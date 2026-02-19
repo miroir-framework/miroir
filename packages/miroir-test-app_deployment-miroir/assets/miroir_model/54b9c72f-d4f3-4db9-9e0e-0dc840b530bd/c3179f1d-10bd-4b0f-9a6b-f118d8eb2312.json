@@ -1,0 +1,158 @@
+{
+  "uuid": "c3179f1d-10bd-4b0f-9a6b-f118d8eb2312",
+  "parentName": "EntityDefinition",
+  "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+  "parentDefinitionVersionUuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
+  "entityUuid": "62209e4a-e429-4d7d-9b28-dcc1da6b51a2",
+  "conceptLevel": "Model",
+  "name": "Blob",
+  "icon": "Interests",
+  "viewAttributes": [
+    "name",
+    "defaultLabel",
+    "uuid"
+  ],
+  "defaultInstanceDetailsReportUuid": "5a90a36c-f167-44f3-812f-3a70772e0a58",
+  "cache": {
+    "cacheAllInstancesOnRefresh": true
+  },
+  "mlSchema": {
+    "type": "object",
+    "definition": {
+      "uuid": {
+        "type": "uuid",
+        "tag": {
+          "value": {
+            "id": 1,
+            "defaultLabel": "Uuid",
+            "display": { "editable": false }
+          }
+        }
+      },
+      "parentName": {
+        "type": "string",
+        "optional": true,
+        "tag": {
+          "value": {
+            "id": 2,
+            "defaultLabel": "Entity Name",
+            "display": { "editable": false }
+          }
+        }
+      },
+      "parentUuid": {
+        "type": "uuid",
+        "tag": {
+          "value": {
+            "id": 3,
+            "defaultLabel": "Entity Uuid",
+            "display": { "editable": false }
+          }
+        }
+      },
+      "parentDefinitionVersionUuid": {
+        "type": "uuid",
+        "optional": true,
+        "tag": {
+          "value": {
+            "id": 4,
+            "defaultLabel": "Entity Definition Version Uuid",
+            "display": { "editable": false }
+          }
+        }
+      },
+      "name": {
+        "type": "string",
+        "tag": {
+          "value": {
+            "defaultLabel": "Name",
+            "display": { "editable": true }
+          }
+        }
+      },
+      "filename": {
+        "type": "string",
+        "tag": {
+          "value": {
+            "defaultLabel": "Filename",
+            "display": { "editable": true }
+          }
+        }
+      },
+      "defaultLabel": {
+        "type": "string",
+        "optional": true,
+        "tag": {
+          "value": {
+            "defaultLabel": "Default Label",
+            "display": { "editable": true }
+          }
+        }
+      },
+      "description": {
+        "type": "string",
+        "optional": true,
+        "tag": {
+          "value": {
+            "defaultLabel": "Description",
+            "display": { "editable": true }
+          }
+        }
+      },
+      "contents": {
+        "type": "object",
+        "optional": true,
+        "tag": {
+          "value": {
+            "defaultLabel": "Contents",
+            "display": { "editable": true },
+            "isBlob": true
+          }
+        },
+        "definition": {
+          "encoding": {
+            "type": "enum",
+            "tag": {
+              "value": {
+                "defaultLabel": "Encoding",
+                "display": { "editable": true }
+              }
+            },
+            "definition": [
+              "base64",
+              "data-uri"
+            ]
+          },
+          "mimeType": {
+            "type": "enum",
+            "tag": {
+              "value": {
+                "defaultLabel": "MIME Type",
+                "display": { "editable": true }
+              }
+            },
+            "definition": [
+              "image/png",
+              "image/jpeg",
+              "image/gif",
+              "image/svg+xml",
+              "application/pdf",
+              "application/zip",
+              "text/plain",
+              "application/json"
+            ]
+          },
+          "data": {
+            "type": "string",
+            "tag": {
+              "value": {
+                "defaultLabel": "Contents",
+                "display": { "editable": true }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

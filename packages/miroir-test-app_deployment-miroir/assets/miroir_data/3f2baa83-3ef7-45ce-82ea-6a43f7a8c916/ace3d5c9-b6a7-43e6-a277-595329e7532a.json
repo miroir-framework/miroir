@@ -1,0 +1,28 @@
+{
+  "uuid": "ace3d5c9-b6a7-43e6-a277-595329e7532a",
+  "selfApplication": "21840247-b5b1-4344-baec-f818f4797d92",
+  "parentName": "Report",
+  "parentUuid": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+  "name": "EndpointList",
+  "defaultLabel": "Endpoints",
+  "definition": {
+    "reportParameters": {},
+    "extractorTemplates": {
+      "endpoints": {
+        "extractorOrCombinerType": "extractorForObjectListByEntity",
+        "parentName": "Endpoint",
+        "parentUuid": "3d8da4d4-8f76-4bb4-9212-14869d81c00c"
+      }
+    },
+    "section": {
+      "type": "objectListReportSection",
+      "definition": {
+        "label": "Endpoints",
+        "parentName": "Endpoint",
+        "parentUuid": "3d8da4d4-8f76-4bb4-9212-14869d81c00c",
+        "fetchedDataReference": "endpoints",
+        "sortByAttribute": "name"
+      }
+    }
+  }
+}

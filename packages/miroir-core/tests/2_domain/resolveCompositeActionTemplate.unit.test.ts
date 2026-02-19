@@ -9,10 +9,7 @@ import {
   type EntityDefinition
 } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
-import entityEntity from '../../src/assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad.json' assert { type: "json" };
-import entityReport from '../../src/assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916.json' assert { type: "json" };
-import entityEntityDefinition from '../../src/assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd.json' assert { type: "json" };
-import entityMenu from '../../src/assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/dde4c883-ae6d-47c3-b6df-26bc6e3c1842.json' assert { type: "json" };
+import { entityEntity, entityReport, entityEntityDefinition, entityMenu } from "miroir-test-app_deployment-miroir";
 
 import { defaultMiroirModelEnvironment } from '../../dist';
 import { MetaEntity } from "../../src/0_interfaces/1_core/EntityDefinition";

@@ -1,0 +1,46 @@
+{
+  "uuid": "8ddb7e2e-a3d3-4622-81d2-0c3e98bca3ea",
+  "name": "listReducerToSpreadObject",
+  "defaultLabel": "listReducerToSpreadObject",
+  "description": "Converts a list of objects into a single spread object.",
+  "parentUuid": "a557419d-a288-4fb8-8a1e-971c86c113b8",
+  "parentDefinitionVersionUuid": "54a16d69-c1f0-4dd7-aba4-a2cda883586c",
+  "parentName": "TransformerDefinition",
+  "classification": "basic",
+  "transformerInterface": {
+    "inputOutput": {
+      "input": "array",
+      "output": "object"
+    },
+    "transformerParameterSchema": {
+      "transformerType": {
+        "type": "literal",
+        "definition": "listReducerToSpreadObject"
+      },
+      "transformerDefinition": {
+        "type": "object",
+        "definition": {
+          "applyTo": {
+            "type": "any",
+            "optional": true,
+            "description": "The list to transform. The actual type is set by the platform depending on interpolation for the transformer."
+          }
+        }
+      }
+    },
+    "transformerResultSchema": {
+      "returns": "mlSchema",
+      "definition": {
+        "type": "record",
+        "definition": {
+          "type": "any"
+        }
+      }
+    }
+  },
+  "transformerImplementation": {
+    "transformerImplementationType": "libraryImplementation",
+    "inMemoryImplementationFunctionName": "transformer_object_listReducerToSpreadObject_apply",
+    "sqlImplementationFunctionName": "sqlStringForListReducerToSpreadObjectTransformer"
+  }
+}

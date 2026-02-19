@@ -17,7 +17,7 @@ import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory";
 import { packageName } from "../constants";
 import { cleanLevel } from "./constants";
 
-import selfApplicationMiroir from '../assets/miroir_data/a659d350-dd97-4da9-91de-524fa01745dc/360fcf1f-f0d4-4f8a-9262-07886e70fa15.json';
+import { selfApplicationMiroir } from "miroir-test-app_deployment-miroir";
 import {
   deployment_Miroir,
   adminSelfApplication,

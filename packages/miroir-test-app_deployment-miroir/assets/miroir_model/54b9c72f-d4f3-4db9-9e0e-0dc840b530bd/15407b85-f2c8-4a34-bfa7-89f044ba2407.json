@@ -1,0 +1,143 @@
+{
+  "uuid": "15407b85-f2c8-4a34-bfa7-89f044ba2407",
+  "parentName": "EntityDefinition",
+  "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+  "parentDefinitionVersionUuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
+  "entityUuid": "5e81e1b9-38be-487c-b3e5-53796c57fccf",
+  "conceptLevel": "Model",
+  "name": "MlSchema",
+  "icon": "Interests",
+  "cache": {
+    "cacheAllInstancesOnRefresh": true
+  },
+  "mlSchema": {
+    "type": "object",
+    "definition": {
+      "uuid": {
+        "type": "uuid",
+        "tag": {
+          "value": {
+            "id": 1,
+            "defaultLabel": "Uuid",
+            "display": { "editable": false }
+          }
+        }
+      },
+      "parentName": {
+        "type": "string",
+        "tag": {
+          "value": {
+            "id": 2,
+            "defaultLabel": "Entity Name",
+            "display": { "editable": false }
+          }
+        }
+      },
+      "parentUuid": {
+        "type": "uuid",
+        "tag": {
+          "value": {
+            "id": 3,
+            "defaultLabel": "Entity Uuid",
+            "display": { "editable": false }
+          }
+        }
+      },
+      "parentDefinitionVersionUuid": {
+        "type": "uuid",
+        "optional": true,
+        "tag": {
+          "value": {
+            "id": 4,
+            "defaultLabel": "Entity Definition Version Uuid",
+            "display": { "editable": false }
+          }
+        }
+      },
+      "name": {
+        "type": "string",
+        "tag": {
+          "value": {
+            "id": 5,
+            "defaultLabel": "Name",
+            "display": { "editable": false }
+          }
+        }
+      },
+      "conceptLevel": {
+        "type": "enum",
+        "definition": [
+          "MetaModel",
+          "Model",
+          "Data"
+        ],
+        "optional": true,
+        "tag": {
+          "value": {
+            "id": 6,
+            "defaultLabel": "Concept Level",
+            "display": { "editable": false }
+          }
+        }
+      },
+      "defaultLabel": {
+        "type": "string",
+        "optional": true,
+        "tag": {
+          "value": {
+            "id": 7,
+            "defaultLabel": "Default Label",
+            "display": { "editable": true }
+          }
+        }
+      },
+      "description": {
+        "type": "string",
+        "optional": true,
+        "tag": {
+          "value": {
+            "id": 8,
+            "defaultLabel": "Description",
+            "display": { "editable": true }
+          }
+        }
+      },
+      "definition": {
+        "type": "schemaReference",
+        "context": {
+          "jzodObjectOrReference": {
+            "type": "union",
+            "discriminator": "type",
+            "definition": [
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+                  "relativePath": "jzodReference"
+                }
+              },
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+                  "relativePath": "jzodObject"
+                }
+              }
+            ]
+          }
+        },
+        "definition": {
+          "relativePath": "jzodObjectOrReference"
+        },
+        "optional": true,
+        "tag": {
+          "value": {
+            "id": 9,
+            "defaultLabel": "Definition",
+            "display": { "editable": true }
+          }
+        }
+      }
+    }
+  }
+}

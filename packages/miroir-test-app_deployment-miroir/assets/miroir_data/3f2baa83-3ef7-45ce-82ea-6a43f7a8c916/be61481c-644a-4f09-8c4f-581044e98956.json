@@ -1,0 +1,27 @@
+{
+  "uuid": "be61481c-644a-4f09-8c4f-581044e98956",
+  "selfApplication": "21840247-b5b1-4344-baec-f818f4797d92",
+  "parentName": "Report",
+  "parentUuid": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+  "name": "BlobList",
+  "defaultLabel": "Blobs",
+  "definition": {
+    "reportParameters": {},
+    "extractorTemplates": {
+      "blobs": {
+        "extractorOrCombinerType": "extractorForObjectListByEntity",
+        "parentUuid": "62209e4a-e429-4d7d-9b28-dcc1da6b51a2"
+      }
+    },
+    "section": {
+      "type": "objectListReportSection",
+      "definition": {
+        "label": "Blobs",
+        "parentName": "Blob",
+        "parentUuid": "62209e4a-e429-4d7d-9b28-dcc1da6b51a2",
+        "fetchedDataReference": "blobs",
+        "sortByAttribute": "name"
+      }
+    }
+  }
+}

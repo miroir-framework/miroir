@@ -43,11 +43,11 @@
         },
         "model": {
           "emulatedServerType": "filesystem",
-          "directory": "./tests/tmp/library_model"
+          "directory":"../miroir-test-app_deployment-library/assets/library_model"
         },
         "data": {
           "emulatedServerType": "filesystem",
-          "directory": "./tests/tmp/library_data"
+          "directory":"../miroir-test-app_deployment-library/assets/library_data"
         }
       }
     },

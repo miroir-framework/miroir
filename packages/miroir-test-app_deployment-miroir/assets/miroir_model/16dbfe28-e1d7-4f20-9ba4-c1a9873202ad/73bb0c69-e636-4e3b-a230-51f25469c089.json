@@ -1,0 +1,10 @@
+{
+  "uuid":"73bb0c69-e636-4e3b-a230-51f25469c089",
+  "parentName":"Entity",
+  "parentUuid":"16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+  "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
+  "name":"Commit",
+  "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+  "conceptLevel":"MetaModel",
+  "description": "A concurrent versioning transaction commit."
+}

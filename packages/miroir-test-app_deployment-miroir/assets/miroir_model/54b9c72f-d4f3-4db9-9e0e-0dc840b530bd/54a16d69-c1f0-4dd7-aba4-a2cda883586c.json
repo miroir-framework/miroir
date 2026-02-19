@@ -1,0 +1,272 @@
+{
+  "uuid": "54a16d69-c1f0-4dd7-aba4-a2cda883586c",
+  "parentName": "EntityDefinition",
+  "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+  "parentDefinitionVersionUuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
+  "entityUuid": "a557419d-a288-4fb8-8a1e-971c86c113b8",
+  "conceptLevel": "Model",
+  "name": "TransformerDefinition",
+  "icon": "Interests",
+  "viewAttributes": [
+    "classification",
+    "name",
+    "defaultLabel",
+    "uuid"
+  ],
+  "cache": {
+    "cacheAllInstancesOnRefresh": true
+  },
+  "defaultInstanceDetailsReportUuid": "6a3122da-b566-4bbe-b94d-3e0904af862f",
+  "mlSchema": {
+    "type": "object",
+    "definition": {
+      "uuid": {
+        "type": "uuid",
+        "tag": {
+          "value": {
+            "id": 1,
+            "defaultLabel": "Uuid",
+            "display": { "editable": false }
+          }
+        }
+      },
+      "parentName": {
+        "type": "string",
+        "optional": true,
+        "tag": {
+          "value": {
+            "id": 2,
+            "defaultLabel": "Entity Name",
+            "display": { "editable": false }
+          }
+        }
+      },
+      "parentUuid": {
+        "type": "uuid",
+        "tag": {
+          "value": {
+            "id": 3,
+            "defaultLabel": "Entity Uuid",
+            "display": { "editable": false }
+          }
+        }
+      },
+      "classification": {
+        "type": "string",
+        "optional": true,
+        "tag": {
+          "value": {
+            "id": 3,
+            "defaultLabel": "Classification",
+            "display": { "editable": true }
+          }
+        }
+      },
+      "runnableAsSql": {
+        "type": "boolean",
+        "optional": true,
+        "tag": {
+          "value": {
+            "id": 3,
+            "defaultLabel": "Runnable As Sql",
+            "display": { "editable": true }
+          }
+        }
+      },
+      "parentDefinitionVersionUuid": {
+        "type": "uuid",
+        "optional": true,
+        "tag": {
+          "value": {
+            "id": 4,
+            "defaultLabel": "Entity Definition Version Uuid",
+            "display": { "editable": false }
+          }
+        }
+      },
+      "name": {
+        "type": "string",
+        "tag": {
+          "value": {
+            "id": 5,
+            "defaultLabel": "Name",
+            "display": { "editable": true }
+          }
+        }
+      },
+      "defaultLabel": {
+        "type": "string",
+        "tag": {
+          "value": {
+            "id": 6,
+            "defaultLabel": "Default Label",
+            "display": { "editable": true }
+          }
+        }
+      },
+      "description": {
+        "type": "string",
+        "optional": true,
+        "tag": {
+          "value": {
+            "id": 7,
+            "defaultLabel": "Description",
+            "display": { "editable": true }
+          }
+        }
+      },
+      "transformerInterface": {
+        "type": "object",
+        "definition": {
+          "inputOutput": {
+            "type": "schemaReference",
+            "optional": true,
+            "context": {
+              "inputOutputType": {
+                "type": "enum",
+                "definition": [
+                  "any",
+                  "undefined",
+                  "bigint",
+                  "number",
+                  "string",
+                  "boolean",
+                  "object",
+                  "array"
+                ]
+              },
+              "inputOutputObject": {
+                "type": "object",
+                "definition": {
+                  "input": {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "inputOutputType"
+                    }
+                  },
+                  "output": {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "inputOutputType"
+                    }
+                  }
+                }
+              }
+            },
+            "definition": {
+              "relativePath": "inputOutputObject"
+            }
+          },
+          "transformerParameterSchema": {
+            "type": "object",
+            "definition": {
+              "transformerType": {
+                "type": "union",
+                "discriminator": "type",
+                "definition": [
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "jzodLiteral"
+                    }
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "jzodEnum"
+                    }
+                  }
+                ]
+              },
+              "transformerDefinition": {
+                "type": "schemaReference",
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "jzodObject"
+                }
+              }
+            }
+          },
+          "transformerResultSchema": {
+            "type": "union",
+            "discriminator": "returns",
+            "definition": [
+              {
+                "type": "object",
+                "definition": {
+                  "returns": {
+                    "type": "literal",
+                    "definition": "mlSchema"
+                  },
+                  "definition": {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "jzodElement"
+                    }
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "definition": {
+                  "returns": {
+                    "type": "literal",
+                    "definition": "mlSchemaTransformer"
+                  },
+                  "definition": {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "transformerForBuildPlusRuntime"
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        }
+      },
+      "transformerImplementation": {
+        "type": "union",
+        "discriminator": "transformerImplementationType",
+        "definition": [
+          {
+            "type": "object",
+            "definition": {
+              "transformerImplementationType": {
+                "type": "literal",
+                "definition": "libraryImplementation"
+              },
+              "inMemoryImplementationFunctionName": {
+                "type": "string"
+              },
+              "sqlImplementationFunctionName": {
+                "type": "string",
+                "optional": true
+              }
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "transformerImplementationType": {
+                "type": "literal",
+                "definition": "transformer"
+              },
+              "definition": {
+                "type": "schemaReference",
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "transformerForBuildPlusRuntime"
+                }
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+}

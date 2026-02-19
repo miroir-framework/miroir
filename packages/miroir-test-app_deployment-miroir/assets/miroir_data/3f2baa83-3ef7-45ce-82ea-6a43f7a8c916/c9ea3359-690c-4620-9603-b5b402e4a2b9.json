@@ -1,0 +1,30 @@
+{
+  "uuid": "c9ea3359-690c-4620-9603-b5b402e4a2b9",
+  "selfApplication": "21840247-b5b1-4344-baec-f818f4797d92",
+  "parentName": "Report",
+  "parentUuid": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+  "name": "EntityList",
+  "defaultLabel": "Entities",
+  "type": "list",
+  "definition": {
+    "reportParameters": {},
+    "extractorTemplates": {
+      "entities": {
+        "extractorOrCombinerType": "extractorForObjectListByEntity",
+        "applicationSection": "model",
+        "parentName": "Entity",
+        "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad"
+      }
+    },
+    "section": {
+      "type": "objectListReportSection",
+      "definition": {
+        "label": "Entities",
+        "parentName": "Entity",
+        "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+        "fetchedDataReference": "entities",
+        "sortByAttribute": "name"
+      }
+    }
+  }
+}

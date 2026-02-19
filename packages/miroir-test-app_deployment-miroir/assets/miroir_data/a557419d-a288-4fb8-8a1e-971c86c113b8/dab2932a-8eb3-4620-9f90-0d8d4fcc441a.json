@@ -1,0 +1,53 @@
+{
+  "uuid": "dab2932a-8eb3-4620-9f90-0d8d4fcc441a",
+  "name": "getFromContext",
+  "defaultLabel": "getFromContext",
+  "description": "Retrieves a value from the runtime context using a key or path.",
+  "parentUuid": "a557419d-a288-4fb8-8a1e-971c86c113b8",
+  "parentDefinitionVersionUuid": "54a16d69-c1f0-4dd7-aba4-a2cda883586c",
+  "parentName": "TransformerDefinition",
+  "classification": "basic",
+  "transformerInterface": {
+    "inputOutput": {
+      "input": "undefined",
+      "output": "any"
+    },
+    "transformerParameterSchema": {
+      "transformerType": {
+        "type": "literal",
+        "definition": "getFromContext"
+      },
+      "transformerDefinition": {
+        "type": "object",
+        "definition": {
+          "safe": {
+            "optional": true,
+            "type": "boolean"
+          },
+          "referenceName": {
+            "optional": true,
+            "type": "string"
+          },
+          "referencePath": {
+            "optional": true,
+            "type": "array",
+            "definition": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "transformerResultSchema": {
+      "returns": "mlSchema",
+      "definition": {
+        "type": "any"
+      }
+    }
+  },
+  "transformerImplementation": {
+    "transformerImplementationType": "libraryImplementation",
+    "inMemoryImplementationFunctionName": "handleTransformer_getFromContext",
+    "sqlImplementationFunctionName": "sqlStringForContextReferenceTransformer"
+  }
+}

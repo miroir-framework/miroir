@@ -11,7 +11,7 @@ import {
 
 import { defaultMetaModelEnvironment } from '../../../src/1_core/Model';
 import { MiroirActivityTracker } from "../../../src/3_controllers/MiroirActivityTracker";
-import transformerTestSuite_jzodTypeCheck from "../../../src/assets/miroir_data/681be9ca-c593-45f5-b45a-5f1d4969e91e/f8e3c7a1-2b9d-4e6f-8c2a-5d7b9e4f1a8c.json";
+import { transformerTestSuite_jzodTypeCheck } from "miroir-test-app_deployment-miroir";
 
 // Access the test file pattern from Vitest's process arguments
 const vitestArgs = process.argv.slice(2);

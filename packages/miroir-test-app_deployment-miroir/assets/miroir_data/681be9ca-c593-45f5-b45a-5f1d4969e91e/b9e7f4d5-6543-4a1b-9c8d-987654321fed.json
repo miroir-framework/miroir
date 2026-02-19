@@ -1,0 +1,284 @@
+{
+  "uuid": "b9e7f4d5-6543-4a1b-9c8d-987654321fed",
+  "parentName": "TransformerTest",
+  "parentUuid": "681be9ca-c593-45f5-b45a-5f1d4969e91e",
+  "name": "resolveSchemaReferenceInContext",
+  "selfApplication": "21840247-b5b1-4344-baec-f818f4797d92",
+  "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
+  "description": "The Test for the resolveSchemaReferenceInContext Transformer",
+  "definition": {
+    "transformerTestType": "transformerTestSuite",
+    "transformerTestLabel": "resolveSchemaReferenceInContext",
+    "transformerTests": [
+      {
+        "transformerTestType": "transformerTest",
+        "transformerTestLabel": "simple string reference resolution",
+        "transformerName": "resolveSchemaReferenceInContext",
+        "runTestStep": "build",
+        "transformer": {
+          "transformerType": "resolveSchemaReferenceInContext",
+          "interpolation": "build",
+          "jzodReference": {
+            "type": "schemaReference",
+            "context": {
+              "a": {
+                "type": "string"
+              }
+            },
+            "definition": {
+              "relativePath": "a"
+            }
+          },
+          "relativeReferenceJzodContext": {
+            "a": {
+              "type": "string"
+            }
+          },
+          "miroirFundamentalJzodSchema": {
+            "uuid": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            "parentName": "MlSchema",
+            "parentUuid": "5e81e1b9-38be-487c-b3e5-53796c57fccf",
+            "name": "miroirFundamentalJzodSchema",
+            "defaultLabel": "The Jzod Schema of Miroir Fundamental Schemas",
+            "definition": {
+              "type": "schemaReference",
+              "definition": {
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                "relativePath": "jzodElement"
+              },
+              "context": {}
+            }
+          }
+        },
+        "transformerParams": {},
+        "expectedValue": {
+          "type": "string"
+        }
+      },
+      {
+        "transformerTestType": "transformerTest",
+        "transformerTestLabel": "recursive object reference resolution",
+        "transformerName": "resolveSchemaReferenceInContext",
+        "runTestStep": "build",
+        "transformer": {
+          "transformerType": "resolveSchemaReferenceInContext",
+          "interpolation": "build",
+          "jzodReference": {
+            "type": "schemaReference",
+            "context": {
+              "myObject": {
+                "type": "object",
+                "definition": {
+                  "a": {
+                    "type": "union",
+                    "definition": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "schemaReference",
+                        "definition": { 
+                          "relativePath": "myObject"
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            "definition": { 
+              "relativePath": "myObject" 
+            }
+          },
+          "relativeReferenceJzodContext": {
+            "myObject": {
+              "type": "object",
+              "definition": {
+                "a": {
+                  "type": "union",
+                  "definition": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "schemaReference",
+                      "definition": { 
+                        "relativePath": "myObject"
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "miroirFundamentalJzodSchema": {
+            "uuid": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            "parentName": "MlSchema",
+            "parentUuid": "5e81e1b9-38be-487c-b3e5-53796c57fccf",
+            "name": "miroirFundamentalJzodSchema",
+            "defaultLabel": "The Jzod Schema of Miroir Fundamental Schemas",
+            "definition": {
+              "type": "schemaReference",
+              "definition": {
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                "relativePath": "jzodElement"
+              },
+              "context": {}
+            }
+          }
+        },
+        "transformerParams": {},
+        "expectedValue": {
+          "type": "object",
+          "definition": {
+            "a": {
+              "type": "union",
+              "definition": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "schemaReference",
+                  "definition": {
+                    "relativePath": "myObject"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      },
+      {
+        "transformerTestType": "transformerTest",
+        "transformerTestLabel": "mutually recursive objects resolution",
+        "transformerName": "resolveSchemaReferenceInContext",
+        "runTestStep": "build",
+        "transformer": {
+          "transformerType": "resolveSchemaReferenceInContext",
+          "interpolation": "build",
+          "jzodReference": {
+            "type": "schemaReference",
+            "context": {
+              "myObject1": {
+                "type": "object",
+                "definition": {
+                  "a": {
+                    "type": "union",
+                    "definition": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "schemaReference",
+                        "definition": { 
+                          "relativePath": "myObject2"
+                        }
+                      }
+                    ]
+                  }
+                }
+              },
+              "myObject2": {
+                "type": "object",
+                "definition": {
+                  "b": {
+                    "type": "union",
+                    "definition": [
+                      {
+                        "type": "number"
+                      },
+                      {
+                        "type": "schemaReference",
+                        "definition": { 
+                          "relativePath": "myObject1"
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            "definition": { 
+              "relativePath": "myObject2" 
+            }
+          },
+          "relativeReferenceJzodContext": {
+            "myObject1": {
+              "type": "object",
+              "definition": {
+                "a": {
+                  "type": "union",
+                  "definition": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "schemaReference",
+                      "definition": { 
+                        "relativePath": "myObject2"
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "myObject2": {
+              "type": "object",
+              "definition": {
+                "b": {
+                  "type": "union",
+                  "definition": [
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "type": "schemaReference",
+                      "definition": { 
+                        "relativePath": "myObject1"
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "miroirFundamentalJzodSchema": {
+            "uuid": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            "parentName": "MlSchema",
+            "parentUuid": "5e81e1b9-38be-487c-b3e5-53796c57fccf",
+            "name": "miroirFundamentalJzodSchema",
+            "defaultLabel": "The Jzod Schema of Miroir Fundamental Schemas",
+            "definition": {
+              "type": "schemaReference",
+              "definition": {
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                "relativePath": "jzodElement"
+              },
+              "context": {}
+            }
+          }
+        },
+        "transformerParams": {},
+        "expectedValue": {
+          "type": "object",
+          "definition": {
+            "b": {
+              "type": "union",
+              "definition": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "schemaReference",
+                  "definition": { 
+                    "relativePath": "myObject1"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      }
+    ]
+  }
+}

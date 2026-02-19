@@ -95,6 +95,7 @@ const adminMetaModel: MetaModel = {
   menus: [],
   applicationVersions: [],
   reports: [],
+  runners: [],
   storedQueries: [],
   applicationVersionCrossEntityDefinition: [],
 };

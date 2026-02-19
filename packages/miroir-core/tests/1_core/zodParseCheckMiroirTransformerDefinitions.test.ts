@@ -10,7 +10,7 @@ import {
 } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
 import { zodErrorDeepestIssueLeaves } from "../../src/1_core/zodParseErrorHandler";
-import test_createEntityAndReportFromSpreadsheetAndUpdateMenu from "../../src/assets/miroir_data/c37625c7-0b35-4d6a-811d-8181eb978301/ffe6ab3c-8296-4293-8aaf-ebbad1f0ac9a.json";
+import { test_createEntityAndReportFromSpreadsheetAndUpdateMenu } from "miroir-test-app_deployment-miroir";
 
 
 // ################################################################################################

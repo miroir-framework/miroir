@@ -1,0 +1,92 @@
+{
+  "uuid": "16d866c4-bc81-4773-89a4-a47ac7f6549d",
+  "name": "createObjectFromPairs",
+  "defaultLabel": "createObjectFromPairs",
+  "description": "Creates an object from an array of key-value pairs with advanced templating.",
+  "parentUuid": "a557419d-a288-4fb8-8a1e-971c86c113b8",
+  "parentDefinitionVersionUuid": "54a16d69-c1f0-4dd7-aba4-a2cda883586c",
+  "parentName": "TransformerDefinition",
+  "classification": "basic",
+  "transformerInterface": {
+    "inputOutput": {
+      "input": "any",
+      "output": "object"
+    },
+    "transformerParameterSchema": {
+      "transformerType": {
+        "type": "literal",
+        "definition": "createObjectFromPairs"
+      },
+      "transformerDefinition": {
+        "type": "object",
+        "extend": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "transformer_orderBy"
+            }
+          }
+        ],
+        "definition": {
+          "applyTo": {
+            "type": "any",
+            "optional": true,
+            "description": "The input to transform. The actual type is set by the platform depending on interpolation for the transformer."
+          },
+          "referenceToOuterObject": {
+            "type": "string",
+            "optional": true,
+            "description": "If set, each attribute value transformer will have access to the outer object through this attribute name."
+          },
+          "definition": {
+            "type": "array",
+            "definition": {
+              "type": "object",
+              "definition": {
+                "attributeKey": {
+                  "type": "union",
+                  "discriminator": "transformerType",
+                  "definition": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "schemaReference",
+                      "definition": {
+                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        "relativePath": "transformer"
+                      }
+                    }
+                  ]
+                },
+                "attributeValue": {
+                  "type": "schemaReference",
+                  "definition": {
+                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    "relativePath": "transformer"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "transformerResultSchema": {
+      "returns": "mlSchema",
+      "definition": {
+        "type": "record",
+        "definition": {
+          "type": "any"
+        }
+      }
+    }
+  },
+  "transformerImplementation": {
+    "transformerImplementationType": "libraryImplementation",
+    "inMemoryImplementationFunctionName": "handleTransformer_createObjectFromPairs",
+    "sqlImplementationFunctionName": "sqlStringForObjectFullTemplateTransformer"
+  }
+}

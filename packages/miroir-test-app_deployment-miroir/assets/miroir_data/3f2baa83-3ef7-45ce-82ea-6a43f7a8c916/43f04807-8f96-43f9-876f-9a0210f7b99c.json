@@ -1,0 +1,28 @@
+{
+  "uuid": "43f04807-8f96-43f9-876f-9a0210f7b99c",
+  "selfApplication": "21840247-b5b1-4344-baec-f818f4797d92",
+  "parentName": "Report",
+  "parentUuid": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+  "name": "StoreBasedConfigurationList",
+  "defaultLabel": "Store-based Configurations",
+  "definition": {
+    "reportParameters": {},
+    "extractorTemplates": {
+      "storeBasedConfigurations": {
+        "extractorOrCombinerType": "extractorForObjectListByEntity",
+        "parentName": "StoreBasedConfiguration",
+        "parentUuid": "7990c0c9-86c3-40a1-a121-036c91b55ed7"
+      }
+    },
+    "section": {
+      "type": "objectListReportSection",
+      "definition": {
+        "label": "Store-based Configurations",
+        "parentName": "StoreBasedConfiguration",
+        "parentUuid": "7990c0c9-86c3-40a1-a121-036c91b55ed7",
+        "fetchedDataReference": "storeBasedConfigurations",
+        "sortByAttribute": "name"
+      }
+    }
+  }
+}

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import instanceEndpointV1 from '../../../miroir-core/src/assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c/ed520de4-55a9-4550-ac50-b1b713b72a89.json';
+import { instanceEndpointV1 } from 'miroir-test-app_deployment-miroir';
 // import instanceEndpointV1 from 'miroir-core';
 import { mcpToolDescriptionFromActionDefinition } from '../../src/tools/mcpToolDescriptionFromActionDefinition';
 import type { application } from 'express';

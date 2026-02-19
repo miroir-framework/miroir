@@ -1,0 +1,70 @@
+{
+  "uuid": "4ee5c863-5ade-4706-92bd-1fc2d89c3766",
+  "name": "aggregate",
+  "defaultLabel": "aggregate",
+  "description": "Aggregates a list into a count object, optionally grouping by an attribute.",
+  "parentUuid": "a557419d-a288-4fb8-8a1e-971c86c113b8",
+  "parentDefinitionVersionUuid": "54a16d69-c1f0-4dd7-aba4-a2cda883586c",
+  "parentName": "TransformerDefinition",
+  "classification": "basic",
+  "transformerInterface": {
+    "inputOutput": {
+      "input": "array",
+      "output": "array"
+    },
+    "transformerParameterSchema": {
+      "transformerType": {
+        "type": "literal",
+        "definition": "aggregate"
+      },
+      "transformerDefinition": {
+        "type": "object",
+        "definition": {
+          "applyTo": {
+            "type": "any",
+            "optional": true,
+            "description": "The list to aggregate. The actual type is set by the platform depending on interpolation for the transformer."
+          },
+          "attribute": {
+            "type": "string",
+            "optional": true
+          },
+          "groupBy": {
+            "type": "union",
+            "optional": true,
+            "definition": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "array",
+                "definition": {
+                  "type": "string"
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    "transformerResultSchema": {
+      "returns": "mlSchema",
+      "definition": {
+        "type": "array",
+        "definition": {
+          "type": "object",
+          "definition": {
+            "aggregate": {
+              "type": "number"
+            }
+          }
+        }
+      }
+    }
+  },
+  "transformerImplementation": {
+    "transformerImplementationType": "libraryImplementation",
+    "inMemoryImplementationFunctionName": "handleCountTransformer",
+    "sqlImplementationFunctionName": "sqlStringForCountTransformer"
+  }
+}

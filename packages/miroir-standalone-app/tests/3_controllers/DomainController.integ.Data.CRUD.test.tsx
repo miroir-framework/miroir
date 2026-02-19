@@ -146,11 +146,11 @@ const deployment_Miroir: Deployment = {
     },
     model: {
       emulatedServerType: "filesystem",
-      directory: "../miroir-core/src/assets/miroir_model",
+      directory: "../miroir-test-app_deployment-miroir/assets/miroir_model",
     },
     data: {
       emulatedServerType: "filesystem",
-      directory: "../miroir-core/src/assets/miroir_data",
+      directory: "../miroir-test-app_deployment-miroir/assets/miroir_data",
     },
     // admin: {
     //   emulatedServerType: "sql",

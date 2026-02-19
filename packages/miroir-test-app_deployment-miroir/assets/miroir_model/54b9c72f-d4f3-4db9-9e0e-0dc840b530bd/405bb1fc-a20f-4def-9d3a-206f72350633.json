@@ -1,0 +1,305 @@
+{
+  "parentName": "EntityDefinition",
+  "name": "TransformerTest",
+  "uuid": "405bb1fc-a20f-4def-9d3a-206f72350633",
+  "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+  "entityUuid": "681be9ca-c593-45f5-b45a-5f1d4969e91e",
+  "conceptLevel": "Model",
+  "defaultInstanceDetailsReportUuid": "1c06268b-2ddb-433c-ae4f-46546908125d",
+  "cache": {
+    "cacheAllInstancesOnRefresh": true
+  },
+  "viewAttributes": [
+    "name",
+    "uuid",
+    "description"
+  ],
+  "mlSchema": {
+    "type": "object",
+    "definition": {
+      "uuid": {
+        "type": "string",
+        "validations": [
+          {
+            "type": "uuid"
+          }
+        ],
+        "tag": {
+          "value": {
+            "id": 1,
+            "defaultLabel": "Uuid",
+            "display": { "editable": false }
+          }
+        }
+      },
+      "parentName": {
+        "type": "string",
+        "optional": true,
+        "tag": {
+          "value": {
+            "id": 1,
+            "defaultLabel": "Uuid",
+            "display": { "editable": false }
+          }
+        }
+      },
+      "parentUuid": {
+        "type": "string",
+        "validations": [
+          {
+            "type": "uuid"
+          }
+        ],
+        "tag": {
+          "value": {
+            "id": 1,
+            "defaultLabel": "parentUuid",
+            "display": { "editable": false }
+          }
+        }
+      },
+      "selfApplication": {
+        "type": "uuid",
+        "tag": {
+          "value": {
+            "id": 9,
+            "defaultLabel": "SelfApplication",
+            "description": "The SelfApplication this Test belongs to",
+            "display": { "editable": false },
+            "foreignKeyParams": {
+              "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
+              "targetEntityOrderInstancesBy": "name"
+            }
+          }
+        }
+      },
+      "branch": {
+        "type": "uuid",
+        "tag": {
+          "value": {
+            "id": 10,
+            "defaultLabel": "Branch",
+            "description": "The Branch of the SelfApplication",
+            "display": { "editable": false }
+          }
+        }
+      },
+      "name": {
+        "type": "string",
+        "optional": true,
+        "tag": {
+          "value": {
+            "id": 1,
+            "defaultLabel": "Name",
+            "display": { "editable": true }
+          }
+        }
+      },
+      "skip": {
+        "type": "boolean",
+        "optional": true,
+        "tag": {
+          "value": {
+            "id": 1,
+            "defaultLabel": "Skip",
+            "display": { "editable": true },
+            "description": "If true, this test will be skipped when running tests",
+            "initializeTo": {
+              "initializeToType": "value",
+              "value": true
+            }
+          }
+        }
+      },
+      "description": {
+        "type": "string",
+        "optional": true,
+        "tag": {
+          "value": {
+            "id": 1,
+            "defaultLabel": "Description",
+            "display": { "editable": true }
+          }
+        }
+      },
+      "definition": {
+        "type": "schemaReference",
+        "context": {
+          "transformerTest": {
+            "type": "object",
+            "tag": {
+              "value": {
+                "defaultLabel": "TransformerTest",
+                "description": "A test of a Transformer",
+                "display": {
+                  "displayedAttributeValueWhenFolded": "transformerTestLabel"
+                }
+              }
+            },
+            "definition": {
+              "transformerTestType": {
+                "type": "literal",
+                "definition": "transformerTest"
+              },
+              "transformerTestLabel": {
+                "type": "string"
+              },
+              "transformerName": {
+                "type": "string"
+              },
+              "testTag": {
+                "type": "union",
+                "optional": true,
+                "definition": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "array",
+                    "definition": {
+                      "type": "string"
+                    }
+                  }
+                ]
+              },
+              "skip": {
+                "type": "boolean",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "id": 1,
+                    "defaultLabel": "Skip",
+                    "display": { "editable": true },
+                    "description": "If true, this test will be skipped when running tests",
+                    "initializeTo": {
+                      "initializeToType": "value",
+                      "value": true
+                    }
+                  }
+                }
+              },
+              "transformer": {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "transformerForBuildPlusRuntime",
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+                }
+              },
+              "runTestStep": {
+                "type": "string",
+                "optional": true
+              },
+              "transformerParams": {
+                "type": "record",
+                "definition": {
+                  "type": "any"
+                },
+                "optional": true
+              },
+              "transformerRuntimeContext": {
+                "type": "record",
+                "definition": {
+                  "type": "any"
+                },
+                "optional": true
+              },
+              "expectedValue": {
+                "type": "any",
+                "optional": true
+              },
+              "integrationTestExpectedValue": {
+                "type": "any",
+                "optional": true
+              },
+              "unitTestExpectedValue": {
+                "type": "any",
+                "optional": true
+              },
+              "retainAttributes": {
+                "type": "array",
+                "definition": {
+                  "type": "string"
+                },
+                "optional": true
+              },
+              "ignoreAttributes": {
+                "type": "array",
+                "definition": {
+                  "type": "string"
+                },
+                "optional": true
+              }
+            }
+          },
+          "transformerTestSuite": {
+            "type": "object",
+            "tag": {
+              "value": {
+                "defaultLabel": "TransformerTestSuite",
+                "description": "A suite of TransformerTests or nested TransformerTestSuites",
+                "display": {
+                  "editable": true,
+                  "displayedAttributeValueWhenFolded": "transformerTestLabel"
+                }
+              }
+            },
+            "definition": {
+              "transformerTestType": {
+                "type": "literal",
+                "definition": "transformerTestSuite"
+              },
+              "transformerTestLabel": {
+                "type": "string"
+              },
+              "skip": {
+                "type": "boolean",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "id": 1,
+                    "defaultLabel": "Skip",
+                    "display": { "editable": true },
+                    "description": "If true, this test suite will be skipped when running tests",
+                    "initializeTo": {
+                      "initializeToType": "value",
+                      "value": true
+                    }
+                  }
+                }
+              },
+              "transformerTests": {
+                "type": "array",
+                "definition": {
+                  "type": "union",
+                  "discriminator": "transformerTestType",
+                  "definition": [
+                    {
+                      "type": "schemaReference",
+                      "definition": {
+                        "relativePath": "transformerTest"
+                      }
+                    },
+                    {
+                      "type": "schemaReference",
+                      "definition": {
+                        "relativePath": "transformerTestSuite"
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "definition": {
+          "relativePath": "transformerTestSuite"
+        }
+      }
+    }
+  },
+  "display": {
+    "foldSubLevels": {
+      "definition": true
+    }
+  }
+}

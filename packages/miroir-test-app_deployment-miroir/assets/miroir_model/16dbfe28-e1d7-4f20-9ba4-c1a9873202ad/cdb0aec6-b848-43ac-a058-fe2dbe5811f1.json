@@ -1,0 +1,10 @@
+{
+  "uuid": "cdb0aec6-b848-43ac-a058-fe2dbe5811f1",
+  "parentName": "Entity",
+  "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+  "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
+  "name": "ApplicationModelBranch",
+  "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+  "conceptLevel": "Model",
+  "description": "A Branch of an SelfApplication Model"
+}

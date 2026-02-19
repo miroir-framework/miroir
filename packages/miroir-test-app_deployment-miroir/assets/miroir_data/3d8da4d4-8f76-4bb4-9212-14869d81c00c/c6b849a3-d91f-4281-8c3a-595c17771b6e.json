@@ -1,0 +1,76 @@
+{
+  "uuid": "c6b849a3-d91f-4281-8c3a-595c17771b6e",
+  "parentName": "Endpoint",
+  "parentUuid": "3d8da4d4-8f76-4bb4-9212-14869d81c00c",
+  "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+  "name": "MenuEndpoint",
+  "version": "1",
+  "description": "Menu Endpoint IS IT RELEVANT?",
+  "definition": {
+    "actions": [
+      {
+        "actionParameters": {
+          "actionType": {
+            "type": "literal",
+            "tag": {
+              "value": {
+                "canBeTemplate": false
+              }
+            },
+            "definition": "menuAddItem"
+          },
+          "actionLabel": { "type": "string", "optional": true },
+          "application": {
+            "type": "literal",
+            "definition": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
+          },
+          "endpoint": { "type": "literal", "definition": "c6b849a3-d91f-4281-8c3a-595c17771b6e" },
+          "payload": {
+            "type": "object",
+            "definition": {
+              "application": {
+                "type": "uuid",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": false,
+                    "defaultLabel": "Application",
+                    "foreignKeyParams": {
+                      "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
+                      "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+                      "targetEntityOrderInstancesBy": "name"
+                    },
+                    "editable": false
+                  }
+                }
+              },
+              "index": {
+                "type": "number",
+                "optional": true
+              },
+              "menuUuid": {
+                "type": "uuid"
+              },
+              "item": {
+                "type": "array",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "SelfApplication Instance to create",
+                    "editable": true
+                  }
+                },
+                "definition": {
+                  "type": "schemaReference",
+                  "optional": false,
+                  "definition": {
+                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    "relativePath": "miroirMenuItem"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    ]
+  }
+}

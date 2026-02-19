@@ -1,0 +1,697 @@
+{
+  "uuid": "ed520de4-55a9-4550-ac50-b1b713b72a89",
+  "parentName": "Endpoint",
+  "parentUuid": "3d8da4d4-8f76-4bb4-9212-14869d81c00c",
+  "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+  "name": "InstanceEndpoint",
+  "version": "1",
+  "description": "Instance Endpoint",
+  "definition": {
+    "actions": [
+      {
+        "actionParameters": {
+          "actionType": {
+            "type": "literal",
+            "tag": {
+              "value": {
+                "canBeTemplate": false
+              }
+            },
+            "definition": "createInstance"
+          },
+          "actionLabel": {
+            "type": "string",
+            "optional": true
+          },
+          "endpoint": {
+            "type": "literal",
+            "definition": "ed520de4-55a9-4550-ac50-b1b713b72a89"
+          },
+          "application": {
+            "type": "literal",
+            "definition": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
+          },
+          "payload": {
+            "type": "object",
+            "definition": {
+              "application": {
+                "type": "uuid",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": false,
+                    "defaultLabel": "Application",
+                    "description": "Application UUID where instances will be created",
+                    "foreignKeyParams": {
+                      "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
+                      "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+                      "targetEntityOrderInstancesBy": "name"
+                    },
+                    "initializeTo": {
+                      "initializeToType": "transformer",
+                      "transformer": {
+                        "transformerType": "getFromParameters",
+                        "referencePath": ["applicationUuid"]
+                      }
+                    },
+                    "display": {
+                      "editable": false
+                    }
+                  }
+                }
+              },
+              "applicationSection": {
+                "type": "schemaReference",
+                "tag": {
+                  "value": {
+                    "description": "Section where instances will be created (model or data)"
+                  }
+                },
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "applicationSection"
+                }
+              },
+              "parentUuid": {
+                "type": "uuid",
+                "tag": {
+                  "value": {
+                    "id": 3,
+                    "defaultLabel": "Entity Uuid",
+                    "description": "Entity UUID (parent entity of the instances to create)",
+                    "foreignKeyParams": {
+                      "targetEntityApplicationSection": "model",
+                      "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                      "targetEntityOrderInstancesBy": "name"
+                    }
+                  }
+                }
+              },
+              "objects": {
+                "type": "array",
+                "tag": {
+                  "value": {
+                    "id": 2,
+                    "defaultLabel": "Entity Instances (objects) to create",
+                    "description": "Array of entity instances to create. Each must have uuid and parentUuid."
+                  }
+                },
+                "definition": {
+                  "type": "object",
+                  "definition": {
+                    "parentName": {
+                      "type": "string",
+                      "optional": true,
+                      "tag": {
+                        "value": {
+                          "id": 1,
+                          "defaultLabel": "Parent Name",
+                          "display": {
+                            "editable": false
+                          },
+                          "canBeTemplate": true
+                        }
+                      }
+                    },
+                    "parentUuid": {
+                      "type": "uuid",
+                      "tag": {
+                        "value": {
+                          "id": 2,
+                          "defaultLabel": "Parent Uuid",
+                          "display": {
+                            "editable": false
+                          },
+                          "canBeTemplate": true,
+                          "foreignKeyParams": {
+                            "targetEntityApplicationSection": "model",
+                            "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                            "targetEntityOrderInstancesBy": "name"
+                          },
+                          "initializeTo": {
+                            "initializeToType": "transformer",
+                            "transformer": {
+                              "transformerType": "getFromParameters",
+                              "interpolation": "build",
+                              "referencePath": [
+                                "rootObject",
+                                "payload",
+                                "parentUuid"
+                              ]
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "applicationSection": {
+                      "type": "schemaReference",
+                      "optional": false,
+                      "definition": {
+                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        "relativePath": "applicationSection"
+                      }
+                    },
+                    "instances": {
+                      "type": "array",
+                      "tag": {
+                        "value": {
+                          "defaultLabel": "Instances",
+                          "description": "instances to be created"
+                        }
+                      },
+                      "definition": {
+                        "type": "schemaReference",
+                        "tag": {
+                          "value": {
+                            "canBeTemplate": true,
+                            "ifThenElseMMLS": {
+                              "mmlsReference": {
+                                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                "relativePath": "compositeActionTemplate"
+                              }
+                            }
+                          }
+                        },
+                        "definition": {
+                          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                          "relativePath": "entityInstance"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "actionErrors": {
+          "type": "literal",
+          "definition": "FailedToCreateInstance"
+        }
+      },
+      {
+        "actionParameters": {
+          "actionType": {
+            "type": "literal",
+            "tag": {
+              "value": {
+                "canBeTemplate": false
+              }
+            },
+            "definition": "deleteInstance"
+          },
+          "actionLabel": {
+            "type": "string",
+            "optional": true
+          },
+          "application": {
+            "type": "literal",
+            "definition": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
+          },
+          "endpoint": {
+            "type": "literal",
+            "definition": "ed520de4-55a9-4550-ac50-b1b713b72a89"
+          },
+          "payload": {
+            "type": "object",
+            "definition": {
+              "application": {
+                "type": "uuid",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": false,
+                    "defaultLabel": "Application",
+                    "foreignKeyParams": {
+                      "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
+                      "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+                      "targetEntityOrderInstancesBy": "name"
+                    },
+                    "display": {
+                      "editable": false
+                    }
+                  }
+                }
+              },
+              "applicationSection": {
+                "type": "schemaReference",
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "applicationSection"
+                }
+              },
+              "includeInTransaction": {
+                "type": "boolean",
+                "optional": true
+              },
+              "objects": {
+                "type": "array",
+                "tag": {
+                  "value": {
+                    "id": 2,
+                    "defaultLabel": "Entity Instances to delete"
+                  }
+                },
+                "definition": {
+                  "type": "schemaReference",
+                  "optional": false,
+                  "definition": {
+                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    "relativePath": "entityInstanceCollection"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "actionErrors": {
+          "type": "literal",
+          "definition": "FailedToDeleteInstance"
+        }
+      },
+      {
+        "actionParameters": {
+          "actionType": {
+            "type": "literal",
+            "tag": {
+              "value": {
+                "canBeTemplate": false
+              }
+            },
+            "definition": "deleteInstanceWithCascade"
+          },
+          "actionLabel": {
+            "type": "string",
+            "optional": true
+          },
+          "application": {
+            "type": "literal",
+            "definition": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
+          },
+          "endpoint": {
+            "type": "literal",
+            "definition": "ed520de4-55a9-4550-ac50-b1b713b72a89"
+          },
+          "payload": {
+            "type": "object",
+            "definition": {
+              "application": {
+                "type": "uuid",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": false,
+                    "defaultLabel": "Application",
+                    "foreignKeyParams": {
+                      "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
+                      "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+                      "targetEntityOrderInstancesBy": "name"
+                    },
+                    "display": {
+                      "editable": false
+                    }
+                  }
+                }
+              },
+              "applicationSection": {
+                "type": "schemaReference",
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "applicationSection"
+                }
+              },
+              "includeInTransaction": {
+                "type": "boolean",
+                "optional": true
+              },
+              "objects": {
+                "type": "array",
+                "tag": {
+                  "value": {
+                    "id": 2,
+                    "defaultLabel": "Entity Instances to delete"
+                  }
+                },
+                "definition": {
+                  "type": "schemaReference",
+                  "optional": false,
+                  "definition": {
+                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    "relativePath": "entityInstanceCollection"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "actionErrors": {
+          "type": "literal",
+          "definition": "FailedToDeleteInstanceWithCascade"
+        }
+      },
+      {
+        "actionParameters": {
+          "actionType": {
+            "type": "literal",
+            "tag": {
+              "value": {
+                "canBeTemplate": false
+              }
+            },
+            "definition": "updateInstance"
+          },
+          "actionLabel": {
+            "type": "string",
+            "optional": true
+          },
+          "application": {
+            "type": "literal",
+            "definition": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
+          },
+          "endpoint": {
+            "type": "literal",
+            "definition": "ed520de4-55a9-4550-ac50-b1b713b72a89"
+          },
+          "payload": {
+            "type": "object",
+            "definition": {
+              "application": {
+                "type": "uuid",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": false,
+                    "defaultLabel": "Application",
+                    "description": "Application UUID",
+                    "foreignKeyParams": {
+                      "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
+                      "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+                      "targetEntityOrderInstancesBy": "name"
+                    },
+                    "display": {
+                      "editable": false
+                    }
+                  }
+                }
+              },
+              "applicationSection": {
+                "type": "schemaReference",
+                "tag": {
+                  "value": {
+                    "description": "Section where instances will be updated"
+                  }
+                },
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "applicationSection"
+                }
+              },
+              "includeInTransaction": {
+                "type": "boolean",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "description": "Set to true to include update in a transaction"
+                  }
+                }
+              },
+              "parentUuid": {
+                "type": "uuid",
+                "tag": {
+                  "value": {
+                    "id": 3,
+                    "defaultLabel": "Entity Uuid",
+                    "description": "The Entity UUID of which instances will be updated",
+                    "foreignKeyParams": {
+                      "targetEntityApplicationSection": "model",
+                      "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                      "targetEntityOrderInstancesBy": "name"
+                    }
+                  }
+                }
+              },
+              "objects": {
+                "type": "array",
+                "tag": {
+                  "value": {
+                    "id": 2,
+                    "defaultLabel": "Entity Instances to update",
+                    "description": "Array of entity instances to be updated"
+                  }
+                },
+                "definition": {
+                  "type": "schemaReference",
+                  "optional": false,
+                  "tag": {
+                    "value": {
+                      "canBeTemplate": true
+                    }
+                  },
+                  "definition": {
+                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    "relativePath": "entityInstanceCollection"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "actionErrors": {
+          "type": "literal",
+          "definition": "FailedToUpdateInstance"
+        }
+      },
+      {
+        "actionParameters": {
+          "actionType": {
+            "type": "literal",
+            "tag": {
+              "value": {
+                "canBeTemplate": false
+              }
+            },
+            "definition": "loadNewInstancesInLocalCache"
+          },
+          "actionLabel": {
+            "type": "string",
+            "optional": true
+          },
+          "application": {
+            "type": "literal",
+            "definition": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
+          },
+          "endpoint": {
+            "type": "literal",
+            "definition": "ed520de4-55a9-4550-ac50-b1b713b72a89"
+          },
+          "payload": {
+            "type": "object",
+            "definition": {
+              "application": {
+                "type": "uuid",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": false,
+                    "defaultLabel": "Application",
+                    "foreignKeyParams": {
+                      "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
+                      "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+                      "targetEntityOrderInstancesBy": "name"
+                    },
+                    "display": {
+                      "editable": false
+                    }
+                  }
+                }
+              },
+              "objects": {
+                "type": "array",
+                "tag": {
+                  "value": {
+                    "id": 2,
+                    "defaultLabel": "Entity Instances to place in the local cache"
+                  }
+                },
+                "definition": {
+                  "type": "schemaReference",
+                  "optional": false,
+                  "definition": {
+                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    "relativePath": "entityInstanceCollection"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "actionErrors": {
+          "type": "literal",
+          "definition": "FailedToLoadNewInstancesInLocalCache"
+        }
+      },
+      {
+        "actionParameters": {
+          "actionType": {
+            "type": "literal",
+            "tag": {
+              "value": {
+                "canBeTemplate": false
+              }
+            },
+            "definition": "getInstance"
+          },
+          "actionLabel": {
+            "type": "string",
+            "optional": true
+          },
+          "application": {
+            "type": "literal",
+            "definition": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
+          },
+          "endpoint": {
+            "type": "literal",
+            "definition": "ed520de4-55a9-4550-ac50-b1b713b72a89"
+          },
+          "payload": {
+            "type": "object",
+            "definition": {
+              "application": {
+                "type": "uuid",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": false,
+                    "defaultLabel": "Application",
+                    "description": "UUID of Application to query",
+                    "foreignKeyParams": {
+                      "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
+                      "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+                      "targetEntityOrderInstancesBy": "name"
+                    },
+                    "display": {
+                      "editable": false
+                    }
+                  }
+                }
+              },
+              "applicationSection": {
+                "type": "schemaReference",
+                "tag": {
+                  "value": {
+                    "description": "Section to query (model or data)"
+                  }
+                },
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "applicationSection"
+                }
+              },
+              "parentUuid": {
+                "type": "uuid",
+                "tag": {
+                  "value": {
+                    "id": 1,
+                    "defaultLabel": "Uuid",
+                    "description": "UUID of Entity (parent entity)",
+                    "display": {
+                      "editable": false
+                    }
+                  }
+                }
+              },
+              "uuid": {
+                "type": "uuid",
+                "tag": {
+                  "value": {
+                    "id": 1,
+                    "defaultLabel": "Uuid",
+                    "description": "UUID of Instance to retrieve",
+                    "display": {
+                      "editable": false
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "actionErrors": {
+          "type": "literal",
+          "definition": "FailedToGetInstance"
+        }
+      },
+      {
+        "actionParameters": {
+          "actionType": {
+            "type": "literal",
+            "tag": {
+              "value": {
+                "canBeTemplate": false
+              }
+            },
+            "definition": "getInstances"
+          },
+          "actionLabel": {
+            "type": "string",
+            "optional": true
+          },
+          "application": {
+            "type": "literal",
+            "definition": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
+          },
+          "endpoint": {
+            "type": "literal",
+            "definition": "ed520de4-55a9-4550-ac50-b1b713b72a89"
+          },
+          "payload": {
+            "type": "object",
+            "definition": {
+              "application": {
+                "type": "uuid",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": false,
+                    "defaultLabel": "Application",
+                    "description": "Application UUID to query",
+                    "foreignKeyParams": {
+                      "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
+                      "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+                      "targetEntityOrderInstancesBy": "name"
+                    },
+                    "display": {
+                      "editable": false
+                    }
+                  }
+                }
+              },
+              "applicationSection": {
+                "type": "schemaReference",
+                "tag": {
+                  "value": {
+                    "description": "Section to query (model or data)"
+                  }
+                },
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "applicationSection"
+                }
+              },
+              "parentUuid": {
+                "type": "uuid",
+                "tag": {
+                  "value": {
+                    "id": 1,
+                    "defaultLabel": "Uuid",
+                    "description": "Entity UUID to get all instances for",
+                    "display": {
+                      "editable": false
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "actionErrors": {
+          "type": "literal",
+          "definition": "FailedToGetInstances"
+        }
+      }
+    ]
+  }
+}

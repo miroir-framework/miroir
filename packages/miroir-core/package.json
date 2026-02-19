@@ -55,6 +55,7 @@
     "json-diff": "^1.0.6",
     "miroir-test-app_deployment-admin": "*",
     "miroir-test-app_deployment-library": "*",
+    "miroir-test-app_deployment-miroir": "*",
     "mustache": "^4.2.0",
     "serialize-error": "^12.0.0",
     "uuid": "^11.0.0",

@@ -1,0 +1,4295 @@
+{
+  "uuid": "a5b4be38-78e3-4f31-9e9b-8ab0b71d4993",
+  "parentName": "TransformerTest",
+  "parentUuid": "681be9ca-c593-45f5-b45a-5f1d4969e91e",
+  "name": "miroirCoreTransformers",
+  "selfApplication": "21840247-b5b1-4344-baec-f818f4797d92",
+  "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
+  "description": "The Test for the Miroir Core Transformers",
+  "definition": {
+    "transformerTestType": "transformerTestSuite",
+    "transformerTestLabel": "miroirCoreTransformers",
+    "transformerTests": [
+      {
+        "transformerTestType": "transformerTestSuite",
+        "transformerTestLabel": "buildTransformerTests",
+        "skip": true,
+        "transformerTests": [
+          {
+            "transformerTestType": "transformerTestSuite",
+            "transformerTestLabel": "constants",
+            "transformerTests": [
+              {
+                "transformerTestType": "transformerTestSuite",
+                "transformerTestLabel": "constantArray",
+                "transformerTests": [
+                  {
+                    "transformerTestType": "transformerTest",
+                    "transformerTestLabel": "resolve basic build transformer constantArray",
+                    "transformerName": "constantArrayAtBuild",
+                    "runTestStep": "build",
+                    "transformer": {
+                      "transformerType": "returnValue",
+                      "mlSchema": { "type": "array", "definition": { "type": "string" } },
+                      "interpolation": "build",
+                      "value": ["testA", "testB"]
+                    },
+                    "transformerParams": {},
+                    "expectedValue": ["testA", "testB"]
+                  }
+                ]
+              },
+              {
+                "transformerTestType": "transformerTestSuite",
+                "transformerTestLabel": "constantArray",
+                "transformerTests": [
+                  {
+                    "transformerTestType": "transformerTest",
+                    "transformerTestLabel": "resolve basic build transformer constantUuid",
+                    "transformerName": "constantUuid",
+                    "runTestStep": "build",
+                    "transformer": {
+                      "transformerType": "returnValue",
+                      "mlSchema": { "type": "uuid" },
+                      "interpolation": "build",
+                      "value": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+                    },
+                    "transformerParams": {},
+                    "expectedValue": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+                  },
+                  {
+                    "transformerTestType": "transformerTest",
+                    "transformerTestLabel": "failed constantUuid transformer for non-uuid value",
+                    "transformerName": "constantUuidFailed",
+                    "runTestStep": "build",
+                    "transformer": {
+                      "transformerType": "returnValue",
+                      "mlSchema": { "type": "uuid" },
+                      "interpolation": "build",
+                      "value": "test"
+                    },
+                    "transformerParams": {},
+                    "expectedValue": "test"
+                  }
+                ]
+              },
+              {
+                "transformerTestType": "transformerTestSuite",
+                "transformerTestLabel": "constantNumber",
+                "transformerTests": [
+                  {
+                    "transformerTestType": "transformerTest",
+                    "transformerTestLabel": "resolve basic build transformer constantNumber",
+                    "transformerName": "constantNumber",
+                    "runTestStep": "build",
+                    "transformer": {
+                      "transformerType": "returnValue",
+                      "mlSchema": { "type": "number" },
+                      "interpolation": "build",
+                      "value": 42
+                    },
+                    "transformerParams": {},
+                    "expectedValue": 42
+                  }
+                ]
+              },
+              {
+                "transformerTestType": "transformerTestSuite",
+                "transformerTestLabel": "constantObject",
+                "transformerTests": [
+                  {
+                    "transformerTestType": "transformerTest",
+                    "transformerTestLabel": "resolve basic build transformer constantObject before runtime",
+                    "transformerName": "constantObjectBeforeRuntime",
+                    "runTestStep": "build",
+                    "transformer": {
+                      "transformerType": "returnValue",
+                      "mlSchema": {
+                        "type": "object",
+                        "definition": {
+                          "test": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      "interpolation": "build",
+                      "value": {
+                        "test": "test"
+                      }
+                    },
+                    "transformerParams": {},
+                    "expectedValue": {
+                      "test": "test"
+                    }
+                  }
+                ]
+              },
+              {
+                "transformerTestType": "transformerTestSuite",
+                "transformerTestLabel": "constantBoolean",
+                "transformerTests": [
+                  {
+                    "transformerTestType": "transformerTest",
+                    "transformerTestLabel": "resolve basic build transformer constantBoolean",
+                    "transformerName": "constantBoolean",
+                    "runTestStep": "build",
+                    "transformer": {
+                      "transformerType": "returnValue",
+                      "mlSchema": { "type": "boolean" },
+                      "interpolation": "build",
+                      "value": true
+                    },
+                    "transformerParams": {},
+                    "expectedValue": true
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "transformerTestType": "transformerTestSuite",
+            "transformerTestLabel": "references",
+            "transformerTests": [
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "resolve basic build transformer getFromParameters",
+                "transformerName": "getFromParameters",
+                "runTestStep": "build",
+                "transformer": {
+                  "transformerType": "getFromParameters",
+                  "referenceName": "fileData"
+                },
+                "transformerParams": {
+                  "fileData": [
+                    {
+                      "a": "A",
+                      "b": "B"
+                    },
+                    {
+                      "a": "1",
+                      "b": "2"
+                    },
+                    {
+                      "a": "3",
+                      "b": "4"
+                    }
+                  ]
+                },
+                "expectedValue": [
+                  {
+                    "a": "A",
+                    "b": "B"
+                  },
+                  {
+                    "a": "1",
+                    "b": "2"
+                  },
+                  {
+                    "a": "3",
+                    "b": "4"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "transformerTestType": "transformerTestSuite",
+            "transformerTestLabel": "mustache",
+            "transformerTests": [
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "mustache string template",
+                "transformerName": "mustache",
+                "runTestStep": "build",
+                "transformer": {
+                  "transformerType": "mustacheStringTemplate",
+                  "interpolation": "build",
+                  "definition": "a{{newApplication.name}}_{{newApplication.suffix}} example"
+                },
+                "transformerParams": {
+                  "newApplication": {
+                    "name": "Test",
+                    "suffix": "Z"
+                  }
+                },
+                "expectedValue": "aTest_Z example"
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "failed mustache string template",
+                "transformerName": "mustacheStringTemplateFailed",
+                "runTestStep": "build",
+                "transformer": {
+                  "transformerType": "mustacheStringTemplate",
+                  "interpolation": "build",
+                  "definition": "{{newApplicationName}SelfApplication"
+                },
+                "transformerParams": {},
+                "retainAttributes": ["queryFailure"],
+                "expectedValue": {
+                  "queryFailure": "FailedTransformer"
+                }
+              }
+            ]
+          },
+          {
+            "transformerTestType": "transformerTestSuite",
+            "transformerTestLabel": "simpleCompositions",
+            "transformerTests": [
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "resolve basic build transformer count on parameter array",
+                "transformerName": "buildCountElementsOfParameterArray",
+                "runTestStep": "build",
+                "transformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "build",
+                  "applyTo": {
+                    "transformerType": "getFromParameters",
+                    "referenceName": "fileData"
+                  }
+                },
+                "transformerParams": {
+                  "fileData": ["a", "b", "c"]
+                },
+                "expectedValue": [
+                  {
+                    "aggregate": 3
+                  }
+                ]
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "resolve basic runtime transformer count on build-resolved parameter array",
+                "transformerName": "runtimeCountElementsOfBuildParameterArray",
+                "runTestStep": "build",
+                "transformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "build",
+                  "applyTo": {
+                    "transformerType": "getFromParameters",
+                    "referenceName": "smallStringArray"
+                  }
+                },
+                "transformerParams": {
+                  "smallStringArray": ["a", "b", "c"]
+                },
+                "expectedValue": [
+                  {
+                    "aggregate": 3
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "transformerTestType": "transformerTestSuite",
+        "transformerTestLabel": "runtimeTransformerTests",
+        "transformerTests": [
+          {
+            "transformerTestType": "transformerTestSuite",
+            "transformerTestLabel": "constants",
+            "skip": true,
+            "transformerTests": [
+              {
+                "transformerTestType": "transformerTestSuite",
+                "transformerTestLabel": "constantArray",
+                "transformerTests": [
+                  {
+                    "transformerTestType": "transformerTest",
+                    "transformerTestLabel": "resolve basic runtime transformer constantArray",
+                    "transformerName": "constantArrayAtRuntime",
+                    "transformer": {
+                      "transformerType": "returnValue",
+                      "mlSchema": { "type": "array", "definition": { "type": "string" } },
+                      "interpolation": "runtime",
+                      "value": ["testA", "testB"]
+                    },
+                    "transformerParams": {},
+                    "expectedValue": ["testA", "testB"]
+                  }
+                ]
+              },
+              {
+                "transformerTestType": "transformerTestSuite",
+                "transformerTestLabel": "constantUuid",
+                "transformerTests": [
+                  {
+                    "transformerTestType": "transformerTest",
+                    "transformerTestLabel": "resolve basic transformer constantUuid",
+                    "transformerName": "constantUuid",
+                    "transformer": {
+                      "transformerType": "returnValue",
+                      "mlSchema": { "type": "uuid" },
+                      "interpolation": "runtime",
+                      "value": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+                    },
+                    "transformerParams": {},
+                    "expectedValue": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+                  }
+                ]
+              },
+              {
+                "transformerTestType": "transformerTestSuite",
+                "transformerTestLabel": "constantNumber",
+                "transformerTests": [
+                  {
+                    "transformerTestType": "transformerTest",
+                    "transformerTestLabel": "resolve basic transformer constantNumber",
+                    "transformerName": "constantNumber",
+                    "transformer": {
+                      "transformerType": "returnValue",
+                      "mlSchema": { "type": "number" },
+                      "interpolation": "runtime",
+                      "value": 42
+                    },
+                    "transformerParams": {},
+                    "expectedValue": 42
+                  }
+                ]
+              },
+              {
+                "transformerTestType": "transformerTestSuite",
+                "transformerTestLabel": "constantObject",
+                "transformerTests": [
+                  {
+                    "transformerTestType": "transformerTest",
+                    "transformerTestLabel": "resolve basic transformer constantObject before runtime",
+                    "transformerName": "constantObjectBeforeRuntime",
+                    "transformer": {
+                      "transformerType": "returnValue",
+                      "mlSchema": {
+                        "type": "object",
+                        "definition": {
+                          "test": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      "interpolation": "runtime",
+                      "value": {
+                        "test": "test"
+                      }
+                    },
+                    "transformerParams": {},
+                    "expectedValue": {
+                      "test": "test"
+                    }
+                  },
+                  {
+                    "transformerTestType": "transformerTest",
+                    "transformerTestLabel": "resolve basic transformer constantObject at runtime",
+                    "transformerName": "constantObjectAtRuntime",
+                    "transformer": {
+                      "transformerType": "returnValue",
+                      "mlSchema": {
+                        "type": "object",
+                        "definition": {
+                          "test": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      "interpolation": "runtime",
+                      "value": {
+                        "test": "test"
+                      }
+                    },
+                    "transformerParams": {},
+                    "expectedValue": {
+                      "test": "test"
+                    }
+                  }
+                ]
+              },
+              {
+                "transformerTestType": "transformerTestSuite",
+                "transformerTestLabel": "constantBoolean",
+                "transformerTests": [
+                  {
+                    "transformerTestType": "transformerTest",
+                    "transformerTestLabel": "resolve basic transformer constantBoolean",
+                    "transformerName": "constantBoolean",
+                    "transformer": {
+                      "transformerType": "returnValue",
+                      "mlSchema": { "type": "boolean" },
+                      "interpolation": "runtime",
+                      "value": true
+                    },
+                    "transformerParams": {},
+                    "expectedValue": true
+                  }
+                ]
+              },
+              {
+                "transformerTestType": "transformerTestSuite",
+                "transformerTestLabel": "constantAsExtractor",
+                "transformerTests": [
+                  {
+                    "transformerTestType": "transformerTest",
+                    "transformerTestLabel": "resolve basic transformer constantAsExtractor for simple object",
+                    "transformerName": "constantAsExtractor",
+                    "transformer": {
+                      "transformerType": "constantAsExtractor",
+                      "interpolation": "runtime",
+                      "valueJzodSchema": {
+                        "type": "object",
+                        "definition": {
+                          "test": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      "value": {
+                        "test": "a"
+                      }
+                    },
+                    "transformerParams": {},
+                    "expectedValue": {
+                      "test": "a"
+                    }
+                  },
+                  {
+                    "transformerTestType": "transformerTest",
+                    "transformerTestLabel": "resolve basic transformer constantAsExtractor for Country object",
+                    "transformerName": "constantAsExtractor",
+                    "transformer": {
+                      "transformerType": "constantAsExtractor",
+                      "interpolation": "runtime",
+                      "valueJzodSchema": {
+                        "type": "object",
+                        "definition": {
+                          "uuid": {
+                            "type": "uuid",
+                            "tag": {
+                              "value": {
+                                "id": 1,
+                                "defaultLabel": "Uuid",
+                                "editable": false
+                              }
+                            }
+                          },
+                          "parentName": {
+                            "type": "string",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "id": 2,
+                                "defaultLabel": "Entity Name",
+                                "editable": false
+                              }
+                            }
+                          },
+                          "parentUuid": {
+                            "type": "uuid",
+                            "tag": {
+                              "value": {
+                                "id": 3,
+                                "defaultLabel": "Entity Uuid",
+                                "editable": false
+                              }
+                            }
+                          },
+                          "conceptLevel": {
+                            "type": "enum",
+                            "definition": ["MetaModel", "Model", "Data"],
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "id": 5,
+                                "defaultLabel": "Concept Level",
+                                "editable": false
+                              }
+                            }
+                          },
+                          "name": {
+                            "type": "string",
+                            "tag": {
+                              "value": {
+                                "id": 4,
+                                "defaultLabel": "Name",
+                                "editable": true
+                              }
+                            }
+                          },
+                          "iso3166-1Alpha-2": {
+                            "type": "string",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "id": 5,
+                                "defaultLabel": "Country Code",
+                                "editable": true
+                              }
+                            }
+                          },
+                          "icon": {
+                            "type": "string",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "id": 6,
+                                "defaultLabel": "Icon",
+                                "editable": true
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "value": {
+                        "uuid": "2eda1207-4dcc-4af9-a3ba-ef75e7f12c11",
+                        "parentName": "Country",
+                        "parentUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+                        "name": "U.S.A.",
+                        "iso3166-1Alpha-2": "US"
+                      }
+                    },
+                    "transformerParams": {},
+                    "ignoreAttributes": ["conceptLevel", "icon"],
+                    "expectedValue": {
+                      "uuid": "2eda1207-4dcc-4af9-a3ba-ef75e7f12c11",
+                      "parentName": "Country",
+                      "parentUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+                      "name": "U.S.A.",
+                      "iso3166-1Alpha-2": "US"
+                    }
+                  },
+                  {
+                    "transformerTestType": "transformerTest",
+                    "transformerTestLabel": "resolve basic transformer constantAsExtractor for array of simple objects",
+                    "transformerName": "constantAsExtractor",
+                    "transformer": {
+                      "transformerType": "constantAsExtractor",
+                      "interpolation": "runtime",
+                      "valueJzodSchema": {
+                        "type": "array",
+                        "definition": {
+                          "type": "object",
+                          "definition": {
+                            "test": {
+                              "type": "string"
+                            }
+                          }
+                        }
+                      },
+                      "value": [
+                        {
+                          "test": "a"
+                        },
+                        {
+                          "test": "b"
+                        }
+                      ]
+                    },
+                    "transformerParams": {},
+                    "expectedValue": [
+                      {
+                        "test": "a"
+                      },
+                      {
+                        "test": "b"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "transformerTestType": "transformerTestSuite",
+            "transformerTestLabel": "ifThenElse",
+            "transformerTests": [
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "ifThenElse equality true - basic string comparison",
+                "transformerName": "ifThenElseEqualityTrue",
+                "transformer": {
+                  "transformerType": "==",
+                  "interpolation": "runtime",
+                  "left": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "mlSchema": { "type": "string" },
+                    "value": "hello"
+                  },
+                  "right": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "mlSchema": { "type": "string" },
+                    "value": "hello"
+                  },
+                  "then": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "mlSchema": { "type": "string" },
+                    "value": "match"
+                  },
+                  "else": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "mlSchema": { "type": "string" },
+                    "value": "no match"
+                  }
+                },
+                "transformerParams": {},
+                "expectedValue": "match"
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "ifThenElse equality false - basic string comparison",
+                "transformerName": "ifThenElseEqualityFalse",
+                "transformer": {
+                  "transformerType": "==",
+                  "interpolation": "runtime",
+                  "left": {
+                    "transformerType": "returnValue",
+                    "mlSchema": { "type": "string" },
+                    "interpolation": "runtime",
+                    "value": "hello"
+                  },
+                  "right": {
+                    "transformerType": "returnValue",
+                    "mlSchema": { "type": "string" },
+                    "interpolation": "runtime",
+                    "value": "world"
+                  },
+                  "then": {
+                    "transformerType": "returnValue",
+                    "mlSchema": { "type": "string" },
+                    "interpolation": "runtime",
+                    "value": "match"
+                  },
+                  "else": {
+                    "transformerType": "returnValue",
+                    "mlSchema": { "type": "string" },
+                    "interpolation": "runtime",
+                    "value": "no match"
+                  }
+                },
+                "transformerParams": {},
+                "expectedValue": "no match"
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "ifThenElse not equal true - string comparison",
+                "transformerName": "ifThenElseNotEqualTrue",
+                "transformer": {
+                  "transformerType": "!=",
+                  "interpolation": "runtime",
+                  "left": {
+                    "transformerType": "returnValue",
+                    "mlSchema": { "type": "string" },
+                    "interpolation": "runtime",
+                    "value": "hello"
+                  },
+                  "right": {
+                    "transformerType": "returnValue",
+                    "mlSchema": { "type": "string" },
+                    "interpolation": "runtime",
+                    "value": "world"
+                  },
+                  "then": {
+                    "transformerType": "returnValue",
+                    "mlSchema": { "type": "string" },
+                    "interpolation": "runtime",
+                    "value": "different"
+                  },
+                  "else": {
+                    "transformerType": "returnValue",
+                    "mlSchema": { "type": "string" },
+                    "interpolation": "runtime",
+                    "value": "same"
+                  }
+                },
+                "transformerParams": {},
+                "expectedValue": "different"
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "ifThenElse not equal false - string comparison",
+                "transformerName": "ifThenElseNotEqualFalse",
+                "transformer": {
+                  "transformerType": "!=",
+                  "interpolation": "runtime",
+                  "left": {
+                    "transformerType": "returnValue",
+                    "mlSchema": { "type": "string" },
+                    "interpolation": "runtime",
+                    "value": "hello"
+                  },
+                  "right": {
+                    "transformerType": "returnValue",
+                    "mlSchema": { "type": "string" },
+                    "interpolation": "runtime",
+                    "value": "hello"
+                  },
+                  "then": {
+                    "transformerType": "returnValue",
+                    "mlSchema": { "type": "string" },
+                    "interpolation": "runtime",
+                    "value": "different"
+                  },
+                  "else": {
+                    "transformerType": "returnValue",
+                    "mlSchema": { "type": "string" },
+                    "interpolation": "runtime",
+                    "value": "same"
+                  }
+                },
+                "transformerParams": {},
+                "expectedValue": "same"
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "ifThenElse less than true - number comparison",
+                "transformerName": "ifThenElseLessThanTrue",
+                "transformer": {
+                  "transformerType": "<",
+                  "interpolation": "runtime",
+                  "left": {
+                    "transformerType": "returnValue",
+                    "mlSchema": { "type": "number" },
+                    "interpolation": "runtime",
+                    "value": 5
+                  },
+                  "right": {
+                    "transformerType": "returnValue",
+                    "mlSchema": { "type": "number" },
+                    "interpolation": "runtime",
+                    "value": 10
+                  },
+                  "then": {
+                    "transformerType": "returnValue",
+                    "mlSchema": { "type": "string" },
+                    "interpolation": "runtime",
+                    "value": "smaller"
+                  },
+                  "else": {
+                    "transformerType": "returnValue",
+                    "mlSchema": { "type": "string" },
+                    "interpolation": "runtime",
+                    "value": "bigger or equal"
+                  }
+                },
+                "transformerParams": {},
+                "expectedValue": "smaller"
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "ifThenElse less than false - number comparison",
+                "transformerName": "ifThenElseLessThanFalse",
+                "transformer": {
+                  "transformerType": "<",
+                  "interpolation": "runtime",
+                  "left": {
+                    "transformerType": "returnValue",
+                    "mlSchema": { "type": "number" },
+                    "interpolation": "runtime",
+                    "value": 15
+                  },
+                  "right": {
+                    "transformerType": "returnValue",
+                    "mlSchema": { "type": "number" },
+                    "interpolation": "runtime",
+                    "value": 10
+                  },
+                  "then": {
+                    "transformerType": "returnValue",
+                    "mlSchema": { "type": "string" },
+                    "interpolation": "runtime",
+                    "value": "smaller"
+                  },
+                  "else": {
+                    "transformerType": "returnValue",
+                    "mlSchema": { "type": "string" },
+                    "interpolation": "runtime",
+                    "value": "bigger or equal"
+                  }
+                },
+                "transformerParams": {},
+                "expectedValue": "bigger or equal"
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "ifThenElse less than or equal true - number comparison",
+                "transformerName": "ifThenElseLessThanOrEqualTrue",
+                "transformer": {
+                  "transformerType": "<=",
+                  "interpolation": "runtime",
+                  "left": {
+                    "transformerType": "returnValue",
+                    "mlSchema": { "type": "number" },
+                    "interpolation": "runtime",
+                    "value": 10
+                  },
+                  "right": {
+                    "transformerType": "returnValue",
+                    "mlSchema": { "type": "number" },
+                    "interpolation": "runtime",
+                    "value": 10
+                  },
+                  "then": {
+                    "transformerType": "returnValue",
+                    "mlSchema": { "type": "string" },
+                    "interpolation": "runtime",
+                    "value": "smaller or equal"
+                  },
+                  "else": {
+                    "transformerType": "returnValue",
+                    "mlSchema": { "type": "string" },
+                    "interpolation": "runtime",
+                    "value": "bigger"
+                  }
+                },
+                "transformerParams": {},
+                "expectedValue": "smaller or equal"
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "ifThenElse less than or equal false - number comparison",
+                "transformerName": "ifThenElseLessThanOrEqualFalse",
+                "transformer": {
+                  "transformerType": "<=",
+                  "interpolation": "runtime",
+                  "left": {
+                    "transformerType": "returnValue",
+                    "mlSchema": { "type": "number" },
+                    "interpolation": "runtime",
+                    "value": 15
+                  },
+                  "right": {
+                    "transformerType": "returnValue",
+                    "mlSchema": { "type": "number" },
+                    "interpolation": "runtime",
+                    "value": 10
+                  },
+                  "then": {
+                    "transformerType": "returnValue",
+                    "mlSchema": { "type": "string" },
+                    "interpolation": "runtime",
+                    "value": "smaller or equal"
+                  },
+                  "else": {
+                    "transformerType": "returnValue",
+                    "mlSchema": { "type": "string" },
+                    "interpolation": "runtime",
+                    "value": "bigger"
+                  }
+                },
+                "transformerParams": {},
+                "expectedValue": "bigger"
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "ifThenElse greater than true - number comparison",
+                "transformerName": "ifThenElseGreaterThanTrue",
+                "transformer": {
+                  "transformerType": ">",
+                  "interpolation": "runtime",
+                  "left": {
+                    "transformerType": "returnValue",
+                    "mlSchema": { "type": "number" },
+                    "interpolation": "runtime",
+                    "value": 15
+                  },
+                  "right": {
+                    "transformerType": "returnValue",
+                    "mlSchema": { "type": "number" },
+                    "interpolation": "runtime",
+                    "value": 10
+                  },
+                  "then": {
+                    "transformerType": "returnValue",
+                    "mlSchema": { "type": "string" },
+                    "interpolation": "runtime",
+                    "value": "bigger"
+                  },
+                  "else": {
+                    "transformerType": "returnValue",
+                    "mlSchema": { "type": "string" },
+                    "interpolation": "runtime",
+                    "value": "smaller or equal"
+                  }
+                },
+                "transformerParams": {},
+                "expectedValue": "bigger"
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "ifThenElse greater than false - number comparison",
+                "transformerName": "ifThenElseGreaterThanFalse",
+                "transformer": {
+                  "transformerType": ">",
+                  "interpolation": "runtime",
+                  "left": {
+                    "transformerType": "returnValue",
+                    "mlSchema": { "type": "number" },
+                    "interpolation": "runtime",
+                    "value": 5
+                  },
+                  "right": {
+                    "transformerType": "returnValue",
+                    "mlSchema": { "type": "number" },
+                    "interpolation": "runtime",
+                    "value": 10
+                  },
+                  "then": {
+                    "transformerType": "returnValue",
+                    "mlSchema": { "type": "string" },
+                    "interpolation": "runtime",
+                    "value": "bigger"
+                  },
+                  "else": {
+                    "transformerType": "returnValue",
+                    "mlSchema": { "type": "string" },
+                    "interpolation": "runtime",
+                    "value": "smaller or equal"
+                  }
+                },
+                "transformerParams": {},
+                "expectedValue": "smaller or equal"
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "ifThenElse greater than or equal true - number comparison",
+                "transformerName": "ifThenElseGreaterThanOrEqualTrue",
+                "transformer": {
+                  "transformerType": ">=",
+                  "interpolation": "runtime",
+                  "left": {
+                    "transformerType": "returnValue",
+                    "mlSchema": { "type": "number" },
+                    "interpolation": "runtime",
+                    "value": 10
+                  },
+                  "right": {
+                    "transformerType": "returnValue",
+                    "mlSchema": { "type": "number" },
+                    "interpolation": "runtime",
+                    "value": 10
+                  },
+                  "then": {
+                    "transformerType": "returnValue",
+                    "mlSchema": { "type": "string" },
+                    "interpolation": "runtime",
+                    "value": "bigger or equal"
+                  },
+                  "else": {
+                    "transformerType": "returnValue",
+                    "mlSchema": { "type": "string" },
+                    "interpolation": "runtime",
+                    "value": "smaller"
+                  }
+                },
+                "transformerParams": {},
+                "expectedValue": "bigger or equal"
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "ifThenElse greater than or equal false - number comparison",
+                "transformerName": "ifThenElseGreaterThanOrEqualFalse",
+                "transformer": {
+                  "transformerType": ">=",
+                  "interpolation": "runtime",
+                  "left": {
+                    "transformerType": "returnValue",
+                    "mlSchema": { "type": "number" },
+                    "interpolation": "runtime",
+                    "value": 5
+                  },
+                  "right": {
+                    "transformerType": "returnValue",
+                    "mlSchema": { "type": "number" },
+                    "interpolation": "runtime",
+                    "value": 10
+                  },
+                  "then": {
+                    "transformerType": "returnValue",
+                    "mlSchema": { "type": "string" },
+                    "interpolation": "runtime",
+                    "value": "bigger or equal"
+                  },
+                  "else": {
+                    "transformerType": "returnValue",
+                    "mlSchema": { "type": "string" },
+                    "interpolation": "runtime",
+                    "value": "smaller"
+                  }
+                },
+                "transformerParams": {},
+                "expectedValue": "smaller"
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "ifThenElse with parameter reference comparison",
+                "transformerName": "ifThenElseWithParameterReference",
+                "transformer": {
+                  "transformerType": "==",
+                  "interpolation": "runtime",
+                  "left": {
+                    "transformerType": "getFromParameters",
+                    "interpolation": "runtime",
+                    "referenceName": "userType"
+                  },
+                  "right": {
+                    "transformerType": "returnValue",
+                    "mlSchema": { "type": "string" },
+                    "interpolation": "runtime",
+                    "value": "admin"
+                  },
+                  "then": {
+                    "transformerType": "returnValue",
+                    "mlSchema": { "type": "string" },
+                    "interpolation": "runtime",
+                    "value": "admin access"
+                  },
+                  "else": {
+                    "transformerType": "returnValue",
+                    "mlSchema": { "type": "string" },
+                    "interpolation": "runtime",
+                    "value": "regular access"
+                  }
+                },
+                "transformerParams": {
+                  "userType": "admin"
+                },
+                "expectedValue": "admin access"
+              }
+            ]
+          },
+          {
+            "transformerTestType": "transformerTestSuite",
+            "transformerTestLabel": "case",
+            "transformerTests": [
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "case matches first when clause",
+                "transformerName": "caseMatchesFirstWhen",
+                "transformer": {
+                  "transformerType": "case",
+                  "interpolation": "runtime",
+                  "discriminator": {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referenceName": "status"
+                  },
+                  "whens": [
+                    {
+                      "when": {
+                        "transformerType": "returnValue",
+                        "value": "active"
+                      },
+                      "then": {
+                        "transformerType": "returnValue",
+                        "value": "User is active"
+                      }
+                    },
+                    {
+                      "when": {
+                        "transformerType": "returnValue",
+                        "value": "inactive"
+                      },
+                      "then": {
+                        "transformerType": "returnValue",
+                        "value": "User is inactive"
+                      }
+                    }
+                  ],
+                  "else": {
+                    "transformerType": "returnValue",
+                    "value": "Unknown status"
+                  }
+                },
+                "transformerParams": {},
+                "transformerRuntimeContext": {
+                  "status": "active"
+                },
+                "expectedValue": "User is active"
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "case matches second when clause",
+                "transformerName": "caseMatchesSecondWhen",
+                "transformer": {
+                  "transformerType": "case",
+                  "interpolation": "runtime",
+                  "discriminator": {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referenceName": "status"
+                  },
+                  "whens": [
+                    {
+                      "when": {
+                        "transformerType": "returnValue",
+                        "value": "active"
+                      },
+                      "then": {
+                        "transformerType": "returnValue",
+                        "value": "User is active"
+                      }
+                    },
+                    {
+                      "when": {
+                        "transformerType": "returnValue",
+                        "value": "inactive"
+                      },
+                      "then": {
+                        "transformerType": "returnValue",
+                        "value": "User is inactive"
+                      }
+                    }
+                  ],
+                  "else": {
+                    "transformerType": "returnValue",
+                    "value": "Unknown status"
+                  }
+                },
+                "transformerParams": {},
+                "transformerRuntimeContext": {
+                  "status": "inactive"
+                },
+                "expectedValue": "User is inactive"
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "case falls through to else clause",
+                "transformerName": "caseFallsToElse",
+                "transformer": {
+                  "transformerType": "case",
+                  "interpolation": "runtime",
+                  "discriminator": {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referenceName": "status"
+                  },
+                  "whens": [
+                    {
+                      "when": {
+                        "transformerType": "returnValue",
+                        "value": "active"
+                      },
+                      "then": {
+                        "transformerType": "returnValue",
+                        "value": "User is active"
+                      }
+                    },
+                    {
+                      "when": {
+                        "transformerType": "returnValue",
+                        "value": "inactive"
+                      },
+                      "then": {
+                        "transformerType": "returnValue",
+                        "value": "User is inactive"
+                      }
+                    }
+                  ],
+                  "else": {
+                    "transformerType": "returnValue",
+                    "value": "Unknown status"
+                  }
+                },
+                "transformerParams": {},
+                "transformerRuntimeContext": {
+                  "status": "pending"
+                },
+                "expectedValue": "Unknown status"
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "case without else returns undefined when no match",
+                "transformerName": "caseWithoutElse",
+                "transformer": {
+                  "transformerType": "case",
+                  "interpolation": "runtime",
+                  "discriminator": {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referenceName": "value"
+                  },
+                  "whens": [
+                    {
+                      "when": {
+                        "transformerType": "returnValue",
+                        "value": "A"
+                      },
+                      "then": {
+                        "transformerType": "returnValue",
+                        "value": "matched A"
+                      }
+                    }
+                  ]
+                },
+                "transformerParams": {},
+                "transformerRuntimeContext": {
+                  "value": "B"
+                },
+                "expectedValue": null
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "case with number discriminator",
+                "transformerName": "caseWithNumberDiscriminator",
+                "transformer": {
+                  "transformerType": "case",
+                  "interpolation": "runtime",
+                  "discriminator": {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referenceName": "level"
+                  },
+                  "whens": [
+                    {
+                      "when": {
+                        "transformerType": "returnValue",
+                        "value": 1
+                      },
+                      "then": {
+                        "transformerType": "returnValue",
+                        "value": "beginner"
+                      }
+                    },
+                    {
+                      "when": {
+                        "transformerType": "returnValue",
+                        "value": 2
+                      },
+                      "then": {
+                        "transformerType": "returnValue",
+                        "value": "intermediate"
+                      }
+                    },
+                    {
+                      "when": {
+                        "transformerType": "returnValue",
+                        "value": 3
+                      },
+                      "then": {
+                        "transformerType": "returnValue",
+                        "value": "advanced"
+                      }
+                    }
+                  ],
+                  "else": {
+                    "transformerType": "returnValue",
+                    "value": "unknown level"
+                  }
+                },
+                "transformerParams": {},
+                "transformerRuntimeContext": {
+                  "level": 2
+                },
+                "expectedValue": "intermediate"
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "case with complex then transformer",
+                "transformerName": "caseWithComplexThen",
+                "transformer": {
+                  "transformerType": "case",
+                  "interpolation": "runtime",
+                  "discriminator": {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referenceName": "type"
+                  },
+                  "whens": [
+                    {
+                      "when": {
+                        "transformerType": "returnValue",
+                        "value": "greeting"
+                      },
+                      "then": {
+                        "transformerType": "mustacheStringTemplate",
+                        "interpolation": "runtime",
+                        "definition": "Hello, {{name}}!"
+                      }
+                    },
+                    {
+                      "when": {
+                        "transformerType": "returnValue",
+                        "value": "farewell"
+                      },
+                      "then": {
+                        "transformerType": "mustacheStringTemplate",
+                        "interpolation": "runtime",
+                        "definition": "Goodbye, {{name}}!"
+                      }
+                    }
+                  ],
+                  "else": {
+                    "transformerType": "returnValue",
+                    "value": "Unknown message type"
+                  }
+                },
+                "transformerParams": {},
+                "transformerRuntimeContext": {
+                  "type": "greeting",
+                  "name": "Alice"
+                },
+                "expectedValue": "Hello, Alice!"
+              }
+            ]
+          },
+          {
+            "transformerTestType": "transformerTestSuite",
+            "transformerTestLabel": "plus",
+            "transformerTests": [
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "plus adds two numbers",
+                "transformerName": "plusTwoNumbers",
+                "transformer": {
+                  "transformerType": "+",
+                  "interpolation": "runtime",
+                  "args": [
+                    {
+                      "transformerType": "returnValue",
+                      "mlSchema": { "type": "number" },
+                      "interpolation": "runtime",
+                      "value": 5
+                    },
+                    {
+                      "transformerType": "returnValue",
+                      "mlSchema": { "type": "number" },
+                      "interpolation": "runtime",
+                      "value": 3
+                    }
+                  ]
+                },
+                "transformerParams": {},
+                "expectedValue": 8
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "plus adds three numbers",
+                "transformerName": "plusThreeNumbers",
+                "transformer": {
+                  "transformerType": "+",
+                  "interpolation": "runtime",
+                  "args": [
+                    {
+                      "transformerType": "returnValue",
+                      "mlSchema": { "type": "number" },
+                      "interpolation": "runtime",
+                      "value": 5
+                    },
+                    {
+                      "transformerType": "returnValue",
+                      "mlSchema": { "type": "number" },
+                      "interpolation": "runtime",
+                      "value": 3
+                    },
+                    {
+                      "transformerType": "returnValue",
+                      "mlSchema": { "type": "number" },
+                      "interpolation": "runtime",
+                      "value": 2
+                    }
+                  ]
+                },
+                "transformerParams": {},
+                "expectedValue": 10
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "plus with single number returns it",
+                "transformerName": "plusSingleNumber",
+                "transformer": {
+                  "transformerType": "+",
+                  "interpolation": "runtime",
+                  "args": [
+                    {
+                      "transformerType": "returnValue",
+                      "mlSchema": { "type": "number" },
+                      "interpolation": "runtime",
+                      "value": 42
+                    }
+                  ]
+                },
+                "transformerParams": {},
+                "expectedValue": 42
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "plus adds two negative numbers",
+                "transformerName": "plusTwoNegativeNumbers",
+                "transformer": {
+                  "transformerType": "+",
+                  "interpolation": "runtime",
+                  "args": [
+                    {
+                      "transformerType": "returnValue",
+                      "mlSchema": { "type": "number" },
+                      "interpolation": "runtime",
+                      "value": -10
+                    },
+                    {
+                      "transformerType": "returnValue",
+                      "mlSchema": { "type": "number" },
+                      "interpolation": "runtime",
+                      "value": -5
+                    }
+                  ]
+                },
+                "transformerParams": {},
+                "expectedValue": -15
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "plus adds positive and negative numbers",
+                "transformerName": "plusPositiveAndNegative",
+                "transformer": {
+                  "transformerType": "+",
+                  "interpolation": "runtime",
+                  "args": [
+                    {
+                      "transformerType": "returnValue",
+                      "mlSchema": { "type": "number" },
+                      "interpolation": "runtime",
+                      "value": 10
+                    },
+                    {
+                      "transformerType": "returnValue",
+                      "mlSchema": { "type": "number" },
+                      "interpolation": "runtime",
+                      "value": -3
+                    }
+                  ]
+                },
+                "transformerParams": {},
+                "expectedValue": 7
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "plus adds decimal numbers",
+                "transformerName": "plusDecimalNumbers",
+                "transformer": {
+                  "transformerType": "+",
+                  "interpolation": "runtime",
+                  "args": [
+                    {
+                      "transformerType": "returnValue",
+                      "mlSchema": { "type": "number" },
+                      "interpolation": "runtime",
+                      "value": 1.5
+                    },
+                    {
+                      "transformerType": "returnValue",
+                      "mlSchema": { "type": "number" },
+                      "interpolation": "runtime",
+                      "value": 2.5
+                    }
+                  ]
+                },
+                "transformerParams": {},
+                "expectedValue": 4
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "plus concatenates two strings",
+                "transformerName": "plusConcatStrings",
+                "transformer": {
+                  "transformerType": "+",
+                  "interpolation": "runtime",
+                  "args": [
+                    {
+                      "transformerType": "returnValue",
+                      "mlSchema": { "type": "string" },
+                      "interpolation": "runtime",
+                      "value": "Hello, "
+                    },
+                    {
+                      "transformerType": "returnValue",
+                      "mlSchema": { "type": "string" },
+                      "interpolation": "runtime",
+                      "value": "World!"
+                    }
+                  ]
+                },
+                "transformerParams": {},
+                "expectedValue": "Hello, World!"
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "plus concatenates three strings",
+                "transformerName": "plusConcatThreeStrings",
+                "transformer": {
+                  "transformerType": "+",
+                  "interpolation": "runtime",
+                  "args": [
+                    {
+                      "transformerType": "returnValue",
+                      "mlSchema": { "type": "string" },
+                      "interpolation": "runtime",
+                      "value": "Hello"
+                    },
+                    {
+                      "transformerType": "returnValue",
+                      "mlSchema": { "type": "string" },
+                      "interpolation": "runtime",
+                      "value": ", "
+                    },
+                    {
+                      "transformerType": "returnValue",
+                      "mlSchema": { "type": "string" },
+                      "interpolation": "runtime",
+                      "value": "World!"
+                    }
+                  ]
+                },
+                "transformerParams": {},
+                "expectedValue": "Hello, World!"
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "plus concatenates empty strings",
+                "transformerName": "plusConcatEmptyStrings",
+                "transformer": {
+                  "transformerType": "+",
+                  "interpolation": "runtime",
+                  "args": [
+                    {
+                      "transformerType": "returnValue",
+                      "mlSchema": { "type": "string" },
+                      "interpolation": "runtime",
+                      "value": ""
+                    },
+                    {
+                      "transformerType": "returnValue",
+                      "mlSchema": { "type": "string" },
+                      "interpolation": "runtime",
+                      "value": "test"
+                    }
+                  ]
+                },
+                "transformerParams": {},
+                "expectedValue": "test"
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "plus adds two bigints",
+                "transformerName": "plusTwoBigints",
+                "transformer": {
+                  "transformerType": "+",
+                  "interpolation": "runtime",
+                  "args": [
+                    {
+                      "transformerType": "returnValue",
+                      "mlSchema": { "type": "bigint" },
+                      "interpolation": "runtime",
+                      "value": "9007199254740992"
+                    },
+                    {
+                      "transformerType": "returnValue",
+                      "mlSchema": { "type": "bigint" },
+                      "interpolation": "runtime",
+                      "value": "1"
+                    }
+                  ]
+                },
+                "transformerParams": {},
+                "expectedValue": "9007199254740993"
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "plus with empty args fails",
+                "transformerName": "plusEmptyArgs",
+                "transformer": {
+                  "transformerType": "+",
+                  "interpolation": "runtime",
+                  "args": []
+                },
+                "transformerParams": {},
+                "retainAttributes": ["queryFailure"],
+                "integrationTestExpectedValue": {
+                  "queryFailure": "QueryNotExecutable"
+                },
+                "unitTestExpectedValue": {
+                  "queryFailure": "FailedTransformer"
+                }
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "plus with number and string fails",
+                "transformerName": "plusNumberAndStringFails",
+                "transformer": {
+                  "transformerType": "+",
+                  "interpolation": "runtime",
+                  "args": [
+                    {
+                      "transformerType": "returnValue",
+                      "mlSchema": { "type": "number" },
+                      "interpolation": "runtime",
+                      "value": 5
+                    },
+                    {
+                      "transformerType": "returnValue",
+                      "mlSchema": { "type": "string" },
+                      "interpolation": "runtime",
+                      "value": "test"
+                    }
+                  ]
+                },
+                "transformerParams": {},
+                "retainAttributes": ["queryFailure"],
+                "integrationTestExpectedValue": {
+                  "queryFailure": "QueryNotExecutable"
+                },
+                "unitTestExpectedValue": {
+                  "queryFailure": "FailedTransformer"
+                }
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "plus with number and bigint fails",
+                "transformerName": "plusNumberAndBigintFails",
+                "transformer": {
+                  "transformerType": "+",
+                  "interpolation": "runtime",
+                  "args": [
+                    {
+                      "transformerType": "returnValue",
+                      "mlSchema": { "type": "number" },
+                      "interpolation": "runtime",
+                      "value": 5
+                    },
+                    {
+                      "transformerType": "returnValue",
+                      "mlSchema": { "type": "bigint" },
+                      "interpolation": "runtime",
+                      "value": "10"
+                    }
+                  ]
+                },
+                "transformerParams": {},
+                "retainAttributes": ["queryFailure"],
+                "integrationTestExpectedValue": {
+                  "queryFailure": "QueryNotExecutable"
+                },
+                "unitTestExpectedValue": {
+                  "queryFailure": "FailedTransformer"
+                }
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "plus with mixed types in middle fails",
+                "transformerName": "plusMixedTypesMiddle",
+                "transformer": {
+                  "transformerType": "+",
+                  "interpolation": "runtime",
+                  "args": [
+                    {
+                      "transformerType": "returnValue",
+                      "mlSchema": { "type": "number" },
+                      "interpolation": "runtime",
+                      "value": 1
+                    },
+                    {
+                      "transformerType": "returnValue",
+                      "mlSchema": { "type": "number" },
+                      "interpolation": "runtime",
+                      "value": 2
+                    },
+                    {
+                      "transformerType": "returnValue",
+                      "mlSchema": { "type": "string" },
+                      "interpolation": "runtime",
+                      "value": "oops"
+                    }
+                  ]
+                },
+                "transformerParams": {},
+                "retainAttributes": ["queryFailure"],
+                "integrationTestExpectedValue": {
+                  "queryFailure": "QueryNotExecutable"
+                },
+                "unitTestExpectedValue": {
+                  "queryFailure": "FailedTransformer"
+                }
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "plus with reference values",
+                "transformerName": "plusWithReferenceValues",
+                "transformer": {
+                  "transformerType": "+",
+                  "interpolation": "runtime",
+                  "args": [
+                    {
+                      "transformerType": "getFromParameters",
+                      "interpolation": "runtime",
+                      "referenceName": "value1"
+                    },
+                    {
+                      "transformerType": "getFromParameters",
+                      "interpolation": "runtime",
+                      "referenceName": "value2"
+                    }
+                  ]
+                },
+                "transformerParams": {
+                  "value1": 100,
+                  "value2": 50
+                },
+                "integrationTestExpectedValue": {
+                  "retainAttributes": ["queryFailure"],
+                  "value": {
+                    "queryFailure": "QueryNotExecutable"
+                  }
+                },
+                "unitTestExpectedValue": 150
+              }
+            ]
+          },
+          {
+            "transformerTestType": "transformerTestSuite",
+            "transformerTestLabel": "references",
+            "skip": true,
+            "transformerTests": [
+              {
+                "transformerTestType": "transformerTestSuite",
+                "transformerTestLabel": "getFromParameters",
+                "transformerTests": [
+                  {
+                    "transformerTestType": "transformerTest",
+                    "transformerTestLabel": "resolve basic transformer getFromParameters",
+                    "transformerName": "getFromParameters",
+                    "transformer": {
+                      "transformerType": "getFromParameters",
+                      "interpolation": "build",
+                      "referenceName": "a"
+                    },
+                    "transformerParams": {
+                      "a": "test"
+                    },
+                    "expectedValue": "test"
+                  },
+                  {
+                    "transformerTestType": "transformerTest",
+                    "transformerTestLabel": "resolve basic transformer getFromParameters for referencePath",
+                    "transformerName": "getFromParametersForReferencePath",
+                    "transformer": {
+                      "transformerType": "getFromParameters",
+                      "referencePath": ["a", "b", "c"]
+                    },
+                    "transformerParams": {
+                      "a": {
+                        "b": {
+                          "c": "test"
+                        }
+                      }
+                    },
+                    "expectedValue": "test"
+                  },
+                  {
+                    "transformerTestType": "transformerTest",
+                    "transformerTestLabel": "should fail when parameter referenceName is not found",
+                    "transformerName": "getFromParameters",
+                    "transformer": {
+                      "transformerType": "getFromParameters",
+                      "referenceName": "nonExistentReference"
+                    },
+                    "transformerParams": {},
+                    "retainAttributes": ["queryFailure"],
+                    "expectedValue": {
+                      "queryFailure": "FailedTransformer"
+                    }
+                  },
+                  {
+                    "transformerTestType": "transformerTest",
+                    "transformerTestLabel": "should fail when parameter referencePath is invalid",
+                    "transformerName": "getFromParameters",
+                    "transformer": {
+                      "transformerType": "getFromParameters",
+                      "referencePath": ["invalidPath"]
+                    },
+                    "transformerParams": {
+                      "a": "test"
+                    },
+                    "retainAttributes": ["queryFailure"],
+                    "expectedValue": {
+                      "queryFailure": "FailedTransformer"
+                    }
+                  }
+                ]
+              },
+              {
+                "transformerTestType": "transformerTestSuite",
+                "transformerTestLabel": "getFromContext",
+                "transformerTests": [
+                  {
+                    "transformerTestType": "transformerTest",
+                    "transformerTestLabel": "resolve basic transformer getFromContext for referenceName",
+                    "transformerName": "getFromContextForReferenceName",
+                    "transformer": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referenceName": "a"
+                    },
+                    "transformerParams": {},
+                    "transformerRuntimeContext": {
+                      "a": "test"
+                    },
+                    "expectedValue": "test"
+                  },
+                  {
+                    "transformerTestType": "transformerTest",
+                    "transformerTestLabel": "resolve basic transformer getFromContext for referencePath",
+                    "transformerName": "getFromContextForReferencePath",
+                    "transformer": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referencePath": ["a", "b", "c"]
+                    },
+                    "transformerParams": {},
+                    "transformerRuntimeContext": {
+                      "a": {
+                        "b": {
+                          "c": "test"
+                        }
+                      }
+                    },
+                    "expectedValue": "test"
+                  },
+                  {
+                    "transformerTestType": "transformerTest",
+                    "transformerTestLabel": "should fail when context referenceName is not found",
+                    "transformerName": "getFromContext",
+                    "transformer": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referenceName": "nonExistentReference"
+                    },
+                    "transformerParams": {},
+                    "retainAttributes": ["queryFailure"],
+                    "integrationTestExpectedValue": {
+                      "queryFailure": "QueryNotExecutable"
+                    },
+                    "unitTestExpectedValue": {
+                      "queryFailure": "FailedTransformer"
+                    }
+                  },
+                  {
+                    "transformerTestType": "transformerTest",
+                    "transformerTestLabel": "should fail when context referencePath is invalid",
+                    "transformerName": "getFromContext",
+                    "transformer": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referencePath": ["a", "invalidPath"]
+                    },
+                    "transformerParams": {},
+                    "transformerRuntimeContext": {
+                      "a": {
+                        "b": "test"
+                      }
+                    },
+                    "retainAttributes": ["queryFailure"],
+                    "integrationTestExpectedValue": {
+                      "queryFailure": "QueryNotExecutable"
+                    },
+                    "unitTestExpectedValue": {
+                      "queryFailure": "FailedTransformer"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "transformerTestType": "transformerTestSuite",
+            "transformerTestLabel": "getObjectEntries",
+            "skip": true,
+            "transformerTests": [
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "getObjectEntries used on returnValue object before runtime",
+                "transformerName": "getObjectEntries",
+                "transformer": {
+                  "transformerType": "getObjectEntries",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "value": {
+                      "a": "testA",
+                      "b": "testB"
+                    }
+                  }
+                },
+                "transformerParams": {},
+                "expectedValue": [
+                  ["a", "testA"],
+                  ["b", "testB"]
+                ]
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "getObjectEntries used on reference before runtime",
+                "transformerName": "getObjectEntries",
+                "transformer": {
+                  "transformerType": "getObjectEntries",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                    "transformerType": "getFromParameters",
+                    "referenceName": "testObject1"
+                  }
+                },
+                "transformerParams": {
+                  "testObject1": {
+                    "a": "testA",
+                    "b": "testB"
+                  }
+                },
+                "expectedValue": [
+                  ["a", "testA"],
+                  ["b", "testB"]
+                ]
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "getObjectEntries used on reference at runtime",
+                "transformerName": "getObjectEntries",
+                "transformer": {
+                  "transformerType": "getObjectEntries",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referenceName": "testObject1"
+                  }
+                },
+                "transformerParams": {},
+                "transformerRuntimeContext": {
+                  "testObject1": {
+                    "a": "testA",
+                    "b": "testB"
+                  }
+                },
+                "expectedValue": [
+                  ["a", "testA"],
+                  ["b", "testB"]
+                ]
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "failed object entries for string parameter",
+                "transformerName": "getObjectEntriesFailed",
+                "transformer": {
+                  "transformerType": "getObjectEntries",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "value": "nonExistingTestObject"
+                  }
+                },
+                "transformerParams": {},
+                "retainAttributes": ["queryFailure"],
+                "unitTestExpectedValue": {
+                  "queryFailure": "FailedTransformer"
+                },
+                "integrationTestExpectedValue": {
+                  "queryFailure": "QueryNotExecutable"
+                }
+              }
+            ]
+          },
+          {
+            "transformerTestType": "transformerTestSuite",
+            "transformerTestLabel": "getObjectValues",
+            "skip": true,
+            "transformerTests": [
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "getObjectValues on returnValue object at runtime",
+                "transformerName": "getObjectValuesBeforeRuntime",
+                "transformer": {
+                  "transformerType": "getObjectValues",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "value": {
+                      "a": "testA",
+                      "b": "testB"
+                    }
+                  }
+                },
+                "transformerParams": {
+                  "testObject": {
+                    "a": "testA",
+                    "b": "testB"
+                  }
+                },
+                "expectedValue": ["testA", "testB"]
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "object values with reference before runtime",
+                "transformerName": "getObjectValuesBeforeRuntime",
+                "transformer": {
+                  "transformerType": "getObjectValues",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referenceName": "testObject"
+                  }
+                },
+                "transformerRuntimeContext": {
+                  "testObject": {
+                    "a": "testA",
+                    "b": "testB"
+                  }
+                },
+                "expectedValue": ["testA", "testB"]
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "getObjectValues with reference at runtime",
+                "transformerName": "getObjectValuesAtRuntime",
+                "transformer": {
+                  "transformerType": "getObjectValues",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referenceName": "testObject"
+                  }
+                },
+                "transformerParams": {},
+                "transformerRuntimeContext": {
+                  "testObject": {
+                    "a": "testA",
+                    "b": "testB"
+                  }
+                },
+                "expectedValue": ["testA", "testB"]
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "failed object values for string parameter",
+                "transformerName": "getObjectValuesFailed",
+                "transformer": {
+                  "transformerType": "getObjectValues",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "value": "nonExistingTestObject"
+                  }
+                },
+                "transformerParams": {},
+                "retainAttributes": ["queryFailure"],
+                "unitTestExpectedValue": {
+                  "queryFailure": "FailedTransformer"
+                },
+                "integrationTestExpectedValue": {
+                  "queryFailure": "QueryNotExecutable"
+                }
+              }
+            ]
+          },
+          {
+            "transformerTestType": "transformerTestSuite",
+            "transformerTestLabel": "pickFromList",
+            "skip": true,
+            "transformerTests": [
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "pickFromList selects wanted element from a returnValue string list before runtime",
+                "transformerName": "listPickElementForString",
+                "transformer": {
+                  "transformerType": "pickFromList",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "value": ["testA", "testB", "testC"]
+                  },
+                  "index": 1
+                },
+                "transformerParams": {},
+                "expectedValue": "testB"
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "pickFromList selects wanted element from a string list parameter reference before runtime",
+                "transformerName": "listPickElementForString",
+                "transformer": {
+                  "transformerType": "pickFromList",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referenceName": "testList"
+                  },
+                  "index": 1
+                },
+                "transformerParams": {},
+                "transformerRuntimeContext": {
+                  "testList": ["testA", "testB", "testC"]
+                },
+                "expectedValue": "testB"
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "pickFromList selects wanted object from a pre-sorted object list before runtime",
+                "transformerName": "listPickElementForObject",
+                "transformer": {
+                  "transformerType": "pickFromList",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referenceName": "testList"
+                  },
+                  "orderBy": "test",
+                  "index": 1
+                },
+                "transformerParams": {},
+                "transformerRuntimeContext": {
+                  "testList": [
+                    {
+                      "test": "testA"
+                    },
+                    {
+                      "test": "testB"
+                    },
+                    {
+                      "test": "testC"
+                    }
+                  ]
+                },
+                "expectedValue": {
+                  "test": "testB"
+                }
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "pickFromList from extractor selects wanted element from string list context reference at runtime",
+                "transformerName": "listPickElementForString",
+                "transformer": {
+                  "transformerType": "pickFromList",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                    "transformerType": "constantAsExtractor",
+                    "interpolation": "runtime",
+                    "valueJzodSchema": {
+                      "type": "array",
+                      "definition": {
+                        "type": "string"
+                      }
+                    },
+                    "value": ["testA", "testB", "testC"]
+                  },
+                  "index": 1
+                },
+                "transformerParams": {},
+                "expectedValue": "testB"
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "pickFromList from extractor selects wanted element from object ordered list at runtime",
+                "transformerName": "listPickElementForString",
+                "transformer": {
+                  "transformerType": "pickFromList",
+                  "interpolation": "runtime",
+                  "orderBy": "test",
+                  "applyTo": {
+                    "transformerType": "constantAsExtractor",
+                    "interpolation": "runtime",
+                    "valueJzodSchema": {
+                      "type": "array",
+                      "definition": {
+                        "type": "object",
+                        "definition": {
+                          "test": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    },
+                    "value": [
+                      {
+                        "test": "testA"
+                      },
+                      {
+                        "test": "testB"
+                      },
+                      {
+                        "test": "testC"
+                      }
+                    ]
+                  },
+                  "index": 1
+                },
+                "transformerParams": {},
+                "expectedValue": {
+                  "test": "testB"
+                }
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "pickFromList returns null when index is out of bounds before runtime",
+                "transformerName": "listPickElementForString",
+                "transformer": {
+                  "transformerType": "pickFromList",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referenceName": "testList"
+                  },
+                  "index": 4
+                },
+                "transformerParams": {},
+                "transformerRuntimeContext": {
+                  "testList": ["testA", "testB", "testC"]
+                },
+                "expectedValue": null
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "pickFromList returns null when index is out of bounds at runtime",
+                "transformerName": "listPickElementForString",
+                "transformer": {
+                  "transformerType": "pickFromList",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referenceName": "testList"
+                  },
+                  "index": 4
+                },
+                "transformerParams": {},
+                "transformerRuntimeContext": {
+                  "testList": ["testA", "testB", "testC"]
+                },
+                "expectedValue": null
+              }
+            ]
+          },
+          {
+            "transformerTestType": "transformerTestSuite",
+            "transformerTestLabel": "getUniqueValues",
+            "skip": true,
+            "transformerTests": [
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "getUniqueValues returns list of getUniqueValues objects from returnValue array at runtime",
+                "transformerName": "getUniqueValuesForReferenceAtRuntime",
+                "transformer": {
+                  "transformerType": "getUniqueValues",
+                  "interpolation": "runtime",
+                  "attribute": "a",
+                  "applyTo": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "value": [
+                      {
+                        "a": "testA"
+                      },
+                      {
+                        "a": "testB"
+                      },
+                      {
+                        "a": "testA"
+                      },
+                      {
+                        "a": "testC"
+                      }
+                    ]
+                  }
+                },
+                "transformerParams": {},
+                "transformerRuntimeContext": {},
+                "expectedValue": [
+                  {
+                    "a": "testA"
+                  },
+                  {
+                    "a": "testB"
+                  },
+                  {
+                    "a": "testC"
+                  }
+                ]
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "getUniqueValues returns list of getUniqueValues objects from reference at runtime",
+                "transformerName": "getUniqueValuesForReferenceAtRuntime",
+                "transformer": {
+                  "transformerType": "getUniqueValues",
+                  "interpolation": "runtime",
+                  "attribute": "a",
+                  "applyTo": {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referenceName": "testList"
+                  }
+                },
+                "transformerParams": {},
+                "transformerRuntimeContext": {
+                  "testList": [
+                    {
+                      "a": "testA"
+                    },
+                    {
+                      "a": "testB"
+                    },
+                    {
+                      "a": "testA"
+                    },
+                    {
+                      "a": "testC"
+                    }
+                  ]
+                },
+                "expectedValue": [
+                  {
+                    "a": "testA"
+                  },
+                  {
+                    "a": "testB"
+                  },
+                  {
+                    "a": "testC"
+                  }
+                ]
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "getUniqueValues returns list of getUniqueValues objects from extractor at runtime",
+                "transformerName": "getUniqueValuesForExtractorAtRuntime",
+                "transformer": {
+                  "transformerType": "getUniqueValues",
+                  "interpolation": "runtime",
+                  "attribute": "a",
+                  "applyTo": {
+                    "transformerType": "constantAsExtractor",
+                    "interpolation": "runtime",
+                    "valueJzodSchema": {
+                      "type": "array",
+                      "definition": {
+                        "type": "object",
+                        "definition": {
+                          "a": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    },
+                    "value": [
+                      {
+                        "a": "testA"
+                      },
+                      {
+                        "a": "testB"
+                      },
+                      {
+                        "a": "testA"
+                      },
+                      {
+                        "a": "testC"
+                      }
+                    ]
+                  }
+                },
+                "transformerParams": {},
+                "expectedValue": [
+                  {
+                    "a": "testA"
+                  },
+                  {
+                    "a": "testB"
+                  },
+                  {
+                    "a": "testC"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "transformerTestType": "transformerTestSuite",
+            "transformerTestLabel": "aggregate",
+            "skip": true,
+            "transformerTests": [
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "count returns number of elements in an object list at runtime",
+                "transformerName": "countForConstantObjectListAtRuntime",
+                "transformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "value": [
+                      {
+                        "test": "testA"
+                      },
+                      {
+                        "test": "testB"
+                      },
+                      {
+                        "test": "testC"
+                      }
+                    ]
+                  }
+                },
+                "transformerParams": {},
+                "transformerRuntimeContext": {},
+                "expectedValue": [
+                  {
+                    "aggregate": 3
+                  }
+                ]
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "count returns number of elements in a returnValue transformer object list at runtime",
+                "transformerName": "countForConstantObjectListAtRuntime",
+                "transformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "value": [
+                      {
+                        "test": "testA"
+                      },
+                      {
+                        "test": "testB"
+                      },
+                      {
+                        "test": "testC"
+                      }
+                    ]
+                  }
+                },
+                "transformerParams": {},
+                "transformerRuntimeContext": {},
+                "expectedValue": [
+                  {
+                    "aggregate": 3
+                  }
+                ]
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "count returns number of elements in a getFromContext object list at runtime",
+                "transformerName": "countForObjectListAtRuntime",
+                "transformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referenceName": "testList"
+                  }
+                },
+                "transformerParams": {},
+                "transformerRuntimeContext": {
+                  "testList": [
+                    {
+                      "test": "testA"
+                    },
+                    {
+                      "test": "testB"
+                    },
+                    {
+                      "test": "testC"
+                    }
+                  ]
+                },
+                "expectedValue": [
+                  {
+                    "aggregate": 3
+                  }
+                ]
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "count returns number of elements in a string list from an extractor at runtime",
+                "transformerName": "countForStringListExtractor",
+                "transformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                    "transformerType": "constantAsExtractor",
+                    "interpolation": "runtime",
+                    "valueJzodSchema": {
+                      "type": "array",
+                      "definition": {
+                        "type": "string"
+                      }
+                    },
+                    "value": ["testA", "testB", "testC"]
+                  }
+                },
+                "transformerParams": {},
+                "expectedValue": [
+                  {
+                    "aggregate": 3
+                  }
+                ]
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "count returns number of elements in an object list from an extractor",
+                "transformerName": "countForObjectListExtractor",
+                "transformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                    "transformerType": "constantAsExtractor",
+                    "interpolation": "runtime",
+                    "valueJzodSchema": {
+                      "type": "array",
+                      "definition": {
+                        "type": "object",
+                        "definition": {
+                          "test": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    },
+                    "value": [
+                      {
+                        "test": "testA"
+                      },
+                      {
+                        "test": "testB"
+                      },
+                      {
+                        "test": "testC"
+                      }
+                    ]
+                  }
+                },
+                "transformerParams": {},
+                "expectedValue": [
+                  {
+                    "aggregate": 3
+                  }
+                ]
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "count returns number of elements in an object list with a group at runtime",
+                "transformerName": "countForObject",
+                "transformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referenceName": "testList"
+                  },
+                  "groupBy": "test"
+                },
+                "transformerParams": {},
+                "transformerRuntimeContext": {
+                  "testList": [
+                    {
+                      "test": "testA"
+                    },
+                    {
+                      "test": "testB"
+                    },
+                    {
+                      "test": "testA"
+                    },
+                    {
+                      "test": "testC"
+                    }
+                  ]
+                },
+                "expectedValue": [
+                  { "test": "testA", "aggregate": 2 },
+                  { "test": "testB", "aggregate": 1 },
+                  { "test": "testC", "aggregate": 1 }
+                ]
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "count returns number of elements in an object list with a multiple groupBy at runtime",
+                "transformerName": "countForObjectMultipleGroupBy",
+                "transformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referenceName": "testList"
+                  },
+                  "groupBy": ["test1", "test2"]
+                },
+                "transformerParams": {},
+                "transformerRuntimeContext": {
+                  "testList": [
+                    {
+                      "test1": "testA",
+                      "test2": 1
+                    },
+                    {
+                      "test1": "testB",
+                      "test2": 1
+                    },
+                    {
+                      "test1": "testA",
+                      "test2": 2
+                    },
+                    {
+                      "test1": "testC",
+                      "test2": 2
+                    },
+                    {
+                      "test1": "testB",
+                      "test2": 1
+                    },
+                    {
+                      "test1": "testC",
+                      "test2": 2
+                    }
+                  ]
+                },
+                "expectedValue": [
+                  { "test1": "testA", "test2": 1, "aggregate": 1 },
+                  { "test1": "testA", "test2": 2, "aggregate": 1 },
+                  { "test1": "testB", "test2": 1, "aggregate": 2 },
+                  { "test1": "testC", "test2": 2, "aggregate": 2 }
+                ]
+              }
+            ]
+          },
+          {
+            "transformerTestType": "transformerTestSuite",
+            "transformerTestLabel": "createObjectFromPairs",
+            "skip": true,
+            "transformerTests": [
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "createObjectFromPairs allows to dynamically build an object from a returnValue object before runtime (unknown keys, unknown values)",
+                "transformerName": "fullTemplate",
+                "transformer": {
+                  "transformerType": "createObjectFromPairs",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "value": {
+                      "uuid": "2eda1207-4dcc-4af9-a3ba-ef75e7f12c11",
+                      "parentName": "Country",
+                      "parentUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+                      "name": "U.S.A.",
+                      "iso3166-1Alpha-2": "US"
+                    }
+                  },
+                  "referenceToOuterObject": "country",
+                  "definition": [
+                    {
+                      "attributeKey": {
+                        "transformerType": "returnValue",
+                        "mlSchema": { "type": "string" },
+                        "interpolation": "runtime",
+                        "value": "uuid"
+                      },
+                      "attributeValue": {
+                        "transformerType": "getFromContext",
+                        "interpolation": "runtime",
+                        "referenceName": "generateUuid"
+                      }
+                    },
+                    {
+                      "attributeKey": {
+                        "transformerType": "returnValue",
+                        "mlSchema": { "type": "string" },
+                        "interpolation": "runtime",
+                        "value": "name"
+                      },
+                      "attributeValue": {
+                        "transformerType": "getFromContext",
+                        "interpolation": "runtime",
+                        "referencePath": ["country", "iso3166-1Alpha-2"]
+                      }
+                    }
+                  ]
+                },
+                "transformerParams": {},
+                "transformerRuntimeContext": {
+                  "generateUuid": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+                },
+                "expectedValue": {
+                  "uuid": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+                  "name": "US"
+                }
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "createObjectFromPairs allows to dynamically build an object before runtime (unknown keys, unknown values)",
+                "transformerName": "fullTemplate",
+                "transformer": {
+                  "transformerType": "createObjectFromPairs",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referenceName": "country"
+                  },
+                  "referenceToOuterObject": "country",
+                  "definition": [
+                    {
+                      "attributeKey": {
+                        "transformerType": "returnValue",
+                        "mlSchema": { "type": "string" },
+                        "interpolation": "runtime",
+                        "value": "uuid"
+                      },
+                      "attributeValue": {
+                        "transformerType": "getFromContext",
+                        "interpolation": "runtime",
+                        "referenceName": "generateUuid"
+                      }
+                    },
+                    {
+                      "attributeKey": {
+                        "transformerType": "returnValue",
+                        "mlSchema": { "type": "string" },
+                        "interpolation": "runtime",
+                        "value": "name"
+                      },
+                      "attributeValue": {
+                        "transformerType": "getFromContext",
+                        "interpolation": "runtime",
+                        "referencePath": ["country", "iso3166-1Alpha-2"]
+                      }
+                    }
+                  ]
+                },
+                "transformerParams": {},
+                "transformerRuntimeContext": {
+                  "generateUuid": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+                  "country": {
+                    "uuid": "2eda1207-4dcc-4af9-a3ba-ef75e7f12c11",
+                    "parentName": "Country",
+                    "parentUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+                    "name": "U.S.A.",
+                    "iso3166-1Alpha-2": "US"
+                  }
+                },
+                "expectedValue": {
+                  "uuid": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+                  "name": "US"
+                }
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "createObjectFromPairs allows to dynamically build an object during runtime using getFromParameters (unknown keys, unknown values)",
+                "transformerName": "fullTemplate",
+                "transformer": {
+                  "transformerType": "createObjectFromPairs",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referenceName": "country"
+                  },
+                  "referenceToOuterObject": "country",
+                  "definition": [
+                    {
+                      "attributeKey": {
+                        "transformerType": "returnValue",
+                        "mlSchema": { "type": "string" },
+                        "interpolation": "runtime",
+                        "value": "uuid"
+                      },
+                      "attributeValue": {
+                        "transformerType": "getFromContext",
+                        "interpolation": "runtime",
+                        "referenceName": "generateUuid"
+                      }
+                    },
+                    {
+                      "attributeKey": {
+                        "transformerType": "returnValue",
+                        "mlSchema": { "type": "string" },
+                        "interpolation": "runtime",
+                        "value": "name"
+                      },
+                      "attributeValue": {
+                        "transformerType": "getFromContext",
+                        "interpolation": "runtime",
+                        "referencePath": ["country", "iso3166-1Alpha-2"]
+                      }
+                    }
+                  ]
+                },
+                "transformerParams": {},
+                "transformerRuntimeContext": {
+                  "generateUuid": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+                  "country": {
+                    "uuid": "2eda1207-4dcc-4af9-a3ba-ef75e7f12c11",
+                    "parentName": "Country",
+                    "parentUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+                    "name": "U.S.A.",
+                    "iso3166-1Alpha-2": "US"
+                  }
+                },
+                "expectedValue": {
+                  "uuid": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+                  "name": "US"
+                }
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "createObjectFromPairs allows to dynamically build an object using an extractor",
+                "transformerName": "fullTemplate",
+                "transformer": {
+                  "transformerType": "createObjectFromPairs",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                    "transformerType": "constantAsExtractor",
+                    "interpolation": "runtime",
+                    "valueJzodSchema": {
+                      "type": "object",
+                      "definition": {
+                        "uuid": {
+                          "type": "uuid",
+                          "tag": {
+                            "value": {
+                              "id": 1,
+                              "defaultLabel": "Uuid",
+                              "editable": false
+                            }
+                          }
+                        },
+                        "parentName": {
+                          "type": "string",
+                          "optional": true,
+                          "tag": {
+                            "value": {
+                              "id": 2,
+                              "defaultLabel": "Entity Name",
+                              "editable": false
+                            }
+                          }
+                        },
+                        "parentUuid": {
+                          "type": "uuid",
+                          "tag": {
+                            "value": {
+                              "id": 3,
+                              "defaultLabel": "Entity Uuid",
+                              "editable": false
+                            }
+                          }
+                        },
+                        "conceptLevel": {
+                          "type": "enum",
+                          "definition": ["MetaModel", "Model", "Data"],
+                          "optional": true,
+                          "tag": {
+                            "value": {
+                              "id": 5,
+                              "defaultLabel": "Concept Level",
+                              "editable": false
+                            }
+                          }
+                        },
+                        "name": {
+                          "type": "string",
+                          "tag": {
+                            "value": {
+                              "id": 4,
+                              "defaultLabel": "Name",
+                              "editable": true
+                            }
+                          }
+                        },
+                        "iso3166-1Alpha-2": {
+                          "type": "string",
+                          "optional": true,
+                          "tag": {
+                            "value": {
+                              "id": 5,
+                              "defaultLabel": "Country Code",
+                              "editable": true
+                            }
+                          }
+                        },
+                        "icon": {
+                          "type": "string",
+                          "optional": true,
+                          "tag": {
+                            "value": {
+                              "id": 6,
+                              "defaultLabel": "Icon",
+                              "editable": true
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "value": {
+                      "uuid": "2eda1207-4dcc-4af9-a3ba-ef75e7f12c11",
+                      "parentName": "Country",
+                      "parentUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+                      "name": "U.S.A.",
+                      "iso3166-1Alpha-2": "US"
+                    }
+                  },
+                  "referenceToOuterObject": "country",
+                  "definition": [
+                    {
+                      "attributeKey": {
+                        "transformerType": "returnValue",
+                        "mlSchema": { "type": "string" },
+                        "interpolation": "runtime",
+                        "value": "uuid"
+                      },
+                      "attributeValue": {
+                        "transformerType": "getFromContext",
+                        "interpolation": "runtime",
+                        "referenceName": "generateUuid"
+                      }
+                    },
+                    {
+                      "attributeKey": {
+                        "transformerType": "returnValue",
+                        "mlSchema": { "type": "string" },
+                        "interpolation": "runtime",
+                        "value": "name"
+                      },
+                      "attributeValue": {
+                        "transformerType": "getFromContext",
+                        "interpolation": "runtime",
+                        "referencePath": ["country", "iso3166-1Alpha-2"]
+                      }
+                    }
+                  ]
+                },
+                "transformerParams": {},
+                "transformerRuntimeContext": {
+                  "generateUuid": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+                  "country": {
+                    "uuid": "2eda1207-4dcc-4af9-a3ba-ef75e7f12c11",
+                    "parentName": "Country",
+                    "parentUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+                    "name": "U.S.A.",
+                    "iso3166-1Alpha-2": "US"
+                  }
+                },
+                "expectedValue": {
+                  "uuid": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+                  "name": "US"
+                }
+              }
+            ]
+          },
+          {
+            "transformerTestType": "transformerTestSuite",
+            "transformerTestLabel": "createObject",
+            "skip": true,
+            "transformerTests": [
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "createObject allows to build a simple object with static values",
+                "transformerName": "createObject",
+                "transformer": {
+                  "transformerType": "createObject",
+                  "interpolation": "runtime",
+                  "definition": {
+                    "uuid": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+                    "name": "US",
+                    "isEntity": false,
+                    "allocation": 1234
+                  }
+                },
+                "transformerParams": {
+                  "country": {
+                    "uuid": "2eda1207-4dcc-4af9-a3ba-ef75e7f12c11",
+                    "parentName": "Country",
+                    "parentUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+                    "name": "U.S.A.",
+                    "iso3166-1Alpha-2": "US"
+                  }
+                },
+                "expectedValue": {
+                  "uuid": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+                  "name": "US",
+                  "isEntity": false,
+                  "allocation": 1234
+                }
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "createObject allows to build a simple object with dynamic values",
+                "transformerName": "createObject",
+                "transformer": {
+                  "transformerType": "createObject",
+                  "interpolation": "runtime",
+                  "definition": {
+                    "uuid": {
+                      "transformerType": "returnValue",
+                      "mlSchema": { "type": "uuid" },
+                      "interpolation": "runtime",
+                      "value": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+                    },
+                    "name": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referencePath": ["country", "iso3166-1Alpha-2"]
+                    }
+                  }
+                },
+                "transformerParams": {},
+                "transformerRuntimeContext": {
+                  "country": {
+                    "uuid": "2eda1207-4dcc-4af9-a3ba-ef75e7f12c11",
+                    "parentName": "Country",
+                    "parentUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+                    "name": "U.S.A.",
+                    "iso3166-1Alpha-2": "US"
+                  }
+                },
+                "expectedValue": {
+                  "uuid": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+                  "name": "US"
+                }
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "createObject allows to build a 2-level object with dynamic values",
+                "transformerName": "createObject",
+                "transformer": {
+                  "transformerType": "createObject",
+                  "interpolation": "runtime",
+                  "definition": {
+                    "uuid": {
+                      "transformerType": "returnValue",
+                      "mlSchema": { "type": "uuid" },
+                      "interpolation": "runtime",
+                      "value": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+                    },
+                    "name": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referencePath": ["country", "iso3166-1Alpha-2"]
+                    },
+                    "country": {
+                      "transformerType": "createObject",
+                      "interpolation": "runtime",
+                      "definition": {
+                        "uuid": {
+                          "transformerType": "returnValue",
+                          "mlSchema": { "type": "uuid" },
+                          "interpolation": "runtime",
+                          "value": "yyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy"
+                        },
+                        "name": {
+                          "transformerType": "getFromContext",
+                          "interpolation": "runtime",
+                          "referencePath": ["country", "iso3166-1Alpha-2"]
+                        }
+                      }
+                    }
+                  }
+                },
+                "transformerParams": {},
+                "transformerRuntimeContext": {
+                  "country": {
+                    "uuid": "2eda1207-4dcc-4af9-a3ba-ef75e7f12c11",
+                    "parentName": "Country",
+                    "parentUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+                    "name": "U.S.A.",
+                    "iso3166-1Alpha-2": "US"
+                  }
+                },
+                "expectedValue": {
+                  "uuid": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+                  "name": "US",
+                  "country": {
+                    "uuid": "yyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy",
+                    "name": "US"
+                  }
+                }
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "createObject should fail when definition fails to resolve correctly",
+                "transformerName": "createObject",
+                "transformer": {
+                  "transformerType": "createObject",
+                  "interpolation": "runtime",
+                  "definition": {
+                    "uuid": {
+                      "transformerType": "returnValue",
+                      "mlSchema": { "type": "uuid" },
+                      "interpolation": "runtime",
+                      "value": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+                    },
+                    "name": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referencePath": ["country", "nonExistingAttribute"]
+                    }
+                  }
+                },
+                "transformerParams": {},
+                "transformerRuntimeContext": {
+                  "country": {
+                    "uuid": "2eda1207-4dcc-4af9-a3ba-ef75e7f12c11",
+                    "parentName": "Country",
+                    "parentUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+                    "name": "U.S.A.",
+                    "iso3166-1Alpha-2": "US"
+                  }
+                },
+                "retainAttributes": ["queryFailure"],
+                "unitTestExpectedValue": {
+                  "queryFailure": "FailedTransformer"
+                },
+                "integrationTestExpectedValue": {
+                  "queryFailure": "QueryNotExecutable"
+                }
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "createObject should fail when sub-definition fails to resolve correctly",
+                "transformerName": "createObject",
+                "transformer": {
+                  "transformerType": "createObject",
+                  "interpolation": "runtime",
+                  "definition": {
+                    "uuid": {
+                      "transformerType": "returnValue",
+                      "mlSchema": { "type": "uuid" },
+                      "interpolation": "runtime",
+                      "value": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+                    },
+                    "name": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referencePath": ["country", "name"]
+                    },
+                    "country": {
+                      "transformerType": "createObject",
+                      "interpolation": "runtime",
+                      "definition": {
+                        "uuid": {
+                          "transformerType": "returnValue",
+                          "mlSchema": { "type": "uuid" },
+                          "interpolation": "runtime",
+                          "value": "yyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy"
+                        },
+                        "name": {
+                          "transformerType": "getFromContext",
+                          "interpolation": "runtime",
+                          "referencePath": ["country", "nonExistingAttribute"]
+                        }
+                      }
+                    }
+                  }
+                },
+                "transformerParams": {},
+                "transformerRuntimeContext": {
+                  "country": {
+                    "uuid": "2eda1207-4dcc-4af9-a3ba-ef75e7f12c11",
+                    "parentName": "Country",
+                    "parentUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+                    "name": "U.S.A.",
+                    "iso3166-1Alpha-2": "US"
+                  }
+                },
+                "retainAttributes": ["queryFailure"],
+                "unitTestExpectedValue": {
+                  "queryFailure": "FailedTransformer"
+                },
+                "integrationTestExpectedValue": {
+                  "queryFailure": "QueryNotExecutable"
+                }
+              }
+            ]
+          },
+          {
+            "transformerTestType": "transformerTestSuite",
+            "transformerTestLabel": "object_alter",
+            "skip": true,
+            "transformerTests": [
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "mergeIntoObject allows to change a returnValue object attribute value",
+                "transformerName": "mergeIntoObject",
+                "transformer": {
+                  "transformerType": "mergeIntoObject",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "value": {
+                      "uuid": "2eda1207-4dcc-4af9-a3ba-ef75e7f12c11",
+                      "parentName": "Country",
+                      "parentUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+                      "name": "U.S.A.",
+                      "iso3166-1Alpha-2": "US"
+                    }
+                  },
+                  "referenceToOuterObject": "country",
+                  "definition": {
+                    "transformerType": "createObject",
+                    "interpolation": "runtime",
+                    "definition": {
+                      "iso3166-1Alpha-2": {
+                        "transformerType": "returnValue",
+                        "mlSchema": { "type": "string" },
+                        "interpolation": "runtime",
+                        "value": "DE"
+                      }
+                    }
+                  }
+                },
+                "transformerParams": {},
+                "expectedValue": {
+                  "uuid": "2eda1207-4dcc-4af9-a3ba-ef75e7f12c11",
+                  "parentName": "Country",
+                  "parentUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+                  "name": "U.S.A.",
+                  "iso3166-1Alpha-2": "DE"
+                }
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "mergeIntoObject allows to change a referenced object attribute value",
+                "transformerName": "mergeIntoObject",
+                "transformer": {
+                  "transformerType": "mergeIntoObject",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                    "transformerType": "getFromParameters",
+                    "referenceName": "country"
+                  },
+                  "referenceToOuterObject": "country",
+                  "definition": {
+                    "transformerType": "createObject",
+                    "interpolation": "runtime",
+                    "definition": {
+                      "iso3166-1Alpha-2": {
+                        "transformerType": "returnValue",
+                        "mlSchema": { "type": "string" },
+                        "interpolation": "runtime",
+                        "value": "DE"
+                      }
+                    }
+                  }
+                },
+                "transformerParams": {
+                  "country": {
+                    "uuid": "2eda1207-4dcc-4af9-a3ba-ef75e7f12c11",
+                    "parentName": "Country",
+                    "parentUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+                    "name": "U.S.A.",
+                    "iso3166-1Alpha-2": "US"
+                  }
+                },
+                "expectedValue": {
+                  "uuid": "2eda1207-4dcc-4af9-a3ba-ef75e7f12c11",
+                  "parentName": "Country",
+                  "parentUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+                  "name": "U.S.A.",
+                  "iso3166-1Alpha-2": "DE"
+                }
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "mergeIntoObject should fail when applyTo fails to resolve correctly",
+                "transformerName": "mergeIntoObject",
+                "transformer": {
+                  "transformerType": "mergeIntoObject",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referenceName": "nonExistingCountry"
+                  },
+                  "referenceToOuterObject": "country",
+                  "definition": {
+                    "transformerType": "createObject",
+                    "interpolation": "runtime",
+                    "definition": {
+                      "iso3166-1Alpha-2": {
+                        "transformerType": "returnValue",
+                        "mlSchema": { "type": "string" },
+                        "interpolation": "runtime",
+                        "value": "DE"
+                      }
+                    }
+                  }
+                },
+                "transformerParams": {
+                  "country": {
+                    "uuid": "2eda1207-4dcc-4af9-a3ba-ef75e7f12c11",
+                    "parentName": "Country",
+                    "parentUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+                    "name": "U.S.A.",
+                    "iso3166-1Alpha-2": "US"
+                  }
+                },
+                "retainAttributes": ["queryFailure"],
+                "unitTestExpectedValue": {
+                  "queryFailure": "FailedTransformer"
+                },
+                "integrationTestExpectedValue": {
+                  "queryFailure": "QueryNotExecutable"
+                }
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "mergeIntoObject should fail when definition fails to resolve correctly",
+                "transformerName": "mergeIntoObject",
+                "transformer": {
+                  "transformerType": "mergeIntoObject",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                    "transformerType": "getFromParameters",
+                    "referenceName": "country"
+                  },
+                  "referenceToOuterObject": "country",
+                  "definition": {
+                    "transformerType": "createObject",
+                    "interpolation": "runtime",
+                    "definition": {
+                      "iso3166-1Alpha-2": {
+                        "transformerType": "getFromContext",
+                        "interpolation": "runtime",
+                        "referencePath": ["country", "nonExistingAttribute"]
+                      }
+                    }
+                  }
+                },
+                "transformerParams": {},
+                "transformerRuntimeContext": {
+                  "country": {
+                    "uuid": "2eda1207-4dcc-4af9-a3ba-ef75e7f12c11",
+                    "parentName": "Country",
+                    "parentUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+                    "name": "U.S.A.",
+                    "iso3166-1Alpha-2": "US"
+                  }
+                },
+                "retainAttributes": ["queryFailure"],
+                "unitTestExpectedValue": {
+                  "queryFailure": "FailedTransformer"
+                },
+                "integrationTestExpectedValue": {
+                  "queryFailure": "FailedTransformer"
+                }
+              }
+            ]
+          },
+          {
+            "transformerTestType": "transformerTestSuite",
+            "transformerTestLabel": "mapList",
+            "skip": true,
+            "transformerTests": [
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "mapList maps a returnValue list of objects to a list of returnValue objects",
+                "transformerName": "mapList",
+                "transformer": {
+                  "transformerType": "mapList",
+                  "label": "countryListMapperToObjectList",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "value": [
+                      {
+                        "uuid": "2eda1207-4dcc-4af9-a3ba-ef75e7f12c11",
+                        "parentName": "Country",
+                        "parentUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+                        "name": "U.S.A.",
+                        "iso3166-1Alpha-2": "US"
+                      },
+                      {
+                        "uuid": "30b8e7c6-b75d-4db0-906f-fa81fa5c4cc0",
+                        "parentName": "Country",
+                        "parentUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+                        "name": "Germany",
+                        "iso3166-1Alpha-2": "DE"
+                      }
+                    ]
+                  },
+                  "referenceToOuterObject": "country",
+                  "elementTransformer": {
+                    "transformerType": "createObject",
+                    "interpolation": "runtime",
+                    "definition": {
+                      "test": "1"
+                    }
+                  }
+                },
+                "transformerRuntimeContext": {
+                  "generateUuid": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+                },
+                "transformerParams": {},
+                "expectedValue": [
+                  {
+                    "test": "1"
+                  },
+                  {
+                    "test": "1"
+                  }
+                ]
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "mapList maps a returnValue list of objects to a list of returnValue objects with subObject",
+                "transformerName": "mapList",
+                "transformer": {
+                  "transformerType": "mapList",
+                  "label": "countryListMapperToObjectList",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "value": [
+                      {
+                        "uuid": "2eda1207-4dcc-4af9-a3ba-ef75e7f12c11",
+                        "parentName": "Country",
+                        "parentUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+                        "name": "U.S.A.",
+                        "iso3166-1Alpha-2": "US"
+                      },
+                      {
+                        "uuid": "30b8e7c6-b75d-4db0-906f-fa81fa5c4cc0",
+                        "parentName": "Country",
+                        "parentUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+                        "name": "Germany",
+                        "iso3166-1Alpha-2": "DE"
+                      }
+                    ]
+                  },
+                  "referenceToOuterObject": "country",
+                  "elementTransformer": {
+                    "transformerType": "createObject",
+                    "interpolation": "runtime",
+                    "definition": {
+                      "test": "1",
+                      "subObject": {
+                        "transformerType": "createObject",
+                        "interpolation": "runtime",
+                        "definition": {
+                          "uuid": {
+                            "transformerType": "returnValue",
+                            "mlSchema": { "type": "uuid" },
+                            "interpolation": "runtime",
+                            "value": "yyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy"
+                          },
+                          "name": {
+                            "transformerType": "returnValue",
+                            "interpolation": "runtime",
+                            "value": "TEST"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "transformerRuntimeContext": {
+                  "generateUuid": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+                },
+                "transformerParams": {},
+                "expectedValue": [
+                  {
+                    "test": "1",
+                    "subObject": {
+                      "uuid": "yyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy",
+                      "name": "TEST"
+                    }
+                  },
+                  {
+                    "test": "1",
+                    "subObject": {
+                      "uuid": "yyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy",
+                      "name": "TEST"
+                    }
+                  }
+                ]
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "mapList maps a list of objects to another list of objects using createObjectFromPairs",
+                "transformerName": "mapList",
+                "transformer": {
+                  "transformerType": "mapList",
+                  "label": "countryListMapperToObjectList",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referenceName": "countryList"
+                  },
+                  "referenceToOuterObject": "country",
+                  "elementTransformer": {
+                    "transformerType": "createObjectFromPairs",
+                    "interpolation": "runtime",
+                    "applyTo": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referenceName": "country"
+                    },
+                    "referenceToOuterObject": "country",
+                    "definition": [
+                      {
+                        "attributeKey": {
+                          "transformerType": "returnValue",
+                          "interpolation": "runtime",
+                          "value": "uuid"
+                        },
+                        "attributeValue": {
+                          "transformerType": "returnValue",
+                          "interpolation": "runtime",
+                          "value": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+                        }
+                      },
+                      {
+                        "attributeKey": {
+                          "transformerType": "returnValue",
+                          "mlSchema": { "type": "uuid" },
+                          "interpolation": "runtime",
+                          "value": "name"
+                        },
+                        "attributeValue": {
+                          "transformerType": "getFromContext",
+                          "interpolation": "runtime",
+                          "referencePath": ["country", "iso3166-1Alpha-2"]
+                        }
+                      }
+                    ]
+                  }
+                },
+                "transformerRuntimeContext": {
+                  "generateUuid": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+                  "countryList": [
+                    {
+                      "uuid": "2eda1207-4dcc-4af9-a3ba-ef75e7f12c11",
+                      "parentName": "Country",
+                      "parentUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+                      "name": "U.S.A.",
+                      "iso3166-1Alpha-2": "US"
+                    },
+                    {
+                      "uuid": "30b8e7c6-b75d-4db0-906f-fa81fa5c4cc0",
+                      "parentName": "Country",
+                      "parentUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+                      "name": "Germany",
+                      "iso3166-1Alpha-2": "DE"
+                    }
+                  ]
+                },
+                "transformerParams": {},
+                "expectedValue": [
+                  {
+                    "uuid": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+                    "name": "US"
+                  },
+                  {
+                    "uuid": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+                    "name": "DE"
+                  }
+                ]
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "mapList maps a list of objects to a list of altered objects using mergeIntoObject",
+                "transformerName": "mapList",
+                "transformer": {
+                  "transformerType": "mapList",
+                  "label": "countryListMapperToObjectList",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referenceName": "countryList"
+                  },
+                  "referenceToOuterObject": "country2",
+                  "elementTransformer": {
+                    "transformerType": "mergeIntoObject",
+                    "interpolation": "runtime",
+                    "applyTo": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referenceName": "country2"
+                    },
+                    "referenceToOuterObject": "country3",
+                    "definition": {
+                      "transformerType": "createObject",
+                      "interpolation": "runtime",
+                      "definition": {
+                        "id": {
+                          "transformerType": "getFromContext",
+                          "interpolation": "runtime",
+                          "referencePath": ["country3", "uuid"]
+                        },
+                        "name": {
+                          "transformerType": "getFromContext",
+                          "interpolation": "runtime",
+                          "referencePath": ["country3", "iso3166-1Alpha-2"]
+                        }
+                      }
+                    }
+                  }
+                },
+                "transformerRuntimeContext": {
+                  "generateUuid": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+                  "countryList": [
+                    {
+                      "uuid": "2eda1207-4dcc-4af9-a3ba-ef75e7f12c11",
+                      "parentName": "Country",
+                      "parentUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+                      "name": "U.S.A.",
+                      "iso3166-1Alpha-2": "US"
+                    },
+                    {
+                      "uuid": "30b8e7c6-b75d-4db0-906f-fa81fa5c4cc0",
+                      "parentName": "Country",
+                      "parentUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+                      "name": "Germany",
+                      "iso3166-1Alpha-2": "DE"
+                    }
+                  ]
+                },
+                "transformerParams": {},
+                "expectedValue": [
+                  {
+                    "uuid": "2eda1207-4dcc-4af9-a3ba-ef75e7f12c11",
+                    "parentName": "Country",
+                    "parentUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+                    "iso3166-1Alpha-2": "US",
+                    "id": "2eda1207-4dcc-4af9-a3ba-ef75e7f12c11",
+                    "name": "US"
+                  },
+                  {
+                    "uuid": "30b8e7c6-b75d-4db0-906f-fa81fa5c4cc0",
+                    "parentName": "Country",
+                    "parentUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+                    "iso3166-1Alpha-2": "DE",
+                    "id": "30b8e7c6-b75d-4db0-906f-fa81fa5c4cc0",
+                    "name": "DE"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "transformerTestType": "transformerTestSuite",
+            "transformerTestLabel": "dataflowObject",
+            "skip": true,
+            "transformerTests": [
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "dataflowObject with single entry allows to build an object with dynamic keys and values",
+                "transformerName": "dataflowObject",
+                "transformer": {
+                  "transformerType": "dataflowObject",
+                  "interpolation": "runtime",
+                  "target": "newObject",
+                  "definition": {
+                    "newObject": {
+                      "transformerType": "createObjectFromPairs",
+                      "interpolation": "runtime",
+                      "applyTo": {
+                        "transformerType": "getFromContext",
+                        "interpolation": "runtime",
+                        "referenceName": "country"
+                      },
+                      "referenceToOuterObject": "country2",
+                      "definition": [
+                        {
+                          "attributeKey": {
+                            "transformerType": "returnValue",
+                            "mlSchema": { "type": "uuid" },
+                            "interpolation": "runtime",
+                            "value": "uuid"
+                          },
+                          "attributeValue": {
+                            "transformerType": "getFromContext",
+                            "interpolation": "runtime",
+                            "referenceName": "generateUuid"
+                          }
+                        },
+                        {
+                          "attributeKey": {
+                            "transformerType": "returnValue",
+                            "mlSchema": { "type": "uuid" },
+                            "interpolation": "runtime",
+                            "value": "name"
+                          },
+                          "attributeValue": {
+                            "transformerType": "getFromContext",
+                            "interpolation": "runtime",
+                            "referencePath": ["country2", "iso3166-1Alpha-2"]
+                          }
+                        }
+                      ]
+                    }
+                  }
+                },
+                "transformerParams": {},
+                "transformerRuntimeContext": {
+                  "generateUuid": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+                  "country": {
+                    "uuid": "2eda1207-4dcc-4af9-a3ba-ef75e7f12c11",
+                    "parentName": "Country",
+                    "parentUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+                    "name": "U.S.A.",
+                    "iso3166-1Alpha-2": "US"
+                  }
+                },
+                "expectedValue": {
+                  "uuid": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+                  "name": "US"
+                }
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "dataflowObject with two entries allows to build an object with dynamic keys and values",
+                "transformerName": "dataflowObject",
+                "transformer": {
+                  "transformerType": "dataflowObject",
+                  "interpolation": "runtime",
+                  "target": "newObject2",
+                  "definition": {
+                    "newObject": {
+                      "transformerType": "createObjectFromPairs",
+                      "interpolation": "runtime",
+                      "label": "newObject",
+                      "applyTo": {
+                        "transformerType": "getFromContext",
+                        "interpolation": "runtime",
+                        "referenceName": "country"
+                      },
+                      "referenceToOuterObject": "country",
+                      "definition": [
+                        {
+                          "attributeKey": {
+                            "transformerType": "returnValue",
+                            "mlSchema": { "type": "uuid" },
+                            "interpolation": "runtime",
+                            "value": "uuid"
+                          },
+                          "attributeValue": {
+                            "transformerType": "getFromContext",
+                            "interpolation": "runtime",
+                            "referenceName": "generateUuid"
+                          }
+                        },
+                        {
+                          "attributeKey": {
+                            "transformerType": "returnValue",
+                            "mlSchema": { "type": "uuid" },
+                            "interpolation": "runtime",
+                            "value": "name"
+                          },
+                          "attributeValue": {
+                            "transformerType": "getFromContext",
+                            "interpolation": "runtime",
+                            "referencePath": ["country", "iso3166-1Alpha-2"]
+                          }
+                        }
+                      ]
+                    },
+                    "newObject2": {
+                      "transformerType": "createObjectFromPairs",
+                      "interpolation": "runtime",
+                      "label": "newObject2",
+                      "applyTo": {
+                        "transformerType": "getFromContext",
+                        "interpolation": "runtime",
+                        "referenceName": "newObject"
+                      },
+                      "referenceToOuterObject": "newObject",
+                      "definition": [
+                        {
+                          "attributeKey": {
+                            "transformerType": "returnValue",
+                            "mlSchema": { "type": "uuid" },
+                            "interpolation": "runtime",
+                            "value": "uuid"
+                          },
+                          "attributeValue": {
+                            "transformerType": "getFromContext",
+                            "interpolation": "runtime",
+                            "referenceName": "generateUuid2"
+                          }
+                        },
+                        {
+                          "attributeKey": {
+                            "transformerType": "returnValue",
+                            "mlSchema": { "type": "uuid" },
+                            "interpolation": "runtime",
+                            "value": "name"
+                          },
+                          "attributeValue": {
+                            "transformerType": "getFromContext",
+                            "interpolation": "runtime",
+                            "referencePath": ["newObject", "name"]
+                          }
+                        }
+                      ]
+                    }
+                  }
+                },
+                "transformerParams": {},
+                "transformerRuntimeContext": {
+                  "generateUuid": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+                  "generateUuid2": "yyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy",
+                  "country": {
+                    "uuid": "2eda1207-4dcc-4af9-a3ba-ef75e7f12c11",
+                    "parentName": "Country",
+                    "parentUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+                    "name": "U.S.A.",
+                    "iso3166-1Alpha-2": "US"
+                  }
+                },
+                "expectedValue": {
+                  "uuid": "yyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy",
+                  "name": "US"
+                }
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "dataflowObject with two entries and without target allows to render each entry based on the previous one",
+                "transformerName": "dataflowObject",
+                "transformer": {
+                  "transformerType": "dataflowObject",
+                  "interpolation": "runtime",
+                  "definition": {
+                    "newObject": {
+                      "transformerType": "createObjectFromPairs",
+                      "interpolation": "runtime",
+                      "label": "newObject",
+                      "applyTo": {
+                        "transformerType": "getFromContext",
+                        "interpolation": "runtime",
+                        "referenceName": "country"
+                      },
+                      "referenceToOuterObject": "country",
+                      "definition": [
+                        {
+                          "attributeKey": {
+                            "transformerType": "returnValue",
+                            "mlSchema": { "type": "uuid" },
+                            "interpolation": "runtime",
+                            "value": "uuid"
+                          },
+                          "attributeValue": {
+                            "transformerType": "getFromContext",
+                            "interpolation": "runtime",
+                            "referenceName": "generateUuid"
+                          }
+                        },
+                        {
+                          "attributeKey": {
+                            "transformerType": "returnValue",
+                            "mlSchema": { "type": "uuid" },
+                            "interpolation": "runtime",
+                            "value": "name"
+                          },
+                          "attributeValue": {
+                            "transformerType": "getFromContext",
+                            "interpolation": "runtime",
+                            "referencePath": ["country", "iso3166-1Alpha-2"]
+                          }
+                        }
+                      ]
+                    },
+                    "newObject2": {
+                      "transformerType": "createObjectFromPairs",
+                      "interpolation": "runtime",
+                      "label": "newObject2",
+                      "applyTo": {
+                        "transformerType": "getFromContext",
+                        "interpolation": "runtime",
+                        "referenceName": "newObject"
+                      },
+                      "referenceToOuterObject": "newObject",
+                      "definition": [
+                        {
+                          "attributeKey": {
+                            "transformerType": "returnValue",
+                            "mlSchema": { "type": "uuid" },
+                            "interpolation": "runtime",
+                            "value": "uuid"
+                          },
+                          "attributeValue": {
+                            "transformerType": "getFromContext",
+                            "interpolation": "runtime",
+                            "referenceName": "generateUuid2"
+                          }
+                        },
+                        {
+                          "attributeKey": {
+                            "transformerType": "returnValue",
+                            "mlSchema": { "type": "uuid" },
+                            "interpolation": "runtime",
+                            "value": "name"
+                          },
+                          "attributeValue": {
+                            "transformerType": "getFromContext",
+                            "interpolation": "runtime",
+                            "referencePath": ["newObject", "name"]
+                          }
+                        }
+                      ]
+                    }
+                  }
+                },
+                "transformerParams": {},
+                "transformerRuntimeContext": {
+                  "generateUuid": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+                  "generateUuid2": "yyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy",
+                  "country": {
+                    "uuid": "2eda1207-4dcc-4af9-a3ba-ef75e7f12c11",
+                    "parentName": "Country",
+                    "parentUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+                    "name": "U.S.A.",
+                    "iso3166-1Alpha-2": "US"
+                  }
+                },
+                "expectedValue": {
+                  "newObject": {
+                    "uuid": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+                    "name": "US"
+                  },
+                  "newObject2": {
+                    "uuid": "yyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy",
+                    "name": "US"
+                  }
+                }
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "dataflowObject shall fail when an entry fails",
+                "transformerName": "dataflowObject",
+                "transformer": {
+                  "transformerType": "dataflowObject",
+                  "interpolation": "runtime",
+                  "target": "newObject",
+                  "definition": {
+                    "newObject": {
+                      "transformerType": "createObjectFromPairs",
+                      "interpolation": "runtime",
+                      "applyTo": {
+                        "transformerType": "getFromContext",
+                        "interpolation": "runtime",
+                        "referenceName": "country"
+                      },
+                      "referenceToOuterObject": "country2",
+                      "definition": [
+                        {
+                          "attributeKey": {
+                            "transformerType": "returnValue",
+                            "mlSchema": { "type": "uuid" },
+                            "interpolation": "runtime",
+                            "value": "uuid"
+                          },
+                          "attributeValue": {
+                            "transformerType": "getFromContext",
+                            "interpolation": "runtime",
+                            "referenceName": "generateUuid"
+                          }
+                        },
+                        {
+                          "attributeKey": {
+                            "transformerType": "returnValue",
+                            "mlSchema": { "type": "uuid" },
+                            "interpolation": "runtime",
+                            "value": "name"
+                          },
+                          "attributeValue": {
+                            "transformerType": "getFromContext",
+                            "interpolation": "runtime",
+                            "referencePath": ["country3", "nonExistingAttribute"]
+                          }
+                        }
+                      ]
+                    }
+                  }
+                },
+                "transformerParams": {},
+                "transformerRuntimeContext": {
+                  "generateUuid": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+                  "country": {
+                    "uuid": "2eda1207-4dcc-4af9-a3ba-ef75e7f12c11",
+                    "parentName": "Country",
+                    "parentUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+                    "name": "U.S.A.",
+                    "iso3166-1Alpha-2": "US"
+                  }
+                },
+                "retainAttributes": ["queryFailure"],
+                "unitTestExpectedValue": {
+                  "queryFailure": "FailedTransformer"
+                },
+                "integrationTestExpectedValue": {
+                  "queryFailure": "QueryNotExecutable"
+                }
+              }
+            ]
+          },
+          {
+            "transformerTestType": "transformerTestSuite",
+            "transformerTestLabel": "listReducerToSpreadObject",
+            "skip": true,
+            "transformerTests": [
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "listReducerToSpreadObject allows to reduce a returnValue list of objects to a single object",
+                "transformerName": "listReducerToSpreadObject",
+                "transformer": {
+                  "transformerType": "listReducerToSpreadObject",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "value": [
+                      {
+                        "uuid": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+                        "name": "US"
+                      },
+                      {
+                        "uuid2": "yyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy",
+                        "name2": "DE"
+                      }
+                    ]
+                  }
+                },
+                "transformerParams": {},
+                "expectedValue": {
+                  "uuid": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+                  "name": "US",
+                  "uuid2": "yyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy",
+                  "name2": "DE"
+                }
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "listReducerToSpreadObject allows to reduce a list of objects from parameter to a single object",
+                "transformerName": "listReducerToSpreadObject",
+                "transformer": {
+                  "transformerType": "listReducerToSpreadObject",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referenceName": "objectList"
+                  }
+                },
+                "transformerParams": {},
+                "transformerRuntimeContext": {
+                  "objectList": [
+                    {
+                      "uuid": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+                      "name": "US"
+                    },
+                    {
+                      "uuid2": "yyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy",
+                      "name2": "DE"
+                    }
+                  ]
+                },
+                "expectedValue": {
+                  "uuid": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+                  "name": "US",
+                  "uuid2": "yyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy",
+                  "name2": "DE"
+                }
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "listReducerToSpreadObject fails when input is not a list",
+                "transformerName": "listReducerToSpreadObject",
+                "transformer": {
+                  "transformerType": "listReducerToSpreadObject",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referenceName": "objectList"
+                  }
+                },
+                "transformerParams": {},
+                "transformerRuntimeContext": {
+                  "objectList": {
+                    "uuid": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+                    "name": "US"
+                  }
+                },
+                "retainAttributes": ["queryFailure"],
+                "unitTestExpectedValue": {
+                  "queryFailure": "FailedTransformer"
+                },
+                "integrationTestExpectedValue": {
+                  "queryFailure": "QueryNotExecutable"
+                }
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "listReducerToSpreadObject fails when non-objects are included in the list",
+                "transformerName": "listReducerToSpreadObject",
+                "transformer": {
+                  "transformerType": "listReducerToSpreadObject",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referenceName": "objectList"
+                  }
+                },
+                "transformerParams": {},
+                "transformerRuntimeContext": {
+                  "objectList": [
+                    {
+                      "uuid": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+                      "name": "US"
+                    },
+                    "DE"
+                  ]
+                },
+                "retainAttributes": ["queryFailure"],
+                "unitTestExpectedValue": {
+                  "queryFailure": "FailedTransformer"
+                },
+                "integrationTestExpectedValue": {
+                  "queryFailure": "QueryNotExecutable"
+                }
+              }
+            ]
+          },
+          {
+            "transformerTestType": "transformerTestSuite",
+            "transformerTestLabel": "indexListBy",
+            "skip": true,
+            "transformerTests": [
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "indexListBy allows to reduce a returnValue list of objects to an object with dynamic keys and values",
+                "transformerName": "indexListBy",
+                "transformer": {
+                  "transformerType": "indexListBy",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "value": [
+                      {
+                        "uuid": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+                        "name": "US"
+                      },
+                      {
+                        "uuid": "yyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy",
+                        "name": "DE"
+                      }
+                    ]
+                  },
+                  "indexAttribute": "uuid"
+                },
+                "transformerParams": {},
+                "expectedValue": {
+                  "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx": {
+                    "uuid": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+                    "name": "US"
+                  },
+                  "yyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy": {
+                    "uuid": "yyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy",
+                    "name": "DE"
+                  }
+                }
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "indexListBy allows to reduce a list of objects from parameter to an object with dynamic keys and values",
+                "transformerName": "indexListBy",
+                "transformer": {
+                  "transformerType": "indexListBy",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referenceName": "objectList"
+                  },
+                  "indexAttribute": "uuid"
+                },
+                "transformerParams": {},
+                "transformerRuntimeContext": {
+                  "objectList": [
+                    {
+                      "uuid": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+                      "name": "US"
+                    },
+                    {
+                      "uuid": "yyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy",
+                      "name": "DE"
+                    }
+                  ]
+                },
+                "expectedValue": {
+                  "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx": {
+                    "uuid": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+                    "name": "US"
+                  },
+                  "yyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy": {
+                    "uuid": "yyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy",
+                    "name": "DE"
+                  }
+                }
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "indexListBy fails when input is not a list",
+                "transformerName": "indexListBy",
+                "transformer": {
+                  "transformerType": "indexListBy",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referenceName": "objectNotList"
+                  },
+                  "indexAttribute": "uuid"
+                },
+                "transformerParams": {},
+                "transformerRuntimeContext": {
+                  "objectNotList": {
+                    "uuid": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+                    "name": "US"
+                  }
+                },
+                "retainAttributes": ["queryFailure"],
+                "unitTestExpectedValue": {
+                  "queryFailure": "FailedTransformer"
+                },
+                "integrationTestExpectedValue": {
+                  "queryFailure": "QueryNotExecutable"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

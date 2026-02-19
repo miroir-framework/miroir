@@ -1,0 +1,10 @@
+{
+  "uuid": "35c5608a-7678-4f07-a4ec-76fc5bc35424",
+  "parentName": "Entity",
+  "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+  "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
+  "name": "Deployment",
+  "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+  "conceptLevel": "Model",
+  "description": "An SelfApplication Deployment"
+}

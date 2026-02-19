@@ -2,38 +2,38 @@ import { JzodElement, TransformerDefinition } from "../0_interfaces/1_core/prepr
 import { transformerInterfaceFromDefinition } from "./Transformer_tools";
 
 
-import transformer_spreadSheetToJzodSchema_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/e44300e8-ed02-40fb-a9ee-d83d08cb1f25.json';
-import transformer_menu_addItem_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/685440be-7f3f-4774-b90d-bafa82d6832b.json';
-// 
-import transformer_ifThenElse_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/4ded1479-1331-4f96-8723-9a797ba3924b.json';
-import transformer_plus_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/6318c3cc-6f2e-476b-b7ae-10de01977009.json';
-import transformer_case_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/59be26d7-c230-4abc-8d85-cdb22feb57ba.json';
-import transformer_returnValue_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/2b4c25e0-6b0f-4f7d-aa68-1fdc079aead3.json';
-import transformer_constantAsExtractor_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/6b2426ee-b740-4785-a15d-9c48a385f2c2.json';
-import transformer_getFromContext_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/dab2932a-8eb3-4620-9f90-0d8d4fcc441a.json';
-import transformer_aggregate_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/4ee5c863-5ade-4706-92bd-1fc2d89c3766.json';
-import transformer_dataflowObject_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/fc7ce040-1653-4cad-842e-99fb0792e728.json';
-import transformer_createObject_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/e99fec79-162b-49ac-97d6-c058d162d1d8.json';
-import transformer_pickFromList_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/64685ad7-1324-4080-9c41-504fcc1972c9.json';
-import transformer_indexListBy_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/8ddb7e2e-a3d3-4622-81d2-0c3e98bca3ea.json';
-import transformer_listReducerToSpreadObject_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/0894ed4f-ca11-4b04-878d-471d1d780fac.json';
-import transformer_mapList_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/3ec73049-5e54-40aa-bc86-4c4906d00baa.json';
-import transformer_mustacheStringTemplate_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/b1d69881-c9c4-4eb7-a60b-7af68163d559.json';
-import transformer_generateUuid_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/9986b805-3580-4974-b849-3d40db4fba51.json';
-import transformer_objectFullTemplate_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/16d866c4-bc81-4773-89a4-a47ac7f6549d.json';
-import transformer_mergeIntoObject_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/774b1087-d4bb-41a0-824c-5ac16571c66a.json';
-import transformer_accessDynamicPath_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/d1f9e7ce-4b38-4602-a8cf-9658d63619ed.json';
-import transformer_getObjectEntries_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/b726ac6a-f65e-403a-bba0-e11f0982fc41.json';
-import transformer_getObjectValues_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/8b03069a-f812-4334-a530-e7f8fd684744.json';
-import transformer_getFromParameters_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/af5029f2-b42e-4541-8e50-4e2f2d8fcfab.json';
-import transformer_getUniqueValues_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/a93aec8f-3f8b-4129-a907-e7321c1e7171.json';
-// MLS
-import transformer_defaultValueForMLSchema_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/3026a4f6-9f4b-4f1a-97bb-ecda4df35309.json';
-import transformer_resolveConditionalSchema_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/70f5e617-2aa3-4dc4-b897-4cc3cffa3405.json';
-import transformer_resolveSchemaReferenceInContext_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/a8f8e3c6-9876-4e2d-8b4f-123456789abc.json';
-import transformer_unfoldSchemaOnce_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/d5c9f2e3-8741-4b9a-a1d2-4e5f6789abcd.json';
-import transformer_jzodTypeCheck_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/a3f7b5c2-1e8d-4a9b-9c7e-6f2d3e8a1b5c.json';
-import transformer_getActiveDeployment_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/d554c31b-638b-4774-95e3-b2e307035a82.json';
+import {
+  transformer_spreadSheetToJzodSchema_json,
+  transformer_menu_addItem_json,
+  transformer_ifThenElse_json,
+  transformer_plus_json,
+  transformer_case_json,
+  transformer_returnValue_json,
+  transformer_constantAsExtractor_json,
+  transformer_getFromContext_json,
+  transformer_aggregate_json,
+  transformer_dataflowObject_json,
+  transformer_createObject_json,
+  transformer_pickFromList_json,
+  transformer_indexListBy_json,
+  transformer_listReducerToSpreadObject_json,
+  transformer_mapList_json,
+  transformer_mustacheStringTemplate_json,
+  transformer_generateUuid_json,
+  transformer_objectFullTemplate_json,
+  transformer_mergeIntoObject_json,
+  transformer_accessDynamicPath_json,
+  transformer_getObjectEntries_json,
+  transformer_getObjectValues_json,
+  transformer_getFromParameters_json,
+  transformer_getUniqueValues_json,
+  transformer_defaultValueForMLSchema_json,
+  transformer_resolveConditionalSchema_json,
+  transformer_resolveSchemaReferenceInContext_json,
+  transformer_unfoldSchemaOnce_json,
+  transformer_jzodTypeCheck_json,
+  transformer_getActiveDeployment_json,
+} from "miroir-test-app_deployment-miroir";
 
 // ################################################################################################
 export type ActionTemplate = any;

@@ -12,7 +12,7 @@ import {
 
 import { defaultMetaModelEnvironment } from "../../../src/1_core/Model";
 import { MiroirActivityTracker } from "../../../src/3_controllers/MiroirActivityTracker";
-import transformerTestSuite_resolveSchemaReferenceInContext from "../../../src/assets/miroir_data/681be9ca-c593-45f5-b45a-5f1d4969e91e/b9e7f4d5-6543-4a1b-9c8d-987654321fed.json";
+import { transformerTestSuite_resolveSchemaReferenceInContext } from "miroir-test-app_deployment-miroir";
 
 // Access the test file pattern from Vitest's process arguments
 const vitestArgs = process.argv.slice(2);

@@ -9,7 +9,7 @@ import {
 // import {
 //   currentTestSuite,
 // } from "./transformersTests_miroir.data";
-import transformerTest_miroirCoreTransformers from "../../src/assets/miroir_data/681be9ca-c593-45f5-b45a-5f1d4969e91e/a5b4be38-78e3-4f31-9e9b-8ab0b71d4993.json" with { type: "json" };
+import { transformerTest_miroirCoreTransformers } from "miroir-test-app_deployment-miroir";
 import type { TransformerTestSuite } from '../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType';
 const transformerTestSuite_miroirTransformers: TransformerTestSuite = transformerTest_miroirCoreTransformers.definition as any;
 

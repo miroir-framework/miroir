@@ -1,0 +1,80 @@
+{
+  "uuid": "685440be-7f3f-4774-b90d-bafa82d6832b",
+  "parentName":"TransformerDefinition",
+  "parentUuid":"a557419d-a288-4fb8-8a1e-971c86c113b8",
+  "name":"transformer_menu_addItem",
+  "defaultLabel": "The Transformer adding an Item to a Menu.",
+  "description": "This Transformer adds an Item to an existing Menu.",
+  "classification": "basic",
+  "transformerInterface": {
+    "inputOutput": {
+      "input": "object",
+      "output": "object"
+    },
+    "transformerParameterSchema": {
+      "transformerType": {
+        "type": "literal",
+        "definition": "transformer_menu_addItem"
+      },
+      "transformerDefinition": {
+        "type": "object",
+        "definition": {
+          "menuReference": {
+            "type": "union",
+            "discriminator": "transformerType",
+            "definition": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "transformer"
+                }
+              }
+            ]
+          },
+          "menuItemReference": {
+            "type": "union",
+            "discriminator": "transformerType",
+            "definition": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "transformer"
+                }
+              }
+            ]
+          },  
+          "menuSectionInsertionIndex": {
+            "type": "number",
+            "optional": true
+          },
+          "menuSectionItemInsertionIndex": {
+            "type": "number",
+            "optional": true
+          }
+        }
+      }
+    },
+    "transformerResultSchema": {
+      "returns": "mlSchema",
+      "definition": {
+        "type": "schemaReference",
+        "definition": {
+          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          "relativePath": "menu"
+        }
+      }
+    }
+  },
+  "transformerImplementation": {
+    "transformerImplementationType": "libraryImplementation",
+    "inMemoryImplementationFunctionName": "handleTransformer_menu_AddItem"
+  }
+}

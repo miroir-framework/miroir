@@ -7,7 +7,7 @@ import {
   runUnitTransformerTests,
   transformerTestsDisplayResults
 } from "../../../src/4_services/TestTools";
-import transformerTestSuite_resolveConditionalSchema from "../../../src/assets/miroir_data/681be9ca-c593-45f5-b45a-5f1d4969e91e/3f025c6c-982d-47ed-8061-50009788773a.json";
+import { transformerTest_resolveConditionalSchema as transformerTestSuite_resolveConditionalSchema } from "miroir-test-app_deployment-miroir";
 
 
 // const domainState: DomainState = domainStateImport as DomainState;

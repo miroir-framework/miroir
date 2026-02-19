@@ -18,7 +18,7 @@ import {
   transformerTestsDisplayResults,
 } from "../../src/4_services/TestTools";
 
-import transformerTestSuite_defaultValueForMLSchema from "../../src/assets/miroir_data/681be9ca-c593-45f5-b45a-5f1d4969e91e/753afec9-f786-4f51-8c46-bd022551a8dd.json";
+import { transformerTestSuite_defaultValueForMLSchema } from "miroir-test-app_deployment-miroir";
 import { defaultMetaModelEnvironment } from '../../src/1_core/Model';
 import { MiroirActivityTracker } from "../../src/3_controllers/MiroirActivityTracker";
 import { MiroirEventService } from '../../src/3_controllers/MiroirEventService';

@@ -19,7 +19,7 @@ import {
 import { MiroirActivityTracker } from "../../../src/3_controllers/MiroirActivityTracker";
 import { defaultMetaModelEnvironment } from "../../../src/1_core/Model";
 
-import transformerTestSuite_unfoldSchemaOnce from "../../../src/assets/miroir_data/681be9ca-c593-45f5-b45a-5f1d4969e91e/e8b5d1a2-9473-4f6c-b2e8-7f8a5c6d9e0f.json";
+import { transformerTestSuite_unfoldSchemaOnce } from "miroir-test-app_deployment-miroir";
 
 // Access the test file pattern from Vitest's process arguments
 const vitestArgs = process.argv.slice(2);

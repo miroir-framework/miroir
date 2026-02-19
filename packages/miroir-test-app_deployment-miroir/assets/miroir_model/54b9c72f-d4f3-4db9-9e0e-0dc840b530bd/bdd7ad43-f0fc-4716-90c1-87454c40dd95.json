@@ -1,0 +1,203 @@
+{
+  "uuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
+  "parentName": "EntityDefinition",
+  "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+  "parentDefinitionVersionUuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
+  "entityUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+  "name": "EntityDefinition",
+  "conceptLevel": "MetaModel",
+  "description": "definition of an entity",
+  "defaultInstanceDetailsReportUuid": "acd55b04-84df-427e-b219-cf0e01a6881b",
+  "viewAttributes": [
+    "name",
+    "description",
+    "entityUuid",
+    "viewAttributes",
+    "uuid"
+  ],
+  "cache": {
+    "cacheAllInstancesOnRefresh": true
+  },
+  "mlSchema": {
+    "type": "object",
+    "definition": {
+      "uuid": {
+        "type": "uuid",
+        "tag": {
+          "value": {
+            "defaultLabel": "Uuid",
+            "display": { "editable": false }
+          }
+        }
+      },
+      "parentName": {
+        "type": "string",
+        "tag": {
+          "value": {
+            "defaultLabel": "Entity Name",
+            "display": { "editable": false }
+          }
+        }
+      },
+      "parentUuid": {
+        "type": "uuid",
+        "tag": {
+          "value": {
+            "defaultLabel": "Entity Uuid",
+            "display": { "editable": false }
+          }
+        }
+      },
+      "parentDefinitionVersionUuid": {
+        "type": "uuid",
+        "optional": true,
+        "tag": {
+          "value": {
+            "defaultLabel": "Entity Definition Version Uuid",
+            "display": { "editable": false }
+          }
+        }
+      },
+      "name": {
+        "type": "string",
+        "tag": {
+          "value": {
+            "id": 5,
+            "defaultLabel": "Name",
+            "display": { "editable": false }
+          }
+        }
+      },
+      "entityUuid": {
+        "type": "uuid",
+        "tag": {
+          "value": {
+            "id": 6,
+            "defaultLabel": "Entity Uuid of the Entity which this definition is the definition",
+            "display": { "editable": false }
+          }
+        }
+      },
+      "conceptLevel": {
+        "type": "enum",
+        "definition": [
+          "MetaModel",
+          "Model",
+          "Data"
+        ],
+        "optional": true,
+        "tag": {
+          "value": {
+            "defaultLabel": "Concept Level",
+            "display": { "editable": false }
+          }
+        }
+      },
+      "description": {
+        "type": "string",
+        "optional": true,
+        "tag": {
+          "value": {
+            "defaultLabel": "Description"
+          }
+        }
+      },
+      "defaultInstanceDetailsReportUuid": {
+        "type": "uuid",
+        "optional": true,
+        "tag": {
+          "value": {
+            "defaultLabel": "Default Report used to display instances of this Entity",
+            "display": { "editable": false },
+            "foreignKeyParams": {
+              "targetEntity": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+              "targetEntityApplicationSection": "model",
+              "targetEntityOrderInstancesBy": "name"
+            }
+          }
+        }
+      },
+      "viewAttributes": {
+        "type": "array",
+        "optional": true,
+        "definition": {
+          "type": "string"
+        },
+        "tag": {
+          "value": {
+            "defaultLabel": "Attributes shown in list",
+            "description": "List of attribute names to be shown when displaying lists of instances of this entity.",
+            "display": { "editable": true }
+          }
+        }
+      },
+      "icon": {
+        "type": "schemaReference",
+        "optional": true,
+        "definition": {
+          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          "relativePath": "miroirIcon"
+        }
+      },
+      "display": {
+        "type": "object",
+        "optional": true,
+        "tag": {
+          "value": {
+            "defaultLabel": "Display Options"
+          }
+        },
+        "definition": {
+          "foldSubLevels": {
+            "type": "record",
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "Unfold Sub Levels"
+              }
+            },
+            "definition": {
+              "type": "boolean"
+            }
+          }
+        }
+      },
+      "cache": {
+        "type": "object",
+        "optional": true,
+        "tag": {
+          "value": {
+            "defaultLabel": "Cache Options"
+          } 
+        },
+        "definition": {
+          "cacheAllInstancesOnRefresh": {
+            "type": "boolean",
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "Enable Systematic Caching of All Instances",
+                "description": "If enabled, all instances of this entity will be cached in memory when the cache is refreshed. This can improve performance when working with large datasets, but will use more memory on the client side.",
+                "initializeTo": {
+                  "initializeToType": "value", "value": true
+                }
+              }
+            }
+          }
+        }
+      },
+      "mlSchema": {
+        "type": "schemaReference",
+        "definition": {
+          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          "relativePath": "jzodObject"
+        },
+        "tag": {
+          "value": {
+            "defaultLabel": "ML Schema"
+          }
+        }
+      }
+    }
+  }
+}
