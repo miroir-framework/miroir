@@ -8,16 +8,32 @@
 ⚠️ We're in "early adopter" phase, documentation is insufficient and can be misleading, and things will break! ⚠️
 ---
 
-## What is Miroir?
+## Miroir in a few Words
 
-Miroir is a comprehensive development framework that transforms how you create data-centric applications by:
+Miroir is a comprehensive development framework that transforms how you create web applications by:
 
-- **Unifying development and runtime** - Define concepts once, use everywhere (database, API, UI, business logic)
+- **adopting a data-centric approach** - Describe the concepts manipulated by your application, Miroir enables any software development activity involving these concepts (creating business logic, testing, scripting, transferring data, etc.)
+- **providing end-to-end support** - in Miroir, described concepts and business logic become alive as Graphical User Interfaces (webapp), APIs (Rest), and database schemas, from the User to the persistent store
+- **enabling low-code description** - in Miroir the business logic is defined as block-like elements, not as code; these elements can be modified at run-time
+- **supporting AI agents** - business logic written in Miroir can automatically be exposed to AI agents using the Model Context Protocol (MCP)
+
+<!-- - **Unifying development and runtime** - Define concepts once, use everywhere (database, API, UI, business logic)
 - **Enabling low-code creation** - Build and modify applications at runtime without recompilation
 - **Supporting AI agents** - Native Model Context Protocol (MCP) integration for natural language development
-- **Fostering domain languages** - Create custom Domain-Specific Languages (DSLs) for your business domain
+- **Fostering domain languages** - Create custom Domain-Specific Languages (DSLs) for your business domain -->
 
-### Key Features
+## Example use case
+
+You need to manage a small library inventory, with Books, Authors, Publishers and Members, where the Members may borrow and return Books under given conditions. Using Miroir, you may typically:
+
+- **deploy Miroir on a laptop** - available on a single machine in the library, perfect for a starting inventory
+- **create the necessary entities in Miroir** - create Book, Author, Publisher and Member entities, each Entity defining potential relations to others (for example a Book must have 1 or more Authors)
+- **create the wanted operations** - typically to lend / return a Book, checking a given set of conditions on the Book and User borrowing / returning the Book
+- **create additional views** - monitor the inventory state, popularity of Books, punctuality of Users, etc.
+- **create (non-regression) tests** - evolve your application and ensure that improvements are safe, not breaking any existing feature
+- **evolve to a full-blown web application** - when a second computer arrives to the library, deploy your existing application on a third-party server and access it from anywhere!
+
+<!-- ### Key Features
 
 ✨ **Schema-First Development** - Define your data model using Jzod (Miroir Meta-Language), generate TypeScript types, Zod validators, and database schemas automatically
 
@@ -29,9 +45,9 @@ Miroir is a comprehensive development framework that transforms how you create d
 
 🤖 **AI-Ready** - Built-in MCP server for LLM-driven development with Claude, ChatGPT, and other AI agents
 
-🧪 **Test-Driven** - Integrated testing framework with development/runtime parity
+🧪 **Test-Driven** - Integrated testing framework with development/runtime parity -->
 
----
+<!-- ---
 
 ## Who Is Miroir For?
 
@@ -49,7 +65,15 @@ Miroir is a comprehensive development framework that transforms how you create d
 | **Software Engineer** | Business applications, APIs, dashboards | Reduce boilerplate by 80%, rapid prototyping |
 | **Data Analyst** | Custom reporting, data transformation | SQL-free queries, visual report builder |
 | **IT Manager** | Internal applications portfolio | Faster delivery, easier maintenance |
-| **Startup Founder** | MVP development | Quick iteration, AI-assisted development |
+| **Startup Founder** | MVP development | Quick iteration, AI-assisted development | -->
+
+---
+
+## Want To Know More?
+
+**[Read the full rationale →](docs/guides/why-miroir.md)**
+
+**[Compare with alternatives →](docs/guides/comparison.md)** (Hasura, Supabase, Retool, OutSystems, and 30+ others)
 
 ---
 
@@ -127,7 +151,7 @@ Documentation organized by role: Executives, Project Managers, Architects, Devel
 
 ---
 
-## Why Miroir?
+<!-- ## Why Miroir?
 
 ### The Problem: Development Tools Are Fragmented
 
@@ -153,9 +177,9 @@ Miroir integrates development-time and runtime activities in a single environmen
 
 **[Compare with alternatives →](docs/guides/comparison.md)** (Hasura, Supabase, Retool, OutSystems, and 30+ others)
 
----
+--- -->
 
-## Example: Building a Book Library App (Idealized)
+## Detailing the Library App (Idealized)
 
 This section gives a slightly simplified syntax for better understanding of the main features that constitute a Library Miroir application. See it for real in **[the Library Tutorial →](docs/tutorials/library-tutorial.md)**
 
@@ -218,14 +242,17 @@ This section gives a slightly simplified syntax for better understanding of the 
 
 - ✅ Jzod meta-language and type generation
 - ✅ Entity and EntityDefinition meta-model
-- ✅ Multi-store connectors (PostgreSQL, IndexedDB, Filesystem)
+- ✅ Multi-store connectors (PostgreSQL, IndexedDB, Filesystem, MongoDB)
 - ✅ Query, Transformer, Action, Report interpreters
+- ✅ Graph visualization (D3.js integration)
+- ✅ Use Markdown text in Reports
 - ✅ In-memory and SQL execution for business logic
 - ✅ Web application and Node.js server
 - ✅ Electron desktop application
 - ✅ Comprehensive test suite
 - ✅ Event system for monitoring and debugging
-- ✅ MCP server for AI integration
+- ✅ MCP server for AI integration (Proof of Concept)
+- ✅ Command Line Interface (Proof of Concept)
 
 ### 🚧 In Active Development
 
@@ -235,11 +262,8 @@ This section gives a slightly simplified syntax for better understanding of the 
 
 ### 📅 Roadmap
 
-- 📅 Graph visualization (D3.js integration)
-- 📅 Markdown/HTML text editor for documentation
 - 📅 Block-based visual programming (low-code)
-- 📅 Additional NoSQL stores (MongoDB, DuckDB, ElasticSearch)
-- 📅 Command Line Interface (CLI)
+- 📅 Additional NoSQL stores (DuckDB, ElasticSearch)
 - 📅 Git/GitHub integration
 - 📅 Code generation ("freeze to JavaScript/Rust")
 
@@ -247,7 +271,7 @@ This section gives a slightly simplified syntax for better understanding of the 
 
 ---
 
-## Architecture Highlights
+<!-- ## Architecture Highlights
 
 ### Layered Domain-Driven Design
 
@@ -276,7 +300,7 @@ This section gives a slightly simplified syntax for better understanding of the 
 
 **[Architecture Deep Dive →](docs/guides/architecture.md)**
 
----
+--- -->
 
 ## Community & Contributing
 
