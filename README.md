@@ -30,8 +30,8 @@ You need to manage a small library inventory, with Books, Authors, Publishers an
 - **create the necessary entities in Miroir** - create Book, Author, Publisher and Member entities, each Entity defining potential relations to others (for example a Book must have 1 or more Authors)
 - **create the wanted operations** - typically for a User to borrow a Book, checking the necessary conditions to allow the operation, and also returning a Book
 - **create additional views** - monitor the inventory state, popularity of Books, punctuality of Users, etc.
-- **create (non-regression) tests** - evolve your application and ensure that improvements are safe, not breaking any existing feature
-- **evolve to a full-blown web application** - when a second computer arrives to the library, deploy your existing application on a third-party server and access it from anywhere!
+- **create (non-regression) tests** - evolve your application safely, ensuring that improvements do not break existing features
+- **evolve to a full-blown web application** - when a second computer arrives at the library, deploy your existing application on a third-party server and access it from anywhere!
 
 <!-- ### Key Features
 
@@ -240,11 +240,11 @@ This section gives a slightly simplified syntax for better understanding of the 
 
 ### ✅ Available Now
 
-- ✅ meta-language for Entities, Reports, Actions, Endpoints...
-- ✅ Query, Transformer, Action, Report interpreters
-- ✅ Graph visualization (D3.js integration)
+- ✅ Create Entities, Reports, Actions, Endpoints...
+- ✅ Execute Queries, Transformers, Actions, display Reports
+- ✅ Display Graphs (D3.js integration)
 - ✅ Use Markdown text in Reports
-- ✅ In-memory and SQL execution for business logic
+- ✅ Run the business logic in the client, on the server, or via SQL
 - ✅ Multi-store connectors (PostgreSQL, IndexedDB, Filesystem, MongoDB)
 - ✅ Node.js server (React GUI + backend)
 - ✅ Electron desktop application
