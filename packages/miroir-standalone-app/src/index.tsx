@@ -423,7 +423,7 @@ async function startWebApp(root:Root) {
   
   theme.spacing(10);
 
-  console.warn("start prod",process.env.NODE_ENV)
+  console.warn("start in mode",process.env.NODE_ENV)
   const desktopMiroirConfig: MiroirConfigClient = {
     miroirConfigType: "client",
     client: {
@@ -459,9 +459,12 @@ async function startWebApp(root:Root) {
       },
     },
   };
+    // Electron uses desktopMiroirConfig (emulated server via IPC).
+    // The browser webapp uses webMiroirConfig (real HTTP server).
+    const miroirConfigToUse = isElectron ? desktopMiroirConfig : webMiroirConfig;
     const { domainControllerForClient, domainControllerForServer: rawDomainControllerForServer, miroirContext } =
       await setupClient(
-        desktopMiroirConfig,
+        miroirConfigToUse,
         miroirActivityTracker,
         miroirEventService,
         electronRestClient ? { customRestClient: electronRestClient } : undefined,
@@ -473,12 +476,7 @@ async function startWebApp(root:Root) {
       ? (new ElectronServerDomainControllerProxy() as any as DomainControllerInterface)
       : rawDomainControllerForServer;
 
-    if (desktopMiroirConfig.client.emulateServer) {
-      // miroirFileSystemStoreSectionStartup();
-      // miroirIndexedDbStoreSectionStartup();
-      // miroirMongoDbStoreSectionStartup();
-      // miroirPostgresStoreSectionStartup();
-
+    if (isElectron && desktopMiroirConfig.client.emulateServer) {
       if (!domainControllerForServer) {
         throw new Error("Domain controller for server is not defined");
       }
@@ -574,7 +572,6 @@ async function startWebApp(root:Root) {
           defaultMetaModelEnvironment
         );
       }
-      
     }
 
     root.render(
