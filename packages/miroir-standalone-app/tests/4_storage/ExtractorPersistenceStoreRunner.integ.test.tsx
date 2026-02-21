@@ -3,6 +3,7 @@ import { describe } from 'vitest';
 import {
   type Action2ReturnType,
   ApplicationSection,
+  ConfigurationService,
   createDeploymentCompositeAction,
   // defaultLibraryModelEnvironment,
   defaultMiroirModelEnvironment,
@@ -69,7 +70,6 @@ import {
 
 import {
   AdminApplicationDeploymentConfiguration,
-  ConfigurationService,
   defaultMiroirMetaModel,
   ignorePostgresExtraAttributesOnList,
   LocalCacheInterface,
@@ -137,11 +137,11 @@ MiroirLoggerFactory.registerLoggerToStart(
 
 miroirAppStartup();
 miroirCoreStartup();
-miroirFileSystemStoreSectionStartup();
-miroirIndexedDbStoreSectionStartup();
-miroirMongoDbStoreSectionStartup();
-miroirPostgresStoreSectionStartup();
-ConfigurationService.registerTestImplementation({expect: expect as any});
+miroirFileSystemStoreSectionStartup(ConfigurationService.configurationService);
+miroirIndexedDbStoreSectionStartup(ConfigurationService.configurationService);
+miroirMongoDbStoreSectionStartup(ConfigurationService.configurationService);
+miroirPostgresStoreSectionStartup(ConfigurationService.configurationService);
+ConfigurationService.configurationService.registerTestImplementation({expect: expect as any});
 
 // const {miroirConfig: miroirConfigParam, logConfig:loggerOptionsParam} = await loadTestConfigFiles(env)
 myConsoleLog("received miroirConfig", JSON.stringify(miroirConfig, null, 2));

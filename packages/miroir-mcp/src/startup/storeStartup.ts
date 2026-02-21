@@ -1,5 +1,6 @@
 import { MiroirMcpConfig } from "../config/configSchema.js";
 import { getRequiredStorageTypes } from "../config/configLoader.js";
+import { ConfigurationService } from "miroir-core";
 
 const packageName = "miroir-mcp";
 
@@ -46,7 +47,7 @@ async function initializeFilesystemStore(): Promise<void> {
   try {
     // Dynamic import to avoid bundling if not needed
     const module = await import("miroir-store-filesystem");
-    module.miroirFileSystemStoreSectionStartup();
+    module.miroirFileSystemStoreSectionStartup(ConfigurationService.configurationService);
     console.log(`[${packageName}] Filesystem store initialized`);
   } catch (error) {
     throw new Error(
@@ -62,7 +63,7 @@ async function initializeFilesystemStore(): Promise<void> {
 async function initializeIndexedDbStore(): Promise<void> {
   try {
     const module = await import("miroir-store-indexedDb");
-    module.miroirIndexedDbStoreSectionStartup();
+    module.miroirIndexedDbStoreSectionStartup(ConfigurationService.configurationService);
     console.log(`[${packageName}] IndexedDB store initialized`);
   } catch (error) {
     throw new Error(
@@ -78,7 +79,7 @@ async function initializeIndexedDbStore(): Promise<void> {
 async function initializeSqlStore(): Promise<void> {
   try {
     const module = await import("miroir-store-postgres");
-    module.miroirPostgresStoreSectionStartup();
+    module.miroirPostgresStoreSectionStartup(ConfigurationService.configurationService);
     console.log(`[${packageName}] PostgreSQL store initialized`);
   } catch (error) {
     throw new Error(

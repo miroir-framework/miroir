@@ -9,6 +9,7 @@ import {
   CompositeActionSequence,
   CompositeRunTestAssertion,
   ConfigurationService,
+  Deployment,
   displayTestSuiteResultsDetails,
   DomainAction,
   DomainControllerInterface,
@@ -35,7 +36,6 @@ import {
   PersistenceStoreControllerManagerInterface,
   Report,
   resetAndInitApplicationDeployment,
-  Deployment,
   selfApplicationDeploymentMiroir,
   StoreUnitConfiguration,
   Uuid
@@ -53,8 +53,14 @@ import {
   resetAndinitializeDeploymentCompositeAction,
   TestCompositeActionParams,
 } from "miroir-core";
+import { miroirFileSystemStoreSectionStartup } from 'miroir-store-filesystem';
+import { miroirIndexedDbStoreSectionStartup } from 'miroir-store-indexedDb';
+import { miroirPostgresStoreSectionStartup } from 'miroir-store-postgres';
 import {
-  deployment_Library_DO_NO_USE,
+  adminApplication_Miroir,
+  deployment_Miroir,
+} from "miroir-test-app_deployment-admin";
+import {
   author1,
   author2,
   author3,
@@ -64,6 +70,7 @@ import {
   book4,
   book5,
   book6,
+  deployment_Library_DO_NO_USE,
   entityAuthor,
   entityBook,
   entityDefinitionAuthor,
@@ -75,9 +82,6 @@ import {
   springer as publisher3,
   selfApplicationLibrary,
 } from "miroir-test-app_deployment-library";
-import { miroirFileSystemStoreSectionStartup } from 'miroir-store-filesystem';
-import { miroirIndexedDbStoreSectionStartup } from 'miroir-store-indexedDb';
-import { miroirPostgresStoreSectionStartup } from 'miroir-store-postgres';
 import { loglevelnext } from "../../src/loglevelnextImporter.js";
 import {
   runTestOrTestSuite,
@@ -86,10 +90,6 @@ import {
 import { miroirAppStartup } from '../../src/startup.js';
 import { loadTestConfigFiles } from '../utils/fileTools.js';
 import { cleanLevel, packageName } from './constants.js';
-import {
-  deployment_Miroir,
-  adminApplication_Miroir,
-} from "miroir-test-app_deployment-admin";
 
 let domainController: DomainControllerInterface | undefined = undefined;
 let localCache: LocalCacheInterface | undefined = undefined;
@@ -118,10 +118,10 @@ MiroirLoggerFactory.registerLoggerToStart(
 
 miroirAppStartup();
 miroirCoreStartup();
-miroirFileSystemStoreSectionStartup();
-miroirIndexedDbStoreSectionStartup();
-miroirPostgresStoreSectionStartup();
-ConfigurationService.registerTestImplementation({expect: expect as any});
+miroirFileSystemStoreSectionStartup(ConfigurationService.configurationService);
+miroirIndexedDbStoreSectionStartup(ConfigurationService.configurationService);
+miroirPostgresStoreSectionStartup(ConfigurationService.configurationService);
+ConfigurationService.configurationService.registerTestImplementation({expect: expect as any});
 
 const {miroirConfig: miroirConfigParam, logConfig} = await loadTestConfigFiles(env)
 miroirConfig = miroirConfigParam;

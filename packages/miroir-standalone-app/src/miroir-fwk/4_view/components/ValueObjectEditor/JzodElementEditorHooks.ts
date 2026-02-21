@@ -91,21 +91,21 @@ export function getItemsOrder(
   flattenedMLSchema: JzodObject | undefined,
   resolvedMLSchema: JzodElement | undefined,
 ) {
-  log.info(
-    "getItemsOrder",
-    "formikRootLessListKey",
-    formikRootLessListKey,
-    "typeCheckKeyMapEntry",
-    typeCheckKeyMapEntry,
-    "currentValue",
-    currentValue,
-    "rawMLSchema",
-    rawMLSchema,
-    "flattenedMLSchema",
-    flattenedMLSchema,
-    "resolvedMLSchema",
-    resolvedMLSchema,
-  );
+  // log.info(
+  //   "getItemsOrder",
+  //   "formikRootLessListKey",
+  //   formikRootLessListKey,
+  //   "typeCheckKeyMapEntry",
+  //   typeCheckKeyMapEntry,
+  //   "currentValue",
+  //   currentValue,
+  //   "rawMLSchema",
+  //   rawMLSchema,
+  //   "flattenedMLSchema",
+  //   flattenedMLSchema,
+  //   "resolvedMLSchema",
+  //   resolvedMLSchema,
+  // );
   return (resolvedMLSchema?.type == "object" || rawMLSchema?.type == "record" || typeCheckKeyMapEntry?.resolvedReferenceSchemaInContext?.type == "record") &&
     typeof currentValue == "object" &&
     currentValue !== null

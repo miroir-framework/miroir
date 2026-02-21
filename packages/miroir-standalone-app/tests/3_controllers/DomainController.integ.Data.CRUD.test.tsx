@@ -4,6 +4,8 @@ import { describe, expect } from "vitest";
 
 import type { ApplicationDeploymentMap, EndpointDefinition, MlSchema } from "miroir-core";
 import {
+  ConfigurationService,
+  configurationService,
   createDeploymentCompositeAction,
   Deployment,
   displayTestSuiteResultsDetails,
@@ -36,15 +38,12 @@ import { miroirAppStartup } from "../../src/startup.js";
 
 
 import {
-  // deployment_Admin,
-  // adminApplication_Miroir,
-  ConfigurationService,
   // defaultLibraryModelEnvironment,
   defaultMiroirMetaModel,
   defaultMiroirModelEnvironment,
   defaultSelfApplicationDeploymentMap,
   selfApplicationMiroir,
-  TestCompositeActionParams,
+  TestCompositeActionParams
 } from "miroir-core";
 import {
   adminApplication_Miroir,
@@ -52,6 +51,7 @@ import {
 } from "miroir-test-app_deployment-admin";
 
 import { LoggerOptions } from "miroir-core";
+import { miroirMongoDbStoreSectionStartup } from "miroir-store-mongodb";
 import {
   author1,
   author2,
@@ -77,7 +77,6 @@ import {
   selfApplicationModelBranchLibraryMasterBranch,
   selfApplicationVersionLibraryInitialVersion,
 } from "miroir-test-app_deployment-library";
-import { miroirMongoDbStoreSectionStartup } from "miroir-store-mongodb";
 import { loglevelnext } from "../../src/loglevelnextImporter.js";
 import {
   testOnLibrary_deleteLibraryDeployment,
@@ -105,11 +104,11 @@ MiroirLoggerFactory.registerLoggerToStart(MiroirLoggerFactory.getLoggerName(pack
 
 miroirAppStartup();
 miroirCoreStartup();
-miroirFileSystemStoreSectionStartup();
-miroirIndexedDbStoreSectionStartup();
-miroirMongoDbStoreSectionStartup();
-miroirPostgresStoreSectionStartup();
-ConfigurationService.registerTestImplementation({ expect: expect as any });
+miroirFileSystemStoreSectionStartup(ConfigurationService.configurationService);
+miroirIndexedDbStoreSectionStartup(ConfigurationService.configurationService);
+miroirMongoDbStoreSectionStartup(ConfigurationService.configurationService);
+miroirPostgresStoreSectionStartup(ConfigurationService.configurationService);
+ConfigurationService.configurationService.registerTestImplementation({ expect: expect as any });
 
 const { miroirConfig: miroirConfigParam, logConfig } = await loadTestConfigFiles(env);
 miroirConfig = miroirConfigParam;
@@ -400,9 +399,11 @@ const testActions: Record<string, TestCompositeActionParams> = {
                 },
                 {
                   actionType: "compositeRunBoxedQueryAction",
+                  endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                  application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                   actionLabel: "calculateNewEntityDefinionAndReports",
                   nameGivenToResult: "entityBookList",
-                  queryTemplate: {
+                  payload: {
                     actionType: "runBoxedQueryAction",
                     application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                     endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
@@ -544,9 +545,11 @@ const testActions: Record<string, TestCompositeActionParams> = {
                 },
                 {
                   actionType: "compositeRunBoxedQueryAction",
+                  endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                  application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                   actionLabel: "calculateNewEntityDefinionAndReports",
                   nameGivenToResult: "entityBookList",
-                  queryTemplate: {
+                  payload: {
                     actionType: "runBoxedQueryAction",
                     application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                     endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
@@ -678,9 +681,11 @@ const testActions: Record<string, TestCompositeActionParams> = {
                 },
                 {
                   actionType: "compositeRunBoxedQueryAction",
+                  endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                  application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                   actionLabel: "calculateNewEntityDefinionAndReports",
                   nameGivenToResult: "entityBookList",
-                  queryTemplate: {
+                  payload: {
                     actionType: "runBoxedQueryAction",
                     application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                     endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
@@ -812,9 +817,11 @@ const testActions: Record<string, TestCompositeActionParams> = {
                 },
                 {
                   actionType: "compositeRunBoxedQueryAction",
+                  endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                  application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                   actionLabel: "calculateNewEntityDefinionAndReports",
                   nameGivenToResult: "entityBookList",
-                  queryTemplate: {
+                  payload: {
                     actionType: "runBoxedQueryAction",
                     application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                     endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
@@ -961,9 +968,11 @@ const testActions: Record<string, TestCompositeActionParams> = {
                 },
                 {
                   actionType: "compositeRunBoxedQueryAction",
+                  endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                  application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                   actionLabel: "calculateNewEntityDefinionAndReports",
                   nameGivenToResult: "entityBookList",
-                  queryTemplate: {
+                  payload: {
                     actionType: "runBoxedQueryAction",
                     application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                     endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
@@ -1107,9 +1116,11 @@ const testActions: Record<string, TestCompositeActionParams> = {
                 },
                 {
                   actionType: "compositeRunBoxedQueryAction",
+                  endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                  application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                   actionLabel: "calculateNewEntityDefinionAndReports",
                   nameGivenToResult: "entityBookList",
-                  queryTemplate: {
+                  payload: {
                     actionType: "runBoxedQueryAction",
                     application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                     endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",

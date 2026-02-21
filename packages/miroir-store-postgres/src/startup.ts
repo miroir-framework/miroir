@@ -1,6 +1,5 @@
 import {
   ApplicationSection,
-  ConfigurationService,
   ErrorAdminStore,
   ErrorDataStore,
   ErrorModelStore,
@@ -9,7 +8,8 @@ import {
   PersistenceStoreAdminSectionInterface,
   PersistenceStoreDataSectionInterface,
   PersistenceStoreModelSectionInterface,
-  StoreSectionConfiguration
+  StoreSectionConfiguration,
+  type ConfigurationServiceInner
 } from "miroir-core";
 import { SqlDbDataStoreSection } from "./4_services/SqlDbDataStoreSection.js";
 import { SqlDbModelStoreSection } from "./4_services/SqlDbModelStoreSection.js";
@@ -24,9 +24,9 @@ MiroirLoggerFactory.registerLoggerToStart(
 ).then((logger: LoggerInterface) => {log = logger});
 
 
-export function miroirPostgresStoreSectionStartup() {
+export function miroirPostgresStoreSectionStartup(configurationService: ConfigurationServiceInner) {
   log.info("miroirPostgresStoreSectionStartup called!")
-  ConfigurationService.registerAdminStoreFactory(
+  configurationService.registerAdminStoreFactory(
     "sql",
     async (config: StoreSectionConfiguration): Promise<PersistenceStoreAdminSectionInterface> => {
       if (config.emulatedServerType == "sql") {
@@ -39,7 +39,7 @@ export function miroirPostgresStoreSectionStartup() {
       }
     }
   )
-  ConfigurationService.registerStoreSectionFactory(
+  configurationService.registerStoreSectionFactory(
     "sql",
     "model",
     async (
@@ -62,7 +62,7 @@ export function miroirPostgresStoreSectionStartup() {
 
     }
   );
-  ConfigurationService.registerStoreSectionFactory(
+  configurationService.registerStoreSectionFactory(
     "sql",
     "data",
     async (

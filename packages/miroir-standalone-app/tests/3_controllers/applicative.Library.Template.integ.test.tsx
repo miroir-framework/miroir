@@ -5,8 +5,6 @@ import { v4 as uuidv4 } from "uuid";
 
 // import { miroirFileSystemStoreSectionStartup } from "../dist/bundle";
 import {
-  deployment_Library_DO_NO_USE,
-  deployment_Miroir,
   author1,
   author2,
   author3,
@@ -17,6 +15,9 @@ import {
   book5,
   book6,
   ConfigurationService,
+  Deployment,
+  deployment_Library_DO_NO_USE,
+  deployment_Miroir,
   DomainControllerInterface,
   entityAuthor,
   entityBook,
@@ -43,7 +44,6 @@ import {
   publisher2,
   publisher3,
   resetAndInitApplicationDeployment,
-  Deployment,
   selfApplicationDeploymentMiroir,
   StoreUnitConfiguration,
   Uuid
@@ -107,10 +107,10 @@ MiroirLoggerFactory.registerLoggerToStart(
 
 miroirAppStartup();
 miroirCoreStartup();
-miroirFileSystemStoreSectionStartup();
-miroirIndexedDbStoreSectionStartup();
-miroirPostgresStoreSectionStartup();
-ConfigurationService.registerTestImplementation({expect: expect as any});
+miroirFileSystemStoreSectionStartup(ConfigurationService.configurationService);
+miroirIndexedDbStoreSectionStartup(ConfigurationService.configurationService);
+miroirPostgresStoreSectionStartup(ConfigurationService.configurationService);
+ConfigurationService.configurationService.registerTestImplementation({expect: expect as any});
 
 const {miroirConfig: miroirConfigParam, logConfig} = await loadTestConfigFiles(env)
 miroirConfig = miroirConfigParam;

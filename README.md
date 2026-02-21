@@ -1,21 +1,20 @@
-# Miroir Framework
+# Miroir Framework [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE) [![GitHub](https://img.shields.io/github/stars/miroir-framework/miroir?style=social)](https://github.com/miroir-framework/miroir)
 
-**An end-to-end, low-code, agentic development platform for data-centric applications.**
 
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![GitHub](https://img.shields.io/github/stars/miroir-framework/miroir?style=social)](https://github.com/miroir-framework/miroir)
+## An end-to-end, low-code, agentic development platform for data-centric applications.
 
-⚠️ We're in "early adopter" phase, documentation is insufficient and can be misleading, and things will break! ⚠️
+
+⚠️ *We're in "early adopter" phase, documentation is insufficient, and things will break!* ⚠️
 ---
 
 ## Miroir in a few Words
 
 Miroir is a comprehensive development framework that transforms how you create web applications by:
 
-- **adopting a data-centric approach** - Describe the concepts manipulated by your application, Miroir enables any software development activity involving these concepts (creating business logic, testing, scripting, transferring data, etc.)
-- **providing end-to-end support** - in Miroir, described concepts and business logic become alive as Graphical User Interfaces (webapp), APIs (Rest), and database schemas, end-to-end!
-- **enabling low-code description** - in Miroir the business logic is defined as block-like elements, not as code; these elements can be modified and tested interactively, at run-time.
-- **supporting AI agents** - business logic written in Miroir can automatically be exposed to AI agents using the Model Context Protocol (MCP)
+- **adopting a data-centric approach** - you start by **describing the concepts** manipulated by your application, then Miroir helps you create your application around these concepts (**creating business logic**, **testing**, **scripting**, transferring data, etc.)
+- **providing end-to-end support** - in Miroir, described concepts and business logic become alive as Graphical User Interfaces (webapp **GUI**), APIs (**Rest**), and **database schemas**, end-to-end!
+- **enabling low-code description** - in Miroir the business logic is defined as **block-like** elements, not as code; these elements can be combined, modified and tested interactively, all at run-time.
+- **supporting AI agents** - business logic written in Miroir can automatically be exposed to AI agents using the **Model Context Protocol** (MCP)
 
 <!-- - **Unifying development and runtime** - Define concepts once, use everywhere (database, API, UI, business logic)
 - **Enabling low-code creation** - Build and modify applications at runtime without recompilation
@@ -26,12 +25,12 @@ Miroir is a comprehensive development framework that transforms how you create w
 
 You need to manage a small library inventory, with Books, Authors, Publishers and Members, where the Members may borrow and return Books under given conditions. Using Miroir, you may typically:
 
-- **deploy Miroir on a laptop** - available on a single machine in the library, perfect for a starting inventory
-- **create the necessary entities in Miroir** - create Book, Author, Publisher and Member entities, each Entity defining potential relations to others (for example a Book must have 1 or more Authors)
-- **create the wanted operations** - typically for a User to borrow a Book, checking the necessary conditions to allow the operation, and also returning a Book
-- **create additional views** - monitor the inventory state, popularity of Books, punctuality of Users, etc.
+- **install Miroir on a laptop** - the Miroir desktop app is made available on a single machine in the library, perfect for a nascent inventory
+- **create the wanted entities** - start creating you application in Miroir by creating Book, Author, Publisher and Member entities, each Entity defining potential relations to others (for example a Book must have 1 or more Authors)
+- **create the wanted operations** - typically, there would be an action for a Member to **borrow a Book**, with a verification of the necessary conditions to allow the operation, and also an action to **return a borrowed Book**.
+- **create additional views** - for example to **monitor the inventory state, popularity of Books**, punctuality of Users, etc.
 - **create (non-regression) tests** - evolve your application safely, ensuring that improvements do not break existing features
-- **evolve to a full-blown web application** - when a second computer arrives at the library, deploy your existing application on a third-party server and access it from anywhere!
+- **evolve to a full-blown web application** - when a second computer arrives at the library, **deploy your existing application on a third-party server** and access it from anywhere via a web browser!
 
 <!-- ### Key Features
 
@@ -240,7 +239,7 @@ This section gives a slightly simplified syntax for better understanding of the 
 
 ### ✅ Available Now
 
-- ✅ Create Entities, Reports, Actions, Endpoints...
+- ✅ Create Entities, Reports, Queries, Actions, Endpoints...
 - ✅ Execute Queries, Transformers, Actions, display Reports
 - ✅ Display Graphs (D3.js integration)
 - ✅ Use Markdown text in Reports

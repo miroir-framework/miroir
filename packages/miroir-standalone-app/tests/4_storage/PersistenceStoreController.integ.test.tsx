@@ -7,7 +7,6 @@ import {
   Action2ReturnType,
   Action2VoidReturnType,
   ActionError,
-  ConfigurationService,
   DomainControllerInterface,
   DomainElementType,
   EntityDefinition,
@@ -27,6 +26,7 @@ import {
   PersistenceStoreControllerInterface,
   PersistenceStoreControllerManagerInterface,
   StoreUnitConfiguration,
+  ConfigurationService,
   createDeploymentCompositeAction,
   defaultLevels,
   defaultMiroirModelEnvironment,
@@ -48,6 +48,9 @@ import {
   deployment_Library_DO_NO_USE,
 } from "miroir-test-app_deployment-library";
 
+import { miroirFileSystemStoreSectionStartup } from 'miroir-store-filesystem';
+import { miroirIndexedDbStoreSectionStartup } from 'miroir-store-indexedDb';
+import { miroirPostgresStoreSectionStartup } from 'miroir-store-postgres';
 import {
   author1,
   book1,
@@ -55,9 +58,6 @@ import {
   entityDefinitionAuthor,
   selfApplicationLibrary,
 } from "miroir-test-app_deployment-library";
-import { miroirFileSystemStoreSectionStartup } from 'miroir-store-filesystem';
-import { miroirIndexedDbStoreSectionStartup } from 'miroir-store-indexedDb';
-import { miroirPostgresStoreSectionStartup } from 'miroir-store-postgres';
 import { cleanLevel, packageName } from '../../src/constants.js';
 import { loglevelnext } from "../../src/loglevelnextImporter.js";
 import {
@@ -94,10 +94,10 @@ MiroirLoggerFactory.registerLoggerToStart(
 
 miroirAppStartup();
 miroirCoreStartup();
-miroirFileSystemStoreSectionStartup();
-miroirIndexedDbStoreSectionStartup();
-miroirPostgresStoreSectionStartup();
-ConfigurationService.registerTestImplementation({expect: expect as any});
+miroirFileSystemStoreSectionStartup(ConfigurationService.configurationService);
+miroirIndexedDbStoreSectionStartup(ConfigurationService.configurationService);
+miroirPostgresStoreSectionStartup(ConfigurationService.configurationService);
+ConfigurationService.configurationService.registerTestImplementation({expect: expect as any});
 
 const {miroirConfig: miroirConfigParam, logConfig:loggerOptionsParam} = await loadTestConfigFiles(env)
 miroirConfig = miroirConfigParam;

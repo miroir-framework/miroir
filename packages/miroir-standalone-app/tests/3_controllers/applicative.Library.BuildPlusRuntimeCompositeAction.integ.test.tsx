@@ -7,6 +7,7 @@ import * as vitest from 'vitest';
 import {
   AdminApplicationDeploymentConfiguration,
   ConfigurationService,
+  Deployment,
   displayTestSuiteResultsDetails,
   DomainControllerInterface,
   LocalCacheInterface,
@@ -20,7 +21,6 @@ import {
   MiroirLoggerFactory,
   PersistenceStoreControllerManagerInterface,
   resetAndInitApplicationDeployment,
-  Deployment,
   selfApplicationDeploymentMiroir,
   StoreUnitConfiguration
 } from "miroir-core";
@@ -33,6 +33,7 @@ import { createDeploymentCompositeAction, defaultMiroirModelEnvironment } from '
 import { miroirFileSystemStoreSectionStartup } from 'miroir-store-filesystem';
 import { miroirIndexedDbStoreSectionStartup } from 'miroir-store-indexedDb';
 import { miroirPostgresStoreSectionStartup } from 'miroir-store-postgres';
+import { deployment_Miroir } from 'miroir-test-app_deployment-admin';
 import { loglevelnext } from "../../src/loglevelnextImporter.js";
 import {
   getTestSuitesForBuildPlusRuntimeCompositeAction,
@@ -45,7 +46,6 @@ import {
 import { miroirAppStartup } from '../../src/startup.js';
 import { loadTestConfigFiles } from '../utils/fileTools.js';
 import { cleanLevel, packageName } from './constants.js';
-import { deployment_Miroir } from 'miroir-test-app_deployment-admin';
 
 let domainController: DomainControllerInterface | undefined = undefined;
 let localCache: LocalCacheInterface | undefined = undefined;
@@ -76,10 +76,10 @@ MiroirLoggerFactory.registerLoggerToStart(
 
 miroirAppStartup();
 miroirCoreStartup();
-miroirFileSystemStoreSectionStartup();
-miroirIndexedDbStoreSectionStartup();
-miroirPostgresStoreSectionStartup();
-ConfigurationService.registerTestImplementation({expect: expect as any});
+miroirFileSystemStoreSectionStartup(ConfigurationService.configurationService);
+miroirIndexedDbStoreSectionStartup(ConfigurationService.configurationService);
+miroirPostgresStoreSectionStartup(ConfigurationService.configurationService);
+ConfigurationService.configurationService.registerTestImplementation({expect: expect as any});
 
 const {miroirConfig: miroirConfigParam, logConfig} = await loadTestConfigFiles(env)
 miroirConfig = miroirConfigParam;

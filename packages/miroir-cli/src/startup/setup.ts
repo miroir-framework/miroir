@@ -41,25 +41,20 @@ export async function setupMiroirPlatform(
     localMiroirEventService,
     miroirConfig
   );
-  
   console.log("setupMiroirPlatform miroirConfig", JSON.stringify(miroirConfig, null, 2));
-  
   let client: RestClientInterface | undefined = undefined;
   let remotePersistenceStoreRestClient: RestPersistenceClientAndRestClientInterface | undefined = undefined;
-  
   if (miroirConfig.client.emulateServer) {
-    client = new RestClientStub(
-      miroirConfig.client.rootApiUrl,
-    );
+    client = new RestClientStub(miroirConfig.client.rootApiUrl);
     remotePersistenceStoreRestClient = new RestPersistenceClientAndRestClient(
       miroirConfig.client.rootApiUrl,
-      client
+      client,
     );
   } else {
     client = new RestClient(customfetch ?? fetch);
     remotePersistenceStoreRestClient = new RestPersistenceClientAndRestClient(
       miroirConfig.client.serverConfig.rootApiUrl,
-      client
+      client,
     );
   }
 
@@ -71,8 +66,8 @@ export async function setupMiroirPlatform(
   }
 
   const persistenceStoreControllerManagerForClient = new PersistenceStoreControllerManager(
-    ConfigurationService.adminStoreFactoryRegister,
-    ConfigurationService.StoreSectionFactoryRegister
+    ConfigurationService.configurationService.adminStoreFactoryRegister,
+    ConfigurationService.configurationService.StoreSectionFactoryRegister
   );
 
   const domainControllerForClient = await setupMiroirDomainController(
@@ -87,8 +82,8 @@ export async function setupMiroirPlatform(
   let persistenceStoreControllerManagerForServer: PersistenceStoreControllerManager | undefined = undefined;
   if (miroirConfig.client.emulateServer) {
     persistenceStoreControllerManagerForServer = new PersistenceStoreControllerManager(
-      ConfigurationService.adminStoreFactoryRegister,
-      ConfigurationService.StoreSectionFactoryRegister
+      configurationService.adminStoreFactoryRegister,
+      configurationService.StoreSectionFactoryRegister
     );
 
     const domainControllerForServer = await setupMiroirDomainController(

@@ -18,16 +18,14 @@ import {
 
 
 import {
-  entityEntity,
   entityEndpointVersion,
+  entityEntity,
   entityMenu,
   entityReport,
   entitySelfApplicationVersion,
   selfApplicationMiroir,
-  selfApplicationDeploymentMiroir,
   selfApplicationModelBranchMiroirMasterBranch,
-  selfApplicationVersionInitialMiroirVersion,
-  selfApplicationStoreBasedConfigurationMiroir,
+  selfApplicationVersionInitialMiroirVersion
 } from "miroir-test-app_deployment-miroir";
 
 import { deployment_Miroir } from "miroir-test-app_deployment-admin";
@@ -2405,15 +2403,17 @@ export class DomainController implements DomainControllerInterface {
             break;
           }
           case "compositeRunBoxedQueryAction": {
-            throw new Error(
-              "DomainController handleCompositeAction compositeRunBoxedQueryAction should not be used in compositeActionSequence, it should be used in compositeActionTemplate instead",
-            );
-            // actionResult = await this.handleCompositeRunBoxedQueryAction(
-            //   currentAction,
-            //   applicationDeploymentMap,
-            //   localContext,
+            // throw new Error(
+            //   "DomainController handleCompositeAction compositeRunBoxedQueryAction should not be used in compositeActionSequence, it should be used in compositeActionTemplate instead",
             // );
-
+            actionResult = await this.handleCompositeRunBoxedQueryAction(
+              currentAction,
+              applicationDeploymentMap,
+              localContext,
+            );
+            if (actionResult instanceof Action2Error) {
+              return actionResult;
+            }
             break;
           }
           case "compositeRunTestAssertion": {
@@ -2875,7 +2875,7 @@ export class DomainController implements DomainControllerInterface {
     localContext: Record<string, any>,
     actionResult: Action2ReturnType | undefined,
   ) {
-    if (!ConfigurationService.testImplementation) {
+    if (!ConfigurationService.configurationService.testImplementation) {
       throw new Error(
         "ConfigurationService.testImplementation is not set, please inject a test implementation using ConfigurationService.registerTestImplementation on startup if you want to run tests at runtime.",
       );
@@ -2940,7 +2940,7 @@ export class DomainController implements DomainControllerInterface {
         JSON.stringify(valueToTest, null, 2),
       );
       try {
-        ConfigurationService.testImplementation
+        ConfigurationService.configurationService.testImplementation
           .expect(valueToTest, currentAction.nameGivenToResult)
           .toEqual(expectedValue);
         // .toEqual(currentAction.testAssertion.definition.expectedValue);

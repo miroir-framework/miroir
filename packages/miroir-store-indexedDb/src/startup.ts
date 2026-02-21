@@ -1,6 +1,5 @@
 import {
   ApplicationSection,
-  ConfigurationService,
   ErrorAdminStore,
   ErrorDataStore,
   ErrorModelStore,
@@ -9,7 +8,8 @@ import {
   PersistenceStoreAdminSectionInterface,
   PersistenceStoreDataOrModelSectionInterface,
   PersistenceStoreDataSectionInterface,
-  StoreSectionConfiguration
+  StoreSectionConfiguration,
+  type ConfigurationServiceInner
 } from "miroir-core";
 import { IndexedDb } from "./4_services/IndexedDb.js";
 import { IndexedDbAdminStore } from "./4_services/IndexedDbAdminStore.js";
@@ -24,8 +24,10 @@ MiroirLoggerFactory.registerLoggerToStart(
 ).then((logger: LoggerInterface) => {log = logger});
 
 
-export function miroirIndexedDbStoreSectionStartup() {
-  ConfigurationService.registerAdminStoreFactory(
+export function miroirIndexedDbStoreSectionStartup(
+  configurationService: ConfigurationServiceInner
+) {
+  configurationService.registerAdminStoreFactory(
     "indexedDb",
     async (config: StoreSectionConfiguration): Promise<PersistenceStoreAdminSectionInterface> => {
       if (config.emulatedServerType == "indexedDb") {
@@ -36,7 +38,7 @@ export function miroirIndexedDbStoreSectionStartup() {
       }
     }
   )
-  ConfigurationService.registerStoreSectionFactory(
+  configurationService.registerStoreSectionFactory(
     "indexedDb",
     "model",
     async (
@@ -56,7 +58,7 @@ export function miroirIndexedDbStoreSectionStartup() {
       }
     }
   );
-  ConfigurationService.registerStoreSectionFactory(
+  configurationService.registerStoreSectionFactory(
     "indexedDb",
     "data",
     async (

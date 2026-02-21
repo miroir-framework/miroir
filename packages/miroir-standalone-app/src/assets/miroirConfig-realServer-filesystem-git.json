@@ -22,7 +22,7 @@
           },
           "model": {
             "emulatedServerType": "filesystem",
-            "directory":"../miroir-test-app_deployment-admin/assets"
+            "directory":"../miroir-test-app_deployment-admin/assets/admin_model"
           },
           "data": {
             "emulatedServerType": "filesystem",

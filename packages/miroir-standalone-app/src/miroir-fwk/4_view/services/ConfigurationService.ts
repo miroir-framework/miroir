@@ -88,6 +88,7 @@ export function fetchMiroirAndAppConfigurations(
   log.info(
     "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ FETCH CONFIGURATIONS START @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
   );
+  log.info("fetchMiroirAndAppConfigurations given configurations", configurations, defaultSelfApplicationDeploymentMap);
 
   let deploymentsToLoad: Deployment[] = []; // UGLY HACK to make it accessible in final .then()
   let applicationDeploymentMapForLoading: ApplicationDeploymentMap; // UGLY HACK to make it accessible in final .then()
@@ -100,7 +101,6 @@ export function fetchMiroirAndAppConfigurations(
         endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
         payload: {
           application: adminSelfApplication.uuid,
-          // deploymentUuid: deployment_Admin.uuid,
         },
       },
       defaultSelfApplicationDeploymentMap,

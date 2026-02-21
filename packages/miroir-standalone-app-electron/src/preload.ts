@@ -5,24 +5,30 @@ import { contextBridge, ipcRenderer, IpcRendererEvent } from 'electron';
 contextBridge.exposeInMainWorld('electronAPI', {
   // Example API methods that can be used by the renderer process
   platform: process.platform,
-  
+
+  // ── Miroir IPC bridge ─────────────────────────────────────────────────────
+  // Routes Miroir persistence / domain-controller calls to the main process
+  // instead of going through HTTP.  The payload shape is defined in
+  // ipcServerSetup.ts (types: 'rest-call', 'server-action', 'server-query').
+  callMiroirIpc: (payload: unknown) => ipcRenderer.invoke('miroir-ipc', payload),
+
   // File system operations (if needed)
   openFile: () => ipcRenderer.invoke('dialog:openFile'),
   saveFile: (content: string) => ipcRenderer.invoke('dialog:saveFile', content),
-  
+
   // App information
   getVersion: () => ipcRenderer.invoke('app:getVersion'),
-  
+
   // Window controls
   minimize: () => ipcRenderer.invoke('window:minimize'),
   maximize: () => ipcRenderer.invoke('window:maximize'),
   close: () => ipcRenderer.invoke('window:close'),
-  
+
   // Event listeners
   onWindowEvent: (callback: (event: string) => void) => {
     ipcRenderer.on('window-event', (_event: IpcRendererEvent, eventType: string) => callback(eventType));
   },
-  
+
   removeAllListeners: (channel: string) => {
     ipcRenderer.removeAllListeners(channel);
   }
@@ -33,6 +39,8 @@ declare global {
   interface Window {
     electronAPI: {
       platform: string;
+      /** Routes a Miroir IPC payload to the main process and returns the result. */
+      callMiroirIpc: (payload: unknown) => Promise<unknown>;
       openFile: () => Promise<string | null>;
       saveFile: (content: string) => Promise<boolean>;
       getVersion: () => Promise<string>;

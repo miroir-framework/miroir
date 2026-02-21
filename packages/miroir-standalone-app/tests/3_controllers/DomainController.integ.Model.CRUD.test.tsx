@@ -5,6 +5,7 @@ import { fetch as crossFetch } from "cross-fetch";
 
 import {
   ConfigurationService,
+  configurationService,
   // defaultLibraryModelEnvironment,
   defaultMiroirMetaModel,
   displayTestSuiteResultsDetails,
@@ -68,6 +69,7 @@ import {
   resetAndinitializeDeploymentCompositeAction,
   selfApplicationMiroir,
 } from "miroir-core";
+import { adminApplication_Miroir, deployment_Admin } from "miroir-test-app_deployment-admin";
 import {
   endpointDocument,
   entityAuthor,
@@ -84,7 +86,6 @@ import {
 } from "miroir-test-app_deployment-library";
 import { packageName } from "../../src/constants.js";
 import { cleanLevel } from "./constants.js";
-import { deployment_Admin, adminApplication_Miroir } from "miroir-test-app_deployment-admin";
 // import { entityBook } from "miroir-core";
 
 const env: any = (import.meta as any).env;
@@ -105,11 +106,11 @@ MiroirLoggerFactory.registerLoggerToStart(MiroirLoggerFactory.getLoggerName(pack
 
 miroirAppStartup();
 miroirCoreStartup();
-miroirFileSystemStoreSectionStartup();
-miroirIndexedDbStoreSectionStartup();
-miroirMongoDbStoreSectionStartup();
-miroirPostgresStoreSectionStartup();
-ConfigurationService.registerTestImplementation({ expect: expect as any });
+miroirFileSystemStoreSectionStartup(ConfigurationService.configurationService);
+miroirIndexedDbStoreSectionStartup(ConfigurationService.configurationService);
+miroirMongoDbStoreSectionStartup(ConfigurationService.configurationService);
+miroirPostgresStoreSectionStartup(ConfigurationService.configurationService);
+ConfigurationService.configurationService.registerTestImplementation({ expect: expect as any });
 
 const { miroirConfig: miroirConfigParam, logConfig } = await loadTestConfigFiles(env);
 miroirConfig = miroirConfigParam;
@@ -345,7 +346,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
         testApplicationDeploymentUuid,
         testApplicationUuid,
         adminDeployment,
-        testDeploymentStorageConfiguration
+        testDeploymentStorageConfiguration,
       ),
       beforeEach: resetAndinitializeDeploymentCompositeAction(
         selfApplicationLibrary.uuid,
@@ -371,13 +372,13 @@ const testActions: Record<string, TestCompositeActionParams> = {
           },
         ],
         defaultLibraryModelEnvironment.currentModel as any,
-        [entityPublisher.uuid], 
+        [entityPublisher.uuid],
       ),
       afterEach: testOnLibrary_resetLibraryDeployment(deployment_Library_DO_NO_USE.uuid),
       afterAll: testOnLibrary_deleteLibraryDeployment(
         miroirConfig,
         selfApplicationLibrary.uuid,
-        deployment_Library_DO_NO_USE.uuid
+        deployment_Library_DO_NO_USE.uuid,
       ),
       testCompositeActions: {
         "Refresh all Instances": {
@@ -415,21 +416,20 @@ const testActions: Record<string, TestCompositeActionParams> = {
                 },
                 {
                   actionType: "compositeRunBoxedQueryAction",
+                  endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                  application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                   actionLabel: "calculateNewEntityDefinionAndReports",
                   nameGivenToResult: "libraryEntityList",
-                  queryTemplate: {
+                  payload: {
                     actionType: "runBoxedQueryAction",
                     application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                     endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
                     payload: {
                       application: testApplicationUuid,
                       applicationSection: "model", // TODO: give only selfApplication section in individual queries?
-                      // deploymentUuid: testApplicationDeploymentUuid,
                       query: {
                         queryType: "boxedQueryWithExtractorCombinerTransformer",
                         application: testApplicationUuid,
-                        // applicationDeploymentMap: defaultSelfApplicationDeploymentMap,
-                        // deploymentUuid: testApplicationDeploymentUuid,
                         pageParams: {
                           currentDeploymentUuid: testApplicationDeploymentUuid,
                         },
@@ -536,9 +536,11 @@ const testActions: Record<string, TestCompositeActionParams> = {
                 {
                   // performs query on local cache for emulated server, and on server for remote server
                   actionType: "compositeRunBoxedQueryAction",
+                  endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                  application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                   actionLabel: "calculateNewEntityDefinionAndReports",
                   nameGivenToResult: "libraryEntityList",
-                  queryTemplate: {
+                  payload: {
                     actionType: "runBoxedQueryAction",
                     application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                     endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
@@ -675,9 +677,11 @@ const testActions: Record<string, TestCompositeActionParams> = {
                 },
                 {
                   actionType: "compositeRunBoxedQueryAction",
+                  endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                  application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                   actionLabel: "calculateNewEntityDefinionAndReports",
                   nameGivenToResult: "libraryEntityList",
-                  queryTemplate: {
+                  payload: {
                     actionType: "runBoxedQueryAction",
                     application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                     endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
@@ -792,9 +796,11 @@ const testActions: Record<string, TestCompositeActionParams> = {
                 },
                 {
                   actionType: "compositeRunBoxedQueryAction",
+                  endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                  application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                   actionLabel: "calculateNewEntityDefinionAndReportsFromLocalCache",
                   nameGivenToResult: "libraryEntityListFromLocalCache",
-                  queryTemplate: {
+                  payload: {
                     actionType: "runBoxedQueryAction",
                     application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                     endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
@@ -831,9 +837,11 @@ const testActions: Record<string, TestCompositeActionParams> = {
                 },
                 {
                   actionType: "compositeRunBoxedQueryAction",
+                  endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                  application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                   actionLabel: "calculateNewEntityDefinionAndReportsFromPersistentStore",
                   nameGivenToResult: "libraryEntityListFromPersistentStore",
-                  queryTemplate: {
+                  payload: {
                     actionType: "runBoxedQueryAction",
                     application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                     endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
@@ -1006,9 +1014,11 @@ const testActions: Record<string, TestCompositeActionParams> = {
                 {
                   // performs query on local cache for emulated server, and on server for remote server
                   actionType: "compositeRunBoxedQueryAction",
+                  endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                  application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                   actionLabel: "calculateNewEntityDefinionAndReports",
                   nameGivenToResult: "libraryEntityList",
-                  queryTemplate: {
+                  payload: {
                     actionType: "runBoxedQueryAction",
                     application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                     endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
@@ -1148,9 +1158,11 @@ const testActions: Record<string, TestCompositeActionParams> = {
                 {
                   // performs query on local cache for emulated server, and on server for remote server
                   actionType: "compositeRunBoxedQueryAction",
+                  endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                  application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                   actionLabel: "calculateNewEntityDefinionAndReports",
                   nameGivenToResult: "libraryEntityList",
-                  queryTemplate: {
+                  payload: {
                     actionType: "runBoxedQueryAction",
                     application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                     endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
@@ -1299,9 +1311,11 @@ const testActions: Record<string, TestCompositeActionParams> = {
                 {
                   // performs query on local cache for emulated server, and on server for remote server
                   actionType: "compositeRunBoxedQueryAction",
+                  endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                  application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                   actionLabel: "calculateNewEntityDefinionAndReports",
                   nameGivenToResult: "libraryEntityDefinitionListFromPersistentStore",
-                  queryTemplate: {
+                  payload: {
                     actionType: "runBoxedQueryAction",
                     application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                     endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
@@ -1339,9 +1353,11 @@ const testActions: Record<string, TestCompositeActionParams> = {
                 {
                   // performs query on local cache for emulated server, and on server for remote server
                   actionType: "compositeRunBoxedQueryAction",
+                  endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                  application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                   actionLabel: "calculateNewEntityDefinionAndReports",
                   nameGivenToResult: "libraryEntityDefinitionListFromLocalCache",
-                  queryTemplate: {
+                  payload: {
                     actionType: "runBoxedQueryAction",
                     application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                     endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",

@@ -159,8 +159,8 @@ async function mountLibraryDeployment() {
     // Create persistence store controller manager
     console.log("4. Creating persistence store controller manager...");
     const persistenceStoreControllerManager = new PersistenceStoreControllerManager(
-      ConfigurationService.adminStoreFactoryRegister,
-      ConfigurationService.StoreSectionFactoryRegister
+      ConfigurationService.configurationService.adminStoreFactoryRegister,
+      ConfigurationService.configurationService.StoreSectionFactoryRegister
     );
 
     // // Setup application deployment map
@@ -346,10 +346,10 @@ async function extractLibrary() {
     // Initialize Miroir framework
     console.log("\n1. Initializing Miroir framework...");
     miroirCoreStartup();
-    miroirFileSystemStoreSectionStartup();
-    miroirIndexedDbStoreSectionStartup();
-    miroirPostgresStoreSectionStartup();
-    ConfigurationService.registerTestImplementation({ expect: {} as any });
+    miroirFileSystemStoreSectionStartup(ConfigurationService.configurationService);
+    miroirIndexedDbStoreSectionStartup(ConfigurationService.configurationService);
+    miroirPostgresStoreSectionStartup(ConfigurationService.configurationService);
+    ConfigurationService.configurationService.registerTestImplementation({ expect: {} as any });
 
     MiroirLoggerFactory.registerLoggerToStart(
       MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "extract-library-metamodel")

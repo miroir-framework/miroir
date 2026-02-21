@@ -1,6 +1,6 @@
 import {
   ApplicationSection,
-  ConfigurationService,
+  ConfigurationServiceInner,
   ErrorAdminStore,
   ErrorDataStore,
   ErrorModelStore,
@@ -23,20 +23,21 @@ MiroirLoggerFactory.registerLoggerToStart(
 ).then((logger: LoggerInterface) => {log = logger});
 
 
-export function miroirFileSystemStoreSectionStartup() {
-  ConfigurationService.registerAdminStoreFactory(
+export function miroirFileSystemStoreSectionStartup(
+  configurationService: ConfigurationServiceInner
+) {
+  configurationService.registerAdminStoreFactory(
     "filesystem",
     async (config: StoreSectionConfiguration): Promise<PersistenceStoreAdminSectionInterface> => {
       if (config.emulatedServerType == "filesystem") {
         const filesystemStoreName: string = config.directory
-        // return Promise.resolve(new SqlDbAdminStore(sqlDbStoreName, config.connectionString, config.schema))
         return Promise.resolve(new FileSystemAdminStore("data",filesystemStoreName, config.directory)) // TODO: provide adequate applicationSection! "admin"?
       } else {
         return Promise.resolve(new ErrorAdminStore())
       }
     }
   )
-  ConfigurationService.registerStoreSectionFactory(
+  configurationService.registerStoreSectionFactory(
     "filesystem",
     "model",
     async (
@@ -59,7 +60,7 @@ export function miroirFileSystemStoreSectionStartup() {
       }
     }
   );
-  ConfigurationService.registerStoreSectionFactory(
+  configurationService.registerStoreSectionFactory(
     "filesystem",
     "data",
     async (

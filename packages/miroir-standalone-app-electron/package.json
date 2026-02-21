@@ -7,11 +7,12 @@
   "bugs": "https://github.com/miroir-framework/miroir/issues",
   "license": "MIT",
   "main": "dist/main.js",
+  "type": "module",
   "private": true,
   "scripts": {
     "build": "npx tsc --noEmit --skipLibCheck",
-    "build-main": "tsc src/main.ts --outDir dist --target es2020 --module commonjs --moduleResolution node --esModuleInterop --allowSyntheticDefaultImports --strict --skipLibCheck",
-    "build-preload": "tsc src/preload.ts --outDir dist --target es2020 --module commonjs --moduleResolution node --esModuleInterop --allowSyntheticDefaultImports --strict --skipLibCheck",
+    "build-main": "tsc src/main.ts --outDir dist --target es2020 --module esnext --moduleResolution bundler --allowSyntheticDefaultImports --strict --skipLibCheck",
+    "build-preload": "tsc src/preload.ts --outDir dist --target es2020 --module commonjs --moduleResolution node --allowSyntheticDefaultImports --strict --skipLibCheck",
     "build-electron": "npm run build-main && npm run build-preload",
     "electron": "npm run build-electron && electron .",
     "electron-dev": "npm run build-electron && electron . --dev",
@@ -23,7 +24,14 @@
   },
   "dependencies": {
     "electron-squirrel-startup": "^1.0.1",
-    "miroir-standalone-app": "*"
+    "miroir-core": "*",
+    "miroir-localcache-redux": "*",
+    "miroir-standalone-app": "*",
+    "miroir-store-filesystem": "*",
+    "miroir-store-indexedDb": "*",
+    "miroir-store-mongodb": "*",
+    "miroir-store-postgres": "*",
+    "miroir-test-app_deployment-admin": "*"
   },
   "devDependencies": {
     "@types/node": "^20.8.9",

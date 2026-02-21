@@ -818,6 +818,7 @@ export {
 export {
   cacheFetchPolicy,
   cacheInvalidationPolicy,
+  ConfigurationServiceInner,
   ConfigurationService,
   PackageConfiguration,
   undoRedoHistorization

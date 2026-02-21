@@ -88,6 +88,8 @@ export async function restMethodGetHandler
     effectiveUrl,
     "params",
     params,
+    "controllers",
+    persistenceStoreControllerManager.getPersistenceStoreControllers()
     // "response",
     // response
   );
@@ -110,16 +112,19 @@ export async function restMethodGetHandler
     return Promise.resolve(
       new Action2Error(
         "FailedToHandleAction",
-        "restMethodGetHandler could not find controller for deployment: " + deploymentUuid,
+        "restMethodGetHandler could not find controller for deployment: " +
+          deploymentUuid +
+          " existing controllers: " +
+          persistenceStoreControllerManager.getPersistenceStoreControllers().join(", "),
         [],
         undefined, // innerError
         {
           existingControllers: persistenceStoreControllerManager
             .getPersistenceStoreControllers()
             .join(", "),
-        }
-      )
-    )
+        },
+      ),
+    );
   }
   
   const targetPersistenceStoreController = localPersistenceStoreController

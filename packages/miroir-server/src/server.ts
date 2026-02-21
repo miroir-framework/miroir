@@ -27,6 +27,7 @@ import {
   StoreOrBundleAction,
   StoreUnitConfiguration,
   circularReplacer,
+  ConfigurationService,
   defaultLevels,
   defaultMetaModelEnvironment,
   defaultSelfApplicationDeploymentMap,
@@ -146,10 +147,10 @@ app.use(
 );
 
 miroirCoreStartup();
-miroirFileSystemStoreSectionStartup();
-miroirIndexedDbStoreSectionStartup();
-miroirMongoDbStoreSectionStartup();
-miroirPostgresStoreSectionStartup();
+miroirFileSystemStoreSectionStartup(ConfigurationService.configurationService);
+miroirIndexedDbStoreSectionStartup(ConfigurationService.configurationService);
+miroirMongoDbStoreSectionStartup(ConfigurationService.configurationService);
+miroirPostgresStoreSectionStartup(ConfigurationService.configurationService);
 
 const miroirActivityTracker = new MiroirActivityTracker();
 const miroirEventService = new MiroirEventService(miroirActivityTracker);
@@ -172,8 +173,8 @@ const miroirContext = new MiroirContext(
 );
 
 const persistenceStoreControllerManager = new PersistenceStoreControllerManager(
-  ConfigurationService.adminStoreFactoryRegister,
-  ConfigurationService.StoreSectionFactoryRegister,
+  ConfigurationService.configurationService.adminStoreFactoryRegister,
+  ConfigurationService.configurationService.StoreSectionFactoryRegister,
 );
 
 const domainController = await setupMiroirDomainController(

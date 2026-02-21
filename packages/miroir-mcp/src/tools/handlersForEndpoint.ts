@@ -364,19 +364,19 @@ function mcpToolEntry(endpoint: EndpointDefinition, actionType: string): McpRequ
   };
 }
 export const mcpRequestHandlers_EntityEndpoint: McpRequestHandlers = {
-  miroir_createInstance: mcpToolEntry(instanceEndpointV1, "createInstance"),
-  miroir_getInstance: mcpToolEntry(instanceEndpointV1, "getInstance"),
-  miroir_getInstances: mcpToolEntry(instanceEndpointV1, "getInstances"),
-  miroir_updateInstance: mcpToolEntry(instanceEndpointV1, "updateInstance"),
-  miroir_deleteInstance: mcpToolEntry(instanceEndpointV1, "deleteInstance"),
-  miroir_deleteInstanceWithCascade: mcpToolEntry(instanceEndpointV1, "deleteInstanceWithCascade"),
-  miroir_loadNewInstancesInLocalCache: mcpToolEntry(instanceEndpointV1, "loadNewInstancesInLocalCache"),
+  miroir_createInstance: mcpToolEntry(instanceEndpointV1 as any as EndpointDefinition, "createInstance"),
+  miroir_getInstance: mcpToolEntry(instanceEndpointV1 as any as EndpointDefinition, "getInstance"),
+  miroir_getInstances: mcpToolEntry(instanceEndpointV1 as any as EndpointDefinition, "getInstances"),
+  miroir_updateInstance: mcpToolEntry(instanceEndpointV1 as any as EndpointDefinition, "updateInstance"),
+  miroir_deleteInstance: mcpToolEntry(instanceEndpointV1 as any as EndpointDefinition, "deleteInstance"),
+  miroir_deleteInstanceWithCascade: mcpToolEntry(instanceEndpointV1 as any as EndpointDefinition, "deleteInstanceWithCascade"),
+  miroir_loadNewInstancesInLocalCache: mcpToolEntry(instanceEndpointV1 as any as EndpointDefinition, "loadNewInstancesInLocalCache"),
 };
 
 const defaultLibraryAppModelDEFUNCT = getDefaultLibraryModelEnvironmentDEFUNCT(
   miroirFundamentalJzodSchema as any,
   defaultMiroirMetaModel,
-  instanceEndpointV1,
+  instanceEndpointV1 as any as EndpointDefinition,
   {
     ...defaultSelfApplicationDeploymentMap,
     [selfApplicationLibrary.uuid]: deployment_Library_DO_NO_USE.uuid

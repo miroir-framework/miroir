@@ -5,6 +5,7 @@ import {
   Action2ReturnType,
   ApplicationSection,
   ConfigurationService,
+  configurationService,
   createDeploymentCompositeAction,
   defaultLevels,
   defaultMiroirModelEnvironment,
@@ -37,12 +38,14 @@ import {
 } from "miroir-core";
 
 
-import { LocalCacheInterface, MiroirContext } from 'miroir-core';
+import { LocalCacheInterface } from 'miroir-core';
+import { miroirFileSystemStoreSectionStartup } from 'miroir-store-filesystem';
+import { miroirIndexedDbStoreSectionStartup } from 'miroir-store-indexedDb';
+import { miroirPostgresStoreSectionStartup } from 'miroir-store-postgres';
 import {
   deployment_Admin
 } from "miroir-test-app_deployment-admin";
 import {
-  deployment_Library_DO_NO_USE,
   author1,
   author2,
   author3,
@@ -52,6 +55,7 @@ import {
   book4,
   book5,
   book6,
+  deployment_Library_DO_NO_USE,
   entityAuthor,
   entityBook,
   entityDefinitionAuthor,
@@ -64,9 +68,6 @@ import {
   reportBookList,
   selfApplicationLibrary
 } from "miroir-test-app_deployment-library";
-import { miroirFileSystemStoreSectionStartup } from 'miroir-store-filesystem';
-import { miroirIndexedDbStoreSectionStartup } from 'miroir-store-indexedDb';
-import { miroirPostgresStoreSectionStartup } from 'miroir-store-postgres';
 import { cleanLevel, packageName } from '../../src/constants.js';
 import { loglevelnext } from "../../src/loglevelnextImporter.js";
 import {
@@ -103,10 +104,10 @@ MiroirLoggerFactory.registerLoggerToStart(
 
 miroirAppStartup();
 miroirCoreStartup();
-miroirFileSystemStoreSectionStartup();
-miroirIndexedDbStoreSectionStartup();
-miroirPostgresStoreSectionStartup();
-ConfigurationService.registerTestImplementation({expect: expect as any});
+miroirFileSystemStoreSectionStartup(ConfigurationService.configurationService);
+miroirIndexedDbStoreSectionStartup(ConfigurationService.configurationService);
+miroirPostgresStoreSectionStartup(ConfigurationService.configurationService);
+ConfigurationService.configurationService.registerTestImplementation({expect: expect as any});
 
 myConsoleLog("received miroirConfig", JSON.stringify(miroirConfig, null, 2));
 myConsoleLog(

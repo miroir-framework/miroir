@@ -1,6 +1,5 @@
 import {
   ApplicationSection,
-  ConfigurationService,
   ErrorAdminStore,
   ErrorDataStore,
   ErrorModelStore,
@@ -9,7 +8,8 @@ import {
   PersistenceStoreAdminSectionInterface,
   PersistenceStoreDataOrModelSectionInterface,
   PersistenceStoreDataSectionInterface,
-  StoreSectionConfiguration
+  StoreSectionConfiguration,
+  type ConfigurationServiceInner
 } from "miroir-core";
 import { MongoDb } from "./4_services/MongoDb.js";
 import { MongoDbAdminStore } from "./4_services/MongoDbAdminStore.js";
@@ -40,8 +40,8 @@ function isMongoDbConfig(config: StoreSectionConfiguration): config is StoreSect
  * Registers MongoDB store factories with the ConfigurationService.
  * This function should be called during application startup to enable MongoDB persistence.
  */
-export function miroirMongoDbStoreSectionStartup() {
-  ConfigurationService.registerAdminStoreFactory(
+export function miroirMongoDbStoreSectionStartup(configurationService: ConfigurationServiceInner) {
+  configurationService.registerAdminStoreFactory(
     "mongodb",
     async (config: StoreSectionConfiguration): Promise<PersistenceStoreAdminSectionInterface> => {
       if (isMongoDbConfig(config)) {
@@ -57,7 +57,7 @@ export function miroirMongoDbStoreSectionStartup() {
     }
   );
 
-  ConfigurationService.registerStoreSectionFactory(
+  configurationService.registerStoreSectionFactory(
     "mongodb",
     "model",
     async (
@@ -82,7 +82,7 @@ export function miroirMongoDbStoreSectionStartup() {
     }
   );
 
-  ConfigurationService.registerStoreSectionFactory(
+  configurationService.registerStoreSectionFactory(
     "mongodb",
     "data",
     async (

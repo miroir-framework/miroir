@@ -33,11 +33,11 @@ export interface PackageConfiguration {
 /**
  * Allows Miroir packages to inject (and access?) configuration information.
  */
-export class ConfigurationService {
-  static packages:PackageConfiguration[] = [];
-  static StoreSectionFactoryRegister:StoreSectionFactoryRegister = new Map();
-  static adminStoreFactoryRegister:AdminStoreFactoryRegister = new Map();
-  static testImplementation:TestImplementation | undefined = undefined;
+export class ConfigurationServiceInner {
+  public packages:PackageConfiguration[] = [];
+  public StoreSectionFactoryRegister:StoreSectionFactoryRegister = new Map();
+  public adminStoreFactoryRegister:AdminStoreFactoryRegister = new Map();
+  public testImplementation:TestImplementation | undefined = undefined;
 
   constructor() {
     
@@ -46,19 +46,19 @@ export class ConfigurationService {
   /**
    * registerPackageConfiguration
    */
-  public static registerPackageConfiguration(packageConfiguration: PackageConfiguration) {
+  public registerPackageConfiguration(packageConfiguration: PackageConfiguration) {
     log.info("ConfigurationService registerPackageConfiguration",packageConfiguration);
     this.packages.push(packageConfiguration);
   }
 
-  public static registerStoreSectionFactory(storageType:StorageType, section: ApplicationSection, storeSectionFactory: PersistenceStoreSectionFactory) {
+  public registerStoreSectionFactory(storageType:StorageType, section: ApplicationSection, storeSectionFactory: PersistenceStoreSectionFactory) {
     log.info("ConfigurationService registerStoreSectionFactory",this.StoreSectionFactoryRegister);
     this.StoreSectionFactoryRegister.set(
       JSON.stringify({storageType, section}), storeSectionFactory
     );
   }
 
-  public static registerAdminStoreFactory(storageType:StorageType, adminStoreFactory: PersistenceStoreAdminSectionFactory) {
+  public registerAdminStoreFactory(storageType:StorageType, adminStoreFactory: PersistenceStoreAdminSectionFactory) {
     log.info("ConfigurationService registerAdminStoreFactory in",this.adminStoreFactoryRegister);
     this.adminStoreFactoryRegister.set(
       JSON.stringify({storageType}), adminStoreFactory
@@ -66,10 +66,14 @@ export class ConfigurationService {
     log.info("ConfigurationService registered in registerAdminStoreFactory",this.adminStoreFactoryRegister);
   }
 
-  public static registerTestImplementation(implement:TestImplementation) {
+  public registerTestImplementation(implement:TestImplementation) {
     log.info("ConfigurationService registerTestImplementation in",implement);
     this.testImplementation = implement;
     log.info("ConfigurationService registered in registerTestImplementation",this.testImplementation);
   }
-
 }
+
+export class ConfigurationService {
+  public static configurationService = new ConfigurationServiceInner();
+}
+// export const configurationService = new ConfigurationService()

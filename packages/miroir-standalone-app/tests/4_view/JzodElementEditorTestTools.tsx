@@ -8,7 +8,7 @@ import { expect, ExpectStatic, vi } from "vitest";
 
 import {
   Action2ReturnType,
-  ConfigurationService,
+  configurationService,
   defaultMiroirMetaModel,
   defaultSelfApplicationDeploymentMap,
   DomainControllerInterface,
@@ -603,13 +603,13 @@ export function getWrapperLoadingLocalCache(
   );
   const theme = createTheme(testThemeParams);
   
-  ConfigurationService.registerTestImplementation({ expect: expect as any });
+  configurationService.registerTestImplementation({ expect: expect as any });
 
   const persistenceSaga:PersistenceReduxSaga  = new PersistenceReduxSaga({
     persistenceStoreAccessMode: "remote",
     localPersistenceStoreControllerManager: new PersistenceStoreControllerManager(
-      ConfigurationService.adminStoreFactoryRegister,
-      ConfigurationService.StoreSectionFactoryRegister
+      configurationService.adminStoreFactoryRegister,
+      configurationService.StoreSectionFactoryRegister
     ),
     // remotePersistenceStoreRestClient: persistenceClientAndRestClient,
     remotePersistenceStoreRestClient: undefined as any,

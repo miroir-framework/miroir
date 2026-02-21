@@ -18,6 +18,7 @@ import {
   PersistenceStoreControllerInterface,
   PersistenceStoreControllerManagerInterface,
   StoreUnitConfiguration,
+  configurationService,
   createDeploymentCompositeAction,
   defaultMiroirModelEnvironment,
   defaultSelfApplicationDeploymentMap,
@@ -42,11 +43,7 @@ import {
 
 import {
   DisplayLoadingInfo,
-  adminApplicationDeploymentConfigurations,
-  deleteAndCloseApplicationDeployments,
-  deploymentConfigurations,
   renderWithProviders,
-  resetApplicationDeployments,
   selfApplicationDeploymentConfigurations,
   setupMiroirTest
 } from "../../src/miroir-fwk/4-tests/tests-utils.js";
@@ -58,9 +55,9 @@ import { miroirPostgresStoreSectionStartup } from "miroir-store-postgres";
 import { miroirAppStartup } from "../../src/startup.js";
 
 import {
+  adminApplication_Miroir,
   deployment_Admin,
   deployment_Miroir,
-  adminApplication_Miroir,
 } from "miroir-test-app_deployment-admin";
 import { loglevelnext } from "../../src/loglevelnextImporter.js";
 import { loadTestConfigFiles } from "../utils/fileTools.js";
@@ -84,10 +81,10 @@ MiroirLoggerFactory.registerLoggerToStart(
 
 miroirAppStartup();
 miroirCoreStartup();
-miroirFileSystemStoreSectionStartup();
-miroirIndexedDbStoreSectionStartup();
-miroirPostgresStoreSectionStartup();
-ConfigurationService.registerTestImplementation({expect: expect as any});
+miroirFileSystemStoreSectionStartup(ConfigurationService.configurationService);
+miroirIndexedDbStoreSectionStartup(ConfigurationService.configurationService);
+miroirPostgresStoreSectionStartup(ConfigurationService.configurationService);
+ConfigurationService.configurationService.registerTestImplementation({expect: expect as any});
 
 const {miroirConfig: miroirConfigParam, logConfig} = await loadTestConfigFiles(env)
 miroirConfig = miroirConfigParam;

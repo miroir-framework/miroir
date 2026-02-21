@@ -3,8 +3,7 @@ import { beforeAll, beforeEach, describe, expect, it } from "vitest";
 
 import {
   ApplicationDeploymentMap,
-  ConfigurationService,
-  defaultLibraryAppModelDEFUNCT,
+  // defaultLibraryAppModelDEFUNCT,
   defaultMiroirMetaModel,
   defaultMiroirModelEnvironment,
   DomainControllerInterface,
@@ -27,7 +26,8 @@ import {
   type LoggerOptions,
   type MetaEntity,
   type MiroirConfigClient,
-  type SpecificLoggerOptionsMap
+  type SpecificLoggerOptionsMap,
+  ConfigurationService
 } from "miroir-core";
 import { loadMiroirMcpConfig } from "../../src/config/configLoader.js";
 import { MiroirMcpConfig } from "../../src/config/configSchema.js";
@@ -211,7 +211,7 @@ describe("MCP Tools Integration Tests", () => {
     initializeStoreStartup(miroirConfig);
     
     // Register test implementation
-    ConfigurationService.registerTestImplementation({ expect: expect as any });
+    ConfigurationService.configurationService.registerTestImplementation({ expect: expect as any });
 
     // Setup MiroirContext
     const miroirActivityTracker = new MiroirActivityTracker();

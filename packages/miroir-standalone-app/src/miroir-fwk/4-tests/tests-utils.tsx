@@ -12,7 +12,6 @@ import { FC, PropsWithChildren, createContext, useState } from 'react';
 import {
   Action2ReturnType,
   AdminApplicationDeploymentConfiguration,
-  ConfigurationService,
   DeploymentConfiguration,
   DomainAction,
   DomainControllerInterface,
@@ -38,6 +37,7 @@ import {
   // Deployment,
   StoreUnitConfiguration,
   Uuid,
+  ConfigurationService,
   // deployment_Library_DO_NO_USE,
   createDeploymentCompositeAction,
   defaultMiroirModelEnvironment,
@@ -432,19 +432,16 @@ export async function setupMiroirTest(
   let client: RestClientInterface | undefined = undefined;
   let remotePersistenceStoreRestClient: RestPersistenceClientAndRestClientInterface | undefined = undefined;
   if (miroirConfig.client.emulateServer) {
-    client = new RestClientStub(
-      miroirConfig.client.rootApiUrl,
-    );
+    client = new RestClientStub(miroirConfig.client.rootApiUrl);
     remotePersistenceStoreRestClient = new RestPersistenceClientAndRestClient(
       miroirConfig.client.rootApiUrl,
-      client
+      client,
     );
-
   } else {
-    client = new RestClient(customfetch??fetch);
+    client = new RestClient(customfetch ?? fetch);
     remotePersistenceStoreRestClient = new RestPersistenceClientAndRestClient(
       miroirConfig.client.serverConfig.rootApiUrl,
-      client
+      client,
     );
   }
 
@@ -456,8 +453,8 @@ export async function setupMiroirTest(
   }
 
   const persistenceStoreControllerManagerForClient = new PersistenceStoreControllerManager(
-    ConfigurationService.adminStoreFactoryRegister,
-    ConfigurationService.StoreSectionFactoryRegister
+    ConfigurationService.configurationService.adminStoreFactoryRegister,
+    ConfigurationService.configurationService.StoreSectionFactoryRegister
   );
 
   const domainControllerForClient = await setupMiroirDomainController(
@@ -472,8 +469,8 @@ export async function setupMiroirTest(
   let persistenceStoreControllerManagerForServer: PersistenceStoreControllerManager | undefined = undefined;
   if (miroirConfig.client.emulateServer) {
     persistenceStoreControllerManagerForServer = new PersistenceStoreControllerManager(
-      ConfigurationService.adminStoreFactoryRegister,
-      ConfigurationService.StoreSectionFactoryRegister
+      ConfigurationService.configurationService.adminStoreFactoryRegister,
+      ConfigurationService.configurationService.StoreSectionFactoryRegister
     );
 
     const domainControllerForServer = await setupMiroirDomainController(

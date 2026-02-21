@@ -51,7 +51,10 @@ import {
   entityDeployment
 } from "miroir-test-app_deployment-admin";
 
-import { getMemoizedReduxDeploymentsStateSelectorMap, ReduxStateChanges } from "../../../miroir-localcache-imports.js";
+import {
+  getMemoizedReduxDeploymentsStateSelectorMap,
+  ReduxStateChanges,
+} from "../../../miroir-localcache-imports.js";
 
 import {
   useDomainControllerService,
@@ -79,6 +82,7 @@ import { DocumentOutlineContextProvider } from '../ValueObjectEditor/InstanceEdi
 import { ViewParamsUpdateQueue, ViewParamsUpdateQueueConfig } from '../ViewParamsUpdateQueue.js';
 import { Sidebar } from "./Sidebar.js";
 import { SidebarWidth } from "./SidebarSection.js";
+import { isElectron } from '../../../..';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -127,16 +131,12 @@ export const RootComponent = (props: RootComponentProps) => {
     snackbarOpen,
     snackbarMessage,
     snackbarSeverity,
-    // showSnackbar,
     handleSnackbarClose,
-    // handleAsyncAction,
   } = useSnackbar();
 
   // InstanceEditorOutline state
   const [isOutlineOpen, setIsOutlineOpen] = useState(false);
   const [outlineWidth, setOutlineWidth] = useState(300);
-  // const [outlineData, setOutlineData] = useState<any>(null);
-  // const [outlineTitle, setOutlineTitle] = useState<string>("Document Structure");
   
   // Track current highlight timeout and element for proper cleanup
   const highlightTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -181,8 +181,14 @@ export const RootComponent = (props: RootComponentProps) => {
     );
   }
 
-  const adminAppModel: MetaModel = useCurrentModel(adminSelfApplication.uuid, defaultSelfApplicationDeploymentMap);
-  const miroirMetaModel: MetaModel = useCurrentModel(selfApplicationMiroir.uuid, defaultSelfApplicationDeploymentMap);
+  const adminAppModel: MetaModel = useCurrentModel(
+    adminSelfApplication.uuid,
+    defaultSelfApplicationDeploymentMap,
+  );
+  const miroirMetaModel: MetaModel = useCurrentModel(
+    selfApplicationMiroir.uuid,
+    defaultSelfApplicationDeploymentMap,
+  );
 
   // log.info("RootComponent", count, "adminAppModel", adminAppModel);
   // log.info("RootComponent", count, "miroirMetaModel", miroirMetaModel);
@@ -802,6 +808,13 @@ export const RootComponent = (props: RootComponentProps) => {
                 style={{padding: "1em"}}
               >
                 {context.viewParams.generalEditMode && <ThemedText>uuid: {uuidv4()}</ThemedText>}
+                <ThemedOnScreenDebug
+                  label={`RootComponent miroirConfig, isElectron: ${isElectron}`}
+                  data={context.miroirContext.getMiroirConfig()}
+                  initiallyUnfolded={false}
+                  useCodeBlock={true}
+                  copyButton={true}
+                />
                 <ThemedOnScreenDebug
                   label="RootComponent adminAppModel"
                   data={{ applicationDeploymentMap, adminAppModel }}
