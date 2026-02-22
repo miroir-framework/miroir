@@ -1,6 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-import React from 'react';
+import React, { useCallback, useRef } from 'react';
 
 import { useMiroirTheme } from '../../contexts/MiroirThemeContext';
 import { ThemedComponentProps } from './BaseTypes';
@@ -439,6 +439,118 @@ export const ThemedTextEditor: React.FC<ThemedComponentProps & {
           {helperText}
         </div>
       )}
+    </div>
+  );
+};
+
+// ################################################################################################
+export const ThemedColorPicker: React.FC<ThemedComponentProps & {
+  readOnly?: boolean;
+  disabled?: boolean;
+  error?: boolean;
+}> = ({
+  value,
+  onChange,
+  readOnly = false,
+  disabled = false,
+  error = false,
+  className,
+  style,
+  id,
+  name,
+}) => {
+  const { currentTheme } = useMiroirTheme();
+  const colorInputRef = useRef<HTMLInputElement>(null);
+
+  const handleSwatchClick = useCallback(() => {
+    if (!readOnly && !disabled && colorInputRef.current) {
+      colorInputRef.current.click();
+    }
+  }, [readOnly, disabled]);
+
+  const containerStyles = css({
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: currentTheme.spacing.sm,
+  });
+
+  const swatchStyles = css({
+    width: '2em',
+    height: '1.6em',
+    borderRadius: currentTheme.borderRadius.sm,
+    border: `1px solid ${error ? (currentTheme.colors.error || '#f44336') : currentTheme.colors.border}`,
+    backgroundColor: (value as string) || '#000000',
+    cursor: readOnly || disabled ? 'default' : 'pointer',
+    flexShrink: 0,
+    position: 'relative',
+    overflow: 'hidden',
+    '&:hover': readOnly || disabled ? {} : {
+      borderColor: currentTheme.colors.primary,
+    },
+  });
+
+  const hiddenInputStyles = css({
+    position: 'absolute',
+    inset: 0,
+    opacity: 0,
+    width: '100%',
+    height: '100%',
+    cursor: 'pointer',
+    padding: 0,
+    border: 'none',
+  });
+
+  const textStyles = css({
+    fontFamily: 'monospace',
+    fontSize: currentTheme.typography.fontSize.sm,
+    color: currentTheme.colors.text,
+    background: 'transparent',
+    border: `1px solid ${
+      error
+        ? currentTheme.colors.error || '#f44336'
+        : currentTheme.colors.border
+    }`,
+    borderRadius: currentTheme.borderRadius.sm,
+    padding: `${currentTheme.spacing.xs} ${currentTheme.spacing.sm}`,
+    width: '7em',
+    outline: 'none',
+    '&:focus': {
+      borderColor: currentTheme.colors.primary,
+    },
+    '&:read-only': {
+      backgroundColor: currentTheme.colors.surfaceVariant || currentTheme.colors.surface,
+      cursor: 'default',
+    },
+  });
+
+  return (
+    <div css={containerStyles} className={className} style={style}>
+      <div css={swatchStyles} onClick={handleSwatchClick}>
+        {!readOnly && !disabled && (
+          <input
+            ref={colorInputRef}
+            css={hiddenInputStyles}
+            type="color"
+            value={(value as string) || '#000000'}
+            onChange={onChange}
+            id={id}
+            name={name}
+            disabled={disabled}
+            tabIndex={-1}
+          />
+        )}
+      </div>
+      <input
+        css={textStyles}
+        type="text"
+        value={(value as string) || ''}
+        onChange={onChange}
+        readOnly={readOnly || disabled}
+        placeholder="#000000"
+        id={readOnly || disabled ? id : undefined}
+        name={readOnly || disabled ? name : undefined}
+        maxLength={25}
+      />
     </div>
   );
 };

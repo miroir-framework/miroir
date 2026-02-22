@@ -407,6 +407,7 @@ export const miroirFundamentalJzodSchema = {
                             "url",
                             "uuid",
                             "uri",
+                            "color",
                             "date-time",
                             "date",
                             "time",
@@ -830,6 +831,7 @@ export const miroirFundamentalJzodSchema = {
                               "url",
                               "uuid",
                               "uri",
+                              "color",
                               "date-time",
                               "date",
                               "time",
@@ -23216,55 +23218,225 @@ export const miroirFundamentalJzodSchema = {
             "type": "object",
             "definition": {
               "primary": {
-                "type": "string"
+                "type": "string",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Primary Color",
+                    "display": {
+                      "string": {
+                        "format": "color"
+                      }
+                    }
+                  }
+                }
               },
               "secondary": {
-                "type": "string"
+                "type": "string",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Secondary Color",
+                    "display": {
+                      "string": {
+                        "format": "color"
+                      }
+                    }
+                  }
+                }
               },
               "background": {
-                "type": "string"
+                "type": "string",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Background Color",
+                    "display": {
+                      "string": {
+                        "format": "color"
+                      }
+                    }
+                  }
+                }
               },
               "surface": {
-                "type": "string"
+                "type": "string",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Surface Color",
+                    "display": {
+                      "string": {
+                        "format": "color"
+                      }
+                    }
+                  }
+                }
               },
               "border": {
-                "type": "string"
+                "type": "string",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Border Color",
+                    "display": {
+                      "string": {
+                        "format": "color"
+                      }
+                    }
+                  }
+                }
               },
               "text": {
-                "type": "string"
+                "type": "string",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Text Color",
+                    "display": {
+                      "string": {
+                        "format": "color"
+                      }
+                    }
+                  }
+                }
               },
               "textSecondary": {
-                "type": "string"
+                "type": "string",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Secondary Text Color",
+                    "display": {
+                      "string": {
+                        "format": "color"
+                      }
+                    }
+                  }
+                }
               },
               "textLight": {
-                "type": "string"
+                "type": "string",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Light Text Color",
+                    "display": {
+                      "string": {
+                        "format": "color"
+                      }
+                    }
+                  }
+                }
               },
               "hover": {
-                "type": "string"
+                "type": "string",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Hover Color",
+                    "display": {
+                      "string": {
+                        "format": "color"
+                      }
+                    }
+                  }
+                }
               },
               "selected": {
-                "type": "string"
+                "type": "string",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Selected Color",
+                    "display": {
+                      "string": {
+                        "format": "color"
+                      }
+                    }
+                  }
+                }
               },
               "filter": {
-                "type": "string"
+                "type": "string",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Filter Color",
+                    "display": {
+                      "string": {
+                        "format": "color"
+                      }
+                    }
+                  }
+                }
               },
               "filterBackground": {
-                "type": "string"
+                "type": "string",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Filter Background Color",
+                    "display": {
+                      "string": {
+                        "format": "color"
+                      }
+                    }
+                  }
+                }
               },
               "error": {
-                "type": "string"
+                "type": "string",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Error Color",
+                    "display": {
+                      "string": {
+                        "format": "color"
+                      }
+                    }
+                  }
+                }
               },
               "warning": {
-                "type": "string"
+                "type": "string",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Warning Color",
+                    "display": {
+                      "string": {
+                        "format": "color"
+                      }
+                    }
+                  }
+                }
               },
               "success": {
-                "type": "string"
+                "type": "string",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Success Color",
+                    "display": {
+                      "string": {
+                        "format": "color"
+                      }
+                    }
+                  }
+                }
               },
               "accent": {
-                "type": "string"
+                "type": "string",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Accent Color",
+                    "display": {
+                      "string": {
+                        "format": "color"
+                      }
+                    }
+                  }
+                }
               },
               "accentLight": {
-                "type": "string"
+                "type": "string",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Accent Light Color",
+                    "display": {
+                      "string": {
+                        "format": "color"
+                      }
+                    }
+                  }
+                }
               }
             }
           },
@@ -23338,7 +23510,17 @@ export const miroirFundamentalJzodSchema = {
                     "type": "string"
                   },
                   "backgroundColor": {
-                    "type": "string"
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Table Background Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
                   },
                   "width": {
                     "type": "string"
@@ -23355,7 +23537,17 @@ export const miroirFundamentalJzodSchema = {
                 "type": "object",
                 "definition": {
                   "background": {
-                    "type": "string"
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Header Background Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
                   },
                   "height": {
                     "type": "string"
@@ -23370,7 +23562,17 @@ export const miroirFundamentalJzodSchema = {
                     "type": "string"
                   },
                   "textColor": {
-                    "type": "string"
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Header Text Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
                   },
                   "hoverBackground": {
                     "type": "string"
@@ -23396,10 +23598,30 @@ export const miroirFundamentalJzodSchema = {
                     "type": "string"
                   },
                   "backgroundColor": {
-                    "type": "string"
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Cell Background Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
                   },
                   "textColor": {
-                    "type": "string"
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Cell Text Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
                   }
                 }
               },
@@ -23447,28 +23669,108 @@ export const miroirFundamentalJzodSchema = {
                 "type": "object",
                 "definition": {
                   "iconColor": {
-                    "type": "string"
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Filter Icon Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
                   },
                   "activeIconColor": {
-                    "type": "string"
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Active Filter Icon Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
                   },
                   "clearButtonColor": {
-                    "type": "string"
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Clear Button Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
                   },
                   "clearButtonBackground": {
-                    "type": "string"
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Clear Button Background Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
                   },
                   "clearButtonBorder": {
-                    "type": "string"
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Clear Button Border Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
                   },
                   "toolbarBackground": {
-                    "type": "string"
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Toolbar Background Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
                   },
                   "inputBackground": {
-                    "type": "string"
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Input Background Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
                   },
                   "inputBorder": {
-                    "type": "string"
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Input Border Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
                   }
                 }
               },
@@ -23509,124 +23811,514 @@ export const miroirFundamentalJzodSchema = {
             "type": "object",
             "definition": {
               "primary": {
-                "type": "string"
+                "type": "string",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Primary Color",
+                    "display": {
+                      "string": {
+                        "format": "color"
+                      }
+                    }
+                  }
+                }
               },
               "primaryLight": {
-                "type": "string"
+                "type": "string",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Primary Light Color",
+                    "display": {
+                      "string": {
+                        "format": "color"
+                      }
+                    }
+                  }
+                }
               },
               "primaryDark": {
-                "type": "string"
+                "type": "string",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Primary Dark Color",
+                    "display": {
+                      "string": {
+                        "format": "color"
+                      }
+                    }
+                  }
+                }
               },
               "secondary": {
-                "type": "string"
+                "type": "string",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Secondary Color",
+                    "display": {
+                      "string": {
+                        "format": "color"
+                      }
+                    }
+                  }
+                }
               },
               "secondaryLight": {
-                "type": "string"
+                "type": "string",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Secondary Light Color",
+                    "display": {
+                      "string": {
+                        "format": "color"
+                      }
+                    }
+                  }
+                }
               },
               "secondaryDark": {
-                "type": "string"
+                "type": "string",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Secondary Dark Color",
+                    "display": {
+                      "string": {
+                        "format": "color"
+                      }
+                    }
+                  }
+                }
               },
               "background": {
-                "type": "string"
+                "type": "string",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Background Color",
+                    "display": {
+                      "string": {
+                        "format": "color"
+                      }
+                    }
+                  }
+                }
               },
               "backgroundPaper": {
-                "type": "string"
+                "type": "string",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Background Paper Color",
+                    "display": {
+                      "string": {
+                        "format": "color"
+                      }
+                    }
+                  }
+                }
               },
               "backgroundOverlay": {
-                "type": "string"
+                "type": "string",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Background Overlay Color",
+                    "display": {
+                      "string": {
+                        "format": "color"
+                      }
+                    }
+                  }
+                }
               },
               "surface": {
-                "type": "string"
+                "type": "string",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Surface Color",
+                    "display": {
+                      "string": {
+                        "format": "color"
+                      }
+                    }
+                  }
+                }
               },
               "surfaceVariant": {
-                "type": "string"
+                "type": "string",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Surface Variant Color",
+                    "display": {
+                      "string": {
+                        "format": "color"
+                      }
+                    }
+                  }
+                }
               },
               "text": {
-                "type": "string"
+                "type": "string",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Text Color",
+                    "display": {
+                      "string": {
+                        "format": "color"
+                      }
+                    }
+                  }
+                }
               },
               "textSecondary": {
-                "type": "string"
+                "type": "string",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Secondary Text Color",
+                    "display": {
+                      "string": {
+                        "format": "color"
+                      }
+                    }
+                  }
+                }
               },
               "textLight": {
-                "type": "string"
+                "type": "string",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Light Text Color",
+                    "display": {
+                      "string": {
+                        "format": "color"
+                      }
+                    }
+                  }
+                }
               },
               "textDisabled": {
-                "type": "string"
+                "type": "string",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Disabled Text Color",
+                    "display": {
+                      "string": {
+                        "format": "color"
+                      }
+                    }
+                  }
+                }
               },
               "border": {
-                "type": "string"
+                "type": "string",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Border Color",
+                    "display": {
+                      "string": {
+                        "format": "color"
+                      }
+                    }
+                  }
+                }
               },
               "borderLight": {
-                "type": "string"
+                "type": "string",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Light Border Color",
+                    "display": {
+                      "string": {
+                        "format": "color"
+                      }
+                    }
+                  }
+                }
               },
               "divider": {
-                "type": "string"
+                "type": "string",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Divider Color",
+                    "display": {
+                      "string": {
+                        "format": "color"
+                      }
+                    }
+                  }
+                }
               },
               "hover": {
-                "type": "string"
+                "type": "string",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Hover Color",
+                    "display": {
+                      "string": {
+                        "format": "color"
+                      }
+                    }
+                  }
+                }
               },
               "selected": {
-                "type": "string"
+                "type": "string",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Selected Color",
+                    "display": {
+                      "string": {
+                        "format": "color"
+                      }
+                    }
+                  }
+                }
               },
               "focused": {
-                "type": "string"
+                "type": "string",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Focused Color",
+                    "display": {
+                      "string": {
+                        "format": "color"
+                      }
+                    }
+                  }
+                }
               },
               "active": {
-                "type": "string"
+                "type": "string",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Active Color",
+                    "display": {
+                      "string": {
+                        "format": "color"
+                      }
+                    }
+                  }
+                }
               },
               "error": {
-                "type": "string"
+                "type": "string",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Error Color",
+                    "display": {
+                      "string": {
+                        "format": "color"
+                      }
+                    }
+                  }
+                }
               },
               "errorLight": {
-                "type": "string"
+                "type": "string",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Light Error Color",
+                    "display": {
+                      "string": {
+                        "format": "color"
+                      }
+                    }
+                  }
+                }
               },
               "errorSurface": {
-                "type": "string"
+                "type": "string",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Error Surface Color",
+                    "display": {
+                      "string": {
+                        "format": "color"
+                      }
+                    }
+                  }
+                }
               },
               "warning": {
-                "type": "string"
+                "type": "string",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Warning Color",
+                    "display": {
+                      "string": {
+                        "format": "color"
+                      }
+                    }
+                  }
+                }
               },
               "warningLight": {
-                "type": "string"
+                "type": "string",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Light Warning Color",
+                    "display": {
+                      "string": {
+                        "format": "color"
+                      }
+                    }
+                  }
+                }
               },
               "success": {
-                "type": "string"
+                "type": "string",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Success Color",
+                    "display": {
+                      "string": {
+                        "format": "color"
+                      }
+                    }
+                  }
+                }
               },
               "successLight": {
-                "type": "string"
+                "type": "string",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Light Success Color",
+                    "display": {
+                      "string": {
+                        "format": "color"
+                      }
+                    }
+                  }
+                }
               },
               "successSurface": {
-                "type": "string"
+                "type": "string",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Success Surface Color",
+                    "display": {
+                      "string": {
+                        "format": "color"
+                      }
+                    }
+                  }
+                }
               },
               "info": {
-                "type": "string"
+                "type": "string",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Info Color",
+                    "display": {
+                      "string": {
+                        "format": "color"
+                      }
+                    }
+                  }
+                }
               },
               "infoLight": {
-                "type": "string"
+                "type": "string",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Light Info Color",
+                    "display": {
+                      "string": {
+                        "format": "color"
+                      }
+                    }
+                  }
+                }
               },
               "accent": {
-                "type": "string"
+                "type": "string",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Accent Color",
+                    "display": {
+                      "string": {
+                        "format": "color"
+                      }
+                    }
+                  }
+                }
               },
               "accentLight": {
-                "type": "string"
+                "type": "string",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Light Accent Color",
+                    "display": {
+                      "string": {
+                        "format": "color"
+                      }
+                    }
+                  }
+                }
               },
               "shadow": {
-                "type": "string"
+                "type": "string",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Shadow Color",
+                    "display": {
+                      "string": {
+                        "format": "color"
+                      }
+                    }
+                  }
+                }
               },
               "overlay": {
-                "type": "string"
+                "type": "string",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Overlay Color",
+                    "display": {
+                      "string": {
+                        "format": "color"
+                      }
+                    }
+                  }
+                }
               },
               "nesting": {
                 "type": "object",
                 "definition": {
                   "level0": {
-                    "type": "string"
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Nesting Level 0 Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
                   },
                   "level1": {
-                    "type": "string"
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Nesting Level 1 Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
                   },
                   "level2": {
-                    "type": "string"
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Nesting Level 2 Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
                   }
                 }
               }
@@ -23770,19 +24462,69 @@ export const miroirFundamentalJzodSchema = {
                 "type": "object",
                 "definition": {
                   "background": {
-                    "type": "string"
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "App Bar Background Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
                   },
                   "textColor": {
-                    "type": "string"
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "App Bar Text Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
                   },
                   "borderBottom": {
-                    "type": "string"
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "App Bar Border Bottom Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
                   },
                   "height": {
-                    "type": "string"
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "App Bar Height",
+                        "display": {
+                          "string": {
+                            "format": "size"
+                          }
+                        }
+                      }
+                    }
                   },
                   "elevation": {
-                    "type": "string"
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "App Bar Elevation",
+                        "display": {
+                          "string": {
+                            "format": "elevation"
+                          }
+                        }
+                      }
+                    }
                   }
                 }
               },
@@ -23790,25 +24532,95 @@ export const miroirFundamentalJzodSchema = {
                 "type": "object",
                 "definition": {
                   "background": {
-                    "type": "string"
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Sidebar Background Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
                   },
                   "backgroundHover": {
-                    "type": "string"
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Sidebar Background Hover Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
                   },
                   "textColor": {
-                    "type": "string"
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Sidebar Text Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
                   },
                   "textColorActive": {
-                    "type": "string"
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Sidebar Text Color Active",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
                   },
                   "borderRight": {
-                    "type": "string"
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Sidebar Border Right Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
                   },
                   "width": {
-                    "type": "string"
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Sidebar Width",
+                        "display": {
+                          "string": {
+                            "format": "size"
+                          }
+                        }
+                      }
+                    }
                   },
                   "itemHeight": {
-                    "type": "string"
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Sidebar Item Height",
+                        "display": {
+                          "string": {
+                            "format": "size"
+                          }
+                        }
+                      }
+                    }
                   }
                 }
               },
@@ -23816,7 +24628,17 @@ export const miroirFundamentalJzodSchema = {
                 "type": "object",
                 "definition": {
                   "background": {
-                    "type": "string"
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Drawer Background Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
                   },
                   "backdrop": {
                     "type": "string"
@@ -23830,7 +24652,17 @@ export const miroirFundamentalJzodSchema = {
                 "type": "object",
                 "definition": {
                   "background": {
-                    "type": "string"
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Input Background Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
                   },
                   "backgroundHover": {
                     "type": "string"
@@ -23839,19 +24671,59 @@ export const miroirFundamentalJzodSchema = {
                     "type": "string"
                   },
                   "borderColor": {
-                    "type": "string"
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Input Border Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
                   },
                   "borderColorHover": {
-                    "type": "string"
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Input Border Color Hover",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
                   },
                   "borderColorFocused": {
                     "type": "string"
                   },
                   "textColor": {
-                    "type": "string"
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Input Text Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
                   },
                   "placeholderColor": {
-                    "type": "string"
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Input Placeholder Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
                   },
                   "borderRadius": {
                     "type": "string"
@@ -23868,19 +24740,69 @@ export const miroirFundamentalJzodSchema = {
                     "type": "object",
                     "definition": {
                       "background": {
-                        "type": "string"
+                        "type": "string",
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Primary Button Background Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
                       },
                       "backgroundHover": {
-                        "type": "string"
+                        "type": "string",
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Primary Button Background Hover Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
                       },
                       "backgroundActive": {
-                        "type": "string"
+                        "type": "string",
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Primary Button Background Active Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
                       },
                       "textColor": {
-                        "type": "string"
+                        "type": "string",
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Primary Button Text Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
                       },
                       "borderColor": {
-                        "type": "string"
+                        "type": "string",
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Primary Button Border Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
                       },
                       "borderRadius": {
                         "type": "string"
@@ -23891,19 +24813,69 @@ export const miroirFundamentalJzodSchema = {
                     "type": "object",
                     "definition": {
                       "background": {
-                        "type": "string"
+                        "type": "string",
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Secondary Button Background Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
                       },
                       "backgroundHover": {
-                        "type": "string"
+                        "type": "string",
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Secondary Button Background Hover Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
                       },
                       "backgroundActive": {
-                        "type": "string"
+                        "type": "string",
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Secondary Button Background Active Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
                       },
                       "textColor": {
-                        "type": "string"
+                        "type": "string",
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Secondary Button Text Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
                       },
                       "borderColor": {
-                        "type": "string"
+                        "type": "string",
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Secondary Button Border Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
                       },
                       "borderRadius": {
                         "type": "string"
@@ -23914,19 +24886,69 @@ export const miroirFundamentalJzodSchema = {
                     "type": "object",
                     "definition": {
                       "background": {
-                        "type": "string"
+                        "type": "string",
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Outlined Button Background Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
                       },
                       "backgroundHover": {
-                        "type": "string"
+                        "type": "string",
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Outlined Button Background Hover Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
                       },
                       "backgroundActive": {
-                        "type": "string"
+                        "type": "string",
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Outlined Button Background Active Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
                       },
                       "textColor": {
-                        "type": "string"
+                        "type": "string",
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Outlined Button Text Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
                       },
                       "borderColor": {
-                        "type": "string"
+                        "type": "string",
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Outlined Button Border Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
                       },
                       "borderRadius": {
                         "type": "string"
@@ -23939,10 +24961,30 @@ export const miroirFundamentalJzodSchema = {
                 "type": "object",
                 "definition": {
                   "background": {
-                    "type": "string"
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Card Background Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
                   },
                   "borderColor": {
-                    "type": "string"
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Card Border Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
                   },
                   "borderRadius": {
                     "type": "string"
@@ -23959,10 +25001,30 @@ export const miroirFundamentalJzodSchema = {
                 "type": "object",
                 "definition": {
                   "background": {
-                    "type": "string"
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Dialog Background Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
                   },
                   "backdrop": {
-                    "type": "string"
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Dialog Backdrop Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
                   },
                   "borderRadius": {
                     "type": "string"
@@ -23979,10 +25041,30 @@ export const miroirFundamentalJzodSchema = {
                 "type": "object",
                 "definition": {
                   "background": {
-                    "type": "string"
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Tooltip Background Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
                   },
                   "textColor": {
-                    "type": "string"
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Tooltip Text Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
                   },
                   "borderRadius": {
                     "type": "string"
@@ -23996,13 +25078,43 @@ export const miroirFundamentalJzodSchema = {
                 "type": "object",
                 "definition": {
                   "colorPrimary": {
-                    "type": "string"
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Icon Primary Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
                   },
                   "colorSecondary": {
-                    "type": "string"
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Icon Secondary Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
                   },
                   "colorDisabled": {
-                    "type": "string"
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Icon Disabled Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
                   },
                   "size": {
                     "type": "object",
@@ -25120,6 +26232,7 @@ export const miroirFundamentalJzodSchema = {
                                         "url",
                                         "uuid",
                                         "uri",
+                                        "color",
                                         "date-time",
                                         "date",
                                         "time",
@@ -26377,6 +27490,7 @@ export const miroirFundamentalJzodSchema = {
                                                   "url",
                                                   "uuid",
                                                   "uri",
+                                                  "color",
                                                   "date-time",
                                                   "date",
                                                   "time",
@@ -29978,6 +31092,7 @@ export const miroirFundamentalJzodSchema = {
                                         "url",
                                         "uuid",
                                         "uri",
+                                        "color",
                                         "date-time",
                                         "date",
                                         "time",
@@ -31214,6 +32329,7 @@ export const miroirFundamentalJzodSchema = {
                                             "url",
                                             "uuid",
                                             "uri",
+                                            "color",
                                             "date-time",
                                             "date",
                                             "time",
@@ -32471,6 +33587,7 @@ export const miroirFundamentalJzodSchema = {
                                                       "url",
                                                       "uuid",
                                                       "uri",
+                                                      "color",
                                                       "date-time",
                                                       "date",
                                                       "time",
@@ -45876,6 +46993,7 @@ export const miroirFundamentalJzodSchema = {
                             "url",
                             "uuid",
                             "uri",
+                            "color",
                             "date-time",
                             "date",
                             "time",
@@ -46349,6 +47467,7 @@ export const miroirFundamentalJzodSchema = {
                               "url",
                               "uuid",
                               "uri",
+                              "color",
                               "date-time",
                               "date",
                               "time",
@@ -56780,6 +57899,7 @@ export const miroirFundamentalJzodSchema = {
                             "url",
                             "uuid",
                             "uri",
+                            "color",
                             "date-time",
                             "date",
                             "time",
@@ -57253,6 +58373,7 @@ export const miroirFundamentalJzodSchema = {
                               "url",
                               "uuid",
                               "uri",
+                              "color",
                               "date-time",
                               "date",
                               "time",
@@ -60695,6 +61816,7 @@ export const miroirFundamentalJzodSchema = {
                             "url",
                             "uuid",
                             "uri",
+                            "color",
                             "date-time",
                             "date",
                             "time",
@@ -61168,6 +62290,7 @@ export const miroirFundamentalJzodSchema = {
                               "url",
                               "uuid",
                               "uri",
+                              "color",
                               "date-time",
                               "date",
                               "time",
@@ -71599,6 +72722,7 @@ export const miroirFundamentalJzodSchema = {
                             "url",
                             "uuid",
                             "uri",
+                            "color",
                             "date-time",
                             "date",
                             "time",
@@ -72072,6 +73196,7 @@ export const miroirFundamentalJzodSchema = {
                               "url",
                               "uuid",
                               "uri",
+                              "color",
                               "date-time",
                               "date",
                               "time",

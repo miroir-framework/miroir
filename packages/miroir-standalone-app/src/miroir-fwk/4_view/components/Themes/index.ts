@@ -105,6 +105,7 @@ export {
   ThemedMenuItemOption,
   ThemedSwitch,
   ThemedTextEditor,
+  ThemedColorPicker,
 } from './UIComponents';
 
 // Material-UI wrapper components

@@ -2,13 +2,14 @@ import React, { useCallback, useState } from "react";
 import { FormikProps } from "formik";
 
 import {
+  ThemedColorPicker,
   ThemedDisplayValue,
   ThemedLabeledEditor,
   ThemedTextEditor
 } from "../Themes/index";
 import { FileSelector } from "../Themes/FileSelector.js";
 import type { JzodEditorPropsRoot } from "./JzodElementEditorInterface";
-import { LoggerInterface, MiroirLoggerFactory, type MetaModel } from "miroir-core";
+import { LoggerInterface, MiroirLoggerFactory, type JzodBaseObject, type MetaModel } from "miroir-core";
 import { packageName } from "../../../../constants";
 import { cleanLevel } from "../../constants";
 
@@ -21,7 +22,8 @@ export interface JzodElementStringEditorProps extends JzodEditorPropsRoot {
   enhancedLabelElement: JSX.Element;
   hasPathError: boolean;
   stringDisplay?: {
-    format?: "email" | "url" | "uuid" | "uri" | "date-time" | "date" | "time" | "file" | "folder";
+    format?: "email" | "url" | "uuid" | "uri" | "color" |  "date-time" | "date" | "time" | "file" | "folder";
+    // format?: JzodBaseObject["tag"]?["value"]?[""]["format"];
     multiline?: boolean;
     rows?: number;
   };
@@ -78,6 +80,32 @@ export const JzodElementStringEditor: React.FC<JzodElementStringEditorProps> = (
     // Store the file path/name in formik
     formik.setFieldValue(formikRootLessListKey, fileName);
   }, [formikRootLessListKey, onChangeVector, rootLessListKey, formik]);
+
+  // Handle color format using ThemedColorPicker
+  if (format === "color") {
+    if (readOnly || localReadOnly) {
+      return (
+        <ThemedLabeledEditor
+          labelElement={enhancedLabelElement}
+          editor={<ThemedColorPicker value={currentValueObjectAtKey} readOnly />}
+        />
+      );
+    }
+    return (
+      <ThemedLabeledEditor
+        labelElement={enhancedLabelElement}
+        editor={
+          <ThemedColorPicker
+            value={formik.getFieldProps(formikRootLessListKey).value ?? currentValueObjectAtKey}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              formik.setFieldValue(formikRootLessListKey, e.target.value)
+            }
+            error={hasPathError}
+          />
+        }
+      />
+    );
+  }
 
   // Handle file and folder formats using FileSelector
   if (format === "file" || format === "folder") {

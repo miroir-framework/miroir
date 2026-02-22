@@ -805,6 +805,17 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
           const stringDisplay = localResolvedElementJzodSchemaBasedOnValue.tag?.value?.display?.string;
           
           return (
+            <>
+            <ThemedOnScreenDebug
+              label={`Rendering JzodElementStringEditor for string type at ${props.rootLessListKey || "ROOT"}`}
+              data={{
+                rootLessListKey: props.rootLessListKey,
+                // rawSchema: currentKeyMap?.rawSchema,
+                localResolvedElementJzodSchemaBasedOnValue,
+                stringDisplay: stringDisplay,
+                currentValueObjectAtKey,
+              }}
+            />
             <JzodElementStringEditor
               {...props}
               formik={formik}
@@ -815,6 +826,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
               hasPathError={hasPathError}
               stringDisplay={stringDisplay}
             />
+            </>
           );
         }
         case "uuid": {

@@ -298,9 +298,10 @@ export const defaultMiroirTheme: MiroirTheme = {
   description: 'Standard light theme with balanced colors and spacing',
   
   colors: {
-    primary: '#1976d2',
-    primaryLight: '#42a5f5',
-    primaryDark: '#1565c0',
+    primary: '#7c67bcff',
+    primaryLight: '#9b8ed6ff',
+    // primaryDark: '#5a4a99ff',
+    primaryDark: '#4527a0ff',
     secondary: '#dc004e',
     secondaryLight: '#e91e63',
     secondaryDark: '#c2185b',
@@ -401,7 +402,7 @@ export const defaultMiroirTheme: MiroirTheme = {
   
   components: {
     appBar: {
-      background: '#1976d2',
+      background: '#4527a0ff',
       textColor: '#ffffff',
       borderBottom: 'none',
       height: '64px',
