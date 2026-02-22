@@ -24463,6 +24463,7 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "background": {
                     "type": "string",
+                    "optional": true,
                     "tag": {
                       "value": {
                         "defaultLabel": "App Bar Background Color",
@@ -24476,6 +24477,7 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "textColor": {
                     "type": "string",
+                    "optional": true,
                     "tag": {
                       "value": {
                         "defaultLabel": "App Bar Text Color",
@@ -24533,6 +24535,7 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "background": {
                     "type": "string",
+                    "optional": true,
                     "tag": {
                       "value": {
                         "defaultLabel": "Sidebar Background Color",
@@ -24546,6 +24549,7 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "backgroundHover": {
                     "type": "string",
+                    "optional": true,
                     "tag": {
                       "value": {
                         "defaultLabel": "Sidebar Background Hover Color",
@@ -24559,6 +24563,7 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "textColor": {
                     "type": "string",
+                    "optional": true,
                     "tag": {
                       "value": {
                         "defaultLabel": "Sidebar Text Color",
@@ -24572,6 +24577,7 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "textColorActive": {
                     "type": "string",
+                    "optional": true,
                     "tag": {
                       "value": {
                         "defaultLabel": "Sidebar Text Color Active",
@@ -24585,6 +24591,7 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "borderRight": {
                     "type": "string",
+                    "optional": true,
                     "tag": {
                       "value": {
                         "defaultLabel": "Sidebar Border Right Color",
@@ -24629,6 +24636,7 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "background": {
                     "type": "string",
+                    "optional": true,
                     "tag": {
                       "value": {
                         "defaultLabel": "Drawer Background Color",
@@ -24641,10 +24649,12 @@ export const miroirFundamentalJzodSchema = {
                     }
                   },
                   "backdrop": {
-                    "type": "string"
+                    "type": "string",
+                    "optional": true
                   },
                   "elevation": {
-                    "type": "string"
+                    "type": "string",
+                    "optional": true
                   }
                 }
               },
@@ -24653,6 +24663,7 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "background": {
                     "type": "string",
+                    "optional": true,
                     "tag": {
                       "value": {
                         "defaultLabel": "Input Background Color",
@@ -24665,13 +24676,36 @@ export const miroirFundamentalJzodSchema = {
                     }
                   },
                   "backgroundHover": {
-                    "type": "string"
+                    "type": "string",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Input Background Hover Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
                   },
                   "backgroundFocused": {
-                    "type": "string"
+                    "type": "string",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Input Background Focused Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
                   },
                   "borderColor": {
                     "type": "string",
+                    "optional": true,
                     "tag": {
                       "value": {
                         "defaultLabel": "Input Border Color",
@@ -24685,6 +24719,7 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "borderColorHover": {
                     "type": "string",
+                    "optional": true,
                     "tag": {
                       "value": {
                         "defaultLabel": "Input Border Color Hover",
@@ -24697,10 +24732,22 @@ export const miroirFundamentalJzodSchema = {
                     }
                   },
                   "borderColorFocused": {
-                    "type": "string"
+                    "type": "string",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Input Border Color Focused",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
                   },
                   "textColor": {
                     "type": "string",
+                    "optional": true,
                     "tag": {
                       "value": {
                         "defaultLabel": "Input Text Color",
@@ -24714,6 +24761,7 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "placeholderColor": {
                     "type": "string",
+                    "optional": true,
                     "tag": {
                       "value": {
                         "defaultLabel": "Input Placeholder Color",
@@ -24741,6 +24789,7 @@ export const miroirFundamentalJzodSchema = {
                     "definition": {
                       "background": {
                         "type": "string",
+                        "optional": true,
                         "tag": {
                           "value": {
                             "defaultLabel": "Primary Button Background Color",
@@ -24754,6 +24803,7 @@ export const miroirFundamentalJzodSchema = {
                       },
                       "backgroundHover": {
                         "type": "string",
+                        "optional": true,
                         "tag": {
                           "value": {
                             "defaultLabel": "Primary Button Background Hover Color",
@@ -24767,6 +24817,7 @@ export const miroirFundamentalJzodSchema = {
                       },
                       "backgroundActive": {
                         "type": "string",
+                        "optional": true,
                         "tag": {
                           "value": {
                             "defaultLabel": "Primary Button Background Active Color",
@@ -24780,6 +24831,7 @@ export const miroirFundamentalJzodSchema = {
                       },
                       "textColor": {
                         "type": "string",
+                        "optional": true,
                         "tag": {
                           "value": {
                             "defaultLabel": "Primary Button Text Color",
@@ -24793,6 +24845,7 @@ export const miroirFundamentalJzodSchema = {
                       },
                       "borderColor": {
                         "type": "string",
+                        "optional": true,
                         "tag": {
                           "value": {
                             "defaultLabel": "Primary Button Border Color",
@@ -24814,6 +24867,7 @@ export const miroirFundamentalJzodSchema = {
                     "definition": {
                       "background": {
                         "type": "string",
+                        "optional": true,
                         "tag": {
                           "value": {
                             "defaultLabel": "Secondary Button Background Color",
@@ -24827,6 +24881,7 @@ export const miroirFundamentalJzodSchema = {
                       },
                       "backgroundHover": {
                         "type": "string",
+                        "optional": true,
                         "tag": {
                           "value": {
                             "defaultLabel": "Secondary Button Background Hover Color",
@@ -24840,6 +24895,7 @@ export const miroirFundamentalJzodSchema = {
                       },
                       "backgroundActive": {
                         "type": "string",
+                        "optional": true,
                         "tag": {
                           "value": {
                             "defaultLabel": "Secondary Button Background Active Color",
@@ -24853,6 +24909,7 @@ export const miroirFundamentalJzodSchema = {
                       },
                       "textColor": {
                         "type": "string",
+                        "optional": true,
                         "tag": {
                           "value": {
                             "defaultLabel": "Secondary Button Text Color",
@@ -24866,6 +24923,7 @@ export const miroirFundamentalJzodSchema = {
                       },
                       "borderColor": {
                         "type": "string",
+                        "optional": true,
                         "tag": {
                           "value": {
                             "defaultLabel": "Secondary Button Border Color",
@@ -24887,6 +24945,7 @@ export const miroirFundamentalJzodSchema = {
                     "definition": {
                       "background": {
                         "type": "string",
+                        "optional": true,
                         "tag": {
                           "value": {
                             "defaultLabel": "Outlined Button Background Color",
@@ -24900,6 +24959,7 @@ export const miroirFundamentalJzodSchema = {
                       },
                       "backgroundHover": {
                         "type": "string",
+                        "optional": true,
                         "tag": {
                           "value": {
                             "defaultLabel": "Outlined Button Background Hover Color",
@@ -24913,6 +24973,7 @@ export const miroirFundamentalJzodSchema = {
                       },
                       "backgroundActive": {
                         "type": "string",
+                        "optional": true,
                         "tag": {
                           "value": {
                             "defaultLabel": "Outlined Button Background Active Color",
@@ -24926,6 +24987,7 @@ export const miroirFundamentalJzodSchema = {
                       },
                       "textColor": {
                         "type": "string",
+                        "optional": true,
                         "tag": {
                           "value": {
                             "defaultLabel": "Outlined Button Text Color",
@@ -24939,6 +25001,7 @@ export const miroirFundamentalJzodSchema = {
                       },
                       "borderColor": {
                         "type": "string",
+                        "optional": true,
                         "tag": {
                           "value": {
                             "defaultLabel": "Outlined Button Border Color",
@@ -24962,6 +25025,7 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "background": {
                     "type": "string",
+                    "optional": true,
                     "tag": {
                       "value": {
                         "defaultLabel": "Card Background Color",
@@ -24975,6 +25039,7 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "borderColor": {
                     "type": "string",
+                    "optional": true,
                     "tag": {
                       "value": {
                         "defaultLabel": "Card Border Color",
@@ -25002,6 +25067,7 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "background": {
                     "type": "string",
+                    "optional": true,
                     "tag": {
                       "value": {
                         "defaultLabel": "Dialog Background Color",
@@ -25015,6 +25081,7 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "backdrop": {
                     "type": "string",
+                    "optional": true,
                     "tag": {
                       "value": {
                         "defaultLabel": "Dialog Backdrop Color",
@@ -25042,6 +25109,7 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "background": {
                     "type": "string",
+                    "optional": true,
                     "tag": {
                       "value": {
                         "defaultLabel": "Tooltip Background Color",
@@ -25055,6 +25123,7 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "textColor": {
                     "type": "string",
+                    "optional": true,
                     "tag": {
                       "value": {
                         "defaultLabel": "Tooltip Text Color",
@@ -25079,6 +25148,7 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "colorPrimary": {
                     "type": "string",
+                    "optional": true,
                     "tag": {
                       "value": {
                         "defaultLabel": "Icon Primary Color",
@@ -25092,6 +25162,7 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "colorSecondary": {
                     "type": "string",
+                    "optional": true,
                     "tag": {
                       "value": {
                         "defaultLabel": "Icon Secondary Color",
@@ -25105,6 +25176,7 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "colorDisabled": {
                     "type": "string",
+                    "optional": true,
                     "tag": {
                       "value": {
                         "defaultLabel": "Icon Disabled Color",

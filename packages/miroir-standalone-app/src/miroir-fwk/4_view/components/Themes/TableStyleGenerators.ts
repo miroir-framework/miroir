@@ -1,7 +1,7 @@
-import { TableTheme } from './TableTheme.js';
+import { ResolvedTableTheme } from './TableTheme.js';
 
 // Generate CSS styles for AG-Grid
-export const generateAgGridStyles = (theme: TableTheme): string => `
+export const generateAgGridStyles = (theme: ResolvedTableTheme): string => `
   /* Container and Root Styles */
   .ag-theme-alpine {
     --ag-background-color: ${theme.colors.background};
@@ -135,7 +135,7 @@ export const generateAgGridStyles = (theme: TableTheme): string => `
 `;
 
 // Generate theme object for Glide Data Grid
-export const generateGlideTheme = (theme: TableTheme) => ({
+export const generateGlideTheme = (theme: ResolvedTableTheme) => ({
   accentColor: theme.colors.primary,
   accentFg: "#ffffff",
   accentLight: theme.colors.accentLight,
@@ -171,7 +171,7 @@ export const generateGlideTheme = (theme: TableTheme) => ({
 });
 
 // Shared filter toolbar styles
-export const getFilterToolbarStyles = (theme: TableTheme) => ({
+export const getFilterToolbarStyles = (theme: ResolvedTableTheme) => ({
   container: {
     padding: theme.spacing.sm,
     borderBottom: `1px solid ${theme.colors.border}`,
@@ -205,5 +205,5 @@ export const getFilterToolbarStyles = (theme: TableTheme) => ({
 });
 
 // Export helper functions for external use
-export const getAgGridStyles = (theme: TableTheme) => generateAgGridStyles(theme);
-export const getGlideTheme = (theme: TableTheme) => generateGlideTheme(theme);
+export const getAgGridStyles = (theme: ResolvedTableTheme) => generateAgGridStyles(theme);
+export const getGlideTheme = (theme: ResolvedTableTheme) => generateGlideTheme(theme);

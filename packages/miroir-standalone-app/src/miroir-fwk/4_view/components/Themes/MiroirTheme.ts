@@ -21,6 +21,7 @@
 
 import {
   TableTheme,
+  ResolvedTableTheme,
   defaultTableTheme,
   darkTableTheme,
   compactTableTheme,
@@ -32,14 +33,19 @@ export type DeepPartial<T> = {
   [P in keyof T]?: T[P] extends object ? DeepPartial<T[P]> : T[P];
 };
 
-// Extended theme interface that includes application-wide theming
+// ################################################################################################
+// MiroirTheme: color properties in components sub-sections are optional.
+// When not specified, they fall back to the corresponding root color
+// from theme.colors via resolveThemeColors().
+// See ThemeColorDefaults.ts for the full mapping documentation.
+// ################################################################################################
 export interface MiroirTheme {
   // Core identification
   id: string;
   name: string;
   description: string;
   
-  // Global color palette
+  // Global color palette (always required - this is the single source of truth for colors)
   colors: {
     // Primary brand colors
     primary: string;
@@ -153,107 +159,107 @@ export interface MiroirTheme {
     full: string;
   };
   
-  // Component-specific theming
+  // Component-specific theming (color properties are optional, fallback to colors.*)
   components: {
     // Navigation and layout
     appBar: {
-      background: string;
-      textColor: string;
-      borderBottom: string;
-      height: string;
-      elevation: string;
+      background?: string;    // fallback: colors.primaryDark
+      textColor?: string;     // fallback: colors.backgroundPaper
+      borderBottom?: string;
+      height?: string;
+      elevation?: string;
     };
     
     sidebar: {
-      background: string;
-      backgroundHover: string;
-      textColor: string;
-      textColorActive: string;
-      borderRight: string;
-      width: string;
-      itemHeight: string;
+      background?: string;       // fallback: colors.backgroundPaper
+      backgroundHover?: string;  // fallback: colors.hover
+      textColor?: string;        // fallback: colors.text
+      textColorActive?: string;  // fallback: colors.accent
+      borderRight?: string;
+      width?: string;
+      itemHeight?: string;
     };
     
     drawer: {
-      background: string;
-      backdrop: string;
-      elevation: string;
+      background?: string;  // fallback: colors.backgroundPaper
+      backdrop?: string;    // fallback: colors.overlay
+      elevation?: string;
     };
     
     // Forms and inputs
     input: {
-      background: string;
-      backgroundHover: string;
-      backgroundFocused: string;
-      borderColor: string;
-      borderColorHover: string;
-      borderColorFocused: string;
-      textColor: string;
-      placeholderColor: string;
-      borderRadius: string;
-      height: string;
+      background?: string;         // fallback: colors.backgroundPaper
+      backgroundHover?: string;    // fallback: colors.surface
+      backgroundFocused?: string;  // fallback: colors.backgroundPaper
+      borderColor?: string;        // fallback: colors.border
+      borderColorHover?: string;   // fallback: colors.textSecondary
+      borderColorFocused?: string; // fallback: colors.accent
+      textColor?: string;          // fallback: colors.text
+      placeholderColor?: string;   // fallback: colors.textLight
+      borderRadius?: string;
+      height?: string;
     };
     
     button: {
       primary: {
-        background: string;
-        backgroundHover: string;
-        backgroundActive: string;
-        textColor: string;
-        borderColor: string;
-        borderRadius: string;
+        background?: string;       // fallback: colors.accent
+        backgroundHover?: string;  // fallback: colors.active
+        backgroundActive?: string; // fallback: colors.active
+        textColor?: string;        // fallback: colors.backgroundPaper
+        borderColor?: string;      // fallback: colors.accent
+        borderRadius?: string;
       };
       secondary: {
-        background: string;
-        backgroundHover: string;
-        backgroundActive: string;
-        textColor: string;
-        borderColor: string;
-        borderRadius: string;
+        background?: string;       // fallback: colors.secondary
+        backgroundHover?: string;  // fallback: colors.secondaryDark
+        backgroundActive?: string; // fallback: colors.secondaryDark
+        textColor?: string;        // fallback: colors.backgroundPaper
+        borderColor?: string;      // fallback: colors.secondary
+        borderRadius?: string;
       };
       outlined: {
-        background: string;
-        backgroundHover: string;
-        backgroundActive: string;
-        textColor: string;
-        borderColor: string;
-        borderRadius: string;
+        background?: string;       // fallback: 'transparent'
+        backgroundHover?: string;  // fallback: colors.accentLight
+        backgroundActive?: string; // fallback: colors.accentLight
+        textColor?: string;        // fallback: colors.accent
+        borderColor?: string;      // fallback: colors.accent
+        borderRadius?: string;
       };
     };
     
     // Data display
     card: {
-      background: string;
-      borderColor: string;
-      borderRadius: string;
-      elevation: string;
-      padding: string;
+      background?: string;    // fallback: colors.backgroundPaper
+      borderColor?: string;   // fallback: colors.border
+      borderRadius?: string;
+      elevation?: string;
+      padding?: string;
     };
     
     dialog: {
-      background: string;
-      backdrop: string;
-      borderRadius: string;
-      elevation: string;
-      padding: string;
+      background?: string;    // fallback: colors.backgroundPaper
+      backdrop?: string;      // fallback: colors.overlay
+      borderRadius?: string;
+      elevation?: string;
+      padding?: string;
     };
     
     tooltip: {
-      background: string;
-      textColor: string;
-      borderRadius: string;
-      fontSize: string;
+      background?: string;    // fallback: colors.overlay
+      textColor?: string;     // fallback: colors.backgroundPaper
+      borderRadius?: string;
+      fontSize?: string;
     };
     
     // Icons and indicators
     icon: {
-      colorPrimary: string;
-      colorSecondary: string;
-      colorDisabled: string;
+      colorPrimary?: string;    // fallback: colors.accent
+      colorSecondary?: string;  // fallback: colors.textSecondary
+      colorDisabled?: string;   // fallback: colors.textDisabled
       size: {
-        sm: string;
-        md: string;
-        lg: string;
+        sm?: string;
+        md?: string;
+        lg?: string;
       };
     };
   };
@@ -284,6 +290,105 @@ export interface MiroirTheme {
       easeInOut: string;
     };
   };
+}
+
+// ################################################################################################
+// ResolvedMiroirTheme: fully resolved version where all optional colors are filled in.
+// This is what consumers (ThemeUtils, components, etc.) actually receive from the context.
+// ################################################################################################
+export interface ResolvedMiroirTheme extends Omit<MiroirTheme, 'components' | 'table'> {
+  components: {
+    appBar: {
+      background: string;
+      textColor: string;
+      borderBottom: string;
+      height: string;
+      elevation: string;
+    };
+    sidebar: {
+      background: string;
+      backgroundHover: string;
+      textColor: string;
+      textColorActive: string;
+      borderRight: string;
+      width: string;
+      itemHeight: string;
+    };
+    drawer: {
+      background: string;
+      backdrop: string;
+      elevation: string;
+    };
+    input: {
+      background: string;
+      backgroundHover: string;
+      backgroundFocused: string;
+      borderColor: string;
+      borderColorHover: string;
+      borderColorFocused: string;
+      textColor: string;
+      placeholderColor: string;
+      borderRadius: string;
+      height: string;
+    };
+    button: {
+      primary: {
+        background: string;
+        backgroundHover: string;
+        backgroundActive: string;
+        textColor: string;
+        borderColor: string;
+        borderRadius: string;
+      };
+      secondary: {
+        background: string;
+        backgroundHover: string;
+        backgroundActive: string;
+        textColor: string;
+        borderColor: string;
+        borderRadius: string;
+      };
+      outlined: {
+        background: string;
+        backgroundHover: string;
+        backgroundActive: string;
+        textColor: string;
+        borderColor: string;
+        borderRadius: string;
+      };
+    };
+    card: {
+      background: string;
+      borderColor: string;
+      borderRadius: string;
+      elevation: string;
+      padding: string;
+    };
+    dialog: {
+      background: string;
+      backdrop: string;
+      borderRadius: string;
+      elevation: string;
+      padding: string;
+    };
+    tooltip: {
+      background: string;
+      textColor: string;
+      borderRadius: string;
+      fontSize: string;
+    };
+    icon: {
+      colorPrimary: string;
+      colorSecondary: string;
+      colorDisabled: string;
+      size: {
+        sm: string;
+        md: string;
+        lg: string;
+      };
+    };
+  };
+  table: ResolvedTableTheme;
 }
 
 // ################################################################################################
@@ -402,96 +507,92 @@ export const defaultMiroirTheme: MiroirTheme = {
   
   components: {
     appBar: {
-      background: '#4527a0ff',
-      textColor: '#ffffff',
+      // background → primaryDark = '#4527a0ff' ✓ (matches, omit)
+      // textColor → backgroundPaper = '#ffffff' ✓ (matches, omit)
       borderBottom: 'none',
       height: '64px',
       elevation: '0 2px 4px rgba(0, 0, 0, 0.1)',
     },
     
     sidebar: {
-      background: '#ffffff',
-      backgroundHover: '#f5f5f5',
-      textColor: '#212121',
-      textColorActive: '#1976d2',
-      borderRight: '1px solid #e0e0e0',
+      // All colors match fallback defaults:
+      //   background → backgroundPaper, backgroundHover → hover,
+      //   textColor → text, textColorActive → accent,
+        // borderRight → computed from border
       width: '200px',
       itemHeight: '48px',
     },
     
-    drawer: {
-      background: '#ffffff',
-      backdrop: 'rgba(0, 0, 0, 0.5)',
-      elevation: '0 8px 10px rgba(0, 0, 0, 0.14), 0 3px 14px rgba(0, 0, 0, 0.12)',
-    },
+    // drawer: all colors match fallback defaults (backgroundPaper, overlay)
+    drawer: {},
     
     input: {
-      background: '#ffffff',
-      backgroundHover: '#f8f8f8',
-      backgroundFocused: '#ffffff',
-      borderColor: '#e0e0e0',
-      borderColorHover: '#757575',
-      borderColorFocused: '#1976d2',
-      textColor: '#212121',
-      placeholderColor: '#9e9e9e',
+      // All colors match fallback defaults:
+      //   background → backgroundPaper, backgroundHover → surface,
+      //   backgroundFocused → backgroundPaper, borderColor → border,
+      //   borderColorHover → textSecondary, borderColorFocused → accent,
+      //   textColor → text, placeholderColor → textLight
       borderRadius: '4px',
       height: '40px',
     },
     
     button: {
       primary: {
-        background: '#1976d2',
-        backgroundHover: '#1565c0',
+        // background → accent = '#1976d2' ✓ (matches, omit)
+        // backgroundHover → active = '#1565c0' ✓ (matches, omit)
+        // backgroundActive → active, but we want '#0d47a1' (deeper)
         backgroundActive: '#0d47a1',
-        textColor: '#ffffff',
-        borderColor: '#1976d2',
+        // textColor → backgroundPaper = '#ffffff' ✓ (matches, omit)
+        // borderColor → accent = '#1976d2' ✓ (matches, omit)
         borderRadius: '4px',
       },
       secondary: {
-        background: '#dc004e',
-        backgroundHover: '#c2185b',
+        // background → secondary = '#dc004e' ✓ (matches, omit)
+        // backgroundHover → secondaryDark = '#c2185b' ✓ (matches, omit)
         backgroundActive: '#ad1457',
-        textColor: '#ffffff',
-        borderColor: '#dc004e',
+        // textColor → backgroundPaper = '#ffffff' ✓ (matches, omit)
+        // borderColor → secondary = '#dc004e' ✓ (matches, omit)
         borderRadius: '4px',
       },
       outlined: {
-        background: 'transparent',
+        // background → 'transparent' ✓ (matches, omit)
+        // backgroundHover → accentLight is rgba(25,118,210,0.1), but we want 0.04
         backgroundHover: 'rgba(25, 118, 210, 0.04)',
         backgroundActive: 'rgba(25, 118, 210, 0.08)',
-        textColor: '#1976d2',
-        borderColor: '#1976d2',
+        // textColor → accent = '#1976d2' ✓ (matches, omit)
+        // borderColor → accent = '#1976d2' ✓ (matches, omit)
         borderRadius: '4px',
       },
     },
     
     card: {
-      background: '#ffffff',
-      borderColor: '#e0e0e0',
+      // background → backgroundPaper = '#ffffff' ✓ (matches, omit)
+      // borderColor → border = '#e0e0e0' ✓ (matches, omit)
       borderRadius: '8px',
       elevation: '0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24)',
       padding: '16px',
     },
     
     dialog: {
-      background: '#ffffff',
-      backdrop: 'rgba(0, 0, 0, 0.5)',
+      // background → backgroundPaper = '#ffffff' ✓ (matches, omit)
+      // backdrop → overlay = 'rgba(0,0,0,0.5)' ✓ (matches, omit)
       borderRadius: '8px',
       elevation: '0 11px 15px rgba(0, 0, 0, 0.2), 0 4px 20px rgba(0, 0, 0, 0.14)',
       padding: '24px',
     },
     
     tooltip: {
+      // background → overlay = 'rgba(0,0,0,0.5)', but we want 'rgba(97,97,97,0.9)'
       background: 'rgba(97, 97, 97, 0.9)',
-      textColor: '#ffffff',
+      // textColor → backgroundPaper = '#ffffff' ✓ (matches, omit)
       borderRadius: '4px',
       fontSize: '12px',
     },
     
     icon: {
-      colorPrimary: '#1976d2',
-      colorSecondary: '#757575',
-      colorDisabled: '#bdbdbd',
+      // colorPrimary → accent = '#1976d2' ✓ (matches, omit)
+      // colorSecondary → textSecondary = '#757575' ✓ (matches, omit)
+      // colorDisabled → textDisabled = '#bdbdbd' ✓ (matches, omit)
       size: {
         sm: '16px',
         md: '24px',
@@ -595,7 +696,9 @@ export const darkMiroirTheme: MiroirTheme = {
   components: {
     ...defaultMiroirTheme.components,
     appBar: {
+      // background defaults to colors.primaryDark, but dark theme uses backgroundPaper
       background: '#1e1e1e',
+      // textColor defaults to colors.backgroundPaper = '#1e1e1e', but we want white
       textColor: '#ffffff',
       borderBottom: '1px solid #333333',
       height: '64px',
@@ -603,72 +706,75 @@ export const darkMiroirTheme: MiroirTheme = {
     },
     
     sidebar: {
-      background: '#1e1e1e',
-      backgroundHover: '#2a2a2a',
-      textColor: '#ffffff',
-      textColorActive: '#90caf9',
-      borderRight: '1px solid #333333',
+      // All colors match fallback defaults from dark root colors:
+      //   background → backgroundPaper, backgroundHover → hover,
+      //   textColor → text, textColorActive → accent,
+      //   borderRight → computed from border
       width: '200px',
       itemHeight: '48px',
     },
     
-    drawer: {
-      background: '#1e1e1e',
-      backdrop: 'rgba(0, 0, 0, 0.7)',
-      elevation: '0 8px 10px rgba(0, 0, 0, 0.3), 0 3px 14px rgba(0, 0, 0, 0.2)',
-    },
+    // drawer: all colors match fallback defaults (backgroundPaper, overlay)
+    drawer: {},
     
     input: {
+      // background → backgroundPaper would be #1e1e1e, but we want surface #2a2a2a
       background: '#2a2a2a',
+      // backgroundHover → surface would be #2a2a2a, but we want surfaceVariant #333333
       backgroundHover: '#333333',
+      // backgroundFocused → backgroundPaper would be #1e1e1e, but we want surface #2a2a2a
       backgroundFocused: '#2a2a2a',
-      borderColor: '#333333',
+      // borderColor → border = '#333333' ✓ (matches, omit)
+      // borderColorHover → textSecondary would be #b3b3b3, but we want #666666
       borderColorHover: '#666666',
-      borderColorFocused: '#90caf9',
-      textColor: '#ffffff',
-      placeholderColor: '#999999',
+      // borderColorFocused → accent = '#90caf9' ✓ (matches, omit)
+      // textColor → text = '#ffffff' ✓ (matches, omit)
+      // placeholderColor → textLight = '#999999' ✓ (matches, omit)
       borderRadius: '4px',
       height: '40px',
     },
     
     button: {
       primary: {
-        background: '#90caf9',
+        // background → accent = '#90caf9' ✓ (matches, omit)
+        // backgroundHover → active = '#0277bd', but we want '#42a5f5'
         backgroundHover: '#42a5f5',
         backgroundActive: '#1976d2',
+        // textColor → backgroundPaper = '#1e1e1e', but we want '#121212'
         textColor: '#121212',
-        borderColor: '#90caf9',
+        // borderColor → accent = '#90caf9' ✓ (matches, omit)
         borderRadius: '4px',
       },
       secondary: {
-        background: '#f48fb1',
-        backgroundHover: '#e91e63',
+        // background → secondary = '#f48fb1' ✓ (matches, omit)
+        // backgroundHover → secondaryDark = '#e91e63' ✓ (matches, omit)
         backgroundActive: '#c2185b',
         textColor: '#121212',
-        borderColor: '#f48fb1',
+        // borderColor → secondary = '#f48fb1' ✓ (matches, omit)
         borderRadius: '4px',
       },
       outlined: {
-        background: 'transparent',
+        // background → 'transparent' ✓ (matches, omit)
+        // backgroundHover → accentLight = 'rgba(144,202,249,0.1)', but we want 0.04
         backgroundHover: 'rgba(144, 202, 249, 0.04)',
         backgroundActive: 'rgba(144, 202, 249, 0.08)',
-        textColor: '#90caf9',
-        borderColor: '#90caf9',
+        // textColor → accent = '#90caf9' ✓ (matches, omit)
+        // borderColor → accent = '#90caf9' ✓ (matches, omit)
         borderRadius: '4px',
       },
     },
     
     card: {
-      background: '#1e1e1e',
-      borderColor: '#333333',
+      // background → backgroundPaper = '#1e1e1e' ✓ (matches, omit)
+      // borderColor → border = '#333333' ✓ (matches, omit)
       borderRadius: '8px',
       elevation: '0 1px 3px rgba(0, 0, 0, 0.3), 0 1px 2px rgba(0, 0, 0, 0.4)',
       padding: '16px',
     },
     
     dialog: {
-      background: '#1e1e1e',
-      backdrop: 'rgba(0, 0, 0, 0.7)',
+      // background → backgroundPaper = '#1e1e1e' ✓ (matches, omit)
+      // backdrop → overlay = 'rgba(0,0,0,0.7)' ✓ (matches, omit)
       borderRadius: '8px',
       elevation: '0 11px 15px rgba(0, 0, 0, 0.4), 0 4px 20px rgba(0, 0, 0, 0.3)',
       padding: '24px',
@@ -676,15 +782,16 @@ export const darkMiroirTheme: MiroirTheme = {
     
     tooltip: {
       background: 'rgba(97, 97, 97, 0.9)',
+      // textColor → backgroundPaper = '#1e1e1e', but we want '#ffffff'
       textColor: '#ffffff',
       borderRadius: '4px',
       fontSize: '12px',
     },
     
     icon: {
-      colorPrimary: '#90caf9',
-      colorSecondary: '#b3b3b3',
-      colorDisabled: '#666666',
+      // colorPrimary → accent = '#90caf9' ✓ (matches, omit)
+      // colorSecondary → textSecondary = '#b3b3b3' ✓ (matches, omit)
+      // colorDisabled → textDisabled = '#666666' ✓ (matches, omit)
       size: {
         sm: '16px',
         md: '24px',
@@ -730,6 +837,9 @@ export const compactMiroirTheme: MiroirTheme = {
     },
   },
   
+  // Compact theme only adjusts sizing-related props.
+  // All colors fall back to root colors via the resolver.
+  // Spreads from defaultMiroirTheme.components to inherit non-color overrides (borderRadius, elevation etc.)
   components: {
     ...defaultMiroirTheme.components,
     appBar: {
@@ -804,8 +914,9 @@ export const materialMiroirTheme: MiroirTheme = {
   components: {
     ...defaultMiroirTheme.components,
     appBar: {
+      // background: uses #2196f3 (material primary), not primaryDark (#1976d2) → keep
       background: '#2196f3',
-      textColor: '#ffffff',
+      // textColor → backgroundPaper = '#ffffff' ✓ (matches, omit)
       borderBottom: 'none',
       height: '64px',
       elevation: '0 4px 8px rgba(0, 0, 0, 0.12)',
@@ -813,23 +924,25 @@ export const materialMiroirTheme: MiroirTheme = {
     
     button: {
       primary: {
+        // Material uses primary=#2196f3, not accent=#1976d2 → keep explicit colors
         background: '#2196f3',
         backgroundHover: '#1976d2',
-        backgroundActive: '#1565c0',
-        textColor: '#ffffff',
+        // backgroundActive → active = '#1565c0' ✓ (matches, omit)
+        // textColor → backgroundPaper = '#ffffff' ✓ (matches, omit)
         borderColor: '#2196f3',
         borderRadius: '8px',
       },
       secondary: {
-        background: '#ff5722',
-        backgroundHover: '#d84315',
+        // background → secondary = '#ff5722' ✓ (matches, omit)
+        // backgroundHover → secondaryDark = '#d84315' ✓ (matches, omit)
         backgroundActive: '#bf360c',
-        textColor: '#ffffff',
-        borderColor: '#ff5722',
+        // textColor → backgroundPaper = '#ffffff' ✓ (matches, omit)
+        // borderColor → secondary = '#ff5722' ✓ (matches, omit)
         borderRadius: '8px',
       },
       outlined: {
-        background: 'transparent',
+        // background → 'transparent' ✓ (matches, omit)
+        // Material uses primary=#2196f3, not accent=#1976d2 → keep these
         backgroundHover: 'rgba(33, 150, 243, 0.04)',
         backgroundActive: 'rgba(33, 150, 243, 0.08)',
         textColor: '#2196f3',
@@ -845,9 +958,10 @@ export const materialMiroirTheme: MiroirTheme = {
     },
     
     icon: {
+      // Material uses primary=#2196f3, not accent=#1976d2 → keep
       colorPrimary: '#2196f3',
-      colorSecondary: '#757575',
-      colorDisabled: '#bdbdbd',
+      // colorSecondary → textSecondary = '#757575' ✓ (matches, omit)
+      // colorDisabled → textDisabled = '#bdbdbd' ✓ (matches, omit)
       size: {
         sm: '16px',
         md: '24px',

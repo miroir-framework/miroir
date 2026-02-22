@@ -36,7 +36,117 @@
 // ensuring visual consistency regardless of which grid implementation is used.
 // ################################################################################################
 
+// ################################################################################################
+// TableTheme: color properties in sub-sections are optional.
+// When not specified, they fall back to the corresponding root color
+// from theme.colors (parent MiroirTheme) via resolveThemeColors().
+// See ThemeColorDefaults.ts for the full mapping documentation.
+// ################################################################################################
 export interface TableTheme {
+  colors: {
+    primary?: string;        // fallback: theme.colors.accent
+    secondary?: string;      // fallback: theme.colors.secondary
+    background?: string;     // fallback: theme.colors.background
+    surface?: string;        // fallback: theme.colors.surface
+    border?: string;         // fallback: theme.colors.border
+    text?: string;           // fallback: theme.colors.text
+    textSecondary?: string;  // fallback: theme.colors.textSecondary
+    textLight?: string;      // fallback: theme.colors.textLight
+    hover?: string;          // fallback: theme.colors.hover
+    selected?: string;       // fallback: theme.colors.selected
+    filter?: string;         // fallback: theme.colors.warning
+    filterBackground?: string; // fallback: theme.colors.warningLight
+    error?: string;          // fallback: theme.colors.error
+    warning?: string;        // fallback: theme.colors.warning
+    success?: string;        // fallback: theme.colors.success
+    accent?: string;         // fallback: theme.colors.accent
+    accentLight?: string;    // fallback: theme.colors.accentLight
+  };
+  spacing: {
+    xs: string;
+    sm: string;
+    md: string;
+    lg: string;
+    xl: string;
+  };
+  typography: {
+    fontSize: string;
+    fontFamily: string;
+    fontWeight: {
+      normal: number;
+      medium: number;
+      bold: number;
+    };
+    headerFontSize: string;
+    headerFontWeight: number;
+  };
+  components: {
+    table: {
+      borderRadius?: string;
+      border?: string;
+      minHeight?: string;
+      maxHeight?: string;
+      backgroundColor?: string;   // fallback: table.colors.background
+      width?: string;
+      maxWidth?: string;
+      adaptiveColumnWidths?: boolean;
+    };
+    header: {
+      background?: string;        // fallback: table.colors.surface
+      height?: string;
+      fontSize?: string;
+      fontWeight?: number;
+      borderBottom?: string;
+      textColor?: string;         // fallback: table.colors.text
+      hoverBackground?: string;   // fallback: table.colors.hover
+    };
+    cell: {
+      height?: string;
+      padding?: string;
+      borderRight?: string;
+      borderBottom?: string;
+      fontSize?: string;
+      backgroundColor?: string;   // fallback: table.colors.background
+      textColor?: string;         // fallback: table.colors.text
+    };
+    row: {
+      hoverBackground?: string;   // fallback: table.colors.hover
+      selectedBackground?: string; // fallback: table.colors.selected
+      borderBottom?: string;
+      evenBackground?: string;    // fallback: table.colors.background
+      oddBackground?: string;     // fallback: table.colors.surface
+    };
+    toolbar: {
+      background?: string;        // fallback: table.colors.surface
+      padding?: string;
+      borderBottom?: string;
+      height?: string;
+      textColor?: string;         // fallback: table.colors.text
+    };
+    filter: {
+      iconColor?: string;         // fallback: table.colors.textSecondary
+      activeIconColor?: string;   // fallback: table.colors.filter
+      clearButtonColor?: string;  // fallback: table.colors.filter
+      clearButtonBackground?: string; // fallback: table.colors.filterBackground
+      clearButtonBorder?: string;
+      toolbarBackground?: string; // fallback: table.colors.surface
+      inputBackground?: string;   // fallback: table.colors.background
+      inputBorder?: string;
+    };
+    sort: {
+      iconColor?: string;         // fallback: table.colors.textSecondary
+      activeIconColor?: string;   // fallback: table.colors.accent
+      ascendingSymbol?: string;
+      descendingSymbol?: string;
+    };
+  };
+}
+
+// ################################################################################################
+// ResolvedTableTheme: fully resolved version where all optional colors are filled in.
+// This is what consumers (TableStyleGenerators, etc.) actually use.
+// ################################################################################################
+export interface ResolvedTableTheme {
   colors: {
     primary: string;
     secondary: string;
@@ -141,7 +251,9 @@ export type DeepPartial<T> = {
   [P in keyof T]?: T[P] extends object ? DeepPartial<T[P]> : T[P];
 };
 
-export const defaultTableTheme: TableTheme = {
+// defaultTableTheme has all fields explicitly set, making it a ResolvedTableTheme.
+// This is used as the base for createTableTheme() and ensures type-safe spreading.
+export const defaultTableTheme: ResolvedTableTheme = {
   colors: {
     primary: '#1976d2',
     secondary: '#dc004e', 
@@ -241,15 +353,91 @@ export const defaultTableTheme: TableTheme = {
   },
 };
 
-// Export the theme configuration for external customization
-export const createTableTheme = (overrides: DeepPartial<TableTheme> = {}): TableTheme => {
+// Export the theme configuration for external customization.
+// Component color fields are auto-derived from the merged table colors,
+// so theme variants only need to specify colors + explicit component overrides.
+// Color derivation follows the same mapping as resolveTableThemeColors():
+//   table.backgroundColor → colors.background
+//   header.background → colors.surface
+//   header.textColor → colors.text
+//   cell.backgroundColor → colors.background
+//   cell.textColor → colors.text
+//   row.hoverBackground → colors.hover
+//   etc. (see ThemeColorDefaults.ts for full mapping)
+export const createTableTheme = (overrides: DeepPartial<TableTheme> = {}): ResolvedTableTheme => {
+  // Step 1: Merge colors (defaults + overrides)
+  const colors: ResolvedTableTheme['colors'] = {
+    ...defaultTableTheme.colors,
+    ...overrides.colors,
+  };
+
+  // Step 2: Compute component color defaults from merged colors (not from defaultTableTheme)
+  const derivedComponents: ResolvedTableTheme['components'] = {
+    table: {
+      borderRadius: defaultTableTheme.components.table.borderRadius,
+      border: `1px solid ${colors.border}`,
+      minHeight: defaultTableTheme.components.table.minHeight,
+      maxHeight: defaultTableTheme.components.table.maxHeight,
+      backgroundColor: colors.background,
+      width: defaultTableTheme.components.table.width,
+      maxWidth: defaultTableTheme.components.table.maxWidth,
+      adaptiveColumnWidths: defaultTableTheme.components.table.adaptiveColumnWidths,
+    },
+    header: {
+      background: colors.surface,
+      height: defaultTableTheme.components.header.height,
+      fontSize: defaultTableTheme.components.header.fontSize,
+      fontWeight: defaultTableTheme.components.header.fontWeight,
+      borderBottom: `1px solid ${colors.border}`,
+      textColor: colors.text,
+      hoverBackground: colors.hover,
+    },
+    cell: {
+      height: defaultTableTheme.components.cell.height,
+      padding: defaultTableTheme.components.cell.padding,
+      borderRight: `1px solid ${colors.border}`,
+      borderBottom: `1px solid ${colors.border}`,
+      fontSize: defaultTableTheme.components.cell.fontSize,
+      backgroundColor: colors.background,
+      textColor: colors.text,
+    },
+    row: {
+      hoverBackground: colors.hover,
+      selectedBackground: colors.selected,
+      borderBottom: `1px solid ${colors.border}`,
+      evenBackground: colors.background,
+      oddBackground: colors.surface,
+    },
+    toolbar: {
+      background: colors.surface,
+      padding: defaultTableTheme.components.toolbar.padding,
+      borderBottom: `1px solid ${colors.border}`,
+      height: defaultTableTheme.components.toolbar.height,
+      textColor: colors.text,
+    },
+    filter: {
+      iconColor: colors.textSecondary,
+      activeIconColor: colors.filter,
+      clearButtonColor: colors.filter,
+      clearButtonBackground: colors.filterBackground,
+      clearButtonBorder: `1px solid ${colors.filter}`,
+      toolbarBackground: colors.surface,
+      inputBackground: colors.background,
+      inputBorder: `1px solid ${colors.border}`,
+    },
+    sort: {
+      iconColor: colors.textSecondary,
+      activeIconColor: colors.accent,
+      ascendingSymbol: defaultTableTheme.components.sort.ascendingSymbol,
+      descendingSymbol: defaultTableTheme.components.sort.descendingSymbol,
+    },
+  };
+
+  // Step 3: Apply explicit component overrides on top of derived defaults
   return {
     ...defaultTableTheme,
     ...overrides,
-    colors: {
-      ...defaultTableTheme.colors,
-      ...overrides.colors,
-    },
+    colors,
     spacing: {
       ...defaultTableTheme.spacing,
       ...overrides.spacing,
@@ -263,34 +451,32 @@ export const createTableTheme = (overrides: DeepPartial<TableTheme> = {}): Table
       },
     },
     components: {
-      ...defaultTableTheme.components,
-      ...overrides.components,
       table: {
-        ...defaultTableTheme.components.table,
+        ...derivedComponents.table,
         ...overrides.components?.table,
       },
       header: {
-        ...defaultTableTheme.components.header,
+        ...derivedComponents.header,
         ...overrides.components?.header,
       },
       cell: {
-        ...defaultTableTheme.components.cell,
+        ...derivedComponents.cell,
         ...overrides.components?.cell,
       },
       row: {
-        ...defaultTableTheme.components.row,
+        ...derivedComponents.row,
         ...overrides.components?.row,
       },
       toolbar: {
-        ...defaultTableTheme.components.toolbar,
+        ...derivedComponents.toolbar,
         ...overrides.components?.toolbar,
       },
       filter: {
-        ...defaultTableTheme.components.filter,
+        ...derivedComponents.filter,
         ...overrides.components?.filter,
       },
       sort: {
-        ...defaultTableTheme.components.sort,
+        ...derivedComponents.sort,
         ...overrides.components?.sort,
       },
     },
@@ -298,6 +484,8 @@ export const createTableTheme = (overrides: DeepPartial<TableTheme> = {}): Table
 };
 
 // Predefined theme variants
+// Dark table theme: only colors need to be specified.
+// Component colors are auto-derived from these colors by createTableTheme().
 export const darkTableTheme = createTableTheme({
   colors: {
     primary: '#90caf9',
@@ -318,41 +506,24 @@ export const darkTableTheme = createTableTheme({
     accent: '#90caf9',
     accentLight: 'rgba(144, 202, 249, 0.1)',
   },
+  // All component colors are auto-derived from the colors above:
+  //   table.backgroundColor → background (#121212) ✓
+  //   table.border → 1px solid border (#333333) ✓
+  //   header.background → surface (#1e1e1e) ✓
+  //   header.textColor → text (#ffffff) ✓
+  //   header.hoverBackground → hover (#2a2a2a) ✓
+  //   cell.backgroundColor → background (#121212) ✓
+  //   cell.textColor → text (#ffffff) ✓
+  //   row.hoverBackground → hover (#2a2a2a) ✓
+  //   row.selectedBackground → selected (#1976d2) ✓
+  //   toolbar.background → surface (#1e1e1e) ✓
+  //   toolbar.textColor → text (#ffffff) ✓
+  //   filter.clearButtonBackground → filterBackground (#2a2a2a) ✓
+  //   filter.* → derived from colors ✓
   components: {
-    table: {
-      backgroundColor: '#121212',
-      border: '1px solid #333333',
-    },
-    header: {
-      background: '#1e1e1e',
-      textColor: '#ffffff',
-      hoverBackground: '#2a2a2a',
-      borderBottom: '1px solid #333333',
-    },
-    cell: {
-      backgroundColor: '#121212',
-      textColor: '#ffffff',
-      borderRight: '1px solid #333333',
-      borderBottom: '1px solid #333333',
-    },
     row: {
-      hoverBackground: '#2a2a2a',
-      selectedBackground: '#1976d2',
-      borderBottom: '1px solid #333333',
-      evenBackground: '#121212',
+      // oddBackground defaults to surface (#1e1e1e), but we want darker
       oddBackground: '#1a1a1a',
-    },
-    toolbar: {
-      background: '#1e1e1e',
-      textColor: '#ffffff',
-      borderBottom: '1px solid #333333',
-    },
-    filter: {
-      clearButtonBackground: '#2a2a2a',
-      clearButtonBorder: '1px solid #ff8c00',
-      toolbarBackground: '#1e1e1e',
-      inputBackground: '#1e1e1e',
-      inputBorder: '1px solid #333333',
     },
   },
 });
@@ -382,6 +553,8 @@ export const compactTableTheme = createTableTheme({
   },
 });
 
+// Material table theme: specify colors that differ from defaults.
+// Component colors are auto-derived from these colors by createTableTheme().
 export const materialTableTheme = createTableTheme({
   colors: {
     primary: '#2196f3',
@@ -399,25 +572,19 @@ export const materialTableTheme = createTableTheme({
     accent: '#2196f3',
     accentLight: 'rgba(33, 150, 243, 0.1)',
   },
+  // Most component colors are auto-derived from the colors above.
+  // Only specify overrides that diverge from the auto-derived values.
   components: {
     table: {
       borderRadius: '8px',
-      border: '1px solid #e1e1e1',
+      // backgroundColor → colors.background (#fafafa), but material wants white surface
       backgroundColor: '#ffffff',
     },
     header: {
-      background: '#f5f5f5',
-      textColor: '#212121',
+      // hoverBackground → colors.hover (#f5f5f5), but material wants slightly darker
       hoverBackground: '#eeeeee',
     },
-    filter: {
-      activeIconColor: '#2196f3',
-      clearButtonColor: '#2196f3',
-      clearButtonBackground: '#e3f2fd',
-      clearButtonBorder: '1px solid #2196f3',
-    },
-    sort: {
-      activeIconColor: '#2196f3',
-    },
+    // filter and sort: activeIconColor → colors.filter (#2196f3) ✓ (auto-derived)
+    // No explicit component color overrides needed
   },
 });

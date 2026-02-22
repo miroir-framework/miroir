@@ -1,26 +1,31 @@
-import React, { createContext, useContext, useState, ReactNode, useCallback } from 'react';
+import React, { createContext, useContext, useState, ReactNode, useCallback, useMemo } from 'react';
 import { 
   MiroirTheme, 
+  ResolvedMiroirTheme,
   MiroirThemeOption, 
   defaultMiroirTheme, 
   miroirThemeOptions 
 } from '../components/Themes/MiroirTheme.js';
+import { resolveThemeColors } from '../components/Themes/ThemeColorDefaults.js';
 
 // Re-export for convenience
 export type { MiroirThemeOption };
 
-// Context interface
+// Context interface - always provides a ResolvedMiroirTheme
 interface MiroirThemeContextType {
-  currentTheme: MiroirTheme;
+  currentTheme: ResolvedMiroirTheme;
   currentThemeId: string;
   currentThemeOption: MiroirThemeOption;
   selectTheme: (themeId: string) => void;
   availableThemes: MiroirThemeOption[];
 }
 
+// Resolve the default theme once for the default context value
+const resolvedDefaultTheme = resolveThemeColors(defaultMiroirTheme);
+
 // Create the context with a default value
 const MiroirThemeContext = createContext<MiroirThemeContextType>({
-  currentTheme: defaultMiroirTheme,
+  currentTheme: resolvedDefaultTheme,
   currentThemeId: 'default',
   currentThemeOption: miroirThemeOptions[0],
   selectTheme: () => {},
@@ -52,7 +57,11 @@ export const MiroirThemeProvider: React.FC<MiroirThemeProviderProps> = ({
   const currentThemeOption = miroirThemeOptions.find(option => option.id === currentThemeId) 
     || miroirThemeOptions[0];
   
-  const currentTheme = currentThemeOption.theme;
+  // Resolve all optional sub-section colors to their root color fallbacks
+  const currentTheme = useMemo(
+    () => resolveThemeColors(currentThemeOption.theme),
+    [currentThemeOption]
+  );
   
   const selectTheme = useCallback((themeId: string) => {
     if (isControlled) {

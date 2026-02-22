@@ -406,7 +406,9 @@
           "appBar": {
             "type": "object",
             "definition": {
-              "background": { "type": "string",
+              "background": {
+                "type": "string",
+                "optional": true,
                 "tag": {
                   "value": {
                     "defaultLabel": "App Bar Background Color",
@@ -414,7 +416,9 @@
                   }
                 }
               },
-              "textColor": { "type": "string",
+              "textColor": {
+                "type": "string",
+                "optional": true,
                 "tag": {
                   "value": {
                     "defaultLabel": "App Bar Text Color",
@@ -422,7 +426,8 @@
                   }
                 }
               },
-              "borderBottom": { "type": "string",
+              "borderBottom": {
+                "type": "string",
                 "tag": {
                   "value": {
                     "defaultLabel": "App Bar Border Bottom Color",
@@ -430,7 +435,8 @@
                   }
                 }
               },
-              "height": { "type": "string",
+              "height": {
+                "type": "string",
                 "tag": {
                   "value": {
                     "defaultLabel": "App Bar Height",
@@ -438,7 +444,8 @@
                   }
                 }
               },
-              "elevation": { "type": "string", 
+              "elevation": {
+                "type": "string",
                 "tag": {
                   "value": {
                     "defaultLabel": "App Bar Elevation",
@@ -451,7 +458,9 @@
           "sidebar": {
             "type": "object",
             "definition": {
-              "background": { "type": "string", 
+              "background": {
+                "type": "string",
+                "optional": true,
                 "tag": {
                   "value": {
                     "defaultLabel": "Sidebar Background Color",
@@ -459,7 +468,9 @@
                   }
                 }
               },
-              "backgroundHover": { "type": "string",
+              "backgroundHover": {
+                "type": "string",
+                "optional": true,
                 "tag": {
                   "value": {
                     "defaultLabel": "Sidebar Background Hover Color",
@@ -467,7 +478,9 @@
                   }
                 }
               },
-              "textColor": { "type": "string",
+              "textColor": {
+                "type": "string",
+                "optional": true,
                 "tag": {
                   "value": {
                     "defaultLabel": "Sidebar Text Color",
@@ -475,7 +488,9 @@
                   }
                 }
               },
-              "textColorActive": { "type": "string",
+              "textColorActive": {
+                "type": "string",
+                "optional": true,
                 "tag": {
                   "value": {
                     "defaultLabel": "Sidebar Text Color Active",
@@ -483,7 +498,9 @@
                   }
                 }
               },
-              "borderRight": { "type": "string",
+              "borderRight": {
+                "type": "string",
+                "optional": true,
                 "tag": {
                   "value": {
                     "defaultLabel": "Sidebar Border Right Color",
@@ -491,7 +508,8 @@
                   }
                 }
               },
-              "width": { "type": "string",
+              "width": {
+                "type": "string",
                 "tag": {
                   "value": {
                     "defaultLabel": "Sidebar Width",
@@ -499,7 +517,8 @@
                   }
                 }
               },
-              "itemHeight": { "type": "string",
+              "itemHeight": {
+                "type": "string",
                 "tag": {
                   "value": {
                     "defaultLabel": "Sidebar Item Height",
@@ -512,7 +531,9 @@
           "drawer": {
             "type": "object",
             "definition": {
-              "background": { "type": "string", 
+              "background": {
+                "type": "string",
+                "optional": true,
                 "tag": {
                   "value": {
                     "defaultLabel": "Drawer Background Color",
@@ -520,14 +541,17 @@
                   }
                 }
               },
-              "backdrop": { "type": "string" },
-              "elevation": { "type": "string" }
+              "backdrop": { "type": "string", "optional": true
+              },
+              "elevation": { "type": "string", "optional": true}
             }
           },
           "input": {
             "type": "object",
             "definition": {
-              "background": { "type": "string", 
+              "background": {
+                "type": "string",
+                "optional": true,
                 "tag": {
                   "value": {
                     "defaultLabel": "Input Background Color",
@@ -535,9 +559,29 @@
                   }
                 }
               },
-              "backgroundHover": { "type": "string" },
-              "backgroundFocused": { "type": "string" },
-              "borderColor": { "type": "string", 
+              "backgroundHover": {
+                "type": "string",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Input Background Hover Color",
+                    "display": { "string": { "format": "color" } }
+                  }
+                }
+              },
+              "backgroundFocused": {
+                "type": "string",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Input Background Focused Color",
+                    "display": { "string": { "format": "color" } }
+                  }
+                }
+              },
+              "borderColor": {
+                "type": "string",
+                "optional": true,
                 "tag": {
                   "value": {
                     "defaultLabel": "Input Border Color",
@@ -545,31 +589,46 @@
                   }
                 }
               },
-              "borderColorHover": { "type": "string", 
+              "borderColorHover": {
+                "type": "string",
+                "optional": true,
                 "tag": {
                   "value": {
                     "defaultLabel": "Input Border Color Hover",
                     "display": { "string": { "format": "color" } }
                   }
                 }
-             },
-              "borderColorFocused": { "type": "string" },
-              "textColor": { "type": "string", 
+              },
+              "borderColorFocused": {
+                "type": "string",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Input Border Color Focused",
+                    "display": { "string": { "format": "color" } }
+                  }
+                }
+              },
+              "textColor": {
+                "type": "string",
+                "optional": true,
                 "tag": {
                   "value": {
                     "defaultLabel": "Input Text Color",
                     "display": { "string": { "format": "color" } }
                   }
                 }
-             },
-              "placeholderColor": { "type": "string", 
+              },
+              "placeholderColor": {
+                "type": "string",
+                "optional": true,
                 "tag": {
                   "value": {
                     "defaultLabel": "Input Placeholder Color",
                     "display": { "string": { "format": "color" } }
                   }
                 }
-             },
+              },
               "borderRadius": { "type": "string" },
               "height": { "type": "string" }
             }
@@ -580,7 +639,9 @@
               "primary": {
                 "type": "object",
                 "definition": {
-                  "background": { "type": "string", 
+                  "background": {
+                    "type": "string",
+                  "optional": true,
                     "tag": {
                       "value": {
                         "defaultLabel": "Primary Button Background Color",
@@ -588,7 +649,9 @@
                       }
                     }
                   },
-                  "backgroundHover": { "type": "string", 
+                  "backgroundHover": {
+                    "type": "string",
+                    "optional": true,
                     "tag": {
                       "value": {
                         "defaultLabel": "Primary Button Background Hover Color",
@@ -596,7 +659,9 @@
                       }
                     }
                   },
-                  "backgroundActive": { "type": "string", 
+                  "backgroundActive": {
+                    "type": "string",
+                "optional": true,
                     "tag": {
                       "value": {
                         "defaultLabel": "Primary Button Background Active Color",
@@ -604,7 +669,9 @@
                       }
                     }
                   },
-                  "textColor": { "type": "string", 
+                  "textColor": {
+                    "type": "string",
+                "optional": true,
                     "tag": {
                       "value": {
                         "defaultLabel": "Primary Button Text Color",
@@ -612,7 +679,9 @@
                       }
                     }
                   },
-                  "borderColor": { "type": "string", 
+                  "borderColor": {
+                    "type": "string",
+                    "optional": true,
                     "tag": {
                       "value": {
                         "defaultLabel": "Primary Button Border Color",
@@ -626,7 +695,9 @@
               "secondary": {
                 "type": "object",
                 "definition": {
-                  "background": { "type": "string", 
+                  "background": {
+                    "type": "string",
+                "optional": true,
                     "tag": {
                       "value": {
                         "defaultLabel": "Secondary Button Background Color",
@@ -634,7 +705,9 @@
                       }
                     }
                   },
-                  "backgroundHover": { "type": "string", 
+                  "backgroundHover": {
+                    "type": "string",
+                    "optional": true,
                     "tag": {
                       "value": {
                         "defaultLabel": "Secondary Button Background Hover Color",
@@ -642,7 +715,9 @@
                       }
                     }
                   },
-                  "backgroundActive": { "type": "string", 
+                  "backgroundActive": {
+                    "type": "string",
+                "optional": true,
                     "tag": {
                       "value": {
                         "defaultLabel": "Secondary Button Background Active Color",
@@ -650,7 +725,9 @@
                       }
                     }
                   },
-                  "textColor": { "type": "string", 
+                  "textColor": {
+                    "type": "string",
+                    "optional": true,
                     "tag": {
                       "value": {
                         "defaultLabel": "Secondary Button Text Color",
@@ -658,7 +735,9 @@
                       }
                     }
                   },
-                  "borderColor": { "type": "string", 
+                  "borderColor": {
+                    "type": "string",
+                    "optional": true,
                     "tag": {
                       "value": {
                         "defaultLabel": "Secondary Button Border Color",
@@ -672,7 +751,9 @@
               "outlined": {
                 "type": "object",
                 "definition": {
-                  "background": { "type": "string", 
+                  "background": {
+                    "type": "string",
+                    "optional": true,
                     "tag": {
                       "value": {
                         "defaultLabel": "Outlined Button Background Color",
@@ -680,7 +761,9 @@
                       }
                     }
                   },
-                  "backgroundHover": { "type": "string", 
+                  "backgroundHover": {
+                    "type": "string",
+                    "optional": true,
                     "tag": {
                       "value": {
                         "defaultLabel": "Outlined Button Background Hover Color",
@@ -688,7 +771,9 @@
                       }
                     }
                   },
-                  "backgroundActive": { "type": "string", 
+                  "backgroundActive": {
+                    "type": "string",
+                    "optional": true,
                     "tag": {
                       "value": {
                         "defaultLabel": "Outlined Button Background Active Color",
@@ -696,7 +781,9 @@
                       }
                     }
                   },
-                  "textColor": { "type": "string", 
+                  "textColor": {
+                    "type": "string",
+                    "optional": true,
                     "tag": {
                       "value": {
                         "defaultLabel": "Outlined Button Text Color",
@@ -704,7 +791,9 @@
                       }
                     }
                   },
-                  "borderColor": { "type": "string", 
+                  "borderColor": {
+                    "type": "string",
+                    "optional": true,
                     "tag": {
                       "value": {
                         "defaultLabel": "Outlined Button Border Color",
@@ -720,7 +809,9 @@
           "card": {
             "type": "object",
             "definition": {
-              "background": { "type": "string", 
+              "background": {
+                "type": "string",
+                "optional": true,
                 "tag": {
                   "value": {
                     "defaultLabel": "Card Background Color",
@@ -728,7 +819,9 @@
                   }
                 }
               },
-              "borderColor": { "type": "string", 
+              "borderColor": {
+                "type": "string",
+                "optional": true,
                 "tag": {
                   "value": {
                     "defaultLabel": "Card Border Color",
@@ -746,6 +839,7 @@
             "definition": {
               "background": {
                 "type": "string",
+                "optional": true,
                 "tag": {
                   "value": {
                     "defaultLabel": "Dialog Background Color",
@@ -755,6 +849,7 @@
               },
               "backdrop": {
                 "type": "string",
+                "optional": true,
                 "tag": {
                   "value": {
                     "defaultLabel": "Dialog Backdrop Color",
@@ -770,7 +865,9 @@
           "tooltip": {
             "type": "object",
             "definition": {
-              "background": { "type": "string", 
+              "background": {
+                "type": "string",
+                "optional": true,
                 "tag": {
                   "value": {
                     "defaultLabel": "Tooltip Background Color",
@@ -778,7 +875,9 @@
                   }
                 }
               },
-              "textColor": { "type": "string", 
+              "textColor": {
+                "type": "string",
+                "optional": true,
                 "tag": {
                   "value": {
                     "defaultLabel": "Tooltip Text Color",
@@ -793,7 +892,9 @@
           "icon": {
             "type": "object",
             "definition": {
-              "colorPrimary": { "type": "string", 
+              "colorPrimary": {
+                "type": "string",
+                "optional": true,
                 "tag": {
                   "value": {
                     "defaultLabel": "Icon Primary Color",
@@ -801,7 +902,9 @@
                   }
                 }
               },
-              "colorSecondary": { "type": "string", 
+              "colorSecondary": {
+                "type": "string",
+                "optional": true,
                 "tag": {
                   "value": {
                     "defaultLabel": "Icon Secondary Color",
@@ -809,7 +912,9 @@
                   }
                 }
               },
-              "colorDisabled": { "type": "string", 
+              "colorDisabled": {
+                "type": "string",
+                "optional": true,
                 "tag": {
                   "value": {
                     "defaultLabel": "Icon Disabled Color",

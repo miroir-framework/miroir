@@ -7,10 +7,10 @@
 // ################################################################################################
 
 import { css } from '@emotion/react';
-import { MiroirTheme } from './MiroirTheme.js';
+import { ResolvedMiroirTheme } from './MiroirTheme.js';
 
 // Helper to create CSS styles from theme
-export const createThemedStyle = (theme: MiroirTheme) => ({
+export const createThemedStyle = (theme: ResolvedMiroirTheme) => ({
   // Common utility styles
   flexCenter: css`
     display: flex;
@@ -350,7 +350,7 @@ export const createThemedStyle = (theme: MiroirTheme) => ({
 });
 
 // Helper function to convert MUI theme to custom CSS properties
-export const createCSSVariables = (theme: MiroirTheme): Record<string, string> => {
+export const createCSSVariables = (theme: ResolvedMiroirTheme): Record<string, string> => {
   return {
     // Colors
     '--miroir-color-primary': theme.colors.primary,
@@ -411,7 +411,7 @@ export const createCSSVariables = (theme: MiroirTheme): Record<string, string> =
 };
 
 // Helper to apply CSS variables to document root
-export const applyCSSVariables = (theme: MiroirTheme): void => {
+export const applyCSSVariables = (theme: ResolvedMiroirTheme): void => {
   const variables = createCSSVariables(theme);
   const root = document.documentElement;
   

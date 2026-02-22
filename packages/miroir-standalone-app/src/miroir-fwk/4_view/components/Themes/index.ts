@@ -1,6 +1,9 @@
 // Base types
 export type { ThemedComponentProps } from './BaseTypes';
 
+// Theme color resolution (optional sub-colors → root color fallbacks)
+export { resolveThemeColors, resolveTableThemeColors } from './ThemeColorDefaults';
+
 // Basic components
 export {
   ThemedContainer,
