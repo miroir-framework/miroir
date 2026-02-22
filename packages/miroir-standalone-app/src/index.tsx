@@ -1,6 +1,6 @@
 declare global { interface Window { process?: any } }
 
-import { createTheme, StyledEngineProvider, ThemeProvider } from "@mui/material";
+import { createTheme, StyledEngineProvider, ThemeProvider, type ThemeOptions } from "@mui/material";
 import { blue } from "@mui/material/colors";
 import 'material-symbols/outlined.css';
 import { StrictMode } from "react";
@@ -72,6 +72,7 @@ import { RunnersPage } from "./miroir-fwk/4_view/routes/Runners.js";
 import { SettingsPage } from "./miroir-fwk/4_view/routes/SettingsPage.js";
 import { SearchPage } from "./miroir-fwk/4_view/routes/SearchPage.js";
 import { adminSelfApplication, deployment_Admin, deployment_Miroir, entityDeployment } from "miroir-test-app_deployment-admin";
+import { rgb } from "d3";
 
 const specificLoggerOptions: SpecificLoggerOptionsMap = {
   // "5_miroir-core_DomainController": {level:defaultLevels.INFO, template:"[{{time}}] {{level}} ({{name}}) BBBBB-"},
@@ -210,18 +211,25 @@ const router = createBrowserRouter([
 
 // const theme = createMuiTheme();
 
-export const themeParams = {
-  palette: {
-    primary: {
-      main: blue[500],
-    },
-  },
+export const themeParams: ThemeOptions = {
+  // palette: {
+  //   primary: {
+  //     // main: blue[500],
+  //     // main: rgb(124, 103, 188),
+  //     main: "#7c67bcff",
+  //   },
+  //   background: {
+  //     // main: blue[500],
+  //     // main: rgb(124, 103, 188),
+  //     default: "#7c67bcff",
+  //   },
+  // },
   // spacing: 2,
   spacing: 0,
   components: {
-    toolbar: {
-      paddingRight: 24, // keep right padding when drawer closed
-    },
+    // toolbar: {
+    //   paddingRight: 24, // keep right padding when drawer closed
+    // },
     // MuiContainer: { // no effect?
     //   defaultProps: {
     //     disableGutters: true,
@@ -237,11 +245,11 @@ export const themeParams = {
     //     disableGutters: true,
     //   },
     // },
-    content: {
-      flexGrow: 1,
-      // height: '100vh',
-      // overflowY: 'auto', // Allow scrolling when content overflows
-    },
+    // content: {
+    //   flexGrow: 1,
+    //   // height: '100vh',
+    //   // overflowY: 'auto', // Allow scrolling when content overflows
+    // },
     MuiList: {
       defaultProps:{
         style: {border: `0`,}
@@ -405,7 +413,7 @@ async function setupClient(
 async function startWebApp(root:Root) {
   // Initialize performance monitoring configuration
   initializePerformanceConfig();
-  
+
   // Start our mock API server
   // const mServer: IndexedDbObjectStore = new IndexedDbObjectStore(miroirConfig.rootApiUrl);
 
@@ -416,14 +424,14 @@ async function startWebApp(root:Root) {
   // Electron IPC mode: the main process owns all store factories and the server-side domain
   // controller.  The renderer detects this via window.electronAPI.callMiroirIpc (injected by
   // the preload script) and uses IPC-based proxies instead of in-process objects.
-  const isElectron = typeof (window as any).electronAPI?.callMiroirIpc === 'function';
+  const isElectron = typeof (window as any).electronAPI?.callMiroirIpc === "function";
   const electronRestClient = isElectron ? new ElectronRestClient() : undefined;
 
   const theme = createTheme(themeParams);
-  
+
   theme.spacing(10);
 
-  console.warn("start in mode",process.env.NODE_ENV)
+  console.warn("start in mode", process.env.NODE_ENV);
   const desktopMiroirConfig: MiroirConfigClient = {
     miroirConfigType: "client",
     client: {
@@ -459,152 +467,160 @@ async function startWebApp(root:Root) {
       },
     },
   };
-    // Electron uses desktopMiroirConfig (emulated server via IPC).
-    // The browser webapp uses webMiroirConfig (real HTTP server).
-    const miroirConfigToUse = isElectron ? desktopMiroirConfig : webMiroirConfig;
-    const { domainControllerForClient, domainControllerForServer: rawDomainControllerForServer, miroirContext } =
-      await setupClient(
-        miroirConfigToUse,
-        miroirActivityTracker,
-        miroirEventService,
-        electronRestClient ? { customRestClient: electronRestClient } : undefined,
-      );
+  // Electron uses desktopMiroirConfig (emulated server via IPC).
+  // The browser webapp uses webMiroirConfig (real HTTP server).
+  const miroirConfigToUse = isElectron ? desktopMiroirConfig : webMiroirConfig;
+  const {
+    domainControllerForClient,
+    domainControllerForServer: rawDomainControllerForServer,
+    miroirContext,
+  } = await setupClient(
+    miroirConfigToUse,
+    miroirActivityTracker,
+    miroirEventService,
+    electronRestClient ? { customRestClient: electronRestClient } : undefined,
+  );
 
-    // In Electron mode, the server-side domain controller is a lightweight IPC proxy that
-    // delegates handleAction / handleBoxedExtractorOrQueryAction calls to the main process.
-    let domainControllerForServer: DomainControllerInterface | undefined = isElectron
-      ? (new ElectronServerDomainControllerProxy() as any as DomainControllerInterface)
-      : rawDomainControllerForServer;
+  // In Electron mode, the server-side domain controller is a lightweight IPC proxy that
+  // delegates handleAction / handleBoxedExtractorOrQueryAction calls to the main process.
+  let domainControllerForServer: DomainControllerInterface | undefined = isElectron
+    ? (new ElectronServerDomainControllerProxy() as any as DomainControllerInterface)
+    : rawDomainControllerForServer;
 
-    if (isElectron && desktopMiroirConfig.client.emulateServer) {
-      if (!domainControllerForServer) {
-        throw new Error("Domain controller for server is not defined");
-      }
-      const configurations: Record<string, Deployment> = {
-        [deployment_Admin.uuid]: deployment_Admin as Deployment,
-        [deployment_Miroir.uuid]: deployment_Miroir as Deployment,
-      }
-      
-      // open all configured stores
-      for (const c of Object.entries(configurations)) {
-        const openStoreAction: StoreOrBundleAction = {
-          actionType: "storeManagementAction_openStore",
-          application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-          endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
-          payload: {
-            application: c[1].selfApplication,
-            deploymentUuid: c[0],
-            configuration: {
-              [c[0]]: c[1].configuration as StoreUnitConfiguration,
-            },
-          },
-        };
-        await domainControllerForServer.handleAction(
-          openStoreAction,
-          defaultSelfApplicationDeploymentMap,
-          defaultMetaModelEnvironment
-        );
-      }
-      const deploymentsQueryResults = await domainControllerForServer.handleBoxedExtractorOrQueryAction({
-        actionType: "runBoxedQueryAction",
+  if (isElectron && desktopMiroirConfig.client.emulateServer) {
+    if (!domainControllerForServer) {
+      throw new Error("Domain controller for server is not defined");
+    }
+    const configurations: Record<string, Deployment> = {
+      [deployment_Admin.uuid]: deployment_Admin as Deployment,
+      [deployment_Miroir.uuid]: deployment_Miroir as Deployment,
+    };
+
+    // open all configured stores
+    for (const c of Object.entries(configurations)) {
+      const openStoreAction: StoreOrBundleAction = {
+        actionType: "storeManagementAction_openStore",
         application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-        endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+        endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
         payload: {
-          application: adminSelfApplication.uuid,
-          applicationSection: "data",
-          queryExecutionStrategy: "storage",
-          query: {
-            application: adminSelfApplication.uuid,
-            queryType: "boxedQueryWithExtractorCombinerTransformer",
-            pageParams: {},
-            queryParams: {},
-            contextResults: {},
-            extractors: {
-              deployments: {
-                extractorOrCombinerType: "extractorByEntityReturningObjectList",
-                parentUuid: entityDeployment.uuid,
-              }
-            }
+          application: c[1].selfApplication,
+          deploymentUuid: c[0],
+          configuration: {
+            [c[0]]: c[1].configuration as StoreUnitConfiguration,
           },
-        }
-      }, defaultSelfApplicationDeploymentMap, defaultMetaModelEnvironment);
-      
-      if (deploymentsQueryResults instanceof Action2Error) {
-        throw new Error(`Error fetching deployments: ${deploymentsQueryResults.errorMessage}`);
-      }
-      
-      const deployments: Deployment[] = deploymentsQueryResults.returnedDomainElement.deployments;
-      
-      log.info(`Deployments fetched: ${JSON.stringify(deployments, circularReplacer(), 2)}`);
-      
-      const deploymentsToOpen: [string, Deployment][] = deployments
-        .filter((d) => !configurations[d.uuid.toString()])
-        .map((d) => [d.uuid.toString(), d]);
-      
-      log.info(`Deployments to open: ${JSON.stringify(deploymentsToOpen, circularReplacer(), 2)}`);
-      
-      const applicationDeploymentMap: ApplicationDeploymentMap = deployments.reduce(
-        (acc, curr) => {
-          return {...acc, [curr.selfApplication??("NO ADMIN APPLICATION for " + curr.name)] : curr.uuid};
         },
-        {}
+      };
+      await domainControllerForServer.handleAction(
+        openStoreAction,
+        defaultSelfApplicationDeploymentMap,
+        defaultMetaModelEnvironment,
       );
-      
-      log.info(`ApplicationDeploymentMap for new deployments: ${JSON.stringify(applicationDeploymentMap, circularReplacer(), 2)}`);
-      
-      // open all newly found stores
-      for (const c of deploymentsToOpen) {
-        const openStoreAction: StoreOrBundleAction = {
-          actionType: "storeManagementAction_openStore",
+    }
+    const deploymentsQueryResults =
+      await domainControllerForServer.handleBoxedExtractorOrQueryAction(
+        {
+          actionType: "runBoxedQueryAction",
           application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-          endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
+          endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
           payload: {
-            application: c[1].selfApplication,
-            deploymentUuid: c[0],
-            configuration: {
-              [c[0]]: c[1].configuration as StoreUnitConfiguration,
+            application: adminSelfApplication.uuid,
+            applicationSection: "data",
+            queryExecutionStrategy: "storage",
+            query: {
+              application: adminSelfApplication.uuid,
+              queryType: "boxedQueryWithExtractorCombinerTransformer",
+              pageParams: {},
+              queryParams: {},
+              contextResults: {},
+              extractors: {
+                deployments: {
+                  extractorOrCombinerType: "extractorByEntityReturningObjectList",
+                  parentUuid: entityDeployment.uuid,
+                },
+              },
             },
           },
-        };
-        await domainControllerForServer.handleAction(
-          openStoreAction,
-          applicationDeploymentMap,
-          defaultMetaModelEnvironment
-        );
-      }
+        },
+        defaultSelfApplicationDeploymentMap,
+        defaultMetaModelEnvironment,
+      );
+
+    if (deploymentsQueryResults instanceof Action2Error) {
+      throw new Error(`Error fetching deployments: ${deploymentsQueryResults.errorMessage}`);
     }
 
-    root.render(
-      <>
-        {/* <span>electron {isElectron ? "yes" : "no"}</span>
-        <pre>{JSON.stringify(webMiroirConfig, null, 2)}</pre> */}
-        <StrictMode>
-          <ThemeProvider theme={theme}>
-            <StyledEngineProvider injectFirst>
-              <LocalCacheProvider store={domainControllerForClient.getLocalCache().getInnerStore()}>
-                <MiroirContextReactProvider
-                  miroirContext={miroirContext}
-                  domainController={domainControllerForClient}
-                >
-                  <RouterProvider router={router} />
-                </MiroirContextReactProvider>
-              </LocalCacheProvider>
-            </StyledEngineProvider>
-          </ThemeProvider>
-        </StrictMode>
-      </>
+    const deployments: Deployment[] = deploymentsQueryResults.returnedDomainElement.deployments;
+
+    log.info(`Deployments fetched: ${JSON.stringify(deployments, circularReplacer(), 2)}`);
+
+    const deploymentsToOpen: [string, Deployment][] = deployments
+      .filter((d) => !configurations[d.uuid.toString()])
+      .map((d) => [d.uuid.toString(), d]);
+
+    log.info(`Deployments to open: ${JSON.stringify(deploymentsToOpen, circularReplacer(), 2)}`);
+
+    const applicationDeploymentMap: ApplicationDeploymentMap = deployments.reduce((acc, curr) => {
+      return {
+        ...acc,
+        [curr.selfApplication ?? "NO ADMIN APPLICATION for " + curr.name]: curr.uuid,
+      };
+    }, {});
+
+    log.info(
+      `ApplicationDeploymentMap for new deployments: ${JSON.stringify(applicationDeploymentMap, circularReplacer(), 2)}`,
     );
 
-    // root.render(
-    //   <>
-    //     {/* <span>Production mode not implemented yet!</span> */}
-    //     <span>electron </span>
-    //     <pre>{JSON.stringify(currentMiroirConfig, null, 2)}</pre>
-    //   </>
-    // )
+    // open all newly found stores
+    for (const c of deploymentsToOpen) {
+      const openStoreAction: StoreOrBundleAction = {
+        actionType: "storeManagementAction_openStore",
+        application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+        endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
+        payload: {
+          application: c[1].selfApplication,
+          deploymentUuid: c[0],
+          configuration: {
+            [c[0]]: c[1].configuration as StoreUnitConfiguration,
+          },
+        },
+      };
+      await domainControllerForServer.handleAction(
+        openStoreAction,
+        applicationDeploymentMap,
+        defaultMetaModelEnvironment,
+      );
+    }
+  }
+
+  root.render(
+    <>
+      {/* <span>electron {isElectron ? "yes" : "no"}</span>
+        <pre>{JSON.stringify(webMiroirConfig, null, 2)}</pre> */}
+      <StrictMode>
+        <ThemeProvider theme={theme}>
+          <StyledEngineProvider injectFirst>
+            <LocalCacheProvider store={domainControllerForClient.getLocalCache().getInnerStore()}>
+              <MiroirContextReactProvider
+                miroirContext={miroirContext}
+                domainController={domainControllerForClient}
+              >
+                <RouterProvider router={router} />
+              </MiroirContextReactProvider>
+            </LocalCacheProvider>
+          </StyledEngineProvider>
+        </ThemeProvider>
+      </StrictMode>
+    </>,
+  );
+
+  // root.render(
+  //   <>
+  //     {/* <span>Production mode not implemented yet!</span> */}
+  //     <span>electron </span>
+  //     <pre>{JSON.stringify(currentMiroirConfig, null, 2)}</pre>
+  //   </>
+  // )
   // }
-
-
 }
 
 if (container) {

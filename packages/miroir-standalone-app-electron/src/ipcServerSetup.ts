@@ -24,9 +24,7 @@ import {
   MiroirEventService,
   PersistenceStoreControllerManager,
   RestClientStub,
-  defaultMetaModelEnvironment,
-  defaultSelfApplicationDeploymentMap,
-  miroirCoreStartup,
+  miroirCoreStartup
 } from "miroir-core";
 // import {
 //   adminSelfApplication,
