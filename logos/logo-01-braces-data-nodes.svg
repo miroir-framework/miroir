@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400">
+  <defs>
+    <linearGradient id="g1a" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#F59E0B;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#EF4444;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="g1b" x1="100%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#F59E0B;stop-opacity:0.3" />
+      <stop offset="100%" style="stop-color:#EF4444;stop-opacity:0.3" />
+    </linearGradient>
+  </defs>
+  <circle cx="200" cy="200" r="190" fill="#1C1412" />
+  <!-- Left brace -->
+  <path d="M 120 70 Q 95 70 95 105 L 95 175 Q 95 200 70 200 Q 95 200 95 225 L 95 295 Q 95 330 120 330"
+        fill="none" stroke="url(#g1a)" stroke-width="6" stroke-linecap="round" opacity="0.35" />
+  <!-- Right brace (mirrored) -->
+  <path d="M 280 70 Q 305 70 305 105 L 305 175 Q 305 200 330 200 Q 305 200 305 225 L 305 295 Q 305 330 280 330"
+        fill="none" stroke="url(#g1b)" stroke-width="6" stroke-linecap="round" opacity="0.25" />
+  <!-- Mirror axis -->
+  <line x1="200" y1="60" x2="200" y2="340" stroke="#F59E0B" stroke-width="1" opacity="0.15" stroke-dasharray="4,6" />
+  <!-- Left data nodes (conception focus) -->
+  <circle cx="150" cy="130" r="14" fill="none" stroke="#F59E0B" stroke-width="2.5" opacity="0.85" />
+  <circle cx="160" cy="200" r="18" fill="none" stroke="#FB923C" stroke-width="2.5" opacity="0.9" />
+  <circle cx="150" cy="270" r="14" fill="none" stroke="#F59E0B" stroke-width="2.5" opacity="0.85" />
+  <!-- Left connections -->
+  <line x1="150" y1="144" x2="158" y2="182" stroke="#F59E0B" stroke-width="1.5" opacity="0.5" />
+  <line x1="158" y1="218" x2="150" y2="256" stroke="#F59E0B" stroke-width="1.5" opacity="0.5" />
+  <!-- Left inner dots (data points) -->
+  <circle cx="150" cy="130" r="5" fill="#F59E0B" opacity="0.7" />
+  <circle cx="160" cy="200" r="7" fill="#FB923C" opacity="0.8" />
+  <circle cx="150" cy="270" r="5" fill="#F59E0B" opacity="0.7" />
+  <!-- Right data nodes (reflected, faded) -->
+  <circle cx="250" cy="130" r="14" fill="none" stroke="#F59E0B" stroke-width="2" opacity="0.25" />
+  <circle cx="240" cy="200" r="18" fill="none" stroke="#FB923C" stroke-width="2" opacity="0.3" />
+  <circle cx="250" cy="270" r="14" fill="none" stroke="#F59E0B" stroke-width="2" opacity="0.25" />
+  <line x1="250" y1="144" x2="242" y2="182" stroke="#F59E0B" stroke-width="1.5" opacity="0.15" />
+  <line x1="242" y1="218" x2="250" y2="256" stroke="#F59E0B" stroke-width="1.5" opacity="0.15" />
+  <circle cx="250" cy="130" r="5" fill="#F59E0B" opacity="0.2" />
+  <circle cx="240" cy="200" r="7" fill="#FB923C" opacity="0.25" />
+  <circle cx="250" cy="270" r="5" fill="#F59E0B" opacity="0.2" />
+</svg>

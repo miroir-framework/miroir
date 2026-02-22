@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400">
+  <!-- Escher: Droste effect - recursive frames (schema defining itself) -->
+  <rect width="400" height="400" rx="20" fill="#0A0E1C" />
+  <!-- Frame 1: outermost -->
+  <rect x="40" y="40" width="320" height="320" rx="8" fill="none" stroke="#60A5FA" stroke-width="2.5" opacity="0.6" />
+  <!-- Data nodes on outer frame -->
+  <circle cx="40" cy="40" r="5" fill="#60A5FA" opacity="0.5" />
+  <circle cx="360" cy="40" r="5" fill="#60A5FA" opacity="0.4" />
+  <circle cx="360" cy="360" r="5" fill="#60A5FA" opacity="0.35" />
+  <circle cx="40" cy="360" r="5" fill="#60A5FA" opacity="0.3" />
+  <!-- Frame 2: rotated slightly, smaller -->
+  <rect x="75" y="75" width="250" height="250" rx="6" fill="none" stroke="#818CF8" stroke-width="2" opacity="0.5"
+        transform="rotate(3 200 200)" />
+  <!-- Frame 3 -->
+  <rect x="110" y="110" width="180" height="180" rx="5" fill="none" stroke="#A78BFA" stroke-width="1.8" opacity="0.4"
+        transform="rotate(-2 200 200)" />
+  <!-- Small entity nodes on frame 3 -->
+  <circle cx="115" cy="115" r="4" fill="#A78BFA" opacity="0.35" />
+  <circle cx="285" cy="115" r="4" fill="#A78BFA" opacity="0.3" />
+  <circle cx="285" cy="285" r="4" fill="#A78BFA" opacity="0.25" />
+  <circle cx="115" cy="285" r="4" fill="#A78BFA" opacity="0.2" />
+  <!-- Frame 4 -->
+  <rect x="140" y="140" width="120" height="120" rx="4" fill="none" stroke="#C4B5FD" stroke-width="1.5" opacity="0.35"
+        transform="rotate(4 200 200)" />
+  <!-- Frame 5 -->
+  <rect x="165" y="165" width="70" height="70" rx="3" fill="none" stroke="#DDD6FE" stroke-width="1.2" opacity="0.3"
+        transform="rotate(-3 200 200)" />
+  <!-- Frame 6: innermost -->
+  <rect x="183" y="183" width="34" height="34" rx="2" fill="none" stroke="#EDE9FE" stroke-width="1" opacity="0.25"
+        transform="rotate(2 200 200)" />
+  <!-- Center dot: the self-referencing core -->
+  <circle cx="200" cy="200" r="5" fill="#E0E7FF" opacity="0.5" />
+  <circle cx="200" cy="200" r="2" fill="#C7D2FE" opacity="0.8" />
+  <!-- Connecting spiral hint -->
+  <path d="M 45,200 Q 45,45 200,45" fill="none" stroke="#60A5FA" stroke-width="0.5" opacity="0.15" />
+  <path d="M 80,200 Q 80,80 200,80" fill="none" stroke="#818CF8" stroke-width="0.5" opacity="0.12" />
+  <path d="M 115,200 Q 115,115 200,115" fill="none" stroke="#A78BFA" stroke-width="0.5" opacity="0.1" />
+</svg>

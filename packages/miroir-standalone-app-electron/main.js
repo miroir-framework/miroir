@@ -1,4 +1,5 @@
 const { app, BrowserWindow } = require('electron');
+const path = require('path');
 
 let mainWindow;
 
@@ -10,6 +11,9 @@ app.on('ready', () => {
   mainWindow = new BrowserWindow({
     width: config.development.windowSize.width,
     height: config.development.windowSize.height,
+    // icon: path.join('./miroir-logo.png'), // Specify the path to your icon file
+    // icon: path.join(__dirname, 'miroir-logo.png'), // Specify the path to your icon file
+    // icon: path.join(__dirname, 'miroir-logo.png'), // Specify the path to your icon file
     webPreferences: {
       nodeIntegration: true,
     },

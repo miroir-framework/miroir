@@ -98,6 +98,7 @@ class MainWindow {
     this.mainWindow = new BrowserWindow({
       height: 1000,
       width: 1400,
+      // icon: path.join(__dirname, 'miroir-logo.png'), // Specify the path to your icon file
       webPreferences: {
         preload: path.join(__dirname, "preload.js"),
         nodeIntegration: false,
@@ -162,7 +163,7 @@ class MainWindow {
 
   private getIconPath(): string {
     // Return path to icon file
-    const iconPath = path.join(__dirname, "../assets/icon.png");
+    const iconPath = path.join(__dirname, "../assets/miroir-logo.png");
     return iconPath;
   }
 

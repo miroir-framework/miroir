@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400">
+  <defs>
+    <linearGradient id="tc1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#34D399;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#059669;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="tc2" x1="100%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#34D399;stop-opacity:0.3" />
+      <stop offset="100%" style="stop-color:#059669;stop-opacity:0.3" />
+    </linearGradient>
+    <clipPath id="leftClip">
+      <rect x="0" y="0" width="200" height="400" />
+    </clipPath>
+    <clipPath id="rightClip">
+      <rect x="200" y="0" width="200" height="400" />
+    </clipPath>
+  </defs>
+  <!-- Background -->
+  <rect width="400" height="400" rx="200" fill="#022C22" />
+  <!-- Left circle (development) -->
+  <circle cx="160" cy="185" r="100" fill="none" stroke="url(#tc1)" stroke-width="3" />
+  <!-- Right circle (runtime) - mirrored -->
+  <circle cx="240" cy="185" r="100" fill="none" stroke="url(#tc2)" stroke-width="3" />
+  <!-- Intersection fill -->
+  <clipPath id="intersect">
+    <circle cx="160" cy="185" r="100" />
+  </clipPath>
+  <circle cx="240" cy="185" r="100" fill="#34D399" opacity="0.15" clip-path="url(#intersect)" />
+  <!-- Left icon: code angle bracket < /> -->
+  <text x="120" y="195" font-family="'Courier New', monospace" font-size="36" fill="#34D399" opacity="0.8">&lt;/&gt;</text>
+  <!-- Right icon: play/run triangle -->
+  <polygon points="260,170 260,200 285,185" fill="#34D399" opacity="0.3" />
+  <!-- Center M at intersection -->
+  <text x="200" y="195" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="40" font-weight="800" fill="#34D399" opacity="0.9">M</text>
+  <!-- Mirror vertical axis -->
+  <line x1="200" y1="75" x2="200" y2="295" stroke="#34D399" stroke-width="1" opacity="0.2" stroke-dasharray="3,5" />
+  <!-- Labels -->
+  <text x="120" y="310" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="11" fill="#34D399" opacity="0.5">DEV</text>
+  <text x="280" y="310" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="11" fill="#34D399" opacity="0.5">RUN</text>
+  <!-- Bottom text -->
+  <text x="200" y="370" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="26" font-weight="600" fill="#34D399" letter-spacing="8">MIROIR</text>
+</svg>

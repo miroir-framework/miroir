@@ -82,8 +82,8 @@ export async function setupMiroirPlatform(
   let persistenceStoreControllerManagerForServer: PersistenceStoreControllerManager | undefined = undefined;
   if (miroirConfig.client.emulateServer) {
     persistenceStoreControllerManagerForServer = new PersistenceStoreControllerManager(
-      configurationService.adminStoreFactoryRegister,
-      configurationService.StoreSectionFactoryRegister
+      ConfigurationService.configurationService.adminStoreFactoryRegister,
+      ConfigurationService.configurationService.StoreSectionFactoryRegister
     );
 
     const domainControllerForServer = await setupMiroirDomainController(

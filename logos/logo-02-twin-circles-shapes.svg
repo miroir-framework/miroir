@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400">
+  <defs>
+    <linearGradient id="g2a" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#34D399;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#059669;stop-opacity:1" />
+    </linearGradient>
+    <clipPath id="leftCircle2">
+      <circle cx="155" cy="200" r="110" />
+    </clipPath>
+  </defs>
+  <rect width="400" height="400" rx="200" fill="#022C22" />
+  <!-- Left circle -->
+  <circle cx="155" cy="200" r="110" fill="none" stroke="#34D399" stroke-width="2.5" opacity="0.8" />
+  <!-- Right circle -->
+  <circle cx="245" cy="200" r="110" fill="none" stroke="#34D399" stroke-width="2.5" opacity="0.35" />
+  <!-- Intersection fill -->
+  <circle cx="245" cy="200" r="110" fill="#34D399" opacity="0.08" clip-path="url(#leftCircle2)" />
+  <!-- Left: abstract entity shapes (conception) -->
+  <rect x="85" y="155" width="30" height="30" rx="4" fill="none" stroke="#34D399" stroke-width="2" opacity="0.7" />
+  <polygon points="100,210 85,240 115,240" fill="none" stroke="#34D399" stroke-width="2" opacity="0.6" />
+  <circle cx="100" cy="275" r="14" fill="none" stroke="#34D399" stroke-width="2" opacity="0.5" />
+  <!-- Connection lines between shapes -->
+  <line x1="100" y1="185" x2="100" y2="210" stroke="#34D399" stroke-width="1" opacity="0.4" />
+  <line x1="100" y1="240" x2="100" y2="261" stroke="#34D399" stroke-width="1" opacity="0.3" />
+  <!-- Center: merged/intersection shapes -->
+  <rect x="186" y="170" width="28" height="28" rx="14" fill="#34D399" opacity="0.25" />
+  <circle cx="200" cy="225" r="12" fill="#34D399" opacity="0.2" />
+  <!-- Right: reflected shapes (runtime, faded) -->
+  <rect x="280" y="155" width="30" height="30" rx="4" fill="none" stroke="#34D399" stroke-width="1.5" opacity="0.2" />
+  <polygon points="295,210 280,240 310,240" fill="none" stroke="#34D399" stroke-width="1.5" opacity="0.15" />
+  <circle cx="295" cy="275" r="14" fill="none" stroke="#34D399" stroke-width="1.5" opacity="0.12" />
+  <!-- Mirror axis -->
+  <line x1="200" y1="80" x2="200" y2="320" stroke="#34D399" stroke-width="1" opacity="0.12" stroke-dasharray="3,5" />
+</svg>
