@@ -1,0 +1,145 @@
+{
+  "uuid": "8e380a46-189d-40ff-a880-7d04f04da673",
+  "parentName": "MlSchema",
+  "parentUuid": "5e81e1b9-38be-487c-b3e5-53796c57fccf",
+  "name": "TableThemeSchema",
+  "defaultLabel": "Jzod Schema for TableTheme",
+  "mlSchema": {
+    "type": "object",
+    "definition": {
+      "colors": {
+        "type": "object",
+        "definition": {
+          "primary": { "type": "string" },
+          "secondary": { "type": "string" },
+          "background": { "type": "string" },
+          "surface": { "type": "string" },
+          "border": { "type": "string" },
+          "text": { "type": "string" },
+          "textSecondary": { "type": "string" },
+          "textLight": { "type": "string" },
+          "hover": { "type": "string" },
+          "selected": { "type": "string" },
+          "filter": { "type": "string" },
+          "filterBackground": { "type": "string" },
+          "error": { "type": "string" },
+          "warning": { "type": "string" },
+          "success": { "type": "string" },
+          "accent": { "type": "string" },
+          "accentLight": { "type": "string" }
+        }
+      },
+      "spacing": {
+        "type": "object",
+        "definition": {
+          "xs": { "type": "string" },
+          "sm": { "type": "string" },
+          "md": { "type": "string" },
+          "lg": { "type": "string" },
+          "xl": { "type": "string" }
+        }
+      },
+      "typography": {
+        "type": "object",
+        "definition": {
+          "fontSize": { "type": "string" },
+          "fontFamily": { "type": "string" },
+          "fontWeight": {
+            "type": "object",
+            "definition": {
+              "normal": { "type": "number" },
+              "medium": { "type": "number" },
+              "bold": { "type": "number" }
+            }
+          },
+          "headerFontSize": { "type": "string" },
+          "headerFontWeight": { "type": "number" }
+        }
+      },
+      "components": {
+        "type": "object",
+        "definition": {
+          "table": {
+            "type": "object",
+            "definition": {
+              "borderRadius": { "type": "string" },
+              "border": { "type": "string" },
+              "minHeight": { "type": "string" },
+              "maxHeight": { "type": "string" },
+              "backgroundColor": { "type": "string" },
+              "width": { "type": "string" },
+              "maxWidth": { "type": "string" },
+              "adaptiveColumnWidths": { "type": "boolean" }
+            }
+          },
+          "header": {
+            "type": "object",
+            "definition": {
+              "background": { "type": "string" },
+              "height": { "type": "string" },
+              "fontSize": { "type": "string" },
+              "fontWeight": { "type": "number" },
+              "borderBottom": { "type": "string" },
+              "textColor": { "type": "string" },
+              "hoverBackground": { "type": "string" }
+            }
+          },
+          "cell": {
+            "type": "object",
+            "definition": {
+              "height": { "type": "string" },
+              "padding": { "type": "string" },
+              "borderRight": { "type": "string" },
+              "borderBottom": { "type": "string" },
+              "fontSize": { "type": "string" },
+              "backgroundColor": { "type": "string" },
+              "textColor": { "type": "string" }
+            }
+          },
+          "row": {
+            "type": "object",
+            "definition": {
+              "hoverBackground": { "type": "string" },
+              "selectedBackground": { "type": "string" },
+              "borderBottom": { "type": "string" },
+              "evenBackground": { "type": "string" },
+              "oddBackground": { "type": "string" }
+            }
+          },
+          "toolbar": {
+            "type": "object",
+            "definition": {
+              "background": { "type": "string" },
+              "padding": { "type": "string" },
+              "borderBottom": { "type": "string" },
+              "height": { "type": "string" },
+              "textColor": { "type": "string" }
+            }
+          },
+          "filter": {
+            "type": "object",
+            "definition": {
+              "iconColor": { "type": "string" },
+              "activeIconColor": { "type": "string" },
+              "clearButtonColor": { "type": "string" },
+              "clearButtonBackground": { "type": "string" },
+              "clearButtonBorder": { "type": "string" },
+              "toolbarBackground": { "type": "string" },
+              "inputBackground": { "type": "string" },
+              "inputBorder": { "type": "string" }
+            }
+          },
+          "sort": {
+            "type": "object",
+            "definition": {
+              "iconColor": { "type": "string" },
+              "activeIconColor": { "type": "string" },
+              "ascendingSymbol": { "type": "string" },
+              "descendingSymbol": { "type": "string" }
+            }
+          }
+        }
+      }
+    }
+  }
+}

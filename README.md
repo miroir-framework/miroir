@@ -23,10 +23,10 @@ Miroir is a comprehensive development framework that transforms how you create w
 
 ## Example use case
 
-You need to manage a small library inventory, with Books, Authors, Publishers and Members, where the Members may borrow and return Books under given conditions. Using Miroir, you may typically:
+You need to **manage a small library inventory**, with Books, Authors, Publishers and Members, where the Members may borrow and return Books under given conditions. Using Miroir, you may typically:
 
 - **install Miroir on a laptop** - the Miroir desktop app is made available on a single machine in the library, perfect for a nascent inventory
-- **create the wanted entities** - start creating you application in Miroir by creating Book, Author, Publisher and Member entities, each Entity defining potential relations to others (for example a Book must have 1 or more Authors)
+- **create the wanted entities** - start creating you application in Miroir by creating **Book**, **Author**, **Publisher** and **Member** entities, each Entity defining potential relations to others (for example a Book must have 1 or more Authors)
 - **create the wanted operations** - typically, there would be an action for a Member to **borrow a Book**, with a verification of the necessary conditions to allow the operation, and also an action to **return a borrowed Book**.
 - **create additional views** - for example to **monitor the inventory state, popularity of Books**, punctuality of Users, etc.
 - **create (non-regression) tests** - evolve your application safely, ensuring that improvements do not break existing features

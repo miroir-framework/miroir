@@ -7,6 +7,7 @@
 //   JzodReferenceResolutionFunction,
 // } from "@miroir-framework/jzod";
 // import { JzodElement, JzodReference } from "@miroir-fr>amework/jzod-ts";
+import { table } from "console";
 import { cleanLevel } from "../../../1_core/constants";
 import { jzodTransitiveDependencySet } from "../../../1_core/jzod/JzodSchemaReferences";
 import {
@@ -44,6 +45,9 @@ import {
   resolveReferencesWithCarryOn,
   testCompositeActionParams,
 } from "./getMiroirFundamentalJzodSchemaHelpers";
+
+import { default as miroirThemeSchema } from "../../../assets/miroir_data/5e81e1b9-38be-487c-b3e5-53796c57fccf/2aa173df-285d-4ed2-8b70-736902ded03a.json" assert { type: "json" };
+import { default as tableThemeSchema } from "../../../assets/miroir_data/5e81e1b9-38be-487c-b3e5-53796c57fccf/8e380a46-189d-40ff-a880-7d04f04da673.json" assert { type: "json" };
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -3255,6 +3259,12 @@ export function getMiroirFundamentalJzodSchema(
         //       }
         //     }
         //   }
+        ______________________________________________themes_____________________________________________:
+          {
+            type: "never",
+          },
+          tableThemeSchema: (tableThemeSchema as any).mlSchema,
+          miroirThemeSchema: (miroirThemeSchema as any).mlSchema,
       },
       definition: {
         absolutePath: miroirFundamentalJzodSchemaUuid,

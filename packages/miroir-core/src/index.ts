@@ -994,3 +994,6 @@ const menuDefaultTest1 = require("./assets/test1_model/dde4c883-ae6d-47c3-b6df-2
 
 export { menuDefaultTest1, test1SelfApplication };
 
+export { default as miroirThemeSchema } from "./assets/miroir_data/5e81e1b9-38be-487c-b3e5-53796c57fccf/2aa173df-285d-4ed2-8b70-736902ded03a.json" assert { type: "json" };
+export { default as TableThemeSchema } from "./assets/miroir_data/5e81e1b9-38be-487c-b3e5-53796c57fccf/8e380a46-189d-40ff-a880-7d04f04da673.json";
+
