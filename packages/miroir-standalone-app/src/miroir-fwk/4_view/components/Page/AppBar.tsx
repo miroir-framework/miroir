@@ -124,7 +124,7 @@ export interface AppBarProps extends MuiAppBarProps {
   handleSidebarOpen?: ()=>void,
   setSidebarOpen: (v: boolean) => void;
   sidebarIsOpen: boolean,
-  children:any,
+  // children:any,
   width?: number,
   onWidthChange?: (width: number) => void,
   // Document outline props
@@ -207,25 +207,25 @@ export function AppBar(props:AppBarProps) {
   
   // custom hooks
   const miroirTheme = useMiroirTheme();
-  const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
-  const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
+  // const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
+  // const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
   const context = useMiroirContextService();
   const { fetchConfigurations } = usePageConfiguration();
 
-  const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorElNav(event.currentTarget);
-  };
-  const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorElUser(event.currentTarget);
-  };
+  // const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
+  //   setAnchorElNav(event.currentTarget);
+  // };
+  // const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
+  //   setAnchorElUser(event.currentTarget);
+  // };
 
-  const handleCloseNavMenu = () => {
-    setAnchorElNav(null);
-  };
+  // const handleCloseNavMenu = () => {
+  //   setAnchorElNav(null);
+  // };
 
-  const handleCloseUserMenu = () => {
-    setAnchorElUser(null);
-  };
+  // const handleCloseUserMenu = () => {
+  //   setAnchorElUser(null);
+  // };
 
   const goToLabelPage = (event: any, l: string) => {
     log.info("goToLabelPage: ", l, " event: ", event);

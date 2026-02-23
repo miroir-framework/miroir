@@ -6,7 +6,6 @@ import {
 import {
   DomainController,
   DomainControllerInterface,
-  Endpoint,
   MiroirContext
 } from "miroir-core";
 import { call } from "typed-redux-saga";
@@ -43,7 +42,7 @@ export function setupMiroirDomainController(
     miroirContext,
     localCache, // implements LocalCacheInterface
     persistenceSaga, // implements PersistenceStoreLocalOrRemoteInterface
-    new Endpoint(localCache)
+    // {} as any// new Endpoint(localCache)
   );
   return domainController
 }

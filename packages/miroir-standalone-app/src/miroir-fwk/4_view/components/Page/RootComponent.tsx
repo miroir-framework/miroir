@@ -797,9 +797,7 @@ export const RootComponent = (props: RootComponentProps) => {
                 onEditModeToggle={() =>
                   context.viewParams.updateEditMode(!context.viewParams.generalEditMode)
                 }
-              >
-                Bar! TODO: remove children
-              </AppBar>
+              />
               <ThemedMainPanel
                 sidebarOpen={sidebarIsOpen}
                 sidebarWidth={sidebarWidth}

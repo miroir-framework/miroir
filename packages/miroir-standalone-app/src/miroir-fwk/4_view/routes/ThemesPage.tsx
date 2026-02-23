@@ -3,7 +3,6 @@
 import {
   defaultSelfApplicationDeploymentMap,
   MiroirLoggerFactory,
-  miroirThemeSchema,
   selfApplicationDeploymentMiroir,
   selfApplicationMiroir,
   type JzodObject,
@@ -19,6 +18,7 @@ import { usePageConfiguration } from "../services/index.js";
 import { TypedValueObjectEditor } from "../components/Reports/TypedValueObjectEditor.js";
 import { TypedValueObjectEditorWithFormik } from "../components/Reports/TypedValueObjectEditorWithFormik.js";
 import { defaultMiroirTheme } from "../components/Themes/MiroirTheme.js";
+import { miroirThemeSchemaJson } from "miroir-test-app_deployment-miroir";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -48,7 +48,7 @@ export const ThemesPage: React.FC<any> = (
   const targetSchema:JzodObject = {
     type: "object",
     definition: {
-      themesPage: miroirThemeSchema.mlSchema as JzodObject
+      themesPage: miroirThemeSchemaJson.mlSchema as JzodObject
     }
   };
   const initialFormValue = {

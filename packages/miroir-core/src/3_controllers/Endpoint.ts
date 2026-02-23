@@ -1,5 +1,6 @@
+import type { E } from "vitest/dist/chunks/environment.d.cL3nLXbE";
 import type { Uuid } from "../0_interfaces/1_core/EntityDefinition";
-import { InstanceAction } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import { InstanceAction, type EndpointDefinition } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { EndpointInterfaceNOTUSED } from "../0_interfaces/3_controllers/EndpointInterface";
 import { LocalCacheInterface } from "../0_interfaces/4-services/LocalCacheInterface";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
@@ -29,52 +30,52 @@ import {
   persistenceEndpointVersionV1,
 } from "miroir-test-app_deployment-miroir";
 
-export const coreEndpoints: Record<string, Endpoint> = {
-  [applicationEndpointV1.uuid]: applicationEndpointV1,
-  [deploymentEndpointV1.uuid]: deploymentEndpointV1,
-  [instanceEndpointV1.uuid]: instanceEndpointV1,
-  [modelEndpointV1.uuid]: modelEndpointV1,
-  [domainEndpointVersionV1.uuid]: domainEndpointVersionV1,
-  [testEndpointVersionV1.uuid]: testEndpointVersionV1,
-  [storeManagementEndpoint.uuid]: storeManagementEndpoint,
-  [instanceEndpointVersionV1.uuid]: instanceEndpointVersionV1,
-  [undoRedoEndpointVersionV1.uuid]: undoRedoEndpointVersionV1,
-  [localCacheEndpointVersionV1.uuid]: localCacheEndpointVersionV1,
-  [queryEndpointVersionV1.uuid]: queryEndpointVersionV1,
-  [persistenceEndpointVersionV1.uuid]: persistenceEndpointVersionV1,
+export const coreEndpoints: Record<string, EndpointDefinition> = {
+  [applicationEndpointV1.uuid]: applicationEndpointV1 as EndpointDefinition,
+  [deploymentEndpointV1.uuid]: deploymentEndpointV1 as any as EndpointDefinition,
+  [instanceEndpointV1.uuid]: instanceEndpointV1 as any as EndpointDefinition,
+  [modelEndpointV1.uuid]: modelEndpointV1 as any as EndpointDefinition,
+  [domainEndpointVersionV1.uuid]: domainEndpointVersionV1 as any as EndpointDefinition,
+  [testEndpointVersionV1.uuid]: testEndpointVersionV1 as EndpointDefinition,
+  [storeManagementEndpoint.uuid]: storeManagementEndpoint as any as EndpointDefinition,
+  [instanceEndpointVersionV1.uuid]: instanceEndpointVersionV1 as any as EndpointDefinition,
+  [undoRedoEndpointVersionV1.uuid]: undoRedoEndpointVersionV1 as EndpointDefinition,
+  [localCacheEndpointVersionV1.uuid]: localCacheEndpointVersionV1 as EndpointDefinition,
+  [queryEndpointVersionV1.uuid]: queryEndpointVersionV1 as EndpointDefinition,
+  [persistenceEndpointVersionV1.uuid]: persistenceEndpointVersionV1 as EndpointDefinition,
 };
 
 export const coreEndpointsUuidList = Object.keys(coreEndpoints);
 
 // export const libraryEndpointUuid: Uuid = "212f2784-5b68-43b2-8ee0-89b1c6fdd0de";
 
-// ################################################################################################
-export class Endpoint implements EndpointInterfaceNOTUSED {
-  constructor(private localCache: LocalCacheInterface) {
+// // ################################################################################################
+// export class Endpoint implements EndpointInterfaceNOTUSED {
+//   constructor(private localCache: LocalCacheInterface) {
 
-  }
+//   }
 
-  handleActionNOTUSED(action: InstanceAction): void {
-    log.info("Endpoint.handleAction called", JSON.stringify(action, null, 2))
-    // // return this.localCache.handleEndpointAction(action);
-    // switch (action.actionType) {
-    //   case "createInstance": {
-    //     // this.localCache.createInstance(action.deploymentUuid, action.applicationSection, action.objects);
-    //     // log.info("Endpoint.handleAction called", action)
-    //     this.localCache.handleLocalCacheAction(action);
-    //     break
-    //   }
-    //   case "getInstance": {
-    //     // TODO
-    //     break;
-    //   }
-    //   default:
-    //     break;
-    // }
-  }
+//   handleActionNOTUSED(action: InstanceAction): void {
+//     log.info("Endpoint.handleAction called", JSON.stringify(action, null, 2))
+//     // // return this.localCache.handleEndpointAction(action);
+//     // switch (action.actionType) {
+//     //   case "createInstance": {
+//     //     // this.localCache.createInstance(action.deploymentUuid, action.applicationSection, action.objects);
+//     //     // log.info("Endpoint.handleAction called", action)
+//     //     this.localCache.handleLocalCacheAction(action);
+//     //     break
+//     //   }
+//     //   case "getInstance": {
+//     //     // TODO
+//     //     break;
+//     //   }
+//     //   default:
+//     //     break;
+//     // }
+//   }
 
-  async handleAsyncActionNOTUSED(action: InstanceAction): Promise<void> {
-    return Promise.resolve();
-  }
-}
-// ################################################################################################
+//   async handleAsyncActionNOTUSED(action: InstanceAction): Promise<void> {
+//     return Promise.resolve();
+//   }
+// }
+// // ################################################################################################

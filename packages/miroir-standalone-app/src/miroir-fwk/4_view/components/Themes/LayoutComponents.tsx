@@ -508,7 +508,7 @@ export const ThemedMainPanel: React.FC<ThemedComponentProps & {
     // width: `calc(100% - ${sidebarOpen ? sidebarWidth : 0}px - ${outlineOpen ? outlineWidth : 0}px)`,
     boxSizing: 'border-box' as const,
     minHeight: 100,
-    // overflow: "scroll", 
+    overflow: "auto", 
     marginTop: 0, // Fix wide gap below the appbar
     paddingTop: 0,
     paddingLeft: 0,

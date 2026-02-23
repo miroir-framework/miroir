@@ -83,6 +83,7 @@ import {
   type Runner,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import type { MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
+import type { EntityInstanceWithName } from "../0_interfaces/1_core/Instance";
 // import { Endpoint } from "../3_controllers/Endpoint";
 
 /**
@@ -91,8 +92,8 @@ import type { MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer"
  * */
 // FIRST: CENTRALIZE LOGIC TO DETERMINE MODEL ENTITIES
 export const metaMetaModelEntities: MetaEntity[] = [
-  entityEntity,
-  entityEntityDefinition,
+  entityEntity as MetaEntity,
+  entityEntityDefinition as MetaEntity,
 ];
 export const metaMetaModelEntityUuids: Uuid[] = metaMetaModelEntities.map((e) => e.uuid);
 
@@ -162,13 +163,13 @@ export const defaultMiroirMetaModel: MetaModel = {
   ],
   endpoints: [
     applicationEndpointV1 as EndpointDefinition,
-    deploymentEndpointV1 as EndpointDefinition,
-    instanceEndpointV1 as EndpointDefinition,
-    modelEndpointV1 as EndpointDefinition,
-    domainEndpointVersionV1 as EndpointDefinition,
+    deploymentEndpointV1 as any as EndpointDefinition,
+    instanceEndpointV1 as any as EndpointDefinition,
+    modelEndpointV1 as any as EndpointDefinition,
+    domainEndpointVersionV1 as any as EndpointDefinition,
     testEndpointVersionV1 as EndpointDefinition,
-    storeManagementEndpoint as EndpointDefinition,
-    instanceEndpointVersionV1 as EndpointDefinition,
+    storeManagementEndpoint as any as EndpointDefinition,
+    instanceEndpointVersionV1 as any as EndpointDefinition,
     undoRedoEndpointVersionV1 as EndpointDefinition,
     localCacheEndpointVersionV1 as EndpointDefinition,
     queryEndpointVersionV1 as EndpointDefinition,
@@ -194,7 +195,7 @@ export const defaultMiroirMetaModel: MetaModel = {
   ],
   runners: [
     runnerDropApplication as Runner,
-    runnerDropEntity as Runner,
+    runnerDropEntity as any as Runner,
   ],
   applicationVersionCrossEntityDefinition: [
     applicationVersionInitialMiroirVersionCrossEntityDefinitionApplication,

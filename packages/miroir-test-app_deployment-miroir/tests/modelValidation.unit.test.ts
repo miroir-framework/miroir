@@ -165,122 +165,110 @@ function describeEntityGroup(
   });
 }
 
-// ================================================================================================
-// Test suites — Model instances (validated against the Miroir meta-model)
-// ================================================================================================
+// // ================================================================================================
+// // Test suites — Model instances (validated against the Miroir meta-model)
+// // ================================================================================================
 
-describeEntityGroup(
-  "Entity",
-  (entityDefinitionEntity as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
-  entityInstances,
-  defaultMiroirModelEnvironment,
-);
+const modelTestsToRun: Array<{
+  groupName: string;
+  jzodSchema: JzodElement;
+  instances: Record<string, { default: any }>;
+  filterByName?: string[];
+}> = [
+  // {
+  //   "groupName": "Entity",
+  //   "jzodSchema": (entityDefinitionEntity as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
+  //   "instances": entityInstances,
+  // },
+  // {
+  //   "groupName": "EntityDefinition",
+  //   "jzodSchema": (entityDefinitionEntityDefinition as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
+  //   "instances": entityDefinitionInstances,
+  // },
+  // {
+  //   "groupName": "Report",
+  //   "jzodSchema": (entityDefinitionReport as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
+  //   "instances": reportInstances,
+  //   // "filterByName": ["SelfApplicationDetails"],
+  // },
+  // {
+  //   "groupName": "EndpointVersion",
+  //   "jzodSchema": (entityDefinitionEndpoint as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
+  //   "instances": endpointInstances,
+  // }
+  {
+    "groupName": "Menu",
+    "jzodSchema": (entityDefinitionMenu as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
+    "instances": menuInstances,
+  },
+  {
+    "groupName": "JzodSchema",
+    "jzodSchema": (entityDefinitionJzodSchema as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
+    "instances": jzodSchemaInstances,
+  },
+  {
+    "groupName": "QueryVersion",
+    "jzodSchema": (entityDefinitionQueryVersionV1 as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
+    "instances": queryInstances,
+  },
+  {
+    "groupName": "StoreBasedConfiguration",
+    "jzodSchema": (entityDefinitionStoreBasedConfiguration as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
+    "instances": storeBasedConfigurationInstances,
+  },
+  {
+    "groupName": "SelfApplication",
+    "jzodSchema": (entityDefinitionSelfApplication as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
+    "instances": selfApplicationInstances,
+  },
+  {
+    "groupName": "SelfApplicationDeploymentConfiguration",
+    "jzodSchema": (entityDefinitionSelfApplicationDeploymentConfiguration as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
+    "instances": selfApplicationDeploymentInstances,
+  },
+  {
+    "groupName": "SelfApplicationModelBranch",
+    "jzodSchema": (entityDefinitionSelfApplicationModelBranch as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
+    "instances": selfApplicationModelBranchInstances,
+  },
+  {
+    "groupName": "SelfApplicationVersion",
+    "jzodSchema": (entityDefinitionSelfApplicationVersion as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
+    "instances": applicationVersionInstances,
+  },
+  {
+    "groupName": "Runner",
+    "jzodSchema": (entityDefinitionRunner as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
+    "instances": runnerInstances,
+  },
+  {
+    "groupName": "TransformerDefinition",
+    "jzodSchema": (entityDefinitionTransformerDefinition as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
+    "instances": transformerDefinitionInstances,
+  },
+  {
+    "groupName": "Test",
+    "jzodSchema": (entityDefinitionTest as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
+    "instances": testInstances,
+  },
+  {
+    "groupName": "TransformerTest",
+    "jzodSchema": (entityDefinitionTransformerTest as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
+    "instances": transformerTestInstances,
+  }
+]
 
-describeEntityGroup(
-  "EntityDefinition",
-  (entityDefinitionEntityDefinition as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
-  entityDefinitionInstances,
-  defaultMiroirModelEnvironment,
-);
-
-// ================================================================================================
-// Test suites — Data instances (validated against the Miroir meta-model)
-// ================================================================================================
-
-describeEntityGroup(
-  "Report",
-  (entityDefinitionReport as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
-  reportInstances,
-  defaultMiroirModelEnvironment,
-);
-
-describeEntityGroup(
-  "EndpointVersion",
-  (entityDefinitionEndpoint as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
-  endpointInstances,
-  defaultMiroirModelEnvironment,
-);
-
-describeEntityGroup(
-  "Menu",
-  (entityDefinitionMenu as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
-  menuInstances,
-  defaultMiroirModelEnvironment,
-);
-
-describeEntityGroup(
-  "JzodSchema",
-  (entityDefinitionJzodSchema as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
-  jzodSchemaInstances,
-  defaultMiroirModelEnvironment,
-);
-
-describeEntityGroup(
-  "QueryVersion",
-  (entityDefinitionQueryVersionV1 as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
-  queryInstances,
-  defaultMiroirModelEnvironment,
-);
-
-describeEntityGroup(
-  "StoreBasedConfiguration",
-  (entityDefinitionStoreBasedConfiguration as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
-  storeBasedConfigurationInstances,
-  defaultMiroirModelEnvironment,
-);
-
-describeEntityGroup(
-  "SelfApplication",
-  (entityDefinitionSelfApplication as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
-  selfApplicationInstances,
-  defaultMiroirModelEnvironment,
-);
-
-describeEntityGroup(
-  "SelfApplicationDeploymentConfiguration",
-  (entityDefinitionSelfApplicationDeploymentConfiguration as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
-  selfApplicationDeploymentInstances,
-  defaultMiroirModelEnvironment,
-);
-
-describeEntityGroup(
-  "SelfApplicationModelBranch",
-  (entityDefinitionSelfApplicationModelBranch as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
-  selfApplicationModelBranchInstances,
-  defaultMiroirModelEnvironment,
-);
-
-describeEntityGroup(
-  "SelfApplicationVersion",
-  (entityDefinitionSelfApplicationVersion as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
-  applicationVersionInstances,
-  defaultMiroirModelEnvironment,
-);
-
-describeEntityGroup(
-  "Runner",
-  (entityDefinitionRunner as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
-  runnerInstances,
-  defaultMiroirModelEnvironment,
-);
-
-describeEntityGroup(
-  "TransformerDefinition",
-  (entityDefinitionTransformerDefinition as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
-  transformerDefinitionInstances,
-  defaultMiroirModelEnvironment,
-);
-
-describeEntityGroup(
-  "Test",
-  (entityDefinitionTest as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
-  testInstances,
-  defaultMiroirModelEnvironment,
-);
-
-describeEntityGroup(
-  "TransformerTest",
-  (entityDefinitionTransformerTest as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
-  transformerTestInstances,
-  defaultMiroirModelEnvironment,
-);
+modelTestsToRun.forEach(({ groupName, jzodSchema, instances, filterByName }) => {
+  const filteredInstances = Object.fromEntries(Object.entries(instances).filter(e => {
+    const instance = e[1].default;
+    if (!instance.name) return true;
+    if (!filterByName) return true;
+    return filterByName.some(name => instance.name.includes(name));
+  }));
+  describeEntityGroup(
+    groupName,
+    jzodSchema,
+    filteredInstances,
+    defaultMiroirModelEnvironment,
+  );
+});

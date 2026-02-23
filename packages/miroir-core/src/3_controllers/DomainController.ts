@@ -60,6 +60,7 @@ import {
   type CompositeRunBoxedQueryTemplateAction,
   type EndpointDefinition,
   type ModelActionInitModel,
+  type Report,
   type TransformerForBuildPlusRuntime
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { type MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
@@ -79,7 +80,7 @@ import { packageName } from "../constants";
 
 import { resolvePathOnObject } from "../tools";
 import { cleanLevel } from "./constants";
-import { Endpoint } from "./Endpoint";
+// import { Endpoint } from "./Endpoint";
 import { CallUtils } from "./ErrorHandling/CallUtils";
 // import { TestSuiteContext } from '../4_services/TestSuiteContext.js';
 import {
@@ -205,7 +206,7 @@ export class DomainController implements DomainControllerInterface {
     private miroirContext: MiroirContextInterface,
     private localCache: LocalCacheInterface,
     private persistenceStoreLocalOrRemote: PersistenceStoreLocalOrRemoteInterface, // instance of PersistenceReduxSaga
-    private endpoint: Endpoint,
+    // private endpoint: EndpointDefinition,
   ) {
     // this.callUtil = new CallUtils(miroirContext.errorLogService, persistenceStoreLocalOrRemote);
     this.callUtil = new CallUtils(persistenceStoreLocalOrRemote);
@@ -1189,7 +1190,7 @@ export class DomainController implements DomainControllerInterface {
                 "reports",
                 "Create Reports from Model",
                 model.reports,
-                entityReport,
+                entityReport as Entity,
                 modelActionResetModel.payload.application,
                 applicationDeploymentMap,
               );
@@ -1203,7 +1204,7 @@ export class DomainController implements DomainControllerInterface {
                 "menus",
                 "Create Menus from Model",
                 model.menus,
-                entityMenu,
+                entityMenu as Entity,
                 modelActionResetModel.payload.application,
                 applicationDeploymentMap,
               );
@@ -1217,7 +1218,7 @@ export class DomainController implements DomainControllerInterface {
                 "endpoints",
                 "Create Endpoints from Model",
                 model.endpoints,
-                entityEndpointVersion,
+                entityEndpointVersion as Entity,
                 modelActionResetModel.payload.application,
                 applicationDeploymentMap,
               );
@@ -1333,7 +1334,7 @@ export class DomainController implements DomainControllerInterface {
                 "reports",
                 "Create Reports from Model",
                 model.reports,
-                entityReport,
+                entityReport as Entity,
                 modelActionInitModel.payload.application,
                 applicationDeploymentMap,
               );
@@ -1347,7 +1348,7 @@ export class DomainController implements DomainControllerInterface {
                 "runners",
                 "Create Runners from Model",
                 model.runners,
-                entityRunner,
+                entityRunner as Entity,
                 modelActionInitModel.payload.application,
                 applicationDeploymentMap,
               );
@@ -1361,7 +1362,7 @@ export class DomainController implements DomainControllerInterface {
                 "menus",
                 "Create Menus from Model",
                 model.menus,
-                entityMenu,
+                entityMenu as Entity,
                 modelActionInitModel.payload.application,
                 applicationDeploymentMap,
               );
@@ -1375,7 +1376,7 @@ export class DomainController implements DomainControllerInterface {
                 "endpoints",
                 "Create Endpoints from Model",
                 model.endpoints,
-                entityEndpointVersion,
+                entityEndpointVersion as Entity,
                 modelActionInitModel.payload.application,
                 applicationDeploymentMap,
               );
@@ -1388,7 +1389,7 @@ export class DomainController implements DomainControllerInterface {
                 "storedQueries",
                 "Create Stored Queries from Model",
                 model.storedQueries,
-                entityQueryVersion,
+                entityQueryVersion as Entity,
                 modelActionInitModel.payload.application,
                 applicationDeploymentMap,
               );

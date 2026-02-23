@@ -235,3 +235,6 @@ export { default as applicationVersionInitialMiroirVersionCrossEntityDefinitionR
 // Miroir Data - Commit (parentUuid = entityCommit = 73bb0c69)
 // ################################################################################################
 export { default as commitInitialCommit } from "./assets/miroir_data/73bb0c69-e636-4e3b-a230-51f25469c089/e91d93fc-9165-4966-a15d-3989cab9a994.json" assert { type: "json" };
+
+export { default as miroirThemeSchemaJson } from "./assets/miroir_data/5e81e1b9-38be-487c-b3e5-53796c57fccf/2aa173df-285d-4ed2-8b70-736902ded03a.json" assert { type: "json" };
+export { default as tableThemeSchemaJson } from "./assets/miroir_data/5e81e1b9-38be-487c-b3e5-53796c57fccf/8e380a46-189d-40ff-a880-7d04f04da673.json" assert { type: "json" };

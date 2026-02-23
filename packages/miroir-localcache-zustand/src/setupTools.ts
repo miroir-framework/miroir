@@ -5,7 +5,6 @@
 import {
   DomainController,
   DomainControllerInterface,
-  Endpoint,
   MiroirContextInterface,
 } from "miroir-core";
 import { LocalCache } from "./4_services/LocalCache.js";
@@ -47,7 +46,7 @@ export function setupMiroirDomainController(
     miroirContext,
     localCache, // implements LocalCacheInterface
     persistenceStore, // implements PersistenceStoreLocalOrRemoteInterface
-    new Endpoint(localCache)
+    // {} as any// new Endpoint(localCache)
   );
   
   return domainController;
