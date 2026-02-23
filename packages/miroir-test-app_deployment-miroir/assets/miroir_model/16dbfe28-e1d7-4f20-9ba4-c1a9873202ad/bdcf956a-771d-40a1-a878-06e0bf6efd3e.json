@@ -1,0 +1,10 @@
+{
+  "uuid": "bdcf956a-771d-40a1-a878-06e0bf6efd3e",
+  "parentName": "Entity",
+  "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+  "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
+  "name": "Theme",
+  "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+  "conceptLevel": "Model",
+  "description": "A Theme, representing the visual and stylistic elements of the application"
+}

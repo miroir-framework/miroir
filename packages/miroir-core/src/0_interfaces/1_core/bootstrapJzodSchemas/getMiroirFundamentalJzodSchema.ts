@@ -3262,8 +3262,8 @@ export function getMiroirFundamentalJzodSchema(
           {
             type: "never",
           },
-          tableThemeSchema: (tableThemeSchemaJson as any).mlSchema,
-          miroirThemeSchema: (miroirThemeSchemaJson as any).mlSchema,
+          tableThemeSchema: tableThemeSchemaJson,
+          miroirThemeSchema: miroirThemeSchemaJson,
       },
       definition: {
         absolutePath: miroirFundamentalJzodSchemaUuid,

@@ -105,6 +105,14 @@
           },
           {
             "miroirMenuItemType": "miroirMenuItemLink",
+            "label": "Miroir Themes",
+            "section": "data",
+            "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+            "reportUuid": "91664509-4326-4f8a-bb2a-7bee1c0e7f47",
+            "icon": "palette"
+          },
+          {
+            "miroirMenuItemType": "miroirMenuItemLink",
             "label": "Miroir Documentation",
             "section": "data",
             "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",

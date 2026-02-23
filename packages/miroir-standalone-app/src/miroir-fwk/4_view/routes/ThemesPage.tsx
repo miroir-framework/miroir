@@ -8,17 +8,15 @@ import {
   type JzodObject,
   type LoggerInterface
 } from "miroir-core";
+import { miroirThemeSchemaJson } from "miroir-test-app_deployment-miroir";
 import { packageName } from "../../../constants.js";
 import { PageContainer } from "../components/Page/PageContainer.js";
 import { ReportPageContextProvider } from "../components/Reports/ReportPageContext.js";
-import { runnerConfigs, RunnerList } from '../components/Runners/RunnersList';
+import { TypedValueObjectEditorWithFormik } from "../components/Reports/TypedValueObjectEditorWithFormik.js";
+import { defaultMiroirTheme } from "../components/Themes/MiroirTheme.js";
 import { cleanLevel } from "../constants.js";
 import { useMiroirContextService } from '../MiroirContextReactProvider';
 import { usePageConfiguration } from "../services/index.js";
-import { TypedValueObjectEditor } from "../components/Reports/TypedValueObjectEditor.js";
-import { TypedValueObjectEditorWithFormik } from "../components/Reports/TypedValueObjectEditorWithFormik.js";
-import { defaultMiroirTheme } from "../components/Themes/MiroirTheme.js";
-import { miroirThemeSchemaJson } from "miroir-test-app_deployment-miroir";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -48,7 +46,7 @@ export const ThemesPage: React.FC<any> = (
   const targetSchema:JzodObject = {
     type: "object",
     definition: {
-      themesPage: miroirThemeSchemaJson.mlSchema as JzodObject
+      themesPage: miroirThemeSchemaJson as JzodObject
     }
   };
   const initialFormValue = {

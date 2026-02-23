@@ -1,18 +1,17 @@
 {
-  "uuid": "cd24df86-204c-4a72-9ac0-87f2b92f25fe",
+  "uuid": "5cefd212-31bc-41bf-b346-8643f91e80aa",
   "selfApplication": "21840247-b5b1-4344-baec-f818f4797d92",
   "parentName": "Report",
   "parentUuid": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
   "conceptLevel": "Model",
-  "name": "SelfApplicationDetails",
-  "defaultLabel": "Detailed information about a SelfApplication",
+  "name": "ThemeDetails",
+  "defaultLabel": "Details of a Theme",
   "definition": {
     "extractorTemplates": {
-      "selfApplication": {
+      "elementToDisplay": {
         "extractorOrCombinerType": "extractorForObjectByDirectReference",
-        "label": "SelfApplicationDetails_selfApplication",
-        "parentName": "SelfApplication",
-        "parentUuid": "a659d350-dd97-4da9-91de-524fa01745dc",
+        "parentName": "Theme",
+        "parentUuid": "bdcf956a-771d-40a1-a878-06e0bf6efd3e",
         "instanceUuid": {
           "transformerType": "getFromParameters",
           "referenceName": "instanceUuid"
@@ -25,9 +24,8 @@
         {
           "type": "objectInstanceReportSection",
           "definition": {
-            "label": "SelfApplication Details: ${instance.name}",
-            "parentUuid": "a659d350-dd97-4da9-91de-524fa01745dc",
-            "fetchedDataReference": "selfApplication"
+            "parentUuid": "bdcf956a-771d-40a1-a878-06e0bf6efd3e",
+            "fetchedDataReference": "elementToDisplay"
           }
         }
       ]
