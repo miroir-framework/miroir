@@ -62,6 +62,11 @@ import {
   persistenceEndpointVersionV1,
   runnerDropApplication,
   runnerDropEntity,
+  defaultStoredMiroirTheme,
+  darkStoredMiroirTheme,
+  compactStoredMiroirTheme,
+  materialStoredMiroirTheme,
+  entityTheme,
 } from "miroir-test-app_deployment-miroir";
 
 import { Transform } from "stream";
@@ -109,6 +114,7 @@ export const metaModelEntities: MetaEntity[] = [
   entityRunner,
   entitySelfApplicationModelBranch,
   entitySelfApplicationVersion,
+  entityTheme,
   // entityStoreBasedConfiguration,
 ] as MetaEntity[];
 
@@ -206,6 +212,12 @@ export const defaultMiroirMetaModel: MetaModel = {
     applicationVersionInitialMiroirVersionCrossEntityDefinitionReport,
     applicationVersionInitialMiroirVersionCrossEntityDefinitionStoreBasedConfiguration,
   ],
+  themes: [
+    defaultStoredMiroirTheme,
+    darkStoredMiroirTheme,
+    compactStoredMiroirTheme,
+    materialStoredMiroirTheme,
+  ],
 };
 
 // #################################################################################################
@@ -258,7 +270,6 @@ export function getApplicationSection(
  */
 export function getReportsAndEntitiesDefinitionsForDeploymentUuid(
   application: Uuid,
-  // deploymentUuid: Uuid,
   metaModel: MetaModel,
   appModel: MetaModel
 ): DeploymentUuidToReportsEntitiesDefinitions

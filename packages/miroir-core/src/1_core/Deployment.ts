@@ -230,6 +230,7 @@ export const emptyMetaModel: MetaModel = {
   reports: [],
   storedQueries: [],
   runners: [],
+  themes: [],
 }
 // ################################################################################################
 export function metaModelFilterEntities(

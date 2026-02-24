@@ -1125,6 +1125,16 @@ export function getMiroirFundamentalJzodSchema(
                 // },
               },
             },
+            themes: {
+              type: "array",
+              definition: {
+                type: "schemaReference",
+                definition: {
+                  absolutePath: miroirFundamentalJzodSchemaUuid,
+                  relativePath: "storedMiroirTheme",
+                },
+              },
+            },
           },
         },
         // ########################################################################################
@@ -3277,7 +3287,7 @@ export function getMiroirFundamentalJzodSchema(
           },
           tableThemeSchema: tableThemeSchemaJson,
           storedMiroirTheme: miroirThemeSchemaJson,
-          miroirThemeFull: makeObjectsMandatory(miroirThemeSchemaJson),
+          miroirThemeFull: makeObjectsMandatory(miroirThemeSchemaJson as any),
       },
       definition: {
         absolutePath: miroirFundamentalJzodSchemaUuid,

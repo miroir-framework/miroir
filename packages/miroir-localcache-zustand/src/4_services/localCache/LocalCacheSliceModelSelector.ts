@@ -31,6 +31,7 @@ import {
   type Deployment,
   entityRunner,
   type Runner,
+  type StoredMiroirTheme,
 } from "miroir-core";
 import {
   selectCurrentReduxDeploymentsStateFromReduxState,
@@ -38,6 +39,7 @@ import {
 } from "./LocalCacheSliceSelectors.js";
 import { ZustandStateWithUndoRedo } from "./localCacheZustandInterface.js";
 import { adminSelfApplication, entityDeployment } from "miroir-test-app_deployment-admin";
+import { entityTheme } from "miroir-test-app_deployment-miroir";
 
 const packageName = "miroir-localcache-zustand";
 const cleanLevel = "4_services";
@@ -322,6 +324,34 @@ const selectQueriesFromReduxState = createSelector(
 );
 
 // ################################################################################################
+const selectThemesFromReduxState = createSelector(
+  [
+    selectCurrentReduxDeploymentsStateFromReduxState,
+    selectApplicationDeploymentMap,
+    selectMiroirSelectorQueryParams,
+  ],
+  (
+    reduxState: ReduxDeploymentsState,
+    applicationDeploymentMap: ApplicationDeploymentMap,
+    params: MiroirQueryTemplate,
+  ): EntityInstancesUuidIndex | undefined => {
+    return selectEntityInstancesFromReduxDeploymentsState(
+      reduxState,
+      applicationDeploymentMap,
+      params.queryType == "localCacheEntityInstancesExtractor"
+        ? params.definition.application
+        : params.application,
+      params.queryType == "localCacheEntityInstancesExtractor"
+        ? params.definition.application == selfApplicationMiroir.uuid
+          ? "data"
+          : "model"
+        : undefined,
+      entityTheme.uuid,
+    );
+  },
+);
+
+// ################################################################################################
 const selectConfigurationsFromReduxState = createSelector(
   [
     selectCurrentReduxDeploymentsStateFromReduxState,
@@ -395,6 +425,7 @@ export const selectModelForDeploymentFromReduxState: () => (
       selectRunnersFromReduxState,
       selectQueriesFromReduxState,
       selectEndpointsFromReduxState,
+      selectThemesFromReduxState,
     ],
     (
       applicationVersions: EntityInstancesUuidIndex | undefined,
@@ -407,6 +438,7 @@ export const selectModelForDeploymentFromReduxState: () => (
       runners: EntityInstancesUuidIndex | undefined,
       queries: EntityInstancesUuidIndex | undefined,
       endpoints: EntityInstancesUuidIndex | undefined,
+      themes: EntityInstancesUuidIndex | undefined,
     ) => {
       const applicationVersion = applicationVersions && Object.values(applicationVersions).length > 0
         ? (Object.values(applicationVersions)[0] as any)
@@ -426,6 +458,7 @@ export const selectModelForDeploymentFromReduxState: () => (
         reports: (reports ? Object.values(reports) : []) as Report[],
         runners: (runners ? Object.values(runners) : []) as Runner[],
         storedQueries: (queries ? Object.values(queries) : []) as Query[],
+        themes: (themes ? Object.values(themes) : []) as StoredMiroirTheme[],
       };
       return result;
     }

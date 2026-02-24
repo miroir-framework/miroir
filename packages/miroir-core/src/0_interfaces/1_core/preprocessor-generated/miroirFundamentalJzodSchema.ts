@@ -13485,6 +13485,16 @@ export const miroirFundamentalJzodSchema = {
             "definition": {
               "type": "any"
             }
+          },
+          "themes": {
+            "type": "array",
+            "definition": {
+              "type": "schemaReference",
+              "definition": {
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                "relativePath": "storedMiroirTheme"
+              }
+            }
           }
         }
       },
@@ -38703,6 +38713,48 @@ export const miroirFundamentalJzodSchema = {
                   }
                 ],
                 "discriminator": "transformerType"
+              },
+              "themes": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "array",
+                    "definition": {
+                      "type": "union",
+                      "discriminator": [
+                        [
+                          "transformerType",
+                          "transformerType"
+                        ]
+                      ],
+                      "definition": [
+                        {
+                          "type": "schemaReference",
+                          "definition": {
+                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            "relativePath": "mlElementTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storedMiroirTheme"
+                          },
+                          "context": {}
+                        },
+                        {
+                          "type": "schemaReference",
+                          "definition": {
+                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            "relativePath": "transformerForBuildCarryOnObject"
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "transformerForBuildCarryOnObject"
+                    }
+                  }
+                ],
+                "discriminator": "transformerType"
               }
             }
           }
@@ -43202,6 +43254,7553 @@ export const miroirFundamentalJzodSchema = {
                     "definition": {
                       "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                       "relativePath": "transformerForBuildCarryOnObject"
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "mlElementTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storedMiroirTheme": {
+        "type": "union",
+        "discriminator": "transformerType",
+        "definition": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "transformerForBuildCarryOnObject"
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "uuid": {
+                "type": "union",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Uuid",
+                    "display": {
+                      "editable": false
+                    },
+                    "isTemplate": true
+                  }
+                },
+                "discriminator": "transformerType",
+                "definition": [
+                  {
+                    "type": "uuid",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Uuid",
+                        "display": {
+                          "editable": false
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "transformerForBuildCarryOnObject"
+                    }
+                  }
+                ]
+              },
+              "parentName": {
+                "type": "union",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Entity Name",
+                    "display": {
+                      "editable": false
+                    },
+                    "isTemplate": true
+                  }
+                },
+                "discriminator": "transformerType",
+                "definition": [
+                  {
+                    "type": "string",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Entity Name",
+                        "display": {
+                          "editable": false
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "transformerForBuildCarryOnObject"
+                    }
+                  }
+                ]
+              },
+              "parentUuid": {
+                "type": "union",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Entity Uuid",
+                    "display": {
+                      "editable": false
+                    },
+                    "isTemplate": true
+                  }
+                },
+                "discriminator": "transformerType",
+                "definition": [
+                  {
+                    "type": "uuid",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Entity Uuid",
+                        "display": {
+                          "editable": false
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "transformerForBuildCarryOnObject"
+                    }
+                  }
+                ]
+              },
+              "parentDefinitionVersionUuid": {
+                "type": "union",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Entity Definition Version Uuid",
+                    "display": {
+                      "editable": false
+                    },
+                    "isTemplate": true
+                  }
+                },
+                "discriminator": "transformerType",
+                "definition": [
+                  {
+                    "type": "uuid",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Entity Definition Version Uuid",
+                        "display": {
+                          "editable": false
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "transformerForBuildCarryOnObject"
+                    }
+                  }
+                ]
+              },
+              "conceptLevel": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "enum",
+                    "definition": [
+                      "MetaModel",
+                      "Model",
+                      "Data"
+                    ],
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Concept Level",
+                        "display": {
+                          "editable": false
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "transformerForBuildCarryOnObject"
+                    }
+                  }
+                ],
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Concept Level",
+                    "display": {
+                      "editable": false
+                    },
+                    "isTemplate": true
+                  }
+                },
+                "discriminator": "transformerType"
+              },
+              "storageAccess": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "enum",
+                    "definition": [
+                      "none",
+                      "localStorage",
+                      "persistentStorage"
+                    ],
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Storage Access",
+                        "display": {
+                          "editable": false
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "transformerForBuildCarryOnObject"
+                    }
+                  }
+                ],
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Storage Access",
+                    "display": {
+                      "editable": false
+                    },
+                    "isTemplate": true
+                  }
+                },
+                "discriminator": "transformerType"
+              },
+              "selfApplication": {
+                "type": "union",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "display": {
+                      "editable": false
+                    },
+                    "defaultLabel": "SelfApplication",
+                    "foreignKeyParams": {
+                      "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
+                      "targetEntityOrderInstancesBy": "name"
+                    },
+                    "isTemplate": true
+                  }
+                },
+                "discriminator": "transformerType",
+                "definition": [
+                  {
+                    "type": "uuid",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "display": {
+                          "editable": false
+                        },
+                        "defaultLabel": "SelfApplication",
+                        "foreignKeyParams": {
+                          "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
+                          "targetEntityOrderInstancesBy": "name"
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "transformerForBuildCarryOnObject"
+                    }
+                  }
+                ]
+              },
+              "name": {
+                "type": "union",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Name",
+                    "isTemplate": true
+                  }
+                },
+                "discriminator": "transformerType",
+                "definition": [
+                  {
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Name"
+                      }
+                    }
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "transformerForBuildCarryOnObject"
+                    }
+                  }
+                ]
+              },
+              "defaultLabel": {
+                "type": "union",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Default Label",
+                    "isTemplate": true
+                  }
+                },
+                "discriminator": "transformerType",
+                "definition": [
+                  {
+                    "type": "string",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Default Label"
+                      }
+                    }
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "transformerForBuildCarryOnObject"
+                    }
+                  }
+                ]
+              },
+              "author": {
+                "type": "union",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "id": 9,
+                    "defaultLabel": "SelfApplication",
+                    "isTemplate": true
+                  }
+                },
+                "discriminator": "transformerType",
+                "definition": [
+                  {
+                    "type": "uuid",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "id": 9,
+                        "defaultLabel": "SelfApplication"
+                      }
+                    }
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "transformerForBuildCarryOnObject"
+                    }
+                  }
+                ]
+              },
+              "description": {
+                "type": "union",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "id": 10,
+                    "defaultLabel": "Description",
+                    "isTemplate": true
+                  }
+                },
+                "discriminator": "transformerType",
+                "definition": [
+                  {
+                    "type": "string",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "id": 10,
+                        "defaultLabel": "Description"
+                      }
+                    }
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "transformerForBuildCarryOnObject"
+                    }
+                  }
+                ]
+              },
+              "definition": {
+                "type": "union",
+                "discriminator": "transformerType",
+                "definition": [
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "transformerForBuildCarryOnObject"
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "definition": {
+                      "id": {
+                        "type": "union",
+                        "discriminator": "transformerType",
+                        "definition": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              "relativePath": "transformerForBuildCarryOnObject"
+                            }
+                          }
+                        ]
+                      },
+                      "name": {
+                        "type": "union",
+                        "discriminator": "transformerType",
+                        "definition": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              "relativePath": "transformerForBuildCarryOnObject"
+                            }
+                          }
+                        ]
+                      },
+                      "description": {
+                        "type": "union",
+                        "optional": true,
+                        "discriminator": "transformerType",
+                        "definition": [
+                          {
+                            "type": "string",
+                            "optional": true
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              "relativePath": "transformerForBuildCarryOnObject"
+                            }
+                          }
+                        ]
+                      },
+                      "colors": {
+                        "optional": true,
+                        "type": "union",
+                        "discriminator": "transformerType",
+                        "definition": [
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              "relativePath": "transformerForBuildCarryOnObject"
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "definition": {
+                              "primary": {
+                                "type": "union",
+                                "optional": true,
+                                "tag": {
+                                  "value": {
+                                    "defaultLabel": "Primary Color",
+                                    "display": {
+                                      "string": {
+                                        "format": "color"
+                                      }
+                                    },
+                                    "isTemplate": true
+                                  }
+                                },
+                                "discriminator": "transformerType",
+                                "definition": [
+                                  {
+                                    "type": "string",
+                                    "optional": true,
+                                    "tag": {
+                                      "value": {
+                                        "defaultLabel": "Primary Color",
+                                        "display": {
+                                          "string": {
+                                            "format": "color"
+                                          }
+                                        }
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "type": "schemaReference",
+                                    "definition": {
+                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                      "relativePath": "transformerForBuildCarryOnObject"
+                                    }
+                                  }
+                                ]
+                              },
+                              "primaryLight": {
+                                "type": "union",
+                                "optional": true,
+                                "tag": {
+                                  "value": {
+                                    "defaultLabel": "Primary Light Color",
+                                    "display": {
+                                      "string": {
+                                        "format": "color"
+                                      }
+                                    },
+                                    "isTemplate": true
+                                  }
+                                },
+                                "discriminator": "transformerType",
+                                "definition": [
+                                  {
+                                    "type": "string",
+                                    "optional": true,
+                                    "tag": {
+                                      "value": {
+                                        "defaultLabel": "Primary Light Color",
+                                        "display": {
+                                          "string": {
+                                            "format": "color"
+                                          }
+                                        }
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "type": "schemaReference",
+                                    "definition": {
+                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                      "relativePath": "transformerForBuildCarryOnObject"
+                                    }
+                                  }
+                                ]
+                              },
+                              "primaryDark": {
+                                "type": "union",
+                                "optional": true,
+                                "tag": {
+                                  "value": {
+                                    "defaultLabel": "Primary Dark Color",
+                                    "display": {
+                                      "string": {
+                                        "format": "color"
+                                      }
+                                    },
+                                    "isTemplate": true
+                                  }
+                                },
+                                "discriminator": "transformerType",
+                                "definition": [
+                                  {
+                                    "type": "string",
+                                    "optional": true,
+                                    "tag": {
+                                      "value": {
+                                        "defaultLabel": "Primary Dark Color",
+                                        "display": {
+                                          "string": {
+                                            "format": "color"
+                                          }
+                                        }
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "type": "schemaReference",
+                                    "definition": {
+                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                      "relativePath": "transformerForBuildCarryOnObject"
+                                    }
+                                  }
+                                ]
+                              },
+                              "secondary": {
+                                "type": "union",
+                                "optional": true,
+                                "tag": {
+                                  "value": {
+                                    "defaultLabel": "Secondary Color",
+                                    "display": {
+                                      "string": {
+                                        "format": "color"
+                                      }
+                                    },
+                                    "isTemplate": true
+                                  }
+                                },
+                                "discriminator": "transformerType",
+                                "definition": [
+                                  {
+                                    "type": "string",
+                                    "optional": true,
+                                    "tag": {
+                                      "value": {
+                                        "defaultLabel": "Secondary Color",
+                                        "display": {
+                                          "string": {
+                                            "format": "color"
+                                          }
+                                        }
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "type": "schemaReference",
+                                    "definition": {
+                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                      "relativePath": "transformerForBuildCarryOnObject"
+                                    }
+                                  }
+                                ]
+                              },
+                              "secondaryLight": {
+                                "type": "union",
+                                "optional": true,
+                                "tag": {
+                                  "value": {
+                                    "defaultLabel": "Secondary Light Color",
+                                    "display": {
+                                      "string": {
+                                        "format": "color"
+                                      }
+                                    },
+                                    "isTemplate": true
+                                  }
+                                },
+                                "discriminator": "transformerType",
+                                "definition": [
+                                  {
+                                    "type": "string",
+                                    "optional": true,
+                                    "tag": {
+                                      "value": {
+                                        "defaultLabel": "Secondary Light Color",
+                                        "display": {
+                                          "string": {
+                                            "format": "color"
+                                          }
+                                        }
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "type": "schemaReference",
+                                    "definition": {
+                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                      "relativePath": "transformerForBuildCarryOnObject"
+                                    }
+                                  }
+                                ]
+                              },
+                              "secondaryDark": {
+                                "type": "union",
+                                "optional": true,
+                                "tag": {
+                                  "value": {
+                                    "defaultLabel": "Secondary Dark Color",
+                                    "display": {
+                                      "string": {
+                                        "format": "color"
+                                      }
+                                    },
+                                    "isTemplate": true
+                                  }
+                                },
+                                "discriminator": "transformerType",
+                                "definition": [
+                                  {
+                                    "type": "string",
+                                    "optional": true,
+                                    "tag": {
+                                      "value": {
+                                        "defaultLabel": "Secondary Dark Color",
+                                        "display": {
+                                          "string": {
+                                            "format": "color"
+                                          }
+                                        }
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "type": "schemaReference",
+                                    "definition": {
+                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                      "relativePath": "transformerForBuildCarryOnObject"
+                                    }
+                                  }
+                                ]
+                              },
+                              "background": {
+                                "type": "union",
+                                "optional": true,
+                                "tag": {
+                                  "value": {
+                                    "defaultLabel": "Background Color",
+                                    "display": {
+                                      "string": {
+                                        "format": "color"
+                                      }
+                                    },
+                                    "isTemplate": true
+                                  }
+                                },
+                                "discriminator": "transformerType",
+                                "definition": [
+                                  {
+                                    "type": "string",
+                                    "optional": true,
+                                    "tag": {
+                                      "value": {
+                                        "defaultLabel": "Background Color",
+                                        "display": {
+                                          "string": {
+                                            "format": "color"
+                                          }
+                                        }
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "type": "schemaReference",
+                                    "definition": {
+                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                      "relativePath": "transformerForBuildCarryOnObject"
+                                    }
+                                  }
+                                ]
+                              },
+                              "backgroundPaper": {
+                                "type": "union",
+                                "optional": true,
+                                "tag": {
+                                  "value": {
+                                    "defaultLabel": "Background Paper Color",
+                                    "display": {
+                                      "string": {
+                                        "format": "color"
+                                      }
+                                    },
+                                    "isTemplate": true
+                                  }
+                                },
+                                "discriminator": "transformerType",
+                                "definition": [
+                                  {
+                                    "type": "string",
+                                    "optional": true,
+                                    "tag": {
+                                      "value": {
+                                        "defaultLabel": "Background Paper Color",
+                                        "display": {
+                                          "string": {
+                                            "format": "color"
+                                          }
+                                        }
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "type": "schemaReference",
+                                    "definition": {
+                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                      "relativePath": "transformerForBuildCarryOnObject"
+                                    }
+                                  }
+                                ]
+                              },
+                              "backgroundOverlay": {
+                                "type": "union",
+                                "optional": true,
+                                "tag": {
+                                  "value": {
+                                    "defaultLabel": "Background Overlay Color",
+                                    "display": {
+                                      "string": {
+                                        "format": "color"
+                                      }
+                                    },
+                                    "isTemplate": true
+                                  }
+                                },
+                                "discriminator": "transformerType",
+                                "definition": [
+                                  {
+                                    "type": "string",
+                                    "optional": true,
+                                    "tag": {
+                                      "value": {
+                                        "defaultLabel": "Background Overlay Color",
+                                        "display": {
+                                          "string": {
+                                            "format": "color"
+                                          }
+                                        }
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "type": "schemaReference",
+                                    "definition": {
+                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                      "relativePath": "transformerForBuildCarryOnObject"
+                                    }
+                                  }
+                                ]
+                              },
+                              "surface": {
+                                "type": "union",
+                                "optional": true,
+                                "tag": {
+                                  "value": {
+                                    "defaultLabel": "Surface Color",
+                                    "display": {
+                                      "string": {
+                                        "format": "color"
+                                      }
+                                    },
+                                    "isTemplate": true
+                                  }
+                                },
+                                "discriminator": "transformerType",
+                                "definition": [
+                                  {
+                                    "type": "string",
+                                    "optional": true,
+                                    "tag": {
+                                      "value": {
+                                        "defaultLabel": "Surface Color",
+                                        "display": {
+                                          "string": {
+                                            "format": "color"
+                                          }
+                                        }
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "type": "schemaReference",
+                                    "definition": {
+                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                      "relativePath": "transformerForBuildCarryOnObject"
+                                    }
+                                  }
+                                ]
+                              },
+                              "surfaceVariant": {
+                                "type": "union",
+                                "optional": true,
+                                "tag": {
+                                  "value": {
+                                    "defaultLabel": "Surface Variant Color",
+                                    "display": {
+                                      "string": {
+                                        "format": "color"
+                                      }
+                                    },
+                                    "isTemplate": true
+                                  }
+                                },
+                                "discriminator": "transformerType",
+                                "definition": [
+                                  {
+                                    "type": "string",
+                                    "optional": true,
+                                    "tag": {
+                                      "value": {
+                                        "defaultLabel": "Surface Variant Color",
+                                        "display": {
+                                          "string": {
+                                            "format": "color"
+                                          }
+                                        }
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "type": "schemaReference",
+                                    "definition": {
+                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                      "relativePath": "transformerForBuildCarryOnObject"
+                                    }
+                                  }
+                                ]
+                              },
+                              "text": {
+                                "type": "union",
+                                "optional": true,
+                                "tag": {
+                                  "value": {
+                                    "defaultLabel": "Text Color",
+                                    "display": {
+                                      "string": {
+                                        "format": "color"
+                                      }
+                                    },
+                                    "isTemplate": true
+                                  }
+                                },
+                                "discriminator": "transformerType",
+                                "definition": [
+                                  {
+                                    "type": "string",
+                                    "optional": true,
+                                    "tag": {
+                                      "value": {
+                                        "defaultLabel": "Text Color",
+                                        "display": {
+                                          "string": {
+                                            "format": "color"
+                                          }
+                                        }
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "type": "schemaReference",
+                                    "definition": {
+                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                      "relativePath": "transformerForBuildCarryOnObject"
+                                    }
+                                  }
+                                ]
+                              },
+                              "textSecondary": {
+                                "type": "union",
+                                "optional": true,
+                                "tag": {
+                                  "value": {
+                                    "defaultLabel": "Secondary Text Color",
+                                    "display": {
+                                      "string": {
+                                        "format": "color"
+                                      }
+                                    },
+                                    "isTemplate": true
+                                  }
+                                },
+                                "discriminator": "transformerType",
+                                "definition": [
+                                  {
+                                    "type": "string",
+                                    "optional": true,
+                                    "tag": {
+                                      "value": {
+                                        "defaultLabel": "Secondary Text Color",
+                                        "display": {
+                                          "string": {
+                                            "format": "color"
+                                          }
+                                        }
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "type": "schemaReference",
+                                    "definition": {
+                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                      "relativePath": "transformerForBuildCarryOnObject"
+                                    }
+                                  }
+                                ]
+                              },
+                              "textLight": {
+                                "type": "union",
+                                "optional": true,
+                                "tag": {
+                                  "value": {
+                                    "defaultLabel": "Light Text Color",
+                                    "display": {
+                                      "string": {
+                                        "format": "color"
+                                      }
+                                    },
+                                    "isTemplate": true
+                                  }
+                                },
+                                "discriminator": "transformerType",
+                                "definition": [
+                                  {
+                                    "type": "string",
+                                    "optional": true,
+                                    "tag": {
+                                      "value": {
+                                        "defaultLabel": "Light Text Color",
+                                        "display": {
+                                          "string": {
+                                            "format": "color"
+                                          }
+                                        }
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "type": "schemaReference",
+                                    "definition": {
+                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                      "relativePath": "transformerForBuildCarryOnObject"
+                                    }
+                                  }
+                                ]
+                              },
+                              "textDisabled": {
+                                "type": "union",
+                                "optional": true,
+                                "tag": {
+                                  "value": {
+                                    "defaultLabel": "Disabled Text Color",
+                                    "display": {
+                                      "string": {
+                                        "format": "color"
+                                      }
+                                    },
+                                    "isTemplate": true
+                                  }
+                                },
+                                "discriminator": "transformerType",
+                                "definition": [
+                                  {
+                                    "type": "string",
+                                    "optional": true,
+                                    "tag": {
+                                      "value": {
+                                        "defaultLabel": "Disabled Text Color",
+                                        "display": {
+                                          "string": {
+                                            "format": "color"
+                                          }
+                                        }
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "type": "schemaReference",
+                                    "definition": {
+                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                      "relativePath": "transformerForBuildCarryOnObject"
+                                    }
+                                  }
+                                ]
+                              },
+                              "border": {
+                                "type": "union",
+                                "optional": true,
+                                "tag": {
+                                  "value": {
+                                    "defaultLabel": "Border Color",
+                                    "display": {
+                                      "string": {
+                                        "format": "color"
+                                      }
+                                    },
+                                    "isTemplate": true
+                                  }
+                                },
+                                "discriminator": "transformerType",
+                                "definition": [
+                                  {
+                                    "type": "string",
+                                    "optional": true,
+                                    "tag": {
+                                      "value": {
+                                        "defaultLabel": "Border Color",
+                                        "display": {
+                                          "string": {
+                                            "format": "color"
+                                          }
+                                        }
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "type": "schemaReference",
+                                    "definition": {
+                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                      "relativePath": "transformerForBuildCarryOnObject"
+                                    }
+                                  }
+                                ]
+                              },
+                              "borderLight": {
+                                "type": "union",
+                                "optional": true,
+                                "tag": {
+                                  "value": {
+                                    "defaultLabel": "Light Border Color",
+                                    "display": {
+                                      "string": {
+                                        "format": "color"
+                                      }
+                                    },
+                                    "isTemplate": true
+                                  }
+                                },
+                                "discriminator": "transformerType",
+                                "definition": [
+                                  {
+                                    "type": "string",
+                                    "optional": true,
+                                    "tag": {
+                                      "value": {
+                                        "defaultLabel": "Light Border Color",
+                                        "display": {
+                                          "string": {
+                                            "format": "color"
+                                          }
+                                        }
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "type": "schemaReference",
+                                    "definition": {
+                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                      "relativePath": "transformerForBuildCarryOnObject"
+                                    }
+                                  }
+                                ]
+                              },
+                              "divider": {
+                                "type": "union",
+                                "optional": true,
+                                "tag": {
+                                  "value": {
+                                    "defaultLabel": "Divider Color",
+                                    "display": {
+                                      "string": {
+                                        "format": "color"
+                                      }
+                                    },
+                                    "isTemplate": true
+                                  }
+                                },
+                                "discriminator": "transformerType",
+                                "definition": [
+                                  {
+                                    "type": "string",
+                                    "optional": true,
+                                    "tag": {
+                                      "value": {
+                                        "defaultLabel": "Divider Color",
+                                        "display": {
+                                          "string": {
+                                            "format": "color"
+                                          }
+                                        }
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "type": "schemaReference",
+                                    "definition": {
+                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                      "relativePath": "transformerForBuildCarryOnObject"
+                                    }
+                                  }
+                                ]
+                              },
+                              "hover": {
+                                "type": "union",
+                                "optional": true,
+                                "tag": {
+                                  "value": {
+                                    "defaultLabel": "Hover Color",
+                                    "display": {
+                                      "string": {
+                                        "format": "color"
+                                      }
+                                    },
+                                    "isTemplate": true
+                                  }
+                                },
+                                "discriminator": "transformerType",
+                                "definition": [
+                                  {
+                                    "type": "string",
+                                    "optional": true,
+                                    "tag": {
+                                      "value": {
+                                        "defaultLabel": "Hover Color",
+                                        "display": {
+                                          "string": {
+                                            "format": "color"
+                                          }
+                                        }
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "type": "schemaReference",
+                                    "definition": {
+                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                      "relativePath": "transformerForBuildCarryOnObject"
+                                    }
+                                  }
+                                ]
+                              },
+                              "selected": {
+                                "type": "union",
+                                "optional": true,
+                                "tag": {
+                                  "value": {
+                                    "defaultLabel": "Selected Color",
+                                    "display": {
+                                      "string": {
+                                        "format": "color"
+                                      }
+                                    },
+                                    "isTemplate": true
+                                  }
+                                },
+                                "discriminator": "transformerType",
+                                "definition": [
+                                  {
+                                    "type": "string",
+                                    "optional": true,
+                                    "tag": {
+                                      "value": {
+                                        "defaultLabel": "Selected Color",
+                                        "display": {
+                                          "string": {
+                                            "format": "color"
+                                          }
+                                        }
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "type": "schemaReference",
+                                    "definition": {
+                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                      "relativePath": "transformerForBuildCarryOnObject"
+                                    }
+                                  }
+                                ]
+                              },
+                              "focused": {
+                                "type": "union",
+                                "optional": true,
+                                "tag": {
+                                  "value": {
+                                    "defaultLabel": "Focused Color",
+                                    "display": {
+                                      "string": {
+                                        "format": "color"
+                                      }
+                                    },
+                                    "isTemplate": true
+                                  }
+                                },
+                                "discriminator": "transformerType",
+                                "definition": [
+                                  {
+                                    "type": "string",
+                                    "optional": true,
+                                    "tag": {
+                                      "value": {
+                                        "defaultLabel": "Focused Color",
+                                        "display": {
+                                          "string": {
+                                            "format": "color"
+                                          }
+                                        }
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "type": "schemaReference",
+                                    "definition": {
+                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                      "relativePath": "transformerForBuildCarryOnObject"
+                                    }
+                                  }
+                                ]
+                              },
+                              "active": {
+                                "type": "union",
+                                "optional": true,
+                                "tag": {
+                                  "value": {
+                                    "defaultLabel": "Active Color",
+                                    "display": {
+                                      "string": {
+                                        "format": "color"
+                                      }
+                                    },
+                                    "isTemplate": true
+                                  }
+                                },
+                                "discriminator": "transformerType",
+                                "definition": [
+                                  {
+                                    "type": "string",
+                                    "optional": true,
+                                    "tag": {
+                                      "value": {
+                                        "defaultLabel": "Active Color",
+                                        "display": {
+                                          "string": {
+                                            "format": "color"
+                                          }
+                                        }
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "type": "schemaReference",
+                                    "definition": {
+                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                      "relativePath": "transformerForBuildCarryOnObject"
+                                    }
+                                  }
+                                ]
+                              },
+                              "error": {
+                                "type": "union",
+                                "optional": true,
+                                "tag": {
+                                  "value": {
+                                    "defaultLabel": "Error Color",
+                                    "display": {
+                                      "string": {
+                                        "format": "color"
+                                      }
+                                    },
+                                    "isTemplate": true
+                                  }
+                                },
+                                "discriminator": "transformerType",
+                                "definition": [
+                                  {
+                                    "type": "string",
+                                    "optional": true,
+                                    "tag": {
+                                      "value": {
+                                        "defaultLabel": "Error Color",
+                                        "display": {
+                                          "string": {
+                                            "format": "color"
+                                          }
+                                        }
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "type": "schemaReference",
+                                    "definition": {
+                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                      "relativePath": "transformerForBuildCarryOnObject"
+                                    }
+                                  }
+                                ]
+                              },
+                              "errorLight": {
+                                "type": "union",
+                                "optional": true,
+                                "tag": {
+                                  "value": {
+                                    "defaultLabel": "Light Error Color",
+                                    "display": {
+                                      "string": {
+                                        "format": "color"
+                                      }
+                                    },
+                                    "isTemplate": true
+                                  }
+                                },
+                                "discriminator": "transformerType",
+                                "definition": [
+                                  {
+                                    "type": "string",
+                                    "optional": true,
+                                    "tag": {
+                                      "value": {
+                                        "defaultLabel": "Light Error Color",
+                                        "display": {
+                                          "string": {
+                                            "format": "color"
+                                          }
+                                        }
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "type": "schemaReference",
+                                    "definition": {
+                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                      "relativePath": "transformerForBuildCarryOnObject"
+                                    }
+                                  }
+                                ]
+                              },
+                              "errorSurface": {
+                                "type": "union",
+                                "optional": true,
+                                "tag": {
+                                  "value": {
+                                    "defaultLabel": "Error Surface Color",
+                                    "display": {
+                                      "string": {
+                                        "format": "color"
+                                      }
+                                    },
+                                    "isTemplate": true
+                                  }
+                                },
+                                "discriminator": "transformerType",
+                                "definition": [
+                                  {
+                                    "type": "string",
+                                    "optional": true,
+                                    "tag": {
+                                      "value": {
+                                        "defaultLabel": "Error Surface Color",
+                                        "display": {
+                                          "string": {
+                                            "format": "color"
+                                          }
+                                        }
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "type": "schemaReference",
+                                    "definition": {
+                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                      "relativePath": "transformerForBuildCarryOnObject"
+                                    }
+                                  }
+                                ]
+                              },
+                              "warning": {
+                                "type": "union",
+                                "optional": true,
+                                "tag": {
+                                  "value": {
+                                    "defaultLabel": "Warning Color",
+                                    "display": {
+                                      "string": {
+                                        "format": "color"
+                                      }
+                                    },
+                                    "isTemplate": true
+                                  }
+                                },
+                                "discriminator": "transformerType",
+                                "definition": [
+                                  {
+                                    "type": "string",
+                                    "optional": true,
+                                    "tag": {
+                                      "value": {
+                                        "defaultLabel": "Warning Color",
+                                        "display": {
+                                          "string": {
+                                            "format": "color"
+                                          }
+                                        }
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "type": "schemaReference",
+                                    "definition": {
+                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                      "relativePath": "transformerForBuildCarryOnObject"
+                                    }
+                                  }
+                                ]
+                              },
+                              "warningLight": {
+                                "type": "union",
+                                "optional": true,
+                                "tag": {
+                                  "value": {
+                                    "defaultLabel": "Light Warning Color",
+                                    "display": {
+                                      "string": {
+                                        "format": "color"
+                                      }
+                                    },
+                                    "isTemplate": true
+                                  }
+                                },
+                                "discriminator": "transformerType",
+                                "definition": [
+                                  {
+                                    "type": "string",
+                                    "optional": true,
+                                    "tag": {
+                                      "value": {
+                                        "defaultLabel": "Light Warning Color",
+                                        "display": {
+                                          "string": {
+                                            "format": "color"
+                                          }
+                                        }
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "type": "schemaReference",
+                                    "definition": {
+                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                      "relativePath": "transformerForBuildCarryOnObject"
+                                    }
+                                  }
+                                ]
+                              },
+                              "success": {
+                                "type": "union",
+                                "optional": true,
+                                "tag": {
+                                  "value": {
+                                    "defaultLabel": "Success Color",
+                                    "display": {
+                                      "string": {
+                                        "format": "color"
+                                      }
+                                    },
+                                    "isTemplate": true
+                                  }
+                                },
+                                "discriminator": "transformerType",
+                                "definition": [
+                                  {
+                                    "type": "string",
+                                    "optional": true,
+                                    "tag": {
+                                      "value": {
+                                        "defaultLabel": "Success Color",
+                                        "display": {
+                                          "string": {
+                                            "format": "color"
+                                          }
+                                        }
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "type": "schemaReference",
+                                    "definition": {
+                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                      "relativePath": "transformerForBuildCarryOnObject"
+                                    }
+                                  }
+                                ]
+                              },
+                              "successLight": {
+                                "type": "union",
+                                "optional": true,
+                                "tag": {
+                                  "value": {
+                                    "defaultLabel": "Light Success Color",
+                                    "display": {
+                                      "string": {
+                                        "format": "color"
+                                      }
+                                    },
+                                    "isTemplate": true
+                                  }
+                                },
+                                "discriminator": "transformerType",
+                                "definition": [
+                                  {
+                                    "type": "string",
+                                    "optional": true,
+                                    "tag": {
+                                      "value": {
+                                        "defaultLabel": "Light Success Color",
+                                        "display": {
+                                          "string": {
+                                            "format": "color"
+                                          }
+                                        }
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "type": "schemaReference",
+                                    "definition": {
+                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                      "relativePath": "transformerForBuildCarryOnObject"
+                                    }
+                                  }
+                                ]
+                              },
+                              "successSurface": {
+                                "type": "union",
+                                "optional": true,
+                                "tag": {
+                                  "value": {
+                                    "defaultLabel": "Success Surface Color",
+                                    "display": {
+                                      "string": {
+                                        "format": "color"
+                                      }
+                                    },
+                                    "isTemplate": true
+                                  }
+                                },
+                                "discriminator": "transformerType",
+                                "definition": [
+                                  {
+                                    "type": "string",
+                                    "optional": true,
+                                    "tag": {
+                                      "value": {
+                                        "defaultLabel": "Success Surface Color",
+                                        "display": {
+                                          "string": {
+                                            "format": "color"
+                                          }
+                                        }
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "type": "schemaReference",
+                                    "definition": {
+                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                      "relativePath": "transformerForBuildCarryOnObject"
+                                    }
+                                  }
+                                ]
+                              },
+                              "info": {
+                                "type": "union",
+                                "optional": true,
+                                "tag": {
+                                  "value": {
+                                    "defaultLabel": "Info Color",
+                                    "display": {
+                                      "string": {
+                                        "format": "color"
+                                      }
+                                    },
+                                    "isTemplate": true
+                                  }
+                                },
+                                "discriminator": "transformerType",
+                                "definition": [
+                                  {
+                                    "type": "string",
+                                    "optional": true,
+                                    "tag": {
+                                      "value": {
+                                        "defaultLabel": "Info Color",
+                                        "display": {
+                                          "string": {
+                                            "format": "color"
+                                          }
+                                        }
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "type": "schemaReference",
+                                    "definition": {
+                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                      "relativePath": "transformerForBuildCarryOnObject"
+                                    }
+                                  }
+                                ]
+                              },
+                              "infoLight": {
+                                "type": "union",
+                                "optional": true,
+                                "tag": {
+                                  "value": {
+                                    "defaultLabel": "Light Info Color",
+                                    "display": {
+                                      "string": {
+                                        "format": "color"
+                                      }
+                                    },
+                                    "isTemplate": true
+                                  }
+                                },
+                                "discriminator": "transformerType",
+                                "definition": [
+                                  {
+                                    "type": "string",
+                                    "optional": true,
+                                    "tag": {
+                                      "value": {
+                                        "defaultLabel": "Light Info Color",
+                                        "display": {
+                                          "string": {
+                                            "format": "color"
+                                          }
+                                        }
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "type": "schemaReference",
+                                    "definition": {
+                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                      "relativePath": "transformerForBuildCarryOnObject"
+                                    }
+                                  }
+                                ]
+                              },
+                              "accent": {
+                                "type": "union",
+                                "optional": true,
+                                "tag": {
+                                  "value": {
+                                    "defaultLabel": "Accent Color",
+                                    "display": {
+                                      "string": {
+                                        "format": "color"
+                                      }
+                                    },
+                                    "isTemplate": true
+                                  }
+                                },
+                                "discriminator": "transformerType",
+                                "definition": [
+                                  {
+                                    "type": "string",
+                                    "optional": true,
+                                    "tag": {
+                                      "value": {
+                                        "defaultLabel": "Accent Color",
+                                        "display": {
+                                          "string": {
+                                            "format": "color"
+                                          }
+                                        }
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "type": "schemaReference",
+                                    "definition": {
+                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                      "relativePath": "transformerForBuildCarryOnObject"
+                                    }
+                                  }
+                                ]
+                              },
+                              "accentLight": {
+                                "type": "union",
+                                "optional": true,
+                                "tag": {
+                                  "value": {
+                                    "defaultLabel": "Light Accent Color",
+                                    "display": {
+                                      "string": {
+                                        "format": "color"
+                                      }
+                                    },
+                                    "isTemplate": true
+                                  }
+                                },
+                                "discriminator": "transformerType",
+                                "definition": [
+                                  {
+                                    "type": "string",
+                                    "optional": true,
+                                    "tag": {
+                                      "value": {
+                                        "defaultLabel": "Light Accent Color",
+                                        "display": {
+                                          "string": {
+                                            "format": "color"
+                                          }
+                                        }
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "type": "schemaReference",
+                                    "definition": {
+                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                      "relativePath": "transformerForBuildCarryOnObject"
+                                    }
+                                  }
+                                ]
+                              },
+                              "shadow": {
+                                "type": "union",
+                                "optional": true,
+                                "tag": {
+                                  "value": {
+                                    "defaultLabel": "Shadow Color",
+                                    "display": {
+                                      "string": {
+                                        "format": "color"
+                                      }
+                                    },
+                                    "isTemplate": true
+                                  }
+                                },
+                                "discriminator": "transformerType",
+                                "definition": [
+                                  {
+                                    "type": "string",
+                                    "optional": true,
+                                    "tag": {
+                                      "value": {
+                                        "defaultLabel": "Shadow Color",
+                                        "display": {
+                                          "string": {
+                                            "format": "color"
+                                          }
+                                        }
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "type": "schemaReference",
+                                    "definition": {
+                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                      "relativePath": "transformerForBuildCarryOnObject"
+                                    }
+                                  }
+                                ]
+                              },
+                              "overlay": {
+                                "type": "union",
+                                "optional": true,
+                                "tag": {
+                                  "value": {
+                                    "defaultLabel": "Overlay Color",
+                                    "display": {
+                                      "string": {
+                                        "format": "color"
+                                      }
+                                    },
+                                    "isTemplate": true
+                                  }
+                                },
+                                "discriminator": "transformerType",
+                                "definition": [
+                                  {
+                                    "type": "string",
+                                    "optional": true,
+                                    "tag": {
+                                      "value": {
+                                        "defaultLabel": "Overlay Color",
+                                        "display": {
+                                          "string": {
+                                            "format": "color"
+                                          }
+                                        }
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "type": "schemaReference",
+                                    "definition": {
+                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                      "relativePath": "transformerForBuildCarryOnObject"
+                                    }
+                                  }
+                                ]
+                              },
+                              "nesting": {
+                                "optional": true,
+                                "type": "union",
+                                "discriminator": "transformerType",
+                                "definition": [
+                                  {
+                                    "type": "schemaReference",
+                                    "definition": {
+                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                      "relativePath": "transformerForBuildCarryOnObject"
+                                    }
+                                  },
+                                  {
+                                    "type": "object",
+                                    "definition": {
+                                      "level0": {
+                                        "type": "union",
+                                        "tag": {
+                                          "value": {
+                                            "defaultLabel": "Nesting Level 0 Color",
+                                            "display": {
+                                              "string": {
+                                                "format": "color"
+                                              }
+                                            },
+                                            "isTemplate": true
+                                          }
+                                        },
+                                        "discriminator": "transformerType",
+                                        "definition": [
+                                          {
+                                            "type": "string",
+                                            "tag": {
+                                              "value": {
+                                                "defaultLabel": "Nesting Level 0 Color",
+                                                "display": {
+                                                  "string": {
+                                                    "format": "color"
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          },
+                                          {
+                                            "type": "schemaReference",
+                                            "definition": {
+                                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                              "relativePath": "transformerForBuildCarryOnObject"
+                                            }
+                                          }
+                                        ]
+                                      },
+                                      "level1": {
+                                        "type": "union",
+                                        "optional": true,
+                                        "tag": {
+                                          "value": {
+                                            "defaultLabel": "Nesting Level 1 Color",
+                                            "display": {
+                                              "string": {
+                                                "format": "color"
+                                              }
+                                            },
+                                            "isTemplate": true
+                                          }
+                                        },
+                                        "discriminator": "transformerType",
+                                        "definition": [
+                                          {
+                                            "type": "string",
+                                            "optional": true,
+                                            "tag": {
+                                              "value": {
+                                                "defaultLabel": "Nesting Level 1 Color",
+                                                "display": {
+                                                  "string": {
+                                                    "format": "color"
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          },
+                                          {
+                                            "type": "schemaReference",
+                                            "definition": {
+                                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                              "relativePath": "transformerForBuildCarryOnObject"
+                                            }
+                                          }
+                                        ]
+                                      },
+                                      "level2": {
+                                        "type": "union",
+                                        "optional": true,
+                                        "tag": {
+                                          "value": {
+                                            "defaultLabel": "Nesting Level 2 Color",
+                                            "display": {
+                                              "string": {
+                                                "format": "color"
+                                              }
+                                            },
+                                            "isTemplate": true
+                                          }
+                                        },
+                                        "discriminator": "transformerType",
+                                        "definition": [
+                                          {
+                                            "type": "string",
+                                            "optional": true,
+                                            "tag": {
+                                              "value": {
+                                                "defaultLabel": "Nesting Level 2 Color",
+                                                "display": {
+                                                  "string": {
+                                                    "format": "color"
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          },
+                                          {
+                                            "type": "schemaReference",
+                                            "definition": {
+                                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                              "relativePath": "transformerForBuildCarryOnObject"
+                                            }
+                                          }
+                                        ]
+                                      }
+                                    }
+                                  }
+                                ]
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "spacing": {
+                        "optional": true,
+                        "type": "union",
+                        "discriminator": "transformerType",
+                        "definition": [
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              "relativePath": "transformerForBuildCarryOnObject"
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "definition": {
+                              "xs": {
+                                "type": "union",
+                                "optional": true,
+                                "discriminator": "transformerType",
+                                "definition": [
+                                  {
+                                    "type": "string",
+                                    "optional": true
+                                  },
+                                  {
+                                    "type": "schemaReference",
+                                    "definition": {
+                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                      "relativePath": "transformerForBuildCarryOnObject"
+                                    }
+                                  }
+                                ]
+                              },
+                              "sm": {
+                                "type": "union",
+                                "optional": true,
+                                "discriminator": "transformerType",
+                                "definition": [
+                                  {
+                                    "type": "string",
+                                    "optional": true
+                                  },
+                                  {
+                                    "type": "schemaReference",
+                                    "definition": {
+                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                      "relativePath": "transformerForBuildCarryOnObject"
+                                    }
+                                  }
+                                ]
+                              },
+                              "md": {
+                                "type": "union",
+                                "optional": true,
+                                "discriminator": "transformerType",
+                                "definition": [
+                                  {
+                                    "type": "string",
+                                    "optional": true
+                                  },
+                                  {
+                                    "type": "schemaReference",
+                                    "definition": {
+                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                      "relativePath": "transformerForBuildCarryOnObject"
+                                    }
+                                  }
+                                ]
+                              },
+                              "lg": {
+                                "type": "union",
+                                "optional": true,
+                                "discriminator": "transformerType",
+                                "definition": [
+                                  {
+                                    "type": "string",
+                                    "optional": true
+                                  },
+                                  {
+                                    "type": "schemaReference",
+                                    "definition": {
+                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                      "relativePath": "transformerForBuildCarryOnObject"
+                                    }
+                                  }
+                                ]
+                              },
+                              "xl": {
+                                "type": "union",
+                                "optional": true,
+                                "discriminator": "transformerType",
+                                "definition": [
+                                  {
+                                    "type": "string",
+                                    "optional": true
+                                  },
+                                  {
+                                    "type": "schemaReference",
+                                    "definition": {
+                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                      "relativePath": "transformerForBuildCarryOnObject"
+                                    }
+                                  }
+                                ]
+                              },
+                              "xxl": {
+                                "type": "union",
+                                "optional": true,
+                                "discriminator": "transformerType",
+                                "definition": [
+                                  {
+                                    "type": "string",
+                                    "optional": true
+                                  },
+                                  {
+                                    "type": "schemaReference",
+                                    "definition": {
+                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                      "relativePath": "transformerForBuildCarryOnObject"
+                                    }
+                                  }
+                                ]
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "typography": {
+                        "optional": true,
+                        "type": "union",
+                        "discriminator": "transformerType",
+                        "definition": [
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              "relativePath": "transformerForBuildCarryOnObject"
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "definition": {
+                              "fontFamily": {
+                                "type": "union",
+                                "optional": true,
+                                "discriminator": "transformerType",
+                                "definition": [
+                                  {
+                                    "type": "string",
+                                    "optional": true
+                                  },
+                                  {
+                                    "type": "schemaReference",
+                                    "definition": {
+                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                      "relativePath": "transformerForBuildCarryOnObject"
+                                    }
+                                  }
+                                ]
+                              },
+                              "fontSize": {
+                                "optional": true,
+                                "type": "union",
+                                "discriminator": "transformerType",
+                                "definition": [
+                                  {
+                                    "type": "schemaReference",
+                                    "definition": {
+                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                      "relativePath": "transformerForBuildCarryOnObject"
+                                    }
+                                  },
+                                  {
+                                    "type": "object",
+                                    "definition": {
+                                      "xs": {
+                                        "type": "union",
+                                        "optional": true,
+                                        "discriminator": "transformerType",
+                                        "definition": [
+                                          {
+                                            "type": "string",
+                                            "optional": true
+                                          },
+                                          {
+                                            "type": "schemaReference",
+                                            "definition": {
+                                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                              "relativePath": "transformerForBuildCarryOnObject"
+                                            }
+                                          }
+                                        ]
+                                      },
+                                      "sm": {
+                                        "type": "union",
+                                        "optional": true,
+                                        "discriminator": "transformerType",
+                                        "definition": [
+                                          {
+                                            "type": "string",
+                                            "optional": true
+                                          },
+                                          {
+                                            "type": "schemaReference",
+                                            "definition": {
+                                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                              "relativePath": "transformerForBuildCarryOnObject"
+                                            }
+                                          }
+                                        ]
+                                      },
+                                      "md": {
+                                        "type": "union",
+                                        "optional": true,
+                                        "discriminator": "transformerType",
+                                        "definition": [
+                                          {
+                                            "type": "string",
+                                            "optional": true
+                                          },
+                                          {
+                                            "type": "schemaReference",
+                                            "definition": {
+                                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                              "relativePath": "transformerForBuildCarryOnObject"
+                                            }
+                                          }
+                                        ]
+                                      },
+                                      "lg": {
+                                        "type": "union",
+                                        "optional": true,
+                                        "discriminator": "transformerType",
+                                        "definition": [
+                                          {
+                                            "type": "string",
+                                            "optional": true
+                                          },
+                                          {
+                                            "type": "schemaReference",
+                                            "definition": {
+                                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                              "relativePath": "transformerForBuildCarryOnObject"
+                                            }
+                                          }
+                                        ]
+                                      },
+                                      "xl": {
+                                        "type": "union",
+                                        "optional": true,
+                                        "discriminator": "transformerType",
+                                        "definition": [
+                                          {
+                                            "type": "string",
+                                            "optional": true
+                                          },
+                                          {
+                                            "type": "schemaReference",
+                                            "definition": {
+                                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                              "relativePath": "transformerForBuildCarryOnObject"
+                                            }
+                                          }
+                                        ]
+                                      },
+                                      "xxl": {
+                                        "type": "union",
+                                        "optional": true,
+                                        "discriminator": "transformerType",
+                                        "definition": [
+                                          {
+                                            "type": "string",
+                                            "optional": true
+                                          },
+                                          {
+                                            "type": "schemaReference",
+                                            "definition": {
+                                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                              "relativePath": "transformerForBuildCarryOnObject"
+                                            }
+                                          }
+                                        ]
+                                      }
+                                    }
+                                  }
+                                ]
+                              },
+                              "fontWeight": {
+                                "optional": true,
+                                "type": "union",
+                                "discriminator": "transformerType",
+                                "definition": [
+                                  {
+                                    "type": "schemaReference",
+                                    "definition": {
+                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                      "relativePath": "transformerForBuildCarryOnObject"
+                                    }
+                                  },
+                                  {
+                                    "type": "object",
+                                    "definition": {
+                                      "light": {
+                                        "type": "union",
+                                        "optional": true,
+                                        "discriminator": "transformerType",
+                                        "definition": [
+                                          {
+                                            "type": "number",
+                                            "optional": true
+                                          },
+                                          {
+                                            "type": "schemaReference",
+                                            "definition": {
+                                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                              "relativePath": "transformerForBuildCarryOnObject"
+                                            }
+                                          }
+                                        ]
+                                      },
+                                      "normal": {
+                                        "type": "union",
+                                        "optional": true,
+                                        "discriminator": "transformerType",
+                                        "definition": [
+                                          {
+                                            "type": "number",
+                                            "optional": true
+                                          },
+                                          {
+                                            "type": "schemaReference",
+                                            "definition": {
+                                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                              "relativePath": "transformerForBuildCarryOnObject"
+                                            }
+                                          }
+                                        ]
+                                      },
+                                      "medium": {
+                                        "type": "union",
+                                        "optional": true,
+                                        "discriminator": "transformerType",
+                                        "definition": [
+                                          {
+                                            "type": "number",
+                                            "optional": true
+                                          },
+                                          {
+                                            "type": "schemaReference",
+                                            "definition": {
+                                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                              "relativePath": "transformerForBuildCarryOnObject"
+                                            }
+                                          }
+                                        ]
+                                      },
+                                      "bold": {
+                                        "type": "union",
+                                        "optional": true,
+                                        "discriminator": "transformerType",
+                                        "definition": [
+                                          {
+                                            "type": "number",
+                                            "optional": true
+                                          },
+                                          {
+                                            "type": "schemaReference",
+                                            "definition": {
+                                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                              "relativePath": "transformerForBuildCarryOnObject"
+                                            }
+                                          }
+                                        ]
+                                      },
+                                      "extraBold": {
+                                        "type": "union",
+                                        "optional": true,
+                                        "discriminator": "transformerType",
+                                        "definition": [
+                                          {
+                                            "type": "number",
+                                            "optional": true
+                                          },
+                                          {
+                                            "type": "schemaReference",
+                                            "definition": {
+                                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                              "relativePath": "transformerForBuildCarryOnObject"
+                                            }
+                                          }
+                                        ]
+                                      }
+                                    }
+                                  }
+                                ]
+                              },
+                              "lineHeight": {
+                                "optional": true,
+                                "type": "union",
+                                "discriminator": "transformerType",
+                                "definition": [
+                                  {
+                                    "type": "schemaReference",
+                                    "definition": {
+                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                      "relativePath": "transformerForBuildCarryOnObject"
+                                    }
+                                  },
+                                  {
+                                    "type": "object",
+                                    "definition": {
+                                      "tight": {
+                                        "type": "union",
+                                        "optional": true,
+                                        "discriminator": "transformerType",
+                                        "definition": [
+                                          {
+                                            "type": "number",
+                                            "optional": true
+                                          },
+                                          {
+                                            "type": "schemaReference",
+                                            "definition": {
+                                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                              "relativePath": "transformerForBuildCarryOnObject"
+                                            }
+                                          }
+                                        ]
+                                      },
+                                      "normal": {
+                                        "type": "union",
+                                        "optional": true,
+                                        "discriminator": "transformerType",
+                                        "definition": [
+                                          {
+                                            "type": "number",
+                                            "optional": true
+                                          },
+                                          {
+                                            "type": "schemaReference",
+                                            "definition": {
+                                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                              "relativePath": "transformerForBuildCarryOnObject"
+                                            }
+                                          }
+                                        ]
+                                      },
+                                      "relaxed": {
+                                        "type": "union",
+                                        "optional": true,
+                                        "discriminator": "transformerType",
+                                        "definition": [
+                                          {
+                                            "type": "number",
+                                            "optional": true
+                                          },
+                                          {
+                                            "type": "schemaReference",
+                                            "definition": {
+                                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                              "relativePath": "transformerForBuildCarryOnObject"
+                                            }
+                                          }
+                                        ]
+                                      }
+                                    }
+                                  }
+                                ]
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "elevation": {
+                        "optional": true,
+                        "type": "union",
+                        "discriminator": "transformerType",
+                        "definition": [
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              "relativePath": "transformerForBuildCarryOnObject"
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "definition": {
+                              "none": {
+                                "type": "union",
+                                "optional": true,
+                                "discriminator": "transformerType",
+                                "definition": [
+                                  {
+                                    "type": "string",
+                                    "optional": true
+                                  },
+                                  {
+                                    "type": "schemaReference",
+                                    "definition": {
+                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                      "relativePath": "transformerForBuildCarryOnObject"
+                                    }
+                                  }
+                                ]
+                              },
+                              "low": {
+                                "type": "union",
+                                "optional": true,
+                                "discriminator": "transformerType",
+                                "definition": [
+                                  {
+                                    "type": "string",
+                                    "optional": true
+                                  },
+                                  {
+                                    "type": "schemaReference",
+                                    "definition": {
+                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                      "relativePath": "transformerForBuildCarryOnObject"
+                                    }
+                                  }
+                                ]
+                              },
+                              "medium": {
+                                "type": "union",
+                                "optional": true,
+                                "discriminator": "transformerType",
+                                "definition": [
+                                  {
+                                    "type": "string",
+                                    "optional": true
+                                  },
+                                  {
+                                    "type": "schemaReference",
+                                    "definition": {
+                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                      "relativePath": "transformerForBuildCarryOnObject"
+                                    }
+                                  }
+                                ]
+                              },
+                              "high": {
+                                "type": "union",
+                                "optional": true,
+                                "discriminator": "transformerType",
+                                "definition": [
+                                  {
+                                    "type": "string",
+                                    "optional": true
+                                  },
+                                  {
+                                    "type": "schemaReference",
+                                    "definition": {
+                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                      "relativePath": "transformerForBuildCarryOnObject"
+                                    }
+                                  }
+                                ]
+                              },
+                              "modal": {
+                                "type": "union",
+                                "optional": true,
+                                "discriminator": "transformerType",
+                                "definition": [
+                                  {
+                                    "type": "string",
+                                    "optional": true
+                                  },
+                                  {
+                                    "type": "schemaReference",
+                                    "definition": {
+                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                      "relativePath": "transformerForBuildCarryOnObject"
+                                    }
+                                  }
+                                ]
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "borderRadius": {
+                        "optional": true,
+                        "type": "union",
+                        "discriminator": "transformerType",
+                        "definition": [
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              "relativePath": "transformerForBuildCarryOnObject"
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "definition": {
+                              "none": {
+                                "type": "union",
+                                "optional": true,
+                                "discriminator": "transformerType",
+                                "definition": [
+                                  {
+                                    "type": "string",
+                                    "optional": true
+                                  },
+                                  {
+                                    "type": "schemaReference",
+                                    "definition": {
+                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                      "relativePath": "transformerForBuildCarryOnObject"
+                                    }
+                                  }
+                                ]
+                              },
+                              "sm": {
+                                "type": "union",
+                                "optional": true,
+                                "discriminator": "transformerType",
+                                "definition": [
+                                  {
+                                    "type": "string",
+                                    "optional": true
+                                  },
+                                  {
+                                    "type": "schemaReference",
+                                    "definition": {
+                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                      "relativePath": "transformerForBuildCarryOnObject"
+                                    }
+                                  }
+                                ]
+                              },
+                              "md": {
+                                "type": "union",
+                                "optional": true,
+                                "discriminator": "transformerType",
+                                "definition": [
+                                  {
+                                    "type": "string",
+                                    "optional": true
+                                  },
+                                  {
+                                    "type": "schemaReference",
+                                    "definition": {
+                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                      "relativePath": "transformerForBuildCarryOnObject"
+                                    }
+                                  }
+                                ]
+                              },
+                              "lg": {
+                                "type": "union",
+                                "optional": true,
+                                "discriminator": "transformerType",
+                                "definition": [
+                                  {
+                                    "type": "string",
+                                    "optional": true
+                                  },
+                                  {
+                                    "type": "schemaReference",
+                                    "definition": {
+                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                      "relativePath": "transformerForBuildCarryOnObject"
+                                    }
+                                  }
+                                ]
+                              },
+                              "xl": {
+                                "type": "union",
+                                "optional": true,
+                                "discriminator": "transformerType",
+                                "definition": [
+                                  {
+                                    "type": "string",
+                                    "optional": true
+                                  },
+                                  {
+                                    "type": "schemaReference",
+                                    "definition": {
+                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                      "relativePath": "transformerForBuildCarryOnObject"
+                                    }
+                                  }
+                                ]
+                              },
+                              "full": {
+                                "type": "union",
+                                "optional": true,
+                                "discriminator": "transformerType",
+                                "definition": [
+                                  {
+                                    "type": "string",
+                                    "optional": true
+                                  },
+                                  {
+                                    "type": "schemaReference",
+                                    "definition": {
+                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                      "relativePath": "transformerForBuildCarryOnObject"
+                                    }
+                                  }
+                                ]
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "components": {
+                        "optional": true,
+                        "type": "union",
+                        "discriminator": "transformerType",
+                        "definition": [
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              "relativePath": "transformerForBuildCarryOnObject"
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "definition": {
+                              "appBar": {
+                                "optional": true,
+                                "type": "union",
+                                "discriminator": "transformerType",
+                                "definition": [
+                                  {
+                                    "type": "schemaReference",
+                                    "definition": {
+                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                      "relativePath": "transformerForBuildCarryOnObject"
+                                    }
+                                  },
+                                  {
+                                    "type": "object",
+                                    "definition": {
+                                      "background": {
+                                        "type": "union",
+                                        "optional": true,
+                                        "tag": {
+                                          "value": {
+                                            "defaultLabel": "App Bar Background Color",
+                                            "display": {
+                                              "string": {
+                                                "format": "color"
+                                              }
+                                            },
+                                            "isTemplate": true
+                                          }
+                                        },
+                                        "discriminator": "transformerType",
+                                        "definition": [
+                                          {
+                                            "type": "string",
+                                            "optional": true,
+                                            "tag": {
+                                              "value": {
+                                                "defaultLabel": "App Bar Background Color",
+                                                "display": {
+                                                  "string": {
+                                                    "format": "color"
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          },
+                                          {
+                                            "type": "schemaReference",
+                                            "definition": {
+                                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                              "relativePath": "transformerForBuildCarryOnObject"
+                                            }
+                                          }
+                                        ]
+                                      },
+                                      "textColor": {
+                                        "type": "union",
+                                        "optional": true,
+                                        "tag": {
+                                          "value": {
+                                            "defaultLabel": "App Bar Text Color",
+                                            "display": {
+                                              "string": {
+                                                "format": "color"
+                                              }
+                                            },
+                                            "isTemplate": true
+                                          }
+                                        },
+                                        "discriminator": "transformerType",
+                                        "definition": [
+                                          {
+                                            "type": "string",
+                                            "optional": true,
+                                            "tag": {
+                                              "value": {
+                                                "defaultLabel": "App Bar Text Color",
+                                                "display": {
+                                                  "string": {
+                                                    "format": "color"
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          },
+                                          {
+                                            "type": "schemaReference",
+                                            "definition": {
+                                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                              "relativePath": "transformerForBuildCarryOnObject"
+                                            }
+                                          }
+                                        ]
+                                      },
+                                      "borderBottom": {
+                                        "type": "union",
+                                        "optional": true,
+                                        "tag": {
+                                          "value": {
+                                            "defaultLabel": "App Bar Border Bottom Color",
+                                            "display": {
+                                              "string": {
+                                                "format": "color"
+                                              }
+                                            },
+                                            "isTemplate": true
+                                          }
+                                        },
+                                        "discriminator": "transformerType",
+                                        "definition": [
+                                          {
+                                            "type": "string",
+                                            "optional": true,
+                                            "tag": {
+                                              "value": {
+                                                "defaultLabel": "App Bar Border Bottom Color",
+                                                "display": {
+                                                  "string": {
+                                                    "format": "color"
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          },
+                                          {
+                                            "type": "schemaReference",
+                                            "definition": {
+                                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                              "relativePath": "transformerForBuildCarryOnObject"
+                                            }
+                                          }
+                                        ]
+                                      },
+                                      "height": {
+                                        "type": "union",
+                                        "optional": true,
+                                        "tag": {
+                                          "value": {
+                                            "defaultLabel": "App Bar Height",
+                                            "display": {
+                                              "string": {
+                                                "format": "size"
+                                              }
+                                            },
+                                            "isTemplate": true
+                                          }
+                                        },
+                                        "discriminator": "transformerType",
+                                        "definition": [
+                                          {
+                                            "type": "string",
+                                            "optional": true,
+                                            "tag": {
+                                              "value": {
+                                                "defaultLabel": "App Bar Height",
+                                                "display": {
+                                                  "string": {
+                                                    "format": "size"
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          },
+                                          {
+                                            "type": "schemaReference",
+                                            "definition": {
+                                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                              "relativePath": "transformerForBuildCarryOnObject"
+                                            }
+                                          }
+                                        ]
+                                      },
+                                      "elevation": {
+                                        "type": "union",
+                                        "optional": true,
+                                        "tag": {
+                                          "value": {
+                                            "defaultLabel": "App Bar Elevation",
+                                            "display": {
+                                              "string": {
+                                                "format": "elevation"
+                                              }
+                                            },
+                                            "isTemplate": true
+                                          }
+                                        },
+                                        "discriminator": "transformerType",
+                                        "definition": [
+                                          {
+                                            "type": "string",
+                                            "optional": true,
+                                            "tag": {
+                                              "value": {
+                                                "defaultLabel": "App Bar Elevation",
+                                                "display": {
+                                                  "string": {
+                                                    "format": "elevation"
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          },
+                                          {
+                                            "type": "schemaReference",
+                                            "definition": {
+                                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                              "relativePath": "transformerForBuildCarryOnObject"
+                                            }
+                                          }
+                                        ]
+                                      }
+                                    }
+                                  }
+                                ]
+                              },
+                              "sidebar": {
+                                "optional": true,
+                                "type": "union",
+                                "discriminator": "transformerType",
+                                "definition": [
+                                  {
+                                    "type": "schemaReference",
+                                    "definition": {
+                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                      "relativePath": "transformerForBuildCarryOnObject"
+                                    }
+                                  },
+                                  {
+                                    "type": "object",
+                                    "definition": {
+                                      "background": {
+                                        "type": "union",
+                                        "optional": true,
+                                        "tag": {
+                                          "value": {
+                                            "defaultLabel": "Sidebar Background Color",
+                                            "display": {
+                                              "string": {
+                                                "format": "color"
+                                              }
+                                            },
+                                            "isTemplate": true
+                                          }
+                                        },
+                                        "discriminator": "transformerType",
+                                        "definition": [
+                                          {
+                                            "type": "string",
+                                            "optional": true,
+                                            "tag": {
+                                              "value": {
+                                                "defaultLabel": "Sidebar Background Color",
+                                                "display": {
+                                                  "string": {
+                                                    "format": "color"
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          },
+                                          {
+                                            "type": "schemaReference",
+                                            "definition": {
+                                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                              "relativePath": "transformerForBuildCarryOnObject"
+                                            }
+                                          }
+                                        ]
+                                      },
+                                      "backgroundHover": {
+                                        "type": "union",
+                                        "optional": true,
+                                        "tag": {
+                                          "value": {
+                                            "defaultLabel": "Sidebar Background Hover Color",
+                                            "display": {
+                                              "string": {
+                                                "format": "color"
+                                              }
+                                            },
+                                            "isTemplate": true
+                                          }
+                                        },
+                                        "discriminator": "transformerType",
+                                        "definition": [
+                                          {
+                                            "type": "string",
+                                            "optional": true,
+                                            "tag": {
+                                              "value": {
+                                                "defaultLabel": "Sidebar Background Hover Color",
+                                                "display": {
+                                                  "string": {
+                                                    "format": "color"
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          },
+                                          {
+                                            "type": "schemaReference",
+                                            "definition": {
+                                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                              "relativePath": "transformerForBuildCarryOnObject"
+                                            }
+                                          }
+                                        ]
+                                      },
+                                      "textColor": {
+                                        "type": "union",
+                                        "optional": true,
+                                        "tag": {
+                                          "value": {
+                                            "defaultLabel": "Sidebar Text Color",
+                                            "display": {
+                                              "string": {
+                                                "format": "color"
+                                              }
+                                            },
+                                            "isTemplate": true
+                                          }
+                                        },
+                                        "discriminator": "transformerType",
+                                        "definition": [
+                                          {
+                                            "type": "string",
+                                            "optional": true,
+                                            "tag": {
+                                              "value": {
+                                                "defaultLabel": "Sidebar Text Color",
+                                                "display": {
+                                                  "string": {
+                                                    "format": "color"
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          },
+                                          {
+                                            "type": "schemaReference",
+                                            "definition": {
+                                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                              "relativePath": "transformerForBuildCarryOnObject"
+                                            }
+                                          }
+                                        ]
+                                      },
+                                      "textColorActive": {
+                                        "type": "union",
+                                        "optional": true,
+                                        "tag": {
+                                          "value": {
+                                            "defaultLabel": "Sidebar Text Color Active",
+                                            "display": {
+                                              "string": {
+                                                "format": "color"
+                                              }
+                                            },
+                                            "isTemplate": true
+                                          }
+                                        },
+                                        "discriminator": "transformerType",
+                                        "definition": [
+                                          {
+                                            "type": "string",
+                                            "optional": true,
+                                            "tag": {
+                                              "value": {
+                                                "defaultLabel": "Sidebar Text Color Active",
+                                                "display": {
+                                                  "string": {
+                                                    "format": "color"
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          },
+                                          {
+                                            "type": "schemaReference",
+                                            "definition": {
+                                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                              "relativePath": "transformerForBuildCarryOnObject"
+                                            }
+                                          }
+                                        ]
+                                      },
+                                      "borderRight": {
+                                        "type": "union",
+                                        "optional": true,
+                                        "tag": {
+                                          "value": {
+                                            "defaultLabel": "Sidebar Border Right Color",
+                                            "display": {
+                                              "string": {
+                                                "format": "color"
+                                              }
+                                            },
+                                            "isTemplate": true
+                                          }
+                                        },
+                                        "discriminator": "transformerType",
+                                        "definition": [
+                                          {
+                                            "type": "string",
+                                            "optional": true,
+                                            "tag": {
+                                              "value": {
+                                                "defaultLabel": "Sidebar Border Right Color",
+                                                "display": {
+                                                  "string": {
+                                                    "format": "color"
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          },
+                                          {
+                                            "type": "schemaReference",
+                                            "definition": {
+                                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                              "relativePath": "transformerForBuildCarryOnObject"
+                                            }
+                                          }
+                                        ]
+                                      },
+                                      "width": {
+                                        "type": "union",
+                                        "optional": true,
+                                        "tag": {
+                                          "value": {
+                                            "defaultLabel": "Sidebar Width",
+                                            "display": {
+                                              "string": {
+                                                "format": "size"
+                                              }
+                                            },
+                                            "isTemplate": true
+                                          }
+                                        },
+                                        "discriminator": "transformerType",
+                                        "definition": [
+                                          {
+                                            "type": "string",
+                                            "optional": true,
+                                            "tag": {
+                                              "value": {
+                                                "defaultLabel": "Sidebar Width",
+                                                "display": {
+                                                  "string": {
+                                                    "format": "size"
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          },
+                                          {
+                                            "type": "schemaReference",
+                                            "definition": {
+                                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                              "relativePath": "transformerForBuildCarryOnObject"
+                                            }
+                                          }
+                                        ]
+                                      },
+                                      "itemHeight": {
+                                        "type": "union",
+                                        "optional": true,
+                                        "tag": {
+                                          "value": {
+                                            "defaultLabel": "Sidebar Item Height",
+                                            "display": {
+                                              "string": {
+                                                "format": "size"
+                                              }
+                                            },
+                                            "isTemplate": true
+                                          }
+                                        },
+                                        "discriminator": "transformerType",
+                                        "definition": [
+                                          {
+                                            "type": "string",
+                                            "optional": true,
+                                            "tag": {
+                                              "value": {
+                                                "defaultLabel": "Sidebar Item Height",
+                                                "display": {
+                                                  "string": {
+                                                    "format": "size"
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          },
+                                          {
+                                            "type": "schemaReference",
+                                            "definition": {
+                                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                              "relativePath": "transformerForBuildCarryOnObject"
+                                            }
+                                          }
+                                        ]
+                                      }
+                                    }
+                                  }
+                                ]
+                              },
+                              "drawer": {
+                                "optional": true,
+                                "type": "union",
+                                "discriminator": "transformerType",
+                                "definition": [
+                                  {
+                                    "type": "schemaReference",
+                                    "definition": {
+                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                      "relativePath": "transformerForBuildCarryOnObject"
+                                    }
+                                  },
+                                  {
+                                    "type": "object",
+                                    "definition": {
+                                      "background": {
+                                        "type": "union",
+                                        "optional": true,
+                                        "tag": {
+                                          "value": {
+                                            "defaultLabel": "Drawer Background Color",
+                                            "display": {
+                                              "string": {
+                                                "format": "color"
+                                              }
+                                            },
+                                            "isTemplate": true
+                                          }
+                                        },
+                                        "discriminator": "transformerType",
+                                        "definition": [
+                                          {
+                                            "type": "string",
+                                            "optional": true,
+                                            "tag": {
+                                              "value": {
+                                                "defaultLabel": "Drawer Background Color",
+                                                "display": {
+                                                  "string": {
+                                                    "format": "color"
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          },
+                                          {
+                                            "type": "schemaReference",
+                                            "definition": {
+                                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                              "relativePath": "transformerForBuildCarryOnObject"
+                                            }
+                                          }
+                                        ]
+                                      },
+                                      "backdrop": {
+                                        "type": "union",
+                                        "optional": true,
+                                        "discriminator": "transformerType",
+                                        "definition": [
+                                          {
+                                            "type": "string",
+                                            "optional": true
+                                          },
+                                          {
+                                            "type": "schemaReference",
+                                            "definition": {
+                                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                              "relativePath": "transformerForBuildCarryOnObject"
+                                            }
+                                          }
+                                        ]
+                                      },
+                                      "elevation": {
+                                        "type": "union",
+                                        "optional": true,
+                                        "discriminator": "transformerType",
+                                        "definition": [
+                                          {
+                                            "type": "string",
+                                            "optional": true
+                                          },
+                                          {
+                                            "type": "schemaReference",
+                                            "definition": {
+                                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                              "relativePath": "transformerForBuildCarryOnObject"
+                                            }
+                                          }
+                                        ]
+                                      }
+                                    }
+                                  }
+                                ]
+                              },
+                              "input": {
+                                "optional": true,
+                                "type": "union",
+                                "discriminator": "transformerType",
+                                "definition": [
+                                  {
+                                    "type": "schemaReference",
+                                    "definition": {
+                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                      "relativePath": "transformerForBuildCarryOnObject"
+                                    }
+                                  },
+                                  {
+                                    "type": "object",
+                                    "definition": {
+                                      "background": {
+                                        "type": "union",
+                                        "optional": true,
+                                        "tag": {
+                                          "value": {
+                                            "defaultLabel": "Input Background Color",
+                                            "display": {
+                                              "string": {
+                                                "format": "color"
+                                              }
+                                            },
+                                            "isTemplate": true
+                                          }
+                                        },
+                                        "discriminator": "transformerType",
+                                        "definition": [
+                                          {
+                                            "type": "string",
+                                            "optional": true,
+                                            "tag": {
+                                              "value": {
+                                                "defaultLabel": "Input Background Color",
+                                                "display": {
+                                                  "string": {
+                                                    "format": "color"
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          },
+                                          {
+                                            "type": "schemaReference",
+                                            "definition": {
+                                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                              "relativePath": "transformerForBuildCarryOnObject"
+                                            }
+                                          }
+                                        ]
+                                      },
+                                      "backgroundHover": {
+                                        "type": "union",
+                                        "optional": true,
+                                        "tag": {
+                                          "value": {
+                                            "defaultLabel": "Input Background Hover Color",
+                                            "display": {
+                                              "string": {
+                                                "format": "color"
+                                              }
+                                            },
+                                            "isTemplate": true
+                                          }
+                                        },
+                                        "discriminator": "transformerType",
+                                        "definition": [
+                                          {
+                                            "type": "string",
+                                            "optional": true,
+                                            "tag": {
+                                              "value": {
+                                                "defaultLabel": "Input Background Hover Color",
+                                                "display": {
+                                                  "string": {
+                                                    "format": "color"
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          },
+                                          {
+                                            "type": "schemaReference",
+                                            "definition": {
+                                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                              "relativePath": "transformerForBuildCarryOnObject"
+                                            }
+                                          }
+                                        ]
+                                      },
+                                      "backgroundFocused": {
+                                        "type": "union",
+                                        "optional": true,
+                                        "tag": {
+                                          "value": {
+                                            "defaultLabel": "Input Background Focused Color",
+                                            "display": {
+                                              "string": {
+                                                "format": "color"
+                                              }
+                                            },
+                                            "isTemplate": true
+                                          }
+                                        },
+                                        "discriminator": "transformerType",
+                                        "definition": [
+                                          {
+                                            "type": "string",
+                                            "optional": true,
+                                            "tag": {
+                                              "value": {
+                                                "defaultLabel": "Input Background Focused Color",
+                                                "display": {
+                                                  "string": {
+                                                    "format": "color"
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          },
+                                          {
+                                            "type": "schemaReference",
+                                            "definition": {
+                                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                              "relativePath": "transformerForBuildCarryOnObject"
+                                            }
+                                          }
+                                        ]
+                                      },
+                                      "borderColor": {
+                                        "type": "union",
+                                        "optional": true,
+                                        "tag": {
+                                          "value": {
+                                            "defaultLabel": "Input Border Color",
+                                            "display": {
+                                              "string": {
+                                                "format": "color"
+                                              }
+                                            },
+                                            "isTemplate": true
+                                          }
+                                        },
+                                        "discriminator": "transformerType",
+                                        "definition": [
+                                          {
+                                            "type": "string",
+                                            "optional": true,
+                                            "tag": {
+                                              "value": {
+                                                "defaultLabel": "Input Border Color",
+                                                "display": {
+                                                  "string": {
+                                                    "format": "color"
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          },
+                                          {
+                                            "type": "schemaReference",
+                                            "definition": {
+                                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                              "relativePath": "transformerForBuildCarryOnObject"
+                                            }
+                                          }
+                                        ]
+                                      },
+                                      "borderColorHover": {
+                                        "type": "union",
+                                        "optional": true,
+                                        "tag": {
+                                          "value": {
+                                            "defaultLabel": "Input Border Color Hover",
+                                            "display": {
+                                              "string": {
+                                                "format": "color"
+                                              }
+                                            },
+                                            "isTemplate": true
+                                          }
+                                        },
+                                        "discriminator": "transformerType",
+                                        "definition": [
+                                          {
+                                            "type": "string",
+                                            "optional": true,
+                                            "tag": {
+                                              "value": {
+                                                "defaultLabel": "Input Border Color Hover",
+                                                "display": {
+                                                  "string": {
+                                                    "format": "color"
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          },
+                                          {
+                                            "type": "schemaReference",
+                                            "definition": {
+                                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                              "relativePath": "transformerForBuildCarryOnObject"
+                                            }
+                                          }
+                                        ]
+                                      },
+                                      "borderColorFocused": {
+                                        "type": "union",
+                                        "optional": true,
+                                        "tag": {
+                                          "value": {
+                                            "defaultLabel": "Input Border Color Focused",
+                                            "display": {
+                                              "string": {
+                                                "format": "color"
+                                              }
+                                            },
+                                            "isTemplate": true
+                                          }
+                                        },
+                                        "discriminator": "transformerType",
+                                        "definition": [
+                                          {
+                                            "type": "string",
+                                            "optional": true,
+                                            "tag": {
+                                              "value": {
+                                                "defaultLabel": "Input Border Color Focused",
+                                                "display": {
+                                                  "string": {
+                                                    "format": "color"
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          },
+                                          {
+                                            "type": "schemaReference",
+                                            "definition": {
+                                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                              "relativePath": "transformerForBuildCarryOnObject"
+                                            }
+                                          }
+                                        ]
+                                      },
+                                      "textColor": {
+                                        "type": "union",
+                                        "optional": true,
+                                        "tag": {
+                                          "value": {
+                                            "defaultLabel": "Input Text Color",
+                                            "display": {
+                                              "string": {
+                                                "format": "color"
+                                              }
+                                            },
+                                            "isTemplate": true
+                                          }
+                                        },
+                                        "discriminator": "transformerType",
+                                        "definition": [
+                                          {
+                                            "type": "string",
+                                            "optional": true,
+                                            "tag": {
+                                              "value": {
+                                                "defaultLabel": "Input Text Color",
+                                                "display": {
+                                                  "string": {
+                                                    "format": "color"
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          },
+                                          {
+                                            "type": "schemaReference",
+                                            "definition": {
+                                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                              "relativePath": "transformerForBuildCarryOnObject"
+                                            }
+                                          }
+                                        ]
+                                      },
+                                      "placeholderColor": {
+                                        "type": "union",
+                                        "optional": true,
+                                        "tag": {
+                                          "value": {
+                                            "defaultLabel": "Input Placeholder Color",
+                                            "display": {
+                                              "string": {
+                                                "format": "color"
+                                              }
+                                            },
+                                            "isTemplate": true
+                                          }
+                                        },
+                                        "discriminator": "transformerType",
+                                        "definition": [
+                                          {
+                                            "type": "string",
+                                            "optional": true,
+                                            "tag": {
+                                              "value": {
+                                                "defaultLabel": "Input Placeholder Color",
+                                                "display": {
+                                                  "string": {
+                                                    "format": "color"
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          },
+                                          {
+                                            "type": "schemaReference",
+                                            "definition": {
+                                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                              "relativePath": "transformerForBuildCarryOnObject"
+                                            }
+                                          }
+                                        ]
+                                      },
+                                      "borderRadius": {
+                                        "type": "union",
+                                        "optional": true,
+                                        "discriminator": "transformerType",
+                                        "definition": [
+                                          {
+                                            "type": "string",
+                                            "optional": true
+                                          },
+                                          {
+                                            "type": "schemaReference",
+                                            "definition": {
+                                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                              "relativePath": "transformerForBuildCarryOnObject"
+                                            }
+                                          }
+                                        ]
+                                      },
+                                      "height": {
+                                        "type": "union",
+                                        "optional": true,
+                                        "discriminator": "transformerType",
+                                        "definition": [
+                                          {
+                                            "type": "string",
+                                            "optional": true
+                                          },
+                                          {
+                                            "type": "schemaReference",
+                                            "definition": {
+                                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                              "relativePath": "transformerForBuildCarryOnObject"
+                                            }
+                                          }
+                                        ]
+                                      }
+                                    }
+                                  }
+                                ]
+                              },
+                              "button": {
+                                "optional": true,
+                                "type": "union",
+                                "discriminator": "transformerType",
+                                "definition": [
+                                  {
+                                    "type": "schemaReference",
+                                    "definition": {
+                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                      "relativePath": "transformerForBuildCarryOnObject"
+                                    }
+                                  },
+                                  {
+                                    "type": "object",
+                                    "definition": {
+                                      "primary": {
+                                        "optional": true,
+                                        "type": "union",
+                                        "discriminator": "transformerType",
+                                        "definition": [
+                                          {
+                                            "type": "schemaReference",
+                                            "definition": {
+                                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                              "relativePath": "transformerForBuildCarryOnObject"
+                                            }
+                                          },
+                                          {
+                                            "type": "object",
+                                            "definition": {
+                                              "background": {
+                                                "type": "union",
+                                                "optional": true,
+                                                "tag": {
+                                                  "value": {
+                                                    "defaultLabel": "Primary Button Background Color",
+                                                    "display": {
+                                                      "string": {
+                                                        "format": "color"
+                                                      }
+                                                    },
+                                                    "isTemplate": true
+                                                  }
+                                                },
+                                                "discriminator": "transformerType",
+                                                "definition": [
+                                                  {
+                                                    "type": "string",
+                                                    "optional": true,
+                                                    "tag": {
+                                                      "value": {
+                                                        "defaultLabel": "Primary Button Background Color",
+                                                        "display": {
+                                                          "string": {
+                                                            "format": "color"
+                                                          }
+                                                        }
+                                                      }
+                                                    }
+                                                  },
+                                                  {
+                                                    "type": "schemaReference",
+                                                    "definition": {
+                                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                                      "relativePath": "transformerForBuildCarryOnObject"
+                                                    }
+                                                  }
+                                                ]
+                                              },
+                                              "backgroundHover": {
+                                                "type": "union",
+                                                "optional": true,
+                                                "tag": {
+                                                  "value": {
+                                                    "defaultLabel": "Primary Button Background Hover Color",
+                                                    "display": {
+                                                      "string": {
+                                                        "format": "color"
+                                                      }
+                                                    },
+                                                    "isTemplate": true
+                                                  }
+                                                },
+                                                "discriminator": "transformerType",
+                                                "definition": [
+                                                  {
+                                                    "type": "string",
+                                                    "optional": true,
+                                                    "tag": {
+                                                      "value": {
+                                                        "defaultLabel": "Primary Button Background Hover Color",
+                                                        "display": {
+                                                          "string": {
+                                                            "format": "color"
+                                                          }
+                                                        }
+                                                      }
+                                                    }
+                                                  },
+                                                  {
+                                                    "type": "schemaReference",
+                                                    "definition": {
+                                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                                      "relativePath": "transformerForBuildCarryOnObject"
+                                                    }
+                                                  }
+                                                ]
+                                              },
+                                              "backgroundActive": {
+                                                "type": "union",
+                                                "optional": true,
+                                                "tag": {
+                                                  "value": {
+                                                    "defaultLabel": "Primary Button Background Active Color",
+                                                    "display": {
+                                                      "string": {
+                                                        "format": "color"
+                                                      }
+                                                    },
+                                                    "isTemplate": true
+                                                  }
+                                                },
+                                                "discriminator": "transformerType",
+                                                "definition": [
+                                                  {
+                                                    "type": "string",
+                                                    "optional": true,
+                                                    "tag": {
+                                                      "value": {
+                                                        "defaultLabel": "Primary Button Background Active Color",
+                                                        "display": {
+                                                          "string": {
+                                                            "format": "color"
+                                                          }
+                                                        }
+                                                      }
+                                                    }
+                                                  },
+                                                  {
+                                                    "type": "schemaReference",
+                                                    "definition": {
+                                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                                      "relativePath": "transformerForBuildCarryOnObject"
+                                                    }
+                                                  }
+                                                ]
+                                              },
+                                              "textColor": {
+                                                "type": "union",
+                                                "optional": true,
+                                                "tag": {
+                                                  "value": {
+                                                    "defaultLabel": "Primary Button Text Color",
+                                                    "display": {
+                                                      "string": {
+                                                        "format": "color"
+                                                      }
+                                                    },
+                                                    "isTemplate": true
+                                                  }
+                                                },
+                                                "discriminator": "transformerType",
+                                                "definition": [
+                                                  {
+                                                    "type": "string",
+                                                    "optional": true,
+                                                    "tag": {
+                                                      "value": {
+                                                        "defaultLabel": "Primary Button Text Color",
+                                                        "display": {
+                                                          "string": {
+                                                            "format": "color"
+                                                          }
+                                                        }
+                                                      }
+                                                    }
+                                                  },
+                                                  {
+                                                    "type": "schemaReference",
+                                                    "definition": {
+                                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                                      "relativePath": "transformerForBuildCarryOnObject"
+                                                    }
+                                                  }
+                                                ]
+                                              },
+                                              "borderColor": {
+                                                "type": "union",
+                                                "optional": true,
+                                                "tag": {
+                                                  "value": {
+                                                    "defaultLabel": "Primary Button Border Color",
+                                                    "display": {
+                                                      "string": {
+                                                        "format": "color"
+                                                      }
+                                                    },
+                                                    "isTemplate": true
+                                                  }
+                                                },
+                                                "discriminator": "transformerType",
+                                                "definition": [
+                                                  {
+                                                    "type": "string",
+                                                    "optional": true,
+                                                    "tag": {
+                                                      "value": {
+                                                        "defaultLabel": "Primary Button Border Color",
+                                                        "display": {
+                                                          "string": {
+                                                            "format": "color"
+                                                          }
+                                                        }
+                                                      }
+                                                    }
+                                                  },
+                                                  {
+                                                    "type": "schemaReference",
+                                                    "definition": {
+                                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                                      "relativePath": "transformerForBuildCarryOnObject"
+                                                    }
+                                                  }
+                                                ]
+                                              },
+                                              "borderRadius": {
+                                                "type": "union",
+                                                "optional": true,
+                                                "discriminator": "transformerType",
+                                                "definition": [
+                                                  {
+                                                    "type": "string",
+                                                    "optional": true
+                                                  },
+                                                  {
+                                                    "type": "schemaReference",
+                                                    "definition": {
+                                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                                      "relativePath": "transformerForBuildCarryOnObject"
+                                                    }
+                                                  }
+                                                ]
+                                              }
+                                            }
+                                          }
+                                        ]
+                                      },
+                                      "secondary": {
+                                        "type": "union",
+                                        "discriminator": "transformerType",
+                                        "definition": [
+                                          {
+                                            "type": "schemaReference",
+                                            "definition": {
+                                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                              "relativePath": "transformerForBuildCarryOnObject"
+                                            }
+                                          },
+                                          {
+                                            "type": "object",
+                                            "definition": {
+                                              "background": {
+                                                "type": "union",
+                                                "optional": true,
+                                                "tag": {
+                                                  "value": {
+                                                    "defaultLabel": "Secondary Button Background Color",
+                                                    "display": {
+                                                      "string": {
+                                                        "format": "color"
+                                                      }
+                                                    },
+                                                    "isTemplate": true
+                                                  }
+                                                },
+                                                "discriminator": "transformerType",
+                                                "definition": [
+                                                  {
+                                                    "type": "string",
+                                                    "optional": true,
+                                                    "tag": {
+                                                      "value": {
+                                                        "defaultLabel": "Secondary Button Background Color",
+                                                        "display": {
+                                                          "string": {
+                                                            "format": "color"
+                                                          }
+                                                        }
+                                                      }
+                                                    }
+                                                  },
+                                                  {
+                                                    "type": "schemaReference",
+                                                    "definition": {
+                                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                                      "relativePath": "transformerForBuildCarryOnObject"
+                                                    }
+                                                  }
+                                                ]
+                                              },
+                                              "backgroundHover": {
+                                                "type": "union",
+                                                "optional": true,
+                                                "tag": {
+                                                  "value": {
+                                                    "defaultLabel": "Secondary Button Background Hover Color",
+                                                    "display": {
+                                                      "string": {
+                                                        "format": "color"
+                                                      }
+                                                    },
+                                                    "isTemplate": true
+                                                  }
+                                                },
+                                                "discriminator": "transformerType",
+                                                "definition": [
+                                                  {
+                                                    "type": "string",
+                                                    "optional": true,
+                                                    "tag": {
+                                                      "value": {
+                                                        "defaultLabel": "Secondary Button Background Hover Color",
+                                                        "display": {
+                                                          "string": {
+                                                            "format": "color"
+                                                          }
+                                                        }
+                                                      }
+                                                    }
+                                                  },
+                                                  {
+                                                    "type": "schemaReference",
+                                                    "definition": {
+                                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                                      "relativePath": "transformerForBuildCarryOnObject"
+                                                    }
+                                                  }
+                                                ]
+                                              },
+                                              "backgroundActive": {
+                                                "type": "union",
+                                                "optional": true,
+                                                "tag": {
+                                                  "value": {
+                                                    "defaultLabel": "Secondary Button Background Active Color",
+                                                    "display": {
+                                                      "string": {
+                                                        "format": "color"
+                                                      }
+                                                    },
+                                                    "isTemplate": true
+                                                  }
+                                                },
+                                                "discriminator": "transformerType",
+                                                "definition": [
+                                                  {
+                                                    "type": "string",
+                                                    "optional": true,
+                                                    "tag": {
+                                                      "value": {
+                                                        "defaultLabel": "Secondary Button Background Active Color",
+                                                        "display": {
+                                                          "string": {
+                                                            "format": "color"
+                                                          }
+                                                        }
+                                                      }
+                                                    }
+                                                  },
+                                                  {
+                                                    "type": "schemaReference",
+                                                    "definition": {
+                                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                                      "relativePath": "transformerForBuildCarryOnObject"
+                                                    }
+                                                  }
+                                                ]
+                                              },
+                                              "textColor": {
+                                                "type": "union",
+                                                "optional": true,
+                                                "tag": {
+                                                  "value": {
+                                                    "defaultLabel": "Secondary Button Text Color",
+                                                    "display": {
+                                                      "string": {
+                                                        "format": "color"
+                                                      }
+                                                    },
+                                                    "isTemplate": true
+                                                  }
+                                                },
+                                                "discriminator": "transformerType",
+                                                "definition": [
+                                                  {
+                                                    "type": "string",
+                                                    "optional": true,
+                                                    "tag": {
+                                                      "value": {
+                                                        "defaultLabel": "Secondary Button Text Color",
+                                                        "display": {
+                                                          "string": {
+                                                            "format": "color"
+                                                          }
+                                                        }
+                                                      }
+                                                    }
+                                                  },
+                                                  {
+                                                    "type": "schemaReference",
+                                                    "definition": {
+                                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                                      "relativePath": "transformerForBuildCarryOnObject"
+                                                    }
+                                                  }
+                                                ]
+                                              },
+                                              "borderColor": {
+                                                "type": "union",
+                                                "optional": true,
+                                                "tag": {
+                                                  "value": {
+                                                    "defaultLabel": "Secondary Button Border Color",
+                                                    "display": {
+                                                      "string": {
+                                                        "format": "color"
+                                                      }
+                                                    },
+                                                    "isTemplate": true
+                                                  }
+                                                },
+                                                "discriminator": "transformerType",
+                                                "definition": [
+                                                  {
+                                                    "type": "string",
+                                                    "optional": true,
+                                                    "tag": {
+                                                      "value": {
+                                                        "defaultLabel": "Secondary Button Border Color",
+                                                        "display": {
+                                                          "string": {
+                                                            "format": "color"
+                                                          }
+                                                        }
+                                                      }
+                                                    }
+                                                  },
+                                                  {
+                                                    "type": "schemaReference",
+                                                    "definition": {
+                                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                                      "relativePath": "transformerForBuildCarryOnObject"
+                                                    }
+                                                  }
+                                                ]
+                                              },
+                                              "borderRadius": {
+                                                "type": "union",
+                                                "optional": true,
+                                                "discriminator": "transformerType",
+                                                "definition": [
+                                                  {
+                                                    "type": "string",
+                                                    "optional": true
+                                                  },
+                                                  {
+                                                    "type": "schemaReference",
+                                                    "definition": {
+                                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                                      "relativePath": "transformerForBuildCarryOnObject"
+                                                    }
+                                                  }
+                                                ]
+                                              }
+                                            }
+                                          }
+                                        ]
+                                      },
+                                      "outlined": {
+                                        "type": "union",
+                                        "discriminator": "transformerType",
+                                        "definition": [
+                                          {
+                                            "type": "schemaReference",
+                                            "definition": {
+                                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                              "relativePath": "transformerForBuildCarryOnObject"
+                                            }
+                                          },
+                                          {
+                                            "type": "object",
+                                            "definition": {
+                                              "background": {
+                                                "type": "union",
+                                                "optional": true,
+                                                "tag": {
+                                                  "value": {
+                                                    "defaultLabel": "Outlined Button Background Color",
+                                                    "display": {
+                                                      "string": {
+                                                        "format": "color"
+                                                      }
+                                                    },
+                                                    "isTemplate": true
+                                                  }
+                                                },
+                                                "discriminator": "transformerType",
+                                                "definition": [
+                                                  {
+                                                    "type": "string",
+                                                    "optional": true,
+                                                    "tag": {
+                                                      "value": {
+                                                        "defaultLabel": "Outlined Button Background Color",
+                                                        "display": {
+                                                          "string": {
+                                                            "format": "color"
+                                                          }
+                                                        }
+                                                      }
+                                                    }
+                                                  },
+                                                  {
+                                                    "type": "schemaReference",
+                                                    "definition": {
+                                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                                      "relativePath": "transformerForBuildCarryOnObject"
+                                                    }
+                                                  }
+                                                ]
+                                              },
+                                              "backgroundHover": {
+                                                "type": "union",
+                                                "optional": true,
+                                                "tag": {
+                                                  "value": {
+                                                    "defaultLabel": "Outlined Button Background Hover Color",
+                                                    "display": {
+                                                      "string": {
+                                                        "format": "color"
+                                                      }
+                                                    },
+                                                    "isTemplate": true
+                                                  }
+                                                },
+                                                "discriminator": "transformerType",
+                                                "definition": [
+                                                  {
+                                                    "type": "string",
+                                                    "optional": true,
+                                                    "tag": {
+                                                      "value": {
+                                                        "defaultLabel": "Outlined Button Background Hover Color",
+                                                        "display": {
+                                                          "string": {
+                                                            "format": "color"
+                                                          }
+                                                        }
+                                                      }
+                                                    }
+                                                  },
+                                                  {
+                                                    "type": "schemaReference",
+                                                    "definition": {
+                                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                                      "relativePath": "transformerForBuildCarryOnObject"
+                                                    }
+                                                  }
+                                                ]
+                                              },
+                                              "backgroundActive": {
+                                                "type": "union",
+                                                "optional": true,
+                                                "tag": {
+                                                  "value": {
+                                                    "defaultLabel": "Outlined Button Background Active Color",
+                                                    "display": {
+                                                      "string": {
+                                                        "format": "color"
+                                                      }
+                                                    },
+                                                    "isTemplate": true
+                                                  }
+                                                },
+                                                "discriminator": "transformerType",
+                                                "definition": [
+                                                  {
+                                                    "type": "string",
+                                                    "optional": true,
+                                                    "tag": {
+                                                      "value": {
+                                                        "defaultLabel": "Outlined Button Background Active Color",
+                                                        "display": {
+                                                          "string": {
+                                                            "format": "color"
+                                                          }
+                                                        }
+                                                      }
+                                                    }
+                                                  },
+                                                  {
+                                                    "type": "schemaReference",
+                                                    "definition": {
+                                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                                      "relativePath": "transformerForBuildCarryOnObject"
+                                                    }
+                                                  }
+                                                ]
+                                              },
+                                              "textColor": {
+                                                "type": "union",
+                                                "optional": true,
+                                                "tag": {
+                                                  "value": {
+                                                    "defaultLabel": "Outlined Button Text Color",
+                                                    "display": {
+                                                      "string": {
+                                                        "format": "color"
+                                                      }
+                                                    },
+                                                    "isTemplate": true
+                                                  }
+                                                },
+                                                "discriminator": "transformerType",
+                                                "definition": [
+                                                  {
+                                                    "type": "string",
+                                                    "optional": true,
+                                                    "tag": {
+                                                      "value": {
+                                                        "defaultLabel": "Outlined Button Text Color",
+                                                        "display": {
+                                                          "string": {
+                                                            "format": "color"
+                                                          }
+                                                        }
+                                                      }
+                                                    }
+                                                  },
+                                                  {
+                                                    "type": "schemaReference",
+                                                    "definition": {
+                                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                                      "relativePath": "transformerForBuildCarryOnObject"
+                                                    }
+                                                  }
+                                                ]
+                                              },
+                                              "borderColor": {
+                                                "type": "union",
+                                                "optional": true,
+                                                "tag": {
+                                                  "value": {
+                                                    "defaultLabel": "Outlined Button Border Color",
+                                                    "display": {
+                                                      "string": {
+                                                        "format": "color"
+                                                      }
+                                                    },
+                                                    "isTemplate": true
+                                                  }
+                                                },
+                                                "discriminator": "transformerType",
+                                                "definition": [
+                                                  {
+                                                    "type": "string",
+                                                    "optional": true,
+                                                    "tag": {
+                                                      "value": {
+                                                        "defaultLabel": "Outlined Button Border Color",
+                                                        "display": {
+                                                          "string": {
+                                                            "format": "color"
+                                                          }
+                                                        }
+                                                      }
+                                                    }
+                                                  },
+                                                  {
+                                                    "type": "schemaReference",
+                                                    "definition": {
+                                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                                      "relativePath": "transformerForBuildCarryOnObject"
+                                                    }
+                                                  }
+                                                ]
+                                              },
+                                              "borderRadius": {
+                                                "type": "union",
+                                                "discriminator": "transformerType",
+                                                "definition": [
+                                                  {
+                                                    "type": "string"
+                                                  },
+                                                  {
+                                                    "type": "schemaReference",
+                                                    "definition": {
+                                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                                      "relativePath": "transformerForBuildCarryOnObject"
+                                                    }
+                                                  }
+                                                ]
+                                              }
+                                            }
+                                          }
+                                        ]
+                                      }
+                                    }
+                                  }
+                                ]
+                              },
+                              "card": {
+                                "optional": true,
+                                "type": "union",
+                                "discriminator": "transformerType",
+                                "definition": [
+                                  {
+                                    "type": "schemaReference",
+                                    "definition": {
+                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                      "relativePath": "transformerForBuildCarryOnObject"
+                                    }
+                                  },
+                                  {
+                                    "type": "object",
+                                    "definition": {
+                                      "background": {
+                                        "type": "union",
+                                        "optional": true,
+                                        "tag": {
+                                          "value": {
+                                            "defaultLabel": "Card Background Color",
+                                            "display": {
+                                              "string": {
+                                                "format": "color"
+                                              }
+                                            },
+                                            "isTemplate": true
+                                          }
+                                        },
+                                        "discriminator": "transformerType",
+                                        "definition": [
+                                          {
+                                            "type": "string",
+                                            "optional": true,
+                                            "tag": {
+                                              "value": {
+                                                "defaultLabel": "Card Background Color",
+                                                "display": {
+                                                  "string": {
+                                                    "format": "color"
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          },
+                                          {
+                                            "type": "schemaReference",
+                                            "definition": {
+                                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                              "relativePath": "transformerForBuildCarryOnObject"
+                                            }
+                                          }
+                                        ]
+                                      },
+                                      "borderColor": {
+                                        "type": "union",
+                                        "optional": true,
+                                        "tag": {
+                                          "value": {
+                                            "defaultLabel": "Card Border Color",
+                                            "display": {
+                                              "string": {
+                                                "format": "color"
+                                              }
+                                            },
+                                            "isTemplate": true
+                                          }
+                                        },
+                                        "discriminator": "transformerType",
+                                        "definition": [
+                                          {
+                                            "type": "string",
+                                            "optional": true,
+                                            "tag": {
+                                              "value": {
+                                                "defaultLabel": "Card Border Color",
+                                                "display": {
+                                                  "string": {
+                                                    "format": "color"
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          },
+                                          {
+                                            "type": "schemaReference",
+                                            "definition": {
+                                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                              "relativePath": "transformerForBuildCarryOnObject"
+                                            }
+                                          }
+                                        ]
+                                      },
+                                      "borderRadius": {
+                                        "type": "union",
+                                        "optional": true,
+                                        "discriminator": "transformerType",
+                                        "definition": [
+                                          {
+                                            "type": "string",
+                                            "optional": true
+                                          },
+                                          {
+                                            "type": "schemaReference",
+                                            "definition": {
+                                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                              "relativePath": "transformerForBuildCarryOnObject"
+                                            }
+                                          }
+                                        ]
+                                      },
+                                      "elevation": {
+                                        "type": "union",
+                                        "optional": true,
+                                        "discriminator": "transformerType",
+                                        "definition": [
+                                          {
+                                            "type": "string",
+                                            "optional": true
+                                          },
+                                          {
+                                            "type": "schemaReference",
+                                            "definition": {
+                                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                              "relativePath": "transformerForBuildCarryOnObject"
+                                            }
+                                          }
+                                        ]
+                                      },
+                                      "padding": {
+                                        "type": "union",
+                                        "optional": true,
+                                        "discriminator": "transformerType",
+                                        "definition": [
+                                          {
+                                            "type": "string",
+                                            "optional": true
+                                          },
+                                          {
+                                            "type": "schemaReference",
+                                            "definition": {
+                                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                              "relativePath": "transformerForBuildCarryOnObject"
+                                            }
+                                          }
+                                        ]
+                                      }
+                                    }
+                                  }
+                                ]
+                              },
+                              "dialog": {
+                                "optional": true,
+                                "type": "union",
+                                "discriminator": "transformerType",
+                                "definition": [
+                                  {
+                                    "type": "schemaReference",
+                                    "definition": {
+                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                      "relativePath": "transformerForBuildCarryOnObject"
+                                    }
+                                  },
+                                  {
+                                    "type": "object",
+                                    "definition": {
+                                      "background": {
+                                        "type": "union",
+                                        "optional": true,
+                                        "tag": {
+                                          "value": {
+                                            "defaultLabel": "Dialog Background Color",
+                                            "display": {
+                                              "string": {
+                                                "format": "color"
+                                              }
+                                            },
+                                            "isTemplate": true
+                                          }
+                                        },
+                                        "discriminator": "transformerType",
+                                        "definition": [
+                                          {
+                                            "type": "string",
+                                            "optional": true,
+                                            "tag": {
+                                              "value": {
+                                                "defaultLabel": "Dialog Background Color",
+                                                "display": {
+                                                  "string": {
+                                                    "format": "color"
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          },
+                                          {
+                                            "type": "schemaReference",
+                                            "definition": {
+                                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                              "relativePath": "transformerForBuildCarryOnObject"
+                                            }
+                                          }
+                                        ]
+                                      },
+                                      "backdrop": {
+                                        "type": "union",
+                                        "optional": true,
+                                        "tag": {
+                                          "value": {
+                                            "defaultLabel": "Dialog Backdrop Color",
+                                            "display": {
+                                              "string": {
+                                                "format": "color"
+                                              }
+                                            },
+                                            "isTemplate": true
+                                          }
+                                        },
+                                        "discriminator": "transformerType",
+                                        "definition": [
+                                          {
+                                            "type": "string",
+                                            "optional": true,
+                                            "tag": {
+                                              "value": {
+                                                "defaultLabel": "Dialog Backdrop Color",
+                                                "display": {
+                                                  "string": {
+                                                    "format": "color"
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          },
+                                          {
+                                            "type": "schemaReference",
+                                            "definition": {
+                                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                              "relativePath": "transformerForBuildCarryOnObject"
+                                            }
+                                          }
+                                        ]
+                                      },
+                                      "borderRadius": {
+                                        "type": "union",
+                                        "optional": true,
+                                        "discriminator": "transformerType",
+                                        "definition": [
+                                          {
+                                            "type": "string",
+                                            "optional": true
+                                          },
+                                          {
+                                            "type": "schemaReference",
+                                            "definition": {
+                                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                              "relativePath": "transformerForBuildCarryOnObject"
+                                            }
+                                          }
+                                        ]
+                                      },
+                                      "elevation": {
+                                        "type": "union",
+                                        "optional": true,
+                                        "discriminator": "transformerType",
+                                        "definition": [
+                                          {
+                                            "type": "string",
+                                            "optional": true
+                                          },
+                                          {
+                                            "type": "schemaReference",
+                                            "definition": {
+                                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                              "relativePath": "transformerForBuildCarryOnObject"
+                                            }
+                                          }
+                                        ]
+                                      },
+                                      "padding": {
+                                        "type": "union",
+                                        "optional": true,
+                                        "discriminator": "transformerType",
+                                        "definition": [
+                                          {
+                                            "type": "string",
+                                            "optional": true
+                                          },
+                                          {
+                                            "type": "schemaReference",
+                                            "definition": {
+                                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                              "relativePath": "transformerForBuildCarryOnObject"
+                                            }
+                                          }
+                                        ]
+                                      }
+                                    }
+                                  }
+                                ]
+                              },
+                              "tooltip": {
+                                "optional": true,
+                                "type": "union",
+                                "discriminator": "transformerType",
+                                "definition": [
+                                  {
+                                    "type": "schemaReference",
+                                    "definition": {
+                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                      "relativePath": "transformerForBuildCarryOnObject"
+                                    }
+                                  },
+                                  {
+                                    "type": "object",
+                                    "definition": {
+                                      "background": {
+                                        "type": "union",
+                                        "optional": true,
+                                        "tag": {
+                                          "value": {
+                                            "defaultLabel": "Tooltip Background Color",
+                                            "display": {
+                                              "string": {
+                                                "format": "color"
+                                              }
+                                            },
+                                            "isTemplate": true
+                                          }
+                                        },
+                                        "discriminator": "transformerType",
+                                        "definition": [
+                                          {
+                                            "type": "string",
+                                            "optional": true,
+                                            "tag": {
+                                              "value": {
+                                                "defaultLabel": "Tooltip Background Color",
+                                                "display": {
+                                                  "string": {
+                                                    "format": "color"
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          },
+                                          {
+                                            "type": "schemaReference",
+                                            "definition": {
+                                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                              "relativePath": "transformerForBuildCarryOnObject"
+                                            }
+                                          }
+                                        ]
+                                      },
+                                      "textColor": {
+                                        "type": "union",
+                                        "optional": true,
+                                        "tag": {
+                                          "value": {
+                                            "defaultLabel": "Tooltip Text Color",
+                                            "display": {
+                                              "string": {
+                                                "format": "color"
+                                              }
+                                            },
+                                            "isTemplate": true
+                                          }
+                                        },
+                                        "discriminator": "transformerType",
+                                        "definition": [
+                                          {
+                                            "type": "string",
+                                            "optional": true,
+                                            "tag": {
+                                              "value": {
+                                                "defaultLabel": "Tooltip Text Color",
+                                                "display": {
+                                                  "string": {
+                                                    "format": "color"
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          },
+                                          {
+                                            "type": "schemaReference",
+                                            "definition": {
+                                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                              "relativePath": "transformerForBuildCarryOnObject"
+                                            }
+                                          }
+                                        ]
+                                      },
+                                      "borderRadius": {
+                                        "type": "union",
+                                        "discriminator": "transformerType",
+                                        "definition": [
+                                          {
+                                            "type": "string"
+                                          },
+                                          {
+                                            "type": "schemaReference",
+                                            "definition": {
+                                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                              "relativePath": "transformerForBuildCarryOnObject"
+                                            }
+                                          }
+                                        ]
+                                      },
+                                      "fontSize": {
+                                        "type": "union",
+                                        "discriminator": "transformerType",
+                                        "definition": [
+                                          {
+                                            "type": "string"
+                                          },
+                                          {
+                                            "type": "schemaReference",
+                                            "definition": {
+                                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                              "relativePath": "transformerForBuildCarryOnObject"
+                                            }
+                                          }
+                                        ]
+                                      }
+                                    }
+                                  }
+                                ]
+                              },
+                              "icon": {
+                                "optional": true,
+                                "type": "union",
+                                "discriminator": "transformerType",
+                                "definition": [
+                                  {
+                                    "type": "schemaReference",
+                                    "definition": {
+                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                      "relativePath": "transformerForBuildCarryOnObject"
+                                    }
+                                  },
+                                  {
+                                    "type": "object",
+                                    "definition": {
+                                      "colorPrimary": {
+                                        "type": "union",
+                                        "optional": true,
+                                        "tag": {
+                                          "value": {
+                                            "defaultLabel": "Icon Primary Color",
+                                            "display": {
+                                              "string": {
+                                                "format": "color"
+                                              }
+                                            },
+                                            "isTemplate": true
+                                          }
+                                        },
+                                        "discriminator": "transformerType",
+                                        "definition": [
+                                          {
+                                            "type": "string",
+                                            "optional": true,
+                                            "tag": {
+                                              "value": {
+                                                "defaultLabel": "Icon Primary Color",
+                                                "display": {
+                                                  "string": {
+                                                    "format": "color"
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          },
+                                          {
+                                            "type": "schemaReference",
+                                            "definition": {
+                                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                              "relativePath": "transformerForBuildCarryOnObject"
+                                            }
+                                          }
+                                        ]
+                                      },
+                                      "colorSecondary": {
+                                        "type": "union",
+                                        "optional": true,
+                                        "tag": {
+                                          "value": {
+                                            "defaultLabel": "Icon Secondary Color",
+                                            "display": {
+                                              "string": {
+                                                "format": "color"
+                                              }
+                                            },
+                                            "isTemplate": true
+                                          }
+                                        },
+                                        "discriminator": "transformerType",
+                                        "definition": [
+                                          {
+                                            "type": "string",
+                                            "optional": true,
+                                            "tag": {
+                                              "value": {
+                                                "defaultLabel": "Icon Secondary Color",
+                                                "display": {
+                                                  "string": {
+                                                    "format": "color"
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          },
+                                          {
+                                            "type": "schemaReference",
+                                            "definition": {
+                                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                              "relativePath": "transformerForBuildCarryOnObject"
+                                            }
+                                          }
+                                        ]
+                                      },
+                                      "colorDisabled": {
+                                        "type": "union",
+                                        "optional": true,
+                                        "tag": {
+                                          "value": {
+                                            "defaultLabel": "Icon Disabled Color",
+                                            "display": {
+                                              "string": {
+                                                "format": "color"
+                                              }
+                                            },
+                                            "isTemplate": true
+                                          }
+                                        },
+                                        "discriminator": "transformerType",
+                                        "definition": [
+                                          {
+                                            "type": "string",
+                                            "optional": true,
+                                            "tag": {
+                                              "value": {
+                                                "defaultLabel": "Icon Disabled Color",
+                                                "display": {
+                                                  "string": {
+                                                    "format": "color"
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          },
+                                          {
+                                            "type": "schemaReference",
+                                            "definition": {
+                                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                              "relativePath": "transformerForBuildCarryOnObject"
+                                            }
+                                          }
+                                        ]
+                                      },
+                                      "size": {
+                                        "optional": true,
+                                        "type": "union",
+                                        "discriminator": "transformerType",
+                                        "definition": [
+                                          {
+                                            "type": "schemaReference",
+                                            "definition": {
+                                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                              "relativePath": "transformerForBuildCarryOnObject"
+                                            }
+                                          },
+                                          {
+                                            "type": "object",
+                                            "definition": {
+                                              "sm": {
+                                                "type": "union",
+                                                "optional": true,
+                                                "discriminator": "transformerType",
+                                                "definition": [
+                                                  {
+                                                    "type": "string",
+                                                    "optional": true
+                                                  },
+                                                  {
+                                                    "type": "schemaReference",
+                                                    "definition": {
+                                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                                      "relativePath": "transformerForBuildCarryOnObject"
+                                                    }
+                                                  }
+                                                ]
+                                              },
+                                              "md": {
+                                                "type": "union",
+                                                "optional": true,
+                                                "discriminator": "transformerType",
+                                                "definition": [
+                                                  {
+                                                    "type": "string",
+                                                    "optional": true
+                                                  },
+                                                  {
+                                                    "type": "schemaReference",
+                                                    "definition": {
+                                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                                      "relativePath": "transformerForBuildCarryOnObject"
+                                                    }
+                                                  }
+                                                ]
+                                              },
+                                              "lg": {
+                                                "type": "union",
+                                                "optional": true,
+                                                "discriminator": "transformerType",
+                                                "definition": [
+                                                  {
+                                                    "type": "string",
+                                                    "optional": true
+                                                  },
+                                                  {
+                                                    "type": "schemaReference",
+                                                    "definition": {
+                                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                                      "relativePath": "transformerForBuildCarryOnObject"
+                                                    }
+                                                  }
+                                                ]
+                                              }
+                                            }
+                                          }
+                                        ]
+                                      }
+                                    }
+                                  }
+                                ]
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "table": {
+                        "optional": true,
+                        "type": "union",
+                        "discriminator": "transformerType",
+                        "definition": [
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              "relativePath": "transformerForBuildCarryOnObject"
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "definition": {
+                              "colors": {
+                                "optional": true,
+                                "type": "union",
+                                "discriminator": "transformerType",
+                                "definition": [
+                                  {
+                                    "type": "schemaReference",
+                                    "definition": {
+                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                      "relativePath": "transformerForBuildCarryOnObject"
+                                    }
+                                  },
+                                  {
+                                    "type": "object",
+                                    "definition": {
+                                      "primary": {
+                                        "type": "union",
+                                        "optional": true,
+                                        "tag": {
+                                          "value": {
+                                            "defaultLabel": "Primary Color",
+                                            "display": {
+                                              "string": {
+                                                "format": "color"
+                                              }
+                                            },
+                                            "isTemplate": true
+                                          }
+                                        },
+                                        "discriminator": "transformerType",
+                                        "definition": [
+                                          {
+                                            "type": "string",
+                                            "optional": true,
+                                            "tag": {
+                                              "value": {
+                                                "defaultLabel": "Primary Color",
+                                                "display": {
+                                                  "string": {
+                                                    "format": "color"
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          },
+                                          {
+                                            "type": "schemaReference",
+                                            "definition": {
+                                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                              "relativePath": "transformerForBuildCarryOnObject"
+                                            }
+                                          }
+                                        ]
+                                      },
+                                      "secondary": {
+                                        "type": "union",
+                                        "optional": true,
+                                        "tag": {
+                                          "value": {
+                                            "defaultLabel": "Secondary Color",
+                                            "display": {
+                                              "string": {
+                                                "format": "color"
+                                              }
+                                            },
+                                            "isTemplate": true
+                                          }
+                                        },
+                                        "discriminator": "transformerType",
+                                        "definition": [
+                                          {
+                                            "type": "string",
+                                            "optional": true,
+                                            "tag": {
+                                              "value": {
+                                                "defaultLabel": "Secondary Color",
+                                                "display": {
+                                                  "string": {
+                                                    "format": "color"
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          },
+                                          {
+                                            "type": "schemaReference",
+                                            "definition": {
+                                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                              "relativePath": "transformerForBuildCarryOnObject"
+                                            }
+                                          }
+                                        ]
+                                      },
+                                      "background": {
+                                        "type": "union",
+                                        "optional": true,
+                                        "tag": {
+                                          "value": {
+                                            "defaultLabel": "Background Color",
+                                            "display": {
+                                              "string": {
+                                                "format": "color"
+                                              }
+                                            },
+                                            "isTemplate": true
+                                          }
+                                        },
+                                        "discriminator": "transformerType",
+                                        "definition": [
+                                          {
+                                            "type": "string",
+                                            "optional": true,
+                                            "tag": {
+                                              "value": {
+                                                "defaultLabel": "Background Color",
+                                                "display": {
+                                                  "string": {
+                                                    "format": "color"
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          },
+                                          {
+                                            "type": "schemaReference",
+                                            "definition": {
+                                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                              "relativePath": "transformerForBuildCarryOnObject"
+                                            }
+                                          }
+                                        ]
+                                      },
+                                      "surface": {
+                                        "type": "union",
+                                        "optional": true,
+                                        "tag": {
+                                          "value": {
+                                            "defaultLabel": "Surface Color",
+                                            "display": {
+                                              "string": {
+                                                "format": "color"
+                                              }
+                                            },
+                                            "isTemplate": true
+                                          }
+                                        },
+                                        "discriminator": "transformerType",
+                                        "definition": [
+                                          {
+                                            "type": "string",
+                                            "optional": true,
+                                            "tag": {
+                                              "value": {
+                                                "defaultLabel": "Surface Color",
+                                                "display": {
+                                                  "string": {
+                                                    "format": "color"
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          },
+                                          {
+                                            "type": "schemaReference",
+                                            "definition": {
+                                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                              "relativePath": "transformerForBuildCarryOnObject"
+                                            }
+                                          }
+                                        ]
+                                      },
+                                      "border": {
+                                        "type": "union",
+                                        "optional": true,
+                                        "tag": {
+                                          "value": {
+                                            "defaultLabel": "Border Color",
+                                            "display": {
+                                              "string": {
+                                                "format": "color"
+                                              }
+                                            },
+                                            "isTemplate": true
+                                          }
+                                        },
+                                        "discriminator": "transformerType",
+                                        "definition": [
+                                          {
+                                            "type": "string",
+                                            "optional": true,
+                                            "tag": {
+                                              "value": {
+                                                "defaultLabel": "Border Color",
+                                                "display": {
+                                                  "string": {
+                                                    "format": "color"
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          },
+                                          {
+                                            "type": "schemaReference",
+                                            "definition": {
+                                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                              "relativePath": "transformerForBuildCarryOnObject"
+                                            }
+                                          }
+                                        ]
+                                      },
+                                      "text": {
+                                        "type": "union",
+                                        "optional": true,
+                                        "tag": {
+                                          "value": {
+                                            "defaultLabel": "Text Color",
+                                            "display": {
+                                              "string": {
+                                                "format": "color"
+                                              }
+                                            },
+                                            "isTemplate": true
+                                          }
+                                        },
+                                        "discriminator": "transformerType",
+                                        "definition": [
+                                          {
+                                            "type": "string",
+                                            "optional": true,
+                                            "tag": {
+                                              "value": {
+                                                "defaultLabel": "Text Color",
+                                                "display": {
+                                                  "string": {
+                                                    "format": "color"
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          },
+                                          {
+                                            "type": "schemaReference",
+                                            "definition": {
+                                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                              "relativePath": "transformerForBuildCarryOnObject"
+                                            }
+                                          }
+                                        ]
+                                      },
+                                      "textSecondary": {
+                                        "type": "union",
+                                        "optional": true,
+                                        "tag": {
+                                          "value": {
+                                            "defaultLabel": "Secondary Text Color",
+                                            "display": {
+                                              "string": {
+                                                "format": "color"
+                                              }
+                                            },
+                                            "isTemplate": true
+                                          }
+                                        },
+                                        "discriminator": "transformerType",
+                                        "definition": [
+                                          {
+                                            "type": "string",
+                                            "optional": true,
+                                            "tag": {
+                                              "value": {
+                                                "defaultLabel": "Secondary Text Color",
+                                                "display": {
+                                                  "string": {
+                                                    "format": "color"
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          },
+                                          {
+                                            "type": "schemaReference",
+                                            "definition": {
+                                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                              "relativePath": "transformerForBuildCarryOnObject"
+                                            }
+                                          }
+                                        ]
+                                      },
+                                      "textLight": {
+                                        "type": "union",
+                                        "optional": true,
+                                        "tag": {
+                                          "value": {
+                                            "defaultLabel": "Light Text Color",
+                                            "display": {
+                                              "string": {
+                                                "format": "color"
+                                              }
+                                            },
+                                            "isTemplate": true
+                                          }
+                                        },
+                                        "discriminator": "transformerType",
+                                        "definition": [
+                                          {
+                                            "type": "string",
+                                            "optional": true,
+                                            "tag": {
+                                              "value": {
+                                                "defaultLabel": "Light Text Color",
+                                                "display": {
+                                                  "string": {
+                                                    "format": "color"
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          },
+                                          {
+                                            "type": "schemaReference",
+                                            "definition": {
+                                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                              "relativePath": "transformerForBuildCarryOnObject"
+                                            }
+                                          }
+                                        ]
+                                      },
+                                      "hover": {
+                                        "type": "union",
+                                        "optional": true,
+                                        "tag": {
+                                          "value": {
+                                            "defaultLabel": "Hover Color",
+                                            "display": {
+                                              "string": {
+                                                "format": "color"
+                                              }
+                                            },
+                                            "isTemplate": true
+                                          }
+                                        },
+                                        "discriminator": "transformerType",
+                                        "definition": [
+                                          {
+                                            "type": "string",
+                                            "optional": true,
+                                            "tag": {
+                                              "value": {
+                                                "defaultLabel": "Hover Color",
+                                                "display": {
+                                                  "string": {
+                                                    "format": "color"
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          },
+                                          {
+                                            "type": "schemaReference",
+                                            "definition": {
+                                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                              "relativePath": "transformerForBuildCarryOnObject"
+                                            }
+                                          }
+                                        ]
+                                      },
+                                      "selected": {
+                                        "type": "union",
+                                        "optional": true,
+                                        "tag": {
+                                          "value": {
+                                            "defaultLabel": "Selected Color",
+                                            "display": {
+                                              "string": {
+                                                "format": "color"
+                                              }
+                                            },
+                                            "isTemplate": true
+                                          }
+                                        },
+                                        "discriminator": "transformerType",
+                                        "definition": [
+                                          {
+                                            "type": "string",
+                                            "optional": true,
+                                            "tag": {
+                                              "value": {
+                                                "defaultLabel": "Selected Color",
+                                                "display": {
+                                                  "string": {
+                                                    "format": "color"
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          },
+                                          {
+                                            "type": "schemaReference",
+                                            "definition": {
+                                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                              "relativePath": "transformerForBuildCarryOnObject"
+                                            }
+                                          }
+                                        ]
+                                      },
+                                      "filter": {
+                                        "type": "union",
+                                        "optional": true,
+                                        "tag": {
+                                          "value": {
+                                            "defaultLabel": "Filter Color",
+                                            "display": {
+                                              "string": {
+                                                "format": "color"
+                                              }
+                                            },
+                                            "isTemplate": true
+                                          }
+                                        },
+                                        "discriminator": "transformerType",
+                                        "definition": [
+                                          {
+                                            "type": "string",
+                                            "optional": true,
+                                            "tag": {
+                                              "value": {
+                                                "defaultLabel": "Filter Color",
+                                                "display": {
+                                                  "string": {
+                                                    "format": "color"
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          },
+                                          {
+                                            "type": "schemaReference",
+                                            "definition": {
+                                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                              "relativePath": "transformerForBuildCarryOnObject"
+                                            }
+                                          }
+                                        ]
+                                      },
+                                      "filterBackground": {
+                                        "type": "union",
+                                        "optional": true,
+                                        "tag": {
+                                          "value": {
+                                            "defaultLabel": "Filter Background Color",
+                                            "display": {
+                                              "string": {
+                                                "format": "color"
+                                              }
+                                            },
+                                            "isTemplate": true
+                                          }
+                                        },
+                                        "discriminator": "transformerType",
+                                        "definition": [
+                                          {
+                                            "type": "string",
+                                            "optional": true,
+                                            "tag": {
+                                              "value": {
+                                                "defaultLabel": "Filter Background Color",
+                                                "display": {
+                                                  "string": {
+                                                    "format": "color"
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          },
+                                          {
+                                            "type": "schemaReference",
+                                            "definition": {
+                                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                              "relativePath": "transformerForBuildCarryOnObject"
+                                            }
+                                          }
+                                        ]
+                                      },
+                                      "error": {
+                                        "type": "union",
+                                        "optional": true,
+                                        "tag": {
+                                          "value": {
+                                            "defaultLabel": "Error Color",
+                                            "display": {
+                                              "string": {
+                                                "format": "color"
+                                              }
+                                            },
+                                            "isTemplate": true
+                                          }
+                                        },
+                                        "discriminator": "transformerType",
+                                        "definition": [
+                                          {
+                                            "type": "string",
+                                            "optional": true,
+                                            "tag": {
+                                              "value": {
+                                                "defaultLabel": "Error Color",
+                                                "display": {
+                                                  "string": {
+                                                    "format": "color"
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          },
+                                          {
+                                            "type": "schemaReference",
+                                            "definition": {
+                                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                              "relativePath": "transformerForBuildCarryOnObject"
+                                            }
+                                          }
+                                        ]
+                                      },
+                                      "warning": {
+                                        "type": "union",
+                                        "optional": true,
+                                        "tag": {
+                                          "value": {
+                                            "defaultLabel": "Warning Color",
+                                            "display": {
+                                              "string": {
+                                                "format": "color"
+                                              }
+                                            },
+                                            "isTemplate": true
+                                          }
+                                        },
+                                        "discriminator": "transformerType",
+                                        "definition": [
+                                          {
+                                            "type": "string",
+                                            "optional": true,
+                                            "tag": {
+                                              "value": {
+                                                "defaultLabel": "Warning Color",
+                                                "display": {
+                                                  "string": {
+                                                    "format": "color"
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          },
+                                          {
+                                            "type": "schemaReference",
+                                            "definition": {
+                                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                              "relativePath": "transformerForBuildCarryOnObject"
+                                            }
+                                          }
+                                        ]
+                                      },
+                                      "success": {
+                                        "type": "union",
+                                        "optional": true,
+                                        "tag": {
+                                          "value": {
+                                            "defaultLabel": "Success Color",
+                                            "display": {
+                                              "string": {
+                                                "format": "color"
+                                              }
+                                            },
+                                            "isTemplate": true
+                                          }
+                                        },
+                                        "discriminator": "transformerType",
+                                        "definition": [
+                                          {
+                                            "type": "string",
+                                            "optional": true,
+                                            "tag": {
+                                              "value": {
+                                                "defaultLabel": "Success Color",
+                                                "display": {
+                                                  "string": {
+                                                    "format": "color"
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          },
+                                          {
+                                            "type": "schemaReference",
+                                            "definition": {
+                                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                              "relativePath": "transformerForBuildCarryOnObject"
+                                            }
+                                          }
+                                        ]
+                                      },
+                                      "accent": {
+                                        "type": "union",
+                                        "optional": true,
+                                        "tag": {
+                                          "value": {
+                                            "defaultLabel": "Accent Color",
+                                            "display": {
+                                              "string": {
+                                                "format": "color"
+                                              }
+                                            },
+                                            "isTemplate": true
+                                          }
+                                        },
+                                        "discriminator": "transformerType",
+                                        "definition": [
+                                          {
+                                            "type": "string",
+                                            "optional": true,
+                                            "tag": {
+                                              "value": {
+                                                "defaultLabel": "Accent Color",
+                                                "display": {
+                                                  "string": {
+                                                    "format": "color"
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          },
+                                          {
+                                            "type": "schemaReference",
+                                            "definition": {
+                                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                              "relativePath": "transformerForBuildCarryOnObject"
+                                            }
+                                          }
+                                        ]
+                                      },
+                                      "accentLight": {
+                                        "type": "union",
+                                        "optional": true,
+                                        "tag": {
+                                          "value": {
+                                            "defaultLabel": "Accent Light Color",
+                                            "display": {
+                                              "string": {
+                                                "format": "color"
+                                              }
+                                            },
+                                            "isTemplate": true
+                                          }
+                                        },
+                                        "discriminator": "transformerType",
+                                        "definition": [
+                                          {
+                                            "type": "string",
+                                            "optional": true,
+                                            "tag": {
+                                              "value": {
+                                                "defaultLabel": "Accent Light Color",
+                                                "display": {
+                                                  "string": {
+                                                    "format": "color"
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          },
+                                          {
+                                            "type": "schemaReference",
+                                            "definition": {
+                                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                              "relativePath": "transformerForBuildCarryOnObject"
+                                            }
+                                          }
+                                        ]
+                                      }
+                                    }
+                                  }
+                                ]
+                              },
+                              "spacing": {
+                                "optional": true,
+                                "type": "union",
+                                "discriminator": "transformerType",
+                                "definition": [
+                                  {
+                                    "type": "schemaReference",
+                                    "definition": {
+                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                      "relativePath": "transformerForBuildCarryOnObject"
+                                    }
+                                  },
+                                  {
+                                    "type": "object",
+                                    "definition": {
+                                      "xs": {
+                                        "type": "union",
+                                        "optional": true,
+                                        "discriminator": "transformerType",
+                                        "definition": [
+                                          {
+                                            "type": "string",
+                                            "optional": true
+                                          },
+                                          {
+                                            "type": "schemaReference",
+                                            "definition": {
+                                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                              "relativePath": "transformerForBuildCarryOnObject"
+                                            }
+                                          }
+                                        ]
+                                      },
+                                      "sm": {
+                                        "type": "union",
+                                        "optional": true,
+                                        "discriminator": "transformerType",
+                                        "definition": [
+                                          {
+                                            "type": "string",
+                                            "optional": true
+                                          },
+                                          {
+                                            "type": "schemaReference",
+                                            "definition": {
+                                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                              "relativePath": "transformerForBuildCarryOnObject"
+                                            }
+                                          }
+                                        ]
+                                      },
+                                      "md": {
+                                        "type": "union",
+                                        "optional": true,
+                                        "discriminator": "transformerType",
+                                        "definition": [
+                                          {
+                                            "type": "string",
+                                            "optional": true
+                                          },
+                                          {
+                                            "type": "schemaReference",
+                                            "definition": {
+                                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                              "relativePath": "transformerForBuildCarryOnObject"
+                                            }
+                                          }
+                                        ]
+                                      },
+                                      "lg": {
+                                        "type": "union",
+                                        "optional": true,
+                                        "discriminator": "transformerType",
+                                        "definition": [
+                                          {
+                                            "type": "string",
+                                            "optional": true
+                                          },
+                                          {
+                                            "type": "schemaReference",
+                                            "definition": {
+                                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                              "relativePath": "transformerForBuildCarryOnObject"
+                                            }
+                                          }
+                                        ]
+                                      },
+                                      "xl": {
+                                        "type": "union",
+                                        "optional": true,
+                                        "discriminator": "transformerType",
+                                        "definition": [
+                                          {
+                                            "type": "string",
+                                            "optional": true
+                                          },
+                                          {
+                                            "type": "schemaReference",
+                                            "definition": {
+                                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                              "relativePath": "transformerForBuildCarryOnObject"
+                                            }
+                                          }
+                                        ]
+                                      }
+                                    }
+                                  }
+                                ]
+                              },
+                              "typography": {
+                                "optional": true,
+                                "type": "union",
+                                "discriminator": "transformerType",
+                                "definition": [
+                                  {
+                                    "type": "schemaReference",
+                                    "definition": {
+                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                      "relativePath": "transformerForBuildCarryOnObject"
+                                    }
+                                  },
+                                  {
+                                    "type": "object",
+                                    "definition": {
+                                      "fontSize": {
+                                        "type": "union",
+                                        "optional": true,
+                                        "discriminator": "transformerType",
+                                        "definition": [
+                                          {
+                                            "type": "string",
+                                            "optional": true
+                                          },
+                                          {
+                                            "type": "schemaReference",
+                                            "definition": {
+                                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                              "relativePath": "transformerForBuildCarryOnObject"
+                                            }
+                                          }
+                                        ]
+                                      },
+                                      "fontFamily": {
+                                        "type": "union",
+                                        "optional": true,
+                                        "discriminator": "transformerType",
+                                        "definition": [
+                                          {
+                                            "type": "string",
+                                            "optional": true
+                                          },
+                                          {
+                                            "type": "schemaReference",
+                                            "definition": {
+                                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                              "relativePath": "transformerForBuildCarryOnObject"
+                                            }
+                                          }
+                                        ]
+                                      },
+                                      "fontWeight": {
+                                        "optional": true,
+                                        "type": "union",
+                                        "discriminator": "transformerType",
+                                        "definition": [
+                                          {
+                                            "type": "schemaReference",
+                                            "definition": {
+                                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                              "relativePath": "transformerForBuildCarryOnObject"
+                                            }
+                                          },
+                                          {
+                                            "type": "object",
+                                            "definition": {
+                                              "normal": {
+                                                "type": "union",
+                                                "optional": true,
+                                                "discriminator": "transformerType",
+                                                "definition": [
+                                                  {
+                                                    "type": "number",
+                                                    "optional": true
+                                                  },
+                                                  {
+                                                    "type": "schemaReference",
+                                                    "definition": {
+                                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                                      "relativePath": "transformerForBuildCarryOnObject"
+                                                    }
+                                                  }
+                                                ]
+                                              },
+                                              "medium": {
+                                                "type": "union",
+                                                "optional": true,
+                                                "discriminator": "transformerType",
+                                                "definition": [
+                                                  {
+                                                    "type": "number",
+                                                    "optional": true
+                                                  },
+                                                  {
+                                                    "type": "schemaReference",
+                                                    "definition": {
+                                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                                      "relativePath": "transformerForBuildCarryOnObject"
+                                                    }
+                                                  }
+                                                ]
+                                              },
+                                              "bold": {
+                                                "type": "union",
+                                                "optional": true,
+                                                "discriminator": "transformerType",
+                                                "definition": [
+                                                  {
+                                                    "type": "number",
+                                                    "optional": true
+                                                  },
+                                                  {
+                                                    "type": "schemaReference",
+                                                    "definition": {
+                                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                                      "relativePath": "transformerForBuildCarryOnObject"
+                                                    }
+                                                  }
+                                                ]
+                                              }
+                                            }
+                                          }
+                                        ]
+                                      },
+                                      "headerFontSize": {
+                                        "type": "union",
+                                        "optional": true,
+                                        "discriminator": "transformerType",
+                                        "definition": [
+                                          {
+                                            "type": "string",
+                                            "optional": true
+                                          },
+                                          {
+                                            "type": "schemaReference",
+                                            "definition": {
+                                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                              "relativePath": "transformerForBuildCarryOnObject"
+                                            }
+                                          }
+                                        ]
+                                      },
+                                      "headerFontWeight": {
+                                        "type": "union",
+                                        "optional": true,
+                                        "discriminator": "transformerType",
+                                        "definition": [
+                                          {
+                                            "type": "number",
+                                            "optional": true
+                                          },
+                                          {
+                                            "type": "schemaReference",
+                                            "definition": {
+                                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                              "relativePath": "transformerForBuildCarryOnObject"
+                                            }
+                                          }
+                                        ]
+                                      }
+                                    }
+                                  }
+                                ]
+                              },
+                              "components": {
+                                "optional": true,
+                                "type": "union",
+                                "discriminator": "transformerType",
+                                "definition": [
+                                  {
+                                    "type": "schemaReference",
+                                    "definition": {
+                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                      "relativePath": "transformerForBuildCarryOnObject"
+                                    }
+                                  },
+                                  {
+                                    "type": "object",
+                                    "definition": {
+                                      "table": {
+                                        "optional": true,
+                                        "type": "union",
+                                        "discriminator": "transformerType",
+                                        "definition": [
+                                          {
+                                            "type": "schemaReference",
+                                            "definition": {
+                                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                              "relativePath": "transformerForBuildCarryOnObject"
+                                            }
+                                          },
+                                          {
+                                            "type": "object",
+                                            "definition": {
+                                              "borderRadius": {
+                                                "type": "union",
+                                                "optional": true,
+                                                "discriminator": "transformerType",
+                                                "definition": [
+                                                  {
+                                                    "type": "string",
+                                                    "optional": true
+                                                  },
+                                                  {
+                                                    "type": "schemaReference",
+                                                    "definition": {
+                                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                                      "relativePath": "transformerForBuildCarryOnObject"
+                                                    }
+                                                  }
+                                                ]
+                                              },
+                                              "border": {
+                                                "type": "union",
+                                                "optional": true,
+                                                "discriminator": "transformerType",
+                                                "definition": [
+                                                  {
+                                                    "type": "string",
+                                                    "optional": true
+                                                  },
+                                                  {
+                                                    "type": "schemaReference",
+                                                    "definition": {
+                                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                                      "relativePath": "transformerForBuildCarryOnObject"
+                                                    }
+                                                  }
+                                                ]
+                                              },
+                                              "minHeight": {
+                                                "type": "union",
+                                                "optional": true,
+                                                "discriminator": "transformerType",
+                                                "definition": [
+                                                  {
+                                                    "type": "string",
+                                                    "optional": true
+                                                  },
+                                                  {
+                                                    "type": "schemaReference",
+                                                    "definition": {
+                                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                                      "relativePath": "transformerForBuildCarryOnObject"
+                                                    }
+                                                  }
+                                                ]
+                                              },
+                                              "maxHeight": {
+                                                "type": "union",
+                                                "optional": true,
+                                                "discriminator": "transformerType",
+                                                "definition": [
+                                                  {
+                                                    "type": "string",
+                                                    "optional": true
+                                                  },
+                                                  {
+                                                    "type": "schemaReference",
+                                                    "definition": {
+                                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                                      "relativePath": "transformerForBuildCarryOnObject"
+                                                    }
+                                                  }
+                                                ]
+                                              },
+                                              "backgroundColor": {
+                                                "type": "union",
+                                                "optional": true,
+                                                "tag": {
+                                                  "value": {
+                                                    "defaultLabel": "Table Background Color",
+                                                    "display": {
+                                                      "string": {
+                                                        "format": "color"
+                                                      }
+                                                    },
+                                                    "isTemplate": true
+                                                  }
+                                                },
+                                                "discriminator": "transformerType",
+                                                "definition": [
+                                                  {
+                                                    "type": "string",
+                                                    "optional": true,
+                                                    "tag": {
+                                                      "value": {
+                                                        "defaultLabel": "Table Background Color",
+                                                        "display": {
+                                                          "string": {
+                                                            "format": "color"
+                                                          }
+                                                        }
+                                                      }
+                                                    }
+                                                  },
+                                                  {
+                                                    "type": "schemaReference",
+                                                    "definition": {
+                                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                                      "relativePath": "transformerForBuildCarryOnObject"
+                                                    }
+                                                  }
+                                                ]
+                                              },
+                                              "width": {
+                                                "type": "union",
+                                                "optional": true,
+                                                "discriminator": "transformerType",
+                                                "definition": [
+                                                  {
+                                                    "type": "string",
+                                                    "optional": true
+                                                  },
+                                                  {
+                                                    "type": "schemaReference",
+                                                    "definition": {
+                                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                                      "relativePath": "transformerForBuildCarryOnObject"
+                                                    }
+                                                  }
+                                                ]
+                                              },
+                                              "maxWidth": {
+                                                "type": "union",
+                                                "optional": true,
+                                                "discriminator": "transformerType",
+                                                "definition": [
+                                                  {
+                                                    "type": "string",
+                                                    "optional": true
+                                                  },
+                                                  {
+                                                    "type": "schemaReference",
+                                                    "definition": {
+                                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                                      "relativePath": "transformerForBuildCarryOnObject"
+                                                    }
+                                                  }
+                                                ]
+                                              },
+                                              "adaptiveColumnWidths": {
+                                                "type": "union",
+                                                "optional": true,
+                                                "discriminator": "transformerType",
+                                                "definition": [
+                                                  {
+                                                    "type": "boolean",
+                                                    "optional": true
+                                                  },
+                                                  {
+                                                    "type": "schemaReference",
+                                                    "definition": {
+                                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                                      "relativePath": "transformerForBuildCarryOnObject"
+                                                    }
+                                                  }
+                                                ]
+                                              }
+                                            }
+                                          }
+                                        ]
+                                      },
+                                      "header": {
+                                        "optional": true,
+                                        "type": "union",
+                                        "discriminator": "transformerType",
+                                        "definition": [
+                                          {
+                                            "type": "schemaReference",
+                                            "definition": {
+                                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                              "relativePath": "transformerForBuildCarryOnObject"
+                                            }
+                                          },
+                                          {
+                                            "type": "object",
+                                            "definition": {
+                                              "background": {
+                                                "type": "union",
+                                                "optional": true,
+                                                "tag": {
+                                                  "value": {
+                                                    "defaultLabel": "Header Background Color",
+                                                    "display": {
+                                                      "string": {
+                                                        "format": "color"
+                                                      }
+                                                    },
+                                                    "isTemplate": true
+                                                  }
+                                                },
+                                                "discriminator": "transformerType",
+                                                "definition": [
+                                                  {
+                                                    "type": "string",
+                                                    "optional": true,
+                                                    "tag": {
+                                                      "value": {
+                                                        "defaultLabel": "Header Background Color",
+                                                        "display": {
+                                                          "string": {
+                                                            "format": "color"
+                                                          }
+                                                        }
+                                                      }
+                                                    }
+                                                  },
+                                                  {
+                                                    "type": "schemaReference",
+                                                    "definition": {
+                                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                                      "relativePath": "transformerForBuildCarryOnObject"
+                                                    }
+                                                  }
+                                                ]
+                                              },
+                                              "height": {
+                                                "type": "union",
+                                                "optional": true,
+                                                "discriminator": "transformerType",
+                                                "definition": [
+                                                  {
+                                                    "type": "string",
+                                                    "optional": true
+                                                  },
+                                                  {
+                                                    "type": "schemaReference",
+                                                    "definition": {
+                                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                                      "relativePath": "transformerForBuildCarryOnObject"
+                                                    }
+                                                  }
+                                                ]
+                                              },
+                                              "fontSize": {
+                                                "type": "union",
+                                                "optional": true,
+                                                "discriminator": "transformerType",
+                                                "definition": [
+                                                  {
+                                                    "type": "string",
+                                                    "optional": true
+                                                  },
+                                                  {
+                                                    "type": "schemaReference",
+                                                    "definition": {
+                                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                                      "relativePath": "transformerForBuildCarryOnObject"
+                                                    }
+                                                  }
+                                                ]
+                                              },
+                                              "fontWeight": {
+                                                "type": "union",
+                                                "optional": true,
+                                                "discriminator": "transformerType",
+                                                "definition": [
+                                                  {
+                                                    "type": "number",
+                                                    "optional": true
+                                                  },
+                                                  {
+                                                    "type": "schemaReference",
+                                                    "definition": {
+                                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                                      "relativePath": "transformerForBuildCarryOnObject"
+                                                    }
+                                                  }
+                                                ]
+                                              },
+                                              "borderBottom": {
+                                                "type": "union",
+                                                "optional": true,
+                                                "discriminator": "transformerType",
+                                                "definition": [
+                                                  {
+                                                    "type": "string",
+                                                    "optional": true
+                                                  },
+                                                  {
+                                                    "type": "schemaReference",
+                                                    "definition": {
+                                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                                      "relativePath": "transformerForBuildCarryOnObject"
+                                                    }
+                                                  }
+                                                ]
+                                              },
+                                              "textColor": {
+                                                "type": "union",
+                                                "optional": true,
+                                                "tag": {
+                                                  "value": {
+                                                    "defaultLabel": "Header Text Color",
+                                                    "display": {
+                                                      "string": {
+                                                        "format": "color"
+                                                      }
+                                                    },
+                                                    "isTemplate": true
+                                                  }
+                                                },
+                                                "discriminator": "transformerType",
+                                                "definition": [
+                                                  {
+                                                    "type": "string",
+                                                    "optional": true,
+                                                    "tag": {
+                                                      "value": {
+                                                        "defaultLabel": "Header Text Color",
+                                                        "display": {
+                                                          "string": {
+                                                            "format": "color"
+                                                          }
+                                                        }
+                                                      }
+                                                    }
+                                                  },
+                                                  {
+                                                    "type": "schemaReference",
+                                                    "definition": {
+                                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                                      "relativePath": "transformerForBuildCarryOnObject"
+                                                    }
+                                                  }
+                                                ]
+                                              },
+                                              "hoverBackground": {
+                                                "type": "union",
+                                                "optional": true,
+                                                "discriminator": "transformerType",
+                                                "definition": [
+                                                  {
+                                                    "type": "string",
+                                                    "optional": true
+                                                  },
+                                                  {
+                                                    "type": "schemaReference",
+                                                    "definition": {
+                                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                                      "relativePath": "transformerForBuildCarryOnObject"
+                                                    }
+                                                  }
+                                                ]
+                                              }
+                                            }
+                                          }
+                                        ]
+                                      },
+                                      "cell": {
+                                        "optional": true,
+                                        "type": "union",
+                                        "discriminator": "transformerType",
+                                        "definition": [
+                                          {
+                                            "type": "schemaReference",
+                                            "definition": {
+                                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                              "relativePath": "transformerForBuildCarryOnObject"
+                                            }
+                                          },
+                                          {
+                                            "type": "object",
+                                            "definition": {
+                                              "height": {
+                                                "type": "union",
+                                                "optional": true,
+                                                "discriminator": "transformerType",
+                                                "definition": [
+                                                  {
+                                                    "type": "string",
+                                                    "optional": true
+                                                  },
+                                                  {
+                                                    "type": "schemaReference",
+                                                    "definition": {
+                                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                                      "relativePath": "transformerForBuildCarryOnObject"
+                                                    }
+                                                  }
+                                                ]
+                                              },
+                                              "padding": {
+                                                "type": "union",
+                                                "optional": true,
+                                                "discriminator": "transformerType",
+                                                "definition": [
+                                                  {
+                                                    "type": "string",
+                                                    "optional": true
+                                                  },
+                                                  {
+                                                    "type": "schemaReference",
+                                                    "definition": {
+                                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                                      "relativePath": "transformerForBuildCarryOnObject"
+                                                    }
+                                                  }
+                                                ]
+                                              },
+                                              "borderRight": {
+                                                "type": "union",
+                                                "optional": true,
+                                                "discriminator": "transformerType",
+                                                "definition": [
+                                                  {
+                                                    "type": "string",
+                                                    "optional": true
+                                                  },
+                                                  {
+                                                    "type": "schemaReference",
+                                                    "definition": {
+                                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                                      "relativePath": "transformerForBuildCarryOnObject"
+                                                    }
+                                                  }
+                                                ]
+                                              },
+                                              "borderBottom": {
+                                                "type": "union",
+                                                "optional": true,
+                                                "discriminator": "transformerType",
+                                                "definition": [
+                                                  {
+                                                    "type": "string",
+                                                    "optional": true
+                                                  },
+                                                  {
+                                                    "type": "schemaReference",
+                                                    "definition": {
+                                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                                      "relativePath": "transformerForBuildCarryOnObject"
+                                                    }
+                                                  }
+                                                ]
+                                              },
+                                              "fontSize": {
+                                                "type": "union",
+                                                "optional": true,
+                                                "discriminator": "transformerType",
+                                                "definition": [
+                                                  {
+                                                    "type": "string",
+                                                    "optional": true
+                                                  },
+                                                  {
+                                                    "type": "schemaReference",
+                                                    "definition": {
+                                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                                      "relativePath": "transformerForBuildCarryOnObject"
+                                                    }
+                                                  }
+                                                ]
+                                              },
+                                              "backgroundColor": {
+                                                "type": "union",
+                                                "optional": true,
+                                                "tag": {
+                                                  "value": {
+                                                    "defaultLabel": "Cell Background Color",
+                                                    "display": {
+                                                      "string": {
+                                                        "format": "color"
+                                                      }
+                                                    },
+                                                    "isTemplate": true
+                                                  }
+                                                },
+                                                "discriminator": "transformerType",
+                                                "definition": [
+                                                  {
+                                                    "type": "string",
+                                                    "optional": true,
+                                                    "tag": {
+                                                      "value": {
+                                                        "defaultLabel": "Cell Background Color",
+                                                        "display": {
+                                                          "string": {
+                                                            "format": "color"
+                                                          }
+                                                        }
+                                                      }
+                                                    }
+                                                  },
+                                                  {
+                                                    "type": "schemaReference",
+                                                    "definition": {
+                                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                                      "relativePath": "transformerForBuildCarryOnObject"
+                                                    }
+                                                  }
+                                                ]
+                                              },
+                                              "textColor": {
+                                                "type": "union",
+                                                "optional": true,
+                                                "tag": {
+                                                  "value": {
+                                                    "defaultLabel": "Cell Text Color",
+                                                    "display": {
+                                                      "string": {
+                                                        "format": "color"
+                                                      }
+                                                    },
+                                                    "isTemplate": true
+                                                  }
+                                                },
+                                                "discriminator": "transformerType",
+                                                "definition": [
+                                                  {
+                                                    "type": "string",
+                                                    "optional": true,
+                                                    "tag": {
+                                                      "value": {
+                                                        "defaultLabel": "Cell Text Color",
+                                                        "display": {
+                                                          "string": {
+                                                            "format": "color"
+                                                          }
+                                                        }
+                                                      }
+                                                    }
+                                                  },
+                                                  {
+                                                    "type": "schemaReference",
+                                                    "definition": {
+                                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                                      "relativePath": "transformerForBuildCarryOnObject"
+                                                    }
+                                                  }
+                                                ]
+                                              }
+                                            }
+                                          }
+                                        ]
+                                      },
+                                      "row": {
+                                        "optional": true,
+                                        "type": "union",
+                                        "discriminator": "transformerType",
+                                        "definition": [
+                                          {
+                                            "type": "schemaReference",
+                                            "definition": {
+                                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                              "relativePath": "transformerForBuildCarryOnObject"
+                                            }
+                                          },
+                                          {
+                                            "type": "object",
+                                            "definition": {
+                                              "hoverBackground": {
+                                                "type": "union",
+                                                "optional": true,
+                                                "discriminator": "transformerType",
+                                                "definition": [
+                                                  {
+                                                    "type": "string",
+                                                    "optional": true
+                                                  },
+                                                  {
+                                                    "type": "schemaReference",
+                                                    "definition": {
+                                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                                      "relativePath": "transformerForBuildCarryOnObject"
+                                                    }
+                                                  }
+                                                ]
+                                              },
+                                              "selectedBackground": {
+                                                "type": "union",
+                                                "optional": true,
+                                                "discriminator": "transformerType",
+                                                "definition": [
+                                                  {
+                                                    "type": "string",
+                                                    "optional": true
+                                                  },
+                                                  {
+                                                    "type": "schemaReference",
+                                                    "definition": {
+                                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                                      "relativePath": "transformerForBuildCarryOnObject"
+                                                    }
+                                                  }
+                                                ]
+                                              },
+                                              "borderBottom": {
+                                                "type": "union",
+                                                "optional": true,
+                                                "discriminator": "transformerType",
+                                                "definition": [
+                                                  {
+                                                    "type": "string",
+                                                    "optional": true
+                                                  },
+                                                  {
+                                                    "type": "schemaReference",
+                                                    "definition": {
+                                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                                      "relativePath": "transformerForBuildCarryOnObject"
+                                                    }
+                                                  }
+                                                ]
+                                              },
+                                              "evenBackground": {
+                                                "type": "union",
+                                                "optional": true,
+                                                "discriminator": "transformerType",
+                                                "definition": [
+                                                  {
+                                                    "type": "string",
+                                                    "optional": true
+                                                  },
+                                                  {
+                                                    "type": "schemaReference",
+                                                    "definition": {
+                                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                                      "relativePath": "transformerForBuildCarryOnObject"
+                                                    }
+                                                  }
+                                                ]
+                                              },
+                                              "oddBackground": {
+                                                "type": "union",
+                                                "optional": true,
+                                                "discriminator": "transformerType",
+                                                "definition": [
+                                                  {
+                                                    "type": "string",
+                                                    "optional": true
+                                                  },
+                                                  {
+                                                    "type": "schemaReference",
+                                                    "definition": {
+                                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                                      "relativePath": "transformerForBuildCarryOnObject"
+                                                    }
+                                                  }
+                                                ]
+                                              }
+                                            }
+                                          }
+                                        ]
+                                      },
+                                      "toolbar": {
+                                        "optional": true,
+                                        "type": "union",
+                                        "discriminator": "transformerType",
+                                        "definition": [
+                                          {
+                                            "type": "schemaReference",
+                                            "definition": {
+                                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                              "relativePath": "transformerForBuildCarryOnObject"
+                                            }
+                                          },
+                                          {
+                                            "type": "object",
+                                            "definition": {
+                                              "background": {
+                                                "type": "union",
+                                                "optional": true,
+                                                "discriminator": "transformerType",
+                                                "definition": [
+                                                  {
+                                                    "type": "string",
+                                                    "optional": true
+                                                  },
+                                                  {
+                                                    "type": "schemaReference",
+                                                    "definition": {
+                                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                                      "relativePath": "transformerForBuildCarryOnObject"
+                                                    }
+                                                  }
+                                                ]
+                                              },
+                                              "padding": {
+                                                "type": "union",
+                                                "optional": true,
+                                                "discriminator": "transformerType",
+                                                "definition": [
+                                                  {
+                                                    "type": "string",
+                                                    "optional": true
+                                                  },
+                                                  {
+                                                    "type": "schemaReference",
+                                                    "definition": {
+                                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                                      "relativePath": "transformerForBuildCarryOnObject"
+                                                    }
+                                                  }
+                                                ]
+                                              },
+                                              "borderBottom": {
+                                                "type": "union",
+                                                "optional": true,
+                                                "discriminator": "transformerType",
+                                                "definition": [
+                                                  {
+                                                    "type": "string",
+                                                    "optional": true
+                                                  },
+                                                  {
+                                                    "type": "schemaReference",
+                                                    "definition": {
+                                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                                      "relativePath": "transformerForBuildCarryOnObject"
+                                                    }
+                                                  }
+                                                ]
+                                              },
+                                              "height": {
+                                                "type": "union",
+                                                "optional": true,
+                                                "discriminator": "transformerType",
+                                                "definition": [
+                                                  {
+                                                    "type": "string",
+                                                    "optional": true
+                                                  },
+                                                  {
+                                                    "type": "schemaReference",
+                                                    "definition": {
+                                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                                      "relativePath": "transformerForBuildCarryOnObject"
+                                                    }
+                                                  }
+                                                ]
+                                              },
+                                              "textColor": {
+                                                "type": "union",
+                                                "optional": true,
+                                                "discriminator": "transformerType",
+                                                "definition": [
+                                                  {
+                                                    "type": "string",
+                                                    "optional": true
+                                                  },
+                                                  {
+                                                    "type": "schemaReference",
+                                                    "definition": {
+                                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                                      "relativePath": "transformerForBuildCarryOnObject"
+                                                    }
+                                                  }
+                                                ]
+                                              }
+                                            }
+                                          }
+                                        ]
+                                      },
+                                      "filter": {
+                                        "optional": true,
+                                        "type": "union",
+                                        "discriminator": "transformerType",
+                                        "definition": [
+                                          {
+                                            "type": "schemaReference",
+                                            "definition": {
+                                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                              "relativePath": "transformerForBuildCarryOnObject"
+                                            }
+                                          },
+                                          {
+                                            "type": "object",
+                                            "definition": {
+                                              "iconColor": {
+                                                "type": "union",
+                                                "optional": true,
+                                                "tag": {
+                                                  "value": {
+                                                    "defaultLabel": "Filter Icon Color",
+                                                    "display": {
+                                                      "string": {
+                                                        "format": "color"
+                                                      }
+                                                    },
+                                                    "isTemplate": true
+                                                  }
+                                                },
+                                                "discriminator": "transformerType",
+                                                "definition": [
+                                                  {
+                                                    "type": "string",
+                                                    "optional": true,
+                                                    "tag": {
+                                                      "value": {
+                                                        "defaultLabel": "Filter Icon Color",
+                                                        "display": {
+                                                          "string": {
+                                                            "format": "color"
+                                                          }
+                                                        }
+                                                      }
+                                                    }
+                                                  },
+                                                  {
+                                                    "type": "schemaReference",
+                                                    "definition": {
+                                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                                      "relativePath": "transformerForBuildCarryOnObject"
+                                                    }
+                                                  }
+                                                ]
+                                              },
+                                              "activeIconColor": {
+                                                "type": "union",
+                                                "optional": true,
+                                                "tag": {
+                                                  "value": {
+                                                    "defaultLabel": "Active Filter Icon Color",
+                                                    "display": {
+                                                      "string": {
+                                                        "format": "color"
+                                                      }
+                                                    },
+                                                    "isTemplate": true
+                                                  }
+                                                },
+                                                "discriminator": "transformerType",
+                                                "definition": [
+                                                  {
+                                                    "type": "string",
+                                                    "optional": true,
+                                                    "tag": {
+                                                      "value": {
+                                                        "defaultLabel": "Active Filter Icon Color",
+                                                        "display": {
+                                                          "string": {
+                                                            "format": "color"
+                                                          }
+                                                        }
+                                                      }
+                                                    }
+                                                  },
+                                                  {
+                                                    "type": "schemaReference",
+                                                    "definition": {
+                                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                                      "relativePath": "transformerForBuildCarryOnObject"
+                                                    }
+                                                  }
+                                                ]
+                                              },
+                                              "clearButtonColor": {
+                                                "type": "union",
+                                                "optional": true,
+                                                "tag": {
+                                                  "value": {
+                                                    "defaultLabel": "Clear Button Color",
+                                                    "display": {
+                                                      "string": {
+                                                        "format": "color"
+                                                      }
+                                                    },
+                                                    "isTemplate": true
+                                                  }
+                                                },
+                                                "discriminator": "transformerType",
+                                                "definition": [
+                                                  {
+                                                    "type": "string",
+                                                    "optional": true,
+                                                    "tag": {
+                                                      "value": {
+                                                        "defaultLabel": "Clear Button Color",
+                                                        "display": {
+                                                          "string": {
+                                                            "format": "color"
+                                                          }
+                                                        }
+                                                      }
+                                                    }
+                                                  },
+                                                  {
+                                                    "type": "schemaReference",
+                                                    "definition": {
+                                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                                      "relativePath": "transformerForBuildCarryOnObject"
+                                                    }
+                                                  }
+                                                ]
+                                              },
+                                              "clearButtonBackground": {
+                                                "type": "union",
+                                                "optional": true,
+                                                "tag": {
+                                                  "value": {
+                                                    "defaultLabel": "Clear Button Background Color",
+                                                    "display": {
+                                                      "string": {
+                                                        "format": "color"
+                                                      }
+                                                    },
+                                                    "isTemplate": true
+                                                  }
+                                                },
+                                                "discriminator": "transformerType",
+                                                "definition": [
+                                                  {
+                                                    "type": "string",
+                                                    "optional": true,
+                                                    "tag": {
+                                                      "value": {
+                                                        "defaultLabel": "Clear Button Background Color",
+                                                        "display": {
+                                                          "string": {
+                                                            "format": "color"
+                                                          }
+                                                        }
+                                                      }
+                                                    }
+                                                  },
+                                                  {
+                                                    "type": "schemaReference",
+                                                    "definition": {
+                                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                                      "relativePath": "transformerForBuildCarryOnObject"
+                                                    }
+                                                  }
+                                                ]
+                                              },
+                                              "clearButtonBorder": {
+                                                "type": "union",
+                                                "optional": true,
+                                                "tag": {
+                                                  "value": {
+                                                    "defaultLabel": "Clear Button Border Color",
+                                                    "display": {
+                                                      "string": {
+                                                        "format": "color"
+                                                      }
+                                                    },
+                                                    "isTemplate": true
+                                                  }
+                                                },
+                                                "discriminator": "transformerType",
+                                                "definition": [
+                                                  {
+                                                    "type": "string",
+                                                    "optional": true,
+                                                    "tag": {
+                                                      "value": {
+                                                        "defaultLabel": "Clear Button Border Color",
+                                                        "display": {
+                                                          "string": {
+                                                            "format": "color"
+                                                          }
+                                                        }
+                                                      }
+                                                    }
+                                                  },
+                                                  {
+                                                    "type": "schemaReference",
+                                                    "definition": {
+                                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                                      "relativePath": "transformerForBuildCarryOnObject"
+                                                    }
+                                                  }
+                                                ]
+                                              },
+                                              "toolbarBackground": {
+                                                "type": "union",
+                                                "optional": true,
+                                                "tag": {
+                                                  "value": {
+                                                    "defaultLabel": "Toolbar Background Color",
+                                                    "display": {
+                                                      "string": {
+                                                        "format": "color"
+                                                      }
+                                                    },
+                                                    "isTemplate": true
+                                                  }
+                                                },
+                                                "discriminator": "transformerType",
+                                                "definition": [
+                                                  {
+                                                    "type": "string",
+                                                    "optional": true,
+                                                    "tag": {
+                                                      "value": {
+                                                        "defaultLabel": "Toolbar Background Color",
+                                                        "display": {
+                                                          "string": {
+                                                            "format": "color"
+                                                          }
+                                                        }
+                                                      }
+                                                    }
+                                                  },
+                                                  {
+                                                    "type": "schemaReference",
+                                                    "definition": {
+                                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                                      "relativePath": "transformerForBuildCarryOnObject"
+                                                    }
+                                                  }
+                                                ]
+                                              },
+                                              "inputBackground": {
+                                                "type": "union",
+                                                "optional": true,
+                                                "tag": {
+                                                  "value": {
+                                                    "defaultLabel": "Input Background Color",
+                                                    "display": {
+                                                      "string": {
+                                                        "format": "color"
+                                                      }
+                                                    },
+                                                    "isTemplate": true
+                                                  }
+                                                },
+                                                "discriminator": "transformerType",
+                                                "definition": [
+                                                  {
+                                                    "type": "string",
+                                                    "optional": true,
+                                                    "tag": {
+                                                      "value": {
+                                                        "defaultLabel": "Input Background Color",
+                                                        "display": {
+                                                          "string": {
+                                                            "format": "color"
+                                                          }
+                                                        }
+                                                      }
+                                                    }
+                                                  },
+                                                  {
+                                                    "type": "schemaReference",
+                                                    "definition": {
+                                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                                      "relativePath": "transformerForBuildCarryOnObject"
+                                                    }
+                                                  }
+                                                ]
+                                              },
+                                              "inputBorder": {
+                                                "type": "union",
+                                                "optional": true,
+                                                "tag": {
+                                                  "value": {
+                                                    "defaultLabel": "Input Border Color",
+                                                    "display": {
+                                                      "string": {
+                                                        "format": "color"
+                                                      }
+                                                    },
+                                                    "isTemplate": true
+                                                  }
+                                                },
+                                                "discriminator": "transformerType",
+                                                "definition": [
+                                                  {
+                                                    "type": "string",
+                                                    "optional": true,
+                                                    "tag": {
+                                                      "value": {
+                                                        "defaultLabel": "Input Border Color",
+                                                        "display": {
+                                                          "string": {
+                                                            "format": "color"
+                                                          }
+                                                        }
+                                                      }
+                                                    }
+                                                  },
+                                                  {
+                                                    "type": "schemaReference",
+                                                    "definition": {
+                                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                                      "relativePath": "transformerForBuildCarryOnObject"
+                                                    }
+                                                  }
+                                                ]
+                                              }
+                                            }
+                                          }
+                                        ]
+                                      },
+                                      "sort": {
+                                        "optional": true,
+                                        "type": "union",
+                                        "discriminator": "transformerType",
+                                        "definition": [
+                                          {
+                                            "type": "schemaReference",
+                                            "definition": {
+                                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                              "relativePath": "transformerForBuildCarryOnObject"
+                                            }
+                                          },
+                                          {
+                                            "type": "object",
+                                            "definition": {
+                                              "iconColor": {
+                                                "type": "union",
+                                                "optional": true,
+                                                "discriminator": "transformerType",
+                                                "definition": [
+                                                  {
+                                                    "type": "string",
+                                                    "optional": true
+                                                  },
+                                                  {
+                                                    "type": "schemaReference",
+                                                    "definition": {
+                                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                                      "relativePath": "transformerForBuildCarryOnObject"
+                                                    }
+                                                  }
+                                                ]
+                                              },
+                                              "activeIconColor": {
+                                                "type": "union",
+                                                "optional": true,
+                                                "discriminator": "transformerType",
+                                                "definition": [
+                                                  {
+                                                    "type": "string",
+                                                    "optional": true
+                                                  },
+                                                  {
+                                                    "type": "schemaReference",
+                                                    "definition": {
+                                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                                      "relativePath": "transformerForBuildCarryOnObject"
+                                                    }
+                                                  }
+                                                ]
+                                              },
+                                              "ascendingSymbol": {
+                                                "type": "union",
+                                                "optional": true,
+                                                "discriminator": "transformerType",
+                                                "definition": [
+                                                  {
+                                                    "type": "string",
+                                                    "optional": true
+                                                  },
+                                                  {
+                                                    "type": "schemaReference",
+                                                    "definition": {
+                                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                                      "relativePath": "transformerForBuildCarryOnObject"
+                                                    }
+                                                  }
+                                                ]
+                                              },
+                                              "descendingSymbol": {
+                                                "type": "union",
+                                                "optional": true,
+                                                "discriminator": "transformerType",
+                                                "definition": [
+                                                  {
+                                                    "type": "string",
+                                                    "optional": true
+                                                  },
+                                                  {
+                                                    "type": "schemaReference",
+                                                    "definition": {
+                                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                                      "relativePath": "transformerForBuildCarryOnObject"
+                                                    }
+                                                  }
+                                                ]
+                                              }
+                                            }
+                                          }
+                                        ]
+                                      }
+                                    }
+                                  }
+                                ]
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "breakpoints": {
+                        "optional": true,
+                        "type": "union",
+                        "discriminator": "transformerType",
+                        "definition": [
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              "relativePath": "transformerForBuildCarryOnObject"
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "definition": {
+                              "xs": {
+                                "type": "union",
+                                "optional": true,
+                                "discriminator": "transformerType",
+                                "definition": [
+                                  {
+                                    "type": "string",
+                                    "optional": true
+                                  },
+                                  {
+                                    "type": "schemaReference",
+                                    "definition": {
+                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                      "relativePath": "transformerForBuildCarryOnObject"
+                                    }
+                                  }
+                                ]
+                              },
+                              "sm": {
+                                "type": "union",
+                                "optional": true,
+                                "discriminator": "transformerType",
+                                "definition": [
+                                  {
+                                    "type": "string",
+                                    "optional": true
+                                  },
+                                  {
+                                    "type": "schemaReference",
+                                    "definition": {
+                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                      "relativePath": "transformerForBuildCarryOnObject"
+                                    }
+                                  }
+                                ]
+                              },
+                              "md": {
+                                "type": "union",
+                                "optional": true,
+                                "discriminator": "transformerType",
+                                "definition": [
+                                  {
+                                    "type": "string",
+                                    "optional": true
+                                  },
+                                  {
+                                    "type": "schemaReference",
+                                    "definition": {
+                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                      "relativePath": "transformerForBuildCarryOnObject"
+                                    }
+                                  }
+                                ]
+                              },
+                              "lg": {
+                                "type": "union",
+                                "optional": true,
+                                "discriminator": "transformerType",
+                                "definition": [
+                                  {
+                                    "type": "string",
+                                    "optional": true
+                                  },
+                                  {
+                                    "type": "schemaReference",
+                                    "definition": {
+                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                      "relativePath": "transformerForBuildCarryOnObject"
+                                    }
+                                  }
+                                ]
+                              },
+                              "xl": {
+                                "type": "union",
+                                "optional": true,
+                                "discriminator": "transformerType",
+                                "definition": [
+                                  {
+                                    "type": "string",
+                                    "optional": true
+                                  },
+                                  {
+                                    "type": "schemaReference",
+                                    "definition": {
+                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                      "relativePath": "transformerForBuildCarryOnObject"
+                                    }
+                                  }
+                                ]
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "transitions": {
+                        "optional": true,
+                        "type": "union",
+                        "discriminator": "transformerType",
+                        "definition": [
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              "relativePath": "transformerForBuildCarryOnObject"
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "definition": {
+                              "duration": {
+                                "type": "union",
+                                "discriminator": "transformerType",
+                                "definition": [
+                                  {
+                                    "type": "schemaReference",
+                                    "definition": {
+                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                      "relativePath": "transformerForBuildCarryOnObject"
+                                    }
+                                  },
+                                  {
+                                    "type": "object",
+                                    "definition": {
+                                      "short": {
+                                        "type": "union",
+                                        "optional": true,
+                                        "discriminator": "transformerType",
+                                        "definition": [
+                                          {
+                                            "type": "string",
+                                            "optional": true
+                                          },
+                                          {
+                                            "type": "schemaReference",
+                                            "definition": {
+                                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                              "relativePath": "transformerForBuildCarryOnObject"
+                                            }
+                                          }
+                                        ]
+                                      },
+                                      "medium": {
+                                        "type": "union",
+                                        "optional": true,
+                                        "discriminator": "transformerType",
+                                        "definition": [
+                                          {
+                                            "type": "string",
+                                            "optional": true
+                                          },
+                                          {
+                                            "type": "schemaReference",
+                                            "definition": {
+                                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                              "relativePath": "transformerForBuildCarryOnObject"
+                                            }
+                                          }
+                                        ]
+                                      },
+                                      "long": {
+                                        "type": "union",
+                                        "optional": true,
+                                        "discriminator": "transformerType",
+                                        "definition": [
+                                          {
+                                            "type": "string",
+                                            "optional": true
+                                          },
+                                          {
+                                            "type": "schemaReference",
+                                            "definition": {
+                                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                              "relativePath": "transformerForBuildCarryOnObject"
+                                            }
+                                          }
+                                        ]
+                                      }
+                                    }
+                                  }
+                                ]
+                              },
+                              "easing": {
+                                "type": "union",
+                                "discriminator": "transformerType",
+                                "definition": [
+                                  {
+                                    "type": "schemaReference",
+                                    "definition": {
+                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                      "relativePath": "transformerForBuildCarryOnObject"
+                                    }
+                                  },
+                                  {
+                                    "type": "object",
+                                    "definition": {
+                                      "linear": {
+                                        "type": "union",
+                                        "optional": true,
+                                        "discriminator": "transformerType",
+                                        "definition": [
+                                          {
+                                            "type": "string",
+                                            "optional": true
+                                          },
+                                          {
+                                            "type": "schemaReference",
+                                            "definition": {
+                                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                              "relativePath": "transformerForBuildCarryOnObject"
+                                            }
+                                          }
+                                        ]
+                                      },
+                                      "easeIn": {
+                                        "type": "union",
+                                        "optional": true,
+                                        "discriminator": "transformerType",
+                                        "definition": [
+                                          {
+                                            "type": "string",
+                                            "optional": true
+                                          },
+                                          {
+                                            "type": "schemaReference",
+                                            "definition": {
+                                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                              "relativePath": "transformerForBuildCarryOnObject"
+                                            }
+                                          }
+                                        ]
+                                      },
+                                      "easeOut": {
+                                        "type": "union",
+                                        "optional": true,
+                                        "discriminator": "transformerType",
+                                        "definition": [
+                                          {
+                                            "type": "string",
+                                            "optional": true
+                                          },
+                                          {
+                                            "type": "schemaReference",
+                                            "definition": {
+                                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                              "relativePath": "transformerForBuildCarryOnObject"
+                                            }
+                                          }
+                                        ]
+                                      },
+                                      "easeInOut": {
+                                        "type": "union",
+                                        "optional": true,
+                                        "discriminator": "transformerType",
+                                        "definition": [
+                                          {
+                                            "type": "string",
+                                            "optional": true
+                                          },
+                                          {
+                                            "type": "schemaReference",
+                                            "definition": {
+                                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                              "relativePath": "transformerForBuildCarryOnObject"
+                                            }
+                                          }
+                                        ]
+                                      }
+                                    }
+                                  }
+                                ]
+                              }
+                            }
+                          }
+                        ]
+                      }
                     }
                   }
                 ]
@@ -56291,6 +63890,16 @@ export const miroirFundamentalJzodSchema = {
             "definition": {
               "type": "any"
             }
+          },
+          "themes": {
+            "type": "array",
+            "definition": {
+              "type": "schemaReference",
+              "definition": {
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storedMiroirTheme"
+              }
+            }
           }
         }
       },
@@ -58961,6 +66570,13 @@ export const miroirFundamentalJzodSchema = {
               }
             }
           }
+        }
+      },
+      "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storedMiroirTheme": {
+        "type": "schemaReference",
+        "definition": {
+          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          "relativePath": "storedMiroirTheme"
         }
       },
       "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodArray": {
@@ -71110,6 +78726,16 @@ export const miroirFundamentalJzodSchema = {
             "definition": {
               "type": "any"
             }
+          },
+          "themes": {
+            "type": "array",
+            "definition": {
+              "type": "schemaReference",
+              "definition": {
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storedMiroirTheme"
+              }
+            }
           }
         }
       },
@@ -73780,6 +81406,13 @@ export const miroirFundamentalJzodSchema = {
               }
             }
           }
+        }
+      },
+      "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storedMiroirTheme": {
+        "type": "schemaReference",
+        "definition": {
+          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          "relativePath": "storedMiroirTheme"
         }
       },
       "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodArray": {

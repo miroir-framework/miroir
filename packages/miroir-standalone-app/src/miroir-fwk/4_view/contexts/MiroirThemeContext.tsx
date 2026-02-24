@@ -1,15 +1,14 @@
+import { LoggerInterface, MiroirLoggerFactory } from "miroir-core";
 import type { MiroirThemeFull } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+import { darkStoredMiroirTheme, defaultStoredMiroirTheme } from "miroir-test-app_deployment-miroir";
 import React, { ReactNode, createContext, useCallback, useContext, useMemo, useState } from "react";
+import { packageName } from "../../../constants.js";
 import {
   MiroirThemeOption,
   defaultMiroirTheme,
-  miroirThemeOptions
 } from "../components/Themes/MiroirTheme.js";
 import { resolveThemeColors } from "../components/Themes/ThemeColorDefaults.js";
-import { LoggerInterface, MiroirLoggerFactory } from "miroir-core";
-import { packageName } from "../../../constants.js";
 import { cleanLevel } from "../constants.js";
-import { darkStoredMiroirTheme } from "miroir-test-app_deployment-miroir";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -37,9 +36,14 @@ const MiroirThemeContext = createContext<MiroirThemeContextType>({
   // currentTheme: resolvedDefaultTheme,
   currentTheme: resolvedDefaultTheme,
   currentThemeId: "default",
-  currentThemeOption: miroirThemeOptions[0],
+  currentThemeOption: {
+    id: "default",
+    name: "Default Theme",
+    description: "The default Miroir theme",
+    theme: defaultStoredMiroirTheme.definition
+  },
   selectTheme: () => {},
-  availableThemes: miroirThemeOptions,
+  availableThemes: [],
 });
 
 // Provider component
@@ -49,6 +53,7 @@ interface MiroirThemeProviderProps {
   // Support for controlled mode (when parent manages theme state)
   currentThemeId?: string;
   onThemeChange?: (themeId: string) => void;
+  currentThemeOptions: MiroirThemeOption[] ,
 }
 
 // ################################################################################################
@@ -57,6 +62,7 @@ export const MiroirThemeProvider: React.FC<MiroirThemeProviderProps> = ({
   defaultThemeId = "default",
   currentThemeId: controlledThemeId,
   onThemeChange: controlledOnThemeChange,
+  currentThemeOptions,
 }) => {
   const [internalThemeId, setInternalThemeId] = useState<string>(defaultThemeId);
 
@@ -65,8 +71,14 @@ export const MiroirThemeProvider: React.FC<MiroirThemeProviderProps> = ({
   const currentThemeId = isControlled ? controlledThemeId : internalThemeId;
 
   // Find the current theme option
-  const currentThemeOption =
-    miroirThemeOptions.find((option) => option.id === currentThemeId) || miroirThemeOptions[0];
+  const currentThemeOption: MiroirThemeOption =
+    // currentThemeOptions.find((option) => option.id === currentThemeId) || currentThemeOptions[0];
+    currentThemeOptions.find((option) => option.id === currentThemeId) || {
+      id: "default",
+      name: "Default Theme",
+      description: "The default Miroir theme",
+      theme: defaultStoredMiroirTheme.definition
+    };
 
   // Resolve all optional sub-section colors to their root color fallbacks
   const currentTheme = useMemo(
@@ -77,8 +89,10 @@ export const MiroirThemeProvider: React.FC<MiroirThemeProviderProps> = ({
   log.info(
     "MiroirThemeProvider currentThemeId",
     currentThemeId,
-    "darkStoredMiroirTheme",
-    darkStoredMiroirTheme,
+    "currentThemeOptions",
+    currentThemeOptions,
+    // "darkStoredMiroirTheme",
+    // darkStoredMiroirTheme,
     "currentThemeOption",
     currentThemeOption,
     "currentTheme",
@@ -103,7 +117,7 @@ export const MiroirThemeProvider: React.FC<MiroirThemeProviderProps> = ({
     currentThemeId,
     currentThemeOption,
     selectTheme,
-    availableThemes: miroirThemeOptions,
+    availableThemes: currentThemeOptions,
   };
 
   return <MiroirThemeContext.Provider value={contextValue}>{children}</MiroirThemeContext.Provider>;
@@ -181,7 +195,7 @@ export const useMiroirNestingBorderColor = (indentLevel: number = 0): string => 
   const safeIndentLevel = Math.max(0, Math.floor(indentLevel));
 
   // Use a slightly darker variant of the nesting color for borders
-  const baseColor = useMiroirNestingColor(safeIndentLevel);
+  // const baseColor = useMiroirNestingColor(safeIndentLevel);
 
   // For light themes, darken the color; for dark themes, lighten it
   const isDarkTheme = currentTheme.id === "dark";

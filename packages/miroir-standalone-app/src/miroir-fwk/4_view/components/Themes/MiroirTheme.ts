@@ -23,6 +23,7 @@ import {
   compactStoredMiroirTheme,
   darkStoredMiroirTheme,
   defaultStoredMiroirTheme,
+  materialStoredMiroirTheme,
 } from "miroir-test-app_deployment-miroir";
 import {
   // TableTheme,
@@ -484,103 +485,7 @@ export const compactMiroirTheme: MiroirTheme = compactStoredMiroirTheme.definiti
 // ################################################################################################
 // ################################################################################################
 // Material Design theme variant
-export const materialMiroirTheme: MiroirTheme = {
-  ...defaultMiroirTheme,
-  id: 'material',
-  name: 'Material Design',
-  description: 'Google Material Design inspired theme with modern aesthetics',
-  
-  colors: {
-    primary: '#2196f3',
-    primaryLight: '#64b5f6',
-    primaryDark: '#1976d2',
-    secondary: '#ff5722',
-    secondaryLight: '#ff8a65',
-    secondaryDark: '#d84315',
-    
-    background: '#fafafa',
-    surface: '#ffffff',
-    surfaceVariant: '#f5f5f5',
-    
-    // Material Design specific nesting colors
-    nesting: {
-      level0: '#fafafa',  // Material background
-      level1: '#f5f5f5',  // Material surface variant
-      level2: '#eeeeee',  // Slightly darker
-    },
-  },
-  
-  borderRadius: {
-    none: '0px',
-    sm: '4px',
-    md: '8px',
-    lg: '12px',
-    xl: '16px',
-    full: '50%',
-  },
-  
-  components: {
-    ...defaultMiroirTheme.components,
-    appBar: {
-      // background: uses #2196f3 (material primary), not primaryDark (#1976d2) → keep
-      background: '#2196f3',
-      // textColor → backgroundPaper = '#ffffff' ✓ (matches, omit)
-      borderBottom: 'none',
-      height: '64px',
-      elevation: '0 4px 8px rgba(0, 0, 0, 0.12)',
-    },
-    
-    button: {
-      primary: {
-        // Material uses primary=#2196f3, not accent=#1976d2 → keep explicit colors
-        background: '#2196f3',
-        backgroundHover: '#1976d2',
-        // backgroundActive → active = '#1565c0' ✓ (matches, omit)
-        // textColor → backgroundPaper = '#ffffff' ✓ (matches, omit)
-        borderColor: '#2196f3',
-        borderRadius: '8px',
-      },
-      secondary: {
-        // background → secondary = '#ff5722' ✓ (matches, omit)
-        // backgroundHover → secondaryDark = '#d84315' ✓ (matches, omit)
-        backgroundActive: '#bf360c',
-        // textColor → backgroundPaper = '#ffffff' ✓ (matches, omit)
-        // borderColor → secondary = '#ff5722' ✓ (matches, omit)
-        borderRadius: '8px',
-      },
-      outlined: {
-        // background → 'transparent' ✓ (matches, omit)
-        // Material uses primary=#2196f3, not accent=#1976d2 → keep these
-        backgroundHover: 'rgba(33, 150, 243, 0.04)',
-        backgroundActive: 'rgba(33, 150, 243, 0.08)',
-        textColor: '#2196f3',
-        borderColor: '#2196f3',
-        borderRadius: '8px',
-      },
-    },
-    
-    card: {
-      ...defaultMiroirTheme.components.card,
-      borderRadius: '12px',
-      elevation: '0 2px 4px rgba(0, 0, 0, 0.1), 0 8px 16px rgba(0, 0, 0, 0.1)',
-    },
-    
-    icon: {
-      // Material uses primary=#2196f3, not accent=#1976d2 → keep
-      colorPrimary: '#2196f3',
-      // colorSecondary → textSecondary = '#757575' ✓ (matches, omit)
-      // colorDisabled → textDisabled = '#bdbdbd' ✓ (matches, omit)
-      size: {
-        sm: '16px',
-        md: '24px',
-        lg: '32px',
-      },
-    },
-  },
-  
-  // table: materialTableTheme,
-  table: {...defaultMiroirTheme.table},  // Material theme does not change table theme
-};
+export const materialMiroirTheme: MiroirTheme = materialStoredMiroirTheme.definition as any; // TODO: fix MiroirTheme, it should be a DeepPartial<MiroirTheme> to allow partial overrides without needing to specify all properties'
 
 // ################################################################################################
 // ################################################################################################
@@ -767,30 +672,30 @@ export interface MiroirThemeOption {
   theme: MiroirTheme;
 }
 
-export const miroirThemeOptions: MiroirThemeOption[] = [
-  {
-    id: 'default',
-    name: 'Default Light',
-    description: 'Standard light theme with balanced spacing',
-    theme: defaultMiroirTheme,
-  },
-  {
-    id: 'dark',
-    name: 'Dark',
-    description: 'Dark theme with reduced eye strain',
-    // theme: createMiroirThemeNOT_USED(darkMiroirTheme),
-    theme: darkMiroirTheme,
-  },
-  {
-    id: 'compact',
-    name: 'Compact',
-    description: 'Space-efficient theme with reduced padding',
-    theme: compactMiroirTheme,
-  },
-  {
-    id: 'material',
-    name: 'Material Design',
-    description: 'Google Material Design inspired theme',
-    theme: materialMiroirTheme,
-  },
-];
+// export const miroirThemeOptions: MiroirThemeOption[] = [
+//   {
+//     id: 'default',
+//     name: 'Default Light',
+//     description: 'Standard light theme with balanced spacing',
+//     theme: defaultMiroirTheme,
+//   },
+//   {
+//     id: 'dark',
+//     name: 'Dark',
+//     description: 'Dark theme with reduced eye strain',
+//     // theme: createMiroirThemeNOT_USED(darkMiroirTheme),
+//     theme: darkMiroirTheme,
+//   },
+//   {
+//     id: 'compact',
+//     name: 'Compact',
+//     description: 'Space-efficient theme with reduced padding',
+//     theme: compactMiroirTheme,
+//   },
+//   {
+//     id: 'material',
+//     name: 'Material Design',
+//     description: 'Google Material Design inspired theme',
+//     theme: materialMiroirTheme,
+//   },
+// ];

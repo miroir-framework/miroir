@@ -62,7 +62,7 @@ import {
   useMiroirContextService,
   useSnackbar,
 } from "../../MiroirContextReactProvider.js";
-import { MiroirThemeProvider, useMiroirTheme } from '../../contexts/MiroirThemeContext.js';
+import { MiroirThemeProvider, useMiroirTheme, type MiroirThemeOption } from '../../contexts/MiroirThemeContext.js';
 import { useRenderTracker } from "../../tools/renderCountTracker.js";
 import AppBar from './AppBar.js';
 
@@ -750,6 +750,7 @@ export const RootComponent = (props: RootComponentProps) => {
       elements: [
         { label: "RootComponent miroirConfig", data: miroirConfig },
         { label: "RootComponent currentModel", data: currentModel },
+        { label: "RootComponent currentThemes", data: miroirMetaModel.themes },
         { label: "RootComponent adminAppModel", data: adminAppModel },
         { label: "RootComponent applicationDeploymentMap", data: applicationDeploymentMap },
         {
@@ -773,7 +774,12 @@ export const RootComponent = (props: RootComponentProps) => {
       adminDeploymentsQueryResult,
     ],
   );
-
+  const currentThemeOptions: MiroirThemeOption[] = (miroirMetaModel.themes??[]).map((theme) => ({
+    id: theme.definition.id,
+    name: theme.definition.name,
+    description: theme.definition.description ?? "",
+    theme: theme.definition,
+  }));
   // ##############################################################################################
   // ##############################################################################################
   // ##############################################################################################
@@ -788,6 +794,7 @@ export const RootComponent = (props: RootComponentProps) => {
       <MiroirThemeProvider
         currentThemeId={currentThemeId}
         onThemeChange={handleAppThemeChange}
+        currentThemeOptions={currentThemeOptions}
       >
         <ReportPageContextProvider>
           <div
