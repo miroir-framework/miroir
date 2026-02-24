@@ -33,7 +33,7 @@ import { useCurrentModel, useCurrentModelEnvironment } from '../ReduxHooks.js';
 import { cleanLevel } from '../constants.js';
 // import { useReportPageContext } from './Reports/ReportPageContext.js';
 import { TypedValueObjectEditor } from './Reports/TypedValueObjectEditor.js';
-import { ThemedOnScreenDebug } from './Themes/BasicComponents.js';
+import { DebugHelper } from './Page/DebugHelper.js';
 import { ThemedPaper } from './Themes/index.js';
 import { selfApplicationLibrary } from 'miroir-test-app_deployment-library';
 import {
@@ -462,56 +462,52 @@ export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
                 Use JzodElementEditor for dynamic form generation based on action parameters schema
               </Typography>
 
-              {/* ThemedOnScreenDebug */}
+              {/* DebugHelper */}
               <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
-                <ThemedOnScreenDebug
-                  label="EndpointActionCallerHelp selectedDeploymentUuid"
-                  data={selectedDeploymentUuid}
-                  initiallyUnfolded={false}
-                />
-                <ThemedOnScreenDebug
-                  label="EndpointActionCallerHelp currentInnerModel"
-                  data={currentInnerModel}
-                  initiallyUnfolded={false}
-                  useCodeBlock
-                />
-                <ThemedOnScreenDebug
-                  label="EndpointActionCallerHelp formikContext values"
-                  data={formikContext.values}
-                  initiallyUnfolded={false}
-                />
-                <ThemedOnScreenDebug
-                  label="EndpointActionCallerHelp availableEndpoints"
-                  data={availableEndpoints.map((e) => ({ uuid: e.uuid, name: e.name }))}
-                  initiallyUnfolded={false}
-                />
-                <ThemedOnScreenDebug
-                  label="EndpointActionCallerHelp selectedEndpointUuid"
-                  data={selectedEndpointUuid}
-                  initiallyUnfolded={false}
-                />
-                <ThemedOnScreenDebug
-                  label="EndpointActionCallerHelp availableActionsAndActionTypes"
-                  data={availableActionsAndActionTypes}
-                  initiallyUnfolded={false}
-                />
-                <ThemedOnScreenDebug
-                  label="EndpointActionCallerHelp currentAction"
-                  data={currentAction}
-                  useCodeBlock
-                  initiallyUnfolded={false}
-                />
-                <ThemedOnScreenDebug
-                  label="EndpointActionCallerHelp currentActionParametersMMLSchema"
-                  data={currentActionParametersMMLSchema}
-                  useCodeBlock
-                  initiallyUnfolded={false}
-                />
-                <ThemedOnScreenDebug
-                  label="EndpointActionCallerHelp endpointActionCallerFormikSchema"
-                  data={endpointActionCallerFormikSchema}
-                  useCodeBlock
-                  initiallyUnfolded={false}
+                <DebugHelper
+                  componentName="EndpointActionCaller"
+                  elements={[
+                    {
+                      label: "EndpointActionCallerHelp selectedDeploymentUuid",
+                      data: selectedDeploymentUuid,
+                    },
+                    {
+                      label: "EndpointActionCallerHelp currentInnerModel",
+                      data: currentInnerModel,
+                      useCodeBlock: true,
+                    },
+                    {
+                      label: "EndpointActionCallerHelp formikContext values",
+                      data: formikContext.values,
+                    },
+                    {
+                      label: "EndpointActionCallerHelp availableEndpoints",
+                      data: availableEndpoints.map((e) => ({ uuid: e.uuid, name: e.name })),
+                    },
+                    {
+                      label: "EndpointActionCallerHelp selectedEndpointUuid",
+                      data: selectedEndpointUuid,
+                    },
+                    {
+                      label: "EndpointActionCallerHelp availableActionsAndActionTypes",
+                      data: availableActionsAndActionTypes,
+                    },
+                    {
+                      label: "EndpointActionCallerHelp currentAction",
+                      data: currentAction,
+                      useCodeBlock: true,
+                    },
+                    {
+                      label: "EndpointActionCallerHelp currentActionParametersMMLSchema",
+                      data: currentActionParametersMMLSchema,
+                      useCodeBlock: true,
+                    },
+                    {
+                      label: "EndpointActionCallerHelp endpointActionCallerFormikSchema",
+                      data: endpointActionCallerFormikSchema,
+                      useCodeBlock: true,
+                    },
+                  ]}
                 />
                 {/* {formikContext.values[formikPath_EndpointActionCaller] && (
                   <TypedValueObjectEditor

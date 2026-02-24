@@ -1,36 +1,27 @@
-import { useCallback, useState, useMemo, useEffect } from "react";
-import { color } from "d3";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 
 import {
-  alterObjectAtPath2,
-  getDefaultValueForJzodSchemaWithResolutionNonHook,
   LoggerInterface,
   MiroirLoggerFactory,
   mStringify,
   ReduxDeploymentsState,
-  resolvePathOnObject,
   SyncBoxedExtractorOrQueryRunnerMap,
   type MetaModel,
   type MiroirModelEnvironment
 } from "miroir-core";
 
-import { JzodElement } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
-import { getMemoizedReduxDeploymentsStateSelectorMap, ReduxStateWithUndoRedo, useSelector } from "../../../miroir-localcache-imports.js";
 import { packageName } from "../../../../constants";
+import { getMemoizedReduxDeploymentsStateSelectorMap, ReduxStateWithUndoRedo, useSelector } from "../../../miroir-localcache-imports.js";
 import { cleanLevel } from "../../constants";
 import { useMiroirContextService } from "../../MiroirContextReactProvider";
 import { useCurrentModelEnvironment } from "../../ReduxHooks";
-import { ChangeValueTypeSelect } from "../ChangeValueTypeSelect";
-import { ThemedOnScreenDebug, ThemedStatusText } from "../Themes/BasicComponents";
-import { JzodElementEditor } from "./JzodElementEditor";
+import { DebugHelper } from "../Page/DebugHelper.js";
+import { ThemedStatusText } from "../Themes/BasicComponents";
+import { FileSelector } from "../Themes/FileSelector.js";
+import { ThemedSwitch } from "../Themes/UIComponents.js";
 import { useJzodElementEditorHooks } from "./JzodElementEditorHooks";
 import { JzodAnyEditorProps } from "./JzodElementEditorInterface";
-import { ThemedLabeledEditor } from "../Themes/FormComponents.js";
-import { ThemedDisplayValue } from "../Themes/DisplayComponents.js";
-import { FileSelector } from "../Themes/FileSelector.js";
-import { JzodElementEditorReactCodeMirror } from "./JzodElementEditorReactCodeMirror.js";
-import { ThemedSwitch } from "../Themes/UIComponents.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -261,19 +252,20 @@ export const JzodAnyEditor: React.FC<JzodAnyEditorProps> = (
     return (
       <div key={rootLessListKey}>
         {/* fomat = "file" */}
-        <ThemedOnScreenDebug
-          label={`JzodAnyEditor Render ${JzodAnyEditorRenderCount} for ${rootLessListKey} format=file`}
-          data={{
-            reportSectionPathAsString,
-            rootLessListKey,
-            // rootLessListKeyArray,
-            currentValueObject,
-            currentValueObjectAtKey,
-            formik: formik.values,
-            currentTypecheckKeyMap,
-          }}
-          initiallyUnfolded={false}
-          useCodeBlock={true}
+        <DebugHelper
+          componentName="JzodAnyEditor"
+          elements={[{
+            label: `JzodAnyEditor Render ${JzodAnyEditorRenderCount} for ${rootLessListKey} format=file`,
+            data: {
+              reportSectionPathAsString,
+              rootLessListKey,
+              currentValueObject,
+              currentValueObjectAtKey,
+              formik: formik.values,
+              currentTypecheckKeyMap,
+            },
+            useCodeBlock: true,
+          }]}
         />
         {/* <ThemedLabeledEditor
           labelElement={labelElement ?? <>{name}</>}
@@ -309,11 +301,13 @@ export const JzodAnyEditor: React.FC<JzodAnyEditorProps> = (
   return (
     <div key={rootLessListKey}>
       {/* <ThemedOnScreenHelper label="JzodAnyEditor" data={rootLessListKey} /> */}
-      <ThemedOnScreenDebug
-        label={`JzodAnyEditor Render ${JzodAnyEditorRenderCount} for ${rootLessListKey} general case`}
-        data={{currentValueObject, currentValueObjectAtKey, currentTypecheckKeyMap}}
-        initiallyUnfolded={false}
-        useCodeBlock={true}
+      <DebugHelper
+        componentName="JzodAnyEditor"
+        elements={[{
+          label: `JzodAnyEditor Render ${JzodAnyEditorRenderCount} for ${rootLessListKey} general case`,
+          data: {currentValueObject, currentValueObjectAtKey, currentTypecheckKeyMap},
+          useCodeBlock: true,
+        }]}
       />
     </div>
   );

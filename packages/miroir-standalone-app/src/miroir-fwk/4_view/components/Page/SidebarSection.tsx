@@ -39,7 +39,7 @@ import { packageName } from '../../../../constants.js';
 import { useMiroirContextService } from '../../MiroirContextReactProvider.js';
 import { useCurrentModel, useReduxDeploymentsStateQuerySelector } from '../../ReduxHooks.js';
 import { ErrorFallbackComponent } from '../ErrorFallbackComponent.js';
-import { ThemedOnScreenDebug } from '../Themes/BasicComponents.js';
+import { DebugHelper } from './DebugHelper.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -198,23 +198,32 @@ export const SidebarSection:FC<SidebarSectionProps> = (props: SidebarSectionProp
                   <ThemedIcon icon="error" />
                 </ThemedListMiroirIcon>
                 <ThemedListItemText primary="Failed to load menu" />
-                <ThemedOnScreenDebug
-                  label='miroirMenusDomainElementObject'
-                  data={miroirMenusDomainElementObject}
+                <DebugHelper
+                  componentName="SidebarSection"
+                  elements={[
+                    {
+                      label: "miroirMenusDomainElementObject",
+                      data: miroirMenusDomainElementObject,
+                    },
+                  ]}
                 />
               </ThemedListItemButton>
             </ThemedListItem>
           </ThemedList>
         ) : (
           <>
-            <ThemedOnScreenDebug
-              label='SidebarSection'
-              data={{
-                props,
-                miroirMenusDomainElementObject,
-              }}
-              useCodeBlock={true}
-              initiallyUnfolded={false}
+            <DebugHelper
+              componentName="SidebarSection"
+              elements={[
+                {
+                  label: "SidebarSection",
+                  data: {
+                    props,
+                    miroirMenusDomainElementObject,
+                  },
+                  useCodeBlock: true,
+                },
+              ]}
             />
             {!((miroirMenusDomainElementObject as any)?.menus as any)?.definition?.menuType ||
             ((miroirMenusDomainElementObject as any)?.menus as any)?.definition?.menuType ==
@@ -227,24 +236,26 @@ export const SidebarSection:FC<SidebarSectionProps> = (props: SidebarSectionProp
                   .filter(
                     (curr: MiroirMenuItem) =>
                       // context.viewParams.generalEditMode
-                      (
-                        (curr.selfApplication === adminSelfApplication.uuid || curr.selfApplication === selfApplicationDeploymentMiroir)
-                        && context.showModelTools
-                      ) 
-                      ||
-                      (
-                        (curr.selfApplication !== adminSelfApplication.uuid && curr.selfApplication !== selfApplicationDeploymentMiroir)
-                        && (!curr.menuItemScope || curr.menuItemScope == "data" || context.viewParams.generalEditMode)
-                      ) 
+                      ((curr.selfApplication === adminSelfApplication.uuid ||
+                        curr.selfApplication === selfApplicationDeploymentMiroir.uuid) &&
+                        context.showModelTools) ||
+                      (curr.selfApplication !== adminSelfApplication.uuid &&
+                        curr.selfApplication !== selfApplicationDeploymentMiroir.uuid &&
+                        (!curr.menuItemScope ||
+                          curr.menuItemScope == "data" ||
+                          context.viewParams.generalEditMode)),
                   )
-                  .map((i: MiroirMenuItem, index: number) => <MenuItemDisplay
+                  .map((i: MiroirMenuItem, index: number) => (
+                    <MenuItemDisplay
                       key={i.label}
                       menuItem={i}
-                      applicationDeploymentMap={props.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap}
+                      applicationDeploymentMap={
+                        props.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap
+                      }
                       keyValue={i.label}
                       showPadding={true}
                     />
-                  )}
+                  ))}
               </ThemedList>
             ) : (
               <ThemedList disablePadding dense>
@@ -255,25 +266,26 @@ export const SidebarSection:FC<SidebarSectionProps> = (props: SidebarSectionProp
                   menuSection.items
                     .filter(
                       (curr: MiroirMenuItem) =>
-                      (
-                        (curr.selfApplication === adminSelfApplication.uuid || curr.selfApplication === selfApplicationDeploymentMiroir)
-                        && context.showModelTools
-                      ) 
-                      ||
-                      (
-                        (curr.selfApplication !== adminSelfApplication.uuid && curr.selfApplication !== selfApplicationDeploymentMiroir)
-                        && (!curr.menuItemScope || curr.menuItemScope == "data" || context.viewParams.generalEditMode)
-                      ) 
+                        ((curr.selfApplication === adminSelfApplication.uuid ||
+                          curr.selfApplication === selfApplicationDeploymentMiroir.uuid) &&
+                          context.showModelTools) ||
+                        (curr.selfApplication !== adminSelfApplication.uuid &&
+                          curr.selfApplication !== selfApplicationDeploymentMiroir.uuid &&
+                          (!curr.menuItemScope ||
+                            curr.menuItemScope == "data" ||
+                            context.viewParams.generalEditMode)),
                     )
                     .map((curr: any, index: number) => (
                       <MenuItemDisplay
                         key={curr.label + index}
                         menuItem={curr}
-                        applicationDeploymentMap={props.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap}
+                        applicationDeploymentMap={
+                          props.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap
+                        }
                         keyValue={curr.label + index}
                       />
                     ))
-                    .concat([<ThemedDivider key={menuSection.label + "Divider"} />])
+                    .concat([<ThemedDivider key={menuSection.label + "Divider"} />]),
                 )}
               </ThemedList>
             )}

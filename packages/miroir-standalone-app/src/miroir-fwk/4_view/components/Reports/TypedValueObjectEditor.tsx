@@ -51,7 +51,6 @@ import {
 import { useRenderTracker } from '../../tools/renderCountTracker.js';
 import { ErrorFallbackComponent } from '../ErrorFallbackComponent.js';
 import { ActionButtonWithSnackbar } from '../Page/ActionButtonWithSnackbar.js';
-import { ThemedOnScreenDebug } from '../Themes/BasicComponents.js';
 import { ThemedOnScreenHelper, ThemedStyledButton } from '../Themes/index.js';
 import { JzodElementEditor } from '../ValueObjectEditor/JzodElementEditor.js';
 import { CodeBlock_ReadOnly } from './CodeBlock_ReadOnly.js';

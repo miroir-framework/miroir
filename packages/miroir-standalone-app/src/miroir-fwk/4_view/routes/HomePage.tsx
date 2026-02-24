@@ -31,7 +31,7 @@ import {
   packageName
 } from "../../../constants.js";
 import { useQueryTemplateResults } from "../components/Reports/ReportHooks.js";
-import { ThemedOnScreenDebug } from "../components/Themes/BasicComponents.js";
+import { DebugHelper } from "../components/Page/DebugHelper.js";
 import { cleanLevel } from "../constants.js";
 import { useCurrentModel } from "../ReduxHooks.js";
 import { RunnerList, runnerConfigs } from "../components/Runners/RunnersList.js";
@@ -186,19 +186,21 @@ export const HomePage = (props: RootComponentProps) => {
       }}
     >
       <h2>Welcome to the Miroir Platform!</h2>
-      <ThemedOnScreenDebug
-        label={`HomePage application: ${currentApplication} section: ${displayedApplicationSection}`}
-        data={{
-          currentAppModel,
-          currentStoredQuery,
-          currentStoredQueryResults,
-          toolsPageState: context.toolsPageState,
-          currentApplicationDeploymentMap,
-          applicationDefinition,
-        }}
-        // initiallyUnfolded={false}
-        copyButton={true}
-        useCodeBlock={true}
+      <DebugHelper
+        componentName="HomePage"
+        elements={[{
+          label: `HomePage application: ${currentApplication} section: ${displayedApplicationSection}`,
+          data: {
+            currentAppModel,
+            currentStoredQuery,
+            currentStoredQueryResults,
+            toolsPageState: context.toolsPageState,
+            currentApplicationDeploymentMap,
+            applicationDefinition,
+          },
+          copyButton: true,
+          useCodeBlock: true,
+        }]}
       />
       {/* undo */}
       {/* <span>

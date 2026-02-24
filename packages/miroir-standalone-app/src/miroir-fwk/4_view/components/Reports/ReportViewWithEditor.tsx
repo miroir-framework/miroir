@@ -39,7 +39,7 @@ import { InlineReportEditor } from './InlineReportEditor.js';
 import { ReportViewProps, useQueryTemplateResults } from './ReportHooks.js';
 import ReportSectionViewWithEditor from './ReportSectionViewWithEditor.js';
 import { reportSectionsFormSchema, reportSectionsFormValue } from './ReportTools.js';
-import { ThemedOnScreenDebug } from '../Themes/BasicComponents.js';
+import { DebugHelper } from '../Page/DebugHelper.js';
 import { deployment_Miroir } from 'miroir-test-app_deployment-admin';
 
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -213,7 +213,7 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
       definition: {
         ...r,
         [reportReportDetailsKey]: entityDefinitionReport.mlSchema,
-        [entityDefinitionReportKey]: entityDefinitionEntityDefinition.mlSchema, // will contain reportEntityDefinition-itself
+        [entityDefinitionReportKey]: entityDefinitionEntityDefinition.mlSchema as any, // will contain reportEntityDefinition-itself
         [reportName]: entityDefinitionReport.mlSchema,
         [lastSubmitButtonClicked]: { type: "string", optional: true}
       }
@@ -475,9 +475,12 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
     <>
       {/* <span>ReportViewWithEditor generalEditMode: {generalEditMode ? "true" : "false"}</span> */}
       <Box sx={{ position: "relative" }}>
-        <ThemedOnScreenDebug
-          label='ReportViewWithEditor'
-          data={{deploymentUuid: props.deploymentUuid}}
+        <DebugHelper
+          componentName="ReportViewWithEditor"
+          elements={[
+            { label: "deploymentUuid", data: { deploymentUuid: props.deploymentUuid } },
+            { label: "reportDataQueryBase / reportDataQueryResults", data: { reportDataQueryBase, reportDataQueryResults }, useCodeBlock: true },
+          ]}
         />
         {props.applicationSection ? (
           reportData.elementType == "failure" ? (
@@ -541,12 +544,6 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
                     </>
                   )}
                   <>
-                    <ThemedOnScreenDebug
-                      label={`ReportViewWithEditor`}
-                      data={{reportDataQueryBase, reportDataQueryResults}}
-                      initiallyUnfolded={false}
-                      useCodeBlock={true}
-                    />
                     <ReportSectionViewWithEditor
                       valueObjectEditMode="update"
                       generalEditMode={generalEditMode}

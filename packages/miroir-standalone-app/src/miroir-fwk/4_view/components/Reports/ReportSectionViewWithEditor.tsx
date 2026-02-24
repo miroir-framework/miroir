@@ -32,7 +32,8 @@ import { ReportDisplay } from '../../routes/ReportDisplay';
 import { useRenderTracker } from '../../tools/renderCountTracker.js';
 import GraphReportSectionView from '../Graph/GraphReportSectionView.js';
 import { StoredRunnerView } from '../Runners/RunnerView';
-import { ThemedOnScreenDebug, ThemedProgressiveAccordion } from '../Themes/BasicComponents';
+import { ThemedProgressiveAccordion } from '../Themes/BasicComponents';
+import { DebugHelper } from '../Page/DebugHelper.js';
 import { ThemedBox, ThemedText } from '../Themes/index.js';
 import { ReportSectionEntityInstance, type ValueObjectEditMode } from './ReportSectionEntityInstance.js';
 import { ReportSectionListDisplay } from './ReportSectionListDisplay.js';
@@ -308,12 +309,21 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
             ReportSectionViewWithEditor renders: {navigationCount} (total: {totalCount})
           </ThemedText>
         )}
-        <ThemedOnScreenDebug
-          label={"ReportSectionViewWithEditor - reportSectionDefinitionFromFormik"}
-          data={reportSectionDefinitionFromFormik}
-          initiallyUnfolded={false}
-          copyButton={true}
-          useCodeBlock={true}
+        <DebugHelper
+          componentName="ReportSectionViewWithEditor"
+          elements={[
+            {
+              label: "reportSectionDefinitionFromFormik",
+              data: reportSectionDefinitionFromFormik,
+              useCodeBlock: true,
+              copyButton: true,
+            },
+            {
+              label: "storedReportDisplay parameters",
+              data: { reportSectionDefinitionFromFormik, storedReportDisplayParameters },
+              useCodeBlock: true,
+            },
+          ]}
         />
         {/* {props.reportSectionDEFUNCT.type == "objectListReportSection" && ( */}
         {reportSectionDefinitionFromFormik?.type == "accordionReportSection" && (
@@ -388,12 +398,6 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
         )}
         {reportSectionDefinitionFromFormik?.type == "storedReportDisplay" && (
           <div>
-            <ThemedOnScreenDebug
-              label={"ReportSectionViewWithEditor - storedReportDisplay section"}
-              data={{ reportSectionDefinitionFromFormik, storedReportDisplayParameters }}
-              useCodeBlock={true}
-              // initiallyUnfolded={false}
-            />
             {storedReportDisplayParameters instanceof TransformerFailure ? (
               <div style={{ color: "red" }}>
                 Error evaluating storedReportDisplay parameters:{" "}

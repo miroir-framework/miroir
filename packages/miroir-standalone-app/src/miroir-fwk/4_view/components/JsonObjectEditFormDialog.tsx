@@ -33,7 +33,8 @@ import { ErrorFallbackComponent } from "./ErrorFallbackComponent.js";
 import type { ValueObjectEditMode } from "./Reports/ReportSectionEntityInstance.js";
 import ReportSectionViewWithEditor from "./Reports/ReportSectionViewWithEditor.js";
 import { reportSectionsFormSchema } from "./Reports/ReportTools.js";
-import { ThemedDialog, ThemedDialogTitle, ThemedOnScreenDebug } from "./Themes/index.js";
+import { ThemedDialog, ThemedDialogTitle } from "./Themes/index.js";
+import { DebugHelper } from "./Page/DebugHelper.js";
 
 
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -331,20 +332,19 @@ const JsonElementEditorDialog: React.FC<JsonElementEditorDialogProps> = ({
     >
       <ThemedDialogTitle>{label} add / edit Element {isEndpointEntity ? "(Endpoint)" : ""}</ThemedDialogTitle>
       <div>
-        <ThemedOnScreenDebug
-          label={"JsonObjectEditFormDialog formValueMLSchema"}
-          data={formValueMLSchema}
-          initiallyUnfolded={false}
-          useCodeBlock={true}
-        />
-        {/* <ThemedOnScreenDebug
-          label={"JsonObjectEditFormDialog initialReportSectionsFormValue"}
-          data={initialReportSectionsFormValue}
-        /> */}
-        <ThemedOnScreenDebug
-          label={"JsonObjectEditFormDialog formik.values"}
-          data={formik.values}
-          initiallyUnfolded={false}
+        <DebugHelper
+          componentName="JsonObjectEditFormDialog"
+          elements={[
+            {
+              label: "JsonObjectEditFormDialog formValueMLSchema",
+              data: formValueMLSchema,
+              useCodeBlock: true,
+            },
+            {
+              label: "JsonObjectEditFormDialog formik.values",
+              data: formik.values,
+            },
+          ]}
         />
       </div>
       <span style={{ paddingTop: 0, paddingBottom: 0 }}>

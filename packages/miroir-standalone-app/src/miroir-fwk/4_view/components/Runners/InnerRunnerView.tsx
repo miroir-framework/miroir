@@ -17,7 +17,7 @@ import { cleanLevel } from "../../constants.js";
 import { useMiroirContextService } from "../../MiroirContextReactProvider.js";
 import { useCurrentModelEnvironment } from "../../ReduxHooks.js";
 import { TypedValueObjectEditor } from "../Reports/TypedValueObjectEditor.js";
-import { ThemedOnScreenDebug } from "../Themes/BasicComponents.js";
+import { DebugHelper } from "../Page/DebugHelper.js";
 import type { RunnerProps } from "./RunnerInterface.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -93,33 +93,32 @@ export const InnerRunnerView = <T extends Record<string, any>>({
 
   return (
     <>
-      <ThemedOnScreenDebug
-        label={`Runner ${runnerName} formik values`}
-        data={formikContext.values}
-        initiallyUnfolded={false}
-        copyButton={true}
-        useCodeBlock={true}
-      />
-      <ThemedOnScreenDebug
-        label={`Runner ${runnerName} count ${count} targetSchema`}
-        data={targetSchema}
-        initiallyUnfolded={false}
-        copyButton={true}
-        useCodeBlock={true}
-      />
-      <ThemedOnScreenDebug
-        label={`Runner ${runnerName} currentApplication ${currentApplication}`}
-        data={currentApplication}
-        initiallyUnfolded={false}
-        // copyButton={true}
-        // useCodeBlock={true}
-      />
-      <ThemedOnScreenDebug
-        label={`Runner ${runnerName} deploymentUuidFromApplicationUuid`}
-        data={deploymentUuidFromApplicationUuid}
-        initiallyUnfolded={false}
-        copyButton={true}
-        useCodeBlock={true}
+      <DebugHelper
+        componentName="InnerRunnerView"
+        elements={[
+          {
+            label: `Runner ${runnerName} formik values`,
+            data: formikContext.values,
+            copyButton: true,
+            useCodeBlock: true,
+          },
+          {
+            label: `Runner ${runnerName} count ${count} targetSchema`,
+            data: targetSchema,
+            copyButton: true,
+            useCodeBlock: true,
+          },
+          {
+            label: `Runner ${runnerName} currentApplication ${currentApplication}`,
+            data: currentApplication,
+          },
+          {
+            label: `Runner ${runnerName} deploymentUuidFromApplicationUuid`,
+            data: deploymentUuidFromApplicationUuid,
+            copyButton: true,
+            useCodeBlock: true,
+          },
+        ]}
       />
       <TypedValueObjectEditor
         labelElement={<h2>{formLabel}</h2>}

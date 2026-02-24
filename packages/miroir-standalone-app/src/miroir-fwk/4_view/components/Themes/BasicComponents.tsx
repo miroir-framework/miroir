@@ -346,9 +346,15 @@ export const ThemedCodeBlock: React.FC<ThemedComponentProps> = ({
       
       // Calculate height based on line height and font size
       // Approximate line height calculation: fontSize * 1.4 (typical line-height ratio)
-      const fontSize = parseFloat(currentTheme.typography.fontSize.sm.replace('px', '')) || 14;
+      const fontSize =
+        parseFloat(
+          currentTheme.typography.fontSize.sm
+            ? currentTheme.typography.fontSize.sm.replace("px", "")
+            : "",
+        ) || 14;
       const lineHeight = fontSize * 1.4;
-      const padding = parseFloat(currentTheme.spacing.md.replace('px', '')) || 16;
+      const padding =
+        parseFloat(currentTheme.spacing.md ? currentTheme.spacing.md.replace("px", "") : "") || 16;
       
       // Calculate content height with padding
       const calculatedHeight = (lineCount * lineHeight) + (padding * 2);

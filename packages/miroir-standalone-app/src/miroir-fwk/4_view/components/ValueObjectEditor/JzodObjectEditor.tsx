@@ -3,7 +3,6 @@ import { ErrorBoundary } from "react-error-boundary";
 import { Clear } from "../Themes/MaterialSymbolWrappers";
 
 import {
-  alterObjectAtPath,
   alterObjectAtPath2,
   ApplicationSection,
   defaultMetaModelEnvironment,
@@ -18,7 +17,6 @@ import {
   LoggerInterface,
   MiroirLoggerFactory,
   ReduxDeploymentsState,
-  resolveJzodSchemaReference,
   resolveJzodSchemaReferenceInContext,
   resolvePathOnObject,
   SyncBoxedExtractorOrQueryRunnerMap,
@@ -30,15 +28,21 @@ import {
 
 import { BlobEditorField } from "./BlobEditorField";
 
-import { getMemoizedReduxDeploymentsStateSelectorMap, ReduxStateWithUndoRedo, useSelector } from "../../../miroir-localcache-imports.js";
 import { packageName } from "../../../../constants";
+import {
+  getMemoizedReduxDeploymentsStateSelectorMap,
+  ReduxStateWithUndoRedo,
+  useSelector,
+} from "../../../miroir-localcache-imports.js";
 import { cleanLevel } from "../../constants";
+import { useDefaultValueParams } from "../../ReduxHooks";
 import {
   measuredUnfoldJzodSchemaOnce
 } from "../../tools/hookPerformanceMeasure";
 import { ErrorFallbackComponent } from "../ErrorFallbackComponent";
+import { DebugHelper } from "../Page/DebugHelper.js";
 import { useReportPageContext } from "../Reports/ReportPageContext";
-import { ThemedOnScreenDebug } from "../Themes/BasicComponents";
+import type { ValueObjectEditMode } from "../Reports/ReportSectionEntityInstance";
 import {
   ThemedAddIcon,
   ThemedAttributeLabel,
@@ -56,8 +60,6 @@ import {
 import { FoldUnfoldAllObjectAttributesOrArrayItems, FoldUnfoldObjectOrArray, JzodElementEditor } from "./JzodElementEditor";
 import { getFoldedDisplayValue, useJzodElementEditorHooks } from "./JzodElementEditorHooks";
 import { JzodObjectEditorProps } from "./JzodElementEditorInterface";
-import type { ValueObjectEditMode } from "../Reports/ReportSectionEntityInstance";
-import { useDefaultValueParams } from "../../ReduxHooks";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -1001,23 +1003,25 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
 
   return (
     <div id={rootLessListKey} key={rootLessListKey}>
-      <ThemedOnScreenDebug
-        label={`JzodObjectEditor: ${rootLessListKey}`}
-        data={{
-          rootLessListKey,
-          itemsOrder,
-          formik: Object.keys(formik.values),
-          pageParams: formik.values.pageParams,
-          formikRootLessListKey,
-          rawSchema: currentTypeCheckKeyMap?.rawSchema,
-          resolvedSchema: currentTypeCheckKeyMap?.resolvedSchema,
-          jzodObjectFlattenedSchema: currentTypeCheckKeyMap?.jzodObjectFlattenedSchema,
-          currentValueObjectAtKey,
-          // mlSchema: rootLessListKey == "mlSchema" ? Object.entries(currentValueObjectAtKey.definition) : undefined,
-        }}
-        copyButton={true}
-        initiallyUnfolded={false}
-        useCodeBlock={true}
+      <DebugHelper
+        componentName="JzodObjectEditor"
+        elements={[{
+          label: `JzodObjectEditor: ${rootLessListKey}`,
+          data: {
+            rootLessListKey,
+            itemsOrder,
+            formik: Object.keys(formik.values),
+            pageParams: formik.values.pageParams,
+            formikRootLessListKey,
+            rawSchema: currentTypeCheckKeyMap?.rawSchema,
+            resolvedSchema: currentTypeCheckKeyMap?.resolvedSchema,
+            jzodObjectFlattenedSchema: currentTypeCheckKeyMap?.jzodObjectFlattenedSchema,
+            currentValueObjectAtKey,
+            // mlSchema: rootLessListKey == "mlSchema" ? Object.entries(currentValueObjectAtKey.definition) : undefined,
+          },
+          copyButton: true,
+          useCodeBlock: true,
+        }]}
       />
       {/* Performance statistics */}
       {!currentTypeCheckKeyMap?.resolvedSchema?.tag?.value?.display?.objectWithoutHeader && (

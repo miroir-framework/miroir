@@ -43,7 +43,7 @@ import {
 } from "../Reports/ReportHooks";
 import { useReportPageContext } from '../Reports/ReportPageContext';
 import { TypedValueObjectEditor } from '../Reports/TypedValueObjectEditor';
-import { ThemedOnScreenDebug } from '../Themes/BasicComponents';
+import { DebugHelper } from '../Page/DebugHelper.js';
 import {
   ThemedContainer,
   ThemedFoldableContainer,
@@ -738,26 +738,27 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
                     flexGrow: 1,
                   }}
                 >
-                  <ThemedOnScreenDebug
-                      label="formikValues"
-                      data={formikContext.values}
-                      initiallyUnfolded={false}
-                      useCodeBlock={true}
-                    />
-                  <ThemedOnScreenDebug
-                    label="inputSelector defaultAdminApplicationDeploymentMapNOTGOOD"
-                    data={defaultAdminApplicationDeploymentMapNOTGOOD}
-                    // initiallyUnfolded={false}
-                  />
-                  <ThemedOnScreenDebug
-                    label={"formikContext.values." + formikPath_TransformerEditorInputModeSelector}
-                    data={formikContext.values[formikPath_TransformerEditorInputModeSelector]}
-                    initiallyUnfolded={false}
-                  />
-                  <ThemedOnScreenDebug
-                    label="currentDefinedTransformerDefinition"
-                    data={transformerSelector_currentFetchedTransformerDefinition}
-                    initiallyUnfolded={false}
+                  <DebugHelper
+                    componentName="TransformerEditor"
+                    elements={[
+                      {
+                        label: "formikValues",
+                        data: formikContext.values,
+                        useCodeBlock: true,
+                      },
+                      {
+                        label: "inputSelector defaultAdminApplicationDeploymentMapNOTGOOD",
+                        data: defaultAdminApplicationDeploymentMapNOTGOOD,
+                      },
+                      {
+                        label: "formikContext.values." + formikPath_TransformerEditorInputModeSelector,
+                        data: formikContext.values[formikPath_TransformerEditorInputModeSelector],
+                      },
+                      {
+                        label: "currentDefinedTransformerDefinition",
+                        data: transformerSelector_currentFetchedTransformerDefinition,
+                      },
+                    ]}
                   />
                   <TypedValueObjectEditor
                     labelElement={<>Transformer Definition</>}

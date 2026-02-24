@@ -35,7 +35,7 @@ import { cleanLevel } from "../../constants.js";
 import { useDomainControllerService, useMiroirContextService, useSnackbar } from "../../MiroirContextReactProvider.js";
 import { useCurrentModelEnvironment } from "../../ReduxHooks.js";
 import { useRunner } from "../Reports/ReportHooks.js";
-import { ThemedOnScreenDebug } from "../Themes/BasicComponents.js";
+import { DebugHelper } from "../Page/DebugHelper.js";
 import { InnerRunnerView } from "./InnerRunnerView.js";
 import type { FormMLSchema, RunnerAction, RunnerProps } from "./RunnerInterface.js";
 
@@ -228,52 +228,51 @@ export function StoredRunnerView(props: {
 
   return (
     <>
-      <ThemedOnScreenDebug
-        label={`StoredRunnerView for ${runnerName} props`}
-        data={props}
-        initiallyUnfolded={false}
-      />
-      <ThemedOnScreenDebug
-        label={`StoredRunnerView for ${runnerName} runnerDefinitionFromLocalCache`}
-        data={runnerDefinitionFromLocalCache}
-        // initiallyUnfolded={false}
-        useCodeBlock={true}
-      />
-      {runnerDefinitionFromLocalCache instanceof Domain2ElementFailed ? (
-        <div>Error loading runner definition...</div>
-      ) : runnerDefinitionFromLocalCache ? (
-        <>
-          <ThemedOnScreenDebug
-            label={`StoredRunnerView for ${runnerName} props`}
-            data={{
+      <DebugHelper
+        componentName="StoredRunnerView"
+        elements={[
+          {
+            label: `StoredRunnerView for ${runnerName} props`,
+            data: props,
+          },
+          {
+            label: `StoredRunnerView for ${runnerName} runnerDefinitionFromLocalCache`,
+            data: runnerDefinitionFromLocalCache,
+            useCodeBlock: true,
+          },
+          {
+            label: `StoredRunnerView for ${runnerName} applicationUuid`,
+            data: {
               applicationUuid: props.applicationUuid,
               applicationDeploymentMap:
                 props.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap,
               runnerDeploymentUuid,
               props,
-            }}
-            initiallyUnfolded={false}
-          />
-          <ThemedOnScreenDebug
-            label={`StoredRunnerView for ${runnerName} runnerDefinitionFromLocalCache`}
-            data={runnerDefinitionFromLocalCache}
-            initiallyUnfolded={false}
-          />
-          <ThemedOnScreenDebug
-            label={`StoredRunnerView for ${runnerName} currentEndpointDefinition`}
-            data={currentEndpointDefinition}
-            initiallyUnfolded={false}
-          />
-          <ThemedOnScreenDebug
-            label={`StoredRunnerView for ${runnerName} currentActionDefinition`}
-            data={currentActionDefinition}
-            initiallyUnfolded={false}
-          />
-          <ThemedOnScreenDebug
-            label={`StoredRunnerView for ${runnerName} formMLSchema`}
-            data={formMLSchema}
-            initiallyUnfolded={false}
-          />
+            },
+          },
+          {
+            label: `StoredRunnerView for ${runnerName} currentEndpointDefinition`,
+            data: currentEndpointDefinition,
+          },
+          {
+            label: `StoredRunnerView for ${runnerName} currentActionDefinition`,
+            data: currentActionDefinition,
+          },
+          {
+            label: `StoredRunnerView for ${runnerName} formMLSchema`,
+            data: formMLSchema,
+          },
+          {
+            label: `StoredRunnerView for ${runnerName} storedRunnerAction`,
+            data: storedRunnerAction,
+            useCodeBlock: true,
+          },
+        ]}
+      />
+      {runnerDefinitionFromLocalCache instanceof Domain2ElementFailed ? (
+        <div>Error loading runner definition...</div>
+      ) : runnerDefinitionFromLocalCache ? (
+        <>
           {runnerDefinitionFromLocalCache.definition.runnerType == "customRunner" ? (
             <RunnerView
               runnerName={runnerName}
@@ -295,12 +294,6 @@ export function StoredRunnerView(props: {
           ) : (
             // <div>Application Runner type not yet supported in StoredRunnerView</div>
             <>
-              <ThemedOnScreenDebug
-                label={`StoredRunnerView for ${runnerName} storedRunnerAction`}
-                data={storedRunnerAction}
-                // initiallyUnfolded={false}
-                useCodeBlock={true}
-              />
               <RunnerView
                 runnerName={runnerName}
                 applicationDeploymentMap={
@@ -436,12 +429,14 @@ export const RunnerView = <T extends Record<string, any>>(props: RunnerProps<T>)
         initiallyUnfolded={false}
         useCodeBlock={true}
       /> */}
-      <ThemedOnScreenDebug
-        label={`RunnerView ${runnerName} initialValues`}
-        data={initialValues}
-        copyButton={true}
-        initiallyUnfolded={true}
-        useCodeBlock={true}
+      <DebugHelper
+        componentName="RunnerView"
+        elements={[{
+          label: `RunnerView ${runnerName} initialValues`,
+          data: initialValues,
+          copyButton: true,
+          useCodeBlock: true,
+        }]}
       />
       <Formik
         enableReinitialize={true}

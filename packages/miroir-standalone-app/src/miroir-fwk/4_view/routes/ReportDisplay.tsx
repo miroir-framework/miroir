@@ -33,7 +33,7 @@ import { ErrorFallbackComponent } from "../components/ErrorFallbackComponent.js"
 import { PerformanceDisplayContainer } from "../components/PerformanceDisplayContainer.js";
 import { useQueryTemplateResults } from "../components/Reports/ReportHooks.js";
 import { ReportViewWithEditor } from "../components/Reports/ReportViewWithEditor.js";
-import { ThemedOnScreenDebug } from "../components/Themes/BasicComponents.js";
+import { DebugHelper } from "../components/Page/DebugHelper.js";
 import { ThemedBox, ThemedSpan } from "../components/Themes/index.js";
 import { cleanLevel } from "../constants.js";
 import { useMiroirTheme } from "../contexts/MiroirThemeContext.js";
@@ -67,7 +67,7 @@ export const ReportDisplay: React.FC<{
   const currentModel: MetaModel = useCurrentModel(application, currentApplicationDeploymentMap);
 
 
-  const reportSection = application == selfApplicationMiroir ? "data" : "model"
+  // const reportSection = application == selfApplicationMiroir.uuid ? "data" : "model"
   const { availableReports, entities, entityDefinitions } = useMemo(() => {
     return pageParams.applicationSection &&
       context.deploymentUuidToReportsEntitiesDefinitionsMapping &&
@@ -157,30 +157,24 @@ export const ReportDisplay: React.FC<{
 
   return (
     <>
-      <ThemedOnScreenDebug label="ReportDisplay pageParams" data={pageParams} />
-      <ThemedOnScreenDebug
-        label="ReportDisplay currentApplicationDeploymentMap"
-        data={{currentApplicationDeploymentMap, application, map: context.deploymentUuidToReportsEntitiesDefinitionsMapping}}
-        initiallyUnfolded={false}
-        useCodeBlock={true}
-        copyButton={true}
-      />
-      <ThemedOnScreenDebug
-        label="ReportDisplay availableReports"
-        data={availableReports.map(r=>({uuid:r.uuid, name:r.name}))}
-        initiallyUnfolded={false}
-        useCodeBlock={true}
-      />
-      <ThemedOnScreenDebug
-        label="ReportDisplay currentMiroirReport"
-        data={currentMiroirReport}
-        initiallyUnfolded={false}
-      />
-      <ThemedOnScreenDebug
-        label="ReportDisplay currentStoredQueryResults"
-        data={currentStoredQueryResults}
-        initiallyUnfolded={false}
-        useCodeBlock={true}
+      <DebugHelper
+        componentName="ReportDisplay"
+        elements={[
+          { label: "pageParams", data: pageParams },
+          {
+            label: "currentApplicationDeploymentMap",
+            data: { currentApplicationDeploymentMap, application, map: context.deploymentUuidToReportsEntitiesDefinitionsMapping },
+            useCodeBlock: true,
+            copyButton: true,
+          },
+          {
+            label: "availableReports",
+            data: availableReports.map((r) => ({ uuid: r.uuid, name: r.name })),
+            useCodeBlock: true,
+          },
+          { label: "currentMiroirReport", data: currentMiroirReport },
+          { label: "currentStoredQueryResults", data: currentStoredQueryResults, useCodeBlock: true },
+        ]}
       />
       <ThemedBox style={{ flex: 1, overflow: "auto", minHeight: 0 }}>
         {

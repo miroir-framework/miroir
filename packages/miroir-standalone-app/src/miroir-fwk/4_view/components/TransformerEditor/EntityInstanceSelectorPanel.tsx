@@ -34,7 +34,7 @@ import { useMiroirContextService } from '../../MiroirContextReactProvider';
 import { useApplicationDeploymentMapFromLocalCache, useCurrentModel, useCurrentModelEnvironment } from '../../ReduxHooks';
 import { TypedValueObjectEditor } from '../Reports/TypedValueObjectEditor';
 import { TypedValueObjectEditorWithFormik } from '../Reports/TypedValueObjectEditorWithFormik';
-import { ThemedOnScreenDebug } from '../Themes/BasicComponents';
+import { DebugHelper } from '../Page/DebugHelper.js';
 import {
   ThemedContainer,
   ThemedFoldableContainer,
@@ -416,15 +416,17 @@ export function EntityInstanceSelectorPanel(props:{
   // ##############################################################################################
   return (
     <>
-      <ThemedOnScreenDebug
-        label={`EntityInstanceSelectorPanel`}
-        data={{
-          props,
-          currentReportDeploymentSectionEntities: currentReportDeploymentSectionEntities?.map(
-            (e) => ({ uuid: e.uuid, name: e.name }),
-          ),
-        }}
-        // initiallyUnfolded={false}
+      <DebugHelper
+        componentName="EntityInstanceSelectorPanel"
+        elements={[{
+          label: `EntityInstanceSelectorPanel`,
+          data: {
+            props,
+            currentReportDeploymentSectionEntities: currentReportDeploymentSectionEntities?.map(
+              (e) => ({ uuid: e.uuid, name: e.name }),
+            ),
+          },
+        }]}
       />
       <ThemedContainer style={{ flex: 1 }}>
         <ThemedHeaderSection style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
@@ -566,24 +568,26 @@ export function EntityInstanceSelectorPanel(props:{
           /* Show all instances */
           entityInstances.length > 0 ? (
             <>
-              <ThemedOnScreenDebug
-                label={`TypedValueObjectEditor showing all ${
-                  entityInstances.length
-                } instances of entity '${currentReportTargetEntityDefinition?.name || ""}`}
-                data={{
-                  type: "object",
-                  definition: {
-                    entityInstances: {
-                      definition: {
-                        type: "array",
-                        definition:
-                          currentReportTargetEntityDefinition?.mlSchema ??
-                          createGenericObjectSchema(),
+              <DebugHelper
+                componentName="EntityInstanceSelectorPanel"
+                elements={[{
+                  label: `TypedValueObjectEditor showing all ${
+                    entityInstances.length
+                  } instances of entity '${currentReportTargetEntityDefinition?.name || ""}`,
+                  data: {
+                    type: "object",
+                    definition: {
+                      entityInstances: {
+                        definition: {
+                          type: "array",
+                          definition:
+                            currentReportTargetEntityDefinition?.mlSchema ??
+                            createGenericObjectSchema(),
+                        },
                       },
                     },
                   },
-                }}
-                initiallyUnfolded={false}
+                }]}
               />
               <ThemedFoldableContainer
                 style={{ flex: 1, padding: 0 }}

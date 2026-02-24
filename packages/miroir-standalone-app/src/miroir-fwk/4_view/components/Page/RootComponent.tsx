@@ -77,7 +77,6 @@ import { cleanLevel } from '../../constants.js';
 import { usePageConfiguration } from '../../services/index.js';
 import { InstanceEditorOutline } from '../InstanceEditorOutline.js';
 import { ReportPageContextProvider } from '../Reports/ReportPageContext';
-import { ThemedOnScreenDebug } from '../Themes/BasicComponents';
 import { DocumentOutlineContextProvider } from '../ValueObjectEditor/InstanceEditorOutlineContext';
 import { ViewParamsUpdateQueue, ViewParamsUpdateQueueConfig } from '../ViewParamsUpdateQueue.js';
 import { Sidebar } from "./Sidebar.js";
@@ -840,7 +839,7 @@ export const RootComponent = (props: RootComponentProps) => {
                 style={{ padding: "1em" }}
               >
                 {context.viewParams.generalEditMode && <ThemedText>uuid: {uuidv4()}</ThemedText>}
-                <DebugHelper elements={debugElements.elements} />
+                <DebugHelper componentName="RootComponent" elements={debugElements.elements} />
                 {/* <DebugHelper label="RootComponent miroirConfig" data={miroirConfig} /> */}
                 {/* <ThemedOnScreenDebug
                   label="RootComponent miroirThemeSchemaJson"

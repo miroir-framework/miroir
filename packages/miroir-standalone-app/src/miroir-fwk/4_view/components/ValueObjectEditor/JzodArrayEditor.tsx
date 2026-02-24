@@ -38,7 +38,7 @@ import { useCurrentModel, useCurrentModelEnvironment, useDefaultValueParams } fr
 import { ErrorFallbackComponent } from "../ErrorFallbackComponent";
 import { useReportPageContext } from "../Reports/ReportPageContext";
 import type { ValueObjectEditMode } from "../Reports/ReportSectionEntityInstance";
-import { ThemedOnScreenDebug } from "../Themes/BasicComponents";
+import { DebugHelper } from "../Page/DebugHelper.js";
 import {
   ThemedAddIcon,
   ThemedFlexRow,
@@ -284,16 +284,13 @@ const ProgressiveArrayItem: React.FC<ProgressiveArrayItemProps> = ({
                 />
               )}
             >
-              <ThemedOnScreenDebug
-                label={`ProgressiveArrayItem rendering item at ${itemRootLessListKey}`}
-                data={{ 
-                  itemRootLessListKey,
-                  // typeCheckKeyMap,
-                  // resolvedElementJzodSchemaDEFUNCT,
-                 }}
-                // copyButton={true}
-                initiallyUnfolded={false}
-                useCodeBlock={true}
+              <DebugHelper
+                componentName="ProgressiveArrayItem"
+                elements={[{
+                  label: `ProgressiveArrayItem rendering item at ${itemRootLessListKey}`,
+                  data: { itemRootLessListKey },
+                  useCodeBlock: true,
+                }]}
               />
               <JzodElementEditor
                 name={"" + index}
@@ -775,12 +772,14 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
   // ##############################################################################################
   return (
     <div id={rootLessListKey} key={rootLessListKey}>
-      <ThemedOnScreenDebug
-        label={`Rendering JzodArrayEditor for array at ${rootLessListKey || "ROOT"}`}
-        data={{ rootLessListKey, readOnly, currentTypeCheckKeyMap }}
-        copyButton={true}
-        initiallyUnfolded={false}
-        useCodeBlock={true}
+      <DebugHelper
+        componentName="JzodArrayEditor"
+        elements={[{
+          label: `Rendering JzodArrayEditor for array at ${rootLessListKey || "ROOT"}`,
+          data: { rootLessListKey, readOnly, currentTypeCheckKeyMap },
+          copyButton: true,
+          useCodeBlock: true,
+        }]}
       />
       <div>
         <ThemedFlexRow justify="start" align="center">

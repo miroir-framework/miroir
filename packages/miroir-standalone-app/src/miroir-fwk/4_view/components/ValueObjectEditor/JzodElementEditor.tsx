@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo } from "react";
+import React, { useCallback, useMemo } from "react";
 
 import {
   ExpandLess,
@@ -20,7 +20,6 @@ import {
   MiroirLoggerFactory,
   mStringify,
   transformer_extended_apply_wrapper,
-  type TransformerForBuild,
   type TransformerForBuildPlusRuntime,
   type TransformerReturnType
 } from "miroir-core";
@@ -34,6 +33,7 @@ import {
 import { useMiroirContextService } from "../../MiroirContextReactProvider.js";
 import { RenderPerformanceMetrics } from "../../tools/renderPerformanceMeasure.js";
 import { ErrorFallbackComponent } from "../ErrorFallbackComponent.js";
+import { DebugHelper } from "../Page/DebugHelper.js";
 import { useReportPageContext } from "../Reports/ReportPageContext.js";
 import {
   ThemedCard,
@@ -52,12 +52,10 @@ import { JzodArrayEditor } from "./JzodArrayEditor.js";
 import { useJzodElementEditorHooks } from "./JzodElementEditorHooks.js";
 import { JzodElementEditorProps } from "./JzodElementEditorInterface.js";
 import { JzodElementEditorReactCodeMirror } from "./JzodElementEditorReactCodeMirror.js";
+import { JzodElementStringEditor } from "./JzodElementStringEditor.js";
 import { JzodEnumEditor } from "./JzodEnumEditor.js";
 import { JzodLiteralEditor } from "./JzodLiteralEditor.js";
 import { JzodObjectEditor } from "./JzodObjectEditor.js";
-import { JzodElementStringEditor } from "./JzodElementStringEditor.js";
-import { ThemedOnScreenDebug, ThemedOnScreenHelper } from "../Themes/BasicComponents";
-import { FileSelector } from "../Themes/FileSelector.js";
 
 
 
@@ -588,9 +586,14 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
       ) {
         return (
           <>
-            <ThemedOnScreenDebug
-              label={`Rendering JzodAnyEditor for 'any' type at ${props.rootLessListKey || "ROOT"}`}
-              data={props.rootLessListKey}
+            <DebugHelper
+              componentName="JzodElementEditor"
+              elements={[
+                {
+                  label: `rendering JzodAnyEditor for 'any' type at ${props.rootLessListKey || "ROOT"}`,
+                  data: props.rootLessListKey,
+                },
+              ]}
             />
             <JzodAnyEditor
               valueObjectEditMode={props.valueObjectEditMode}
@@ -1338,31 +1341,33 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
     <>
       {props.isTopLevel && (
         <>
-          <ThemedOnScreenDebug
-            label={`JzodElementEditor: key "${formikRootLessListKey}" of type ${localResolvedElementJzodSchemaBasedOnValue?.type}`}
-            data={{
-              existingObject,
-              itemsOrder,
-              localResolvedElementJzodSchemaBasedOnValue,
-              // formik: Object.keys(formik.values),
-            }}
-            initiallyUnfolded={false}
-            copyButton={true}
-            useCodeBlock={true}
+          <DebugHelper
+            componentName="JzodElementEditor"
+            elements={[
+              {
+                label: `key "${formikRootLessListKey}" of type ${localResolvedElementJzodSchemaBasedOnValue?.type}`,
+                data: {
+                  existingObject,
+                  itemsOrder,
+                  localResolvedElementJzodSchemaBasedOnValue,
+                },
+                initiallyUnfolded: false,
+                copyButton: true,
+                useCodeBlock: true,
+              },
+              ...(currentKeyMap?.rawSchema?.type === "any" ? [{
+                label: `rendering JzodElementEditor for 'any' at ${props.rootLessListKey || "ROOT"}, objectOrArrayOrAny=${resolvedTypeIsObjectOrArrayOrAny}, displayAsCodeEditor=${displayAsCodeEditor}`,
+                data: {
+                  localResolvedElementJzodSchemaBasedOnValue,
+                  currentValueObjectAtKey,
+                  currentKeyMap,
+                },
+                useCodeBlock: true as const,
+              }] : []),
+            ]}
           />
           {props.submitButton ?? <></>}
         </>
-      )}
-      {currentKeyMap?.rawSchema?.type === "any" && (
-        <ThemedOnScreenDebug
-          label={`Rendering JzodElementEditor for 'any' type at ${props.rootLessListKey || "ROOT"}, objectOrArrayOrAny=${resolvedTypeIsObjectOrArrayOrAny}, displayAsCodeEditor=${displayAsCodeEditor}`}
-          data={{
-            localResolvedElementJzodSchemaBasedOnValue,
-            currentValueObjectAtKey,
-            currentKeyMap,
-          }}
-          useCodeBlock={true}
-        />
       )}
       <div>
         {props.rootLessListKey === "" && (
