@@ -1,0 +1,81 @@
+{
+  "uuid": "3c3b4845-59c5-4fbc-859e-8b94253fa090",
+  "parentName": "Theme",
+  "parentUuid": "bdcf956a-771d-40a1-a878-06e0bf6efd3e",
+  "name": "materialMiroirTheme",
+  "defaultLabel": "The default material Miroir Theme, used as a base for the material theme of the application.",
+  "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+  "definition": {
+    "id": "material",
+    "name": "Material Theme",
+    "description": "Standard material theme with balanced colors",
+    "colors": {
+      "primary": "#2196f3",
+      "primaryLight": "#64b5f6",
+      "primaryDark": "#1976d2",
+      "secondary": "#ff5722",
+      "secondaryLight": "#ff8a65",
+      "secondaryDark": "#d84315",
+      "background": "#fafafa",
+      "surface": "#ffffff",
+      "surfaceVariant": "#f5f5f5",
+      "nesting": {
+        "level0": "#fafafa",
+        "level1": "#f5f5f5",
+        "level2": "#eeeeee"
+      }
+    },
+
+    "borderRadius": {
+      "none": "0px",
+      "sm": "4px",
+      "md": "8px",
+      "lg": "12px",
+      "xl": "16px",
+      "full": "50%"
+    },
+
+    "components": {
+      "appBar": {
+        "background": "#2196f3",
+        "borderBottom": "none",
+        "height": "64px",
+        "elevation": "0 4px 8px rgba(0, 0, 0, 0.12)"
+      },
+
+      "button": {
+        "primary": {
+          "background": "#2196f3",
+          "backgroundHover": "#1976d2",
+          "borderColor": "#2196f3",
+          "borderRadius": "8px"
+        },
+        "secondary": {
+          "backgroundActive": "#bf360c",
+          "borderRadius": "8px"
+        },
+        "outlined": {
+          "backgroundHover": "rgba(33, 150, 243, 0.04)",
+          "backgroundActive": "rgba(33, 150, 243, 0.08)",
+          "textColor": "#2196f3",
+          "borderColor": "#2196f3",
+          "borderRadius": "8px"
+        }
+      },
+
+      "card": {
+        "borderRadius": "12px",
+        "elevation": "0 2px 4px rgba(0, 0, 0, 0.1), 0 8px 16px rgba(0, 0, 0, 0.1)"
+      },
+
+      "icon": {
+        "colorPrimary": "#2196f3",
+        "size": {
+          "sm": "16px",
+          "md": "24px",
+          "lg": "32px"
+        }
+      }
+    }
+  }
+}
