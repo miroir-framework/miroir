@@ -31,7 +31,7 @@ import {
 } from "../../../miroir-localcache-imports.js";
 import { cleanLevel } from '../../constants';
 import { useMiroirContextService } from '../../MiroirContextReactProvider';
-import { useCurrentModel, useCurrentModelEnvironment } from '../../ReduxHooks';
+import { useApplicationDeploymentMapFromLocalCache, useCurrentModel, useCurrentModelEnvironment } from '../../ReduxHooks';
 import { TypedValueObjectEditor } from '../Reports/TypedValueObjectEditor';
 import { TypedValueObjectEditorWithFormik } from '../Reports/TypedValueObjectEditorWithFormik';
 import { ThemedOnScreenDebug } from '../Themes/BasicComponents';
@@ -130,6 +130,8 @@ export function EntityInstanceSelectorPanel(props:{
     },
   };
 
+  // const applicationDeploymentMap = useApplicationDeploymentMapFromLocalCache();
+  const applicationDeploymentMap = context.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap;
   // ##################################################################################
   // ##################################################################################
   // SELECT INPUT INSTANCE(S)
@@ -150,7 +152,7 @@ export function EntityInstanceSelectorPanel(props:{
       ? deploymentUuid
       : defaultAdminApplicationDeploymentMapNOTGOOD[inputSelector_applicationUuid];
 
-  const currentModel = useCurrentModel(inputSelector_applicationUuid, props.applicationDeploymentMap);
+  const currentModel = useCurrentModel(inputSelector_applicationUuid, applicationDeploymentMap);
   // const currentModel = useCurrentModel(inputSelector_deploymentUuidFromApplicationUuid);
 
   // Entities are always defined in the 'model' section, sorted by name
@@ -204,7 +206,7 @@ export function EntityInstanceSelectorPanel(props:{
 
   const currentMiroirModelEnvironment: MiroirModelEnvironment = useCurrentModelEnvironment(
     inputSelector_applicationUuid,
-    props.applicationDeploymentMap
+    applicationDeploymentMap
   );
   // const currentMiroirModelEnvironment: MiroirModelEnvironment = useMemo(() => {
   //   return {
@@ -221,7 +223,7 @@ export function EntityInstanceSelectorPanel(props:{
       (state: ReduxStateWithUndoRedo) =>
         deploymentEntityStateSelectorMap.extractState(
           state.presentModelSnapshot.current,
-          props.applicationDeploymentMap,
+          applicationDeploymentMap,
           () => ({}),
           currentMiroirModelEnvironment
         ),
@@ -236,7 +238,7 @@ export function EntityInstanceSelectorPanel(props:{
         deploymentEntityState,
         currentMiroirModelEnvironment,
         inputSelector_applicationUuid,
-        props.applicationDeploymentMap,
+        applicationDeploymentMap,
         inputSelector_deploymentUuidFromApplicationUuid,
         selectedEntityUuid,
         "name" // Order by name if available
@@ -416,7 +418,12 @@ export function EntityInstanceSelectorPanel(props:{
     <>
       <ThemedOnScreenDebug
         label={`EntityInstanceSelectorPanel`}
-        data={props || {}}
+        data={{
+          props,
+          currentReportDeploymentSectionEntities: currentReportDeploymentSectionEntities?.map(
+            (e) => ({ uuid: e.uuid, name: e.name }),
+          ),
+        }}
         // initiallyUnfolded={false}
       />
       <ThemedContainer style={{ flex: 1 }}>
@@ -452,25 +459,23 @@ export function EntityInstanceSelectorPanel(props:{
           </div>
 
           {/* Application Selector */}
-          {
-            formikContext.values[formikPath_EntityInstanceSelectorPanel] && (
-              <TypedValueObjectEditor
-                labelElement={<span>select Application</span>}
-                formValueMLSchema={entityInstanceSelectorPanelSchema}
-                formikValuePathAsString={formikPath_EntityInstanceSelectorPanel}
-                application={inputSelector_applicationUuid}
-                applicationDeploymentMap={props.applicationDeploymentMap}
-                deploymentUuid={deploymentUuid}
-                applicationSection={"data"}
-                formLabel={"Application Selector jzod"}
-                // onSubmit={async () => {}} // No-op for readonly
-                valueObjectEditMode="create" // Readonly viewer mode, not relevant here
-                displaySubmitButton="noDisplay"
-                maxRenderDepth={3}
-                // readonly={true}
-              />
-            )
-          }
+          {formikContext.values[formikPath_EntityInstanceSelectorPanel] && (
+            <TypedValueObjectEditor
+              labelElement={<span>select Application</span>}
+              formValueMLSchema={entityInstanceSelectorPanelSchema}
+              formikValuePathAsString={formikPath_EntityInstanceSelectorPanel}
+              application={inputSelector_applicationUuid}
+              applicationDeploymentMap={applicationDeploymentMap}
+              deploymentUuid={deploymentUuid}
+              applicationSection={"data"}
+              formLabel={"Application Selector jzod"}
+              // onSubmit={async () => {}} // No-op for readonly
+              valueObjectEditMode="create" // Readonly viewer mode, not relevant here
+              displaySubmitButton="noDisplay"
+              maxRenderDepth={3}
+              // readonly={true}
+            />
+          )}
 
           {/* Entity Selector */}
           <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
@@ -603,7 +608,7 @@ export function EntityInstanceSelectorPanel(props:{
                   } // TODO: ILL-TYPED!!
                   formikValuePathAsString="entityInstances"
                   application={inputSelector_applicationUuid}
-                  applicationDeploymentMap={props.applicationDeploymentMap}
+                  applicationDeploymentMap={applicationDeploymentMap}
                   deploymentUuid={deploymentUuid}
                   applicationSection={"data"}
                   formLabel={"All Entity Instances Viewer"}
@@ -641,7 +646,7 @@ export function EntityInstanceSelectorPanel(props:{
               formikValuePathAsString="selectedEntityInstance"
               deploymentUuid={deploymentUuid}
               application={inputSelector_applicationUuid}
-              applicationDeploymentMap={props.applicationDeploymentMap}
+              applicationDeploymentMap={applicationDeploymentMap}
               applicationSection={"data"}
               formLabel={"Entity Instance Viewer"}
               onSubmit={async () => {}} // No-op for readonly
