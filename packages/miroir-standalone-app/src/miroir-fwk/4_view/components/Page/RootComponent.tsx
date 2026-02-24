@@ -6,7 +6,7 @@ import {
   useCallback,
   useEffect, useMemo, useRef, useState
 } from 'react';
-import { Outlet, useNavigate } from 'react-router-dom';
+import { Outlet } from 'react-router-dom';
 import { EventTimelineContainer } from '../EventTimelineContainer';
 import {
   ThemedGrid,
@@ -44,10 +44,10 @@ import {
   type SyncQueryRunnerExtractorAndParams
 } from "miroir-core";
 import {
-  deployment_Admin,
-  deployment_Miroir,
   adminSelfApplication,
   defaultAdminViewParams,
+  deployment_Admin,
+  deployment_Miroir,
   entityDeployment
 } from "miroir-test-app_deployment-admin";
 
@@ -66,12 +66,12 @@ import { MiroirThemeProvider, useMiroirTheme } from '../../contexts/MiroirThemeC
 import { useRenderTracker } from "../../tools/renderCountTracker.js";
 import AppBar from './AppBar.js';
 
+import { defaultStoredMiroirTheme } from 'miroir-test-app_deployment-miroir';
 import { packageName } from '../../../../constants.js';
 import {
-  useApplicationDeploymentMapFromLocalCache,
   useCurrentModel,
   useReduxDeploymentsStateQuerySelector,
-  useReduxDeploymentsStateQuerySelectorForCleanedResult,
+  useReduxDeploymentsStateQuerySelectorForCleanedResult
 } from "../../ReduxHooks.js";
 import { cleanLevel } from '../../constants.js';
 import { usePageConfiguration } from '../../services/index.js';
@@ -82,9 +82,7 @@ import { DocumentOutlineContextProvider } from '../ValueObjectEditor/InstanceEdi
 import { ViewParamsUpdateQueue, ViewParamsUpdateQueueConfig } from '../ViewParamsUpdateQueue.js';
 import { Sidebar } from "./Sidebar.js";
 import { SidebarWidth } from "./SidebarSection.js";
-import { isElectron } from '../../../..';
-import { darkStoredMiroirTheme, defaultStoredMiroirTheme, miroirThemeSchemaJson, tableThemeSchemaJson } from 'miroir-test-app_deployment-miroir';
-import { darkMiroirTheme } from '../Themes/MiroirTheme';
+import { type DebugElements, DebugHelper } from './DebugHelper';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -99,10 +97,6 @@ export interface RootComponentProps {
   // store:any;
   // reportName: string;
 }
-
-// export const actionsWithDeploymentInPayload = instanceEndpointV1.definition.actions.map(
-//   (actionDef:any) => actionDef.actionParameters.actionType.definition
-// )
 
 // ################################################################################################
 // ################################################################################################
@@ -752,13 +746,41 @@ export const RootComponent = (props: RootComponentProps) => {
     };
   }, [updateQueue]);
 
+  const debugElements: {elements: DebugElements} = useMemo(
+    () => ({
+      elements: [
+        { label: "RootComponent miroirConfig", data: miroirConfig },
+        { label: "RootComponent currentModel", data: currentModel },
+        { label: "RootComponent adminAppModel", data: adminAppModel },
+        { label: "RootComponent applicationDeploymentMap", data: applicationDeploymentMap },
+        {
+          label: "RootComponent deploymentUuidToReportsEntitiesDefinitionsMapping",
+          data: deploymentUuidToReportsEntitiesDefinitionsMapping,
+        },
+        {
+          label: "RootComponent viewParams generalEditMode",
+          data: context.viewParams.generalEditMode,
+        },
+        { label: "RootComponent adminDeploymentsQueryResult", data: adminDeploymentsQueryResult },
+      ],
+    }),
+    [
+      miroirConfig,
+      currentModel,
+      adminAppModel,
+      applicationDeploymentMap,
+      deploymentUuidToReportsEntitiesDefinitionsMapping,
+      context.viewParams.generalEditMode,
+      adminDeploymentsQueryResult,
+    ],
+  );
+
   // ##############################################################################################
   // ##############################################################################################
   // ##############################################################################################
   // ##############################################################################################
   // ##############################################################################################
   return (
-    // <DocumentOutlineContext.Provider value={outlineContextValue}>
     <DocumentOutlineContextProvider
       isOutlineOpen={isOutlineOpen}
       onToggleOutline={handleToggleOutline}
@@ -818,7 +840,9 @@ export const RootComponent = (props: RootComponentProps) => {
                 style={{ padding: "1em" }}
               >
                 {context.viewParams.generalEditMode && <ThemedText>uuid: {uuidv4()}</ThemedText>}
-                <ThemedOnScreenDebug
+                <DebugHelper elements={debugElements.elements} />
+                {/* <DebugHelper label="RootComponent miroirConfig" data={miroirConfig} /> */}
+                {/* <ThemedOnScreenDebug
                   label="RootComponent miroirThemeSchemaJson"
                   data={{
                     currentThemeId,
@@ -829,7 +853,7 @@ export const RootComponent = (props: RootComponentProps) => {
                   initiallyUnfolded={false}
                   useCodeBlock={true}
                   copyButton={true}
-                />
+                /> */}
                 {/* <ThemedOnScreenDebug
                   label="RootComponent darkStoredMiroirTheme"
                   data={{
@@ -840,64 +864,51 @@ export const RootComponent = (props: RootComponentProps) => {
                   useCodeBlock={true}
                   copyButton={true}
                 /> */}
-                <ThemedOnScreenDebug
+                {/* <ThemedOnScreenDebug
                   label={`RootComponent miroirConfig, isElectron: ${isElectron}`}
                   data={context.miroirContext.getMiroirConfig()}
                   initiallyUnfolded={false}
                   useCodeBlock={true}
                   copyButton={true}
-                />
-                <ThemedOnScreenDebug
+                /> */}
+                {/* <ThemedOnScreenDebug
                   label="RootComponent adminAppModel"
                   data={{ applicationDeploymentMap, adminAppModel }}
                   initiallyUnfolded={false}
                   useCodeBlock={true}
                   copyButton={true}
-                />
-                <ThemedOnScreenDebug
+                /> */}
+                {/* <ThemedOnScreenDebug
                   label="RootComponent applicationDeploymentMap"
                   data={applicationDeploymentMap}
                   initiallyUnfolded={false}
                   useCodeBlock={true}
-                />
-                <ThemedOnScreenDebug
+                /> */}
+                {/* <ThemedOnScreenDebug
                   label="RootComponent currentModel"
                   data={currentModel}
                   initiallyUnfolded={false}
                   useCodeBlock={true}
-                />
-                <ThemedOnScreenDebug
+                /> */}
+                {/* <ThemedOnScreenDebug
                   label="RootComponent deploymentUuidToReportsEntitiesDefinitionsMapping"
                   data={deploymentUuidToReportsEntitiesDefinitionsMapping}
                   initiallyUnfolded={false}
                   useCodeBlock={true}
                   copyButton={true}
-                />
+                /> */}
                 {/* <ThemedOnScreenDebug
-                    label="RootComponent applicationDeploymentMap2"
-                    data={applicationDeploymentMap2}
-                    initiallyUnfolded={false}
-                    useCodeBlock={true}
-                  /> */}
-                {/* <ThemedOnScreenDebug
-                    label="RootComponent adminAppModel"
-                    data={{applicationDeploymentMap, adminAppModel}}
-                    initiallyUnfolded={false}
-                    useCodeBlock={true}
-                    copyButton={true}
-                  /> */}
-                <ThemedOnScreenDebug
                   label="RootComponent viewParams generalEditMode"
                   data={context.viewParams.generalEditMode}
                   initiallyUnfolded={false}
                   useCodeBlock={true}
-                />
-                <ThemedOnScreenDebug
+                /> */}
+                {/* <ThemedOnScreenDebug
                   label="RootComponent adminDeploymentsQueryResult"
                   data={adminDeploymentsQueryResult}
                   initiallyUnfolded={false}
                   useCodeBlock={true}
-                />
+                /> */}
                 {transactions && transactions.length > 0 && (
                   <ThemedText> transactions: {JSON.stringify(transactions)}</ThemedText>
                 )}

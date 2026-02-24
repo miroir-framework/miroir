@@ -517,12 +517,7 @@ export const ThemedMainPanel: React.FC<ThemedComponentProps & {
     display: 'flex',
     flexDirection: 'column' as const,
     flexGrow: 1,
-    
-    // overflow: 'hidden', // Prevent main panel from scrolling, let content handle it
     minWidth: 0, // Allow shrinking
-    // height: '100%',
-    // padding: currentTheme.spacing.md,
-    // width: `calc(100% - ${sidebarOpen ? sidebarWidth : 0}px - ${outlineOpen ? outlineWidth : 0}px)`,
     boxSizing: 'border-box' as const,
     minHeight: 100,
     overflow: "auto", 
@@ -542,18 +537,14 @@ export const ThemedMainPanel: React.FC<ThemedComponentProps & {
   });
 
   return (
-    // <div css={responsiveStyles} className={className} style={style}>
-    //   {children}
-    // </div>
     <ThemedScrollableContent>
       <main css={responsiveStyles} className={className} style={style}>
-        <ThemedOnScreenDebug
+        {/* <ThemedOnScreenDebug
           label="ThemedMainPanel currentTheme"
           data={currentTheme}
           initiallyUnfolded={false}
           useCodeBlock={true}
-        />
-
+        /> */}
         {children}
       </main>
     </ThemedScrollableContent>
