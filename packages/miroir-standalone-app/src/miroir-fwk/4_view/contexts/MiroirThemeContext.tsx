@@ -159,9 +159,9 @@ export const useMiroirNestingColor = (indentLevel: number = 0): string => {
   const safeIndentLevel = Math.max(0, Math.floor(indentLevel));
 
   const nestingLevels = [
-    currentTheme.colors.nesting.level0,
-    currentTheme.colors.nesting.level1,
-    currentTheme.colors.nesting.level2,
+    currentTheme.colors.nesting.level0 ?? defaultMiroirTheme.colors.nesting.level0,
+    currentTheme.colors.nesting.level1 ?? defaultMiroirTheme.colors.nesting.level1,
+    currentTheme.colors.nesting.level2 ?? defaultMiroirTheme.colors.nesting.level2,
   ];
 
   return nestingLevels[safeIndentLevel % 3];

@@ -83,7 +83,7 @@ import { ViewParamsUpdateQueue, ViewParamsUpdateQueueConfig } from '../ViewParam
 import { Sidebar } from "./Sidebar.js";
 import { SidebarWidth } from "./SidebarSection.js";
 import { isElectron } from '../../../..';
-import { darkStoredMiroirTheme, miroirThemeSchemaJson, tableThemeSchemaJson } from 'miroir-test-app_deployment-miroir';
+import { darkStoredMiroirTheme, defaultStoredMiroirTheme, miroirThemeSchemaJson, tableThemeSchemaJson } from 'miroir-test-app_deployment-miroir';
 import { darkMiroirTheme } from '../Themes/MiroirTheme';
 
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -492,12 +492,18 @@ export const RootComponent = (props: RootComponentProps) => {
       if (highlightedElementRef.current) {
         const prevElement = highlightedElementRef.current;
         // Only clear styles if they haven't been modified by other code
-        if (prevElement.style.backgroundColor.includes(theme.currentTheme.colors.warningLight) ||
-            prevElement.style.border.includes(theme.currentTheme.colors.warning)) {
-          prevElement.style.backgroundColor = '';
-          prevElement.style.border = '';
-          prevElement.style.borderRadius = '';
-          prevElement.style.transition = '';
+        if (
+          prevElement.style.backgroundColor.includes(
+            theme.currentTheme.colors.warningLight ?? defaultStoredMiroirTheme.definition.colors.warningLight,
+          ) ||
+          prevElement.style.border.includes(
+            theme.currentTheme.colors.warning ?? defaultStoredMiroirTheme.definition.colors.warning,
+          )
+        ) {
+          prevElement.style.backgroundColor = "";
+          prevElement.style.border = "";
+          prevElement.style.borderRadius = "";
+          prevElement.style.transition = "";
         }
       }
       
@@ -514,8 +520,8 @@ export const RootComponent = (props: RootComponentProps) => {
       const originalBorderRadius = targetElement.style.borderRadius;
 
       // Apply highlight styles
-      targetElement.style.backgroundColor = theme.currentTheme.colors.warningLight;
-      targetElement.style.border = `2px solid ${theme.currentTheme.colors.warning}`;
+      targetElement.style.backgroundColor = theme.currentTheme.colors.warningLight ?? defaultStoredMiroirTheme.definition.colors.warningLight;
+      targetElement.style.border = `2px solid ${theme.currentTheme.colors.warning ?? defaultStoredMiroirTheme.definition.colors.warning}`;
       targetElement.style.borderRadius = "4px";
       targetElement.style.transition = "all 0.3s ease";
 
@@ -655,8 +661,8 @@ export const RootComponent = (props: RootComponentProps) => {
       if (highlightedElementRef.current) {
         const element = highlightedElementRef.current;
         // Clear highlight styles if they match our theme colors
-        if (element.style.backgroundColor.includes(theme.currentTheme.colors.warningLight) ||
-            element.style.border.includes(theme.currentTheme.colors.warning)) {
+        if (element.style.backgroundColor.includes(theme.currentTheme.colors.warningLight ?? defaultStoredMiroirTheme.definition.colors.warningLight) ||
+            element.style.border.includes(theme.currentTheme.colors.warning ?? defaultStoredMiroirTheme.definition.colors.warning)) {
           element.style.backgroundColor = '';
           element.style.border = '';
           element.style.borderRadius = '';

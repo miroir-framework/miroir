@@ -158,7 +158,35 @@ import { ResolvedTableTheme, TableTheme } from './TableTheme.js';
  */
 // export function resolveThemeColors(theme: MiroirTheme): ResolvedMiroirTheme {
 export function resolveThemeColors(theme: MiroirTheme): MiroirThemeFull['definition'] {
-const colors = theme.colors ?? defaultMiroirTheme.colors;
+const colors: MiroirThemeFull['definition']['colors'] = {
+  primary: theme.colors?.primary ?? defaultMiroirTheme.colors.primary,
+  primaryLight: theme.colors?.primaryLight ?? defaultMiroirTheme.colors.primaryLight,
+  primaryDark: theme.colors?.primaryDark ?? defaultMiroirTheme.colors.primaryDark,
+  secondary: theme.colors?.secondary ?? defaultMiroirTheme.colors.secondary,
+  secondaryLight: theme.colors?.secondaryLight ?? defaultMiroirTheme.colors.secondaryLight,
+  secondaryDark: theme.colors?.secondaryDark ?? defaultMiroirTheme.colors.secondaryDark,
+  background: theme.colors?.background ?? defaultMiroirTheme.colors.background,
+  backgroundPaper: theme.colors?.backgroundPaper ?? defaultMiroirTheme.colors.backgroundPaper,
+  surface: theme.colors?.surface ?? defaultMiroirTheme.colors.surface,
+  border: theme.colors?.border ?? defaultMiroirTheme.colors.border,
+  text: theme.colors?.text ?? defaultMiroirTheme.colors.text,
+  textSecondary: theme.colors?.textSecondary ?? defaultMiroirTheme.colors.textSecondary,
+  textLight: theme.colors?.textLight ?? defaultMiroirTheme.colors.textLight,
+  hover: theme.colors?.hover ?? defaultMiroirTheme.colors.hover,
+  selected: theme.colors?.selected ?? defaultMiroirTheme.colors.selected,
+  error: theme.colors?.error ?? defaultMiroirTheme.colors.error,
+  warning: theme.colors?.warning ?? defaultMiroirTheme.colors.warning,
+  success: theme.colors?.success ?? defaultMiroirTheme.colors.success,
+  accent: theme.colors?.accent ?? defaultMiroirTheme.colors.accent,
+  accentLight: theme.colors?.accentLight ?? defaultMiroirTheme.colors.accentLight,
+  nesting: theme.colors?.nesting ?? defaultMiroirTheme.colors.nesting,
+  active: theme.colors?.active ?? defaultMiroirTheme.colors.active,
+  backgroundOverlay: theme.colors?.backgroundOverlay ?? defaultMiroirTheme.colors.backgroundOverlay,
+  borderLight: theme.colors?.borderLight ?? defaultMiroirTheme.colors.borderLight,
+  divider: theme.colors?.divider ?? defaultMiroirTheme.colors.divider,
+  errorLight: theme.colors?.errorLight ?? defaultMiroirTheme.colors.errorLight,
+  warningLight: theme.colors?.warningLight ?? defaultMiroirTheme.colors.warningLight,
+};
 
   // ──────────────────────────────────────────────────
   // Resolve components
