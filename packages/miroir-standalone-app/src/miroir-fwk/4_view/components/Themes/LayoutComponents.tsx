@@ -447,9 +447,10 @@ export const ThemedIndentedContainer: React.FC<ThemedComponentProps & {
 
 // #################################################################################################
 export const ThemedScrollableContent: React.FC<ThemedComponentProps> = ({ 
-  children, 
+  children,
   className, 
-  style 
+  style,
+  hideScrollbar = false
 }) => {
   const { currentTheme } = useMiroirTheme();
   
@@ -457,15 +458,30 @@ export const ThemedScrollableContent: React.FC<ThemedComponentProps> = ({
     flex: 1,
     overflowY: 'scroll',
     overflowX: 'hidden',
-    // padding: currentTheme.spacing.md, // no reason for padding something because it is scrollable
     backgroundColor: currentTheme.colors.background,
-    
-    // Hide scrollbars but keep scroll functionality
-    scrollbarWidth: 'none', // Firefox
-    msOverflowStyle: 'none', // IE and Edge
-    '&::-webkit-scrollbar': {
-      display: 'none', // Chrome, Safari, Opera
-    },
+    ...hideScrollbar? {
+      // Hide scrollbars but keep scroll functionality
+      scrollbarWidth: 'none', // Firefox
+      msOverflowStyle: 'none', // IE and Edge
+      '&::-webkit-scrollbar': {
+        display: 'none', // Chrome, Safari, Opera
+      },
+    }: {
+      // Slim scrollbar styling
+      '&::-webkit-scrollbar': {
+        width: '12px',
+      },
+      '&::-webkit-scrollbar-track': {
+        backgroundColor: currentTheme.colors.surface,
+      },
+      '&::-webkit-scrollbar-thumb': {
+        backgroundColor: currentTheme.colors.border,
+        borderRadius: '4px',
+        '&:hover': {
+          backgroundColor: currentTheme.colors.textSecondary,
+        },
+      },
+    }
   });
 
   return (

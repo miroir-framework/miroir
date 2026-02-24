@@ -16,4 +16,5 @@ export interface ThemedComponentProps {
   'aria-label'?: string;
   title?: string;
   disabled?: boolean;
+  hideScrollbar?: boolean; // New prop to control scrollbar visibility
 }

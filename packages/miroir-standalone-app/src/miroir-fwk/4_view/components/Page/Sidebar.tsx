@@ -201,13 +201,13 @@ export const Sidebar: FC<{
             color: currentTheme.colors.text,
           }}
         > */}
-          <ApplicationSelector
-            applicationUuid={currentApplication}
-            onApplicationChange={setCurrentApplication}
-          />
+        <ApplicationSelector
+          applicationUuid={currentApplication}
+          onApplicationChange={setCurrentApplication}
+        />
         {/* </div> */}
       </ThemedDrawerHeader>
-      <ThemedScrollableContent>{memoizedSidebarSections}</ThemedScrollableContent>
+      <ThemedScrollableContent hideScrollbar>{memoizedSidebarSections}</ThemedScrollableContent>
       {/* Resize handle - only show when sidebar is open */}
     </ThemedDrawer>
   );
