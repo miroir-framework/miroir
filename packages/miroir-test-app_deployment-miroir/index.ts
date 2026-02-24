@@ -237,9 +237,13 @@ export { default as applicationVersionInitialMiroirVersionCrossEntityDefinitionR
 export { default as commitInitialCommit } from "./assets/miroir_data/73bb0c69-e636-4e3b-a230-51f25469c089/e91d93fc-9165-4966-a15d-3989cab9a994.json" assert { type: "json" };
 
 export { default as entityTheme } from "./assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/bdcf956a-771d-40a1-a878-06e0bf6efd3e.json" assert { type: "json" };
+import type { JzodObject } from "miroir-core";
 import { default as entityDefinitionTheme } from "./assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/31b88b03-f301-44f9-a6bf-934ed0576ee0.json" assert { type: "json" };
 export { entityDefinitionTheme };
-export const miroirThemeSchemaJson = entityDefinitionTheme.mlSchema;
-export const tableThemeSchemaJson = (entityDefinitionTheme as any).mlSchema.definition.table;
+export const miroirThemeSchemaJson: JzodObject = entityDefinitionTheme.mlSchema as any;
+export const tableThemeSchemaJson: JzodObject = entityDefinitionTheme.mlSchema.definition.definition.definition.table as any;
+// export const tableThemeSchemaJson = (entityDefinitionTheme as any).mlSchema.definition.definition.table;
 // export { default as miroirThemeSchemaJson } from "./assets/miroir_data/5e81e1b9-38be-487c-b3e5-53796c57fccf/2aa173df-285d-4ed2-8b70-736902ded03a.json" assert { type: "json" };
 // export { default as tableThemeSchemaJson } from "./assets/miroir_data/5e81e1b9-38be-487c-b3e5-53796c57fccf/8e380a46-189d-40ff-a880-7d04f04da673.json" assert { type: "json" };
+export { default as defaultStoredMiroirTheme } from "./assets/miroir_data/bdcf956a-771d-40a1-a878-06e0bf6efd3e/919803c4-979d-4d7c-9cec-e54d37bdac09.json" assert { type: "json" };
+export { default as darkStoredMiroirTheme } from "./assets/miroir_data/bdcf956a-771d-40a1-a878-06e0bf6efd3e/b327b9c0-7355-42ac-b44b-b6d8b0320e0f.json" assert { type: "json" };

@@ -806,7 +806,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
           
           return (
             <>
-            <ThemedOnScreenDebug
+            {/* <ThemedOnScreenDebug
               label={`Rendering JzodElementStringEditor for string type at ${props.rootLessListKey || "ROOT"}`}
               data={{
                 rootLessListKey: props.rootLessListKey,
@@ -815,7 +815,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
                 stringDisplay: stringDisplay,
                 currentValueObjectAtKey,
               }}
-            />
+            /> */}
             <JzodElementStringEditor
               {...props}
               formik={formik}

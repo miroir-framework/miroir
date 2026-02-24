@@ -72,8 +72,7 @@ import { RunnersPage } from "./miroir-fwk/4_view/routes/Runners.js";
 import { SettingsPage } from "./miroir-fwk/4_view/routes/SettingsPage.js";
 import { SearchPage } from "./miroir-fwk/4_view/routes/SearchPage.js";
 import { adminSelfApplication, deployment_Admin, deployment_Miroir, entityDeployment } from "miroir-test-app_deployment-admin";
-import { rgb } from "d3";
-import { ThemesPage } from "./miroir-fwk/4_view/routes/ThemesPage.js";
+// import { ThemesPage } from "./miroir-fwk/4_view/routes/ThemesPage.js";
 
 const specificLoggerOptions: SpecificLoggerOptionsMap = {
   // "5_miroir-core_DomainController": {level:defaultLevels.INFO, template:"[{{time}}] {{level}} ({{name}}) BBBBB-"},
@@ -180,11 +179,11 @@ const router = createBrowserRouter([
         element: <RunnersPage />,
         // errorElement: <ErrorPage />,
       },
-      {
-        path: "themes",
-        element: <ThemesPage />,
-        // errorElement: <ErrorPage />,
-      },
+      // {
+      //   path: "themes",
+      //   element: <ThemesPage />,
+      //   // errorElement: <ErrorPage />,
+      // },
       {
         path: "check",
         element: <CheckPage />,

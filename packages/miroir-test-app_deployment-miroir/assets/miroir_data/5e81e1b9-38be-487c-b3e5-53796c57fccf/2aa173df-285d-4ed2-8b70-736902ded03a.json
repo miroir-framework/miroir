@@ -2,7 +2,7 @@
   "uuid": "2aa173df-285d-4ed2-8b70-736902ded03a",
   "parentName": "MlSchema",
   "parentUuid": "5e81e1b9-38be-487c-b3e5-53796c57fccf",
-  "name": "MiroirThemeSchema",
+  "name": "StoredMiroirTheme",
   "defaultLabel": "The Jzod Schema for MiroirTheme",
   "mlSchema": {
     "type": "object",

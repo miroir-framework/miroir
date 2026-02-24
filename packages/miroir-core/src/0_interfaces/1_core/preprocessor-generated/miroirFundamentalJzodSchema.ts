@@ -23211,9 +23211,11 @@ export const miroirFundamentalJzodSchema = {
       },
       "tableThemeSchema": {
         "type": "object",
+        "optional": true,
         "definition": {
           "colors": {
             "type": "object",
+            "optional": true,
             "definition": {
               "primary": {
                 "type": "string",
@@ -23440,6 +23442,7 @@ export const miroirFundamentalJzodSchema = {
           },
           "spacing": {
             "type": "object",
+            "optional": true,
             "definition": {
               "xs": {
                 "type": "string"
@@ -23460,6 +23463,7 @@ export const miroirFundamentalJzodSchema = {
           },
           "typography": {
             "type": "object",
+            "optional": true,
             "definition": {
               "fontSize": {
                 "type": "string"
@@ -23491,9 +23495,11 @@ export const miroirFundamentalJzodSchema = {
           },
           "components": {
             "type": "object",
+            "optional": true,
             "definition": {
               "table": {
                 "type": "object",
+                "optional": true,
                 "definition": {
                   "borderRadius": {
                     "type": "string"
@@ -23533,6 +23539,7 @@ export const miroirFundamentalJzodSchema = {
               },
               "header": {
                 "type": "object",
+                "optional": true,
                 "definition": {
                   "background": {
                     "type": "string",
@@ -23579,6 +23586,7 @@ export const miroirFundamentalJzodSchema = {
               },
               "cell": {
                 "type": "object",
+                "optional": true,
                 "definition": {
                   "height": {
                     "type": "string"
@@ -23625,6 +23633,7 @@ export const miroirFundamentalJzodSchema = {
               },
               "row": {
                 "type": "object",
+                "optional": true,
                 "definition": {
                   "hoverBackground": {
                     "type": "string"
@@ -23645,6 +23654,7 @@ export const miroirFundamentalJzodSchema = {
               },
               "toolbar": {
                 "type": "object",
+                "optional": true,
                 "definition": {
                   "background": {
                     "type": "string"
@@ -23665,6 +23675,7 @@ export const miroirFundamentalJzodSchema = {
               },
               "filter": {
                 "type": "object",
+                "optional": true,
                 "definition": {
                   "iconColor": {
                     "type": "string",
@@ -23774,6 +23785,7 @@ export const miroirFundamentalJzodSchema = {
               },
               "sort": {
                 "type": "object",
+                "optional": true,
                 "definition": {
                   "iconColor": {
                     "type": "string"
@@ -23793,1428 +23805,190 @@ export const miroirFundamentalJzodSchema = {
           }
         }
       },
-      "miroirThemeSchema": {
+      "storedMiroirTheme": {
         "type": "object",
         "definition": {
-          "id": {
-            "type": "string"
+          "uuid": {
+            "type": "uuid",
+            "tag": {
+              "value": {
+                "defaultLabel": "Uuid",
+                "display": {
+                  "editable": false
+                }
+              }
+            }
+          },
+          "parentName": {
+            "type": "string",
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "Entity Name",
+                "display": {
+                  "editable": false
+                }
+              }
+            }
+          },
+          "parentUuid": {
+            "type": "uuid",
+            "tag": {
+              "value": {
+                "defaultLabel": "Entity Uuid",
+                "display": {
+                  "editable": false
+                }
+              }
+            }
+          },
+          "parentDefinitionVersionUuid": {
+            "type": "uuid",
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "Entity Definition Version Uuid",
+                "display": {
+                  "editable": false
+                }
+              }
+            }
+          },
+          "conceptLevel": {
+            "type": "enum",
+            "definition": [
+              "MetaModel",
+              "Model",
+              "Data"
+            ],
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "Concept Level",
+                "display": {
+                  "editable": false
+                }
+              }
+            }
+          },
+          "storageAccess": {
+            "type": "enum",
+            "definition": [
+              "none",
+              "localStorage",
+              "persistentStorage"
+            ],
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "Storage Access",
+                "display": {
+                  "editable": false
+                }
+              }
+            }
+          },
+          "selfApplication": {
+            "type": "uuid",
+            "optional": true,
+            "tag": {
+              "value": {
+                "display": {
+                  "editable": false
+                },
+                "defaultLabel": "SelfApplication",
+                "foreignKeyParams": {
+                  "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
+                  "targetEntityOrderInstancesBy": "name"
+                }
+              }
+            }
           },
           "name": {
-            "type": "string"
+            "type": "string",
+            "tag": {
+              "value": {
+                "defaultLabel": "Name"
+              }
+            }
+          },
+          "defaultLabel": {
+            "type": "string",
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "Default Label"
+              }
+            }
+          },
+          "author": {
+            "type": "uuid",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 9,
+                "defaultLabel": "SelfApplication"
+              }
+            }
           },
           "description": {
-            "type": "string"
-          },
-          "colors": {
-            "type": "object",
-            "definition": {
-              "primary": {
-                "type": "string",
-                "tag": {
-                  "value": {
-                    "defaultLabel": "Primary Color",
-                    "display": {
-                      "string": {
-                        "format": "color"
-                      }
-                    }
-                  }
-                }
-              },
-              "primaryLight": {
-                "type": "string",
-                "tag": {
-                  "value": {
-                    "defaultLabel": "Primary Light Color",
-                    "display": {
-                      "string": {
-                        "format": "color"
-                      }
-                    }
-                  }
-                }
-              },
-              "primaryDark": {
-                "type": "string",
-                "tag": {
-                  "value": {
-                    "defaultLabel": "Primary Dark Color",
-                    "display": {
-                      "string": {
-                        "format": "color"
-                      }
-                    }
-                  }
-                }
-              },
-              "secondary": {
-                "type": "string",
-                "tag": {
-                  "value": {
-                    "defaultLabel": "Secondary Color",
-                    "display": {
-                      "string": {
-                        "format": "color"
-                      }
-                    }
-                  }
-                }
-              },
-              "secondaryLight": {
-                "type": "string",
-                "tag": {
-                  "value": {
-                    "defaultLabel": "Secondary Light Color",
-                    "display": {
-                      "string": {
-                        "format": "color"
-                      }
-                    }
-                  }
-                }
-              },
-              "secondaryDark": {
-                "type": "string",
-                "tag": {
-                  "value": {
-                    "defaultLabel": "Secondary Dark Color",
-                    "display": {
-                      "string": {
-                        "format": "color"
-                      }
-                    }
-                  }
-                }
-              },
-              "background": {
-                "type": "string",
-                "tag": {
-                  "value": {
-                    "defaultLabel": "Background Color",
-                    "display": {
-                      "string": {
-                        "format": "color"
-                      }
-                    }
-                  }
-                }
-              },
-              "backgroundPaper": {
-                "type": "string",
-                "tag": {
-                  "value": {
-                    "defaultLabel": "Background Paper Color",
-                    "display": {
-                      "string": {
-                        "format": "color"
-                      }
-                    }
-                  }
-                }
-              },
-              "backgroundOverlay": {
-                "type": "string",
-                "tag": {
-                  "value": {
-                    "defaultLabel": "Background Overlay Color",
-                    "display": {
-                      "string": {
-                        "format": "color"
-                      }
-                    }
-                  }
-                }
-              },
-              "surface": {
-                "type": "string",
-                "tag": {
-                  "value": {
-                    "defaultLabel": "Surface Color",
-                    "display": {
-                      "string": {
-                        "format": "color"
-                      }
-                    }
-                  }
-                }
-              },
-              "surfaceVariant": {
-                "type": "string",
-                "tag": {
-                  "value": {
-                    "defaultLabel": "Surface Variant Color",
-                    "display": {
-                      "string": {
-                        "format": "color"
-                      }
-                    }
-                  }
-                }
-              },
-              "text": {
-                "type": "string",
-                "tag": {
-                  "value": {
-                    "defaultLabel": "Text Color",
-                    "display": {
-                      "string": {
-                        "format": "color"
-                      }
-                    }
-                  }
-                }
-              },
-              "textSecondary": {
-                "type": "string",
-                "tag": {
-                  "value": {
-                    "defaultLabel": "Secondary Text Color",
-                    "display": {
-                      "string": {
-                        "format": "color"
-                      }
-                    }
-                  }
-                }
-              },
-              "textLight": {
-                "type": "string",
-                "tag": {
-                  "value": {
-                    "defaultLabel": "Light Text Color",
-                    "display": {
-                      "string": {
-                        "format": "color"
-                      }
-                    }
-                  }
-                }
-              },
-              "textDisabled": {
-                "type": "string",
-                "tag": {
-                  "value": {
-                    "defaultLabel": "Disabled Text Color",
-                    "display": {
-                      "string": {
-                        "format": "color"
-                      }
-                    }
-                  }
-                }
-              },
-              "border": {
-                "type": "string",
-                "tag": {
-                  "value": {
-                    "defaultLabel": "Border Color",
-                    "display": {
-                      "string": {
-                        "format": "color"
-                      }
-                    }
-                  }
-                }
-              },
-              "borderLight": {
-                "type": "string",
-                "tag": {
-                  "value": {
-                    "defaultLabel": "Light Border Color",
-                    "display": {
-                      "string": {
-                        "format": "color"
-                      }
-                    }
-                  }
-                }
-              },
-              "divider": {
-                "type": "string",
-                "tag": {
-                  "value": {
-                    "defaultLabel": "Divider Color",
-                    "display": {
-                      "string": {
-                        "format": "color"
-                      }
-                    }
-                  }
-                }
-              },
-              "hover": {
-                "type": "string",
-                "tag": {
-                  "value": {
-                    "defaultLabel": "Hover Color",
-                    "display": {
-                      "string": {
-                        "format": "color"
-                      }
-                    }
-                  }
-                }
-              },
-              "selected": {
-                "type": "string",
-                "tag": {
-                  "value": {
-                    "defaultLabel": "Selected Color",
-                    "display": {
-                      "string": {
-                        "format": "color"
-                      }
-                    }
-                  }
-                }
-              },
-              "focused": {
-                "type": "string",
-                "tag": {
-                  "value": {
-                    "defaultLabel": "Focused Color",
-                    "display": {
-                      "string": {
-                        "format": "color"
-                      }
-                    }
-                  }
-                }
-              },
-              "active": {
-                "type": "string",
-                "tag": {
-                  "value": {
-                    "defaultLabel": "Active Color",
-                    "display": {
-                      "string": {
-                        "format": "color"
-                      }
-                    }
-                  }
-                }
-              },
-              "error": {
-                "type": "string",
-                "tag": {
-                  "value": {
-                    "defaultLabel": "Error Color",
-                    "display": {
-                      "string": {
-                        "format": "color"
-                      }
-                    }
-                  }
-                }
-              },
-              "errorLight": {
-                "type": "string",
-                "tag": {
-                  "value": {
-                    "defaultLabel": "Light Error Color",
-                    "display": {
-                      "string": {
-                        "format": "color"
-                      }
-                    }
-                  }
-                }
-              },
-              "errorSurface": {
-                "type": "string",
-                "tag": {
-                  "value": {
-                    "defaultLabel": "Error Surface Color",
-                    "display": {
-                      "string": {
-                        "format": "color"
-                      }
-                    }
-                  }
-                }
-              },
-              "warning": {
-                "type": "string",
-                "tag": {
-                  "value": {
-                    "defaultLabel": "Warning Color",
-                    "display": {
-                      "string": {
-                        "format": "color"
-                      }
-                    }
-                  }
-                }
-              },
-              "warningLight": {
-                "type": "string",
-                "tag": {
-                  "value": {
-                    "defaultLabel": "Light Warning Color",
-                    "display": {
-                      "string": {
-                        "format": "color"
-                      }
-                    }
-                  }
-                }
-              },
-              "success": {
-                "type": "string",
-                "tag": {
-                  "value": {
-                    "defaultLabel": "Success Color",
-                    "display": {
-                      "string": {
-                        "format": "color"
-                      }
-                    }
-                  }
-                }
-              },
-              "successLight": {
-                "type": "string",
-                "tag": {
-                  "value": {
-                    "defaultLabel": "Light Success Color",
-                    "display": {
-                      "string": {
-                        "format": "color"
-                      }
-                    }
-                  }
-                }
-              },
-              "successSurface": {
-                "type": "string",
-                "tag": {
-                  "value": {
-                    "defaultLabel": "Success Surface Color",
-                    "display": {
-                      "string": {
-                        "format": "color"
-                      }
-                    }
-                  }
-                }
-              },
-              "info": {
-                "type": "string",
-                "tag": {
-                  "value": {
-                    "defaultLabel": "Info Color",
-                    "display": {
-                      "string": {
-                        "format": "color"
-                      }
-                    }
-                  }
-                }
-              },
-              "infoLight": {
-                "type": "string",
-                "tag": {
-                  "value": {
-                    "defaultLabel": "Light Info Color",
-                    "display": {
-                      "string": {
-                        "format": "color"
-                      }
-                    }
-                  }
-                }
-              },
-              "accent": {
-                "type": "string",
-                "tag": {
-                  "value": {
-                    "defaultLabel": "Accent Color",
-                    "display": {
-                      "string": {
-                        "format": "color"
-                      }
-                    }
-                  }
-                }
-              },
-              "accentLight": {
-                "type": "string",
-                "tag": {
-                  "value": {
-                    "defaultLabel": "Light Accent Color",
-                    "display": {
-                      "string": {
-                        "format": "color"
-                      }
-                    }
-                  }
-                }
-              },
-              "shadow": {
-                "type": "string",
-                "tag": {
-                  "value": {
-                    "defaultLabel": "Shadow Color",
-                    "display": {
-                      "string": {
-                        "format": "color"
-                      }
-                    }
-                  }
-                }
-              },
-              "overlay": {
-                "type": "string",
-                "tag": {
-                  "value": {
-                    "defaultLabel": "Overlay Color",
-                    "display": {
-                      "string": {
-                        "format": "color"
-                      }
-                    }
-                  }
-                }
-              },
-              "nesting": {
-                "type": "object",
-                "definition": {
-                  "level0": {
-                    "type": "string",
-                    "tag": {
-                      "value": {
-                        "defaultLabel": "Nesting Level 0 Color",
-                        "display": {
-                          "string": {
-                            "format": "color"
-                          }
-                        }
-                      }
-                    }
-                  },
-                  "level1": {
-                    "type": "string",
-                    "tag": {
-                      "value": {
-                        "defaultLabel": "Nesting Level 1 Color",
-                        "display": {
-                          "string": {
-                            "format": "color"
-                          }
-                        }
-                      }
-                    }
-                  },
-                  "level2": {
-                    "type": "string",
-                    "tag": {
-                      "value": {
-                        "defaultLabel": "Nesting Level 2 Color",
-                        "display": {
-                          "string": {
-                            "format": "color"
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
+            "type": "string",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 10,
+                "defaultLabel": "Description"
               }
             }
           },
-          "spacing": {
+          "definition": {
             "type": "object",
             "definition": {
-              "xs": {
+              "id": {
                 "type": "string"
               },
-              "sm": {
+              "name": {
                 "type": "string"
               },
-              "md": {
-                "type": "string"
+              "description": {
+                "type": "string",
+                "optional": true
               },
-              "lg": {
-                "type": "string"
-              },
-              "xl": {
-                "type": "string"
-              },
-              "xxl": {
-                "type": "string"
-              }
-            }
-          },
-          "typography": {
-            "type": "object",
-            "definition": {
-              "fontFamily": {
-                "type": "string"
-              },
-              "fontSize": {
-                "type": "object",
-                "definition": {
-                  "xs": {
-                    "type": "string"
-                  },
-                  "sm": {
-                    "type": "string"
-                  },
-                  "md": {
-                    "type": "string"
-                  },
-                  "lg": {
-                    "type": "string"
-                  },
-                  "xl": {
-                    "type": "string"
-                  },
-                  "xxl": {
-                    "type": "string"
-                  }
-                }
-              },
-              "fontWeight": {
-                "type": "object",
-                "definition": {
-                  "light": {
-                    "type": "number"
-                  },
-                  "normal": {
-                    "type": "number"
-                  },
-                  "medium": {
-                    "type": "number"
-                  },
-                  "bold": {
-                    "type": "number"
-                  },
-                  "extraBold": {
-                    "type": "number"
-                  }
-                }
-              },
-              "lineHeight": {
-                "type": "object",
-                "definition": {
-                  "tight": {
-                    "type": "number"
-                  },
-                  "normal": {
-                    "type": "number"
-                  },
-                  "relaxed": {
-                    "type": "number"
-                  }
-                }
-              }
-            }
-          },
-          "elevation": {
-            "type": "object",
-            "definition": {
-              "none": {
-                "type": "string"
-              },
-              "low": {
-                "type": "string"
-              },
-              "medium": {
-                "type": "string"
-              },
-              "high": {
-                "type": "string"
-              },
-              "modal": {
-                "type": "string"
-              }
-            }
-          },
-          "borderRadius": {
-            "type": "object",
-            "definition": {
-              "none": {
-                "type": "string"
-              },
-              "sm": {
-                "type": "string"
-              },
-              "md": {
-                "type": "string"
-              },
-              "lg": {
-                "type": "string"
-              },
-              "xl": {
-                "type": "string"
-              },
-              "full": {
-                "type": "string"
-              }
-            }
-          },
-          "components": {
-            "type": "object",
-            "definition": {
-              "appBar": {
-                "type": "object",
-                "definition": {
-                  "background": {
-                    "type": "string",
-                    "optional": true,
-                    "tag": {
-                      "value": {
-                        "defaultLabel": "App Bar Background Color",
-                        "display": {
-                          "string": {
-                            "format": "color"
-                          }
-                        }
-                      }
-                    }
-                  },
-                  "textColor": {
-                    "type": "string",
-                    "optional": true,
-                    "tag": {
-                      "value": {
-                        "defaultLabel": "App Bar Text Color",
-                        "display": {
-                          "string": {
-                            "format": "color"
-                          }
-                        }
-                      }
-                    }
-                  },
-                  "borderBottom": {
-                    "type": "string",
-                    "tag": {
-                      "value": {
-                        "defaultLabel": "App Bar Border Bottom Color",
-                        "display": {
-                          "string": {
-                            "format": "color"
-                          }
-                        }
-                      }
-                    }
-                  },
-                  "height": {
-                    "type": "string",
-                    "tag": {
-                      "value": {
-                        "defaultLabel": "App Bar Height",
-                        "display": {
-                          "string": {
-                            "format": "size"
-                          }
-                        }
-                      }
-                    }
-                  },
-                  "elevation": {
-                    "type": "string",
-                    "tag": {
-                      "value": {
-                        "defaultLabel": "App Bar Elevation",
-                        "display": {
-                          "string": {
-                            "format": "elevation"
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              },
-              "sidebar": {
-                "type": "object",
-                "definition": {
-                  "background": {
-                    "type": "string",
-                    "optional": true,
-                    "tag": {
-                      "value": {
-                        "defaultLabel": "Sidebar Background Color",
-                        "display": {
-                          "string": {
-                            "format": "color"
-                          }
-                        }
-                      }
-                    }
-                  },
-                  "backgroundHover": {
-                    "type": "string",
-                    "optional": true,
-                    "tag": {
-                      "value": {
-                        "defaultLabel": "Sidebar Background Hover Color",
-                        "display": {
-                          "string": {
-                            "format": "color"
-                          }
-                        }
-                      }
-                    }
-                  },
-                  "textColor": {
-                    "type": "string",
-                    "optional": true,
-                    "tag": {
-                      "value": {
-                        "defaultLabel": "Sidebar Text Color",
-                        "display": {
-                          "string": {
-                            "format": "color"
-                          }
-                        }
-                      }
-                    }
-                  },
-                  "textColorActive": {
-                    "type": "string",
-                    "optional": true,
-                    "tag": {
-                      "value": {
-                        "defaultLabel": "Sidebar Text Color Active",
-                        "display": {
-                          "string": {
-                            "format": "color"
-                          }
-                        }
-                      }
-                    }
-                  },
-                  "borderRight": {
-                    "type": "string",
-                    "optional": true,
-                    "tag": {
-                      "value": {
-                        "defaultLabel": "Sidebar Border Right Color",
-                        "display": {
-                          "string": {
-                            "format": "color"
-                          }
-                        }
-                      }
-                    }
-                  },
-                  "width": {
-                    "type": "string",
-                    "tag": {
-                      "value": {
-                        "defaultLabel": "Sidebar Width",
-                        "display": {
-                          "string": {
-                            "format": "size"
-                          }
-                        }
-                      }
-                    }
-                  },
-                  "itemHeight": {
-                    "type": "string",
-                    "tag": {
-                      "value": {
-                        "defaultLabel": "Sidebar Item Height",
-                        "display": {
-                          "string": {
-                            "format": "size"
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              },
-              "drawer": {
-                "type": "object",
-                "definition": {
-                  "background": {
-                    "type": "string",
-                    "optional": true,
-                    "tag": {
-                      "value": {
-                        "defaultLabel": "Drawer Background Color",
-                        "display": {
-                          "string": {
-                            "format": "color"
-                          }
-                        }
-                      }
-                    }
-                  },
-                  "backdrop": {
-                    "type": "string",
-                    "optional": true
-                  },
-                  "elevation": {
-                    "type": "string",
-                    "optional": true
-                  }
-                }
-              },
-              "input": {
-                "type": "object",
-                "definition": {
-                  "background": {
-                    "type": "string",
-                    "optional": true,
-                    "tag": {
-                      "value": {
-                        "defaultLabel": "Input Background Color",
-                        "display": {
-                          "string": {
-                            "format": "color"
-                          }
-                        }
-                      }
-                    }
-                  },
-                  "backgroundHover": {
-                    "type": "string",
-                    "optional": true,
-                    "tag": {
-                      "value": {
-                        "defaultLabel": "Input Background Hover Color",
-                        "display": {
-                          "string": {
-                            "format": "color"
-                          }
-                        }
-                      }
-                    }
-                  },
-                  "backgroundFocused": {
-                    "type": "string",
-                    "optional": true,
-                    "tag": {
-                      "value": {
-                        "defaultLabel": "Input Background Focused Color",
-                        "display": {
-                          "string": {
-                            "format": "color"
-                          }
-                        }
-                      }
-                    }
-                  },
-                  "borderColor": {
-                    "type": "string",
-                    "optional": true,
-                    "tag": {
-                      "value": {
-                        "defaultLabel": "Input Border Color",
-                        "display": {
-                          "string": {
-                            "format": "color"
-                          }
-                        }
-                      }
-                    }
-                  },
-                  "borderColorHover": {
-                    "type": "string",
-                    "optional": true,
-                    "tag": {
-                      "value": {
-                        "defaultLabel": "Input Border Color Hover",
-                        "display": {
-                          "string": {
-                            "format": "color"
-                          }
-                        }
-                      }
-                    }
-                  },
-                  "borderColorFocused": {
-                    "type": "string",
-                    "optional": true,
-                    "tag": {
-                      "value": {
-                        "defaultLabel": "Input Border Color Focused",
-                        "display": {
-                          "string": {
-                            "format": "color"
-                          }
-                        }
-                      }
-                    }
-                  },
-                  "textColor": {
-                    "type": "string",
-                    "optional": true,
-                    "tag": {
-                      "value": {
-                        "defaultLabel": "Input Text Color",
-                        "display": {
-                          "string": {
-                            "format": "color"
-                          }
-                        }
-                      }
-                    }
-                  },
-                  "placeholderColor": {
-                    "type": "string",
-                    "optional": true,
-                    "tag": {
-                      "value": {
-                        "defaultLabel": "Input Placeholder Color",
-                        "display": {
-                          "string": {
-                            "format": "color"
-                          }
-                        }
-                      }
-                    }
-                  },
-                  "borderRadius": {
-                    "type": "string"
-                  },
-                  "height": {
-                    "type": "string"
-                  }
-                }
-              },
-              "button": {
-                "type": "object",
-                "definition": {
-                  "primary": {
-                    "type": "object",
-                    "definition": {
-                      "background": {
-                        "type": "string",
-                        "optional": true,
-                        "tag": {
-                          "value": {
-                            "defaultLabel": "Primary Button Background Color",
-                            "display": {
-                              "string": {
-                                "format": "color"
-                              }
-                            }
-                          }
-                        }
-                      },
-                      "backgroundHover": {
-                        "type": "string",
-                        "optional": true,
-                        "tag": {
-                          "value": {
-                            "defaultLabel": "Primary Button Background Hover Color",
-                            "display": {
-                              "string": {
-                                "format": "color"
-                              }
-                            }
-                          }
-                        }
-                      },
-                      "backgroundActive": {
-                        "type": "string",
-                        "optional": true,
-                        "tag": {
-                          "value": {
-                            "defaultLabel": "Primary Button Background Active Color",
-                            "display": {
-                              "string": {
-                                "format": "color"
-                              }
-                            }
-                          }
-                        }
-                      },
-                      "textColor": {
-                        "type": "string",
-                        "optional": true,
-                        "tag": {
-                          "value": {
-                            "defaultLabel": "Primary Button Text Color",
-                            "display": {
-                              "string": {
-                                "format": "color"
-                              }
-                            }
-                          }
-                        }
-                      },
-                      "borderColor": {
-                        "type": "string",
-                        "optional": true,
-                        "tag": {
-                          "value": {
-                            "defaultLabel": "Primary Button Border Color",
-                            "display": {
-                              "string": {
-                                "format": "color"
-                              }
-                            }
-                          }
-                        }
-                      },
-                      "borderRadius": {
-                        "type": "string"
-                      }
-                    }
-                  },
-                  "secondary": {
-                    "type": "object",
-                    "definition": {
-                      "background": {
-                        "type": "string",
-                        "optional": true,
-                        "tag": {
-                          "value": {
-                            "defaultLabel": "Secondary Button Background Color",
-                            "display": {
-                              "string": {
-                                "format": "color"
-                              }
-                            }
-                          }
-                        }
-                      },
-                      "backgroundHover": {
-                        "type": "string",
-                        "optional": true,
-                        "tag": {
-                          "value": {
-                            "defaultLabel": "Secondary Button Background Hover Color",
-                            "display": {
-                              "string": {
-                                "format": "color"
-                              }
-                            }
-                          }
-                        }
-                      },
-                      "backgroundActive": {
-                        "type": "string",
-                        "optional": true,
-                        "tag": {
-                          "value": {
-                            "defaultLabel": "Secondary Button Background Active Color",
-                            "display": {
-                              "string": {
-                                "format": "color"
-                              }
-                            }
-                          }
-                        }
-                      },
-                      "textColor": {
-                        "type": "string",
-                        "optional": true,
-                        "tag": {
-                          "value": {
-                            "defaultLabel": "Secondary Button Text Color",
-                            "display": {
-                              "string": {
-                                "format": "color"
-                              }
-                            }
-                          }
-                        }
-                      },
-                      "borderColor": {
-                        "type": "string",
-                        "optional": true,
-                        "tag": {
-                          "value": {
-                            "defaultLabel": "Secondary Button Border Color",
-                            "display": {
-                              "string": {
-                                "format": "color"
-                              }
-                            }
-                          }
-                        }
-                      },
-                      "borderRadius": {
-                        "type": "string"
-                      }
-                    }
-                  },
-                  "outlined": {
-                    "type": "object",
-                    "definition": {
-                      "background": {
-                        "type": "string",
-                        "optional": true,
-                        "tag": {
-                          "value": {
-                            "defaultLabel": "Outlined Button Background Color",
-                            "display": {
-                              "string": {
-                                "format": "color"
-                              }
-                            }
-                          }
-                        }
-                      },
-                      "backgroundHover": {
-                        "type": "string",
-                        "optional": true,
-                        "tag": {
-                          "value": {
-                            "defaultLabel": "Outlined Button Background Hover Color",
-                            "display": {
-                              "string": {
-                                "format": "color"
-                              }
-                            }
-                          }
-                        }
-                      },
-                      "backgroundActive": {
-                        "type": "string",
-                        "optional": true,
-                        "tag": {
-                          "value": {
-                            "defaultLabel": "Outlined Button Background Active Color",
-                            "display": {
-                              "string": {
-                                "format": "color"
-                              }
-                            }
-                          }
-                        }
-                      },
-                      "textColor": {
-                        "type": "string",
-                        "optional": true,
-                        "tag": {
-                          "value": {
-                            "defaultLabel": "Outlined Button Text Color",
-                            "display": {
-                              "string": {
-                                "format": "color"
-                              }
-                            }
-                          }
-                        }
-                      },
-                      "borderColor": {
-                        "type": "string",
-                        "optional": true,
-                        "tag": {
-                          "value": {
-                            "defaultLabel": "Outlined Button Border Color",
-                            "display": {
-                              "string": {
-                                "format": "color"
-                              }
-                            }
-                          }
-                        }
-                      },
-                      "borderRadius": {
-                        "type": "string"
-                      }
-                    }
-                  }
-                }
-              },
-              "card": {
-                "type": "object",
-                "definition": {
-                  "background": {
-                    "type": "string",
-                    "optional": true,
-                    "tag": {
-                      "value": {
-                        "defaultLabel": "Card Background Color",
-                        "display": {
-                          "string": {
-                            "format": "color"
-                          }
-                        }
-                      }
-                    }
-                  },
-                  "borderColor": {
-                    "type": "string",
-                    "optional": true,
-                    "tag": {
-                      "value": {
-                        "defaultLabel": "Card Border Color",
-                        "display": {
-                          "string": {
-                            "format": "color"
-                          }
-                        }
-                      }
-                    }
-                  },
-                  "borderRadius": {
-                    "type": "string"
-                  },
-                  "elevation": {
-                    "type": "string"
-                  },
-                  "padding": {
-                    "type": "string"
-                  }
-                }
-              },
-              "dialog": {
-                "type": "object",
-                "definition": {
-                  "background": {
-                    "type": "string",
-                    "optional": true,
-                    "tag": {
-                      "value": {
-                        "defaultLabel": "Dialog Background Color",
-                        "display": {
-                          "string": {
-                            "format": "color"
-                          }
-                        }
-                      }
-                    }
-                  },
-                  "backdrop": {
-                    "type": "string",
-                    "optional": true,
-                    "tag": {
-                      "value": {
-                        "defaultLabel": "Dialog Backdrop Color",
-                        "display": {
-                          "string": {
-                            "format": "color"
-                          }
-                        }
-                      }
-                    }
-                  },
-                  "borderRadius": {
-                    "type": "string"
-                  },
-                  "elevation": {
-                    "type": "string"
-                  },
-                  "padding": {
-                    "type": "string"
-                  }
-                }
-              },
-              "tooltip": {
-                "type": "object",
-                "definition": {
-                  "background": {
-                    "type": "string",
-                    "optional": true,
-                    "tag": {
-                      "value": {
-                        "defaultLabel": "Tooltip Background Color",
-                        "display": {
-                          "string": {
-                            "format": "color"
-                          }
-                        }
-                      }
-                    }
-                  },
-                  "textColor": {
-                    "type": "string",
-                    "optional": true,
-                    "tag": {
-                      "value": {
-                        "defaultLabel": "Tooltip Text Color",
-                        "display": {
-                          "string": {
-                            "format": "color"
-                          }
-                        }
-                      }
-                    }
-                  },
-                  "borderRadius": {
-                    "type": "string"
-                  },
-                  "fontSize": {
-                    "type": "string"
-                  }
-                }
-              },
-              "icon": {
-                "type": "object",
-                "definition": {
-                  "colorPrimary": {
-                    "type": "string",
-                    "optional": true,
-                    "tag": {
-                      "value": {
-                        "defaultLabel": "Icon Primary Color",
-                        "display": {
-                          "string": {
-                            "format": "color"
-                          }
-                        }
-                      }
-                    }
-                  },
-                  "colorSecondary": {
-                    "type": "string",
-                    "optional": true,
-                    "tag": {
-                      "value": {
-                        "defaultLabel": "Icon Secondary Color",
-                        "display": {
-                          "string": {
-                            "format": "color"
-                          }
-                        }
-                      }
-                    }
-                  },
-                  "colorDisabled": {
-                    "type": "string",
-                    "optional": true,
-                    "tag": {
-                      "value": {
-                        "defaultLabel": "Icon Disabled Color",
-                        "display": {
-                          "string": {
-                            "format": "color"
-                          }
-                        }
-                      }
-                    }
-                  },
-                  "size": {
-                    "type": "object",
-                    "definition": {
-                      "sm": {
-                        "type": "string"
-                      },
-                      "md": {
-                        "type": "string"
-                      },
-                      "lg": {
-                        "type": "string"
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "table": {
-            "type": "object",
-            "definition": {
               "colors": {
                 "type": "object",
+                "optional": true,
                 "definition": {
                   "primary": {
                     "type": "string",
                     "tag": {
                       "value": {
                         "defaultLabel": "Primary Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "primaryLight": {
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Primary Light Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "primaryDark": {
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Primary Dark Color",
                         "display": {
                           "string": {
                             "format": "color"
@@ -25236,11 +24010,63 @@ export const miroirFundamentalJzodSchema = {
                       }
                     }
                   },
+                  "secondaryLight": {
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Secondary Light Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "secondaryDark": {
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Secondary Dark Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
+                  },
                   "background": {
                     "type": "string",
                     "tag": {
                       "value": {
                         "defaultLabel": "Background Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "backgroundPaper": {
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Background Paper Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "backgroundOverlay": {
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Background Overlay Color",
                         "display": {
                           "string": {
                             "format": "color"
@@ -25262,11 +24088,11 @@ export const miroirFundamentalJzodSchema = {
                       }
                     }
                   },
-                  "border": {
+                  "surfaceVariant": {
                     "type": "string",
                     "tag": {
                       "value": {
-                        "defaultLabel": "Border Color",
+                        "defaultLabel": "Surface Variant Color",
                         "display": {
                           "string": {
                             "format": "color"
@@ -25314,6 +24140,58 @@ export const miroirFundamentalJzodSchema = {
                       }
                     }
                   },
+                  "textDisabled": {
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Disabled Text Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "border": {
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Border Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "borderLight": {
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Light Border Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "divider": {
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Divider Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
+                  },
                   "hover": {
                     "type": "string",
                     "tag": {
@@ -25340,11 +24218,11 @@ export const miroirFundamentalJzodSchema = {
                       }
                     }
                   },
-                  "filter": {
+                  "focused": {
                     "type": "string",
                     "tag": {
                       "value": {
-                        "defaultLabel": "Filter Color",
+                        "defaultLabel": "Focused Color",
                         "display": {
                           "string": {
                             "format": "color"
@@ -25353,11 +24231,11 @@ export const miroirFundamentalJzodSchema = {
                       }
                     }
                   },
-                  "filterBackground": {
+                  "active": {
                     "type": "string",
                     "tag": {
                       "value": {
-                        "defaultLabel": "Filter Background Color",
+                        "defaultLabel": "Active Color",
                         "display": {
                           "string": {
                             "format": "color"
@@ -25379,6 +24257,32 @@ export const miroirFundamentalJzodSchema = {
                       }
                     }
                   },
+                  "errorLight": {
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Light Error Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "errorSurface": {
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Error Surface Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
+                  },
                   "warning": {
                     "type": "string",
                     "tag": {
@@ -25392,11 +24296,76 @@ export const miroirFundamentalJzodSchema = {
                       }
                     }
                   },
+                  "warningLight": {
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Light Warning Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
+                  },
                   "success": {
                     "type": "string",
                     "tag": {
                       "value": {
                         "defaultLabel": "Success Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "successLight": {
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Light Success Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "successSurface": {
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Success Surface Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "info": {
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Info Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "infoLight": {
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Light Info Color",
                         "display": {
                           "string": {
                             "format": "color"
@@ -25422,10 +24391,2300 @@ export const miroirFundamentalJzodSchema = {
                     "type": "string",
                     "tag": {
                       "value": {
-                        "defaultLabel": "Accent Light Color",
+                        "defaultLabel": "Light Accent Color",
                         "display": {
                           "string": {
                             "format": "color"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "shadow": {
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Shadow Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "overlay": {
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Overlay Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "nesting": {
+                    "type": "object",
+                    "definition": {
+                      "level0": {
+                        "type": "string",
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Nesting Level 0 Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "level1": {
+                        "type": "string",
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Nesting Level 1 Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "level2": {
+                        "type": "string",
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Nesting Level 2 Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "spacing": {
+                "type": "object",
+                "optional": true,
+                "definition": {
+                  "xs": {
+                    "type": "string"
+                  },
+                  "sm": {
+                    "type": "string"
+                  },
+                  "md": {
+                    "type": "string"
+                  },
+                  "lg": {
+                    "type": "string"
+                  },
+                  "xl": {
+                    "type": "string"
+                  },
+                  "xxl": {
+                    "type": "string"
+                  }
+                }
+              },
+              "typography": {
+                "type": "object",
+                "optional": true,
+                "definition": {
+                  "fontFamily": {
+                    "type": "string"
+                  },
+                  "fontSize": {
+                    "type": "object",
+                    "definition": {
+                      "xs": {
+                        "type": "string"
+                      },
+                      "sm": {
+                        "type": "string"
+                      },
+                      "md": {
+                        "type": "string"
+                      },
+                      "lg": {
+                        "type": "string"
+                      },
+                      "xl": {
+                        "type": "string"
+                      },
+                      "xxl": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "fontWeight": {
+                    "type": "object",
+                    "definition": {
+                      "light": {
+                        "type": "number"
+                      },
+                      "normal": {
+                        "type": "number"
+                      },
+                      "medium": {
+                        "type": "number"
+                      },
+                      "bold": {
+                        "type": "number"
+                      },
+                      "extraBold": {
+                        "type": "number"
+                      }
+                    }
+                  },
+                  "lineHeight": {
+                    "type": "object",
+                    "definition": {
+                      "tight": {
+                        "type": "number"
+                      },
+                      "normal": {
+                        "type": "number"
+                      },
+                      "relaxed": {
+                        "type": "number"
+                      }
+                    }
+                  }
+                }
+              },
+              "elevation": {
+                "type": "object",
+                "optional": true,
+                "definition": {
+                  "none": {
+                    "type": "string"
+                  },
+                  "low": {
+                    "type": "string"
+                  },
+                  "medium": {
+                    "type": "string"
+                  },
+                  "high": {
+                    "type": "string"
+                  },
+                  "modal": {
+                    "type": "string"
+                  }
+                }
+              },
+              "borderRadius": {
+                "type": "object",
+                "optional": true,
+                "definition": {
+                  "none": {
+                    "type": "string"
+                  },
+                  "sm": {
+                    "type": "string"
+                  },
+                  "md": {
+                    "type": "string"
+                  },
+                  "lg": {
+                    "type": "string"
+                  },
+                  "xl": {
+                    "type": "string"
+                  },
+                  "full": {
+                    "type": "string"
+                  }
+                }
+              },
+              "components": {
+                "type": "object",
+                "optional": true,
+                "definition": {
+                  "appBar": {
+                    "type": "object",
+                    "optional": true,
+                    "definition": {
+                      "background": {
+                        "type": "string",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "App Bar Background Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "textColor": {
+                        "type": "string",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "App Bar Text Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "borderBottom": {
+                        "type": "string",
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "App Bar Border Bottom Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "height": {
+                        "type": "string",
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "App Bar Height",
+                            "display": {
+                              "string": {
+                                "format": "size"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "elevation": {
+                        "type": "string",
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "App Bar Elevation",
+                            "display": {
+                              "string": {
+                                "format": "elevation"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "sidebar": {
+                    "type": "object",
+                    "optional": true,
+                    "definition": {
+                      "background": {
+                        "type": "string",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Sidebar Background Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "backgroundHover": {
+                        "type": "string",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Sidebar Background Hover Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "textColor": {
+                        "type": "string",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Sidebar Text Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "textColorActive": {
+                        "type": "string",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Sidebar Text Color Active",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "borderRight": {
+                        "type": "string",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Sidebar Border Right Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "width": {
+                        "type": "string",
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Sidebar Width",
+                            "display": {
+                              "string": {
+                                "format": "size"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "itemHeight": {
+                        "type": "string",
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Sidebar Item Height",
+                            "display": {
+                              "string": {
+                                "format": "size"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "drawer": {
+                    "type": "object",
+                    "optional": true,
+                    "definition": {
+                      "background": {
+                        "type": "string",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Drawer Background Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "backdrop": {
+                        "type": "string",
+                        "optional": true
+                      },
+                      "elevation": {
+                        "type": "string",
+                        "optional": true
+                      }
+                    }
+                  },
+                  "input": {
+                    "type": "object",
+                    "optional": true,
+                    "definition": {
+                      "background": {
+                        "type": "string",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Input Background Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "backgroundHover": {
+                        "type": "string",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Input Background Hover Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "backgroundFocused": {
+                        "type": "string",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Input Background Focused Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "borderColor": {
+                        "type": "string",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Input Border Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "borderColorHover": {
+                        "type": "string",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Input Border Color Hover",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "borderColorFocused": {
+                        "type": "string",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Input Border Color Focused",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "textColor": {
+                        "type": "string",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Input Text Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "placeholderColor": {
+                        "type": "string",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Input Placeholder Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "borderRadius": {
+                        "type": "string"
+                      },
+                      "height": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "button": {
+                    "type": "object",
+                    "optional": true,
+                    "definition": {
+                      "primary": {
+                        "type": "object",
+                        "definition": {
+                          "background": {
+                            "type": "string",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Primary Button Background Color",
+                                "display": {
+                                  "string": {
+                                    "format": "color"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "backgroundHover": {
+                            "type": "string",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Primary Button Background Hover Color",
+                                "display": {
+                                  "string": {
+                                    "format": "color"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "backgroundActive": {
+                            "type": "string",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Primary Button Background Active Color",
+                                "display": {
+                                  "string": {
+                                    "format": "color"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "textColor": {
+                            "type": "string",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Primary Button Text Color",
+                                "display": {
+                                  "string": {
+                                    "format": "color"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "borderColor": {
+                            "type": "string",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Primary Button Border Color",
+                                "display": {
+                                  "string": {
+                                    "format": "color"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "borderRadius": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      "secondary": {
+                        "type": "object",
+                        "definition": {
+                          "background": {
+                            "type": "string",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Secondary Button Background Color",
+                                "display": {
+                                  "string": {
+                                    "format": "color"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "backgroundHover": {
+                            "type": "string",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Secondary Button Background Hover Color",
+                                "display": {
+                                  "string": {
+                                    "format": "color"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "backgroundActive": {
+                            "type": "string",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Secondary Button Background Active Color",
+                                "display": {
+                                  "string": {
+                                    "format": "color"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "textColor": {
+                            "type": "string",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Secondary Button Text Color",
+                                "display": {
+                                  "string": {
+                                    "format": "color"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "borderColor": {
+                            "type": "string",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Secondary Button Border Color",
+                                "display": {
+                                  "string": {
+                                    "format": "color"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "borderRadius": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      "outlined": {
+                        "type": "object",
+                        "definition": {
+                          "background": {
+                            "type": "string",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Outlined Button Background Color",
+                                "display": {
+                                  "string": {
+                                    "format": "color"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "backgroundHover": {
+                            "type": "string",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Outlined Button Background Hover Color",
+                                "display": {
+                                  "string": {
+                                    "format": "color"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "backgroundActive": {
+                            "type": "string",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Outlined Button Background Active Color",
+                                "display": {
+                                  "string": {
+                                    "format": "color"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "textColor": {
+                            "type": "string",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Outlined Button Text Color",
+                                "display": {
+                                  "string": {
+                                    "format": "color"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "borderColor": {
+                            "type": "string",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Outlined Button Border Color",
+                                "display": {
+                                  "string": {
+                                    "format": "color"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "borderRadius": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "card": {
+                    "type": "object",
+                    "optional": true,
+                    "definition": {
+                      "background": {
+                        "type": "string",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Card Background Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "borderColor": {
+                        "type": "string",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Card Border Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "borderRadius": {
+                        "type": "string"
+                      },
+                      "elevation": {
+                        "type": "string"
+                      },
+                      "padding": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "dialog": {
+                    "type": "object",
+                    "optional": true,
+                    "definition": {
+                      "background": {
+                        "type": "string",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Dialog Background Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "backdrop": {
+                        "type": "string",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Dialog Backdrop Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "borderRadius": {
+                        "type": "string"
+                      },
+                      "elevation": {
+                        "type": "string"
+                      },
+                      "padding": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "tooltip": {
+                    "type": "object",
+                    "optional": true,
+                    "definition": {
+                      "background": {
+                        "type": "string",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Tooltip Background Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "textColor": {
+                        "type": "string",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Tooltip Text Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "borderRadius": {
+                        "type": "string"
+                      },
+                      "fontSize": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "icon": {
+                    "type": "object",
+                    "optional": true,
+                    "definition": {
+                      "colorPrimary": {
+                        "type": "string",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Icon Primary Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "colorSecondary": {
+                        "type": "string",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Icon Secondary Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "colorDisabled": {
+                        "type": "string",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Icon Disabled Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "size": {
+                        "type": "object",
+                        "definition": {
+                          "sm": {
+                            "type": "string"
+                          },
+                          "md": {
+                            "type": "string"
+                          },
+                          "lg": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "table": {
+                "type": "object",
+                "optional": true,
+                "definition": {
+                  "colors": {
+                    "type": "object",
+                    "optional": true,
+                    "definition": {
+                      "primary": {
+                        "type": "string",
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Primary Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "secondary": {
+                        "type": "string",
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Secondary Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "background": {
+                        "type": "string",
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Background Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "surface": {
+                        "type": "string",
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Surface Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "border": {
+                        "type": "string",
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Border Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "text": {
+                        "type": "string",
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Text Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "textSecondary": {
+                        "type": "string",
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Secondary Text Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "textLight": {
+                        "type": "string",
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Light Text Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "hover": {
+                        "type": "string",
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Hover Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "selected": {
+                        "type": "string",
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Selected Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "filter": {
+                        "type": "string",
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Filter Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "filterBackground": {
+                        "type": "string",
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Filter Background Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "error": {
+                        "type": "string",
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Error Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "warning": {
+                        "type": "string",
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Warning Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "success": {
+                        "type": "string",
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Success Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "accent": {
+                        "type": "string",
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Accent Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "accentLight": {
+                        "type": "string",
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Accent Light Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "spacing": {
+                    "type": "object",
+                    "optional": true,
+                    "definition": {
+                      "xs": {
+                        "type": "string"
+                      },
+                      "sm": {
+                        "type": "string"
+                      },
+                      "md": {
+                        "type": "string"
+                      },
+                      "lg": {
+                        "type": "string"
+                      },
+                      "xl": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "typography": {
+                    "type": "object",
+                    "optional": true,
+                    "definition": {
+                      "fontSize": {
+                        "type": "string"
+                      },
+                      "fontFamily": {
+                        "type": "string"
+                      },
+                      "fontWeight": {
+                        "type": "object",
+                        "definition": {
+                          "normal": {
+                            "type": "number"
+                          },
+                          "medium": {
+                            "type": "number"
+                          },
+                          "bold": {
+                            "type": "number"
+                          }
+                        }
+                      },
+                      "headerFontSize": {
+                        "type": "string"
+                      },
+                      "headerFontWeight": {
+                        "type": "number"
+                      }
+                    }
+                  },
+                  "components": {
+                    "type": "object",
+                    "optional": true,
+                    "definition": {
+                      "table": {
+                        "type": "object",
+                        "optional": true,
+                        "definition": {
+                          "borderRadius": {
+                            "type": "string"
+                          },
+                          "border": {
+                            "type": "string"
+                          },
+                          "minHeight": {
+                            "type": "string"
+                          },
+                          "maxHeight": {
+                            "type": "string"
+                          },
+                          "backgroundColor": {
+                            "type": "string",
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Table Background Color",
+                                "display": {
+                                  "string": {
+                                    "format": "color"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "width": {
+                            "type": "string"
+                          },
+                          "maxWidth": {
+                            "type": "string"
+                          },
+                          "adaptiveColumnWidths": {
+                            "type": "boolean"
+                          }
+                        }
+                      },
+                      "header": {
+                        "type": "object",
+                        "optional": true,
+                        "definition": {
+                          "background": {
+                            "type": "string",
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Header Background Color",
+                                "display": {
+                                  "string": {
+                                    "format": "color"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "height": {
+                            "type": "string"
+                          },
+                          "fontSize": {
+                            "type": "string"
+                          },
+                          "fontWeight": {
+                            "type": "number"
+                          },
+                          "borderBottom": {
+                            "type": "string"
+                          },
+                          "textColor": {
+                            "type": "string",
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Header Text Color",
+                                "display": {
+                                  "string": {
+                                    "format": "color"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "hoverBackground": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      "cell": {
+                        "type": "object",
+                        "optional": true,
+                        "definition": {
+                          "height": {
+                            "type": "string"
+                          },
+                          "padding": {
+                            "type": "string"
+                          },
+                          "borderRight": {
+                            "type": "string"
+                          },
+                          "borderBottom": {
+                            "type": "string"
+                          },
+                          "fontSize": {
+                            "type": "string"
+                          },
+                          "backgroundColor": {
+                            "type": "string",
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Cell Background Color",
+                                "display": {
+                                  "string": {
+                                    "format": "color"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "textColor": {
+                            "type": "string",
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Cell Text Color",
+                                "display": {
+                                  "string": {
+                                    "format": "color"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "row": {
+                        "type": "object",
+                        "optional": true,
+                        "definition": {
+                          "hoverBackground": {
+                            "type": "string"
+                          },
+                          "selectedBackground": {
+                            "type": "string"
+                          },
+                          "borderBottom": {
+                            "type": "string"
+                          },
+                          "evenBackground": {
+                            "type": "string"
+                          },
+                          "oddBackground": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      "toolbar": {
+                        "type": "object",
+                        "optional": true,
+                        "definition": {
+                          "background": {
+                            "type": "string"
+                          },
+                          "padding": {
+                            "type": "string"
+                          },
+                          "borderBottom": {
+                            "type": "string"
+                          },
+                          "height": {
+                            "type": "string"
+                          },
+                          "textColor": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      "filter": {
+                        "type": "object",
+                        "optional": true,
+                        "definition": {
+                          "iconColor": {
+                            "type": "string",
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Filter Icon Color",
+                                "display": {
+                                  "string": {
+                                    "format": "color"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "activeIconColor": {
+                            "type": "string",
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Active Filter Icon Color",
+                                "display": {
+                                  "string": {
+                                    "format": "color"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "clearButtonColor": {
+                            "type": "string",
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Clear Button Color",
+                                "display": {
+                                  "string": {
+                                    "format": "color"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "clearButtonBackground": {
+                            "type": "string",
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Clear Button Background Color",
+                                "display": {
+                                  "string": {
+                                    "format": "color"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "clearButtonBorder": {
+                            "type": "string",
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Clear Button Border Color",
+                                "display": {
+                                  "string": {
+                                    "format": "color"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "toolbarBackground": {
+                            "type": "string",
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Toolbar Background Color",
+                                "display": {
+                                  "string": {
+                                    "format": "color"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "inputBackground": {
+                            "type": "string",
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Input Background Color",
+                                "display": {
+                                  "string": {
+                                    "format": "color"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "inputBorder": {
+                            "type": "string",
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Input Border Color",
+                                "display": {
+                                  "string": {
+                                    "format": "color"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "sort": {
+                        "type": "object",
+                        "optional": true,
+                        "definition": {
+                          "iconColor": {
+                            "type": "string"
+                          },
+                          "activeIconColor": {
+                            "type": "string"
+                          },
+                          "ascendingSymbol": {
+                            "type": "string"
+                          },
+                          "descendingSymbol": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "breakpoints": {
+                "type": "object",
+                "optional": true,
+                "definition": {
+                  "xs": {
+                    "type": "string"
+                  },
+                  "sm": {
+                    "type": "string"
+                  },
+                  "md": {
+                    "type": "string"
+                  },
+                  "lg": {
+                    "type": "string"
+                  },
+                  "xl": {
+                    "type": "string"
+                  }
+                }
+              },
+              "transitions": {
+                "type": "object",
+                "optional": true,
+                "definition": {
+                  "duration": {
+                    "type": "object",
+                    "definition": {
+                      "short": {
+                        "type": "string"
+                      },
+                      "medium": {
+                        "type": "string"
+                      },
+                      "long": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "easing": {
+                    "type": "object",
+                    "definition": {
+                      "linear": {
+                        "type": "string"
+                      },
+                      "easeIn": {
+                        "type": "string"
+                      },
+                      "easeOut": {
+                        "type": "string"
+                      },
+                      "easeInOut": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "miroirThemeFull": {
+        "type": "object",
+        "definition": {
+          "uuid": {
+            "type": "uuid",
+            "tag": {
+              "value": {
+                "defaultLabel": "Uuid",
+                "display": {
+                  "editable": false
+                }
+              }
+            }
+          },
+          "parentName": {
+            "type": "string",
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "Entity Name",
+                "display": {
+                  "editable": false
+                }
+              }
+            }
+          },
+          "parentUuid": {
+            "type": "uuid",
+            "tag": {
+              "value": {
+                "defaultLabel": "Entity Uuid",
+                "display": {
+                  "editable": false
+                }
+              }
+            }
+          },
+          "parentDefinitionVersionUuid": {
+            "type": "uuid",
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "Entity Definition Version Uuid",
+                "display": {
+                  "editable": false
+                }
+              }
+            }
+          },
+          "conceptLevel": {
+            "type": "enum",
+            "definition": [
+              "MetaModel",
+              "Model",
+              "Data"
+            ],
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "Concept Level",
+                "display": {
+                  "editable": false
+                }
+              }
+            }
+          },
+          "storageAccess": {
+            "type": "enum",
+            "definition": [
+              "none",
+              "localStorage",
+              "persistentStorage"
+            ],
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "Storage Access",
+                "display": {
+                  "editable": false
+                }
+              }
+            }
+          },
+          "selfApplication": {
+            "type": "uuid",
+            "optional": true,
+            "tag": {
+              "value": {
+                "display": {
+                  "editable": false
+                },
+                "defaultLabel": "SelfApplication",
+                "foreignKeyParams": {
+                  "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
+                  "targetEntityOrderInstancesBy": "name"
+                }
+              }
+            }
+          },
+          "name": {
+            "type": "string",
+            "tag": {
+              "value": {
+                "defaultLabel": "Name"
+              }
+            }
+          },
+          "defaultLabel": {
+            "type": "string",
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "Default Label"
+              }
+            }
+          },
+          "author": {
+            "type": "uuid",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 9,
+                "defaultLabel": "SelfApplication"
+              }
+            }
+          },
+          "description": {
+            "type": "string",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 10,
+                "defaultLabel": "Description"
+              }
+            }
+          },
+          "definition": {
+            "type": "object",
+            "definition": {
+              "id": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string",
+                "optional": true
+              },
+              "colors": {
+                "type": "object",
+                "definition": {
+                  "primary": {
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Primary Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "primaryLight": {
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Primary Light Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "primaryDark": {
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Primary Dark Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "secondary": {
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Secondary Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "secondaryLight": {
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Secondary Light Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "secondaryDark": {
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Secondary Dark Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "background": {
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Background Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "backgroundPaper": {
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Background Paper Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "backgroundOverlay": {
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Background Overlay Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "surface": {
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Surface Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "surfaceVariant": {
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Surface Variant Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "text": {
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Text Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "textSecondary": {
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Secondary Text Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "textLight": {
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Light Text Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "textDisabled": {
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Disabled Text Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "border": {
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Border Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "borderLight": {
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Light Border Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "divider": {
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Divider Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "hover": {
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Hover Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "selected": {
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Selected Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "focused": {
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Focused Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "active": {
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Active Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "error": {
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Error Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "errorLight": {
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Light Error Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "errorSurface": {
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Error Surface Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "warning": {
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Warning Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "warningLight": {
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Light Warning Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "success": {
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Success Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "successLight": {
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Light Success Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "successSurface": {
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Success Surface Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "info": {
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Info Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "infoLight": {
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Light Info Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "accent": {
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Accent Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "accentLight": {
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Light Accent Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "shadow": {
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Shadow Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "overlay": {
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Overlay Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "nesting": {
+                    "type": "object",
+                    "definition": {
+                      "level0": {
+                        "type": "string",
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Nesting Level 0 Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "level1": {
+                        "type": "string",
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Nesting Level 1 Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "level2": {
+                        "type": "string",
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Nesting Level 2 Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
                           }
                         }
                       }
@@ -25450,21 +26709,47 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "xl": {
                     "type": "string"
+                  },
+                  "xxl": {
+                    "type": "string"
                   }
                 }
               },
               "typography": {
                 "type": "object",
                 "definition": {
-                  "fontSize": {
-                    "type": "string"
-                  },
                   "fontFamily": {
                     "type": "string"
+                  },
+                  "fontSize": {
+                    "type": "object",
+                    "definition": {
+                      "xs": {
+                        "type": "string"
+                      },
+                      "sm": {
+                        "type": "string"
+                      },
+                      "md": {
+                        "type": "string"
+                      },
+                      "lg": {
+                        "type": "string"
+                      },
+                      "xl": {
+                        "type": "string"
+                      },
+                      "xxl": {
+                        "type": "string"
+                      }
+                    }
                   },
                   "fontWeight": {
                     "type": "object",
                     "definition": {
+                      "light": {
+                        "type": "number"
+                      },
                       "normal": {
                         "type": "number"
                       },
@@ -25473,40 +26758,211 @@ export const miroirFundamentalJzodSchema = {
                       },
                       "bold": {
                         "type": "number"
+                      },
+                      "extraBold": {
+                        "type": "number"
                       }
                     }
                   },
-                  "headerFontSize": {
+                  "lineHeight": {
+                    "type": "object",
+                    "definition": {
+                      "tight": {
+                        "type": "number"
+                      },
+                      "normal": {
+                        "type": "number"
+                      },
+                      "relaxed": {
+                        "type": "number"
+                      }
+                    }
+                  }
+                }
+              },
+              "elevation": {
+                "type": "object",
+                "definition": {
+                  "none": {
                     "type": "string"
                   },
-                  "headerFontWeight": {
-                    "type": "number"
+                  "low": {
+                    "type": "string"
+                  },
+                  "medium": {
+                    "type": "string"
+                  },
+                  "high": {
+                    "type": "string"
+                  },
+                  "modal": {
+                    "type": "string"
+                  }
+                }
+              },
+              "borderRadius": {
+                "type": "object",
+                "definition": {
+                  "none": {
+                    "type": "string"
+                  },
+                  "sm": {
+                    "type": "string"
+                  },
+                  "md": {
+                    "type": "string"
+                  },
+                  "lg": {
+                    "type": "string"
+                  },
+                  "xl": {
+                    "type": "string"
+                  },
+                  "full": {
+                    "type": "string"
                   }
                 }
               },
               "components": {
                 "type": "object",
                 "definition": {
-                  "table": {
+                  "appBar": {
                     "type": "object",
                     "definition": {
-                      "borderRadius": {
-                        "type": "string"
+                      "background": {
+                        "type": "string",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "App Bar Background Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
                       },
-                      "border": {
-                        "type": "string"
+                      "textColor": {
+                        "type": "string",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "App Bar Text Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
                       },
-                      "minHeight": {
-                        "type": "string"
-                      },
-                      "maxHeight": {
-                        "type": "string"
-                      },
-                      "backgroundColor": {
+                      "borderBottom": {
                         "type": "string",
                         "tag": {
                           "value": {
-                            "defaultLabel": "Table Background Color",
+                            "defaultLabel": "App Bar Border Bottom Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "height": {
+                        "type": "string",
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "App Bar Height",
+                            "display": {
+                              "string": {
+                                "format": "size"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "elevation": {
+                        "type": "string",
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "App Bar Elevation",
+                            "display": {
+                              "string": {
+                                "format": "elevation"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "sidebar": {
+                    "type": "object",
+                    "definition": {
+                      "background": {
+                        "type": "string",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Sidebar Background Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "backgroundHover": {
+                        "type": "string",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Sidebar Background Hover Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "textColor": {
+                        "type": "string",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Sidebar Text Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "textColorActive": {
+                        "type": "string",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Sidebar Text Color Active",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "borderRight": {
+                        "type": "string",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Sidebar Border Right Color",
                             "display": {
                               "string": {
                                 "format": "color"
@@ -25516,24 +26972,42 @@ export const miroirFundamentalJzodSchema = {
                         }
                       },
                       "width": {
-                        "type": "string"
+                        "type": "string",
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Sidebar Width",
+                            "display": {
+                              "string": {
+                                "format": "size"
+                              }
+                            }
+                          }
+                        }
                       },
-                      "maxWidth": {
-                        "type": "string"
-                      },
-                      "adaptiveColumnWidths": {
-                        "type": "boolean"
+                      "itemHeight": {
+                        "type": "string",
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Sidebar Item Height",
+                            "display": {
+                              "string": {
+                                "format": "size"
+                              }
+                            }
+                          }
+                        }
                       }
                     }
                   },
-                  "header": {
+                  "drawer": {
                     "type": "object",
                     "definition": {
                       "background": {
                         "type": "string",
+                        "optional": true,
                         "tag": {
                           "value": {
-                            "defaultLabel": "Header Background Color",
+                            "defaultLabel": "Drawer Background Color",
                             "display": {
                               "string": {
                                 "format": "color"
@@ -25542,205 +27016,22 @@ export const miroirFundamentalJzodSchema = {
                           }
                         }
                       },
-                      "height": {
-                        "type": "string"
-                      },
-                      "fontSize": {
-                        "type": "string"
-                      },
-                      "fontWeight": {
-                        "type": "number"
-                      },
-                      "borderBottom": {
-                        "type": "string"
-                      },
-                      "textColor": {
+                      "backdrop": {
                         "type": "string",
-                        "tag": {
-                          "value": {
-                            "defaultLabel": "Header Text Color",
-                            "display": {
-                              "string": {
-                                "format": "color"
-                              }
-                            }
-                          }
-                        }
+                        "optional": true
                       },
-                      "hoverBackground": {
-                        "type": "string"
+                      "elevation": {
+                        "type": "string",
+                        "optional": true
                       }
                     }
                   },
-                  "cell": {
-                    "type": "object",
-                    "definition": {
-                      "height": {
-                        "type": "string"
-                      },
-                      "padding": {
-                        "type": "string"
-                      },
-                      "borderRight": {
-                        "type": "string"
-                      },
-                      "borderBottom": {
-                        "type": "string"
-                      },
-                      "fontSize": {
-                        "type": "string"
-                      },
-                      "backgroundColor": {
-                        "type": "string",
-                        "tag": {
-                          "value": {
-                            "defaultLabel": "Cell Background Color",
-                            "display": {
-                              "string": {
-                                "format": "color"
-                              }
-                            }
-                          }
-                        }
-                      },
-                      "textColor": {
-                        "type": "string",
-                        "tag": {
-                          "value": {
-                            "defaultLabel": "Cell Text Color",
-                            "display": {
-                              "string": {
-                                "format": "color"
-                              }
-                            }
-                          }
-                        }
-                      }
-                    }
-                  },
-                  "row": {
-                    "type": "object",
-                    "definition": {
-                      "hoverBackground": {
-                        "type": "string"
-                      },
-                      "selectedBackground": {
-                        "type": "string"
-                      },
-                      "borderBottom": {
-                        "type": "string"
-                      },
-                      "evenBackground": {
-                        "type": "string"
-                      },
-                      "oddBackground": {
-                        "type": "string"
-                      }
-                    }
-                  },
-                  "toolbar": {
+                  "input": {
                     "type": "object",
                     "definition": {
                       "background": {
-                        "type": "string"
-                      },
-                      "padding": {
-                        "type": "string"
-                      },
-                      "borderBottom": {
-                        "type": "string"
-                      },
-                      "height": {
-                        "type": "string"
-                      },
-                      "textColor": {
-                        "type": "string"
-                      }
-                    }
-                  },
-                  "filter": {
-                    "type": "object",
-                    "definition": {
-                      "iconColor": {
                         "type": "string",
-                        "tag": {
-                          "value": {
-                            "defaultLabel": "Filter Icon Color",
-                            "display": {
-                              "string": {
-                                "format": "color"
-                              }
-                            }
-                          }
-                        }
-                      },
-                      "activeIconColor": {
-                        "type": "string",
-                        "tag": {
-                          "value": {
-                            "defaultLabel": "Active Filter Icon Color",
-                            "display": {
-                              "string": {
-                                "format": "color"
-                              }
-                            }
-                          }
-                        }
-                      },
-                      "clearButtonColor": {
-                        "type": "string",
-                        "tag": {
-                          "value": {
-                            "defaultLabel": "Clear Button Color",
-                            "display": {
-                              "string": {
-                                "format": "color"
-                              }
-                            }
-                          }
-                        }
-                      },
-                      "clearButtonBackground": {
-                        "type": "string",
-                        "tag": {
-                          "value": {
-                            "defaultLabel": "Clear Button Background Color",
-                            "display": {
-                              "string": {
-                                "format": "color"
-                              }
-                            }
-                          }
-                        }
-                      },
-                      "clearButtonBorder": {
-                        "type": "string",
-                        "tag": {
-                          "value": {
-                            "defaultLabel": "Clear Button Border Color",
-                            "display": {
-                              "string": {
-                                "format": "color"
-                              }
-                            }
-                          }
-                        }
-                      },
-                      "toolbarBackground": {
-                        "type": "string",
-                        "tag": {
-                          "value": {
-                            "defaultLabel": "Toolbar Background Color",
-                            "display": {
-                              "string": {
-                                "format": "color"
-                              }
-                            }
-                          }
-                        }
-                      },
-                      "inputBackground": {
-                        "type": "string",
+                        "optional": true,
                         "tag": {
                           "value": {
                             "defaultLabel": "Input Background Color",
@@ -25752,8 +27043,37 @@ export const miroirFundamentalJzodSchema = {
                           }
                         }
                       },
-                      "inputBorder": {
+                      "backgroundHover": {
                         "type": "string",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Input Background Hover Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "backgroundFocused": {
+                        "type": "string",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Input Background Focused Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "borderColor": {
+                        "type": "string",
+                        "optional": true,
                         "tag": {
                           "value": {
                             "defaultLabel": "Input Border Color",
@@ -25764,81 +27084,1133 @@ export const miroirFundamentalJzodSchema = {
                             }
                           }
                         }
+                      },
+                      "borderColorHover": {
+                        "type": "string",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Input Border Color Hover",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "borderColorFocused": {
+                        "type": "string",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Input Border Color Focused",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "textColor": {
+                        "type": "string",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Input Text Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "placeholderColor": {
+                        "type": "string",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Input Placeholder Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "borderRadius": {
+                        "type": "string"
+                      },
+                      "height": {
+                        "type": "string"
                       }
                     }
                   },
-                  "sort": {
+                  "button": {
                     "type": "object",
                     "definition": {
-                      "iconColor": {
+                      "primary": {
+                        "type": "object",
+                        "definition": {
+                          "background": {
+                            "type": "string",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Primary Button Background Color",
+                                "display": {
+                                  "string": {
+                                    "format": "color"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "backgroundHover": {
+                            "type": "string",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Primary Button Background Hover Color",
+                                "display": {
+                                  "string": {
+                                    "format": "color"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "backgroundActive": {
+                            "type": "string",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Primary Button Background Active Color",
+                                "display": {
+                                  "string": {
+                                    "format": "color"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "textColor": {
+                            "type": "string",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Primary Button Text Color",
+                                "display": {
+                                  "string": {
+                                    "format": "color"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "borderColor": {
+                            "type": "string",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Primary Button Border Color",
+                                "display": {
+                                  "string": {
+                                    "format": "color"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "borderRadius": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      "secondary": {
+                        "type": "object",
+                        "definition": {
+                          "background": {
+                            "type": "string",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Secondary Button Background Color",
+                                "display": {
+                                  "string": {
+                                    "format": "color"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "backgroundHover": {
+                            "type": "string",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Secondary Button Background Hover Color",
+                                "display": {
+                                  "string": {
+                                    "format": "color"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "backgroundActive": {
+                            "type": "string",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Secondary Button Background Active Color",
+                                "display": {
+                                  "string": {
+                                    "format": "color"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "textColor": {
+                            "type": "string",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Secondary Button Text Color",
+                                "display": {
+                                  "string": {
+                                    "format": "color"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "borderColor": {
+                            "type": "string",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Secondary Button Border Color",
+                                "display": {
+                                  "string": {
+                                    "format": "color"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "borderRadius": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      "outlined": {
+                        "type": "object",
+                        "definition": {
+                          "background": {
+                            "type": "string",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Outlined Button Background Color",
+                                "display": {
+                                  "string": {
+                                    "format": "color"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "backgroundHover": {
+                            "type": "string",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Outlined Button Background Hover Color",
+                                "display": {
+                                  "string": {
+                                    "format": "color"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "backgroundActive": {
+                            "type": "string",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Outlined Button Background Active Color",
+                                "display": {
+                                  "string": {
+                                    "format": "color"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "textColor": {
+                            "type": "string",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Outlined Button Text Color",
+                                "display": {
+                                  "string": {
+                                    "format": "color"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "borderColor": {
+                            "type": "string",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Outlined Button Border Color",
+                                "display": {
+                                  "string": {
+                                    "format": "color"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "borderRadius": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "card": {
+                    "type": "object",
+                    "definition": {
+                      "background": {
+                        "type": "string",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Card Background Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "borderColor": {
+                        "type": "string",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Card Border Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "borderRadius": {
                         "type": "string"
                       },
-                      "activeIconColor": {
+                      "elevation": {
                         "type": "string"
                       },
-                      "ascendingSymbol": {
+                      "padding": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "dialog": {
+                    "type": "object",
+                    "definition": {
+                      "background": {
+                        "type": "string",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Dialog Background Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "backdrop": {
+                        "type": "string",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Dialog Backdrop Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "borderRadius": {
                         "type": "string"
                       },
-                      "descendingSymbol": {
+                      "elevation": {
                         "type": "string"
+                      },
+                      "padding": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "tooltip": {
+                    "type": "object",
+                    "definition": {
+                      "background": {
+                        "type": "string",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Tooltip Background Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "textColor": {
+                        "type": "string",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Tooltip Text Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "borderRadius": {
+                        "type": "string"
+                      },
+                      "fontSize": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "icon": {
+                    "type": "object",
+                    "definition": {
+                      "colorPrimary": {
+                        "type": "string",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Icon Primary Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "colorSecondary": {
+                        "type": "string",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Icon Secondary Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "colorDisabled": {
+                        "type": "string",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Icon Disabled Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "size": {
+                        "type": "object",
+                        "definition": {
+                          "sm": {
+                            "type": "string"
+                          },
+                          "md": {
+                            "type": "string"
+                          },
+                          "lg": {
+                            "type": "string"
+                          }
+                        }
                       }
                     }
                   }
                 }
-              }
-            }
-          },
-          "breakpoints": {
-            "type": "object",
-            "definition": {
-              "xs": {
-                "type": "string"
               },
-              "sm": {
-                "type": "string"
-              },
-              "md": {
-                "type": "string"
-              },
-              "lg": {
-                "type": "string"
-              },
-              "xl": {
-                "type": "string"
-              }
-            }
-          },
-          "transitions": {
-            "type": "object",
-            "definition": {
-              "duration": {
+              "table": {
                 "type": "object",
                 "definition": {
-                  "short": {
+                  "colors": {
+                    "type": "object",
+                    "definition": {
+                      "primary": {
+                        "type": "string",
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Primary Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "secondary": {
+                        "type": "string",
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Secondary Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "background": {
+                        "type": "string",
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Background Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "surface": {
+                        "type": "string",
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Surface Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "border": {
+                        "type": "string",
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Border Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "text": {
+                        "type": "string",
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Text Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "textSecondary": {
+                        "type": "string",
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Secondary Text Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "textLight": {
+                        "type": "string",
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Light Text Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "hover": {
+                        "type": "string",
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Hover Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "selected": {
+                        "type": "string",
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Selected Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "filter": {
+                        "type": "string",
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Filter Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "filterBackground": {
+                        "type": "string",
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Filter Background Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "error": {
+                        "type": "string",
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Error Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "warning": {
+                        "type": "string",
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Warning Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "success": {
+                        "type": "string",
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Success Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "accent": {
+                        "type": "string",
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Accent Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "accentLight": {
+                        "type": "string",
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Accent Light Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "spacing": {
+                    "type": "object",
+                    "definition": {
+                      "xs": {
+                        "type": "string"
+                      },
+                      "sm": {
+                        "type": "string"
+                      },
+                      "md": {
+                        "type": "string"
+                      },
+                      "lg": {
+                        "type": "string"
+                      },
+                      "xl": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "typography": {
+                    "type": "object",
+                    "definition": {
+                      "fontSize": {
+                        "type": "string"
+                      },
+                      "fontFamily": {
+                        "type": "string"
+                      },
+                      "fontWeight": {
+                        "type": "object",
+                        "definition": {
+                          "normal": {
+                            "type": "number"
+                          },
+                          "medium": {
+                            "type": "number"
+                          },
+                          "bold": {
+                            "type": "number"
+                          }
+                        }
+                      },
+                      "headerFontSize": {
+                        "type": "string"
+                      },
+                      "headerFontWeight": {
+                        "type": "number"
+                      }
+                    }
+                  },
+                  "components": {
+                    "type": "object",
+                    "definition": {
+                      "table": {
+                        "type": "object",
+                        "definition": {
+                          "borderRadius": {
+                            "type": "string"
+                          },
+                          "border": {
+                            "type": "string"
+                          },
+                          "minHeight": {
+                            "type": "string"
+                          },
+                          "maxHeight": {
+                            "type": "string"
+                          },
+                          "backgroundColor": {
+                            "type": "string",
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Table Background Color",
+                                "display": {
+                                  "string": {
+                                    "format": "color"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "width": {
+                            "type": "string"
+                          },
+                          "maxWidth": {
+                            "type": "string"
+                          },
+                          "adaptiveColumnWidths": {
+                            "type": "boolean"
+                          }
+                        }
+                      },
+                      "header": {
+                        "type": "object",
+                        "definition": {
+                          "background": {
+                            "type": "string",
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Header Background Color",
+                                "display": {
+                                  "string": {
+                                    "format": "color"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "height": {
+                            "type": "string"
+                          },
+                          "fontSize": {
+                            "type": "string"
+                          },
+                          "fontWeight": {
+                            "type": "number"
+                          },
+                          "borderBottom": {
+                            "type": "string"
+                          },
+                          "textColor": {
+                            "type": "string",
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Header Text Color",
+                                "display": {
+                                  "string": {
+                                    "format": "color"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "hoverBackground": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      "cell": {
+                        "type": "object",
+                        "definition": {
+                          "height": {
+                            "type": "string"
+                          },
+                          "padding": {
+                            "type": "string"
+                          },
+                          "borderRight": {
+                            "type": "string"
+                          },
+                          "borderBottom": {
+                            "type": "string"
+                          },
+                          "fontSize": {
+                            "type": "string"
+                          },
+                          "backgroundColor": {
+                            "type": "string",
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Cell Background Color",
+                                "display": {
+                                  "string": {
+                                    "format": "color"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "textColor": {
+                            "type": "string",
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Cell Text Color",
+                                "display": {
+                                  "string": {
+                                    "format": "color"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "row": {
+                        "type": "object",
+                        "definition": {
+                          "hoverBackground": {
+                            "type": "string"
+                          },
+                          "selectedBackground": {
+                            "type": "string"
+                          },
+                          "borderBottom": {
+                            "type": "string"
+                          },
+                          "evenBackground": {
+                            "type": "string"
+                          },
+                          "oddBackground": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      "toolbar": {
+                        "type": "object",
+                        "definition": {
+                          "background": {
+                            "type": "string"
+                          },
+                          "padding": {
+                            "type": "string"
+                          },
+                          "borderBottom": {
+                            "type": "string"
+                          },
+                          "height": {
+                            "type": "string"
+                          },
+                          "textColor": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      "filter": {
+                        "type": "object",
+                        "definition": {
+                          "iconColor": {
+                            "type": "string",
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Filter Icon Color",
+                                "display": {
+                                  "string": {
+                                    "format": "color"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "activeIconColor": {
+                            "type": "string",
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Active Filter Icon Color",
+                                "display": {
+                                  "string": {
+                                    "format": "color"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "clearButtonColor": {
+                            "type": "string",
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Clear Button Color",
+                                "display": {
+                                  "string": {
+                                    "format": "color"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "clearButtonBackground": {
+                            "type": "string",
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Clear Button Background Color",
+                                "display": {
+                                  "string": {
+                                    "format": "color"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "clearButtonBorder": {
+                            "type": "string",
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Clear Button Border Color",
+                                "display": {
+                                  "string": {
+                                    "format": "color"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "toolbarBackground": {
+                            "type": "string",
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Toolbar Background Color",
+                                "display": {
+                                  "string": {
+                                    "format": "color"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "inputBackground": {
+                            "type": "string",
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Input Background Color",
+                                "display": {
+                                  "string": {
+                                    "format": "color"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "inputBorder": {
+                            "type": "string",
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Input Border Color",
+                                "display": {
+                                  "string": {
+                                    "format": "color"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "sort": {
+                        "type": "object",
+                        "definition": {
+                          "iconColor": {
+                            "type": "string"
+                          },
+                          "activeIconColor": {
+                            "type": "string"
+                          },
+                          "ascendingSymbol": {
+                            "type": "string"
+                          },
+                          "descendingSymbol": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "breakpoints": {
+                "type": "object",
+                "definition": {
+                  "xs": {
                     "type": "string"
                   },
-                  "medium": {
+                  "sm": {
                     "type": "string"
                   },
-                  "long": {
+                  "md": {
+                    "type": "string"
+                  },
+                  "lg": {
+                    "type": "string"
+                  },
+                  "xl": {
                     "type": "string"
                   }
                 }
               },
-              "easing": {
+              "transitions": {
                 "type": "object",
                 "definition": {
-                  "linear": {
-                    "type": "string"
+                  "duration": {
+                    "type": "object",
+                    "definition": {
+                      "short": {
+                        "type": "string"
+                      },
+                      "medium": {
+                        "type": "string"
+                      },
+                      "long": {
+                        "type": "string"
+                      }
+                    }
                   },
-                  "easeIn": {
-                    "type": "string"
-                  },
-                  "easeOut": {
-                    "type": "string"
-                  },
-                  "easeInOut": {
-                    "type": "string"
+                  "easing": {
+                    "type": "object",
+                    "definition": {
+                      "linear": {
+                        "type": "string"
+                      },
+                      "easeIn": {
+                        "type": "string"
+                      },
+                      "easeOut": {
+                        "type": "string"
+                      },
+                      "easeInOut": {
+                        "type": "string"
+                      }
+                    }
                   }
                 }
               }

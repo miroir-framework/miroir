@@ -7,7 +7,7 @@
   "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "definition": {
     "id": "default",
-    "name": "Default Lights",
+    "name": "Default Light",
     "description": "Standard light theme with balanced colors and spacing",
     "colors": {
       "primary": "#7c67bcff",

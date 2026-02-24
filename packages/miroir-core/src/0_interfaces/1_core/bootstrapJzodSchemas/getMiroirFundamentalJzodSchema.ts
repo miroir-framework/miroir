@@ -56,7 +56,20 @@ MiroirLoggerFactory.registerLoggerToStart(
 });
 
 
-
+function makeObjectsMandatory (element: JzodElement): JzodElement {
+  if (element.type === "object") {
+    const result: JzodElement = {
+      ...element,
+      definition: Object.fromEntries(
+        Object.entries(element.definition).map(([key, value]) => [key, makeObjectsMandatory(value)])
+      ),
+    };
+    delete result.optional;
+    delete result.nullable;
+    return result;
+  }
+  return element;
+}
 
 // ################################################################################################
 export function getMiroirFundamentalJzodSchema(
@@ -3263,7 +3276,8 @@ export function getMiroirFundamentalJzodSchema(
             type: "never",
           },
           tableThemeSchema: tableThemeSchemaJson,
-          miroirThemeSchema: miroirThemeSchemaJson,
+          storedMiroirTheme: miroirThemeSchemaJson,
+          miroirThemeFull: makeObjectsMandatory(miroirThemeSchemaJson),
       },
       definition: {
         absolutePath: miroirFundamentalJzodSchemaUuid,

@@ -83,6 +83,8 @@ import { ViewParamsUpdateQueue, ViewParamsUpdateQueueConfig } from '../ViewParam
 import { Sidebar } from "./Sidebar.js";
 import { SidebarWidth } from "./SidebarSection.js";
 import { isElectron } from '../../../..';
+import { darkStoredMiroirTheme, miroirThemeSchemaJson, tableThemeSchemaJson } from 'miroir-test-app_deployment-miroir';
+import { darkMiroirTheme } from '../Themes/MiroirTheme';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -759,7 +761,9 @@ export const RootComponent = (props: RootComponentProps) => {
         onThemeChange={handleAppThemeChange}
       >
         <ReportPageContextProvider>
-          <div style={{ display: "flex", flexDirection: "row", height: "100vh", overflow: "hidden" }}>
+          <div
+            style={{ display: "flex", flexDirection: "row", height: "100vh", overflow: "hidden" }}
+          >
             <Sidebar
               open={sidebarIsOpen}
               setOpen={setSidebarStatus}
@@ -782,7 +786,7 @@ export const RootComponent = (props: RootComponentProps) => {
               {/* sidebar: {sidebarIsOpen ? "open" : "closed"}, width: {sidebarWidth}px */}
               {/* <ThemedGrid item> */}
               <AppBar
-                style={{padding: "0"}}
+                style={{ padding: "0" }}
                 handleSidebarOpen={openSidebarCloseOutline}
                 sidebarIsOpen={sidebarIsOpen}
                 width={sidebarWidth}
@@ -803,9 +807,29 @@ export const RootComponent = (props: RootComponentProps) => {
                 sidebarWidth={sidebarWidth}
                 outlineOpen={isOutlineOpen}
                 outlineWidth={outlineWidth}
-                style={{padding: "1em"}}
+                style={{ padding: "1em" }}
               >
                 {context.viewParams.generalEditMode && <ThemedText>uuid: {uuidv4()}</ThemedText>}
+                <ThemedOnScreenDebug
+                  label="RootComponent miroirThemeSchemaJson"
+                  data={{
+                    miroirThemeSchemaJson,
+                    tableThemeSchemaJson,
+                  }}
+                  initiallyUnfolded={false}
+                  useCodeBlock={true}
+                  copyButton={true}
+                />
+                {/* <ThemedOnScreenDebug
+                  label="RootComponent darkStoredMiroirTheme"
+                  data={{
+                    darkStoredMiroirTheme: darkStoredMiroirTheme.definition.colors,
+                    darkMiroirTheme: darkMiroirTheme.colors,
+                  }}
+                  initiallyUnfolded={false}
+                  useCodeBlock={true}
+                  copyButton={true}
+                /> */}
                 <ThemedOnScreenDebug
                   label={`RootComponent miroirConfig, isElectron: ${isElectron}`}
                   data={context.miroirContext.getMiroirConfig()}

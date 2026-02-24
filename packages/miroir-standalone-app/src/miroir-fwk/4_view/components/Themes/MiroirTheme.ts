@@ -19,14 +19,15 @@
 // 
 // ################################################################################################
 
+import { darkStoredMiroirTheme, defaultStoredMiroirTheme } from "miroir-test-app_deployment-miroir";
 import {
   TableTheme,
   ResolvedTableTheme,
-  defaultTableTheme,
   darkTableTheme,
   compactTableTheme,
   materialTableTheme,
 } from "./TableTheme.js";
+import type { StoredMiroirTheme } from "miroir-core";
 
 // Deep partial type for theme overrides
 export type DeepPartial<T> = {
@@ -39,258 +40,259 @@ export type DeepPartial<T> = {
 // from theme.colors via resolveThemeColors().
 // See ThemeColorDefaults.ts for the full mapping documentation.
 // ################################################################################################
-export interface MiroirTheme {
-  // Core identification
-  id: string;
-  name: string;
-  description: string;
+export type MiroirTheme = StoredMiroirTheme["definition"];
+// export interface MiroirTheme {
+//   // Core identification
+//   id: string;
+//   name: string;
+//   description: string;
   
-  // Global color palette (always required - this is the single source of truth for colors)
-  colors: {
-    // Primary brand colors
-    primary: string;
-    primaryLight: string;
-    primaryDark: string;
-    secondary: string;
-    secondaryLight: string;
-    secondaryDark: string;
+//   // Global color palette (always required - this is the single source of truth for colors)
+//   colors: {
+//     // Primary brand colors
+//     primary: string;
+//     primaryLight: string;
+//     primaryDark: string;
+//     secondary: string;
+//     secondaryLight: string;
+//     secondaryDark: string;
     
-    // Background colors
-    background: string;
-    backgroundPaper: string;
-    backgroundOverlay: string;
-    surface: string;
-    surfaceVariant: string;
+//     // Background colors
+//     background: string;
+//     backgroundPaper: string;
+//     backgroundOverlay: string;
+//     surface: string;
+//     surfaceVariant: string;
     
-    // Text colors
-    text: string;
-    textSecondary: string;
-    textLight: string;
-    textDisabled: string;
+//     // Text colors
+//     text: string;
+//     textSecondary: string;
+//     textLight: string;
+//     textDisabled: string;
     
-    // Border and divider colors
-    border: string;
-    borderLight: string;
-    divider: string;
+//     // Border and divider colors
+//     border: string;
+//     borderLight: string;
+//     divider: string;
     
-    // State colors
-    hover: string;
-    selected: string;
-    focused: string;
-    active: string;
+//     // State colors
+//     hover: string;
+//     selected: string;
+//     focused: string;
+//     active: string;
     
-    // Status colors
-    error: string;
-    errorLight: string;
-    errorSurface: string;
-    warning: string;
-    warningLight: string;
-    success: string;
-    successLight: string;
-    successSurface: string;
-    info: string;
-    infoLight: string;
+//     // Status colors
+//     error: string;
+//     errorLight: string;
+//     errorSurface: string;
+//     warning: string;
+//     warningLight: string;
+//     success: string;
+//     successLight: string;
+//     successSurface: string;
+//     info: string;
+//     infoLight: string;
     
-    // Special purpose colors
-    accent: string;
-    accentLight: string;
-    shadow: string;
-    overlay: string;
+//     // Special purpose colors
+//     accent: string;
+//     accentLight: string;
+//     shadow: string;
+//     overlay: string;
     
-    // Nesting colors for nested editors (Prettier-like)
-    nesting: {
-      level0: string;  // Base level (lightest)
-      level1: string;  // First nesting level
-      level2: string;  // Second nesting level
-    };
-  };
+//     // Nesting colors for nested editors (Prettier-like)
+//     nesting: {
+//       level0: string;  // Base level (lightest)
+//       level1: string;  // First nesting level
+//       level2: string;  // Second nesting level
+//     };
+//   };
   
-  // Global spacing system
-  spacing: {
-    xs: string;
-    sm: string;
-    md: string;
-    lg: string;
-    xl: string;
-    xxl: string;
-  };
+//   // Global spacing system
+//   spacing: {
+//     xs: string;
+//     sm: string;
+//     md: string;
+//     lg: string;
+//     xl: string;
+//     xxl: string;
+//   };
   
-  // Typography system
-  typography: {
-    fontFamily: string;
-    fontSize: {
-      xs: string;
-      sm: string;
-      md: string;
-      lg: string;
-      xl: string;
-      xxl: string;
-    };
-    fontWeight: {
-      light: number;
-      normal: number;
-      medium: number;
-      bold: number;
-      extraBold: number;
-    };
-    lineHeight: {
-      tight: number;
-      normal: number;
-      relaxed: number;
-    };
-  };
+//   // Typography system
+//   typography: {
+//     fontFamily: string;
+//     fontSize: {
+//       xs: string;
+//       sm: string;
+//       md: string;
+//       lg: string;
+//       xl: string;
+//       xxl: string;
+//     };
+//     fontWeight: {
+//       light: number;
+//       normal: number;
+//       medium: number;
+//       bold: number;
+//       extraBold: number;
+//     };
+//     lineHeight: {
+//       tight: number;
+//       normal: number;
+//       relaxed: number;
+//     };
+//   };
   
-  // Elevation and shadows
-  elevation: {
-    none: string;
-    low: string;
-    medium: string;
-    high: string;
-    modal: string;
-  };
+//   // Elevation and shadows
+//   elevation: {
+//     none: string;
+//     low: string;
+//     medium: string;
+//     high: string;
+//     modal: string;
+//   };
   
-  // Border radius
-  borderRadius: {
-    none: string;
-    sm: string;
-    md: string;
-    lg: string;
-    xl: string;
-    full: string;
-  };
+//   // Border radius
+//   borderRadius: {
+//     none: string;
+//     sm: string;
+//     md: string;
+//     lg: string;
+//     xl: string;
+//     full: string;
+//   };
   
-  // Component-specific theming (color properties are optional, fallback to colors.*)
-  components: {
-    // Navigation and layout
-    appBar: {
-      background?: string;    // fallback: colors.primaryDark
-      textColor?: string;     // fallback: colors.backgroundPaper
-      borderBottom?: string;
-      height?: string;
-      elevation?: string;
-    };
+//   // Component-specific theming (color properties are optional, fallback to colors.*)
+//   components: {
+//     // Navigation and layout
+//     appBar: {
+//       background?: string;    // fallback: colors.primaryDark
+//       textColor?: string;     // fallback: colors.backgroundPaper
+//       borderBottom?: string;
+//       height?: string;
+//       elevation?: string;
+//     };
     
-    sidebar: {
-      background?: string;       // fallback: colors.backgroundPaper
-      backgroundHover?: string;  // fallback: colors.hover
-      textColor?: string;        // fallback: colors.text
-      textColorActive?: string;  // fallback: colors.accent
-      borderRight?: string;
-      width?: string;
-      itemHeight?: string;
-    };
+//     sidebar: {
+//       background?: string;       // fallback: colors.backgroundPaper
+//       backgroundHover?: string;  // fallback: colors.hover
+//       textColor?: string;        // fallback: colors.text
+//       textColorActive?: string;  // fallback: colors.accent
+//       borderRight?: string;
+//       width?: string;
+//       itemHeight?: string;
+//     };
     
-    drawer: {
-      background?: string;  // fallback: colors.backgroundPaper
-      backdrop?: string;    // fallback: colors.overlay
-      elevation?: string;
-    };
+//     drawer: {
+//       background?: string;  // fallback: colors.backgroundPaper
+//       backdrop?: string;    // fallback: colors.overlay
+//       elevation?: string;
+//     };
     
-    // Forms and inputs
-    input: {
-      background?: string;         // fallback: colors.backgroundPaper
-      backgroundHover?: string;    // fallback: colors.surface
-      backgroundFocused?: string;  // fallback: colors.backgroundPaper
-      borderColor?: string;        // fallback: colors.border
-      borderColorHover?: string;   // fallback: colors.textSecondary
-      borderColorFocused?: string; // fallback: colors.accent
-      textColor?: string;          // fallback: colors.text
-      placeholderColor?: string;   // fallback: colors.textLight
-      borderRadius?: string;
-      height?: string;
-    };
+//     // Forms and inputs
+//     input: {
+//       background?: string;         // fallback: colors.backgroundPaper
+//       backgroundHover?: string;    // fallback: colors.surface
+//       backgroundFocused?: string;  // fallback: colors.backgroundPaper
+//       borderColor?: string;        // fallback: colors.border
+//       borderColorHover?: string;   // fallback: colors.textSecondary
+//       borderColorFocused?: string; // fallback: colors.accent
+//       textColor?: string;          // fallback: colors.text
+//       placeholderColor?: string;   // fallback: colors.textLight
+//       borderRadius?: string;
+//       height?: string;
+//     };
     
-    button: {
-      primary: {
-        background?: string;       // fallback: colors.accent
-        backgroundHover?: string;  // fallback: colors.active
-        backgroundActive?: string; // fallback: colors.active
-        textColor?: string;        // fallback: colors.backgroundPaper
-        borderColor?: string;      // fallback: colors.accent
-        borderRadius?: string;
-      };
-      secondary: {
-        background?: string;       // fallback: colors.secondary
-        backgroundHover?: string;  // fallback: colors.secondaryDark
-        backgroundActive?: string; // fallback: colors.secondaryDark
-        textColor?: string;        // fallback: colors.backgroundPaper
-        borderColor?: string;      // fallback: colors.secondary
-        borderRadius?: string;
-      };
-      outlined: {
-        background?: string;       // fallback: 'transparent'
-        backgroundHover?: string;  // fallback: colors.accentLight
-        backgroundActive?: string; // fallback: colors.accentLight
-        textColor?: string;        // fallback: colors.accent
-        borderColor?: string;      // fallback: colors.accent
-        borderRadius?: string;
-      };
-    };
+//     button: {
+//       primary: {
+//         background?: string;       // fallback: colors.accent
+//         backgroundHover?: string;  // fallback: colors.active
+//         backgroundActive?: string; // fallback: colors.active
+//         textColor?: string;        // fallback: colors.backgroundPaper
+//         borderColor?: string;      // fallback: colors.accent
+//         borderRadius?: string;
+//       };
+//       secondary: {
+//         background?: string;       // fallback: colors.secondary
+//         backgroundHover?: string;  // fallback: colors.secondaryDark
+//         backgroundActive?: string; // fallback: colors.secondaryDark
+//         textColor?: string;        // fallback: colors.backgroundPaper
+//         borderColor?: string;      // fallback: colors.secondary
+//         borderRadius?: string;
+//       };
+//       outlined: {
+//         background?: string;       // fallback: 'transparent'
+//         backgroundHover?: string;  // fallback: colors.accentLight
+//         backgroundActive?: string; // fallback: colors.accentLight
+//         textColor?: string;        // fallback: colors.accent
+//         borderColor?: string;      // fallback: colors.accent
+//         borderRadius?: string;
+//       };
+//     };
     
-    // Data display
-    card: {
-      background?: string;    // fallback: colors.backgroundPaper
-      borderColor?: string;   // fallback: colors.border
-      borderRadius?: string;
-      elevation?: string;
-      padding?: string;
-    };
+//     // Data display
+//     card: {
+//       background?: string;    // fallback: colors.backgroundPaper
+//       borderColor?: string;   // fallback: colors.border
+//       borderRadius?: string;
+//       elevation?: string;
+//       padding?: string;
+//     };
     
-    dialog: {
-      background?: string;    // fallback: colors.backgroundPaper
-      backdrop?: string;      // fallback: colors.overlay
-      borderRadius?: string;
-      elevation?: string;
-      padding?: string;
-    };
+//     dialog: {
+//       background?: string;    // fallback: colors.backgroundPaper
+//       backdrop?: string;      // fallback: colors.overlay
+//       borderRadius?: string;
+//       elevation?: string;
+//       padding?: string;
+//     };
     
-    tooltip: {
-      background?: string;    // fallback: colors.overlay
-      textColor?: string;     // fallback: colors.backgroundPaper
-      borderRadius?: string;
-      fontSize?: string;
-    };
+//     tooltip: {
+//       background?: string;    // fallback: colors.overlay
+//       textColor?: string;     // fallback: colors.backgroundPaper
+//       borderRadius?: string;
+//       fontSize?: string;
+//     };
     
-    // Icons and indicators
-    icon: {
-      colorPrimary?: string;    // fallback: colors.accent
-      colorSecondary?: string;  // fallback: colors.textSecondary
-      colorDisabled?: string;   // fallback: colors.textDisabled
-      size: {
-        sm?: string;
-        md?: string;
-        lg?: string;
-      };
-    };
-  };
+//     // Icons and indicators
+//     icon: {
+//       colorPrimary?: string;    // fallback: colors.accent
+//       colorSecondary?: string;  // fallback: colors.textSecondary
+//       colorDisabled?: string;   // fallback: colors.textDisabled
+//       size: {
+//         sm?: string;
+//         md?: string;
+//         lg?: string;
+//       };
+//     };
+//   };
   
-  // Table theme integration
-  table: TableTheme;
+//   // Table theme integration
+//   table: TableTheme;
   
-  // Responsive breakpoints
-  breakpoints: {
-    xs: string;
-    sm: string;
-    md: string;
-    lg: string;
-    xl: string;
-  };
+//   // Responsive breakpoints
+//   breakpoints: {
+//     xs: string;
+//     sm: string;
+//     md: string;
+//     lg: string;
+//     xl: string;
+//   };
   
-  // Animation and transitions
-  transitions: {
-    duration: {
-      short: string;
-      medium: string;
-      long: string;
-    };
-    easing: {
-      linear: string;
-      easeIn: string;
-      easeOut: string;
-      easeInOut: string;
-    };
-  };
-}
+//   // Animation and transitions
+//   transitions: {
+//     duration: {
+//       short: string;
+//       medium: string;
+//       long: string;
+//     };
+//     easing: {
+//       linear: string;
+//       easeIn: string;
+//       easeOut: string;
+//       easeInOut: string;
+//     };
+//   };
+// }
 
 // ################################################################################################
 // ResolvedMiroirTheme: fully resolved version where all optional colors are filled in.
@@ -397,410 +399,231 @@ export interface ResolvedMiroirTheme extends Omit<MiroirTheme, 'components' | 't
 // ################################################################################################
 // ################################################################################################
 // Default light theme
-export const defaultMiroirTheme: MiroirTheme = {
-  id: 'default',
-  name: 'Default Light',
-  description: 'Standard light theme with balanced colors and spacing',
-  
-  colors: {
-    primary: '#7c67bcff',
-    primaryLight: '#9b8ed6ff',
-    // primaryDark: '#5a4a99ff',
-    primaryDark: '#4527a0ff',
-    secondary: '#dc004e',
-    secondaryLight: '#e91e63',
-    secondaryDark: '#c2185b',
-    
-    background: '#ffffff',
-    backgroundPaper: '#ffffff',
-    backgroundOverlay: 'rgba(255, 255, 255, 0.9)',
-    surface: '#f8f8f8',
-    surfaceVariant: '#f0f0f0',
-    
-    text: '#212121',
-    textSecondary: '#757575',
-    textLight: '#9e9e9e',
-    textDisabled: '#bdbdbd',
-    
-    border: '#e0e0e0',
-    borderLight: '#f0f0f0',
-    divider: '#e0e0e0',
-    
-    hover: '#f5f5f5',
-    selected: '#e3f2fd',
-    focused: '#1976d2',
-    active: '#1565c0',
-    
-    error: '#d32f2f',
-    errorLight: '#ffebee',
-    errorSurface: '#fff5f5',
-    warning: '#ff8c00',
-    warningLight: '#f8c68dff',
-    success: '#388e3c',
-    successLight: '#e8f5e8',
-    successSurface: '#f9fff9',
-    info: '#1976d2',
-    infoLight: '#e3f2fd',
-    
-    accent: '#1976d2',
-    accentLight: 'rgba(25, 118, 210, 0.1)',
-    shadow: 'rgba(0, 0, 0, 0.2)',
-    overlay: 'rgba(0, 0, 0, 0.5)',
-    
-    // Nesting colors for nested editors (Prettier-like)
-    nesting: {
-      level0: '#f8f8f8',  // Light gray (base level)
-      level1: '#f0f0f0',  // Slightly darker gray
-      level2: '#e8e8e8',  // Even darker gray
-    },
-  },
-  
-  spacing: {
-    xs: '4px',
-    sm: '8px',
-    md: '16px',
-    lg: '24px',
-    xl: '32px',
-    xxl: '48px',
-  },
-  
-  typography: {
-    fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
-    fontSize: {
-      xs: '12px',
-      sm: '14px',
-      md: '16px',
-      lg: '18px',
-      xl: '20px',
-      xxl: '24px',
-    },
-    fontWeight: {
-      light: 300,
-      normal: 400,
-      medium: 500,
-      bold: 700,
-      extraBold: 900,
-    },
-    lineHeight: {
-      tight: 1.2,
-      normal: 1.4,
-      relaxed: 1.6,
-    },
-  },
-  
-  elevation: {
-    none: 'none',
-    low: '0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24)',
-    medium: '0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23)',
-    high: '0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23)',
-    modal: '0 19px 38px rgba(0, 0, 0, 0.30), 0 15px 12px rgba(0, 0, 0, 0.22)',
-  },
-  
-  borderRadius: {
-    none: '0px',
-    sm: '4px',
-    md: '8px',
-    lg: '12px',
-    xl: '16px',
-    full: '50%',
-  },
-  
-  components: {
-    appBar: {
-      // background → primaryDark = '#4527a0ff' ✓ (matches, omit)
-      // textColor → backgroundPaper = '#ffffff' ✓ (matches, omit)
-      borderBottom: 'none',
-      height: '64px',
-      elevation: '0 2px 4px rgba(0, 0, 0, 0.1)',
-    },
-    
-    sidebar: {
-      // All colors match fallback defaults:
-      //   background → backgroundPaper, backgroundHover → hover,
-      //   textColor → text, textColorActive → accent,
-        // borderRight → computed from border
-      width: '200px',
-      itemHeight: '48px',
-    },
-    
-    // drawer: all colors match fallback defaults (backgroundPaper, overlay)
-    drawer: {},
-    
-    input: {
-      // All colors match fallback defaults:
-      //   background → backgroundPaper, backgroundHover → surface,
-      //   backgroundFocused → backgroundPaper, borderColor → border,
-      //   borderColorHover → textSecondary, borderColorFocused → accent,
-      //   textColor → text, placeholderColor → textLight
-      borderRadius: '4px',
-      height: '40px',
-    },
-    
-    button: {
-      primary: {
-        // background → accent = '#1976d2' ✓ (matches, omit)
-        // backgroundHover → active = '#1565c0' ✓ (matches, omit)
-        // backgroundActive → active, but we want '#0d47a1' (deeper)
-        backgroundActive: '#0d47a1',
-        // textColor → backgroundPaper = '#ffffff' ✓ (matches, omit)
-        // borderColor → accent = '#1976d2' ✓ (matches, omit)
-        borderRadius: '4px',
-      },
-      secondary: {
-        // background → secondary = '#dc004e' ✓ (matches, omit)
-        // backgroundHover → secondaryDark = '#c2185b' ✓ (matches, omit)
-        backgroundActive: '#ad1457',
-        // textColor → backgroundPaper = '#ffffff' ✓ (matches, omit)
-        // borderColor → secondary = '#dc004e' ✓ (matches, omit)
-        borderRadius: '4px',
-      },
-      outlined: {
-        // background → 'transparent' ✓ (matches, omit)
-        // backgroundHover → accentLight is rgba(25,118,210,0.1), but we want 0.04
-        backgroundHover: 'rgba(25, 118, 210, 0.04)',
-        backgroundActive: 'rgba(25, 118, 210, 0.08)',
-        // textColor → accent = '#1976d2' ✓ (matches, omit)
-        // borderColor → accent = '#1976d2' ✓ (matches, omit)
-        borderRadius: '4px',
-      },
-    },
-    
-    card: {
-      // background → backgroundPaper = '#ffffff' ✓ (matches, omit)
-      // borderColor → border = '#e0e0e0' ✓ (matches, omit)
-      borderRadius: '8px',
-      elevation: '0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24)',
-      padding: '16px',
-    },
-    
-    dialog: {
-      // background → backgroundPaper = '#ffffff' ✓ (matches, omit)
-      // backdrop → overlay = 'rgba(0,0,0,0.5)' ✓ (matches, omit)
-      borderRadius: '8px',
-      elevation: '0 11px 15px rgba(0, 0, 0, 0.2), 0 4px 20px rgba(0, 0, 0, 0.14)',
-      padding: '24px',
-    },
-    
-    tooltip: {
-      // background → overlay = 'rgba(0,0,0,0.5)', but we want 'rgba(97,97,97,0.9)'
-      background: 'rgba(97, 97, 97, 0.9)',
-      // textColor → backgroundPaper = '#ffffff' ✓ (matches, omit)
-      borderRadius: '4px',
-      fontSize: '12px',
-    },
-    
-    icon: {
-      // colorPrimary → accent = '#1976d2' ✓ (matches, omit)
-      // colorSecondary → textSecondary = '#757575' ✓ (matches, omit)
-      // colorDisabled → textDisabled = '#bdbdbd' ✓ (matches, omit)
-      size: {
-        sm: '16px',
-        md: '24px',
-        lg: '32px',
-      },
-    },
-  },
-  
-  table: defaultTableTheme,
-  
-  breakpoints: {
-    xs: '0px',
-    sm: '600px',
-    md: '960px',
-    lg: '1280px',
-    xl: '1920px',
-  },
-  
-  transitions: {
-    duration: {
-      short: '150ms',
-      medium: '300ms',
-      long: '500ms',
-    },
-    easing: {
-      linear: 'linear',
-      easeIn: 'cubic-bezier(0.4, 0, 1, 1)',
-      easeOut: 'cubic-bezier(0, 0, 0.2, 1)',
-      easeInOut: 'cubic-bezier(0.4, 0, 0.2, 1)',
-    },
-  },
-};
+export const defaultMiroirTheme = defaultStoredMiroirTheme.definition;
+// export const defaultMiroirTheme = defaultStoredMiroirTheme.definition as MiroirTheme;
+// export const defaultMiroirTheme: MiroirTheme = defaultStoredMiroirTheme.definition as MiroirTheme;
 
-// ################################################################################################
-// ################################################################################################
-// ################################################################################################
-// ################################################################################################
-// ################################################################################################
-// ################################################################################################
-// ################################################################################################
-// Dark theme variant
 export const darkMiroirTheme: MiroirTheme = {
-  ...defaultMiroirTheme,
-  id: 'dark',
-  name: 'Dark',
-  description: 'Dark theme with reduced eye strain for low-light environments',
-  
-  colors: {
-    ...defaultMiroirTheme.colors,
-    primary: '#90caf9',
-    primaryLight: '#b3e5fc',
-    primaryDark: '#0277bd',
-    secondary: '#f48fb1',
-    secondaryLight: '#f8bbd9',
-    secondaryDark: '#e91e63',
-    
-    background: '#121212',
-    backgroundPaper: '#1e1e1e',
-    backgroundOverlay: 'rgba(18, 18, 18, 0.9)',
-    surface: '#2a2a2a',
-    surfaceVariant: '#333333',
-    
-    text: '#ffffff',
-    textSecondary: '#b3b3b3',
-    textLight: '#999999',
-    textDisabled: '#666666',
-    
-    border: '#333333',
-    borderLight: '#404040',
-    divider: '#333333',
-    
-    hover: '#2a2a2a',
-    selected: '#1976d2',
-    focused: '#90caf9',
-    active: '#0277bd',
-    
-    error: '#f44336',
-    errorLight: '#ffebee',
-    errorSurface: '#2d1b1b',
-    warning: '#ff8c00',
-    warningLight: '#f8c68dff',
-    success: '#4caf50',
-    successLight: '#e8f5e8',
-    successSurface: '#1b2d1b',
-    info: '#90caf9',
-    infoLight: 'rgba(144, 202, 249, 0.1)',
-    
-    accent: '#90caf9',
-    accentLight: 'rgba(144, 202, 249, 0.1)',
-    shadow: 'rgba(0, 0, 0, 0.3)',
-    overlay: 'rgba(0, 0, 0, 0.7)',
-    
-    // Nesting colors for nested editors (Prettier-like, dark theme)
-    nesting: {
-      level0: '#2a2a2a',  // Dark gray (base level)
-      level1: '#323232',  // Slightly lighter dark gray
-      level2: '#3a3a3a',  // Even lighter dark gray
-    },
-  },
-  
+  // ...defaultMiroirTheme,
+  ...darkStoredMiroirTheme.definition,
+  id: "dark",
+  name: "Dark",
+  description: "Dark theme with reduced eye strain for low-light environments",
+
+  // colors: darkStoredMiroirTheme.definition.colors,
+
   components: {
-    ...defaultMiroirTheme.components,
     appBar: {
       // background defaults to colors.primaryDark, but dark theme uses backgroundPaper
-      background: '#1e1e1e',
+      background: "#1e1e1e",
       // textColor defaults to colors.backgroundPaper = '#1e1e1e', but we want white
-      textColor: '#ffffff',
-      borderBottom: '1px solid #333333',
-      height: '64px',
-      elevation: '0 2px 4px rgba(0, 0, 0, 0.3)',
+      textColor: "#ffffff",
+      borderBottom: "1px solid #333333",
+      height: "64px",
+      elevation: "0 2px 4px rgba(0, 0, 0, 0.3)",
     },
-    
+
     sidebar: {
       // All colors match fallback defaults from dark root colors:
       //   background → backgroundPaper, backgroundHover → hover,
       //   textColor → text, textColorActive → accent,
       //   borderRight → computed from border
-      width: '200px',
-      itemHeight: '48px',
+      width: "200px",
+      itemHeight: "48px",
     },
-    
+
     // drawer: all colors match fallback defaults (backgroundPaper, overlay)
-    drawer: {},
-    
+    // drawer: {},
+
     input: {
       // background → backgroundPaper would be #1e1e1e, but we want surface #2a2a2a
-      background: '#2a2a2a',
+      background: "#2a2a2a",
       // backgroundHover → surface would be #2a2a2a, but we want surfaceVariant #333333
-      backgroundHover: '#333333',
+      backgroundHover: "#333333",
       // backgroundFocused → backgroundPaper would be #1e1e1e, but we want surface #2a2a2a
-      backgroundFocused: '#2a2a2a',
+      backgroundFocused: "#2a2a2a",
       // borderColor → border = '#333333' ✓ (matches, omit)
       // borderColorHover → textSecondary would be #b3b3b3, but we want #666666
-      borderColorHover: '#666666',
+      borderColorHover: "#666666",
       // borderColorFocused → accent = '#90caf9' ✓ (matches, omit)
       // textColor → text = '#ffffff' ✓ (matches, omit)
       // placeholderColor → textLight = '#999999' ✓ (matches, omit)
-      borderRadius: '4px',
-      height: '40px',
+      borderRadius: "4px",
+      height: "40px",
     },
-    
+
     button: {
       primary: {
         // background → accent = '#90caf9' ✓ (matches, omit)
         // backgroundHover → active = '#0277bd', but we want '#42a5f5'
-        backgroundHover: '#42a5f5',
-        backgroundActive: '#1976d2',
+        backgroundHover: "#42a5f5",
+        backgroundActive: "#1976d2",
         // textColor → backgroundPaper = '#1e1e1e', but we want '#121212'
-        textColor: '#121212',
+        textColor: "#121212",
         // borderColor → accent = '#90caf9' ✓ (matches, omit)
-        borderRadius: '4px',
+        borderRadius: "4px",
       },
       secondary: {
         // background → secondary = '#f48fb1' ✓ (matches, omit)
         // backgroundHover → secondaryDark = '#e91e63' ✓ (matches, omit)
-        backgroundActive: '#c2185b',
-        textColor: '#121212',
+        backgroundActive: "#c2185b",
+        textColor: "#121212",
         // borderColor → secondary = '#f48fb1' ✓ (matches, omit)
-        borderRadius: '4px',
+        borderRadius: "4px",
       },
       outlined: {
         // background → 'transparent' ✓ (matches, omit)
         // backgroundHover → accentLight = 'rgba(144,202,249,0.1)', but we want 0.04
-        backgroundHover: 'rgba(144, 202, 249, 0.04)',
-        backgroundActive: 'rgba(144, 202, 249, 0.08)',
+        backgroundHover: "rgba(144, 202, 249, 0.04)",
+        backgroundActive: "rgba(144, 202, 249, 0.08)",
         // textColor → accent = '#90caf9' ✓ (matches, omit)
         // borderColor → accent = '#90caf9' ✓ (matches, omit)
-        borderRadius: '4px',
+        borderRadius: "4px",
       },
     },
-    
+
     card: {
       // background → backgroundPaper = '#1e1e1e' ✓ (matches, omit)
       // borderColor → border = '#333333' ✓ (matches, omit)
-      borderRadius: '8px',
-      elevation: '0 1px 3px rgba(0, 0, 0, 0.3), 0 1px 2px rgba(0, 0, 0, 0.4)',
-      padding: '16px',
+      borderRadius: "8px",
+      elevation: "0 1px 3px rgba(0, 0, 0, 0.3), 0 1px 2px rgba(0, 0, 0, 0.4)",
+      padding: "16px",
     },
-    
+
     dialog: {
       // background → backgroundPaper = '#1e1e1e' ✓ (matches, omit)
       // backdrop → overlay = 'rgba(0,0,0,0.7)' ✓ (matches, omit)
-      borderRadius: '8px',
-      elevation: '0 11px 15px rgba(0, 0, 0, 0.4), 0 4px 20px rgba(0, 0, 0, 0.3)',
-      padding: '24px',
+      borderRadius: "8px",
+      elevation: "0 11px 15px rgba(0, 0, 0, 0.4), 0 4px 20px rgba(0, 0, 0, 0.3)",
+      padding: "24px",
     },
-    
+
     tooltip: {
-      background: 'rgba(97, 97, 97, 0.9)',
+      background: "rgba(97, 97, 97, 0.9)",
       // textColor → backgroundPaper = '#1e1e1e', but we want '#ffffff'
-      textColor: '#ffffff',
-      borderRadius: '4px',
-      fontSize: '12px',
+      textColor: "#ffffff",
+      borderRadius: "4px",
+      fontSize: "12px",
     },
-    
+
     icon: {
       // colorPrimary → accent = '#90caf9' ✓ (matches, omit)
       // colorSecondary → textSecondary = '#b3b3b3' ✓ (matches, omit)
       // colorDisabled → textDisabled = '#666666' ✓ (matches, omit)
       size: {
-        sm: '16px',
-        md: '24px',
-        lg: '32px',
+        sm: "16px",
+        md: "24px",
+        lg: "32px",
       },
     },
   },
-  
-  table: darkTableTheme,
+
+  table: darkTableTheme
+  // table: {
+  //   colors: {
+  //     primary: "#90caf9",
+  //     secondary: "#f48fb1",
+  //     background: "#121212",
+  //     surface: "#1e1e1e",
+  //     border: "#333333",
+  //     text: "#ffffff",
+  //     textSecondary: "#b3b3b3",
+  //     textLight: "#999999",
+  //     hover: "#2a2a2a",
+  //     selected: "#1976d2",
+  //     filter: "#ff8c00",
+  //     filterBackground: "#2a2a2a",
+  //     error: "#f44336",
+  //     warning: "#ff9800",
+  //     success: "#4caf50",
+  //     accent: "#90caf9",
+  //     accentLight: "rgba(144, 202, 249, 0.1)",
+  //   },
+  //   spacing: {
+  //     xs: "4px",
+  //     sm: "8px",
+  //     md: "16px",
+  //     lg: "24px",
+  //     xl: "32px",
+  //   },
+  //   typography: {
+  //     fontSize: "14px",
+  //     fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
+  //     fontWeight: {
+  //       normal: 400,
+  //       medium: 500,
+  //       bold: 700,
+  //     },
+  //     headerFontSize: "14px",
+  //     headerFontWeight: 600,
+  //   },
+  //   components: {
+  //     table: {
+  //       borderRadius: "4px",
+  //       border: "1px solid #e0e0e0",
+  //       minHeight: "200px",
+  //       maxHeight: "600px",
+  //       backgroundColor: "#ffffff",
+  //       width: "100%",
+  //       maxWidth: "100%",
+  //       adaptiveColumnWidths: true,
+  //     },
+  //     header: {
+  //       background: "#fafafa",
+  //       height: "36px",
+  //       fontSize: "14px",
+  //       fontWeight: 600,
+  //       borderBottom: "1px solid #e0e0e0",
+  //       textColor: "#212121",
+  //       hoverBackground: "#f0f0f0",
+  //     },
+  //     cell: {
+  //       height: "34px",
+  //       padding: "8px 12px",
+  //       borderRight: "1px solid #f0f0f0",
+  //       borderBottom: "1px solid #f0f0f0",
+  //       fontSize: "14px",
+  //       backgroundColor: "#ffffff",
+  //       textColor: "#212121",
+  //     },
+  //     row: {
+  //       hoverBackground: "#f5f5f5",
+  //       selectedBackground: "#e3f2fd",
+  //       borderBottom: "1px solid #f0f0f0",
+  //       evenBackground: "#ffffff",
+  //       oddBackground: "#1a1a1a",
+  //     },
+  //     toolbar: {
+  //       background: "#f8f8f8",
+  //       padding: "8px",
+  //       borderBottom: "1px solid #e0e0e0",
+  //       height: "auto",
+  //       textColor: "#212121",
+  //     },
+  //     filter: {
+  //       iconColor: "#757575",
+  //       activeIconColor: "#ff8c00",
+  //       clearButtonColor: "#ff8c00",
+  //       clearButtonBackground: "#fff8f0",
+  //       clearButtonBorder: "1px solid #ff8c00",
+  //       toolbarBackground: "#f8f8f8",
+  //       inputBackground: "#ffffff",
+  //       inputBorder: "1px solid #e0e0e0",
+  //     },
+  //     sort: {
+  //       iconColor: "#757575",
+  //       activeIconColor: "#1976d2",
+  //       ascendingSymbol: "↑",
+  //       descendingSymbol: "↓",
+  //     },
+  //   },
+  //   // components: {
+  //   //   row: {
+  //   //     // oddBackground defaults to surface (#1e1e1e), but we want darker
+  //   //     oddBackground: '#1a1a1a',
+  //   //   },
+  //   // },
+  // },
 };
 
 // ################################################################################################
@@ -979,169 +802,171 @@ export const materialMiroirTheme: MiroirTheme = {
 // ################################################################################################
 // ################################################################################################
 // Theme creation utility function
-export const createMiroirTheme = (overrides: DeepPartial<MiroirTheme> = {}): MiroirTheme => {
-  const baseTheme = defaultMiroirTheme;
+export const createMiroirThemeNOT_USED = (
+  // baseTheme: MiroirTheme,
+  overrides: DeepPartial<MiroirTheme> = {}): MiroirTheme => {
+  // const defaultMiroirTheme = defaultMiroirTheme;
   
   return {
-    ...baseTheme,
+    ...defaultMiroirTheme,
     ...overrides,
     colors: {
-      ...baseTheme.colors,
+      ...defaultMiroirTheme.colors,
       ...overrides.colors,
       nesting: {
-        ...baseTheme.colors.nesting,
+        ...defaultMiroirTheme.colors.nesting,
         ...overrides.colors?.nesting,
       },
     },
     spacing: {
-      ...baseTheme.spacing,
+      ...defaultMiroirTheme.spacing,
       ...overrides.spacing,
     },
     typography: {
-      ...baseTheme.typography,
+      ...defaultMiroirTheme.typography,
       ...overrides.typography,
       fontSize: {
-        ...baseTheme.typography.fontSize,
+        ...defaultMiroirTheme.typography.fontSize,
         ...overrides.typography?.fontSize,
       },
       fontWeight: {
-        ...baseTheme.typography.fontWeight,
+        ...defaultMiroirTheme.typography.fontWeight,
         ...overrides.typography?.fontWeight,
       },
       lineHeight: {
-        ...baseTheme.typography.lineHeight,
+        ...defaultMiroirTheme.typography.lineHeight,
         ...overrides.typography?.lineHeight,
       },
     },
     elevation: {
-      ...baseTheme.elevation,
+      ...defaultMiroirTheme.elevation,
       ...overrides.elevation,
     },
     borderRadius: {
-      ...baseTheme.borderRadius,
+      ...defaultMiroirTheme.borderRadius,
       ...overrides.borderRadius,
     },
     components: {
-      ...baseTheme.components,
+      ...defaultMiroirTheme.components,
       ...overrides.components,
       appBar: {
-        ...baseTheme.components.appBar,
+        ...defaultMiroirTheme.components.appBar,
         ...overrides.components?.appBar,
       },
       sidebar: {
-        ...baseTheme.components.sidebar,
+        ...defaultMiroirTheme.components.sidebar,
         ...overrides.components?.sidebar,
       },
       drawer: {
-        ...baseTheme.components.drawer,
+        ...defaultMiroirTheme.components.drawer,
         ...overrides.components?.drawer,
       },
       input: {
-        ...baseTheme.components.input,
+        ...defaultMiroirTheme.components.input,
         ...overrides.components?.input,
       },
       button: {
-        ...baseTheme.components.button,
+        ...defaultMiroirTheme.components.button,
         ...overrides.components?.button,
         primary: {
-          ...baseTheme.components.button.primary,
+          ...defaultMiroirTheme.components.button.primary,
           ...overrides.components?.button?.primary,
         },
         secondary: {
-          ...baseTheme.components.button.secondary,
+          ...defaultMiroirTheme.components.button.secondary,
           ...overrides.components?.button?.secondary,
         },
         outlined: {
-          ...baseTheme.components.button.outlined,
+          ...defaultMiroirTheme.components.button.outlined,
           ...overrides.components?.button?.outlined,
         },
       },
       card: {
-        ...baseTheme.components.card,
+        ...defaultMiroirTheme.components.card,
         ...overrides.components?.card,
       },
       dialog: {
-        ...baseTheme.components.dialog,
+        ...defaultMiroirTheme.components.dialog,
         ...overrides.components?.dialog,
       },
       tooltip: {
-        ...baseTheme.components.tooltip,
+        ...defaultMiroirTheme.components.tooltip,
         ...overrides.components?.tooltip,
       },
       icon: {
-        ...baseTheme.components.icon,
+        ...defaultMiroirTheme.components.icon,
         ...overrides.components?.icon,
         size: {
-          ...baseTheme.components.icon.size,
+          ...defaultMiroirTheme.components.icon.size,
           ...overrides.components?.icon?.size,
         },
       },
     },
     table: overrides.table ? {
-      ...baseTheme.table,
+      ...defaultMiroirTheme.table,
       ...overrides.table,
       colors: {
-        ...baseTheme.table.colors,
+        ...defaultMiroirTheme.table.colors,
         ...overrides.table.colors,
       },
       spacing: {
-        ...baseTheme.table.spacing,
+        ...defaultMiroirTheme.table.spacing,
         ...overrides.table.spacing,
       },
       typography: {
-        ...baseTheme.table.typography,
+        ...defaultMiroirTheme.table.typography,
         ...overrides.table.typography,
         fontWeight: {
-          ...baseTheme.table.typography.fontWeight,
+          ...defaultMiroirTheme.table.typography.fontWeight,
           ...overrides.table.typography?.fontWeight,
         },
       },
       components: {
-        ...baseTheme.table.components,
+        ...defaultMiroirTheme.table.components,
         ...overrides.table.components,
         table: {
-          ...baseTheme.table.components.table,
+          ...defaultMiroirTheme.table.components.table,
           ...overrides.table.components?.table,
         },
         header: {
-          ...baseTheme.table.components.header,
+          ...defaultMiroirTheme.table.components.header,
           ...overrides.table.components?.header,
         },
         cell: {
-          ...baseTheme.table.components.cell,
+          ...defaultMiroirTheme.table.components.cell,
           ...overrides.table.components?.cell,
         },
         row: {
-          ...baseTheme.table.components.row,
+          ...defaultMiroirTheme.table.components.row,
           ...overrides.table.components?.row,
         },
         toolbar: {
-          ...baseTheme.table.components.toolbar,
+          ...defaultMiroirTheme.table.components.toolbar,
           ...overrides.table.components?.toolbar,
         },
         filter: {
-          ...baseTheme.table.components.filter,
+          ...defaultMiroirTheme.table.components.filter,
           ...overrides.table.components?.filter,
         },
         sort: {
-          ...baseTheme.table.components.sort,
+          ...defaultMiroirTheme.table.components.sort,
           ...overrides.table.components?.sort,
         },
       },
-    } : baseTheme.table,
+    } : defaultMiroirTheme.table,
     breakpoints: {
-      ...baseTheme.breakpoints,
+      ...defaultMiroirTheme.breakpoints,
       ...overrides.breakpoints,
     },
     transitions: {
-      ...baseTheme.transitions,
+      ...defaultMiroirTheme.transitions,
       ...overrides.transitions,
       duration: {
-        ...baseTheme.transitions.duration,
+        ...defaultMiroirTheme.transitions.duration,
         ...overrides.transitions?.duration,
       },
       easing: {
-        ...baseTheme.transitions.easing,
+        ...defaultMiroirTheme.transitions.easing,
         ...overrides.transitions?.easing,
       },
     },
@@ -1167,6 +992,7 @@ export const miroirThemeOptions: MiroirThemeOption[] = [
     id: 'dark',
     name: 'Dark',
     description: 'Dark theme with reduced eye strain',
+    // theme: createMiroirThemeNOT_USED(darkMiroirTheme),
     theme: darkMiroirTheme,
   },
   {

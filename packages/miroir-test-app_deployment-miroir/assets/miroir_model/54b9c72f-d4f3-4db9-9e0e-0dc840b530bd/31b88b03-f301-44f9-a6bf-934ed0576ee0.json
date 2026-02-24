@@ -146,6 +146,7 @@
           "description": { "type": "string", "optional": true },
           "colors": {
             "type": "object",
+            "optional": true,
             "definition": {
               "primary": {
                 "type": "string",
@@ -507,6 +508,7 @@
           },
           "spacing": {
             "type": "object",
+            "optional": true,
             "definition": {
               "xs": { "type": "string" },
               "sm": { "type": "string" },
@@ -518,6 +520,7 @@
           },
           "typography": {
             "type": "object",
+            "optional": true,
             "definition": {
               "fontFamily": { "type": "string" },
               "fontSize": {
@@ -553,6 +556,7 @@
           },
           "elevation": {
             "type": "object",
+            "optional": true,
             "definition": {
               "none": { "type": "string" },
               "low": { "type": "string" },
@@ -563,6 +567,7 @@
           },
           "borderRadius": {
             "type": "object",
+            "optional": true,
             "definition": {
               "none": { "type": "string" },
               "sm": { "type": "string" },
@@ -574,9 +579,11 @@
           },
           "components": {
             "type": "object",
+            "optional": true,
             "definition": {
               "appBar": {
                 "type": "object",
+                "optional": true,
                 "definition": {
                   "background": {
                     "type": "string",
@@ -629,6 +636,7 @@
               },
               "sidebar": {
                 "type": "object",
+                "optional": true,
                 "definition": {
                   "background": {
                     "type": "string",
@@ -702,6 +710,7 @@
               },
               "drawer": {
                 "type": "object",
+                "optional": true,
                 "definition": {
                   "background": {
                     "type": "string",
@@ -719,6 +728,7 @@
               },
               "input": {
                 "type": "object",
+                "optional": true,
                 "definition": {
                   "background": {
                     "type": "string",
@@ -806,6 +816,7 @@
               },
               "button": {
                 "type": "object",
+                "optional": true,
                 "definition": {
                   "primary": {
                     "type": "object",
@@ -979,6 +990,7 @@
               },
               "card": {
                 "type": "object",
+                "optional": true,
                 "definition": {
                   "background": {
                     "type": "string",
@@ -1007,6 +1019,7 @@
               },
               "dialog": {
                 "type": "object",
+                "optional": true,
                 "definition": {
                   "background": {
                     "type": "string",
@@ -1035,6 +1048,7 @@
               },
               "tooltip": {
                 "type": "object",
+                "optional": true,
                 "definition": {
                   "background": {
                     "type": "string",
@@ -1062,6 +1076,7 @@
               },
               "icon": {
                 "type": "object",
+                "optional": true,
                 "definition": {
                   "colorPrimary": {
                     "type": "string",
@@ -1107,9 +1122,11 @@
           },
           "table": {
             "type": "object",
+            "optional": true,
             "definition": {
               "colors": {
                 "type": "object",
+                "optional": true,
                 "definition": {
                   "primary": {
                     "type": "string",
@@ -1268,6 +1285,7 @@
               },
               "spacing": {
                 "type": "object",
+                "optional": true,
                 "definition": {
                   "xs": { "type": "string" },
                   "sm": { "type": "string" },
@@ -1278,6 +1296,7 @@
               },
               "typography": {
                 "type": "object",
+                "optional": true,
                 "definition": {
                   "fontSize": { "type": "string" },
                   "fontFamily": { "type": "string" },
@@ -1295,9 +1314,11 @@
               },
               "components": {
                 "type": "object",
+                "optional": true,
                 "definition": {
                   "table": {
                     "type": "object",
+                    "optional": true,
                     "definition": {
                       "borderRadius": { "type": "string" },
                       "border": { "type": "string" },
@@ -1319,6 +1340,7 @@
                   },
                   "header": {
                     "type": "object",
+                    "optional": true,
                     "definition": {
                       "background": {
                         "type": "string",
@@ -1347,6 +1369,7 @@
                   },
                   "cell": {
                     "type": "object",
+                    "optional": true,
                     "definition": {
                       "height": { "type": "string" },
                       "padding": { "type": "string" },
@@ -1375,6 +1398,7 @@
                   },
                   "row": {
                     "type": "object",
+                    "optional": true,
                     "definition": {
                       "hoverBackground": { "type": "string" },
                       "selectedBackground": { "type": "string" },
@@ -1385,6 +1409,7 @@
                   },
                   "toolbar": {
                     "type": "object",
+                    "optional": true,
                     "definition": {
                       "background": { "type": "string" },
                       "padding": { "type": "string" },
@@ -1395,6 +1420,7 @@
                   },
                   "filter": {
                     "type": "object",
+                    "optional": true,
                     "definition": {
                       "iconColor": {
                         "type": "string",
@@ -1472,6 +1498,7 @@
                   },
                   "sort": {
                     "type": "object",
+                    "optional": true,
                     "definition": {
                       "iconColor": { "type": "string" },
                       "activeIconColor": { "type": "string" },
@@ -1485,6 +1512,7 @@
           },
           "breakpoints": {
             "type": "object",
+            "optional": true,
             "definition": {
               "xs": { "type": "string" },
               "sm": { "type": "string" },
@@ -1495,6 +1523,7 @@
           },
           "transitions": {
             "type": "object",
+            "optional": true,
             "definition": {
               "duration": {
                 "type": "object",

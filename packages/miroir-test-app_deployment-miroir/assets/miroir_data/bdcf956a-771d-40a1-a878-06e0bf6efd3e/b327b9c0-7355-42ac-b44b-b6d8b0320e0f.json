@@ -1,0 +1,129 @@
+{
+  "uuid": "b327b9c0-7355-42ac-b44b-b6d8b0320e0f",
+  "parentName": "Theme",
+  "parentUuid": "bdcf956a-771d-40a1-a878-06e0bf6efd3e",
+  "name": "darkMiroirTheme",
+  "defaultLabel": "The default dark Miroir Theme, used as a base for the dark theme of the application.",
+  "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+  "definition": {
+    "id": "dark",
+    "name": "Dark Theme",
+    "description": "Standard dark theme with balanced colors and spacing",
+    "colors": {
+      "primary": "#90caf9",
+      "primaryLight": "#b3e5fc",
+      "primaryDark": "#0277bd",
+      "secondary": "#f48fb1",
+      "secondaryLight": "#f8bbd9",
+      "secondaryDark": "#e91e63",
+      "background": "#121212",
+      "backgroundPaper": "#1e1e1e",
+      "backgroundOverlay": "rgba(18, 18, 18, 0.9)",
+      "surface": "#2a2a2a",
+      "surfaceVariant": "#333333",
+      "text": "#ffffff",
+      "textSecondary": "#666666",
+      "textLight": "#999999",
+      "textDisabled": "#666666",
+      "border": "#333333",
+      "borderLight": "#404040",
+      "divider": "#333333",
+      "hover": "#2a2a2a",
+      "selected": "#1976d2",
+      "focused": "#90caf9",
+      "active": "#0277bd",
+      "error": "#f44336",
+      "errorLight": "#ffebee",
+      "errorSurface": "#2d1b1b",
+      "warning": "#ff8c00",
+      "warningLight": "#f8c68dff",
+      "success": "#4caf50",
+      "successLight": "#e8f5e8",
+      "successSurface": "#1b2d1b",
+      "info": "#90caf9",
+      "infoLight": "rgba(144, 202, 249, 0.1)",
+      "accent": "#90caf9",
+      "accentLight": "rgba(144, 202, 249, 0.1)",
+      "shadow": "rgba(0, 0, 0, 0.3)",
+      "overlay": "rgba(0, 0, 0, 0.7)",
+      "nesting": {
+        "level0": "#2a2a2a",
+        "level1": "#323232",
+        "level2": "#3a3a3a"
+      }
+    },
+    "components": {
+      "appBar": {
+        "background": "#1e1e1e",
+        "textColor": "#ffffff",
+        "borderBottom": "1px solid #333333",
+        "height": "64px",
+        "elevation": "0 2px 4px rgba(0, 0, 0, 0.3)"
+      },
+      "sidebar": {
+        "width": "200px",
+        "itemHeight": "48px"
+      },
+      "input": {
+        "background": "#2a2a2a",
+        "backgroundHover": "#333333",
+        "backgroundFocused": "#2a2a2a",
+        "borderColorHover": "#666666",
+        "borderRadius": "4px",
+        "height": "40px"
+      },
+      "button": {
+        "primary": {
+          "backgroundHover": "#42a5f5",
+          "backgroundActive": "#1976d2",
+          "textColor": "#121212",
+          "borderRadius": "4px"
+        },
+        "secondary": {
+          "backgroundActive": "#c2185b",
+          "textColor": "#121212",
+          "borderRadius": "4px"
+        },
+        "outlined": {
+          "backgroundHover": "rgba(144, 202, 249, 0.04)",
+          "backgroundActive": "rgba(144, 202, 249, 0.08)",
+          "borderRadius": "4px"
+        }
+      },
+      "tooltip": {
+        "background": "rgba(97, 97, 97, 0.9)",
+        "textColor": "#ffffff",
+        "borderRadius": "4px",
+        "fontSize": "12px"
+      },
+      "icon": {
+        "size": {
+          "sm": "16px",
+          "md": "24px",
+          "lg": "32px"
+        }
+      }
+    },
+    "table": {
+      "colors": {
+        "primary": "#90caf9",
+        "secondary": "#f48fb1",
+        "background": "#121212",
+        "surface": "#1e1e1e",
+        "border": "#333333",
+        "text": "#ffffff",
+        "textSecondary": "#b3b3b3",
+        "textLight": "#999999",
+        "hover": "#2a2a2a",
+        "selected": "#1976d2",
+        "filter": "#ff8c00",
+        "filterBackground": "#2a2a2a",
+        "error": "#f44336",
+        "warning": "#ff9800",
+        "success": "#4caf50",
+        "accent": "#90caf9",
+        "accentLight": "rgba(144, 202, 249, 0.1)"
+      }
+    }
+  }
+}

@@ -12,7 +12,8 @@
 //
 // ################################################################################################
 
-import { MiroirTheme, ResolvedMiroirTheme } from './MiroirTheme.js';
+import type { MiroirThemeFull } from 'miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js';
+import { defaultMiroirTheme, MiroirTheme, ResolvedMiroirTheme } from './MiroirTheme.js';
 import { ResolvedTableTheme, TableTheme } from './TableTheme.js';
 
 // ################################################################################################
@@ -155,108 +156,109 @@ import { ResolvedTableTheme, TableTheme } from './TableTheme.js';
  * This function is the single source of truth for color fallbacks.
  * Every optional color in components.* and table.* is resolved here.
  */
-export function resolveThemeColors(theme: MiroirTheme): ResolvedMiroirTheme {
-  const colors = theme.colors;
+// export function resolveThemeColors(theme: MiroirTheme): ResolvedMiroirTheme {
+export function resolveThemeColors(theme: MiroirTheme): MiroirThemeFull['definition'] {
+const colors = theme.colors ?? defaultMiroirTheme.colors;
 
   // ──────────────────────────────────────────────────
   // Resolve components
   // ──────────────────────────────────────────────────
-  const resolvedComponents: ResolvedMiroirTheme['components'] = {
+  const resolvedComponents: MiroirThemeFull['definition']['components'] = {
     appBar: {
-      background: theme.components.appBar.background ?? colors.primaryDark,
-      textColor: theme.components.appBar.textColor ?? colors.backgroundPaper,
-      borderBottom: theme.components.appBar.borderBottom ?? 'none',
-      height: theme.components.appBar.height ?? '64px',
-      elevation: theme.components.appBar.elevation ?? '0 2px 4px rgba(0, 0, 0, 0.1)',
+      background: theme?.components?.appBar?.background ?? colors.primaryDark,
+      textColor: theme?.components?.appBar?.textColor ?? colors.backgroundPaper,
+      borderBottom: theme?.components?.appBar?.borderBottom ?? 'none',
+      height: theme?.components?.appBar?.height ?? '64px',
+      elevation: theme?.components?.appBar?.elevation ?? '0 2px 4px rgba(0, 0, 0, 0.1)',
     },
 
     sidebar: {
-      background: theme.components.sidebar.background ?? colors.backgroundPaper,
-      backgroundHover: theme.components.sidebar.backgroundHover ?? colors.hover,
-      textColor: theme.components.sidebar.textColor ?? colors.text,
-      textColorActive: theme.components.sidebar.textColorActive ?? colors.accent,
-      borderRight: theme.components.sidebar.borderRight ?? `1px solid ${colors.border}`,
-      width: theme.components.sidebar.width ?? '200px',
-      itemHeight: theme.components.sidebar.itemHeight ?? '48px',
+      background: theme?.components?.sidebar?.background ?? colors.backgroundPaper,
+      backgroundHover: theme?.components?.sidebar?.backgroundHover ?? colors.hover,
+      textColor: theme?.components?.sidebar?.textColor ?? colors.text,
+      textColorActive: theme?.components?.sidebar?.textColorActive ?? colors.accent,
+      borderRight: theme?.components?.sidebar?.borderRight ?? `1px solid ${colors.border}`,
+      width: theme?.components?.sidebar?.width ?? '200px',
+      itemHeight: theme?.components?.sidebar?.itemHeight ?? '48px',
     },
 
     drawer: {
-      background: theme.components.drawer.background ?? colors.backgroundPaper,
-      backdrop: theme.components.drawer.backdrop ?? colors.overlay,
-      elevation: theme.components.drawer.elevation ?? '0 8px 10px rgba(0, 0, 0, 0.14), 0 3px 14px rgba(0, 0, 0, 0.12)',
+      background: theme?.components?.drawer?.background ?? colors.backgroundPaper,
+      backdrop: theme?.components?.drawer?.backdrop ?? colors.overlay,
+      elevation: theme?.components?.drawer?.elevation ?? '0 8px 10px rgba(0, 0, 0, 0.14), 0 3px 14px rgba(0, 0, 0, 0.12)',
     },
 
     input: {
-      background: theme.components.input.background ?? colors.backgroundPaper,
-      backgroundHover: theme.components.input.backgroundHover ?? colors.surface,
-      backgroundFocused: theme.components.input.backgroundFocused ?? colors.backgroundPaper,
-      borderColor: theme.components.input.borderColor ?? colors.border,
-      borderColorHover: theme.components.input.borderColorHover ?? colors.textSecondary,
-      borderColorFocused: theme.components.input.borderColorFocused ?? colors.accent,
-      textColor: theme.components.input.textColor ?? colors.text,
-      placeholderColor: theme.components.input.placeholderColor ?? colors.textLight,
-      borderRadius: theme.components.input.borderRadius ?? '4px',
-      height: theme.components.input.height ?? '40px',
+      background: theme?.components?.input?.background ?? colors.backgroundPaper,
+      backgroundHover: theme?.components?.input?.backgroundHover ?? colors.surface,
+      backgroundFocused: theme?.components?.input?.backgroundFocused ?? colors.backgroundPaper,
+      borderColor: theme?.components?.input?.borderColor ?? colors.border,
+      borderColorHover: theme?.components?.input?.borderColorHover ?? colors.textSecondary,
+      borderColorFocused: theme?.components?.input?.borderColorFocused ?? colors.accent,
+      textColor: theme?.components?.input?.textColor ?? colors.text,
+      placeholderColor: theme?.components?.input?.placeholderColor ?? colors.textLight,
+      borderRadius: theme?.components?.input?.borderRadius ?? '4px',
+      height: theme?.components?.input?.height ?? '40px',
     },
 
     button: {
       primary: {
-        background: theme.components.button.primary.background ?? colors.accent,
-        backgroundHover: theme.components.button.primary.backgroundHover ?? colors.active,
-        backgroundActive: theme.components.button.primary.backgroundActive ?? colors.active,
-        textColor: theme.components.button.primary.textColor ?? colors.backgroundPaper,
-        borderColor: theme.components.button.primary.borderColor ?? colors.accent,
-        borderRadius: theme.components.button.primary.borderRadius ?? '4px',
+        background: theme?.components?.button?.primary?.background ?? colors.accent,
+        backgroundHover: theme?.components?.button?.primary?.backgroundHover ?? colors.active,
+        backgroundActive: theme?.components?.button?.primary?.backgroundActive ?? colors.active,
+        textColor: theme?.components?.button?.primary?.textColor ?? colors.backgroundPaper,
+        borderColor: theme?.components?.button?.primary?.borderColor ?? colors.accent,
+        borderRadius: theme?.components?.button?.primary?.borderRadius ?? '4px',
       },
       secondary: {
-        background: theme.components.button.secondary.background ?? colors.secondary,
-        backgroundHover: theme.components.button.secondary.backgroundHover ?? colors.secondaryDark,
-        backgroundActive: theme.components.button.secondary.backgroundActive ?? colors.secondaryDark,
-        textColor: theme.components.button.secondary.textColor ?? colors.backgroundPaper,
-        borderColor: theme.components.button.secondary.borderColor ?? colors.secondary,
-        borderRadius: theme.components.button.secondary.borderRadius ?? '4px',
+        background: theme?.components?.button?.secondary?.background ?? colors.secondary,
+        backgroundHover: theme?.components?.button?.secondary?.backgroundHover ?? colors.secondaryDark,
+        backgroundActive: theme?.components?.button?.secondary?.backgroundActive ?? colors.secondaryDark,
+        textColor: theme?.components?.button?.secondary?.textColor ?? colors.backgroundPaper,
+        borderColor: theme?.components?.button?.secondary?.borderColor ?? colors.secondary,
+        borderRadius: theme?.components?.button?.secondary?.borderRadius ?? '4px',
       },
       outlined: {
-        background: theme.components.button.outlined.background ?? 'transparent',
-        backgroundHover: theme.components.button.outlined.backgroundHover ?? colors.accentLight,
-        backgroundActive: theme.components.button.outlined.backgroundActive ?? colors.accentLight,
-        textColor: theme.components.button.outlined.textColor ?? colors.accent,
-        borderColor: theme.components.button.outlined.borderColor ?? colors.accent,
-        borderRadius: theme.components.button.outlined.borderRadius ?? '4px',
+        background: theme?.components?.button?.outlined?.background ?? 'transparent',
+        backgroundHover: theme?.components?.button?.outlined?.backgroundHover ?? colors.accentLight,
+        backgroundActive: theme?.components?.button?.outlined?.backgroundActive ?? colors.accentLight,
+        textColor: theme?.components?.button?.outlined?.textColor ?? colors.accent,
+        borderColor: theme?.components?.button?.outlined?.borderColor ?? colors.accent,
+        borderRadius: theme?.components?.button?.outlined?.borderRadius ?? '4px',
       },
     },
 
     card: {
-      background: theme.components.card.background ?? colors.backgroundPaper,
-      borderColor: theme.components.card.borderColor ?? colors.border,
-      borderRadius: theme.components.card.borderRadius ?? '8px',
-      elevation: theme.components.card.elevation ?? '0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24)',
-      padding: theme.components.card.padding ?? '16px',
+      background: theme?.components?.card?.background ?? colors.backgroundPaper,
+      borderColor: theme?.components?.card?.borderColor ?? colors.border,
+      borderRadius: theme?.components?.card?.borderRadius ?? '8px',
+      elevation: theme?.components?.card?.elevation ?? '0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24)',
+      padding: theme?.components?.card?.padding ?? '16px',
     },
 
     dialog: {
-      background: theme.components.dialog.background ?? colors.backgroundPaper,
-      backdrop: theme.components.dialog.backdrop ?? colors.overlay,
-      borderRadius: theme.components.dialog.borderRadius ?? '8px',
-      elevation: theme.components.dialog.elevation ?? '0 11px 15px rgba(0, 0, 0, 0.2), 0 4px 20px rgba(0, 0, 0, 0.14)',
-      padding: theme.components.dialog.padding ?? '24px',
+      background: theme?.components?.dialog?.background ?? colors.backgroundPaper,
+      backdrop: theme?.components?.dialog?.backdrop ?? colors.overlay,
+      borderRadius: theme?.components?.dialog?.borderRadius ?? '8px',
+      elevation: theme?.components?.dialog?.elevation ?? '0 11px 15px rgba(0, 0, 0, 0.2), 0 4px 20px rgba(0, 0, 0, 0.14)',
+      padding: theme?.components?.dialog?.padding ?? '24px',
     },
 
     tooltip: {
-      background: theme.components.tooltip.background ?? colors.overlay,
-      textColor: theme.components.tooltip.textColor ?? colors.backgroundPaper,
-      borderRadius: theme.components.tooltip.borderRadius ?? '4px',
-      fontSize: theme.components.tooltip.fontSize ?? '12px',
+      background: theme?.components?.tooltip?.background ?? colors.overlay,
+      textColor: theme?.components?.tooltip?.textColor ?? colors.backgroundPaper,
+      borderRadius: theme?.components?.tooltip?.borderRadius ?? '4px',
+      fontSize: theme?.components?.tooltip?.fontSize ?? '12px',
     },
 
     icon: {
-      colorPrimary: theme.components.icon.colorPrimary ?? colors.accent,
-      colorSecondary: theme.components.icon.colorSecondary ?? colors.textSecondary,
-      colorDisabled: theme.components.icon.colorDisabled ?? colors.textDisabled,
+      colorPrimary: theme?.components?.icon?.colorPrimary ?? colors.accent,
+      colorSecondary: theme?.components?.icon?.colorSecondary ?? colors.textSecondary,
+      colorDisabled: theme?.components?.icon?.colorDisabled ?? colors.textDisabled,
       size: {
-        sm: theme.components.icon.size.sm ?? '16px',
-        md: theme.components.icon.size.md ?? '24px',
-        lg: theme.components.icon.size.lg ?? '32px',
+        sm: theme?.components?.icon?.size?.sm ?? '16px',
+        md: theme?.components?.icon?.size?.md ?? '24px',
+        lg: theme?.components?.icon?.size?.lg ?? '32px',
       },
     },
   };
@@ -264,10 +266,18 @@ export function resolveThemeColors(theme: MiroirTheme): ResolvedMiroirTheme {
   // ──────────────────────────────────────────────────
   // Resolve table theme
   // ──────────────────────────────────────────────────
-  const resolvedTable = resolveTableThemeColors(theme.table, colors);
+  const resolvedTable = resolveTableThemeColors(theme.table ?? defaultMiroirTheme.table as any, colors);
+
 
   return {
     ...theme,
+    colors,
+    spacing: theme.spacing ?? defaultMiroirTheme.spacing,
+    typography: theme.typography ?? defaultMiroirTheme.typography,
+    elevation: theme.elevation ?? defaultMiroirTheme.elevation,
+    borderRadius: theme.borderRadius ?? defaultMiroirTheme.borderRadius,
+    breakpoints: theme.breakpoints ?? defaultMiroirTheme.breakpoints,
+    transitions: theme.transitions ?? defaultMiroirTheme.transitions,
     components: resolvedComponents,
     table: resolvedTable,
   };
@@ -280,26 +290,28 @@ export function resolveThemeColors(theme: MiroirTheme): ResolvedMiroirTheme {
 export function resolveTableThemeColors(
   table: TableTheme,
   rootColors: MiroirTheme['colors']
-): ResolvedTableTheme {
+// ): ResolvedTableTheme {
+): MiroirThemeFull['definition']['table'] {
+  const colors = rootColors ?? defaultMiroirTheme.colors;
   // First resolve table-level colors
   const resolvedTableColors: ResolvedTableTheme['colors'] = {
-    primary: table.colors.primary ?? rootColors.accent,
-    secondary: table.colors.secondary ?? rootColors.secondary,
-    background: table.colors.background ?? rootColors.background,
-    surface: table.colors.surface ?? rootColors.surface,
-    border: table.colors.border ?? rootColors.border,
-    text: table.colors.text ?? rootColors.text,
-    textSecondary: table.colors.textSecondary ?? rootColors.textSecondary,
-    textLight: table.colors.textLight ?? rootColors.textLight,
-    hover: table.colors.hover ?? rootColors.hover,
-    selected: table.colors.selected ?? rootColors.selected,
-    filter: table.colors.filter ?? rootColors.warning,
-    filterBackground: table.colors.filterBackground ?? rootColors.warningLight,
-    error: table.colors.error ?? rootColors.error,
-    warning: table.colors.warning ?? rootColors.warning,
-    success: table.colors.success ?? rootColors.success,
-    accent: table.colors.accent ?? rootColors.accent,
-    accentLight: table.colors.accentLight ?? rootColors.accentLight,
+    primary: table.colors.primary ?? colors.accent,
+    secondary: table.colors.secondary ?? colors.secondary,
+    background: table.colors.background ?? colors.background,
+    surface: table.colors.surface ?? colors.surface,
+    border: table.colors.border ?? colors.border,
+    text: table.colors.text ?? colors.text,
+    textSecondary: table.colors.textSecondary ?? colors.textSecondary,
+    textLight: table.colors.textLight ?? colors.textLight,
+    hover: table.colors.hover ?? colors.hover,
+    selected: table.colors.selected ?? colors.selected,
+    filter: table.colors.filter ?? colors.warning,
+    filterBackground: table.colors.filterBackground ?? colors.warningLight,
+    error: table.colors.error ?? colors.error,
+    warning: table.colors.warning ?? colors.warning,
+    success: table.colors.success ?? colors.success,
+    accent: table.colors.accent ?? colors.accent,
+    accentLight: table.colors.accentLight ?? colors.accentLight,
   };
 
   // Then resolve table component colors using the resolved table colors
