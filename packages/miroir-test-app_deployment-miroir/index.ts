@@ -247,3 +247,4 @@ export const tableThemeSchemaJson: JzodObject = entityDefinitionTheme.mlSchema.d
 // export { default as tableThemeSchemaJson } from "./assets/miroir_data/5e81e1b9-38be-487c-b3e5-53796c57fccf/8e380a46-189d-40ff-a880-7d04f04da673.json" assert { type: "json" };
 export { default as defaultStoredMiroirTheme } from "./assets/miroir_data/bdcf956a-771d-40a1-a878-06e0bf6efd3e/919803c4-979d-4d7c-9cec-e54d37bdac09.json" assert { type: "json" };
 export { default as darkStoredMiroirTheme } from "./assets/miroir_data/bdcf956a-771d-40a1-a878-06e0bf6efd3e/b327b9c0-7355-42ac-b44b-b6d8b0320e0f.json" assert { type: "json" };
+export { default as compactStoredMiroirTheme } from "./assets/miroir_data/bdcf956a-771d-40a1-a878-06e0bf6efd3e/edd44b02-3125-46d7-b5a8-ccb1c3c51363.json" assert { type: "json" };

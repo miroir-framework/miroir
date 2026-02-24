@@ -46,7 +46,6 @@ import {
   JsonObjectEditFormDialogInputs,
 } from "../JsonObjectEditFormDialog.js";
 import { generateAgGridStyles, generateGlideTheme, getFilterToolbarStyles } from '../Themes/TableStyleGenerators.js';
-import { DeepPartial, TableTheme, createTableTheme } from '../Themes/TableTheme.js';
 import {
   TableComponentProps,
   TableComponentRow,
@@ -69,24 +68,22 @@ MiroirLoggerFactory.registerLoggerToStart(
 
 
 // ################################################################################################
-export const EntityInstanceGrid = (props: TableComponentProps & { theme?: DeepPartial<TableTheme> }) => {
+// export const EntityInstanceGrid = (props: TableComponentProps & { theme?: DeepPartial<TableTheme> }) => {
+export const EntityInstanceGrid = (props: TableComponentProps) => {
   log.info(":::::::::::::::::::::::::: EntityInstanceGrid refreshing with props",props);
   
   // Get theme from context first, then allow prop overrides
   const contextTheme = useMiroirTableTheme();
   
   // Use the unified table theme with optional overrides
-  const tableTheme = useMemo(() => {
-    // Start with context theme, then apply any prop overrides
-    return props.theme ? createTableTheme({
-      ...contextTheme,
-      ...props.theme,
-    }) : contextTheme;
-  }, [contextTheme, props.theme]);
+      // const tableTheme = useMemo(() => {
+      //   // Start with context theme, then apply any prop overrides
+      //   return contextTheme;
+      // }, [contextTheme]);
   
-  const filterToolbarStyles = useMemo(() => getFilterToolbarStyles(tableTheme), [tableTheme]);
-  const agGridStyles = useMemo(() => generateAgGridStyles(tableTheme), [tableTheme]);
-  const glideTheme = useMemo(() => generateGlideTheme(tableTheme), [tableTheme]);
+  const filterToolbarStyles = useMemo(() => getFilterToolbarStyles(contextTheme), [contextTheme]);
+  const agGridStyles = useMemo(() => generateAgGridStyles(contextTheme), [contextTheme]);
+  const glideTheme = useMemo(() => generateGlideTheme(contextTheme), [contextTheme]);
   
   const navigate = useNavigate();
   const context = useMiroirContextService();
@@ -807,7 +804,7 @@ export const EntityInstanceGrid = (props: TableComponentProps & { theme?: DeepPa
         flexDirection: 'column',
         flexGrow: 1,
         boxSizing: 'border-box',
-        fontFamily: tableTheme.typography.fontFamily,
+        fontFamily: contextTheme.typography.fontFamily,
       }}
     >
       {/* Apply unified table styles */}
@@ -821,6 +818,13 @@ export const EntityInstanceGrid = (props: TableComponentProps & { theme?: DeepPa
       <ThemedOnScreenDebug
         label={`EntityInstanceGrid rendering with deploymentUuid ${contextDeploymentUuid} and application ${props.application}`}
         data={props}
+        copyButton={true}
+        initiallyUnfolded={false}
+        useCodeBlock={true}
+      />
+      <ThemedOnScreenDebug
+        label={`EntityInstanceGrid rendering with theme`}
+        data={{ contextTheme }}
         copyButton={true}
         initiallyUnfolded={false}
         useCodeBlock={true}
@@ -898,18 +902,18 @@ export const EntityInstanceGrid = (props: TableComponentProps & { theme?: DeepPa
                     ? { 
                         ...props.styles, 
                         height: "50vh", 
-                        maxHeight: tableTheme.components.table.maxHeight 
+                        maxHeight: contextTheme.components.table.maxHeight 
                       }
                     : {
                         ...props.styles,
-                        minHeight: tableTheme.components.table.minHeight
+                        minHeight: contextTheme.components.table.minHeight
                       }),
                   width: '100%',
                   maxWidth: '100%',
                   overflow: 'auto', // Allow table to scroll when needed
                   boxSizing: 'border-box',
-                  borderRadius: tableTheme.components.table.borderRadius,
-                  border: tableTheme.components.table.border,
+                  borderRadius: contextTheme.components.table.borderRadius,
+                  border: contextTheme.components.table.border,
                 }}
               >
                 <ThemedOnScreenDebug
@@ -954,16 +958,16 @@ export const EntityInstanceGrid = (props: TableComponentProps & { theme?: DeepPa
               styles={{
                 ...props.styles,
                 // height: `${containerHeight}px`,
-                fontFamily: tableTheme.typography.fontFamily,
-                fontSize: tableTheme.typography.fontSize,
-                borderRadius: tableTheme.components.table.borderRadius,
-                border: tableTheme.components.table.border,
+                fontFamily: contextTheme.typography.fontFamily,
+                fontSize: contextTheme.typography.fontSize,
+                borderRadius: contextTheme.components.table.borderRadius,
+                border: contextTheme.components.table.border,
               }}
               type={props.type}
               currentEntityDefinition={props.type === 'EntityInstance' ? (props as any).currentEntityDefinition : undefined}
               toolsColumnDefinition={toolsColumnDefinition}
               maxRows={props.maxRows}
-              theme={tableTheme}
+              theme={contextTheme}
               glideTheme={glideTheme}
               onCellClicked={onGlideGridCellClicked}
               onCellEdited={(cell, newValue) => {
@@ -992,7 +996,7 @@ export const EntityInstanceGrid = (props: TableComponentProps & { theme?: DeepPa
           }}
           columnDefs={props.columnDefs}
           styles={props.styles}
-          theme={props.theme}
+          theme={contextTheme}
           maxRows={props.maxRows}
           sortByAttribute={props.sortByAttribute}
           gridType={gridType}

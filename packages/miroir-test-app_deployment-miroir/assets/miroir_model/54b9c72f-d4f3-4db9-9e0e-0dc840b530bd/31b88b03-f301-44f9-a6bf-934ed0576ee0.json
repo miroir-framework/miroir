@@ -11,11 +11,7 @@
     "cacheAllInstancesOnRefresh": true
   },
   "defaultInstanceDetailsReportUuid": "5cefd212-31bc-41bf-b346-8643f91e80aa",
-  "viewAttributes": [
-    "name",
-    "description",
-    "uuid"
-  ],
+  "viewAttributes": ["name", "description", "uuid"],
   "mlSchema": {
     "type": "object",
     "definition": {
@@ -59,11 +55,7 @@
       },
       "conceptLevel": {
         "type": "enum",
-        "definition": [
-          "MetaModel",
-          "Model",
-          "Data"
-        ],
+        "definition": ["MetaModel", "Model", "Data"],
         "optional": true,
         "tag": {
           "value": {
@@ -74,11 +66,7 @@
       },
       "storageAccess": {
         "type": "enum",
-        "definition": [
-          "none",
-          "localStorage",
-          "persistentStorage"
-        ],
+        "definition": ["none", "localStorage", "persistentStorage"],
         "optional": true,
         "tag": {
           "value": {
@@ -150,6 +138,7 @@
             "definition": {
               "primary": {
                 "type": "string",
+                "optional": true,
                 "tag": {
                   "value": {
                     "defaultLabel": "Primary Color",
@@ -159,6 +148,7 @@
               },
               "primaryLight": {
                 "type": "string",
+                "optional": true,
                 "tag": {
                   "value": {
                     "defaultLabel": "Primary Light Color",
@@ -168,6 +158,7 @@
               },
               "primaryDark": {
                 "type": "string",
+                "optional": true,
                 "tag": {
                   "value": {
                     "defaultLabel": "Primary Dark Color",
@@ -177,6 +168,7 @@
               },
               "secondary": {
                 "type": "string",
+                "optional": true,
                 "tag": {
                   "value": {
                     "defaultLabel": "Secondary Color",
@@ -186,6 +178,7 @@
               },
               "secondaryLight": {
                 "type": "string",
+                "optional": true,
                 "tag": {
                   "value": {
                     "defaultLabel": "Secondary Light Color",
@@ -195,6 +188,7 @@
               },
               "secondaryDark": {
                 "type": "string",
+                "optional": true,
                 "tag": {
                   "value": {
                     "defaultLabel": "Secondary Dark Color",
@@ -204,6 +198,7 @@
               },
               "background": {
                 "type": "string",
+                "optional": true,
                 "tag": {
                   "value": {
                     "defaultLabel": "Background Color",
@@ -213,6 +208,7 @@
               },
               "backgroundPaper": {
                 "type": "string",
+                "optional": true,
                 "tag": {
                   "value": {
                     "defaultLabel": "Background Paper Color",
@@ -222,6 +218,7 @@
               },
               "backgroundOverlay": {
                 "type": "string",
+                "optional": true,
                 "tag": {
                   "value": {
                     "defaultLabel": "Background Overlay Color",
@@ -231,6 +228,7 @@
               },
               "surface": {
                 "type": "string",
+                "optional": true,
                 "tag": {
                   "value": {
                     "defaultLabel": "Surface Color",
@@ -240,6 +238,7 @@
               },
               "surfaceVariant": {
                 "type": "string",
+                "optional": true,
                 "tag": {
                   "value": {
                     "defaultLabel": "Surface Variant Color",
@@ -249,6 +248,7 @@
               },
               "text": {
                 "type": "string",
+                "optional": true,
                 "tag": {
                   "value": {
                     "defaultLabel": "Text Color",
@@ -258,6 +258,7 @@
               },
               "textSecondary": {
                 "type": "string",
+                "optional": true,
                 "tag": {
                   "value": {
                     "defaultLabel": "Secondary Text Color",
@@ -267,6 +268,7 @@
               },
               "textLight": {
                 "type": "string",
+                "optional": true,
                 "tag": {
                   "value": {
                     "defaultLabel": "Light Text Color",
@@ -276,6 +278,7 @@
               },
               "textDisabled": {
                 "type": "string",
+                "optional": true,
                 "tag": {
                   "value": {
                     "defaultLabel": "Disabled Text Color",
@@ -285,6 +288,7 @@
               },
               "border": {
                 "type": "string",
+                "optional": true,
                 "tag": {
                   "value": {
                     "defaultLabel": "Border Color",
@@ -294,6 +298,7 @@
               },
               "borderLight": {
                 "type": "string",
+                "optional": true,
                 "tag": {
                   "value": {
                     "defaultLabel": "Light Border Color",
@@ -303,6 +308,7 @@
               },
               "divider": {
                 "type": "string",
+                "optional": true,
                 "tag": {
                   "value": {
                     "defaultLabel": "Divider Color",
@@ -312,6 +318,7 @@
               },
               "hover": {
                 "type": "string",
+                "optional": true,
                 "tag": {
                   "value": {
                     "defaultLabel": "Hover Color",
@@ -321,6 +328,7 @@
               },
               "selected": {
                 "type": "string",
+                "optional": true,
                 "tag": {
                   "value": {
                     "defaultLabel": "Selected Color",
@@ -330,6 +338,7 @@
               },
               "focused": {
                 "type": "string",
+                "optional": true,
                 "tag": {
                   "value": {
                     "defaultLabel": "Focused Color",
@@ -339,6 +348,7 @@
               },
               "active": {
                 "type": "string",
+                "optional": true,
                 "tag": {
                   "value": {
                     "defaultLabel": "Active Color",
@@ -348,6 +358,7 @@
               },
               "error": {
                 "type": "string",
+                "optional": true,
                 "tag": {
                   "value": {
                     "defaultLabel": "Error Color",
@@ -357,6 +368,7 @@
               },
               "errorLight": {
                 "type": "string",
+                "optional": true,
                 "tag": {
                   "value": {
                     "defaultLabel": "Light Error Color",
@@ -366,6 +378,7 @@
               },
               "errorSurface": {
                 "type": "string",
+                "optional": true,
                 "tag": {
                   "value": {
                     "defaultLabel": "Error Surface Color",
@@ -375,6 +388,7 @@
               },
               "warning": {
                 "type": "string",
+                "optional": true,
                 "tag": {
                   "value": {
                     "defaultLabel": "Warning Color",
@@ -384,6 +398,7 @@
               },
               "warningLight": {
                 "type": "string",
+                "optional": true,
                 "tag": {
                   "value": {
                     "defaultLabel": "Light Warning Color",
@@ -393,6 +408,7 @@
               },
               "success": {
                 "type": "string",
+                "optional": true,
                 "tag": {
                   "value": {
                     "defaultLabel": "Success Color",
@@ -402,6 +418,7 @@
               },
               "successLight": {
                 "type": "string",
+                "optional": true,
                 "tag": {
                   "value": {
                     "defaultLabel": "Light Success Color",
@@ -411,6 +428,7 @@
               },
               "successSurface": {
                 "type": "string",
+                "optional": true,
                 "tag": {
                   "value": {
                     "defaultLabel": "Success Surface Color",
@@ -420,6 +438,7 @@
               },
               "info": {
                 "type": "string",
+                "optional": true,
                 "tag": {
                   "value": {
                     "defaultLabel": "Info Color",
@@ -429,6 +448,7 @@
               },
               "infoLight": {
                 "type": "string",
+                "optional": true,
                 "tag": {
                   "value": {
                     "defaultLabel": "Light Info Color",
@@ -438,6 +458,7 @@
               },
               "accent": {
                 "type": "string",
+                "optional": true,
                 "tag": {
                   "value": {
                     "defaultLabel": "Accent Color",
@@ -447,6 +468,7 @@
               },
               "accentLight": {
                 "type": "string",
+                "optional": true,
                 "tag": {
                   "value": {
                     "defaultLabel": "Light Accent Color",
@@ -456,6 +478,7 @@
               },
               "shadow": {
                 "type": "string",
+                "optional": true,
                 "tag": {
                   "value": {
                     "defaultLabel": "Shadow Color",
@@ -465,6 +488,7 @@
               },
               "overlay": {
                 "type": "string",
+                "optional": true,
                 "tag": {
                   "value": {
                     "defaultLabel": "Overlay Color",
@@ -474,6 +498,7 @@
               },
               "nesting": {
                 "type": "object",
+                "optional": true,
                 "definition": {
                   "level0": {
                     "type": "string",
@@ -486,6 +511,7 @@
                   },
                   "level1": {
                     "type": "string",
+                    "optional": true,
                     "tag": {
                       "value": {
                         "defaultLabel": "Nesting Level 1 Color",
@@ -495,6 +521,7 @@
                   },
                   "level2": {
                     "type": "string",
+                    "optional": true,
                     "tag": {
                       "value": {
                         "defaultLabel": "Nesting Level 2 Color",
@@ -510,46 +537,49 @@
             "type": "object",
             "optional": true,
             "definition": {
-              "xs": { "type": "string" },
-              "sm": { "type": "string" },
-              "md": { "type": "string" },
-              "lg": { "type": "string" },
-              "xl": { "type": "string" },
-              "xxl": { "type": "string" }
+              "xs": { "type": "string", "optional": true },
+              "sm": { "type": "string", "optional": true },
+              "md": { "type": "string", "optional": true },
+              "lg": { "type": "string", "optional": true },
+              "xl": { "type": "string", "optional": true },
+              "xxl": { "type": "string", "optional": true }
             }
           },
           "typography": {
             "type": "object",
             "optional": true,
             "definition": {
-              "fontFamily": { "type": "string" },
+              "fontFamily": { "type": "string", "optional": true },
               "fontSize": {
                 "type": "object",
+                "optional": true,
                 "definition": {
-                  "xs": { "type": "string" },
-                  "sm": { "type": "string" },
-                  "md": { "type": "string" },
-                  "lg": { "type": "string" },
-                  "xl": { "type": "string" },
-                  "xxl": { "type": "string" }
+                  "xs": { "type": "string", "optional": true },
+                  "sm": { "type": "string", "optional": true },
+                  "md": { "type": "string", "optional": true },
+                  "lg": { "type": "string", "optional": true },
+                  "xl": { "type": "string", "optional": true },
+                  "xxl": { "type": "string", "optional": true }
                 }
               },
               "fontWeight": {
                 "type": "object",
+                "optional": true,
                 "definition": {
-                  "light": { "type": "number" },
-                  "normal": { "type": "number" },
-                  "medium": { "type": "number" },
-                  "bold": { "type": "number" },
-                  "extraBold": { "type": "number" }
+                  "light": { "type": "number", "optional": true },
+                  "normal": { "type": "number", "optional": true },
+                  "medium": { "type": "number", "optional": true },
+                  "bold": { "type": "number", "optional": true },
+                  "extraBold": { "type": "number", "optional": true }
                 }
               },
               "lineHeight": {
                 "type": "object",
+                "optional": true,
                 "definition": {
-                  "tight": { "type": "number" },
-                  "normal": { "type": "number" },
-                  "relaxed": { "type": "number" }
+                  "tight": { "type": "number", "optional": true },
+                  "normal": { "type": "number", "optional": true },
+                  "relaxed": { "type": "number", "optional": true }
                 }
               }
             }
@@ -558,23 +588,23 @@
             "type": "object",
             "optional": true,
             "definition": {
-              "none": { "type": "string" },
-              "low": { "type": "string" },
-              "medium": { "type": "string" },
-              "high": { "type": "string" },
-              "modal": { "type": "string" }
+              "none": { "type": "string", "optional": true },
+              "low": { "type": "string", "optional": true },
+              "medium": { "type": "string", "optional": true },
+              "high": { "type": "string", "optional": true },
+              "modal": { "type": "string", "optional": true }
             }
           },
           "borderRadius": {
             "type": "object",
             "optional": true,
             "definition": {
-              "none": { "type": "string" },
-              "sm": { "type": "string" },
-              "md": { "type": "string" },
-              "lg": { "type": "string" },
-              "xl": { "type": "string" },
-              "full": { "type": "string" }
+              "none": { "type": "string", "optional": true },
+              "sm": { "type": "string", "optional": true },
+              "md": { "type": "string", "optional": true },
+              "lg": { "type": "string", "optional": true },
+              "xl": { "type": "string", "optional": true },
+              "full": { "type": "string", "optional": true }
             }
           },
           "components": {
@@ -607,6 +637,7 @@
                   },
                   "borderBottom": {
                     "type": "string",
+                    "optional": true,
                     "tag": {
                       "value": {
                         "defaultLabel": "App Bar Border Bottom Color",
@@ -616,6 +647,7 @@
                   },
                   "height": {
                     "type": "string",
+                    "optional": true,
                     "tag": {
                       "value": {
                         "defaultLabel": "App Bar Height",
@@ -625,6 +657,7 @@
                   },
                   "elevation": {
                     "type": "string",
+                    "optional": true,
                     "tag": {
                       "value": {
                         "defaultLabel": "App Bar Elevation",
@@ -690,6 +723,7 @@
                   },
                   "width": {
                     "type": "string",
+                    "optional": true,
                     "tag": {
                       "value": {
                         "defaultLabel": "Sidebar Width",
@@ -699,6 +733,7 @@
                   },
                   "itemHeight": {
                     "type": "string",
+                    "optional": true,
                     "tag": {
                       "value": {
                         "defaultLabel": "Sidebar Item Height",
@@ -810,8 +845,8 @@
                       }
                     }
                   },
-                  "borderRadius": { "type": "string" },
-                  "height": { "type": "string" }
+                  "borderRadius": { "type": "string", "optional": true },
+                  "height": { "type": "string", "optional": true }
                 }
               },
               "button": {
@@ -820,6 +855,7 @@
                 "definition": {
                   "primary": {
                     "type": "object",
+                    "optional": true,
                     "definition": {
                       "background": {
                         "type": "string",
@@ -871,7 +907,7 @@
                           }
                         }
                       },
-                      "borderRadius": { "type": "string" }
+                      "borderRadius": { "type": "string", "optional": true }
                     }
                   },
                   "secondary": {
@@ -927,7 +963,7 @@
                           }
                         }
                       },
-                      "borderRadius": { "type": "string" }
+                      "borderRadius": { "type": "string", "optional": true }
                     }
                   },
                   "outlined": {
@@ -1012,9 +1048,9 @@
                       }
                     }
                   },
-                  "borderRadius": { "type": "string" },
-                  "elevation": { "type": "string" },
-                  "padding": { "type": "string" }
+                  "borderRadius": { "type": "string", "optional": true },
+                  "elevation": { "type": "string", "optional": true },
+                  "padding": { "type": "string", "optional": true }
                 }
               },
               "dialog": {
@@ -1041,9 +1077,9 @@
                       }
                     }
                   },
-                  "borderRadius": { "type": "string" },
-                  "elevation": { "type": "string" },
-                  "padding": { "type": "string" }
+                  "borderRadius": { "type": "string", "optional": true },
+                  "elevation": { "type": "string", "optional": true },
+                  "padding": { "type": "string", "optional": true }
                 }
               },
               "tooltip": {
@@ -1110,10 +1146,11 @@
                   },
                   "size": {
                     "type": "object",
+                    "optional": true,
                     "definition": {
-                      "sm": { "type": "string" },
-                      "md": { "type": "string" },
-                      "lg": { "type": "string" }
+                      "sm": { "type": "string", "optional": true },
+                      "md": { "type": "string", "optional": true },
+                      "lg": { "type": "string", "optional": true }
                     }
                   }
                 }
@@ -1130,6 +1167,7 @@
                 "definition": {
                   "primary": {
                     "type": "string",
+                    "optional": true,
                     "tag": {
                       "value": {
                         "defaultLabel": "Primary Color",
@@ -1139,6 +1177,7 @@
                   },
                   "secondary": {
                     "type": "string",
+                    "optional": true,
                     "tag": {
                       "value": {
                         "defaultLabel": "Secondary Color",
@@ -1148,6 +1187,7 @@
                   },
                   "background": {
                     "type": "string",
+                    "optional": true,
                     "tag": {
                       "value": {
                         "defaultLabel": "Background Color",
@@ -1157,6 +1197,7 @@
                   },
                   "surface": {
                     "type": "string",
+                    "optional": true,
                     "tag": {
                       "value": {
                         "defaultLabel": "Surface Color",
@@ -1166,6 +1207,7 @@
                   },
                   "border": {
                     "type": "string",
+                    "optional": true,
                     "tag": {
                       "value": {
                         "defaultLabel": "Border Color",
@@ -1175,6 +1217,7 @@
                   },
                   "text": {
                     "type": "string",
+                    "optional": true,
                     "tag": {
                       "value": {
                         "defaultLabel": "Text Color",
@@ -1184,6 +1227,7 @@
                   },
                   "textSecondary": {
                     "type": "string",
+                    "optional": true,
                     "tag": {
                       "value": {
                         "defaultLabel": "Secondary Text Color",
@@ -1193,6 +1237,7 @@
                   },
                   "textLight": {
                     "type": "string",
+                    "optional": true,
                     "tag": {
                       "value": {
                         "defaultLabel": "Light Text Color",
@@ -1202,6 +1247,7 @@
                   },
                   "hover": {
                     "type": "string",
+                    "optional": true,
                     "tag": {
                       "value": {
                         "defaultLabel": "Hover Color",
@@ -1211,6 +1257,7 @@
                   },
                   "selected": {
                     "type": "string",
+                    "optional": true,
                     "tag": {
                       "value": {
                         "defaultLabel": "Selected Color",
@@ -1220,6 +1267,7 @@
                   },
                   "filter": {
                     "type": "string",
+                    "optional": true,
                     "tag": {
                       "value": {
                         "defaultLabel": "Filter Color",
@@ -1229,6 +1277,7 @@
                   },
                   "filterBackground": {
                     "type": "string",
+                    "optional": true,
                     "tag": {
                       "value": {
                         "defaultLabel": "Filter Background Color",
@@ -1238,6 +1287,7 @@
                   },
                   "error": {
                     "type": "string",
+                    "optional": true,
                     "tag": {
                       "value": {
                         "defaultLabel": "Error Color",
@@ -1247,6 +1297,7 @@
                   },
                   "warning": {
                     "type": "string",
+                    "optional": true,
                     "tag": {
                       "value": {
                         "defaultLabel": "Warning Color",
@@ -1256,6 +1307,7 @@
                   },
                   "success": {
                     "type": "string",
+                    "optional": true,
                     "tag": {
                       "value": {
                         "defaultLabel": "Success Color",
@@ -1265,6 +1317,7 @@
                   },
                   "accent": {
                     "type": "string",
+                    "optional": true,
                     "tag": {
                       "value": {
                         "defaultLabel": "Accent Color",
@@ -1274,6 +1327,7 @@
                   },
                   "accentLight": {
                     "type": "string",
+                    "optional": true,
                     "tag": {
                       "value": {
                         "defaultLabel": "Accent Light Color",
@@ -1287,29 +1341,30 @@
                 "type": "object",
                 "optional": true,
                 "definition": {
-                  "xs": { "type": "string" },
-                  "sm": { "type": "string" },
-                  "md": { "type": "string" },
-                  "lg": { "type": "string" },
-                  "xl": { "type": "string" }
+                  "xs": { "type": "string", "optional": true },
+                  "sm": { "type": "string", "optional": true },
+                  "md": { "type": "string", "optional": true },
+                  "lg": { "type": "string", "optional": true },
+                  "xl": { "type": "string", "optional": true }
                 }
               },
               "typography": {
                 "type": "object",
                 "optional": true,
                 "definition": {
-                  "fontSize": { "type": "string" },
-                  "fontFamily": { "type": "string" },
+                  "fontSize": { "type": "string", "optional": true },
+                  "fontFamily": { "type": "string", "optional": true },
                   "fontWeight": {
                     "type": "object",
+                    "optional": true,
                     "definition": {
-                      "normal": { "type": "number" },
-                      "medium": { "type": "number" },
-                      "bold": { "type": "number" }
+                      "normal": { "type": "number", "optional": true },
+                      "medium": { "type": "number", "optional": true },
+                      "bold": { "type": "number", "optional": true }
                     }
                   },
-                  "headerFontSize": { "type": "string" },
-                  "headerFontWeight": { "type": "number" }
+                  "headerFontSize": { "type": "string", "optional": true },
+                  "headerFontWeight": { "type": "number", "optional": true }
                 }
               },
               "components": {
@@ -1320,12 +1375,14 @@
                     "type": "object",
                     "optional": true,
                     "definition": {
-                      "borderRadius": { "type": "string" },
-                      "border": { "type": "string" },
-                      "minHeight": { "type": "string" },
-                      "maxHeight": { "type": "string" },
+                      "borderRadius": { "type": "string", "optional": true },
+                      "border": { "type": "string", "optional": true },
+                      "minHeight": { "type": "string", "optional": true },
+                      "maxHeight": { "type": "string", "optional": true },
                       "backgroundColor": {
                         "type": "string",
+                        "optional": true,
+
                         "tag": {
                           "value": {
                             "defaultLabel": "Table Background Color",
@@ -1333,9 +1390,9 @@
                           }
                         }
                       },
-                      "width": { "type": "string" },
-                      "maxWidth": { "type": "string" },
-                      "adaptiveColumnWidths": { "type": "boolean" }
+                      "width": { "type": "string", "optional": true },
+                      "maxWidth": { "type": "string", "optional": true },
+                      "adaptiveColumnWidths": { "type": "boolean", "optional": true }
                     }
                   },
                   "header": {
@@ -1344,6 +1401,8 @@
                     "definition": {
                       "background": {
                         "type": "string",
+                        "optional": true,
+
                         "tag": {
                           "value": {
                             "defaultLabel": "Header Background Color",
@@ -1351,12 +1410,13 @@
                           }
                         }
                       },
-                      "height": { "type": "string" },
-                      "fontSize": { "type": "string" },
-                      "fontWeight": { "type": "number" },
-                      "borderBottom": { "type": "string" },
+                      "height": { "type": "string", "optional": true },
+                      "fontSize": { "type": "string", "optional": true },
+                      "fontWeight": { "type": "number", "optional": true },
+                      "borderBottom": { "type": "string", "optional": true },
                       "textColor": {
                         "type": "string",
+                        "optional": true,
                         "tag": {
                           "value": {
                             "defaultLabel": "Header Text Color",
@@ -1364,20 +1424,21 @@
                           }
                         }
                       },
-                      "hoverBackground": { "type": "string" }
+                      "hoverBackground": { "type": "string", "optional": true }
                     }
                   },
                   "cell": {
                     "type": "object",
                     "optional": true,
                     "definition": {
-                      "height": { "type": "string" },
-                      "padding": { "type": "string" },
-                      "borderRight": { "type": "string" },
-                      "borderBottom": { "type": "string" },
-                      "fontSize": { "type": "string" },
+                      "height": { "type": "string", "optional": true },
+                      "padding": { "type": "string", "optional": true },
+                      "borderRight": { "type": "string", "optional": true },
+                      "borderBottom": { "type": "string", "optional": true },
+                      "fontSize": { "type": "string", "optional": true },
                       "backgroundColor": {
                         "type": "string",
+                        "optional": true,
                         "tag": {
                           "value": {
                             "defaultLabel": "Cell Background Color",
@@ -1387,6 +1448,7 @@
                       },
                       "textColor": {
                         "type": "string",
+                        "optional": true,
                         "tag": {
                           "value": {
                             "defaultLabel": "Cell Text Color",
@@ -1400,22 +1462,22 @@
                     "type": "object",
                     "optional": true,
                     "definition": {
-                      "hoverBackground": { "type": "string" },
-                      "selectedBackground": { "type": "string" },
-                      "borderBottom": { "type": "string" },
-                      "evenBackground": { "type": "string" },
-                      "oddBackground": { "type": "string" }
+                      "hoverBackground": { "type": "string", "optional": true },
+                      "selectedBackground": { "type": "string", "optional": true },
+                      "borderBottom": { "type": "string", "optional": true },
+                      "evenBackground": { "type": "string", "optional": true },
+                      "oddBackground": { "type": "string", "optional": true }
                     }
                   },
                   "toolbar": {
                     "type": "object",
                     "optional": true,
                     "definition": {
-                      "background": { "type": "string" },
-                      "padding": { "type": "string" },
-                      "borderBottom": { "type": "string" },
-                      "height": { "type": "string" },
-                      "textColor": { "type": "string" }
+                      "background": { "type": "string", "optional": true },
+                      "padding": { "type": "string", "optional": true },
+                      "borderBottom": { "type": "string", "optional": true },
+                      "height": { "type": "string", "optional": true },
+                      "textColor": { "type": "string", "optional": true }
                     }
                   },
                   "filter": {
@@ -1424,6 +1486,7 @@
                     "definition": {
                       "iconColor": {
                         "type": "string",
+                        "optional": true,
                         "tag": {
                           "value": {
                             "defaultLabel": "Filter Icon Color",
@@ -1433,6 +1496,7 @@
                       },
                       "activeIconColor": {
                         "type": "string",
+                        "optional": true,
                         "tag": {
                           "value": {
                             "defaultLabel": "Active Filter Icon Color",
@@ -1442,6 +1506,7 @@
                       },
                       "clearButtonColor": {
                         "type": "string",
+                        "optional": true,
                         "tag": {
                           "value": {
                             "defaultLabel": "Clear Button Color",
@@ -1451,6 +1516,7 @@
                       },
                       "clearButtonBackground": {
                         "type": "string",
+                        "optional": true,
                         "tag": {
                           "value": {
                             "defaultLabel": "Clear Button Background Color",
@@ -1460,6 +1526,8 @@
                       },
                       "clearButtonBorder": {
                         "type": "string",
+                        "optional": true,
+
                         "tag": {
                           "value": {
                             "defaultLabel": "Clear Button Border Color",
@@ -1469,6 +1537,8 @@
                       },
                       "toolbarBackground": {
                         "type": "string",
+                        "optional": true,
+
                         "tag": {
                           "value": {
                             "defaultLabel": "Toolbar Background Color",
@@ -1478,6 +1548,8 @@
                       },
                       "inputBackground": {
                         "type": "string",
+                        "optional": true,
+
                         "tag": {
                           "value": {
                             "defaultLabel": "Input Background Color",
@@ -1487,6 +1559,7 @@
                       },
                       "inputBorder": {
                         "type": "string",
+                        "optional": true,
                         "tag": {
                           "value": {
                             "defaultLabel": "Input Border Color",
@@ -1500,10 +1573,10 @@
                     "type": "object",
                     "optional": true,
                     "definition": {
-                      "iconColor": { "type": "string" },
-                      "activeIconColor": { "type": "string" },
-                      "ascendingSymbol": { "type": "string" },
-                      "descendingSymbol": { "type": "string" }
+                      "iconColor": { "type": "string", "optional": true },
+                      "activeIconColor": { "type": "string", "optional": true },
+                      "ascendingSymbol": { "type": "string", "optional": true },
+                      "descendingSymbol": { "type": "string", "optional": true }
                     }
                   }
                 }
@@ -1514,11 +1587,11 @@
             "type": "object",
             "optional": true,
             "definition": {
-              "xs": { "type": "string" },
-              "sm": { "type": "string" },
-              "md": { "type": "string" },
-              "lg": { "type": "string" },
-              "xl": { "type": "string" }
+              "xs": { "type": "string", "optional": true },
+              "sm": { "type": "string", "optional": true },
+              "md": { "type": "string", "optional": true },
+              "lg": { "type": "string", "optional": true },
+              "xl": { "type": "string", "optional": true }
             }
           },
           "transitions": {
@@ -1528,18 +1601,18 @@
               "duration": {
                 "type": "object",
                 "definition": {
-                  "short": { "type": "string" },
-                  "medium": { "type": "string" },
-                  "long": { "type": "string" }
+                  "short": { "type": "string", "optional": true },
+                  "medium": { "type": "string", "optional": true },
+                  "long": { "type": "string", "optional": true }
                 }
               },
               "easing": {
                 "type": "object",
                 "definition": {
-                  "linear": { "type": "string" },
-                  "easeIn": { "type": "string" },
-                  "easeOut": { "type": "string" },
-                  "easeInOut": { "type": "string" }
+                  "linear": { "type": "string", "optional": true },
+                  "easeIn": { "type": "string", "optional": true },
+                  "easeOut": { "type": "string", "optional": true },
+                  "easeInOut": { "type": "string", "optional": true }
                 }
               }
             }

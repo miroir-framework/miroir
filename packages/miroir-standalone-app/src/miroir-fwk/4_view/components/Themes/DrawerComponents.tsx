@@ -4,6 +4,7 @@ import React from 'react';
 
 import { useMiroirTheme } from '../../contexts/MiroirThemeContext';
 import { ThemedComponentProps } from './BaseTypes';
+import { ThemedOnScreenDebug } from './BasicComponents';
 
 // ################################################################################################
 // Drawer Components
@@ -65,6 +66,12 @@ export const ThemedDrawer: React.FC<ThemedComponentProps & {
         />
       )}
       <div css={drawerStyles} className={className} style={style}>
+        {/* <ThemedOnScreenDebug
+          label="ThemedDrawer currentTheme"
+          data={currentTheme}
+          initiallyUnfolded={false}
+          useCodeBlock={true}
+        /> */}
         {children}
       </div>
       {/* {open && resizeHandle != "left" && onMouseDown && <ThemedResizeHandle onMouseDown={onMouseDown} isResizing={isResizing} />} */}

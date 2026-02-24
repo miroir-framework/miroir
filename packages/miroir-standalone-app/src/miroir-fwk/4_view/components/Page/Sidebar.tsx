@@ -48,9 +48,9 @@ export const Sidebar: FC<{
   onWidthChange?: (width: number) => void;
 }> = (props) => {
   count++;
-  const { currentTheme } = useMiroirTheme();
+  // const { currentTheme } = useMiroirTheme();
   const [isResizing, setIsResizing] = useState(false);
-  const resizeRef = useRef<HTMLDivElement>(null);
+  // const resizeRef = useRef<HTMLDivElement>(null);
 
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
     e.preventDefault();

@@ -6,6 +6,7 @@ import { useMiroirTheme } from '../../contexts/MiroirThemeContext';
 import { ThemedComponentProps } from './BaseTypes';
 import type { CSSInterpolation } from '@mui/material';
 import { ThemedResizeHandleWidth } from './DrawerComponents';
+import { ThemedOnScreenDebug } from './BasicComponents';
 
 // ################################################################################################
 // Layout Components
@@ -521,27 +522,6 @@ export const ThemedMainPanel: React.FC<ThemedComponentProps & {
   // Calculate responsive layout based on sidebar and outline states
   const responsiveStyles = css({
     ...baseStyles,
-    // // When sidebar is open
-    // ...(open && {
-    //   width: `calc(100% - ${width}px - ${outlineOpen ? outlineWidth : 0}px)`,
-    //   marginLeft: `${width}px`,
-    //   marginRight: outlineOpen ? `${outlineWidth}px` : 0,
-    //   // Let the element naturally fill remaining space
-    //   // width: 'auto',
-    // }),
-    // // When sidebar is closed but outline is open
-    // ...(!open && outlineOpen && {
-    //   // width: `calc(100% - ${outlineWidth}px)`,
-    //   marginRight: `${outlineWidth}px`,
-    //   // width: 'auto',
-    // }),
-    // // When both sidebar and outline are closed
-    // ...(!open && !outlineOpen && {
-    //   width: '100%',
-    //   marginLeft: 0,
-    //   marginRight: 0,
-    //   // width: 'auto',
-    // }),
     padding: 0,
   });
 
@@ -551,6 +531,13 @@ export const ThemedMainPanel: React.FC<ThemedComponentProps & {
     // </div>
     <ThemedScrollableContent>
       <main css={responsiveStyles} className={className} style={style}>
+        <ThemedOnScreenDebug
+          label="ThemedMainPanel currentTheme"
+          data={currentTheme}
+          initiallyUnfolded={false}
+          useCodeBlock={true}
+        />
+
         {children}
       </main>
     </ThemedScrollableContent>

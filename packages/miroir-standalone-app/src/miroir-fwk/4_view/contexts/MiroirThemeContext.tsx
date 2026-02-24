@@ -1,13 +1,20 @@
-import React, { createContext, useContext, useState, ReactNode, useCallback, useMemo } from "react";
+import type { MiroirThemeFull } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+import React, { ReactNode, createContext, useCallback, useContext, useMemo, useState } from "react";
 import {
-  MiroirTheme,
-  ResolvedMiroirTheme,
   MiroirThemeOption,
   defaultMiroirTheme,
-  miroirThemeOptions,
+  miroirThemeOptions
 } from "../components/Themes/MiroirTheme.js";
 import { resolveThemeColors } from "../components/Themes/ThemeColorDefaults.js";
-import type { MiroirThemeFull } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+import { LoggerInterface, MiroirLoggerFactory } from "miroir-core";
+import { packageName } from "../../../constants.js";
+import { cleanLevel } from "../constants.js";
+import { darkStoredMiroirTheme } from "miroir-test-app_deployment-miroir";
+
+let log: LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.registerLoggerToStart(
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "MiroirThemeContext"), "UI",
+).then((logger: LoggerInterface) => {log = logger});
 
 // Re-export for convenience
 export type { MiroirThemeOption };
@@ -44,6 +51,7 @@ interface MiroirThemeProviderProps {
   onThemeChange?: (themeId: string) => void;
 }
 
+// ################################################################################################
 export const MiroirThemeProvider: React.FC<MiroirThemeProviderProps> = ({
   children,
   defaultThemeId = "default",
@@ -64,6 +72,17 @@ export const MiroirThemeProvider: React.FC<MiroirThemeProviderProps> = ({
   const currentTheme = useMemo(
     () => resolveThemeColors(currentThemeOption.theme),
     [currentThemeOption],
+  );
+
+  log.info(
+    "MiroirThemeProvider currentThemeId",
+    currentThemeId,
+    "darkStoredMiroirTheme",
+    darkStoredMiroirTheme,
+    "currentThemeOption",
+    currentThemeOption,
+    "currentTheme",
+    currentTheme,
   );
 
   const selectTheme = useCallback(
@@ -181,3 +200,4 @@ export const useMiroirNestingBorderColor = (indentLevel: number = 0): string => 
 // Export the context for advanced usage
 export { MiroirThemeContext };
 export type { MiroirThemeContextType, MiroirThemeProviderProps };
+

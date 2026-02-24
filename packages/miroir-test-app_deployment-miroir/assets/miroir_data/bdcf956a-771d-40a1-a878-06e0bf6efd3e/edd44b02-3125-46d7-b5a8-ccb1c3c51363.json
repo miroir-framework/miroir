@@ -1,0 +1,77 @@
+{
+  "uuid": "edd44b02-3125-46d7-b5a8-ccb1c3c51363",
+  "parentName": "Theme",
+  "parentUuid": "bdcf956a-771d-40a1-a878-06e0bf6efd3e",
+  "name": "compactMiroirTheme",
+  "defaultLabel": "The default compact Miroir Theme, used as a base for the compact theme of the application.",
+  "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+  "definition": {
+    "id": "compact",
+    "name": "Compact Theme",
+    "description": "Standard compact theme with balanced colors",
+    "spacing": {
+      "xs": "2px",
+      "sm": "4px",
+      "md": "8px",
+      "lg": "12px",
+      "xl": "16px",
+      "xxl": "24px"
+    },
+
+    "typography": {
+      "fontSize": {
+        "xs": "10px",
+        "sm": "12px",
+        "md": "14px",
+        "lg": "16px",
+        "xl": "18px",
+        "xxl": "20px"
+      }
+    },
+    "components": {
+      "appBar": {
+        "height": "48px"
+      },
+
+      "sidebar": {
+        "itemHeight": "36px"
+      },
+
+      "input": {
+        "height": "32px"
+      },
+
+      "card": {
+        "padding": "12px"
+      },
+
+      "dialog": {
+        "padding": "16px"
+      }
+    },
+    "table": {
+      "spacing": {
+        "xs": "2px",
+        "sm": "4px",
+        "md": "8px",
+        "lg": "12px",
+        "xl": "16px"
+      },
+      "typography": {
+        "fontSize": "12px",
+        "headerFontSize": "12px"
+      },
+      "components": {
+        "header": {
+          "height": "28px",
+          "fontSize": "12px"
+        },
+        "cell": {
+          "height": "24px",
+          "padding": "4px 8px",
+          "fontSize": "12px"
+        }
+      }
+    }
+  }
+}

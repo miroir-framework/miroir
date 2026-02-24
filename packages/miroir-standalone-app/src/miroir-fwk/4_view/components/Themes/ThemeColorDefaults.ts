@@ -13,7 +13,7 @@
 // ################################################################################################
 
 import type { MiroirThemeFull } from 'miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js';
-import { defaultMiroirTheme, MiroirTheme, ResolvedMiroirTheme } from './MiroirTheme.js';
+import { defaultMiroirTheme, MiroirTheme, ResolvedMiroirTheme } from "./MiroirTheme.js";
 import { ResolvedTableTheme, TableTheme } from './TableTheme.js';
 
 // ################################################################################################
@@ -268,16 +268,49 @@ const colors = theme.colors ?? defaultMiroirTheme.colors;
   // ──────────────────────────────────────────────────
   const resolvedTable = resolveTableThemeColors(theme.table ?? defaultMiroirTheme.table as any, colors);
 
+  const resolvedTypography: MiroirThemeFull['definition']['typography'] = {
+    fontFamily: theme.typography?.fontFamily ?? defaultMiroirTheme.typography.fontFamily,
+    fontSize: theme.typography?.fontSize ?? defaultMiroirTheme.typography.fontSize,
+    fontWeight: theme.typography?.fontWeight ?? defaultMiroirTheme.typography.fontWeight,
+    lineHeight: theme.typography?.lineHeight ?? defaultMiroirTheme.typography.lineHeight,
+  };
+  const resolvedElevation: MiroirThemeFull['definition']['elevation'] = {
+    low: theme.elevation?.low ?? defaultMiroirTheme.elevation.low,
+    medium: theme.elevation?.medium ?? defaultMiroirTheme.elevation.medium,
+    high: theme.elevation?.high ?? defaultMiroirTheme.elevation.high,
+    modal: theme.elevation?.modal ?? defaultMiroirTheme.elevation.modal,
+    none: theme.elevation?.none ?? defaultMiroirTheme.elevation.none,
+  };
+
+  const resolvedBorderRadius: MiroirThemeFull["definition"]["borderRadius"] ={
+    sm: theme.borderRadius?.sm ?? defaultMiroirTheme.borderRadius.sm,
+    md: theme.borderRadius?.md ?? defaultMiroirTheme.borderRadius.md,
+    lg: theme.borderRadius?.lg ?? defaultMiroirTheme.borderRadius.lg,
+    full: theme.borderRadius?.full ?? defaultMiroirTheme.borderRadius.full,
+    xl: theme.borderRadius?.xl ?? defaultMiroirTheme.borderRadius.xl,
+    none: theme.borderRadius?.none ?? defaultMiroirTheme.borderRadius.none,
+  };
+  const resolvedBreakpoints: MiroirThemeFull['definition']['breakpoints'] = {
+    xs: theme.breakpoints?.xs ?? defaultMiroirTheme.breakpoints.xs,
+    sm: theme.breakpoints?.sm ?? defaultMiroirTheme.breakpoints.sm,
+    md: theme.breakpoints?.md ?? defaultMiroirTheme.breakpoints.md,
+    lg: theme.breakpoints?.lg ?? defaultMiroirTheme.breakpoints.lg,
+    xl: theme.breakpoints?.xl ?? defaultMiroirTheme.breakpoints.xl,
+  };
+  const resolvedTransitions: MiroirThemeFull['definition']['transitions'] = {
+    duration: theme.transitions?.duration ?? defaultMiroirTheme.transitions.duration,
+    easing: theme.transitions?.easing ?? defaultMiroirTheme.transitions.easing,
+  };
 
   return {
     ...theme,
     colors,
     spacing: theme.spacing ?? defaultMiroirTheme.spacing,
-    typography: theme.typography ?? defaultMiroirTheme.typography,
-    elevation: theme.elevation ?? defaultMiroirTheme.elevation,
-    borderRadius: theme.borderRadius ?? defaultMiroirTheme.borderRadius,
-    breakpoints: theme.breakpoints ?? defaultMiroirTheme.breakpoints,
-    transitions: theme.transitions ?? defaultMiroirTheme.transitions,
+    typography: resolvedTypography,
+    elevation: resolvedElevation,
+    borderRadius: resolvedBorderRadius,
+    breakpoints: resolvedBreakpoints,
+    transitions: resolvedTransitions,
     components: resolvedComponents,
     table: resolvedTable,
   };
@@ -292,95 +325,118 @@ export function resolveTableThemeColors(
   rootColors: MiroirTheme['colors']
 // ): ResolvedTableTheme {
 ): MiroirThemeFull['definition']['table'] {
-  const colors = rootColors ?? defaultMiroirTheme.colors;
+  const defaultColors = rootColors ?? defaultMiroirTheme.colors;
+  const defaultTable = table ?? defaultMiroirTheme.table;
   // First resolve table-level colors
   const resolvedTableColors: ResolvedTableTheme['colors'] = {
-    primary: table.colors.primary ?? colors.accent,
-    secondary: table.colors.secondary ?? colors.secondary,
-    background: table.colors.background ?? colors.background,
-    surface: table.colors.surface ?? colors.surface,
-    border: table.colors.border ?? colors.border,
-    text: table.colors.text ?? colors.text,
-    textSecondary: table.colors.textSecondary ?? colors.textSecondary,
-    textLight: table.colors.textLight ?? colors.textLight,
-    hover: table.colors.hover ?? colors.hover,
-    selected: table.colors.selected ?? colors.selected,
-    filter: table.colors.filter ?? colors.warning,
-    filterBackground: table.colors.filterBackground ?? colors.warningLight,
-    error: table.colors.error ?? colors.error,
-    warning: table.colors.warning ?? colors.warning,
-    success: table.colors.success ?? colors.success,
-    accent: table.colors.accent ?? colors.accent,
-    accentLight: table.colors.accentLight ?? colors.accentLight,
+    primary: table?.colors?.primary ?? defaultColors.accent,
+    secondary: table?.colors?.secondary ?? defaultColors.secondary,
+    background: table?.colors?.background ?? defaultColors.background,
+    surface: table?.colors?.surface ?? defaultColors.surface,
+    border: table?.colors?.border ?? defaultColors.border,
+    text: table?.colors?.text ?? defaultColors.text,
+    textSecondary: table?.colors?.textSecondary ?? defaultColors.textSecondary,
+    textLight: table?.colors?.textLight ?? defaultColors.textLight,
+    hover: table?.colors?.hover ?? defaultColors.hover,
+    selected: table?.colors?.selected ?? defaultColors.selected,
+    filter: table?.colors?.filter ?? defaultColors.warning,
+    filterBackground: table?.colors?.filterBackground ?? defaultColors.warningLight,
+    error: table?.colors?.error ?? defaultColors.error,
+    warning: table?.colors?.warning ?? defaultColors.warning,
+    success: table?.colors?.success ?? defaultColors.success,
+    accent: table?.colors?.accent ?? defaultColors.accent,
+    accentLight: table?.colors?.accentLight ?? defaultColors.accentLight,
   };
 
   // Then resolve table component colors using the resolved table colors
   const tc = resolvedTableColors;
 
+  const resolvedTableTypography: ResolvedTableTheme['typography'] = {
+    fontFamily: table?.typography?.fontFamily ?? defaultTable.typography?.fontFamily ?? 'Arial, sans-serif',
+    fontSize: table?.typography?.fontSize ?? defaultTable.typography?.fontSize ?? '14px',
+    fontWeight: table?.typography?.fontWeight ?? defaultTable.typography?.fontWeight ?? {
+      normal: 400,
+      medium: 500,
+      bold: 700,
+    },
+    headerFontSize: table?.typography?.headerFontSize ?? defaultTable.typography?.headerFontSize ?? '16px',
+    headerFontWeight: table?.typography?.headerFontWeight ?? defaultTable.typography?.headerFontWeight ?? 600,
+  };
+  const resolvedTableSpacing: ResolvedTableTheme['spacing'] = {
+    xs: table?.spacing?.xs ?? defaultTable.spacing?.xs ?? '4px',
+    sm: table?.spacing?.sm ?? defaultTable.spacing?.sm ?? '8px',
+    md: table?.spacing?.md ?? defaultTable.spacing?.md ?? '16px',
+    lg: table?.spacing?.lg ?? defaultTable.spacing?.lg ?? '24px',
+    xl: table?.spacing?.xl ?? defaultTable.spacing?.xl ?? '32px',
+  };
+
   const resolvedTableComponents: ResolvedTableTheme['components'] = {
     table: {
-      borderRadius: table.components.table.borderRadius ?? '4px',
-      border: table.components.table.border ?? `1px solid ${tc.border}`,
-      minHeight: table.components.table.minHeight ?? '200px',
-      maxHeight: table.components.table.maxHeight ?? '600px',
-      backgroundColor: table.components.table.backgroundColor ?? tc.background,
-      width: table.components.table.width ?? '100%',
-      maxWidth: table.components.table.maxWidth ?? '100%',
-      adaptiveColumnWidths: table.components.table.adaptiveColumnWidths ?? true,
+      borderRadius: table?.components?.table?.borderRadius ?? '4px',
+      border: table?.components?.table?.border ?? `1px solid ${tc.border}`,
+      minHeight: table?.components?.table?.minHeight ?? '200px',
+      maxHeight: table?.components?.table?.maxHeight ?? '600px',
+      backgroundColor: table?.components?.table?.backgroundColor ?? tc.background,
+      width: table?.components?.table?.width ?? '100%',
+      maxWidth: table?.components?.table?.maxWidth ?? '100%',
+      adaptiveColumnWidths: table?.components?.table?.adaptiveColumnWidths ?? true,
     },
     header: {
-      background: table.components.header.background ?? tc.surface,
-      height: table.components.header.height ?? '36px',
-      fontSize: table.components.header.fontSize ?? '14px',
-      fontWeight: table.components.header.fontWeight ?? 600,
-      borderBottom: table.components.header.borderBottom ?? `1px solid ${tc.border}`,
-      textColor: table.components.header.textColor ?? tc.text,
-      hoverBackground: table.components.header.hoverBackground ?? tc.hover,
+      background: table?.components?.header?.background ?? tc.surface,
+      height: table?.components?.header?.height ?? '36px',
+      fontSize: table?.components?.header?.fontSize ?? '14px',
+      fontWeight: table?.components?.header?.fontWeight ?? 600,
+      borderBottom: table?.components?.header?.borderBottom ?? `1px solid ${tc.border}`,
+      textColor: table?.components?.header?.textColor ?? tc.text,
+      hoverBackground: table?.components?.header?.hoverBackground ?? tc.hover,
     },
     cell: {
-      height: table.components.cell.height ?? '34px',
-      padding: table.components.cell.padding ?? '8px 12px',
-      borderRight: table.components.cell.borderRight ?? `1px solid ${tc.border}`,
-      borderBottom: table.components.cell.borderBottom ?? `1px solid ${tc.border}`,
-      fontSize: table.components.cell.fontSize ?? '14px',
-      backgroundColor: table.components.cell.backgroundColor ?? tc.background,
-      textColor: table.components.cell.textColor ?? tc.text,
+      height: table?.components?.cell?.height ?? '34px',
+      padding: table?.components?.cell?.padding ?? '8px 12px',
+      borderRight: table?.components?.cell?.borderRight ?? `1px solid ${tc.border}`,
+      borderBottom: table?.components?.cell?.borderBottom ?? `1px solid ${tc.border}`,
+      fontSize: table?.components?.cell?.fontSize ?? '14px',
+      backgroundColor: table?.components?.cell?.backgroundColor ?? tc.background,
+      textColor: table?.components?.cell?.textColor ?? tc.text,
     },
     row: {
-      hoverBackground: table.components.row.hoverBackground ?? tc.hover,
-      selectedBackground: table.components.row.selectedBackground ?? tc.selected,
-      borderBottom: table.components.row.borderBottom ?? `1px solid ${tc.border}`,
-      evenBackground: table.components.row.evenBackground ?? tc.background,
-      oddBackground: table.components.row.oddBackground ?? tc.surface,
+      hoverBackground: table?.components?.row?.hoverBackground ?? tc.hover,
+      selectedBackground: table?.components?.row?.selectedBackground ?? tc.selected,
+      borderBottom: table?.components?.row?.borderBottom ?? `1px solid ${tc.border}`,
+      evenBackground: table?.components?.row?.evenBackground ?? tc.background,
+      oddBackground: table?.components?.row?.oddBackground ?? tc.surface,
     },
     toolbar: {
-      background: table.components.toolbar.background ?? tc.surface,
-      padding: table.components.toolbar.padding ?? '8px',
-      borderBottom: table.components.toolbar.borderBottom ?? `1px solid ${tc.border}`,
-      height: table.components.toolbar.height ?? 'auto',
-      textColor: table.components.toolbar.textColor ?? tc.text,
+      background: table?.components?.toolbar?.background ?? tc.surface,
+      padding: table?.components?.toolbar?.padding ?? '8px',
+      borderBottom: table?.components?.toolbar?.borderBottom ?? `1px solid ${tc.border}`,
+      height: table?.components?.toolbar?.height ?? 'auto',
+      textColor: table?.components?.toolbar?.textColor ?? tc.text,
     },
     filter: {
-      iconColor: table.components.filter.iconColor ?? tc.textSecondary,
-      activeIconColor: table.components.filter.activeIconColor ?? tc.filter,
-      clearButtonColor: table.components.filter.clearButtonColor ?? tc.filter,
-      clearButtonBackground: table.components.filter.clearButtonBackground ?? tc.filterBackground,
-      clearButtonBorder: table.components.filter.clearButtonBorder ?? `1px solid ${tc.filter}`,
-      toolbarBackground: table.components.filter.toolbarBackground ?? tc.surface,
-      inputBackground: table.components.filter.inputBackground ?? tc.background,
-      inputBorder: table.components.filter.inputBorder ?? `1px solid ${tc.border}`,
+      iconColor: table?.components?.filter?.iconColor ?? tc.textSecondary,
+      activeIconColor: table?.components?.filter?.activeIconColor ?? tc.filter,
+      clearButtonColor: table?.components?.filter?.clearButtonColor ?? tc.filter,
+      clearButtonBackground: table?.components?.filter?.clearButtonBackground ?? tc.filterBackground,
+      clearButtonBorder: table?.components?.filter?.clearButtonBorder ?? `1px solid ${tc.filter}`,
+      toolbarBackground: table?.components?.filter?.toolbarBackground ?? tc.surface,
+      inputBackground: table?.components?.filter?.inputBackground ?? tc.background,
+      inputBorder: table?.components?.filter?.inputBorder ?? `1px solid ${tc.border}`,
     },
     sort: {
-      iconColor: table.components.sort.iconColor ?? tc.textSecondary,
-      activeIconColor: table.components.sort.activeIconColor ?? tc.accent,
-      ascendingSymbol: table.components.sort.ascendingSymbol ?? '↑',
-      descendingSymbol: table.components.sort.descendingSymbol ?? '↓',
+      iconColor: table?.components?.sort?.iconColor ?? tc.textSecondary,
+      activeIconColor: table?.components?.sort?.activeIconColor ?? tc.accent,
+      ascendingSymbol: table?.components?.sort?.ascendingSymbol ?? '↑',
+      descendingSymbol: table?.components?.sort?.descendingSymbol ?? '↓',
     },
   };
 
   return {
+    ...defaultMiroirTheme.table,  // Start with default table theme to ensure all properties are present
     ...table,
     colors: resolvedTableColors,
     components: resolvedTableComponents,
+    typography: resolvedTableTypography,
+    spacing: resolvedTableSpacing,
   };
 }

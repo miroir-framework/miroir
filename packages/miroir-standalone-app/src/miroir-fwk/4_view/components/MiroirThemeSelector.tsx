@@ -12,6 +12,7 @@ import {
 import { Palette, DarkMode, CompressOutlined, Style } from './Themes/MaterialSymbolWrappers';
 import { useMiroirTheme, MiroirThemeOption } from '../contexts/MiroirThemeContext.js';
 import { AppTheme } from 'miroir-core';
+import { defaultMiroirTheme } from './Themes/MiroirTheme';
 
 interface MiroirThemeSelectorProps {
   size?: 'small' | 'medium';
@@ -42,9 +43,9 @@ const getThemeColorIndicator = (themeOption: MiroirThemeOption) => {
       sx={{
         width: 16,
         height: 16,
-        borderRadius: '2px',
-        background: `linear-gradient(45deg, ${theme.colors.primary} 0%, ${theme.colors.secondary} 100%)`,
-        border: `1px solid ${theme.colors.border}`,
+        borderRadius: "2px",
+        background: `linear-gradient(45deg, ${theme?.colors?.primary ?? defaultMiroirTheme.colors.primary} 0%, ${theme?.colors?.secondary ?? defaultMiroirTheme.colors.secondary} 100%)`,
+        border: `1px solid ${theme?.colors?.border ?? defaultMiroirTheme.colors.border}`,
         marginRight: 1,
         flexShrink: 0,
       }}

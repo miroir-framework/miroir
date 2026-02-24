@@ -152,7 +152,7 @@ export const RootComponent = (props: RootComponentProps) => {
 
   log.info("RootComponent currentApplication", currentApplication);
 
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   // Get theme for theming the outline highlight colors
   const theme = useMiroirTheme();
   // Optimize transactions selector to avoid unnecessary re-renders during bulk operations
@@ -590,6 +590,8 @@ export const RootComponent = (props: RootComponentProps) => {
     [defaultViewParamsFromAdminStorageFetchQueryResults]
   );
 
+  const currentThemeId = defaultViewParamsFromAdminStorage?.appTheme || "default";
+
   // log.info(
   //   "RootComponent: defaultViewParamsFromAdminStorageFetchQueryResults",
   //   defaultViewParamsFromAdminStorage,
@@ -757,7 +759,7 @@ export const RootComponent = (props: RootComponentProps) => {
       onNavigateToPath={handleNavigateToPath}
     >
       <MiroirThemeProvider
-        currentThemeId={defaultViewParamsFromAdminStorage?.appTheme || "default"}
+        currentThemeId={currentThemeId}
         onThemeChange={handleAppThemeChange}
       >
         <ReportPageContextProvider>
@@ -813,8 +815,10 @@ export const RootComponent = (props: RootComponentProps) => {
                 <ThemedOnScreenDebug
                   label="RootComponent miroirThemeSchemaJson"
                   data={{
-                    miroirThemeSchemaJson,
-                    tableThemeSchemaJson,
+                    currentThemeId,
+                    theme,
+                    // miroirThemeSchemaJson,
+                    // tableThemeSchemaJson,
                   }}
                   initiallyUnfolded={false}
                   useCodeBlock={true}

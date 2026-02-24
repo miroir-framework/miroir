@@ -19,13 +19,17 @@
 // 
 // ################################################################################################
 
-import { darkStoredMiroirTheme, defaultStoredMiroirTheme } from "miroir-test-app_deployment-miroir";
 import {
-  TableTheme,
+  compactStoredMiroirTheme,
+  darkStoredMiroirTheme,
+  defaultStoredMiroirTheme,
+} from "miroir-test-app_deployment-miroir";
+import {
+  // TableTheme,
   ResolvedTableTheme,
-  darkTableTheme,
-  compactTableTheme,
-  materialTableTheme,
+  // darkTableTheme,
+  // compactTableTheme,
+  // materialTableTheme,
 } from "./TableTheme.js";
 import type { StoredMiroirTheme } from "miroir-core";
 
@@ -406,119 +410,119 @@ export const defaultMiroirTheme = defaultStoredMiroirTheme.definition;
 export const darkMiroirTheme: MiroirTheme = {
   // ...defaultMiroirTheme,
   ...darkStoredMiroirTheme.definition,
-  id: "dark",
-  name: "Dark",
-  description: "Dark theme with reduced eye strain for low-light environments",
+  // id: "dark",
+  // name: "Dark",
+  // description: "Dark theme with reduced eye strain for low-light environments",
 
-  // colors: darkStoredMiroirTheme.definition.colors,
+  // // colors: darkStoredMiroirTheme.definition.colors,
 
-  components: {
-    appBar: {
-      // background defaults to colors.primaryDark, but dark theme uses backgroundPaper
-      background: "#1e1e1e",
-      // textColor defaults to colors.backgroundPaper = '#1e1e1e', but we want white
-      textColor: "#ffffff",
-      borderBottom: "1px solid #333333",
-      height: "64px",
-      elevation: "0 2px 4px rgba(0, 0, 0, 0.3)",
-    },
+  // components: {
+  //   appBar: {
+  //     // background defaults to colors.primaryDark, but dark theme uses backgroundPaper
+  //     background: "#1e1e1e",
+  //     // textColor defaults to colors.backgroundPaper = '#1e1e1e', but we want white
+  //     textColor: "#ffffff",
+  //     borderBottom: "1px solid #333333",
+  //     height: "64px",
+  //     elevation: "0 2px 4px rgba(0, 0, 0, 0.3)",
+  //   },
 
-    sidebar: {
-      // All colors match fallback defaults from dark root colors:
-      //   background → backgroundPaper, backgroundHover → hover,
-      //   textColor → text, textColorActive → accent,
-      //   borderRight → computed from border
-      width: "200px",
-      itemHeight: "48px",
-    },
+  //   sidebar: {
+  //     // All colors match fallback defaults from dark root colors:
+  //     //   background → backgroundPaper, backgroundHover → hover,
+  //     //   textColor → text, textColorActive → accent,
+  //     //   borderRight → computed from border
+  //     width: "200px",
+  //     itemHeight: "48px",
+  //   },
 
-    // drawer: all colors match fallback defaults (backgroundPaper, overlay)
-    // drawer: {},
+  //   // drawer: all colors match fallback defaults (backgroundPaper, overlay)
+  //   // drawer: {},
 
-    input: {
-      // background → backgroundPaper would be #1e1e1e, but we want surface #2a2a2a
-      background: "#2a2a2a",
-      // backgroundHover → surface would be #2a2a2a, but we want surfaceVariant #333333
-      backgroundHover: "#333333",
-      // backgroundFocused → backgroundPaper would be #1e1e1e, but we want surface #2a2a2a
-      backgroundFocused: "#2a2a2a",
-      // borderColor → border = '#333333' ✓ (matches, omit)
-      // borderColorHover → textSecondary would be #b3b3b3, but we want #666666
-      borderColorHover: "#666666",
-      // borderColorFocused → accent = '#90caf9' ✓ (matches, omit)
-      // textColor → text = '#ffffff' ✓ (matches, omit)
-      // placeholderColor → textLight = '#999999' ✓ (matches, omit)
-      borderRadius: "4px",
-      height: "40px",
-    },
+  //   input: {
+  //     // background → backgroundPaper would be #1e1e1e, but we want surface #2a2a2a
+  //     background: "#2a2a2a",
+  //     // backgroundHover → surface would be #2a2a2a, but we want surfaceVariant #333333
+  //     backgroundHover: "#333333",
+  //     // backgroundFocused → backgroundPaper would be #1e1e1e, but we want surface #2a2a2a
+  //     backgroundFocused: "#2a2a2a",
+  //     // borderColor → border = '#333333' ✓ (matches, omit)
+  //     // borderColorHover → textSecondary would be #b3b3b3, but we want #666666
+  //     borderColorHover: "#666666",
+  //     // borderColorFocused → accent = '#90caf9' ✓ (matches, omit)
+  //     // textColor → text = '#ffffff' ✓ (matches, omit)
+  //     // placeholderColor → textLight = '#999999' ✓ (matches, omit)
+  //     borderRadius: "4px",
+  //     height: "40px",
+  //   },
 
-    button: {
-      primary: {
-        // background → accent = '#90caf9' ✓ (matches, omit)
-        // backgroundHover → active = '#0277bd', but we want '#42a5f5'
-        backgroundHover: "#42a5f5",
-        backgroundActive: "#1976d2",
-        // textColor → backgroundPaper = '#1e1e1e', but we want '#121212'
-        textColor: "#121212",
-        // borderColor → accent = '#90caf9' ✓ (matches, omit)
-        borderRadius: "4px",
-      },
-      secondary: {
-        // background → secondary = '#f48fb1' ✓ (matches, omit)
-        // backgroundHover → secondaryDark = '#e91e63' ✓ (matches, omit)
-        backgroundActive: "#c2185b",
-        textColor: "#121212",
-        // borderColor → secondary = '#f48fb1' ✓ (matches, omit)
-        borderRadius: "4px",
-      },
-      outlined: {
-        // background → 'transparent' ✓ (matches, omit)
-        // backgroundHover → accentLight = 'rgba(144,202,249,0.1)', but we want 0.04
-        backgroundHover: "rgba(144, 202, 249, 0.04)",
-        backgroundActive: "rgba(144, 202, 249, 0.08)",
-        // textColor → accent = '#90caf9' ✓ (matches, omit)
-        // borderColor → accent = '#90caf9' ✓ (matches, omit)
-        borderRadius: "4px",
-      },
-    },
+  //   button: {
+  //     primary: {
+  //       // background → accent = '#90caf9' ✓ (matches, omit)
+  //       // backgroundHover → active = '#0277bd', but we want '#42a5f5'
+  //       backgroundHover: "#42a5f5",
+  //       backgroundActive: "#1976d2",
+  //       // textColor → backgroundPaper = '#1e1e1e', but we want '#121212'
+  //       textColor: "#121212",
+  //       // borderColor → accent = '#90caf9' ✓ (matches, omit)
+  //       borderRadius: "4px",
+  //     },
+  //     secondary: {
+  //       // background → secondary = '#f48fb1' ✓ (matches, omit)
+  //       // backgroundHover → secondaryDark = '#e91e63' ✓ (matches, omit)
+  //       backgroundActive: "#c2185b",
+  //       textColor: "#121212",
+  //       // borderColor → secondary = '#f48fb1' ✓ (matches, omit)
+  //       borderRadius: "4px",
+  //     },
+  //     outlined: {
+  //       // background → 'transparent' ✓ (matches, omit)
+  //       // backgroundHover → accentLight = 'rgba(144,202,249,0.1)', but we want 0.04
+  //       backgroundHover: "rgba(144, 202, 249, 0.04)",
+  //       backgroundActive: "rgba(144, 202, 249, 0.08)",
+  //       // textColor → accent = '#90caf9' ✓ (matches, omit)
+  //       // borderColor → accent = '#90caf9' ✓ (matches, omit)
+  //       borderRadius: "4px",
+  //     },
+  //   },
 
-    card: {
-      // background → backgroundPaper = '#1e1e1e' ✓ (matches, omit)
-      // borderColor → border = '#333333' ✓ (matches, omit)
-      borderRadius: "8px",
-      elevation: "0 1px 3px rgba(0, 0, 0, 0.3), 0 1px 2px rgba(0, 0, 0, 0.4)",
-      padding: "16px",
-    },
+  //   card: {
+  //     // background → backgroundPaper = '#1e1e1e' ✓ (matches, omit)
+  //     // borderColor → border = '#333333' ✓ (matches, omit)
+  //     borderRadius: "8px",
+  //     elevation: "0 1px 3px rgba(0, 0, 0, 0.3), 0 1px 2px rgba(0, 0, 0, 0.4)",
+  //     padding: "16px",
+  //   },
 
-    dialog: {
-      // background → backgroundPaper = '#1e1e1e' ✓ (matches, omit)
-      // backdrop → overlay = 'rgba(0,0,0,0.7)' ✓ (matches, omit)
-      borderRadius: "8px",
-      elevation: "0 11px 15px rgba(0, 0, 0, 0.4), 0 4px 20px rgba(0, 0, 0, 0.3)",
-      padding: "24px",
-    },
+  //   dialog: {
+  //     // background → backgroundPaper = '#1e1e1e' ✓ (matches, omit)
+  //     // backdrop → overlay = 'rgba(0,0,0,0.7)' ✓ (matches, omit)
+  //     borderRadius: "8px",
+  //     elevation: "0 11px 15px rgba(0, 0, 0, 0.4), 0 4px 20px rgba(0, 0, 0, 0.3)",
+  //     padding: "24px",
+  //   },
 
-    tooltip: {
-      background: "rgba(97, 97, 97, 0.9)",
-      // textColor → backgroundPaper = '#1e1e1e', but we want '#ffffff'
-      textColor: "#ffffff",
-      borderRadius: "4px",
-      fontSize: "12px",
-    },
+  //   tooltip: {
+  //     background: "rgba(97, 97, 97, 0.9)",
+  //     // textColor → backgroundPaper = '#1e1e1e', but we want '#ffffff'
+  //     textColor: "#ffffff",
+  //     borderRadius: "4px",
+  //     fontSize: "12px",
+  //   },
 
-    icon: {
-      // colorPrimary → accent = '#90caf9' ✓ (matches, omit)
-      // colorSecondary → textSecondary = '#b3b3b3' ✓ (matches, omit)
-      // colorDisabled → textDisabled = '#666666' ✓ (matches, omit)
-      size: {
-        sm: "16px",
-        md: "24px",
-        lg: "32px",
-      },
-    },
-  },
+  //   icon: {
+  //     // colorPrimary → accent = '#90caf9' ✓ (matches, omit)
+  //     // colorSecondary → textSecondary = '#b3b3b3' ✓ (matches, omit)
+  //     // colorDisabled → textDisabled = '#666666' ✓ (matches, omit)
+  //     size: {
+  //       sm: "16px",
+  //       md: "24px",
+  //       lg: "32px",
+  //     },
+  //   },
+  // },
 
-  table: darkTableTheme
+  // table: darkTableTheme
   // table: {
   //   colors: {
   //     primary: "#90caf9",
@@ -633,66 +637,67 @@ export const darkMiroirTheme: MiroirTheme = {
 // ################################################################################################
 // ################################################################################################
 // Compact theme variant
-export const compactMiroirTheme: MiroirTheme = {
-  ...defaultMiroirTheme,
-  id: 'compact',
-  name: 'Compact',
-  description: 'Space-efficient theme with reduced padding and smaller elements',
+export const compactMiroirTheme: MiroirTheme = compactStoredMiroirTheme.definition as any; // TODO: fix MiroirTheme, it should be a DeepPartial<MiroirTheme> to allow partial overrides without needing to specify all properties'
+// export const compactMiroirTheme: MiroirTheme = {
+//   ...defaultMiroirTheme,
+//   id: 'compact',
+//   name: 'Compact',
+//   description: 'Space-efficient theme with reduced padding and smaller elements',
   
-  spacing: {
-    xs: '2px',
-    sm: '4px',
-    md: '8px',
-    lg: '12px',
-    xl: '16px',
-    xxl: '24px',
-  },
+//   spacing: {
+//     xs: '2px',
+//     sm: '4px',
+//     md: '8px',
+//     lg: '12px',
+//     xl: '16px',
+//     xxl: '24px',
+//   },
   
-  typography: {
-    ...defaultMiroirTheme.typography,
-    fontSize: {
-      xs: '10px',
-      sm: '12px',
-      md: '14px',
-      lg: '16px',
-      xl: '18px',
-      xxl: '20px',
-    },
-  },
+//   typography: {
+//     ...defaultMiroirTheme.typography,
+//     fontSize: {
+//       xs: '10px',
+//       sm: '12px',
+//       md: '14px',
+//       lg: '16px',
+//       xl: '18px',
+//       xxl: '20px',
+//     },
+//   },
   
-  // Compact theme only adjusts sizing-related props.
-  // All colors fall back to root colors via the resolver.
-  // Spreads from defaultMiroirTheme.components to inherit non-color overrides (borderRadius, elevation etc.)
-  components: {
-    ...defaultMiroirTheme.components,
-    appBar: {
-      ...defaultMiroirTheme.components.appBar,
-      height: '48px',
-    },
+//   // Compact theme only adjusts sizing-related props.
+//   // All colors fall back to root colors via the resolver.
+//   // Spreads from defaultMiroirTheme.components to inherit non-color overrides (borderRadius, elevation etc.)
+//   components: {
+//     ...defaultMiroirTheme.components,
+//     appBar: {
+//       ...defaultMiroirTheme.components.appBar,
+//       height: '48px',
+//     },
     
-    sidebar: {
-      ...defaultMiroirTheme.components.sidebar,
-      itemHeight: '36px',
-    },
+//     sidebar: {
+//       ...defaultMiroirTheme.components.sidebar,
+//       itemHeight: '36px',
+//     },
     
-    input: {
-      ...defaultMiroirTheme.components.input,
-      height: '32px',
-    },
+//     input: {
+//       ...defaultMiroirTheme.components.input,
+//       height: '32px',
+//     },
     
-    card: {
-      ...defaultMiroirTheme.components.card,
-      padding: '12px',
-    },
+//     card: {
+//       ...defaultMiroirTheme.components.card,
+//       padding: '12px',
+//     },
     
-    dialog: {
-      ...defaultMiroirTheme.components.dialog,
-      padding: '16px',
-    },
-  },
+//     dialog: {
+//       ...defaultMiroirTheme.components.dialog,
+//       padding: '16px',
+//     },
+//   },
   
-  table: compactTableTheme,
-};
+//   table: {...defaultMiroirTheme.table},  // Compact theme does not change table theme
+// };
 
 // ################################################################################################
 // ################################################################################################
@@ -793,7 +798,8 @@ export const materialMiroirTheme: MiroirTheme = {
     },
   },
   
-  table: materialTableTheme,
+  // table: materialTableTheme,
+  table: {...defaultMiroirTheme.table},  // Material theme does not change table theme
 };
 
 // ################################################################################################
