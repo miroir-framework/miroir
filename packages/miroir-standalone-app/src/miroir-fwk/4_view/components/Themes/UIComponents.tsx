@@ -374,8 +374,8 @@ export const ThemedTextEditor: React.FC<ThemedComponentProps & {
       ? `${currentTheme.spacing.xs} ${currentTheme.spacing.sm}`
       : `${currentTheme.spacing.sm} ${currentTheme.spacing.md}`,
     backgroundColor: disabled 
-      ? currentTheme.colors.surfaceVariant || currentTheme.colors.surface 
-      : currentTheme.colors.surface,
+      ? currentTheme.colors.surface || currentTheme.colors.background 
+      : currentTheme.colors.background,
     color: disabled ? currentTheme.colors.textSecondary : currentTheme.colors.text,
     border: `1px solid ${error ? (currentTheme.colors.error || '#f44336') : currentTheme.colors.border}`,
     borderRadius: currentTheme.borderRadius.sm,

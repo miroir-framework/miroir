@@ -847,6 +847,17 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
           //   "stringSelectList",
           //   stringSelectList
           // );
+          // if (props.readOnly || !localResolvedElementJzodSchemaBasedOnValue.tag?.value?.display?.editable) {
+          //   return (
+          //     // <ThemedDisplayValue value={currentValueObjectAtKey} type="uuid" />
+          //     <ThemedLabeledEditor
+          //       labelElement={enhancedLabelElement}
+          //       editor={
+          //         <ThemedDisplayValue value={currentValueObjectAtKey} type="uuid" />
+          //       }
+          //     />
+          //   );
+          // }
           if (localResolvedElementJzodSchemaBasedOnValue.tag?.value?.foreignKeyParams?.targetEntity) {
             // Convert stringSelectList to options for selectors
             const selectOptions = stringSelectList.map((e: [string, EntityInstance]) => ({

@@ -309,7 +309,7 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
             parentUuid
           );
           return Promise.resolve(
-            new Action2Error("FailedToGetInstances", `could not find entity ${parentUuid}`)
+            new Action2Error("FailedToGetInstances", `could not find entity ${parentUuid} in database schema ${this.schema}, available entities: ${Object.keys(this.sqlSchemaTableAccess ? this.sqlSchemaTableAccess : {})}`)
           );
         }
         // TODO: CORRECT APPLICATION SECTION
@@ -373,7 +373,7 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
             parentUuid
           );
           return Promise.resolve(
-            new Action2Error("FailedToGetInstances", `could not find entity ${parentUuid}`)
+            new Action2Error("FailedToGetInstances", `could not find entity ${parentUuid} in database schema ${this.schema}, available entities: ${Object.keys(this.sqlSchemaTableAccess ? this.sqlSchemaTableAccess : {})}`)
           );
         }
         // TODO: CORRECT APPLICATION SECTION
@@ -424,7 +424,7 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
             parentUuid
           );
           return Promise.resolve(
-            new Action2Error("FailedToGetInstances", `could not find entity ${parentUuid}`)
+            new Action2Error("FailedToGetInstances", `could not find entity ${parentUuid} in database schema ${this.schema}, available entities: ${Object.keys(this.sqlSchemaTableAccess ? this.sqlSchemaTableAccess : {})}`)
           );
         }
         // TODO: CORRECT APPLICATION SECTION
@@ -469,13 +469,13 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
           this.logHeader,
           "upsertInstance",
           "could not find entity in database: entityUuid",
-          instance.parentUuid
+          // instance.parentUuid
+          `could not find entity ${instance.parentUuid} in database schema ${this.schema}, available entities: ${Object.keys(this.sqlSchemaTableAccess ? this.sqlSchemaTableAccess : {})}`
         );
-        // return Promise.resolve(new Action2Error("FailedToUpdateInstance", `could not find entity ${instance.parentUuid} designated in 'parentUuid' attribute of instance ${instance}`));
         return Promise.resolve(
           new Action2Error(
             "FailedToUpdateInstance",
-            `failed to upsert instance ${instance.uuid} of entity ${instance.parentUuid}`
+            `failed to upsert instance ${instance.uuid} of entity ${instance.parentUuid} in database schema ${this.schema}, available entities: ${Object.keys(this.sqlSchemaTableAccess ? this.sqlSchemaTableAccess : {})}`
           )
         );
       }
@@ -558,7 +558,7 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
           parentUuid
         );
         return Promise.resolve(
-          new Action2Error("FailedToDeleteInstance", `could not find entity ${parentUuid}`)
+          new Action2Error("FailedToDeleteInstance", `could not find entity ${parentUuid} in database schema ${this.schema}, available entities: ${Object.keys(this.sqlSchemaTableAccess ? this.sqlSchemaTableAccess : {})}`)
         );
       }
       try {

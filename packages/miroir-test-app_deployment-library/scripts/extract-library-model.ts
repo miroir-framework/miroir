@@ -42,7 +42,8 @@ import {
   type PersistenceStoreControllerInterface,
   type Query,
   type Report,
-  type Runner
+  type Runner,
+  type StoredMiroirTheme
 } from "miroir-core";
 
 import {
@@ -57,22 +58,23 @@ import { entityAuthor, entityBook, entityCountry, entityLendingHistoryItem, enti
 import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
 import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
 import { miroirPostgresStoreSectionStartup } from "miroir-store-postgres";
+import { entityTheme } from "miroir-test-app_deployment-miroir";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-// Entity UUIDs from Miroir meta-model
-// const ENTITY_ENTITY_UUID = "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad";
-const ENTITY_ENTITY_UUID = entityEntity.uuid;
-const ENTITY_DEFINITION_UUID = entityEntityDefinition.uuid;
-const ENTITY_MENU_UUID = entityMenu.uuid;
-const ENTITY_REPORT_UUID = entityReport.uuid;
-const ENTITY_ENDPOINT_VERSION_UUID = entityEndpointVersion.uuid;
-const ENTITY_JZOD_SCHEMA_UUID = entityJzodSchema.uuid;
-const ENTITY_QUERY_VERSION_UUID = entityQueryVersion.uuid;
-// const ENTITY_SELF_APPLICATION_UUID = "a659d350-dd97-4da9-91de-524fa01745dc";
-const ENTITY_SELF_APPLICATION_VERSION_UUID = entitySelfApplicationVersion.uuid;
-// const ENTITY_SELF_APPLICATION_MODEL_BRANCH_UUID = "cdb0aec6-b848-43ac-a058-fe2dbe5811f1";
+// // Entity UUIDs from Miroir meta-model
+// // const ENTITY_ENTITY_UUID = "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad";
+// const ENTITY_ENTITY_UUID = entityEntity.uuid;
+// const ENTITY_DEFINITION_UUID = entityEntityDefinition.uuid;
+// const ENTITY_MENU_UUID = entityMenu.uuid;
+// const ENTITY_REPORT_UUID = entityReport.uuid;
+// const ENTITY_ENDPOINT_VERSION_UUID = entityEndpointVersion.uuid;
+// const ENTITY_JZOD_SCHEMA_UUID = entityJzodSchema.uuid;
+// const ENTITY_QUERY_VERSION_UUID = entityQueryVersion.uuid;
+// // const ENTITY_SELF_APPLICATION_UUID = "a659d350-dd97-4da9-91de-524fa01745dc";
+// const ENTITY_SELF_APPLICATION_VERSION_UUID = entitySelfApplicationVersion.uuid;
+// // const ENTITY_SELF_APPLICATION_MODEL_BRANCH_UUID = "cdb0aec6-b848-43ac-a058-fe2dbe5811f1";
 
 // Logger setup
 const packageName = "miroir-test-app_deployment-library";
@@ -252,6 +254,7 @@ async function extractLibraryModel(
     const queries = await extractEntityInstances(storeController, "model", entityQueryVersion.uuid, "queries");
     const applicationVersions = await extractEntityInstances(storeController, "model", entitySelfApplicationVersion.uuid, "application versions");
     const runners = await extractEntityInstances(storeController, "model", entityRunner.uuid, "runners");
+    const themes = await extractEntityInstances(storeController, "model", entityTheme.uuid, "themes");
 
     // Assemble the MetaModel
     console.log("\n8. Assembling MetaModel structure...");
@@ -268,6 +271,7 @@ async function extractLibraryModel(
       applicationVersions: applicationVersions as ApplicationVersion[],
       applicationVersionCrossEntityDefinition: [], // These would need to be read separately if needed
       runners: runners as Runner[], 
+      themes: themes as StoredMiroirTheme[], // Themes are now included in the model extraction
     };
 
     return libraryMetaModel;
@@ -366,7 +370,7 @@ async function extractLibrary() {
 
     // Write to output file
     console.log("9. Writing MetaModel to file...");
-    const outputPath = resolve(__dirname, "..", "dist", "library-model-extracted.json");
+    const outputPath = resolve(__dirname, "..", "dist", "library-model-26.01.json");
     const outputDir = dirname(outputPath);
 
     await mkdir(outputDir, { recursive: true });
@@ -374,7 +378,7 @@ async function extractLibrary() {
     await writeFile(outputPath, jsonContent, "utf-8");
 
     const libraryData = await extractLibraryData(storeController);
-    const dataOutputPath = resolve(__dirname, "..", "dist", "library-data-extracted.json");
+    const dataOutputPath = resolve(__dirname, "..", "dist", "library-data-26.01.json");
     const dataJsonContent = JSON.stringify(libraryData, null, 2);
     await writeFile(dataOutputPath, dataJsonContent, "utf-8");
 
@@ -400,6 +404,7 @@ async function extractLibrary() {
     console.log(`  - Jzod Schemas: ${libraryMetaModel.jzodSchemas.length}`);
     console.log(`  - Stored Queries: ${libraryMetaModel.storedQueries.length}`);
     console.log(`  - Application Versions: ${libraryMetaModel.applicationVersions.length}`);
+    console.log(`  - Themes: ${libraryMetaModel.themes.length}`);
     console.log("=".repeat(80));
     process.exit(0);
   } catch (error) {

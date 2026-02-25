@@ -410,114 +410,133 @@ export const ThemedSelectWithPortal: React.FC<ThemedComponentProps & {
       setDropdownJustOpened(false);
     };
 
-    const handleInputKeyDown = useCallback((event: React.KeyboardEvent) => {
-      if (event.key === 'Enter') {
-        event.preventDefault();
-        
-        // Force recalculate filtered options based on current filterText to ensure we have the latest
-        let actualFilteredOptions = filteredOptions;
-        if (filterText.trim()) {
-          const filterTextLower = filterText.toLowerCase();
-          const recalculatedFiltered = options.filter(option =>
-            option.label.toLowerCase().includes(filterTextLower) ||
-            option.value.toLowerCase().includes(filterTextLower)
-          );
-          actualFilteredOptions = recalculatedFiltered;
-        }
-        
-        let selectedValue: string | undefined;
-        
-        if (highlightedIndex >= 0 && highlightedIndex < actualFilteredOptions.length) {
-          // Select the highlighted option
-          selectedValue = actualFilteredOptions[highlightedIndex].value;
-        } else if (actualFilteredOptions.length > 0) {
-          // Select the first option if nothing is highlighted
-          selectedValue = actualFilteredOptions[0].value;
-        } else if (allowCustomValue && filterText.trim()) {
-          selectedValue = filterText.trim();
-        }
-        
-        // If we have a value to select, do the selection bypassing dropdownJustOpened check
-        if (selectedValue !== undefined) {
-          if (onChange) {
-            const syntheticEvent = {
-              target: { value: selectedValue },
-              currentTarget: { value: selectedValue }
-            } as React.ChangeEvent<HTMLSelectElement>;
-            onChange(syntheticEvent);
+    const handleInputKeyDown = useCallback(
+      (event: React.KeyboardEvent) => {
+        if (event.key === "Enter") {
+          event.preventDefault();
+
+          // Force recalculate filtered options based on current filterText to ensure we have the latest
+          let actualFilteredOptions = filteredOptions;
+          if (filterText.trim()) {
+            const filterTextLower = filterText.toLowerCase();
+            const recalculatedFiltered = options.filter(
+              (option) =>
+                option.label.toLowerCase().includes(filterTextLower) ||
+                option.value.toLowerCase().includes(filterTextLower),
+            );
+            actualFilteredOptions = recalculatedFiltered;
           }
-          
-          // Immediately update DOM attribute for test tracking
-          if (stateTrackerRef.current) {
-            stateTrackerRef.current.setAttribute('data-test-selected-value', selectedValue);
+
+          let selectedValue: string | undefined;
+
+          if (highlightedIndex >= 0 && highlightedIndex < actualFilteredOptions.length) {
+            // Select the highlighted option
+            selectedValue = actualFilteredOptions[highlightedIndex].value;
+          } else if (actualFilteredOptions.length > 0) {
+            // Select the first option if nothing is highlighted
+            selectedValue = actualFilteredOptions[0].value;
+          } else if (allowCustomValue && filterText.trim()) {
+            selectedValue = filterText.trim();
           }
-          
+
+          // If we have a value to select, do the selection bypassing dropdownJustOpened check
+          if (selectedValue !== undefined) {
+            if (onChange) {
+              const syntheticEvent = {
+                target: { value: selectedValue },
+                currentTarget: { value: selectedValue },
+              } as React.ChangeEvent<HTMLSelectElement>;
+              onChange(syntheticEvent);
+            }
+
+            // Immediately update DOM attribute for test tracking
+            if (stateTrackerRef.current) {
+              stateTrackerRef.current.setAttribute("data-test-selected-value", selectedValue);
+            }
+
+            setIsOpenWithDOMUpdate(false);
+            setFilterText("");
+            setHighlightedIndex(-1);
+            setDropdownJustOpened(false);
+          }
+        } else if (event.key === "Escape") {
           setIsOpenWithDOMUpdate(false);
-          setFilterText('');
+          setFilterText("");
           setHighlightedIndex(-1);
           setDropdownJustOpened(false);
-        }
-      } else if (event.key === 'Escape') {
-        setIsOpenWithDOMUpdate(false);
-        setFilterText('');
-        setHighlightedIndex(-1);
-        setDropdownJustOpened(false);
-      } else if (event.key === 'ArrowDown') {
-        event.preventDefault();
-        if (!isOpen) {
-          if (navigateWithoutOpening) {
-            // Navigate through options without opening dropdown
-            const currentIndex = filteredOptions.findIndex(opt => opt.value === value);
-            const nextIndex = currentIndex < filteredOptions.length - 1 ? currentIndex + 1 : 0;
-            if (filteredOptions[nextIndex]) {
-              handleOptionClick(filteredOptions[nextIndex].value);
+        } else if (event.key === "ArrowDown") {
+          event.preventDefault();
+          if (!isOpen) {
+            if (navigateWithoutOpening) {
+              // Navigate through options without opening dropdown
+              const currentIndex = filteredOptions.findIndex((opt) => opt.value === value);
+              const nextIndex = currentIndex < filteredOptions.length - 1 ? currentIndex + 1 : 0;
+              if (filteredOptions[nextIndex]) {
+                handleOptionClick(filteredOptions[nextIndex].value);
+              }
+            } else {
+              openDropdown();
             }
           } else {
-            openDropdown();
+            // Navigate down in the options list
+            const nextIndex =
+              highlightedIndex < filteredOptions.length - 1 ? highlightedIndex + 1 : 0;
+            setHighlightedIndex(nextIndex);
           }
-        } else {
-          // Navigate down in the options list
-          const nextIndex = highlightedIndex < filteredOptions.length - 1 ? highlightedIndex + 1 : 0;
-          setHighlightedIndex(nextIndex);
-        }
-      } else if (event.key === 'ArrowUp') {
-        event.preventDefault();
-        if (isOpen) {
-          // Navigate up in the options list
-          const prevIndex = highlightedIndex > 0 ? highlightedIndex - 1 : filteredOptions.length - 1;
-          setHighlightedIndex(prevIndex);
-        } else {
-          if (navigateWithoutOpening) {
-            // Navigate through options without opening dropdown
-            const currentIndex = filteredOptions.findIndex(opt => opt.value === value);
-            const prevIndex = currentIndex > 0 ? currentIndex - 1 : filteredOptions.length - 1;
-            if (filteredOptions[prevIndex]) {
-              handleOptionClick(filteredOptions[prevIndex].value);
-            }
+        } else if (event.key === "ArrowUp") {
+          event.preventDefault();
+          if (isOpen) {
+            // Navigate up in the options list
+            const prevIndex =
+              highlightedIndex > 0 ? highlightedIndex - 1 : filteredOptions.length - 1;
+            setHighlightedIndex(prevIndex);
           } else {
-            // If closed, open the dropdown and will highlight the last option
-            openDropdown();
-            setTimeout(() => setHighlightedIndex(filteredOptions.length - 1), 0);
+            if (navigateWithoutOpening) {
+              // Navigate through options without opening dropdown
+              const currentIndex = filteredOptions.findIndex((opt) => opt.value === value);
+              const prevIndex = currentIndex > 0 ? currentIndex - 1 : filteredOptions.length - 1;
+              if (filteredOptions[prevIndex]) {
+                handleOptionClick(filteredOptions[prevIndex].value);
+              }
+            } else {
+              // If closed, open the dropdown and will highlight the last option
+              openDropdown();
+              setTimeout(() => setHighlightedIndex(filteredOptions.length - 1), 0);
+            }
+          }
+        } else if (event.key === "Backspace" || event.key === "Delete") {
+          // Allow editing by opening dropdown when user tries to delete
+          if (!isOpen) {
+            setIsOpen(true);
+            setFilterText("");
+            updateDropdownPosition();
+          }
+        } else if (event.key.length === 1 && !event.ctrlKey && !event.altKey && !event.metaKey) {
+          // User is typing a character - open dropdown and start filtering
+          if (!isOpen) {
+            setIsOpen(true);
+            setFilterText(event.key);
+            setHighlightedIndex(-1);
+            updateDropdownPosition();
+            event.preventDefault(); // Prevent double character
           }
         }
-      } else if (event.key === 'Backspace' || event.key === 'Delete') {
-        // Allow editing by opening dropdown when user tries to delete
-        if (!isOpen) {
-          setIsOpen(true);
-          setFilterText('');
-          updateDropdownPosition();
-        }
-      } else if (event.key.length === 1 && !event.ctrlKey && !event.altKey && !event.metaKey) {
-        // User is typing a character - open dropdown and start filtering
-        if (!isOpen) {
-          setIsOpen(true);
-          setFilterText(event.key);
-          setHighlightedIndex(-1);
-          updateDropdownPosition();
-          event.preventDefault(); // Prevent double character
-        }
-      }
-    }, [highlightedIndex, filteredOptions, handleOptionClick, allowCustomValue, filterText, isOpen, navigateWithoutOpening, value, openDropdown, setIsOpenWithDOMUpdate, updateDropdownPosition, options]);
+      },
+      [
+        highlightedIndex,
+        filteredOptions,
+        handleOptionClick,
+        allowCustomValue,
+        filterText,
+        isOpen,
+        navigateWithoutOpening,
+        value,
+        openDropdown,
+        setIsOpenWithDOMUpdate,
+        updateDropdownPosition,
+        options,
+      ],
+    );
 
     // position: relative;
     // display: inline-block;
@@ -534,8 +553,8 @@ export const ThemedSelectWithPortal: React.FC<ThemedComponentProps & {
       width: 100%;
       box-sizing: border-box;
       
-      background-color: ${currentTheme.colors.surface} !important;
-      background: ${currentTheme.colors.surface} !important;
+      background-color: ${currentTheme.colors.background} !important;
+      background: ${currentTheme.colors.background} !important;
       color: ${currentTheme.colors.text} !important;
       
       border: 1px solid ${currentTheme.colors.border} !important;
@@ -572,7 +591,7 @@ export const ThemedSelectWithPortal: React.FC<ThemedComponentProps & {
       z-index: 99999;
       max-height: 200px;
       overflow-y: auto;
-      background: ${currentTheme.colors.surface};
+      background: ${currentTheme.colors.background};
       border: 1px solid ${currentTheme.colors.border};
       border-radius: ${currentTheme.borderRadius.sm};
       box-shadow: 0 6px 16px rgba(0,0,0,0.2);
@@ -585,23 +604,23 @@ export const ThemedSelectWithPortal: React.FC<ThemedComponentProps & {
       left: ${dropdownPosition.left}px;
     `;
 
-    const optionStyles = css`
-      padding: ${currentTheme.spacing.sm};
-      cursor: pointer;
-      font-family: ${currentTheme.typography.fontFamily};
-      font-size: ${currentTheme.typography.fontSize.md};
-      color: ${currentTheme.colors.text};
-      white-space: nowrap;
+    // const optionStyles = css`
+    //   padding: ${currentTheme.spacing.sm};
+    //   cursor: pointer;
+    //   font-family: ${currentTheme.typography.fontFamily};
+    //   font-size: ${currentTheme.typography.fontSize.md};
+    //   color: ${currentTheme.colors.text};
+    //   white-space: nowrap;
       
-      &:hover {
-        background-color: ${currentTheme.colors.hover || currentTheme.colors.surfaceVariant};
-      }
+    //   &:hover {
+    //     background-color: ${currentTheme.colors.hover || currentTheme.colors.surfaceVariant};
+    //   }
       
-      &:active {
-        background-color: ${currentTheme.colors.selected || currentTheme.colors.primary};
-        color: ${currentTheme.colors.background};
-      }
-    `;
+    //   &:active {
+    //     background-color: ${currentTheme.colors.selected || currentTheme.colors.primary};
+    //     color: ${currentTheme.colors.background};
+    //   }
+    // `;
 
     const getOptionStyles = (isHighlighted: boolean) => css`
       padding: ${currentTheme.spacing.sm};

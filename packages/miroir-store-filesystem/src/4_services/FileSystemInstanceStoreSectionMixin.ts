@@ -180,7 +180,9 @@ export function FileSystemInstanceStoreSectionMixin<TBase extends MixableFileSys
         const entityInstances: EntityInstanceCollection = {
           parentUuid: entityUuid,
           applicationSection: this.applicationSection,
-          instances: entityInstancesUuid.map((e) =>
+          instances: entityInstancesUuid
+            .filter((e) => e.endsWith(fileExt))
+            .map((e) =>
             JSON.parse(
               fs.readFileSync(path.join(entityInstancesPath, e), { encoding: "utf-8" }).toString(),
             ),

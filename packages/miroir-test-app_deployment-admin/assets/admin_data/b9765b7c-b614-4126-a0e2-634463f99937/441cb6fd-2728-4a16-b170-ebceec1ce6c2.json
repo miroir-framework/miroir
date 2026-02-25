@@ -7,5 +7,5 @@
   "description": "Default ViewParams for any application / local deployment",
   "sidebarWidth": 292,
   "gridType": "ag-grid",
-  "appTheme": "material"
+  "appTheme": "default"
 }

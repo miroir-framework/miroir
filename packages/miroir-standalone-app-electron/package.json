@@ -53,22 +53,59 @@
       {
         "from": "../miroir-standalone-app/dist",
         "to": "app",
+        "filter": ["**/*"]
+      },
+      {
+        "from": "../miroir-core/src/assets/admin",
+        "to": "miroir-assets/miroir-core/src/assets/admin",
+        "filter": ["**/*"]
+      },
+      {
+        "from": "../miroir-test-app_deployment-admin/assets/admin_data",
+        "to": "miroir-assets/miroir-test-app_deployment-admin/assets/admin_data",
+        "filter": [
+          "**/*",
+          "!7959d814-400c-4e80-988f-a00fe582ab98/10ff36f2-50a3-48d8-b80f-e48e5d13af8e.json",
+          "!7959d814-400c-4e80-988f-a00fe582ab98/18db21bf-f8d3-4f6a-8296-84b69f6dc48b.json"
+        ]
+      },
+      {
+        "from": "../miroir-test-app_deployment-admin/assets/admin_model",
+        "to": "miroir-assets/miroir-test-app_deployment-admin/assets/admin_model",
         "filter": [
           "**/*"
         ]
+      },
+      {
+        "from": "assets/10ff36f2-50a3-48d8-b80f-e48e5d13af8e.json",
+        "to": "miroir-assets/miroir-test-app_deployment-admin/assets/admin_data/7959d814-400c-4e80-988f-a00fe582ab98/10ff36f2-50a3-48d8-b80f-e48e5d13af8e.json"
+      },
+      {
+        "from": "assets/18db21bf-f8d3-4f6a-8296-84b69f6dc48b.json",
+        "to": "miroir-assets/miroir-test-app_deployment-admin/assets/admin_data/7959d814-400c-4e80-988f-a00fe582ab98/18db21bf-f8d3-4f6a-8296-84b69f6dc48b.json"
+      },
+      {
+        "from": "../miroir-test-app_deployment-miroir/assets",
+        "to": "miroir-assets/miroir-test-app_deployment-miroir/assets",
+        "filter": ["**/*"]
+      },
+      {
+        "from": "../miroir-test-app_deployment-library/dist",
+        "to": "miroir-assets/bundles",
+        "filter": ["library-model-*.json", "library-data-*.json"]
       }
     ],
     "win": {
       "target": "nsis",
-      "icon": "assets/icon.ico"
+      "icon": "assets/miroir-logo.png"
     },
     "mac": {
       "target": "dmg",
-      "icon": "assets/icon.icns"
+      "icon": "assets/miroir-logo.png"
     },
     "linux": {
       "target": "AppImage",
-      "icon": "assets/icon.png"
+      "icon": "assets/miroir-logo.png"
     },
     "nsis": {
       "oneClick": false,

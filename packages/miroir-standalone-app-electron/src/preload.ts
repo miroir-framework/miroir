@@ -12,6 +12,11 @@ contextBridge.exposeInMainWorld('electronAPI', {
   // ipcServerSetup.ts (types: 'rest-call', 'server-action', 'server-query').
   callMiroirIpc: (payload: unknown) => ipcRenderer.invoke('miroir-ipc', payload),
 
+  // Returns the assets base path used by the main process for store path resolution.
+  // Dev: absolute path to the monorepo packages/ directory.
+  // Prod: <resourcesPath>/miroir-assets/
+  getAssetsBasePath: () => ipcRenderer.invoke('get-assets-base-path'),
+
   // File system operations (if needed)
   openFile: () => ipcRenderer.invoke('dialog:openFile'),
   saveFile: (content: string) => ipcRenderer.invoke('dialog:saveFile', content),
@@ -41,6 +46,8 @@ declare global {
       platform: string;
       /** Routes a Miroir IPC payload to the main process and returns the result. */
       callMiroirIpc: (payload: unknown) => Promise<unknown>;
+      /** Returns the assets base path for store directory resolution. */
+      getAssetsBasePath: () => Promise<string>;
       openFile: () => Promise<string | null>;
       saveFile: (content: string) => Promise<boolean>;
       getVersion: () => Promise<string>;

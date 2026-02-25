@@ -44,6 +44,12 @@ import {
   instanceEndpointV1,
   miroirJzodSchemaBootstrap,
   menuDefaultMiroir,
+  entityTheme,
+  entityDefinitionTheme,
+  defaultStoredMiroirTheme,
+  darkStoredMiroirTheme,
+  compactStoredMiroirTheme,
+  materialStoredMiroirTheme,
 } from "miroir-test-app_deployment-miroir";
 import { menuDefaultLibrary } from "miroir-test-app_deployment-library";
 
@@ -112,17 +118,6 @@ export async function modelInitialize(
     await persistenceStoreController.createEntity(entitySelfApplicationVersion as MetaEntity, entityDefinitionSelfApplicationVersion as EntityDefinition);
     log.info(logHeader, 'created entity ApplicationVersion',persistenceStoreController.getEntityUuids());
     
-    // // bootstrap SelfApplication Deployment Configuration
-    // await persistenceStoreController.createEntity(entitySelfApplicationDeploymentConfiguration as MetaEntity, entityDefinitionSelfApplicationDeploymentConfiguration as EntityDefinition);
-    // log.info(logHeader, 'created entity entitySelfApplicationDeploymentConfiguration',persistenceStoreController.getEntityUuids());
-
-    
-
-
-    // // bootstrap Endpoint
-    // await persistenceStoreController.createEntity(entityEndpoint as MetaEntity, entityDefinitionEndpoint as EntityDefinition);
-    // log.info(logHeader, 'created entity Endpoint',persistenceStoreController.getEntityUuids());
-    
     // bootstrap Endpoint version
     await persistenceStoreController.createEntity(entityEndpointVersion as MetaEntity, entityDefinitionEndpoint as EntityDefinition);
     log.info(logHeader, 'created entity Endpoint',persistenceStoreController.getEntityUuids());
@@ -146,6 +141,10 @@ export async function modelInitialize(
     // bootstrap EntityRunner
     await persistenceStoreController.createEntity(entityRunner as MetaEntity, entityDefinitionRunner as EntityDefinition);
     log.info(logHeader, 'created entity EntityRunner',persistenceStoreController.getEntityUuids());
+    
+    // bootstrap EntityTheme
+    await persistenceStoreController.createEntity(entityTheme as MetaEntity, entityDefinitionTheme as EntityDefinition);
+    log.info(logHeader, 'created entity EntityTheme',persistenceStoreController.getEntityUuids());
     
     // bootstrap EntityQuery
     await persistenceStoreController.createEntity(entityQueryVersion as MetaEntity, entityDefinitionQuery as EntityDefinition);
@@ -192,6 +191,11 @@ export async function modelInitialize(
 
     // await persistenceStoreController.upsertInstance('data', queryBundleProducer);
     await persistenceStoreController.upsertInstance('data', queryVersionBundleProducerV1);
+
+    await persistenceStoreController.upsertInstance('data', defaultStoredMiroirTheme);
+    await persistenceStoreController.upsertInstance('data', darkStoredMiroirTheme);
+    await persistenceStoreController.upsertInstance('data', compactStoredMiroirTheme);
+    await persistenceStoreController.upsertInstance('data', materialStoredMiroirTheme);
   }
 
   if (dataStoreType == 'app') {
@@ -230,17 +234,6 @@ export async function modelInitialize(
     );
     log.info(logHeader, "app initialized entity ApplicationVersion", persistenceStoreController.getEntityUuids());
 
-    // bootstrap Self Deployment
-    // await persistenceStoreController.createModelStorageSpaceForInstancesOfEntity(
-    //   entitySelfApplicationDeploymentConfiguration as MetaEntity,
-    //   entityDefinitionSelfApplicationDeploymentConfiguration as EntityDefinition
-    // );
-    // log.info(
-    //   logHeader,
-    //   "app initialized entity deployment",
-    //   persistenceStoreController.getEntityUuids()
-    // );
-
     // bootstrap Self Menu
     await persistenceStoreController.createModelStorageSpaceForInstancesOfEntity(
       entityMenu as MetaEntity,
@@ -251,10 +244,6 @@ export async function modelInitialize(
       "app initialized entity Menu",
       persistenceStoreController.getEntityUuids()
     );
-
-    // // bootstrap Endpoint
-    // await persistenceStoreController.createModelStorageSpaceForInstancesOfEntity(entityEndpoint as MetaEntity, entityDefinitionEndpoint as EntityDefinition);
-    // log.info(logHeader, 'app initialized entity Endpoint',persistenceStoreController.getEntityUuids());
 
     // bootstrap Endpoint
     await persistenceStoreController.createModelStorageSpaceForInstancesOfEntity(
@@ -284,6 +273,13 @@ export async function modelInitialize(
       entityDefinitionRunner as EntityDefinition
     );
     log.info(logHeader, "app initialized entity Runner", persistenceStoreController.getEntityUuids());
+
+    log.info(logHeader, "app initializing entity Theme", persistenceStoreController.getEntityUuids());
+    await persistenceStoreController.createModelStorageSpaceForInstancesOfEntity(
+      entityTheme as MetaEntity,
+      entityDefinitionTheme as EntityDefinition
+    );
+    log.info(logHeader, "app initialized entity Theme", persistenceStoreController.getEntityUuids());
 
     // // bootstrap EntityStoreBasedConfiguration
     // await persistenceStoreController.createModelStorageSpaceForInstancesOfEntity(

@@ -67,6 +67,7 @@ import {
   compactStoredMiroirTheme,
   materialStoredMiroirTheme,
   entityTheme,
+  entityDefinitionTheme,
 } from "miroir-test-app_deployment-miroir";
 
 import { Transform } from "stream";
@@ -151,6 +152,7 @@ export const defaultMiroirMetaModel: MetaModel = {
     entitySelfApplication as Entity,
     entitySelfApplicationModelBranch as Entity,
     entitySelfApplicationVersion as Entity,
+    entityTheme as Entity,
   ],
   entityDefinitions: [
     // bootstrap entities have to come first
@@ -166,6 +168,7 @@ export const defaultMiroirMetaModel: MetaModel = {
     entityDefinitionSelfApplication as EntityDefinition,
     entityDefinitionSelfApplicationModelBranch as EntityDefinition,
     entityDefinitionSelfApplicationVersion as EntityDefinition,
+    entityDefinitionTheme as EntityDefinition,
   ],
   endpoints: [
     applicationEndpointV1 as EndpointDefinition,

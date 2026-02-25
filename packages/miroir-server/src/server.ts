@@ -12,7 +12,6 @@ import { fileURLToPath } from 'url';
 import {
   Action2Error,
   type ApplicationDeploymentMap,
-  ConfigurationService,
   type Deployment,
   LoggerFactoryInterface,
   LoggerInterface,
@@ -85,7 +84,7 @@ const configFileContents = JSON.parse(
 );
 
 
-const miroirConfig:MiroirConfigServer = configFileContents as MiroirConfigServer;
+const miroirConfig: MiroirConfigServer = configFileContents as MiroirConfigServer;
 myLogger.info('miroirConfig',miroirConfig)
 
 const portFromConfig: number = Number(miroirConfig.server.rootApiUrl.substring(miroirConfig.server.rootApiUrl.lastIndexOf(":") + 1));

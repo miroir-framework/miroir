@@ -498,22 +498,6 @@ export class DomainController implements DomainControllerInterface {
                   },
                 )
                 .then((context: Record<string, any> | Action2Error) => {
-                  // log.info(
-                  //   "DomainController loadConfigurationFromPersistenceStore fetched instances for",
-                  //   "application",
-                  //   applicationUuid,
-                  //   "deployment",
-                  //   deploymentUuid,
-                  //   "section",
-                  //   e.section,
-                  //   "entity",
-                  //   e.entity.name,
-                  //   // "is error",
-                  //   // context instanceof Action2Error,
-                  //   context instanceof Action2Error ? "failed" : "succeeded",
-                  //   "length",
-                  //   context instanceof Action2Error? context : context.entityInstanceCollection.returnedDomainElement.instances.length,
-                  // );
                   if (context instanceof Action2Error) {
                     return context;
                   } else {
@@ -548,6 +532,7 @@ export class DomainController implements DomainControllerInterface {
           const allInstances = await Promise.all(fetchPromises);
 
           const errors = allInstances.filter((result) => result instanceof Action2Error);
+          const nonErrors = allInstances.filter((result) => !(result instanceof Action2Error));
           // log.info(
           //   "DomainController loadConfigurationFromPersistenceStore fetched all instances for",
           //   "application",
@@ -559,21 +544,8 @@ export class DomainController implements DomainControllerInterface {
           //   "errors",
           //   errors,
           // );
-          if (errors.length > 0) {
-            return Promise.resolve(
-              new Action2Error(
-                "FailedToLoadNewInstancesInLocalCache",
-                "DomainController loadConfigurationFromPersistenceStore application" +
-                  applicationUuid +
-                  "deployment" +
-                  deploymentUuid +
-                  " failed to load new instances in local cache: " +
-                  errors.map((e) => JSON.stringify(e, undefined, 2)).join(", "),
-              ),
-            );
-          }
           // Batch all local cache updates in a single operation to leverage React 18's automatic batching
-          if (allInstances.length > 0) {
+          if (nonErrors.length > 0) {
             await this.callUtil.callLocalCacheAction(
               context, // context
               {}, // continuation
@@ -601,10 +573,23 @@ export class DomainController implements DomainControllerInterface {
               endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
               payload: {
                 application: applicationUuid,
-                // deploymentUuid: adminDeploymentUuid,
               },
             },
           );
+
+          if (errors.length > 0) {
+            return Promise.resolve(
+              new Action2Error(
+                "FailedToLoadNewInstancesInLocalCache",
+                "DomainController loadConfigurationFromPersistenceStore application" +
+                  applicationUuid +
+                  "deployment" +
+                  deploymentUuid +
+                  " failed to load new instances in local cache: " +
+                  errors.map((e) => JSON.stringify(e, undefined, 2)).join(", "),
+              ),
+            );
+          }
 
           // log.info(
           //   "DomainController loadConfigurationFromPersistenceStore done rollback, currentTransaction=",

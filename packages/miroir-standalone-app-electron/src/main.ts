@@ -99,13 +99,13 @@ class MainWindow {
       height: 1000,
       width: 1400,
       // icon: path.join(__dirname, 'miroir-logo.png'), // Specify the path to your icon file
+      icon: this.getIconPath(),
       webPreferences: {
         preload: path.join(__dirname, "preload.js"),
         nodeIntegration: false,
         contextIsolation: true,
         webSecurity: true,
       },
-      icon: this.getIconPath(),
       show: false, // Don't show window until ready
       titleBarStyle: "default",
     });
@@ -146,7 +146,7 @@ class MainWindow {
     // Initialise store factories + domain controller in the main process and register the IPC
     // handler BEFORE loading the renderer URL.  The renderer will call back via IPC once it
     // starts initialising Miroir (store-management and persistence actions).
-    await setupIpcServer();
+    await setupIpcServer(__dirname);
     log("Starting miroir standalone app - IPC server ready");
 
     if (this.isDev) {
@@ -163,7 +163,8 @@ class MainWindow {
 
   private getIconPath(): string {
     // Return path to icon file
-    const iconPath = path.join(__dirname, "../assets/miroir-logo.png");
+    // const iconPath = path.join(__dirname, "../assets/miroir-logo.png");
+    const iconPath = path.join(__dirname, "./resources/app/assets/miroir-logo-4ec98748.png");
     return iconPath;
   }
 
