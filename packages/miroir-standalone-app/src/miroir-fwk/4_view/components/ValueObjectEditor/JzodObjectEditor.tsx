@@ -55,7 +55,8 @@ import {
   ThemedOptionalAttributeContainer,
   ThemedOptionalAttributeItem,
   ThemedSizedButton,
-  ThemedSmallIconButton
+  ThemedSmallIconButton,
+  ThemedStyledButton,
 } from "../Themes/index";
 import { FoldUnfoldAllObjectAttributesOrArrayItems, FoldUnfoldObjectOrArray, JzodElementEditor } from "./JzodElementEditor";
 import { getFoldedDisplayValue, useJzodElementEditorHooks } from "./JzodElementEditorHooks";
@@ -159,6 +160,8 @@ const ProgressiveAttribute: FC<{
   onChangeVector?: Record<string, (newValue: any, rootLessListKey: string) => void>;
   handleAttributeNameChange: (newValue: string, attributeRootLessListKeyArray: (string | number)[]) => void;
   deleteElement: (formikRootLessListKeyArray: (string | number)[]) => () => void;
+  handleMoveAttribute: (direction: "up" | "down", attributeKey: string) => void;
+  totalAttributes: number;
   hideOptionalButton?: boolean;
   formik: any;
   currentMiroirFundamentalJzodSchema: any;
@@ -199,6 +202,8 @@ const ProgressiveAttribute: FC<{
   onChangeVector,
   handleAttributeNameChange,
   deleteElement,
+  handleMoveAttribute,
+  totalAttributes,
   hideOptionalButton,
   formik,
   currentMiroirFundamentalJzodSchema,
@@ -273,6 +278,12 @@ const ProgressiveAttribute: FC<{
 
   // Determine if this is a record type where attribute names should be editable
   const isRecordType = currentKeyMap?.rawSchema?.type === "record" || currentKeyMap?.resolvedReferenceSchemaInContext?.type === "record";
+
+  // Move up/down buttons: visible when the attribute value carries a tag.value.id
+  const attributeTagValueId = currentValue?.[attribute[0]]?.tag?.value?.id;
+  const canMoveAttribute = !readOnly && typeof attributeTagValueId === "number";
+  const isFirst = attributeNumber === 0;
+  const isLast = attributeNumber === totalAttributes - 1;
   const editableLabel = isRecordType ? (
     <EditableAttributeName
       initialValue={attribute[0]}
@@ -344,6 +355,30 @@ const ProgressiveAttribute: FC<{
             deleteButtonElement={
               !readOnly && !hideOptionalButton ? (
                 <>
+                  {canMoveAttribute && (
+                    <ThemedStyledButton
+                      variant="transparent"
+                      type="button"
+                      role={`${reportSectionPathAsString}.${attributeRootLessListKey}.button.up`}
+                      disabled={isFirst}
+                      onClick={() => handleMoveAttribute("up", attribute[0])}
+                      title="Move attribute up"
+                    >
+                      ^
+                    </ThemedStyledButton>
+                  )}
+                  {canMoveAttribute && (
+                    <ThemedStyledButton
+                      variant="transparent"
+                      type="button"
+                      role={`${reportSectionPathAsString}.${attributeRootLessListKey}.button.down`}
+                      disabled={isLast}
+                      onClick={() => handleMoveAttribute("down", attribute[0])}
+                      title="Move attribute down"
+                    >
+                      v
+                    </ThemedStyledButton>
+                  )}
                   <ThemedSmallIconButton
                     id={reportSectionPathAsString+ "." + attributeRootLessListKey + "-removeOptionalAttributeOrRecordEntry"}
                     aria-label={reportSectionPathAsString+ "." + attributeRootLessListKey + "-removeOptionalAttributeOrRecordEntry"}
@@ -365,6 +400,85 @@ const ProgressiveAttribute: FC<{
 };
 
 // ##############################################################################################
+// Helper: compute the max tag.value.id across sibling object entries
+function getMaxTagValueId(siblingObject: Record<string, any>): number | undefined {
+  let maxId: number | undefined = undefined;
+  for (const value of Object.values(siblingObject)) {
+    const id = value?.tag?.value?.id;
+    if (typeof id === "number") {
+      maxId = maxId === undefined ? id : Math.max(maxId, id);
+    }
+  }
+  return maxId;
+}
+
+// ##############################################################################################
+// Helper: auto-assign tag.value.id to a new entry if sibling entries have tag.value.id values
+function assignNextTagValueId(newValue: any, siblingObject: Record<string, any>): any {
+  if (newValue == null || typeof newValue !== "object" || Array.isArray(newValue)) {
+    return newValue;
+  }
+  const maxId = getMaxTagValueId(siblingObject);
+  if (maxId === undefined) {
+    // No sibling has tag.value.id, don't assign one
+    return newValue;
+  }
+  const nextId = maxId + 1;
+  // Set tag.value.id on the new value, creating the tag/value structure if needed
+  return {
+    ...newValue,
+    tag: {
+      ...(newValue.tag ?? {}),
+      value: {
+        ...(newValue.tag?.value ?? {}),
+        id: nextId,
+      },
+    },
+  };
+}
+
+// ##############################################################################################
+// Helper: renumber tag.value.id values sequentially (starting from 1) based on the given key order,
+// only if at least one entry has a tag.value.id. Returns the updated object.
+function renumberTagValueIds(obj: Record<string, any>, keyOrder: string[]): Record<string, any> {
+  // Check if any entries have tag.value.id
+  const hasAnyId = Object.values(obj).some(
+    (v) => v != null && typeof v === "object" && typeof v?.tag?.value?.id === "number"
+  );
+  if (!hasAnyId) {
+    return obj;
+  }
+  const result: Record<string, any> = {};
+  let nextId = 1;
+  for (const key of keyOrder) {
+    if (key in obj) {
+      const entry = obj[key];
+      if (entry != null && typeof entry === "object" && !Array.isArray(entry)) {
+        result[key] = {
+          ...entry,
+          tag: {
+            ...(entry.tag ?? {}),
+            value: {
+              ...(entry.tag?.value ?? {}),
+              id: nextId,
+            },
+          },
+        };
+      } else {
+        result[key] = entry;
+      }
+      nextId++;
+    }
+  }
+  // Include any keys not in keyOrder (shouldn't happen, but be safe)
+  for (const key of Object.keys(obj)) {
+    if (!(key in result)) {
+      result[key] = obj[key];
+    }
+  }
+  return result;
+}
+
 // ##############################################################################################
 // ##############################################################################################
 // ##############################################################################################
@@ -681,7 +795,10 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
         )
       : undefined;
 
-    const newRecordValue: any = { ["newRecordEntry"]: newAttributeValue, ...currentValueObjectAtKey };
+    // Auto-assign tag.value.id if sibling entries have tag.value.id values
+    const newAttributeValueWithId = assignNextTagValueId(newAttributeValue, currentValueObjectAtKey);
+
+    const newRecordValue: any = { ["newRecordEntry"]: newAttributeValueWithId, ...currentValueObjectAtKey };
     log.info("addExtraRecordEntry", "newValue", newRecordValue);
 
     // Invoke onChangeVector callback if registered for this field
@@ -833,7 +950,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
   // ##############################################################################################
   const deleteElement = (rootLessListKeyArray: (string | number)[]) => () => {
     if (rootLessListKeyArray.length > 0) {
-      const newFormState: any = deleteObjectAtPath(currentValueObject, rootLessListKeyArray);
+      let newFormState: any = deleteObjectAtPath(currentValueObject, rootLessListKeyArray);
       log.info(
         "deleteElement called for",
         "reportSectionPathAsString",
@@ -847,6 +964,25 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
         "newFormState",
         newFormState
       );
+
+      // Renumber tag.value.id for sibling entries after deletion (for record-like objects)
+      if (rootLessListKeyArray.length >= 1) {
+        const parentPath = rootLessListKeyArray.slice(0, -1);
+        const parentObject = parentPath.length > 0
+          ? resolvePathOnObject(newFormState, parentPath)
+          : newFormState;
+        if (parentObject != null && typeof parentObject === "object" && !Array.isArray(parentObject)) {
+          const renumbered = renumberTagValueIds(parentObject, Object.keys(parentObject));
+          if (renumbered !== parentObject) {
+            if (parentPath.length > 0) {
+              newFormState = alterObjectAtPath2(newFormState, parentPath, renumbered);
+            } else {
+              newFormState = renumbered;
+            }
+          }
+        }
+      }
+
       // Invoke onChangeVector callback if registered for this field
       if (onChangeVector?.[rootLessListKey]) {
         onChangeVector[rootLessListKey](newFormState, rootLessListKey);
@@ -857,6 +993,72 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
       log.warn("deleteElement called with empty rootLessListKeyArray, cannot delete root object");
     }
   };
+
+  // ##############################################################################################
+  // Move an attribute up or down in display order by adjusting tag.value.id values.
+  // Works across the id/no-id boundary: the crossed-over entry receives an id so that
+  // repeated moves remain coherent.  All id-tracked entries are renumbered sequentially
+  // (1, 2, 3 …) in their new positions so the result is always gap-free.
+  const handleMoveAttribute = useCallback(
+    (direction: "up" | "down", attributeKey: string) => {
+      const currentIndex = itemsOrder.indexOf(attributeKey);
+      if (currentIndex === -1) return;
+      const neighborIndex = direction === "up" ? currentIndex - 1 : currentIndex + 1;
+      if (neighborIndex < 0 || neighborIndex >= itemsOrder.length) return;
+      const neighborKey = itemsOrder[neighborIndex];
+
+      const currentEntry = currentValueObjectAtKey[attributeKey];
+      // Only id-having entries can be moved (buttons are only rendered for those)
+      if (typeof currentEntry?.tag?.value?.id !== "number") return;
+
+      // Build new display order by swapping the two positions
+      const newOrder = itemsOrder.slice();
+      [newOrder[currentIndex], newOrder[neighborIndex]] = [newOrder[neighborIndex], newOrder[currentIndex]];
+
+      // Assign sequential ids to:
+      //   – every entry that had an id before the move, AND
+      //   – the crossed-over neighbor (so it participates in future moves)
+      const newObjectValue = { ...currentValueObjectAtKey };
+      let nextId = 1;
+      for (const key of newOrder) {
+        const entry = currentValueObjectAtKey[key];
+        const hadId = typeof entry?.tag?.value?.id === "number";
+        const isCrossedNeighbor = key === neighborKey;
+        if (hadId || isCrossedNeighbor) {
+          newObjectValue[key] = {
+            ...entry,
+            tag: {
+              ...(entry?.tag ?? {}),
+              value: {
+                ...(entry?.tag?.value ?? {}),
+                id: nextId,
+              },
+            },
+          };
+          nextId++;
+        }
+      }
+
+      log.info(
+        "handleMoveAttribute",
+        direction,
+        "attribute",
+        attributeKey,
+        "->",
+        neighborKey,
+        "newOrder",
+        newOrder,
+        "assigned ids up to",
+        nextId - 1
+      );
+
+      if (onChangeVector?.[rootLessListKey]) {
+        onChangeVector[rootLessListKey](newObjectValue, rootLessListKey);
+      }
+      formik.setFieldValue(formikRootLessListKey, newObjectValue);
+    },
+    [itemsOrder, currentValueObjectAtKey, formik, formikRootLessListKey, onChangeVector, rootLessListKey]
+  );
 
   // ##############################################################################################
   // Render error state if we can't properly render an object
@@ -960,6 +1162,8 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
                 onChangeVector={onChangeVector}
                 handleAttributeNameChange={handleAttributeNameChange}
                 deleteElement={deleteElement}
+                handleMoveAttribute={handleMoveAttribute}
+                totalAttributes={itemsOrder.length}
                 hideOptionalButton={localResolvedElementJzodSchemaBasedOnValue?.tag?.value?.display?.objectHideOptionalButton}
                 maxRenderDepth={maxRenderDepth}
                 readOnly={readOnly}
@@ -993,6 +1197,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
     onChangeVector,
     handleAttributeNameChange,
     deleteElement,
+    handleMoveAttribute,
     formik,
     currentMiroirFundamentalJzodSchema,
     currentModel,

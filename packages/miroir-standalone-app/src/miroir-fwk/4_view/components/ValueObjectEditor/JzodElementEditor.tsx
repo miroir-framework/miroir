@@ -227,10 +227,10 @@ export const FoldUnfoldAllObjectAttributesOrArrayItems = (props: {
       e.stopPropagation();
       e.preventDefault();
 
-      // Generate list keys for all child attributes at the first level
-      const childKeys = props.itemsOrder.map(
-        (attributeName) => `${props.listKey}.${attributeName}`
-      );
+      // // Generate list keys for all child attributes at the first level
+      // const childKeys = props.itemsOrder.map(
+      //   (attributeName) => `${props.listKey}.${attributeName}`
+      // );
 
       // Use rootLessListKeyArray if available, otherwise fall back to split path
       const pathArray = props.rootLessListKeyArray || props.listKey.split('.').filter(Boolean);

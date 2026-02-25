@@ -106,15 +106,50 @@ export function getItemsOrder(
   //   "resolvedMLSchema",
   //   resolvedMLSchema,
   // );
-  return (resolvedMLSchema?.type == "object" || rawMLSchema?.type == "record" || typeCheckKeyMapEntry?.resolvedReferenceSchemaInContext?.type == "record") &&
+  if (
+    (resolvedMLSchema?.type == "object" || rawMLSchema?.type == "record" || typeCheckKeyMapEntry?.resolvedReferenceSchemaInContext?.type == "record") &&
     typeof currentValue == "object" &&
     currentValue !== null
-    ? rawMLSchema?.type == "record" || typeCheckKeyMapEntry?.resolvedReferenceSchemaInContext?.type == "record"
-      ? Object.keys(currentValue)
-      : Object.keys(flattenedMLSchema?.definition ?? {}).filter((k) => k in currentValue)
-    : Array.isArray(currentValue)
-      ? currentValue.map((e: any, k: number) => k)
-      : [];
+  ) {
+    if (rawMLSchema?.type == "record" || typeCheckKeyMapEntry?.resolvedReferenceSchemaInContext?.type == "record") {
+      // For records: sort entries by value's tag.value.id if any entries have one, otherwise use memory order
+      const keys = Object.keys(currentValue);
+      const withId: { key: string; id: number }[] = [];
+      const withoutId: string[] = [];
+      for (const key of keys) {
+        const id = currentValue[key]?.tag?.value?.id;
+        if (typeof id === "number") {
+          withId.push({ key, id });
+        } else {
+          withoutId.push(key);
+        }
+      }
+      if (withId.length > 0) {
+        withId.sort((a, b) => a.id - b.id);
+        return [...withId.map((e) => e.key), ...withoutId];
+      }
+      return keys;
+    }
+    // For typed objects: sort attributes by tag.value.id (ascending), id-less attributes come after
+    const definition = flattenedMLSchema?.definition ?? {};
+    const presentKeys = Object.keys(definition).filter((k) => k in currentValue);
+    const withId: { key: string; id: number }[] = [];
+    const withoutId: string[] = [];
+    for (const key of presentKeys) {
+      const id = definition[key]?.tag?.value?.id;
+      if (typeof id === "number") {
+        withId.push({ key, id });
+      } else {
+        withoutId.push(key);
+      }
+    }
+    withId.sort((a, b) => a.id - b.id);
+    return [...withId.map((e) => e.key), ...withoutId];
+  }
+  if (Array.isArray(currentValue)) {
+    return currentValue.map((e: any, k: number) => k);
+  }
+  return [];
 }
 
 // ################################################################################################

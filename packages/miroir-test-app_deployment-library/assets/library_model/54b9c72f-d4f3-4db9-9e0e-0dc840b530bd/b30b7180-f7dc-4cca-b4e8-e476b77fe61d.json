@@ -76,8 +76,7 @@
         "tag": {
           "value": {
             "id": 4,
-            "defaultLabel": "Name",
-            "display": { "editable": true }
+            "defaultLabel": "Name"
           }
         }
       },
@@ -87,8 +86,7 @@
         "tag": {
           "value": {
             "id": 5,
-            "defaultLabel": "Language",
-            "display": { "editable": true }
+            "defaultLabel": "Language"
           }
         }
       },
@@ -98,8 +96,7 @@
         "tag": {
           "value": {
             "id": 6,
-            "defaultLabel": "Birth",
-            "display": { "editable": true }
+            "defaultLabel": "Birth"
           }
         }
       },
@@ -109,8 +106,7 @@
         "tag": {
           "value": {
             "id": 7,
-            "defaultLabel": "Death",
-            "display": { "editable": true }
+            "defaultLabel": "Death"
           }
         }
       },
@@ -120,7 +116,6 @@
         "tag": {
           "value": {
             "id": 8,
-            "display": { "editable": true },
             "defaultLabel": "Country",
             "foreignKeyParams": {
               "targetEntity": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
@@ -135,8 +130,7 @@
         "tag": {
           "value": {
             "id": 9,
-            "defaultLabel": "Icon",
-            "display": { "editable": true }
+            "defaultLabel": "Icon"
           }
         }
       },
@@ -146,8 +140,7 @@
         "tag": {
           "value": {
             "id": 10,
-            "defaultLabel": "Icons",
-            "display": { "editable": true }
+            "defaultLabel": "Icons"
           }
         }
       }

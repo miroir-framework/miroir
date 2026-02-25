@@ -89,7 +89,7 @@
         "optional": true,
         "tag": {
           "value": {
-            "id": 5,
+            "id": 6,
             "defaultLabel": "Year of Publication",
             "display": {
               "editable": true
@@ -101,6 +101,7 @@
         "type": "uuid",
         "tag": {
           "value": {
+            "id": 7,
             "defaultLabel": "Author",
             "foreignKeyParams": {
               "targetEntity": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
@@ -114,10 +115,21 @@
         "tag": {
           "value": {
             "defaultLabel": "Publisher",
+            "id": 8,
             "foreignKeyParams": {
               "targetEntity": "a027c379-8468-43a5-ba4d-bf618be25cab",
               "targetEntityOrderInstancesBy": "name"
             }
+          }
+        }
+      },
+      "ISBN": {
+        "type": "string",
+        "optional": true,
+        "tag": {
+          "value": {
+            "id": 9,
+            "defaultLabel": "ISBN"
           }
         }
       }
