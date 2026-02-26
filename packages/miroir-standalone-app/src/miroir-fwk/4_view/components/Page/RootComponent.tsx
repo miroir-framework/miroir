@@ -847,77 +847,9 @@ export const RootComponent = (props: RootComponentProps) => {
               >
                 {context.viewParams.generalEditMode && <ThemedText>uuid: {uuidv4()}</ThemedText>}
                 <DebugHelper componentName="RootComponent" elements={debugElements.elements} />
-                {/* <DebugHelper label="RootComponent miroirConfig" data={miroirConfig} /> */}
-                {/* <ThemedOnScreenDebug
-                  label="RootComponent miroirThemeSchemaJson"
-                  data={{
-                    currentThemeId,
-                    theme,
-                    // miroirThemeSchemaJson,
-                    // tableThemeSchemaJson,
-                  }}
-                  initiallyUnfolded={false}
-                  useCodeBlock={true}
-                  copyButton={true}
-                /> */}
-                {/* <ThemedOnScreenDebug
-                  label="RootComponent darkStoredMiroirTheme"
-                  data={{
-                    darkStoredMiroirTheme: darkStoredMiroirTheme.definition.colors,
-                    darkMiroirTheme: darkMiroirTheme.colors,
-                  }}
-                  initiallyUnfolded={false}
-                  useCodeBlock={true}
-                  copyButton={true}
-                /> */}
-                {/* <ThemedOnScreenDebug
-                  label={`RootComponent miroirConfig, isElectron: ${isElectron}`}
-                  data={context.miroirContext.getMiroirConfig()}
-                  initiallyUnfolded={false}
-                  useCodeBlock={true}
-                  copyButton={true}
-                /> */}
-                {/* <ThemedOnScreenDebug
-                  label="RootComponent adminAppModel"
-                  data={{ applicationDeploymentMap, adminAppModel }}
-                  initiallyUnfolded={false}
-                  useCodeBlock={true}
-                  copyButton={true}
-                /> */}
-                {/* <ThemedOnScreenDebug
-                  label="RootComponent applicationDeploymentMap"
-                  data={applicationDeploymentMap}
-                  initiallyUnfolded={false}
-                  useCodeBlock={true}
-                /> */}
-                {/* <ThemedOnScreenDebug
-                  label="RootComponent currentModel"
-                  data={currentModel}
-                  initiallyUnfolded={false}
-                  useCodeBlock={true}
-                /> */}
-                {/* <ThemedOnScreenDebug
-                  label="RootComponent deploymentUuidToReportsEntitiesDefinitionsMapping"
-                  data={deploymentUuidToReportsEntitiesDefinitionsMapping}
-                  initiallyUnfolded={false}
-                  useCodeBlock={true}
-                  copyButton={true}
-                /> */}
-                {/* <ThemedOnScreenDebug
-                  label="RootComponent viewParams generalEditMode"
-                  data={context.viewParams.generalEditMode}
-                  initiallyUnfolded={false}
-                  useCodeBlock={true}
-                /> */}
-                {/* <ThemedOnScreenDebug
-                  label="RootComponent adminDeploymentsQueryResult"
-                  data={adminDeploymentsQueryResult}
-                  initiallyUnfolded={false}
-                  useCodeBlock={true}
-                /> */}
-                {transactions && transactions.length > 0 && (
+                {/* {transactions && transactions.length > 0 && (
                   <ThemedText> transactions: {JSON.stringify(transactions)}</ThemedText>
-                )}
+                )} */}
                 {context.showPerformanceDisplay && (
                   <div>
                     RootComponent renders: {navigationCount} (total: {totalCount})

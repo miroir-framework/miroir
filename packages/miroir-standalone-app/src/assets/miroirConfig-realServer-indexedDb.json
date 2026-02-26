@@ -1,17 +1,16 @@
-
 {
   "miroirConfigType": "client",
   "client": {
     "emulateServer": false,
-    "serverConfig":{
-      "rootApiUrl":"http://localhost:3080",
+    "serverConfig": {
+      "rootApiUrl": "http://localhost:3080",
       "dataflowConfiguration": {
-        "type":"singleNode",
+        "type": "singleNode",
         "metaModel": {
           "location": {
-            "side":"server",
+            "side": "server",
             "type": "filesystem",
-            "location":"C:/Users/nono/Documents/devhome/miroir-app-dev/packages/miroir-core/src/assets"
+            "location": "C:/Users/nono/Documents/devhome/miroir-app-dev/packages/miroir-core/src/assets"
           }
         }
       },
@@ -19,33 +18,34 @@
         "10ff36f2-50a3-48d8-b80f-e48e5d13af8e": {
           "admin": {
             "emulatedServerType": "indexedDb",
-            "indexedDbName":"miroir-uuid-indexedDb"
+            "indexedDbName": "miroir-uuid-indexedDb"
           },
           "model": {
             "emulatedServerType": "indexedDb",
-            "indexedDbName":"miroir-uuid-indexedDb"
+            "indexedDbName": "miroir-uuid-indexedDb"
           },
           "data": {
             "emulatedServerType": "indexedDb",
-            "indexedDbName":"miroir-uuid-indexedDb"
+            "indexedDbName": "miroir-uuid-indexedDb"
           }
         },
         "f714bb2f-a12d-4e71-a03b-74dcedea6eb4": {
           "admin": {
             "emulatedServerType": "indexedDb",
-            "indexedDbName":"miroir-uuid-indexedDb"
-          },          "model": {
+            "indexedDbName": "miroir-uuid-indexedDb"
+          },
+          "model": {
             "emulatedServerType": "indexedDb",
-            "indexedDbName":"library-uuid-indexedDb"
+            "indexedDbName": "library-uuid-indexedDb"
           },
           "data": {
             "emulatedServerType": "indexedDb",
-            "indexedDbName":"library-uuid-indexedDb"
+            "indexedDbName": "library-uuid-indexedDb"
           }
         }
       }
     },
-    "deploymentMode":"monoUser",
+    "deploymentMode": "monoUser",
     "monoUserAutentification": false,
     "monoUserVersionControl": false,
     "versionControlForDataConceptLevel": false

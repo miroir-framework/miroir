@@ -168,6 +168,7 @@ const colors: MiroirThemeFull['definition']['colors'] = {
   background: theme.colors?.background ?? defaultMiroirTheme.colors.background,
   backgroundPaper: theme.colors?.backgroundPaper ?? defaultMiroirTheme.colors.backgroundPaper,
   surface: theme.colors?.surface ?? defaultMiroirTheme.colors.surface,
+  surfaceVariant: theme.colors?.surfaceVariant ?? defaultMiroirTheme.colors.surfaceVariant,
   border: theme.colors?.border ?? defaultMiroirTheme.colors.border,
   text: theme.colors?.text ?? defaultMiroirTheme.colors.text,
   textSecondary: theme.colors?.textSecondary ?? defaultMiroirTheme.colors.textSecondary,

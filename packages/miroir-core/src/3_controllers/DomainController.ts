@@ -1486,29 +1486,29 @@ export class DomainController implements DomainControllerInterface {
             },
           };
 
-          // in the case of the Miroir app, this should be done in the 'data' section
-          const newModelVersionActionResult = await this.callUtil.callPersistenceAction(
-            {}, // context
-            {}, // continuation
-            applicationDeploymentMap,
-            newModelVersionAction,
-          );
+          // // in the case of the Miroir app, this should be done in the 'data' section
+          // const newModelVersionActionResult = await this.callUtil.callPersistenceAction(
+          //   {}, // context
+          //   {}, // continuation
+          //   applicationDeploymentMap,
+          //   newModelVersionAction,
+          // );
           // log.info(
           //   "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleModelAction commit persistenceActionResult for new version",
           //   newModelVersionActionResult,
           //   "newModelVersionActionResult instanceof Action2Error",
           //   newModelVersionActionResult instanceof Action2Error,
           // );
-          if (newModelVersionActionResult instanceof Action2Error) {
-            return Promise.resolve(
-              new Action2Error(
-                "FailedToHandleAction",
-                "handleModelAction commit create new model version failed",
-                [],
-                newModelVersionActionResult,
-              ),
-            );
-          }
+          // if (newModelVersionActionResult instanceof Action2Error) {
+          //   return Promise.resolve(
+          //     new Action2Error(
+          //       "FailedToHandleAction",
+          //       "handleModelAction commit create new model version failed",
+          //       [],
+          //       newModelVersionActionResult,
+          //     ),
+          //   );
+          // }
 
           log.info(
             "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleModelAction commit replaying currentTransaction",
@@ -1617,34 +1617,34 @@ export class DomainController implements DomainControllerInterface {
                 },
               },
             )
-            .then((context) => {
-              // log.debug(
-              //   "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleModelAction commit actions replayed and notified to local cache, currentTransaction:",
-              //   this.localCache.currentTransaction(),
-              // );
-              return this.callUtil.callLocalCacheAction(
-                {}, // context
-                {}, // continuation
-                applicationDeploymentMap,
-                {
-                  actionType: "createInstance",
-                  application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-                  endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-                  payload: {
-                    application: currentApplication,
-                    applicationSection: "model",
-                    parentUuid: newModelVersion.parentUuid,
-                    objects: [
-                      {
-                        parentUuid: newModelVersion.parentUuid,
-                        applicationSection: sectionOfapplicationEntities,
-                        instances: [newModelVersion],
-                      },
-                    ],
-                  },
-                },
-              );
-            });
+            // .then((context) => {
+            //   // log.debug(
+            //   //   "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleModelAction commit actions replayed and notified to local cache, currentTransaction:",
+            //   //   this.localCache.currentTransaction(),
+            //   // );
+            //   return this.callUtil.callLocalCacheAction(
+            //     {}, // context
+            //     {}, // continuation
+            //     applicationDeploymentMap,
+            //     {
+            //       actionType: "createInstance",
+            //       application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+            //       endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+            //       payload: {
+            //         application: currentApplication,
+            //         applicationSection: "model",
+            //         parentUuid: newModelVersion.parentUuid,
+            //         objects: [
+            //           {
+            //             parentUuid: newModelVersion.parentUuid,
+            //             applicationSection: sectionOfapplicationEntities,
+            //             instances: [newModelVersion],
+            //           },
+            //         ],
+            //       },
+            //     },
+            //   );
+            // });
           // log.info(
           //   "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleModelAction commit done!",
           // );
@@ -1665,7 +1665,7 @@ export class DomainController implements DomainControllerInterface {
         modelAction["actionType"],
         "application",
         modelAction.payload.application,
-        "deployment",
+        "deploymen+t",
         deploymentUuid,
         "action",
         modelAction,

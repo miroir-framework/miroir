@@ -4,6 +4,7 @@ import React, { useMemo } from 'react';
 
 import { useMiroirTheme } from '../../contexts/MiroirThemeContext';
 import { ThemedComponentProps } from './BaseTypes';
+import { ThemedOnScreenDebug } from './BasicComponents';
 
 // ################################################################################################
 // Display Components
@@ -106,7 +107,7 @@ export const ThemedDisplayValue: React.FC<ThemedComponentProps & {
 
   const displayStyles = css({
     padding: `${currentTheme.spacing.xs} ${currentTheme.spacing.sm}`,
-    backgroundColor: currentTheme.colors.surfaceVariant || '#f5f5f5',
+    backgroundColor: currentTheme.colors.surfaceVariant,
     borderRadius: currentTheme.borderRadius.sm,
     fontFamily: 'monospace',
     fontSize: currentTheme.typography.fontSize.sm,
@@ -121,6 +122,12 @@ export const ThemedDisplayValue: React.FC<ThemedComponentProps & {
 
   return (
     <span css={displayStyles} className={className} style={style}>
+      {/* <ThemedOnScreenDebug
+        label="ThemedDisplayValue"
+        data={currentTheme}
+        initiallyUnfolded={false}
+        useCodeBlock={true}
+      /> */}
       {displayValue}
     </span>
   );
@@ -142,6 +149,7 @@ export const ThemedDisplayLabel: React.FC<ThemedComponentProps> = ({
 
   return (
     <span css={labelStyles} className={className} style={style}>
+      {/* <ThemedOnScreenDebug label="ThemedDisplayLabel" data={currentTheme} /> */}
       {children}
     </span>
   );

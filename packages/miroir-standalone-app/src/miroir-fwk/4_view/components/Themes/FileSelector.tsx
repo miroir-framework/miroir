@@ -268,6 +268,14 @@ export const FileSelector: React.FC<FileSelectorProps> = ({
             </Button>
           </Box>
         )}
+        {(!selectedFileName || error) && (
+          <Box css={fileInfoStyles}>
+            <ClearIcon sx={{ color: 'error.main', fontSize: compact ? '1rem' : '1.25rem' }} />
+            <Typography css={fileNameStyles} variant={compact ? "caption" : "body2"} color="error">
+              {error} {selectedFileName ? `Please select a valid ${folder ? "folder" : "file"}.` : `No ${folder ? "folder" : "file"} selected.`}
+            </Typography>
+          </Box>
+        )}
       </Box>
 
       {/* Error message - hidden in compact mode */}
