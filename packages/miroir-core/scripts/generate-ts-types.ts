@@ -307,6 +307,7 @@ export const transformerForBuildPlusRuntime: z.ZodType<TransformerForBuildPlusRu
     transformerForBuildPlusRuntime_createObject,
     transformerForBuildPlusRuntime_pickFromList,
     transformerForBuildPlusRuntime_indexListBy,
+    transformerForBuildPlusRuntime_ifThenElse,
     transformerForBuildPlusRuntime_listReducerToSpreadObject,
     transformerForBuildPlusRuntime_mapList,
     transformerForBuildPlusRuntime_mustacheStringTemplate,

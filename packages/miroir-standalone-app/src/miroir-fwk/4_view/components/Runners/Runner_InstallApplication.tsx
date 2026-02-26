@@ -834,6 +834,63 @@ export const Runner_InstallApplication: React.FC<DeployApplicationRunnerProps> =
     testApplicationVersionUuid,
   ]);
 
+  // ##############################################################################################
+  // Validation transformer: lightweight shape checks for uploaded files
+  const validationTransformer: TransformerForBuildPlusRuntime = useMemo(
+    () => ({
+      transformerType: "!=",
+      label: "deployApplicationValidation",
+      left: {
+        transformerType: "getFromParameters",
+        safe: true,
+        referencePath: ["deployApplication", "applicationBundle", "applicationName"],
+      },
+      right: {
+        transformerType: "returnValue",
+        value: "",
+      },
+      then: {
+        transformerType: "isNotNull",
+        left: {
+          transformerType: "getFromParameters",
+          safe: true,
+          referencePath: ["deployApplication", "applicationBundle", "entities"],
+        },
+        then: {
+          transformerType: "isNotNull",
+          left: {
+            transformerType: "getFromParameters",
+            safe: true,
+            referencePath: ["deployApplication", "applicationBundle", "entityDefinitions"],
+          },
+          then: {
+            transformerType: "isNotNull",
+            left: {
+              transformerType: "getFromParameters",
+              safe: true,
+              referencePath: ["deployApplication", "deploymentData", "instances"],
+            },
+            then: {
+              transformerType: "isNotNull",
+              left: {
+                transformerType: "getFromParameters",
+                safe: true,
+                referencePath: ["deployApplication", "deploymentData", "instances", "0", "parentUuid"],
+              },
+              then: true,
+              else: "Deployment Data must contain instances.parentUuid",
+            },
+            else: "Deployment Data must contain instances",
+          },
+          else: "Application Bundle must contain entityDefinitions",
+        },
+        else: "Application Bundle must contain entities",
+      },
+      else: "Application Bundle must contain a non-empty applicationName",
+    }),
+    [],
+  );
+
   return (
     <>
       <RunnerView
@@ -849,6 +906,7 @@ export const Runner_InstallApplication: React.FC<DeployApplicationRunnerProps> =
         formLabel="Install Existing Application"
         displaySubmitButton="onFirstLine"
         useActionButton={false}
+        validationTransformer={validationTransformer}
       />
     </>
   );

@@ -28,37 +28,37 @@ export type RunnerConfig = {
 }
 export const runnerConfigs: RunnerConfig[] = [
   // {
-  // //   title: "Endpoint Action Caller",
-  // //   component: EndpointActionCaller,
-  // // },
-  // {
-  //   title: "Install Existing Application",
-  //   component: Runner_InstallApplication,
+  //   title: "Endpoint Action Caller",
+  //   component: EndpointActionCaller,
   // },
+  {
+    title: "Install Existing Application",
+    component: Runner_InstallApplication,
+  },
   {
     title: "Create Application (and Deployment)",
     component: Runner_CreateApplication,
   },
+  {
+    title: "Drop Application (and Deployment)",
+    component: Runner_DropApplication,
+  },
+  {
+    title: "Create Entity",
+    component: Runner_CreateEntity,
+  },
+  {
+    title: "Drop Entity",
+    component: Runner_DeleteEntity,
+  },
+  // // // {
+  // // //   title: "Import Entity From Spreadsheet",
+  // // //   component: ImportEntityFromSpreadsheetRunner,
+  // // // },
   // {
-  //   title: "Drop Application (and Deployment)",
-  //   component: Runner_DropApplication,
+  //   title: "Lend Document",
+  //   component: LibraryRunner_LendDocument,
   // },
-  // {
-  //   title: "Create Entity",
-  //   component: Runner_CreateEntity,
-  // },
-  // {
-  //   title: "Drop Entity",
-  //   component: Runner_DeleteEntity,
-  // },
-  // // // // {
-  // // // //   title: "Import Entity From Spreadsheet",
-  // // // //   component: ImportEntityFromSpreadsheetRunner,
-  // // // // },
-  // // {
-  // //   title: "Lend Document",
-  // //   component: LibraryRunner_LendDocument,
-  // // },
 ] as const;
 
 // ################################################################################################
