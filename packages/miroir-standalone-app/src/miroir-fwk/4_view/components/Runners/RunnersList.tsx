@@ -35,30 +35,30 @@ export const runnerConfigs: RunnerConfig[] = [
     title: "Install Existing Application",
     component: Runner_InstallApplication,
   },
-  {
-    title: "Create Application (and Deployment)",
-    component: Runner_CreateApplication,
-  },
-  {
-    title: "Drop Application (and Deployment)",
-    component: Runner_DropApplication,
-  },
-  {
-    title: "Create Entity",
-    component: Runner_CreateEntity,
-  },
-  {
-    title: "Drop Entity",
-    component: Runner_DeleteEntity,
-  },
-  // // // {
-  // // //   title: "Import Entity From Spreadsheet",
-  // // //   component: ImportEntityFromSpreadsheetRunner,
-  // // // },
   // {
-  //   title: "Lend Document",
-  //   component: LibraryRunner_LendDocument,
+  //   title: "Create Application (and Deployment)",
+  //   component: Runner_CreateApplication,
   // },
+  // {
+  //   title: "Drop Application (and Deployment)",
+  //   component: Runner_DropApplication,
+  // },
+  // {
+  //   title: "Create Entity",
+  //   component: Runner_CreateEntity,
+  // },
+  // {
+  //   title: "Drop Entity",
+  //   component: Runner_DeleteEntity,
+  // },
+  // // // // {
+  // // // //   title: "Import Entity From Spreadsheet",
+  // // // //   component: ImportEntityFromSpreadsheetRunner,
+  // // // // },
+  // // {
+  // //   title: "Lend Document",
+  // //   component: LibraryRunner_LendDocument,
+  // // },
 ] as const;
 
 // ################################################################################################

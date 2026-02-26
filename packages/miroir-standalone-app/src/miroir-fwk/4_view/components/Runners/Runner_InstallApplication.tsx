@@ -838,55 +838,89 @@ export const Runner_InstallApplication: React.FC<DeployApplicationRunnerProps> =
   // Validation transformer: lightweight shape checks for uploaded files
   const validationTransformer: TransformerForBuildPlusRuntime = useMemo(
     () => ({
-      transformerType: "!=",
-      label: "deployApplicationValidation",
+      // Model file required: bundle must be present with applicationName, entities, and entityDefinitions.
+      // Data file optional: pass when null; if provided, must have valid instances with parentUuid.
+      transformerType: "&&",
+      label: "deployApplicationAndDeploymentDataValidation",
       left: {
-        transformerType: "getFromParameters",
-        safe: true,
-        referencePath: ["deployApplication", "applicationBundle", "applicationName"],
-      },
-      right: {
-        transformerType: "returnValue",
-        value: "",
-      },
-      then: {
-        transformerType: "isNotNull",
+        // All bundle fields must be valid (inner &&/!= return boolean directly, no then/else needed)
+        transformerType: "&&",
         left: {
-          transformerType: "getFromParameters",
-          safe: true,
-          referencePath: ["deployApplication", "applicationBundle", "entities"],
+          transformerType: "&&",
+          left: {
+            transformerType: "&&",
+            left: {
+              transformerType: "isNotNull",
+              left: {
+                transformerType: "getFromParameters",
+                safe: true,
+                referencePath: ["deployApplication", "applicationBundle"],
+              },
+            },
+            right: {
+              transformerType: "!=",
+              left: {
+                transformerType: "getFromParameters",
+                safe: true,
+                referencePath: ["deployApplication", "applicationBundle", "applicationName"],
+              },
+              right: {
+                transformerType: "returnValue",
+                value: "",
+              },
+            },
+          },
+          right: {
+            transformerType: "isNotNull",
+            left: {
+              transformerType: "getFromParameters",
+              safe: true,
+              referencePath: ["deployApplication", "applicationBundle", "entities"],
+            },
+          },
         },
-        then: {
+        right: {
           transformerType: "isNotNull",
           left: {
             transformerType: "getFromParameters",
             safe: true,
             referencePath: ["deployApplication", "applicationBundle", "entityDefinitions"],
           },
-          then: {
+        },
+      },
+      right: {
+        // Data file is optional: null deploymentData passes; if present, instances and parentUuid required.
+        transformerType: "||",
+        left: {
+          transformerType: "isNull",
+          left: {
+            transformerType: "getFromParameters",
+            safe: true,
+            referencePath: ["deployApplication", "deploymentData"],
+          },
+        },
+        right: {
+          transformerType: "&&",
+          left: {
             transformerType: "isNotNull",
             left: {
               transformerType: "getFromParameters",
               safe: true,
               referencePath: ["deployApplication", "deploymentData", "instances"],
             },
-            then: {
-              transformerType: "isNotNull",
-              left: {
-                transformerType: "getFromParameters",
-                safe: true,
-                referencePath: ["deployApplication", "deploymentData", "instances", "0", "parentUuid"],
-              },
-              then: true,
-              else: "Deployment Data must contain instances.parentUuid",
-            },
-            else: "Deployment Data must contain instances",
           },
-          else: "Application Bundle must contain entityDefinitions",
+          right: {
+            transformerType: "isNotNull",
+            left: {
+              transformerType: "getFromParameters",
+              safe: true,
+              referencePath: ["deployApplication", "deploymentData", "instances", "0", "parentUuid"],
+            },
+          },
         },
-        else: "Application Bundle must contain entities",
       },
-      else: "Application Bundle must contain a non-empty applicationName",
+      then: true,
+      else: "Validation failed: provide a valid application bundle (applicationName, entities, entityDefinitions required); deployment data is optional but must contain instances with parentUuid if provided.",
     }),
     [],
   );

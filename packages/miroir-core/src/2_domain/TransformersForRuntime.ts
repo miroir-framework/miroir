@@ -2626,334 +2626,53 @@ export function handleTransformer_ifThenElse(
         reduxDeploymentsState
       )
     : undefined;
+
+  // Helper: apply the branch transformer, or return true/false if omitted.
+  // When 'then' is omitted, a truthy condition returns true.
+  // When 'else' is omitted, a falsy condition returns false.
+  const applyBranch = (
+    branchTransformer: TransformerForBuildPlusRuntime_ifThenElse["then"],
+    branchDefault: boolean,
+    branchName: "then" | "else"
+  ): TransformerReturnType<any> => {
+    if (branchTransformer === undefined) {
+      return branchDefault;
+    }
+    return defaultTransformers.transformer_extended_apply(
+      step,
+      [...transformerPath, branchName],
+      transformer.label ? transformer.label + "_" + branchName : branchName,
+      branchTransformer,
+      resolveBuildTransformersTo,
+      modelEnvironment,
+      transformerParams,
+      contextResults,
+      reduxDeploymentsState
+    );
+  };
+
+  let condition: boolean;
   switch (transformer.transformerType) {
-    case "==": {
-      if (leftValue == rightValue) {
-        return defaultTransformers.transformer_extended_apply(
-          step,
-          [...transformerPath, "then"],
-          transformer.label ? transformer.label + "_then" : "then",
-          transformer.then,
-          resolveBuildTransformersTo,
-          modelEnvironment,
-          transformerParams,
-          contextResults,
-          reduxDeploymentsState
-        );
-      } else {
-        return defaultTransformers.transformer_extended_apply(
-          step,
-          [...transformerPath, "else"],
-          transformer.label ? transformer.label + "_else" : "else",
-          transformer.else,
-          resolveBuildTransformersTo,
-          modelEnvironment,
-          transformerParams,
-          contextResults,
-          reduxDeploymentsState
-        );
-      }
-      break;
-    }
-    case "!=": {
-      // log.info(
-      //   "handleTransformer_ifThenElse != leftValue",
-      //   leftValue,
-      //   "rightValue",
-      //   rightValue
-      // );
-      if (leftValue != rightValue) {
-        const result = defaultTransformers.transformer_extended_apply(
-          step,
-          [...transformerPath, "then"],
-          transformer.label ? transformer.label + "_then" : "then",
-          transformer.then,
-          resolveBuildTransformersTo,
-          modelEnvironment,
-          transformerParams,
-          contextResults,
-          reduxDeploymentsState
-        );
-        log.info("handleTransformer_ifThenElse != leftValue", leftValue, "rightValue", rightValue, "THEN", result);
-        return result;
-      } else {
-        const result = defaultTransformers.transformer_extended_apply(
-          step,
-          [...transformerPath, "else"],
-          transformer.label ? transformer.label + "_else" : "else",
-          transformer.else,
-          resolveBuildTransformersTo,
-          modelEnvironment,
-          transformerParams,
-          contextResults,
-          reduxDeploymentsState
-        );
-        log.info("handleTransformer_ifThenElse != leftValue", leftValue, "rightValue", rightValue, "ELSE", result);
-        return result;
-      }
-    }
-    case "<": {
-      if (leftValue < rightValue) {
-        return defaultTransformers.transformer_extended_apply(
-          step,
-          [...transformerPath, "then"],
-          transformer.label ? transformer.label + "_then" : "then",
-          transformer.then,
-          resolveBuildTransformersTo,
-          modelEnvironment,
-          transformerParams,
-          contextResults,
-          reduxDeploymentsState
-        );
-      } else {
-        return defaultTransformers.transformer_extended_apply(
-          step,
-          [...transformerPath, "else"],
-          transformer.label ? transformer.label + "_else" : "else",
-          transformer.else,
-          resolveBuildTransformersTo,
-          modelEnvironment,
-          transformerParams,
-          contextResults,
-          reduxDeploymentsState
-        );
-      }
-    }
-    case "<=": {
-      if (leftValue <= rightValue) {
-        return defaultTransformers.transformer_extended_apply(
-          step,
-          [...transformerPath, "then"],
-          transformer.label ? transformer.label + "_then" : "then",
-          transformer.then,
-          resolveBuildTransformersTo,
-          modelEnvironment,
-          transformerParams,
-          contextResults,
-          reduxDeploymentsState
-        );
-      } else {
-        return defaultTransformers.transformer_extended_apply(
-          step,
-          [...transformerPath, "else"],
-          transformer.label ? transformer.label + "_else" : "else",
-          transformer.else,
-          resolveBuildTransformersTo,
-          modelEnvironment,
-          transformerParams,
-          contextResults,
-          reduxDeploymentsState
-        );
-      }
-    }
-    case ">": {
-      if (leftValue > rightValue) {
-        return defaultTransformers.transformer_extended_apply(
-          step,
-          [...transformerPath, "then"],
-          transformer.label ? transformer.label + "_then" : "then",
-          transformer.then,
-          resolveBuildTransformersTo,
-          modelEnvironment,
-          transformerParams,
-          contextResults,
-          reduxDeploymentsState
-        );
-      } else {
-        return defaultTransformers.transformer_extended_apply(
-          step,
-          [...transformerPath, "else"],
-          transformer.label ? transformer.label + "_else" : "else",
-          transformer.else,
-          resolveBuildTransformersTo,
-          modelEnvironment,
-          transformerParams,
-          contextResults,
-          reduxDeploymentsState
-        );
-      }
-    }
-    case ">=": {
-      if (leftValue >= rightValue) {
-        return defaultTransformers.transformer_extended_apply(
-          step,
-          [...transformerPath, "then"],
-          transformer.label ? transformer.label + "_then" : "then",
-          transformer.then,
-          resolveBuildTransformersTo,
-          modelEnvironment,
-          transformerParams,
-          contextResults,
-          reduxDeploymentsState
-        );
-      } else {
-        return defaultTransformers.transformer_extended_apply(
-          step,
-          [...transformerPath, "else"],
-          transformer.label ? transformer.label + "_else" : "else",
-          transformer.else,
-          resolveBuildTransformersTo,
-          modelEnvironment,
-          transformerParams,
-          contextResults,
-          reduxDeploymentsState
-        );
-      }
-    }
-    case "&&": {
-      if (leftValue && rightValue) {
-        return defaultTransformers.transformer_extended_apply(
-          step,
-          [...transformerPath, "then"],
-          transformer.label ? transformer.label + "_then" : "then",
-          transformer.then,
-          resolveBuildTransformersTo,
-          modelEnvironment,
-          transformerParams,
-          contextResults,
-          reduxDeploymentsState
-        );
-      } else {
-        return defaultTransformers.transformer_extended_apply(
-          step,
-          [...transformerPath, "else"],
-          transformer.label ? transformer.label + "_else" : "else",
-          transformer.else,
-          resolveBuildTransformersTo,
-          modelEnvironment,
-          transformerParams,
-          contextResults,
-          reduxDeploymentsState
-        );
-      }
-    }
-    case "||": {
-      if (leftValue || rightValue) {
-        return defaultTransformers.transformer_extended_apply(
-          step,
-          [...transformerPath, "then"],
-          transformer.label ? transformer.label + "_then" : "then",
-          transformer.then,
-          resolveBuildTransformersTo,
-          modelEnvironment,
-          transformerParams,
-          contextResults,
-          reduxDeploymentsState
-        );
-      } else {
-        return defaultTransformers.transformer_extended_apply(
-          step,
-          [...transformerPath, "else"],
-          transformer.label ? transformer.label + "_else" : "else",
-          transformer.else,
-          resolveBuildTransformersTo,
-          modelEnvironment,
-          transformerParams,
-          contextResults,
-          reduxDeploymentsState
-        );
-      }
-    }
-    case "isNull": {
-      // Checks left == null (covers both null and undefined via JS loose equality).
-      // JSON has no undefined, but runtime values may be undefined; isNull handles both.
-      if (leftValue == null) {
-        return defaultTransformers.transformer_extended_apply(
-          step,
-          [...transformerPath, "then"],
-          transformer.label ? transformer.label + "_then" : "then",
-          transformer.then,
-          resolveBuildTransformersTo,
-          modelEnvironment,
-          transformerParams,
-          contextResults,
-          reduxDeploymentsState
-        );
-      } else {
-        return defaultTransformers.transformer_extended_apply(
-          step,
-          [...transformerPath, "else"],
-          transformer.label ? transformer.label + "_else" : "else",
-          transformer.else,
-          resolveBuildTransformersTo,
-          modelEnvironment,
-          transformerParams,
-          contextResults,
-          reduxDeploymentsState
-        );
-      }
-    }
-    case "isNotNull": {
-      // Checks left != null (covers both null and undefined via JS loose equality).
-      // JSON has no undefined, but runtime values may be undefined; isNotNull handles both.
-      if (leftValue != null) {
-        return defaultTransformers.transformer_extended_apply(
-          step,
-          [...transformerPath, "then"],
-          transformer.label ? transformer.label + "_then" : "then",
-          transformer.then,
-          resolveBuildTransformersTo,
-          modelEnvironment,
-          transformerParams,
-          contextResults,
-          reduxDeploymentsState
-        );
-      } else {
-        return defaultTransformers.transformer_extended_apply(
-          step,
-          [...transformerPath, "else"],
-          transformer.label ? transformer.label + "_else" : "else",
-          transformer.else,
-          resolveBuildTransformersTo,
-          modelEnvironment,
-          transformerParams,
-          contextResults,
-          reduxDeploymentsState
-        );
-      }
-    }
-    case "!": {
-      // Applies JS boolean NOT semantics: !leftValue.
-      // Falsy values: null, undefined, 0, false, "", NaN.
-      // JSON has no undefined, but runtime values may be undefined; ! handles all falsy values.
-      if (!leftValue) {
-        return defaultTransformers.transformer_extended_apply(
-          step,
-          [...transformerPath, "then"],
-          transformer.label ? transformer.label + "_then" : "then",
-          transformer.then,
-          resolveBuildTransformersTo,
-          modelEnvironment,
-          transformerParams,
-          contextResults,
-          reduxDeploymentsState
-        );
-      } else {
-        return defaultTransformers.transformer_extended_apply(
-          step,
-          [...transformerPath, "else"],
-          transformer.label ? transformer.label + "_else" : "else",
-          transformer.else,
-          resolveBuildTransformersTo,
-          modelEnvironment,
-          transformerParams,
-          contextResults,
-          reduxDeploymentsState
-        );
-      }
-    }
+    case "==":        condition = leftValue == rightValue;       break;
+    case "!=":        condition = leftValue != rightValue;       break;
+    case "<":         condition = leftValue < rightValue;        break;
+    case "<=":        condition = leftValue <= rightValue;       break;
+    case ">":         condition = leftValue > rightValue;        break;
+    case ">=":        condition = leftValue >= rightValue;       break;
+    case "&&":        condition = !!(leftValue && rightValue);   break;
+    case "||":        condition = !!(leftValue || rightValue);   break;
+    case "isNull":    condition = leftValue == null;             break; // covers null and undefined via JS loose equality
+    case "isNotNull": condition = leftValue != null;             break; // covers null and undefined via JS loose equality
+    case "!":         condition = !leftValue;                    break; // JS boolean NOT: falsy = null, undefined, 0, false, "", NaN
+    default:          condition = false;                         break;
   }
-  // const leftValue = resolveOperand(transformer.left, transformerParams, contextResults);
-  // const rightValue = resolveOperand(transformer.right, transformerParams, contextResults);
 
-  // return evaluateCondition(leftValue, condition.operator, rightValue);
-  // });
-
-  // const finalResult = transformer.logic === "and"
-  //   ? results.every(r => r)
-  //   : results.some(r => r);
-
-  // return { transformerReturnType: "success", returnedValue: finalResult };
+  if (transformer.transformerType === "!=") {
+    log.info("handleTransformer_ifThenElse != leftValue", leftValue, "rightValue", rightValue, condition ? "THEN" : "ELSE");
+  }
+  return condition
+    ? applyBranch(transformer.then, true, "then")
+    : applyBranch(transformer.else, false, "else");
 }
 
 // ################################################################################################
