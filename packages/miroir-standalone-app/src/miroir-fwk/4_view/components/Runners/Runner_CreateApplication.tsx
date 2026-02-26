@@ -74,8 +74,8 @@ export const Runner_CreateApplication: React.FC<CreateApplicationToolProps> = ({
 
   // State for MetaModel file upload
   const [selectedMetaModel, setSelectedMetaModel] = useState<MetaModel | undefined>(undefined);
-  const [selectedFileName, setSelectedFileName] = useState<string | undefined>(undefined);
-  const [fileError, setFileError] = useState<string | undefined>(undefined);
+  // const [selectedFileName, setSelectedFileName] = useState<string | undefined>(undefined);
+  // const [fileError, setFileError] = useState<string | undefined>(undefined);
   // const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   // const [selectedFileNameAndContents, setSelectedFileName] = useState<string | null>(null);
@@ -127,11 +127,11 @@ export const Runner_CreateApplication: React.FC<CreateApplicationToolProps> = ({
                         tag: {
                           value: {
                             defaultLabel: "Application Folder Path",
-                            display: {
-                              string: {
-                                format: "folder",
-                              }
-                            }
+                            // display: {
+                            //   string: {
+                            //     format: "folder",
+                            //   }
+                            // }
                           },
                         },
                       },
@@ -853,6 +853,34 @@ export const Runner_CreateApplication: React.FC<CreateApplicationToolProps> = ({
     selectedMetaModel,
   ]);
 
+  // ##############################################################################################
+  // Validation transformer: checks that applicationName is defined and non-empty
+  const validationTransformer: TransformerForBuildPlusRuntime = useMemo(
+    () => ({
+      // transformerType: "returnValue",
+      // label: "createApplicationAndDeploymentValidation",
+      // value: "this is an error message that should be replaced by the actual validation logic",
+      // value: false
+      transformerType: "==",
+      label: "createApplicationAndDeploymentValidation",
+      left: {
+        transformerType: "getFromParameters",
+        referencePath: [
+          "createApplicationAndDeployment",
+          "applicationStorage",
+          "applicationName",
+        ],
+      },
+      right: {
+        transformerType: "returnValue",
+        value: undefined,
+      },
+      then: "Application Name must not be empty",
+      else: true,
+    }), 
+    []
+  );
+
   return (
     <>
       {/* Model File Upload Section */}
@@ -886,6 +914,7 @@ export const Runner_CreateApplication: React.FC<CreateApplicationToolProps> = ({
         formLabel="Create Application (and Deployment)"
         displaySubmitButton="onFirstLine"
         useActionButton={false}
+        validationTransformer={validationTransformer}
       />
     </>
   );

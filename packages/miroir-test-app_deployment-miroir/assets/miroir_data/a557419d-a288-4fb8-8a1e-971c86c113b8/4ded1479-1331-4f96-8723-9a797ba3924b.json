@@ -19,7 +19,6 @@
         "tag": {
           "value": {
             "defaultLabel": "Operator",
-            "editable": true,
             "initializeTo": {
               "initializeToType": "value",
               "value": "=="

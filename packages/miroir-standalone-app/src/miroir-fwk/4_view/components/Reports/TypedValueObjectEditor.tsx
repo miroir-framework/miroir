@@ -24,10 +24,13 @@ import {
   SyncBoxedExtractorOrQueryRunnerMap,
   SyncQueryRunner,
   SyncQueryRunnerExtractorAndParams,
+  TransformerFailure,
+  transformer_extended_apply_wrapper,
   Uuid,
   type ApplicationDeploymentMap,
   type JzodObject,
-  type MiroirModelEnvironment
+  type MiroirModelEnvironment,
+  type TransformerForBuildPlusRuntime
 } from "miroir-core";
 import {
   getMemoizedReduxDeploymentsStateSelectorMap,
@@ -102,6 +105,8 @@ export interface TypedValueObjectEditorProps {
   // navigationCount: number;
   // external field change observation
   onChangeVector?: Record<string, (value: any, rootLessListKey: string) => void>; // callbacks indexed by rootLessListKey for selective field observation
+  // optional validation transformer: receives form values as params, must return true (valid) or a string error message (invalid)
+  validationTransformer?: TransformerForBuildPlusRuntime;
   // when displayed in a JzodObjectEditFormDialog modal dialog form
   setAddObjectdialogFormIsOpen?: (a:boolean) => void,
 }
@@ -145,6 +150,9 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
   onChangeVector,
   ...props
 }) => {
+  // ##############################################################################################
+  // Validation transformer support
+  const validationTransformer = props.validationTransformer;
   // const renderStartTime = performance.now();
   const context = useMiroirContextService();
   const { isActionRunning } = useSnackbar();
@@ -162,29 +170,6 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
   const zoomedInValueObject_DEFUNCT = hasZoomPath ? getValueAtPath(valueObject, zoomInPath) : valueObject;
   const zoomedInDisplaySchema = formValueMLSchema.definition[formikValuePathAsString]; 
 
-
-  const onSubmit = useCallback(
-    async (e: React.FormEvent<HTMLFormElement>) => {
-      log.info("TypedValueObjectEditor onSubmit called", e, formikValuePathAsString);
-      // e.preventDefault();
-      if (useActionButton) {
-        e.preventDefault();
-        log.info("TypedValueObjectEditor form submit prevented (useActionButton=true)");
-        return false;
-      }
-      await formik.handleSubmit(e);
-      if (props.setAddObjectdialogFormIsOpen) {
-        log.info("TypedValueObjectEditor closing AddObjectdialogForm after submit");
-        props.setAddObjectdialogFormIsOpen(false); // close the dialog form after submit
-        log.info("TypedValueObjectEditor closing AddObjectdialogForm after submit DONE");
-      } else {
-        log.info(
-          "TypedValueObjectEditor no setAddObjectdialogFormIsOpen prop, not closing dialog form"
-        );
-      }
-    },
-    [formik, formikValuePathAsString, useActionButton, props.setAddObjectdialogFormIsOpen]
-  );
   // Log zoom functionality usage
   // if (hasZoomPath) {
   //   log.info(
@@ -246,7 +231,88 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
     currentApplication,
     applicationDeploymentMap
   );
-  
+
+  // ##############################################################################################
+  // Validation transformer: runs on every form value change, returns true | string (error message)
+  const validationError: string | undefined = useMemo(() => {
+    if (!validationTransformer) {
+      return undefined; // no validation transformer => always valid
+    }
+    const transformerLabel: string = (validationTransformer as any).label ?? "validationTransformer";
+    try {
+      const result = transformer_extended_apply_wrapper(
+        context.miroirContext?.miroirActivityTracker, // activityTracker
+        "runtime", // step
+        [], // transformerPath
+        transformerLabel, // label
+        validationTransformer,
+        currentMiroirModelEnvironment,
+        formik.values, // transformerParams: full formik values available to the transformer
+        {}, // contextResults
+        "value", // resolveBuildTransformersTo
+        reduxDeploymentsState,
+        deploymentUuid,
+      );
+      log.info("TypedValueObjectEditor validationTransforme", "label", transformerLabel,"result", result);
+      if (result instanceof TransformerFailure) {
+        return result.failureMessage ?? result.queryFailure ?? "Validation transformer failed";
+      }
+      if (result === true) {
+        return undefined; // valid
+      }
+      if (typeof result === "string") {
+        return result; // error message
+      }
+      // Any other falsy value is treated as invalid
+      if (!result) {
+        return "Validation failed";
+      }
+      return undefined; // truthy non-string is valid
+    } catch (e: any) {
+      log.error("TypedValueObjectEditor validationTransformer error", e);
+      // return e?.message ?? "Validation transformer error";
+      return e ?? "Validation transformer error";
+    }
+  }, [
+    validationTransformer,
+    formik.values,
+    currentMiroirModelEnvironment,
+    reduxDeploymentsState,
+    deploymentUuid,
+    context.miroirContext?.miroirActivityTracker,
+  ]);
+
+  const isFormValid = !validationError;
+
+  const onSubmit = useCallback(
+    async (e: React.FormEvent<HTMLFormElement>) => {
+      log.info("TypedValueObjectEditor onSubmit called", e, formikValuePathAsString);
+      // Block submission when validation transformer indicates invalid form
+      if (validationError) {
+        e.preventDefault();
+        log.info("TypedValueObjectEditor form submit blocked by validationTransformer:", validationError);
+        return false;
+      }
+      // e.preventDefault();
+      if (useActionButton) {
+        e.preventDefault();
+        log.info("TypedValueObjectEditor form submit prevented (useActionButton=true)");
+        return false;
+      }
+      await formik.handleSubmit(e);
+      if (props.setAddObjectdialogFormIsOpen) {
+        log.info("TypedValueObjectEditor closing AddObjectdialogForm after submit");
+        props.setAddObjectdialogFormIsOpen(false); // close the dialog form after submit
+        log.info("TypedValueObjectEditor closing AddObjectdialogForm after submit DONE");
+      } else {
+        log.info(
+          "TypedValueObjectEditor no setAddObjectdialogFormIsOpen prop, not closing dialog form"
+        );
+      }
+    },
+    [formik, formikValuePathAsString, useActionButton, props.setAddObjectdialogFormIsOpen, validationError]
+  );
+
   let typeError: JSX.Element | undefined = undefined;
   const jzodTypeCheckResult: ResolvedJzodSchemaReturnType | undefined = useMemo(() => {
     let result: ResolvedJzodSchemaReturnType | undefined = undefined;
@@ -409,6 +475,10 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
     <ActionButtonWithSnackbar
       onAction={async () => {
         log.info("TypedValueObjectEditor ActionButtonWithSnackbar async submit button clicked", formikValuePathAsString);
+        if (validationError) {
+          log.info("TypedValueObjectEditor ActionButtonWithSnackbar submit blocked by validationTransformer:", validationError);
+          return Promise.resolve(ACTION_OK); // don't proceed with submit
+        }
         formik.setFieldValue(lastSubmitButtonClicked, formikValuePathAsString);
         const result = await formik.submitForm();
         log.info("TypedValueObjectEditor async submit button action done", result);
@@ -420,6 +490,7 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
       actionName={formLabel}
       type="button" // no form submit happening!
       variant="contained"
+      disabled={!isFormValid}
       style={{ maxWidth: "300px" }}
     />
   ) : (
@@ -428,6 +499,7 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
       variant="contained"
       style={{ maxWidth: "300px" }}
       loading={isActionRunning}
+      disabled={!isFormValid}
       onClick={(e) => {
         log.info("TypedValueObjectEditor submit button clicked", e);
         formik.setFieldValue(lastSubmitButtonClicked, formikValuePathAsString);
@@ -444,6 +516,19 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
   const result = (
     <>
       {typeError && (<span>"typeError: "{typeError}</span>) }
+      {validationError && (
+        <div style={{
+          padding: '8px 16px',
+          marginBottom: '8px',
+          border: '1px solid #f44336',
+          borderRadius: '4px',
+          backgroundColor: '#ffebee',
+          color: '#c62828',
+          fontSize: '0.9em',
+        }}>
+          error: {validationError}
+        </div>
+      )}
       {readonly ? (
         // Readonly mode: just display the editor without form
         <div>

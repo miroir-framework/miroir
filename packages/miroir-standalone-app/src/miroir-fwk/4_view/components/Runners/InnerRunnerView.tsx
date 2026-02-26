@@ -48,6 +48,7 @@ export const InnerRunnerView = <T extends Record<string, any>>({
   useActionButton = false,
   validateOnChange = false,
   validateOnBlur = false,
+  validationTransformer,
   ...props
   // enableReinitialize = true,
 }: RunnerProps<T>) => {
@@ -134,6 +135,7 @@ export const InnerRunnerView = <T extends Record<string, any>>({
         displaySubmitButton={displaySubmitButton}
         useActionButton={useActionButton}
         valueObjectEditMode="create" // N/A
+        validationTransformer={validationTransformer}
       />
       {/* <ThemedOnScreenHelper
         label={`Runner ${runnerName} targetSchema`}

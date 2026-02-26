@@ -466,8 +466,7 @@
                             "tag": {
                               "value": {
                                 "id": 1,
-                                "defaultLabel": "Uuid",
-                                "editable": false
+                                "defaultLabel": "Uuid"
                               }
                             }
                           },
@@ -477,8 +476,7 @@
                             "tag": {
                               "value": {
                                 "id": 2,
-                                "defaultLabel": "Entity Name",
-                                "editable": false
+                                "defaultLabel": "Entity Name"
                               }
                             }
                           },
@@ -487,8 +485,7 @@
                             "tag": {
                               "value": {
                                 "id": 3,
-                                "defaultLabel": "Entity Uuid",
-                                "editable": false
+                                "defaultLabel": "Entity Uuid"
                               }
                             }
                           },
@@ -499,8 +496,7 @@
                             "tag": {
                               "value": {
                                 "id": 5,
-                                "defaultLabel": "Concept Level",
-                                "editable": false
+                                "defaultLabel": "Concept Level"
                               }
                             }
                           },
@@ -509,8 +505,7 @@
                             "tag": {
                               "value": {
                                 "id": 4,
-                                "defaultLabel": "Name",
-                                "editable": true
+                                "defaultLabel": "Name"
                               }
                             }
                           },
@@ -520,8 +515,7 @@
                             "tag": {
                               "value": {
                                 "id": 5,
-                                "defaultLabel": "Country Code",
-                                "editable": true
+                                "defaultLabel": "Country Code"
                               }
                             }
                           },
@@ -531,8 +525,7 @@
                             "tag": {
                               "value": {
                                 "id": 6,
-                                "defaultLabel": "Icon",
-                                "editable": true
+                                "defaultLabel": "Icon"
                               }
                             }
                           }
@@ -2870,8 +2863,7 @@
                           "tag": {
                             "value": {
                               "id": 1,
-                              "defaultLabel": "Uuid",
-                              "editable": false
+                              "defaultLabel": "Uuid"
                             }
                           }
                         },
@@ -2881,8 +2873,7 @@
                           "tag": {
                             "value": {
                               "id": 2,
-                              "defaultLabel": "Entity Name",
-                              "editable": false
+                              "defaultLabel": "Entity Name"
                             }
                           }
                         },
@@ -2891,8 +2882,7 @@
                           "tag": {
                             "value": {
                               "id": 3,
-                              "defaultLabel": "Entity Uuid",
-                              "editable": false
+                              "defaultLabel": "Entity Uuid"
                             }
                           }
                         },
@@ -2903,8 +2893,7 @@
                           "tag": {
                             "value": {
                               "id": 5,
-                              "defaultLabel": "Concept Level",
-                              "editable": false
+                              "defaultLabel": "Concept Level"
                             }
                           }
                         },
@@ -2913,8 +2902,7 @@
                           "tag": {
                             "value": {
                               "id": 4,
-                              "defaultLabel": "Name",
-                              "editable": true
+                              "defaultLabel": "Name"
                             }
                           }
                         },
@@ -2924,8 +2912,7 @@
                           "tag": {
                             "value": {
                               "id": 5,
-                              "defaultLabel": "Country Code",
-                              "editable": true
+                              "defaultLabel": "Country Code"
                             }
                           }
                         },
@@ -2935,8 +2922,7 @@
                           "tag": {
                             "value": {
                               "id": 6,
-                              "defaultLabel": "Icon",
-                              "editable": true
+                              "defaultLabel": "Icon"
                             }
                           }
                         }
