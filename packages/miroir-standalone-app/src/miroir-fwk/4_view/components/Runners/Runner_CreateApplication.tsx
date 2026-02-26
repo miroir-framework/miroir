@@ -861,7 +861,7 @@ export const Runner_CreateApplication: React.FC<CreateApplicationToolProps> = ({
       // label: "createApplicationAndDeploymentValidation",
       // value: "this is an error message that should be replaced by the actual validation logic",
       // value: false
-      transformerType: "==",
+      transformerType: "!=",
       label: "createApplicationAndDeploymentValidation",
       left: {
         transformerType: "getFromParameters",
@@ -873,10 +873,11 @@ export const Runner_CreateApplication: React.FC<CreateApplicationToolProps> = ({
       },
       right: {
         transformerType: "returnValue",
-        value: undefined,
+        value: "",
       },
-      then: "Application Name must not be empty",
-      else: true,
+      then: true,
+      else: "Application Name must not be empty",
+      // else: true,
     }), 
     []
   );
