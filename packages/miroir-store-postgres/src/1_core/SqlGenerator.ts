@@ -767,6 +767,43 @@ const jsOperatorToSqlOperatorMap: Record<string, string> = {
   ">": ">",
   ">=": ">=",
 }
+
+// ################################################################################################
+// Helper: SQL expression for JS-style falsy check.
+// JS falsy values: null, undefined, 0, false, "".
+// For JSON/JSONB types: also checks for JSON null ('null'::jsonb), JSON false, JSON 0, JSON empty string.
+// For scalar types: uses IS NULL plus a text cast to check for '0', 'false', or '' values.
+function sqlIsFalsy(expr: string, type: SqlStringForTransformerElementValueType): string {
+  if (isJson(type)) {
+    return `(${expr} IS NULL OR ${expr} = 'null'::jsonb OR ${expr} = 'false'::jsonb OR ${expr} = '0'::jsonb OR ${expr} = '""'::jsonb)`;
+  } else {
+    // scalar: cast to text and check known falsy string representations
+    return `(${expr} IS NULL OR ${expr}::text IN ('0', 'false', ''))`;
+  }
+}
+
+// ################################################################################################
+// Helper: SQL expression for JS-style null check.
+// Covers both SQL NULL and JSON null ('null'::jsonb) for JSON/JSONB types.
+function sqlIsNull(expr: string, type: SqlStringForTransformerElementValueType): string {
+  if (isJson(type)) {
+    return `(${expr} IS NULL OR ${expr} = 'null'::jsonb)`;
+  } else {
+    return `${expr} IS NULL`;
+  }
+}
+
+// ################################################################################################
+// Helper: SQL expression for JS-style isNotNull check.
+// Value must be neither SQL NULL nor JSON null.
+function sqlIsNotNull(expr: string, type: SqlStringForTransformerElementValueType): string {
+  if (isJson(type)) {
+    return `(${expr} IS NOT NULL AND ${expr} <> 'null'::jsonb)`;
+  } else {
+    return `${expr} IS NOT NULL`;
+  }
+}
+
 // ################################################################################################
 function sqlStringForConditionalTransformer(
   actionRuntimeTransformer: TransformerForBuildPlusRuntime_ifThenElse,
@@ -782,6 +819,12 @@ function sqlStringForConditionalTransformer(
   let newPreparedStatementParametersCount = preparedStatementParametersCount;
   let preparedStatementParameters: any[] = [];
 
+  // Unary operators (isNull, isNotNull, !) do not use the right operand.
+  const isUnaryOperator =
+    actionRuntimeTransformer.transformerType === "isNull" ||
+    actionRuntimeTransformer.transformerType === "isNotNull" ||
+    actionRuntimeTransformer.transformerType === "!";
+
   const left = sqlStringForRuntimeTransformer(
     actionRuntimeTransformer.left as TransformerForBuildPlusRuntime,
     newPreparedStatementParametersCount,
@@ -790,121 +833,151 @@ function sqlStringForConditionalTransformer(
     definedContextEntries,
     useAccessPathForContextReference,
     false, // topLevelTransformer
-    undefined, // withClauseColumnName
-    // referenceToOuterObjectRenamed // iterateOn
-  )
+  );
   if (left instanceof Domain2ElementFailed) {
     return left;
   }
   if (left.preparedStatementParameters) {
-    preparedStatementParameters = [
-      ...preparedStatementParameters,
-      ...left.preparedStatementParameters,
-    ];
-    newPreparedStatementParametersCount +=
-      left.preparedStatementParameters.length;
+    preparedStatementParameters = [...preparedStatementParameters, ...left.preparedStatementParameters];
+    newPreparedStatementParametersCount += left.preparedStatementParameters.length;
   }
 
-  const right = sqlStringForRuntimeTransformer(
-    actionRuntimeTransformer.right as TransformerForBuildPlusRuntime,
-    newPreparedStatementParametersCount,
-    indentLevel,
-    queryParams,
-    definedContextEntries,
-    useAccessPathForContextReference,
-    false, // topLevelTransformer
-    undefined, // withClauseColumnName
-    // referenceToOuterObjectRenamed // iterateOn
-  )
-  if (right instanceof Domain2ElementFailed) {
-    return right;
+  // right is optional and not used for unary operators
+  let right: SqlStringForTransformerElementValue | undefined;
+  if (!isUnaryOperator && actionRuntimeTransformer.right !== undefined) {
+    const rightResult = sqlStringForRuntimeTransformer(
+      actionRuntimeTransformer.right as TransformerForBuildPlusRuntime,
+      newPreparedStatementParametersCount,
+      indentLevel,
+      queryParams,
+      definedContextEntries,
+      useAccessPathForContextReference,
+      false, // topLevelTransformer
+    );
+    if (rightResult instanceof Domain2ElementFailed) {
+      return rightResult;
+    }
+    if (rightResult.preparedStatementParameters) {
+      preparedStatementParameters = [...preparedStatementParameters, ...rightResult.preparedStatementParameters];
+      newPreparedStatementParametersCount += rightResult.preparedStatementParameters.length;
+    }
+    right = rightResult;
   }
-  if (right.preparedStatementParameters) {
-    preparedStatementParameters = [
-      ...preparedStatementParameters,
-      ...right.preparedStatementParameters,
-    ];
-    newPreparedStatementParametersCount +=
-      right.preparedStatementParameters.length;
+
+  // then is optional: when absent, a truthy condition returns true::boolean
+  let thenSql: SqlStringForTransformerElementValue;
+  if (actionRuntimeTransformer.then !== undefined) {
+    const thenResult = sqlStringForRuntimeTransformer(
+      actionRuntimeTransformer.then as TransformerForBuildPlusRuntime,
+      newPreparedStatementParametersCount,
+      indentLevel,
+      queryParams,
+      definedContextEntries,
+      useAccessPathForContextReference,
+      false, // topLevelTransformer
+    );
+    if (thenResult instanceof Domain2ElementFailed) {
+      return thenResult;
+    }
+    if (thenResult.preparedStatementParameters) {
+      preparedStatementParameters = [...preparedStatementParameters, ...thenResult.preparedStatementParameters];
+      newPreparedStatementParametersCount += thenResult.preparedStatementParameters.length;
+    }
+    thenSql = thenResult;
+  } else {
+    thenSql = { type: "scalar", sqlStringOrObject: "true::boolean" };
   }
-  const _then = sqlStringForRuntimeTransformer(
-    actionRuntimeTransformer.then as TransformerForBuildPlusRuntime,
-    newPreparedStatementParametersCount,
-    indentLevel,
-    queryParams,
-    definedContextEntries,
-    useAccessPathForContextReference,
-    false, // topLevelTransformer
-    undefined, // withClauseColumnName
-    // referenceToOuterObjectRenamed // iterateOn
-  )
-  if (_then instanceof Domain2ElementFailed) {
-    return _then;
+
+  // else is optional: when absent, a falsy condition returns false::boolean
+  let elseSql: SqlStringForTransformerElementValue;
+  if (actionRuntimeTransformer.else !== undefined) {
+    const elseResult = sqlStringForRuntimeTransformer(
+      actionRuntimeTransformer.else as TransformerForBuildPlusRuntime,
+      newPreparedStatementParametersCount,
+      indentLevel,
+      queryParams,
+      definedContextEntries,
+      useAccessPathForContextReference,
+      false, // topLevelTransformer
+    );
+    if (elseResult instanceof Domain2ElementFailed) {
+      return elseResult;
+    }
+    if (elseResult.preparedStatementParameters) {
+      preparedStatementParameters = [...preparedStatementParameters, ...elseResult.preparedStatementParameters];
+      newPreparedStatementParametersCount += elseResult.preparedStatementParameters.length;
+    }
+    elseSql = elseResult;
+  } else {
+    elseSql = { type: "scalar", sqlStringOrObject: "false::boolean" };
   }
-  if (_then.preparedStatementParameters) {
-    preparedStatementParameters = [
-      ...preparedStatementParameters,
-      ..._then.preparedStatementParameters,
-    ];
-    newPreparedStatementParametersCount +=
-      _then.preparedStatementParameters.length;
-  }
-  const _else = sqlStringForRuntimeTransformer(
-    actionRuntimeTransformer.else as TransformerForBuildPlusRuntime,
-    newPreparedStatementParametersCount,
-    indentLevel,
-    queryParams,
-    definedContextEntries,
-    useAccessPathForContextReference,
-    false, // topLevelTransformer
-    undefined, // withClauseColumnName
-    // referenceToOuterObjectRenamed // iterateOn
-  )
-  if (_else instanceof Domain2ElementFailed) {
-    return _else;
-  }
-  if (_else.preparedStatementParameters) {
-    preparedStatementParameters = [
-      ...preparedStatementParameters,
-      ..._else.preparedStatementParameters,
-    ];
-    newPreparedStatementParametersCount +=
-      _else.preparedStatementParameters.length;
-  }
-  // switch (left.type) {
-  //   case "json":
-  //   case "scalar":
-  //   case "table":
-  //   case "json_array":
-  //   case "tableOf1JsonColumn":
-  // }
-  if (left.type !== "scalar" || right.type !== "scalar") {
+
+  // For standard binary comparison operators, both sides must be scalar
+  const isBinaryComparisonOperator = jsOperatorToSqlOperatorMap[actionRuntimeTransformer.transformerType] !== undefined;
+  if (isBinaryComparisonOperator && right && (left.type !== "scalar" || right.type !== "scalar")) {
     return new Domain2ElementFailed({
       queryFailure: "QueryNotExecutable",
       query: actionRuntimeTransformer as any,
-      failureMessage: "sqlStringForRuntimeTransformer ifThenElse left or right is not scalar",
+      failureMessage: "sqlStringForRuntimeTransformer ifThenElse left or right is not scalar for operator " + actionRuntimeTransformer.transformerType,
     });
   }
+
+  // Build the SQL condition expression based on operator type
+  const leftExpr = left.sqlStringOrObject;
+  const rightExpr = right?.sqlStringOrObject ?? "";
+  const t = actionRuntimeTransformer.transformerType;
+  let conditionSql: string;
+
+  switch (t) {
+    case "isNull":
+      conditionSql = sqlIsNull(leftExpr, left.type);
+      break;
+    case "isNotNull":
+      conditionSql = sqlIsNotNull(leftExpr, left.type);
+      break;
+    case "!":
+      // JS boolean NOT: true when left is a JS-falsy value (null/undefined/0/false/"")
+      conditionSql = sqlIsFalsy(leftExpr, left.type);
+      break;
+    case "&&":
+      // JS logical AND: true when both operands are JS-truthy
+      conditionSql =
+        `NOT ${sqlIsFalsy(leftExpr, left.type)} AND NOT ${sqlIsFalsy(rightExpr, right?.type ?? "scalar")}`;
+      break;
+    case "||":
+      // JS logical OR: true when at least one operand is JS-truthy
+      conditionSql =
+        `NOT ${sqlIsFalsy(leftExpr, left.type)} OR NOT ${sqlIsFalsy(rightExpr, right?.type ?? "scalar")}`;
+      break;
+    default:
+      // Standard binary comparison operators (==, !=, <, <=, >, >=)
+      conditionSql = `${leftExpr} ${jsOperatorToSqlOperatorMap[t]} ${rightExpr}`;
+      break;
+  }
+
+  const columnName = withClauseColumnName ?? "ifThenElse";
   return {
     type: "scalar",
-    sqlStringOrObject: (topLevelTransformer ? "select " : "") + "case when " +
-      left.sqlStringOrObject + " " + jsOperatorToSqlOperatorMap[actionRuntimeTransformer.transformerType] + " " + right.sqlStringOrObject +
-      " then " + _then.sqlStringOrObject + " else " + _else.sqlStringOrObject + " end" +
-      (topLevelTransformer ? ` AS "${withClauseColumnName??"ifThenElse"}"` : ""),
+    sqlStringOrObject:
+      (topLevelTransformer ? "select " : "") +
+      "case when " + conditionSql +
+      " then " + thenSql.sqlStringOrObject +
+      " else " + elseSql.sqlStringOrObject +
+      " end" +
+      (topLevelTransformer ? ` AS "${columnName}"` : ""),
     preparedStatementParameters: [
       ...(left.preparedStatementParameters ?? []),
-      ...(right.preparedStatementParameters ?? []),
-      ...(_then.preparedStatementParameters ?? []),
-      ...(_else.preparedStatementParameters ?? []),
+      ...(right?.preparedStatementParameters ?? []),
+      ...(thenSql.preparedStatementParameters ?? []),
+      ...(elseSql.preparedStatementParameters ?? []),
     ],
-    resultAccessPath: topLevelTransformer ? [0, withClauseColumnName??"ifThenElse"] : undefined,
-    columnNameContainingJsonValue: topLevelTransformer ? withClauseColumnName??"ifThenElse" : undefined,
-    // encloseEndResultInArray: true
+    resultAccessPath: topLevelTransformer ? [0, columnName] : undefined,
+    columnNameContainingJsonValue: topLevelTransformer ? columnName : undefined,
     usedContextEntries: [
       ...(left.usedContextEntries ?? []),
-      ...(right.usedContextEntries ?? []),
-      ...(_then.usedContextEntries ?? []),
-      ...(_else.usedContextEntries ?? []),
+      ...(right?.usedContextEntries ?? []),
+      ...(thenSql.usedContextEntries ?? []),
+      ...(elseSql.usedContextEntries ?? []),
     ],
   };
 }

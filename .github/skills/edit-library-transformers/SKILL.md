@@ -45,7 +45,7 @@ RUN_TEST=transformers.unit.test npm run testByFile -w miroir-core -- 'transforme
 
 ### Step 2: Write Test Cases First (TDD) 📝
 Add test cases to the test suite:
-- **File**: `packages/miroir-core/src/assets/miroir_data/681be9ca-c593-45f5-b45a-5f1d4969e91e/a5b4be38-78e3-4f31-9e9b-8ab0b71d4993.json`
+- **File**: `packages/miroir-test-app_deployment-miroir/assets/miroir_data/681be9ca-c593-45f5-b45a-5f1d4969e91e/a5b4be38-78e3-4f31-9e9b-8ab0b71d4993.json`
 - **Suite name**: `miroirCoreTransformers`
 - Use the test case template from `template-test-case.json`
 
@@ -57,7 +57,7 @@ RUN_TEST=transformers.unit.test npm run testByFile -w miroir-core -- 'transforme
 
 ### Step 4: Create TransformerDefinition JSON 📄
 Create the transformer definition file:
-- **Location**: `packages/miroir-core/src/assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/<uuid>.json`
+- **Location**: `packages/miroir-test-app_deployment-miroir/assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/<uuid>.json`
 - **Parent UUID**: `a557419d-a288-4fb8-8a1e-971c86c113b8` (TransformerDefinition entity)
 - Use the template from `template-library-transformer.json`
 - **Key field**: `transformerImplementationType: "libraryImplementation"`
@@ -86,6 +86,116 @@ export const handleTransformer_<name> = (
 };
 ```
 
+### Step 5b: Implement SQL Handler Function (Optional) 💾
+
+If the transformer needs PostgreSQL execution support, add a SQL handler in `packages/miroir-store-postgres/src/1_core/SqlGenerator.ts`.
+
+**Set `sqlImplementationFunctionName`** in the TransformerDefinition JSON:
+```json
+"transformerImplementation": {
+  "transformerImplementationType": "libraryImplementation",
+  "inMemoryImplementationFunctionName": "handleTransformer_<name>",
+  "sqlImplementationFunctionName": "sqlStringFor<Name>Transformer"
+}
+```
+
+**Register in `sqlTransformerImplementations`** object in `SqlGenerator.ts` (same pattern as `inMemoryTransformerImplementations`).
+
+**SQL Handler Function Signature**:
+```ts
+function sqlStringFor<Name>Transformer(
+  actionRuntimeTransformer: TransformerForBuildPlusRuntime_<name>,
+  preparedStatementParametersCount: number,
+  indentLevel: number,
+  queryParams: Record<string, any>,
+  definedContextEntries: Record<string, SqlContextEntry>,
+  useAccessPathForContextReference: boolean,
+  topLevelTransformer: boolean,
+  withClauseColumnName?: string,
+  iterateOn?: string,
+): Domain2QueryReturnType<SqlStringForTransformerElementValue> { ... }
+```
+
+**Key SQL patterns and pitfalls**:
+
+#### Resolving sub-transformers
+Always call `sqlStringForRuntimeTransformer` for each operand. **Never pass `undefined` — check for optional fields first**:
+```ts
+// ❌ WRONG – crashes if right is undefined: TypeError: Cannot read properties of undefined (reading 'orderBy')
+const right = sqlStringForRuntimeTransformer(transformer.right as any, ...)
+
+// ✅ CORRECT – guard optional fields
+let right: SqlStringForTransformerElementValue | undefined;
+if (transformer.right !== undefined) {
+  const rightResult = sqlStringForRuntimeTransformer(transformer.right as any, ...);
+  if (rightResult instanceof Domain2ElementFailed) return rightResult;
+  // collect preparedStatementParameters...
+  right = rightResult;
+}
+```
+
+#### Prepared statement parameter tracking
+Each operand generates `$N::type` placeholders. Track the running index:
+```ts
+let count = preparedStatementParametersCount;
+const left = sqlStringForRuntimeTransformer(transformer.left as any, count, ...);
+if (left instanceof Domain2ElementFailed) return left;
+if (left.preparedStatementParameters) count += left.preparedStatementParameters.length;
+// ... resolve right, then, else with updated count each time
+```
+
+The final return combines all `preparedStatementParameters` in the order they appear in the SQL string.
+
+#### Top-level vs nested transformer
+`topLevelTransformer = true` means the transformer is the root of a WITH clause:
+```ts
+// topLevelTransformer = true  → wraps result: "select <expr> AS \"name\""
+// topLevelTransformer = false → bare expression:  "<expr>"
+const columnName = withClauseColumnName ?? "myTransformer";
+return {
+  type: "scalar",
+  sqlStringOrObject: (topLevelTransformer ? "select " : "") + expr
+    + (topLevelTransformer ? ` AS "${columnName}"` : ""),
+  resultAccessPath: topLevelTransformer ? [0, columnName] : undefined,
+  columnNameContainingJsonValue: topLevelTransformer ? columnName : undefined,
+  preparedStatementParameters: [...],
+  usedContextEntries: [...],
+};
+```
+
+#### JSON null vs SQL NULL
+In PostgreSQL, `'null'::jsonb` (JSON null) is **not** SQL NULL:
+```sql
+SELECT 'null'::jsonb IS NULL;  -- returns false!
+```
+Use the helper functions available in `SqlGenerator.ts` to handle both cases:
+- `sqlIsNull(expr, type)` — covers SQL NULL **and** JSON null
+- `sqlIsNotNull(expr, type)` — covers both cases
+- `sqlIsFalsy(expr, type)` — JS-style falsy: null, JSON null, `false`, `0`, `""`
+  - For `json`/`jsonb` type: checks `IS NULL OR = 'null'::jsonb OR = 'false'::jsonb OR = '0'::jsonb OR = '""'::jsonb`
+  - For `scalar` type: checks `IS NULL OR ::text IN ('0', 'false', '')`
+- Use `isJson(type)` to distinguish json vs scalar `SqlStringForTransformerElementValueType`
+
+#### Type checks
+Check `left.type !== "scalar"` only when the SQL operator requires scalars (standard comparisons like `=`, `<`, `>`).  Logical operators (`&&`, `||`) and unary operators work on any type by using `sqlIsFalsy`/`sqlIsNull`.
+
+#### Error return
+```ts
+return new Domain2ElementFailed({
+  queryFailure: "QueryNotExecutable",
+  query: actionRuntimeTransformer as any,
+  failureMessage: "description of why this failed",
+});
+```
+
+#### Rebuild required after changes
+After modifying `SqlGenerator.ts`, always rebuild:
+```bash
+npm run build -w miroir-store-postgres
+```
+
+---
+
 ### Step 6: Export and Register Transformer 📦
 In `packages/miroir-core/src/2_domain/Transformers.ts`:
 1. **Import** the JSON definition
@@ -113,6 +223,7 @@ File: `packages/miroir-core/scripts/generate-ts-types.ts`
 ### Step 8: Run devBuild and Tests ✅
 Generate types and verify everything works:
 ```bash
+npm run build -w miroir-test-app_deployment-library
 npm run devBuild -w miroir-core && RUN_TEST=transformers.unit.test npm run testByFile -w miroir-core -- 'transformers.unit' && RUN_TEST=transformers.integ.test npm run testByFile -w miroir-core -- 'transformers.integ'
 ```
 
@@ -131,6 +242,7 @@ Documentation is in folder `docs-OLD/transformers`
 | `0_interfaces/1_core/bootstrapJzodSchemas/getMiroirFundamentalJzodSchema.ts` | Schema registration | 2 transformer entries + 1 dependency entry |
 | `scripts/generate-ts-types.ts` | Pre-generated types | 4 transformer entries |
 | `miroir_data/681be9ca-c593-45f5-b45a-5f1d4969e91e/a5b4be38-78e3-4f31-9e9b-8ab0b71d4993.json` | Test cases | New test case objects |
+| `miroir-store-postgres/src/1_core/SqlGenerator.ts` | SQL implementation (optional) | `sqlStringFor<Name>Transformer` function + registration in `sqlTransformerImplementations`, then rebuild with `npm run build -w miroir-store-postgres` |
 
 ---
 
