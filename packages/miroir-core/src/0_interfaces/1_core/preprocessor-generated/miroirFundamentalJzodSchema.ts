@@ -3652,12 +3652,14 @@ export const miroirFundamentalJzodSchema = {
               "<",
               "<=",
               ">",
-              ">="
+              ">=",
+              "isNull",
+              "isNotNull",
+              "!"
             ],
             "tag": {
               "value": {
                 "defaultLabel": "Operator",
-                "editable": true,
                 "initializeTo": {
                   "initializeToType": "value",
                   "value": "=="
@@ -3674,6 +3676,7 @@ export const miroirFundamentalJzodSchema = {
           },
           "right": {
             "type": "schemaReference",
+            "optional": true,
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
               "relativePath": "transformerForBuild"
@@ -5288,12 +5291,14 @@ export const miroirFundamentalJzodSchema = {
               "<",
               "<=",
               ">",
-              ">="
+              ">=",
+              "isNull",
+              "isNotNull",
+              "!"
             ],
             "tag": {
               "value": {
                 "defaultLabel": "Operator",
-                "editable": true,
                 "initializeTo": {
                   "initializeToType": "value",
                   "value": "=="
@@ -5310,6 +5315,7 @@ export const miroirFundamentalJzodSchema = {
           },
           "right": {
             "type": "schemaReference",
+            "optional": true,
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
               "relativePath": "transformerForBuildPlusRuntime"

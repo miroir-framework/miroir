@@ -2597,7 +2597,6 @@ export function handleTransformer_ifThenElse(
   contextResults?: Record<string, any>,
   reduxDeploymentsState?: ReduxDeploymentsState | undefined // used by getDefaultValueForJzodSchemaWithResolution only, somewhat redundant with modelEnvironment
 ): TransformerReturnType<any> {
-  // const results = transformer.conditions.map(condition => {
   const leftValue = defaultTransformers.transformer_extended_apply(
     step,
     [...transformerPath, "left"],
@@ -2609,17 +2608,24 @@ export function handleTransformer_ifThenElse(
     contextResults,
     reduxDeploymentsState
   );
-  const rightValue = defaultTransformers.transformer_extended_apply(
-    step,
-    [...transformerPath, "right"],
-    transformer.label ? transformer.label + "_right" : "right",
-    transformer.right,
-    resolveBuildTransformersTo,
-    modelEnvironment,
-    transformerParams,
-    contextResults,
-    reduxDeploymentsState
-  );
+  // Unary operators (isNull, isNotNull, !) do not use right operand.
+  // JSON has no undefined; isNull/isNotNull use JS loose equality (null == undefined).
+  const isUnaryOperator = transformer.transformerType === "isNull"
+    || transformer.transformerType === "isNotNull"
+    || transformer.transformerType === "!";
+  const rightValue = !isUnaryOperator && transformer.right !== undefined
+    ? defaultTransformers.transformer_extended_apply(
+        step,
+        [...transformerPath, "right"],
+        transformer.label ? transformer.label + "_right" : "right",
+        transformer.right,
+        resolveBuildTransformersTo,
+        modelEnvironment,
+        transformerParams,
+        contextResults,
+        reduxDeploymentsState
+      )
+    : undefined;
   switch (transformer.transformerType) {
     case "==": {
       if (leftValue == rightValue) {
@@ -2769,6 +2775,94 @@ export function handleTransformer_ifThenElse(
     }
     case ">=": {
       if (leftValue >= rightValue) {
+        return defaultTransformers.transformer_extended_apply(
+          step,
+          [...transformerPath, "then"],
+          transformer.label ? transformer.label + "_then" : "then",
+          transformer.then,
+          resolveBuildTransformersTo,
+          modelEnvironment,
+          transformerParams,
+          contextResults,
+          reduxDeploymentsState
+        );
+      } else {
+        return defaultTransformers.transformer_extended_apply(
+          step,
+          [...transformerPath, "else"],
+          transformer.label ? transformer.label + "_else" : "else",
+          transformer.else,
+          resolveBuildTransformersTo,
+          modelEnvironment,
+          transformerParams,
+          contextResults,
+          reduxDeploymentsState
+        );
+      }
+    }
+    case "isNull": {
+      // Checks left == null (covers both null and undefined via JS loose equality).
+      // JSON has no undefined, but runtime values may be undefined; isNull handles both.
+      if (leftValue == null) {
+        return defaultTransformers.transformer_extended_apply(
+          step,
+          [...transformerPath, "then"],
+          transformer.label ? transformer.label + "_then" : "then",
+          transformer.then,
+          resolveBuildTransformersTo,
+          modelEnvironment,
+          transformerParams,
+          contextResults,
+          reduxDeploymentsState
+        );
+      } else {
+        return defaultTransformers.transformer_extended_apply(
+          step,
+          [...transformerPath, "else"],
+          transformer.label ? transformer.label + "_else" : "else",
+          transformer.else,
+          resolveBuildTransformersTo,
+          modelEnvironment,
+          transformerParams,
+          contextResults,
+          reduxDeploymentsState
+        );
+      }
+    }
+    case "isNotNull": {
+      // Checks left != null (covers both null and undefined via JS loose equality).
+      // JSON has no undefined, but runtime values may be undefined; isNotNull handles both.
+      if (leftValue != null) {
+        return defaultTransformers.transformer_extended_apply(
+          step,
+          [...transformerPath, "then"],
+          transformer.label ? transformer.label + "_then" : "then",
+          transformer.then,
+          resolveBuildTransformersTo,
+          modelEnvironment,
+          transformerParams,
+          contextResults,
+          reduxDeploymentsState
+        );
+      } else {
+        return defaultTransformers.transformer_extended_apply(
+          step,
+          [...transformerPath, "else"],
+          transformer.label ? transformer.label + "_else" : "else",
+          transformer.else,
+          resolveBuildTransformersTo,
+          modelEnvironment,
+          transformerParams,
+          contextResults,
+          reduxDeploymentsState
+        );
+      }
+    }
+    case "!": {
+      // Applies JS boolean NOT semantics: !leftValue.
+      // Falsy values: null, undefined, 0, false, "", NaN.
+      // JSON has no undefined, but runtime values may be undefined; ! handles all falsy values.
+      if (!leftValue) {
         return defaultTransformers.transformer_extended_apply(
           step,
           [...transformerPath, "then"],

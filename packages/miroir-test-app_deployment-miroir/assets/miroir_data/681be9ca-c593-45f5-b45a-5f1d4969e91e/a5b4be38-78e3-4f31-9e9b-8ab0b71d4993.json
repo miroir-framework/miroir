@@ -1049,6 +1049,325 @@
                   "userType": "admin"
                 },
                 "expectedValue": "admin access"
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "ifThenElse isNull - left is null (then branch)",
+                "transformerName": "ifThenElseIsNullTrue",
+                "transformer": {
+                  "transformerType": "isNull",
+                  "interpolation": "runtime",
+                  "left": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "mlSchema": { "type": "null" },
+                    "value": null
+                  },
+                  "then": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "mlSchema": { "type": "string" },
+                    "value": "is null"
+                  },
+                  "else": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "mlSchema": { "type": "string" },
+                    "value": "not null"
+                  }
+                },
+                "transformerParams": {},
+                "expectedValue": "is null"
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "ifThenElse isNull - left is not null (else branch)",
+                "transformerName": "ifThenElseIsNullFalse",
+                "transformer": {
+                  "transformerType": "isNull",
+                  "interpolation": "runtime",
+                  "left": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "mlSchema": { "type": "string" },
+                    "value": "hello"
+                  },
+                  "then": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "mlSchema": { "type": "string" },
+                    "value": "is null"
+                  },
+                  "else": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "mlSchema": { "type": "string" },
+                    "value": "not null"
+                  }
+                },
+                "transformerParams": {},
+                "expectedValue": "not null"
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "ifThenElse isNull - left is 0 (not null, else branch)",
+                "transformerName": "ifThenElseIsNullZero",
+                "transformer": {
+                  "transformerType": "isNull",
+                  "interpolation": "runtime",
+                  "left": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "mlSchema": { "type": "number" },
+                    "value": 0
+                  },
+                  "then": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "mlSchema": { "type": "string" },
+                    "value": "is null"
+                  },
+                  "else": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "mlSchema": { "type": "string" },
+                    "value": "not null"
+                  }
+                },
+                "transformerParams": {},
+                "expectedValue": "not null"
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "ifThenElse isNotNull - left is not null (then branch)",
+                "transformerName": "ifThenElseIsNotNullTrue",
+                "transformer": {
+                  "transformerType": "isNotNull",
+                  "interpolation": "runtime",
+                  "left": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "mlSchema": { "type": "string" },
+                    "value": "hello"
+                  },
+                  "then": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "mlSchema": { "type": "string" },
+                    "value": "has value"
+                  },
+                  "else": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "mlSchema": { "type": "string" },
+                    "value": "is null"
+                  }
+                },
+                "transformerParams": {},
+                "expectedValue": "has value"
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "ifThenElse isNotNull - left is null (else branch)",
+                "transformerName": "ifThenElseIsNotNullFalse",
+                "transformer": {
+                  "transformerType": "isNotNull",
+                  "interpolation": "runtime",
+                  "left": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "mlSchema": { "type": "null" },
+                    "value": null
+                  },
+                  "then": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "mlSchema": { "type": "string" },
+                    "value": "has value"
+                  },
+                  "else": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "mlSchema": { "type": "string" },
+                    "value": "is null"
+                  }
+                },
+                "transformerParams": {},
+                "expectedValue": "is null"
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "ifThenElse ! - left is null (falsy, then branch)",
+                "transformerName": "ifThenElseNotNull",
+                "transformer": {
+                  "transformerType": "!",
+                  "interpolation": "runtime",
+                  "left": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "mlSchema": { "type": "null" },
+                    "value": null
+                  },
+                  "then": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "mlSchema": { "type": "string" },
+                    "value": "is falsy"
+                  },
+                  "else": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "mlSchema": { "type": "string" },
+                    "value": "is truthy"
+                  }
+                },
+                "transformerParams": {},
+                "expectedValue": "is falsy"
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "ifThenElse ! - left is truthy string (else branch)",
+                "transformerName": "ifThenElseNotTruthyString",
+                "transformer": {
+                  "transformerType": "!",
+                  "interpolation": "runtime",
+                  "left": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "mlSchema": { "type": "string" },
+                    "value": "hello"
+                  },
+                  "then": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "mlSchema": { "type": "string" },
+                    "value": "is falsy"
+                  },
+                  "else": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "mlSchema": { "type": "string" },
+                    "value": "is truthy"
+                  }
+                },
+                "transformerParams": {},
+                "expectedValue": "is truthy"
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "ifThenElse ! - left is 0 (falsy number, then branch)",
+                "transformerName": "ifThenElseNotZero",
+                "transformer": {
+                  "transformerType": "!",
+                  "interpolation": "runtime",
+                  "left": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "mlSchema": { "type": "number" },
+                    "value": 0
+                  },
+                  "then": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "mlSchema": { "type": "string" },
+                    "value": "is falsy"
+                  },
+                  "else": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "mlSchema": { "type": "string" },
+                    "value": "is truthy"
+                  }
+                },
+                "transformerParams": {},
+                "expectedValue": "is falsy"
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "ifThenElse ! - left is false (falsy boolean, then branch)",
+                "transformerName": "ifThenElseNotFalse",
+                "transformer": {
+                  "transformerType": "!",
+                  "interpolation": "runtime",
+                  "left": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "mlSchema": { "type": "boolean" },
+                    "value": false
+                  },
+                  "then": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "mlSchema": { "type": "string" },
+                    "value": "is falsy"
+                  },
+                  "else": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "mlSchema": { "type": "string" },
+                    "value": "is truthy"
+                  }
+                },
+                "transformerParams": {},
+                "expectedValue": "is falsy"
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "ifThenElse ! - left is empty string (falsy, then branch)",
+                "transformerName": "ifThenElseNotEmptyString",
+                "transformer": {
+                  "transformerType": "!",
+                  "interpolation": "runtime",
+                  "left": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "mlSchema": { "type": "string" },
+                    "value": ""
+                  },
+                  "then": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "mlSchema": { "type": "string" },
+                    "value": "is falsy"
+                  },
+                  "else": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "mlSchema": { "type": "string" },
+                    "value": "is truthy"
+                  }
+                },
+                "transformerParams": {},
+                "expectedValue": "is falsy"
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "ifThenElse ! - left is 1 (truthy number, else branch)",
+                "transformerName": "ifThenElseNotOne",
+                "transformer": {
+                  "transformerType": "!",
+                  "interpolation": "runtime",
+                  "left": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "mlSchema": { "type": "number" },
+                    "value": 1
+                  },
+                  "then": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "mlSchema": { "type": "string" },
+                    "value": "is falsy"
+                  },
+                  "else": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "mlSchema": { "type": "string" },
+                    "value": "is truthy"
+                  }
+                },
+                "transformerParams": {},
+                "expectedValue": "is truthy"
               }
             ]
           },
