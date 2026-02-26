@@ -127,6 +127,21 @@ export const Runner_CreateApplication: React.FC<CreateApplicationToolProps> = ({
                         tag: {
                           value: {
                             defaultLabel: "Application Folder Path",
+                            editorButton: {
+                              label: "generate name with timestamp",
+                              // transformer: "test_application_" + formatYYYYMMDD_HHMMSS(new Date()),
+                              transformer: {
+                                transformerType: "returnValue",
+                                value: "test_application_" + formatYYYYMMDD_HHMMSS(new Date()),
+                                // definition: {
+                                //   transformerType: "mapList",
+                                //   elementTransformer: {
+                                //     transformerType: "getFromContext",
+                                //     referenceName: "originTransformer",
+                                //   },
+                                // },
+                              },
+                            },
                             // display: {
                             //   string: {
                             //     format: "folder",
@@ -149,8 +164,8 @@ export const Runner_CreateApplication: React.FC<CreateApplicationToolProps> = ({
                             display: {
                               string: {
                                 format: "folder",
-                              }
-                            }
+                              },
+                            },
                           },
                         },
                       },
@@ -169,7 +184,7 @@ export const Runner_CreateApplication: React.FC<CreateApplicationToolProps> = ({
                             initializeTo: {
                               initializeToType: "value",
                               value: "test_application_" + formatYYYYMMDD_HHMMSS(new Date()),
-                            }
+                            },
                           },
                         },
                       },
@@ -188,7 +203,7 @@ export const Runner_CreateApplication: React.FC<CreateApplicationToolProps> = ({
                             initializeTo: {
                               initializeToType: "value",
                               value: "test_application_" + formatYYYYMMDD_HHMMSS(new Date()),
-                            }
+                            },
                           },
                         },
                       },

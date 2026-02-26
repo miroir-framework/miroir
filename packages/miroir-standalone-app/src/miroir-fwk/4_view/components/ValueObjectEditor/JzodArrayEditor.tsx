@@ -355,6 +355,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
     itemsOrder,
     insideAny,
     displayAsStructuredElementSwitch,
+    extraToolsButtons,
     maxRenderDepth,
     readOnly,
     existingObject,
@@ -855,6 +856,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
               alignItems: "center",
             }}
           >
+            {extraToolsButtons ?? <></>}
             {/* Only show switch in edit mode */}
             {!readOnly && (displayAsStructuredElementSwitch ?? <></>)}
           </span>

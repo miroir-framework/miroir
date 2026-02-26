@@ -55,6 +55,7 @@ import { JzodElementEditorReactCodeMirror } from "./JzodElementEditorReactCodeMi
 import { JzodElementStringEditor } from "./JzodElementStringEditor.js";
 import { JzodEnumEditor } from "./JzodEnumEditor.js";
 import { JzodLiteralEditor } from "./JzodLiteralEditor.js";
+import { JzodEditorButton } from "./JzodEditorButton.js";
 import { JzodObjectEditor } from "./JzodObjectEditor.js";
 
 
@@ -500,6 +501,54 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
     [currentKeyMap?.resolvedSchema?.tag?.value?.display?.objectOrArrayWithoutFrame]
   );
 
+  const schemaEditorButton = useMemo(
+    () => currentKeyMap?.resolvedSchema?.tag?.value?.editorButton,
+    [currentKeyMap?.resolvedSchema?.tag?.value?.editorButton]
+  );
+
+  const centralizedSchemaEditorButton = useMemo(() => {
+    if (!schemaEditorButton?.label || !schemaEditorButton?.transformer) {
+      return undefined;
+    }
+    return (
+      <JzodEditorButton
+        editorButton={schemaEditorButton}
+        currentValue={currentValueObjectAtKey}
+        rootLessListKey={props.rootLessListKey}
+        currentApplication={props.currentApplication}
+        applicationDeploymentMap={props.applicationDeploymentMap}
+        onApplyResult={(newValue: any) => {
+          const callback = props.onChangeVector?.[props.rootLessListKey];
+          if (callback) {
+            callback(newValue, props.rootLessListKey);
+          }
+          formik.setFieldValue(formikRootLessListKey, newValue);
+        }}
+      />
+    );
+  }, [
+    schemaEditorButton,
+    currentValueObjectAtKey,
+    props.rootLessListKey,
+    props.currentApplication,
+    props.applicationDeploymentMap,
+    props.onChangeVector,
+    formik,
+    formikRootLessListKey,
+  ]);
+
+  const mergedExtraToolsButtons = useMemo(() => {
+    if (!props.extraToolsButtons && !centralizedSchemaEditorButton) {
+      return undefined;
+    }
+    return (
+      <>
+        {props.extraToolsButtons}
+        {centralizedSchemaEditorButton}
+      </>
+    );
+  }, [props.extraToolsButtons, centralizedSchemaEditorButton]);
+
 
   // Create the main element based on the schema type
   // ##############################################################################################
@@ -670,7 +719,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
               maxRenderDepth={props.maxRenderDepth}
               readOnly={props.readOnly}
               insideAny={props.insideAny}
-              extraToolsButtons={props.extraToolsButtons}
+              extraToolsButtons={mergedExtraToolsButtons}
               displayError={props.displayError}
               onChangeVector={props.onChangeVector}
             />
@@ -701,6 +750,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
               hidden={hideSubJzodEditor}
               displayAsStructuredElementSwitch={displayAsStructuredElementSwitch}
               deleteButtonElement={props.deleteButtonElement}
+              extraToolsButtons={mergedExtraToolsButtons}
               maxRenderDepth={props.maxRenderDepth}
               readOnly={props.readOnly}
               displayError={props.displayError}
@@ -1270,6 +1320,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
     props.deleteButtonElement,
     props.maxRenderDepth,
     props.extraToolsButtons,
+    mergedExtraToolsButtons,
     // Computed values that affect rendering (all properly memoized)
     localResolvedElementJzodSchemaBasedOnValue, 
     currentValueObjectAtKey, 
@@ -1315,22 +1366,37 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
     resolvedTypeIsObjectOrArrayOrAny?
      displayAsCodeEditor ? (
       <>
-        {/* {props.submitButton}
-        JzodElementEditor rendering as JzodElementEditorReactCodeMirror 1 */}
-        <JzodElementEditorReactCodeMirror
-          formikRootLessListKey={formikRootLessListKey}
-          initialValue={JSON.stringify(currentValueObjectAtKey, null, 2)}
-          codeMirrorValue={codeMirrorValue}
-          setCodeMirrorValue={setCodeMirrorValue}
-          codeMirrorIsValidJson={codeMirrorIsValidJson}
-          setCodeMirrorIsValidJson={setCodeMirrorIsValidJson}
-          rootLessListKey={props.rootLessListKey}
-          rootLessListKeyArray={props.rootLessListKeyArray}
-          hidden={!displayAsCodeEditor}
-          insideAny={props.insideAny}
-          isUnderTest={isUnderTest}
-          displayAsStructuredElementSwitch={displayAsStructuredElementSwitch}
-        />
+        <span
+          style={{
+            display: "flex",
+            alignItems: "flex-start",
+            width: "100%",
+          }}
+        >
+          <span style={{ flexGrow: 1, minWidth: 0 }}>
+            {/* {props.submitButton}
+            JzodElementEditor rendering as JzodElementEditorReactCodeMirror 1 */}
+            <JzodElementEditorReactCodeMirror
+              formikRootLessListKey={formikRootLessListKey}
+              initialValue={JSON.stringify(currentValueObjectAtKey, null, 2)}
+              codeMirrorValue={codeMirrorValue}
+              setCodeMirrorValue={setCodeMirrorValue}
+              codeMirrorIsValidJson={codeMirrorIsValidJson}
+              setCodeMirrorIsValidJson={setCodeMirrorIsValidJson}
+              rootLessListKey={props.rootLessListKey}
+              rootLessListKeyArray={props.rootLessListKeyArray}
+              hidden={!displayAsCodeEditor}
+              insideAny={props.insideAny}
+              isUnderTest={isUnderTest}
+              displayAsStructuredElementSwitch={displayAsStructuredElementSwitch}
+            />
+          </span>
+          {mergedExtraToolsButtons && (
+            <span style={{ marginLeft: "8px", display: "inline-flex", alignItems: "center" }}>
+              {mergedExtraToolsButtons}
+            </span>
+          )}
+        </span>
       </>
     ) : displayWithoutFrame ? (
       <>
@@ -1400,6 +1466,11 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
             {!localResolvedElementJzodSchemaBasedOnValue?.tag?.value?.display
               ?.objectHideDeleteButton && props.deleteButtonElement}
             {mainElement}
+            {mergedExtraToolsButtons && (
+              <span style={{ marginLeft: "8px", display: "inline-flex", alignItems: "center" }}>
+                {mergedExtraToolsButtons}
+              </span>
+            )}
           </span>
         ) : displayWithoutFrame ? (
           <div

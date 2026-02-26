@@ -1,7 +1,4 @@
-import { useState } from 'react';
 
-import { ChevronLeftIcon, ChevronRightIcon, Edit, EditOff } from '../Themes/MaterialSymbolWrappers';
-import { default as MuiAppBar, AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
 import {
   Box,
   Button,
@@ -10,18 +7,19 @@ import {
   Toolbar,
   Tooltip
 } from '@mui/material';
+import { default as MuiAppBar, AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
 import { styled } from '@mui/material/styles';
+import { ChevronLeftIcon, ChevronRightIcon, Edit, EditOff } from '../Themes/MaterialSymbolWrappers';
 
-import { defaultMiroirModelEnvironment, defaultSelfApplicationDeploymentMap, LoggerInterface, MiroirLoggerFactory, MiroirMenuItem, noValue } from 'miroir-core';
+import { LoggerInterface, MiroirLoggerFactory, MiroirMenuItem } from 'miroir-core';
 
 import { Link, useNavigate } from 'react-router-dom';
 import { packageName } from '../../../../constants.js';
 import { cleanLevel } from '../../constants.js';
 import { useMiroirTheme } from '../../contexts/MiroirThemeContext.js';
-import { useDomainControllerService, useMiroirContextService, useSnackbar } from '../../MiroirContextReactProvider.js';
+import { useDomainControllerService, useMiroirContextService } from '../../MiroirContextReactProvider.js';
 import { usePageConfiguration } from '../../services/index.js';
 import { ThemedIcon, ThemedIconButton } from '../Themes/IconComponents.js';
-import { ActionButtonWithSnackbar } from './ActionButtonWithSnackbar.js';
 import { SidebarWidth } from './SidebarSection.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -42,22 +40,22 @@ const appbarItems: (MiroirMenuItem & { targetRoot?: string })[] = [
       name: "search",
     },
   },
-  // {
-  //   miroirMenuItemType: "miroirMenuItemLink",
-  //   label: "Transformer Builder",
-  //   targetRoot: "transformerBuilder",
-  //   section: "model",
-  //   selfApplication: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e", // not used
-  //   reportUuid: "c9ea3359-690c-4620-9603-b5b402e4a2b9", // not used
-  //   icon: {
-  //     iconType: "mui",
-  //     name: "build",
-  //     superImpose: {
-  //       letter: "T",
-  //       color: "#FF0000",
-  //     },
-  //   },
-  // },
+  {
+    miroirMenuItemType: "miroirMenuItemLink",
+    label: "Transformer Builder",
+    targetRoot: "transformerBuilder",
+    section: "model",
+    selfApplication: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e", // not used
+    reportUuid: "c9ea3359-690c-4620-9603-b5b402e4a2b9", // not used
+    icon: {
+      iconType: "mui",
+      name: "build",
+      superImpose: {
+        letter: "T",
+        color: "#FF0000",
+      },
+    },
+  },
   // {
   //   "label": "runners",
   //   "section": "model",

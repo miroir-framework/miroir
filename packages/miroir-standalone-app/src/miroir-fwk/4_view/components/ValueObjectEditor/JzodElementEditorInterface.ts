@@ -80,6 +80,7 @@ export interface JzodArrayEditorProps extends JzodEditorPropsRoot {
   indentLevel?: number;
   itemsOrder: any[];
   displayAsStructuredElementSwitch?: JSX.Element; // used to display switches in the editor
+  extraToolsButtons?: JSX.Element; // used to display extra tool buttons on the title line
   maxRenderDepth?: number; // Optional max depth for initial rendering, default 1
 }
 

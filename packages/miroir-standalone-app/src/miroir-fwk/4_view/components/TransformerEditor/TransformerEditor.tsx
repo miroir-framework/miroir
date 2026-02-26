@@ -96,17 +96,17 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
     applicationDeploymentMap
   );
 
-  const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState> =
-      getMemoizedReduxDeploymentsStateSelectorMap();
-  const deploymentEntityState: ReduxDeploymentsState = useSelector(
-    (state: ReduxStateWithUndoRedo) =>
-      deploymentEntityStateSelectorMap.extractState(
-        state.presentModelSnapshot.current,
-        applicationDeploymentMap,
-        () => ({}),
-        currentMiroirModelEnvironment
-      )
-  );
+  // const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState> =
+  //     getMemoizedReduxDeploymentsStateSelectorMap();
+  // const deploymentEntityState: ReduxDeploymentsState = useSelector(
+  //   (state: ReduxStateWithUndoRedo) =>
+  //     deploymentEntityStateSelectorMap.extractState(
+  //       state.presentModelSnapshot.current,
+  //       applicationDeploymentMap,
+  //       () => ({}),
+  //       currentMiroirModelEnvironment
+  //     )
+  // );
   
   // Ref for debouncing transformer definition updates when mode='here'
   const transformerUpdateTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);

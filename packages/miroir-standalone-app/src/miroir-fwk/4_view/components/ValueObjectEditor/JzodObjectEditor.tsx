@@ -20,10 +20,8 @@ import {
   resolveJzodSchemaReferenceInContext,
   resolvePathOnObject,
   SyncBoxedExtractorOrQueryRunnerMap,
-  transformer_extended_apply_wrapper,
   Uuid,
   type ApplicationDeploymentMap,
-  type TransformerReturnType
 } from "miroir-core";
 
 import { BlobEditorField } from "./BlobEditorField";
@@ -1315,59 +1313,6 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
                 </>
               )}
           </span>
-          {/* custom transformer for transformers (transform Entity Instance Transformer to an Entity Instance List Transformer) */}
-          {currentTypeCheckKeyMap?.resolvedSchema &&
-            currentTypeCheckKeyMap?.resolvedSchema.tag &&
-            currentTypeCheckKeyMap.resolvedSchema.tag.value &&
-            currentTypeCheckKeyMap.resolvedSchema.tag.value.editorButton && (
-              <span>
-                {(() => {
-                  // log.info("JzodObjectEditor rendering editorButton",
-                  //   "rootLessListKey", rootLessListKey,
-                  //   "editorButton", currentTypeCheckKeyMap.resolvedSchema.tag.value.editorButton,
-                  //   "tag.value", JSON.stringify(currentTypeCheckKeyMap.resolvedSchema.tag.value)
-                  // );
-                  return null;
-                })()}
-                {/* {JSON.stringify((currentTypeCheckKeyMap?.resolvedSchema.tag as any)?.value) ??
-                    "tag undefined!"} */}
-                <button
-                  type="button"
-                  onClick={(e: any) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    log.info("editorButton transformer button clicked", e);
-                    console.log("editorButton transformer button clicked", e);
-                    const result: TransformerReturnType<any> = transformer_extended_apply_wrapper(
-                      context.miroirContext.miroirActivityTracker, // activityTracker
-                      "runtime", // step
-                      [], // transformerPath
-                      currentTypeCheckKeyMap.resolvedSchema.tag?.value?.editorButton?.label, // label
-                      currentTypeCheckKeyMap.resolvedSchema.tag?.value?.editorButton?.transformer, // transformer
-                      currentApplicationModelEnvironment,
-                      {}, // queryParams
-                      { originTransformer: currentValueObjectAtKey }, // contextResults - pass the instance to transform
-                      "value" // resolveBuildTransformersTo
-                    );
-                    if (result.status === "error") {
-                      log.error("editorButton transformer error:", result.message);
-                      console.error("editorButton transformer error:", result.message);
-                    } else {
-                      // Invoke onChangeVector callback if registered for this field
-                      if (onChangeVector?.[rootLessListKey]) {
-                        onChangeVector[rootLessListKey](result, rootLessListKey);
-                      }
-                      formik.setFieldValue(reportSectionPathAsString, result);
-                    }
-                    log.info("editorButton transformer button clicked, result:", result);
-                  }}
-                  // name={currentTypeCheckKeyMap.resolvedSchema.tag.value.editorButton.label}
-                  // role="button"
-                >
-                  {(currentTypeCheckKeyMap?.resolvedSchema.tag as any)?.value.editorButton.label}
-                </button>
-              </span>
-            )}
           {/* extra buttons */}
           {props.extraToolsButtons && <span>{props.extraToolsButtons}</span>}
           <ThemedDeleteButtonContainer>

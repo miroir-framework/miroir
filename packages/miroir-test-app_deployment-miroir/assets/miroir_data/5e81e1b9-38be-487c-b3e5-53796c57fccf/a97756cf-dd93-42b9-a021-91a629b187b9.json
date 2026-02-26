@@ -138,24 +138,6 @@
             "relativePath": "transformer_inner_label"
           }
         },
-        "tag": {
-          "value": {
-            "editable": true,
-            "editorButton": {
-              "label": "Apply Transformer to a List",
-              "transformer": {
-                "transformerType": "createObject",
-                "definition": {
-                  "transformerType": "mapList",
-                  "elementTransformer": {
-                    "transformerType": "getFromContext",
-                    "referenceName": "originTransformer"
-                  }
-                }
-              }
-            }
-          }
-        },
         "definition": {
           "interpolation": {
             "type": "enum",
