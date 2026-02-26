@@ -28,7 +28,6 @@ export type InitialFormValue<T extends Record<string, any>> = {
 
 // #
 export type FormMLSchema =
-  // | JzodObject
   | {
       formMLSchemaType: "mlSchema";
       mlSchema: JzodObject;

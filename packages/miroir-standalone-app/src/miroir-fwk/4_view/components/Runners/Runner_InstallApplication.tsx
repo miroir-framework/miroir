@@ -150,7 +150,6 @@ export const Runner_InstallApplication: React.FC<DeployApplicationRunnerProps> =
                     type: "object",
                     definition: {
                       emulatedServerType: { type: "literal", definition: "indexedDb" },
-                      // indexedDbName: { type: "string" },
                     },
                   },
                   filesystemDbStoreSectionConfiguration: {
@@ -195,28 +194,24 @@ export const Runner_InstallApplication: React.FC<DeployApplicationRunnerProps> =
                       {
                         type: "schemaReference",
                         definition: {
-                          // absolutePath: miroirFundamentalJzodSchemaUuid,
                           relativePath: "indexedDbStoreSectionConfiguration",
                         },
                       },
                       {
                         type: "schemaReference",
                         definition: {
-                          // absolutePath: miroirFundamentalJzodSchemaUuid,
                           relativePath: "filesystemDbStoreSectionConfiguration",
                         },
                       },
                       {
                         type: "schemaReference",
                         definition: {
-                          // absolutePath: miroirFundamentalJzodSchemaUuid,
                           relativePath: "sqlDbStoreSectionConfiguration",
                         },
                       },
                       {
                         type: "schemaReference",
                         definition: {
-                          // absolutePath: miroirFundamentalJzodSchemaUuid,
                           relativePath: "mongoDbStoreSectionConfiguration",
                         },
                       },
@@ -224,7 +219,6 @@ export const Runner_InstallApplication: React.FC<DeployApplicationRunnerProps> =
                   },
                 },
                 definition: {
-                  // absolutePath: miroirFundamentalJzodSchemaUuid,
                   relativePath: "storeSectionConfiguration",
                 },
               },
@@ -311,10 +305,6 @@ export const Runner_InstallApplication: React.FC<DeployApplicationRunnerProps> =
                     transformerType: "getFromParameters",
                     referencePath: ["deployApplication", "applicationBundle", "applicationName"],
                   },
-                  // {
-                  //   transformerType: "mustacheStringTemplate",
-                  //   definition: "{{deployApplication.applicationName}}",
-                  // },
                   "_model",
                 ],
               },
@@ -332,10 +322,6 @@ export const Runner_InstallApplication: React.FC<DeployApplicationRunnerProps> =
                     transformerType: "getFromParameters",
                     referencePath: ["deployApplication", "applicationBundle", "applicationName"],
                   },
-                  // {
-                  //   transformerType: "mustacheStringTemplate",
-                  //   definition: "{{deployApplication.applicationName}}",
-                  // },
                   "_data",
                 ],
               },
@@ -402,10 +388,6 @@ export const Runner_InstallApplication: React.FC<DeployApplicationRunnerProps> =
                     transformerType: "getFromParameters",
                     referencePath: ["deployApplication", "applicationBundle", "applicationName"],
                   },
-                  // {
-                  //   transformerType: "getFromParameters",
-                  //   referencePath: ["deployApplication", "applicationName"],
-                  // },
                   "_model",
                 ],
               },
@@ -502,25 +484,25 @@ export const Runner_InstallApplication: React.FC<DeployApplicationRunnerProps> =
       },
     };
 
-    const effectiveSelfApplication = {
-        ...selfApplicationLibrary,
-        uuid: testSelfApplicationUuid,
-        name: {
-          transformerType: "getFromParameters",
-          referencePath: ["deployApplication", "applicationBundle", "applicationName"],
-        } as any,
-        defaultLabel: {
-          transformerType: "mustacheStringTemplate",
-          interpolation: "build",
-          definition: "The {{deployApplication.applicationBundle.applicationName}} selfApplication",
-        } as any,
-        description: {
-          transformerType: "mustacheStringTemplate",
-          interpolation: "build",
-          definition:
-            "The model and data of the {{deployApplication.applicationBundle.applicationName}} selfApplication",
-        } as any,
-      }
+    // const effectiveSelfApplication = {
+    //   ...selfApplicationLibrary,
+    //   uuid: testSelfApplicationUuid,
+    //   name: {
+    //     transformerType: "getFromParameters",
+    //     referencePath: ["deployApplication", "applicationBundle", "applicationName"],
+    //   } as any,
+    //   defaultLabel: {
+    //     transformerType: "mustacheStringTemplate",
+    //     interpolation: "build",
+    //     definition: "The {{deployApplication.applicationBundle.applicationName}} selfApplication",
+    //   } as any,
+    //   description: {
+    //     transformerType: "mustacheStringTemplate",
+    //     interpolation: "build",
+    //     definition:
+    //       "The model and data of the {{deployApplication.applicationBundle.applicationName}} selfApplication",
+    //   } as any,
+    // };
     const initParametersForTest: InitApplicationParameters = {
       dataStoreType: "app", // TODO: comparison between deployment and selfAdminConfigurationDeployment
       // metaModel: defaultMiroirMetaModel,

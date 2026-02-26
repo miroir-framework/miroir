@@ -54,7 +54,9 @@ export function getCreateEntityActionTemplate(
           actionType: "compositeRunBoxedQueryAction",
           actionLabel: "getDeploymentForApplication",
           nameGivenToResult: "deploymentInfo",
-          queryTemplate: {
+          application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+          endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+          payload: {
             actionType: "runBoxedQueryAction",
             application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
             endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",

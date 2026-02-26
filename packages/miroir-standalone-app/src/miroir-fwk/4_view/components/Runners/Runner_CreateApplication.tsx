@@ -122,12 +122,38 @@ export const Runner_CreateApplication: React.FC<CreateApplicationToolProps> = ({
                     type: "object",
                     definition: {
                       emulatedServerType: { type: "literal", definition: "indexedDb" },
+                      applicationName: {
+                        type: "string",
+                        tag: {
+                          value: {
+                            defaultLabel: "Application Folder Path",
+                            display: {
+                              string: {
+                                format: "folder",
+                              }
+                            }
+                          },
+                        },
+                      },
                     },
                   },
                   filesystemDbStoreSectionConfiguration: {
                     type: "object",
                     definition: {
                       emulatedServerType: { type: "literal", definition: "filesystem" },
+                      applicationName: {
+                        type: "string",
+                        tag: {
+                          value: {
+                            defaultLabel: "Application Folder Path",
+                            display: {
+                              string: {
+                                format: "folder",
+                              }
+                            }
+                          },
+                        },
+                      },
                     },
                   },
                   sqlDbStoreSectionConfiguration: {
@@ -135,6 +161,18 @@ export const Runner_CreateApplication: React.FC<CreateApplicationToolProps> = ({
                     definition: {
                       emulatedServerType: { type: "literal", definition: "sql" },
                       connectionString: { type: "string" },
+                      applicationName: {
+                        type: "string",
+                        tag: {
+                          value: {
+                            defaultLabel: "Application Schema Name",
+                            initializeTo: {
+                              initializeToType: "value",
+                              value: "test_application_" + formatYYYYMMDD_HHMMSS(new Date()),
+                            }
+                          },
+                        },
+                      },
                     },
                   },
                   mongoDbStoreSectionConfiguration: {
@@ -142,6 +180,18 @@ export const Runner_CreateApplication: React.FC<CreateApplicationToolProps> = ({
                     definition: {
                       emulatedServerType: { type: "literal", definition: "mongodb" },
                       connectionString: { type: "string" },
+                      applicationName: {
+                        type: "string",
+                        tag: {
+                          value: {
+                            defaultLabel: "Database Name",
+                            initializeTo: {
+                              initializeToType: "value",
+                              value: "test_application_" + formatYYYYMMDD_HHMMSS(new Date()),
+                            }
+                          },
+                        },
+                      },
                     },
                   },
                   storeSectionConfiguration: {
@@ -179,14 +229,14 @@ export const Runner_CreateApplication: React.FC<CreateApplicationToolProps> = ({
                   relativePath: "storeSectionConfiguration",
                 },
               },
-              applicationName: {
-                type: "string",
-                tag: {
-                  value: {
-                    defaultLabel: "Application Name",
-                  },
-                },
-              },
+              // applicationName: {
+              //   type: "string",
+              //   tag: {
+              //     value: {
+              //       defaultLabel: "Application Name or Folder Path",
+              //     },
+              //   },
+              // },
             },
           },
         },
@@ -198,23 +248,25 @@ export const Runner_CreateApplication: React.FC<CreateApplicationToolProps> = ({
   const initialFormValue = useMemo(
     () => ({
       createApplicationAndDeployment: {
-        ...getDefaultValueForJzodSchemaWithResolutionNonHook(
-          "build",
-          (formMLSchema as any).mlSchema,
-          undefined, // rootObject
-          "", // rootLessListKey,
-          undefined, // No need to pass currentDefaultValue here
-          [], // currentPath on value is root
-          false, // forceOptional
-          noValue.uuid, // storedRunner.application,
-          defaultSelfApplicationDeploymentMap,
-          runnerDeploymentUuid,
-          miroirModelEnvironment,
-          {}, // transformerParams
-          {}, // contextResults
-          deploymentEntityState, // TODO: keep this? improve so that it does not depend on entire deployment state
-        ).createApplicationAndDeployment,
-        applicationName: "test_application_" + formatYYYYMMDD_HHMMSS(new Date()),
+        applicationStorage: {
+          ...getDefaultValueForJzodSchemaWithResolutionNonHook(
+            "build",
+            (formMLSchema as any).mlSchema,
+            undefined, // rootObject
+            "", // rootLessListKey,
+            undefined, // No need to pass currentDefaultValue here
+            [], // currentPath on value is root
+            false, // forceOptional
+            noValue.uuid, // storedRunner.application,
+            defaultSelfApplicationDeploymentMap,
+            runnerDeploymentUuid,
+            miroirModelEnvironment,
+            {}, // transformerParams
+            {}, // contextResults
+            deploymentEntityState, // TODO: keep this? improve so that it does not depend on entire deployment state
+          ).createApplicationAndDeployment.applicationStorage,
+          // applicationName: "test_application_" + formatYYYYMMDD_HHMMSS(new Date()),
+        }
       },
     }),
     [],
@@ -280,7 +332,7 @@ export const Runner_CreateApplication: React.FC<CreateApplicationToolProps> = ({
                 args: [
                   {
                     transformerType: "mustacheStringTemplate",
-                    definition: "{{createApplicationAndDeployment.applicationName}}",
+                    definition: "{{createApplicationAndDeployment.applicationStorage.applicationName}}",
                   },
                   "_model",
                 ],
@@ -301,7 +353,7 @@ export const Runner_CreateApplication: React.FC<CreateApplicationToolProps> = ({
                 args: [
                   {
                     transformerType: "mustacheStringTemplate",
-                    definition: "{{createApplicationAndDeployment.applicationName}}",
+                    definition: "{{createApplicationAndDeployment.applicationStorage.applicationName}}",
                   },
                   "_data",
                 ],
@@ -337,7 +389,7 @@ export const Runner_CreateApplication: React.FC<CreateApplicationToolProps> = ({
               },
               schema: {
                 transformerType: "mustacheStringTemplate",
-                definition: "{{createApplicationAndDeployment.applicationName}}",
+                definition: "{{createApplicationAndDeployment.applicationStorage.applicationName}}",
               }, // TODO: separate model and data schemas
             },
             data: {
@@ -352,7 +404,7 @@ export const Runner_CreateApplication: React.FC<CreateApplicationToolProps> = ({
               },
               schema: {
                 transformerType: "mustacheStringTemplate",
-                definition: "{{createApplicationAndDeployment.applicationName}}",
+                definition: "{{createApplicationAndDeployment.applicationStorage.applicationName}}",
               }, // TODO: separate model and data schemas
             },
           },
@@ -374,7 +426,7 @@ export const Runner_CreateApplication: React.FC<CreateApplicationToolProps> = ({
                   //     "indexedDbName",
                   //   ],
                   // },
-                  prefix,
+                  // prefix,
                   "admin",
                 ],
               },
@@ -393,10 +445,10 @@ export const Runner_CreateApplication: React.FC<CreateApplicationToolProps> = ({
                   //   ],
                   // },
                   // "/",
-                  prefix,
+                  // prefix,
                   {
                     transformerType: "getFromParameters",
-                    referencePath: ["createApplicationAndDeployment", "applicationName"],
+                    referencePath: ["createApplicationAndDeployment", "applicationStorage", "applicationName"],
                   },
                   "_model",
                 ],
@@ -416,10 +468,10 @@ export const Runner_CreateApplication: React.FC<CreateApplicationToolProps> = ({
                   //   ],
                   // },
                   // "/",
-                  prefix,
+                  // prefix,
                   {
                     transformerType: "getFromParameters",
-                    referencePath: ["createApplicationAndDeployment", "applicationName"],
+                    referencePath: ["createApplicationAndDeployment", "applicationStorage", "applicationName"],
                   },
                   "_data",
                 ],
@@ -446,7 +498,7 @@ export const Runner_CreateApplication: React.FC<CreateApplicationToolProps> = ({
                   prefix,
                   {
                     transformerType: "getFromParameters",
-                    referencePath: ["createApplicationAndDeployment", "applicationName"],
+                    referencePath: ["createApplicationAndDeployment", "applicationStorage", "applicationName"],
                   },
                   "_model",
                 ],
@@ -460,7 +512,7 @@ export const Runner_CreateApplication: React.FC<CreateApplicationToolProps> = ({
                   prefix,
                   {
                     transformerType: "getFromParameters",
-                    referencePath: ["createApplicationAndDeployment", "applicationName"],
+                    referencePath: ["createApplicationAndDeployment", "applicationStorage", "applicationName"],
                   },
                   "_data",
                 ],
@@ -494,18 +546,18 @@ export const Runner_CreateApplication: React.FC<CreateApplicationToolProps> = ({
         name: {
           transformerType: "mustacheStringTemplate",
           interpolation: "build",
-          definition: "{{createApplicationAndDeployment.applicationName}}",
+          definition: "{{createApplicationAndDeployment.applicationStorage.applicationName}}",
         } as any,
         defaultLabel: {
           transformerType: "mustacheStringTemplate",
           interpolation: "build",
-          definition: "The {{createApplicationAndDeployment.applicationName}} selfApplication",
+          definition: "The {{createApplicationAndDeployment.applicationStorage.applicationName}} selfApplication",
         } as any,
         description: {
           transformerType: "mustacheStringTemplate",
           interpolation: "build",
           definition:
-            "The model and data of the {{createApplicationAndDeployment.applicationName}} selfApplication",
+            "The model and data of the {{createApplicationAndDeployment.applicationStorage.applicationName}} selfApplication",
         } as any,
       },
       // deployment: {
@@ -522,7 +574,7 @@ export const Runner_CreateApplication: React.FC<CreateApplicationToolProps> = ({
           transformerType: "mustacheStringTemplate",
           interpolation: "build",
           definition:
-            "The master branch of the {{createApplicationAndDeployment.applicationName}} SelfApplication",
+            "The master branch of the {{createApplicationAndDeployment.applicationStorage.applicationName}} SelfApplication",
         },
       } as any,
       // applicationStoreBasedConfiguration: {
@@ -538,7 +590,7 @@ export const Runner_CreateApplication: React.FC<CreateApplicationToolProps> = ({
           transformerType: "mustacheStringTemplate",
           interpolation: "build",
           definition:
-            "Initial {{createApplicationAndDeployment.applicationName}} selfApplication version",
+            "Initial {{createApplicationAndDeployment.applicationStorage.applicationName}} selfApplication version",
         },
       } as any,
     };
@@ -573,17 +625,17 @@ export const Runner_CreateApplication: React.FC<CreateApplicationToolProps> = ({
                       name: {
                         transformerType: "mustacheStringTemplate",
                         interpolation: "build",
-                        definition: `{{createApplicationAndDeployment.applicationName}}`,
+                        definition: `{{createApplicationAndDeployment.applicationStorage.applicationName}}`,
                       } as any,
                       defaultLabel: {
                         transformerType: "mustacheStringTemplate",
                         interpolation: "build",
-                        definition: `The {{createApplicationAndDeployment.applicationName}} Admin Application.`,
+                        definition: `The {{createApplicationAndDeployment.applicationStorage.applicationName}} Admin Application.`,
                       } as any,
                       description: {
                         transformerType: "mustacheStringTemplate",
                         interpolation: "build",
-                        definition: `This Admin Application contains the {{createApplicationAndDeployment.applicationName}} model and data.`,
+                        definition: `This Admin Application contains the {{createApplicationAndDeployment.applicationStorage.applicationName}} model and data.`,
                       } as any,
                       selfApplication: testSelfApplicationUuid,
                     } as AdminApplication,
@@ -650,17 +702,17 @@ export const Runner_CreateApplication: React.FC<CreateApplicationToolProps> = ({
                       name: {
                         transformerType: "mustacheStringTemplate",
                         interpolation: "build",
-                        definition: `Deployment of application {{createApplicationAndDeployment.applicationName}}`,
+                        definition: `Deployment of application {{createApplicationAndDeployment.applicationStorage.applicationName}}`,
                       } as any,
                       defaultLabel: {
                         transformerType: "mustacheStringTemplate",
                         interpolation: "build",
-                        definition: `The deployment of application {{createApplicationAndDeployment.applicationName}}`,
+                        definition: `The deployment of application {{createApplicationAndDeployment.applicationStorage.applicationName}}`,
                       } as any,
                       description: {
                         transformerType: "mustacheStringTemplate",
                         interpolation: "build",
-                        definition: `The description of deployment of application {{createApplicationAndDeployment.applicationName}}`,
+                        definition: `The description of deployment of application {{createApplicationAndDeployment.applicationStorage.applicationName}}`,
                       } as any,
                       selfApplication: testSelfApplicationUuid,
                       configuration: sqltestDeploymentStorageConfigurationTemplate as any,
