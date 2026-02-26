@@ -2,7 +2,7 @@
   "uuid": "4ded1479-1331-4f96-8723-9a797ba3924b",
   "name": "ifThenElse",
   "defaultLabel": "ifThenElse",
-  "description": "Returns different transformer results based on comparing values using operators (==, !=, <, <=, >, >=, isNull, isNotNull, !). isNull/isNotNull check for null or undefined (JS loose equality). ! applies JS boolean NOT semantics (any falsy value: null, undefined, 0, false, \"\"). Unary operators (isNull, isNotNull, !) do not use the right operand.",
+  "description": "Returns different transformer results based on comparing values using operators (==, !=, <, <=, >, >=, &&, ||, isNull, isNotNull, !). isNull/isNotNull check for null or undefined (JS loose equality). ! applies JS boolean NOT semantics (any falsy value: null, undefined, 0, false, \"\"). && and || use JS truthiness on left and right operands. Unary operators (isNull, isNotNull, !) do not use the right operand.",
   "parentUuid": "a557419d-a288-4fb8-8a1e-971c86c113b8",
   "parentDefinitionVersionUuid": "54a16d69-c1f0-4dd7-aba4-a2cda883586c",
   "parentName": "TransformerDefinition",
@@ -15,7 +15,7 @@
     "transformerParameterSchema": {
       "transformerType": {
         "type": "enum",
-        "definition": ["==", "!=", "<", "<=", ">", ">=", "isNull", "isNotNull", "!"],
+        "definition": ["==", "!=", "<", "<=", ">", ">=", "&&", "||", "isNull", "isNotNull", "!"],
         "tag": {
           "value": {
             "defaultLabel": "Operator",

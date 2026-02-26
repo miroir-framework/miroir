@@ -1368,6 +1368,76 @@
                 },
                 "transformerParams": {},
                 "expectedValue": "is truthy"
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "ifThenElse && - both operands truthy (then branch)",
+                "transformerName": "ifThenElseAndTruthy",
+                "transformer": {
+                  "transformerType": "&&",
+                  "interpolation": "runtime",
+                  "left": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "mlSchema": { "type": "number" },
+                    "value": 1
+                  },
+                  "right": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "mlSchema": { "type": "string" },
+                    "value": "non-empty"
+                  },
+                  "then": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "mlSchema": { "type": "string" },
+                    "value": "both truthy"
+                  },
+                  "else": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "mlSchema": { "type": "string" },
+                    "value": "at least one falsy"
+                  }
+                },
+                "transformerParams": {},
+                "expectedValue": "both truthy"
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "ifThenElse || - both operands falsy (else branch)",
+                "transformerName": "ifThenElseOrFalsy",
+                "transformer": {
+                  "transformerType": "||",
+                  "interpolation": "runtime",
+                  "left": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "mlSchema": { "type": "number" },
+                    "value": 0
+                  },
+                  "right": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "mlSchema": { "type": "string" },
+                    "value": ""
+                  },
+                  "then": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "mlSchema": { "type": "string" },
+                    "value": "at least one truthy"
+                  },
+                  "else": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "mlSchema": { "type": "string" },
+                    "value": "both falsy"
+                  }
+                },
+                "transformerParams": {},
+                "expectedValue": "both falsy"
               }
             ]
           },

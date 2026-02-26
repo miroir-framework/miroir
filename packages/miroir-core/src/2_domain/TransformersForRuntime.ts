@@ -2800,6 +2800,60 @@ export function handleTransformer_ifThenElse(
         );
       }
     }
+    case "&&": {
+      if (leftValue && rightValue) {
+        return defaultTransformers.transformer_extended_apply(
+          step,
+          [...transformerPath, "then"],
+          transformer.label ? transformer.label + "_then" : "then",
+          transformer.then,
+          resolveBuildTransformersTo,
+          modelEnvironment,
+          transformerParams,
+          contextResults,
+          reduxDeploymentsState
+        );
+      } else {
+        return defaultTransformers.transformer_extended_apply(
+          step,
+          [...transformerPath, "else"],
+          transformer.label ? transformer.label + "_else" : "else",
+          transformer.else,
+          resolveBuildTransformersTo,
+          modelEnvironment,
+          transformerParams,
+          contextResults,
+          reduxDeploymentsState
+        );
+      }
+    }
+    case "||": {
+      if (leftValue || rightValue) {
+        return defaultTransformers.transformer_extended_apply(
+          step,
+          [...transformerPath, "then"],
+          transformer.label ? transformer.label + "_then" : "then",
+          transformer.then,
+          resolveBuildTransformersTo,
+          modelEnvironment,
+          transformerParams,
+          contextResults,
+          reduxDeploymentsState
+        );
+      } else {
+        return defaultTransformers.transformer_extended_apply(
+          step,
+          [...transformerPath, "else"],
+          transformer.label ? transformer.label + "_else" : "else",
+          transformer.else,
+          resolveBuildTransformersTo,
+          modelEnvironment,
+          transformerParams,
+          contextResults,
+          reduxDeploymentsState
+        );
+      }
+    }
     case "isNull": {
       // Checks left == null (covers both null and undefined via JS loose equality).
       // JSON has no undefined, but runtime values may be undefined; isNull handles both.

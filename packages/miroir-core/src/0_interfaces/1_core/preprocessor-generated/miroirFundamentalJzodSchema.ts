@@ -2259,24 +2259,6 @@ export const miroirFundamentalJzodSchema = {
           },
           "context": {}
         },
-        "tag": {
-          "value": {
-            "editable": true,
-            "editorButton": {
-              "label": "Apply Transformer to a List",
-              "transformer": {
-                "transformerType": "createObject",
-                "definition": {
-                  "transformerType": "mapList",
-                  "elementTransformer": {
-                    "transformerType": "getFromContext",
-                    "referenceName": "originTransformer"
-                  }
-                }
-              }
-            }
-          }
-        },
         "definition": {
           "interpolation": {
             "type": "enum",
@@ -3653,6 +3635,8 @@ export const miroirFundamentalJzodSchema = {
               "<=",
               ">",
               ">=",
+              "&&",
+              "||",
               "isNull",
               "isNotNull",
               "!"
@@ -5292,6 +5276,8 @@ export const miroirFundamentalJzodSchema = {
               "<=",
               ">",
               ">=",
+              "&&",
+              "||",
               "isNull",
               "isNotNull",
               "!"
@@ -31490,25 +31476,6 @@ export const miroirFundamentalJzodSchema = {
             }
           }
         ],
-        "tag": {
-          "value": {
-            "editable": true,
-            "editorButton": {
-              "label": "Apply Transformer to a List",
-              "transformer": {
-                "transformerType": "createObject",
-                "definition": {
-                  "transformerType": "mapList",
-                  "elementTransformer": {
-                    "transformerType": "getFromContext",
-                    "referenceName": "originTransformer"
-                  }
-                }
-              }
-            },
-            "isTemplate": true
-          }
-        },
         "definition": {
           "interpolation": {
             "type": "union",
@@ -59991,25 +59958,6 @@ export const miroirFundamentalJzodSchema = {
             }
           }
         ],
-        "tag": {
-          "value": {
-            "editable": true,
-            "editorButton": {
-              "label": "Apply Transformer to a List",
-              "transformer": {
-                "transformerType": "createObject",
-                "definition": {
-                  "transformerType": "mapList",
-                  "elementTransformer": {
-                    "transformerType": "getFromContext",
-                    "referenceName": "originTransformer"
-                  }
-                }
-              }
-            },
-            "isTemplate": true
-          }
-        },
         "definition": {
           "interpolation": {
             "type": "enum",
@@ -74827,25 +74775,6 @@ export const miroirFundamentalJzodSchema = {
             }
           }
         ],
-        "tag": {
-          "value": {
-            "editable": true,
-            "editorButton": {
-              "label": "Apply Transformer to a List",
-              "transformer": {
-                "transformerType": "createObject",
-                "definition": {
-                  "transformerType": "mapList",
-                  "elementTransformer": {
-                    "transformerType": "getFromContext",
-                    "referenceName": "originTransformer"
-                  }
-                }
-              }
-            },
-            "isTemplate": true
-          }
-        },
         "definition": {
           "interpolation": {
             "type": "enum",
