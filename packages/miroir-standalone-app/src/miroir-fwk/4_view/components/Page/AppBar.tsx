@@ -30,6 +30,18 @@ MiroirLoggerFactory.registerLoggerToStart(
 const appbarItems: (MiroirMenuItem & { targetRoot?: string })[] = [
   {
     miroirMenuItemType: "miroirMenuItemLink",
+    label: "Model",
+    targetRoot: "model",
+    section: "model",
+    selfApplication: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
+    reportUuid: "c9ea3359-690c-4620-9603-b5b402e4a2b9",
+    icon: {
+      iconType: "mui",
+      name: "accountTree",
+    },
+  },
+  {
+    miroirMenuItemType: "miroirMenuItemLink",
     label: "Search",
     targetRoot: "search",
     section: "model",
