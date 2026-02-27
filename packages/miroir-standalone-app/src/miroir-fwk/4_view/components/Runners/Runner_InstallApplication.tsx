@@ -271,218 +271,218 @@ export const Runner_InstallApplication: React.FC<DeployApplicationRunnerProps> =
 
   const createApplicationActionTemplate = useMemo((): CompositeActionTemplate => {
 
-    const defaultDirectory = "tmp/miroir_data_storage";
+  const defaultDirectory = "tmp/miroir_data_storage";
 
-    const sqltestDeploymentStorageConfigurationTemplate: TransformerForBuildPlusRuntime = {
-      transformerType: "case",
-      discriminator: {
-        transformerType: "getFromParameters",
-        referencePath: ["deployApplication", "applicationStorage", "emulatedServerType"],
-      },
-      whens: [
-        // mongodb
-        {
-          when: "mongodb",
-          then: {
-            admin: {
-              emulatedServerType: "mongodb",
-              connectionString: {
-                transformerType: "getFromParameters",
-                referencePath: ["deployApplication", "applicationStorage", "connectionString"],
-              },
-              database: "miroirAdmin",
+  const sqltestDeploymentStorageConfigurationTemplate: TransformerForBuildPlusRuntime = {
+    transformerType: "case",
+    discriminator: {
+      transformerType: "getFromParameters",
+      referencePath: ["deployApplication", "applicationStorage", "emulatedServerType"],
+    },
+    whens: [
+      // mongodb
+      {
+        when: "mongodb",
+        then: {
+          admin: {
+            emulatedServerType: "mongodb",
+            connectionString: {
+              transformerType: "getFromParameters",
+              referencePath: ["deployApplication", "applicationStorage", "connectionString"],
             },
-            model: {
-              emulatedServerType: "mongodb",
-              connectionString: {
-                transformerType: "getFromParameters",
-                referencePath: ["deployApplication", "applicationStorage", "connectionString"],
-              },
-              database: {
-                transformerType: "+",
-                args: [
-                  {
-                    transformerType: "getFromParameters",
-                    referencePath: ["deployApplication", "applicationBundle", "applicationName"],
-                  },
-                  "_model",
-                ],
-              },
+            database: "miroirAdmin",
+          },
+          model: {
+            emulatedServerType: "mongodb",
+            connectionString: {
+              transformerType: "getFromParameters",
+              referencePath: ["deployApplication", "applicationStorage", "connectionString"],
             },
-            data: {
-              emulatedServerType: "mongodb",
-              connectionString: {
-                transformerType: "getFromParameters",
-                referencePath: ["deployApplication", "applicationStorage", "connectionString"],
-              },
-              database: {
-                transformerType: "+",
-                args: [
-                  {
-                    transformerType: "getFromParameters",
-                    referencePath: ["deployApplication", "applicationBundle", "applicationName"],
-                  },
-                  "_data",
-                ],
-              },
+            database: {
+              transformerType: "+",
+              args: [
+                {
+                  transformerType: "getFromParameters",
+                  referencePath: ["deployApplication", "applicationBundle", "applicationName"],
+                },
+                "_model",
+              ],
             },
           },
-        },
-        // sql
-        {
-          when: "sql",
-          then: {
-            admin: {
-              emulatedServerType: "sql",
-              connectionString: {
-                transformerType: "getFromParameters",
-                referencePath: ["deployApplication", "applicationStorage", "connectionString"],
-              },
-              schema: "miroirAdmin",
+          data: {
+            emulatedServerType: "mongodb",
+            connectionString: {
+              transformerType: "getFromParameters",
+              referencePath: ["deployApplication", "applicationStorage", "connectionString"],
             },
-            model: {
-              emulatedServerType: "sql",
-              connectionString: {
-                transformerType: "getFromParameters",
-                referencePath: ["deployApplication", "applicationStorage", "connectionString"],
-              },
-              schema: {
-                transformerType: "getFromParameters",
-                referencePath: ["deployApplication", "applicationBundle", "applicationName"],
-              }, // TODO: separate model and data schemas
-            },
-            data: {
-              emulatedServerType: "sql",
-              connectionString: {
-                transformerType: "getFromParameters",
-                referencePath: ["deployApplication", "applicationStorage", "connectionString"],
-              },
-              schema: {
-                transformerType: "getFromParameters",
-                referencePath: ["deployApplication", "applicationBundle", "applicationName"],
-              }, // TODO: separate model and data schemas
+            database: {
+              transformerType: "+",
+              args: [
+                {
+                  transformerType: "getFromParameters",
+                  referencePath: ["deployApplication", "applicationBundle", "applicationName"],
+                },
+                "_data",
+              ],
             },
           },
-        },
-        // indexedDb
-        {
-          when: "indexedDb",
-          then: {
-            admin: {
-              emulatedServerType: "indexedDb",
-              indexedDbName: {
-                transformerType: "+",
-                args: [
-                  prefix,
-                  "admin",
-                ],
-              },
-            },
-            model: {
-              emulatedServerType: "indexedDb",
-              indexedDbName: {
-                transformerType: "+",
-                args: [
-                  prefix,
-                  {
-                    transformerType: "getFromParameters",
-                    referencePath: ["deployApplication", "applicationBundle", "applicationName"],
-                  },
-                  "_model",
-                ],
-              },
-            },
-            data: {
-              emulatedServerType: "indexedDb",
-              indexedDbName: {
-                transformerType: "+",
-                args: [
-                  // {
-                  //   transformerType: "getFromParameters",
-                  //   referencePath: [
-                  //     "deployApplication",
-                  //     "applicationStorage",
-                  //     "indexedDbName",
-                  //   ],
-                  // },
-                  // "/",
-                  prefix,
-                  {
-                    transformerType: "getFromParameters",
-                    referencePath: ["deployApplication", "applicationBundle", "applicationName"],
-                  },
-                  // {
-                  //   transformerType: "getFromParameters",
-                  //   referencePath: ["deployApplication", "applicationName"],
-                  // },
-                  "_data",
-                ],
-              },
-            },
-          },
-        },
-        // filesystem
-        {
-          when: "filesystem",
-          then: {
-            admin: {
-              emulatedServerType: "filesystem",
-              directory: {
-                transformerType: "+",
-                args: [prefix, "admin"],
-              },
-            },
-            model: {
-              emulatedServerType: "filesystem",
-              directory: {
-                transformerType: "+",
-                args: [
-                  prefix,
-                  {
-                    transformerType: "getFromParameters",
-                    referencePath: ["deployApplication", "applicationBundle", "applicationName"],
-                  },
-                  "_model",
-                ],
-              },
-            },
-            data: {
-              emulatedServerType: "filesystem",
-              directory: {
-                transformerType: "+",
-                args: [
-                  prefix,
-                  {
-                    transformerType: "getFromParameters",
-                    referencePath: ["deployApplication", "applicationBundle", "applicationName"],
-                  },
-                  // {
-                  //   transformerType: "getFromParameters",
-                  //   referencePath: ["deployApplication", "applicationName"],
-                  // },
-                  "_data",
-                ],
-              },
-            },
-          },
-        },
-      ],
-      else: {
-        // default: filesystem
-        admin: {
-          emulatedServerType: "filesystem",
-          directory: defaultDirectory,
-        },
-        model: {
-          emulatedServerType: "filesystem",
-          directory: defaultDirectory,
-        },
-        data: {
-          emulatedServerType: "filesystem",
-          directory: defaultDirectory,
         },
       },
-    };
+      // sql
+      {
+        when: "sql",
+        then: {
+          admin: {
+            emulatedServerType: "sql",
+            connectionString: {
+              transformerType: "getFromParameters",
+              referencePath: ["deployApplication", "applicationStorage", "connectionString"],
+            },
+            schema: "miroirAdmin",
+          },
+          model: {
+            emulatedServerType: "sql",
+            connectionString: {
+              transformerType: "getFromParameters",
+              referencePath: ["deployApplication", "applicationStorage", "connectionString"],
+            },
+            schema: {
+              transformerType: "getFromParameters",
+              referencePath: ["deployApplication", "applicationBundle", "applicationName"],
+            }, // TODO: separate model and data schemas
+          },
+          data: {
+            emulatedServerType: "sql",
+            connectionString: {
+              transformerType: "getFromParameters",
+              referencePath: ["deployApplication", "applicationStorage", "connectionString"],
+            },
+            schema: {
+              transformerType: "getFromParameters",
+              referencePath: ["deployApplication", "applicationBundle", "applicationName"],
+            }, // TODO: separate model and data schemas
+          },
+        },
+      },
+      // indexedDb
+      {
+        when: "indexedDb",
+        then: {
+          admin: {
+            emulatedServerType: "indexedDb",
+            indexedDbName: {
+              transformerType: "+",
+              args: [
+                prefix,
+                "admin",
+              ],
+            },
+          },
+          model: {
+            emulatedServerType: "indexedDb",
+            indexedDbName: {
+              transformerType: "+",
+              args: [
+                prefix,
+                {
+                  transformerType: "getFromParameters",
+                  referencePath: ["deployApplication", "applicationBundle", "applicationName"],
+                },
+                "_model",
+              ],
+            },
+          },
+          data: {
+            emulatedServerType: "indexedDb",
+            indexedDbName: {
+              transformerType: "+",
+              args: [
+                // {
+                //   transformerType: "getFromParameters",
+                //   referencePath: [
+                //     "deployApplication",
+                //     "applicationStorage",
+                //     "indexedDbName",
+                //   ],
+                // },
+                // "/",
+                prefix,
+                {
+                  transformerType: "getFromParameters",
+                  referencePath: ["deployApplication", "applicationBundle", "applicationName"],
+                },
+                // {
+                //   transformerType: "getFromParameters",
+                //   referencePath: ["deployApplication", "applicationName"],
+                // },
+                "_data",
+              ],
+            },
+          },
+        },
+      },
+      // filesystem
+      {
+        when: "filesystem",
+        then: {
+          admin: {
+            emulatedServerType: "filesystem",
+            directory: {
+              transformerType: "+",
+              args: [prefix, "admin"],
+            },
+          },
+          model: {
+            emulatedServerType: "filesystem",
+            directory: {
+              transformerType: "+",
+              args: [
+                prefix,
+                {
+                  transformerType: "getFromParameters",
+                  referencePath: ["deployApplication", "applicationBundle", "applicationName"],
+                },
+                "_model",
+              ],
+            },
+          },
+          data: {
+            emulatedServerType: "filesystem",
+            directory: {
+              transformerType: "+",
+              args: [
+                prefix,
+                {
+                  transformerType: "getFromParameters",
+                  referencePath: ["deployApplication", "applicationBundle", "applicationName"],
+                },
+                // {
+                //   transformerType: "getFromParameters",
+                //   referencePath: ["deployApplication", "applicationName"],
+                // },
+                "_data",
+              ],
+            },
+          },
+        },
+      },
+    ],
+    else: {
+      // default: filesystem
+      admin: {
+        emulatedServerType: "filesystem",
+        directory: defaultDirectory,
+      },
+      model: {
+        emulatedServerType: "filesystem",
+        directory: defaultDirectory,
+      },
+      data: {
+        emulatedServerType: "filesystem",
+        directory: defaultDirectory,
+      },
+    },
+  };
 
     // const effectiveSelfApplication = {
     //   ...selfApplicationLibrary,
@@ -842,9 +842,11 @@ export const Runner_InstallApplication: React.FC<DeployApplicationRunnerProps> =
       // Data file optional: pass when null; if provided, must have valid instances with parentUuid.
       transformerType: "&&",
       label: "deployApplicationAndDeploymentDataValidation",
+      // left: false,
       left: {
         // All bundle fields must be valid (inner &&/!= return boolean directly, no then/else needed)
         transformerType: "&&",
+        label: "applicationBundleValidation",
         left: {
           transformerType: "&&",
           left: {
@@ -888,42 +890,135 @@ export const Runner_InstallApplication: React.FC<DeployApplicationRunnerProps> =
           },
         },
       },
-      right: {
-        // Data file is optional: null deploymentData passes; if present, instances and parentUuid required.
-        transformerType: "||",
-        left: {
-          transformerType: "isNull",
-          left: {
-            transformerType: "getFromParameters",
-            safe: true,
-            referencePath: ["deployApplication", "deploymentData"],
-          },
-        },
-        right: {
-          transformerType: "&&",
-          left: {
-            transformerType: "isNotNull",
-            left: {
-              transformerType: "getFromParameters",
-              safe: true,
-              referencePath: ["deployApplication", "deploymentData", "instances"],
-            },
-          },
-          right: {
-            transformerType: "isNotNull",
-            left: {
-              transformerType: "getFromParameters",
-              safe: true,
-              referencePath: ["deployApplication", "deploymentData", "instances", "0", "parentUuid"],
-            },
-          },
-        },
-      },
+      right: true,
+      // right: {
+      //   // Data file is optional: null deploymentData passes; if present, instances and parentUuid required.
+      //   // transformerType: "||",
+      //   // label: "deploymentDataValidation",
+      //   // left: {
+      //     transformerType: "isNotNull",
+      //     left: {
+      //       transformerType: "getFromParameters",
+      //       safe: true,
+      //       referencePath: ["deployApplication", "deploymentData"],
+      //     },
+      //   // },
+      //   // right: {
+      //   //   transformerType: "&&",
+      //   //   left: {
+      //   //     transformerType: "isNotNull",
+      //   //     left: {
+      //   //       transformerType: "getFromParameters",
+      //   //       safe: true,
+      //   //       referencePath: ["deployApplication", "deploymentData", "instances"],
+      //   //     },
+      //   //   },
+      //   //   right: {
+      //   //     transformerType: "isNotNull",
+      //   //     left: {
+      //   //       transformerType: "getFromParameters",
+      //   //       safe: true,
+      //   //       referencePath: ["deployApplication", "deploymentData", "instances", "0", "parentUuid"],
+      //   //     },
+      //   //   },
+      //   // },
+      // },
       then: true,
       else: "Validation failed: provide a valid application bundle (applicationName, entities, entityDefinitions required); deployment data is optional but must contain instances with parentUuid if provided.",
     }),
     [],
   );
+  // const validationTransformer: TransformerForBuildPlusRuntime = useMemo(
+  //   () => ({
+  //     // Model file required: bundle must be present with applicationName, entities, and entityDefinitions.
+  //     // Data file optional: pass when null; if provided, must have valid instances with parentUuid.
+  //     transformerType: "&&",
+  //     label: "deployApplicationAndDeploymentDataValidation",
+  //     left: {
+  //       // All bundle fields must be valid (inner &&/!= return boolean directly, no then/else needed)
+  //       transformerType: "&&",
+  //       label: "applicationBundleValidation",
+  //       left: {
+  //         transformerType: "&&",
+  //         left: {
+  //           transformerType: "&&",
+  //           left: {
+  //             transformerType: "isNotNull",
+  //             left: {
+  //               transformerType: "getFromParameters",
+  //               safe: true,
+  //               referencePath: ["deployApplication", "applicationBundle"],
+  //             },
+  //           },
+  //           right: {
+  //             transformerType: "!=",
+  //             left: {
+  //               transformerType: "getFromParameters",
+  //               safe: true,
+  //               referencePath: ["deployApplication", "applicationBundle", "applicationName"],
+  //             },
+  //             right: {
+  //               transformerType: "returnValue",
+  //               value: "",
+  //             },
+  //           },
+  //         },
+  //         right: {
+  //           transformerType: "isNotNull",
+  //           left: {
+  //             transformerType: "getFromParameters",
+  //             safe: true,
+  //             referencePath: ["deployApplication", "applicationBundle", "entities"],
+  //           },
+  //         },
+  //       },
+  //       right: {
+  //         transformerType: "isNotNull",
+  //         left: {
+  //           transformerType: "getFromParameters",
+  //           safe: true,
+  //           referencePath: ["deployApplication", "applicationBundle", "entityDefinitions"],
+  //         },
+  //       },
+  //     },
+  //     rigth: true,
+  //     // right: {
+  //     //   // Data file is optional: null deploymentData passes; if present, instances and parentUuid required.
+  //     //   transformerType: "||",
+  //     //   label: "deploymentDataValidation",
+  //     //   left: {
+  //     //     transformerType: "isNull",
+  //     //     left: {
+  //     //       transformerType: "getFromParameters",
+  //     //       safe: true,
+  //     //       referencePath: ["deployApplication", "deploymentData"],
+  //     //     },
+  //     //   },
+  //     //   right: {
+  //     //     transformerType: "&&",
+  //     //     left: {
+  //     //       transformerType: "isNotNull",
+  //     //       left: {
+  //     //         transformerType: "getFromParameters",
+  //     //         safe: true,
+  //     //         referencePath: ["deployApplication", "deploymentData", "instances"],
+  //     //       },
+  //     //     },
+  //     //     right: {
+  //     //       transformerType: "isNotNull",
+  //     //       left: {
+  //     //         transformerType: "getFromParameters",
+  //     //         safe: true,
+  //     //         referencePath: ["deployApplication", "deploymentData", "instances", "0", "parentUuid"],
+  //     //       },
+  //     //     },
+  //     //   },
+  //     // },
+  //     then: true,
+  //     else: "Validation failed: provide a valid application bundle (applicationName, entities, entityDefinitions required); deployment data is optional but must contain instances with parentUuid if provided.",
+  //   }),
+  //   [],
+  // );
 
   return (
     <>

@@ -86,7 +86,7 @@ export const handleTransformer_<name> = (
 };
 ```
 
-### Step 5b: Implement SQL Handler Function (Optional) 💾
+### Step 5b: Implement SQL Handler Function
 
 If the transformer needs PostgreSQL execution support, add a SQL handler in `packages/miroir-store-postgres/src/1_core/SqlGenerator.ts`.
 

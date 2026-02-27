@@ -77,6 +77,7 @@ import {
   type TransformerForBuildPlusRuntime_createObject,
   type TransformerForBuildPlusRuntime_dataflowObject,
   type TransformerForBuildPlusRuntime_ifThenElse,
+  type TransformerForBuildPlusRuntime_boolExpr,
   type TransformerForBuildPlusRuntime_returnValue,
   type TransformerForBuildPlusRuntime_getFromContext,
   type TransformerForBuildPlusRuntime_generateUuid,
@@ -119,6 +120,7 @@ import {
   transformer_spreadSheetToJzodSchema,
   // 
   transformer_ifThenElse,
+  transformer_boolExpr,
   transformer_plus,
   transformer_case,
   transformer_returnValue,
@@ -699,6 +701,7 @@ const inMemoryTransformerImplementations: Record<string, ITransformerHandler<any
   handleListPickElementTransformer,
   handleUniqueTransformer,
   handleTransformer_ifThenElse,
+  handleTransformer_boolExpr,
   handleTransformer_plus,
   handleTransformer_case,
   handleTransformer_constant,
@@ -745,6 +748,7 @@ export const applicationTransformerDefinitions: Record<string, TransformerDefini
         .definition as string[]
     ).map((t: string) => [t, transformer_ifThenElse])
   ),
+  boolExpr: transformer_boolExpr,
   "+": transformer_plus,
   case: transformer_case,
   returnValue: transformer_returnValue,
@@ -1677,14 +1681,14 @@ export function transformer_resolveReference(
         queryContext: JSON.stringify(Object.keys(bank)),
       });
     }
-    // log.info(
-    //   "transformer_resolveReference resolved for",
-    //   JSON.stringify(transformerInnerReference, null, 2),
-    //   "bank",
-    //   JSON.stringify(Object.keys(bank), null, 2),
-    //   "found result",
-    //   JSON.stringify(bank[transformerInnerReference.referenceName], null, 2)
-    // );
+    log.info(
+      "transformer_resolveReference resolved for",
+      JSON.stringify(transformerInnerReference, null, 2),
+      "bank",
+      JSON.stringify(Object.keys(bank), null, 2),
+      "found result",
+      JSON.stringify(bank[transformerInnerReference.referenceName], null, 2)
+    );
     return bank[transformerInnerReference.referenceName];
   }
 
@@ -1694,12 +1698,12 @@ export function transformer_resolveReference(
       const pathResult = transformerInnerReference.safe
         ? safeResolvePathOnObject(bank, transformerInnerReference.referencePath)
         : resolvePathOnObject(bank, transformerInnerReference.referencePath);
-      // log.info(
-      //   "transformer_resolveReference resolved for",
-      //   JSON.stringify(transformerInnerReference, null, 2),
-      //   "found pathResult",
-      //   pathResult
-      // );
+      log.info(
+        "transformer_resolveReference resolved for",
+        JSON.stringify(transformerInnerReference, null, 2),
+        "found pathResult",
+        pathResult
+      );
       return pathResult;
     } catch (error) {
       log.error(
@@ -2667,12 +2671,101 @@ export function handleTransformer_ifThenElse(
     default:          condition = false;                         break;
   }
 
-  if (transformer.transformerType === "!=") {
-    log.info("handleTransformer_ifThenElse != leftValue", leftValue, "rightValue", rightValue, condition ? "THEN" : "ELSE");
-  }
+  // if (transformer.transformerType === "!=") {
+  log.info(
+    "handleTransformer_ifThenElse",
+    "label",
+    label,
+    "operator",
+    transformer.transformerType,
+    "leftValue",
+    leftValue,
+    "rightValue",
+    rightValue,
+    condition ? "THEN" : "ELSE",
+  );
+  // }
   return condition
     ? applyBranch(transformer.then, true, "then")
     : applyBranch(transformer.else, false, "else");
+}
+
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+export function handleTransformer_boolExpr(
+  step: Step,
+  transformerPath: string[],
+  label: string | undefined,
+  transformer: TransformerForBuildPlusRuntime_boolExpr,
+  resolveBuildTransformersTo: ResolveBuildTransformersTo,
+  modelEnvironment: MiroirModelEnvironment,
+  transformerParams: Record<string, any>,
+  contextResults?: Record<string, any>,
+  reduxDeploymentsState?: ReduxDeploymentsState | undefined // used by getDefaultValueForJzodSchemaWithResolution only
+): TransformerReturnType<any> {
+  const leftValue = defaultTransformers.transformer_extended_apply(
+    step,
+    [...transformerPath, "left"],
+    transformer.label ? transformer.label + "_left" : "left",
+    transformer.left,
+    resolveBuildTransformersTo,
+    modelEnvironment,
+    transformerParams,
+    contextResults,
+    reduxDeploymentsState
+  );
+  // Unary operators (isNull, isNotNull, !) do not use right operand.
+  const op = transformer.operator;
+  const isUnaryOperator = op === "isNull" || op === "isNotNull" || op === "!";
+  const rightValue = !isUnaryOperator && transformer.right !== undefined
+    ? defaultTransformers.transformer_extended_apply(
+        step,
+        [...transformerPath, "right"],
+        transformer.label ? transformer.label + "_right" : "right",
+        transformer.right,
+        resolveBuildTransformersTo,
+        modelEnvironment,
+        transformerParams,
+        contextResults,
+        reduxDeploymentsState
+      )
+    : undefined;
+
+  let condition: boolean;
+  switch (op) {
+    case "==":        condition = leftValue == rightValue;       break;
+    case "!=":        condition = leftValue != rightValue;       break;
+    case "<":         condition = leftValue < rightValue;        break;
+    case "<=":        condition = leftValue <= rightValue;       break;
+    case ">":         condition = leftValue > rightValue;        break;
+    case ">=":        condition = leftValue >= rightValue;       break;
+    case "&&":        condition = !!(leftValue && rightValue);   break;
+    case "||":        condition = !!(leftValue || rightValue);   break;
+    case "isNull":    condition = leftValue == null;             break; // covers null and undefined via JS loose equality
+    case "isNotNull": condition = leftValue != null;             break; // covers null and undefined via JS loose equality
+    case "!":         condition = !leftValue;                    break; // JS boolean NOT: falsy = null, undefined, 0, false, "", NaN
+    default:          condition = false;                         break;
+  }
+
+  log.info(
+    "handleTransformer_boolExpr",
+    "label",
+    label,
+    "operator",
+    op,
+    "leftValue",
+    leftValue,
+    "rightValue",
+    rightValue,
+    "result",
+    condition,
+  );
+  return condition;
 }
 
 // ################################################################################################

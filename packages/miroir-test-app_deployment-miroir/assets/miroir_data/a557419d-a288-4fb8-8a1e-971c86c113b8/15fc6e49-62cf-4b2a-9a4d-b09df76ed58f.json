@@ -1,0 +1,66 @@
+{
+  "uuid": "15fc6e49-62cf-4b2a-9a4d-b09df76ed58f",
+  "name": "boolExpr",
+  "defaultLabel": "boolExpr",
+  "description": "Returns a boolean value from evaluating a condition using operators (==, !=, <, <=, >, >=, &&, ||, isNull, isNotNull, !). Always returns a boolean (true or false). isNull/isNotNull check for null or undefined (JS loose equality). ! applies JS boolean NOT semantics (any falsy value: null, undefined, 0, false, \"\"). && and || use JS truthiness on left and right operands. Unary operators (isNull, isNotNull, !) do not use the right operand. Unlike ifThenElse, there are no 'then' or 'else' branches.",
+  "parentUuid": "a557419d-a288-4fb8-8a1e-971c86c113b8",
+  "parentDefinitionVersionUuid": "54a16d69-c1f0-4dd7-aba4-a2cda883586c",
+  "parentName": "TransformerDefinition",
+  "classification": "basic",
+  "transformerInterface": {
+    "inputOutput": {
+      "input": "any",
+      "output": "boolean"
+    },
+    "transformerParameterSchema": {
+      "transformerType": {
+        "type": "literal",
+        "definition": "boolExpr"
+      },
+      "transformerDefinition": {
+        "type": "object",
+        "definition": {
+          "operator": {
+            "type": "enum",
+            "definition": ["==", "!=", "<", "<=", ">", ">=", "&&", "||", "isNull", "isNotNull", "!"],
+            "tag": {
+              "value": {
+                "defaultLabel": "Operator",
+                "initializeTo": {
+                  "initializeToType": "value",
+                  "value": "=="
+                }
+              }
+            }
+          },
+          "left": {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "transformer"
+            }
+          },
+          "right": {
+            "type": "schemaReference",
+            "optional": true,
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "transformer"
+            }
+          }
+        }
+      }
+    },
+    "transformerResultSchema": {
+      "returns": "mlSchema",
+      "definition": {
+        "type": "boolean"
+      }
+    }
+  },
+  "transformerImplementation": {
+    "transformerImplementationType": "libraryImplementation",
+    "inMemoryImplementationFunctionName": "handleTransformer_boolExpr",
+    "sqlImplementationFunctionName": "sqlStringForBoolExprTransformer"
+  }
+}

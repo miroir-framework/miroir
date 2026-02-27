@@ -179,6 +179,7 @@ export { default as transformerTestSuite_jzodTypeCheck } from "./assets/miroir_d
 export { default as transformerMenuV1 } from "./assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/685440be-7f3f-4774-b90d-bafa82d6832b.json" assert { type: "json" };
 export { default as transformer_spreadSheetToJzodSchema_json } from "./assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/e44300e8-ed02-40fb-a9ee-d83d08cb1f25.json" assert { type: "json" };
 export { default as transformer_ifThenElse_json } from "./assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/4ded1479-1331-4f96-8723-9a797ba3924b.json" assert { type: "json" };
+export { default as transformer_boolExpr_json } from "./assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/15fc6e49-62cf-4b2a-9a4d-b09df76ed58f.json" assert { type: "json" };
 export { default as transformer_plus_json } from "./assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/6318c3cc-6f2e-476b-b7ae-10de01977009.json" assert { type: "json" };
 export { default as transformer_case_json } from "./assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/59be26d7-c230-4abc-8d85-cdb22feb57ba.json" assert { type: "json" };
 export { default as transformer_returnValue_json } from "./assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/2b4c25e0-6b0f-4f7d-aa68-1fdc079aead3.json" assert { type: "json" };

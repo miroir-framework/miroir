@@ -6,6 +6,7 @@ import {
   transformer_spreadSheetToJzodSchema_json,
   transformer_menu_addItem_json,
   transformer_ifThenElse_json,
+  transformer_boolExpr_json,
   transformer_plus_json,
   transformer_case_json,
   transformer_returnValue_json,
@@ -45,6 +46,7 @@ export const transformer_spreadSheetToJzodSchema: TransformerDefinition = transf
 export const transformer_menu_addItem: TransformerDefinition = transformer_menu_addItem_json as TransformerDefinition;
 // 
 export const transformer_ifThenElse: TransformerDefinition = transformer_ifThenElse_json as TransformerDefinition;
+export const transformer_boolExpr: TransformerDefinition = transformer_boolExpr_json as TransformerDefinition;
 export const transformer_plus: TransformerDefinition = transformer_plus_json as TransformerDefinition;
 export const transformer_case: TransformerDefinition = transformer_case_json as TransformerDefinition;
 export const transformer_returnValue: TransformerDefinition = transformer_returnValue_json as TransformerDefinition;
@@ -106,6 +108,7 @@ export const miroirCoreTransformers: Record<string,TransformerDefinition> = {
   transformer_indexListBy,
   transformer_listReducerToSpreadObject,
   transformer_ifThenElse,
+  transformer_boolExpr,
   transformer_plus,
   transformer_case,
   transformer_pickFromList,

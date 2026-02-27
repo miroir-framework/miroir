@@ -1685,6 +1685,433 @@
           },
           {
             "transformerTestType": "transformerTestSuite",
+            "transformerTestLabel": "boolExpr",
+            "transformerTests": [
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "boolExpr equality true - basic string comparison",
+                "transformerName": "boolExprEqualityTrue",
+                "transformer": {
+                  "transformerType": "boolExpr",
+                  "interpolation": "runtime",
+                  "left": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "mlSchema": { "type": "string" },
+                    "value": "hello"
+                  },
+                  "right": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "mlSchema": { "type": "string" },
+                    "value": "hello"
+                  },
+                  "operator": "=="
+                },
+                "transformerParams": {},
+                "expectedValue": true
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "boolExpr equality false - basic string comparison",
+                "transformerName": "boolExprEqualityFalse",
+                "transformer": {
+                  "transformerType": "boolExpr",
+                  "interpolation": "runtime",
+                  "left": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "mlSchema": { "type": "string" },
+                    "value": "hello"
+                  },
+                  "right": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "mlSchema": { "type": "string" },
+                    "value": "world"
+                  },
+                  "operator": "=="
+                },
+                "transformerParams": {},
+                "expectedValue": false
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "boolExpr not equal true - string comparison",
+                "transformerName": "boolExprNotEqualTrue",
+                "transformer": {
+                  "transformerType": "boolExpr",
+                  "interpolation": "runtime",
+                  "left": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "mlSchema": { "type": "string" },
+                    "value": "hello"
+                  },
+                  "right": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "mlSchema": { "type": "string" },
+                    "value": "world"
+                  },
+                  "operator": "!="
+                },
+                "transformerParams": {},
+                "expectedValue": true
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "boolExpr not equal false - string comparison",
+                "transformerName": "boolExprNotEqualFalse",
+                "transformer": {
+                  "transformerType": "boolExpr",
+                  "interpolation": "runtime",
+                  "left": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "mlSchema": { "type": "string" },
+                    "value": "hello"
+                  },
+                  "right": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "mlSchema": { "type": "string" },
+                    "value": "hello"
+                  },
+                  "operator": "!="
+                },
+                "transformerParams": {},
+                "expectedValue": false
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "boolExpr less than true - number comparison",
+                "transformerName": "boolExprLessThanTrue",
+                "transformer": {
+                  "transformerType": "boolExpr",
+                  "interpolation": "runtime",
+                  "left": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "mlSchema": { "type": "number" },
+                    "value": 5
+                  },
+                  "right": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "mlSchema": { "type": "number" },
+                    "value": 10
+                  },
+                  "operator": "<"
+                },
+                "transformerParams": {},
+                "expectedValue": true
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "boolExpr less than false - number comparison",
+                "transformerName": "boolExprLessThanFalse",
+                "transformer": {
+                  "transformerType": "boolExpr",
+                  "interpolation": "runtime",
+                  "left": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "mlSchema": { "type": "number" },
+                    "value": 15
+                  },
+                  "right": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "mlSchema": { "type": "number" },
+                    "value": 10
+                  },
+                  "operator": "<"
+                },
+                "transformerParams": {},
+                "expectedValue": false
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "boolExpr greater than true - number comparison",
+                "transformerName": "boolExprGreaterThanTrue",
+                "transformer": {
+                  "transformerType": "boolExpr",
+                  "interpolation": "runtime",
+                  "left": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "mlSchema": { "type": "number" },
+                    "value": 15
+                  },
+                  "right": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "mlSchema": { "type": "number" },
+                    "value": 10
+                  },
+                  "operator": ">"
+                },
+                "transformerParams": {},
+                "expectedValue": true
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "boolExpr greater than false - number comparison",
+                "transformerName": "boolExprGreaterThanFalse",
+                "transformer": {
+                  "transformerType": "boolExpr",
+                  "interpolation": "runtime",
+                  "left": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "mlSchema": { "type": "number" },
+                    "value": 5
+                  },
+                  "right": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "mlSchema": { "type": "number" },
+                    "value": 10
+                  },
+                  "operator": ">"
+                },
+                "transformerParams": {},
+                "expectedValue": false
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "boolExpr isNull - left is null returns true",
+                "transformerName": "boolExprIsNullTrue",
+                "transformer": {
+                  "transformerType": "boolExpr",
+                  "interpolation": "runtime",
+                  "left": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "mlSchema": { "type": "null" },
+                    "value": null
+                  },
+                  "operator": "isNull"
+                },
+                "transformerParams": {},
+                "expectedValue": true
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "boolExpr isNull - left is not null returns false",
+                "transformerName": "boolExprIsNullFalse",
+                "transformer": {
+                  "transformerType": "boolExpr",
+                  "interpolation": "runtime",
+                  "left": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "mlSchema": { "type": "string" },
+                    "value": "hello"
+                  },
+                  "operator": "isNull"
+                },
+                "transformerParams": {},
+                "expectedValue": false
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "boolExpr isNotNull - left is not null returns true",
+                "transformerName": "boolExprIsNotNullTrue",
+                "transformer": {
+                  "transformerType": "boolExpr",
+                  "interpolation": "runtime",
+                  "left": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "mlSchema": { "type": "string" },
+                    "value": "hello"
+                  },
+                  "operator": "isNotNull"
+                },
+                "transformerParams": {},
+                "expectedValue": true
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "boolExpr isNotNull - left is null returns false",
+                "transformerName": "boolExprIsNotNullFalse",
+                "transformer": {
+                  "transformerType": "boolExpr",
+                  "interpolation": "runtime",
+                  "left": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "mlSchema": { "type": "null" },
+                    "value": null
+                  },
+                  "operator": "isNotNull"
+                },
+                "transformerParams": {},
+                "expectedValue": false
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "boolExpr ! - left is null returns true",
+                "transformerName": "boolExprNotNull",
+                "transformer": {
+                  "transformerType": "boolExpr",
+                  "interpolation": "runtime",
+                  "left": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "mlSchema": { "type": "null" },
+                    "value": null
+                  },
+                  "operator": "!"
+                },
+                "transformerParams": {},
+                "expectedValue": true
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "boolExpr ! - left is truthy string returns false",
+                "transformerName": "boolExprNotTruthyString",
+                "transformer": {
+                  "transformerType": "boolExpr",
+                  "interpolation": "runtime",
+                  "left": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "mlSchema": { "type": "string" },
+                    "value": "hello"
+                  },
+                  "operator": "!"
+                },
+                "transformerParams": {},
+                "expectedValue": false
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "boolExpr && - both truthy returns true",
+                "transformerName": "boolExprAndTruthy",
+                "transformer": {
+                  "transformerType": "boolExpr",
+                  "interpolation": "runtime",
+                  "left": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "mlSchema": { "type": "number" },
+                    "value": 1
+                  },
+                  "right": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "mlSchema": { "type": "string" },
+                    "value": "non-empty"
+                  },
+                  "operator": "&&"
+                },
+                "transformerParams": {},
+                "expectedValue": true
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "boolExpr && - one operand falsy returns false",
+                "transformerName": "boolExprAndOneFalsy",
+                "transformer": {
+                  "transformerType": "boolExpr",
+                  "interpolation": "runtime",
+                  "left": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "mlSchema": { "type": "number" },
+                    "value": 1
+                  },
+                  "right": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "mlSchema": { "type": "number" },
+                    "value": 0
+                  },
+                  "operator": "&&"
+                },
+                "transformerParams": {},
+                "expectedValue": false
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "boolExpr || - one truthy returns true",
+                "transformerName": "boolExprOrOneTruthy",
+                "transformer": {
+                  "transformerType": "boolExpr",
+                  "interpolation": "runtime",
+                  "left": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "mlSchema": { "type": "number" },
+                    "value": 0
+                  },
+                  "right": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "mlSchema": { "type": "string" },
+                    "value": "truthy"
+                  },
+                  "operator": "||"
+                },
+                "transformerParams": {},
+                "expectedValue": true
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "boolExpr || - both falsy returns false",
+                "transformerName": "boolExprOrBothFalsy",
+                "transformer": {
+                  "transformerType": "boolExpr",
+                  "interpolation": "runtime",
+                  "left": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "mlSchema": { "type": "number" },
+                    "value": 0
+                  },
+                  "right": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "mlSchema": { "type": "string" },
+                    "value": ""
+                  },
+                  "operator": "||"
+                },
+                "transformerParams": {},
+                "expectedValue": false
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "boolExpr with parameter reference",
+                "transformerName": "boolExprWithParameterReference",
+                "transformer": {
+                  "transformerType": "boolExpr",
+                  "interpolation": "runtime",
+                  "left": {
+                    "transformerType": "getFromParameters",
+                    "interpolation": "runtime",
+                    "referenceName": "userType"
+                  },
+                  "right": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "mlSchema": { "type": "string" },
+                    "value": "admin"
+                  },
+                  "operator": "=="
+                },
+                "transformerParams": {
+                  "userType": "admin"
+                },
+                "expectedValue": true
+              }
+            ]
+          },
+          {
+            "transformerTestType": "transformerTestSuite",
             "transformerTestLabel": "case",
             "transformerTests": [
               {

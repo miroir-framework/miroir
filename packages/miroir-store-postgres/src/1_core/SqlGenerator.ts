@@ -32,6 +32,7 @@ import {
   defaultMetaModelEnvironment,
   defaultTransformerInput,
   type TransformerForBuildPlusRuntime_ifThenElse,
+  type TransformerForBuildPlusRuntime_boolExpr,
   type MiroirModelEnvironment,
   type TransformerForBuildPlusRuntime_accessDynamicPath,
 } from "miroir-core";
@@ -87,6 +88,7 @@ export type ITransformerHandler<T> = (
 const sqlTransformerImplementations: Record<string, ITransformerHandler<any>> = {
   sqlStringForCaseTransformer,
   sqlStringForConditionalTransformer,
+  sqlStringForBoolExprTransformer,
   sqlStringForConstantAnyTransformer,
   sqlStringForConstantTransformer,
   sqlStringForConstantAsExtractorTransformer,
@@ -978,6 +980,129 @@ function sqlStringForConditionalTransformer(
       ...(right?.usedContextEntries ?? []),
       ...(thenSql.usedContextEntries ?? []),
       ...(elseSql.usedContextEntries ?? []),
+    ],
+  };
+}
+
+// ################################################################################################
+// SQL implementation of the boolExpr transformer
+// Evaluates a boolean condition and always returns a boolean (true or false), no then/else branches.
+function sqlStringForBoolExprTransformer(
+  actionRuntimeTransformer: TransformerForBuildPlusRuntime_boolExpr,
+  preparedStatementParametersCount: number,
+  indentLevel: number,
+  queryParams: Record<string, any>,
+  definedContextEntries: Record<string, SqlContextEntry>,
+  useAccessPathForContextReference: boolean,
+  topLevelTransformer: boolean,
+  withClauseColumnName?: string,
+  iterateOn?: string,
+): Domain2QueryReturnType<SqlStringForTransformerElementValue> {
+  let newPreparedStatementParametersCount = preparedStatementParametersCount;
+  let preparedStatementParameters: any[] = [];
+
+  // Unary operators (isNull, isNotNull, !) do not use the right operand.
+  const op = (actionRuntimeTransformer as any).operator as string;
+  const isUnaryOperator =
+    op === "isNull" ||
+    op === "isNotNull" ||
+    op === "!";
+
+  const left = sqlStringForRuntimeTransformer(
+    (actionRuntimeTransformer as any).left as TransformerForBuildPlusRuntime,
+    newPreparedStatementParametersCount,
+    indentLevel,
+    queryParams,
+    definedContextEntries,
+    useAccessPathForContextReference,
+    false, // topLevelTransformer
+  );
+  if (left instanceof Domain2ElementFailed) {
+    return left;
+  }
+  if (left.preparedStatementParameters) {
+    preparedStatementParameters = [...preparedStatementParameters, ...left.preparedStatementParameters];
+    newPreparedStatementParametersCount += left.preparedStatementParameters.length;
+  }
+
+  // right is optional and not used for unary operators
+  let right: SqlStringForTransformerElementValue | undefined;
+  if (!isUnaryOperator && (actionRuntimeTransformer as any).right !== undefined) {
+    const rightResult = sqlStringForRuntimeTransformer(
+      (actionRuntimeTransformer as any).right as TransformerForBuildPlusRuntime,
+      newPreparedStatementParametersCount,
+      indentLevel,
+      queryParams,
+      definedContextEntries,
+      useAccessPathForContextReference,
+      false, // topLevelTransformer
+    );
+    if (rightResult instanceof Domain2ElementFailed) {
+      return rightResult;
+    }
+    if (rightResult.preparedStatementParameters) {
+      preparedStatementParameters = [...preparedStatementParameters, ...rightResult.preparedStatementParameters];
+      newPreparedStatementParametersCount += rightResult.preparedStatementParameters.length;
+    }
+    right = rightResult;
+  }
+
+  // For standard binary comparison operators, both sides must be scalar
+  const isBinaryComparisonOperator = jsOperatorToSqlOperatorMap[op] !== undefined;
+  if (isBinaryComparisonOperator && right && (left.type !== "scalar" || right.type !== "scalar")) {
+    return new Domain2ElementFailed({
+      queryFailure: "QueryNotExecutable",
+      query: actionRuntimeTransformer as any,
+      failureMessage: "sqlStringForBoolExprTransformer boolExpr left or right is not scalar for operator " + op,
+    });
+  }
+
+  // Build the SQL condition expression based on operator type
+  const leftExpr = left.sqlStringOrObject;
+  const rightExpr = right?.sqlStringOrObject ?? "";
+  let conditionSql: string;
+
+  switch (op) {
+    case "isNull":
+      conditionSql = sqlIsNull(leftExpr, left.type);
+      break;
+    case "isNotNull":
+      conditionSql = sqlIsNotNull(leftExpr, left.type);
+      break;
+    case "!":
+      conditionSql = sqlIsFalsy(leftExpr, left.type);
+      break;
+    case "&&":
+      conditionSql =
+        `NOT ${sqlIsFalsy(leftExpr, left.type)} AND NOT ${sqlIsFalsy(rightExpr, right?.type ?? "scalar")}`;
+      break;
+    case "||":
+      conditionSql =
+        `NOT ${sqlIsFalsy(leftExpr, left.type)} OR NOT ${sqlIsFalsy(rightExpr, right?.type ?? "scalar")}`;
+      break;
+    default:
+      conditionSql = `${leftExpr} ${jsOperatorToSqlOperatorMap[op]} ${rightExpr}`;
+      break;
+  }
+
+  const columnName = withClauseColumnName ?? "boolExpr";
+  // boolExpr always returns a boolean: wrap condition in CASE to yield true::boolean or false::boolean
+  const boolSql = "case when " + conditionSql + " then true::boolean else false::boolean end";
+  return {
+    type: "scalar",
+    sqlStringOrObject:
+      (topLevelTransformer ? "select " : "") +
+      boolSql +
+      (topLevelTransformer ? ` AS "${columnName}"` : ""),
+    preparedStatementParameters: [
+      ...(left.preparedStatementParameters ?? []),
+      ...(right?.preparedStatementParameters ?? []),
+    ],
+    resultAccessPath: topLevelTransformer ? [0, columnName] : undefined,
+    columnNameContainingJsonValue: topLevelTransformer ? columnName : undefined,
+    usedContextEntries: [
+      ...(left.usedContextEntries ?? []),
+      ...(right?.usedContextEntries ?? []),
     ],
   };
 }
