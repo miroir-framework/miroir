@@ -157,7 +157,7 @@ export async function setupIpcServer(mainDirname: string): Promise<void> {
 
   const electronServerConfig: MiroirConfigServer = {
     miroirConfigType: "server",
-    server: { rootApiUrl: "http://localhost:3080" },
+    server: { rootApiUrl: "https://localhost:3080" },
   };
 
   const miroirContext = new MiroirContext(
@@ -177,7 +177,7 @@ export async function setupIpcServer(mainDirname: string): Promise<void> {
   });
 
   // RestClientStub routes REST-shaped calls through restServerDefaultHandlers using the real stores.
-  const restClientStub = new RestClientStub("http://localhost:3080");
+  const restClientStub = new RestClientStub("https://localhost:3080");
   restClientStub.setServerDomainController(domainController);
   restClientStub.setPersistenceStoreControllerManager(persistenceStoreControllerManager);
 

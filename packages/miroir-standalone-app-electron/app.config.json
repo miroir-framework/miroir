@@ -1,6 +1,6 @@
 {
   "development": {
-    "webAppUrl": "http://localhost:5173",
+    "webAppUrl": "https://localhost:5173",
     "enableDevTools": true,
     "windowSize": {
       "width": 1200,

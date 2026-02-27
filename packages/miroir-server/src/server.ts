@@ -3,6 +3,7 @@ import cors from 'cors';
 import express, { Request } from 'express';
 // import {bodyParser} from 'body-parser';
 import { existsSync, readFileSync } from 'fs';
+import * as https from 'https';
 import log from 'loglevelnext'; // TODO: use this? or plain "console" log?
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -92,7 +93,7 @@ const portFromConfig: number = Number(miroirConfig.server.rootApiUrl.substring(m
 
 const app = express();
 app.use(cors({
-  origin: ['http://localhost:5173', 'http://localhost:3000'], // Add your client URLs
+  origin: ['https://localhost:5173', 'https://localhost:3000'], // HTTPS client URLs
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
@@ -371,11 +372,40 @@ const server = await setupMcpServer(
 app.get('/', (req: any,res: any) => {
   res.send('App Works !!!!');
 });
-    
+
 // ##############################################################################################
-app.listen(portFromConfig, () => {
-    myLogger.info(`Server listening on the port::${portFromConfig}`);
-});
+// Start HTTPS server. Certificate paths are resolved from environment variables
+// (MIROIR_TLS_CERT / MIROIR_TLS_KEY) or default to <repo-root>/certs/ relative to this file.
+// If the certificate files are absent, the server falls back to plain HTTP with a warning —
+// run scripts/setup-https.sh (or .ps1) once to generate the certificates.
+const defaultCertsDir = path.resolve(__dirname, '../../../certs');
+const certFile = process.env.MIROIR_TLS_CERT ?? path.join(defaultCertsDir, 'localhost.pem');
+const keyFile  = process.env.MIROIR_TLS_KEY  ?? path.join(defaultCertsDir, 'localhost-key.pem');
+
+if (existsSync(certFile) && existsSync(keyFile)) {
+  const tlsOptions = {
+    cert: readFileSync(certFile),
+    key:  readFileSync(keyFile),
+  };
+  https.createServer(tlsOptions, app).listen(portFromConfig, () => {
+    myLogger.info(`HTTPS server listening on port ${portFromConfig}`);
+    myLogger.info(`  cert: ${certFile}`);
+    myLogger.info(`  key:  ${keyFile}`);
+  });
+} else {
+  myLogger.warn(
+    `TLS certificate files not found — falling back to plain HTTP.\n` +
+    `  Expected cert: ${certFile}\n` +
+    `  Expected key:  ${keyFile}\n` +
+    `  Run  scripts/setup-https.sh  (bash) or  scripts/setup-https.ps1  (PowerShell)` +
+    ` to generate local certificates.`
+  );
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const http = await import('http');
+  http.createServer(app).listen(portFromConfig, () => {
+    myLogger.info(`HTTP server listening on port ${portFromConfig} (no TLS — run setup-https to enable HTTPS)`);
+  });
+}
 
 // Adjust Request type
 interface CustomRequest extends Request {

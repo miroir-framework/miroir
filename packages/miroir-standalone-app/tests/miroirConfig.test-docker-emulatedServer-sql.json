@@ -1,7 +1,7 @@
 {
   "client": {
     "emulateServer": true,
-    "rootApiUrl":"http://localhost:3080",
+    "rootApiUrl":"https://localhost:3080",
     "deploymentStorageConfig": {
       "10ff36f2-50a3-48d8-b80f-e48e5d13af8e":{
         "admin": {

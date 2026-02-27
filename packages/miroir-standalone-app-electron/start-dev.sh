@@ -12,9 +12,12 @@ if [ ! -f "package.json" ]; then
 fi
 
 # Check if miroir-standalone-app dev server is running
+# Using -k (--insecure) because curl may not have mkcert CA in its own trust bundle,
+# even though the OS/browser trust store contains it. The -k flag is safe here since
+# this is only a localhost health-check.
 echo "Checking if miroir-standalone-app dev server is running..."
-if curl -s http://localhost:5173 > /dev/null; then
-    echo "✓ Dev server is running on http://localhost:5173"
+if curl -sk https://localhost:5173 > /dev/null || curl -s http://localhost:5173 > /dev/null; then
+    echo "✓ Dev server is running (https://localhost:5173 or http://localhost:5173)"
 else
     echo "✗ Dev server is not running!"
     echo "Please start the miroir-standalone-app dev server first:"

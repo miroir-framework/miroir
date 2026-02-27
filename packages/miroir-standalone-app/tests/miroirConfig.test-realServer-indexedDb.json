@@ -2,7 +2,7 @@
   "client": {
     "emulateServer": false,
     "serverConfig":{
-      "rootApiUrl":"http://localhost:3080",
+      "rootApiUrl":"https://localhost:3080",
       "dataflowConfiguration": {
         "type":"singleNode",
         "metaModel": {

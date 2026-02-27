@@ -1,6 +1,6 @@
 {
   "server": {
-    "rootApiUrl":"http://localhost:3080",
+    "rootApiUrl":"https://localhost:3080",
     "defaultLevel": "INFO",
     "defaultTemplate": "[{{time}}] {{level}} {{name}} ### ",
     "specificLoggerOptions": {
