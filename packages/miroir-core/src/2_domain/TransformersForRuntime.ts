@@ -742,12 +742,7 @@ export const applicationTransformerDefinitions: Record<string, TransformerDefini
   //
   spreadSheetToJzodSchema: transformer_spreadSheetToJzodSchema,
   aggregate: transformer_aggregate,
-  ...Object.fromEntries(
-    (
-      transformer_ifThenElse.transformerInterface.transformerParameterSchema.transformerType
-        .definition as string[]
-    ).map((t: string) => [t, transformer_ifThenElse])
-  ),
+  ifThenElse: transformer_ifThenElse,
   boolExpr: transformer_boolExpr,
   "+": transformer_plus,
   case: transformer_case,
@@ -2601,35 +2596,18 @@ export function handleTransformer_ifThenElse(
   contextResults?: Record<string, any>,
   reduxDeploymentsState?: ReduxDeploymentsState | undefined // used by getDefaultValueForJzodSchemaWithResolution only, somewhat redundant with modelEnvironment
 ): TransformerReturnType<any> {
-  const leftValue = defaultTransformers.transformer_extended_apply(
+  // Evaluate the boolean condition given by the 'if' attribute
+  const conditionValue = defaultTransformers.transformer_extended_apply(
     step,
-    [...transformerPath, "left"],
-    transformer.label ? transformer.label + "_left" : "left",
-    transformer.left,
+    [...transformerPath, "if"],
+    transformer.label ? transformer.label + "_if" : "if",
+    transformer["if"],
     resolveBuildTransformersTo,
     modelEnvironment,
     transformerParams,
     contextResults,
     reduxDeploymentsState
   );
-  // Unary operators (isNull, isNotNull, !) do not use right operand.
-  // JSON has no undefined; isNull/isNotNull use JS loose equality (null == undefined).
-  const isUnaryOperator = transformer.transformerType === "isNull"
-    || transformer.transformerType === "isNotNull"
-    || transformer.transformerType === "!";
-  const rightValue = !isUnaryOperator && transformer.right !== undefined
-    ? defaultTransformers.transformer_extended_apply(
-        step,
-        [...transformerPath, "right"],
-        transformer.label ? transformer.label + "_right" : "right",
-        transformer.right,
-        resolveBuildTransformersTo,
-        modelEnvironment,
-        transformerParams,
-        contextResults,
-        reduxDeploymentsState
-      )
-    : undefined;
 
   // Helper: apply the branch transformer, or return true/false if omitted.
   // When 'then' is omitted, a truthy condition returns true.
@@ -2655,36 +2633,15 @@ export function handleTransformer_ifThenElse(
     );
   };
 
-  let condition: boolean;
-  switch (transformer.transformerType) {
-    case "==":        condition = leftValue == rightValue;       break;
-    case "!=":        condition = leftValue != rightValue;       break;
-    case "<":         condition = leftValue < rightValue;        break;
-    case "<=":        condition = leftValue <= rightValue;       break;
-    case ">":         condition = leftValue > rightValue;        break;
-    case ">=":        condition = leftValue >= rightValue;       break;
-    case "&&":        condition = !!(leftValue && rightValue);   break;
-    case "||":        condition = !!(leftValue || rightValue);   break;
-    case "isNull":    condition = leftValue == null;             break; // covers null and undefined via JS loose equality
-    case "isNotNull": condition = leftValue != null;             break; // covers null and undefined via JS loose equality
-    case "!":         condition = !leftValue;                    break; // JS boolean NOT: falsy = null, undefined, 0, false, "", NaN
-    default:          condition = false;                         break;
-  }
+  const condition = !!conditionValue;
 
-  // if (transformer.transformerType === "!=") {
   log.info(
     "handleTransformer_ifThenElse",
     "label",
     label,
-    "operator",
-    transformer.transformerType,
-    "leftValue",
-    leftValue,
-    "rightValue",
-    rightValue,
+    "condition result",
     condition ? "THEN" : "ELSE",
   );
-  // }
   return condition
     ? applyBranch(transformer.then, true, "then")
     : applyBranch(transformer.else, false, "else");

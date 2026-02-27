@@ -73,8 +73,9 @@ A transformer that filters active users and formats their data.
             "referenceName": "allUsers"
           },
           "condition": {
-            "transformerType": "==",
+            "transformerType": "boolExpr",
             "interpolation": "runtime",
+            "operator": "==",
             "left": {
               "transformerType": "accessDynamicPath",
               "interpolation": "runtime",
@@ -575,9 +576,13 @@ Different processing based on conditions:
 {
   "inputData": { /* get data */ },
   "processedData": {
-    "transformerType": "==",
-    "left": { /* check some condition */ },
-    "right": { /* comparison value */ },
+    "transformerType": "ifThenElse",
+    "if": {
+      "transformerType": "boolExpr",
+      "operator": "==",
+      "left": { /* check some condition */ },
+      "right": { /* comparison value */ }
+    },
     "then": { /* transformer for true case */ },
     "else": { /* transformer for false case */ }
   }

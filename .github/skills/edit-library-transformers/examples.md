@@ -383,16 +383,21 @@ export const handleTransformer_ifThenElse = (
       "transformerName": "ifThenElse_eq_true",
       "runTestStep": "runtime",
       "transformer": {
-        "transformerType": "==",
+        "transformerType": "ifThenElse",
         "interpolation": "runtime",
-        "left": {
-          "transformerType": "getFromContext",
+        "if": {
+          "transformerType": "boolExpr",
           "interpolation": "runtime",
-          "referenceName": "testValue"
-        },
-        "right": {
-          "transformerType": "returnValue",
-          "value": "match"
+          "operator": "==",
+          "left": {
+            "transformerType": "getFromContext",
+            "interpolation": "runtime",
+            "referenceName": "testValue"
+          },
+          "right": {
+            "transformerType": "returnValue",
+            "value": "match"
+          }
         },
         "then": {
           "transformerType": "returnValue",
@@ -415,16 +420,21 @@ export const handleTransformer_ifThenElse = (
       "transformerName": "ifThenElse_lt_true",
       "runTestStep": "runtime",
       "transformer": {
-        "transformerType": "<",
+        "transformerType": "ifThenElse",
         "interpolation": "runtime",
-        "left": {
-          "transformerType": "getFromContext",
+        "if": {
+          "transformerType": "boolExpr",
           "interpolation": "runtime",
-          "referenceName": "value"
-        },
-        "right": {
-          "transformerType": "returnValue",
-          "value": 10
+          "operator": "<",
+          "left": {
+            "transformerType": "getFromContext",
+            "interpolation": "runtime",
+            "referenceName": "value"
+          },
+          "right": {
+            "transformerType": "returnValue",
+            "value": 10
+          }
         },
         "then": {
           "transformerType": "returnValue",

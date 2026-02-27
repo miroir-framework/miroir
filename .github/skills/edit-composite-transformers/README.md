@@ -141,12 +141,16 @@ Filter a list then transform each item:
 ```
 
 ### Pattern 3: Conditional Processing
-Use `ifThenElse` for different logic paths:
+Use `ifThenElse` for different logic paths. The condition goes in the `if` attribute (typically a `boolExpr` transformer):
 ```json
 {
-  "transformerType": "==",
-  "left": { /* value to check */ },
-  "right": { /* comparison value */ },
+  "transformerType": "ifThenElse",
+  "if": {
+    "transformerType": "boolExpr",
+    "operator": "==",
+    "left": { /* value to check */ },
+    "right": { /* comparison value */ }
+  },
   "then": { /* transformer if true */ },
   "else": { /* transformer if false */ }
 }

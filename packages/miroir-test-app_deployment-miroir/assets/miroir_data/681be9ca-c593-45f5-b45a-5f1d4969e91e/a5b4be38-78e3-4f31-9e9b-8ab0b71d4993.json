@@ -30,12 +30,23 @@
                     "runTestStep": "build",
                     "transformer": {
                       "transformerType": "returnValue",
-                      "mlSchema": { "type": "array", "definition": { "type": "string" } },
+                      "mlSchema": {
+                        "type": "array",
+                        "definition": {
+                          "type": "string"
+                        }
+                      },
                       "interpolation": "build",
-                      "value": ["testA", "testB"]
+                      "value": [
+                        "testA",
+                        "testB"
+                      ]
                     },
                     "transformerParams": {},
-                    "expectedValue": ["testA", "testB"]
+                    "expectedValue": [
+                      "testA",
+                      "testB"
+                    ]
                   }
                 ]
               },
@@ -50,7 +61,9 @@
                     "runTestStep": "build",
                     "transformer": {
                       "transformerType": "returnValue",
-                      "mlSchema": { "type": "uuid" },
+                      "mlSchema": {
+                        "type": "uuid"
+                      },
                       "interpolation": "build",
                       "value": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
                     },
@@ -64,7 +77,9 @@
                     "runTestStep": "build",
                     "transformer": {
                       "transformerType": "returnValue",
-                      "mlSchema": { "type": "uuid" },
+                      "mlSchema": {
+                        "type": "uuid"
+                      },
                       "interpolation": "build",
                       "value": "test"
                     },
@@ -84,7 +99,9 @@
                     "runTestStep": "build",
                     "transformer": {
                       "transformerType": "returnValue",
-                      "mlSchema": { "type": "number" },
+                      "mlSchema": {
+                        "type": "number"
+                      },
                       "interpolation": "build",
                       "value": 42
                     },
@@ -135,7 +152,9 @@
                     "runTestStep": "build",
                     "transformer": {
                       "transformerType": "returnValue",
-                      "mlSchema": { "type": "boolean" },
+                      "mlSchema": {
+                        "type": "boolean"
+                      },
                       "interpolation": "build",
                       "value": true
                     },
@@ -225,7 +244,9 @@
                   "definition": "{{newApplicationName}SelfApplication"
                 },
                 "transformerParams": {},
-                "retainAttributes": ["queryFailure"],
+                "retainAttributes": [
+                  "queryFailure"
+                ],
                 "expectedValue": {
                   "queryFailure": "FailedTransformer"
                 }
@@ -250,7 +271,11 @@
                   }
                 },
                 "transformerParams": {
-                  "fileData": ["a", "b", "c"]
+                  "fileData": [
+                    "a",
+                    "b",
+                    "c"
+                  ]
                 },
                 "expectedValue": [
                   {
@@ -272,7 +297,11 @@
                   }
                 },
                 "transformerParams": {
-                  "smallStringArray": ["a", "b", "c"]
+                  "smallStringArray": [
+                    "a",
+                    "b",
+                    "c"
+                  ]
                 },
                 "expectedValue": [
                   {
@@ -303,12 +332,23 @@
                     "transformerName": "constantArrayAtRuntime",
                     "transformer": {
                       "transformerType": "returnValue",
-                      "mlSchema": { "type": "array", "definition": { "type": "string" } },
+                      "mlSchema": {
+                        "type": "array",
+                        "definition": {
+                          "type": "string"
+                        }
+                      },
                       "interpolation": "runtime",
-                      "value": ["testA", "testB"]
+                      "value": [
+                        "testA",
+                        "testB"
+                      ]
                     },
                     "transformerParams": {},
-                    "expectedValue": ["testA", "testB"]
+                    "expectedValue": [
+                      "testA",
+                      "testB"
+                    ]
                   }
                 ]
               },
@@ -322,7 +362,9 @@
                     "transformerName": "constantUuid",
                     "transformer": {
                       "transformerType": "returnValue",
-                      "mlSchema": { "type": "uuid" },
+                      "mlSchema": {
+                        "type": "uuid"
+                      },
                       "interpolation": "runtime",
                       "value": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
                     },
@@ -341,7 +383,9 @@
                     "transformerName": "constantNumber",
                     "transformer": {
                       "transformerType": "returnValue",
-                      "mlSchema": { "type": "number" },
+                      "mlSchema": {
+                        "type": "number"
+                      },
                       "interpolation": "runtime",
                       "value": 42
                     },
@@ -414,7 +458,9 @@
                     "transformerName": "constantBoolean",
                     "transformer": {
                       "transformerType": "returnValue",
-                      "mlSchema": { "type": "boolean" },
+                      "mlSchema": {
+                        "type": "boolean"
+                      },
                       "interpolation": "runtime",
                       "value": true
                     },
@@ -491,7 +537,11 @@
                           },
                           "conceptLevel": {
                             "type": "enum",
-                            "definition": ["MetaModel", "Model", "Data"],
+                            "definition": [
+                              "MetaModel",
+                              "Model",
+                              "Data"
+                            ],
                             "optional": true,
                             "tag": {
                               "value": {
@@ -540,7 +590,10 @@
                       }
                     },
                     "transformerParams": {},
-                    "ignoreAttributes": ["conceptLevel", "icon"],
+                    "ignoreAttributes": [
+                      "conceptLevel",
+                      "icon"
+                    ],
                     "expectedValue": {
                       "uuid": "2eda1207-4dcc-4af9-a3ba-ef75e7f12c11",
                       "parentName": "Country",
@@ -599,30 +652,43 @@
                 "transformerTestLabel": "ifThenElse equality true - basic string comparison",
                 "transformerName": "ifThenElseEqualityTrue",
                 "transformer": {
-                  "transformerType": "==",
+                  "transformerType": "ifThenElse",
                   "interpolation": "runtime",
-                  "left": {
-                    "transformerType": "returnValue",
+                  "if": {
+                    "transformerType": "boolExpr",
                     "interpolation": "runtime",
-                    "mlSchema": { "type": "string" },
-                    "value": "hello"
-                  },
-                  "right": {
-                    "transformerType": "returnValue",
-                    "interpolation": "runtime",
-                    "mlSchema": { "type": "string" },
-                    "value": "hello"
+                    "operator": "==",
+                    "left": {
+                      "transformerType": "returnValue",
+                      "interpolation": "runtime",
+                      "mlSchema": {
+                        "type": "string"
+                      },
+                      "value": "hello"
+                    },
+                    "right": {
+                      "transformerType": "returnValue",
+                      "interpolation": "runtime",
+                      "mlSchema": {
+                        "type": "string"
+                      },
+                      "value": "hello"
+                    }
                   },
                   "then": {
                     "transformerType": "returnValue",
                     "interpolation": "runtime",
-                    "mlSchema": { "type": "string" },
+                    "mlSchema": {
+                      "type": "string"
+                    },
                     "value": "match"
                   },
                   "else": {
                     "transformerType": "returnValue",
                     "interpolation": "runtime",
-                    "mlSchema": { "type": "string" },
+                    "mlSchema": {
+                      "type": "string"
+                    },
                     "value": "no match"
                   }
                 },
@@ -634,30 +700,43 @@
                 "transformerTestLabel": "ifThenElse equality false - basic string comparison",
                 "transformerName": "ifThenElseEqualityFalse",
                 "transformer": {
-                  "transformerType": "==",
+                  "transformerType": "ifThenElse",
                   "interpolation": "runtime",
-                  "left": {
-                    "transformerType": "returnValue",
-                    "mlSchema": { "type": "string" },
+                  "if": {
+                    "transformerType": "boolExpr",
                     "interpolation": "runtime",
-                    "value": "hello"
-                  },
-                  "right": {
-                    "transformerType": "returnValue",
-                    "mlSchema": { "type": "string" },
-                    "interpolation": "runtime",
-                    "value": "world"
+                    "operator": "==",
+                    "left": {
+                      "transformerType": "returnValue",
+                      "interpolation": "runtime",
+                      "mlSchema": {
+                        "type": "string"
+                      },
+                      "value": "hello"
+                    },
+                    "right": {
+                      "transformerType": "returnValue",
+                      "interpolation": "runtime",
+                      "mlSchema": {
+                        "type": "string"
+                      },
+                      "value": "world"
+                    }
                   },
                   "then": {
                     "transformerType": "returnValue",
-                    "mlSchema": { "type": "string" },
                     "interpolation": "runtime",
+                    "mlSchema": {
+                      "type": "string"
+                    },
                     "value": "match"
                   },
                   "else": {
                     "transformerType": "returnValue",
-                    "mlSchema": { "type": "string" },
                     "interpolation": "runtime",
+                    "mlSchema": {
+                      "type": "string"
+                    },
                     "value": "no match"
                   }
                 },
@@ -669,30 +748,43 @@
                 "transformerTestLabel": "ifThenElse not equal true - string comparison",
                 "transformerName": "ifThenElseNotEqualTrue",
                 "transformer": {
-                  "transformerType": "!=",
+                  "transformerType": "ifThenElse",
                   "interpolation": "runtime",
-                  "left": {
-                    "transformerType": "returnValue",
-                    "mlSchema": { "type": "string" },
+                  "if": {
+                    "transformerType": "boolExpr",
                     "interpolation": "runtime",
-                    "value": "hello"
-                  },
-                  "right": {
-                    "transformerType": "returnValue",
-                    "mlSchema": { "type": "string" },
-                    "interpolation": "runtime",
-                    "value": "world"
+                    "operator": "!=",
+                    "left": {
+                      "transformerType": "returnValue",
+                      "interpolation": "runtime",
+                      "mlSchema": {
+                        "type": "string"
+                      },
+                      "value": "hello"
+                    },
+                    "right": {
+                      "transformerType": "returnValue",
+                      "interpolation": "runtime",
+                      "mlSchema": {
+                        "type": "string"
+                      },
+                      "value": "world"
+                    }
                   },
                   "then": {
                     "transformerType": "returnValue",
-                    "mlSchema": { "type": "string" },
                     "interpolation": "runtime",
+                    "mlSchema": {
+                      "type": "string"
+                    },
                     "value": "different"
                   },
                   "else": {
                     "transformerType": "returnValue",
-                    "mlSchema": { "type": "string" },
                     "interpolation": "runtime",
+                    "mlSchema": {
+                      "type": "string"
+                    },
                     "value": "same"
                   }
                 },
@@ -704,30 +796,43 @@
                 "transformerTestLabel": "ifThenElse not equal false - string comparison",
                 "transformerName": "ifThenElseNotEqualFalse",
                 "transformer": {
-                  "transformerType": "!=",
+                  "transformerType": "ifThenElse",
                   "interpolation": "runtime",
-                  "left": {
-                    "transformerType": "returnValue",
-                    "mlSchema": { "type": "string" },
+                  "if": {
+                    "transformerType": "boolExpr",
                     "interpolation": "runtime",
-                    "value": "hello"
-                  },
-                  "right": {
-                    "transformerType": "returnValue",
-                    "mlSchema": { "type": "string" },
-                    "interpolation": "runtime",
-                    "value": "hello"
+                    "operator": "!=",
+                    "left": {
+                      "transformerType": "returnValue",
+                      "interpolation": "runtime",
+                      "mlSchema": {
+                        "type": "string"
+                      },
+                      "value": "hello"
+                    },
+                    "right": {
+                      "transformerType": "returnValue",
+                      "interpolation": "runtime",
+                      "mlSchema": {
+                        "type": "string"
+                      },
+                      "value": "hello"
+                    }
                   },
                   "then": {
                     "transformerType": "returnValue",
-                    "mlSchema": { "type": "string" },
                     "interpolation": "runtime",
+                    "mlSchema": {
+                      "type": "string"
+                    },
                     "value": "different"
                   },
                   "else": {
                     "transformerType": "returnValue",
-                    "mlSchema": { "type": "string" },
                     "interpolation": "runtime",
+                    "mlSchema": {
+                      "type": "string"
+                    },
                     "value": "same"
                   }
                 },
@@ -739,30 +844,43 @@
                 "transformerTestLabel": "ifThenElse less than true - number comparison",
                 "transformerName": "ifThenElseLessThanTrue",
                 "transformer": {
-                  "transformerType": "<",
+                  "transformerType": "ifThenElse",
                   "interpolation": "runtime",
-                  "left": {
-                    "transformerType": "returnValue",
-                    "mlSchema": { "type": "number" },
+                  "if": {
+                    "transformerType": "boolExpr",
                     "interpolation": "runtime",
-                    "value": 5
-                  },
-                  "right": {
-                    "transformerType": "returnValue",
-                    "mlSchema": { "type": "number" },
-                    "interpolation": "runtime",
-                    "value": 10
+                    "operator": "<",
+                    "left": {
+                      "transformerType": "returnValue",
+                      "interpolation": "runtime",
+                      "mlSchema": {
+                        "type": "number"
+                      },
+                      "value": 5
+                    },
+                    "right": {
+                      "transformerType": "returnValue",
+                      "interpolation": "runtime",
+                      "mlSchema": {
+                        "type": "number"
+                      },
+                      "value": 10
+                    }
                   },
                   "then": {
                     "transformerType": "returnValue",
-                    "mlSchema": { "type": "string" },
                     "interpolation": "runtime",
+                    "mlSchema": {
+                      "type": "string"
+                    },
                     "value": "smaller"
                   },
                   "else": {
                     "transformerType": "returnValue",
-                    "mlSchema": { "type": "string" },
                     "interpolation": "runtime",
+                    "mlSchema": {
+                      "type": "string"
+                    },
                     "value": "bigger or equal"
                   }
                 },
@@ -774,30 +892,43 @@
                 "transformerTestLabel": "ifThenElse less than false - number comparison",
                 "transformerName": "ifThenElseLessThanFalse",
                 "transformer": {
-                  "transformerType": "<",
+                  "transformerType": "ifThenElse",
                   "interpolation": "runtime",
-                  "left": {
-                    "transformerType": "returnValue",
-                    "mlSchema": { "type": "number" },
+                  "if": {
+                    "transformerType": "boolExpr",
                     "interpolation": "runtime",
-                    "value": 15
-                  },
-                  "right": {
-                    "transformerType": "returnValue",
-                    "mlSchema": { "type": "number" },
-                    "interpolation": "runtime",
-                    "value": 10
+                    "operator": "<",
+                    "left": {
+                      "transformerType": "returnValue",
+                      "interpolation": "runtime",
+                      "mlSchema": {
+                        "type": "number"
+                      },
+                      "value": 15
+                    },
+                    "right": {
+                      "transformerType": "returnValue",
+                      "interpolation": "runtime",
+                      "mlSchema": {
+                        "type": "number"
+                      },
+                      "value": 10
+                    }
                   },
                   "then": {
                     "transformerType": "returnValue",
-                    "mlSchema": { "type": "string" },
                     "interpolation": "runtime",
+                    "mlSchema": {
+                      "type": "string"
+                    },
                     "value": "smaller"
                   },
                   "else": {
                     "transformerType": "returnValue",
-                    "mlSchema": { "type": "string" },
                     "interpolation": "runtime",
+                    "mlSchema": {
+                      "type": "string"
+                    },
                     "value": "bigger or equal"
                   }
                 },
@@ -809,30 +940,43 @@
                 "transformerTestLabel": "ifThenElse less than or equal true - number comparison",
                 "transformerName": "ifThenElseLessThanOrEqualTrue",
                 "transformer": {
-                  "transformerType": "<=",
+                  "transformerType": "ifThenElse",
                   "interpolation": "runtime",
-                  "left": {
-                    "transformerType": "returnValue",
-                    "mlSchema": { "type": "number" },
+                  "if": {
+                    "transformerType": "boolExpr",
                     "interpolation": "runtime",
-                    "value": 10
-                  },
-                  "right": {
-                    "transformerType": "returnValue",
-                    "mlSchema": { "type": "number" },
-                    "interpolation": "runtime",
-                    "value": 10
+                    "operator": "<=",
+                    "left": {
+                      "transformerType": "returnValue",
+                      "interpolation": "runtime",
+                      "mlSchema": {
+                        "type": "number"
+                      },
+                      "value": 10
+                    },
+                    "right": {
+                      "transformerType": "returnValue",
+                      "interpolation": "runtime",
+                      "mlSchema": {
+                        "type": "number"
+                      },
+                      "value": 10
+                    }
                   },
                   "then": {
                     "transformerType": "returnValue",
-                    "mlSchema": { "type": "string" },
                     "interpolation": "runtime",
+                    "mlSchema": {
+                      "type": "string"
+                    },
                     "value": "smaller or equal"
                   },
                   "else": {
                     "transformerType": "returnValue",
-                    "mlSchema": { "type": "string" },
                     "interpolation": "runtime",
+                    "mlSchema": {
+                      "type": "string"
+                    },
                     "value": "bigger"
                   }
                 },
@@ -844,30 +988,43 @@
                 "transformerTestLabel": "ifThenElse less than or equal false - number comparison",
                 "transformerName": "ifThenElseLessThanOrEqualFalse",
                 "transformer": {
-                  "transformerType": "<=",
+                  "transformerType": "ifThenElse",
                   "interpolation": "runtime",
-                  "left": {
-                    "transformerType": "returnValue",
-                    "mlSchema": { "type": "number" },
+                  "if": {
+                    "transformerType": "boolExpr",
                     "interpolation": "runtime",
-                    "value": 15
-                  },
-                  "right": {
-                    "transformerType": "returnValue",
-                    "mlSchema": { "type": "number" },
-                    "interpolation": "runtime",
-                    "value": 10
+                    "operator": "<=",
+                    "left": {
+                      "transformerType": "returnValue",
+                      "interpolation": "runtime",
+                      "mlSchema": {
+                        "type": "number"
+                      },
+                      "value": 15
+                    },
+                    "right": {
+                      "transformerType": "returnValue",
+                      "interpolation": "runtime",
+                      "mlSchema": {
+                        "type": "number"
+                      },
+                      "value": 10
+                    }
                   },
                   "then": {
                     "transformerType": "returnValue",
-                    "mlSchema": { "type": "string" },
                     "interpolation": "runtime",
+                    "mlSchema": {
+                      "type": "string"
+                    },
                     "value": "smaller or equal"
                   },
                   "else": {
                     "transformerType": "returnValue",
-                    "mlSchema": { "type": "string" },
                     "interpolation": "runtime",
+                    "mlSchema": {
+                      "type": "string"
+                    },
                     "value": "bigger"
                   }
                 },
@@ -879,30 +1036,43 @@
                 "transformerTestLabel": "ifThenElse greater than true - number comparison",
                 "transformerName": "ifThenElseGreaterThanTrue",
                 "transformer": {
-                  "transformerType": ">",
+                  "transformerType": "ifThenElse",
                   "interpolation": "runtime",
-                  "left": {
-                    "transformerType": "returnValue",
-                    "mlSchema": { "type": "number" },
+                  "if": {
+                    "transformerType": "boolExpr",
                     "interpolation": "runtime",
-                    "value": 15
-                  },
-                  "right": {
-                    "transformerType": "returnValue",
-                    "mlSchema": { "type": "number" },
-                    "interpolation": "runtime",
-                    "value": 10
+                    "operator": ">",
+                    "left": {
+                      "transformerType": "returnValue",
+                      "interpolation": "runtime",
+                      "mlSchema": {
+                        "type": "number"
+                      },
+                      "value": 15
+                    },
+                    "right": {
+                      "transformerType": "returnValue",
+                      "interpolation": "runtime",
+                      "mlSchema": {
+                        "type": "number"
+                      },
+                      "value": 10
+                    }
                   },
                   "then": {
                     "transformerType": "returnValue",
-                    "mlSchema": { "type": "string" },
                     "interpolation": "runtime",
+                    "mlSchema": {
+                      "type": "string"
+                    },
                     "value": "bigger"
                   },
                   "else": {
                     "transformerType": "returnValue",
-                    "mlSchema": { "type": "string" },
                     "interpolation": "runtime",
+                    "mlSchema": {
+                      "type": "string"
+                    },
                     "value": "smaller or equal"
                   }
                 },
@@ -914,30 +1084,43 @@
                 "transformerTestLabel": "ifThenElse greater than false - number comparison",
                 "transformerName": "ifThenElseGreaterThanFalse",
                 "transformer": {
-                  "transformerType": ">",
+                  "transformerType": "ifThenElse",
                   "interpolation": "runtime",
-                  "left": {
-                    "transformerType": "returnValue",
-                    "mlSchema": { "type": "number" },
+                  "if": {
+                    "transformerType": "boolExpr",
                     "interpolation": "runtime",
-                    "value": 5
-                  },
-                  "right": {
-                    "transformerType": "returnValue",
-                    "mlSchema": { "type": "number" },
-                    "interpolation": "runtime",
-                    "value": 10
+                    "operator": ">",
+                    "left": {
+                      "transformerType": "returnValue",
+                      "interpolation": "runtime",
+                      "mlSchema": {
+                        "type": "number"
+                      },
+                      "value": 5
+                    },
+                    "right": {
+                      "transformerType": "returnValue",
+                      "interpolation": "runtime",
+                      "mlSchema": {
+                        "type": "number"
+                      },
+                      "value": 10
+                    }
                   },
                   "then": {
                     "transformerType": "returnValue",
-                    "mlSchema": { "type": "string" },
                     "interpolation": "runtime",
+                    "mlSchema": {
+                      "type": "string"
+                    },
                     "value": "bigger"
                   },
                   "else": {
                     "transformerType": "returnValue",
-                    "mlSchema": { "type": "string" },
                     "interpolation": "runtime",
+                    "mlSchema": {
+                      "type": "string"
+                    },
                     "value": "smaller or equal"
                   }
                 },
@@ -949,30 +1132,43 @@
                 "transformerTestLabel": "ifThenElse greater than or equal true - number comparison",
                 "transformerName": "ifThenElseGreaterThanOrEqualTrue",
                 "transformer": {
-                  "transformerType": ">=",
+                  "transformerType": "ifThenElse",
                   "interpolation": "runtime",
-                  "left": {
-                    "transformerType": "returnValue",
-                    "mlSchema": { "type": "number" },
+                  "if": {
+                    "transformerType": "boolExpr",
                     "interpolation": "runtime",
-                    "value": 10
-                  },
-                  "right": {
-                    "transformerType": "returnValue",
-                    "mlSchema": { "type": "number" },
-                    "interpolation": "runtime",
-                    "value": 10
+                    "operator": ">=",
+                    "left": {
+                      "transformerType": "returnValue",
+                      "interpolation": "runtime",
+                      "mlSchema": {
+                        "type": "number"
+                      },
+                      "value": 10
+                    },
+                    "right": {
+                      "transformerType": "returnValue",
+                      "interpolation": "runtime",
+                      "mlSchema": {
+                        "type": "number"
+                      },
+                      "value": 10
+                    }
                   },
                   "then": {
                     "transformerType": "returnValue",
-                    "mlSchema": { "type": "string" },
                     "interpolation": "runtime",
+                    "mlSchema": {
+                      "type": "string"
+                    },
                     "value": "bigger or equal"
                   },
                   "else": {
                     "transformerType": "returnValue",
-                    "mlSchema": { "type": "string" },
                     "interpolation": "runtime",
+                    "mlSchema": {
+                      "type": "string"
+                    },
                     "value": "smaller"
                   }
                 },
@@ -984,30 +1180,43 @@
                 "transformerTestLabel": "ifThenElse greater than or equal false - number comparison",
                 "transformerName": "ifThenElseGreaterThanOrEqualFalse",
                 "transformer": {
-                  "transformerType": ">=",
+                  "transformerType": "ifThenElse",
                   "interpolation": "runtime",
-                  "left": {
-                    "transformerType": "returnValue",
-                    "mlSchema": { "type": "number" },
+                  "if": {
+                    "transformerType": "boolExpr",
                     "interpolation": "runtime",
-                    "value": 5
-                  },
-                  "right": {
-                    "transformerType": "returnValue",
-                    "mlSchema": { "type": "number" },
-                    "interpolation": "runtime",
-                    "value": 10
+                    "operator": ">=",
+                    "left": {
+                      "transformerType": "returnValue",
+                      "interpolation": "runtime",
+                      "mlSchema": {
+                        "type": "number"
+                      },
+                      "value": 5
+                    },
+                    "right": {
+                      "transformerType": "returnValue",
+                      "interpolation": "runtime",
+                      "mlSchema": {
+                        "type": "number"
+                      },
+                      "value": 10
+                    }
                   },
                   "then": {
                     "transformerType": "returnValue",
-                    "mlSchema": { "type": "string" },
                     "interpolation": "runtime",
+                    "mlSchema": {
+                      "type": "string"
+                    },
                     "value": "bigger or equal"
                   },
                   "else": {
                     "transformerType": "returnValue",
-                    "mlSchema": { "type": "string" },
                     "interpolation": "runtime",
+                    "mlSchema": {
+                      "type": "string"
+                    },
                     "value": "smaller"
                   }
                 },
@@ -1019,29 +1228,40 @@
                 "transformerTestLabel": "ifThenElse with parameter reference comparison",
                 "transformerName": "ifThenElseWithParameterReference",
                 "transformer": {
-                  "transformerType": "==",
+                  "transformerType": "ifThenElse",
                   "interpolation": "runtime",
-                  "left": {
-                    "transformerType": "getFromParameters",
+                  "if": {
+                    "transformerType": "boolExpr",
                     "interpolation": "runtime",
-                    "referenceName": "userType"
-                  },
-                  "right": {
-                    "transformerType": "returnValue",
-                    "mlSchema": { "type": "string" },
-                    "interpolation": "runtime",
-                    "value": "admin"
+                    "operator": "==",
+                    "left": {
+                      "transformerType": "getFromParameters",
+                      "interpolation": "runtime",
+                      "referenceName": "userType"
+                    },
+                    "right": {
+                      "transformerType": "returnValue",
+                      "interpolation": "runtime",
+                      "mlSchema": {
+                        "type": "string"
+                      },
+                      "value": "admin"
+                    }
                   },
                   "then": {
                     "transformerType": "returnValue",
-                    "mlSchema": { "type": "string" },
                     "interpolation": "runtime",
+                    "mlSchema": {
+                      "type": "string"
+                    },
                     "value": "admin access"
                   },
                   "else": {
                     "transformerType": "returnValue",
-                    "mlSchema": { "type": "string" },
                     "interpolation": "runtime",
+                    "mlSchema": {
+                      "type": "string"
+                    },
                     "value": "regular access"
                   }
                 },
@@ -1055,24 +1275,35 @@
                 "transformerTestLabel": "ifThenElse isNull - left is null (then branch)",
                 "transformerName": "ifThenElseIsNullTrue",
                 "transformer": {
-                  "transformerType": "isNull",
+                  "transformerType": "ifThenElse",
                   "interpolation": "runtime",
-                  "left": {
-                    "transformerType": "returnValue",
+                  "if": {
+                    "transformerType": "boolExpr",
                     "interpolation": "runtime",
-                    "mlSchema": { "type": "null" },
-                    "value": null
+                    "operator": "isNull",
+                    "left": {
+                      "transformerType": "returnValue",
+                      "interpolation": "runtime",
+                      "mlSchema": {
+                        "type": "null"
+                      },
+                      "value": null
+                    }
                   },
                   "then": {
                     "transformerType": "returnValue",
                     "interpolation": "runtime",
-                    "mlSchema": { "type": "string" },
+                    "mlSchema": {
+                      "type": "string"
+                    },
                     "value": "is null"
                   },
                   "else": {
                     "transformerType": "returnValue",
                     "interpolation": "runtime",
-                    "mlSchema": { "type": "string" },
+                    "mlSchema": {
+                      "type": "string"
+                    },
                     "value": "not null"
                   }
                 },
@@ -1084,24 +1315,35 @@
                 "transformerTestLabel": "ifThenElse isNull - left is not null (else branch)",
                 "transformerName": "ifThenElseIsNullFalse",
                 "transformer": {
-                  "transformerType": "isNull",
+                  "transformerType": "ifThenElse",
                   "interpolation": "runtime",
-                  "left": {
-                    "transformerType": "returnValue",
+                  "if": {
+                    "transformerType": "boolExpr",
                     "interpolation": "runtime",
-                    "mlSchema": { "type": "string" },
-                    "value": "hello"
+                    "operator": "isNull",
+                    "left": {
+                      "transformerType": "returnValue",
+                      "interpolation": "runtime",
+                      "mlSchema": {
+                        "type": "string"
+                      },
+                      "value": "hello"
+                    }
                   },
                   "then": {
                     "transformerType": "returnValue",
                     "interpolation": "runtime",
-                    "mlSchema": { "type": "string" },
+                    "mlSchema": {
+                      "type": "string"
+                    },
                     "value": "is null"
                   },
                   "else": {
                     "transformerType": "returnValue",
                     "interpolation": "runtime",
-                    "mlSchema": { "type": "string" },
+                    "mlSchema": {
+                      "type": "string"
+                    },
                     "value": "not null"
                   }
                 },
@@ -1113,24 +1355,35 @@
                 "transformerTestLabel": "ifThenElse isNull - left is 0 (not null, else branch)",
                 "transformerName": "ifThenElseIsNullZero",
                 "transformer": {
-                  "transformerType": "isNull",
+                  "transformerType": "ifThenElse",
                   "interpolation": "runtime",
-                  "left": {
-                    "transformerType": "returnValue",
+                  "if": {
+                    "transformerType": "boolExpr",
                     "interpolation": "runtime",
-                    "mlSchema": { "type": "number" },
-                    "value": 0
+                    "operator": "isNull",
+                    "left": {
+                      "transformerType": "returnValue",
+                      "interpolation": "runtime",
+                      "mlSchema": {
+                        "type": "number"
+                      },
+                      "value": 0
+                    }
                   },
                   "then": {
                     "transformerType": "returnValue",
                     "interpolation": "runtime",
-                    "mlSchema": { "type": "string" },
+                    "mlSchema": {
+                      "type": "string"
+                    },
                     "value": "is null"
                   },
                   "else": {
                     "transformerType": "returnValue",
                     "interpolation": "runtime",
-                    "mlSchema": { "type": "string" },
+                    "mlSchema": {
+                      "type": "string"
+                    },
                     "value": "not null"
                   }
                 },
@@ -1142,24 +1395,35 @@
                 "transformerTestLabel": "ifThenElse isNotNull - left is not null (then branch)",
                 "transformerName": "ifThenElseIsNotNullTrue",
                 "transformer": {
-                  "transformerType": "isNotNull",
+                  "transformerType": "ifThenElse",
                   "interpolation": "runtime",
-                  "left": {
-                    "transformerType": "returnValue",
+                  "if": {
+                    "transformerType": "boolExpr",
                     "interpolation": "runtime",
-                    "mlSchema": { "type": "string" },
-                    "value": "hello"
+                    "operator": "isNotNull",
+                    "left": {
+                      "transformerType": "returnValue",
+                      "interpolation": "runtime",
+                      "mlSchema": {
+                        "type": "string"
+                      },
+                      "value": "hello"
+                    }
                   },
                   "then": {
                     "transformerType": "returnValue",
                     "interpolation": "runtime",
-                    "mlSchema": { "type": "string" },
+                    "mlSchema": {
+                      "type": "string"
+                    },
                     "value": "has value"
                   },
                   "else": {
                     "transformerType": "returnValue",
                     "interpolation": "runtime",
-                    "mlSchema": { "type": "string" },
+                    "mlSchema": {
+                      "type": "string"
+                    },
                     "value": "is null"
                   }
                 },
@@ -1171,24 +1435,35 @@
                 "transformerTestLabel": "ifThenElse isNotNull - left is null (else branch)",
                 "transformerName": "ifThenElseIsNotNullFalse",
                 "transformer": {
-                  "transformerType": "isNotNull",
+                  "transformerType": "ifThenElse",
                   "interpolation": "runtime",
-                  "left": {
-                    "transformerType": "returnValue",
+                  "if": {
+                    "transformerType": "boolExpr",
                     "interpolation": "runtime",
-                    "mlSchema": { "type": "null" },
-                    "value": null
+                    "operator": "isNotNull",
+                    "left": {
+                      "transformerType": "returnValue",
+                      "interpolation": "runtime",
+                      "mlSchema": {
+                        "type": "null"
+                      },
+                      "value": null
+                    }
                   },
                   "then": {
                     "transformerType": "returnValue",
                     "interpolation": "runtime",
-                    "mlSchema": { "type": "string" },
+                    "mlSchema": {
+                      "type": "string"
+                    },
                     "value": "has value"
                   },
                   "else": {
                     "transformerType": "returnValue",
                     "interpolation": "runtime",
-                    "mlSchema": { "type": "string" },
+                    "mlSchema": {
+                      "type": "string"
+                    },
                     "value": "is null"
                   }
                 },
@@ -1200,24 +1475,35 @@
                 "transformerTestLabel": "ifThenElse ! - left is null (falsy, then branch)",
                 "transformerName": "ifThenElseNotNull",
                 "transformer": {
-                  "transformerType": "!",
+                  "transformerType": "ifThenElse",
                   "interpolation": "runtime",
-                  "left": {
-                    "transformerType": "returnValue",
+                  "if": {
+                    "transformerType": "boolExpr",
                     "interpolation": "runtime",
-                    "mlSchema": { "type": "null" },
-                    "value": null
+                    "operator": "!",
+                    "left": {
+                      "transformerType": "returnValue",
+                      "interpolation": "runtime",
+                      "mlSchema": {
+                        "type": "null"
+                      },
+                      "value": null
+                    }
                   },
                   "then": {
                     "transformerType": "returnValue",
                     "interpolation": "runtime",
-                    "mlSchema": { "type": "string" },
+                    "mlSchema": {
+                      "type": "string"
+                    },
                     "value": "is falsy"
                   },
                   "else": {
                     "transformerType": "returnValue",
                     "interpolation": "runtime",
-                    "mlSchema": { "type": "string" },
+                    "mlSchema": {
+                      "type": "string"
+                    },
                     "value": "is truthy"
                   }
                 },
@@ -1229,24 +1515,35 @@
                 "transformerTestLabel": "ifThenElse ! - left is truthy string (else branch)",
                 "transformerName": "ifThenElseNotTruthyString",
                 "transformer": {
-                  "transformerType": "!",
+                  "transformerType": "ifThenElse",
                   "interpolation": "runtime",
-                  "left": {
-                    "transformerType": "returnValue",
+                  "if": {
+                    "transformerType": "boolExpr",
                     "interpolation": "runtime",
-                    "mlSchema": { "type": "string" },
-                    "value": "hello"
+                    "operator": "!",
+                    "left": {
+                      "transformerType": "returnValue",
+                      "interpolation": "runtime",
+                      "mlSchema": {
+                        "type": "string"
+                      },
+                      "value": "hello"
+                    }
                   },
                   "then": {
                     "transformerType": "returnValue",
                     "interpolation": "runtime",
-                    "mlSchema": { "type": "string" },
+                    "mlSchema": {
+                      "type": "string"
+                    },
                     "value": "is falsy"
                   },
                   "else": {
                     "transformerType": "returnValue",
                     "interpolation": "runtime",
-                    "mlSchema": { "type": "string" },
+                    "mlSchema": {
+                      "type": "string"
+                    },
                     "value": "is truthy"
                   }
                 },
@@ -1258,24 +1555,35 @@
                 "transformerTestLabel": "ifThenElse ! - left is 0 (falsy number, then branch)",
                 "transformerName": "ifThenElseNotZero",
                 "transformer": {
-                  "transformerType": "!",
+                  "transformerType": "ifThenElse",
                   "interpolation": "runtime",
-                  "left": {
-                    "transformerType": "returnValue",
+                  "if": {
+                    "transformerType": "boolExpr",
                     "interpolation": "runtime",
-                    "mlSchema": { "type": "number" },
-                    "value": 0
+                    "operator": "!",
+                    "left": {
+                      "transformerType": "returnValue",
+                      "interpolation": "runtime",
+                      "mlSchema": {
+                        "type": "number"
+                      },
+                      "value": 0
+                    }
                   },
                   "then": {
                     "transformerType": "returnValue",
                     "interpolation": "runtime",
-                    "mlSchema": { "type": "string" },
+                    "mlSchema": {
+                      "type": "string"
+                    },
                     "value": "is falsy"
                   },
                   "else": {
                     "transformerType": "returnValue",
                     "interpolation": "runtime",
-                    "mlSchema": { "type": "string" },
+                    "mlSchema": {
+                      "type": "string"
+                    },
                     "value": "is truthy"
                   }
                 },
@@ -1287,24 +1595,35 @@
                 "transformerTestLabel": "ifThenElse ! - left is false (falsy boolean, then branch)",
                 "transformerName": "ifThenElseNotFalse",
                 "transformer": {
-                  "transformerType": "!",
+                  "transformerType": "ifThenElse",
                   "interpolation": "runtime",
-                  "left": {
-                    "transformerType": "returnValue",
+                  "if": {
+                    "transformerType": "boolExpr",
                     "interpolation": "runtime",
-                    "mlSchema": { "type": "boolean" },
-                    "value": false
+                    "operator": "!",
+                    "left": {
+                      "transformerType": "returnValue",
+                      "interpolation": "runtime",
+                      "mlSchema": {
+                        "type": "boolean"
+                      },
+                      "value": false
+                    }
                   },
                   "then": {
                     "transformerType": "returnValue",
                     "interpolation": "runtime",
-                    "mlSchema": { "type": "string" },
+                    "mlSchema": {
+                      "type": "string"
+                    },
                     "value": "is falsy"
                   },
                   "else": {
                     "transformerType": "returnValue",
                     "interpolation": "runtime",
-                    "mlSchema": { "type": "string" },
+                    "mlSchema": {
+                      "type": "string"
+                    },
                     "value": "is truthy"
                   }
                 },
@@ -1316,24 +1635,35 @@
                 "transformerTestLabel": "ifThenElse ! - left is empty string (falsy, then branch)",
                 "transformerName": "ifThenElseNotEmptyString",
                 "transformer": {
-                  "transformerType": "!",
+                  "transformerType": "ifThenElse",
                   "interpolation": "runtime",
-                  "left": {
-                    "transformerType": "returnValue",
+                  "if": {
+                    "transformerType": "boolExpr",
                     "interpolation": "runtime",
-                    "mlSchema": { "type": "string" },
-                    "value": ""
+                    "operator": "!",
+                    "left": {
+                      "transformerType": "returnValue",
+                      "interpolation": "runtime",
+                      "mlSchema": {
+                        "type": "string"
+                      },
+                      "value": ""
+                    }
                   },
                   "then": {
                     "transformerType": "returnValue",
                     "interpolation": "runtime",
-                    "mlSchema": { "type": "string" },
+                    "mlSchema": {
+                      "type": "string"
+                    },
                     "value": "is falsy"
                   },
                   "else": {
                     "transformerType": "returnValue",
                     "interpolation": "runtime",
-                    "mlSchema": { "type": "string" },
+                    "mlSchema": {
+                      "type": "string"
+                    },
                     "value": "is truthy"
                   }
                 },
@@ -1345,24 +1675,35 @@
                 "transformerTestLabel": "ifThenElse ! - left is 1 (truthy number, else branch)",
                 "transformerName": "ifThenElseNotOne",
                 "transformer": {
-                  "transformerType": "!",
+                  "transformerType": "ifThenElse",
                   "interpolation": "runtime",
-                  "left": {
-                    "transformerType": "returnValue",
+                  "if": {
+                    "transformerType": "boolExpr",
                     "interpolation": "runtime",
-                    "mlSchema": { "type": "number" },
-                    "value": 1
+                    "operator": "!",
+                    "left": {
+                      "transformerType": "returnValue",
+                      "interpolation": "runtime",
+                      "mlSchema": {
+                        "type": "number"
+                      },
+                      "value": 1
+                    }
                   },
                   "then": {
                     "transformerType": "returnValue",
                     "interpolation": "runtime",
-                    "mlSchema": { "type": "string" },
+                    "mlSchema": {
+                      "type": "string"
+                    },
                     "value": "is falsy"
                   },
                   "else": {
                     "transformerType": "returnValue",
                     "interpolation": "runtime",
-                    "mlSchema": { "type": "string" },
+                    "mlSchema": {
+                      "type": "string"
+                    },
                     "value": "is truthy"
                   }
                 },
@@ -1374,30 +1715,43 @@
                 "transformerTestLabel": "ifThenElse && - both operands truthy (then branch)",
                 "transformerName": "ifThenElseAndTruthy",
                 "transformer": {
-                  "transformerType": "&&",
+                  "transformerType": "ifThenElse",
                   "interpolation": "runtime",
-                  "left": {
-                    "transformerType": "returnValue",
+                  "if": {
+                    "transformerType": "boolExpr",
                     "interpolation": "runtime",
-                    "mlSchema": { "type": "number" },
-                    "value": 1
-                  },
-                  "right": {
-                    "transformerType": "returnValue",
-                    "interpolation": "runtime",
-                    "mlSchema": { "type": "string" },
-                    "value": "non-empty"
+                    "operator": "&&",
+                    "left": {
+                      "transformerType": "returnValue",
+                      "interpolation": "runtime",
+                      "mlSchema": {
+                        "type": "number"
+                      },
+                      "value": 1
+                    },
+                    "right": {
+                      "transformerType": "returnValue",
+                      "interpolation": "runtime",
+                      "mlSchema": {
+                        "type": "string"
+                      },
+                      "value": "non-empty"
+                    }
                   },
                   "then": {
                     "transformerType": "returnValue",
                     "interpolation": "runtime",
-                    "mlSchema": { "type": "string" },
+                    "mlSchema": {
+                      "type": "string"
+                    },
                     "value": "both truthy"
                   },
                   "else": {
                     "transformerType": "returnValue",
                     "interpolation": "runtime",
-                    "mlSchema": { "type": "string" },
+                    "mlSchema": {
+                      "type": "string"
+                    },
                     "value": "at least one falsy"
                   }
                 },
@@ -1409,30 +1763,43 @@
                 "transformerTestLabel": "ifThenElse || - both operands falsy (else branch)",
                 "transformerName": "ifThenElseOrFalsy",
                 "transformer": {
-                  "transformerType": "||",
+                  "transformerType": "ifThenElse",
                   "interpolation": "runtime",
-                  "left": {
-                    "transformerType": "returnValue",
+                  "if": {
+                    "transformerType": "boolExpr",
                     "interpolation": "runtime",
-                    "mlSchema": { "type": "number" },
-                    "value": 0
-                  },
-                  "right": {
-                    "transformerType": "returnValue",
-                    "interpolation": "runtime",
-                    "mlSchema": { "type": "string" },
-                    "value": ""
+                    "operator": "||",
+                    "left": {
+                      "transformerType": "returnValue",
+                      "interpolation": "runtime",
+                      "mlSchema": {
+                        "type": "number"
+                      },
+                      "value": 0
+                    },
+                    "right": {
+                      "transformerType": "returnValue",
+                      "interpolation": "runtime",
+                      "mlSchema": {
+                        "type": "string"
+                      },
+                      "value": ""
+                    }
                   },
                   "then": {
                     "transformerType": "returnValue",
                     "interpolation": "runtime",
-                    "mlSchema": { "type": "string" },
+                    "mlSchema": {
+                      "type": "string"
+                    },
                     "value": "at least one truthy"
                   },
                   "else": {
                     "transformerType": "returnValue",
                     "interpolation": "runtime",
-                    "mlSchema": { "type": "string" },
+                    "mlSchema": {
+                      "type": "string"
+                    },
                     "value": "both falsy"
                   }
                 },
@@ -1444,30 +1811,43 @@
                 "transformerTestLabel": "ifThenElse && - one operand falsy (else branch)",
                 "transformerName": "ifThenElseAndOneFalsy",
                 "transformer": {
-                  "transformerType": "&&",
+                  "transformerType": "ifThenElse",
                   "interpolation": "runtime",
-                  "left": {
-                    "transformerType": "returnValue",
+                  "if": {
+                    "transformerType": "boolExpr",
                     "interpolation": "runtime",
-                    "mlSchema": { "type": "number" },
-                    "value": 1
-                  },
-                  "right": {
-                    "transformerType": "returnValue",
-                    "interpolation": "runtime",
-                    "mlSchema": { "type": "number" },
-                    "value": 0
+                    "operator": "&&",
+                    "left": {
+                      "transformerType": "returnValue",
+                      "interpolation": "runtime",
+                      "mlSchema": {
+                        "type": "number"
+                      },
+                      "value": 1
+                    },
+                    "right": {
+                      "transformerType": "returnValue",
+                      "interpolation": "runtime",
+                      "mlSchema": {
+                        "type": "number"
+                      },
+                      "value": 0
+                    }
                   },
                   "then": {
                     "transformerType": "returnValue",
                     "interpolation": "runtime",
-                    "mlSchema": { "type": "string" },
+                    "mlSchema": {
+                      "type": "string"
+                    },
                     "value": "both truthy"
                   },
                   "else": {
                     "transformerType": "returnValue",
                     "interpolation": "runtime",
-                    "mlSchema": { "type": "string" },
+                    "mlSchema": {
+                      "type": "string"
+                    },
                     "value": "at least one falsy"
                   }
                 },
@@ -1479,30 +1859,43 @@
                 "transformerTestLabel": "ifThenElse || - one operand truthy (then branch)",
                 "transformerName": "ifThenElseOrOneTruthy",
                 "transformer": {
-                  "transformerType": "||",
+                  "transformerType": "ifThenElse",
                   "interpolation": "runtime",
-                  "left": {
-                    "transformerType": "returnValue",
+                  "if": {
+                    "transformerType": "boolExpr",
                     "interpolation": "runtime",
-                    "mlSchema": { "type": "number" },
-                    "value": 0
-                  },
-                  "right": {
-                    "transformerType": "returnValue",
-                    "interpolation": "runtime",
-                    "mlSchema": { "type": "string" },
-                    "value": "truthy"
+                    "operator": "||",
+                    "left": {
+                      "transformerType": "returnValue",
+                      "interpolation": "runtime",
+                      "mlSchema": {
+                        "type": "number"
+                      },
+                      "value": 0
+                    },
+                    "right": {
+                      "transformerType": "returnValue",
+                      "interpolation": "runtime",
+                      "mlSchema": {
+                        "type": "string"
+                      },
+                      "value": "truthy"
+                    }
                   },
                   "then": {
                     "transformerType": "returnValue",
                     "interpolation": "runtime",
-                    "mlSchema": { "type": "string" },
+                    "mlSchema": {
+                      "type": "string"
+                    },
                     "value": "at least one truthy"
                   },
                   "else": {
                     "transformerType": "returnValue",
                     "interpolation": "runtime",
-                    "mlSchema": { "type": "string" },
+                    "mlSchema": {
+                      "type": "string"
+                    },
                     "value": "both falsy"
                   }
                 },
@@ -1514,19 +1907,28 @@
                 "transformerTestLabel": "ifThenElse && - no then/else - both truthy returns true",
                 "transformerName": "ifThenElseAndNoThenElseTruthy",
                 "transformer": {
-                  "transformerType": "&&",
+                  "transformerType": "ifThenElse",
                   "interpolation": "runtime",
-                  "left": {
-                    "transformerType": "returnValue",
+                  "if": {
+                    "transformerType": "boolExpr",
                     "interpolation": "runtime",
-                    "mlSchema": { "type": "number" },
-                    "value": 1
-                  },
-                  "right": {
-                    "transformerType": "returnValue",
-                    "interpolation": "runtime",
-                    "mlSchema": { "type": "string" },
-                    "value": "non-empty"
+                    "operator": "&&",
+                    "left": {
+                      "transformerType": "returnValue",
+                      "interpolation": "runtime",
+                      "mlSchema": {
+                        "type": "number"
+                      },
+                      "value": 1
+                    },
+                    "right": {
+                      "transformerType": "returnValue",
+                      "interpolation": "runtime",
+                      "mlSchema": {
+                        "type": "string"
+                      },
+                      "value": "non-empty"
+                    }
                   }
                 },
                 "transformerParams": {},
@@ -1537,19 +1939,28 @@
                 "transformerTestLabel": "ifThenElse && - no then/else - one falsy returns false",
                 "transformerName": "ifThenElseAndNoThenElseFalsy",
                 "transformer": {
-                  "transformerType": "&&",
+                  "transformerType": "ifThenElse",
                   "interpolation": "runtime",
-                  "left": {
-                    "transformerType": "returnValue",
+                  "if": {
+                    "transformerType": "boolExpr",
                     "interpolation": "runtime",
-                    "mlSchema": { "type": "number" },
-                    "value": 1
-                  },
-                  "right": {
-                    "transformerType": "returnValue",
-                    "interpolation": "runtime",
-                    "mlSchema": { "type": "number" },
-                    "value": 0
+                    "operator": "&&",
+                    "left": {
+                      "transformerType": "returnValue",
+                      "interpolation": "runtime",
+                      "mlSchema": {
+                        "type": "number"
+                      },
+                      "value": 1
+                    },
+                    "right": {
+                      "transformerType": "returnValue",
+                      "interpolation": "runtime",
+                      "mlSchema": {
+                        "type": "number"
+                      },
+                      "value": 0
+                    }
                   }
                 },
                 "transformerParams": {},
@@ -1560,19 +1971,28 @@
                 "transformerTestLabel": "ifThenElse || - no then/else - one truthy returns true",
                 "transformerName": "ifThenElseOrNoThenElseTruthy",
                 "transformer": {
-                  "transformerType": "||",
+                  "transformerType": "ifThenElse",
                   "interpolation": "runtime",
-                  "left": {
-                    "transformerType": "returnValue",
+                  "if": {
+                    "transformerType": "boolExpr",
                     "interpolation": "runtime",
-                    "mlSchema": { "type": "number" },
-                    "value": 0
-                  },
-                  "right": {
-                    "transformerType": "returnValue",
-                    "interpolation": "runtime",
-                    "mlSchema": { "type": "string" },
-                    "value": "truthy"
+                    "operator": "||",
+                    "left": {
+                      "transformerType": "returnValue",
+                      "interpolation": "runtime",
+                      "mlSchema": {
+                        "type": "number"
+                      },
+                      "value": 0
+                    },
+                    "right": {
+                      "transformerType": "returnValue",
+                      "interpolation": "runtime",
+                      "mlSchema": {
+                        "type": "string"
+                      },
+                      "value": "truthy"
+                    }
                   }
                 },
                 "transformerParams": {},
@@ -1583,19 +2003,28 @@
                 "transformerTestLabel": "ifThenElse || - no then/else - both falsy returns false",
                 "transformerName": "ifThenElseOrNoThenElseFalsy",
                 "transformer": {
-                  "transformerType": "||",
+                  "transformerType": "ifThenElse",
                   "interpolation": "runtime",
-                  "left": {
-                    "transformerType": "returnValue",
+                  "if": {
+                    "transformerType": "boolExpr",
                     "interpolation": "runtime",
-                    "mlSchema": { "type": "number" },
-                    "value": 0
-                  },
-                  "right": {
-                    "transformerType": "returnValue",
-                    "interpolation": "runtime",
-                    "mlSchema": { "type": "string" },
-                    "value": ""
+                    "operator": "||",
+                    "left": {
+                      "transformerType": "returnValue",
+                      "interpolation": "runtime",
+                      "mlSchema": {
+                        "type": "number"
+                      },
+                      "value": 0
+                    },
+                    "right": {
+                      "transformerType": "returnValue",
+                      "interpolation": "runtime",
+                      "mlSchema": {
+                        "type": "string"
+                      },
+                      "value": ""
+                    }
                   }
                 },
                 "transformerParams": {},
@@ -1606,13 +2035,20 @@
                 "transformerTestLabel": "ifThenElse isNotNull - no then/else - not null returns true",
                 "transformerName": "ifThenElseIsNotNullNoThenElseTruthy",
                 "transformer": {
-                  "transformerType": "isNotNull",
+                  "transformerType": "ifThenElse",
                   "interpolation": "runtime",
-                  "left": {
-                    "transformerType": "returnValue",
+                  "if": {
+                    "transformerType": "boolExpr",
                     "interpolation": "runtime",
-                    "mlSchema": { "type": "string" },
-                    "value": "some-value"
+                    "operator": "isNotNull",
+                    "left": {
+                      "transformerType": "returnValue",
+                      "interpolation": "runtime",
+                      "mlSchema": {
+                        "type": "string"
+                      },
+                      "value": "some-value"
+                    }
                   }
                 },
                 "transformerParams": {},
@@ -1623,13 +2059,20 @@
                 "transformerTestLabel": "ifThenElse isNotNull - no then/else - null returns false",
                 "transformerName": "ifThenElseIsNotNullNoThenElseFalsy",
                 "transformer": {
-                  "transformerType": "isNotNull",
+                  "transformerType": "ifThenElse",
                   "interpolation": "runtime",
-                  "left": {
-                    "transformerType": "returnValue",
+                  "if": {
+                    "transformerType": "boolExpr",
                     "interpolation": "runtime",
-                    "mlSchema": { "type": "null" },
-                    "value": null
+                    "operator": "isNotNull",
+                    "left": {
+                      "transformerType": "returnValue",
+                      "interpolation": "runtime",
+                      "mlSchema": {
+                        "type": "null"
+                      },
+                      "value": null
+                    }
                   }
                 },
                 "transformerParams": {},
@@ -1640,19 +2083,28 @@
                 "transformerTestLabel": "ifThenElse == - no then/else - equal returns true",
                 "transformerName": "ifThenElseEqNoThenElseTrue",
                 "transformer": {
-                  "transformerType": "==",
+                  "transformerType": "ifThenElse",
                   "interpolation": "runtime",
-                  "left": {
-                    "transformerType": "returnValue",
+                  "if": {
+                    "transformerType": "boolExpr",
                     "interpolation": "runtime",
-                    "mlSchema": { "type": "string" },
-                    "value": "hello"
-                  },
-                  "right": {
-                    "transformerType": "returnValue",
-                    "interpolation": "runtime",
-                    "mlSchema": { "type": "string" },
-                    "value": "hello"
+                    "operator": "==",
+                    "left": {
+                      "transformerType": "returnValue",
+                      "interpolation": "runtime",
+                      "mlSchema": {
+                        "type": "string"
+                      },
+                      "value": "hello"
+                    },
+                    "right": {
+                      "transformerType": "returnValue",
+                      "interpolation": "runtime",
+                      "mlSchema": {
+                        "type": "string"
+                      },
+                      "value": "hello"
+                    }
                   }
                 },
                 "transformerParams": {},
@@ -1663,19 +2115,28 @@
                 "transformerTestLabel": "ifThenElse == - no then/else - not equal returns false",
                 "transformerName": "ifThenElseEqNoThenElseFalse",
                 "transformer": {
-                  "transformerType": "==",
+                  "transformerType": "ifThenElse",
                   "interpolation": "runtime",
-                  "left": {
-                    "transformerType": "returnValue",
+                  "if": {
+                    "transformerType": "boolExpr",
                     "interpolation": "runtime",
-                    "mlSchema": { "type": "string" },
-                    "value": "hello"
-                  },
-                  "right": {
-                    "transformerType": "returnValue",
-                    "interpolation": "runtime",
-                    "mlSchema": { "type": "string" },
-                    "value": "world"
+                    "operator": "==",
+                    "left": {
+                      "transformerType": "returnValue",
+                      "interpolation": "runtime",
+                      "mlSchema": {
+                        "type": "string"
+                      },
+                      "value": "hello"
+                    },
+                    "right": {
+                      "transformerType": "returnValue",
+                      "interpolation": "runtime",
+                      "mlSchema": {
+                        "type": "string"
+                      },
+                      "value": "world"
+                    }
                   }
                 },
                 "transformerParams": {},
@@ -1697,13 +2158,17 @@
                   "left": {
                     "transformerType": "returnValue",
                     "interpolation": "runtime",
-                    "mlSchema": { "type": "string" },
+                    "mlSchema": {
+                      "type": "string"
+                    },
                     "value": "hello"
                   },
                   "right": {
                     "transformerType": "returnValue",
                     "interpolation": "runtime",
-                    "mlSchema": { "type": "string" },
+                    "mlSchema": {
+                      "type": "string"
+                    },
                     "value": "hello"
                   },
                   "operator": "=="
@@ -1721,13 +2186,17 @@
                   "left": {
                     "transformerType": "returnValue",
                     "interpolation": "runtime",
-                    "mlSchema": { "type": "string" },
+                    "mlSchema": {
+                      "type": "string"
+                    },
                     "value": "hello"
                   },
                   "right": {
                     "transformerType": "returnValue",
                     "interpolation": "runtime",
-                    "mlSchema": { "type": "string" },
+                    "mlSchema": {
+                      "type": "string"
+                    },
                     "value": "world"
                   },
                   "operator": "=="
@@ -1745,13 +2214,17 @@
                   "left": {
                     "transformerType": "returnValue",
                     "interpolation": "runtime",
-                    "mlSchema": { "type": "string" },
+                    "mlSchema": {
+                      "type": "string"
+                    },
                     "value": "hello"
                   },
                   "right": {
                     "transformerType": "returnValue",
                     "interpolation": "runtime",
-                    "mlSchema": { "type": "string" },
+                    "mlSchema": {
+                      "type": "string"
+                    },
                     "value": "world"
                   },
                   "operator": "!="
@@ -1769,13 +2242,17 @@
                   "left": {
                     "transformerType": "returnValue",
                     "interpolation": "runtime",
-                    "mlSchema": { "type": "string" },
+                    "mlSchema": {
+                      "type": "string"
+                    },
                     "value": "hello"
                   },
                   "right": {
                     "transformerType": "returnValue",
                     "interpolation": "runtime",
-                    "mlSchema": { "type": "string" },
+                    "mlSchema": {
+                      "type": "string"
+                    },
                     "value": "hello"
                   },
                   "operator": "!="
@@ -1793,13 +2270,17 @@
                   "left": {
                     "transformerType": "returnValue",
                     "interpolation": "runtime",
-                    "mlSchema": { "type": "number" },
+                    "mlSchema": {
+                      "type": "number"
+                    },
                     "value": 5
                   },
                   "right": {
                     "transformerType": "returnValue",
                     "interpolation": "runtime",
-                    "mlSchema": { "type": "number" },
+                    "mlSchema": {
+                      "type": "number"
+                    },
                     "value": 10
                   },
                   "operator": "<"
@@ -1817,13 +2298,17 @@
                   "left": {
                     "transformerType": "returnValue",
                     "interpolation": "runtime",
-                    "mlSchema": { "type": "number" },
+                    "mlSchema": {
+                      "type": "number"
+                    },
                     "value": 15
                   },
                   "right": {
                     "transformerType": "returnValue",
                     "interpolation": "runtime",
-                    "mlSchema": { "type": "number" },
+                    "mlSchema": {
+                      "type": "number"
+                    },
                     "value": 10
                   },
                   "operator": "<"
@@ -1841,13 +2326,17 @@
                   "left": {
                     "transformerType": "returnValue",
                     "interpolation": "runtime",
-                    "mlSchema": { "type": "number" },
+                    "mlSchema": {
+                      "type": "number"
+                    },
                     "value": 15
                   },
                   "right": {
                     "transformerType": "returnValue",
                     "interpolation": "runtime",
-                    "mlSchema": { "type": "number" },
+                    "mlSchema": {
+                      "type": "number"
+                    },
                     "value": 10
                   },
                   "operator": ">"
@@ -1865,13 +2354,17 @@
                   "left": {
                     "transformerType": "returnValue",
                     "interpolation": "runtime",
-                    "mlSchema": { "type": "number" },
+                    "mlSchema": {
+                      "type": "number"
+                    },
                     "value": 5
                   },
                   "right": {
                     "transformerType": "returnValue",
                     "interpolation": "runtime",
-                    "mlSchema": { "type": "number" },
+                    "mlSchema": {
+                      "type": "number"
+                    },
                     "value": 10
                   },
                   "operator": ">"
@@ -1889,7 +2382,9 @@
                   "left": {
                     "transformerType": "returnValue",
                     "interpolation": "runtime",
-                    "mlSchema": { "type": "null" },
+                    "mlSchema": {
+                      "type": "null"
+                    },
                     "value": null
                   },
                   "operator": "isNull"
@@ -1907,7 +2402,9 @@
                   "left": {
                     "transformerType": "returnValue",
                     "interpolation": "runtime",
-                    "mlSchema": { "type": "string" },
+                    "mlSchema": {
+                      "type": "string"
+                    },
                     "value": "hello"
                   },
                   "operator": "isNull"
@@ -1925,7 +2422,9 @@
                   "left": {
                     "transformerType": "returnValue",
                     "interpolation": "runtime",
-                    "mlSchema": { "type": "string" },
+                    "mlSchema": {
+                      "type": "string"
+                    },
                     "value": "hello"
                   },
                   "operator": "isNotNull"
@@ -1943,7 +2442,9 @@
                   "left": {
                     "transformerType": "returnValue",
                     "interpolation": "runtime",
-                    "mlSchema": { "type": "null" },
+                    "mlSchema": {
+                      "type": "null"
+                    },
                     "value": null
                   },
                   "operator": "isNotNull"
@@ -1961,7 +2462,9 @@
                   "left": {
                     "transformerType": "returnValue",
                     "interpolation": "runtime",
-                    "mlSchema": { "type": "null" },
+                    "mlSchema": {
+                      "type": "null"
+                    },
                     "value": null
                   },
                   "operator": "!"
@@ -1979,7 +2482,9 @@
                   "left": {
                     "transformerType": "returnValue",
                     "interpolation": "runtime",
-                    "mlSchema": { "type": "string" },
+                    "mlSchema": {
+                      "type": "string"
+                    },
                     "value": "hello"
                   },
                   "operator": "!"
@@ -1997,13 +2502,17 @@
                   "left": {
                     "transformerType": "returnValue",
                     "interpolation": "runtime",
-                    "mlSchema": { "type": "number" },
+                    "mlSchema": {
+                      "type": "number"
+                    },
                     "value": 1
                   },
                   "right": {
                     "transformerType": "returnValue",
                     "interpolation": "runtime",
-                    "mlSchema": { "type": "string" },
+                    "mlSchema": {
+                      "type": "string"
+                    },
                     "value": "non-empty"
                   },
                   "operator": "&&"
@@ -2021,13 +2530,17 @@
                   "left": {
                     "transformerType": "returnValue",
                     "interpolation": "runtime",
-                    "mlSchema": { "type": "number" },
+                    "mlSchema": {
+                      "type": "number"
+                    },
                     "value": 1
                   },
                   "right": {
                     "transformerType": "returnValue",
                     "interpolation": "runtime",
-                    "mlSchema": { "type": "number" },
+                    "mlSchema": {
+                      "type": "number"
+                    },
                     "value": 0
                   },
                   "operator": "&&"
@@ -2045,13 +2558,17 @@
                   "left": {
                     "transformerType": "returnValue",
                     "interpolation": "runtime",
-                    "mlSchema": { "type": "number" },
+                    "mlSchema": {
+                      "type": "number"
+                    },
                     "value": 0
                   },
                   "right": {
                     "transformerType": "returnValue",
                     "interpolation": "runtime",
-                    "mlSchema": { "type": "string" },
+                    "mlSchema": {
+                      "type": "string"
+                    },
                     "value": "truthy"
                   },
                   "operator": "||"
@@ -2069,13 +2586,17 @@
                   "left": {
                     "transformerType": "returnValue",
                     "interpolation": "runtime",
-                    "mlSchema": { "type": "number" },
+                    "mlSchema": {
+                      "type": "number"
+                    },
                     "value": 0
                   },
                   "right": {
                     "transformerType": "returnValue",
                     "interpolation": "runtime",
-                    "mlSchema": { "type": "string" },
+                    "mlSchema": {
+                      "type": "string"
+                    },
                     "value": ""
                   },
                   "operator": "||"
@@ -2098,7 +2619,9 @@
                   "right": {
                     "transformerType": "returnValue",
                     "interpolation": "runtime",
-                    "mlSchema": { "type": "string" },
+                    "mlSchema": {
+                      "type": "string"
+                    },
                     "value": "admin"
                   },
                   "operator": "=="
@@ -2399,13 +2922,17 @@
                   "args": [
                     {
                       "transformerType": "returnValue",
-                      "mlSchema": { "type": "number" },
+                      "mlSchema": {
+                        "type": "number"
+                      },
                       "interpolation": "runtime",
                       "value": 5
                     },
                     {
                       "transformerType": "returnValue",
-                      "mlSchema": { "type": "number" },
+                      "mlSchema": {
+                        "type": "number"
+                      },
                       "interpolation": "runtime",
                       "value": 3
                     }
@@ -2424,19 +2951,25 @@
                   "args": [
                     {
                       "transformerType": "returnValue",
-                      "mlSchema": { "type": "number" },
+                      "mlSchema": {
+                        "type": "number"
+                      },
                       "interpolation": "runtime",
                       "value": 5
                     },
                     {
                       "transformerType": "returnValue",
-                      "mlSchema": { "type": "number" },
+                      "mlSchema": {
+                        "type": "number"
+                      },
                       "interpolation": "runtime",
                       "value": 3
                     },
                     {
                       "transformerType": "returnValue",
-                      "mlSchema": { "type": "number" },
+                      "mlSchema": {
+                        "type": "number"
+                      },
                       "interpolation": "runtime",
                       "value": 2
                     }
@@ -2455,7 +2988,9 @@
                   "args": [
                     {
                       "transformerType": "returnValue",
-                      "mlSchema": { "type": "number" },
+                      "mlSchema": {
+                        "type": "number"
+                      },
                       "interpolation": "runtime",
                       "value": 42
                     }
@@ -2474,13 +3009,17 @@
                   "args": [
                     {
                       "transformerType": "returnValue",
-                      "mlSchema": { "type": "number" },
+                      "mlSchema": {
+                        "type": "number"
+                      },
                       "interpolation": "runtime",
                       "value": -10
                     },
                     {
                       "transformerType": "returnValue",
-                      "mlSchema": { "type": "number" },
+                      "mlSchema": {
+                        "type": "number"
+                      },
                       "interpolation": "runtime",
                       "value": -5
                     }
@@ -2499,13 +3038,17 @@
                   "args": [
                     {
                       "transformerType": "returnValue",
-                      "mlSchema": { "type": "number" },
+                      "mlSchema": {
+                        "type": "number"
+                      },
                       "interpolation": "runtime",
                       "value": 10
                     },
                     {
                       "transformerType": "returnValue",
-                      "mlSchema": { "type": "number" },
+                      "mlSchema": {
+                        "type": "number"
+                      },
                       "interpolation": "runtime",
                       "value": -3
                     }
@@ -2524,13 +3067,17 @@
                   "args": [
                     {
                       "transformerType": "returnValue",
-                      "mlSchema": { "type": "number" },
+                      "mlSchema": {
+                        "type": "number"
+                      },
                       "interpolation": "runtime",
                       "value": 1.5
                     },
                     {
                       "transformerType": "returnValue",
-                      "mlSchema": { "type": "number" },
+                      "mlSchema": {
+                        "type": "number"
+                      },
                       "interpolation": "runtime",
                       "value": 2.5
                     }
@@ -2549,13 +3096,17 @@
                   "args": [
                     {
                       "transformerType": "returnValue",
-                      "mlSchema": { "type": "string" },
+                      "mlSchema": {
+                        "type": "string"
+                      },
                       "interpolation": "runtime",
                       "value": "Hello, "
                     },
                     {
                       "transformerType": "returnValue",
-                      "mlSchema": { "type": "string" },
+                      "mlSchema": {
+                        "type": "string"
+                      },
                       "interpolation": "runtime",
                       "value": "World!"
                     }
@@ -2574,19 +3125,25 @@
                   "args": [
                     {
                       "transformerType": "returnValue",
-                      "mlSchema": { "type": "string" },
+                      "mlSchema": {
+                        "type": "string"
+                      },
                       "interpolation": "runtime",
                       "value": "Hello"
                     },
                     {
                       "transformerType": "returnValue",
-                      "mlSchema": { "type": "string" },
+                      "mlSchema": {
+                        "type": "string"
+                      },
                       "interpolation": "runtime",
                       "value": ", "
                     },
                     {
                       "transformerType": "returnValue",
-                      "mlSchema": { "type": "string" },
+                      "mlSchema": {
+                        "type": "string"
+                      },
                       "interpolation": "runtime",
                       "value": "World!"
                     }
@@ -2605,13 +3162,17 @@
                   "args": [
                     {
                       "transformerType": "returnValue",
-                      "mlSchema": { "type": "string" },
+                      "mlSchema": {
+                        "type": "string"
+                      },
                       "interpolation": "runtime",
                       "value": ""
                     },
                     {
                       "transformerType": "returnValue",
-                      "mlSchema": { "type": "string" },
+                      "mlSchema": {
+                        "type": "string"
+                      },
                       "interpolation": "runtime",
                       "value": "test"
                     }
@@ -2630,13 +3191,17 @@
                   "args": [
                     {
                       "transformerType": "returnValue",
-                      "mlSchema": { "type": "bigint" },
+                      "mlSchema": {
+                        "type": "bigint"
+                      },
                       "interpolation": "runtime",
                       "value": "9007199254740992"
                     },
                     {
                       "transformerType": "returnValue",
-                      "mlSchema": { "type": "bigint" },
+                      "mlSchema": {
+                        "type": "bigint"
+                      },
                       "interpolation": "runtime",
                       "value": "1"
                     }
@@ -2655,7 +3220,9 @@
                   "args": []
                 },
                 "transformerParams": {},
-                "retainAttributes": ["queryFailure"],
+                "retainAttributes": [
+                  "queryFailure"
+                ],
                 "integrationTestExpectedValue": {
                   "queryFailure": "QueryNotExecutable"
                 },
@@ -2673,20 +3240,26 @@
                   "args": [
                     {
                       "transformerType": "returnValue",
-                      "mlSchema": { "type": "number" },
+                      "mlSchema": {
+                        "type": "number"
+                      },
                       "interpolation": "runtime",
                       "value": 5
                     },
                     {
                       "transformerType": "returnValue",
-                      "mlSchema": { "type": "string" },
+                      "mlSchema": {
+                        "type": "string"
+                      },
                       "interpolation": "runtime",
                       "value": "test"
                     }
                   ]
                 },
                 "transformerParams": {},
-                "retainAttributes": ["queryFailure"],
+                "retainAttributes": [
+                  "queryFailure"
+                ],
                 "integrationTestExpectedValue": {
                   "queryFailure": "QueryNotExecutable"
                 },
@@ -2704,20 +3277,26 @@
                   "args": [
                     {
                       "transformerType": "returnValue",
-                      "mlSchema": { "type": "number" },
+                      "mlSchema": {
+                        "type": "number"
+                      },
                       "interpolation": "runtime",
                       "value": 5
                     },
                     {
                       "transformerType": "returnValue",
-                      "mlSchema": { "type": "bigint" },
+                      "mlSchema": {
+                        "type": "bigint"
+                      },
                       "interpolation": "runtime",
                       "value": "10"
                     }
                   ]
                 },
                 "transformerParams": {},
-                "retainAttributes": ["queryFailure"],
+                "retainAttributes": [
+                  "queryFailure"
+                ],
                 "integrationTestExpectedValue": {
                   "queryFailure": "QueryNotExecutable"
                 },
@@ -2735,26 +3314,34 @@
                   "args": [
                     {
                       "transformerType": "returnValue",
-                      "mlSchema": { "type": "number" },
+                      "mlSchema": {
+                        "type": "number"
+                      },
                       "interpolation": "runtime",
                       "value": 1
                     },
                     {
                       "transformerType": "returnValue",
-                      "mlSchema": { "type": "number" },
+                      "mlSchema": {
+                        "type": "number"
+                      },
                       "interpolation": "runtime",
                       "value": 2
                     },
                     {
                       "transformerType": "returnValue",
-                      "mlSchema": { "type": "string" },
+                      "mlSchema": {
+                        "type": "string"
+                      },
                       "interpolation": "runtime",
                       "value": "oops"
                     }
                   ]
                 },
                 "transformerParams": {},
-                "retainAttributes": ["queryFailure"],
+                "retainAttributes": [
+                  "queryFailure"
+                ],
                 "integrationTestExpectedValue": {
                   "queryFailure": "QueryNotExecutable"
                 },
@@ -2787,7 +3374,9 @@
                   "value2": 50
                 },
                 "integrationTestExpectedValue": {
-                  "retainAttributes": ["queryFailure"],
+                  "retainAttributes": [
+                    "queryFailure"
+                  ],
                   "value": {
                     "queryFailure": "QueryNotExecutable"
                   }
@@ -2825,7 +3414,11 @@
                     "transformerName": "getFromParametersForReferencePath",
                     "transformer": {
                       "transformerType": "getFromParameters",
-                      "referencePath": ["a", "b", "c"]
+                      "referencePath": [
+                        "a",
+                        "b",
+                        "c"
+                      ]
                     },
                     "transformerParams": {
                       "a": {
@@ -2845,7 +3438,9 @@
                       "referenceName": "nonExistentReference"
                     },
                     "transformerParams": {},
-                    "retainAttributes": ["queryFailure"],
+                    "retainAttributes": [
+                      "queryFailure"
+                    ],
                     "expectedValue": {
                       "queryFailure": "FailedTransformer"
                     }
@@ -2856,12 +3451,16 @@
                     "transformerName": "getFromParameters",
                     "transformer": {
                       "transformerType": "getFromParameters",
-                      "referencePath": ["invalidPath"]
+                      "referencePath": [
+                        "invalidPath"
+                      ]
                     },
                     "transformerParams": {
                       "a": "test"
                     },
-                    "retainAttributes": ["queryFailure"],
+                    "retainAttributes": [
+                      "queryFailure"
+                    ],
                     "expectedValue": {
                       "queryFailure": "FailedTransformer"
                     }
@@ -2894,7 +3493,11 @@
                     "transformer": {
                       "transformerType": "getFromContext",
                       "interpolation": "runtime",
-                      "referencePath": ["a", "b", "c"]
+                      "referencePath": [
+                        "a",
+                        "b",
+                        "c"
+                      ]
                     },
                     "transformerParams": {},
                     "transformerRuntimeContext": {
@@ -2916,7 +3519,9 @@
                       "referenceName": "nonExistentReference"
                     },
                     "transformerParams": {},
-                    "retainAttributes": ["queryFailure"],
+                    "retainAttributes": [
+                      "queryFailure"
+                    ],
                     "integrationTestExpectedValue": {
                       "queryFailure": "QueryNotExecutable"
                     },
@@ -2931,7 +3536,10 @@
                     "transformer": {
                       "transformerType": "getFromContext",
                       "interpolation": "runtime",
-                      "referencePath": ["a", "invalidPath"]
+                      "referencePath": [
+                        "a",
+                        "invalidPath"
+                      ]
                     },
                     "transformerParams": {},
                     "transformerRuntimeContext": {
@@ -2939,7 +3547,9 @@
                         "b": "test"
                       }
                     },
-                    "retainAttributes": ["queryFailure"],
+                    "retainAttributes": [
+                      "queryFailure"
+                    ],
                     "integrationTestExpectedValue": {
                       "queryFailure": "QueryNotExecutable"
                     },
@@ -2974,8 +3584,14 @@
                 },
                 "transformerParams": {},
                 "expectedValue": [
-                  ["a", "testA"],
-                  ["b", "testB"]
+                  [
+                    "a",
+                    "testA"
+                  ],
+                  [
+                    "b",
+                    "testB"
+                  ]
                 ]
               },
               {
@@ -2997,8 +3613,14 @@
                   }
                 },
                 "expectedValue": [
-                  ["a", "testA"],
-                  ["b", "testB"]
+                  [
+                    "a",
+                    "testA"
+                  ],
+                  [
+                    "b",
+                    "testB"
+                  ]
                 ]
               },
               {
@@ -3022,8 +3644,14 @@
                   }
                 },
                 "expectedValue": [
-                  ["a", "testA"],
-                  ["b", "testB"]
+                  [
+                    "a",
+                    "testA"
+                  ],
+                  [
+                    "b",
+                    "testB"
+                  ]
                 ]
               },
               {
@@ -3040,7 +3668,9 @@
                   }
                 },
                 "transformerParams": {},
-                "retainAttributes": ["queryFailure"],
+                "retainAttributes": [
+                  "queryFailure"
+                ],
                 "unitTestExpectedValue": {
                   "queryFailure": "FailedTransformer"
                 },
@@ -3077,7 +3707,10 @@
                     "b": "testB"
                   }
                 },
-                "expectedValue": ["testA", "testB"]
+                "expectedValue": [
+                  "testA",
+                  "testB"
+                ]
               },
               {
                 "transformerTestType": "transformerTest",
@@ -3098,7 +3731,10 @@
                     "b": "testB"
                   }
                 },
-                "expectedValue": ["testA", "testB"]
+                "expectedValue": [
+                  "testA",
+                  "testB"
+                ]
               },
               {
                 "transformerTestType": "transformerTest",
@@ -3120,7 +3756,10 @@
                     "b": "testB"
                   }
                 },
-                "expectedValue": ["testA", "testB"]
+                "expectedValue": [
+                  "testA",
+                  "testB"
+                ]
               },
               {
                 "transformerTestType": "transformerTest",
@@ -3136,7 +3775,9 @@
                   }
                 },
                 "transformerParams": {},
-                "retainAttributes": ["queryFailure"],
+                "retainAttributes": [
+                  "queryFailure"
+                ],
                 "unitTestExpectedValue": {
                   "queryFailure": "FailedTransformer"
                 },
@@ -3161,7 +3802,11 @@
                   "applyTo": {
                     "transformerType": "returnValue",
                     "interpolation": "runtime",
-                    "value": ["testA", "testB", "testC"]
+                    "value": [
+                      "testA",
+                      "testB",
+                      "testC"
+                    ]
                   },
                   "index": 1
                 },
@@ -3184,7 +3829,11 @@
                 },
                 "transformerParams": {},
                 "transformerRuntimeContext": {
-                  "testList": ["testA", "testB", "testC"]
+                  "testList": [
+                    "testA",
+                    "testB",
+                    "testC"
+                  ]
                 },
                 "expectedValue": "testB"
               },
@@ -3237,7 +3886,11 @@
                         "type": "string"
                       }
                     },
-                    "value": ["testA", "testB", "testC"]
+                    "value": [
+                      "testA",
+                      "testB",
+                      "testC"
+                    ]
                   },
                   "index": 1
                 },
@@ -3301,7 +3954,11 @@
                 },
                 "transformerParams": {},
                 "transformerRuntimeContext": {
-                  "testList": ["testA", "testB", "testC"]
+                  "testList": [
+                    "testA",
+                    "testB",
+                    "testC"
+                  ]
                 },
                 "expectedValue": null
               },
@@ -3321,7 +3978,11 @@
                 },
                 "transformerParams": {},
                 "transformerRuntimeContext": {
-                  "testList": ["testA", "testB", "testC"]
+                  "testList": [
+                    "testA",
+                    "testB",
+                    "testC"
+                  ]
                 },
                 "expectedValue": null
               }
@@ -3585,7 +4246,11 @@
                         "type": "string"
                       }
                     },
-                    "value": ["testA", "testB", "testC"]
+                    "value": [
+                      "testA",
+                      "testB",
+                      "testC"
+                    ]
                   }
                 },
                 "transformerParams": {},
@@ -3668,9 +4333,18 @@
                   ]
                 },
                 "expectedValue": [
-                  { "test": "testA", "aggregate": 2 },
-                  { "test": "testB", "aggregate": 1 },
-                  { "test": "testC", "aggregate": 1 }
+                  {
+                    "test": "testA",
+                    "aggregate": 2
+                  },
+                  {
+                    "test": "testB",
+                    "aggregate": 1
+                  },
+                  {
+                    "test": "testC",
+                    "aggregate": 1
+                  }
                 ]
               },
               {
@@ -3685,7 +4359,10 @@
                     "interpolation": "runtime",
                     "referenceName": "testList"
                   },
-                  "groupBy": ["test1", "test2"]
+                  "groupBy": [
+                    "test1",
+                    "test2"
+                  ]
                 },
                 "transformerParams": {},
                 "transformerRuntimeContext": {
@@ -3717,10 +4394,26 @@
                   ]
                 },
                 "expectedValue": [
-                  { "test1": "testA", "test2": 1, "aggregate": 1 },
-                  { "test1": "testA", "test2": 2, "aggregate": 1 },
-                  { "test1": "testB", "test2": 1, "aggregate": 2 },
-                  { "test1": "testC", "test2": 2, "aggregate": 2 }
+                  {
+                    "test1": "testA",
+                    "test2": 1,
+                    "aggregate": 1
+                  },
+                  {
+                    "test1": "testA",
+                    "test2": 2,
+                    "aggregate": 1
+                  },
+                  {
+                    "test1": "testB",
+                    "test2": 1,
+                    "aggregate": 2
+                  },
+                  {
+                    "test1": "testC",
+                    "test2": 2,
+                    "aggregate": 2
+                  }
                 ]
               }
             ]
@@ -3753,7 +4446,9 @@
                     {
                       "attributeKey": {
                         "transformerType": "returnValue",
-                        "mlSchema": { "type": "string" },
+                        "mlSchema": {
+                          "type": "string"
+                        },
                         "interpolation": "runtime",
                         "value": "uuid"
                       },
@@ -3766,14 +4461,19 @@
                     {
                       "attributeKey": {
                         "transformerType": "returnValue",
-                        "mlSchema": { "type": "string" },
+                        "mlSchema": {
+                          "type": "string"
+                        },
                         "interpolation": "runtime",
                         "value": "name"
                       },
                       "attributeValue": {
                         "transformerType": "getFromContext",
                         "interpolation": "runtime",
-                        "referencePath": ["country", "iso3166-1Alpha-2"]
+                        "referencePath": [
+                          "country",
+                          "iso3166-1Alpha-2"
+                        ]
                       }
                     }
                   ]
@@ -3804,7 +4504,9 @@
                     {
                       "attributeKey": {
                         "transformerType": "returnValue",
-                        "mlSchema": { "type": "string" },
+                        "mlSchema": {
+                          "type": "string"
+                        },
                         "interpolation": "runtime",
                         "value": "uuid"
                       },
@@ -3817,14 +4519,19 @@
                     {
                       "attributeKey": {
                         "transformerType": "returnValue",
-                        "mlSchema": { "type": "string" },
+                        "mlSchema": {
+                          "type": "string"
+                        },
                         "interpolation": "runtime",
                         "value": "name"
                       },
                       "attributeValue": {
                         "transformerType": "getFromContext",
                         "interpolation": "runtime",
-                        "referencePath": ["country", "iso3166-1Alpha-2"]
+                        "referencePath": [
+                          "country",
+                          "iso3166-1Alpha-2"
+                        ]
                       }
                     }
                   ]
@@ -3862,7 +4569,9 @@
                     {
                       "attributeKey": {
                         "transformerType": "returnValue",
-                        "mlSchema": { "type": "string" },
+                        "mlSchema": {
+                          "type": "string"
+                        },
                         "interpolation": "runtime",
                         "value": "uuid"
                       },
@@ -3875,14 +4584,19 @@
                     {
                       "attributeKey": {
                         "transformerType": "returnValue",
-                        "mlSchema": { "type": "string" },
+                        "mlSchema": {
+                          "type": "string"
+                        },
                         "interpolation": "runtime",
                         "value": "name"
                       },
                       "attributeValue": {
                         "transformerType": "getFromContext",
                         "interpolation": "runtime",
-                        "referencePath": ["country", "iso3166-1Alpha-2"]
+                        "referencePath": [
+                          "country",
+                          "iso3166-1Alpha-2"
+                        ]
                       }
                     }
                   ]
@@ -3946,7 +4660,11 @@
                         },
                         "conceptLevel": {
                           "type": "enum",
-                          "definition": ["MetaModel", "Model", "Data"],
+                          "definition": [
+                            "MetaModel",
+                            "Model",
+                            "Data"
+                          ],
                           "optional": true,
                           "tag": {
                             "value": {
@@ -3999,7 +4717,9 @@
                     {
                       "attributeKey": {
                         "transformerType": "returnValue",
-                        "mlSchema": { "type": "string" },
+                        "mlSchema": {
+                          "type": "string"
+                        },
                         "interpolation": "runtime",
                         "value": "uuid"
                       },
@@ -4012,14 +4732,19 @@
                     {
                       "attributeKey": {
                         "transformerType": "returnValue",
-                        "mlSchema": { "type": "string" },
+                        "mlSchema": {
+                          "type": "string"
+                        },
                         "interpolation": "runtime",
                         "value": "name"
                       },
                       "attributeValue": {
                         "transformerType": "getFromContext",
                         "interpolation": "runtime",
-                        "referencePath": ["country", "iso3166-1Alpha-2"]
+                        "referencePath": [
+                          "country",
+                          "iso3166-1Alpha-2"
+                        ]
                       }
                     }
                   ]
@@ -4087,14 +4812,19 @@
                   "definition": {
                     "uuid": {
                       "transformerType": "returnValue",
-                      "mlSchema": { "type": "uuid" },
+                      "mlSchema": {
+                        "type": "uuid"
+                      },
                       "interpolation": "runtime",
                       "value": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
                     },
                     "name": {
                       "transformerType": "getFromContext",
                       "interpolation": "runtime",
-                      "referencePath": ["country", "iso3166-1Alpha-2"]
+                      "referencePath": [
+                        "country",
+                        "iso3166-1Alpha-2"
+                      ]
                     }
                   }
                 },
@@ -4123,14 +4853,19 @@
                   "definition": {
                     "uuid": {
                       "transformerType": "returnValue",
-                      "mlSchema": { "type": "uuid" },
+                      "mlSchema": {
+                        "type": "uuid"
+                      },
                       "interpolation": "runtime",
                       "value": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
                     },
                     "name": {
                       "transformerType": "getFromContext",
                       "interpolation": "runtime",
-                      "referencePath": ["country", "iso3166-1Alpha-2"]
+                      "referencePath": [
+                        "country",
+                        "iso3166-1Alpha-2"
+                      ]
                     },
                     "country": {
                       "transformerType": "createObject",
@@ -4138,14 +4873,19 @@
                       "definition": {
                         "uuid": {
                           "transformerType": "returnValue",
-                          "mlSchema": { "type": "uuid" },
+                          "mlSchema": {
+                            "type": "uuid"
+                          },
                           "interpolation": "runtime",
                           "value": "yyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy"
                         },
                         "name": {
                           "transformerType": "getFromContext",
                           "interpolation": "runtime",
-                          "referencePath": ["country", "iso3166-1Alpha-2"]
+                          "referencePath": [
+                            "country",
+                            "iso3166-1Alpha-2"
+                          ]
                         }
                       }
                     }
@@ -4180,14 +4920,19 @@
                   "definition": {
                     "uuid": {
                       "transformerType": "returnValue",
-                      "mlSchema": { "type": "uuid" },
+                      "mlSchema": {
+                        "type": "uuid"
+                      },
                       "interpolation": "runtime",
                       "value": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
                     },
                     "name": {
                       "transformerType": "getFromContext",
                       "interpolation": "runtime",
-                      "referencePath": ["country", "nonExistingAttribute"]
+                      "referencePath": [
+                        "country",
+                        "nonExistingAttribute"
+                      ]
                     }
                   }
                 },
@@ -4201,7 +4946,9 @@
                     "iso3166-1Alpha-2": "US"
                   }
                 },
-                "retainAttributes": ["queryFailure"],
+                "retainAttributes": [
+                  "queryFailure"
+                ],
                 "unitTestExpectedValue": {
                   "queryFailure": "FailedTransformer"
                 },
@@ -4219,14 +4966,19 @@
                   "definition": {
                     "uuid": {
                       "transformerType": "returnValue",
-                      "mlSchema": { "type": "uuid" },
+                      "mlSchema": {
+                        "type": "uuid"
+                      },
                       "interpolation": "runtime",
                       "value": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
                     },
                     "name": {
                       "transformerType": "getFromContext",
                       "interpolation": "runtime",
-                      "referencePath": ["country", "name"]
+                      "referencePath": [
+                        "country",
+                        "name"
+                      ]
                     },
                     "country": {
                       "transformerType": "createObject",
@@ -4234,14 +4986,19 @@
                       "definition": {
                         "uuid": {
                           "transformerType": "returnValue",
-                          "mlSchema": { "type": "uuid" },
+                          "mlSchema": {
+                            "type": "uuid"
+                          },
                           "interpolation": "runtime",
                           "value": "yyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy"
                         },
                         "name": {
                           "transformerType": "getFromContext",
                           "interpolation": "runtime",
-                          "referencePath": ["country", "nonExistingAttribute"]
+                          "referencePath": [
+                            "country",
+                            "nonExistingAttribute"
+                          ]
                         }
                       }
                     }
@@ -4257,7 +5014,9 @@
                     "iso3166-1Alpha-2": "US"
                   }
                 },
-                "retainAttributes": ["queryFailure"],
+                "retainAttributes": [
+                  "queryFailure"
+                ],
                 "unitTestExpectedValue": {
                   "queryFailure": "FailedTransformer"
                 },
@@ -4297,7 +5056,9 @@
                     "definition": {
                       "iso3166-1Alpha-2": {
                         "transformerType": "returnValue",
-                        "mlSchema": { "type": "string" },
+                        "mlSchema": {
+                          "type": "string"
+                        },
                         "interpolation": "runtime",
                         "value": "DE"
                       }
@@ -4331,7 +5092,9 @@
                     "definition": {
                       "iso3166-1Alpha-2": {
                         "transformerType": "returnValue",
-                        "mlSchema": { "type": "string" },
+                        "mlSchema": {
+                          "type": "string"
+                        },
                         "interpolation": "runtime",
                         "value": "DE"
                       }
@@ -4374,7 +5137,9 @@
                     "definition": {
                       "iso3166-1Alpha-2": {
                         "transformerType": "returnValue",
-                        "mlSchema": { "type": "string" },
+                        "mlSchema": {
+                          "type": "string"
+                        },
                         "interpolation": "runtime",
                         "value": "DE"
                       }
@@ -4390,7 +5155,9 @@
                     "iso3166-1Alpha-2": "US"
                   }
                 },
-                "retainAttributes": ["queryFailure"],
+                "retainAttributes": [
+                  "queryFailure"
+                ],
                 "unitTestExpectedValue": {
                   "queryFailure": "FailedTransformer"
                 },
@@ -4417,7 +5184,10 @@
                       "iso3166-1Alpha-2": {
                         "transformerType": "getFromContext",
                         "interpolation": "runtime",
-                        "referencePath": ["country", "nonExistingAttribute"]
+                        "referencePath": [
+                          "country",
+                          "nonExistingAttribute"
+                        ]
                       }
                     }
                   }
@@ -4432,7 +5202,9 @@
                     "iso3166-1Alpha-2": "US"
                   }
                 },
-                "retainAttributes": ["queryFailure"],
+                "retainAttributes": [
+                  "queryFailure"
+                ],
                 "unitTestExpectedValue": {
                   "queryFailure": "FailedTransformer"
                 },
@@ -4537,7 +5309,9 @@
                         "definition": {
                           "uuid": {
                             "transformerType": "returnValue",
-                            "mlSchema": { "type": "uuid" },
+                            "mlSchema": {
+                              "type": "uuid"
+                            },
                             "interpolation": "runtime",
                             "value": "yyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy"
                           },
@@ -4611,14 +5385,19 @@
                       {
                         "attributeKey": {
                           "transformerType": "returnValue",
-                          "mlSchema": { "type": "uuid" },
+                          "mlSchema": {
+                            "type": "uuid"
+                          },
                           "interpolation": "runtime",
                           "value": "name"
                         },
                         "attributeValue": {
                           "transformerType": "getFromContext",
                           "interpolation": "runtime",
-                          "referencePath": ["country", "iso3166-1Alpha-2"]
+                          "referencePath": [
+                            "country",
+                            "iso3166-1Alpha-2"
+                          ]
                         }
                       }
                     ]
@@ -4685,12 +5464,18 @@
                         "id": {
                           "transformerType": "getFromContext",
                           "interpolation": "runtime",
-                          "referencePath": ["country3", "uuid"]
+                          "referencePath": [
+                            "country3",
+                            "uuid"
+                          ]
                         },
                         "name": {
                           "transformerType": "getFromContext",
                           "interpolation": "runtime",
-                          "referencePath": ["country3", "iso3166-1Alpha-2"]
+                          "referencePath": [
+                            "country3",
+                            "iso3166-1Alpha-2"
+                          ]
                         }
                       }
                     }
@@ -4764,7 +5549,9 @@
                         {
                           "attributeKey": {
                             "transformerType": "returnValue",
-                            "mlSchema": { "type": "uuid" },
+                            "mlSchema": {
+                              "type": "uuid"
+                            },
                             "interpolation": "runtime",
                             "value": "uuid"
                           },
@@ -4777,14 +5564,19 @@
                         {
                           "attributeKey": {
                             "transformerType": "returnValue",
-                            "mlSchema": { "type": "uuid" },
+                            "mlSchema": {
+                              "type": "uuid"
+                            },
                             "interpolation": "runtime",
                             "value": "name"
                           },
                           "attributeValue": {
                             "transformerType": "getFromContext",
                             "interpolation": "runtime",
-                            "referencePath": ["country2", "iso3166-1Alpha-2"]
+                            "referencePath": [
+                              "country2",
+                              "iso3166-1Alpha-2"
+                            ]
                           }
                         }
                       ]
@@ -4830,7 +5622,9 @@
                         {
                           "attributeKey": {
                             "transformerType": "returnValue",
-                            "mlSchema": { "type": "uuid" },
+                            "mlSchema": {
+                              "type": "uuid"
+                            },
                             "interpolation": "runtime",
                             "value": "uuid"
                           },
@@ -4843,14 +5637,19 @@
                         {
                           "attributeKey": {
                             "transformerType": "returnValue",
-                            "mlSchema": { "type": "uuid" },
+                            "mlSchema": {
+                              "type": "uuid"
+                            },
                             "interpolation": "runtime",
                             "value": "name"
                           },
                           "attributeValue": {
                             "transformerType": "getFromContext",
                             "interpolation": "runtime",
-                            "referencePath": ["country", "iso3166-1Alpha-2"]
+                            "referencePath": [
+                              "country",
+                              "iso3166-1Alpha-2"
+                            ]
                           }
                         }
                       ]
@@ -4869,7 +5668,9 @@
                         {
                           "attributeKey": {
                             "transformerType": "returnValue",
-                            "mlSchema": { "type": "uuid" },
+                            "mlSchema": {
+                              "type": "uuid"
+                            },
                             "interpolation": "runtime",
                             "value": "uuid"
                           },
@@ -4882,14 +5683,19 @@
                         {
                           "attributeKey": {
                             "transformerType": "returnValue",
-                            "mlSchema": { "type": "uuid" },
+                            "mlSchema": {
+                              "type": "uuid"
+                            },
                             "interpolation": "runtime",
                             "value": "name"
                           },
                           "attributeValue": {
                             "transformerType": "getFromContext",
                             "interpolation": "runtime",
-                            "referencePath": ["newObject", "name"]
+                            "referencePath": [
+                              "newObject",
+                              "name"
+                            ]
                           }
                         }
                       ]
@@ -4935,7 +5741,9 @@
                         {
                           "attributeKey": {
                             "transformerType": "returnValue",
-                            "mlSchema": { "type": "uuid" },
+                            "mlSchema": {
+                              "type": "uuid"
+                            },
                             "interpolation": "runtime",
                             "value": "uuid"
                           },
@@ -4948,14 +5756,19 @@
                         {
                           "attributeKey": {
                             "transformerType": "returnValue",
-                            "mlSchema": { "type": "uuid" },
+                            "mlSchema": {
+                              "type": "uuid"
+                            },
                             "interpolation": "runtime",
                             "value": "name"
                           },
                           "attributeValue": {
                             "transformerType": "getFromContext",
                             "interpolation": "runtime",
-                            "referencePath": ["country", "iso3166-1Alpha-2"]
+                            "referencePath": [
+                              "country",
+                              "iso3166-1Alpha-2"
+                            ]
                           }
                         }
                       ]
@@ -4974,7 +5787,9 @@
                         {
                           "attributeKey": {
                             "transformerType": "returnValue",
-                            "mlSchema": { "type": "uuid" },
+                            "mlSchema": {
+                              "type": "uuid"
+                            },
                             "interpolation": "runtime",
                             "value": "uuid"
                           },
@@ -4987,14 +5802,19 @@
                         {
                           "attributeKey": {
                             "transformerType": "returnValue",
-                            "mlSchema": { "type": "uuid" },
+                            "mlSchema": {
+                              "type": "uuid"
+                            },
                             "interpolation": "runtime",
                             "value": "name"
                           },
                           "attributeValue": {
                             "transformerType": "getFromContext",
                             "interpolation": "runtime",
-                            "referencePath": ["newObject", "name"]
+                            "referencePath": [
+                              "newObject",
+                              "name"
+                            ]
                           }
                         }
                       ]
@@ -5046,7 +5866,9 @@
                         {
                           "attributeKey": {
                             "transformerType": "returnValue",
-                            "mlSchema": { "type": "uuid" },
+                            "mlSchema": {
+                              "type": "uuid"
+                            },
                             "interpolation": "runtime",
                             "value": "uuid"
                           },
@@ -5059,14 +5881,19 @@
                         {
                           "attributeKey": {
                             "transformerType": "returnValue",
-                            "mlSchema": { "type": "uuid" },
+                            "mlSchema": {
+                              "type": "uuid"
+                            },
                             "interpolation": "runtime",
                             "value": "name"
                           },
                           "attributeValue": {
                             "transformerType": "getFromContext",
                             "interpolation": "runtime",
-                            "referencePath": ["country3", "nonExistingAttribute"]
+                            "referencePath": [
+                              "country3",
+                              "nonExistingAttribute"
+                            ]
                           }
                         }
                       ]
@@ -5084,7 +5911,9 @@
                     "iso3166-1Alpha-2": "US"
                   }
                 },
-                "retainAttributes": ["queryFailure"],
+                "retainAttributes": [
+                  "queryFailure"
+                ],
                 "unitTestExpectedValue": {
                   "queryFailure": "FailedTransformer"
                 },
@@ -5182,7 +6011,9 @@
                     "name": "US"
                   }
                 },
-                "retainAttributes": ["queryFailure"],
+                "retainAttributes": [
+                  "queryFailure"
+                ],
                 "unitTestExpectedValue": {
                   "queryFailure": "FailedTransformer"
                 },
@@ -5213,7 +6044,9 @@
                     "DE"
                   ]
                 },
-                "retainAttributes": ["queryFailure"],
+                "retainAttributes": [
+                  "queryFailure"
+                ],
                 "unitTestExpectedValue": {
                   "queryFailure": "FailedTransformer"
                 },
@@ -5322,7 +6155,9 @@
                     "name": "US"
                   }
                 },
-                "retainAttributes": ["queryFailure"],
+                "retainAttributes": [
+                  "queryFailure"
+                ],
                 "unitTestExpectedValue": {
                   "queryFailure": "FailedTransformer"
                 },

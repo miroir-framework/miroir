@@ -821,14 +821,9 @@ function sqlStringForConditionalTransformer(
   let newPreparedStatementParametersCount = preparedStatementParametersCount;
   let preparedStatementParameters: any[] = [];
 
-  // Unary operators (isNull, isNotNull, !) do not use the right operand.
-  const isUnaryOperator =
-    actionRuntimeTransformer.transformerType === "isNull" ||
-    actionRuntimeTransformer.transformerType === "isNotNull" ||
-    actionRuntimeTransformer.transformerType === "!";
-
-  const left = sqlStringForRuntimeTransformer(
-    actionRuntimeTransformer.left as TransformerForBuildPlusRuntime,
+  // Resolve the 'if' boolean condition (expected to be a boolExpr transformer)
+  const ifResult = sqlStringForRuntimeTransformer(
+    actionRuntimeTransformer["if"] as TransformerForBuildPlusRuntime,
     newPreparedStatementParametersCount,
     indentLevel,
     queryParams,
@@ -836,34 +831,12 @@ function sqlStringForConditionalTransformer(
     useAccessPathForContextReference,
     false, // topLevelTransformer
   );
-  if (left instanceof Domain2ElementFailed) {
-    return left;
+  if (ifResult instanceof Domain2ElementFailed) {
+    return ifResult;
   }
-  if (left.preparedStatementParameters) {
-    preparedStatementParameters = [...preparedStatementParameters, ...left.preparedStatementParameters];
-    newPreparedStatementParametersCount += left.preparedStatementParameters.length;
-  }
-
-  // right is optional and not used for unary operators
-  let right: SqlStringForTransformerElementValue | undefined;
-  if (!isUnaryOperator && actionRuntimeTransformer.right !== undefined) {
-    const rightResult = sqlStringForRuntimeTransformer(
-      actionRuntimeTransformer.right as TransformerForBuildPlusRuntime,
-      newPreparedStatementParametersCount,
-      indentLevel,
-      queryParams,
-      definedContextEntries,
-      useAccessPathForContextReference,
-      false, // topLevelTransformer
-    );
-    if (rightResult instanceof Domain2ElementFailed) {
-      return rightResult;
-    }
-    if (rightResult.preparedStatementParameters) {
-      preparedStatementParameters = [...preparedStatementParameters, ...rightResult.preparedStatementParameters];
-      newPreparedStatementParametersCount += rightResult.preparedStatementParameters.length;
-    }
-    right = rightResult;
+  if (ifResult.preparedStatementParameters) {
+    preparedStatementParameters = [...preparedStatementParameters, ...ifResult.preparedStatementParameters];
+    newPreparedStatementParametersCount += ifResult.preparedStatementParameters.length;
   }
 
   // then is optional: when absent, a truthy condition returns true::boolean
@@ -914,48 +887,8 @@ function sqlStringForConditionalTransformer(
     elseSql = { type: "scalar", sqlStringOrObject: "false::boolean" };
   }
 
-  // For standard binary comparison operators, both sides must be scalar
-  const isBinaryComparisonOperator = jsOperatorToSqlOperatorMap[actionRuntimeTransformer.transformerType] !== undefined;
-  if (isBinaryComparisonOperator && right && (left.type !== "scalar" || right.type !== "scalar")) {
-    return new Domain2ElementFailed({
-      queryFailure: "QueryNotExecutable",
-      query: actionRuntimeTransformer as any,
-      failureMessage: "sqlStringForRuntimeTransformer ifThenElse left or right is not scalar for operator " + actionRuntimeTransformer.transformerType,
-    });
-  }
-
-  // Build the SQL condition expression based on operator type
-  const leftExpr = left.sqlStringOrObject;
-  const rightExpr = right?.sqlStringOrObject ?? "";
-  const t = actionRuntimeTransformer.transformerType;
-  let conditionSql: string;
-
-  switch (t) {
-    case "isNull":
-      conditionSql = sqlIsNull(leftExpr, left.type);
-      break;
-    case "isNotNull":
-      conditionSql = sqlIsNotNull(leftExpr, left.type);
-      break;
-    case "!":
-      // JS boolean NOT: true when left is a JS-falsy value (null/undefined/0/false/"")
-      conditionSql = sqlIsFalsy(leftExpr, left.type);
-      break;
-    case "&&":
-      // JS logical AND: true when both operands are JS-truthy
-      conditionSql =
-        `NOT ${sqlIsFalsy(leftExpr, left.type)} AND NOT ${sqlIsFalsy(rightExpr, right?.type ?? "scalar")}`;
-      break;
-    case "||":
-      // JS logical OR: true when at least one operand is JS-truthy
-      conditionSql =
-        `NOT ${sqlIsFalsy(leftExpr, left.type)} OR NOT ${sqlIsFalsy(rightExpr, right?.type ?? "scalar")}`;
-      break;
-    default:
-      // Standard binary comparison operators (==, !=, <, <=, >, >=)
-      conditionSql = `${leftExpr} ${jsOperatorToSqlOperatorMap[t]} ${rightExpr}`;
-      break;
-  }
+  // The 'if' result is a boolean SQL expression (e.g. from boolExpr: CASE WHEN ... THEN true ELSE false END)
+  const conditionSql = ifResult.sqlStringOrObject;
 
   const columnName = withClauseColumnName ?? "ifThenElse";
   return {
@@ -968,16 +901,14 @@ function sqlStringForConditionalTransformer(
       " end" +
       (topLevelTransformer ? ` AS "${columnName}"` : ""),
     preparedStatementParameters: [
-      ...(left.preparedStatementParameters ?? []),
-      ...(right?.preparedStatementParameters ?? []),
+      ...(ifResult.preparedStatementParameters ?? []),
       ...(thenSql.preparedStatementParameters ?? []),
       ...(elseSql.preparedStatementParameters ?? []),
     ],
     resultAccessPath: topLevelTransformer ? [0, columnName] : undefined,
     columnNameContainingJsonValue: topLevelTransformer ? columnName : undefined,
     usedContextEntries: [
-      ...(left.usedContextEntries ?? []),
-      ...(right?.usedContextEntries ?? []),
+      ...(ifResult.usedContextEntries ?? []),
       ...(thenSql.usedContextEntries ?? []),
       ...(elseSql.usedContextEntries ?? []),
     ],

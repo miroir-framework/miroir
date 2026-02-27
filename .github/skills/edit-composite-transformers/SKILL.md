@@ -281,20 +281,25 @@ Create new objects from transformers.
 ```
 
 ### ifThenElse - Conditional Logic
-Choose between transformers based on conditions.
+Choose between transformers based on conditions. The `if` attribute takes a boolean transformer (typically `boolExpr`).
 
 ```json
 {
-  "transformerType": "==",
+  "transformerType": "ifThenElse",
   "interpolation": "runtime",
-  "left": {
-    "transformerType": "getFromContext",
+  "if": {
+    "transformerType": "boolExpr",
     "interpolation": "runtime",
-    "referenceName": "status"
-  },
-  "right": {
-    "transformerType": "returnValue",
-    "value": "active"
+    "operator": "==",
+    "left": {
+      "transformerType": "getFromContext",
+      "interpolation": "runtime",
+      "referenceName": "status"
+    },
+    "right": {
+      "transformerType": "returnValue",
+      "value": "active"
+    }
   },
   "then": { /* transformer if true */ },
   "else": { /* transformer if false */ }
@@ -337,8 +342,9 @@ Access nested object properties.
         "referenceName": "rawList"
       },
       "condition": {
-        "transformerType": "==",
+        "transformerType": "boolExpr",
         "interpolation": "runtime",
+        "operator": "==",
         "left": {
           "transformerType": "accessDynamicPath",
           "interpolation": "runtime",

@@ -2,53 +2,67 @@
 
 ## Quick Overview
 
-The `ifThenElse` transformer provides conditional branching logic. It evaluates a condition using an operator and returns one of two values based on whether the condition is true (`then`) or false (`else`).
+The `ifThenElse` transformer provides conditional branching logic. It evaluates a boolean condition (the `if` attribute) and returns one of two values based on whether it is true (`then`) or false (`else`).
 
-Supported operators:
-- **Binary comparison**: `==`, `!=`, `<`, `<=`, `>`, `>=`
-- **Unary null/undefined check**: `isNull`, `isNotNull`
-- **Unary boolean NOT**: `!`
+The condition is typically provided as a [`boolExpr`](./boolExpr.md) transformer, which evaluates comparison and logical operators.
 
 ## What It Does
 
-- **Input**: A `left` operand, an optional `right` operand (for binary operators), and `then`/`else` branches
+- **Input**: A boolean condition (`if` attribute, typically a `boolExpr`), and optional `then`/`else` branches
 - **Output**: The result of the `then` transformer when the condition is true, or the `else` transformer when false
 - **Purpose**: Conditional logic — choose different values based on comparisons or truthiness tests
 
 ## Basic Structure
 
-### Binary operators
-
 ```json
 {
-  "transformerType": "==",
+  "transformerType": "ifThenElse",
   "interpolation": "runtime",
-  "left": <left-operand>,
-  "right": <right-operand>,
+  "if": <boolean-condition>,
   "then": <result-if-true>,
   "else": <result-if-false>
 }
 ```
 
-### Unary operators (`isNull`, `isNotNull`, `!`)
+The `if` attribute is most commonly a `boolExpr`:
 
 ```json
 {
-  "transformerType": "isNull",
+  "transformerType": "ifThenElse",
   "interpolation": "runtime",
-  "left": <value-to-test>,
+  "if": {
+    "transformerType": "boolExpr",
+    "interpolation": "runtime",
+    "operator": "==",
+    "left": <left-operand>,
+    "right": <right-operand>
+  },
   "then": <result-if-true>,
   "else": <result-if-false>
 }
 ```
-
-The `right` operand is **not used** (and should be omitted) for unary operators.
 
 ## Key Properties
 
 ### `transformerType` (required)
 
-The comparison operator:
+Always `"ifThenElse"`.
+
+### `if` (required)
+
+A transformer that evaluates to a boolean. Typically a `boolExpr` transformer, but any transformer returning a truthy/falsy value works.
+
+### `then` (optional)
+
+The transformer to evaluate and return when `if` is **true**. When omitted, returns `true`.
+
+### `else` (optional)
+
+The transformer to evaluate and return when `if` is **false**. When omitted, returns `false`.
+
+## The `boolExpr` Condition
+
+Use the `boolExpr` transformer for the `if` condition:
 
 | Operator      | Type   | Description                                          |
 |---------------|--------|------------------------------------------------------|
@@ -61,28 +75,14 @@ The comparison operator:
 | `isNull`      | Unary  | True if `left == null` (null **or** undefined)       |
 | `isNotNull`   | Unary  | True if `left != null` (not null **and** not undefined) |
 | `!`           | Unary  | True if `!left` (JS falsy: null, undefined, 0, false, `""`) |
-
-### `left` (required)
-
-The left operand. For unary operators, this is the only value tested.
-
-### `right` (optional — required for binary operators)
-
-The right operand. **Must be omitted** for unary operators (`isNull`, `isNotNull`, `!`).
-
-### `then` (required)
-
-The transformer to evaluate and return when the condition is **true**.
-
-### `else` (required)
-
-The transformer to evaluate and return when the condition is **false**.
+| `&&`          | Binary | Logical AND                                          |
+| `\|\|`        | Binary | Logical OR                                           |
 
 ## Null and Undefined Handling
 
 > **Important**: JSON has no `undefined` value. Transformers stored as JSON can only represent `null` explicitly.
 
-The unary operators address this gap:
+The unary operators in `boolExpr` address this gap:
 
 - **`isNull`**: Uses JS loose equality (`left == null`), which is true for **both** `null` and `undefined`. Use this to detect missing/absent values regardless of whether they are `null` in JSON or `undefined` at runtime.
 - **`isNotNull`**: Uses JS loose inequality (`left != null`), which is false for **both** `null` and `undefined`.
@@ -90,15 +90,15 @@ The unary operators address this gap:
 
 ### Comparison: `isNull` vs `!`
 
-| Value     | `isNull` result | `!` result |
-|-----------|-----------------|------------|
-| `null`    | true            | true       |
-| `undefined` | true          | true       |
-| `0`       | **false**       | true       |
-| `false`   | **false**       | true       |
-| `""`      | **false**       | true       |
-| `"hello"` | false           | false      |
-| `1`       | false           | false      |
+| Value       | `isNull` result | `!` result |
+|-------------|-----------------|------------|
+| `null`      | true            | true       |
+| `undefined` | true            | true       |
+| `0`         | **false**       | true       |
+| `false`     | **false**       | true       |
+| `""`        | **false**       | true       |
+| `"hello"`   | false           | false      |
+| `1`         | false           | false      |
 
 Choose `isNull`/`isNotNull` for strict null/undefined checks; choose `!` for broad falsy checks.
 
@@ -108,18 +108,23 @@ Choose `isNull`/`isNotNull` for strict null/undefined checks; choose `!` for bro
 
 ```json
 {
-  "transformerType": "==",
+  "transformerType": "ifThenElse",
   "interpolation": "runtime",
-  "left": {
-    "transformerType": "getFromParameters",
+  "if": {
+    "transformerType": "boolExpr",
     "interpolation": "runtime",
-    "referenceName": "userType"
-  },
-  "right": {
-    "transformerType": "returnValue",
-    "interpolation": "runtime",
-    "mlSchema": { "type": "string" },
-    "value": "admin"
+    "operator": "==",
+    "left": {
+      "transformerType": "getFromParameters",
+      "interpolation": "runtime",
+      "referenceName": "userType"
+    },
+    "right": {
+      "transformerType": "returnValue",
+      "interpolation": "runtime",
+      "mlSchema": { "type": "string" },
+      "value": "admin"
+    }
   },
   "then": {
     "transformerType": "returnValue",
@@ -140,12 +145,17 @@ Choose `isNull`/`isNotNull` for strict null/undefined checks; choose `!` for bro
 
 ```json
 {
-  "transformerType": "isNull",
+  "transformerType": "ifThenElse",
   "interpolation": "runtime",
-  "left": {
-    "transformerType": "getFromContext",
+  "if": {
+    "transformerType": "boolExpr",
     "interpolation": "runtime",
-    "referenceName": "optionalValue"
+    "operator": "isNull",
+    "left": {
+      "transformerType": "getFromContext",
+      "interpolation": "runtime",
+      "referenceName": "optionalValue"
+    }
   },
   "then": {
     "transformerType": "returnValue",
@@ -166,12 +176,17 @@ Choose `isNull`/`isNotNull` for strict null/undefined checks; choose `!` for bro
 
 ```json
 {
-  "transformerType": "!",
+  "transformerType": "ifThenElse",
   "interpolation": "runtime",
-  "left": {
-    "transformerType": "getFromParameters",
+  "if": {
+    "transformerType": "boolExpr",
     "interpolation": "runtime",
-    "referenceName": "isEnabled"
+    "operator": "!",
+    "left": {
+      "transformerType": "getFromParameters",
+      "interpolation": "runtime",
+      "referenceName": "isEnabled"
+    }
   },
   "then": {
     "transformerType": "returnValue",
@@ -192,18 +207,23 @@ Choose `isNull`/`isNotNull` for strict null/undefined checks; choose `!` for bro
 
 ```json
 {
-  "transformerType": "<",
+  "transformerType": "ifThenElse",
   "interpolation": "runtime",
-  "left": {
-    "transformerType": "getFromParameters",
+  "if": {
+    "transformerType": "boolExpr",
     "interpolation": "runtime",
-    "referenceName": "score"
-  },
-  "right": {
-    "transformerType": "returnValue",
-    "interpolation": "runtime",
-    "mlSchema": { "type": "number" },
-    "value": 50
+    "operator": "<",
+    "left": {
+      "transformerType": "getFromParameters",
+      "interpolation": "runtime",
+      "referenceName": "score"
+    },
+    "right": {
+      "transformerType": "returnValue",
+      "interpolation": "runtime",
+      "mlSchema": { "type": "number" },
+      "value": 50
+    }
   },
   "then": {
     "transformerType": "returnValue",
@@ -222,17 +242,19 @@ Choose `isNull`/`isNotNull` for strict null/undefined checks; choose `!` for bro
 
 ## Comparison to `case`
 
-| Feature           | `ifThenElse`              | `case`                          |
-|-------------------|---------------------------|----------------------------------|
-| Conditions        | Single condition           | Multiple `when` clauses          |
-| Operator types    | Binary + Unary (`!`, null) | Equality only (matched via `==`) |
-| Null/falsy tests  | `isNull`, `isNotNull`, `!` | Not supported                    |
-| Use when          | Simple if/else logic       | Multi-branch dispatch            |
+| Feature           | `ifThenElse`                    | `case`                          |
+|-------------------|---------------------------------|----------------------------------|
+| Conditions        | Single condition (via `boolExpr`) | Multiple `when` clauses         |
+| Operator types    | All `boolExpr` operators        | Equality only (matched via `==`) |
+| Null/falsy tests  | `isNull`, `isNotNull`, `!`      | Not supported                    |
+| Use when          | Simple if/else logic            | Multi-branch dispatch            |
 
 ## Common Pitfalls
 
-1. **Omitting `right` for binary operators** — binary operators (`==`, `!=`, etc.) require a `right` value. Omitting it results in `rightValue` being `undefined`, which may produce unexpected results.
+1. **Forgetting to wrap the condition in `boolExpr`** — the `if` attribute must be a transformer returning a boolean value. Use `{ "transformerType": "boolExpr", "operator": "==", ... }` rather than putting the operator directly in `ifThenElse`.
 
-2. **Including `right` for unary operators** — the `right` field is silently ignored by `isNull`, `isNotNull`, and `!`. Omit it for clarity.
+2. **Omitting `right` for binary `boolExpr` operators** — binary operators (`==`, `!=`, etc.) require a `right` value. Omitting it results in `rightValue` being `undefined`, which may produce unexpected results.
 
-3. **Confusing `isNull` and `!` for zero/false** — `isNull` only tests for null/undefined. If you also want to catch `0`, `false`, or `""`, use `!` instead.
+3. **Including `right` for unary `boolExpr` operators** — the `right` field is silently ignored by `isNull`, `isNotNull`, and `!`. Omit it for clarity.
+
+4. **Confusing `isNull` and `!` for zero/false** — `isNull` only tests for null/undefined. If you also want to catch `0`, `false`, or `""`, use `!` instead.

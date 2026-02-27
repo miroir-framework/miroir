@@ -44,21 +44,26 @@
                 },
                 "foreignKeyParams": {
                   "targetApplicationUuid": {
-                    "transformerType": "!=",
+                    "transformerType": "ifThenElse",
                     "interpolation": "build",
-                    "left": {
-                      "transformerType": "getFromParameters",
+                    "if": {
+                      "transformerType": "boolExpr",
                       "interpolation": "build",
-                      "safe": true,
-                      "referencePath": [
-                        "dropEntity",
-                        "application"
-                      ]
-                    },
-                    "right": {
-                      "transformerType": "returnValue",
-                      "interpolation": "build",
-                      "value": null
+                      "operator": "!=",
+                      "left": {
+                        "transformerType": "getFromParameters",
+                        "interpolation": "build",
+                        "safe": true,
+                        "referencePath": [
+                          "dropEntity",
+                          "application"
+                        ]
+                      },
+                      "right": {
+                        "transformerType": "returnValue",
+                        "interpolation": "build",
+                        "value": null
+                      }
                     },
                     "then": {
                       "transformerType": "getFromParameters",

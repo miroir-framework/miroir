@@ -3627,40 +3627,11 @@ export const miroirFundamentalJzodSchema = {
         ],
         "definition": {
           "transformerType": {
-            "type": "enum",
-            "definition": [
-              "==",
-              "!=",
-              "<",
-              "<=",
-              ">",
-              ">=",
-              "&&",
-              "||",
-              "isNull",
-              "isNotNull",
-              "!"
-            ],
-            "tag": {
-              "value": {
-                "defaultLabel": "Operator",
-                "initializeTo": {
-                  "initializeToType": "value",
-                  "value": "=="
-                }
-              }
-            }
+            "type": "literal",
+            "definition": "ifThenElse"
           },
-          "left": {
+          "if": {
             "type": "schemaReference",
-            "definition": {
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "transformerForBuild"
-            }
-          },
-          "right": {
-            "type": "schemaReference",
-            "optional": true,
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
               "relativePath": "transformerForBuild"
@@ -5337,40 +5308,11 @@ export const miroirFundamentalJzodSchema = {
         ],
         "definition": {
           "transformerType": {
-            "type": "enum",
-            "definition": [
-              "==",
-              "!=",
-              "<",
-              "<=",
-              ">",
-              ">=",
-              "&&",
-              "||",
-              "isNull",
-              "isNotNull",
-              "!"
-            ],
-            "tag": {
-              "value": {
-                "defaultLabel": "Operator",
-                "initializeTo": {
-                  "initializeToType": "value",
-                  "value": "=="
-                }
-              }
-            }
+            "type": "literal",
+            "definition": "ifThenElse"
           },
-          "left": {
+          "if": {
             "type": "schemaReference",
-            "definition": {
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "transformerForBuildPlusRuntime"
-            }
-          },
-          "right": {
-            "type": "schemaReference",
-            "optional": true,
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
               "relativePath": "transformerForBuildPlusRuntime"
