@@ -10,7 +10,9 @@ import { Box, Typography } from "@mui/material";
 import {
   LoggerInterface,
   MiroirLoggerFactory,
+  defaultMiroirMetaModel,
   defaultSelfApplicationDeploymentMap,
+  selfApplicationDeploymentMiroir,
   type MetaModel,
 } from "miroir-core";
 
@@ -20,9 +22,10 @@ import { MermaidClassDiagram } from "miroir-diagram-class";
 import { cleanLevel } from "../constants.js";
 import { useMiroirTheme } from "../contexts/MiroirThemeContext.js";
 import { useMiroirContextService } from "miroir-react";
-import { useCurrentModel } from "../ReduxHooks.js";
+import { useCurrentModel, useCurrentModelEnvironment } from "../ReduxHooks.js";
 import { DebugHelper } from "miroir-react";
 import { usePageConfiguration } from "../services/usePageConfiguration.js";
+import { adminSelfApplication } from "miroir-test-app_deployment-admin";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -44,27 +47,59 @@ export const ModelDiagramPage: React.FC<any> = () => {
   const context = useMiroirContextService();
   const currentApplicationDeploymentMap =
     context.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap;
-  const application = context.toolsPageState.applicationSelector ?? context.application;
-
+  // const application = context.toolsPageState.applicationSelector ?? context.application;
+  const application = selfApplicationDeploymentMiroir.uuid;
+  // const application = adminSelfApplication.uuid;
+  
+  // const currentModel: MetaModel = useMiroir(
   const currentModel: MetaModel = useCurrentModel(
     application,
-    currentApplicationDeploymentMap,
+    defaultSelfApplicationDeploymentMap,
   );
+  // const currentModel: MetaModel = useCurrentModel(
+  //   application,
+  //   currentApplicationDeploymentMap,
+  // );
 
-  const entityDefinitions = useMemo(
-    () => currentModel.entityDefinitions ?? [],
-    [currentModel.entityDefinitions],
-  );
+  // const reportSection = application == selfApplicationMiroir.uuid ? "data" : "model"
 
+  // const { availableReports, entities, entityDefinitions } = useMemo(() => {
+  //   return context.deploymentUuidToReportsEntitiesDefinitionsMapping &&
+  //     context.deploymentUuidToReportsEntitiesDefinitionsMapping[currentApplicationDeploymentMap[application]]
+  //     ? context.deploymentUuidToReportsEntitiesDefinitionsMapping[
+  //         currentApplicationDeploymentMap[application]
+  //       ]["data"]
+  //     : { availableReports: [], entities: [], entityDefinitions: [] };
+  // }, [
+  //   currentApplicationDeploymentMap,
+  //   application,
+  //   currentApplicationDeploymentMap[application],
+  //   context.deploymentUuidToReportsEntitiesDefinitionsMapping,
+  //   // pageParams.applicationSection,
+  // ]);
+
+  // const entityDefinitions = useMemo(
+  //   () => currentModel.entityDefinitions ?? [],
+  //   [currentModel.entityDefinitions],
+  // );
+  const entityDefinitions = defaultMiroirMetaModel.entityDefinitions ?? [];
   const applicationName = currentModel.applicationName || "Application";
 
   return (
     <PageContainer padding={2}>
-      <DebugHelper componentName="ModelDiagramPage" elements={[
+      <DebugHelper
+        componentName="ModelDiagramPage"
+        elements={[
           { label: "ModelDiagramPage miroirTheme", data: miroirTheme },
-          { label: `ModelDiagramPage application ${application}`, data: currentModel.entityDefinitions },
+          // { label: `ModelDiagramPage application ${application}`, data: currentModel.entityDefinitions },
+          {
+            label: `ModelDiagramPage defaultMiroirMetaModel ${application}`,
+            data: defaultMiroirMetaModel.entityDefinitions,
+            useCodeBlock: false,
+          },
           { label: "ModelDiagramPage currentModel", data: currentModel },
-      ]} />
+        ]}
+      />
       <Box
         sx={{
           display: "flex",
@@ -90,10 +125,9 @@ export const ModelDiagramPage: React.FC<any> = () => {
             opacity: 0.7,
           }}
         >
-          UML class diagram showing entities, their attributes, and
-          foreign-key relationships for the current application model.
-          {entityDefinitions.length > 0 &&
-            ` (${entityDefinitions.length} entities)`}
+          UML class diagram showing entities, their attributes, and foreign-key relationships for
+          the current application model.
+          {entityDefinitions.length > 0 && ` (${entityDefinitions.length} entities)`}
         </Typography>
 
         <MermaidClassDiagram
