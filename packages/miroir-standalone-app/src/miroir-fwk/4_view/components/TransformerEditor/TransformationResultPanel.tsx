@@ -20,11 +20,11 @@ import {
   ThemedCodeBlock,
   ThemedContainer,
   ThemedHeaderSection,
-  ThemedOnScreenHelper,
   ThemedTitle
 } from "../Themes/index";
 import { useFormikContext } from 'formik';
 import type { TransformerEditorFormikValueType } from './TransformerEditorInterface';
+import { ThemedOnScreenHelper } from 'miroir-react';
 
 // ################################################################################################
 let log: LoggerInterface = console as any as LoggerInterface;

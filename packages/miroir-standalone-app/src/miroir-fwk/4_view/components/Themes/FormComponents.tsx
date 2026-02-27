@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react'
 import { createPortal } from 'react-dom';
 
 import { useMiroirTheme } from '../../contexts/MiroirThemeContext';
-import { ThemedComponentProps } from './BaseTypes';
+import { ThemedComponentProps } from 'miroir-react';
 import { type LoggerInterface, MiroirLoggerFactory } from 'miroir-core';
 import { packageName } from '../../../../constants';
 import { cleanLevel } from '../../constants';

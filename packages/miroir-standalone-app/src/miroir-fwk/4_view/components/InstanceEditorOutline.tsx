@@ -28,7 +28,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { packageName } from '../../../constants.js';
 import { cleanLevel } from '../constants.js';
 import { useMiroirTheme } from '../contexts/MiroirThemeContext.js';
-import { useMiroirContextService } from '../MiroirContextReactProvider.js';
+import { useMiroirContextService } from 'miroir-react';
 import { exclusivelyUnfoldPath } from './Reports/FoldedStateTreeUtils.js';
 import { useDocumentOutlineContext } from './ValueObjectEditor/InstanceEditorOutlineContext.js';
 import { getFoldedDisplayValue } from './ValueObjectEditor/JzodElementEditorHooks.js';

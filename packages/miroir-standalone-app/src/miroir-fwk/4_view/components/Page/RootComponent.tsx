@@ -54,18 +54,19 @@ import {
 import {
   getMemoizedReduxDeploymentsStateSelectorMap,
   ReduxStateChanges,
-} from "../../../miroir-localcache-imports.js";
+} from "miroir-react";
 
 import {
   useDomainControllerService,
   useLocalCacheTransactions,
   useMiroirContextService,
   useSnackbar,
-} from "../../MiroirContextReactProvider.js";
+} from "miroir-react";
 import { MiroirThemeProvider, useMiroirTheme, type MiroirThemeOption } from '../../contexts/MiroirThemeContext.js';
 import { useRenderTracker } from "../../tools/renderCountTracker.js";
 import AppBar from './AppBar.js';
 
+import { DebugHelper, type DebugElements } from 'miroir-react';
 import { defaultStoredMiroirTheme } from 'miroir-test-app_deployment-miroir';
 import { packageName } from '../../../../constants.js';
 import {
@@ -81,7 +82,6 @@ import { DocumentOutlineContextProvider } from '../ValueObjectEditor/InstanceEdi
 import { ViewParamsUpdateQueue, ViewParamsUpdateQueueConfig } from '../ViewParamsUpdateQueue.js';
 import { Sidebar } from "./Sidebar.js";
 import { SidebarWidth } from "./SidebarSection.js";
-import { type DebugElements, DebugHelper } from './DebugHelper';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(

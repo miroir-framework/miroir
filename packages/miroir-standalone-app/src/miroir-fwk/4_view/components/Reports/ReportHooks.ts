@@ -37,7 +37,7 @@ import type { TransformerDefinition } from 'miroir-core/src/0_interfaces/1_core/
 import { packageName, ReportUrlParamKeys } from '../../../../constants.js';
 import {
   getMemoizedReduxDeploymentsStateSelectorMap
-} from "../../../miroir-localcache-imports.js";
+} from "miroir-react";
 import { cleanLevel } from '../../constants.js';
 
 // Entity constants

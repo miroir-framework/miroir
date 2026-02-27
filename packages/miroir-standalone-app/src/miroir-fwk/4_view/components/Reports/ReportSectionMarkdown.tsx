@@ -28,7 +28,7 @@ import {
 import { MarkdownEditorModal } from './MarkdownEditorModal.js';
 import type { MarkdownReportSection } from 'miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js';
 import { useFormikContext } from 'formik';
-import { useMiroirContextService } from '../../MiroirContextReactProvider.js';
+import { useMiroirContextService } from 'miroir-react';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(

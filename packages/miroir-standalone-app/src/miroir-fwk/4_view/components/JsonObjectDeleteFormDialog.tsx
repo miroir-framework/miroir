@@ -22,7 +22,7 @@ import { cleanLevel } from "../constants.js";
 import {
   useMiroirContextInnerFormOutput,
   useMiroirContextService
-} from "../MiroirContextReactProvider.js";
+} from "miroir-react";
 import { useCurrentModel, useCurrentModelEnvironment } from "../ReduxHooks.js";
 import {
   ThemedDialog,

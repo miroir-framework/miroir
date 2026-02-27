@@ -6,7 +6,7 @@ import { MiroirIcon, MiroirLoggerFactory, type LoggerInterface } from 'miroir-co
 import { packageName } from '../../../../constants';
 import { cleanLevel } from '../../constants';
 import { useMiroirTheme } from '../../contexts/MiroirThemeContext';
-import { ThemedComponentProps } from './BaseTypes';
+import { ThemedComponentProps } from 'miroir-react';
 import { SymbolWithLetter } from './SymbolWithLetter';
 
 let log: LoggerInterface = console as any as LoggerInterface;

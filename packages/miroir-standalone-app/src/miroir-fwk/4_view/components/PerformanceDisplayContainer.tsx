@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { useMiroirContextService } from '../MiroirContextReactProvider.js';
+import { useMiroirContextService } from 'miroir-react';
 import { RenderPerformanceMetrics, RenderPerformanceMetricsElement } from '../tools/renderPerformanceMeasure.js';
 import { getPerformanceConfig, updatePerformanceConfig } from '../tools/performanceConfig.js';
 import { DraggableContainer } from './DraggableContainer.js';

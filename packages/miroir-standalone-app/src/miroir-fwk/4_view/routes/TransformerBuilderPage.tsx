@@ -26,7 +26,7 @@ import {
   getMemoizedReduxDeploymentsStateSelectorMap,
   type ReduxStateWithUndoRedo,
   useSelector,
-} from "../../miroir-localcache-imports.js";
+} from "miroir-react";
 // import {
 //   Entity,
 //   TestSuiteResult
@@ -35,7 +35,7 @@ import { packageName } from "../../../constants.js";
 import {
   useDomainControllerService,
   useMiroirContextService
-} from "../MiroirContextReactProvider.js";
+} from "miroir-react";
 import { cleanLevel } from "../constants.js";
 import { usePageConfiguration } from "../services/index.js";
 

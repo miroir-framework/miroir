@@ -17,9 +17,7 @@ import {
   type JzodElement,
   type JzodObject,
   type JzodUnion,
-  type MiroirModelEnvironment,
-  type ReduxDeploymentsState,
-  type SyncBoxedExtractorOrQueryRunnerMap
+  type MiroirModelEnvironment
 } from 'miroir-core';
 import {
   adminSelfApplication,
@@ -32,10 +30,10 @@ import {
   type TransformerDefinition,
   type TransformerForBuildPlusRuntime
 } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import { DebugHelper } from 'miroir-react';
+import { useMiroirContextService } from 'miroir-react';
 import { packageName } from '../../../../constants';
-import { getMemoizedReduxDeploymentsStateSelectorMap, useSelector, type ReduxStateWithUndoRedo } from '../../../miroir-localcache-imports.js';
 import { cleanLevel, lastSubmitButtonClicked } from '../../constants';
-import { useMiroirContextService } from '../../MiroirContextReactProvider';
 import { useCurrentModelEnvironment } from '../../ReduxHooks';
 import {
   useDeploymentUuidFromApplicationUuid,
@@ -43,7 +41,6 @@ import {
 } from "../Reports/ReportHooks";
 import { useReportPageContext } from '../Reports/ReportPageContext';
 import { TypedValueObjectEditor } from '../Reports/TypedValueObjectEditor';
-import { DebugHelper } from '../Page/DebugHelper.js';
 import {
   ThemedContainer,
   ThemedFoldableContainer,

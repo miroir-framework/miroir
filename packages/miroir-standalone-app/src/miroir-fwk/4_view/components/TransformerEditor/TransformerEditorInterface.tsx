@@ -1,7 +1,6 @@
 import type { EntityInstance, TransformerForBuildPlusRuntime, Uuid } from "miroir-core";
+import type { formikPath_EntityInstanceSelectorPanel } from "miroir-react";
 
-// TODO: remove formikPath_EntityInstanceSelectorPanel from this file, it belongs with EntityInstanceSelectorPanel 
-export const formikPath_EntityInstanceSelectorPanel = "entityInstanceSelector"
 
 export type TransformerEditorFormikValueType = {
   transformerEditor_transformer_selector: {

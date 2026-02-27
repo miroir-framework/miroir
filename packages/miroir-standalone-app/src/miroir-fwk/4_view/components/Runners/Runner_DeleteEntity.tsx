@@ -1,8 +1,7 @@
 
 import type {
   ApplicationDeploymentMap,
-  LoggerInterface,
-  Uuid
+  LoggerInterface
 } from "miroir-core";
 import {
   defaultSelfApplicationDeploymentMap,
@@ -12,7 +11,6 @@ import {
 import { packageName } from "../../../../constants.js";
 import { cleanLevel } from "../../constants.js";
 import { StoredRunnerView } from "./RunnerView.js";
-import { useApplicationDeploymentMap } from "../../MiroirContextReactProvider.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(

@@ -3,7 +3,7 @@ import { css } from '@emotion/react';
 import React from 'react';
 
 import { useMiroirTheme } from '../../contexts/MiroirThemeContext';
-import { ThemedComponentProps } from './BaseTypes';
+import { ThemedComponentProps } from 'miroir-react';
 
 // ################################################################################################
 // List Components

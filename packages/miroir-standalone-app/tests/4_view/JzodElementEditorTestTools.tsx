@@ -35,7 +35,7 @@ import {
   LocalCache,
   LocalCacheProvider,
   PersistenceReduxSaga,
-} from "../../src/miroir-fwk/miroir-localcache-imports.js";
+} from "miroir-react";
 
 // import { rootLessListKeyMapDEFUNCT } from "miroir-core";
 import {

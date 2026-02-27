@@ -17,7 +17,7 @@ import {
 import React, { FC, useCallback, useMemo } from "react";
 import { packageName } from "../../../../constants";
 import { cleanLevel } from "../../constants";
-import { useMiroirContextService } from "../../MiroirContextReactProvider";
+import { useMiroirContextService } from "miroir-react";
 import { useCurrentModelEnvironment, useDefaultValueParams } from "../../ReduxHooks";
 import {
   ThemedDisplayValue,

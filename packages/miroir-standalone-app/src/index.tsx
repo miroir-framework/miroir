@@ -42,12 +42,12 @@ import {
   LocalCacheProvider,
   RestPersistenceClientAndRestClient,
   setupMiroirDomainController,
-} from "./miroir-fwk/miroir-localcache-imports.js";
+} from "miroir-react";
+import { MiroirContextReactProvider } from "miroir-react";
 
 import { loglevelnext } from './loglevelnextImporter.js';
 import { ErrorLogsPageDEFUNCT } from "./miroir-fwk/4_view/ErrorLogsPageDEFUNCT.js";
 import { ErrorPage } from "./miroir-fwk/4_view/ErrorPage.js";
-import { MiroirContextReactProvider } from "./miroir-fwk/4_view/MiroirContextReactProvider.js";
 import { RootComponent } from "./miroir-fwk/4_view/components/Page/RootComponent.js";
 import { MiroirEventsPage } from "./miroir-fwk/4_view/pages/MiroirEventsPage.js";
 import { HomePage } from "./miroir-fwk/4_view/routes/HomePage.js";
@@ -72,6 +72,7 @@ import { RunnersPage } from "./miroir-fwk/4_view/routes/Runners.js";
 import { SearchPage } from "./miroir-fwk/4_view/routes/SearchPage.js";
 import { SettingsPage } from "./miroir-fwk/4_view/routes/SettingsPage.js";
 import { TransformerBuilderPage } from "./miroir-fwk/4_view/routes/TransformerBuilderPage.js";
+// import { RestPersistenceClientAndRestClient, setupMiroirDomainController } from "miroir-localcache-redux";
 // import { ThemesPage } from "./miroir-fwk/4_view/routes/ThemesPage.js";
 
 const specificLoggerOptions: SpecificLoggerOptionsMap = {

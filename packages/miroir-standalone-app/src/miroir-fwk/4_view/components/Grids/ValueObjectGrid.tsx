@@ -13,13 +13,13 @@ import "ag-grid-community/styles/ag-theme-alpine.css";
 
 import { JzodElement, JzodObject, LoggerInterface, MiroirLoggerFactory } from "miroir-core";
 
+import { useMiroirContextService } from "miroir-react";
 import { packageName } from "../../../../constants.js";
 import {
   ToolsColumnDefinition
 } from "../../adaptiveColumnWidths.js";
 import { cleanLevel } from "../../constants.js";
 import { useMiroirTableTheme } from "../../contexts/MiroirThemeContext.js";
-import { useMiroirContextService } from "../../MiroirContextReactProvider.js";
 import { RenderPerformanceMetrics } from "../../tools/renderPerformanceMeasure.js";
 import {
   JsonObjectEditFormDialogInputs

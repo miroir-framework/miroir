@@ -1,4 +1,4 @@
-import { useMemo, useRef } from "react";
+import { useMemo } from "react";
 
 import {
   ApplicationSection,
@@ -31,7 +31,6 @@ import {
   SyncQueryTemplateRunnerParams,
   Uuid,
   defaultMetaModelEnvironment,
-  defaultSelfApplicationDeploymentMap,
   entityEndpointVersion,
   entityMenu,
   getApplicationSection,
@@ -58,13 +57,13 @@ import {
   selectEntityInstanceUuidIndexFromLocalCache,
   selectInstanceArrayForDeploymentSectionEntity,
   selectModelForDeploymentFromReduxState,
+  useMiroirContextService,
   useSelector,
-} from "../miroir-localcache-imports.js";
+} from "miroir-react";
 
+import { adminSelfApplication, entityDeployment } from "miroir-test-app_deployment-admin";
 import { packageName } from "../../constants.js";
 import { cleanLevel } from "./constants.js";
-import { useMiroirContextService } from "./MiroirContextReactProvider.js";
-import { adminSelfApplication, entityDeployment } from "miroir-test-app_deployment-admin";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(

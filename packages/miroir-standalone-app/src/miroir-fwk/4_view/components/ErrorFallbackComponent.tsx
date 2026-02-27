@@ -6,7 +6,7 @@ import {
 import React from "react";
 import { packageName } from "../../../constants";
 import { cleanLevel } from "../constants";
-import { ThemedOnScreenHelper } from "./Themes";
+import { ThemedOnScreenHelper } from "miroir-react";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(

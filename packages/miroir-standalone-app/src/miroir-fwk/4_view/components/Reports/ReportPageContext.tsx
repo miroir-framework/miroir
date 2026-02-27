@@ -1,11 +1,16 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
-import { useDocumentOutlineContext } from "../ValueObjectEditor/InstanceEditorOutlineContext";
-import { FoldedStateTree, isNodeFolded, setNodeFolded, foldAllChildren, unfoldAllChildren } from "./FoldedStateTreeUtils";
-import type { FoldAction } from "./FoldedStateTreeDebug";
 import { LoggerInterface, MiroirLoggerFactory } from "miroir-core";
+import { useMiroirContextService, type FoldedStateTree } from "miroir-react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { packageName } from "../../../../constants";
 import { cleanLevel } from "../../constants";
-import { useMiroirContextService } from "../../MiroirContextReactProvider";
+import type { FoldAction } from "./FoldedStateTreeDebug";
+import {
+  foldAllChildren,
+  // FoldedStateTree,
+  isNodeFolded,
+  setNodeFolded,
+  unfoldAllChildren,
+} from "./FoldedStateTreeUtils";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(

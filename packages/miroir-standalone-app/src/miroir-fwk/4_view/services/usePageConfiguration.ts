@@ -6,13 +6,13 @@
  * manually triggered by user actions.
  */
 
-import { useCallback, useEffect, useRef } from 'react';
-import { MiroirConfigClient, type Action2VoidReturnType } from 'miroir-core';
+import { MiroirConfigClient } from 'miroir-core';
 import {
   useDomainControllerService,
   useMiroirContextService,
   useSnackbar,
-} from '../MiroirContextReactProvider.js';
+} from 'miroir-react';
+import { useCallback, useEffect, useRef } from 'react';
 import { fetchMiroirAndAppConfigurations } from './ConfigurationService.js';
 
 // Application-wide state to track if configurations have been loaded

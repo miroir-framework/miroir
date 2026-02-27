@@ -1,7 +1,5 @@
-import React from 'react';
 import { useFormikContext } from 'formik';
-import { ExpandMoreIcon } from '../Themes/MaterialSymbolWrappers';
-import { Accordion, AccordionDetails, AccordionSummary } from '@mui/material';
+import React from 'react';
 
 import {
   ApplicationSection,
@@ -16,10 +14,11 @@ import {
   type JzodObject
 } from "miroir-core";
 
+import { ThemedOnScreenHelper } from 'miroir-react';
 import { packageName } from '../../../../constants.js';
 import { cleanLevel } from '../../constants.js';
+import { ThemedProgressiveAccordion } from '../Themes/BasicComponents.js';
 import { ReportSectionEntityInstance } from './ReportSectionEntityInstance.js';
-import { ThemedOnScreenHelper, ThemedProgressiveAccordion } from '../Themes/BasicComponents.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(

@@ -14,7 +14,7 @@ import React, { useMemo, useState } from 'react';
 
 import { packageName } from '../../../../constants';
 import { cleanLevel } from '../../constants';
-import { useMiroirContextService, useMiroirEvents } from '../../MiroirContextReactProvider';
+import { useMiroirContextService, useMiroirEvents } from 'miroir-react';
 import {
   ThemedCodeBlock,
   ThemedContainer,

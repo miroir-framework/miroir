@@ -27,15 +27,17 @@ import {
 } from "miroir-core";
 
 import {
+  ThemedOnScreenHelper,
   useMiroirContextService,
-  useViewParams
-} from "../../MiroirContextReactProvider.js";
+  useViewParams,
+  type FoldedStateTree
+} from "miroir-react";
 
 import { useFormikContext } from 'formik';
-import { packageName } from '../../../../constants.js';
 import {
   getMemoizedReduxDeploymentsStateSelectorForTemplateMap
-} from "../../../miroir-localcache-imports.js";
+} from "miroir-react";
+import { packageName } from '../../../../constants.js';
 import { cleanLevel } from '../../constants.js';
 import {
   useCurrentModel,
@@ -48,13 +50,11 @@ import {
   ThemedContainer,
   ThemedHeaderSection,
   ThemedLabel,
-  ThemedOnScreenHelper,
   ThemedPreformattedText,
   ThemedText,
   ThemedTitle
 } from "../Themes/index";
 import { useDocumentOutlineContext } from '../ValueObjectEditor/InstanceEditorOutlineContext.js';
-import type { FoldedStateTree } from './FoldedStateTreeUtils.js';
 import { useReportPageContext } from './ReportPageContext.js';
 import { TransformerTestDisplay } from './TransformerTestDisplay.js';
 import { TypedValueObjectEditor } from './TypedValueObjectEditor.js';

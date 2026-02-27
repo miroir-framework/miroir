@@ -23,18 +23,24 @@ import {
 
 
 import { useFormikContext } from 'formik';
-import { packageName } from '../../../../constants';
 import {
+  DebugHelper,
+  formikPath_EntityInstanceSelectorPanel,
   getMemoizedReduxDeploymentsStateSelectorMap,
+  useMiroirContextService,
   useSelector,
   type ReduxStateWithUndoRedo,
-} from "../../../miroir-localcache-imports.js";
+} from "miroir-react";
+import {
+  adminSelfApplication,
+  entityApplicationForAdmin,
+} from "miroir-test-app_deployment-admin";
+import { selfApplicationLibrary } from 'miroir-test-app_deployment-library';
+import { packageName } from '../../../../constants';
 import { cleanLevel } from '../../constants';
-import { useMiroirContextService } from '../../MiroirContextReactProvider';
-import { useApplicationDeploymentMapFromLocalCache, useCurrentModel, useCurrentModelEnvironment } from '../../ReduxHooks';
+import { useCurrentModel, useCurrentModelEnvironment } from '../../ReduxHooks';
 import { TypedValueObjectEditor } from '../Reports/TypedValueObjectEditor';
 import { TypedValueObjectEditorWithFormik } from '../Reports/TypedValueObjectEditorWithFormik';
-import { DebugHelper } from '../Page/DebugHelper.js';
 import {
   ThemedContainer,
   ThemedFoldableContainer,
@@ -42,15 +48,9 @@ import {
   ThemedTitle
 } from "../Themes/index";
 import {
-  formikPath_EntityInstanceSelectorPanel,
   formikPath_TransformerEditorInputModeSelector,
   type TransformerEditorFormikValueType,
 } from "./TransformerEditorInterface";
-import {
-  adminSelfApplication,
-  entityApplicationForAdmin,
-} from "miroir-test-app_deployment-admin";
-import { selfApplicationLibrary } from 'miroir-test-app_deployment-library';
 
 // ################################################################################################
 let log: LoggerInterface = console as any as LoggerInterface;

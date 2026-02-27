@@ -30,10 +30,10 @@ import {
   useMiroirNestingBorderColor,
   useMiroirNestingColor
 } from "../../contexts/MiroirThemeContext.js";
-import { useMiroirContextService } from "../../MiroirContextReactProvider.js";
+import { useMiroirContextService } from "miroir-react";
 import { RenderPerformanceMetrics } from "../../tools/renderPerformanceMeasure.js";
 import { ErrorFallbackComponent } from "../ErrorFallbackComponent.js";
-import { DebugHelper } from "../Page/DebugHelper.js";
+import { DebugHelper } from "miroir-react";
 import { useReportPageContext } from "../Reports/ReportPageContext.js";
 import {
   ThemedCard,

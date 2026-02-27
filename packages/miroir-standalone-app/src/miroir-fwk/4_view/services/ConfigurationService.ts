@@ -32,7 +32,7 @@ import type { Deployment } from 'miroir-core/src/0_interfaces/1_core/preprocesso
 
 import { packageName } from '../../../constants.js';
 import { cleanLevel } from '../constants.js';
-import { logStartupError } from './ErrorLogService.js';
+import { logStartupError } from 'miroir-react';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(

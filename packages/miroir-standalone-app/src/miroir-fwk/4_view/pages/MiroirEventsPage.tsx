@@ -49,7 +49,7 @@ import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { packageName } from '../../../constants.js';
 import { EventLogComponent, getLogLevelColor } from '../components/EventLogComponent';
 import { cleanLevel } from '../constants.js';
-import { useMiroirContextService, useMiroirEvents } from '../MiroirContextReactProvider';
+import { useMiroirContextService, useMiroirEvents } from 'miroir-react';
 import { usePageConfiguration } from '../services';
 
 // Set up logger

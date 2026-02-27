@@ -33,7 +33,7 @@ import {
 } from "miroir-core";
 import { useMemo } from "react";
 import { packageName } from "../../../constants.js";
-import { getMemoizedReduxDeploymentsStateSelectorMap } from "../../miroir-localcache-imports.js";
+import { getMemoizedReduxDeploymentsStateSelectorMap } from "miroir-react";
 import { MiroirThemeSelector } from "../components/MiroirThemeSelector.js";
 import { PageContainer } from "../components/Page/PageContainer.js";
 import {
@@ -45,7 +45,7 @@ import { useMiroirTheme } from "../contexts/MiroirThemeContext.js";
 import {
   useDomainControllerService,
   useMiroirContextService,
-} from "../MiroirContextReactProvider.js";
+} from "miroir-react";
 import { useReduxDeploymentsStateQuerySelectorForCleanedResult } from "../ReduxHooks.js";
 import { usePageConfiguration } from "../services/index.js";
 import { ReportDisplay } from "./ReportDisplay.js";

@@ -21,7 +21,7 @@ import {
 } from "miroir-core";
 import {
   useMiroirContextService
-} from "../../../miroir-fwk/4_view/MiroirContextReactProvider.js";
+} from "miroir-react";
 
 import { ErrorBoundary } from "react-error-boundary";
 import {
@@ -33,7 +33,7 @@ import { ErrorFallbackComponent } from "../components/ErrorFallbackComponent.js"
 import { PerformanceDisplayContainer } from "../components/PerformanceDisplayContainer.js";
 import { useQueryTemplateResults } from "../components/Reports/ReportHooks.js";
 import { ReportViewWithEditor } from "../components/Reports/ReportViewWithEditor.js";
-import { DebugHelper } from "../components/Page/DebugHelper.js";
+import { DebugHelper } from "miroir-react";
 import { ThemedBox, ThemedSpan } from "../components/Themes/index.js";
 import { cleanLevel } from "../constants.js";
 import { useMiroirTheme } from "../contexts/MiroirThemeContext.js";

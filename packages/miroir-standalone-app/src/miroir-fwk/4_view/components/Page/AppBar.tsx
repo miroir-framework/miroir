@@ -17,7 +17,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { packageName } from '../../../../constants.js';
 import { cleanLevel } from '../../constants.js';
 import { useMiroirTheme } from '../../contexts/MiroirThemeContext.js';
-import { useDomainControllerService, useMiroirContextService } from '../../MiroirContextReactProvider.js';
+import { useDomainControllerService, useMiroirContextService } from 'miroir-react';
 import { usePageConfiguration } from '../../services/index.js';
 import { ThemedIcon, ThemedIconButton } from '../Themes/IconComponents.js';
 import { SidebarWidth } from './SidebarSection.js';

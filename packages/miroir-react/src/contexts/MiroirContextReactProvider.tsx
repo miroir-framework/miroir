@@ -1,51 +1,48 @@
 import {
   ReactNode,
   createContext,
+  startTransition,
   useContext,
+  useEffect,
   useMemo,
   useState,
-  startTransition,
-  useEffect,
   type Dispatch,
   type SetStateAction,
 } from "react";
-import { FoldedStateTree } from "./components/Reports/FoldedStateTreeUtils";
 
-import { Alert, AlertColor, Snackbar } from "@mui/material";
+import { Alert, Snackbar } from "@mui/material";
 
 import {
-  Action2Error,
-  Action2ReturnType,
   ApplicationSection,
   DeploymentUuidToReportsEntitiesDefinitionsMapping,
   DomainControllerInterface,
-  JzodElement,
-  MlSchema,
+  GridType,
   LoggerInterface,
-  MiroirContext,
   MiroirContextInterface,
   MiroirLoggerFactory,
-  miroirFundamentalJzodSchema as globalMiroirFundamentalJzodSchema,
+  MlSchema,
   Uuid,
   ViewParams,
-  GridType,
-  type MiroirEvent,
-  type KeyMapEntry,
-  type TransformerForBuildPlusRuntime,
+  miroirFundamentalJzodSchema as globalMiroirFundamentalJzodSchema,
   type ApplicationDeploymentMap,
+  type KeyMapEntry,
+  type MiroirEvent,
+  type ReduxStateChanges,
+  type TransformerForBuildPlusRuntime
 } from "miroir-core";
-import { ReduxStateChanges, selectCurrentTransaction, useSelector } from "../miroir-localcache-imports.js";
 
-import { packageName } from "../../constants.js";
-import { cleanLevel } from "./constants.js";
+import { packageName } from "../constants.js";
+import { cleanLevel } from "../constants.js";
+import { errorLogService, logServerError, type ErrorLogServiceClass } from "../components/logs/ErrorLogService.js";
+// import {
+//   errorLogService,
+//   logServerError
+// } from "miroir-react";
+
 import {
-  errorLogService,
-  ErrorLogEntry,
-  logStartupError,
-  logServerError,
-  logClientError,
-} from "./services/ErrorLogService.js";
-import type { formikPath_EntityInstanceSelectorPanel } from "./components/TransformerEditor/TransformerEditorInterface";
+  selectCurrentTransaction,
+  useSelector
+} from "../miroir-localcache-imports.js"
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -53,6 +50,17 @@ MiroirLoggerFactory.registerLoggerToStart(
 ).then((logger: LoggerInterface) => {
   log = logger;
 });
+
+// TODO: remove formikPath_EntityInstanceSelectorPanel from this file, it belongs with EntityInstanceSelectorPanel 
+export const formikPath_EntityInstanceSelectorPanel = "entityInstanceSelector"
+
+/**
+ * Tree structure representing folded state where each node is either
+ * a branch (object with more nodes) or a leaf with value "true"
+ */
+export type FoldedStateTree = {
+  [key: string]: FoldedStateTree | "folded";
+};
 
 // ################################################################################################
 // TransformerBuilderPage state interface for persistence
@@ -178,7 +186,7 @@ export interface MiroirReactContext {
     actionName: string
   ) => Promise<void>;
   // Error logging service access
-  errorLogService: typeof errorLogService;
+  errorLogService: ErrorLogServiceClass;
 }
 
 // #############################################################################################

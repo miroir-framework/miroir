@@ -187,6 +187,12 @@ export const MermaidClassDiagram: React.FC<MermaidClassDiagramProps> = ({
         height,
       }}
     >
+      {/* <DebugHelper componentName="ModelDiagramPage" elements={[
+          { label: "ModelDiagramPage miroirTheme", data: miroirTheme },
+          { label: `ModelDiagramPage application ${application}`, data: currentModel.entityDefinitions },
+          { label: "ModelDiagramPage currentModel", data: currentModel },
+      ]} /> */}
+      
       {/* Toolbar */}
       <Box
         sx={{

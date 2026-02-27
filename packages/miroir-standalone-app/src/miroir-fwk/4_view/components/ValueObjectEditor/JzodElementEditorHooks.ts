@@ -29,10 +29,10 @@ import {
   type Uuid,
   type JzodObject
 } from "miroir-core";
-import { getMemoizedReduxDeploymentsStateSelectorMap } from "../../../miroir-localcache-imports.js";
+import { getMemoizedReduxDeploymentsStateSelectorMap } from "miroir-react";
 import { packageName } from "../../../../constants";
 import { cleanLevel } from "../../constants";
-import { MiroirReactContext, useMiroirContextService } from "../../MiroirContextReactProvider";
+import { MiroirReactContext, useMiroirContextService } from "miroir-react";
 import {
   useCurrentModel,
   useCurrentModelEnvironment,

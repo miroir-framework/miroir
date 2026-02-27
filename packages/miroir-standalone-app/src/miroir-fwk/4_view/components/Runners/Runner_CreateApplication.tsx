@@ -32,7 +32,7 @@ import {
   selfApplicationVersionLibraryInitialVersion,
 } from "miroir-test-app_deployment-library";
 import { packageName } from "../../../../constants.js";
-import { getMemoizedReduxDeploymentsStateSelectorMap, useSelector } from "../../../miroir-localcache-imports.js";
+import { getMemoizedReduxDeploymentsStateSelectorMap, useSelector } from "miroir-react";
 import { cleanLevel } from "../../constants.js";
 import { useCurrentModelEnvironment } from "../../ReduxHooks.js";
 import { devRelativePathPrefix, FileSelector, prodRelativePathPrefix } from '../Themes/FileSelector.js';

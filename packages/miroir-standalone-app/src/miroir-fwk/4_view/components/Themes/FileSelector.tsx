@@ -4,7 +4,7 @@ import React, { useCallback } from 'react';
 import { Box, Button, Typography, Alert } from '@mui/material';
 import { CloudUploadIcon, CheckCircle as CheckCircleIcon, Clear as ClearIcon } from './MaterialSymbolWrappers';
 import { useMiroirTheme } from '../../contexts/MiroirThemeContext';
-import { ThemedComponentProps } from './BaseTypes';
+import { ThemedComponentProps } from 'miroir-react';
 // removed Node 'path' import; use browser-safe string operations instead
 
 // ################################################################################################

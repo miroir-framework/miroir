@@ -14,7 +14,7 @@ import {
 
 import { packageName } from "../../../constants.js";
 import { JzodEnumSchemaToJzodElementResolver } from "../../JzodTools.js";
-import { useMiroirContextService } from "../MiroirContextReactProvider.js";
+import { useMiroirContextService } from "miroir-react";
 import { cleanLevel } from "../constants.js";
 import { getMDataGridColumnDefinition } from "../getColumnDefinitionsFromEntityAttributes.js";
 import { EntityInstanceLink } from "./EntityInstanceLink.js";

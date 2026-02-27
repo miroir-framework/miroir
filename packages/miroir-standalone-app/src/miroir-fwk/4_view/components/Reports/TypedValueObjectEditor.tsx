@@ -24,8 +24,8 @@ import {
   SyncBoxedExtractorOrQueryRunnerMap,
   SyncQueryRunner,
   SyncQueryRunnerExtractorAndParams,
-  TransformerFailure,
   transformer_extended_apply_wrapper,
+  TransformerFailure,
   Uuid,
   type ApplicationDeploymentMap,
   type JzodObject,
@@ -33,15 +33,17 @@ import {
   type TransformerForBuildPlusRuntime
 } from "miroir-core";
 import {
+  CodeBlock_ReadOnly,
   getMemoizedReduxDeploymentsStateSelectorMap,
   ReduxStateWithUndoRedo,
+  ThemedOnScreenHelper,
   useSelector,
-} from "../../../miroir-localcache-imports.js";
+} from "miroir-react";
 
 import {
   useMiroirContextService,
   useSnackbar
-} from "../../MiroirContextReactProvider.js";
+} from "miroir-react";
 
 import { ErrorBoundary } from "react-error-boundary";
 import { packageName } from '../../../../constants.js';
@@ -54,9 +56,8 @@ import {
 import { useRenderTracker } from '../../tools/renderCountTracker.js';
 import { ErrorFallbackComponent } from '../ErrorFallbackComponent.js';
 import { ActionButtonWithSnackbar } from '../Page/ActionButtonWithSnackbar.js';
-import { ThemedOnScreenHelper, ThemedStyledButton } from '../Themes/index.js';
+import { ThemedStyledButton } from '../Themes/index.js';
 import { JzodElementEditor } from '../ValueObjectEditor/JzodElementEditor.js';
-import { CodeBlock_ReadOnly } from './CodeBlock_ReadOnly.js';
 import type { ValueObjectEditMode } from './ReportSectionEntityInstance.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;

@@ -13,7 +13,6 @@ import {
   ThemedStyledButton,
   ThemedSpan,
   ThemedCodeBlock,
-  ThemedOnScreenHelper
 } from "../Themes/index";
 import { useFormikContext } from "formik";
 

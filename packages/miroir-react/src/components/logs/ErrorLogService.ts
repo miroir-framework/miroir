@@ -25,7 +25,7 @@ export interface ErrorNotificationOptions {
   userMessage?: string;
 }
 
-class ErrorLogServiceClass {
+export class ErrorLogServiceClass {
   private errorLogs: ErrorLogEntry[] = [];
   private maxLogs = 1000; // Keep last 1000 errors
   private subscribers: Array<(error: ErrorLogEntry) => void> = [];

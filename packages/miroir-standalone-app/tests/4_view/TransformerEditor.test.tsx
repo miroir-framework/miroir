@@ -19,7 +19,7 @@ import {
   ReduxStateWithUndoRedo,
   reduxStoreWithUndoRedoGetInitialState,
   LocalCacheSliceState
-} from "../../src/miroir-fwk/miroir-localcache-imports.js";
+} from "miroir-react";
 
 import { TransformerEditor } from "../../src/miroir-fwk/4_view/components/TransformerEditor/TransformerEditor";
 import { cleanLevel, packageName } from "../3_controllers/constants";

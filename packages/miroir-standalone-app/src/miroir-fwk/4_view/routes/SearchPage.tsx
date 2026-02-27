@@ -15,7 +15,7 @@ import {
 } from "../components/TransformerEditor/EntityInstanceSelectorPanel";
 import { cleanLevel } from "../constants";
 import { usePageConfiguration } from "../services";
-import { useMiroirContextService } from "../MiroirContextReactProvider";
+import { useMiroirContextService } from "miroir-react";
 import { formikPath_TransformerEditorInputModeSelector } from "../components/TransformerEditor/TransformerEditorInterface";
 import { deployment_Library_DO_NO_USE, entityBook, selfApplicationLibrary } from "miroir-test-app_deployment-library";
 

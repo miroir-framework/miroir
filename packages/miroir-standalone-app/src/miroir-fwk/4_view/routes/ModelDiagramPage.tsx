@@ -19,9 +19,9 @@ import { PageContainer } from "../components/Page/PageContainer.js";
 import { MermaidClassDiagram } from "miroir-diagram-class";
 import { cleanLevel } from "../constants.js";
 import { useMiroirTheme } from "../contexts/MiroirThemeContext.js";
-import { useMiroirContextService } from "../MiroirContextReactProvider.js";
+import { useMiroirContextService } from "miroir-react";
 import { useCurrentModel } from "../ReduxHooks.js";
-import { DebugHelper } from "../components/Page/DebugHelper.js";
+import { DebugHelper } from "miroir-react";
 import { usePageConfiguration } from "../services/usePageConfiguration.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;

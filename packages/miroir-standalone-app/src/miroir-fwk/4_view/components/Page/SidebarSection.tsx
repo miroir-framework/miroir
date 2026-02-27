@@ -33,13 +33,13 @@ import {
   type ApplicationDeploymentMap,
   type MiroirMenuItem
 } from "miroir-core";
-import { getMemoizedReduxDeploymentsStateSelectorMap } from '../../../miroir-localcache-imports.js';
+import { getMemoizedReduxDeploymentsStateSelectorMap } from 'miroir-react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { packageName } from '../../../../constants.js';
-import { useMiroirContextService } from '../../MiroirContextReactProvider.js';
+import { useMiroirContextService } from 'miroir-react';
 import { useCurrentModel, useReduxDeploymentsStateQuerySelector } from '../../ReduxHooks.js';
 import { ErrorFallbackComponent } from '../ErrorFallbackComponent.js';
-import { DebugHelper } from './DebugHelper.js';
+import { DebugHelper } from 'miroir-react';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
