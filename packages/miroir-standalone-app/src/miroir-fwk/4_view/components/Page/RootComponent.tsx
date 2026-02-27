@@ -749,10 +749,10 @@ export const RootComponent = (props: RootComponentProps) => {
     () => ({
       elements: [
         { label: "RootComponent miroirConfig", data: miroirConfig },
+        { label: `RootComponent application ${context.application}`, data: applicationDeploymentMap },
         { label: "RootComponent currentModel", data: currentModel },
         { label: "RootComponent currentThemes", data: miroirMetaModel.themes },
         { label: "RootComponent adminAppModel", data: adminAppModel },
-        { label: "RootComponent applicationDeploymentMap", data: applicationDeploymentMap },
         {
           label: "RootComponent deploymentUuidToReportsEntitiesDefinitionsMapping",
           data: deploymentUuidToReportsEntitiesDefinitionsMapping,

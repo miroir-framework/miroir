@@ -8,7 +8,7 @@ export default defineConfig({
   sourcemap: true,
   treeshake: true,
   minify: true,
-  external: ["react", "react-dom", "@mui/material", "@emotion/react", "@emotion/styled", "miroir-react"],
+  external: ["react", "react-dom", "@mui/material", "@emotion/react", "@emotion/styled"],
   esbuildOptions(options) {
     options.jsx = "automatic";
   },

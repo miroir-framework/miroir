@@ -16,11 +16,13 @@ import {
 
 import { packageName } from "../../../constants.js";
 import { PageContainer } from "../components/Page/PageContainer.js";
-import { MermaidClassDiagram } from "../components/MermaidClassDiagram.js";
+import { MermaidClassDiagram } from "miroir-diagram-class";
 import { cleanLevel } from "../constants.js";
 import { useMiroirTheme } from "../contexts/MiroirThemeContext.js";
 import { useMiroirContextService } from "../MiroirContextReactProvider.js";
 import { useCurrentModel } from "../ReduxHooks.js";
+import { DebugHelper } from "../components/Page/DebugHelper.js";
+import { usePageConfiguration } from "../services/usePageConfiguration.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -32,11 +34,17 @@ MiroirLoggerFactory.registerLoggerToStart(
 
 // ################################################################################################
 export const ModelDiagramPage: React.FC<any> = () => {
+  const { fetchConfigurations } = usePageConfiguration({
+    autoFetchOnMount: true,
+    successMessage: "ModelDiagramPage configurations loaded successfully",
+    actionName: "model diagram page configuration fetch"
+  });
+
   const miroirTheme = useMiroirTheme();
   const context = useMiroirContextService();
   const currentApplicationDeploymentMap =
     context.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap;
-  const application = context.application;
+  const application = context.toolsPageState.applicationSelector ?? context.application;
 
   const currentModel: MetaModel = useCurrentModel(
     application,
@@ -52,6 +60,11 @@ export const ModelDiagramPage: React.FC<any> = () => {
 
   return (
     <PageContainer padding={2}>
+      <DebugHelper componentName="ModelDiagramPage" elements={[
+          { label: "ModelDiagramPage miroirTheme", data: miroirTheme },
+          { label: `ModelDiagramPage application ${application}`, data: currentModel.entityDefinitions },
+          { label: "ModelDiagramPage currentModel", data: currentModel },
+      ]} />
       <Box
         sx={{
           display: "flex",
@@ -87,6 +100,7 @@ export const ModelDiagramPage: React.FC<any> = () => {
           entityDefinitions={entityDefinitions}
           options={{
             title: `${applicationName} Model`,
+            direction: entityDefinitions.length > 10 ? "TB" : "LR", // Top-Bottom if many entities, else Left-Right
           }}
           height="calc(100vh - 220px)"
         />

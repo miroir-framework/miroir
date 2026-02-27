@@ -3,18 +3,42 @@
  * class diagram from Miroir EntityDefinitions.
  *
  * Uses the `mermaid` library for SVG rendering and integrates with the
- * Miroir theme system via `useMiroirTheme()`.
+ * Miroir theme system via `useMiroirTheme()` from `miroir-react`.
  */
 
 import React, { useRef, useCallback, useState } from "react";
 import mermaid from "mermaid";
-import { Box, Typography, IconButton, Tooltip, ToggleButtonGroup, ToggleButton } from "@mui/material";
+import {
+  Box,
+  Typography,
+  IconButton,
+  Tooltip,
+  ToggleButtonGroup,
+  ToggleButton,
+} from "@mui/material";
 import type { EntityDefinition } from "miroir-core";
 import {
   entityDefinitionsToMermaidClassDiagram,
   type ClassDiagramOptions,
-} from "miroir-diagram-class";
-import { useMiroirTheme } from "../contexts/MiroirThemeContext.js";
+} from "../2_domain/entityDefinitionsToMermaidClassDiagram.js";
+import { useMiroirTheme } from "miroir-react";
+
+// ############################################################################
+// Constants
+// ############################################################################
+
+const ZOOM_STEP = 0.1;
+const ZOOM_MIN = 0.2;
+const ZOOM_MAX = 3.0;
+
+/**
+ * Compute an initial zoom so that diagrams with ≤10 classes start at 1.0
+ * and larger diagrams scale down proportionally (floor: 0.3).
+ */
+function computeInitialZoom(entityCount: number): number {
+  if (entityCount <= 10) return 1.0;
+  return Math.max(ZOOM_MIN, 10 / entityCount);
+}
 
 // ############################################################################
 // Types
@@ -48,6 +72,7 @@ export const MermaidClassDiagram: React.FC<MermaidClassDiagramProps> = ({
     (options.direction === "TB" || options.direction === "LR") ? options.direction : "TB"
   );
   const [showInfra, setShowInfra] = useState<boolean>(options.showInfrastructureAttributes ?? false);
+  const [zoom, setZoom] = useState<number>(() => computeInitialZoom(entityDefinitions.length));
   const renderIdRef = useRef(0);
 
   // Derive theme-aware colors for Mermaid
@@ -66,7 +91,6 @@ export const MermaidClassDiagram: React.FC<MermaidClassDiagramProps> = ({
   // Build diagram options merged with overrides
   const diagramOptions: ClassDiagramOptions = {
     ...options,
-    // Override direction and showInfra with local interactive state
     direction,
     showInfrastructureAttributes: showInfra,
     showTitle: options.showTitle ?? true,
@@ -113,10 +137,9 @@ export const MermaidClassDiagram: React.FC<MermaidClassDiagramProps> = ({
       setError(err.message ?? "Failed to render diagram");
       setSvgContent("");
     }
-  }, [entityDefinitions, diagramOptions, isDark, themeColors]);
+  }, [entityDefinitions, mermaidInitialized, diagramOptions, isDark, themeColors]);
 
-  // Render when inputs change. We use a ref-based approach to avoid useEffect.
-  // Instead, we trigger rendering via a key-based mechanism.
+  // Re-render when inputs change without useEffect: compare key and trigger synchronously.
   const diagramKey = JSON.stringify({
     defs: entityDefinitions.map((ed) => ed.uuid),
     direction,
@@ -129,6 +152,8 @@ export const MermaidClassDiagram: React.FC<MermaidClassDiagramProps> = ({
     lastKeyRef.current = diagramKey;
     // Re-initialize mermaid when theme changes
     mermaidInitialized = false;
+    // Reset zoom to fit when entity list changes
+    setZoom(computeInitialZoom(entityDefinitions.length));
     renderDiagram();
   }
 
@@ -138,6 +163,18 @@ export const MermaidClassDiagram: React.FC<MermaidClassDiagramProps> = ({
 
   const handleInfraToggle = () => {
     setShowInfra((prev) => !prev);
+  };
+
+  const handleZoomIn = () => {
+    setZoom((z) => Math.min(ZOOM_MAX, parseFloat((z + ZOOM_STEP).toFixed(2))));
+  };
+
+  const handleZoomOut = () => {
+    setZoom((z) => Math.max(ZOOM_MIN, parseFloat((z - ZOOM_STEP).toFixed(2))));
+  };
+
+  const handleZoomReset = () => {
+    setZoom(computeInitialZoom(entityDefinitions.length));
   };
 
   return (
@@ -163,6 +200,7 @@ export const MermaidClassDiagram: React.FC<MermaidClassDiagramProps> = ({
           flexWrap: "wrap",
         }}
       >
+        {/* Direction toggle */}
         <Typography
           variant="body2"
           sx={{ color: themeColors.text, fontWeight: 500 }}
@@ -183,6 +221,7 @@ export const MermaidClassDiagram: React.FC<MermaidClassDiagramProps> = ({
           </ToggleButton>
         </ToggleButtonGroup>
 
+        {/* Infrastructure attributes toggle */}
         <Tooltip title={showInfra ? "Hide infrastructure attributes" : "Show infrastructure attributes (uuid, parentUuid, etc.)"}>
           <ToggleButton
             value="infra"
@@ -194,6 +233,28 @@ export const MermaidClassDiagram: React.FC<MermaidClassDiagramProps> = ({
             {showInfra ? "Hide Infra" : "Show Infra"}
           </ToggleButton>
         </Tooltip>
+
+        {/* Zoom controls */}
+        <Box sx={{ display: "flex", alignItems: "center", gap: 0.5, ml: "auto" }}>
+          <Typography variant="body2" sx={{ color: themeColors.text, minWidth: "42px", textAlign: "right" }}>
+            {Math.round(zoom * 100)}%
+          </Typography>
+          <Tooltip title="Zoom out">
+            <IconButton size="small" onClick={handleZoomOut} disabled={zoom <= ZOOM_MIN} sx={{ fontWeight: "bold", fontSize: "1rem" }}>
+              −
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Reset zoom">
+            <IconButton size="small" onClick={handleZoomReset} sx={{ fontSize: "0.8rem" }}>
+              ⊡
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Zoom in">
+            <IconButton size="small" onClick={handleZoomIn} disabled={zoom >= ZOOM_MAX} sx={{ fontWeight: "bold", fontSize: "1rem" }}>
+              +
+            </IconButton>
+          </Tooltip>
+        </Box>
       </Box>
 
       {/* Diagram area */}
@@ -210,10 +271,6 @@ export const MermaidClassDiagram: React.FC<MermaidClassDiagramProps> = ({
           display: "flex",
           justifyContent: "center",
           alignItems: "flex-start",
-          "& svg": {
-            maxWidth: "100%",
-            height: "auto",
-          },
         }}
       >
         {error ? (
@@ -228,7 +285,16 @@ export const MermaidClassDiagram: React.FC<MermaidClassDiagramProps> = ({
             No entity definitions available for the current application model.
           </Typography>
         ) : svgContent ? (
-          <div dangerouslySetInnerHTML={{ __html: svgContent }} />
+          <Box
+            sx={{
+              transformOrigin: "top center",
+              transform: `scale(${zoom})`,
+              transition: "transform 0.15s ease",
+              // Reserve the original (unscaled) space so the container scrollbars are correct
+              width: `${Math.round(100 / zoom)}%`,
+            }}
+            dangerouslySetInnerHTML={{ __html: svgContent }}
+          />
         ) : (
           <Typography
             variant="body2"
@@ -250,13 +316,11 @@ export const MermaidClassDiagram: React.FC<MermaidClassDiagramProps> = ({
  * Rough heuristic to determine if a CSS colour string is dark.
  */
 function isColorDark(color: string): boolean {
-  // Handle hex colours
   const hex = color.replace("#", "");
   if (/^[0-9a-fA-F]{6}$/.test(hex)) {
     const r = parseInt(hex.slice(0, 2), 16);
     const g = parseInt(hex.slice(2, 4), 16);
     const b = parseInt(hex.slice(4, 6), 16);
-    // Relative luminance
     const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
     return luminance < 0.5;
   }

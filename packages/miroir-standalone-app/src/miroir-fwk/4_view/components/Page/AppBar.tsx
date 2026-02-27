@@ -37,7 +37,7 @@ const appbarItems: (MiroirMenuItem & { targetRoot?: string })[] = [
     reportUuid: "c9ea3359-690c-4620-9603-b5b402e4a2b9",
     icon: {
       iconType: "mui",
-      name: "accountTree",
+      name: "account_tree",
     },
   },
   {

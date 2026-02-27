@@ -1,7 +1,7 @@
 {
-  "name": "miroir-diagram-class",
+  "name": "miroir-react",
   "version": "1.0.0",
-  "description": "UML-like class diagram generation from Miroir EntityDefinitions using Mermaid",
+  "description": "Reusable React context and theme system for the Miroir Framework",
   "author": "Miroir Framework <miroir-framework@protonmail.com>",
   "license": "MIT",
   "private": true,
@@ -15,22 +15,19 @@
     }
   },
   "scripts": {
-    "build": "tsup",
-    "test": "vitest run"
+    "build": "tsup"
   },
   "dependencies": {
     "miroir-core": "*",
-    "mermaid": "*"
+    "miroir-test-app_deployment-miroir": "*"
   },
   "peerDependencies": {
     "react": ">=18.0.0",
-    "@mui/material": ">=5.0.0",
-    "miroir-react": "*"
+    "@mui/material": ">=5.0.0"
   },
   "devDependencies": {
     "tsup": "^8.0.0",
     "typescript": "^5.8.2",
-    "vitest": "^3.2.4",
     "@types/react": "^18"
   }
 }
