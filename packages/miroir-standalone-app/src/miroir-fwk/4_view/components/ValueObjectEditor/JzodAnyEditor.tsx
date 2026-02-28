@@ -7,6 +7,7 @@ import {
   mStringify,
   ReduxDeploymentsState,
   SyncBoxedExtractorOrQueryRunnerMap,
+  transformer_extended_apply_wrapper,
   type MetaModel,
   type MiroirModelEnvironment
 } from "miroir-core";
@@ -44,19 +45,19 @@ export const JzodAnyEditor: React.FC<JzodAnyEditorProps> = (
   JzodAnyEditorRenderCount++;
   const context = useMiroirContextService();
   const {
-    name,
-    listKey,
+    // name,
+    // listKey,
     rootLessListKey,
-    rootLessListKeyArray,
+    // rootLessListKeyArray,
     reportSectionPathAsString,
-    currentDeploymentUuid,
-    currentApplicationSection,
-    foreignKeyObjects,
-    resolvedElementJzodSchemaDEFUNCT: resolvedElementJzodSchema, // handleSelectLiteralChange,
-    labelElement,
+    // currentDeploymentUuid,
+    // currentApplicationSection,
+    // foreignKeyObjects,
+    // resolvedElementJzodSchemaDEFUNCT, // handleSelectLiteralChange,
+    // labelElement,
     insideAny,
-    readOnly,
-    typeCheckKeyMap,
+    // readOnly,
+    // typeCheckKeyMap,
   } = props;
 
   const {
@@ -66,15 +67,15 @@ export const JzodAnyEditor: React.FC<JzodAnyEditorProps> = (
     currentValueObjectAtKey,
     formikRootLessListKey,
     localResolvedElementJzodSchemaBasedOnValue,
-    currentModel,
-    miroirMetaModel,
-    // 
-    displayAsStructuredElement,
-    setDisplayAsStructuredElement,
-    codeMirrorValue,
-    setCodeMirrorValue,
-    codeMirrorIsValidJson,
-    setCodeMirrorIsValidJson,
+    // currentModel,
+    // miroirMetaModel,
+    // // 
+    // displayAsStructuredElement,
+    // setDisplayAsStructuredElement,
+    // codeMirrorValue,
+    // setCodeMirrorValue,
+    // codeMirrorIsValidJson,
+    // setCodeMirrorIsValidJson,
 
   } = useJzodElementEditorHooks(
     props.rootLessListKey,
@@ -88,160 +89,173 @@ export const JzodAnyEditor: React.FC<JzodAnyEditorProps> = (
     "JzodAnyEditor",
   );
 
-  const [selectedFileName, setSelectedFileName] = useState<string | undefined>(
-    currentValueObjectAtKey || undefined,
-  );
+  const [selectedFileName, setSelectedFileName] = useState<string | undefined>(undefined);
   const [fileError, setFileError] = useState<string | undefined>(undefined);
-  const [selectedFileContents, setSelectedFileContents] = useState<
-    MetaModel | undefined
-  >(undefined);
 
-  // const setSelectedFileContents = useCallback(
-  //   (metaModel: MetaModel | undefined) => {
-  //     // formik.setFieldValue(formikRootLessListKey, metaModel);
-  //     log.info(
-  //       "JzodAnyEditor - setSelectedFileContents for",
-  //       formikRootLessListKey,
-  //       "to metaModel:",
-  //       mStringify(metaModel, null, 2)
-  //     );
-  //     formik.setValues(
-  //       {
-  //         ...formik.values,
-  //         [formikRootLessListKey]: metaModel
-  //       });
-  //   },
-  //   [formikRootLessListKey, formik],
-  // );
-  useEffect(() => {
-    if (selectedFileContents !== undefined) {
-      log.info(
-        "JzodAnyEditor - useEffect selectedFileContents changed for",
-        formikRootLessListKey,
-        "to metaModel:",
-        mStringify(selectedFileContents, null, 2)
-      );
-      formik.setFieldValue(formikRootLessListKey, selectedFileContents);
-      // formik.setValues(
-      //   alterObjectAtPath2(
-      //     formik.values,
-      //     [reportSectionPathAsString,...rootLessListKeyArray],
-      //     selectedFileContents
-      //   )
-      //   // alterObjectAtPath2(
-      //   //   formik.values,
-      //   //   rootLessListKeyArray,
-      //   //   selectedFileContents
-      //   // )
-      //   // {
-      //   //   ...formik.values,
-      //   //   [formikRootLessListKey]: selectedFileContents
-      //   // }
-      // );
-    }
-  }, [selectedFileContents, reportSectionPathAsString]);
-
-  const format = currentTypecheckKeyMap?.rawSchema?.tag?.value?.display?.any?.format;
-  const label = currentTypecheckKeyMap?.rawSchema?.tag?.value?.defaultLabel?? formikRootLessListKey[formikRootLessListKey.length -1];
+  // Compute the reset value from the schema's initializeTo tag (used for CLEAR and post-submit reset)
+  const initializeTo = currentTypecheckKeyMap?.rawSchema?.tag?.value?.initializeTo;
 
   const currentMiroirModelEnvironment: MiroirModelEnvironment = useCurrentModelEnvironment(
     props.currentApplication,
     props.applicationDeploymentMap,
   );
 
-  // ##############################################################################################
-    const handleDisplayAsStructuredElementSwitchChange = useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>) => {
-      log.info(
-        "handleDisplayAsStructuredElementSwitchChange",
-        props.rootLessListKey,
-        "Switching display mode to:",
-        event.target.checked
-      );
-      if (event.target.checked) {
-        try {
-          const parsedCodeMirrorValue = JSON.parse(codeMirrorValue);
-          log.info(
-            "handleDisplayAsStructuredElementSwitchChange Parsed CodeMirror value for structured element display:",
-            mStringify(parsedCodeMirrorValue, null, 2)
-          );
-          // if (props.rootLessListKey && props.rootLessListKey.length > 0) {
-            // Invoke onChangeVector callback if registered for this field
-            const onChangeCallback = props.onChangeVector?.[props.rootLessListKey];
-            if (onChangeCallback) {
-              onChangeCallback(parsedCodeMirrorValue, props.rootLessListKey);
-            }
-            formik.setFieldValue(formikRootLessListKey, parsedCodeMirrorValue);
-          // } else {
-          //   formik.setValues(parsedCodeMirrorValue);
-          // }
-        } catch (e) {
-          log.error("Failed to parse JSON in switch handler:", e);
-          // Keep display mode as is in case of error
-          return;
-        }
-      } else {
-        // if switching to code editor, reset the codeMirrorValue to the current value
-        // setCodeMirrorValue(safeStringify(currentValue));
-        setCodeMirrorValue(JSON.stringify(currentValueObject, null, 2));
-      }
-      setDisplayAsStructuredElement(event.target.checked);
-    },
-    [
-      currentValueObject,
-      codeMirrorValue,
-      formik,
-      props.rootLessListKey,
-      setCodeMirrorValue,
-      setDisplayAsStructuredElement,
-    ]
-  );
-
-  const resolvedTypeIsObjectOrArrayOrAny = useMemo(() => 
-    !localResolvedElementJzodSchemaBasedOnValue || ["any", "object", "record", "array", "tuple"].includes(
-      localResolvedElementJzodSchemaBasedOnValue.type
-    ), [localResolvedElementJzodSchemaBasedOnValue]
-  );
-
-    // Switches for display mode
-  const displayAsStructuredElementSwitch: JSX.Element = useMemo(
-    () => (
-      <>
-        {!props.readOnly && resolvedTypeIsObjectOrArrayOrAny ? (
-          <ThemedSwitch
-            checked={displayAsStructuredElement}
-            id={`displayAsStructuredElementSwitch-${props.rootLessListKey}`}
-            name={`displayAsStructuredElementSwitch-${props.rootLessListKey}`}
-            onChange={handleDisplayAsStructuredElementSwitchChange}
-            disabled={!codeMirrorIsValidJson}
-          />
-        ) : (
-          <></>
-        )}
-      </>
-    ),
-    [
-      props.readOnly,
-      resolvedTypeIsObjectOrArrayOrAny,
-      displayAsStructuredElement,
-      handleDisplayAsStructuredElementSwitchChange,
-      codeMirrorIsValidJson,
-    ]
-  );
-  
-  // const currentValue = resolvePathOnObject(formik.values[reportSectionPathAsString], rootLessListKeyArray);
-  const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState> =
-    getMemoizedReduxDeploymentsStateSelectorMap();
-
-  const deploymentEntityState: ReduxDeploymentsState = useSelector(
-    (state: ReduxStateWithUndoRedo) =>
-      deploymentEntityStateSelectorMap.extractState(
-        state.presentModelSnapshot.current,
-        props.applicationDeploymentMap,
-        () => ({}),
+  // Resolve the reset value from the schema's initializeTo tag (used for CLEAR and post-submit reset)
+  const resetFieldValue = useMemo(() => {
+    if (!initializeTo) return undefined;
+    if (initializeTo.initializeToType === "value") {
+      return initializeTo.value;
+    }
+    if (initializeTo.initializeToType === "transformer" && initializeTo.transformer) {
+      return transformer_extended_apply_wrapper(
+        undefined, // activityTracker – not needed for build-time init
+        "build",
+        [formikRootLessListKey, "initializeTo"],
+        "initializeTo",
+        initializeTo.transformer,
         currentMiroirModelEnvironment,
-      ),
+        formik.values, // transformerParams
+        {}, // contextResults
+        "value",
+      );
+    }
+    return undefined;
+  }, [initializeTo, currentMiroirModelEnvironment]);
+
+  // Directly write file contents into formik (no intermediate state) to avoid race conditions on clear
+  const setSelectedFileContents = useCallback(
+    (contents: MetaModel | undefined) => {
+      log.info(
+        "JzodAnyEditor - setSelectedFileContents for",
+        formikRootLessListKey,
+        "contents:",
+        mStringify(contents, null, 2)
+      );
+      formik.setFieldValue(formikRootLessListKey, contents !== undefined ? contents : resetFieldValue);
+    },
+    [formik, formikRootLessListKey, resetFieldValue],
   );
+
+  // Sync selectedFileName from formik value: reset when cleared, show placeholder when a file object is loaded
+  // but selectedFileName hasn't been set (e.g. after a code-editor round-trip remounts this component)
+  useEffect(() => {
+    const isReset = currentValueObjectAtKey === undefined || currentValueObjectAtKey === resetFieldValue;
+    if (isReset) {
+      setSelectedFileName(undefined);
+      setFileError(undefined);
+    } else if (
+      typeof currentValueObjectAtKey === "object" &&
+      currentValueObjectAtKey !== null &&
+      selectedFileName === undefined
+    ) {
+      // File content is in formik but display name was lost (e.g. remount after code-editor round-trip)
+      const name = (currentValueObjectAtKey as any).applicationName;
+      setSelectedFileName(typeof name === "string" ? name : "(file loaded)");
+    }
+  }, [currentValueObjectAtKey, resetFieldValue]);
+
+  const handleClear = useCallback(() => {
+    formik.setFieldValue(formikRootLessListKey, resetFieldValue);
+    setSelectedFileName(undefined);
+    setFileError(undefined);
+  }, [formik, formikRootLessListKey, resetFieldValue]);
+
+  const format = currentTypecheckKeyMap?.rawSchema?.tag?.value?.display?.any?.format;
+  const label = currentTypecheckKeyMap?.rawSchema?.tag?.value?.defaultLabel?? formikRootLessListKey[formikRootLessListKey.length -1];
+
+  // // ##############################################################################################
+  // const handleDisplayAsStructuredElementSwitchChange = useCallback(
+  //   (event: React.ChangeEvent<HTMLInputElement>) => {
+  //     log.info(
+  //       "handleDisplayAsStructuredElementSwitchChange",
+  //       props.rootLessListKey,
+  //       "Switching display mode to:",
+  //       event.target.checked
+  //     );
+  //     if (event.target.checked) {
+  //       try {
+  //         const parsedCodeMirrorValue = JSON.parse(codeMirrorValue);
+  //         log.info(
+  //           "handleDisplayAsStructuredElementSwitchChange Parsed CodeMirror value for structured element display:",
+  //           mStringify(parsedCodeMirrorValue, null, 2)
+  //         );
+  //         // if (props.rootLessListKey && props.rootLessListKey.length > 0) {
+  //           // Invoke onChangeVector callback if registered for this field
+  //           const onChangeCallback = props.onChangeVector?.[props.rootLessListKey];
+  //           if (onChangeCallback) {
+  //             onChangeCallback(parsedCodeMirrorValue, props.rootLessListKey);
+  //           }
+  //           formik.setFieldValue(formikRootLessListKey, parsedCodeMirrorValue);
+  //         // } else {
+  //         //   formik.setValues(parsedCodeMirrorValue);
+  //         // }
+  //       } catch (e) {
+  //         log.error("Failed to parse JSON in switch handler:", e);
+  //         // Keep display mode as is in case of error
+  //         return;
+  //       }
+  //     } else {
+  //       // if switching to code editor, reset the codeMirrorValue to the current value
+  //       // setCodeMirrorValue(safeStringify(currentValue));
+  //       setCodeMirrorValue(JSON.stringify(currentValueObject, null, 2));
+  //     }
+  //     setDisplayAsStructuredElement(event.target.checked);
+  //   },
+  //   [
+  //     currentValueObject,
+  //     codeMirrorValue,
+  //     formik,
+  //     props.rootLessListKey,
+  //     setCodeMirrorValue,
+  //     setDisplayAsStructuredElement,
+  //   ]
+  // );
+
+  // const resolvedTypeIsObjectOrArrayOrAny = useMemo(() => 
+  //   !localResolvedElementJzodSchemaBasedOnValue || ["any", "object", "record", "array", "tuple"].includes(
+  //     localResolvedElementJzodSchemaBasedOnValue.type
+  //   ), [localResolvedElementJzodSchemaBasedOnValue]
+  // );
+
+  //   // Switches for display mode
+  // const displayAsStructuredElementSwitch: JSX.Element = useMemo(
+  //   () => (
+  //     <>
+  //       {!props.readOnly && resolvedTypeIsObjectOrArrayOrAny ? (
+  //         <ThemedSwitch
+  //           checked={displayAsStructuredElement}
+  //           id={`displayAsStructuredElementSwitch-${props.rootLessListKey}`}
+  //           name={`displayAsStructuredElementSwitch-${props.rootLessListKey}`}
+  //           onChange={handleDisplayAsStructuredElementSwitchChange}
+  //           disabled={!codeMirrorIsValidJson}
+  //         />
+  //       ) : (
+  //         <></>
+  //       )}
+  //     </>
+  //   ),
+  //   [
+  //     props.readOnly,
+  //     resolvedTypeIsObjectOrArrayOrAny,
+  //     displayAsStructuredElement,
+  //     handleDisplayAsStructuredElementSwitchChange,
+  //     codeMirrorIsValidJson,
+  //   ]
+  // );
+  
+  // // const currentValue = resolvePathOnObject(formik.values[reportSectionPathAsString], rootLessListKeyArray);
+  // const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState> =
+  //   getMemoizedReduxDeploymentsStateSelectorMap();
+
+  // const deploymentEntityState: ReduxDeploymentsState = useSelector(
+  //   (state: ReduxStateWithUndoRedo) =>
+  //     deploymentEntityStateSelectorMap.extractState(
+  //       state.presentModelSnapshot.current,
+  //       props.applicationDeploymentMap,
+  //       () => ({}),
+  //       currentMiroirModelEnvironment,
+  //     ),
+  // );
   if (insideAny) {
     log.info(`JzodAnyEditor Rendered insideAny for ${rootLessListKey} ${JzodAnyEditorRenderCount}`);
     return (<ThemedStatusText style={{color: "red"}}>
@@ -284,6 +298,7 @@ export const JzodAnyEditor: React.FC<JzodAnyEditorProps> = (
           showBorder={false}
           compact={true}
           style={{ marginBottom: 0 }}
+          onFileClear={handleClear}
         />
       </div>
     );
