@@ -73,6 +73,7 @@
                     },
                     "transformer": {
                       "type": "any",
+                      "optional": true,
                       "tag": {
                         "value": {
                           "ifThenElseMMLS": {
@@ -82,8 +83,7 @@
                             }
                           }
                         }
-                      },
-                      "optional": true
+                      }
                     }
                   }
                 },
@@ -260,6 +260,26 @@
                 "isTemplate": {
                   "type": "boolean",
                   "optional": true
+                },
+                "formValidation": {
+                  "type": "object",
+                  "optional": true,
+                  "definition": {
+                    "transformer": {
+                      "type": "any",
+                      "tag": {
+                        "value": {
+                          "ifThenElseMMLS": {
+                            "mmlsReference": {
+                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              "relativePath": "transformerForBuildPlusRuntime"
+                            }
+                          }
+                        }
+                      },
+                      "optional": true
+                    }
+                  }
                 },
                 "ifThenElseMMLS": {
                   "type": "object",
@@ -688,6 +708,26 @@
                   "isTemplate": {
                     "type": "boolean",
                     "optional": true
+                  },
+                  "formValidation": {
+                    "type": "object",
+                    "optional": true,
+                    "definition": {
+                      "transformer": {
+                        "type": "any",
+                        "tag": {
+                          "value": {
+                            "ifThenElseMMLS": {
+                              "mmlsReference": {
+                                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                "relativePath": "transformerForBuildPlusRuntime"
+                              }
+                            }
+                          }
+                        },
+                        "optional": true
+                      }
+                    }
                   },
                   "ifThenElseMMLS": {
                     "type": "object",

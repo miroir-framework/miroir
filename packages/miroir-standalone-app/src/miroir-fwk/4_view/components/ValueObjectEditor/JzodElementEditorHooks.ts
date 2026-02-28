@@ -1,5 +1,5 @@
 import { FormikProps, useFormikContext } from "formik";
-import { useMemo, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 
 
 import {
@@ -24,11 +24,13 @@ import {
   selfApplicationMiroir,
   transformer_extended_apply_wrapper,
   type ApplicationDeploymentMap,
+  type MiroirActivityTrackerInterface,
   type MiroirModelEnvironment,
   type TransformerReturnType,
   type Uuid,
   type JzodObject
 } from "miroir-core";
+import { FieldValidationContext } from "./FieldValidationContext.js";
 import { getMemoizedReduxDeploymentsStateSelectorMap } from "../../../miroir-localcache-imports.js";
 import { packageName } from "../../../../constants";
 import { cleanLevel } from "../../constants";
@@ -546,4 +548,82 @@ export function getFoldedDisplayValue(schema: JzodElement | undefined, currentVa
   }
 
   return null;
+}
+
+// ################################################################################################
+/**
+ * Hook to evaluate a field-level formValidation transformer and register the result
+ * in the FieldValidationContext so that the form-level (TypedValueObjectEditor)
+ * can take field-level errors into account for submit gating.
+ *
+ * @param rootLessListKey  - The field key (used as the context key for error registration)
+ * @param currentTypecheckKeyMap - The KeyMapEntry for the current field
+ * @param formikValues - The full formik values (for cross-field references in transformers)
+ * @param currentMiroirModelEnvironment - The model environment
+ * @param activityTracker - Optional activity tracker
+ * @param reduxDeploymentsState - Optional redux deployments state (for runtime transformers)
+ * @param deploymentUuid - Optional deployment UUID
+ * @returns The validation error string, or undefined if valid
+ */
+export function useFieldValidation(
+  rootLessListKey: string,
+  currentTypecheckKeyMap: KeyMapEntry | undefined,
+  formikValues: Record<string, any>,
+  currentMiroirModelEnvironment: MiroirModelEnvironment,
+  activityTracker: MiroirActivityTrackerInterface | undefined,
+  reduxDeploymentsState?: ReduxDeploymentsState,
+  deploymentUuid?: Uuid,
+): string | undefined {
+  const { setFieldError } = useContext(FieldValidationContext);
+
+  const validationError: string | undefined = useMemo(() => {
+    const formValidation = currentTypecheckKeyMap?.rawSchema?.tag?.value?.formValidation;
+    if (!formValidation?.transformer) {
+      return undefined;
+    }
+    const transformerLabel: string =
+      (formValidation.transformer as any)?.label ?? "formValidation";
+    try {
+      const result = transformer_extended_apply_wrapper(
+        activityTracker,
+        "runtime",
+        [],
+        transformerLabel,
+        formValidation.transformer,
+        currentMiroirModelEnvironment,
+        formikValues,
+        {},
+        "value",
+        reduxDeploymentsState,
+        deploymentUuid,
+      );
+      if (result instanceof TransformerFailure) {
+        return result.failureMessage ?? result.queryFailure ?? "Validation failed";
+      }
+      if (result === true) return undefined;
+      if (typeof result === "string") return result;
+      if (!result) return "Validation failed";
+      return undefined;
+    } catch (e: any) {
+      log.error("useFieldValidation error for", rootLessListKey, e);
+      return e?.message ?? "Validation error";
+    }
+  }, [
+    currentTypecheckKeyMap,
+    formikValues,
+    currentMiroirModelEnvironment,
+    activityTracker,
+    reduxDeploymentsState,
+    deploymentUuid,
+  ]);
+
+  // Register/clear the validation error in the FieldValidationContext so that form-level
+  // logic (TypedValueObjectEditor) can aggregate field-level errors.
+  // This useEffect is strictly necessary: it bridges per-field memoized validation results
+  // into the shared context without re-rendering the field itself.
+  useEffect(() => {
+    setFieldError(rootLessListKey, validationError);
+  }, [rootLessListKey, validationError, setFieldError]);
+
+  return validationError;
 }

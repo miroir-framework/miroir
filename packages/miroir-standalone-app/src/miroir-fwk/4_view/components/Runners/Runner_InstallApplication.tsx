@@ -145,6 +145,67 @@ export const Runner_InstallApplication: React.FC<DeployApplicationRunnerProps> =
                       initializeToType: "value",
                       value: "",
                     },
+                    formValidation: {
+                      transformer: {
+                        // Application bundle required: must be present with applicationName, entities, and entityDefinitions.
+                        transformerType: "ifThenElse",
+                        label: "applicationBundleValidation",
+                        if: {
+                          transformerType: "boolExpr",
+                          operator: "&&",
+                          left: {
+                            transformerType: "boolExpr",
+                            operator: "&&",
+                            left: {
+                              transformerType: "boolExpr",
+                              operator: "&&",
+                              left: {
+                                transformerType: "boolExpr",
+                                operator: "isNotNull",
+                                left: {
+                                  transformerType: "getFromParameters",
+                                  safe: true,
+                                  referencePath: ["deployApplication", "applicationBundle"],
+                                },
+                              },
+                              right: {
+                                transformerType: "boolExpr",
+                                operator: "!=",
+                                left: {
+                                  transformerType: "getFromParameters",
+                                  safe: true,
+                                  referencePath: ["deployApplication", "applicationBundle", "applicationName"],
+                                },
+                                right: {
+                                  transformerType: "returnValue",
+                                  value: "",
+                                },
+                              },
+                            },
+                            right: {
+                              transformerType: "boolExpr",
+                              operator: "isNotNull",
+                              left: {
+                                transformerType: "getFromParameters",
+                                safe: true,
+                                referencePath: ["deployApplication", "applicationBundle", "entities"],
+                              },
+                            },
+                          },
+                          right: {
+                            transformerType: "boolExpr",
+                            operator: "isNotNull",
+                            left: {
+                              transformerType: "getFromParameters",
+                              safe: true,
+                              referencePath: ["deployApplication", "applicationBundle", "entityDefinitions"],
+                            },
+                          },
+                        },
+                        then: true,
+                        else: "Provide a valid application bundle (applicationName, entities, entityDefinitions required).",
+                      },
+                    },
                   },
                 },
               },
@@ -162,6 +223,56 @@ export const Runner_InstallApplication: React.FC<DeployApplicationRunnerProps> =
                     initializeTo: {
                       initializeToType: "value",
                       value: "",
+                    },
+                    formValidation: {
+                      transformer: {
+                        // Data file is optional: null/empty passes; if present, instances and parentUuid required.
+                        transformerType: "ifThenElse",
+                        label: "deploymentDataValidation",
+                        if: {
+                          transformerType: "boolExpr",
+                          operator: "||",
+                          left: {
+                            transformerType: "boolExpr",
+                            operator: "isNull",
+                            left: {
+                              transformerType: "getFromParameters",
+                              safe: true,
+                              referencePath: ["deployApplication", "deploymentData"],
+                            },
+                          },
+                          right: {
+                            transformerType: "boolExpr",
+                            operator: "&&",
+                            left: {
+                              transformerType: "boolExpr",
+                              operator: "isNotNull",
+                              left: {
+                                transformerType: "getFromParameters",
+                                safe: true,
+                                referencePath: ["deployApplication", "deploymentData", "instances"],
+                              },
+                            },
+                            right: {
+                              transformerType: "boolExpr",
+                              operator: "isNotNull",
+                              left: {
+                                transformerType: "getFromParameters",
+                                safe: true,
+                                referencePath: [
+                                  "deployApplication",
+                                  "deploymentData",
+                                  "instances",
+                                  "0",
+                                  "parentUuid",
+                                ],
+                              },
+                            },
+                          },
+                        },
+                        then: true,
+                        else: "If deployment data is provided, it must contain instances with parentUuid.",
+                      },
                     },
                   },
                 },
@@ -193,7 +304,9 @@ export const Runner_InstallApplication: React.FC<DeployApplicationRunnerProps> =
                             display: { editable: false },
                             initializeTo: {
                               initializeToType: "value",
-                              value: viewParams?.postgresConnectionString || "NO POSTGRES CONNECTION STRING IN VIEW PARAMS",
+                              value:
+                                viewParams?.postgresConnectionString ||
+                                "NO POSTGRES CONNECTION STRING IN VIEW PARAMS",
                             },
                           },
                         },
@@ -204,18 +317,21 @@ export const Runner_InstallApplication: React.FC<DeployApplicationRunnerProps> =
                     type: "object",
                     definition: {
                       emulatedServerType: { type: "literal", definition: "mongodb" },
-                      connectionString: { type: "string",
+                      connectionString: {
+                        type: "string",
                         tag: {
                           value: {
                             defaultLabel: "MongoDB Connection String",
                             display: { editable: false },
                             initializeTo: {
                               initializeToType: "value",
-                              value: viewParams?.mongoConnectionString || "NO MONGODB CONNECTION STRING IN VIEW PARAMS",
+                              value:
+                                viewParams?.mongoConnectionString ||
+                                "NO MONGODB CONNECTION STRING IN VIEW PARAMS",
                             },
                           },
                         },
-                       },
+                      },
                     },
                   },
                   storeSectionConfiguration: {
