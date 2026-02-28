@@ -31,14 +31,14 @@ import {
   getMemoizedReduxDeploymentsStateSelectorMap,
   ReduxStateWithUndoRedo,
   useSelector,
-} from "../../../miroir-localcache-imports.js";
+} from "miroir-react";
 import { cleanLevel } from "../../constants";
 import { useDefaultValueParams } from "../../ReduxHooks";
 import {
   measuredUnfoldJzodSchemaOnce
 } from "../../tools/hookPerformanceMeasure";
 import { ErrorFallbackComponent } from "../ErrorFallbackComponent";
-import { DebugHelper } from "../Page/DebugHelper.js";
+import { DebugHelper } from "miroir-react";
 import { useReportPageContext } from "../Reports/ReportPageContext";
 import type { ValueObjectEditMode } from "../Reports/ReportSectionEntityInstance";
 import {

@@ -5,7 +5,6 @@ import {
 
 import { Formik, type FormikProps } from 'formik';
 import {
-  defaultAdminApplicationDeploymentMapNOTGOOD,
   defaultMiroirModelEnvironment,
   defaultSelfApplicationDeploymentMap,
   DomainControllerInterface,
@@ -25,22 +24,28 @@ import {
   type MiroirModelEnvironment,
   type TransformerForBuildPlusRuntime
 } from 'miroir-core';
-import { getMemoizedReduxDeploymentsStateSelectorMap, ReduxStateWithUndoRedo, useSelector } from '../../miroir-localcache-imports.js';
+import {
+  DebugHelper,
+  getMemoizedReduxDeploymentsStateSelectorMap,
+  ReduxStateWithUndoRedo,
+  useDomainControllerService,
+  useMiroirContextService,
+  useSelector,
+  useSnackbar,
+} from "miroir-react";
 import { FC, useEffect, useMemo, useState } from 'react';
 import { packageName } from '../../../constants.js';
-import { useDomainControllerService, useMiroirContextService, useSnackbar } from '../MiroirContextReactProvider.js';
 import { useCurrentModel, useCurrentModelEnvironment } from '../ReduxHooks.js';
 import { cleanLevel } from '../constants.js';
 // import { useReportPageContext } from './Reports/ReportPageContext.js';
-import { TypedValueObjectEditor } from './Reports/TypedValueObjectEditor.js';
-import { DebugHelper } from './Page/DebugHelper.js';
-import { ThemedPaper } from './Themes/index.js';
-import { selfApplicationLibrary } from 'miroir-test-app_deployment-library';
 import {
   deployment_Admin,
   deployment_Miroir,
   entityApplicationForAdmin,
 } from "miroir-test-app_deployment-admin";
+import { selfApplicationLibrary } from 'miroir-test-app_deployment-library';
+import { TypedValueObjectEditor } from './Reports/TypedValueObjectEditor.js';
+import { ThemedPaper } from './Themes/index.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -350,7 +355,8 @@ export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
                           objectUuidAttributeLabelPosition: "hidden",
                           uuid: { selector: "muiSelector" },
                           hidden: {
-                            transformerType: "==",
+                            transformerType: "boolExpr",
+                            operator: "==",
                             label: "Hide Endpoint selector if Application not selected",
                             left: {
                               transformerType: "getFromContext",
@@ -358,8 +364,8 @@ export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
                               referencePath: ["rootValueObject", "applicationUuid"],
                             },
                             right: noValue.uuid,
-                            then: true,
-                            else: false,
+                            // then: true,
+                            // else: false,
                           },
                         },
                         initializeTo: {
@@ -378,7 +384,8 @@ export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
                         editable: true,
                         display: {
                           hidden: {
-                            transformerType: "==",
+                            transformerType: "boolExpr",
+                            operator: "==",
                             label: "Hide Action if Endpoint not selected",
                             left: {
                               transformerType: "getFromContext",

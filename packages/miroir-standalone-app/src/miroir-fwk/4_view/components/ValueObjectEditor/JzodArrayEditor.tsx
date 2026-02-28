@@ -22,23 +22,21 @@ import {
   type MiroirModelEnvironment,
   type Uuid
 } from "miroir-core";
+import {
+  DebugHelper,
+  getMemoizedReduxDeploymentsStateSelectorMap,
+  ReduxStateWithUndoRedo,
+  useMiroirContextService,
+  useSelector,
+} from "miroir-react";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import { packageName } from "../../../../constants";
-import {
-  getMemoizedReduxDeploymentsStateSelectorMap,
-  ReduxStateWithUndoRedo,
-  useSelector,
-} from "../../../miroir-localcache-imports.js";
 import { cleanLevel } from "../../constants";
-import {
-  useMiroirContextService
-} from "../../MiroirContextReactProvider";
 import { useCurrentModel, useCurrentModelEnvironment, useDefaultValueParams } from "../../ReduxHooks";
 import { ErrorFallbackComponent } from "../ErrorFallbackComponent";
 import { useReportPageContext } from "../Reports/ReportPageContext";
 import type { ValueObjectEditMode } from "../Reports/ReportSectionEntityInstance";
-import { DebugHelper } from "../Page/DebugHelper.js";
 import {
   ThemedAddIcon,
   ThemedFlexRow,

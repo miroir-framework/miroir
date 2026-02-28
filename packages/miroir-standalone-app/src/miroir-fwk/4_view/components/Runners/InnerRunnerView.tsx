@@ -14,10 +14,10 @@ import {
 } from "miroir-core";
 import { packageName } from "../../../../constants.js";
 import { cleanLevel } from "../../constants.js";
-import { useMiroirContextService } from "../../MiroirContextReactProvider.js";
+import { useMiroirContextService } from "miroir-react";
+import { DebugHelper } from "miroir-react";
 import { useCurrentModelEnvironment } from "../../ReduxHooks.js";
 import { TypedValueObjectEditor } from "../Reports/TypedValueObjectEditor.js";
-import { DebugHelper } from "../Page/DebugHelper.js";
 import type { RunnerProps } from "./RunnerInterface.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;

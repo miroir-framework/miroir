@@ -54,18 +54,19 @@ import {
 import {
   getMemoizedReduxDeploymentsStateSelectorMap,
   ReduxStateChanges,
-} from "../../../miroir-localcache-imports.js";
+} from "miroir-react";
 
 import {
   useDomainControllerService,
   useLocalCacheTransactions,
   useMiroirContextService,
   useSnackbar,
-} from "../../MiroirContextReactProvider.js";
+} from "miroir-react";
 import { MiroirThemeProvider, useMiroirTheme, type MiroirThemeOption } from '../../contexts/MiroirThemeContext.js';
 import { useRenderTracker } from "../../tools/renderCountTracker.js";
 import AppBar from './AppBar.js';
 
+import { DebugHelper, type DebugElements } from 'miroir-react';
 import { defaultStoredMiroirTheme } from 'miroir-test-app_deployment-miroir';
 import { packageName } from '../../../../constants.js';
 import {
@@ -81,7 +82,6 @@ import { DocumentOutlineContextProvider } from '../ValueObjectEditor/InstanceEdi
 import { ViewParamsUpdateQueue, ViewParamsUpdateQueueConfig } from '../ViewParamsUpdateQueue.js';
 import { Sidebar } from "./Sidebar.js";
 import { SidebarWidth } from "./SidebarSection.js";
-import { type DebugElements, DebugHelper } from './DebugHelper';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -149,7 +149,7 @@ export const RootComponent = (props: RootComponentProps) => {
   // Get theme for theming the outline highlight colors
   const theme = useMiroirTheme();
   // Optimize transactions selector to avoid unnecessary re-renders during bulk operations
-  const transactions: ReduxStateChanges[] = useLocalCacheTransactions();
+  // const transactions: ReduxStateChanges[] = useLocalCacheTransactions();
   const miroirConfig = context.miroirContext.getMiroirConfig();
 
   // Configuration loading service for centralized configuration management
@@ -749,10 +749,10 @@ export const RootComponent = (props: RootComponentProps) => {
     () => ({
       elements: [
         { label: "RootComponent miroirConfig", data: miroirConfig },
+        { label: `RootComponent application ${context.application}`, data: applicationDeploymentMap },
         { label: "RootComponent currentModel", data: currentModel },
         { label: "RootComponent currentThemes", data: miroirMetaModel.themes },
         { label: "RootComponent adminAppModel", data: adminAppModel },
-        { label: "RootComponent applicationDeploymentMap", data: applicationDeploymentMap },
         {
           label: "RootComponent deploymentUuidToReportsEntitiesDefinitionsMapping",
           data: deploymentUuidToReportsEntitiesDefinitionsMapping,

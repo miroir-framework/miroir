@@ -1,5 +1,4 @@
-import { useEffect, useState } from 'react';
-import { useMiroirContextService } from '../MiroirContextReactProvider.js';
+import { useMiroirContextService } from 'miroir-react';
 import { DraggableContainer } from './DraggableContainer.js';
 import { MiroirEventTimeLine } from './MiroirEventTimeline.js';
 

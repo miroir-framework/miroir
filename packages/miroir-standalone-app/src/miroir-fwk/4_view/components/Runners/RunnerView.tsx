@@ -25,17 +25,18 @@ import {
   transformer_extended_apply_wrapper
 } from "miroir-core";
 import {
+  DebugHelper,
   getMemoizedReduxDeploymentsStateSelectorMap,
   type ReduxStateWithUndoRedo,
+  useDomainControllerService, useMiroirContextService,
   useSelector,
-} from "../../../miroir-localcache-imports.js";
+  useSnackbar,
+} from "miroir-react";
 import { useMemo } from "react";
 import { packageName } from "../../../../constants.js";
 import { cleanLevel } from "../../constants.js";
-import { useDomainControllerService, useMiroirContextService, useSnackbar } from "../../MiroirContextReactProvider.js";
 import { useCurrentModelEnvironment } from "../../ReduxHooks.js";
 import { useRunner } from "../Reports/ReportHooks.js";
-import { DebugHelper } from "../Page/DebugHelper.js";
 import { InnerRunnerView } from "./InnerRunnerView.js";
 import type { FormMLSchema, RunnerAction, RunnerProps } from "./RunnerInterface.js";
 

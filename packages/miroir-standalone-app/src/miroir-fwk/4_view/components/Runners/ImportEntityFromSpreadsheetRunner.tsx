@@ -26,7 +26,7 @@ import {
 
 import { packageName } from "../../../../constants.js";
 import { cleanLevel } from "../../constants.js";
-import { useDomainControllerService } from "../../MiroirContextReactProvider.js";
+import { useDomainControllerService } from "miroir-react";
 import { useCurrentModelEnvironment } from "../../ReduxHooks.js";
 import type { FormMLSchema } from "./RunnerInterface.js";
 import { RunnerView } from "./RunnerView.js";
@@ -338,7 +338,7 @@ export const ImportEntityFromSpreadsheetRunner: React.FC<CreateEntityToolProps> 
             actionType: "compositeRunBoxedQueryAction",
             actionLabel: "getDeploymentForApplication",
             nameGivenToResult: "deploymentInfo",
-            queryTemplate: {
+            payload: {
               actionType: "runBoxedQueryAction",
               application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
               endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",

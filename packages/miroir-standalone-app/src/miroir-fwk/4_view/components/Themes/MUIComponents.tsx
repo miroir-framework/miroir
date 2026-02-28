@@ -23,7 +23,7 @@ import {
 } from "@mui/material";
 
 import { useMiroirTheme } from '../../contexts/MiroirThemeContext';
-import { ThemedComponentProps } from './BaseTypes';
+import { ThemedComponentProps } from 'miroir-react';
 
 // ################################################################################################
 // Themed Material-UI Components

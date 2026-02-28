@@ -6,16 +6,16 @@ import {
   noValue,
   selfApplicationMiroir,
 } from "miroir-core";
+import { useMiroirContextService } from "miroir-react";
 import {
   adminSelfApplication,
   deployment_Admin,
   entityApplicationForAdmin,
 } from "miroir-test-app_deployment-admin";
-import { FC, useEffect, useMemo, useRef, useState } from "react";
-import { TypedValueObjectEditorWithFormik } from "../Reports/TypedValueObjectEditorWithFormik";
+import { FC, useEffect, useMemo, useRef } from "react";
 import { packageName } from "../../../../constants";
 import { cleanLevel } from "../../constants";
-import { useMiroirContextService } from "../../MiroirContextReactProvider";
+import { TypedValueObjectEditorWithFormik } from "../Reports/TypedValueObjectEditorWithFormik";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(

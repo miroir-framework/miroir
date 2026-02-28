@@ -14,7 +14,11 @@ import {
   Uuid,
   type ApplicationDeploymentMap
 } from 'miroir-core';
-import { ReduxStateWithUndoRedo, selectInstanceArrayForDeploymentSectionEntity, useSelector } from "../../src/miroir-fwk/miroir-localcache-imports.js";
+import {
+  ReduxStateWithUndoRedo,
+  selectInstanceArrayForDeploymentSectionEntity,
+  useSelector,
+} from "miroir-react";
 
 import { packageName } from "../../src/constants";
 import { cleanLevel } from "../../src/miroir-fwk/4_view/constants";

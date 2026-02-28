@@ -1,46 +1,42 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
 import {
   Box,
-  Paper,
-  Typography,
-  IconButton,
-  TextField,
-  Select,
-  MenuItem,
-  FormControl,
-  InputLabel,
   Chip,
   Collapse,
+  FormControl,
+  IconButton,
+  InputLabel,
   List,
   ListItem,
-  ListItemText,
   ListItemIcon,
+  ListItemText,
+  MenuItem,
+  Select,
+  TextField,
   Tooltip,
-  // Error as MuiError,
+  Typography
 } from '@mui/material';
+import React, { useCallback, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
-  ErrorIcon as MuiError,
-  PlayArrow,
-  CheckCircle,
-// import {
-  ExpandLess,
-  ExpandMore,
-  Refresh,
-  Clear,
-  FilterList,
-  Visibility,
-  BugReport,
   Assignment,
   AssignmentTurnedIn,
+  BugReport,
+  CheckCircle,
+  Clear,
+  // import {
+  ExpandLess,
+  ExpandMore,
+  FilterList,
+  ErrorIcon as MuiError,
+  PlayArrow,
   Science,
+  Visibility
 } from './Themes/MaterialSymbolWrappers';
 
-import { MiroirEventTrackingData, LoggerInterface, MiroirLoggerFactory } from 'miroir-core';
-import { useMiroirEventTrackingData, useMiroirContextService } from '../MiroirContextReactProvider.js';
+import { LoggerInterface, MiroirEventTrackingData, MiroirLoggerFactory } from "miroir-core";
+import { useMiroirContextService, useMiroirEventTrackingData } from "miroir-react";
 import { packageName } from '../../../constants.js';
 import { cleanLevel } from '../constants.js';
-import { usePageConfiguration } from '../services/usePageConfiguration.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(

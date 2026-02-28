@@ -1,26 +1,24 @@
 
 import {
+  ACTION_OK,
   MiroirLoggerFactory,
   TestFramework,
-  // defaultLibraryModelEnvironment,
-  runTransformerTestInMemory,
-  runTransformerTestSuite,
-  type LoggerInterface,
-  type TestSuiteResult,
-  type TestSuiteListFilter,
-  type TransformerReturnType,
-  type TransformerTestDefinition,
-  runUnitTransformerTests,
   defaultMiroirModelEnvironment,
+  runTransformerTestSuite,
+  runUnitTransformerTests,
   type Action2VoidReturnType,
-  ACTION_OK
+  type LoggerInterface,
+  type TestSuiteListFilter,
+  type TestSuiteResult,
+  type TransformerReturnType,
+  type TransformerTestDefinition
 } from "miroir-core";
 
 
+import { useMiroirContextService, useSnackbar } from "miroir-react";
 import { packageName } from "../../../../constants.js";
 import { ActionButtonWithSnackbar } from "../../components/Page/ActionButtonWithSnackbar.js";
 import { cleanLevel } from "../../constants.js";
-import { useMiroirContextService, useSnackbar } from "../../MiroirContextReactProvider.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(

@@ -10,7 +10,7 @@ import {
 } from "miroir-core";
 import {
   useMiroirContextService
-} from "../../../miroir-fwk/4_view/MiroirContextReactProvider.js";
+} from "miroir-react";
 
 import {
   packageName,
@@ -23,7 +23,7 @@ import { usePageConfiguration } from "../services/index.js";
 import { useRenderTracker } from "../tools/renderCountTracker.js";
 import { RenderPerformanceMetrics } from "../tools/renderPerformanceMeasure.js";
 import { ReportDisplay } from "./ReportDisplay.js";
-import { DebugHelper } from "../components/Page/DebugHelper.js";
+import { DebugHelper } from "miroir-react";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(

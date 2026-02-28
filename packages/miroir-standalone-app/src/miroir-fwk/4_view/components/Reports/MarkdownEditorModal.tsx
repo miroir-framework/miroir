@@ -1,35 +1,33 @@
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
 import rehypeSanitize from 'rehype-sanitize';
+import remarkGfm from 'remark-gfm';
 
 import {
   alterObjectAtPath2,
-  alterObjectAtPathWithCreate,
   ApplicationSection,
   defaultMiroirModelEnvironment,
   getApplicationSection,
   LoggerInterface,
   MiroirLoggerFactory,
   resolvePathOnObject,
-  setValueAtPath,
   Uuid,
-  type ApplicationDeploymentMap,
+  type ApplicationDeploymentMap
 } from "miroir-core";
 
-import { DraggableContainer } from '../DraggableContainer.js';
-import {
-  ThemedButton,
-  ThemedBox,
-  ThemedText,
-  ThemedSpan,
-} from '../Themes/index.js';
+import { useFormikContext } from 'formik';
+import type { MarkdownReportSection } from 'miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js';
+import { useDomainControllerService, useMiroirContextService } from 'miroir-react';
 import { packageName } from '../../../../constants.js';
 import { cleanLevel } from '../../constants.js';
 import { useMiroirTheme } from '../../contexts/MiroirThemeContext.js';
-import { useFormikContext } from 'formik';
-import type { MarkdownReportSection } from 'miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js';
-import { useDomainControllerService, useMiroirContextService } from '../../MiroirContextReactProvider.js';
+import { DraggableContainer } from '../DraggableContainer.js';
+import {
+  ThemedBox,
+  ThemedButton,
+  ThemedSpan,
+  ThemedText,
+} from '../Themes/index.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(

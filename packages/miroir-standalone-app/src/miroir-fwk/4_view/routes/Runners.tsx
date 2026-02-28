@@ -9,7 +9,7 @@ import { PageContainer } from "../components/Page/PageContainer.js";
 import { ReportPageContextProvider } from "../components/Reports/ReportPageContext.js";
 import { runnerConfigs, RunnerList } from '../components/Runners/RunnersList';
 import { cleanLevel } from "../constants.js";
-import { useMiroirContextService } from '../MiroirContextReactProvider';
+import { useMiroirContextService } from 'miroir-react';
 import { usePageConfiguration } from "../services/index.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;

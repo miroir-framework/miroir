@@ -1,17 +1,13 @@
-import { Formik, FormikProps } from 'formik';
+import { Formik } from 'formik';
 import {
   LoggerInterface,
-  MiroirLoggerFactory,
-  setValueAtPath,
-  getValueAtPath,
-  getSchemaAtPath,
+  MiroirLoggerFactory
 } from "miroir-core";
 
 import { packageName } from '../../../../constants.js';
 import { cleanLevel } from '../../constants.js';
-import { ThemedOnScreenHelper } from '../Themes/index.js';
-import { TypedValueObjectEditor } from './TypedValueObjectEditor.js';
 import type { TypedValueObjectEditorProps } from './TypedValueObjectEditor.js';
+import { TypedValueObjectEditor } from './TypedValueObjectEditor.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -86,3 +82,4 @@ export const TypedValueObjectEditorWithFormik: React.FC<TypedValueObjectEditorWi
 
 // Re-export the props type for convenience
 export type { TypedValueObjectEditorProps } from './TypedValueObjectEditor.js';
+

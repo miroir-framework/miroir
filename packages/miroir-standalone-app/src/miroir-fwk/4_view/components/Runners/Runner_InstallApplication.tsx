@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from "react";
+import { useMemo } from "react";
 import { v4 as uuidv4 } from 'uuid';
 
 import type {
@@ -11,7 +11,6 @@ import type {
   EntityInstancesUuidIndex,
   InitApplicationParameters,
   LoggerInterface,
-  MetaModel,
   MiroirModelEnvironment,
   ReduxDeploymentsState,
   ReduxStateWithUndoRedo,
@@ -32,6 +31,12 @@ import {
 import {
   type AdminApplication
 } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+import { getMemoizedReduxDeploymentsStateSelectorMap, useSelector } from "miroir-react";
+import {
+  adminSelfApplication,
+  entityApplicationForAdmin,
+  entityDeployment,
+} from "miroir-test-app_deployment-admin";
 import {
   selfApplicationLibrary,
   selfApplicationModelBranchLibraryMasterBranch,
@@ -39,16 +44,10 @@ import {
 } from "miroir-test-app_deployment-library";
 import { packageName } from "../../../../constants.js";
 import { cleanLevel } from "../../constants.js";
-import { devRelativePathPrefix, FileSelector, prodRelativePathPrefix } from '../Themes/FileSelector.js';
+import { useCurrentModelEnvironment } from "../../ReduxHooks.js";
+import { devRelativePathPrefix, prodRelativePathPrefix } from '../Themes/FileSelector.js';
 import type { FormMLSchema } from "./RunnerInterface.js";
 import { RunnerView } from "./RunnerView.js";
-import { useCurrentModelEnvironment, useReduxDeploymentsStateQuerySelectorForCleanedResult } from "../../ReduxHooks.js";
-import { getMemoizedReduxDeploymentsStateSelectorMap, useSelector } from "../../../miroir-localcache-imports.js";
-import {
-  adminSelfApplication,
-  entityApplicationForAdmin,
-  entityDeployment,
-} from "miroir-test-app_deployment-admin";
 import { DebugHelper } from "../Page/DebugHelper.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -997,100 +996,95 @@ export const Runner_InstallApplication: React.FC<DeployApplicationRunnerProps> =
       // Data file optional: pass when null; if provided, must have valid instances with parentUuid.
       transformerType: "ifThenElse",
       label: "deployApplicationAndDeploymentDataValidation",
-      // left: false,
-      if: {
-        // All bundle fields must be valid (inner &&/!= return boolean directly, no then/else needed)
-        transformerType: "boolExpr",
+      if: true,
+      // left: true,
         operator: "&&",
-        label: "applicationBundleValidation",
-        left: {
-          transformerType: "boolExpr",
           operator: "&&",
-          left: {
-            transformerType: "boolExpr",
             operator: "&&",
-            left: {
-              transformerType: "boolExpr",
               operator: "isNotNull",
-              left: {
-                transformerType: "getFromParameters",
-                safe: true,
-                referencePath: ["deployApplication", "applicationBundle"],
-              },
-            },
-            right: {
-              transformerType: "boolExpr",
               operator: "!=",
-              left: {
-                transformerType: "getFromParameters",
-                safe: true,
-                referencePath: ["deployApplication", "applicationBundle", "applicationName"],
-              },
-              right: {
-                transformerType: "returnValue",
-                value: "",
-              },
-            },
-          },
-          right: {
-            transformerType: "boolExpr",
             operator: "isNotNull",
-            left: {
-              transformerType: "getFromParameters",
-              safe: true,
-              referencePath: ["deployApplication", "applicationBundle", "entities"],
-            },
-          },
-        },
-        right: {
-          transformerType: "boolExpr",
           operator: "isNotNull",
-          left: {
-            transformerType: "getFromParameters",
-            safe: true,
-            referencePath: ["deployApplication", "applicationBundle", "entityDefinitions"],
-          },
-        },
-      },
-      then: {
-        transformerType: "ifThenElse",
-        if: {
-          // Data file is optional: null deploymentData passes; if present, instances and parentUuid required.
-          transformerType: "boolExpr",
-          operator: "||",
-          label: "deploymentDataValidation",
-          left: {
-            transformerType: "boolExpr",
-            operator: "isNull",
-            left: {
-              transformerType: "getFromParameters",
-              safe: true,
-              referencePath: ["deployApplication", "deploymentData"],
-            },
-          },
-          right: {
-            transformerType: "boolExpr",
-            operator: "&&",
-            left: {
-              transformerType: "boolExpr",
-              operator: "isNotNull",
-              left: {
-                transformerType: "getFromParameters",
-                safe: true,
-                referencePath: ["deployApplication", "deploymentData", "instances"],
-              },
-            },
-            right: {
-              transformerType: "boolExpr",
-              operator: "isNotNull",
-              left: {
-                transformerType: "getFromParameters",
-                safe: true,
-                referencePath: ["deployApplication", "deploymentData", "instances", "0", "parentUuid"],
-              },
-            },
-          },
-        },
+      // // left: {
+      // //   // All bundle fields must be valid (inner &&/!= return boolean directly, no then/else needed)
+      // //   transformerType: "&&",
+      // //   label: "applicationBundleValidation",
+      // //   left: {
+      // //     transformerType: "&&",
+      // //     left: {
+      // //       transformerType: "&&",
+      // //       left: {
+      // //         transformerType: "isNotNull",
+      // //         left: {
+      // //           transformerType: "getFromParameters",
+      // //           safe: true,
+      // //           referencePath: ["deployApplication", "applicationBundle"],
+      // //         },
+      // //       },
+      // //       right: {
+      // //         transformerType: "!=",
+      // //         left: {
+      // //           transformerType: "getFromParameters",
+      // //           safe: true,
+      // //           referencePath: ["deployApplication", "applicationBundle", "applicationName"],
+      // //         },
+      // //         right: {
+      // //           transformerType: "returnValue",
+      // //           value: "",
+      // //         },
+      // //       },
+      // //     },
+      // //     right: {
+      // //       transformerType: "isNotNull",
+      // //       left: {
+      // //         transformerType: "getFromParameters",
+      // //         safe: true,
+      // //         referencePath: ["deployApplication", "applicationBundle", "entities"],
+      // //       },
+      // //     },
+      // //   },
+      // //   right: {
+      // //     transformerType: "isNotNull",
+      // //     left: {
+      // //       transformerType: "getFromParameters",
+      // //       safe: true,
+      // //       referencePath: ["deployApplication", "applicationBundle", "entityDefinitions"],
+      // //     },
+      // //   },
+      // // },
+      // right: true,
+      // // right: {
+      // //   // Data file is optional: null deploymentData passes; if present, instances and parentUuid required.
+      // //   // transformerType: "||",
+      // //   // label: "deploymentDataValidation",
+      // //   // left: {
+      // //     transformerType: "isNotNull",
+      // //     left: {
+      // //       transformerType: "getFromParameters",
+      // //       safe: true,
+      // //       referencePath: ["deployApplication", "deploymentData"],
+      // //     },
+      // //   // },
+      // //   // right: {
+      // //   //   transformerType: "&&",
+      // //   //   left: {
+      // //   //     transformerType: "isNotNull",
+      // //   //     left: {
+      // //   //       transformerType: "getFromParameters",
+      // //   //       safe: true,
+      // //   //       referencePath: ["deployApplication", "deploymentData", "instances"],
+      // //   //     },
+      // //   //   },
+      // //   //   right: {
+      // //   //     transformerType: "isNotNull",
+      // //   //     left: {
+      // //   //       transformerType: "getFromParameters",
+      // //   //       safe: true,
+      // //   //       referencePath: ["deployApplication", "deploymentData", "instances", "0", "parentUuid"],
+      // //   //     },
+      // //   //   },
+      // //   // },
+      // // },
         then: true,
         else: "Validation failed: if deployment data is provided, it must contain instances with parentUuid.",
       },

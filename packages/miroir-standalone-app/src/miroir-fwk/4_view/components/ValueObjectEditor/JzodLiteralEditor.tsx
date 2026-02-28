@@ -20,17 +20,21 @@ import {
   type Uuid
 } from "miroir-core";
 
+import {
+  getMemoizedReduxDeploymentsStateSelectorMap,
+  ThemedOnScreenHelper,
+  useSelector,
+  type ReduxStateWithUndoRedo,
+} from "miroir-react";
 import { packageName } from "../../../../constants";
 import { cleanLevel } from "../../constants";
 import { useCurrentModelEnvironment, useDefaultValueParams } from "../../ReduxHooks";
 import {
   ThemedDisplayValue,
   ThemedLabeledEditor,
-  ThemedOnScreenHelper,
   ThemedSelectWithPortal
 } from "../Themes/index";
 import { JzodLiteralEditorProps } from "./JzodElementEditorInterface";
-import { getMemoizedReduxDeploymentsStateSelectorMap, type ReduxStateWithUndoRedo, useSelector } from "../../../miroir-localcache-imports.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(

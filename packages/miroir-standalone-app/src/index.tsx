@@ -1,7 +1,6 @@
 declare global { interface Window { process?: any } }
 
 import { createTheme, StyledEngineProvider, ThemeProvider, type ThemeOptions } from "@mui/material";
-import { blue } from "@mui/material/colors";
 import 'material-symbols/outlined.css';
 import { StrictMode } from "react";
 import { createRoot, Root } from "react-dom/client";
@@ -38,28 +37,29 @@ import {
   type StoreOrBundleAction,
   type StoreUnitConfiguration
 } from "miroir-core";
+import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
 import {
   LocalCacheProvider,
   RestPersistenceClientAndRestClient,
   setupMiroirDomainController,
-} from "./miroir-fwk/miroir-localcache-imports.js";
-import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
+} from "miroir-react";
+import { MiroirContextReactProvider } from "miroir-react";
 
-import { initializePerformanceConfig } from "./miroir-fwk/4_view/tools/performanceConfig.js";
 import { loglevelnext } from './loglevelnextImporter.js';
-import { MiroirEventsPage } from "./miroir-fwk/4_view/pages/MiroirEventsPage.js";
-import { ErrorPage } from "./miroir-fwk/4_view/ErrorPage.js";
 import { ErrorLogsPageDEFUNCT } from "./miroir-fwk/4_view/ErrorLogsPageDEFUNCT.js";
-import { MiroirContextReactProvider } from "./miroir-fwk/4_view/MiroirContextReactProvider.js";
+import { ErrorPage } from "./miroir-fwk/4_view/ErrorPage.js";
 import { RootComponent } from "./miroir-fwk/4_view/components/Page/RootComponent.js";
+import { MiroirEventsPage } from "./miroir-fwk/4_view/pages/MiroirEventsPage.js";
 import { HomePage } from "./miroir-fwk/4_view/routes/HomePage.js";
 import { ReportPage } from "./miroir-fwk/4_view/routes/ReportPage.js";
-import { miroirAppStartup } from "./startup.js";
 import { ElectronRestClient, ElectronServerDomainControllerProxy } from "./miroir-fwk/4_view/services/ElectronIpcProxy.js";
+import { initializePerformanceConfig } from "./miroir-fwk/4_view/tools/performanceConfig.js";
+import { miroirAppStartup } from "./startup.js";
 
 import { packageName } from "./constants.js";
 import { cleanLevel } from "./miroir-fwk/4_view/constants.js";
 
+import { adminSelfApplication, deployment_Admin, deployment_Miroir, entityDeployment } from "miroir-test-app_deployment-admin";
 import miroirConfigEmulatedServerIndexedDb from "./assets/miroirConfig-emulatedServer-IndexedDb.json" assert { type: "json" };
 import miroirConfigRealServerFilesystemGit from "./assets/miroirConfig-realServer-filesystem-git.json" assert { type: "json" };
 import miroirConfigRealServerFilesystemTmp from "./assets/miroirConfig-realServer-filesystem-tmp.json" assert { type: "json" };
@@ -67,11 +67,12 @@ import miroirConfigRealServerIndexedDb from "./assets/miroirConfig-realServer-in
 import miroirConfigRealServerSql from "./assets/miroirConfig-realServer-sql.json" assert { type: "json" };
 import miroirConfig from "./assets/miroirConfig.json" assert { type: "json" };
 import { CheckPage } from "./miroir-fwk/4_view/routes/Check.js";
-import { TransformerBuilderPage } from "./miroir-fwk/4_view/routes/TransformerBuilderPage.js";
+import { ModelDiagramPage } from "./miroir-fwk/4_view/routes/ModelDiagramPage.js";
 import { RunnersPage } from "./miroir-fwk/4_view/routes/Runners.js";
-import { SettingsPage } from "./miroir-fwk/4_view/routes/SettingsPage.js";
 import { SearchPage } from "./miroir-fwk/4_view/routes/SearchPage.js";
-import { adminSelfApplication, deployment_Admin, deployment_Miroir, entityDeployment } from "miroir-test-app_deployment-admin";
+import { SettingsPage } from "./miroir-fwk/4_view/routes/SettingsPage.js";
+import { TransformerBuilderPage } from "./miroir-fwk/4_view/routes/TransformerBuilderPage.js";
+// import { RestPersistenceClientAndRestClient, setupMiroirDomainController } from "miroir-localcache-redux";
 // import { ThemesPage } from "./miroir-fwk/4_view/routes/ThemesPage.js";
 
 const specificLoggerOptions: SpecificLoggerOptionsMap = {
@@ -208,6 +209,10 @@ const router = createBrowserRouter([
         path: "search",
         element: <SearchPage />,
         // errorElement: <ErrorPage />,
+      },
+      {
+        path: "model",
+        element: <ModelDiagramPage />,
       },
       // Renamed from action-logs to events
     ]

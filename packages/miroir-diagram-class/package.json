@@ -1,0 +1,36 @@
+{
+  "name": "miroir-diagram-class",
+  "version": "1.0.0",
+  "description": "UML-like class diagram generation from Miroir EntityDefinitions using Mermaid",
+  "author": "Miroir Framework <miroir-framework@protonmail.com>",
+  "license": "MIT",
+  "private": true,
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsup",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "miroir-core": "*",
+    "mermaid": "*"
+  },
+  "peerDependencies": {
+    "react": ">=18.0.0",
+    "@mui/material": ">=5.0.0",
+    "miroir-react": "*"
+  },
+  "devDependencies": {
+    "tsup": "^8.0.0",
+    "typescript": "^5.8.2",
+    "vitest": "^3.2.4",
+    "@types/react": "^18"
+  }
+}

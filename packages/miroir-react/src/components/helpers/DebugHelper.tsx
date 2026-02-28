@@ -1,7 +1,10 @@
 import React, { useState } from "react";
-import { useMiroirContextService } from "../../MiroirContextReactProvider.js";
-import { useMiroirTheme } from "../../contexts/MiroirThemeContext.js";
-import { ThemedOnScreenDebug } from "../Themes/index.js";
+import { ThemedOnScreenDebug } from "./ThemedHelper";
+import { useMiroirContextService } from "../../contexts/MiroirContextReactProvider";
+import { useMiroirTheme } from "../../contexts/MiroirThemeContext";
+// import { useMiroirContextService } from "../../../../miroir-standalone-app/src/miroir-fwk/4_view/MiroirContextReactProvider.js";
+// import { useMiroirTheme } from "../../../../miroir-standalone-app/src/miroir-fwk/4_view/contexts/MiroirThemeContext.js";
+// import { ThemedOnScreenDebug } from "../../../../miroir-standalone-app/src/miroir-fwk/4_view/components/Themes/index.js";
 
 // ################################################################################################
 export type DebugElement = {

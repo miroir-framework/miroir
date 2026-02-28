@@ -12,12 +12,16 @@ import {
   type MiroirModelEnvironment
 } from "miroir-core";
 
+import {
+  getMemoizedReduxDeploymentsStateSelectorMap,
+  ReduxStateWithUndoRedo,
+  useSelector,
+} from "miroir-react";
+import { DebugHelper } from "miroir-react";
+import { useMiroirContextService } from "miroir-react";
 import { packageName } from "../../../../constants";
-import { getMemoizedReduxDeploymentsStateSelectorMap, ReduxStateWithUndoRedo, useSelector } from "../../../miroir-localcache-imports.js";
 import { cleanLevel } from "../../constants";
-import { useMiroirContextService } from "../../MiroirContextReactProvider";
 import { useCurrentModelEnvironment } from "../../ReduxHooks";
-import { DebugHelper } from "../Page/DebugHelper.js";
 import { ThemedStatusText } from "../Themes/BasicComponents";
 import { FileSelector } from "../Themes/FileSelector.js";
 import { ThemedSwitch } from "../Themes/UIComponents.js";

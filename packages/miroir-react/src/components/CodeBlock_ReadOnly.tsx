@@ -4,8 +4,7 @@ import React from "react";
 import ReactCodeMirror from "@uiw/react-codemirror";
 import { EditorView } from "@codemirror/view";
 import { javascript } from '@codemirror/lang-javascript';
-import { ThemedCodeBlock } from "../Themes/index.js";
-import { useMiroirTheme } from "../../contexts/MiroirThemeContext.js";
+import { useMiroirTheme } from '../contexts/MiroirThemeContext';
 
 const codeMirrorExtensions = [javascript()];
 

@@ -1,4 +1,4 @@
-import { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { FC, useCallback, useEffect, useMemo, useState } from 'react';
 
 
 // import AutoStories from '@mui/icons-material/AutoStories';
@@ -10,26 +10,24 @@ import {
   type Uuid
 } from "miroir-core";
 import {
+  adminSelfApplication,
   deployment_Admin,
   deployment_Miroir,
-  adminSelfApplication,
   menuDefaultAdmin
 } from "miroir-test-app_deployment-admin";
 
+import { useMiroirContextService } from 'miroir-react';
 import { packageName } from '../../../../constants.js';
 import { cleanLevel } from '../../constants.js';
-import { useMiroirTheme } from '../../contexts/MiroirThemeContext.js';
-import { useMiroirContextService } from '../../MiroirContextReactProvider.js';
+import { useMenusOfApplications } from '../../ReduxHooks.js';
 import { ApplicationSelector } from '../interactive/ApplicationSelector.js';
 import {
   ThemedDivider,
   ThemedDrawer,
   ThemedDrawerHeader,
-  ThemedResizeHandle,
   ThemedScrollableContent
 } from "../Themes/index";
 import { SidebarSection } from './SidebarSection.js';
-import { useMenusOfApplications } from '../../ReduxHooks.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(

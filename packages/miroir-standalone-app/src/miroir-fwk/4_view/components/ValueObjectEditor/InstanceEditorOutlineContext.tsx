@@ -2,7 +2,7 @@ import { MiroirLoggerFactory, type KeyMapEntry, type LoggerInterface } from "mir
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { packageName } from "../../../../constants";
 import { cleanLevel } from "../../constants";
-import { useMiroirContextService } from "../../MiroirContextReactProvider";
+import { useMiroirContextService } from "miroir-react";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(

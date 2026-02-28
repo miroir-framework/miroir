@@ -21,7 +21,7 @@ import {
 
 import {
   useMiroirContextService
-} from "../MiroirContextReactProvider.js";
+} from "miroir-react";
 import { PageContainer } from "../components/Page/PageContainer.js";
 import { usePageConfiguration } from "../services/index.js";
 
@@ -31,7 +31,7 @@ import {
   packageName
 } from "../../../constants.js";
 import { useQueryTemplateResults } from "../components/Reports/ReportHooks.js";
-import { DebugHelper } from "../components/Page/DebugHelper.js";
+import { DebugHelper } from "miroir-react";
 import { cleanLevel } from "../constants.js";
 import { useCurrentModel } from "../ReduxHooks.js";
 import { RunnerList, runnerConfigs } from "../components/Runners/RunnersList.js";

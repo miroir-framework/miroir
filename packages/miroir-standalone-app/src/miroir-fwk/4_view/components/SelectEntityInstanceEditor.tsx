@@ -1,41 +1,22 @@
 import _ from "lodash";
 const { transform:_transform, isObject: _isObject, isUndefined: _isUndefined } = _;
 
-import { Autocomplete, Box, TextField } from '@mui/material';
 import {
-  ICellEditorParams,
   ICellRendererParams
 } from 'ag-grid-community';
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
 import {
-  forwardRef,
-  memo,
-  useEffect,
-  useImperativeHandle,
-  useMemo,
-  useRef,
-  useState
+  memo
 } from 'react';
-import ReactDOM from 'react-dom';
 
 import {
-  EntityInstanceWithName,
-  LocalCacheExtractor,
   LoggerInterface,
   MiroirLoggerFactory
 } from "miroir-core";
-import {
-  ReduxStateWithUndoRedo,
-  useSelector,
-  selectInstanceArrayForDeploymentSectionEntity
-} from "../../miroir-localcache-imports.js";
 
 import { packageName } from "../../../constants.js";
 import { cleanLevel } from "../constants.js";
-import {
-  useMiroirContextService
-} from '../MiroirContextReactProvider.js';
 import { TableComponentRow } from "./Grids/EntityInstanceGridInterface.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;

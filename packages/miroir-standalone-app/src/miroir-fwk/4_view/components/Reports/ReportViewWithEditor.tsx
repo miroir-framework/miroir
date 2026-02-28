@@ -28,10 +28,11 @@ import {
   type RecordOfJzodObject,
   type ReduxDeploymentsState
 } from "miroir-core";
-import { getMemoizedReduxDeploymentsStateJzodSchemaSelectorMap } from '../../../miroir-localcache-imports.js';
+import { DebugHelper, getMemoizedReduxDeploymentsStateJzodSchemaSelectorMap } from 'miroir-react';
+import { useDomainControllerService, useMiroirContextService, useSnackbar } from "miroir-react";
+import { deployment_Miroir } from 'miroir-test-app_deployment-admin';
 import { packageName } from '../../../../constants.js';
 import { cleanLevel, lastSubmitButtonClicked } from '../../constants.js';
-import { useDomainControllerService, useMiroirContextService, useSnackbar } from "../../MiroirContextReactProvider.js";
 import { useCurrentModel, useReduxDeploymentsStateJzodSchemaSelector } from '../../ReduxHooks.js';
 import { ThemedSpan } from '../Themes/index.js';
 import { useDocumentOutlineContext } from '../ValueObjectEditor/InstanceEditorOutlineContext.js';
@@ -39,8 +40,6 @@ import { InlineReportEditor } from './InlineReportEditor.js';
 import { ReportViewProps, useQueryTemplateResults } from './ReportHooks.js';
 import ReportSectionViewWithEditor from './ReportSectionViewWithEditor.js';
 import { reportSectionsFormSchema, reportSectionsFormValue } from './ReportTools.js';
-import { DebugHelper } from '../Page/DebugHelper.js';
-import { deployment_Miroir } from 'miroir-test-app_deployment-admin';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(

@@ -24,16 +24,15 @@ import {
 } from "miroir-core";
 
 import { useFormikContext } from 'formik';
+import { DebugHelper, useMiroirContextService } from 'miroir-react';
 import type { Params } from 'react-router-dom';
 import { packageName, type ReportUrlParamKeys } from '../../../../constants.js';
-import { useMiroirContextService } from '../../MiroirContextReactProvider.js';
 import { cleanLevel } from '../../constants.js';
 import { ReportDisplay } from '../../routes/ReportDisplay';
 import { useRenderTracker } from '../../tools/renderCountTracker.js';
 import GraphReportSectionView from '../Graph/GraphReportSectionView.js';
 import { StoredRunnerView } from '../Runners/RunnerView';
 import { ThemedProgressiveAccordion } from '../Themes/BasicComponents';
-import { DebugHelper } from '../Page/DebugHelper.js';
 import { ThemedBox, ThemedText } from '../Themes/index.js';
 import { ReportSectionEntityInstance, type ValueObjectEditMode } from './ReportSectionEntityInstance.js';
 import { ReportSectionListDisplay } from './ReportSectionListDisplay.js';

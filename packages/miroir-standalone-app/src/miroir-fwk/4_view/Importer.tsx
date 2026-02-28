@@ -13,15 +13,19 @@ import {
   metaModel,
   noValue
 } from "miroir-core";
-import * as XLSX from 'xlsx';
-import { applicationParis, packageName } from "../../constants.js";
-import { cleanLevel } from "./constants.js";
-import { useDomainControllerService, useErrorLogService, useMiroirContextService } from "./MiroirContextReactProvider.js";
+import {
+  useDomainControllerService,
+  useErrorLogService,
+  useMiroirContextService,
+} from "miroir-react";
 import {
   deployment_Admin,
   entityApplicationForAdmin,
   entityDeployment,
 } from "miroir-test-app_deployment-admin";
+import * as XLSX from 'xlsx';
+import { applicationParis, packageName } from "../../constants.js";
+import { cleanLevel } from "./constants.js";
 
 
 let log: LoggerInterface = console as any as LoggerInterface;

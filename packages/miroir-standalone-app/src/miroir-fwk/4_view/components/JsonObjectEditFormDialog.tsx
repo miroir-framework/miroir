@@ -22,19 +22,19 @@ import {
   type Report
 } from "miroir-core";
 
-import { packageName } from "../../../constants.js";
-import { cleanLevel } from "../constants.js";
 import {
+  DebugHelper,
   useDomainControllerService,
   useMiroirContextInnerFormOutput,
   useMiroirContextService
-} from "../MiroirContextReactProvider.js";
+} from "miroir-react";
+import { packageName } from "../../../constants.js";
+import { cleanLevel } from "../constants.js";
 import { ErrorFallbackComponent } from "./ErrorFallbackComponent.js";
 import type { ValueObjectEditMode } from "./Reports/ReportSectionEntityInstance.js";
 import ReportSectionViewWithEditor from "./Reports/ReportSectionViewWithEditor.js";
 import { reportSectionsFormSchema } from "./Reports/ReportTools.js";
 import { ThemedDialog, ThemedDialogTitle } from "./Themes/index.js";
-import { DebugHelper } from "./Page/DebugHelper.js";
 
 
 let log: LoggerInterface = console as any as LoggerInterface;

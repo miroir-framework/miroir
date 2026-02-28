@@ -12,6 +12,7 @@ import { FC, PropsWithChildren, createContext, useState } from 'react';
 import {
   Action2ReturnType,
   AdminApplicationDeploymentConfiguration,
+  ConfigurationService,
   DeploymentConfiguration,
   DomainAction,
   DomainControllerInterface,
@@ -37,7 +38,6 @@ import {
   // Deployment,
   StoreUnitConfiguration,
   Uuid,
-  ConfigurationService,
   // deployment_Library_DO_NO_USE,
   createDeploymentCompositeAction,
   defaultMiroirModelEnvironment,
@@ -60,16 +60,14 @@ import {
 import {
   TestCompositeActionParams
 } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
-import { packageName } from '../../constants';
-import { MiroirContextReactProvider } from '../4_view/MiroirContextReactProvider';
-import { cleanLevel } from '../4_view/constants';
 import {
   LocalCache,
-  LocalCacheProvider,
-  ReduxStoreWithUndoRedo,
+  LocalCacheProvider, MiroirContextReactProvider, ReduxStoreWithUndoRedo,
   RestPersistenceClientAndRestClient,
   setupMiroirDomainController
-} from "../miroir-localcache-imports.js";
+} from 'miroir-react';
+import { packageName } from '../../constants';
+import { cleanLevel } from '../4_view/constants';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(

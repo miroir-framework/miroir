@@ -32,7 +32,7 @@ import {
   selfApplicationVersionLibraryInitialVersion,
 } from "miroir-test-app_deployment-library";
 import { packageName } from "../../../../constants.js";
-import { getMemoizedReduxDeploymentsStateSelectorMap, useSelector } from "../../../miroir-localcache-imports.js";
+import { getMemoizedReduxDeploymentsStateSelectorMap, useSelector } from "miroir-react";
 import { cleanLevel } from "../../constants.js";
 import { useCurrentModelEnvironment } from "../../ReduxHooks.js";
 import { devRelativePathPrefix, FileSelector, prodRelativePathPrefix } from '../Themes/FileSelector.js';
@@ -868,34 +868,34 @@ export const Runner_CreateApplication: React.FC<CreateApplicationToolProps> = ({
     selectedMetaModel,
   ]);
 
-  // ##############################################################################################
-  // Validation transformer: checks that applicationName is defined and non-empty
-  const validationTransformer: TransformerForBuildPlusRuntime = useMemo(
-    () => ({
-      // transformerType: "returnValue",
-      // label: "createApplicationAndDeploymentValidation",
-      // value: "this is an error message that should be replaced by the actual validation logic",
-      // value: false
-      transformerType: "!=",
-      label: "createApplicationAndDeploymentValidation",
-      left: {
-        transformerType: "getFromParameters",
-        referencePath: [
-          "createApplicationAndDeployment",
-          "applicationStorage",
-          "applicationName",
-        ],
-      },
-      right: {
-        transformerType: "returnValue",
-        value: "",
-      },
-      then: true,
-      else: "Application Name must not be empty",
-      // else: true,
-    }), 
-    []
-  );
+  // // ##############################################################################################
+  // // Validation transformer: checks that applicationName is defined and non-empty
+  // const validationTransformer: TransformerForBuildPlusRuntime = useMemo(
+  //   () => ({
+  //     // transformerType: "returnValue",
+  //     // label: "createApplicationAndDeploymentValidation",
+  //     // value: "this is an error message that should be replaced by the actual validation logic",
+  //     // value: false
+  //     transformerType: "!=",
+  //     label: "createApplicationAndDeploymentValidation",
+  //     left: {
+  //       transformerType: "getFromParameters",
+  //       referencePath: [
+  //         "createApplicationAndDeployment",
+  //         "applicationStorage",
+  //         "applicationName",
+  //       ],
+  //     },
+  //     right: {
+  //       transformerType: "returnValue",
+  //       value: "",
+  //     },
+  //     then: true,
+  //     else: "Application Name must not be empty",
+  //     // else: true,
+  //   }), 
+  //   []
+  // );
 
   return (
     <>
@@ -930,7 +930,7 @@ export const Runner_CreateApplication: React.FC<CreateApplicationToolProps> = ({
         formLabel="Create Application (and Deployment)"
         displaySubmitButton="onFirstLine"
         useActionButton={false}
-        validationTransformer={validationTransformer}
+        // validationTransformer={validationTransformer}
       />
     </>
   );

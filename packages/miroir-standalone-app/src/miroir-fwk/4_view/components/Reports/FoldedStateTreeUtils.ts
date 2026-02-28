@@ -1,13 +1,5 @@
-import { resolvePathOnObject } from "miroir-core";
-import { debugIsNodeFolded, debugSetNodeFoldedState, pathToString, type FoldAction } from "./FoldedStateTreeDebug";
+import { pathToString, type FoldAction } from "./FoldedStateTreeDebug";
 
-/**
- * Tree structure representing folded state where each node is either
- * a branch (object with more nodes) or a leaf with value "true"
- */
-export type FoldedStateTree = {
-  [key: string]: FoldedStateTree | "folded";
-};
 
 /**
  * Safely resolves a path on the folded state tree

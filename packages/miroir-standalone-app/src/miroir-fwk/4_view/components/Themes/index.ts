@@ -1,5 +1,5 @@
 // Base types
-export type { ThemedComponentProps } from './BaseTypes';
+export type { ThemedComponentProps } from 'miroir-react';
 
 // Theme color resolution (optional sub-colors → root color fallbacks)
 export { resolveThemeColors, resolveTableThemeColors } from './ThemeColorDefaults';
@@ -17,8 +17,6 @@ export {
   ThemedLabel,
   ThemedText,
   ThemedSpan,
-  ThemedOnScreenHelper,
-  ThemedOnScreenDebug,
   ThemedProgressiveAccordion,
 } from './BasicComponents';
 
