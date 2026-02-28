@@ -19,12 +19,14 @@
             },
             "definition": "menuAddItem"
           },
-          "actionLabel": { "type": "string", "optional": true },
-          "application": {
-            "type": "literal",
-            "definition": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
+          "actionLabel": {
+            "type": "string",
+            "optional": true
           },
-          "endpoint": { "type": "literal", "definition": "c6b849a3-d91f-4281-8c3a-595c17771b6e" },
+          "endpoint": {
+            "type": "literal",
+            "definition": "c6b849a3-d91f-4281-8c3a-595c17771b6e"
+          },
           "payload": {
             "type": "object",
             "definition": {

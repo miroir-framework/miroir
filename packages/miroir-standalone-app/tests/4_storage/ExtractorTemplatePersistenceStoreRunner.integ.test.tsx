@@ -414,9 +414,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
         const queryResult: Action2ReturnType =
           await localAppPersistenceStoreController.handleQueryTemplateActionForServerONLY(
             {
-              actionType: "runBoxedQueryTemplateAction",
-              application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-              endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+              actionType: "runBoxedQueryTemplateAction",              endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
               payload: {
                 application: selfApplicationLibrary.uuid,
                 applicationSection: applicationSection,
@@ -466,9 +464,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
         const queryResult =
           await localMiroirPersistenceStoreController.handleQueryTemplateActionForServerONLY(
             {
-              actionType: "runBoxedQueryTemplateAction",
-              application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-              endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+              actionType: "runBoxedQueryTemplateAction",              endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
               payload: {
                 application: selfApplicationLibrary.uuid,
                 // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
@@ -531,9 +527,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
         const queryResult =
           await localAppPersistenceStoreController.handleQueryTemplateActionForServerONLY(
             {
-              actionType: "runBoxedQueryTemplateAction",
-              application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-              endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+              actionType: "runBoxedQueryTemplateAction",              endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
               payload: {
                 application: selfApplicationLibrary.uuid,
                 // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
@@ -598,9 +592,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
         const queryResult =
           await localAppPersistenceStoreController.handleQueryTemplateActionForServerONLY(
             {
-              actionType: "runBoxedQueryTemplateAction",
-              application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-              endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+              actionType: "runBoxedQueryTemplateAction",              endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
               payload: {
                 application: selfApplicationLibrary.uuid,
                 applicationSection: applicationSection,
@@ -656,9 +648,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
         const queryResult =
           await localAppPersistenceStoreController.handleQueryTemplateActionForServerONLY(
             {
-              actionType: "runBoxedQueryTemplateAction",
-              application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-              endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+              actionType: "runBoxedQueryTemplateAction",              endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
               payload: {
                 application: selfApplicationLibrary.uuid,
                 // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
@@ -847,9 +837,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
         const queryResult =
           await localAppPersistenceStoreController.handleQueryTemplateActionForServerONLY(
             {
-              actionType: "runBoxedQueryTemplateAction",
-              application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-              endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+              actionType: "runBoxedQueryTemplateAction",              endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
               payload: {
                 application: selfApplicationLibrary.uuid,
                 // deploymentUuid: deployment_Library_DO_NO_USE.uuid,

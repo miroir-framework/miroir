@@ -47,7 +47,7 @@ const libraryAppEntities: EntityDefinitionCouple[] = [
   { entity: entityBook as Entity, entityDefinition: entityDefinitionBook as EntityDefinition},
   { entity: entityCountry as Entity, entityDefinition: entityDefinitionCountry as EntityDefinition},
   { entity: entityPublisher as Entity, entityDefinition: entityDefinitionPublisher as EntityDefinition},
-  { entity: entityUser as Entity, entityDefinition: entityDefinitionUser as EntityDefinition},
+  { entity: entityUser as Entity, entityDefinition: entityDefinitionUser as any as EntityDefinition},
   { entity: entityLendingHistoryItem as Entity, entityDefinition: entityDefinitionLendingHistoryItem as EntityDefinition},
 ];
 
@@ -64,11 +64,13 @@ export const defaultLibraryAppModelDEFUNCT: MetaModel = {
   entities: libraryAppEntities.map((couple) => couple.entity),
   entityDefinitions: libraryAppEntities.map((couple) => couple.entityDefinition),
   endpoints: [
-    bookEndpoint as EndpointDefinition,
-    lendingEndpoint as EndpointDefinition,
+    bookEndpoint as any as EndpointDefinition,
+    lendingEndpoint as any as EndpointDefinition,
   ],
   jzodSchemas: [],
   menus: [],
+  runners: [],
+  themes: [],
   applicationVersions: [],
   reports: Object.values(libraryAppReportsByEntityName).flat() as Report[],
   storedQueries: [

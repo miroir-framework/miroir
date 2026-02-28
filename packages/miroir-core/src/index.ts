@@ -635,9 +635,11 @@ export {
   defaultDeployments,
   defaultDeploymentUuids,
   defaultAdminApplicationDeploymentMapNOTGOOD,
+  defaultEndpointApplicationMap,
   defaultSelfApplicationDeploymentMap,
   emptyMetaModel,
   dropApplicationAndDeploymentCompositeAction,
+  EndpointApplicationMap,
   resetAndinitializeDeploymentCompositeAction,
 } from "./1_core/Deployment";
 export { DomainInstanceUuidIndexToArray } from "./1_core/DomainState.js";

@@ -19,10 +19,9 @@
             },
             "definition": "storeManagementAction_createStore"
           },
-          "actionLabel": { "type": "string", "optional": true },
-          "application": {
-            "type": "literal",
-            "definition": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
+          "actionLabel": {
+            "type": "string",
+            "optional": true
           },
           "endpoint": {
             "type": "literal",
@@ -68,7 +67,10 @@
         },
         "actionErrors": {
           "type": "enum",
-          "definition": ["FailedToCreateStore", "FailedToDeployModule"]
+          "definition": [
+            "FailedToCreateStore",
+            "FailedToDeployModule"
+          ]
         }
       },
       {
@@ -82,10 +84,9 @@
             },
             "definition": "storeManagementAction_deleteStore"
           },
-          "actionLabel": { "type": "string", "optional": true },
-          "application": {
-            "type": "literal",
-            "definition": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
+          "actionLabel": {
+            "type": "string",
+            "optional": true
           },
           "endpoint": {
             "type": "literal",
@@ -145,10 +146,9 @@
             },
             "definition": "storeManagementAction_resetAndInitApplicationDeployment"
           },
-          "actionLabel": { "type": "string", "optional": true },
-          "application": {
-            "type": "literal",
-            "definition": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
+          "actionLabel": {
+            "type": "string",
+            "optional": true
           },
           "endpoint": {
             "type": "literal",
@@ -201,10 +201,9 @@
             },
             "definition": "storeManagementAction_openStore"
           },
-          "actionLabel": { "type": "string", "optional": true },
-          "application": {
-            "type": "literal",
-            "definition": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
+          "actionLabel": {
+            "type": "string",
+            "optional": true
           },
           "endpoint": {
             "type": "literal",
@@ -267,10 +266,9 @@
             },
             "definition": "storeManagementAction_closeStore"
           },
-          "actionLabel": { "type": "string", "optional": true },
-          "application": {
-            "type": "literal",
-            "definition": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
+          "actionLabel": {
+            "type": "string",
+            "optional": true
           },
           "endpoint": {
             "type": "literal",

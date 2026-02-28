@@ -258,11 +258,8 @@ describe.sequential(
                   {
                     // actionType: "modelAction",
                     actionType: "rollback",
-                    application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                     payload: {
-                      application: selfApplicationMiroir.uuid,
-                      // deploymentUuid:deployment_Miroir.uuid,
                     },
                   },
                   applicationDeploymentMap,
@@ -272,7 +269,6 @@ describe.sequential(
                   {
                     // actionType: "modelAction",
                     actionType: "rollback",
-                    application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                     payload: {
                       application: selfApplicationLibrary.uuid,
@@ -309,7 +305,6 @@ describe.sequential(
             const createAuthorAction: DomainAction = {
               // actionType: "modelAction",
               actionType: "createEntity",
-              application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
               endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
               payload: {
                 application: selfApplicationLibrary.uuid,
@@ -324,7 +319,6 @@ describe.sequential(
             };
             const createBookAction: DomainAction = {
               actionType: "createEntity",
-              application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
               endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
               payload: {
                 application: selfApplicationLibrary.uuid,
@@ -391,7 +385,6 @@ describe.sequential(
               async () => {
                 await domainController.handleAction({
                   actionType: "undo",
-                  application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                   endpoint: "71c04f8e-c687-4ea7-9a19-bc98d796c389",
                   payload: {
                     application: selfApplicationLibrary.uuid,
@@ -432,7 +425,6 @@ describe.sequential(
                 await domainController.handleAction(
                   {
                     actionType: "redo",
-                    application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                     endpoint: "71c04f8e-c687-4ea7-9a19-bc98d796c389",
                     payload: {
                       application: selfApplicationLibrary.uuid,
@@ -479,7 +471,6 @@ describe.sequential(
                 await domainController.handleAction(
                   {
                     actionType: "undo",
-                    application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                     endpoint: "71c04f8e-c687-4ea7-9a19-bc98d796c389",
                     payload: {
                       application: selfApplicationLibrary.uuid,
@@ -490,7 +481,6 @@ describe.sequential(
                 );
                 await domainController.handleAction({
                   actionType: "undo",
-                  application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                   endpoint: "71c04f8e-c687-4ea7-9a19-bc98d796c389",
                   payload: {
                     application: selfApplicationLibrary.uuid,
@@ -499,7 +489,6 @@ describe.sequential(
                 }, applicationDeploymentMap, defaultMiroirModelEnvironment);
                 await domainController.handleAction({
                   actionType: "redo",
-                  application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                   endpoint: "71c04f8e-c687-4ea7-9a19-bc98d796c389",
                   payload: {
                     application: selfApplicationLibrary.uuid,
@@ -533,7 +522,6 @@ describe.sequential(
                 await domainController.handleAction(
                   {
                     actionType: "redo",
-                    application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                     endpoint: "71c04f8e-c687-4ea7-9a19-bc98d796c389",
                     payload: {
                       application: selfApplicationLibrary.uuid,
@@ -555,7 +543,6 @@ describe.sequential(
                 await domainController.handleAction(
                   {
                     actionType: "undo",
-                    application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                     endpoint: "71c04f8e-c687-4ea7-9a19-bc98d796c389",
                     payload: {
                       application: selfApplicationLibrary.uuid,
@@ -567,7 +554,6 @@ describe.sequential(
                 await domainController.handleAction(
                   {
                     actionType: "undo",
-                    application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                     endpoint: "71c04f8e-c687-4ea7-9a19-bc98d796c389",
                     payload: {
                       application: selfApplicationLibrary.uuid,
@@ -579,7 +565,6 @@ describe.sequential(
                 await domainController.handleAction(
                   {
                     actionType: "undo",
-                    application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                     endpoint: "71c04f8e-c687-4ea7-9a19-bc98d796c389",
                     payload: {
                       application: selfApplicationLibrary.uuid,
@@ -591,7 +576,6 @@ describe.sequential(
                 await domainController.handleAction(
                   {
                     actionType: "redo",
-                    application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                     endpoint: "71c04f8e-c687-4ea7-9a19-bc98d796c389",
                     payload: {
                       application: selfApplicationLibrary.uuid,
@@ -627,7 +611,6 @@ describe.sequential(
                 await domainController.handleAction(
                   {
                     actionType: "redo",
-                    application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                     endpoint: "71c04f8e-c687-4ea7-9a19-bc98d796c389",
                     payload: {
                       application: selfApplicationLibrary.uuid,
@@ -648,7 +631,6 @@ describe.sequential(
                 await domainController.handleAction(
                   {
                     actionType: "redo",
-                    application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                     endpoint: "71c04f8e-c687-4ea7-9a19-bc98d796c389",
                     payload: {
                       application: selfApplicationLibrary.uuid,
@@ -680,7 +662,6 @@ describe.sequential(
                   {
                     actionType: "commit",
                     // actionType: "modelAction",
-                    application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                     payload: {
                       application: selfApplicationLibrary.uuid,

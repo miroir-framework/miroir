@@ -373,7 +373,6 @@ const testActions: Record<string, TestCompositeActionParams> = {
           compositeActionSequence: {
             actionType: "compositeActionSequence",
             actionLabel: "testLibraryBooks",
-            application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
             endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             payload: {
               application: "NOT_USED",
@@ -381,17 +380,15 @@ const testActions: Record<string, TestCompositeActionParams> = {
                 {
                   actionType: "rollback",
                   actionLabel: "refreshMiroirLocalCache",
-                  application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   payload: {
                     application: selfApplicationMiroir.uuid,
-                  },
+                    },
                 },
                 {
                   actionType: "rollback",
                   actionLabel: "refreshLibraryLocalCache",
                   // actionType: "modelAction",
-                  application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   payload: {
                     application: testApplicationUuid,
@@ -400,12 +397,10 @@ const testActions: Record<string, TestCompositeActionParams> = {
                 {
                   actionType: "compositeRunBoxedQueryAction",
                   endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
-                  application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                   actionLabel: "calculateNewEntityDefinionAndReports",
                   nameGivenToResult: "entityBookList",
                   payload: {
                     actionType: "runBoxedQueryAction",
-                    application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                     endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
                     payload: {
                       application: testApplicationUuid,
@@ -495,7 +490,6 @@ const testActions: Record<string, TestCompositeActionParams> = {
           compositeActionSequence: {
             actionType: "compositeActionSequence",
             actionLabel: "AddBookInstanceThenRollback",
-            application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
             endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             payload: {
               application: "NOT_USED",
@@ -504,18 +498,16 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   actionType: "rollback",
                   // actionType: "modelAction",
                   actionLabel: "refreshMiroirLocalCache",
-                  application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   payload: {
+
                     application: selfApplicationMiroir.uuid,
-                    // deploymentUuid: deployment_Miroir.uuid,
-                  },
+                    },
                 },
                 {
                   actionType: "rollback",
                   // actionType: "modelAction",
                   actionLabel: "refreshLibraryLocalCache",
-                  application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   payload: {
                     application: testApplicationUuid,
@@ -526,7 +518,6 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   // actionType: "instanceAction",
                   actionType: "createInstance",
                   actionLabel: "addBook3",
-                  application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                   endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
                   payload: {
                     application: testApplicationUuid,
@@ -546,12 +537,10 @@ const testActions: Record<string, TestCompositeActionParams> = {
                 {
                   actionType: "compositeRunBoxedQueryAction",
                   endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
-                  application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                   actionLabel: "calculateNewEntityDefinionAndReports",
                   nameGivenToResult: "entityBookList",
                   payload: {
                     actionType: "runBoxedQueryAction",
-                    application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                     endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
                     payload: {
                       application: testApplicationUuid,
@@ -631,7 +620,6 @@ const testActions: Record<string, TestCompositeActionParams> = {
           compositeActionSequence: {
             actionType: "compositeActionSequence",
             actionLabel: "AddBookInstanceThenRollback",
-            application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
             endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             payload: {
               application: "NOT_USED",
@@ -640,18 +628,16 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   actionType: "rollback",
                   // actionType: "modelAction",
                   actionLabel: "refreshMiroirLocalCache",
-                  application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   payload: {
+
                     application: selfApplicationMiroir.uuid,
-                    // deploymentUuid: deployment_Miroir.uuid,
-                  },
+                    },
                 },
                 {
                   // actionType: "modelAction",
                   actionType: "rollback",
                   actionLabel: "refreshLibraryLocalCache",
-                  application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   payload: {
                     application: testApplicationUuid,
@@ -662,7 +648,6 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   // actionType: "instanceAction",
                   actionType: "createInstance",
                   actionLabel: "addBook3",
-                  application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                   endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
                   payload: {
                     application: testApplicationUuid,
@@ -682,12 +667,10 @@ const testActions: Record<string, TestCompositeActionParams> = {
                 {
                   actionType: "compositeRunBoxedQueryAction",
                   endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
-                  application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                   actionLabel: "calculateNewEntityDefinionAndReports",
                   nameGivenToResult: "entityBookList",
                   payload: {
                     actionType: "runBoxedQueryAction",
-                    application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                     endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
                     // deploymentUuid: testApplicationDeploymentUuid,
                     payload: {
@@ -768,7 +751,6 @@ const testActions: Record<string, TestCompositeActionParams> = {
           compositeActionSequence: {
             actionType: "compositeActionSequence",
             actionLabel: "AddBookInstanceThenRollback",
-            application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
             endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             payload: {
               application: "NOT_USED",
@@ -777,18 +759,15 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   actionType: "rollback",
                   // actionType: "modelAction",
                   actionLabel: "refreshMiroirLocalCache",
-                  application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   payload: {
                     application: selfApplicationMiroir.uuid,
-                    // deploymentUuid: deployment_Miroir.uuid,
-                  },
+                    },
                 },
                 {
                   actionType: "rollback",
                   // actionType: "modelAction",
                   actionLabel: "refreshLibraryLocalCache",
-                  application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   payload: {
                     application: testApplicationUuid,
@@ -799,7 +778,6 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   // actionType: "instanceAction",
                   actionType: "deleteInstance",
                   actionLabel: "deleteBook2",
-                  application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                   endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
                   payload: {
                     application: testApplicationUuid,
@@ -818,12 +796,10 @@ const testActions: Record<string, TestCompositeActionParams> = {
                 {
                   actionType: "compositeRunBoxedQueryAction",
                   endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
-                  application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                   actionLabel: "calculateNewEntityDefinionAndReports",
                   nameGivenToResult: "entityBookList",
                   payload: {
                     actionType: "runBoxedQueryAction",
-                    application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                     endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
                     payload: {
                       application: testApplicationUuid,
@@ -910,7 +886,6 @@ const testActions: Record<string, TestCompositeActionParams> = {
           compositeActionSequence: {
             actionType: "compositeActionSequence",
             actionLabel: "AddBookInstanceThenRollback",
-            application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
             endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             payload: {
               application: "NOT_USED",
@@ -918,17 +893,14 @@ const testActions: Record<string, TestCompositeActionParams> = {
                 {
                   actionType: "rollback",
                   actionLabel: "refreshMiroirLocalCache",
-                  application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   payload: {
                     application: selfApplicationMiroir.uuid,
-                    // deploymentUuid: deployment_Miroir.uuid,
-                  },
+                    },
                 },
                 {
                   actionType: "rollback",
                   actionLabel: "refreshLibraryLocalCache",
-                  application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   payload: {
                     application: testApplicationUuid,
@@ -939,7 +911,6 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   // actionType: "instanceAction",
                   actionType: "deleteInstance",
                   actionLabel: "addBook3",
-                  application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                   endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
                   payload: {
                     application: testApplicationUuid,
@@ -959,7 +930,6 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   actionType: "rollback",
                   // actionType: "modelAction",
                   actionLabel: "refreshLibraryLocalCache",
-                  application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   payload: {
                     application: testApplicationUuid,
@@ -969,12 +939,10 @@ const testActions: Record<string, TestCompositeActionParams> = {
                 {
                   actionType: "compositeRunBoxedQueryAction",
                   endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
-                  application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                   actionLabel: "calculateNewEntityDefinionAndReports",
                   nameGivenToResult: "entityBookList",
                   payload: {
                     actionType: "runBoxedQueryAction",
-                    application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                     endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
                     payload: {
                       application: testApplicationUuid,
@@ -1061,7 +1029,6 @@ const testActions: Record<string, TestCompositeActionParams> = {
           compositeActionSequence: {
             actionType: "compositeActionSequence",
             actionLabel: "AddBookInstanceThenRollback",
-            application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
             endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             payload: {
               application: "NOT_USED",
@@ -1070,18 +1037,16 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   actionType: "rollback",
                   // actionType: "modelAction",
                   actionLabel: "refreshMiroirLocalCache",
-                  application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   payload: {
+
                     application: selfApplicationMiroir.uuid,
-                    // deploymentUuid: deployment_Miroir.uuid,
-                  },
+                    },
                 },
                 {
                   actionType: "rollback",
                   // actionType: "modelAction",
                   actionLabel: "refreshLibraryLocalCache",
-                  application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   payload: {
                     application: testApplicationUuid,
@@ -1092,7 +1057,6 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   // actionType: "instanceAction",
                   actionType: "updateInstance",
                   actionLabel: "updateBook2",
-                  application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                   endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
                   payload: {
                     application: testApplicationUuid,
@@ -1117,12 +1081,10 @@ const testActions: Record<string, TestCompositeActionParams> = {
                 {
                   actionType: "compositeRunBoxedQueryAction",
                   endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
-                  application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                   actionLabel: "calculateNewEntityDefinionAndReports",
                   nameGivenToResult: "entityBookList",
                   payload: {
                     actionType: "runBoxedQueryAction",
-                    application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                     endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
                     payload: {
                       application: testApplicationUuid,

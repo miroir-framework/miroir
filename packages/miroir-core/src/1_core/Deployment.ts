@@ -17,7 +17,20 @@ import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory";
 import { packageName } from "../constants";
 import { cleanLevel } from "./constants";
 
-import { selfApplicationMiroir } from "miroir-test-app_deployment-miroir";
+import {
+  selfApplicationMiroir,
+  applicationEndpointV1,
+  instanceEndpointV1,
+  modelEndpointV1,
+  domainEndpointVersionV1,
+  testEndpointVersionV1,
+  storeManagementEndpoint,
+  undoRedoEndpointVersionV1,
+  localCacheEndpointVersionV1,
+  queryEndpointVersionV1,
+  persistenceEndpointVersionV1,
+  menuEndpointV1,
+} from "miroir-test-app_deployment-miroir";
 import {
   deployment_Miroir,
   adminSelfApplication,
@@ -39,6 +52,17 @@ export interface ApplicationDeploymentMap {
   [applicationUuid: Uuid]: Uuid; // deploymentUuid
 }
 
+// ################################################################################################
+/**
+ * Maps endpoint UUIDs to the application UUID that defines them.
+ * This enables the path: endpoint -> application -> deployment.
+ * Since the endpoint UUID uniquely identifies the application, having
+ * `application` in the action envelope is redundant.
+ */
+export interface EndpointApplicationMap {
+  [endpointUuid: Uuid]: Uuid; // applicationUuid
+}
+
 export const defaultSelfApplicationDeploymentMap: ApplicationDeploymentMap = {
   [selfApplicationMiroir.uuid]: deployment_Miroir.uuid,
   [adminSelfApplication.uuid]: deployment_Admin.uuid,
@@ -47,6 +71,24 @@ export const defaultSelfApplicationDeploymentMap: ApplicationDeploymentMap = {
 export const defaultAdminApplicationDeploymentMapNOTGOOD: ApplicationDeploymentMap = {
   [adminApplication_Miroir.uuid]: deployment_Miroir.uuid,
   [adminApplication_Admin.uuid]: deployment_Admin.uuid,
+};
+
+/**
+ * Default endpoint → application map, built from all known built-in endpoints.
+ * All built-in endpoints belong to the Miroir self-application.
+ */
+export const defaultEndpointApplicationMap: EndpointApplicationMap = {
+  [applicationEndpointV1.uuid]: selfApplicationMiroir.uuid,
+  [instanceEndpointV1.uuid]: selfApplicationMiroir.uuid,
+  [modelEndpointV1.uuid]: selfApplicationMiroir.uuid,
+  [domainEndpointVersionV1.uuid]: selfApplicationMiroir.uuid,
+  [testEndpointVersionV1.uuid]: selfApplicationMiroir.uuid,
+  [storeManagementEndpoint.uuid]: selfApplicationMiroir.uuid,
+  [undoRedoEndpointVersionV1.uuid]: selfApplicationMiroir.uuid,
+  [localCacheEndpointVersionV1.uuid]: selfApplicationMiroir.uuid,
+  [queryEndpointVersionV1.uuid]: selfApplicationMiroir.uuid,
+  [persistenceEndpointVersionV1.uuid]: selfApplicationMiroir.uuid,
+  [menuEndpointV1.uuid]: selfApplicationMiroir.uuid,
 };
 
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -68,7 +110,6 @@ export function createApplicationCompositeAction(
   const result: CompositeActionSequence = {
     actionType: "compositeActionSequence",
     actionLabel: "beforeAll",
-    application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
     endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
     payload: {
       application: adminSelfApplication.uuid,  //
@@ -77,7 +118,6 @@ export function createApplicationCompositeAction(
           actionType: "createInstance",
           actionLabel: "createApplicationForAdminAction",
           endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-          application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
           payload: {
             application: newSelfApplicationUuid,
             applicationSection: "data",
@@ -127,7 +167,6 @@ export function createDeploymentCompositeAction(
   return {
     actionType: "compositeActionSequence",
     actionLabel: "createDeploymentCompositeAction",
-    application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
     endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
     payload: {
       application: selfApplicationUuid, // to be ignored?
@@ -135,7 +174,6 @@ export function createDeploymentCompositeAction(
         {
           actionType: "storeManagementAction_openStore",
           actionLabel: "storeManagementAction_openStore for " + applicationName + " admin",
-          application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
           endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
           payload: {
             application: adminSelfApplication.uuid,
@@ -149,7 +187,6 @@ export function createDeploymentCompositeAction(
         {
           actionType: "storeManagementAction_openStore",
           actionLabel: "storeManagementAction_openStore for " + applicationName,
-          application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
           endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
           payload: {
             application: selfApplicationUuid,
@@ -162,7 +199,6 @@ export function createDeploymentCompositeAction(
         {
           actionType: "storeManagementAction_createStore",
           actionLabel: "storeManagementAction_createStore for " + applicationName,
-          application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
           endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
           payload: {
             application: selfApplicationUuid,
@@ -173,7 +209,6 @@ export function createDeploymentCompositeAction(
         {
           actionType: "createInstance",
           actionLabel: "CreateDeploymentInstances for " + applicationName,
-          application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
           endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
           payload: {
             application: adminSelfApplication.uuid,
@@ -284,7 +319,6 @@ export function resetAndinitializeDeploymentCompositeAction(
   return {
     actionType: "compositeActionSequence",
     actionLabel: "resetAndinitializeDeploymentCompositeAction",
-    application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
     endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
     payload: {
       application: applicationUuid, // to be ignored?
@@ -292,7 +326,6 @@ export function resetAndinitializeDeploymentCompositeAction(
         {
           actionType: "resetModel",
           actionLabel: "resetAndinitializeDeploymentCompositeAction_resetModel",
-          application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
           endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
           payload: {
             application: applicationUuid,
@@ -301,7 +334,6 @@ export function resetAndinitializeDeploymentCompositeAction(
         {
           actionType: "initModel",
           actionLabel: "resetAndinitializeDeploymentCompositeAction_InitModel",
-          application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
           endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
           payload: {
             application: applicationUuid,
@@ -311,7 +343,6 @@ export function resetAndinitializeDeploymentCompositeAction(
         {
           actionType: "commit", // TODO: should be initModel commit?
           actionLabel: "resetAndinitializeDeploymentCompositeAction_commitInitModel",
-          application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
           endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
           payload: {
             application: applicationUuid,
@@ -320,7 +351,6 @@ export function resetAndinitializeDeploymentCompositeAction(
         {
           actionType: "rollback",
           actionLabel: "resetAndinitializeDeploymentCompositeAction_Rollback",
-          application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
           endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
           payload: {
             application: applicationUuid,
@@ -329,7 +359,6 @@ export function resetAndinitializeDeploymentCompositeAction(
         {
           actionType: "createEntity",
           actionLabel: "resetAndinitializeDeploymentCompositeAction_createEntities",
-          application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
           endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
           payload: {
             application: applicationUuid,
@@ -339,7 +368,6 @@ export function resetAndinitializeDeploymentCompositeAction(
         {
           actionType: "commit",
           actionLabel: "resetAndinitializeDeploymentCompositeAction_commitEntities",
-          application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
           endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
           payload: {
             application: applicationUuid,
@@ -348,7 +376,6 @@ export function resetAndinitializeDeploymentCompositeAction(
         {
           actionType: "createInstance",
           actionLabel: "resetAndinitializeDeploymentCompositeAction_createInstances",
-          application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
           endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
           payload: {
             application: applicationUuid,
@@ -383,7 +410,6 @@ export function dropApplicationAndDeploymentCompositeAction(
   return {
     actionType: "compositeActionSequence",
     actionLabel: "dropApplicationAndDeployment",
-    application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
     endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
     payload: {
       application: applicationUuid, // to be ignored?
@@ -391,7 +417,6 @@ export function dropApplicationAndDeploymentCompositeAction(
         {
           actionType: "storeManagementAction_deleteStore",
           actionLabel: "deleteStore",
-          application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
           endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
           payload: {
             application: applicationUuid,

@@ -59,17 +59,13 @@ export function testOnLibrary_resetLibraryDeployment(
 ): CompositeActionSequence {
   return {
     actionType: "compositeActionSequence",
-    actionLabel: "afterEach",
-    application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-    endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+    actionLabel: "afterEach",    endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
     payload: {
       application: "NOT_USED_HERE",
       definition: [
         {
           actionType: "resetModel",
-          actionLabel: "resetLibraryStore",
-          application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-          endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+          actionLabel: "resetLibraryStore",          endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
           payload: {
             application,
           },
@@ -90,17 +86,13 @@ export function testOnLibrary_deleteLibraryDeployment(
   );
   return {
     actionType: "compositeActionSequence",
-    actionLabel: "deleteLibraryDeployment",
-    application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-    endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+    actionLabel: "deleteLibraryDeployment",    endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
     payload: {
       application: "NOT_USED_HERE",
       definition: [
         {
           actionType: "storeManagementAction_deleteStore",
-          actionLabel: "deleteLibraryStore",
-          application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-          endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
+          actionLabel: "deleteLibraryStore",          endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
           payload: {
             application,
             deploymentUuid,

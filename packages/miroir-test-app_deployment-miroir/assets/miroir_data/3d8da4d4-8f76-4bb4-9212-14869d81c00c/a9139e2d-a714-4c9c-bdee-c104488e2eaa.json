@@ -19,10 +19,6 @@
             },
             "definition": "runTestCompositeAction"
           },
-          "application": {
-            "type": "literal",
-            "definition": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
-          },
           "endpoint": {
             "type": "literal",
             "definition": "a9139e2d-a714-4c9c-bdee-c104488e2eaa"
@@ -77,10 +73,6 @@
               }
             },
             "definition": "runTestCase"
-          },
-          "application": {
-            "type": "literal",
-            "definition": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
           },
           "endpoint": {
             "type": "literal",

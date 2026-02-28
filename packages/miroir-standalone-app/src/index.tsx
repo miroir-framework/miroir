@@ -509,9 +509,7 @@ async function startWebApp(root:Root) {
     // open all configured stores
     for (const c of Object.entries(configurations)) {
       const openStoreAction: StoreOrBundleAction = {
-        actionType: "storeManagementAction_openStore",
-        application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-        endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
+        actionType: "storeManagementAction_openStore",        endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
         payload: {
           application: c[1].selfApplication,
           deploymentUuid: c[0],
@@ -529,9 +527,7 @@ async function startWebApp(root:Root) {
     const deploymentsQueryResults =
       await domainControllerForServer.handleBoxedExtractorOrQueryAction(
         {
-          actionType: "runBoxedQueryAction",
-          application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-          endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+          actionType: "runBoxedQueryAction",          endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
           payload: {
             application: adminSelfApplication.uuid,
             applicationSection: "data",
@@ -583,9 +579,7 @@ async function startWebApp(root:Root) {
     // open all newly found stores
     for (const c of deploymentsToOpen) {
       const openStoreAction: StoreOrBundleAction = {
-        actionType: "storeManagementAction_openStore",
-        application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-        endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
+        actionType: "storeManagementAction_openStore",        endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
         payload: {
           application: c[1].selfApplication,
           deploymentUuid: c[0],

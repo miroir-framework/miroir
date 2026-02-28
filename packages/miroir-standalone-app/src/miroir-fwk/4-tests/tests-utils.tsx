@@ -254,9 +254,7 @@ export async function addEntitiesAndInstancesForRealServer(
 ) {
   const createAction: DomainAction = {
     actionType: "createEntity",
-    endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-    application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-    payload: {
+    endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",    payload: {
       application: selfApplicationDeploymentLibrary.selfApplication,
       // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
       entities: entities
@@ -276,9 +274,7 @@ export async function addEntitiesAndInstancesForRealServer(
       );
       await domainController.handleAction(
         {
-          actionType: "commit",
-          application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-          endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+          actionType: "commit",          endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
           payload: {
             application: selfApplicationDeploymentLibrary.selfApplication,
             // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
@@ -304,9 +300,7 @@ export async function addEntitiesAndInstancesForRealServer(
     );
     await domainController.handleAction(
       {
-        actionType: "commit",
-        application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-        endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+        actionType: "commit",        endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
         payload: {
           application: selfApplicationDeploymentLibrary.selfApplication,
           // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
@@ -323,9 +317,7 @@ export async function addEntitiesAndInstancesForRealServer(
 
   const createInstancesAction: InstanceAction = {
     // actionType: "instanceAction",
-    actionType: "createInstance",
-    application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-    endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+    actionType: "createInstance",    endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
     payload: {
       application: selfApplicationDeploymentLibrary.selfApplication,
       applicationSection: "data",
@@ -618,9 +610,7 @@ export async function resetApplicationDeployments(
   for (const d of deploymentConfigurations) {
     await domainController.handleAction(
       {
-        actionType: "resetModel",
-        application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-        endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+        actionType: "resetModel",        endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
         payload: {
           application: d.selfApplicationDeployment.selfApplication,
           // deploymentUuid: d.adminConfigurationDeployment.uuid,
@@ -655,9 +645,7 @@ export async function deleteAndCloseApplicationDeployments(
     ? miroirConfig.client.deploymentStorageConfig[d.uuid]
     : miroirConfig.client.serverConfig.storeSectionConfiguration[d.uuid];
     const deletedStore = await domainController.handleAction({
-      actionType: "storeManagementAction_deleteStore",
-      application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-      endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
+      actionType: "storeManagementAction_deleteStore",      endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
       payload: {
         application: d.selfApplication,
         deploymentUuid: d.uuid,
@@ -675,9 +663,7 @@ export async function deleteAndCloseApplicationDeployments(
     for (const d of deploymentConfigurations) {
       const deletedStore = await domainController.handleAction(
         {
-          actionType: "storeManagementAction_closeStore",
-          application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-          endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
+          actionType: "storeManagementAction_closeStore",          endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
           payload: {
             application: d.selfApplication,
             // deploymentUuid: d.uuid,

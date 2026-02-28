@@ -396,9 +396,7 @@ const createEntity_newEntityDefinition: EntityDefinition = {
 const createEntityCompositeAction: CompositeActionSequence = {
   actionType: "compositeActionSequence",
   // actionLabel: "createEntityCompositeActionTemplate",
-  actionLabel: "createEntityCompositeAction",
-  application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-  endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+  actionLabel: "createEntityCompositeAction",  endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
   payload: {
     templates: {
       // all
@@ -624,9 +622,7 @@ const createEntityCompositeAction: CompositeActionSequence = {
       {
         // actionType: "modelAction",
         actionType: "createEntity",
-        actionLabel: "createEntity",
-        application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-        endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+        actionLabel: "createEntity",        endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
         payload: {
           application: testSelfApplicationUuid,
           // deploymentUuid: testAdminConfigurationDeploymentUuid,
@@ -856,16 +852,12 @@ const newEntityDetailsReport = {
 
 const createReportsCompositeAction: DomainAction = {
   actionType: "transactionalInstanceAction",
-  actionLabel: "createReports",
-  application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-  endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+  actionLabel: "createReports",  endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
   payload: {
     deploymentUuid: testAdminConfigurationDeploymentUuid,
     instanceAction: {
       // actionType: "instanceAction",
-      actionType: "createInstance",
-      application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-      endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+      actionType: "createInstance",      endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
       payload: {
         application: testSelfApplicationUuid,
         // deploymentUuid: testAdminConfigurationDeploymentUuid,
@@ -957,9 +949,7 @@ const createReportsCompositeActionPrepActions: any[] = [
     actionLabel: "getListOfReports",
     nameGivenToResult: "newApplicationReportList",
     queryTemplate: {
-      actionType: "runBoxedQueryAction",
-      application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-      endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+      actionType: "runBoxedQueryAction",      endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
       applicationSection: "model", // TODO: give only selfApplication section in individual queries?
       deploymentUuid: testAdminConfigurationDeploymentUuid,
       query: {
@@ -1119,9 +1109,7 @@ const testSuites: Record<string, TestCompositeActionParams> = {
           compositeActionSequence: {
             actionType: "compositeActionSequence",
             actionLabel: "createEntityAndReportFromSpreadsheet",
-            // templates: createEntityCompositeAction.templates,
-            application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-            endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+            // templates: createEntityCompositeAction.templates,            endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             payload: {
               definition: [
                 ...(createEntityCompositeAction as any).definition,
@@ -1150,9 +1138,7 @@ const testSuites: Record<string, TestCompositeActionParams> = {
                   actionLabel: "getMenu",
                   nameGivenToResult: "menuUpdateQueryResult",
                   queryTemplate: {
-                    actionType: "runBoxedQueryAction",
-                    application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-                    endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+                    actionType: "runBoxedQueryAction",                    endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
                     payload: {
                       applicationSection: "model",
                       deploymentUuid: testAdminConfigurationDeploymentUuid,
@@ -1217,16 +1203,12 @@ const testSuites: Record<string, TestCompositeActionParams> = {
                 // update current menu
                 {
                   actionType: "transactionalInstanceAction",
-                  actionLabel: "updateMenu",
-                  application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-                  endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                  actionLabel: "updateMenu",                  endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
                   payload: {
                     deploymentUuid: testAdminConfigurationDeploymentUuid,
                     instanceAction: {
                       actionType: "updateInstance",
-                      applicationSection: "model",
-                      application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-                      deploymentUuid: testAdminConfigurationDeploymentUuid,
+                      applicationSection: "model",                      deploymentUuid: testAdminConfigurationDeploymentUuid,
                       endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
                       objects: [
                         {

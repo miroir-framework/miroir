@@ -713,17 +713,13 @@ export const Runner_InstallApplication: React.FC<DeployApplicationRunnerProps> =
 
     const localCreateApplicationCompositeActionTemplate: CompositeActionSequence = {
       actionType: "compositeActionSequence",
-      actionLabel: "createApplicationForAdminAction",
-      application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-      endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+      actionLabel: "createApplicationForAdminAction",      endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
       payload: {
         application: "NOT_USED_HERE",
         definition: [
           {
             actionType: "createInstance",
-            actionLabel: "createApplicationForAdminAction_instances",
-            application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-            endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+            actionLabel: "createApplicationForAdminAction_instances",            endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
             payload: {
               application: adminSelfApplication.uuid,
               applicationSection: "data",
@@ -769,17 +765,13 @@ export const Runner_InstallApplication: React.FC<DeployApplicationRunnerProps> =
 
     const localCreateDeploymentCompositeActionTemplate: CompositeActionSequence = {
       actionType: "compositeActionSequence",
-      actionLabel: "createDeployment",
-      application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-      endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+      actionLabel: "createDeployment",      endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
       payload: {
         application: "NOT_USED_HERE",
         definition: [
           {
             actionType: "storeManagementAction_openStore",
-            actionLabel: "storeManagementAction_openStore",
-            application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-            endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
+            actionLabel: "storeManagementAction_openStore",            endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
             payload: {
               application: testSelfApplicationUuid,
               deploymentUuid: testDeploymentUuid,
@@ -790,9 +782,7 @@ export const Runner_InstallApplication: React.FC<DeployApplicationRunnerProps> =
           },
           {
             actionType: "storeManagementAction_createStore",
-            actionLabel: "storeManagementAction_createStore",
-            application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-            endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
+            actionLabel: "storeManagementAction_createStore",            endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
             payload: {
               application: testSelfApplicationUuid,
               deploymentUuid: testDeploymentUuid,
@@ -801,9 +791,7 @@ export const Runner_InstallApplication: React.FC<DeployApplicationRunnerProps> =
           },
           {
             actionType: "createInstance",
-            actionLabel: "CreateDeploymentInstances",
-            application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-            endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+            actionLabel: "CreateDeploymentInstances",            endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
             payload: {
               application: adminSelfApplication.uuid,
               applicationSection: "data",
@@ -848,17 +836,13 @@ export const Runner_InstallApplication: React.FC<DeployApplicationRunnerProps> =
     const appEntitesAndInstances: any[] = [];
     const localResetAndinitializeDeploymentCompositeActionTemplate: CompositeActionSequence = {
       actionType: "compositeActionSequence",
-      actionLabel: "resetAndInitializeDeployment",
-      application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-      endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+      actionLabel: "resetAndInitializeDeployment",      endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
       payload: {
         application: "NOT_USED_IN_compositeActionSequence",
         definition: [
           {
             actionType: "resetModel",
-            actionLabel: "resetApplicationStore",
-            application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-            endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+            actionLabel: "resetApplicationStore",            endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
             payload: {
               // TODO: remove!!
               transformerType: "mergeIntoObject",
@@ -878,9 +862,7 @@ export const Runner_InstallApplication: React.FC<DeployApplicationRunnerProps> =
           },
           {
             actionType: "initModel",
-            actionLabel: "resetAndInitializeDeployment_initModel_" + testSelfApplicationUuid,
-            application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-            endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+            actionLabel: "resetAndInitializeDeployment_initModel_" + testSelfApplicationUuid,            endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
             payload: {
               application: testSelfApplicationUuid,
               model: {
@@ -903,27 +885,21 @@ export const Runner_InstallApplication: React.FC<DeployApplicationRunnerProps> =
           },
           {
             actionType: "commit", // in the case where initModel has a model attribute
-            actionLabel: "commitApplicationModelToPersistentStore",
-            application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-            endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+            actionLabel: "commitApplicationModelToPersistentStore",            endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
             payload: {
               application: testSelfApplicationUuid,
             },
           },
           {
             actionType: "rollback",
-            actionLabel: "refreshLocalCacheForApplication",
-            application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-            endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+            actionLabel: "refreshLocalCacheForApplication",            endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
             payload: {
               application: testSelfApplicationUuid,
             },
           },
           {
             actionType: "createEntity",
-            actionLabel: "CreateApplicationStoreEntities",
-            application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-            endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+            actionLabel: "CreateApplicationStoreEntities",            endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
             payload: {
               application: testSelfApplicationUuid,
               entities: appEntitesAndInstances,
@@ -931,18 +907,14 @@ export const Runner_InstallApplication: React.FC<DeployApplicationRunnerProps> =
           },
           {
             actionType: "commit",
-            actionLabel: "CommitApplicationStoreEntities",
-            application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-            endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+            actionLabel: "CommitApplicationStoreEntities",            endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
             payload: {
               application: testSelfApplicationUuid,
             },
           },
           {
             actionType: "createInstance",
-            actionLabel: "CreateApplicationStoreInstances",
-            application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-            endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+            actionLabel: "CreateApplicationStoreInstances",            endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
             payload: {
               application: testSelfApplicationUuid,
               applicationSection: "data",
@@ -965,9 +937,7 @@ export const Runner_InstallApplication: React.FC<DeployApplicationRunnerProps> =
     // Combine all three composite actions into one
     const createApplicationActionTemplate: CompositeActionTemplate = {
       actionType: "compositeActionSequence",
-      actionLabel: "deployApplication",
-      application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-      endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+      actionLabel: "deployApplication",      endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
       payload: {
         application: "NOT_USED_IN_TEMPLATE",
         definition: [

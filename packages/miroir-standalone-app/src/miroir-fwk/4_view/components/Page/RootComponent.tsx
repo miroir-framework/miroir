@@ -66,7 +66,7 @@ import { MiroirThemeProvider, useMiroirTheme, type MiroirThemeOption } from '../
 import { useRenderTracker } from "../../tools/renderCountTracker.js";
 import AppBar from './AppBar.js';
 
-import { DebugHelper, type DebugElements } from 'miroir-react';
+import { DebugHelper } from 'miroir-react';
 import { defaultStoredMiroirTheme } from 'miroir-test-app_deployment-miroir';
 import { packageName } from '../../../../constants.js';
 import {

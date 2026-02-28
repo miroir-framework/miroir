@@ -19,12 +19,14 @@
             },
             "definition": "LocalPersistenceAction_create"
           },
-          "actionLabel": { "type": "string", "optional": true },
-          "application": {
-            "type": "literal",
-            "definition": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
+          "actionLabel": {
+            "type": "string",
+            "optional": true
           },
-          "endpoint": { "type": "literal", "definition": "a93598b3-19b6-42e8-828c-f02042d212d4" },
+          "endpoint": {
+            "type": "literal",
+            "definition": "a93598b3-19b6-42e8-828c-f02042d212d4"
+          },
           "payload": {
             "type": "object",
             "definition": {
@@ -53,19 +55,42 @@
               "parentName": {
                 "type": "string",
                 "optional": true,
-                "tag": { "value": { "defaultLabel": "Parent Name", "editable": false } }
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Parent Name",
+                    "editable": false
+                  }
+                }
               },
               "parentUuid": {
                 "type": "string",
                 "optional": true,
-                "validations": [{ "type": "uuid" }],
-                "tag": { "value": { "defaultLabel": "Parent Uuid", "editable": false } }
+                "validations": [
+                  {
+                    "type": "uuid"
+                  }
+                ],
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Parent Uuid",
+                    "editable": false
+                  }
+                }
               },
               "uuid": {
                 "type": "string",
                 "optional": true,
-                "validations": [{ "type": "uuid" }],
-                "tag": { "value": { "defaultLabel": "Uuid", "editable": false } }
+                "validations": [
+                  {
+                    "type": "uuid"
+                  }
+                ],
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Uuid",
+                    "editable": false
+                  }
+                }
               },
               "objects": {
                 "type": "array",
@@ -98,12 +123,14 @@
             },
             "definition": "LocalPersistenceAction_read"
           },
-          "actionLabel": { "type": "string", "optional": true },
-          "application": {
-            "type": "literal",
-            "definition": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
+          "actionLabel": {
+            "type": "string",
+            "optional": true
           },
-          "endpoint": { "type": "literal", "definition": "a93598b3-19b6-42e8-828c-f02042d212d4" },
+          "endpoint": {
+            "type": "literal",
+            "definition": "a93598b3-19b6-42e8-828c-f02042d212d4"
+          },
           "payload": {
             "type": "object",
             "definition": {
@@ -132,19 +159,42 @@
               "parentName": {
                 "type": "string",
                 "optional": true,
-                "tag": { "value": { "defaultLabel": "Parent Name", "editable": false } }
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Parent Name",
+                    "editable": false
+                  }
+                }
               },
               "parentUuid": {
                 "type": "string",
                 "optional": true,
-                "validations": [{ "type": "uuid" }],
-                "tag": { "value": { "defaultLabel": "Parent Uuid", "editable": false } }
+                "validations": [
+                  {
+                    "type": "uuid"
+                  }
+                ],
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Parent Uuid",
+                    "editable": false
+                  }
+                }
               },
               "uuid": {
                 "type": "string",
                 "optional": true,
-                "validations": [{ "type": "uuid" }],
-                "tag": { "value": { "defaultLabel": "Uuid", "editable": false } }
+                "validations": [
+                  {
+                    "type": "uuid"
+                  }
+                ],
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Uuid",
+                    "editable": false
+                  }
+                }
               },
               "objects": {
                 "type": "array",
@@ -177,12 +227,14 @@
             },
             "definition": "LocalPersistenceAction_update"
           },
-          "actionLabel": { "type": "string", "optional": true },
-          "application": {
-            "type": "literal",
-            "definition": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
+          "actionLabel": {
+            "type": "string",
+            "optional": true
           },
-          "endpoint": { "type": "literal", "definition": "a93598b3-19b6-42e8-828c-f02042d212d4" },
+          "endpoint": {
+            "type": "literal",
+            "definition": "a93598b3-19b6-42e8-828c-f02042d212d4"
+          },
           "payload": {
             "type": "object",
             "definition": {
@@ -211,19 +263,42 @@
               "parentName": {
                 "type": "string",
                 "optional": true,
-                "tag": { "value": { "defaultLabel": "Parent Name", "editable": false } }
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Parent Name",
+                    "editable": false
+                  }
+                }
               },
               "parentUuid": {
                 "type": "string",
                 "optional": true,
-                "validations": [{ "type": "uuid" }],
-                "tag": { "value": { "defaultLabel": "Parent Uuid", "editable": false } }
+                "validations": [
+                  {
+                    "type": "uuid"
+                  }
+                ],
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Parent Uuid",
+                    "editable": false
+                  }
+                }
               },
               "uuid": {
                 "type": "string",
                 "optional": true,
-                "validations": [{ "type": "uuid" }],
-                "tag": { "value": { "defaultLabel": "Uuid", "editable": false } }
+                "validations": [
+                  {
+                    "type": "uuid"
+                  }
+                ],
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Uuid",
+                    "editable": false
+                  }
+                }
               },
               "objects": {
                 "type": "array",
@@ -256,12 +331,14 @@
             },
             "definition": "LocalPersistenceAction_delete"
           },
-          "actionLabel": { "type": "string", "optional": true },
-          "application": {
-            "type": "literal",
-            "definition": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
+          "actionLabel": {
+            "type": "string",
+            "optional": true
           },
-          "endpoint": { "type": "literal", "definition": "a93598b3-19b6-42e8-828c-f02042d212d4" },
+          "endpoint": {
+            "type": "literal",
+            "definition": "a93598b3-19b6-42e8-828c-f02042d212d4"
+          },
           "payload": {
             "type": "object",
             "definition": {
@@ -290,19 +367,42 @@
               "parentName": {
                 "type": "string",
                 "optional": true,
-                "tag": { "value": { "defaultLabel": "Parent Name", "editable": false } }
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Parent Name",
+                    "editable": false
+                  }
+                }
               },
               "parentUuid": {
                 "type": "string",
                 "optional": true,
-                "validations": [{ "type": "uuid" }],
-                "tag": { "value": { "defaultLabel": "Parent Uuid", "editable": false } }
+                "validations": [
+                  {
+                    "type": "uuid"
+                  }
+                ],
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Parent Uuid",
+                    "editable": false
+                  }
+                }
               },
               "uuid": {
                 "type": "string",
                 "optional": true,
-                "validations": [{ "type": "uuid" }],
-                "tag": { "value": { "defaultLabel": "Uuid", "editable": false } }
+                "validations": [
+                  {
+                    "type": "uuid"
+                  }
+                ],
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Uuid",
+                    "editable": false
+                  }
+                }
               },
               "objects": {
                 "type": "array",
@@ -335,12 +435,14 @@
             },
             "definition": "RestPersistenceAction_create"
           },
-          "actionLabel": { "type": "string", "optional": true },
-          "application": {
-            "type": "literal",
-            "definition": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
+          "actionLabel": {
+            "type": "string",
+            "optional": true
           },
-          "endpoint": { "type": "literal", "definition": "a93598b3-19b6-42e8-828c-f02042d212d4" },
+          "endpoint": {
+            "type": "literal",
+            "definition": "a93598b3-19b6-42e8-828c-f02042d212d4"
+          },
           "payload": {
             "type": "object",
             "definition": {
@@ -369,19 +471,42 @@
               "parentName": {
                 "type": "string",
                 "optional": true,
-                "tag": { "value": { "defaultLabel": "Parent Name", "editable": false } }
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Parent Name",
+                    "editable": false
+                  }
+                }
               },
               "parentUuid": {
                 "type": "string",
                 "optional": true,
-                "validations": [{ "type": "uuid" }],
-                "tag": { "value": { "defaultLabel": "Parent Uuid", "editable": false } }
+                "validations": [
+                  {
+                    "type": "uuid"
+                  }
+                ],
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Parent Uuid",
+                    "editable": false
+                  }
+                }
               },
               "uuid": {
                 "type": "string",
                 "optional": true,
-                "validations": [{ "type": "uuid" }],
-                "tag": { "value": { "defaultLabel": "Uuid", "editable": false } }
+                "validations": [
+                  {
+                    "type": "uuid"
+                  }
+                ],
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Uuid",
+                    "editable": false
+                  }
+                }
               },
               "objects": {
                 "type": "array",
@@ -414,12 +539,14 @@
             },
             "definition": "RestPersistenceAction_read"
           },
-          "actionLabel": { "type": "string", "optional": true },
-          "application": {
-            "type": "literal",
-            "definition": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
+          "actionLabel": {
+            "type": "string",
+            "optional": true
           },
-          "endpoint": { "type": "literal", "definition": "a93598b3-19b6-42e8-828c-f02042d212d4" },
+          "endpoint": {
+            "type": "literal",
+            "definition": "a93598b3-19b6-42e8-828c-f02042d212d4"
+          },
           "payload": {
             "type": "object",
             "definition": {
@@ -448,19 +575,42 @@
               "parentName": {
                 "type": "string",
                 "optional": true,
-                "tag": { "value": { "defaultLabel": "Parent Name", "editable": false } }
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Parent Name",
+                    "editable": false
+                  }
+                }
               },
               "parentUuid": {
                 "type": "string",
                 "optional": true,
-                "validations": [{ "type": "uuid" }],
-                "tag": { "value": { "defaultLabel": "Parent Uuid", "editable": false } }
+                "validations": [
+                  {
+                    "type": "uuid"
+                  }
+                ],
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Parent Uuid",
+                    "editable": false
+                  }
+                }
               },
               "uuid": {
                 "type": "string",
                 "optional": true,
-                "validations": [{ "type": "uuid" }],
-                "tag": { "value": { "defaultLabel": "Uuid", "editable": false } }
+                "validations": [
+                  {
+                    "type": "uuid"
+                  }
+                ],
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Uuid",
+                    "editable": false
+                  }
+                }
               },
               "objects": {
                 "type": "array",
@@ -493,12 +643,14 @@
             },
             "definition": "RestPersistenceAction_update"
           },
-          "actionLabel": { "type": "string", "optional": true },
-          "application": {
-            "type": "literal",
-            "definition": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
+          "actionLabel": {
+            "type": "string",
+            "optional": true
           },
-          "endpoint": { "type": "literal", "definition": "a93598b3-19b6-42e8-828c-f02042d212d4" },
+          "endpoint": {
+            "type": "literal",
+            "definition": "a93598b3-19b6-42e8-828c-f02042d212d4"
+          },
           "payload": {
             "type": "object",
             "definition": {
@@ -527,19 +679,42 @@
               "parentName": {
                 "type": "string",
                 "optional": true,
-                "tag": { "value": { "defaultLabel": "Parent Name", "editable": false } }
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Parent Name",
+                    "editable": false
+                  }
+                }
               },
               "parentUuid": {
                 "type": "string",
                 "optional": true,
-                "validations": [{ "type": "uuid" }],
-                "tag": { "value": { "defaultLabel": "Parent Uuid", "editable": false } }
+                "validations": [
+                  {
+                    "type": "uuid"
+                  }
+                ],
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Parent Uuid",
+                    "editable": false
+                  }
+                }
               },
               "uuid": {
                 "type": "string",
                 "optional": true,
-                "validations": [{ "type": "uuid" }],
-                "tag": { "value": { "defaultLabel": "Uuid", "editable": false } }
+                "validations": [
+                  {
+                    "type": "uuid"
+                  }
+                ],
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Uuid",
+                    "editable": false
+                  }
+                }
               },
               "objects": {
                 "type": "array",
@@ -572,12 +747,14 @@
             },
             "definition": "RestPersistenceAction_delete"
           },
-          "actionLabel": { "type": "string", "optional": true },
-          "application": {
-            "type": "literal",
-            "definition": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
+          "actionLabel": {
+            "type": "string",
+            "optional": true
           },
-          "endpoint": { "type": "literal", "definition": "a93598b3-19b6-42e8-828c-f02042d212d4" },
+          "endpoint": {
+            "type": "literal",
+            "definition": "a93598b3-19b6-42e8-828c-f02042d212d4"
+          },
           "payload": {
             "type": "object",
             "definition": {
@@ -606,19 +783,42 @@
               "parentName": {
                 "type": "string",
                 "optional": true,
-                "tag": { "value": { "defaultLabel": "Parent Name", "editable": false } }
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Parent Name",
+                    "editable": false
+                  }
+                }
               },
               "parentUuid": {
                 "type": "string",
                 "optional": true,
-                "validations": [{ "type": "uuid" }],
-                "tag": { "value": { "defaultLabel": "Parent Uuid", "editable": false } }
+                "validations": [
+                  {
+                    "type": "uuid"
+                  }
+                ],
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Parent Uuid",
+                    "editable": false
+                  }
+                }
               },
               "uuid": {
                 "type": "string",
                 "optional": true,
-                "validations": [{ "type": "uuid" }],
-                "tag": { "value": { "defaultLabel": "Uuid", "editable": false } }
+                "validations": [
+                  {
+                    "type": "uuid"
+                  }
+                ],
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Uuid",
+                    "editable": false
+                  }
+                }
               },
               "objects": {
                 "type": "array",

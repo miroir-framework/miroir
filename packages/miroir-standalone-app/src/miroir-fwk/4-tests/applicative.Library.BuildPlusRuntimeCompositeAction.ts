@@ -182,9 +182,7 @@ export function getTestSuitesForBuildPlusRuntimeCompositeAction(miroirConfig: an
             compositeActionSequence: {
               actionType: "compositeActionSequence",
               endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
-              actionLabel: "createEntityAndReportFromSpreadsheetAndUpdateMenu",
-              application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-              // endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+              actionLabel: "createEntityAndReportFromSpreadsheetAndUpdateMenu",              // endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
               payload: {
                 application: {
                   transformerType: "getFromParameters",
@@ -405,9 +403,7 @@ export function getTestSuitesForBuildPlusRuntimeCompositeAction(miroirConfig: an
                   // createEntity
                   {
                     actionType: "createEntity",
-                    actionLabel: "createEntity",
-                    application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-                    endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                    actionLabel: "createEntity",                    endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                     payload: {
                       application: {
                         transformerType: "getFromParameters",
@@ -482,9 +478,7 @@ export function getTestSuitesForBuildPlusRuntimeCompositeAction(miroirConfig: an
                   // commit
                   {
                     actionType: "commit",
-                    actionLabel: "commit",
-                    application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-                    endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                    actionLabel: "commit",                    endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                     payload: {
                       application: {
                         transformerType: "getFromParameters",
@@ -504,9 +498,7 @@ export function getTestSuitesForBuildPlusRuntimeCompositeAction(miroirConfig: an
                     actionLabel: "getListOfEntityDefinitions",
                     nameGivenToResult: "newApplicationEntityDefinitionList",
                     query: {
-                      actionType: "runBoxedQueryAction",
-                      application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-                      endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+                      actionType: "runBoxedQueryAction",                      endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
                       payload: {
                         application: {
                           transformerType: "getFromParameters",
@@ -570,9 +562,7 @@ export function getTestSuitesForBuildPlusRuntimeCompositeAction(miroirConfig: an
                     actionLabel: "getListOfEntities",
                     nameGivenToResult: "newApplicationEntityList",
                     query: {
-                      actionType: "runBoxedQueryAction",
-                      application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-                      endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+                      actionType: "runBoxedQueryAction",                      endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
                       payload: {
                         application: {
                           transformerType: "getFromParameters",

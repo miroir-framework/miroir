@@ -7,7 +7,7 @@ import {
   ViewParamsData,
   type DomainAction,
 } from "miroir-core";
-import { entityViewParams } from "miroir-test-app_deployment-admin";
+import { adminSelfApplication, entityViewParams } from "miroir-test-app_deployment-admin";
 
 export interface ViewParamsUpdate {
   currentValue: ViewParamsData | undefined;
@@ -116,11 +116,12 @@ export class ViewParamsUpdateQueue {
       // Create the updateInstance action
       const updateAction: DomainAction = {
         actionType: "updateInstance",
-        application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
         endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-        deploymentUuid: this.config.deploymentUuid,
+        // deploymentUuid: this.config.deploymentUuid,
         payload: {
+          application: adminSelfApplication.uuid,
           applicationSection: "data",
+          parentUuid: entityViewParams.uuid, // ViewParams entity UUID
           objects: [
             {
               parentName: entityViewParams.name,

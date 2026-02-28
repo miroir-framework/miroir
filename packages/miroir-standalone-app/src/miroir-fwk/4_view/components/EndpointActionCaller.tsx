@@ -58,9 +58,7 @@ export interface EndpointActionCallerProps {}
 
 const formikPath_EndpointActionCaller = "EndpointActionCaller";
 
-const runnerDefinition = {
-  application: selfApplicationMiroir.uuid,
-  runnerName: "EndpointActionCaller",
+const runnerDefinition = {  runnerName: "EndpointActionCaller",
   runnerLabel: "Call Endpoint Action",
   // currentEndpointUuid : "212f2784-5b68-43b2-8ee0-89b1c6fdd0de",
   // domainActionType : "lendDocument",

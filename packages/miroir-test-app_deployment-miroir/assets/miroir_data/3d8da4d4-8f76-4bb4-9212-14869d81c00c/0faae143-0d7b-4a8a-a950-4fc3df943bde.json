@@ -19,12 +19,14 @@
             },
             "definition": "runBoxedQueryTemplateAction"
           },
-          "actionLabel": { "type": "string", "optional": true },
-          "application": {
-            "type": "literal",
-            "definition": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
+          "actionLabel": {
+            "type": "string",
+            "optional": true
           },
-          "endpoint": { "type": "literal", "definition": "9e404b3c-368c-40cb-be8b-e3c28550c25e" },
+          "endpoint": {
+            "type": "literal",
+            "definition": "9e404b3c-368c-40cb-be8b-e3c28550c25e"
+          },
           "payload": {
             "type": "object",
             "definition": {
@@ -44,10 +46,14 @@
                       "initializeToType": "transformer",
                       "transformer": {
                         "transformerType": "getFromParameters",
-                        "referencePath": ["applicationUuid"]
+                        "referencePath": [
+                          "applicationUuid"
+                        ]
                       }
                     },
-                    "display": { "editable": false }
+                    "display": {
+                      "editable": false
+                    }
                   }
                 }
               },
@@ -86,12 +92,14 @@
             },
             "definition": "runBoxedQueryAction"
           },
-          "actionLabel": { "type": "string", "optional": true },
-          "application": {
-            "type": "literal",
-            "definition": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
+          "actionLabel": {
+            "type": "string",
+            "optional": true
           },
-          "endpoint": { "type": "literal", "definition": "9e404b3c-368c-40cb-be8b-e3c28550c25e" },
+          "endpoint": {
+            "type": "literal",
+            "definition": "9e404b3c-368c-40cb-be8b-e3c28550c25e"
+          },
           "payload": {
             "type": "object",
             "definition": {
@@ -107,7 +115,9 @@
                       "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                       "targetEntityOrderInstancesBy": "name"
                     },
-                    "display": { "editable": false }
+                    "display": {
+                      "editable": false
+                    }
                   }
                 }
               },
@@ -122,7 +132,12 @@
               "queryExecutionStrategy": {
                 "type": "enum",
                 "optional": true,
-                "definition": ["localCacheOrFail", "localCacheOrFetch", "ServerCache", "storage"]
+                "definition": [
+                  "localCacheOrFail",
+                  "localCacheOrFetch",
+                  "ServerCache",
+                  "storage"
+                ]
               },
               "query": {
                 "type": "schemaReference",

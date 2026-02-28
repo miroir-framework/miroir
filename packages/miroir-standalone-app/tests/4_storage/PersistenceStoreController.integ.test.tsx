@@ -513,9 +513,7 @@ describe.sequential("PersistenceStoreController.integ.test", () => {
     // test starts
     const modelActionRenameEntity:ModelActionRenameEntity =  {
       // actionType: "modelAction",
-      actionType: "renameEntity",
-      application:"360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-      endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+      actionType: "renameEntity",      endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       payload: {
         application: selfApplicationLibrary.uuid,
         // deploymentUuid:deployment_Library_DO_NO_USE.uuid,
@@ -606,9 +604,7 @@ describe.sequential("PersistenceStoreController.integ.test", () => {
     // test starts
     const modelActionDropEntity:ModelActionDropEntity =  {
       // actionType: "modelAction",
-      actionType: "dropEntity",
-      application:"360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-      endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+      actionType: "dropEntity",      endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       payload: {
         application: selfApplicationLibrary.uuid,
         // deploymentUuid:deployment_Library_DO_NO_USE.uuid,
@@ -702,9 +698,7 @@ describe.sequential("PersistenceStoreController.integ.test", () => {
     };
     const modelActionAlterAttribute:ModelAction =  {
       // actionType: "modelAction",
-      actionType: "alterEntityAttribute",
-      application:"360fcf1f-f0d4-4f8a-9262-07886e70fa15", 
-      endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+      actionType: "alterEntityAttribute",      endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       payload: {
         application: selfApplicationLibrary.uuid,
         // deploymentUuid:deployment_Library_DO_NO_USE.uuid,

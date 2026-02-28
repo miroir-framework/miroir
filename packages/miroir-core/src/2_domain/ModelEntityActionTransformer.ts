@@ -37,9 +37,7 @@ export class ModelEntityActionTransformer{
       case "createEntity": {
         return [
           {
-            actionType: "createInstance",
-            application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-            endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+            actionType: "createInstance",            endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
             payload: {
               application: modelAction.payload.application,
               applicationSection: "model",
@@ -79,9 +77,7 @@ export class ModelEntityActionTransformer{
         return [
           {
             // actionType: "instanceAction",
-            actionType: "deleteInstance",
-            application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-            endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+            actionType: "deleteInstance",            endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
             payload: {
               application: modelAction.payload.application,
               // deploymentUuid: modelAction.payload.deploymentUuid,
@@ -147,9 +143,7 @@ export class ModelEntityActionTransformer{
           ];
           const result: InstanceAction[] = [
             {
-              actionType: "updateInstance",
-              application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-              endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+              actionType: "updateInstance",              endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
               payload: {
                 application: modelAction.payload.application,
                 parentUuid: entityEntity.uuid,
@@ -211,9 +205,7 @@ export class ModelEntityActionTransformer{
           ];
           const result: InstanceAction[] = [
             {
-              actionType: "updateInstance",
-              application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-              endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+              actionType: "updateInstance",              endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
               payload: {
                 application: modelAction.payload.application,
                 parentUuid: entityEntityDefinition.uuid,

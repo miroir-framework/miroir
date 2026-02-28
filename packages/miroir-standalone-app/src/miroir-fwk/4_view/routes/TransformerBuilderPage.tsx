@@ -137,9 +137,7 @@ export const TransformerBuilderPage: React.FC<any> = (
           currentApplicationDeploymentMap,
           {
             extractor: {
-              queryType: "boxedExtractorOrCombinerReturningObject",
-              application: selfApplicationMiroir.uuid,
-              contextResults: {},
+              queryType: "boxedExtractorOrCombinerReturningObject",              contextResults: {},
               pageParams: {},
               queryParams: {},
               select: {

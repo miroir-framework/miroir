@@ -84,7 +84,7 @@ export interface CliCommandHandler<T extends CliCommandDescription> {
   actionEnvelope: {
     actionType: string;
     actionLabel: string;
-    application: string;
+    // application: string;
     endpoint: string;
   };
   execute: CliExecuteFunction;
@@ -327,7 +327,7 @@ export function cliCommandExecutor(
  */
 function cliCommandEntry(endpoint: EndpointDefinition, actionType: string): CliCommandHandler<any> {
   const actionDef = endpoint.definition.actions.find(
-    (action: any) => action.actionParameters.actionType.definition === actionType
+    (action: any) => action.actionParameters.actionType.definition === actionType,
   );
   if (!actionDef) {
     throw new Error(`Action definition not found for action type: ${actionType}`);
@@ -335,13 +335,14 @@ function cliCommandEntry(endpoint: EndpointDefinition, actionType: string): CliC
   if (!actionDef.actionParameters.payload) {
     throw new Error(`Payload definition not found for action type: ${actionType}`);
   }
-  
+
   const jzodPayload = actionDef.actionParameters.payload;
   const commandName = actionType;
-  const actionDescription = actionDef.actionParameters.actionType.tag?.value?.description 
-    || actionDef.actionParameters.actionType.tag?.value?.defaultLabel
-    || `Execute ${actionType} action on ${endpoint.name || endpoint.uuid}`;
-  
+  const actionDescription =
+    actionDef.actionParameters.actionType.tag?.value?.description ||
+    actionDef.actionParameters.actionType.tag?.value?.defaultLabel ||
+    `Execute ${actionType} action on ${endpoint.name || endpoint.uuid}`;
+
   return {
     commandDescription: {
       name: commandName,
@@ -351,8 +352,7 @@ function cliCommandEntry(endpoint: EndpointDefinition, actionType: string): CliC
     payloadZodSchema: jzodPayloadToZodSchema(jzodPayload),
     actionEnvelope: {
       actionType: actionType,
-      actionLabel: `CLI: ${actionType.replace(/([A-Z])/g, ' $1').trim()}`,
-      application: endpoint.application,
+      actionLabel: `CLI: ${actionType.replace(/([A-Z])/g, " $1").trim()}`,
       endpoint: endpoint.uuid,
     },
     execute: cliCommandExecutor(commandName),

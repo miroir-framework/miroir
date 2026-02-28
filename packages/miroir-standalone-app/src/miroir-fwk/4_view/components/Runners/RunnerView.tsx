@@ -209,9 +209,7 @@ export function StoredRunnerView(props: {
           actionType: "compositeActionTemplate",
           compositeActionTemplate: {
             actionType: "compositeActionSequence",
-            actionLabel: storedRunner.defaultLabel,
-            application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-            endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+            actionLabel: storedRunner.defaultLabel,            endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             payload: {
               application: storedRunner.application,
               definition: [

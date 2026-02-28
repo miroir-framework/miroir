@@ -403,9 +403,7 @@ export function AppBar(props:AppBarProps) {
                 onAction={async () => {
                   return domainController.handleActionFromUI(
                     {
-                      actionType: "commit",
-                      application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-                      endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                      actionType: "commit",                      endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                       payload: {
                         application: noValue.uuid,
                       },

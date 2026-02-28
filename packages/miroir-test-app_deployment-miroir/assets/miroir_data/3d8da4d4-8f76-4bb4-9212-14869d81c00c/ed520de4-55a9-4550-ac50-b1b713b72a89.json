@@ -27,10 +27,6 @@
             "type": "literal",
             "definition": "ed520de4-55a9-4550-ac50-b1b713b72a89"
           },
-          "application": {
-            "type": "literal",
-            "definition": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
-          },
           "payload": {
             "type": "object",
             "definition": {
@@ -50,7 +46,9 @@
                       "initializeToType": "transformer",
                       "transformer": {
                         "transformerType": "getFromParameters",
-                        "referencePath": ["applicationUuid"]
+                        "referencePath": [
+                          "applicationUuid"
+                        ]
                       }
                     },
                     "display": {
@@ -203,10 +201,6 @@
             "type": "string",
             "optional": true
           },
-          "application": {
-            "type": "literal",
-            "definition": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
-          },
           "endpoint": {
             "type": "literal",
             "definition": "ed520de4-55a9-4550-ac50-b1b713b72a89"
@@ -282,10 +276,6 @@
             "type": "string",
             "optional": true
           },
-          "application": {
-            "type": "literal",
-            "definition": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
-          },
           "endpoint": {
             "type": "literal",
             "definition": "ed520de4-55a9-4550-ac50-b1b713b72a89"
@@ -360,10 +350,6 @@
           "actionLabel": {
             "type": "string",
             "optional": true
-          },
-          "application": {
-            "type": "literal",
-            "definition": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
           },
           "endpoint": {
             "type": "literal",
@@ -472,10 +458,6 @@
             "type": "string",
             "optional": true
           },
-          "application": {
-            "type": "literal",
-            "definition": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
-          },
           "endpoint": {
             "type": "literal",
             "definition": "ed520de4-55a9-4550-ac50-b1b713b72a89"
@@ -539,10 +521,6 @@
           "actionLabel": {
             "type": "string",
             "optional": true
-          },
-          "application": {
-            "type": "literal",
-            "definition": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
           },
           "endpoint": {
             "type": "literal",
@@ -629,10 +607,6 @@
           "actionLabel": {
             "type": "string",
             "optional": true
-          },
-          "application": {
-            "type": "literal",
-            "definition": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
           },
           "endpoint": {
             "type": "literal",

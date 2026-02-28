@@ -386,9 +386,7 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", async (
         const queryResult: Action2ReturnType =
           await localMiroirPersistenceStoreController.handleBoxedQueryAction(
             {
-              actionType: "runBoxedQueryAction",
-              application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-              endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+              actionType: "runBoxedQueryAction",              endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
               payload: {
                 application: selfApplicationLibrary.uuid,
                 applicationSection: applicationSection,
@@ -565,16 +563,10 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", async (
         const queryResult: Action2ReturnType =
           await localMiroirPersistenceStoreController.handleBoxedExtractorAction(
             {
-              actionType: "runBoxedExtractorAction",
-              application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-              endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-              payload: {
-                application: selfApplicationMiroir.uuid,
-                applicationSection: applicationSection,
+              actionType: "runBoxedExtractorAction",              endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+              payload: {                applicationSection: applicationSection,
                 query: {
-                  queryType: "boxedExtractorOrCombinerReturningObject",
-                  application: selfApplicationMiroir.uuid,
-                  pageParams: {},
+                  queryType: "boxedExtractorOrCombinerReturningObject",                  pageParams: {},
                   queryParams: {},
                   contextResults: {},
                   select: {
@@ -619,9 +611,7 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", async (
         const queryResult: Action2ReturnType =
           await localAppPersistenceStoreController.handleBoxedQueryAction(
             {
-              actionType: "runBoxedQueryAction",
-              application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-              endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+              actionType: "runBoxedQueryAction",              endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
               payload: {
                 application: selfApplicationLibrary.uuid,
                 applicationSection: applicationSection,
@@ -681,9 +671,7 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", async (
         const queryResult: Action2ReturnType =
           await localAppPersistenceStoreController.handleBoxedQueryAction(
             {
-              actionType: "runBoxedQueryAction",
-              application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-              endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+              actionType: "runBoxedQueryAction",              endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
               payload: {
                 application: selfApplicationLibrary.uuid,
                 // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
@@ -864,9 +852,7 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", async (
         const applicationSection: ApplicationSection = "model";
         const queryResult = await localMiroirPersistenceStoreController.handleBoxedQueryAction(
           {
-            actionType: "runBoxedQueryAction",
-            application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-            endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+            actionType: "runBoxedQueryAction",            endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
             payload: {
               application: selfApplicationLibrary.uuid,
               applicationSection: applicationSection,
@@ -921,9 +907,7 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", async (
         const applicationSection: ApplicationSection = "data";
         const queryResult = await localAppPersistenceStoreController.handleBoxedQueryAction(
           {
-            actionType: "runBoxedQueryAction",
-            application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-            endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+            actionType: "runBoxedQueryAction",            endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
             payload: {
               application: selfApplicationLibrary.uuid,
               // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
@@ -986,9 +970,7 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", async (
       async () => {
         const applicationSection: ApplicationSection = "data";
         const queryResult = await localAppPersistenceStoreController.handleBoxedQueryAction({
-          actionType: "runBoxedQueryAction",
-          application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-          endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+          actionType: "runBoxedQueryAction",          endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
           payload: {
             application: selfApplicationLibrary.uuid,
             // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
@@ -1047,9 +1029,7 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", async (
         const applicationSection: ApplicationSection = "data";
         const queryResult = await localAppPersistenceStoreController.handleBoxedQueryAction(
           {
-            actionType: "runBoxedQueryAction",
-            application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-            endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+            actionType: "runBoxedQueryAction",            endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
             payload: {
               application: selfApplicationLibrary.uuid,
               // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
@@ -1113,9 +1093,7 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", async (
         const applicationSection: ApplicationSection = "data";
         const queryResult = await localAppPersistenceStoreController.handleBoxedQueryAction(
           {
-            actionType: "runBoxedQueryAction",
-            application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-            endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+            actionType: "runBoxedQueryAction",            endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
             payload: {
               application: selfApplicationLibrary.uuid,
               // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
@@ -1178,9 +1156,7 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", async (
         const queryResult = await localAppPersistenceStoreController.handleBoxedQueryAction(
           {
             actionType: "runBoxedQueryAction",
-            // actionName: "runQuery",
-            application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-            endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+            // actionName: "runQuery",            endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
             payload: {
               application: selfApplicationLibrary.uuid,
               applicationSection: applicationSection,
@@ -1352,9 +1328,7 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", async (
       async () => {
         const applicationSection: ApplicationSection = "data";
         const queryResult = await localAppPersistenceStoreController.handleBoxedQueryAction({
-          actionType: "runBoxedQueryAction",
-          application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-          endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+          actionType: "runBoxedQueryAction",          endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
           payload: {
             application: selfApplicationLibrary.uuid,
             // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
@@ -1441,9 +1415,7 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", async (
         const applicationSection: ApplicationSection = "data";
         const queryResult = await localAppPersistenceStoreController.handleBoxedQueryAction(
           {
-            actionType: "runBoxedQueryAction",
-            application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-            endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+            actionType: "runBoxedQueryAction",            endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
             payload: {
               application: selfApplicationLibrary.uuid,
               // deploymentUuid: deployment_Library_DO_NO_USE.uuid,

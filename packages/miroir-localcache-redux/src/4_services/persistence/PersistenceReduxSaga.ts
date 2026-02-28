@@ -460,9 +460,7 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
           actionType: actionMap[newActionType],
           parentName: action.payload.parentName ?? "",
           parentUuid: action.payload.parentUuid ?? "",
-          // deploymentUuid: action.deploymentUuid, // NOT for createInstance
-          application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-          endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+          // deploymentUuid: action.deploymentUuid, // NOT for createInstance          endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
           payload: {
             application: action.payload.application,
             // deploymentUuid: action.payload.deploymentUuid, // ONLY for createInstance

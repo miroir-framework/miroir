@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import type { ApplicationDeploymentMap } from "../../1_core/Deployment";
+import type { ApplicationDeploymentMap, EndpointApplicationMap } from "../../1_core/Deployment";
 import type { Uuid } from "../1_core/EntityDefinition";
 import {
   CompositeActionSequence,
@@ -136,7 +136,8 @@ export interface DomainControllerInterface {
   handleActionFromUI(
     action: DomainAction,
     applicationDeploymentMap: ApplicationDeploymentMap,
-    currentModel?: MiroirModelEnvironment
+    currentModel?: MiroirModelEnvironment,
+    endpointApplicationMap?: EndpointApplicationMap
   ): Promise<Action2VoidReturnType>;
   /**
    *
@@ -146,7 +147,8 @@ export interface DomainControllerInterface {
   handleAction(
     action: DomainAction,
     applicationDeploymentMap: ApplicationDeploymentMap,
-    currentModel?: MiroirModelEnvironment
+    currentModel?: MiroirModelEnvironment,
+    endpointApplicationMap?: EndpointApplicationMap
   ): Promise<Action2VoidReturnType>;
   /**
    * data access must accomodate different styles of access

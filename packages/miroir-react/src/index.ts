@@ -12,7 +12,7 @@ export type { DeepPartial, MiroirTheme, ResolvedMiroirTheme } from "./components
 
 export { resolveTableThemeColors, resolveThemeColors } from "./components/Themes/ThemeColorDefaults.js";
 
-export { DebugHelper } from "./components/helpers/DebugHelper.js";
+export { DebugHelper, type DebugElements } from "./components/helpers/DebugHelper.js";
 export { ThemedOnScreenDebug, ThemedOnScreenHelper } from "./components/helpers/ThemedHelper.js";
 export {
   errorLogService,

@@ -31,18 +31,18 @@ import {
 } from "miroir-test-app_deployment-miroir";
 
 export const coreEndpoints: Record<string, EndpointDefinition> = {
-  [applicationEndpointV1.uuid]: applicationEndpointV1 as EndpointDefinition,
+  [applicationEndpointV1.uuid]: applicationEndpointV1 as any as EndpointDefinition,
   [deploymentEndpointV1.uuid]: deploymentEndpointV1 as any as EndpointDefinition,
   [instanceEndpointV1.uuid]: instanceEndpointV1 as any as EndpointDefinition,
   [modelEndpointV1.uuid]: modelEndpointV1 as any as EndpointDefinition,
   [domainEndpointVersionV1.uuid]: domainEndpointVersionV1 as any as EndpointDefinition,
-  [testEndpointVersionV1.uuid]: testEndpointVersionV1 as EndpointDefinition,
+  [testEndpointVersionV1.uuid]: testEndpointVersionV1 as any as EndpointDefinition,
   [storeManagementEndpoint.uuid]: storeManagementEndpoint as any as EndpointDefinition,
   [instanceEndpointVersionV1.uuid]: instanceEndpointVersionV1 as any as EndpointDefinition,
-  [undoRedoEndpointVersionV1.uuid]: undoRedoEndpointVersionV1 as EndpointDefinition,
-  [localCacheEndpointVersionV1.uuid]: localCacheEndpointVersionV1 as EndpointDefinition,
-  [queryEndpointVersionV1.uuid]: queryEndpointVersionV1 as EndpointDefinition,
-  [persistenceEndpointVersionV1.uuid]: persistenceEndpointVersionV1 as EndpointDefinition,
+  [undoRedoEndpointVersionV1.uuid]: undoRedoEndpointVersionV1 as any as EndpointDefinition,
+  [localCacheEndpointVersionV1.uuid]: localCacheEndpointVersionV1 as any as EndpointDefinition,
+  [queryEndpointVersionV1.uuid]: queryEndpointVersionV1 as any as EndpointDefinition,
+  [persistenceEndpointVersionV1.uuid]: persistenceEndpointVersionV1 as any as EndpointDefinition,
 };
 
 export const coreEndpointsUuidList = Object.keys(coreEndpoints);

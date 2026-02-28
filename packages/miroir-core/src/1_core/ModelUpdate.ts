@@ -80,9 +80,7 @@ export function getModelUpdate(
 
   // Build the ModelAction
   const modelAction: ModelAction = {
-    actionType: "alterEntityAttribute",
-    application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-    endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+    actionType: "alterEntityAttribute",    endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
     payload: {
       application: application,
       // deploymentUuid: entityDefinitionBefore.parentUuid,

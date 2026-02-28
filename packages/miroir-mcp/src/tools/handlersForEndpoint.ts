@@ -356,9 +356,7 @@ function mcpToolEntry(endpoint: EndpointDefinition, actionType: string): McpRequ
     ),
     actionEnvelope: {
       actionType: actionType,
-      actionLabel: `MCP: ${actionType.replace(/([A-Z])/g, ' $1').trim()}`,
-      application: endpoint.application,
-      endpoint: endpoint.uuid,
+      actionLabel: `MCP: ${actionType.replace(/([A-Z])/g, ' $1').trim()}`,      endpoint: endpoint.uuid,
     },
     actionHandler: mcpToolHandler(toolName),
   };

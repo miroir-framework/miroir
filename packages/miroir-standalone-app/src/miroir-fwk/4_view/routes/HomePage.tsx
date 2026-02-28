@@ -207,12 +207,8 @@ export const HomePage = (props: RootComponentProps) => {
         <button
           onClick={async () => {
             await domainController.handleActionFromUI({
-              actionType: "undo",
-              application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-              endpoint: "71c04f8e-c687-4ea7-9a19-bc98d796c389",
-              payload: {
-                application: selfApplicationMiroir.uuid,
-                deploymentUuid: deployment_Miroir.uuid,
+              actionType: "undo",              endpoint: "71c04f8e-c687-4ea7-9a19-bc98d796c389",
+              payload: {                deploymentUuid: deployment_Miroir.uuid,
               }
             }, currentApplicationDeploymentMap, defaultMiroirModelEnvironment);
           }}
@@ -225,12 +221,8 @@ export const HomePage = (props: RootComponentProps) => {
         <button
           onClick={async () => {
             await domainController.handleActionFromUI({
-              actionType: "redo",
-              application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-              endpoint: "71c04f8e-c687-4ea7-9a19-bc98d796c389",
-              payload: {
-                application: selfApplicationMiroir.uuid,
-                deploymentUuid: deployment_Miroir.uuid,
+              actionType: "redo",              endpoint: "71c04f8e-c687-4ea7-9a19-bc98d796c389",
+              payload: {                deploymentUuid: deployment_Miroir.uuid,
               }
             }, currentApplicationDeploymentMap, defaultMiroirModelEnvironment);
           }}

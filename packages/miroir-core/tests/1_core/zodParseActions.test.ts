@@ -103,7 +103,6 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
     zodSchema: domainAction,
     action: {
       actionType: "commit",
-      application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       payload: {
         application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
@@ -114,7 +113,6 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
     zodSchema: domainAction,
     action: {
       actionType: "rollback",
-      application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       payload: {
         application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
@@ -125,7 +123,6 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
     zodSchema: domainAction,
     action: {
       actionType: "initModel",
-      application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       payload: {
         application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
@@ -144,6 +141,8 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
             reports: [],
             applicationVersionCrossEntityDefinition: [],
             storedQueries: [],
+            runners: [],
+            themes: [],
           },
           // TODO: this is wrong, selfApplication, selfApplication version, etc. must be passed as parameters!!!!!!!!!!!!!!!!!!!!
           selfApplication: testApplicationConfig.selfApplication,
@@ -157,7 +156,6 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
     zodSchema: domainAction,
     action: {
       actionType: "resetModel",
-      application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       payload: {
         application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
@@ -168,7 +166,6 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
     zodSchema: domainAction,
     action: {
       actionType: "resetData",
-      application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       payload: {
         application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
@@ -179,7 +176,6 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
     zodSchema: domainAction,
     action: {
       actionType: "alterEntityAttribute",
-      application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       payload: {
         application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
@@ -203,7 +199,6 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
     zodSchema: domainAction,
     action: {
       actionType: "renameEntity",
-      application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       payload: {
         application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
@@ -218,7 +213,6 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
     zodSchema: domainAction,
     action: {
       actionType: "createEntity",
-      application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       payload: {
         application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
@@ -235,7 +229,6 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
     zodSchema: domainAction,
     action: {
       actionType: "dropEntity",
-      application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       payload: {
         application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
@@ -250,7 +243,6 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
     zodSchema: domainAction,
     action: {
       actionType: "createInstance",
-      application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
       endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
       payload: {
         application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
@@ -271,7 +263,6 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
     zodSchema: domainAction,
     action: {
       actionType: "updateInstance",
-      application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
       endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
       payload: {
         application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
@@ -292,7 +283,6 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
     zodSchema: domainAction,
     action: {
       actionType: "deleteInstance",
-      application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
       endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
       payload: {
         application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
@@ -312,7 +302,6 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
     zodSchema: domainAction,
     action: {
       actionType: "deleteInstanceWithCascade",
-      application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
       endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
       payload: {
         application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
@@ -332,7 +321,6 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
     zodSchema: domainAction,
     action: {
       actionType: "getInstances",
-      application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
       endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
       payload: {
         application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
@@ -345,7 +333,6 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
     zodSchema: domainAction,
     action: {
       actionType: "getInstance",
-      application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
       endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
       payload: {
         application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
@@ -361,7 +348,6 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
     zodSchema: domainAction,
     action: {
       actionType: "loadNewInstancesInLocalCache",
-      application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
       endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
       payload: {
         application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
@@ -380,7 +366,6 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
     zodSchema: domainAction,
     action: {
       actionType: "undo",
-      application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
       endpoint: "71c04f8e-c687-4ea7-9a19-bc98d796c389",
       payload: {
         application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
@@ -391,7 +376,6 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
     zodSchema: domainAction,
     action: {
       actionType: "redo",
-      application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
       endpoint: "71c04f8e-c687-4ea7-9a19-bc98d796c389",
       payload: {
         application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
@@ -403,13 +387,11 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
     action: {
       actionType: "transactionalInstanceAction",
       // endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-      application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
       endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
       payload: {
         application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
         instanceAction: {
           actionType: "createInstance",
-          application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
           endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
           payload: {
             application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
@@ -435,7 +417,6 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
     action: {
       actionType: "LocalPersistenceAction_create",
       endpoint: "a93598b3-19b6-42e8-828c-f02042d212d4",
-      application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
       payload: {
         section: "data",
         application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
@@ -452,7 +433,6 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
     zodSchema: storeManagementAction,
     action: {
       actionType: "storeManagementAction_createStore",
-      application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
       endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
       payload: {
         application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
@@ -465,7 +445,6 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
     zodSchema: storeManagementAction,
     action: {
       actionType: "storeManagementAction_deleteStore",
-      application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
       endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
       payload: {
         application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
@@ -480,7 +459,6 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
     action: {
       actionType: "storeManagementAction_resetAndInitApplicationDeployment",
       endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
-      application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
       payload: {
         application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
         deployments: [
@@ -522,7 +500,6 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
     zodSchema: storeManagementAction,
     action: {
       actionType: "storeManagementAction_openStore",
-      application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
       endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
       payload: {
         application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
@@ -539,7 +516,6 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
     zodSchema: storeManagementAction,
     action: {
       actionType: "storeManagementAction_closeStore",
-      application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
       endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
       payload: {
         application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
@@ -553,7 +529,6 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
     zodSchema: persistenceAction,
     action: {
       actionType: "runBoxedQueryAction",
-      application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
       endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
       payload: {
         application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
@@ -644,7 +619,6 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
     zodSchema: domainAction,
     action: {
       actionType: "compositeActionSequence",
-      application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
       endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
       payload: {
         application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15", // IGNORED
@@ -652,7 +626,6 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
         definition: [
           {
             actionType: "createInstance",
-            application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
             endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
             payload: {
               application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
@@ -670,7 +643,6 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
           },
           {
             actionType: "updateInstance",
-            application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
             endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
             payload: {
               application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",

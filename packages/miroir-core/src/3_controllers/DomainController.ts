@@ -91,7 +91,11 @@ import {
   TransformerFailure,
   type TransformerReturnType
 } from "../0_interfaces/2_domain/DomainElement.js";
-import { type ApplicationDeploymentMap } from '../1_core/Deployment.js';
+import {
+  type ApplicationDeploymentMap,
+  type EndpointApplicationMap,
+  defaultEndpointApplicationMap,
+} from "../1_core/Deployment.js";
 import { resolveTestCompositeActionTemplateSuite } from '../2_domain/TestSuiteTemplate.js';
 import {
   ignorePostgresExtraAttributesOnList,
@@ -128,7 +132,6 @@ export async function resetAndInitApplicationDeployment(
     await domainController.handleAction(
       {
         actionType: "resetModel",
-        application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
         endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
         payload: {
           application: selfAdminConfigurationDeployment.selfApplication,
@@ -142,7 +145,6 @@ export async function resetAndInitApplicationDeployment(
     await domainController.handleAction(
       {
         actionType: "initModel",
-        application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
         endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
         payload: {
           application: selfAdminConfigurationDeployment.selfApplication,
@@ -174,7 +176,6 @@ export async function resetAndInitApplicationDeployment(
     await domainController.handleAction(
       {
         actionType: "rollback",
-        application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
         endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
         payload: {
           application: d.selfApplication,
@@ -349,7 +350,6 @@ export class DomainController implements DomainControllerInterface {
           applicationDeploymentMap,
           {
             actionType: "RestPersistenceAction_read",
-            application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
             endpoint: "a93598b3-19b6-42e8-828c-f02042d212d4",
             payload: {
               application: applicationUuid,
@@ -487,7 +487,6 @@ export class DomainController implements DomainControllerInterface {
                   applicationDeploymentMap,
                   {
                     actionType: "RestPersistenceAction_read",
-                    application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                     endpoint: "a93598b3-19b6-42e8-828c-f02042d212d4",
                     payload: {
                       application: applicationUuid,
@@ -552,7 +551,6 @@ export class DomainController implements DomainControllerInterface {
               applicationDeploymentMap,
               {
                 actionType: "loadNewInstancesInLocalCache",
-                application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                 endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
                 payload: {
                   application: applicationUuid,
@@ -569,7 +567,6 @@ export class DomainController implements DomainControllerInterface {
             applicationDeploymentMap,
             {
               actionType: "rollback",
-              application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
               endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
               payload: {
                 application: applicationUuid,
@@ -929,7 +926,6 @@ export class DomainController implements DomainControllerInterface {
     const createInstanceAction: InstanceAction = {
       actionType: "createInstance",
       actionLabel,
-      application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
       endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
       payload: {
         application,
@@ -947,7 +943,6 @@ export class DomainController implements DomainControllerInterface {
     const createInstanceResult = await this.handleAction(
       {
         actionType: "transactionalInstanceAction",
-        application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
         endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
         payload: {
           application,
@@ -1134,7 +1129,6 @@ export class DomainController implements DomainControllerInterface {
               for (const { entity, entityDefinition } of entitiesToCreate) {
                 const createEntityAction: ModelAction = {
                   actionType: "createEntity",
-                  application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   payload: {
                     application: modelActionResetModel.payload.application,
@@ -1278,7 +1272,6 @@ export class DomainController implements DomainControllerInterface {
               for (const { entity, entityDefinition } of entitiesToCreate) {
                 const createEntityAction: ModelAction = {
                   actionType: "createEntity",
-                  application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   payload: {
                     application: modelActionInitModel.payload.application,
@@ -1470,7 +1463,6 @@ export class DomainController implements DomainControllerInterface {
           );
           const newModelVersionAction: RestPersistenceAction = {
             actionType: "RestPersistenceAction_create",
-            application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
             endpoint: "a93598b3-19b6-42e8-828c-f02042d212d4",
             payload: {
               application: currentApplication,
@@ -1537,7 +1529,6 @@ export class DomainController implements DomainControllerInterface {
                   applicationDeploymentMap,
                   {
                     actionType: newActionType,
-                    application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                     endpoint: "a93598b3-19b6-42e8-828c-f02042d212d4",
                     payload: {
                       // deploymentUuid: replayAction.payload.instanceAction.payload.deploymentUuid,
@@ -1609,7 +1600,6 @@ export class DomainController implements DomainControllerInterface {
               applicationDeploymentMap,
               {
                 actionType: "commit",
-                application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                 payload: {
                   application: currentApplication,
@@ -1719,6 +1709,7 @@ export class DomainController implements DomainControllerInterface {
     domainAction: DomainAction,
     applicationDeploymentMap: ApplicationDeploymentMap,
     currentModelEnvironment?: MiroirModelEnvironment,
+    endpointApplicationMap?: EndpointApplicationMap,
   ): Promise<Action2VoidReturnType> {
     return this.miroirContext.miroirActivityTracker.trackAction(
       domainAction.actionType,
@@ -1739,7 +1730,7 @@ export class DomainController implements DomainControllerInterface {
             applicationDeploymentMap,
             currentModelEnvironment,
           ).then(async (result: Action2ReturnType) => {
-            const application = domainAction.payload.application ?? "APPLICATION_UUID_NOT_FOUND";
+            const application = (domainAction.payload as any).application ?? "APPLICATION_UUID_NOT_FOUND";
             const deploymentUuid =
               // domainAction.payload.deploymentUuid ??
               applicationDeploymentMap[application];
@@ -1781,7 +1772,6 @@ export class DomainController implements DomainControllerInterface {
               // automatically commit after each model action from the UI if autocommit is enabled
               const commitAction: ModelAction = {
                 actionType: "commit",
-                application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                 payload: {
                   application: application,
@@ -1850,13 +1840,19 @@ export class DomainController implements DomainControllerInterface {
     domainAction: DomainAction,
     applicationDeploymentMap: ApplicationDeploymentMap,
     currentModelEnvironment?: MiroirModelEnvironment,
+    endpointApplicationMap?: EndpointApplicationMap,
   ): Promise<Action2VoidReturnType> {
     log.info("DomainController handleAction START actionType=", domainAction["actionType"]);
     return this.miroirContext.miroirActivityTracker.trackAction(
       domainAction.actionType,
       (domainAction as any).actionLabel,
       (async () => {
-        if ((domainAction as any)?.application !== selfApplicationMiroir.uuid) {
+        // Derive the application UUID from the endpoint using the endpointApplicationMap.
+        // This replaces the former envelope-level `application` field.
+        const resolvedEndpointApplicationMap = endpointApplicationMap ?? defaultEndpointApplicationMap;
+        const endpointUuid = (domainAction as any)?.endpoint;
+        const applicationUuid = endpointUuid ? resolvedEndpointApplicationMap[endpointUuid] : undefined;
+        if (applicationUuid !== undefined && applicationUuid !== selfApplicationMiroir.uuid) {
           return this.handleApplicationAction(
             domainAction,
             applicationDeploymentMap,
@@ -2005,7 +2001,7 @@ export class DomainController implements DomainControllerInterface {
       // "objects",
       // JSON.stringify((domainAction as any)["objects"], null, 2)
     );
-    const application = domainAction.payload.application ?? "APPLICATION_UUID_NOT_FOUND";
+    const application = (domainAction.payload as any).application ?? "APPLICATION_UUID_NOT_FOUND";
     const deploymentUuid = applicationDeploymentMap[application];
 
 
@@ -2831,7 +2827,6 @@ export class DomainController implements DomainControllerInterface {
     const resolvedAction: BuildPlusRuntimeCompositeAction = {
       actionType: "compositeActionSequence",
       actionLabel: buildPlusRuntimeCompositeAction.actionLabel,
-      application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
       endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
       payload: {
         application: "IGNORED",
@@ -3543,7 +3538,6 @@ export class DomainController implements DomainControllerInterface {
       case "testCompositeAction": {
         const localCompositeAction: CompositeActionSequence = {
           ...testAction.compositeActionSequence,
-          application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
           endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
           payload: {
             application: "IGNORED",
@@ -3563,7 +3557,6 @@ export class DomainController implements DomainControllerInterface {
       case "testBuildPlusRuntimeCompositeAction": {
         const localCompositeAction: BuildPlusRuntimeCompositeAction = {
           ...testAction.compositeActionSequence,
-          application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
           endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
           payload: {
             application: "IGNORED",
@@ -3762,7 +3755,6 @@ export class DomainController implements DomainControllerInterface {
           case "testBuildPlusRuntimeCompositeAction": {
             const localTestCompositeAction: BuildPlusRuntimeCompositeAction = {
               ...testCompositeAction[1].compositeActionSequence,
-              application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
               endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
               payload: {
                 application: "IGNORED",
@@ -3824,7 +3816,6 @@ export class DomainController implements DomainControllerInterface {
           case "testCompositeAction": {
             const localTestCompositeAction: CompositeActionSequence = {
               ...testCompositeAction[1].compositeActionSequence,
-              application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
               endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
               payload: {
                 application: "IGNORED",

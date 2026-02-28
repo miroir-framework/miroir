@@ -19,14 +19,13 @@
             },
             "definition": "createApplication"
           },
-          "actionLabel": { "type": "string", "optional": true },
+          "actionLabel": {
+            "type": "string",
+            "optional": true
+          },
           "endpoint": {
             "type": "literal",
             "definition": "ddd9c928-2ceb-4f67-971b-5898090412d6"
-          },
-          "application": {
-            "type": "literal",
-            "definition": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
           },
           "payload": {
             "type": "object",
@@ -89,14 +88,13 @@
             },
             "definition": "dropApplication"
           },
-          "actionLabel": { "type": "string", "optional": true },
+          "actionLabel": {
+            "type": "string",
+            "optional": true
+          },
           "endpoint": {
             "type": "literal",
             "definition": "ddd9c928-2ceb-4f67-971b-5898090412d6"
-          },
-          "application": {
-            "type": "literal",
-            "definition": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
           },
           "payload": {
             "type": "object",

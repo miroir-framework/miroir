@@ -23,10 +23,6 @@
             "type": "string",
             "optional": true
           },
-          "application": {
-            "type": "literal",
-            "definition": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
-          },
           "endpoint": {
             "type": "literal",
             "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
@@ -54,7 +50,7 @@
               "model": {
                 "type": "schemaReference",
                 "optional": true,
-                "tag":{
+                "tag": {
                   "value": {
                     "defaultLabel": "Model",
                     "description": "The model of the application"
@@ -124,10 +120,6 @@
             "type": "string",
             "optional": true
           },
-          "application": {
-            "type": "literal",
-            "definition": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
-          },
           "endpoint": {
             "type": "literal",
             "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
@@ -170,10 +162,6 @@
           "actionLabel": {
             "type": "string",
             "optional": true
-          },
-          "application": {
-            "type": "literal",
-            "definition": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
           },
           "endpoint": {
             "type": "literal",
@@ -218,10 +206,6 @@
             "type": "string",
             "optional": true
           },
-          "application": {
-            "type": "literal",
-            "definition": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
-          },
           "endpoint": {
             "type": "literal",
             "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
@@ -265,10 +249,6 @@
             "type": "string",
             "optional": true
           },
-          "application": {
-            "type": "literal",
-            "definition": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
-          },
           "endpoint": {
             "type": "literal",
             "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
@@ -296,7 +276,7 @@
               "model": {
                 "type": "schemaReference",
                 "optional": true,
-                "tag":{
+                "tag": {
                   "value": {
                     "defaultLabel": "Model",
                     "description": "The model of the application"
@@ -325,10 +305,6 @@
           "actionLabel": {
             "type": "string",
             "optional": true
-          },
-          "application": {
-            "type": "literal",
-            "definition": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
           },
           "endpoint": {
             "type": "literal",
@@ -372,10 +348,6 @@
           "actionLabel": {
             "type": "string",
             "optional": true
-          },
-          "application": {
-            "type": "literal",
-            "definition": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
           },
           "endpoint": {
             "type": "literal",
@@ -477,10 +449,6 @@
             "type": "string",
             "optional": true
           },
-          "application": {
-            "type": "literal",
-            "definition": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
-          },
           "endpoint": {
             "type": "literal",
             "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
@@ -550,10 +518,6 @@
           "actionLabel": {
             "type": "string",
             "optional": true
-          },
-          "application": {
-            "type": "literal",
-            "definition": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
           },
           "endpoint": {
             "type": "literal",
@@ -633,15 +597,6 @@
           "actionLabel": {
             "type": "string",
             "optional": true
-          },
-          "application": {
-            "type": "literal",
-            "definition": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-            "tag": {
-              "value": {
-                "canBeTemplate": true
-              }
-            }
           },
           "endpoint": {
             "type": "literal",

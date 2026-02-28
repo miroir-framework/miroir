@@ -19,14 +19,13 @@
             },
             "definition": "transactionalInstanceAction"
           },
-          "actionLabel": { "type": "string", "optional": true },
+          "actionLabel": {
+            "type": "string",
+            "optional": true
+          },
           "endpoint": {
             "type": "literal",
             "definition": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5"
-          },
-          "application": {
-            "type": "literal",
-            "definition": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
           },
           "payload": {
             "type": "object",
@@ -73,14 +72,13 @@
             },
             "definition": "compositeActionSequence"
           },
-          "actionLabel": { "type": "string", "optional": true },
+          "actionLabel": {
+            "type": "string",
+            "optional": true
+          },
           "endpoint": {
             "type": "literal",
             "definition": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5"
-          },
-          "application": {
-            "type": "literal",
-            "definition": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
           },
           "payload": {
             "type": "object",
@@ -98,7 +96,13 @@
               },
               "definition": {
                 "type": "array",
-                "tag": { "value": { "defaultLabel": "Actions Definition", "editable": true, "canBeTemplate": false } },
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Actions Definition",
+                    "editable": true,
+                    "canBeTemplate": false
+                  }
+                },
                 "definition": {
                   "type": "union",
                   "tag": {
@@ -126,7 +130,7 @@
                       "type": "object",
                       "tag": {
                         "value": {
-                          "display":{
+                          "display": {
                             "displayedAttributeValueWhenFolded": "actionLabel"
                           }
                         }
@@ -141,8 +145,13 @@
                           },
                           "definition": "compositeRunTestAssertion"
                         },
-                        "actionLabel": { "type": "string", "optional": true },
-                        "nameGivenToResult": { "type": "string" },
+                        "actionLabel": {
+                          "type": "string",
+                          "optional": true
+                        },
+                        "nameGivenToResult": {
+                          "type": "string"
+                        },
                         "testAssertion": {
                           "type": "schemaReference",
                           "definition": {
@@ -178,12 +187,13 @@
             "type": "literal",
             "definition": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5"
           },
-          "application": {
-            "type": "literal",
-            "definition": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
+          "actionLabel": {
+            "type": "string",
+            "optional": true
           },
-          "actionLabel": { "type": "string", "optional": true },
-          "nameGivenToResult": { "type": "string" },
+          "nameGivenToResult": {
+            "type": "string"
+          },
           "payload": {
             "type": "schemaReference",
             "definition": {
@@ -212,12 +222,13 @@
             "type": "literal",
             "definition": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5"
           },
-          "application": {
-            "type": "literal",
-            "definition": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
+          "actionLabel": {
+            "type": "string",
+            "optional": true
           },
-          "actionLabel": { "type": "string", "optional": true },
-          "nameGivenToResult": { "type": "string" },
+          "nameGivenToResult": {
+            "type": "string"
+          },
           "payload": {
             "type": "schemaReference",
             "definition": {

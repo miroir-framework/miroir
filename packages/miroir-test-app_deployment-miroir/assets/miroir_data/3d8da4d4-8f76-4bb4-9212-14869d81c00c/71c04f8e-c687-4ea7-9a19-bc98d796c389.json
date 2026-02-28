@@ -19,12 +19,14 @@
             },
             "definition": "undo"
           },
-          "actionLabel": { "type": "string", "optional": true },
-          "application": {
-            "type": "literal",
-            "definition": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
+          "actionLabel": {
+            "type": "string",
+            "optional": true
           },
-          "endpoint": { "type": "literal", "definition": "71c04f8e-c687-4ea7-9a19-bc98d796c389" },
+          "endpoint": {
+            "type": "literal",
+            "definition": "71c04f8e-c687-4ea7-9a19-bc98d796c389"
+          },
           "payload": {
             "type": "object",
             "definition": {
@@ -62,9 +64,14 @@
             },
             "definition": "redo"
           },
-          "actionLabel": { "type": "string", "optional": true },
-          "endpoint": { "type": "literal", "definition": "71c04f8e-c687-4ea7-9a19-bc98d796c389" },
-          "application": {"type": "literal", "definition": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"},
+          "actionLabel": {
+            "type": "string",
+            "optional": true
+          },
+          "endpoint": {
+            "type": "literal",
+            "definition": "71c04f8e-c687-4ea7-9a19-bc98d796c389"
+          },
           "payload": {
             "type": "object",
             "definition": {
