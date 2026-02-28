@@ -840,19 +840,23 @@ export const Runner_InstallApplication: React.FC<DeployApplicationRunnerProps> =
     () => ({
       // Model file required: bundle must be present with applicationName, entities, and entityDefinitions.
       // Data file optional: pass when null; if provided, must have valid instances with parentUuid.
-      transformerType: "&&",
+      transformerType: "ifThenElse",
       label: "deployApplicationAndDeploymentDataValidation",
       // left: false,
-      left: {
+      if: {
         // All bundle fields must be valid (inner &&/!= return boolean directly, no then/else needed)
-        transformerType: "&&",
+        transformerType: "boolExpr",
+        operator: "&&",
         label: "applicationBundleValidation",
         left: {
-          transformerType: "&&",
+          transformerType: "boolExpr",
+          operator: "&&",
           left: {
-            transformerType: "&&",
+            transformerType: "boolExpr",
+            operator: "&&",
             left: {
-              transformerType: "isNotNull",
+              transformerType: "boolExpr",
+              operator: "isNotNull",
               left: {
                 transformerType: "getFromParameters",
                 safe: true,
@@ -860,7 +864,8 @@ export const Runner_InstallApplication: React.FC<DeployApplicationRunnerProps> =
               },
             },
             right: {
-              transformerType: "!=",
+              transformerType: "boolExpr",
+              operator: "!=",
               left: {
                 transformerType: "getFromParameters",
                 safe: true,
@@ -873,7 +878,8 @@ export const Runner_InstallApplication: React.FC<DeployApplicationRunnerProps> =
             },
           },
           right: {
-            transformerType: "isNotNull",
+            transformerType: "boolExpr",
+            operator: "isNotNull",
             left: {
               transformerType: "getFromParameters",
               safe: true,
@@ -882,7 +888,8 @@ export const Runner_InstallApplication: React.FC<DeployApplicationRunnerProps> =
           },
         },
         right: {
-          transformerType: "isNotNull",
+          transformerType: "boolExpr",
+          operator: "isNotNull",
           left: {
             transformerType: "getFromParameters",
             safe: true,
@@ -890,7 +897,7 @@ export const Runner_InstallApplication: React.FC<DeployApplicationRunnerProps> =
           },
         },
       },
-      right: true,
+      // right: true,
       // right: {
       //   // Data file is optional: null deploymentData passes; if present, instances and parentUuid required.
       //   // transformerType: "||",
@@ -923,8 +930,50 @@ export const Runner_InstallApplication: React.FC<DeployApplicationRunnerProps> =
       //   //   },
       //   // },
       // },
-      then: true,
-      else: "Validation failed: provide a valid application bundle (applicationName, entities, entityDefinitions required); deployment data is optional but must contain instances with parentUuid if provided.",
+      then: {
+        transformerType: "ifThenElse",
+        if: {
+          // Data file is optional: null deploymentData passes; if present, instances and parentUuid required.
+          transformerType: "boolExpr",
+          operator: "||",
+          label: "deploymentDataValidation",
+          left: {
+            transformerType: "boolExpr",
+            operator: "isNull",
+            left: {
+              transformerType: "getFromParameters",
+              safe: true,
+              referencePath: ["deployApplication", "deploymentData"],
+            },
+          },
+          right: {
+            transformerType: "boolExpr",
+            operator: "&&",
+            left: {
+              transformerType: "boolExpr",
+              operator: "isNotNull",
+              left: {
+                transformerType: "getFromParameters",
+                safe: true,
+                referencePath: ["deployApplication", "deploymentData", "instances"],
+              },
+            },
+            right: {
+              transformerType: "boolExpr",
+              operator: "isNotNull",
+              left: {
+                transformerType: "getFromParameters",
+                safe: true,
+                referencePath: ["deployApplication", "deploymentData", "instances", "0", "parentUuid"],
+              },
+            },
+          },
+        },
+        then: true,
+        else: "Validation failed: if deployment data is provided, it must contain instances with parentUuid.",
+      },
+      // else: "Validation failed: provide a valid application bundle (applicationName, entities, entityDefinitions required); deployment data is optional but must contain instances with parentUuid if provided.",
+      else: "Validation failed: provide a valid application bundle (applicationName, entities, entityDefinitions required)",
     }),
     [],
   );

@@ -21,6 +21,7 @@ export const viewParams: JzodElement = {
     sidebarWidth: { type: "number" },
     gridType: { type: "enum", definition: ["ag-grid", "glide-data-grid"] },
     appTheme: { type: "enum", definition: ["default", "dark", "compact", "material"] },
+    defaultFilesystemFolder: { type: "string", optional: true },
     toolsPage: { type: "object", definition: {} }, // Add toolsPage to the schema
   },
 };
@@ -52,6 +53,7 @@ export interface ViewParamsData {
   sidebarWidth: number;
   gridType: GridType;
   appTheme: AppTheme;
+  defaultFilesystemFolder?: string;
   toolsPage?: ToolsPageState;
   generalEditMode?: boolean;
 }
@@ -61,6 +63,7 @@ export class ViewParams {
   private _sidebarWidth: number;
   private _gridType: GridType;
   private _appTheme: AppTheme;
+  private _defaultFilesystemFolder: string | undefined;
   private _toolsPage: ToolsPageState;
   private _editMode: boolean;
   // private _showModelTools: boolean;
@@ -70,6 +73,7 @@ export class ViewParams {
     initialSidebarWidth: number = 250, 
     initialGridType: GridType = 'ag-grid', 
     initialAppTheme: AppTheme = 'default',
+    initialDefaultFilesystemFolder: string | undefined = undefined,
     initialToolsPage: ToolsPageState = {},
     initialEditMode: boolean = false,
     // initialShowModelTools: boolean = false
@@ -78,6 +82,7 @@ export class ViewParams {
     this._sidebarWidth = initialSidebarWidth;
     this._gridType = initialGridType;
     this._appTheme = initialAppTheme;
+    this._defaultFilesystemFolder = initialDefaultFilesystemFolder;
     this._toolsPage = initialToolsPage;
     this._editMode = initialEditMode;
     // this._showModelTools = initialShowModelTools;
@@ -121,6 +126,18 @@ export class ViewParams {
 
   setAppTheme(theme: AppTheme): void {
     this._appTheme = theme;
+  }
+
+  get defaultFilesystemFolder(): string | undefined {
+    return this._defaultFilesystemFolder;
+  }
+
+  set defaultFilesystemFolder(folder: string | undefined) {
+    this._defaultFilesystemFolder = folder;
+  }
+
+  updateDefaultFilesystemFolder(folder: string | undefined): void {
+    this._defaultFilesystemFolder = folder;
   }
 
   get toolsPage(): ToolsPageState {

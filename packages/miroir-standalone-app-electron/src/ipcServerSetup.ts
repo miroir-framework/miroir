@@ -36,6 +36,7 @@
  */
 
 import { app, ipcMain } from "electron";
+import * as os from "os";
 import * as path from "path";
 import {
   ConfigurationService,
@@ -186,6 +187,11 @@ export async function setupIpcServer(mainDirname: string): Promise<void> {
   // inside the 'server-action' handler below; renderers do not need to call this for
   // normal operation.
   ipcMain.handle("get-assets-base-path", () => getAssetsBasePath(mainDirname));
+
+  // Expose the platform-appropriate default filesystem folder so the renderer can
+  // pre-populate filesystem / indexedDb deployment paths in Runner components.
+  // Returns os.homedir() which resolves to e.g. /home/user on Linux, C:\Users\user on Windows.
+  ipcMain.handle("get-default-filesystem-folder", () => os.homedir());
 
   ipcMain.handle(MIROIR_IPC_CHANNEL, async (_event, payload: any) => {
     switch (payload.type) {

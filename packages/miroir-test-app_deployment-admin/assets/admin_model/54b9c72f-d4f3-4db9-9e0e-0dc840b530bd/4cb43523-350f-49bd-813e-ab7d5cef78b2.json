@@ -40,6 +40,11 @@
       "sidebarWidth": { "type": "number" },
       "gridType": { "type": "enum", "definition": ["ag-grid", "glide-data-grid"] },
       "appTheme": { "type": "enum", "definition": ["default", "dark", "compact", "material"] },
+      "defaultFilesystemFolder": {
+        "type": "string",
+        "optional": true,
+        "tag": { "value": { "id": 9, "defaultLabel": "Default Filesystem Folder", "display": { "editable": true } } }
+      },
       "generalEditMode": {
         "type": "boolean",
         "optional": true,
