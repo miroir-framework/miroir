@@ -45,6 +45,16 @@
         "optional": true,
         "tag": { "value": { "id": 9, "defaultLabel": "Default Filesystem Folder", "display": { "editable": true } } }
       },
+      "postgresConnectionString": {
+        "type": "string",
+        "optional": true,
+        "tag": { "value": { "id": 10, "defaultLabel": "PostgreSQL Connection String", "display": { "editable": true } } }
+      },
+      "mongoConnectionString": {
+        "type": "string",
+        "optional": true,
+        "tag": { "value": { "id": 11, "defaultLabel": "MongoDB Connection String", "display": { "editable": true } } }
+      },
       "generalEditMode": {
         "type": "boolean",
         "optional": true,

@@ -22,6 +22,8 @@ export const viewParams: JzodElement = {
     gridType: { type: "enum", definition: ["ag-grid", "glide-data-grid"] },
     appTheme: { type: "enum", definition: ["default", "dark", "compact", "material"] },
     defaultFilesystemFolder: { type: "string", optional: true },
+    postgresConnectionString: { type: "string", optional: true },
+    mongoConnectionString: { type: "string", optional: true },
     toolsPage: { type: "object", definition: {} }, // Add toolsPage to the schema
   },
 };
@@ -54,6 +56,8 @@ export interface ViewParamsData {
   gridType: GridType;
   appTheme: AppTheme;
   defaultFilesystemFolder?: string;
+  postgresConnectionString?: string;
+  mongoConnectionString?: string;
   toolsPage?: ToolsPageState;
   generalEditMode?: boolean;
 }
@@ -64,6 +68,8 @@ export class ViewParams {
   private _gridType: GridType;
   private _appTheme: AppTheme;
   private _defaultFilesystemFolder: string | undefined;
+  private _postgresConnectionString: string | undefined;
+  private _mongoConnectionString: string | undefined;
   private _toolsPage: ToolsPageState;
   private _editMode: boolean;
   // private _showModelTools: boolean;
@@ -74,6 +80,8 @@ export class ViewParams {
     initialGridType: GridType = 'ag-grid', 
     initialAppTheme: AppTheme = 'default',
     initialDefaultFilesystemFolder: string | undefined = undefined,
+    initialPostgresConnectionString: string | undefined = undefined,
+    initialMongoConnectionString: string | undefined = undefined,
     initialToolsPage: ToolsPageState = {},
     initialEditMode: boolean = false,
     // initialShowModelTools: boolean = false
@@ -83,6 +91,8 @@ export class ViewParams {
     this._gridType = initialGridType;
     this._appTheme = initialAppTheme;
     this._defaultFilesystemFolder = initialDefaultFilesystemFolder;
+    this._postgresConnectionString = initialPostgresConnectionString;
+    this._mongoConnectionString = initialMongoConnectionString;
     this._toolsPage = initialToolsPage;
     this._editMode = initialEditMode;
     // this._showModelTools = initialShowModelTools;
@@ -138,6 +148,22 @@ export class ViewParams {
 
   updateDefaultFilesystemFolder(folder: string | undefined): void {
     this._defaultFilesystemFolder = folder;
+  }
+
+  get postgresConnectionString(): string | undefined {
+    return this._postgresConnectionString;
+  }
+
+  set postgresConnectionString(connectionString: string | undefined) {
+    this._postgresConnectionString = connectionString;
+  }
+
+  get mongoConnectionString(): string | undefined {
+    return this._mongoConnectionString;
+  }
+
+  set mongoConnectionString(connectionString: string | undefined) {
+    this._mongoConnectionString = connectionString;
   }
 
   get toolsPage(): ToolsPageState {

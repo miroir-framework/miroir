@@ -6,6 +6,9 @@ import type {
   CompositeActionSequence,
   CompositeActionTemplate,
   Deployment,
+  Domain2QueryReturnType,
+  DomainElementSuccess,
+  EntityInstancesUuidIndex,
   InitApplicationParameters,
   LoggerInterface,
   MetaModel,
@@ -13,11 +16,14 @@ import type {
   ReduxDeploymentsState,
   ReduxStateWithUndoRedo,
   SyncBoxedExtractorOrQueryRunnerMap,
-  TransformerForBuildPlusRuntime
+  SyncQueryRunner,
+  TransformerForBuildPlusRuntime,
+  ViewParams
 } from "miroir-core";
 import {
   defaultMiroirMetaModel,
   defaultSelfApplicationDeploymentMap,
+  defaultViewParamsFromAdminStorageFetchQueryParams,
   getDefaultValueForJzodSchemaWithResolutionNonHook,
   MiroirLoggerFactory,
   noValue,
@@ -36,7 +42,7 @@ import { cleanLevel } from "../../constants.js";
 import { devRelativePathPrefix, FileSelector, prodRelativePathPrefix } from '../Themes/FileSelector.js';
 import type { FormMLSchema } from "./RunnerInterface.js";
 import { RunnerView } from "./RunnerView.js";
-import { useCurrentModelEnvironment } from "../../ReduxHooks.js";
+import { useCurrentModelEnvironment, useReduxDeploymentsStateQuerySelectorForCleanedResult } from "../../ReduxHooks.js";
 import { getMemoizedReduxDeploymentsStateSelectorMap, useSelector } from "../../../miroir-localcache-imports.js";
 import {
   adminSelfApplication,
@@ -90,6 +96,7 @@ export const Runner_InstallApplication: React.FC<DeployApplicationRunnerProps> =
   );
   const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState> =
         getMemoizedReduxDeploymentsStateSelectorMap();
+
   const deploymentEntityState: ReduxDeploymentsState = useSelector(
     (state: ReduxStateWithUndoRedo) =>
       deploymentEntityStateSelectorMap.extractState(
@@ -100,6 +107,19 @@ export const Runner_InstallApplication: React.FC<DeployApplicationRunnerProps> =
       )
   );
 
+  const defaultViewParamsFromAdminStorageFetchQueryResults: Record<string, EntityInstancesUuidIndex> =
+    useReduxDeploymentsStateQuerySelectorForCleanedResult(
+      deploymentEntityStateSelectorMap.runQuery as SyncQueryRunner<
+        ReduxDeploymentsState,
+        Domain2QueryReturnType<DomainElementSuccess>
+      >,
+      defaultViewParamsFromAdminStorageFetchQueryParams(deploymentEntityStateSelectorMap),
+      applicationDeploymentMap,
+    );
+  
+  const viewParams: ViewParams | undefined = defaultViewParamsFromAdminStorageFetchQueryResults?.[
+    "viewParams"
+  ] as any;
 
   const formMLSchema: FormMLSchema = useMemo(
     () => ({
@@ -123,8 +143,8 @@ export const Runner_InstallApplication: React.FC<DeployApplicationRunnerProps> =
                     },
                     initializeTo: {
                       initializeToType: "value",
-                      value: ""
-                    }
+                      value: "",
+                    },
                   },
                 },
               },
@@ -141,8 +161,8 @@ export const Runner_InstallApplication: React.FC<DeployApplicationRunnerProps> =
                     },
                     initializeTo: {
                       initializeToType: "value",
-                      value: ""
-                    }
+                      value: "",
+                    },
                   },
                 },
               },
@@ -165,14 +185,37 @@ export const Runner_InstallApplication: React.FC<DeployApplicationRunnerProps> =
                     type: "object",
                     definition: {
                       emulatedServerType: { type: "literal", definition: "sql" },
-                      connectionString: { type: "string" },
+                      connectionString: {
+                        type: "string",
+                        tag: {
+                          value: {
+                            defaultLabel: "SQL Connection String",
+                            display: { editable: false },
+                            initializeTo: {
+                              initializeToType: "value",
+                              value: viewParams?.postgresConnectionString || "NO POSTGRES CONNECTION STRING IN VIEW PARAMS",
+                            },
+                          },
+                        },
+                      },
                     },
                   },
                   mongoDbStoreSectionConfiguration: {
                     type: "object",
                     definition: {
                       emulatedServerType: { type: "literal", definition: "mongodb" },
-                      connectionString: { type: "string" },
+                      connectionString: { type: "string",
+                        tag: {
+                          value: {
+                            defaultLabel: "MongoDB Connection String",
+                            display: { editable: false },
+                            initializeTo: {
+                              initializeToType: "value",
+                              value: viewParams?.mongoConnectionString || "NO MONGODB CONNECTION STRING IN VIEW PARAMS",
+                            },
+                          },
+                        },
+                       },
                     },
                   },
                   storeSectionConfiguration: {
@@ -191,19 +234,27 @@ export const Runner_InstallApplication: React.FC<DeployApplicationRunnerProps> =
                           relativePath: "filesystemDbStoreSectionConfiguration",
                         },
                       },
-                      {
-                        type: "schemaReference",
-                        definition: {
-                          relativePath: "sqlDbStoreSectionConfiguration",
-                        },
-                      },
-                      {
-                        type: "schemaReference",
-                        definition: {
-                          relativePath: "mongoDbStoreSectionConfiguration",
-                        },
-                      },
-                    ],
+                      ...(viewParams?.postgresConnectionString
+                        ? [
+                            {
+                              type: "schemaReference",
+                              definition: {
+                                relativePath: "sqlDbStoreSectionConfiguration",
+                              },
+                            },
+                          ]
+                        : []),
+                      ...(viewParams?.mongoConnectionString
+                        ? [
+                            {
+                              type: "schemaReference",
+                              definition: {
+                                relativePath: "mongoDbStoreSectionConfiguration",
+                              },
+                            },
+                          ]
+                        : []),
+                    ] as any,
                   },
                 },
                 definition: {

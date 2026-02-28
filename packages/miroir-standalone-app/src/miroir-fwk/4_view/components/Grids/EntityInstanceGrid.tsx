@@ -94,7 +94,6 @@ export const EntityInstanceGrid = (props: TableComponentProps) => {
   // Container width tracking for adaptive column sizing
   // const containerRef = useRef<HTMLDivElement>(null);
 
-    // const viewParams = useViewParams();
   const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState> =
   useMemo(() => getMemoizedReduxDeploymentsStateSelectorMap(), []);
     

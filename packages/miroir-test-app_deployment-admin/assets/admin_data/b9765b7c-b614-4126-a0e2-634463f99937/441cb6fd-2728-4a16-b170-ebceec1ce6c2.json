@@ -7,5 +7,7 @@
   "description": "Default ViewParams for any application / local deployment",
   "sidebarWidth": 292,
   "gridType": "ag-grid",
-  "appTheme": "default"
+  "appTheme": "default",
+  "postgresConnectionString": "postgres://postgres:postgres@localhost:5432/postgres",
+  "mongoConnectionString": "mongodb://localhost:27017/"
 }
