@@ -6,6 +6,9 @@ import type {
   CompositeActionSequence,
   CompositeActionTemplate,
   Deployment,
+  Domain2QueryReturnType,
+  DomainElementSuccess,
+  EntityInstancesUuidIndex,
   InitApplicationParameters,
   LoggerInterface,
   MetaModel,
@@ -13,11 +16,14 @@ import type {
   ReduxDeploymentsState,
   ReduxStateWithUndoRedo,
   SyncBoxedExtractorOrQueryRunnerMap,
-  TransformerForBuildPlusRuntime
+  SyncQueryRunner,
+  TransformerForBuildPlusRuntime,
+  ViewParams
 } from "miroir-core";
 import {
   defaultMiroirMetaModel,
   defaultSelfApplicationDeploymentMap,
+  defaultViewParamsFromAdminStorageFetchQueryParams,
   getDefaultValueForJzodSchemaWithResolutionNonHook,
   MiroirLoggerFactory,
   noValue,
@@ -36,13 +42,14 @@ import { cleanLevel } from "../../constants.js";
 import { devRelativePathPrefix, FileSelector, prodRelativePathPrefix } from '../Themes/FileSelector.js';
 import type { FormMLSchema } from "./RunnerInterface.js";
 import { RunnerView } from "./RunnerView.js";
-import { useCurrentModelEnvironment } from "../../ReduxHooks.js";
+import { useCurrentModelEnvironment, useReduxDeploymentsStateQuerySelectorForCleanedResult } from "../../ReduxHooks.js";
 import { getMemoizedReduxDeploymentsStateSelectorMap, useSelector } from "../../../miroir-localcache-imports.js";
 import {
   adminSelfApplication,
   entityApplicationForAdmin,
   entityDeployment,
 } from "miroir-test-app_deployment-admin";
+import { DebugHelper } from "../Page/DebugHelper.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -89,6 +96,7 @@ export const Runner_InstallApplication: React.FC<DeployApplicationRunnerProps> =
   );
   const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState> =
         getMemoizedReduxDeploymentsStateSelectorMap();
+
   const deploymentEntityState: ReduxDeploymentsState = useSelector(
     (state: ReduxStateWithUndoRedo) =>
       deploymentEntityStateSelectorMap.extractState(
@@ -99,6 +107,19 @@ export const Runner_InstallApplication: React.FC<DeployApplicationRunnerProps> =
       )
   );
 
+  const defaultViewParamsFromAdminStorageFetchQueryResults: Record<string, EntityInstancesUuidIndex> =
+    useReduxDeploymentsStateQuerySelectorForCleanedResult(
+      deploymentEntityStateSelectorMap.runQuery as SyncQueryRunner<
+        ReduxDeploymentsState,
+        Domain2QueryReturnType<DomainElementSuccess>
+      >,
+      defaultViewParamsFromAdminStorageFetchQueryParams(deploymentEntityStateSelectorMap),
+      applicationDeploymentMap,
+    );
+  
+  const viewParams: ViewParams | undefined = defaultViewParamsFromAdminStorageFetchQueryResults?.[
+    "viewParams"
+  ] as any;
 
   const formMLSchema: FormMLSchema = useMemo(
     () => ({
@@ -111,6 +132,7 @@ export const Runner_InstallApplication: React.FC<DeployApplicationRunnerProps> =
             definition: {
               applicationBundle: {
                 type: "any",
+                optional: true,
                 tag: {
                   value: {
                     defaultLabel: "Application Bundle",
@@ -121,13 +143,75 @@ export const Runner_InstallApplication: React.FC<DeployApplicationRunnerProps> =
                     },
                     initializeTo: {
                       initializeToType: "value",
-                      value: ""
-                    }
+                      value: "",
+                    },
+                    formValidation: {
+                      transformer: {
+                        // Application bundle required: must be present with applicationName, entities, and entityDefinitions.
+                        transformerType: "ifThenElse",
+                        label: "applicationBundleValidation",
+                        if: {
+                          transformerType: "boolExpr",
+                          operator: "&&",
+                          left: {
+                            transformerType: "boolExpr",
+                            operator: "&&",
+                            left: {
+                              transformerType: "boolExpr",
+                              operator: "&&",
+                              left: {
+                                transformerType: "boolExpr",
+                                operator: "isNotNull",
+                                left: {
+                                  transformerType: "getFromParameters",
+                                  safe: true,
+                                  referencePath: ["deployApplication", "applicationBundle"],
+                                },
+                              },
+                              right: {
+                                transformerType: "boolExpr",
+                                operator: "!=",
+                                left: {
+                                  transformerType: "getFromParameters",
+                                  safe: true,
+                                  referencePath: ["deployApplication", "applicationBundle", "applicationName"],
+                                },
+                                right: {
+                                  transformerType: "returnValue",
+                                  value: "",
+                                },
+                              },
+                            },
+                            right: {
+                              transformerType: "boolExpr",
+                              operator: "isNotNull",
+                              left: {
+                                transformerType: "getFromParameters",
+                                safe: true,
+                                referencePath: ["deployApplication", "applicationBundle", "entities"],
+                              },
+                            },
+                          },
+                          right: {
+                            transformerType: "boolExpr",
+                            operator: "isNotNull",
+                            left: {
+                              transformerType: "getFromParameters",
+                              safe: true,
+                              referencePath: ["deployApplication", "applicationBundle", "entityDefinitions"],
+                            },
+                          },
+                        },
+                        then: true,
+                        else: "Provide a valid application bundle (applicationName, entities, entityDefinitions required).",
+                      },
+                    },
                   },
                 },
               },
               deploymentData: {
                 type: "any",
+                optional: true,
                 tag: {
                   value: {
                     defaultLabel: "Deployment Data",
@@ -138,8 +222,58 @@ export const Runner_InstallApplication: React.FC<DeployApplicationRunnerProps> =
                     },
                     initializeTo: {
                       initializeToType: "value",
-                      value: ""
-                    }
+                      value: "",
+                    },
+                    formValidation: {
+                      transformer: {
+                        // Data file is optional: null/empty passes; if present, instances and parentUuid required.
+                        transformerType: "ifThenElse",
+                        label: "deploymentDataValidation",
+                        if: {
+                          transformerType: "boolExpr",
+                          operator: "||",
+                          left: {
+                            transformerType: "boolExpr",
+                            operator: "isNull",
+                            left: {
+                              transformerType: "getFromParameters",
+                              safe: true,
+                              referencePath: ["deployApplication", "deploymentData"],
+                            },
+                          },
+                          right: {
+                            transformerType: "boolExpr",
+                            operator: "&&",
+                            left: {
+                              transformerType: "boolExpr",
+                              operator: "isNotNull",
+                              left: {
+                                transformerType: "getFromParameters",
+                                safe: true,
+                                referencePath: ["deployApplication", "deploymentData", "instances"],
+                              },
+                            },
+                            right: {
+                              transformerType: "boolExpr",
+                              operator: "isNotNull",
+                              left: {
+                                transformerType: "getFromParameters",
+                                safe: true,
+                                referencePath: [
+                                  "deployApplication",
+                                  "deploymentData",
+                                  "instances",
+                                  "0",
+                                  "parentUuid",
+                                ],
+                              },
+                            },
+                          },
+                        },
+                        then: true,
+                        else: "If deployment data is provided, it must contain instances with parentUuid.",
+                      },
+                    },
                   },
                 },
               },
@@ -156,35 +290,48 @@ export const Runner_InstallApplication: React.FC<DeployApplicationRunnerProps> =
                     type: "object",
                     definition: {
                       emulatedServerType: { type: "literal", definition: "filesystem" },
-                      // directory: {
-                      //   type: "string",
-                      //   tag: {
-                      //     value: {
-                      //       defaultLabel: "Directory Path",
-                      //       display: {
-                      //         string: {
-                      //           format: "folder",
-                      //         },
-                      //       },
-                      //     },
-                      //   },
-                      // },
                     },
                   },
                   sqlDbStoreSectionConfiguration: {
                     type: "object",
                     definition: {
                       emulatedServerType: { type: "literal", definition: "sql" },
-                      connectionString: { type: "string" },
-                      // schema: { type: "string" },
+                      connectionString: {
+                        type: "string",
+                        tag: {
+                          value: {
+                            defaultLabel: "SQL Connection String",
+                            display: { editable: false },
+                            initializeTo: {
+                              initializeToType: "value",
+                              value:
+                                viewParams?.postgresConnectionString ||
+                                "NO POSTGRES CONNECTION STRING IN VIEW PARAMS",
+                            },
+                          },
+                        },
+                      },
                     },
                   },
                   mongoDbStoreSectionConfiguration: {
                     type: "object",
                     definition: {
                       emulatedServerType: { type: "literal", definition: "mongodb" },
-                      connectionString: { type: "string" },
-                      // database: { type: "string" },
+                      connectionString: {
+                        type: "string",
+                        tag: {
+                          value: {
+                            defaultLabel: "MongoDB Connection String",
+                            display: { editable: false },
+                            initializeTo: {
+                              initializeToType: "value",
+                              value:
+                                viewParams?.mongoConnectionString ||
+                                "NO MONGODB CONNECTION STRING IN VIEW PARAMS",
+                            },
+                          },
+                        },
+                      },
                     },
                   },
                   storeSectionConfiguration: {
@@ -203,19 +350,27 @@ export const Runner_InstallApplication: React.FC<DeployApplicationRunnerProps> =
                           relativePath: "filesystemDbStoreSectionConfiguration",
                         },
                       },
-                      {
-                        type: "schemaReference",
-                        definition: {
-                          relativePath: "sqlDbStoreSectionConfiguration",
-                        },
-                      },
-                      {
-                        type: "schemaReference",
-                        definition: {
-                          relativePath: "mongoDbStoreSectionConfiguration",
-                        },
-                      },
-                    ],
+                      ...(viewParams?.postgresConnectionString
+                        ? [
+                            {
+                              type: "schemaReference",
+                              definition: {
+                                relativePath: "sqlDbStoreSectionConfiguration",
+                              },
+                            },
+                          ]
+                        : []),
+                      ...(viewParams?.mongoConnectionString
+                        ? [
+                            {
+                              type: "schemaReference",
+                              definition: {
+                                relativePath: "mongoDbStoreSectionConfiguration",
+                              },
+                            },
+                          ]
+                        : []),
+                    ] as any,
                   },
                 },
                 definition: {
@@ -240,7 +395,7 @@ export const Runner_InstallApplication: React.FC<DeployApplicationRunnerProps> =
           "", // rootLessListKey,
           undefined, // No need to pass currentDefaultValue here
           [], // currentPath on value is root
-          false, // forceOptional
+          true, // forceOptional
           noValue.uuid, // storedRunner.application,
           defaultSelfApplicationDeploymentMap,
           runnerDeploymentUuid,
@@ -840,19 +995,23 @@ export const Runner_InstallApplication: React.FC<DeployApplicationRunnerProps> =
     () => ({
       // Model file required: bundle must be present with applicationName, entities, and entityDefinitions.
       // Data file optional: pass when null; if provided, must have valid instances with parentUuid.
-      transformerType: "&&",
+      transformerType: "ifThenElse",
       label: "deployApplicationAndDeploymentDataValidation",
       // left: false,
-      left: {
+      if: {
         // All bundle fields must be valid (inner &&/!= return boolean directly, no then/else needed)
-        transformerType: "&&",
+        transformerType: "boolExpr",
+        operator: "&&",
         label: "applicationBundleValidation",
         left: {
-          transformerType: "&&",
+          transformerType: "boolExpr",
+          operator: "&&",
           left: {
-            transformerType: "&&",
+            transformerType: "boolExpr",
+            operator: "&&",
             left: {
-              transformerType: "isNotNull",
+              transformerType: "boolExpr",
+              operator: "isNotNull",
               left: {
                 transformerType: "getFromParameters",
                 safe: true,
@@ -860,7 +1019,8 @@ export const Runner_InstallApplication: React.FC<DeployApplicationRunnerProps> =
               },
             },
             right: {
-              transformerType: "!=",
+              transformerType: "boolExpr",
+              operator: "!=",
               left: {
                 transformerType: "getFromParameters",
                 safe: true,
@@ -873,7 +1033,8 @@ export const Runner_InstallApplication: React.FC<DeployApplicationRunnerProps> =
             },
           },
           right: {
-            transformerType: "isNotNull",
+            transformerType: "boolExpr",
+            operator: "isNotNull",
             left: {
               transformerType: "getFromParameters",
               safe: true,
@@ -882,7 +1043,8 @@ export const Runner_InstallApplication: React.FC<DeployApplicationRunnerProps> =
           },
         },
         right: {
-          transformerType: "isNotNull",
+          transformerType: "boolExpr",
+          operator: "isNotNull",
           left: {
             transformerType: "getFromParameters",
             safe: true,
@@ -890,138 +1052,71 @@ export const Runner_InstallApplication: React.FC<DeployApplicationRunnerProps> =
           },
         },
       },
-      right: true,
-      // right: {
-      //   // Data file is optional: null deploymentData passes; if present, instances and parentUuid required.
-      //   // transformerType: "||",
-      //   // label: "deploymentDataValidation",
-      //   // left: {
-      //     transformerType: "isNotNull",
-      //     left: {
-      //       transformerType: "getFromParameters",
-      //       safe: true,
-      //       referencePath: ["deployApplication", "deploymentData"],
-      //     },
-      //   // },
-      //   // right: {
-      //   //   transformerType: "&&",
-      //   //   left: {
-      //   //     transformerType: "isNotNull",
-      //   //     left: {
-      //   //       transformerType: "getFromParameters",
-      //   //       safe: true,
-      //   //       referencePath: ["deployApplication", "deploymentData", "instances"],
-      //   //     },
-      //   //   },
-      //   //   right: {
-      //   //     transformerType: "isNotNull",
-      //   //     left: {
-      //   //       transformerType: "getFromParameters",
-      //   //       safe: true,
-      //   //       referencePath: ["deployApplication", "deploymentData", "instances", "0", "parentUuid"],
-      //   //     },
-      //   //   },
-      //   // },
-      // },
-      then: true,
-      else: "Validation failed: provide a valid application bundle (applicationName, entities, entityDefinitions required); deployment data is optional but must contain instances with parentUuid if provided.",
+      then: {
+        transformerType: "ifThenElse",
+        if: {
+          // Data file is optional: null deploymentData passes; if present, instances and parentUuid required.
+          transformerType: "boolExpr",
+          operator: "||",
+          label: "deploymentDataValidation",
+          left: {
+            transformerType: "boolExpr",
+            operator: "isNull",
+            left: {
+              transformerType: "getFromParameters",
+              safe: true,
+              referencePath: ["deployApplication", "deploymentData"],
+            },
+          },
+          right: {
+            transformerType: "boolExpr",
+            operator: "&&",
+            left: {
+              transformerType: "boolExpr",
+              operator: "isNotNull",
+              left: {
+                transformerType: "getFromParameters",
+                safe: true,
+                referencePath: ["deployApplication", "deploymentData", "instances"],
+              },
+            },
+            right: {
+              transformerType: "boolExpr",
+              operator: "isNotNull",
+              left: {
+                transformerType: "getFromParameters",
+                safe: true,
+                referencePath: ["deployApplication", "deploymentData", "instances", "0", "parentUuid"],
+              },
+            },
+          },
+        },
+        then: true,
+        else: "Validation failed: if deployment data is provided, it must contain instances with parentUuid.",
+      },
+      // else: "Validation failed: provide a valid application bundle (applicationName, entities, entityDefinitions required); deployment data is optional but must contain instances with parentUuid if provided.",
+      else: "Validation failed: provide a valid application bundle (applicationName, entities, entityDefinitions required)",
     }),
     [],
   );
-  // const validationTransformer: TransformerForBuildPlusRuntime = useMemo(
-  //   () => ({
-  //     // Model file required: bundle must be present with applicationName, entities, and entityDefinitions.
-  //     // Data file optional: pass when null; if provided, must have valid instances with parentUuid.
-  //     transformerType: "&&",
-  //     label: "deployApplicationAndDeploymentDataValidation",
-  //     left: {
-  //       // All bundle fields must be valid (inner &&/!= return boolean directly, no then/else needed)
-  //       transformerType: "&&",
-  //       label: "applicationBundleValidation",
-  //       left: {
-  //         transformerType: "&&",
-  //         left: {
-  //           transformerType: "&&",
-  //           left: {
-  //             transformerType: "isNotNull",
-  //             left: {
-  //               transformerType: "getFromParameters",
-  //               safe: true,
-  //               referencePath: ["deployApplication", "applicationBundle"],
-  //             },
-  //           },
-  //           right: {
-  //             transformerType: "!=",
-  //             left: {
-  //               transformerType: "getFromParameters",
-  //               safe: true,
-  //               referencePath: ["deployApplication", "applicationBundle", "applicationName"],
-  //             },
-  //             right: {
-  //               transformerType: "returnValue",
-  //               value: "",
-  //             },
-  //           },
-  //         },
-  //         right: {
-  //           transformerType: "isNotNull",
-  //           left: {
-  //             transformerType: "getFromParameters",
-  //             safe: true,
-  //             referencePath: ["deployApplication", "applicationBundle", "entities"],
-  //           },
-  //         },
-  //       },
-  //       right: {
-  //         transformerType: "isNotNull",
-  //         left: {
-  //           transformerType: "getFromParameters",
-  //           safe: true,
-  //           referencePath: ["deployApplication", "applicationBundle", "entityDefinitions"],
-  //         },
-  //       },
-  //     },
-  //     rigth: true,
-  //     // right: {
-  //     //   // Data file is optional: null deploymentData passes; if present, instances and parentUuid required.
-  //     //   transformerType: "||",
-  //     //   label: "deploymentDataValidation",
-  //     //   left: {
-  //     //     transformerType: "isNull",
-  //     //     left: {
-  //     //       transformerType: "getFromParameters",
-  //     //       safe: true,
-  //     //       referencePath: ["deployApplication", "deploymentData"],
-  //     //     },
-  //     //   },
-  //     //   right: {
-  //     //     transformerType: "&&",
-  //     //     left: {
-  //     //       transformerType: "isNotNull",
-  //     //       left: {
-  //     //         transformerType: "getFromParameters",
-  //     //         safe: true,
-  //     //         referencePath: ["deployApplication", "deploymentData", "instances"],
-  //     //       },
-  //     //     },
-  //     //     right: {
-  //     //       transformerType: "isNotNull",
-  //     //       left: {
-  //     //         transformerType: "getFromParameters",
-  //     //         safe: true,
-  //     //         referencePath: ["deployApplication", "deploymentData", "instances", "0", "parentUuid"],
-  //     //       },
-  //     //     },
-  //     //   },
-  //     // },
-  //     then: true,
-  //     else: "Validation failed: provide a valid application bundle (applicationName, entities, entityDefinitions required); deployment data is optional but must contain instances with parentUuid if provided.",
-  //   }),
-  //   [],
-  // );
 
   return (
     <>
+      <DebugHelper
+        componentName="Create Application and Deployment"
+        elements={[
+          {
+            label: "Form Values",
+            data: {
+              formMLSchema,
+              initialFormValue,
+              applicationDeploymentMapWithNewApplication,
+              createApplicationActionTemplate,
+              validationTransformer,
+            },
+          },
+        ]}
+      />
       <RunnerView
         runnerName={runnerName}
         applicationDeploymentMap={applicationDeploymentMapWithNewApplication}

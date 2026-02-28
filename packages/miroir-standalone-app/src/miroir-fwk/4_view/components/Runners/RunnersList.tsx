@@ -39,10 +39,10 @@ export const runnerConfigs: RunnerConfig[] = [
   //   title: "Create Application (and Deployment)",
   //   component: Runner_CreateApplication,
   // },
-  // {
-  //   title: "Drop Application (and Deployment)",
-  //   component: Runner_DropApplication,
-  // },
+  {
+    title: "Drop Application (and Deployment)",
+    component: Runner_DropApplication,
+  },
   // {
   //   title: "Create Entity",
   //   component: Runner_CreateEntity,

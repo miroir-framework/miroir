@@ -56,6 +56,7 @@ import { ErrorFallbackComponent } from '../ErrorFallbackComponent.js';
 import { ActionButtonWithSnackbar } from '../Page/ActionButtonWithSnackbar.js';
 import { ThemedOnScreenHelper, ThemedStyledButton } from '../Themes/index.js';
 import { JzodElementEditor } from '../ValueObjectEditor/JzodElementEditor.js';
+import { FieldValidationProvider, useFieldValidationContext } from '../ValueObjectEditor/FieldValidationContext.js';
 import { CodeBlock_ReadOnly } from './CodeBlock_ReadOnly.js';
 import type { ValueObjectEditMode } from './ReportSectionEntityInstance.js';
 
@@ -115,6 +116,18 @@ export interface TypedValueObjectEditorProps {
 // ################################################################################################
 // ################################################################################################
 /**
+ * Outer wrapper that provides the FieldValidationContext.
+ * The inner component reads from the context to aggregate field-level errors.
+ */
+export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = (props) => {
+  return (
+    <FieldValidationProvider>
+      <TypedValueObjectEditorInner {...props} />
+    </FieldValidationProvider>
+  );
+};
+
+/**
  * 
  * hooks used:
  * useMiroirContextService
@@ -124,7 +137,7 @@ export interface TypedValueObjectEditorProps {
  * @param param0 
  * @returns 
  */
-export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
+const TypedValueObjectEditorInner: React.FC<TypedValueObjectEditorProps> = ({
   labelElement,
   // 
   // zoom
@@ -284,6 +297,12 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
 
   const isFormValid = !validationError;
 
+  // ##############################################################################################
+  // Field-level validation errors (collected from individual editors via FieldValidationContext)
+  const { fieldErrors } = useFieldValidationContext();
+  const hasFieldErrors = Object.keys(fieldErrors).length > 0;
+  const isFormAndFieldsValid = isFormValid && !hasFieldErrors;
+
   const onSubmit = useCallback(
     async (e: React.FormEvent<HTMLFormElement>) => {
       log.info("TypedValueObjectEditor onSubmit called", e, formikValuePathAsString);
@@ -291,6 +310,12 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
       if (validationError) {
         e.preventDefault();
         log.info("TypedValueObjectEditor form submit blocked by validationTransformer:", validationError);
+        return false;
+      }
+      // Block submission when field-level validation errors exist
+      if (hasFieldErrors) {
+        e.preventDefault();
+        log.info("TypedValueObjectEditor form submit blocked by field-level validation errors:", fieldErrors);
         return false;
       }
       // e.preventDefault();
@@ -310,7 +335,7 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
         );
       }
     },
-    [formik, formikValuePathAsString, useActionButton, props.setAddObjectdialogFormIsOpen, validationError]
+    [formik, formikValuePathAsString, useActionButton, props.setAddObjectdialogFormIsOpen, validationError, hasFieldErrors, fieldErrors]
   );
 
   let typeError: JSX.Element | undefined = undefined;
@@ -479,6 +504,10 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
           log.info("TypedValueObjectEditor ActionButtonWithSnackbar submit blocked by validationTransformer:", validationError);
           return Promise.resolve(ACTION_OK); // don't proceed with submit
         }
+        if (hasFieldErrors) {
+          log.info("TypedValueObjectEditor ActionButtonWithSnackbar submit blocked by field-level errors:", fieldErrors);
+          return Promise.resolve(ACTION_OK);
+        }
         formik.setFieldValue(lastSubmitButtonClicked, formikValuePathAsString);
         const result = await formik.submitForm();
         log.info("TypedValueObjectEditor async submit button action done", result);
@@ -490,7 +519,7 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
       actionName={formLabel}
       type="button" // no form submit happening!
       variant="contained"
-      disabled={!isFormValid}
+      disabled={!isFormAndFieldsValid}
       style={{ maxWidth: "300px" }}
     />
   ) : (
@@ -499,7 +528,7 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
       variant="contained"
       style={{ maxWidth: "300px" }}
       loading={isActionRunning}
-      disabled={!isFormValid}
+      disabled={!isFormAndFieldsValid}
       onClick={(e) => {
         log.info("TypedValueObjectEditor submit button clicked", e);
         formik.setFieldValue(lastSubmitButtonClicked, formikValuePathAsString);

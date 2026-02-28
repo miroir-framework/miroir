@@ -49,7 +49,8 @@ import {
 } from "../Themes/index";
 import { JzodAnyEditor } from "./JzodAnyEditor.js";
 import { JzodArrayEditor } from "./JzodArrayEditor.js";
-import { useJzodElementEditorHooks } from "./JzodElementEditorHooks.js";
+import { FieldValidationError } from "./FieldValidationError.js";
+import { useFieldValidation, useJzodElementEditorHooks } from "./JzodElementEditorHooks.js";
 import { JzodElementEditorProps } from "./JzodElementEditorInterface.js";
 import { JzodElementEditorReactCodeMirror } from "./JzodElementEditorReactCodeMirror.js";
 import { JzodElementStringEditor } from "./JzodElementStringEditor.js";
@@ -312,6 +313,8 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
   const {
     // general use
     context,
+    // environment
+    currentApplicationModelEnvironment,
     // editor state
     formik,
     formikRootLessListKey,
@@ -337,6 +340,18 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
     props.currentDeploymentUuid,
     count,
     "JzodElementEditor"
+  );
+
+  // ##############################################################################################
+  // Field-level validation: evaluate formValidation.transformer from the schema tag
+  // This is the centralized evaluation point — all element types (object, array, string, etc.)
+  // get field-level validation for free through the JzodElementEditor dispatcher.
+  const fieldValidationError = useFieldValidation(
+    props.rootLessListKey,
+    currentKeyMap,
+    formik.values,
+    currentApplicationModelEnvironment,
+    context.miroirContext?.miroirActivityTracker,
   );
 
 
@@ -1516,6 +1531,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
         )}
         {/* <div>{count}</div> */}
       </div>
+      <FieldValidationError error={fieldValidationError} />
     </>
   );
 }

@@ -17,6 +17,8 @@ packages/miroir-core/dist/src/index.d.ts
 packages/miroir-core/node_modules*/
 packages/miroir-mcp/dist*/
 packages/miroir-mcp/tmp*/
+packages/miroir-diagram-class/node_modules*/
+packages/miroir-diagram-class/dist*/
 packages/miroir-react/node_modules*/
 packages/miroir-react/dist*/
 packages/miroir-server/dist*/
