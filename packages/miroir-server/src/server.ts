@@ -91,9 +91,21 @@ myLogger.info('miroirConfig',miroirConfig)
 const portFromConfig: number = Number(miroirConfig.server.rootApiUrl.substring(miroirConfig.server.rootApiUrl.lastIndexOf(":") + 1));
 
 
+// Derive CORS allowed origins: prefer explicit config, otherwise allow both http/https on common dev ports
+// For production: set corsAllowedOrigins in the server config to only the exact production frontend URL(s) (e.g., ["https://app.example.com"]). No code change needed.
+const serverUrl = new URL(miroirConfig.server.rootApiUrl);
+const devPorts = ['5173', '3000'];
+const defaultCorsOrigins = devPorts.flatMap(p => [
+  `http://${serverUrl.hostname}:${p}`,
+  `https://${serverUrl.hostname}:${p}`,
+]);
+const corsAllowedOrigins: string[] =
+  (miroirConfig.server as any).corsAllowedOrigins ?? defaultCorsOrigins;
+myLogger.info('CORS allowed origins:', corsAllowedOrigins);
+
 const app = express();
 app.use(cors({
-  origin: ['https://localhost:5173', 'https://localhost:3000'], // HTTPS client URLs
+  origin: corsAllowedOrigins,
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
@@ -193,7 +205,8 @@ const configurations: Record<string, Deployment> = {
 // open all configured stores
 for (const c of Object.entries(configurations)) {
   const openStoreAction: StoreOrBundleAction = {
-    actionType: "storeManagementAction_openStore",    endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
+    actionType: "storeManagementAction_openStore",
+    endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
     payload: {
       application: c[1].selfApplication,
       deploymentUuid: c[0],
@@ -211,7 +224,8 @@ for (const c of Object.entries(configurations)) {
 
 
 const deploymentsQueryResults = await domainController.handleBoxedExtractorOrQueryAction({
-  actionType: "runBoxedQueryAction",  endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+  actionType: "runBoxedQueryAction",
+  endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
   payload: {
     application: adminSelfApplication.uuid,
     applicationSection: "data",
@@ -258,7 +272,8 @@ myLogger.info(`ApplicationDeploymentMap for new deployments: ${JSON.stringify(ap
 // open all newly found stores
 for (const c of deploymentsToOpen) {
   const openStoreAction: StoreOrBundleAction = {
-    actionType: "storeManagementAction_openStore",    endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
+    actionType: "storeManagementAction_openStore",
+    endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
     payload: {
       application: c[1].selfApplication,
       deploymentUuid: c[0],

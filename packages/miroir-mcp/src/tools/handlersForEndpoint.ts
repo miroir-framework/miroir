@@ -278,7 +278,7 @@ export type McpRequestHandler<T extends McpToolDescription> = {
   actionEnvelope: {
     actionType: string;
     actionLabel: string;
-    application: string;
+    // application: string;
     endpoint: string;
   };
   actionHandler: ToolHandler;
@@ -356,7 +356,8 @@ function mcpToolEntry(endpoint: EndpointDefinition, actionType: string): McpRequ
     ),
     actionEnvelope: {
       actionType: actionType,
-      actionLabel: `MCP: ${actionType.replace(/([A-Z])/g, ' $1').trim()}`,      endpoint: endpoint.uuid,
+      actionLabel: `MCP: ${actionType.replace(/([A-Z])/g, ' $1').trim()}`,
+      endpoint: endpoint.uuid,
     },
     actionHandler: mcpToolHandler(toolName),
   };
