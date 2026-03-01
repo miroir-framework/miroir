@@ -281,7 +281,17 @@ export function MiroirContextReactProvider(props: {
 
   const viewParams = useMemo(() => {
     // const params = new ViewParams(sidebarIsopen, sidebarWidth, gridType, 'default', {}, generalEditMode, showModelTools);
-    const params = new ViewParams(sidebarIsopen, sidebarWidth, gridType, 'default', {}, generalEditMode);
+    const params = new ViewParams(
+      sidebarIsopen,
+      sidebarWidth,
+      gridType,
+      "default",
+      "",
+      "postgres://postgres:postgres@localhost:5432/postgres",
+      "mongodb://localhost:27017/",
+      {},
+      generalEditMode,
+    );
     // Override setters to use React state
     params.updateSidebarIsOpen = (sidebarIsopen: boolean) => setSidebarIsOpen(sidebarIsopen);
     params.updateSidebarWidth = (width: number) => setSidebarWidth(width);
