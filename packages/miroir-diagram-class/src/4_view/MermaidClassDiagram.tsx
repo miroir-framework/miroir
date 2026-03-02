@@ -11,11 +11,12 @@ import mermaid from "mermaid";
 import {
   Box,
   Typography,
-  IconButton,
-  Tooltip,
   ToggleButtonGroup,
   ToggleButton,
+  Tooltip,
 } from "@mui/material";
+import { SvgToolbelt } from "svg-toolbelt";
+import "svg-toolbelt/dist/svg-toolbelt.css";
 import type { EntityDefinition } from "miroir-core";
 import {
   entityDefinitionsToMermaidClassDiagram,
@@ -27,9 +28,9 @@ import { DebugHelper, useMiroirTheme } from "miroir-react";
 // Constants
 // ############################################################################
 
-const ZOOM_STEP = 0.1;
 const ZOOM_MIN = 0.2;
 const ZOOM_MAX = 3.0;
+const ZOOM_STEP = 0.15;
 
 /**
  * Compute an initial zoom so that diagrams with ≤10 classes start at 1.0
@@ -66,13 +67,14 @@ export const MermaidClassDiagram: React.FC<MermaidClassDiagramProps> = ({
 }) => {
   const miroirTheme = useMiroirTheme();
   const containerRef = useRef<HTMLDivElement>(null);
+  const svgContainerRef = useRef<HTMLDivElement>(null);
+  const toolbeltRef = useRef<SvgToolbelt | null>(null);
   const [svgContent, setSvgContent] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
   const [direction, setDirection] = useState<"TB" | "LR">(
     (options.direction === "TB" || options.direction === "LR") ? options.direction : "TB"
   );
   const [showInfra, setShowInfra] = useState<boolean>(options.showInfrastructureAttributes ?? false);
-  const [zoom, setZoom] = useState<number>(() => computeInitialZoom(entityDefinitions.length));
   const renderIdRef = useRef(0);
 
   // Derive theme-aware colors for Mermaid
@@ -98,7 +100,7 @@ export const MermaidClassDiagram: React.FC<MermaidClassDiagramProps> = ({
   }), [options, direction, showInfra]);
 
   const renderDiagram = useCallback(async () => {
-    if (!containerRef.current || entityDefinitions.length === 0) {
+    if (entityDefinitions.length === 0) {
       setSvgContent("");
       return;
     }
@@ -151,10 +153,42 @@ export const MermaidClassDiagram: React.FC<MermaidClassDiagramProps> = ({
   // useEffect is strictly necessary here because renderDiagram needs containerRef.current.
   useEffect(() => {
     mermaidInitialized = false;
-    setZoom(computeInitialZoom(entityDefinitions.length));
     renderDiagram();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [diagramKey]);
+
+  // Initialise (or reinitialise) svg-toolbelt once the SVG is in the DOM.
+  // useEffect is strictly necessary here because SvgToolbelt needs the SVG DOM node.
+  useEffect(() => {
+    if (!svgContainerRef.current || !svgContent) return;
+
+    // Destroy any previous instance before creating a new one.
+    toolbeltRef.current?.destroy();
+    toolbeltRef.current = null;
+
+    const enhancer = new SvgToolbelt(svgContainerRef.current, {
+      minScale: ZOOM_MIN,
+      maxScale: ZOOM_MAX,
+      zoomStep: ZOOM_STEP,
+      showControls: true,
+      controlsPosition: "top-right",
+      enableTouch: true,
+      enableKeyboard: true,
+    });
+    enhancer.init();
+
+    // Apply the computed initial scale.
+    enhancer.scale = computeInitialZoom(entityDefinitions.length);
+    enhancer.applyTransform();
+
+    toolbeltRef.current = enhancer;
+
+    return () => {
+      enhancer.destroy();
+      toolbeltRef.current = null;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [svgContent]);
 
   const handleDirectionChange = (_: unknown, newDir: "TB" | "LR" | null) => {
     if (newDir) setDirection(newDir);
@@ -162,18 +196,6 @@ export const MermaidClassDiagram: React.FC<MermaidClassDiagramProps> = ({
 
   const handleInfraToggle = () => {
     setShowInfra((prev) => !prev);
-  };
-
-  const handleZoomIn = () => {
-    setZoom((z) => Math.min(ZOOM_MAX, parseFloat((z + ZOOM_STEP).toFixed(2))));
-  };
-
-  const handleZoomOut = () => {
-    setZoom((z) => Math.max(ZOOM_MIN, parseFloat((z - ZOOM_STEP).toFixed(2))));
-  };
-
-  const handleZoomReset = () => {
-    setZoom(computeInitialZoom(entityDefinitions.length));
   };
 
   return (
@@ -245,75 +267,46 @@ export const MermaidClassDiagram: React.FC<MermaidClassDiagramProps> = ({
             {showInfra ? "Hide Infra" : "Show Infra"}
           </ToggleButton>
         </Tooltip>
-
-        {/* Zoom controls */}
-        <Box sx={{ display: "flex", alignItems: "center", gap: 0.5, ml: "auto" }}>
-          <Typography variant="body2" sx={{ color: themeColors.text, minWidth: "42px", textAlign: "right" }}>
-            {Math.round(zoom * 100)}%
-          </Typography>
-          <Tooltip title="Zoom out">
-            <IconButton size="small" onClick={handleZoomOut} disabled={zoom <= ZOOM_MIN} sx={{ fontWeight: "bold", fontSize: "1rem" }}>
-              −
-            </IconButton>
-          </Tooltip>
-          <Tooltip title="Reset zoom">
-            <IconButton size="small" onClick={handleZoomReset} sx={{ fontSize: "0.8rem" }}>
-              ⊡
-            </IconButton>
-          </Tooltip>
-          <Tooltip title="Zoom in">
-            <IconButton size="small" onClick={handleZoomIn} disabled={zoom >= ZOOM_MAX} sx={{ fontWeight: "bold", fontSize: "1rem" }}>
-              +
-            </IconButton>
-          </Tooltip>
-        </Box>
       </Box>
 
-      {/* Diagram area */}
+      {/* Diagram area — svg-toolbelt manages zoom/pan directly on the SVG transform */}
       <Box
         ref={containerRef}
         sx={{
           flex: 1,
-          overflow: "auto",
+          overflow: "hidden",
           backgroundColor: themeColors.background,
           border: `1px solid ${themeColors.border}`,
           borderRadius: "0 0 4px 4px",
-          padding: 2,
           minHeight: "300px",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "flex-start",
+          position: "relative",
         }}
       >
         {error ? (
-          <Typography color="error" variant="body2">
+          <Typography color="error" variant="body2" sx={{ padding: 2 }}>
             Diagram rendering error: {error}
           </Typography>
         ) : entityDefinitions.length === 0 ? (
           <Typography
             variant="body2"
-            sx={{ color: themeColors.text, opacity: 0.6 }}
+            sx={{ color: themeColors.text, opacity: 0.6, padding: 2 }}
           >
             No entity definitions available for the current application model.
           </Typography>
-        ) : svgContent ? (
-          <Box
-            sx={{
-              transformOrigin: "top center",
-              transform: `scale(${zoom})`,
-              transition: "transform 0.15s ease",
-              // Reserve the original (unscaled) space so the container scrollbars are correct
-              width: `${Math.round(100 / zoom)}%`,
-            }}
-            dangerouslySetInnerHTML={{ __html: svgContent }}
-          />
-        ) : (
+        ) : !svgContent ? (
           <Typography
             variant="body2"
-            sx={{ color: themeColors.text, opacity: 0.6 }}
+            sx={{ color: themeColors.text, opacity: 0.6, padding: 2 }}
           >
             Rendering diagram...
           </Typography>
+        ) : (
+          // svgContainerRef is the svg-toolbelt viewport: contains exactly one <svg>
+          <Box
+            ref={svgContainerRef}
+            sx={{ width: "100%", height: "100%", minHeight: "300px" }}
+            dangerouslySetInnerHTML={{ __html: svgContent }}
+          />
         )}
       </Box>
     </Box>
