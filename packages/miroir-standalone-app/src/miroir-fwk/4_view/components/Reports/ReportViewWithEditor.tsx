@@ -398,26 +398,20 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
         ) { // meta-model or model change, need transaction
           return domainController.handleActionFromUI(
             {
-              actionType: "transactionalInstanceAction",              endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+              actionType: "transactionalInstanceAction",
+              endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
               payload: {
                 application: props.pageParams.application ?? "NO_APPLICATION",
                 // deploymentUuid: props.deploymentUuid,
                 instanceAction: {
-                  actionType: mode == "create" ? "createInstance" : "updateInstance",                  endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+                  actionType: mode == "create" ? "createInstance" : "updateInstance",
+                  endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
                   // deploymentUuid: props.deploymentUuid, // NOT FOR createInstance
                   payload: {
                     application: props.pageParams.application ?? "NO_APPLICATION",
                     // deploymentUuid: props.deploymentUuid, // ONLY FOR createInstance
                     applicationSection,
-                    parentUuid: currentInstance.parentUuid,
-                    objects: [
-                      {
-                        parentName: currentInstance.parentName,
-                        parentUuid: currentInstance.parentUuid,
-                        applicationSection: applicationSection,
-                        instances: [currentInstance],
-                      },
-                    ],
+                    objects: [currentInstance],
                   },
                 },
               },
@@ -428,22 +422,14 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
         } else { // only data is modified, no transaction is needed
           const updateAction: InstanceAction = {
             actionType: mode == "create" ? "createInstance" : "updateInstance",
-            // deploymentUuid: props.deploymentUuid, // NOT FOR createInstance            endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+            // deploymentUuid: props.deploymentUuid, // NOT FOR createInstance
+            endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
             payload: {
               // applicationSection: "data",
               application: props.pageParams.application ?? "NO_APPLICATION",
               // deploymentUuid: props.deploymentUuid, // ONLY FOR createInstance
               applicationSection: applicationSection,
-              parentUuid: currentInstance.parentUuid,
-              objects: [
-                {
-                  parentName: currentInstance.name,
-                  parentUuid: currentInstance.parentUuid,
-                  // applicationSection: "data",
-                  applicationSection: applicationSection,
-                  instances: [currentInstance],
-                },
-              ],
+              objects: [currentInstance],
             },
           };
           log.info("onEditValueObjectFormSubmit dispatching updateAction", updateAction);

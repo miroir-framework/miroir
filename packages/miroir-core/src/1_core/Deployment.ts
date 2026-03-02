@@ -121,24 +121,16 @@ export function createApplicationCompositeAction(
           payload: {
             application: newSelfApplicationUuid,
             applicationSection: "data",
-            parentUuid: entityApplicationForAdmin.uuid,
             objects: [
               {
+                uuid: newSelfApplicationUuid,
                 parentName: entityApplicationForAdmin.name,
                 parentUuid: entityApplicationForAdmin.uuid,
-                applicationSection: "data",
-                instances: [
-                  {
-                    uuid: newSelfApplicationUuid,
-                    parentName: entityApplicationForAdmin.name,
-                    parentUuid: entityApplicationForAdmin.uuid,
-                    name: newApplicationName,
-                    defaultLabel: `The ${newApplicationName} Admin Application.`,
-                    description: `This Admin Application contains the ${newApplicationName} model and data.`,
-                    selfApplication: newSelfApplicationUuid,
-                  } as AdminApplication,
-                ],
-              },
+                name: newApplicationName,
+                defaultLabel: `The ${newApplicationName} Admin Application.`,
+                description: `This Admin Application contains the ${newApplicationName} model and data.`,
+                selfApplication: newSelfApplicationUuid,
+              } as AdminApplication,
             ],
           },
         },
@@ -212,26 +204,18 @@ export function createDeploymentCompositeAction(
           endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
           payload: {
             application: adminSelfApplication.uuid,
-            parentUuid: entityDeployment.uuid,
             applicationSection: "data",
             objects: [
               {
+                uuid: newDeploymentUuid,
                 parentName: "Deployment",
                 parentUuid: entityDeployment.uuid,
-                applicationSection: "data",
-                instances: [
-                  {
-                    uuid: newDeploymentUuid,
-                    parentName: "Deployment",
-                    parentUuid: entityDeployment.uuid,
-                    name: `Deployment of application ${applicationName}`,
-                    defaultLabel: `The deployment of application ${applicationName}`,
-                    description: `The description of deployment of application ${applicationName}`,
-                    selfApplication: selfApplicationUuid, // TODO: this should be selfApplication
-                    configuration: newDeploymentConfiguration,
-                  } as Deployment,
-                ],
-              },
+                name: `Deployment of application ${applicationName}`,
+                defaultLabel: `The deployment of application ${applicationName}`,
+                description: `The description of deployment of application ${applicationName}`,
+                selfApplication: selfApplicationUuid, // TODO: this should be selfApplication
+                configuration: newDeploymentConfiguration,
+              } as Deployment,
             ],
           },
         },
@@ -380,15 +364,9 @@ export function resetAndinitializeDeploymentCompositeAction(
           payload: {
             application: applicationUuid,
             applicationSection: "data",
-            parentUuid: appEntitesAndInstances.length > 0? appEntitesAndInstances[0].entity.uuid : noValue.uuid,
-            objects: appEntitesAndInstances.map((e) => {
-              return {
-                parentName: e.entity.name,
-                parentUuid: e.entity.uuid,
-                applicationSection: "data",
-                instances: e.instances,
-              };
-            }),
+            objects: appEntitesAndInstances.flatMap((e) => 
+              e.instances
+            ),
           },
         },
       ],

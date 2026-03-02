@@ -111,47 +111,28 @@
                     "parentUuid": "e81078f3-2de7-4301-bd79-d3a156aec149",
                     "objects": [
                       {
+                        "uuid": {
+                          "transformerType": "generateUuid"
+                        },
                         "parentName": "LendingHistoryItem",
                         "parentUuid": "e81078f3-2de7-4301-bd79-d3a156aec149",
-                        "applicationSection": "data",
-                        "instances": [
-                          {
-                            "uuid": {
-                              "transformerType": "generateUuid"
-                            },
-                            "parentName": "LendingHistoryItem",
-                            "parentUuid": "e81078f3-2de7-4301-bd79-d3a156aec149",
-                            "book": {
-                              "transformerType": "getFromParameters",
-                              "referencePath": [
-                                "payload",
-                                "book"
-                              ]
-                            },
-                            "user": {
-                              "transformerType": "getFromParameters",
-                              "referencePath": [
-                                "payload",
-                                "user"
-                              ]
-                            },
-                            "startDate": {
-                              "transformerType": "getFromParameters",
-                              "referencePath": [
-                                "payload",
-                                "startDate"
-                              ]
-                            },
-                            "note": {
-                              "transformerType": "getFromParameters",
-                              "safe": true,
-                              "referencePath": [
-                                "payload",
-                                "note"
-                              ]
-                            }
-                          }
-                        ]
+                        "book": {
+                          "transformerType": "getFromParameters",
+                          "referencePath": ["payload", "book"]
+                        },
+                        "user": {
+                          "transformerType": "getFromParameters",
+                          "referencePath": ["payload", "user"]
+                        },
+                        "startDate": {
+                          "transformerType": "getFromParameters",
+                          "referencePath": ["payload", "startDate"]
+                        },
+                        "note": {
+                          "transformerType": "getFromParameters",
+                          "safe": true,
+                          "referencePath": ["payload", "note"]
+                        }
                       }
                     ]
                   }

@@ -271,25 +271,12 @@
                       "applicationSection": "model",
                       "objects": [
                         {
-                          "parentName": {
-                            "transformerType": "getFromParameters",
-                            "referencePath": ["newEntityListReport", "parentName"]
-                          },
-                          "parentUuid": {
-                            "transformerType": "getFromParameters",
-                            "referencePath": ["newEntityListReport", "parentUuid"]
-                          },
-                          "applicationSection": "model",
-                          "instances": [
-                            {
-                              "transformerType": "getFromParameters",
-                              "referenceName": "newEntityListReport"
-                            },
-                            {
-                              "transformerType": "getFromParameters",
-                              "referenceName": "newEntityDetailsReport"
-                            }
-                          ]
+                          "transformerType": "getFromParameters",
+                          "referenceName": "newEntityListReport"
+                        },
+                        {
+                          "transformerType": "getFromParameters",
+                          "referenceName": "newEntityDetailsReport"
                         }
                       ]
                     }

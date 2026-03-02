@@ -232,21 +232,25 @@ export class PersistenceAsyncStore implements PersistenceStoreLocalOrRemoteInter
         const localStoreAction: PersistenceStoreControllerAction = {
           actionType: actionMap[newActionType],
           parentName: action.payload.parentName ?? "",
-          parentUuid: action.payload.parentUuid ?? "",          endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+          parentUuid: action.payload.parentUuid ?? "",
+          endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
           payload: {
             application: action.payload.application,
             applicationSection: action.payload.section,
-            objects: [
-              {
-                // type issue: read action does not have "objects" attribute
-                parentName: action.payload.parentName ?? "",
-                parentUuid: action.payload.parentUuid ?? "",
-                applicationSection: action.payload.section,
-                instances: (Array.isArray(action.payload.objects)
+            objects: (Array.isArray(action.payload.objects)
                   ? action.payload.objects
-                  : []) as EntityInstance[],
-              },
-            ],
+                  : []) as EntityInstance[]
+            // objects: [
+            //   {
+            //     // type issue: read action does not have "objects" attribute
+            //     parentName: action.payload.parentName ?? "",
+            //     parentUuid: action.payload.parentUuid ?? "",
+            //     applicationSection: action.payload.section,
+            //     instances: (Array.isArray(action.payload.objects)
+            //       ? action.payload.objects
+            //       : []) as EntityInstance[],
+            //   },
+            // ],
           },
         } as PersistenceStoreControllerAction;
         log.info(

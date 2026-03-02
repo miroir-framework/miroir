@@ -473,25 +473,17 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
         if (props.chosenApplicationSection == "model") {
           await domainController.handleActionFromUI(
             {
-              actionType: "transactionalInstanceAction",              endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+              actionType: "transactionalInstanceAction",
+              endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
               payload: {
                 application: props.application,
                 instanceAction: {
-                  actionType: "createInstance",                  endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+                  actionType: "createInstance",
+                  endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
                   payload: {
                     application: props.application,
                     applicationSection: currentApplicationSection,
-                    parentUuid: data.parentUuid,
-                    objects: [
-                      {
-                        parentName: data.name,
-                        parentUuid: data.parentUuid,
-                        applicationSection: "model",
-                        instances: [
-                          data,
-                        ],
-                      },
-                    ],
+                    objects: [data],
                   },
                 },
               },
@@ -501,20 +493,12 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
           );
         } else {
           const createAction: InstanceAction = {
-            actionType: "createInstance",            endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+            actionType: "createInstance",
+            endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
             payload: {
               application: props.application,
-              // deploymentUuid: props.displayedDeploymentDefinition?.uuid,
               applicationSection: currentApplicationSection,
-              parentUuid: data.parentUuid,
-              objects: [
-                {
-                  parentName: data.name,
-                  parentUuid: data.parentUuid,
-                  applicationSection: currentApplicationSection,
-                  instances: [data],
-                },
-              ],
+              objects: [data],
             },
           };
           await domainController.handleActionFromUI(createAction, props.applicationDeploymentMap);
@@ -545,23 +529,17 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
         if (props.chosenApplicationSection == "model") {
           result = await domainController.handleActionFromUI(
             {
-              actionType: "transactionalInstanceAction",              endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+              actionType: "transactionalInstanceAction",
+              endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
               payload: {
                 application: props.application,
                 instanceAction: {
-                  actionType: "updateInstance",                  endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+                  actionType: "updateInstance",
+                  endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
                   payload: {
                     application: props.application,
                     applicationSection: "model",
-                    parentUuid: data.parentUuid,
-                    objects: [
-                      {
-                        parentName: data.name,
-                        parentUuid: data.parentUuid,
-                        applicationSection: props.chosenApplicationSection,
-                        instances: [data],
-                      },
-                    ],
+                    objects: [data],
                   },
                 },
               },
@@ -571,23 +549,14 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
           );
         } else {
           const updateAction: InstanceAction = {
-            actionType: "updateInstance",            endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+            actionType: "updateInstance",
+            endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
             payload: {
               application: props.application,
               applicationSection: props.chosenApplicationSection
                 ? props.chosenApplicationSection
                 : "data",
-              parentUuid: data.parentUuid,
-              objects: [
-                {
-                  parentName: data.name,
-                  parentUuid: data.parentUuid,
-                  applicationSection: props.chosenApplicationSection
-                    ? props.chosenApplicationSection
-                    : "data",
-                  instances: [data],
-                },
-              ],
+              objects: [data],
             },
           };
           result = await domainController.handleActionFromUI(updateAction, props.applicationDeploymentMap);

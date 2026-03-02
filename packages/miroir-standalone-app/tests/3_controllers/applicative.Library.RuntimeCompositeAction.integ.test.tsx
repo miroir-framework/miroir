@@ -58,6 +58,7 @@ import { miroirIndexedDbStoreSectionStartup } from 'miroir-store-indexedDb';
 import { miroirPostgresStoreSectionStartup } from 'miroir-store-postgres';
 import {
   adminApplication_Miroir,
+  adminSelfApplication,
   deployment_Miroir,
 } from "miroir-test-app_deployment-admin";
 import {
@@ -396,7 +397,8 @@ const createEntity_newEntityDefinition: EntityDefinition = {
 const createEntityCompositeAction: CompositeActionSequence = {
   actionType: "compositeActionSequence",
   // actionLabel: "createEntityCompositeActionTemplate",
-  actionLabel: "createEntityCompositeAction",  endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+  actionLabel: "createEntityCompositeAction",
+  endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
   payload: {
     templates: {
       // all
@@ -622,7 +624,8 @@ const createEntityCompositeAction: CompositeActionSequence = {
       {
         // actionType: "modelAction",
         actionType: "createEntity",
-        actionLabel: "createEntity",        endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+        actionLabel: "createEntity",
+        endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
         payload: {
           application: testSelfApplicationUuid,
           // deploymentUuid: testAdminConfigurationDeploymentUuid,
@@ -852,90 +855,84 @@ const newEntityDetailsReport = {
 
 const createReportsCompositeAction: DomainAction = {
   actionType: "transactionalInstanceAction",
-  actionLabel: "createReports",  endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+  actionLabel: "createReports",
+  endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
   payload: {
-    deploymentUuid: testAdminConfigurationDeploymentUuid,
+    application: adminSelfApplication.uuid,
+    // deploymentUuid: testAdminConfigurationDeploymentUuid,
     instanceAction: {
-      // actionType: "instanceAction",
-      actionType: "createInstance",      endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+      actionType: "createInstance",
+      endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
       payload: {
         application: testSelfApplicationUuid,
-        // deploymentUuid: testAdminConfigurationDeploymentUuid,
         applicationSection: "model",
         objects: [
+          // List of new entity instances Report Definition
           {
-            parentName: newEntityListReport.parentName,
-            parentUuid: newEntityListReport.parentUuid,
-            applicationSection: "model",
-            instances: [
-              // List of new entity instances Report Definition
-              {
-                uuid: createEntity_newEntityListReportUuid,
-                selfApplication: testSelfApplicationUuid,
-                parentName: "Report",
-                parentUuid: entityReport.uuid,
-                conceptLevel: "Model",
-                name: newEntityName + "List",
-                defaultLabel: "List of " + newEntityName + "s",
-                type: "list",
-                definition: {
-                  extractors: {
-                    instanceList: {
-                      extractorOrCombinerType: "extractorByEntityReturningObjectList",
-                      parentName: newEntityName,
-                      parentUuid: createEntity_newEntity.uuid,
-                    },
-                  },
-                  section: {
-                    type: "objectListReportSection",
-                    definition: {
-                      label: newEntityName + "s",
-                      parentUuid: createEntity_newEntity.uuid,
-                      fetchedDataReference: "instanceList",
-                    },
-                  },
+            uuid: createEntity_newEntityListReportUuid,
+            selfApplication: testSelfApplicationUuid,
+            parentName: "Report",
+            parentUuid: entityReport.uuid,
+            conceptLevel: "Model",
+            name: newEntityName + "List",
+            defaultLabel: "List of " + newEntityName + "s",
+            type: "list",
+            definition: {
+              extractors: {
+                instanceList: {
+                  extractorOrCombinerType: "extractorByEntityReturningObjectList",
+                  parentName: newEntityName,
+                  parentUuid: createEntity_newEntity.uuid,
                 },
-              } as EntityInstance,
-              newEntityDetailsReport as any as Report, // TODO: update report type to accomodate for "parentUuid" in ExtractorOrCombinerTemplate
-              // // Details of an entity instance Report Definition
-              // {
-              //   uuid: createEntity_newEntityDetailsReportUuid,
-              //   selfApplication: testSelfApplicationUuid,
-              //   parentName: entityReport.name,
-              //   parentUuid: entityReport.uuid,
-              //   conceptLevel: "Model",
-              //   name: newEntityName + "Details",
-              //   defaultLabel: "Details of " + newEntityName,
-              //   definition: {
-              //     extractorTemplates: {
-              //       elementToDisplay: {
-              //         extractorOrCombinerType: "extractorForObjectByDirectReference",
-              //         parentName: newEntityName,
-              //         parentUuid: newEntityUuid,
-              //         instanceUuid: {
-              //           transformerType: "getFromContext",
-              //           interpolation: "runtime",
-              //           referenceName: "instanceUuid",
-              //         }
-              //       },
-              //     },
-              //   },
-              //   section: {
-              //     type: "list",
-              //     definition: [
-              //       {
-              //         type: "objectInstanceReportSection",
-              //         definition: {
-              //           label: "My " + newEntityName,
-              //           parentUuid: newEntityUuid,
-              //           fetchedDataReference: "elementToDisplay",
-              //         },
-              //       },
-              //     ],
-              //   },
-              // } as EntityInstance,
-            ],
-          },
+              },
+              section: {
+                type: "objectListReportSection",
+                definition: {
+                  label: newEntityName + "s",
+                  parentUuid: createEntity_newEntity.uuid,
+                  fetchedDataReference: "instanceList",
+                },
+              },
+            },
+          } as EntityInstance,
+          newEntityDetailsReport as any as Report, // TODO: update report type to accomodate for "parentUuid" in ExtractorOrCombinerTemplate
+          // // Details of an entity instance Report Definition
+          // {
+          //   uuid: createEntity_newEntityDetailsReportUuid,
+          //   selfApplication: testSelfApplicationUuid,
+          //   parentName: entityReport.name,
+          //   parentUuid: entityReport.uuid,
+          //   conceptLevel: "Model",
+          //   name: newEntityName + "Details",
+          //   defaultLabel: "Details of " + newEntityName,
+          //   definition: {
+          //     extractorTemplates: {
+          //       elementToDisplay: {
+          //         extractorOrCombinerType: "extractorForObjectByDirectReference",
+          //         parentName: newEntityName,
+          //         parentUuid: newEntityUuid,
+          //         instanceUuid: {
+          //           transformerType: "getFromContext",
+          //           interpolation: "runtime",
+          //           referenceName: "instanceUuid",
+          //         }
+          //       },
+          //     },
+          //   },
+          //   section: {
+          //     type: "list",
+          //     definition: [
+          //       {
+          //         type: "objectInstanceReportSection",
+          //         definition: {
+          //           label: "My " + newEntityName,
+          //           parentUuid: newEntityUuid,
+          //           fetchedDataReference: "elementToDisplay",
+          //         },
+          //       },
+          //     ],
+          //   },
+          // } as EntityInstance,
         ],
       },
     },
@@ -949,7 +946,8 @@ const createReportsCompositeActionPrepActions: any[] = [
     actionLabel: "getListOfReports",
     nameGivenToResult: "newApplicationReportList",
     queryTemplate: {
-      actionType: "runBoxedQueryAction",      endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+      actionType: "runBoxedQueryAction",
+      endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
       applicationSection: "model", // TODO: give only selfApplication section in individual queries?
       deploymentUuid: testAdminConfigurationDeploymentUuid,
       query: {
@@ -1109,7 +1107,8 @@ const testSuites: Record<string, TestCompositeActionParams> = {
           compositeActionSequence: {
             actionType: "compositeActionSequence",
             actionLabel: "createEntityAndReportFromSpreadsheet",
-            // templates: createEntityCompositeAction.templates,            endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+            // templates: createEntityCompositeAction.templates,
+            endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             payload: {
               definition: [
                 ...(createEntityCompositeAction as any).definition,
@@ -1138,7 +1137,8 @@ const testSuites: Record<string, TestCompositeActionParams> = {
                   actionLabel: "getMenu",
                   nameGivenToResult: "menuUpdateQueryResult",
                   queryTemplate: {
-                    actionType: "runBoxedQueryAction",                    endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+                    actionType: "runBoxedQueryAction",
+                    endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
                     payload: {
                       applicationSection: "model",
                       deploymentUuid: testAdminConfigurationDeploymentUuid,
@@ -1203,12 +1203,14 @@ const testSuites: Record<string, TestCompositeActionParams> = {
                 // update current menu
                 {
                   actionType: "transactionalInstanceAction",
-                  actionLabel: "updateMenu",                  endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                  actionLabel: "updateMenu",
+                  endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
                   payload: {
                     deploymentUuid: testAdminConfigurationDeploymentUuid,
                     instanceAction: {
                       actionType: "updateInstance",
-                      applicationSection: "model",                      deploymentUuid: testAdminConfigurationDeploymentUuid,
+                      applicationSection: "model",
+                      deploymentUuid: testAdminConfigurationDeploymentUuid,
                       endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
                       objects: [
                         {

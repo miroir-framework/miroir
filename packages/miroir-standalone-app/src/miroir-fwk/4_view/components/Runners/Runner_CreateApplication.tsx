@@ -612,46 +612,40 @@ export const Runner_CreateApplication: React.FC<CreateApplicationToolProps> = ({
 
     const localCreateApplicationCompositeActionTemplate: CompositeActionSequence = {
       actionType: "compositeActionSequence",
-      actionLabel: "createApplicationForAdminAction",      endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+      actionLabel: "createApplicationForAdminAction",
+      endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
       payload: {
         application: "NOT_USED_HERE",
         definition: [
           {
             actionType: "createInstance",
-            actionLabel: "createApplicationForAdminAction_instances",            endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+            actionLabel: "createApplicationForAdminAction_instances",
+            endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
             payload: {
               application: adminSelfApplication.uuid,
               applicationSection: "data",
-              parentUuid: entityApplicationForAdmin.uuid,
               objects: [
                 {
+                  uuid: testSelfApplicationUuid,
                   parentName: entityApplicationForAdmin.name,
                   parentUuid: entityApplicationForAdmin.uuid,
-                  applicationSection: "data",
-                  instances: [
-                    {
-                      uuid: testSelfApplicationUuid,
-                      parentName: entityApplicationForAdmin.name,
-                      parentUuid: entityApplicationForAdmin.uuid,
-                      name: {
-                        transformerType: "mustacheStringTemplate",
-                        interpolation: "build",
-                        definition: `{{createApplicationAndDeployment.applicationStorage.applicationName}}`,
-                      } as any,
-                      defaultLabel: {
-                        transformerType: "mustacheStringTemplate",
-                        interpolation: "build",
-                        definition: `The {{createApplicationAndDeployment.applicationStorage.applicationName}} Admin Application.`,
-                      } as any,
-                      description: {
-                        transformerType: "mustacheStringTemplate",
-                        interpolation: "build",
-                        definition: `This Admin Application contains the {{createApplicationAndDeployment.applicationStorage.applicationName}} model and data.`,
-                      } as any,
-                      selfApplication: testSelfApplicationUuid,
-                    } as AdminApplication,
-                  ],
-                },
+                  name: {
+                    transformerType: "mustacheStringTemplate",
+                    interpolation: "build",
+                    definition: `{{createApplicationAndDeployment.applicationStorage.applicationName}}`,
+                  } as any,
+                  defaultLabel: {
+                    transformerType: "mustacheStringTemplate",
+                    interpolation: "build",
+                    definition: `The {{createApplicationAndDeployment.applicationStorage.applicationName}} Admin Application.`,
+                  } as any,
+                  description: {
+                    transformerType: "mustacheStringTemplate",
+                    interpolation: "build",
+                    definition: `This Admin Application contains the {{createApplicationAndDeployment.applicationStorage.applicationName}} model and data.`,
+                  } as any,
+                  selfApplication: testSelfApplicationUuid,
+                } as AdminApplication,
               ],
             },
           },
@@ -661,13 +655,15 @@ export const Runner_CreateApplication: React.FC<CreateApplicationToolProps> = ({
 
     const localCreateDeploymentCompositeActionTemplate: CompositeActionSequence = {
       actionType: "compositeActionSequence",
-      actionLabel: "createDeployment",      endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+      actionLabel: "createDeployment",
+      endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
       payload: {
         application: "NOT_USED_HERE",
         definition: [
           {
             actionType: "storeManagementAction_openStore",
-            actionLabel: "storeManagementAction_openStore",            endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
+            actionLabel: "storeManagementAction_openStore",
+            endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
             payload: {
               application: testSelfApplicationUuid,
               deploymentUuid: testDeploymentUuid,
@@ -678,7 +674,8 @@ export const Runner_CreateApplication: React.FC<CreateApplicationToolProps> = ({
           },
           {
             actionType: "storeManagementAction_createStore",
-            actionLabel: "storeManagementAction_createStore",            endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
+            actionLabel: "storeManagementAction_createStore",
+            endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
             payload: {
               application: testSelfApplicationUuid,
               deploymentUuid: testDeploymentUuid,
@@ -687,41 +684,34 @@ export const Runner_CreateApplication: React.FC<CreateApplicationToolProps> = ({
           },
           {
             actionType: "createInstance",
-            actionLabel: "CreateDeploymentInstances",            endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+            actionLabel: "CreateDeploymentInstances",
+            endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
             payload: {
               application: adminSelfApplication.uuid,
               applicationSection: "data",
-              parentUuid: entityDeployment.uuid,
               objects: [
                 {
+                  uuid: testDeploymentUuid,
                   parentName: "Deployment",
                   parentUuid: entityDeployment.uuid,
-                  applicationSection: "data",
-                  instances: [
-                    {
-                      uuid: testDeploymentUuid,
-                      parentName: "Deployment",
-                      parentUuid: entityDeployment.uuid,
-                      name: {
-                        transformerType: "mustacheStringTemplate",
-                        interpolation: "build",
-                        definition: `Deployment of application {{createApplicationAndDeployment.applicationStorage.applicationName}}`,
-                      } as any,
-                      defaultLabel: {
-                        transformerType: "mustacheStringTemplate",
-                        interpolation: "build",
-                        definition: `The deployment of application {{createApplicationAndDeployment.applicationStorage.applicationName}}`,
-                      } as any,
-                      description: {
-                        transformerType: "mustacheStringTemplate",
-                        interpolation: "build",
-                        definition: `The description of deployment of application {{createApplicationAndDeployment.applicationStorage.applicationName}}`,
-                      } as any,
-                      selfApplication: testSelfApplicationUuid,
-                      configuration: sqltestDeploymentStorageConfigurationTemplate as any,
-                    } as Deployment,
-                  ],
-                },
+                  name: {
+                    transformerType: "mustacheStringTemplate",
+                    interpolation: "build",
+                    definition: `Deployment of application {{createApplicationAndDeployment.applicationStorage.applicationName}}`,
+                  } as any,
+                  defaultLabel: {
+                    transformerType: "mustacheStringTemplate",
+                    interpolation: "build",
+                    definition: `The deployment of application {{createApplicationAndDeployment.applicationStorage.applicationName}}`,
+                  } as any,
+                  description: {
+                    transformerType: "mustacheStringTemplate",
+                    interpolation: "build",
+                    definition: `The description of deployment of application {{createApplicationAndDeployment.applicationStorage.applicationName}}`,
+                  } as any,
+                  selfApplication: testSelfApplicationUuid,
+                  configuration: sqltestDeploymentStorageConfigurationTemplate as any,
+                } as Deployment,
               ],
             },
           },
@@ -732,13 +722,15 @@ export const Runner_CreateApplication: React.FC<CreateApplicationToolProps> = ({
     const appEntitesAndInstances: any[] = [];
     const localResetAndinitializeDeploymentCompositeActionTemplate: CompositeActionSequence = {
       actionType: "compositeActionSequence",
-      actionLabel: "resetAndInitializeDeployment",      endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+      actionLabel: "resetAndInitializeDeployment",
+      endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
       payload: {
         application: "NOT_USED_IN_compositeActionSequence",
         definition: [
           {
             actionType: "resetModel",
-            actionLabel: "resetApplicationStore",            endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+            actionLabel: "resetApplicationStore",
+            endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
             payload: {
               application: testSelfApplicationUuid,
               ...(selectedMetaModel ? {
@@ -753,7 +745,8 @@ export const Runner_CreateApplication: React.FC<CreateApplicationToolProps> = ({
           },
           {
             actionType: "initModel",
-            actionLabel: "resetAndInitializeDeployment_initModel_" + testSelfApplicationUuid,            endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+            actionLabel: "resetAndInitializeDeployment_initModel_" + testSelfApplicationUuid,
+            endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
             payload: {
               application: testSelfApplicationUuid,
               params: {
@@ -766,21 +759,24 @@ export const Runner_CreateApplication: React.FC<CreateApplicationToolProps> = ({
           },
           {
             actionType: "commit", // in the case where initModel has a model attribute
-            actionLabel: "refreshLocalCacheForApplication",            endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+            actionLabel: "refreshLocalCacheForApplication",
+            endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
             payload: {
               application: testSelfApplicationUuid,
             },
           },
           {
             actionType: "rollback",
-            actionLabel: "refreshLocalCacheForApplication",            endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+            actionLabel: "refreshLocalCacheForApplication",
+            endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
             payload: {
               application: testSelfApplicationUuid,
             },
           },
           {
             actionType: "createEntity",
-            actionLabel: "CreateApplicationStoreEntities",            endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+            actionLabel: "CreateApplicationStoreEntities",
+            endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
             payload: {
               application: testSelfApplicationUuid,
               entities: appEntitesAndInstances,
@@ -788,26 +784,20 @@ export const Runner_CreateApplication: React.FC<CreateApplicationToolProps> = ({
           },
           {
             actionType: "commit",
-            actionLabel: "CommitApplicationStoreEntities",            endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+            actionLabel: "CommitApplicationStoreEntities",
+            endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
             payload: {
               application: testSelfApplicationUuid,
             },
           },
           {
             actionType: "createInstance",
-            actionLabel: "CreateApplicationStoreInstances",            endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+            actionLabel: "CreateApplicationStoreInstances",
+            endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
             payload: {
               application: testSelfApplicationUuid,
               applicationSection: "data",
-              parentUuid: appEntitesAndInstances.length > 0 ? appEntitesAndInstances[0].entity.uuid : noValue.uuid,
-              objects: appEntitesAndInstances.map((e) => {
-                return {
-                  parentName: e.entity.name,
-                  parentUuid: e.entity.uuid,
-                  applicationSection: "data",
-                  instances: e.instances,
-                };
-              }),
+              objects: appEntitesAndInstances,
             },
           },
         ],
@@ -817,7 +807,8 @@ export const Runner_CreateApplication: React.FC<CreateApplicationToolProps> = ({
     // Combine all three composite actions into one
     const combinedCompositeActionTemplate: CompositeActionTemplate = {
       actionType: "compositeActionSequence",
-      actionLabel: "createApplicationAndDeployment",      endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+      actionLabel: "createApplicationAndDeployment",
+      endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
       payload: {
         application: "NOT_USED_IN_TEMPLATE",
         definition: [

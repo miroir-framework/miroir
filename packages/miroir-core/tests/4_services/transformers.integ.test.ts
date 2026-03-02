@@ -175,14 +175,16 @@ const beforeAll = async () => {
 
     await persistenceStoreController.handleAction({
       actionType: "resetModel",
-      actionLabel: "resetTestStore",      endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+      actionLabel: "resetTestStore",
+      endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       payload: {
         application: paramSelfApplicationUuid,
         // deploymentUuid: paramAdminConfigurationDeploymentUuid,
       },
     });
     await persistenceStoreController.handleAction({
-      actionType: "initModel",      endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+      actionType: "initModel",
+      endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       payload: {
         application: paramSelfApplicationUuid,
         // deploymentUuid: paramAdminConfigurationDeploymentUuid,
@@ -199,7 +201,8 @@ const beforeAll = async () => {
     // }, defaultMiroirMetaModel);
     await persistenceStoreController.handleAction({
       actionType: "createEntity",
-      actionLabel: "CreateLibraryStoreEntities",      endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+      actionLabel: "CreateLibraryStoreEntities",
+      endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       payload: {
         application: paramSelfApplicationUuid,
         // deploymentUuid: paramAdminConfigurationDeploymentUuid,
@@ -208,21 +211,12 @@ const beforeAll = async () => {
     });
     await persistenceStoreController.handleAction({
       actionType: "createInstance",
-      actionLabel: "CreateLibraryStoreInstances",      endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+      actionLabel: "CreateLibraryStoreInstances",
+      endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
       payload: {
         application: paramSelfApplicationUuid,
-        // deploymentUuid: paramAdminConfigurationDeploymentUuid,
         applicationSection: "data",
-        parentUuid: entityAuthor.uuid, // IRRELEVANT, will be overridden
-        // parentUuid: libraryEntitesAndInstances[].entity.uuid,
-        objects: libraryEntitesAndInstances.map((e) => {
-          return {
-            parentName: e.entity.name,
-            parentUuid: e.entity.uuid,
-            applicationSection: "data",
-            instances: e.instances,
-          };
-        }),
+        objects: libraryEntitesAndInstances.flatMap(e => e.instances),
       }
     });
     console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ END beforeAll");

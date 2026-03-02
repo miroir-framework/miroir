@@ -1,5 +1,6 @@
 import type { Domain } from "domain";
 import {
+  defaultSelfApplicationDeploymentMap,
   DomainControllerInterface,
   EntityInstance,
   LoggerInterface,
@@ -140,7 +141,7 @@ export class ViewParamsUpdateQueue {
 
       this.log.info("ViewParamsUpdateQueue: sending updateInstance action", updateAction);
 
-      await this.domainController.handleActionFromUI(updateAction);
+      await this.domainController.handleActionFromUI(updateAction, defaultSelfApplicationDeploymentMap);
 
       this.log.info("ViewParamsUpdateQueue: successfully updated view params");
 

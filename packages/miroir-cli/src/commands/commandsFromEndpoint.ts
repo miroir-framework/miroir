@@ -364,13 +364,13 @@ function cliCommandEntry(endpoint: EndpointDefinition, actionType: string): CliC
 // ################################################################################################
 
 export const cliRequestHandlers_EntityEndpoint: CliRequestHandlers = {
-  createInstance: cliCommandEntry(instanceEndpointV1, "createInstance"),
-  getInstance: cliCommandEntry(instanceEndpointV1, "getInstance"),
-  getInstances: cliCommandEntry(instanceEndpointV1, "getInstances"),
-  updateInstance: cliCommandEntry(instanceEndpointV1, "updateInstance"),
-  deleteInstance: cliCommandEntry(instanceEndpointV1, "deleteInstance"),
-  deleteInstanceWithCascade: cliCommandEntry(instanceEndpointV1, "deleteInstanceWithCascade"),
-  loadNewInstancesInLocalCache: cliCommandEntry(instanceEndpointV1, "loadNewInstancesInLocalCache"),
+  createInstance: cliCommandEntry(instanceEndpointV1 as any as EndpointDefinition, "createInstance"),
+  getInstance: cliCommandEntry(instanceEndpointV1 as any as EndpointDefinition, "getInstance"),
+  getInstances: cliCommandEntry(instanceEndpointV1 as any as EndpointDefinition, "getInstances"),
+  updateInstance: cliCommandEntry(instanceEndpointV1 as any as EndpointDefinition, "updateInstance"),
+  deleteInstance: cliCommandEntry(instanceEndpointV1 as any as EndpointDefinition, "deleteInstance"),
+  deleteInstanceWithCascade: cliCommandEntry(instanceEndpointV1 as any as EndpointDefinition, "deleteInstanceWithCascade"),
+  loadNewInstancesInLocalCache: cliCommandEntry(instanceEndpointV1 as any as EndpointDefinition, "loadNewInstancesInLocalCache"),
 };
 
 // ################################################################################################

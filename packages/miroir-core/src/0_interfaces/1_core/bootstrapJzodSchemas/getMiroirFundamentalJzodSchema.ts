@@ -968,7 +968,8 @@ export function getMiroirFundamentalJzodSchema(
                 type: "schemaReference",
                 definition: {
                   absolutePath: miroirFundamentalJzodSchemaUuid,
-                  relativePath: "entityInstanceCollection",
+                  relativePath: "entityInstance",
+                  // relativePath: "entityInstanceCollection",
                 },
               },
             },

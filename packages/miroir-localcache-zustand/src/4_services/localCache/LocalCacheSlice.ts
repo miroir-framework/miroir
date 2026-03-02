@@ -256,56 +256,56 @@ function handleInstanceAction(
   
   switch (instanceAction.actionType) {
     case "createInstance": {
-      for (const instanceCollection of instanceAction.payload.objects ?? []) {
+      for (const instance of instanceAction.payload.objects ?? []) {
         const index = getReduxDeploymentsStateIndex(
           deploymentUuid,
           instanceAction.payload.applicationSection ?? "data",
-          instanceCollection.parentUuid
+          instance.parentUuid
         );
         
         initializeLocalCacheSliceState(
           deploymentUuid,
           instanceAction.payload.applicationSection ?? "data",
-          instanceCollection.parentUuid,
+          instance.parentUuid,
           "current",
           state
         );
         
         const currentState = state.current[index] as EntityState;
-        state.current[index] = addManyToEntityState(currentState, instanceCollection.instances);
+        state.current[index] = addManyToEntityState(currentState, [instance]);
       }
       break;
     }
     case "deleteInstance": {
-      for (const instanceCollection of instanceAction.payload.objects ?? []) {
+      for (const instance of instanceAction.payload.objects ?? []) {
         const index = getReduxDeploymentsStateIndex(
           deploymentUuid,
           instanceAction.payload.applicationSection,
-          instanceCollection.parentUuid
+          instance.parentUuid
         );
         
         if (state.current[index]) {
-          const ids = instanceCollection.instances.map((i: EntityInstance) => i.uuid);
-          state.current[index] = removeManyFromEntityState(state.current[index] as EntityState, ids);
+          // const ids = instanceAction.payload.objects.map((i: EntityInstance) => i.uuid);
+          state.current[index] = removeOneFromEntityState(state.current[index] as EntityState, instance.uuid);
         }
       }
       break;
     }
     case "updateInstance": {
-      for (const instanceCollection of instanceAction.payload.objects ?? []) {
-        const index = getReduxDeploymentsStateIndex(
-          deploymentUuid,
-          instanceAction.payload.applicationSection,
-          instanceCollection.parentUuid
-        );
-        
-        if (state.current[index]) {
-          let currentState = state.current[index] as EntityState;
-          for (const instance of instanceCollection.instances) {
-            currentState = updateOneInEntityState(currentState, instance);
-          }
-          state.current[index] = currentState;
+      for (const instance of instanceAction.payload.objects ?? []) {
+      const index = getReduxDeploymentsStateIndex(
+        deploymentUuid,
+        instanceAction.payload.applicationSection,
+        instance.parentUuid
+      );
+      
+      if (state.current[index]) {
+        let currentState = state.current[index] as EntityState;
+        for (const instance of instanceAction.payload.objects ?? []) {
+          currentState = updateOneInEntityState(currentState, instance);
         }
+        state.current[index] = currentState;
+      }
       }
       break;
     }

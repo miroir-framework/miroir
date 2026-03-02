@@ -460,22 +460,26 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
           actionType: actionMap[newActionType],
           parentName: action.payload.parentName ?? "",
           parentUuid: action.payload.parentUuid ?? "",
-          // deploymentUuid: action.deploymentUuid, // NOT for createInstance          endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+          // deploymentUuid: action.deploymentUuid, // NOT for createInstance
+          endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
           payload: {
             application: action.payload.application,
             // deploymentUuid: action.payload.deploymentUuid, // ONLY for createInstance
             applicationSection: action.payload.section,
-            objects: [
-              {
-                // type issue: read action does not have "objects" attribute
-                parentName: action.payload.parentName ?? "",
-                parentUuid: action.payload.parentUuid ?? "",
-                applicationSection: action.payload.section,
-                instances: (Array.isArray(action.payload.objects)
-                  ? action.payload.objects
-                  : []) as EntityInstance[],
-              },
-            ],
+            objects: (Array.isArray(action.payload.objects)
+              ? action.payload.objects
+              : []) as EntityInstance[],
+            // objects: [
+            //   {
+            //     // type issue: read action does not have "objects" attribute
+            //     parentName: action.payload.parentName ?? "",
+            //     parentUuid: action.payload.parentUuid ?? "",
+            //     applicationSection: action.payload.section,
+            //     instances: (Array.isArray(action.payload.objects)
+            //       ? action.payload.objects
+            //       : []) as EntityInstance[],
+            //   },
+            // ],
           },
         } as PersistenceStoreControllerAction;
         log.info(

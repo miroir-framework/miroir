@@ -930,14 +930,7 @@ export class DomainController implements DomainControllerInterface {
       payload: {
         application,
         applicationSection: "model",
-        parentUuid: parentEntity.uuid,
-        objects: [
-          {
-            parentUuid: parentEntity.uuid,
-            applicationSection: "model",
-            instances,
-          },
-        ],
+        objects: instances,
       },
     };
     const createInstanceResult = await this.handleAction(
@@ -968,13 +961,11 @@ export class DomainController implements DomainControllerInterface {
   }
 
   async handleModelAction(
-    // deploymentUuid: Uuid,
     modelAction: ModelAction,
     applicationDeploymentMap: ApplicationDeploymentMap,
     currentModelEnvironment: MiroirModelEnvironment,
   ): Promise<Action2VoidReturnType> {
     const deploymentUuid =
-      // modelAction.payload.deploymentUuid ??
       applicationDeploymentMap[modelAction.payload.application] ?? "DEPLOYMENT_UUID_NOT_FOUND";
     // log.info(
     //   "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleModelAction START actionType=",

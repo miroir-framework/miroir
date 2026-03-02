@@ -297,42 +297,48 @@ async function extractLibraryData(
       applicationUuid: selfApplicationLibrary.uuid,
       instances: [
         // order matters here for referential integrity when re-importing the data
-        {
-          parentUuid: entityCountry.uuid,
-          applicationSection: "data",
-          parentName: "Country",
-          instances: countries,
-        },
-        {
-          parentUuid: entityPublisher.uuid,
-          applicationSection: "data",
-          parentName: "Publisher",
-          instances: publishers,
-        },
-        {
-          parentUuid: entityUser.uuid,
-          applicationSection: "data",
-          parentName: "User",
-          instances: users,
-        },
-        {
-          parentUuid: entityAuthor.uuid,
-          applicationSection: "data",
-          parentName: "Author",
-          instances: authors,
-        },
-        {
-          parentUuid: entityBook.uuid,
-          applicationSection: "data",
-          parentName: "Book",
-          instances: books,
-        },
-        {
-          parentUuid: entityLendingHistoryItem.uuid,
-          applicationSection: "data",
-          parentName: "LendingHistoryItem",
-          instances: lendingHistoryItems,
-        },
+        ...countries,
+        ...publishers,
+        ...users,
+        ...authors,
+        ...books,
+        ...lendingHistoryItems,
+        // {
+        //   parentUuid: entityCountry.uuid,
+        //   applicationSection: "data",
+        //   parentName: "Country",
+        //   instances: countries,
+        // },
+        // {
+        //   parentUuid: entityPublisher.uuid,
+        //   applicationSection: "data",
+        //   parentName: "Publisher",
+        //   instances: publishers,
+        // },
+        // {
+        //   parentUuid: entityUser.uuid,
+        //   applicationSection: "data",
+        //   parentName: "User",
+        //   instances: users,
+        // },
+        // {
+        //   parentUuid: entityAuthor.uuid,
+        //   applicationSection: "data",
+        //   parentName: "Author",
+        //   instances: authors,
+        // },
+        // {
+        //   parentUuid: entityBook.uuid,
+        //   applicationSection: "data",
+        //   parentName: "Book",
+        //   instances: books,
+        // },
+        // {
+        //   parentUuid: entityLendingHistoryItem.uuid,
+        //   applicationSection: "data",
+        //   parentName: "LendingHistoryItem",
+        //   instances: lendingHistoryItems,
+        // },
       ]
     });
   } catch (error) {

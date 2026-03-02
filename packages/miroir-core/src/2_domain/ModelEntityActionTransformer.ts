@@ -6,7 +6,8 @@ import {
   EntityInstanceCollection,
   InstanceAction,
   MetaModel,
-  ModelAction
+  ModelAction,
+  type EntityInstance
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { TransformerFailure, type TransformerReturnType } from "../0_interfaces/2_domain/DomainElement";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
@@ -37,26 +38,15 @@ export class ModelEntityActionTransformer{
       case "createEntity": {
         return [
           {
-            actionType: "createInstance",            endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+            actionType: "createInstance",
+            endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
             payload: {
               application: modelAction.payload.application,
               applicationSection: "model",
-              parentUuid:entityEntity.uuid,
               objects: [
                 ...modelAction.payload.entities.flatMap(
                   a => [
-                    {
-                      parentName:entityEntity.name,
-                      parentUuid:entityEntity.uuid,
-                      applicationSection:'model' as ApplicationSection,
-                      instances:[a.entity]
-                    },
-                    {
-                      parentName:entityEntityDefinition.name,
-                      parentUuid:entityEntityDefinition.uuid,
-                      applicationSection:'model' as ApplicationSection, 
-                      instances:[a.entityDefinition]
-                    },
+                    a.entity, a.entityDefinition
                   ]
                 )
               ]
@@ -76,25 +66,14 @@ export class ModelEntityActionTransformer{
         }
         return [
           {
-            // actionType: "instanceAction",
-            actionType: "deleteInstance",            endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+            actionType: "deleteInstance",
+            endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
             payload: {
               application: modelAction.payload.application,
-              // deploymentUuid: modelAction.payload.deploymentUuid,
               applicationSection: "model",
               objects: [
-                {
-                  parentName: entityEntity.name,
-                  parentUuid: entityEntity.uuid,
-                  applicationSection: "model",
-                  instances: [{ parentUuid: entityEntity.uuid, uuid: modelAction.payload.entityUuid }],
-                },
-                {
-                  parentName: entityEntityDefinition.name,
-                  parentUuid: entityEntityDefinition.uuid,
-                  applicationSection: "model",
-                  instances: [{ parentUuid: entityEntityDefinition.uuid, uuid: modelAction.payload.entityDefinitionUuid }],
-                },
+                { parentUuid: entityEntity.uuid, uuid: modelAction.payload.entityUuid },
+                { parentUuid: entityEntityDefinition.uuid, uuid: modelAction.payload.entityDefinitionUuid },
               ],
             }
           },
@@ -127,27 +106,16 @@ export class ModelEntityActionTransformer{
         const modifiedEntity:EntityInstanceWithName = Object.assign({},currentEntity,{name:modelAction.payload.targetValue});
         const modifiedEntityDefinition:EntityInstanceWithName = Object.assign({},currentEntityDefinition,{name:modelAction.payload.targetValue});
         if (currentEntity && currentEntityDefinition) {
-          const objects: EntityInstanceCollection[] = [
-            {
-              parentName: currentEntity.parentName,
-              parentUuid: currentEntity.parentUuid,
-              applicationSection: "model",
-              instances: [modifiedEntity],
-            },
-            {
-              parentName: currentEntityDefinition.parentName,
-              parentUuid: currentEntityDefinition.parentUuid,
-              applicationSection: "model",
-              instances: [modifiedEntityDefinition],
-            },
+          const objects: EntityInstance[] = [
+            modifiedEntity as EntityInstance,
+            modifiedEntityDefinition as EntityInstance,
           ];
           const result: InstanceAction[] = [
             {
-              actionType: "updateInstance",              endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+              actionType: "updateInstance",
+              endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
               payload: {
                 application: modelAction.payload.application,
-                parentUuid: entityEntity.uuid,
-                // deploymentUuid: modelAction.payload.deploymentUuid,
                 applicationSection: "model",
                 objects
               }
@@ -194,22 +162,13 @@ export class ModelEntityActionTransformer{
             },
           });
     
-          const objects: EntityInstanceCollection[] = [
-            // {parentName:currentEntity.parentName, parentUuid:currentEntity.parentUuid, applicationSection:'model', instances:[modifiedEntity]},
-            {
-              parentName: currentEntityDefinition.parentName,
-              parentUuid: currentEntityDefinition.parentUuid,
-              applicationSection: "model",
-              instances: [modifiedEntityDefinition],
-            },
-          ];
+          const objects: EntityInstance[] = [modifiedEntityDefinition as EntityInstance];
           const result: InstanceAction[] = [
             {
-              actionType: "updateInstance",              endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+              actionType: "updateInstance",
+              endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
               payload: {
                 application: modelAction.payload.application,
-                parentUuid: entityEntityDefinition.uuid,
-                // deploymentUuid: modelAction.payload.deploymentUuid,
                 applicationSection: "model",
                 objects
               }

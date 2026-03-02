@@ -264,14 +264,14 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
       // case "instanceAction": {
       case "createInstance":
       case "updateInstance": {
-        for (const instanceCollection of persistenceStoreControllerAction.payload.objects) {
+        for (const instance of persistenceStoreControllerAction.payload.objects) {
           log.info(
-            this.logHeader,"handleAction upsertInstance for section: ", instanceCollection.applicationSection,
-            "instances", instanceCollection.instances
+            this.logHeader,"handleAction upsertInstance for section: ", persistenceStoreControllerAction.payload.applicationSection,
+            "instance", instance
           )
-          for (const instance of instanceCollection.instances) {
+          // for (const instance of instanceCollection.instances) {
             const result = await this.upsertInstance(
-              instanceCollection.applicationSection,
+              persistenceStoreControllerAction.payload.applicationSection,
               instance
             );
             if (
@@ -281,23 +281,23 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
               log.error(
                 this.logHeader,
                 "handleAction upsertInstance failed for section: ",
-                instanceCollection.applicationSection,
+                persistenceStoreControllerAction.payload.applicationSection,
                 "instance",
                 instance,
                 "error:",
                 result
               );
               return result;
-            }
+            // }
           }
         }
         break;
       }
       case "deleteInstance": {
-        for (const instanceCollection of persistenceStoreControllerAction.payload.objects) {
+        // for (const instanceCollection of persistenceStoreControllerAction.payload.objects) {
           const result = await this.deleteInstances(
-            instanceCollection.applicationSection,
-            instanceCollection.instances
+            persistenceStoreControllerAction.payload.applicationSection,
+            persistenceStoreControllerAction.payload.objects
           );
           if (
             result instanceof Action2Error ||
@@ -306,15 +306,15 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
             log.error(
               this.logHeader,
               "handleAction deleteInstances failed for section: ",
-              instanceCollection.applicationSection,
+              persistenceStoreControllerAction.payload.applicationSection,
               "instances",
-              instanceCollection.instances,
+              persistenceStoreControllerAction.payload.objects,
               "error:",
               result
             );
             return result;
           }
-        }
+        // }
         break;
       }
       case "deleteInstanceWithCascade": {

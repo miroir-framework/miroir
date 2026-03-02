@@ -42,6 +42,12 @@ export const chainVitestSteps = async (
       "testResult that will be compared",
       JSON.stringify(testResult, null, 2)
     );
+    log.info(
+      "########################################### chainTestAsyncDomainCalls",
+      stepName,
+      "expectedResult that will be compared",
+      JSON.stringify(expectedValue, null, 2)
+    );
     if (expectedDomainElementType) {
       if (domainElement.returnedDomainElement?.elementType != expectedDomainElementType) {
         expect(

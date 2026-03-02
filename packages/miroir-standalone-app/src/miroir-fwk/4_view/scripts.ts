@@ -78,21 +78,12 @@ export const deleteCascade = async (p: {
 
   // // delete current list of objects (on a relational database, this would require suspending foreign key constraints for the involved relations)
   const deleteCurrentEntityInstancesAction: InstanceAction = {
-    actionType: "deleteInstance",    endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+    actionType: "deleteInstance",
+    endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
     payload: {
       application: p.application,
       applicationSection: p.applicationSection,
-      objects:
-        p.entityInstances.length > 0
-          ? [
-              {
-                parentName: (p.entityInstances[0] as any)["name"] ?? "undefined name",
-                parentUuid: p.entityInstances[0].parentUuid,
-                applicationSection: p.applicationSection,
-                instances: p.entityInstances,
-              },
-            ]
-          : [],
+      objects: p.entityInstances,
     },
   };
 
@@ -137,7 +128,8 @@ export const deleteCascade = async (p: {
     const foreignKeyUnfilteredObjects: Action2ReturnType =
       await p.domainController.handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(
         {
-          actionType: "runBoxedQueryTemplateOrBoxedExtractorTemplateAction",          endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+          actionType: "runBoxedQueryTemplateOrBoxedExtractorTemplateAction",
+          endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
           payload: {
             application: p.application,
             applicationSection: p.applicationSection,

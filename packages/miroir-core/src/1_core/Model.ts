@@ -148,7 +148,6 @@ export const defaultMiroirMetaModel: MetaModel = {
     entityQueryVersion as Entity,
     entityReport as Entity,
     entityRunner as Entity,
-    entitySelfApplicationVersion as Entity,
     entitySelfApplication as Entity,
     entitySelfApplicationModelBranch as Entity,
     entitySelfApplicationVersion as Entity,

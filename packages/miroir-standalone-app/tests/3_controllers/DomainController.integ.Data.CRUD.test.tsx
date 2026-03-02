@@ -5,7 +5,6 @@ import { describe, expect } from "vitest";
 import type { ApplicationDeploymentMap, EndpointDefinition, MlSchema } from "miroir-core";
 import {
   ConfigurationService,
-  configurationService,
   createDeploymentCompositeAction,
   Deployment,
   displayTestSuiteResultsDetails,
@@ -264,7 +263,11 @@ export const libraryEntitiesAndInstancesWithoutBook3: ApplicationEntitiesAndInst
   {
     entity: entityPublisher as MetaEntity,
     entityDefinition: entityDefinitionPublisher as EntityDefinition,
-    instances: [publisher1 as EntityInstance, publisher2 as EntityInstance, publisher3 as EntityInstance],
+    instances: [
+      publisher1 as EntityInstance,
+      publisher2 as EntityInstance,
+      publisher3 as EntityInstance,
+    ],
   },
 ];
 
@@ -344,7 +347,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
         testApplicationDeploymentUuid,
         testApplicationUuid,
         adminDeployment,
-        testDeploymentStorageConfiguration
+        testDeploymentStorageConfiguration,
       ),
       beforeEach: resetAndinitializeDeploymentCompositeAction(
         selfApplicationLibrary.uuid,
@@ -358,13 +361,13 @@ const testActions: Record<string, TestCompositeActionParams> = {
         },
         libraryEntitiesAndInstancesWithoutBook3,
         defaultLibraryModelEnvironment.currentModel as any,
-        [entityAuthor.uuid, entityBook.uuid, entityPublisher.uuid], 
+        [entityAuthor.uuid, entityBook.uuid, entityPublisher.uuid],
       ),
       afterEach: testOnLibrary_resetLibraryDeployment(deployment_Library_DO_NO_USE.uuid),
       afterAll: testOnLibrary_deleteLibraryDeployment(
         miroirConfig,
         selfApplicationLibrary.uuid,
-        deployment_Library_DO_NO_USE.uuid
+        deployment_Library_DO_NO_USE.uuid,
       ),
       testCompositeActions: {
         "Refresh all Instances": {
@@ -383,7 +386,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   payload: {
                     application: selfApplicationMiroir.uuid,
-                    },
+                  },
                 },
                 {
                   actionType: "rollback",
@@ -500,9 +503,8 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   actionLabel: "refreshMiroirLocalCache",
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   payload: {
-
                     application: selfApplicationMiroir.uuid,
-                    },
+                  },
                 },
                 {
                   actionType: "rollback",
@@ -521,17 +523,8 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
                   payload: {
                     application: testApplicationUuid,
-                    // deploymentUuid: testApplicationDeploymentUuid,
                     applicationSection: "data",
-                    parentUuid: entityBook.uuid,
-                    objects: [
-                      {
-                        parentName: book3.parentName,
-                        parentUuid: book3.parentUuid,
-                        applicationSection: "data",
-                        instances: [book3 as EntityInstance],
-                      },
-                    ],
+                    objects: [book3 as EntityInstance],
                   },
                 },
                 {
@@ -630,9 +623,8 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   actionLabel: "refreshMiroirLocalCache",
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   payload: {
-
                     application: selfApplicationMiroir.uuid,
-                    },
+                  },
                 },
                 {
                   // actionType: "modelAction",
@@ -651,17 +643,8 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
                   payload: {
                     application: testApplicationUuid,
-                    // deploymentUuid: testApplicationDeploymentUuid,
                     applicationSection: "data",
-                    parentUuid: entityBook.uuid,
-                    objects: [
-                      {
-                        parentName: book3.parentName,
-                        parentUuid: book3.parentUuid,
-                        applicationSection: "data",
-                        instances: [book3 as EntityInstance],
-                      },
-                    ],
+                    objects: [book3 as EntityInstance],
                   },
                 },
                 {
@@ -762,7 +745,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   payload: {
                     application: selfApplicationMiroir.uuid,
-                    },
+                  },
                 },
                 {
                   actionType: "rollback",
@@ -781,16 +764,8 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
                   payload: {
                     application: testApplicationUuid,
-                    // deploymentUuid: testApplicationDeploymentUuid,
                     applicationSection: "data",
-                    objects: [
-                      {
-                        parentName: book2.parentName,
-                        parentUuid: book2.parentUuid,
-                        applicationSection: "data",
-                        instances: [book2 as EntityInstance],
-                      },
-                    ],
+                    objects: [book2 as EntityInstance],
                   },
                 },
                 {
@@ -896,7 +871,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   payload: {
                     application: selfApplicationMiroir.uuid,
-                    },
+                  },
                 },
                 {
                   actionType: "rollback",
@@ -914,16 +889,8 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
                   payload: {
                     application: testApplicationUuid,
-                    // deploymentUuid: testApplicationDeploymentUuid,
                     applicationSection: "data",
-                    objects: [
-                      {
-                        parentName: book2.parentName,
-                        parentUuid: book2.parentUuid,
-                        applicationSection: "data",
-                        instances: [book2 as EntityInstance],
-                      },
-                    ],
+                    objects: [book2 as EntityInstance],
                   },
                 },
                 {
@@ -1039,9 +1006,8 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   actionLabel: "refreshMiroirLocalCache",
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   payload: {
-
                     application: selfApplicationMiroir.uuid,
-                    },
+                  },
                 },
                 {
                   actionType: "rollback",
@@ -1060,21 +1026,12 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
                   payload: {
                     application: testApplicationUuid,
-                    parentUuid: entityBook.uuid,
-                    // deploymentUuid: testApplicationDeploymentUuid,
                     applicationSection: "data",
                     objects: [
-                      {
-                        parentName: book4.parentName,
-                        parentUuid: book4.parentUuid,
-                        applicationSection: "data",
-                        instances: [
-                          Object.assign({}, book4, {
-                            name: "Tthe Bride Wore Blackk",
-                            author: "d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17",
-                          }) as EntityInstance,
-                        ],
-                      },
+                      Object.assign({}, book4, {
+                        name: "Tthe Bride Wore Blackk",
+                        author: "d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17",
+                      }) as EntityInstance,
                     ],
                   },
                 },
