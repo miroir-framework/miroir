@@ -171,14 +171,15 @@ export const ModelDiagramPage: React.FC<any> = () => {
             <DebugHelper
               componentName="ModelDiagramPage"
               elements={[
-                { label: "ModelDiagramPage miroirTheme", data: miroirTheme },
+                // { label: "ModelDiagramPage miroirTheme", data: miroirTheme },
                 // { label: `ModelDiagramPage application ${application}`, data: currentModel.entityDefinitions },
-                {
-                  label: `ModelDiagramPage defaultMiroirMetaModel ${formikContext.values[formikPath].application}`,
-                  data: defaultMiroirMetaModel.entityDefinitions,
-                  useCodeBlock: false,
-                },
-                { label: "ModelDiagramPage currentModel", data: currentModel },
+                // {
+                //   label: `ModelDiagramPage defaultMiroirMetaModel ${formikContext.values[formikPath].application}`,
+                //   data: defaultMiroirMetaModel.entityDefinitions,
+                //   useCodeBlock: false,
+                // },
+                // { label: "ModelDiagramPage currentModel", data: currentModel },
+                { label: "ModelDiagramPage entity definitions", data: currentModel.entityDefinitions },
               ]}
             />
             <Box

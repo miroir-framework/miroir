@@ -6,7 +6,7 @@
  * Miroir theme system via `useMiroirTheme()` from `miroir-react`.
  */
 
-import React, { useRef, useCallback, useState } from "react";
+import React, { useRef, useCallback, useState, useEffect, useMemo } from "react";
 import mermaid from "mermaid";
 import {
   Box,
@@ -21,7 +21,7 @@ import {
   entityDefinitionsToMermaidClassDiagram,
   type ClassDiagramOptions,
 } from "../2_domain/entityDefinitionsToMermaidClassDiagram.js";
-import { useMiroirTheme } from "miroir-react";
+import { DebugHelper, useMiroirTheme } from "miroir-react";
 
 // ############################################################################
 // Constants
@@ -80,22 +80,22 @@ export const MermaidClassDiagram: React.FC<MermaidClassDiagramProps> = ({
     ? isColorDark(miroirTheme.currentTheme.colors.background)
     : false;
 
-  const themeColors = {
+  const themeColors = useMemo(() => ({
     background: miroirTheme.currentTheme.colors.background || "#ffffff",
     text: miroirTheme.currentTheme.colors.text || "#333333",
     primary: miroirTheme.currentTheme.colors.primary || "#7c67bc",
     surface: miroirTheme.currentTheme.colors.surface || "#f5f5f5",
     border: miroirTheme.currentTheme.colors.border || "#cccccc",
-  };
+  }), [miroirTheme.currentTheme.colors]);
 
   // Build diagram options merged with overrides
-  const diagramOptions: ClassDiagramOptions = {
+  const diagramOptions: ClassDiagramOptions = useMemo(() => ({
     ...options,
     direction,
     showInfrastructureAttributes: showInfra,
     showTitle: options.showTitle ?? true,
     title: options.title ?? "Application Model",
-  };
+  }), [options, direction, showInfra]);
 
   const renderDiagram = useCallback(async () => {
     if (!containerRef.current || entityDefinitions.length === 0) {
@@ -137,9 +137,9 @@ export const MermaidClassDiagram: React.FC<MermaidClassDiagramProps> = ({
       setError(err.message ?? "Failed to render diagram");
       setSvgContent("");
     }
-  }, [entityDefinitions, mermaidInitialized, diagramOptions, isDark, themeColors]);
+  }, [entityDefinitions, diagramOptions, isDark, themeColors]);
 
-  // Re-render when inputs change without useEffect: compare key and trigger synchronously.
+  // Key capturing all inputs that should trigger a re-render.
   const diagramKey = JSON.stringify({
     defs: entityDefinitions.map((ed) => ed.uuid),
     direction,
@@ -147,15 +147,14 @@ export const MermaidClassDiagram: React.FC<MermaidClassDiagramProps> = ({
     theme: isDark,
   });
 
-  const lastKeyRef = useRef<string>("");
-  if (diagramKey !== lastKeyRef.current) {
-    lastKeyRef.current = diagramKey;
-    // Re-initialize mermaid when theme changes
+  // Trigger rendering after the DOM is committed (ref is attached).
+  // useEffect is strictly necessary here because renderDiagram needs containerRef.current.
+  useEffect(() => {
     mermaidInitialized = false;
-    // Reset zoom to fit when entity list changes
     setZoom(computeInitialZoom(entityDefinitions.length));
     renderDiagram();
-  }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [diagramKey]);
 
   const handleDirectionChange = (_: unknown, newDir: "TB" | "LR" | null) => {
     if (newDir) setDirection(newDir);
@@ -187,12 +186,19 @@ export const MermaidClassDiagram: React.FC<MermaidClassDiagramProps> = ({
         height,
       }}
     >
-      {/* <DebugHelper componentName="ModelDiagramPage" elements={[
-          { label: "ModelDiagramPage miroirTheme", data: miroirTheme },
-          { label: `ModelDiagramPage application ${application}`, data: currentModel.entityDefinitions },
-          { label: "ModelDiagramPage currentModel", data: currentModel },
-      ]} /> */}
-      
+      <DebugHelper
+        componentName="MermaidClassDiagram"
+        elements={[
+          { label: "MermaidClassDiagram entityDefinitions", data: entityDefinitions },
+          { label: "MermaidClassDiagram diagramKey", data: diagramKey },
+          { label: "MermaidClassDiagram options", data: diagramOptions },
+          // { label: "MermaidClassDiagram themeColors", data: themeColors },
+          { label: "MermaidClassDiagram svgContent", data: svgContent },
+          { label: "MermaidClassDiagram error", data: error },
+        ]}
+      />
+
+
       {/* Toolbar */}
       <Box
         sx={{
