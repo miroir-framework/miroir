@@ -23,7 +23,10 @@
     "dist-linux": "npm run build-electron && electron-builder --linux"
   },
   "dependencies": {
+    "diff": "8.0.3",
     "electron-squirrel-startup": "^1.0.1",
+    "happy-dom": "20.7.0",
+    "http-proxy-middleware": "3.0.5",
     "miroir-core": "*",
     "miroir-localcache-redux": "*",
     "miroir-standalone-app": "*",
@@ -31,12 +34,13 @@
     "miroir-store-indexedDb": "*",
     "miroir-store-mongodb": "*",
     "miroir-store-postgres": "*",
-    "miroir-test-app_deployment-admin": "*"
+    "miroir-test-app_deployment-admin": "*",
+    "vite": "^7.3.1"
   },
   "devDependencies": {
     "@types/node": "^20.8.9",
-    "electron": "28.0.0",
-    "electron-builder": "^24.9.1",
+    "electron": "^40.6.1",
+    "electron-builder": "^26.8.1",
     "typescript": "^5.8.2"
   },
   "build": {
@@ -53,12 +57,16 @@
       {
         "from": "../miroir-standalone-app/dist",
         "to": "app",
-        "filter": ["**/*"]
+        "filter": [
+          "**/*"
+        ]
       },
       {
         "from": "../miroir-core/src/assets/admin",
         "to": "miroir-assets/miroir-core/src/assets/admin",
-        "filter": ["**/*"]
+        "filter": [
+          "**/*"
+        ]
       },
       {
         "from": "../miroir-test-app_deployment-admin/assets/admin_data",
@@ -87,12 +95,17 @@
       {
         "from": "../miroir-test-app_deployment-miroir/assets",
         "to": "miroir-assets/miroir-test-app_deployment-miroir/assets",
-        "filter": ["**/*"]
+        "filter": [
+          "**/*"
+        ]
       },
       {
         "from": "../miroir-test-app_deployment-library/dist",
         "to": "miroir-assets/bundles",
-        "filter": ["library-model-*.json", "library-data-*.json"]
+        "filter": [
+          "library-model-*.json",
+          "library-data-*.json"
+        ]
       }
     ],
     "win": {

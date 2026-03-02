@@ -54,6 +54,7 @@ import {
 import {
   getMemoizedReduxDeploymentsStateSelectorMap,
   ReduxStateChanges,
+  type DebugElements,
 } from "miroir-react";
 
 import {

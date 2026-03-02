@@ -118,23 +118,14 @@ export class ViewParamsUpdateQueue {
       const updateAction: DomainAction = {
         actionType: "updateInstance",
         endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-        // deploymentUuid: this.config.deploymentUuid,
         payload: {
           application: adminSelfApplication.uuid,
           applicationSection: "data",
-          parentUuid: entityViewParams.uuid, // ViewParams entity UUID
           objects: [
             {
-              parentName: entityViewParams.name,
-              parentUuid: entityViewParams.uuid, // ViewParams entity UUID
-              applicationSection: "data",
-              instances: [
-                {
-                  ...this.pendingUpdates?.currentValue,
-                  ...this.pendingUpdates?.updates,
-                } as EntityInstance,
-              ],
-            },
+              ...this.pendingUpdates?.currentValue,
+              ...this.pendingUpdates?.updates,
+            } as EntityInstance,
           ],
         },
       };

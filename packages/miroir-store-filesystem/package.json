@@ -9,10 +9,12 @@
   "browser": "dist/bundle-browser.esm.js",
   "type": "module",
   "dependencies": {
+    "electron": "40.6.1",
     "miroir-core": "*",
     "pg": "^8.9.0",
     "pg-hstore": "^2.3.4",
-    "sequelize": "^6.29.0"
+    "sequelize": "^6.29.0",
+    "vite": "7.3.1"
   },
   "devDependencies": {
     "@jest/globals": "^29.3.1",
@@ -30,7 +32,7 @@
     "ts-jest": "^29.1.1",
     "tsconfig-paths": "^4.1.2",
     "typescript": "^4.9.4",
-    "vite-plugin-node": "^3.1.0"
+    "vite-plugin-node": "^7.0.0"
   },
   "scripts": {
     "watch": "lerna watch --scope='miroir-store-filesystem' --include-dependencies -- lerna run build --scope='miroir-store-filesystem'",

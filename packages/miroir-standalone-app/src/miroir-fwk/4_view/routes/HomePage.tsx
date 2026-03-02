@@ -44,27 +44,25 @@ MiroirLoggerFactory.registerLoggerToStart(
 
 
 export interface RootComponentProps {
-  // store:any;
-  // reportName: string;
 }
 
-function defaultToEntityList(
-  value: string | undefined,
-  miroirReports: Report[]
-): string | undefined {
-  return value
-    ? (value as string)
-    : miroirReports.find((r) => r.name == "EntityList")
-    ? "EntityList"
-    : undefined;
-}
+// function defaultToEntityList(
+//   value: string | undefined,
+//   miroirReports: Report[]
+// ): string | undefined {
+//   return value
+//     ? (value as string)
+//     : miroirReports.find((r) => r.name == "EntityList")
+//     ? "EntityList"
+//     : undefined;
+// }
 
-const metaModelReports = [
-  reportEntityList.uuid,
-  reportEntityDefinitionList.uuid,
-  reportEntityDetails.uuid,
-  reportEntityDefinitionDetails.uuid,
-];
+// const metaModelReports = [
+//   reportEntityList.uuid,
+//   reportEntityDefinitionList.uuid,
+//   reportEntityDetails.uuid,
+//   reportEntityDefinitionDetails.uuid,
+// ];
 
 
 
@@ -90,32 +88,11 @@ export const HomePage = (props: RootComponentProps) => {
     currentApplicationDeploymentMap
   );
 
-  // computing current state #####################################################################
-  // const displayedDeploymentDefinition: Deployment | undefined = deployments.find(
-  //   (d) => d.uuid == displayedDeploymentUuid
-  // );
-  // log.info("HomePage displayedDeploymentDefinition",displayedDeploymentDefinition);
-
-  // // TODO: adapt to Admin app deployment!
-  // const currentModel = displayedDeploymentUuid == deployment_Miroir.uuid? defaultMiroirMetaModel:currentAppModel;
-  // // const currentModel = libraryAppModel;
-  // log.info("HomePage currentModel",currentModel);
-
-  // // const currentReportDefinitionApplicationSection: ApplicationSection | undefined = 
-  // //   currentReportDefinitionDeployment?.applicationModelLevel == "metamodel"? 'data':'model'
-  // ;
-  // log.info(
-  //   "HomePage displayedDeploymentDefinition",
-  //   displayedDeploymentDefinition?.uuid,
-  //   "displayedApplicationSection",
-  //   displayedApplicationSection
-  // );
 
   // log.info("HomePage availableReports",availableReports);
 
   const currentStoredQuery:
     | BoxedQueryWithExtractorCombinerTransformer
-    // | BoxedQueryTemplateWithExtractorCombinerTransformer
     | undefined = useMemo(
     () =>
       currentApplication && currentAppModel?.entities?.length > 0
@@ -143,11 +120,6 @@ export const HomePage = (props: RootComponentProps) => {
   const currentStoredQueryResults: Domain2QueryReturnType<Record<string, any>> =
     useQueryTemplateResults(
       {
-        // applicationSection: pageParams.applicationSection as ApplicationSection,
-        // deploymentUuid: pageParams.deploymentUuid!,
-        // instanceUuid: pageParams.instanceUuid,
-        // pageParams: pageParams,
-        // reportDefinition: currentMiroirReport,
       },
       currentApplicationDeploymentMap,
       currentStoredQuery
@@ -207,8 +179,10 @@ export const HomePage = (props: RootComponentProps) => {
         <button
           onClick={async () => {
             await domainController.handleActionFromUI({
-              actionType: "undo",              endpoint: "71c04f8e-c687-4ea7-9a19-bc98d796c389",
-              payload: {                deploymentUuid: deployment_Miroir.uuid,
+              actionType: "undo",
+              endpoint: "71c04f8e-c687-4ea7-9a19-bc98d796c389",
+              payload: {
+                deploymentUuid: deployment_Miroir.uuid,
               }
             }, currentApplicationDeploymentMap, defaultMiroirModelEnvironment);
           }}
@@ -221,8 +195,10 @@ export const HomePage = (props: RootComponentProps) => {
         <button
           onClick={async () => {
             await domainController.handleActionFromUI({
-              actionType: "redo",              endpoint: "71c04f8e-c687-4ea7-9a19-bc98d796c389",
-              payload: {                deploymentUuid: deployment_Miroir.uuid,
+              actionType: "redo",
+              endpoint: "71c04f8e-c687-4ea7-9a19-bc98d796c389",
+              payload: {
+                deploymentUuid: deployment_Miroir.uuid,
               }
             }, currentApplicationDeploymentMap, defaultMiroirModelEnvironment);
           }}

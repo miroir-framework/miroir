@@ -191,20 +191,20 @@ export function AppBar(props:AppBarProps) {
         name: "search",
       },
     },
-    {
-      miroirMenuItemType: "miroirMenuPageLink",
-      label: "Transformer Builder",
-      targetRoot: "transformerBuilder",
-      section: "model",
-      icon: {
-        iconType: "mui",
-        name: "build",
-        superImpose: {
-          letter: "T",
-          color: "#FF0000",
-        },
-      },
-    },
+    // {
+    //   miroirMenuItemType: "miroirMenuPageLink",
+    //   label: "Transformer Builder",
+    //   targetRoot: "transformerBuilder",
+    //   section: "model",
+    //   icon: {
+    //     iconType: "mui",
+    //     name: "build",
+    //     superImpose: {
+    //       letter: "T",
+    //       color: "#FF0000",
+    //     },
+    //   },
+    // },
     // {
     //   "label": "runners",
     //   "section": "model",
@@ -217,8 +217,6 @@ export function AppBar(props:AppBarProps) {
       label: "events",
       targetRoot: "events",
       section: "model",
-      // selfApplication: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e", //not used
-      // reportUuid: "c9ea3359-690c-4620-9603-b5b402e4a2b9", //not used
       // "icon": "event_note"
     },
     {
@@ -226,9 +224,7 @@ export function AppBar(props:AppBarProps) {
       label: "error-logs",
       targetRoot: "error-logs",
       section: "model",
-      // selfApplication: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e", //not used
-      // reportUuid: "c9ea3359-690c-4620-9603-b5b402e4a2b9", //not used
-      // "icon": "error"
+      "icon": "report_problem"
     },
     // {
     //   "label": "error-logs",
