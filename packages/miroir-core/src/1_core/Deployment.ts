@@ -127,7 +127,7 @@ export function createApplicationCompositeAction(
                 parentName: entityApplicationForAdmin.name,
                 parentUuid: entityApplicationForAdmin.uuid,
                 name: newApplicationName,
-                defaultLabel: `The ${newApplicationName} Admin Application.`,
+                defaultLabel: `The ${newApplicationName} Application.`,
                 description: `This Admin Application contains the ${newApplicationName} model and data.`,
                 selfApplication: newSelfApplicationUuid,
               } as AdminApplication,

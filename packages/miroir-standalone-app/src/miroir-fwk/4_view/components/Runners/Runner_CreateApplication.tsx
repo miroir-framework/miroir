@@ -651,12 +651,12 @@ export const Runner_CreateApplication: React.FC<CreateApplicationToolProps> = ({
                   defaultLabel: {
                     transformerType: "mustacheStringTemplate",
                     interpolation: "build",
-                    definition: `The {{createApplicationAndDeployment.applicationStorage.applicationName}} Admin Application.`,
+                    definition: `The {{createApplicationAndDeployment.applicationStorage.applicationName}} Application.`,
                   } as any,
                   description: {
                     transformerType: "mustacheStringTemplate",
                     interpolation: "build",
-                    definition: `This Admin Application contains the {{createApplicationAndDeployment.applicationStorage.applicationName}} model and data.`,
+                    definition: `This Application contains the {{createApplicationAndDeployment.applicationStorage.applicationName}} model and data.`,
                   } as any,
                   selfApplication: testSelfApplicationUuid,
                 } as AdminApplication,

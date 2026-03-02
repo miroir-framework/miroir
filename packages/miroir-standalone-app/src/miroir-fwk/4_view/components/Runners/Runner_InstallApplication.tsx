@@ -741,7 +741,7 @@ export const Runner_InstallApplication: React.FC<DeployApplicationRunnerProps> =
                   defaultLabel: {
                     transformerType: "mustacheStringTemplate",
                     interpolation: "build",
-                    definition: `The {{deployApplication.applicationBundle.applicationName}} Admin Application.`,
+                    definition: `The {{deployApplication.applicationBundle.applicationName}} Application.`,
                   } as any,
                   description: {
                     transformerType: "mustacheStringTemplate",
