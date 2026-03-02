@@ -183,7 +183,37 @@ export const MermaidClassDiagram: React.FC<MermaidClassDiagramProps> = ({
 
     toolbeltRef.current = enhancer;
 
+    // Custom wheel handler (capture phase → fires before svg-toolbelt's bubble-phase zoom):
+    //   plain scroll      → pan vertically
+    //   shift + scroll    → pan horizontally
+    //   ctrl  + scroll    → zoom (delegated to svg-toolbelt)
+    const handleWheel = (e: WheelEvent) => {
+      if (e.ctrlKey) {
+        // Let svg-toolbelt's ZoomFeature handle zoom; don't intercept.
+        return;
+      }
+      // Prevent both the page from scrolling and svg-toolbelt from zooming.
+      e.preventDefault();
+      e.stopImmediatePropagation();
+
+      // deltaY is non-zero for most wheel events; prefer it over deltaX so that
+      // shift+scroll works consistently even when the OS reports deltaX.
+      const delta = e.deltaY !== 0 ? e.deltaY : e.deltaX;
+
+      if (e.shiftKey) {
+        enhancer.translateX -= delta;
+      } else {
+        enhancer.translateY -= delta;
+      }
+      enhancer.constrainPan();
+      enhancer.applyTransform();
+    };
+
+    const el = svgContainerRef.current;
+    el.addEventListener("wheel", handleWheel, { capture: true, passive: false });
+
     return () => {
+      el.removeEventListener("wheel", handleWheel, { capture: true });
       enhancer.destroy();
       toolbeltRef.current = null;
     };
@@ -220,7 +250,6 @@ export const MermaidClassDiagram: React.FC<MermaidClassDiagramProps> = ({
         ]}
       />
 
-
       {/* Toolbar */}
       <Box
         sx={{
@@ -235,10 +264,7 @@ export const MermaidClassDiagram: React.FC<MermaidClassDiagramProps> = ({
         }}
       >
         {/* Direction toggle */}
-        <Typography
-          variant="body2"
-          sx={{ color: themeColors.text, fontWeight: 500 }}
-        >
+        <Typography variant="body2" sx={{ color: themeColors.text, fontWeight: 500 }}>
           Direction:
         </Typography>
         <ToggleButtonGroup
@@ -246,27 +272,38 @@ export const MermaidClassDiagram: React.FC<MermaidClassDiagramProps> = ({
           exclusive
           onChange={handleDirectionChange}
           size="small"
+          sx={{ padding: "8px" }}
         >
-          <ToggleButton value="TB" sx={{ fontSize: "0.75rem", py: 0.25, px: 1 }}>
+          <ToggleButton value="TB" sx={{ fontSize: "0.75rem", py: 0.25, px: 1, padding: "8px" }}>
             Top→Bottom
           </ToggleButton>
-          <ToggleButton value="LR" sx={{ fontSize: "0.75rem", py: 0.25, px: 1 }}>
+          <ToggleButton value="LR" sx={{ fontSize: "0.75rem", py: 0.25, px: 1, padding: "8px" }}>
             Left→Right
           </ToggleButton>
         </ToggleButtonGroup>
 
         {/* Infrastructure attributes toggle */}
-        <Tooltip title={showInfra ? "Hide infrastructure attributes" : "Show infrastructure attributes (uuid, parentUuid, etc.)"}>
+        <Tooltip
+          title={
+            showInfra
+              ? "Hide infrastructure attributes"
+              : "Show infrastructure attributes (uuid, parentUuid, etc.)"
+          }
+        >
           <ToggleButton
             value="infra"
             selected={showInfra}
             onChange={handleInfraToggle}
             size="small"
-            sx={{ fontSize: "0.75rem", py: 0.25, px: 1 }}
+            sx={{ fontSize: "0.75rem", py: 0.25, px: 1, padding: "8px" }}
           >
             {showInfra ? "Hide Infra" : "Show Infra"}
           </ToggleButton>
         </Tooltip>
+
+        <Typography variant="body2" sx={{ color: themeColors.text, fontWeight: 500, padding: "8px" }}>
+          CTRL + Scroll to zoom, Shift + Scroll to pan horizontally, Scroll to pan vertically
+        </Typography>
       </Box>
 
       {/* Diagram area — svg-toolbelt manages zoom/pan directly on the SVG transform */}
@@ -283,21 +320,15 @@ export const MermaidClassDiagram: React.FC<MermaidClassDiagramProps> = ({
         }}
       >
         {error ? (
-          <Typography color="error" variant="body2" sx={{ padding: 2 }}>
+          <Typography color="error" variant="body2">
             Diagram rendering error: {error}
           </Typography>
         ) : entityDefinitions.length === 0 ? (
-          <Typography
-            variant="body2"
-            sx={{ color: themeColors.text, opacity: 0.6, padding: 2 }}
-          >
+          <Typography variant="body2" sx={{ color: themeColors.text, opacity: 0.6, }}>
             No entity definitions available for the current application model.
           </Typography>
         ) : !svgContent ? (
-          <Typography
-            variant="body2"
-            sx={{ color: themeColors.text, opacity: 0.6, padding: 2 }}
-          >
+          <Typography variant="body2" sx={{ color: themeColors.text, opacity: 0.6, }}>
             Rendering diagram...
           </Typography>
         ) : (
