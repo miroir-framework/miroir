@@ -1,4 +1,3 @@
-
 import {
   Box,
   Button,
@@ -21,111 +20,13 @@ import { useDomainControllerService, useMiroirContextService } from 'miroir-reac
 import { usePageConfiguration } from '../../services/index.js';
 import { ThemedIcon, ThemedIconButton } from '../Themes/IconComponents.js';
 import { SidebarWidth } from './SidebarSection.js';
+import type { MiroirMenuPageLink } from 'miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
   MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ResponsiveAppBar"), "UI",
 ).then((logger: LoggerInterface) => {log = logger});
 
-const appbarItems: (MiroirMenuItem & { targetRoot?: string })[] = [
-  {
-    miroirMenuItemType: "miroirMenuItemLink",
-    label: "Model",
-    targetRoot: "model",
-    section: "model",
-    selfApplication: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
-    reportUuid: "c9ea3359-690c-4620-9603-b5b402e4a2b9",
-    icon: {
-      iconType: "mui",
-      name: "account_tree",
-    },
-  },
-  {
-    miroirMenuItemType: "miroirMenuItemLink",
-    label: "Search",
-    targetRoot: "search",
-    section: "model",
-    selfApplication: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e", // not used
-    reportUuid: "c9ea3359-690c-4620-9603-b5b402e4a2b9", // not used
-    icon: {
-      iconType: "mui",
-      name: "search",
-    },
-  },
-  {
-    miroirMenuItemType: "miroirMenuItemLink",
-    label: "Transformer Builder",
-    targetRoot: "transformerBuilder",
-    section: "model",
-    selfApplication: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e", // not used
-    reportUuid: "c9ea3359-690c-4620-9603-b5b402e4a2b9", // not used
-    icon: {
-      iconType: "mui",
-      name: "build",
-      superImpose: {
-        letter: "T",
-        color: "#FF0000",
-      },
-    },
-  },
-  // {
-  //   "label": "runners",
-  //   "section": "model",
-  //   "selfApplication": "10ff36f2-50a3-48d8-b80f-e48e5d13af8e", //not used
-  //   "reportUuid": "c9ea3359-690c-4620-9603-b5b402e4a2b9", //not used
-  //   "icon": "directions_run"
-  // },
-  {
-    miroirMenuItemType: "miroirMenuItemLink",
-    label: "events",
-    section: "model",
-    selfApplication: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e", //not used
-    reportUuid: "c9ea3359-690c-4620-9603-b5b402e4a2b9", //not used
-    // "icon": "event_note"
-  },
-  {
-    miroirMenuItemType: "miroirMenuItemLink",
-    label: "error-logs",
-    section: "model",
-    selfApplication: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e", //not used
-    reportUuid: "c9ea3359-690c-4620-9603-b5b402e4a2b9", //not used
-    // "icon": "error"
-  },
-  // {
-  //   "label": "error-logs",
-  //   "section": "model",
-  //   "selfApplication": "10ff36f2-50a3-48d8-b80f-e48e5d13af8e", //not used
-  //   "reportUuid": "c9ea3359-690c-4620-9603-b5b402e4a2b9", //not used
-  //   "icon": "engineering"
-  // },
-  {
-    miroirMenuItemType: "miroirMenuItemLink",
-    label: "settings",
-    section: "model",
-    selfApplication: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e", //not used
-    reportUuid: "c9ea3359-690c-4620-9603-b5b402e4a2b9", //not used
-    // "icon": "manufacturing"
-    icon: "settings",
-    // "icon": {
-    //   iconType: "mui",
-    //   name: "settings",
-    // }
-  },
-  // {
-  //   miroirMenuItemType: "miroirMenuItemLink",
-  //   label: "themes",
-  //   targetRoot: "themes",
-  //   section: "model",
-  //   selfApplication: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e", //not used
-  //   reportUuid: "c9ea3359-690c-4620-9603-b5b402e4a2b9", //not used
-  //   // "icon": "manufacturing"
-  //   icon: "palette",
-  //   // "icon": {
-  //   //   iconType: "mui",
-  //   //   name: "settings",
-  //   // }
-  // },
-];
 const settings = ['Setting1', 'Setting2', 'Setting3', 'Setting4'];
 
 
@@ -158,33 +59,13 @@ const StyledAppBar = styled(
       prop !== "open" && prop !== "width" && prop !== "outlineOpen" && prop !== "outlineWidth",
   },
 )<AppBarProps>(({ theme, open, width = SidebarWidth, outlineOpen, outlineWidth = 300 }) => {
-  // let appBarWidth = "100%";
   let marginLeft = 0;
   let marginRight = 0;
 
-  // // Calculate width and margins based on both sidebars
-  // if (open && outlineOpen) {
-  //   // Both sidebars open
-  //   // appBarWidth = `calc(100% - ${width}px - ${outlineWidth}px)`;
-  //   marginLeft = width;
-  //   marginRight = outlineWidth;
-  // } else if (open) {
-  //   // Only left sidebar open
-  //   // appBarWidth = `calc(100% - ${width}px)`;
-  //   marginLeft = width;
-  // } else if (outlineOpen) {
-  //   // Only right outline open
-  //   // appBarWidth = `calc(100% - ${outlineWidth}px)`;
-  //   marginRight = outlineWidth;
-  // }
 
   return {
-    // zIndex: 1201, // Higher than drawer (1200) to appear above it
     position: "static",
     minHeight: 0,
-    // width: appBarWidth,
-    // marginLeft: `${marginLeft}px`,
-    // marginRight: `${marginRight}px`,
     transition: "margin 0.3s ease-out, width 0.3s ease-out",
     "@media (max-width: 600px)": {
       padding: "0 0px",
@@ -202,46 +83,190 @@ export function AppBar(props:AppBarProps) {
   // react hooks
   const navigate = useNavigate();
 
-  const domainController = useDomainControllerService();
-  // const context = useMiroirContextService();
-
-  // // Use snackbar from context
-  // const {
-  //   snackbarOpen,
-  //   snackbarMessage,
-  //   snackbarSeverity,
-  //   showSnackbar,
-  //   handleSnackbarClose,
-  //   handleAsyncAction,
-  // } = useSnackbar();
-  
-  // custom hooks
   const miroirTheme = useMiroirTheme();
-  // const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
-  // const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
   const context = useMiroirContextService();
   const { fetchConfigurations } = usePageConfiguration();
 
-  // const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
-  //   setAnchorElNav(event.currentTarget);
-  // };
-  // const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
-  //   setAnchorElUser(event.currentTarget);
-  // };
-
-  // const handleCloseNavMenu = () => {
-  //   setAnchorElNav(null);
-  // };
-
-  // const handleCloseUserMenu = () => {
-  //   setAnchorElUser(null);
-  // };
 
   const goToLabelPage = (event: any, l: string) => {
     log.info("goToLabelPage: ", l, " event: ", event);
     navigate("/"+l)
   }
-  
+  const appbarItems: (MiroirMenuItem | JSX.Element)[] = [
+    /* HOME */
+    <Link to={`/home`}>
+      <IconButton
+        sx={{
+          // mr: 2,
+          color: miroirTheme.currentTheme.components.appBar.textColor,
+        }}
+      >
+        <ThemedIcon
+          icon={{
+            iconType: "mui",
+            name: "home",
+          }}
+        />
+      </IconButton>
+    </Link>,
+    props.onEditModeToggle ? (
+      <Tooltip
+        title={
+          props.generalEditMode
+            ? "Edit Report Mode: ON (click to disable)"
+            : "Edit Report Mode: OFF (click to enable)"
+        }
+      >
+        <IconButton
+          color="inherit"
+          onClick={props.onEditModeToggle}
+          sx={{
+            mr: 1,
+            color: props.generalEditMode
+              ? miroirTheme.currentTheme.colors.warningLight || "orange"
+              : miroirTheme.currentTheme.components.appBar.textColor,
+            transition: "all 0.3s ease-in-out",
+            "&:hover": {
+              backgroundColor: miroirTheme.currentTheme.colors.hover,
+            },
+          }}
+        >
+          {props.generalEditMode ? <EditOff /> : <Edit />}
+        </IconButton>
+      </Tooltip>
+    ) : (
+      <> </>
+    ),
+    context.setShowModelTools ? (
+      <Tooltip
+        title={
+          context.showModelTools
+            ? "Model Tools: ON (click to disable)"
+            : "Model Tools: OFF (click to enable)"
+        }
+      >
+        <ThemedIconButton
+          onClick={() => context.setShowModelTools?.(!context.showModelTools) as any}
+          aria-label="Model Tools"
+        >
+          <ThemedIcon
+            icon={
+              context.showModelTools
+                ? {
+                    iconType: "mui",
+                    name: "wbIncandescent",
+                    color: {
+                      colorType: "themeColor",
+                      currentThemeColorPath: "colors.warning",
+                    },
+                  }
+                : {
+                    iconType: "mui",
+                    name: "lightbulb",
+                  }
+            }
+          />
+        </ThemedIconButton>
+      </Tooltip>
+    ) : (
+      <> </>
+    ),
+    {
+      miroirMenuItemType: "miroirMenuPageLink",
+      label: "Model",
+      targetRoot: "model",
+      section: "model",
+      icon: {
+        iconType: "mui",
+        name: "account_tree",
+      },
+    },
+    {
+      miroirMenuItemType: "miroirMenuPageLink",
+      label: "Search",
+      targetRoot: "search",
+      section: "model",
+      icon: {
+        iconType: "mui",
+        name: "search",
+      },
+    },
+    {
+      miroirMenuItemType: "miroirMenuPageLink",
+      label: "Transformer Builder",
+      targetRoot: "transformerBuilder",
+      section: "model",
+      icon: {
+        iconType: "mui",
+        name: "build",
+        superImpose: {
+          letter: "T",
+          color: "#FF0000",
+        },
+      },
+    },
+    // {
+    //   "label": "runners",
+    //   "section": "model",
+    //   "selfApplication": "10ff36f2-50a3-48d8-b80f-e48e5d13af8e", //not used
+    //   "reportUuid": "c9ea3359-690c-4620-9603-b5b402e4a2b9", //not used
+    //   "icon": "directions_run"
+    // },
+    {
+      miroirMenuItemType: "miroirMenuPageLink",
+      label: "events",
+      targetRoot: "events",
+      section: "model",
+      // selfApplication: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e", //not used
+      // reportUuid: "c9ea3359-690c-4620-9603-b5b402e4a2b9", //not used
+      // "icon": "event_note"
+    },
+    {
+      miroirMenuItemType: "miroirMenuPageLink",
+      label: "error-logs",
+      targetRoot: "error-logs",
+      section: "model",
+      // selfApplication: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e", //not used
+      // reportUuid: "c9ea3359-690c-4620-9603-b5b402e4a2b9", //not used
+      // "icon": "error"
+    },
+    // {
+    //   "label": "error-logs",
+    //   "section": "model",
+    //   "selfApplication": "10ff36f2-50a3-48d8-b80f-e48e5d13af8e", //not used
+    //   "reportUuid": "c9ea3359-690c-4620-9603-b5b402e4a2b9", //not used
+    //   "icon": "engineering"
+    // },
+    {
+      miroirMenuItemType: "miroirMenuPageLink",
+      label: "settings",
+      targetRoot: "settings",
+      section: "model",
+      // selfApplication: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e", //not used
+      // reportUuid: "c9ea3359-690c-4620-9603-b5b402e4a2b9", //not used
+      // "icon": "manufacturing"
+      icon: "settings",
+      // "icon": {
+      //   iconType: "mui",
+      //   name: "settings",
+      // }
+    },
+    // {
+    //   miroirMenuItemType: "miroirMenuPageLink",
+    //   label: "themes",
+    //   targetRoot: "themes",
+    //   section: "model",
+    //   selfApplication: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e", //not used
+    //   reportUuid: "c9ea3359-690c-4620-9603-b5b402e4a2b9", //not used
+    //   // "icon": "manufacturing"
+    //   icon: "palette",
+    //   // "icon": {
+    //   //   iconType: "mui",
+    //   //   name: "settings",
+    //   // }
+    // },
+  ];
+
   return (
     <StyledAppBar
       style={{ padding: "0" }}
@@ -255,7 +280,9 @@ export function AppBar(props:AppBarProps) {
         borderBottom: miroirTheme.currentTheme.components.appBar.borderBottom,
         boxShadow: miroirTheme.currentTheme.components.appBar.elevation,
       }}
-    > <Box sx={{display:"flex"}}>
+    >
+      {" "}
+      <Box sx={{ display: "flex" }}>
         <Toolbar disableGutters>
           {/* <Box sx={{display:"flex"}}> */}
           {/* sidebar opener */}
@@ -279,88 +306,34 @@ export function AppBar(props:AppBarProps) {
               <ChevronLeftIcon />
             </ThemedIconButton>
           )}
-          {/* HOME */}
-          <Link to={`/home`}>
-            <Icon
-              sx={{
-                mr: 2,
-                color: miroirTheme.currentTheme.components.appBar.textColor,
-              }}
-            >
-              home
-            </Icon>
-          </Link>
-          <Box>
-
-          {/* MENU, NOT WORKING */}
-          {/* <Box sx={{ flexGrow: 0, display: { xs: "flex", md: "flex" } }}>
-              <Menu
-                id="menu-appbar"
-                anchorEl={anchorElNav}
-                anchorOrigin={{
-                  vertical: "bottom",
-                  horizontal: "left",
-                }}
-                keepMounted
-                transformOrigin={{
-                  vertical: "top",
-                  horizontal: "left",
-                }}
-                open={Boolean(anchorElNav)}
-                onClose={handleCloseNavMenu}
-                sx={{
-                  display: { xs: "block", md: "none" },
-                }}
-              >
-                {pages.map((page) => (
-                  <MenuItem key={page.label} onClick={(e: any) => goToLabelPage(e, page.label)}>
-                    <Typography textAlign="center">{page.label}</Typography>
-                  </MenuItem>
-                ))}
-              </Menu>
-            </Box> */}
-          {/* <AdbIcon sx={{ display: { xs: "flex", md: "none" }, mr: 1 }} /> */}
-          {/* <Typography
-              variant="h5"
-              noWrap
-              component="a"
-              href=""
-              sx={{
-                mr: 2,
-                display: { xs: "flex", md: "none" },
-                flexGrow: 1,
-                fontFamily: "monospace",
-                fontWeight: 700,
-                letterSpacing: ".3rem",
-                color: "inherit",
-                textDecoration: "none",
-              }}
-            >
-              LOGO
-            </Typography> */}
-          </Box>
+          
           {/* MAIN APPBAR ITEMS */}
           <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
             {/* TODO: dividers are ignored  */}
-            {appbarItems.map(
-              (item) =>
-                item.miroirMenuItemType === "miroirMenuItemLink" && (
+            {appbarItems.map((item) => {
+              if (!("miroirMenuItemType" in item)) {
+                return item as JSX.Element;
+              }
+              const castItem = item as MiroirMenuPageLink;
+              return (
+                (castItem as any).miroirMenuItemType === "miroirMenuPageLink" && (
                   <Button
-                    key={item.label}
-                    onClick={(e: any) => goToLabelPage(e, item.targetRoot ?? item.label)}
+                    key={castItem.label}
+                    onClick={(e: any) => goToLabelPage(e, castItem.targetRoot ?? castItem.label)}
                     sx={{
                       my: 2,
                       color: miroirTheme.currentTheme.components.appBar.textColor,
                       display: "block",
                     }}
                   >
-                    {item.icon ? <ThemedIcon icon={item.icon} /> : item.label}
+                    {castItem.icon ? <ThemedIcon icon={castItem.icon} /> : castItem.label}
                   </Button>
-                ),
-            )}
+                )
+              );
+            })}
           </Box>
           {/* Edit Mode Toggle Button */}
-          {props.onEditModeToggle && (
+          {/* {props.onEditModeToggle && (
             <Tooltip
               title={
                 props.generalEditMode
@@ -385,38 +358,8 @@ export function AppBar(props:AppBarProps) {
                 {props.generalEditMode ? <EditOff /> : <Edit />}
               </IconButton>
             </Tooltip>
-          )}
-          {/* useless menu */}
-          {/* <IconButton
-              size="large"
-              aria-label="account of current user"
-              aria-controls="menu-appbar"
-              aria-haspopup="true"
-              onClick={handleOpenNavMenu}
-              color="inherit"
-            >
-              <MenuIcon />
-            </IconButton> */}
+          )} */}
           <Box sx={{ flexGrow: 0, display: "flex" }}>
-            {/* Commit */}
-            {/* <ActionButtonWithSnackbar
-                onAction={async () => {
-                  return domainController.handleActionFromUI(
-                    {
-                      actionType: "commit",                      endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                      payload: {
-                        application: noValue.uuid,
-                      },
-                    },
-                    defaultSelfApplicationDeploymentMap,
-                    defaultMiroirModelEnvironment
-                  );
-                }}
-                successMessage="Committed successfully"
-                label="Commit"
-                handleAsyncAction={handleAsyncAction}
-                actionName="commit"
-              /> */}
             {/* Fetch Configurations Button */}
             <ThemedIconButton
               onClick={fetchConfigurations}
@@ -425,43 +368,6 @@ export function AppBar(props:AppBarProps) {
             >
               <ThemedIcon icon={{ iconType: "mui", name: "sync" }} />
             </ThemedIconButton>
-            {/* Model Tools Indicator */}
-            {context.setShowModelTools && (
-              <Tooltip
-                title={
-                  context.showModelTools
-                    ? "Model Tools: ON (click to disable)"
-                    : "Model Tools: OFF (click to enable)"
-                }
-              >
-                <ThemedIconButton
-                  onClick={() => context.setShowModelTools?.(!context.showModelTools) as any}
-                  aria-label="Model Tools"
-                >
-                  <ThemedIcon
-                    icon={
-                      context.showModelTools
-                        ? {
-                            iconType: "mui",
-                            // name: "architecture",
-                            name: "wbIncandescent",
-                            // name: "draw",
-                            color: {
-                              colorType: "themeColor",
-                              currentThemeColorPath: "colors.warning",
-                            },
-                          }
-                        : {
-                            iconType: "mui",
-                            // name: "architecture",
-                            name: "lightbulb",
-                            // name: "draw",
-                          }
-                    }
-                  />
-                </ThemedIconButton>
-              </Tooltip>
-            )}
             {/* Action Timeline Indicator */}
             {/* {context.setShowActionTimeline && (
                 <Tooltip

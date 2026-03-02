@@ -13,7 +13,7 @@
         "label": "admin",
         "items": [
           {
-            "miroirMenuItemType": "miroirMenuItemLink",
+            "miroirMenuItemType": "miroirMenuReportLink",
             "label": "Admin Entities",
             "section": "model",
             "selfApplication": "55af124e-8c05-4bae-a3ef-0933d41daa92",
@@ -21,7 +21,7 @@
             "icon": "category"
           },
           {
-            "miroirMenuItemType": "miroirMenuItemLink",
+            "miroirMenuItemType": "miroirMenuReportLink",
             "label": "Admin Entity Definitions",
             "section": "model",
             "selfApplication": "55af124e-8c05-4bae-a3ef-0933d41daa92",
@@ -29,7 +29,7 @@
             "icon": "category"
           },
           {
-            "miroirMenuItemType": "miroirMenuItemLink",
+            "miroirMenuItemType": "miroirMenuReportLink",
             "label": "Admin Applications",
             "section": "data",
             "selfApplication": "55af124e-8c05-4bae-a3ef-0933d41daa92",
@@ -37,7 +37,7 @@
             "icon": "web_asset"
           },
           {
-            "miroirMenuItemType": "miroirMenuItemLink",
+            "miroirMenuItemType": "miroirMenuReportLink",
             "label": "Admin Reports",
             "section": "model",
             "selfApplication": "55af124e-8c05-4bae-a3ef-0933d41daa92",
@@ -45,7 +45,7 @@
             "icon": "dashboard"
           },
           {
-            "miroirMenuItemType": "miroirMenuItemLink",
+            "miroirMenuItemType": "miroirMenuReportLink",
             "label": "Deployments",
             "section": "data",
             "selfApplication": "55af124e-8c05-4bae-a3ef-0933d41daa92",
@@ -53,7 +53,7 @@
             "icon": "rocket_launch"
           },
           {
-            "miroirMenuItemType": "miroirMenuItemLink",
+            "miroirMenuItemType": "miroirMenuReportLink",
             "label": "Bundles",
             "section": "data",
             "selfApplication": "55af124e-8c05-4bae-a3ef-0933d41daa92",
@@ -61,7 +61,7 @@
             "icon": "inventory_2"
           },
           {
-            "miroirMenuItemType": "miroirMenuItemLink",
+            "miroirMenuItemType": "miroirMenuReportLink",
             "label": "ViewParams",
             "section": "data",
             "selfApplication": "55af124e-8c05-4bae-a3ef-0933d41daa92",

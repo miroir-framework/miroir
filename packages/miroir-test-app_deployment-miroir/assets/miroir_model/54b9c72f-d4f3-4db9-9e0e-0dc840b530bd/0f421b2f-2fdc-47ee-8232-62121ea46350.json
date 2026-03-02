@@ -96,7 +96,7 @@
       "definition": {
         "type": "schemaReference",
         "context": {
-          "miroirMenuItemLink": {
+          "miroirMenuPageLink": {
             "type": "object",
             "tag": {
               "value": {
@@ -110,7 +110,69 @@
             "definition": {
               "miroirMenuItemType": {
                 "type": "literal",
-                "definition": "miroirMenuItemLink"
+                "definition": "miroirMenuPageLink"
+              },
+              "label": {
+                "type": "string"
+              },
+              "targetRoot": {
+                "type": "string"
+              },
+              "hidden": {
+                "type": "boolean",
+                "optional": true
+              },
+              "menuItemScope": {
+                "type": "enum",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Scope",
+                    "display": { "editable": true },
+                    "description": "What elements this menu item targets (data or model)",
+                    "initializeTo": {
+                      "initializeToType": "value",
+                      "value": "data"
+                    }
+                  }
+                },
+                "definition": [
+                  "data",
+                  "model"
+                ]
+              },
+              "section": {
+                "type": "schemaReference",
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "applicationSection"
+                }
+              },
+              "icon": {
+                "type": "schemaReference",
+                "optional":true,
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "miroirIcon"
+                }
+              }
+            }
+          },
+          "miroirMenuReportLink": {
+            "type": "object",
+            "tag": {
+              "value": {
+                "defaultLabel": "Menu Item",
+                "display": {
+                  "displayedAttributeValueWhenFolded": "label",
+                  "editable": true
+                }
+              }
+            },
+            "definition": {
+              "miroirMenuItemType": {
+                "type": "literal",
+                "definition": "miroirMenuReportLink"
               },
               "label": {
                 "type": "string"
@@ -162,6 +224,7 @@
               },
               "reportUuid": {
                 "type": "string",
+                "optional": true,
                 "validations": [
                   {
                     "type": "uuid"
@@ -268,7 +331,14 @@
                 "type": "schemaReference",
                 "definition": {
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "miroirMenuItemLink"
+                  "relativePath": "miroirMenuPageLink"
+                }
+              },
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "miroirMenuReportLink"
                 }
               },
               {

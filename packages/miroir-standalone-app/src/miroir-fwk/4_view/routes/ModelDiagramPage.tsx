@@ -52,42 +52,6 @@ export const ModelDiagramPage: React.FC<any> = () => {
   const context = useMiroirContextService();
   const currentApplicationDeploymentMap =
     context.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap;
-  // const application = context.toolsPageState.applicationSelector ?? context.application;
-  // const application = selfApplicationDeploymentMiroir.uuid;
-  // const application = adminSelfApplication.uuid;
-  
-  // const currentModel: MetaModel = useMiroir(
-  // const currentModel: MetaModel = useCurrentModel(
-  //   application,
-  //   defaultSelfApplicationDeploymentMap,
-  // );
-  // const currentModel: MetaModel = useCurrentModel(
-  //   application,
-  //   currentApplicationDeploymentMap,
-  // );
-
-  // const reportSection = application == selfApplicationMiroir.uuid ? "data" : "model"
-
-  // const { availableReports, entities, entityDefinitions } = useMemo(() => {
-  //   return context.deploymentUuidToReportsEntitiesDefinitionsMapping &&
-  //     context.deploymentUuidToReportsEntitiesDefinitionsMapping[currentApplicationDeploymentMap[application]]
-  //     ? context.deploymentUuidToReportsEntitiesDefinitionsMapping[
-  //         currentApplicationDeploymentMap[application]
-  //       ]["data"]
-  //     : { availableReports: [], entities: [], entityDefinitions: [] };
-  // }, [
-  //   currentApplicationDeploymentMap,
-  //   application,
-  //   currentApplicationDeploymentMap[application],
-  //   context.deploymentUuidToReportsEntitiesDefinitionsMapping,
-  //   // pageParams.applicationSection,
-  // ]);
-
-  // const entityDefinitions = useMemo(
-  //   () => currentModel.entityDefinitions ?? [],
-  //   [currentModel.entityDefinitions],
-  // );
-  // const entityDefinitions = defaultMiroirMetaModel.entityDefinitions ?? [];
 
   const formikPath = "modelDiagramPage";
   const inputSelector_applicationUuid = context.toolsPageState?.applicationSelector ?? selfApplicationDeploymentMiroir.uuid;
@@ -112,7 +76,7 @@ export const ModelDiagramPage: React.FC<any> = () => {
             type: "uuid",
             tag: {
               value: {
-                defaultLabel: "Application (mls)",
+                defaultLabel: "Application",
                 foreignKeyParams: {
                   targetApplicationUuid: adminSelfApplication.uuid,
                   targetEntity: entityApplicationForAdmin.uuid,

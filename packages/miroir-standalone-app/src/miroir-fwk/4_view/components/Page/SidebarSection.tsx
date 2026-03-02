@@ -40,6 +40,7 @@ import { useMiroirContextService } from 'miroir-react';
 import { useCurrentModel, useReduxDeploymentsStateQuerySelector } from '../../ReduxHooks.js';
 import { ErrorFallbackComponent } from '../ErrorFallbackComponent.js';
 import { DebugHelper } from 'miroir-react';
+import type { MiroirMenuItemDivider, MiroirMenuReportLink } from 'miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -57,11 +58,12 @@ export interface ResponsiveAppBarProps {
 
 const sideBarDefaultItems: MiroirMenuItem[] = [
   {
-    miroirMenuItemType: "miroirMenuItemLink",
+    miroirMenuItemType: "miroirMenuPageLink",
     label: "A Menu will be displayed here!",
     section: "model",
-    selfApplication: "noApplicationSpecified",
-    reportUuid: "",
+    targetRoot: "model",
+    // selfApplication: "noApplicationSpecified",
+    // reportUuid: "",
     "icon": "south",
   },
 ];
@@ -75,24 +77,67 @@ interface MenuItemProps {
 }
 
 const MenuItemDisplay: FC<MenuItemProps> = ({ menuItem, applicationDeploymentMap, keyValue, showPadding = false }) => {
-  return menuItem.miroirMenuItemType == "miroirMenuItemLink" ? (
-    <ThemedListItem key={keyValue} disablePadding>
-      <ThemedListItemButton
-        sx={showPadding ? { padding: 0 } : undefined}
-        component={Link}
-        to={`/report/${menuItem.selfApplication}/${
-          applicationDeploymentMap[menuItem.selfApplication]
-        }/${menuItem.section}/${menuItem.reportUuid}/${menuItem.instanceUuid ?? "xxxxxx"}`}
-      >
-        <ThemedListMiroirIcon>
-          <ThemedIcon icon={menuItem.icon} />
-        </ThemedListMiroirIcon>
-        <ThemedListItemText primary={menuItem.label} />
-      </ThemedListItemButton>
-    </ThemedListItem>
-  ) : (
-    <ThemedDivider />
-  );
+  switch (menuItem.miroirMenuItemType) {
+    case "miroirMenuPageLink": {
+      return (
+        <ThemedListItem key={keyValue} disablePadding>
+          <ThemedListItemButton
+            sx={showPadding ? { padding: 0 } : undefined}
+            component={Link}
+            to={`/${menuItem.targetRoot}`}
+          >
+            <ThemedListMiroirIcon>
+              <ThemedIcon icon={menuItem.icon} />
+            </ThemedListMiroirIcon>
+            <ThemedListItemText primary={menuItem.label} />
+          </ThemedListItemButton>
+        </ThemedListItem>
+      )
+    }
+    case "miroirMenuReportLink": {
+      return (
+        <ThemedListItem key={keyValue} disablePadding>
+          <ThemedListItemButton
+            sx={showPadding ? { padding: 0 } : undefined}
+            component={Link}
+            to={`/report/${menuItem.selfApplication}/${
+              applicationDeploymentMap[menuItem.selfApplication]
+            }/${menuItem.section}/${menuItem.reportUuid}/${menuItem.instanceUuid ?? "xxxxxx"}`}
+          >
+            <ThemedListMiroirIcon>
+              <ThemedIcon icon={menuItem.icon} />
+            </ThemedListMiroirIcon>
+            <ThemedListItemText primary={menuItem.label} />
+          </ThemedListItemButton>
+        </ThemedListItem>
+      )
+    }
+    case 'miroirMenuItemDivider': {
+      return <ThemedDivider />;
+    }
+    default: {
+      return "menu item type not supported: " + (menuItem as any).miroirMenuItemType
+    }
+  }
+
+  // return menuItem.miroirMenuItemType == "miroirMenuReportLink" ? (
+  //   <ThemedListItem key={keyValue} disablePadding>
+  //     <ThemedListItemButton
+  //       sx={showPadding ? { padding: 0 } : undefined}
+  //       component={Link}
+  //       to={`/report/${menuItem.selfApplication}/${
+  //         applicationDeploymentMap[menuItem.selfApplication]
+  //       }/${menuItem.section}/${menuItem.reportUuid}/${menuItem.instanceUuid ?? "xxxxxx"}`}
+  //     >
+  //       <ThemedListMiroirIcon>
+  //         <ThemedIcon icon={menuItem.icon} />
+  //       </ThemedListMiroirIcon>
+  //       <ThemedListItemText primary={menuItem.label} />
+  //     </ThemedListItemButton>
+  //   </ThemedListItem>
+  // ) : (
+  //   <ThemedDivider />
+  // );
 };
 
 let count = 0;
@@ -233,8 +278,9 @@ export const SidebarSection:FC<SidebarSectionProps> = (props: SidebarSectionProp
                   ((miroirMenusDomainElementObject as any)?.menus as any)?.definition?.definition ??
                   sideBarDefaultItems
                 )
+                  .filter((curr: MiroirMenuItem) => curr.miroirMenuItemType != "miroirMenuPageLink")
                   .filter(
-                    (curr: MiroirMenuItem) =>
+                    (curr: MiroirMenuReportLink | MiroirMenuItemDivider) =>
                       // context.viewParams.generalEditMode
                       ((curr.selfApplication === adminSelfApplication.uuid ||
                         curr.selfApplication === selfApplicationDeploymentMiroir.uuid) &&
@@ -264,8 +310,9 @@ export const SidebarSection:FC<SidebarSectionProps> = (props: SidebarSectionProp
                   []
                 ).flatMap((menuSection: any, index: number) =>
                   menuSection.items
+                  .filter((curr: MiroirMenuItem) => curr.miroirMenuItemType != "miroirMenuPageLink")
                     .filter(
-                      (curr: MiroirMenuItem) =>
+                      (curr: MiroirMenuReportLink | MiroirMenuItemDivider) =>
                         ((curr.selfApplication === adminSelfApplication.uuid ||
                           curr.selfApplication === selfApplicationDeploymentMiroir.uuid) &&
                           context.showModelTools) ||

@@ -13,7 +13,7 @@
         "label": "Test1",
         "items": [
           {
-            "miroirMenuItemType": "miroirMenuItemLink",
+            "miroirMenuItemType": "miroirMenuReportLink",
             "label": "Test1 Entities",
             "section": "model",
             "selfApplication": "15e2004a-e7a0-4b9e-8acd-6d3500a6c9ad",
@@ -21,7 +21,7 @@
             "icon": "category"
           },
           {
-            "miroirMenuItemType": "miroirMenuItemLink",
+            "miroirMenuItemType": "miroirMenuReportLink",
             "label": "Test1 Entity Definitions",
             "section": "model",
             "selfApplication": "15e2004a-e7a0-4b9e-8acd-6d3500a6c9ad",
@@ -29,7 +29,7 @@
             "icon": "category"
           },
           {
-            "miroirMenuItemType": "miroirMenuItemLink",
+            "miroirMenuItemType": "miroirMenuReportLink",
             "label": "Test1 Reports",
             "section": "model",
             "selfApplication": "15e2004a-e7a0-4b9e-8acd-6d3500a6c9ad",
