@@ -298,21 +298,16 @@ export const Runner_CreateApplication: React.FC<CreateApplicationToolProps> = ({
   };
 
   const prefix =
-          process.env.NODE_ENV === "development" ? devRelativePathPrefix : prodRelativePathPrefix;
+    process.env.NODE_ENV === "development" ? devRelativePathPrefix : prodRelativePathPrefix;
 
   const createApplicationActionTemplate = useMemo((): CompositeActionTemplate => {
-
     const defaultDirectory = "tmp/miroir_data_storage";
 
     const sqltestDeploymentStorageConfigurationTemplate: TransformerForBuildPlusRuntime = {
       transformerType: "case",
       discriminator: {
         transformerType: "getFromParameters",
-        referencePath: [
-          "createApplicationAndDeployment",
-          "applicationStorage",
-          "emulatedServerType",
-        ],
+        referencePath: ["createApplicationAndDeployment", "applicationStorage", "emulatedServerType"],
       },
       whens: [
         // mongodb
@@ -347,7 +342,8 @@ export const Runner_CreateApplication: React.FC<CreateApplicationToolProps> = ({
                 args: [
                   {
                     transformerType: "mustacheStringTemplate",
-                    definition: "{{createApplicationAndDeployment.applicationStorage.applicationName}}",
+                    definition:
+                      "{{createApplicationAndDeployment.applicationStorage.applicationName}}",
                   },
                   "_model",
                 ],
@@ -368,7 +364,8 @@ export const Runner_CreateApplication: React.FC<CreateApplicationToolProps> = ({
                 args: [
                   {
                     transformerType: "mustacheStringTemplate",
-                    definition: "{{createApplicationAndDeployment.applicationStorage.applicationName}}",
+                    definition:
+                      "{{createApplicationAndDeployment.applicationStorage.applicationName}}",
                   },
                   "_data",
                 ],
@@ -463,7 +460,11 @@ export const Runner_CreateApplication: React.FC<CreateApplicationToolProps> = ({
                   // prefix,
                   {
                     transformerType: "getFromParameters",
-                    referencePath: ["createApplicationAndDeployment", "applicationStorage", "applicationName"],
+                    referencePath: [
+                      "createApplicationAndDeployment",
+                      "applicationStorage",
+                      "applicationName",
+                    ],
                   },
                   "_model",
                 ],
@@ -486,7 +487,11 @@ export const Runner_CreateApplication: React.FC<CreateApplicationToolProps> = ({
                   // prefix,
                   {
                     transformerType: "getFromParameters",
-                    referencePath: ["createApplicationAndDeployment", "applicationStorage", "applicationName"],
+                    referencePath: [
+                      "createApplicationAndDeployment",
+                      "applicationStorage",
+                      "applicationName",
+                    ],
                   },
                   "_data",
                 ],
@@ -513,7 +518,11 @@ export const Runner_CreateApplication: React.FC<CreateApplicationToolProps> = ({
                   prefix,
                   {
                     transformerType: "getFromParameters",
-                    referencePath: ["createApplicationAndDeployment", "applicationStorage", "applicationName"],
+                    referencePath: [
+                      "createApplicationAndDeployment",
+                      "applicationStorage",
+                      "applicationName",
+                    ],
                   },
                   "_model",
                 ],
@@ -527,7 +536,11 @@ export const Runner_CreateApplication: React.FC<CreateApplicationToolProps> = ({
                   prefix,
                   {
                     transformerType: "getFromParameters",
-                    referencePath: ["createApplicationAndDeployment", "applicationStorage", "applicationName"],
+                    referencePath: [
+                      "createApplicationAndDeployment",
+                      "applicationStorage",
+                      "applicationName",
+                    ],
                   },
                   "_data",
                 ],
@@ -566,7 +579,8 @@ export const Runner_CreateApplication: React.FC<CreateApplicationToolProps> = ({
         defaultLabel: {
           transformerType: "mustacheStringTemplate",
           interpolation: "build",
-          definition: "The {{createApplicationAndDeployment.applicationStorage.applicationName}} selfApplication",
+          definition:
+            "The {{createApplicationAndDeployment.applicationStorage.applicationName}} selfApplication",
         } as any,
         description: {
           transformerType: "mustacheStringTemplate",
@@ -818,7 +832,6 @@ export const Runner_CreateApplication: React.FC<CreateApplicationToolProps> = ({
         ],
       },
     };
-
     return combinedCompositeActionTemplate;
   }, [
     applicationDeploymentMap,

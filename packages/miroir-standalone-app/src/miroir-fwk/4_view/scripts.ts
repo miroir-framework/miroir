@@ -126,9 +126,9 @@ export const deleteCascade = async (p: {
     };
 
     const foreignKeyUnfilteredObjects: Action2ReturnType =
-      await p.domainController.handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(
+      await p.domainController.handleQueryTemplateActionForServerONLY(
         {
-          actionType: "runBoxedQueryTemplateOrBoxedExtractorTemplateAction",
+          actionType: "runBoxedQueryTemplateAction",
           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
           payload: {
             application: p.application,

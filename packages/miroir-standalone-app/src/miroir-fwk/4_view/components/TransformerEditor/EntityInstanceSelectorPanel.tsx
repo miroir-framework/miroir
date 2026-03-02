@@ -370,7 +370,7 @@ export function EntityInstanceSelectorPanel(props:{
   ); // Remove context from dependencies
 
   // ##################################################################################
-  // input -> formik
+  // input -> formik when formikContext.values[formikPath_TransformerEditorInputModeSelector].mode is changed or when selected instance(s) change
   useEffect(() => {
     // formikPath_EntityInstanceSelectorPanel initial value
     if (!formikContext.values[formikPath_EntityInstanceSelectorPanel]?.application) {
