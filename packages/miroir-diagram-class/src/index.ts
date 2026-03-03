@@ -4,6 +4,7 @@ export {
   extractClassInfo,
   extractRelationships,
   buildEntityUuidToNameMap,
+  buildEntityDefinitionClickLinks,
   jzodTypeToUml,
   sanitiseMermaidId,
   type ClassDiagramOptions,

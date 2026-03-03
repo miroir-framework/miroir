@@ -17,12 +17,22 @@ import {
 } from "@mui/material";
 import { SvgToolbelt } from "svg-toolbelt";
 import "svg-toolbelt/dist/svg-toolbelt.css";
-import type { EntityDefinition } from "miroir-core";
+import { MiroirLoggerFactory, type EntityDefinition, type LoggerInterface } from "miroir-core";
 import {
   entityDefinitionsToMermaidClassDiagram,
   type ClassDiagramOptions,
 } from "../2_domain/entityDefinitionsToMermaidClassDiagram.js";
 import { DebugHelper, useMiroirTheme } from "miroir-react";
+import { cleanLevel, packageName } from "../constants.js";
+
+
+let log: LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.registerLoggerToStart(
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "MermaidClassDiagram"),
+  "UI"
+).then((logger: LoggerInterface) => {
+  log = logger;
+});
 
 // ############################################################################
 // Constants
@@ -52,6 +62,14 @@ export interface MermaidClassDiagramProps {
   options?: Partial<ClassDiagramOptions>;
   /** Optional CSS height. Defaults to "auto". */
   height?: string;
+  /**
+   * Called when a class node is clicked in the diagram.
+   * Receives the entity-definition UUID (the `uuid` field of the EntityDefinition,
+   * not the `entityUuid`).
+   * Requires `classClickLinks` to be set in `options` (e.g. via
+   * `buildEntityDefinitionClickLinks`).
+   */
+  onClassClick?: (entityDefinitionUuid: string) => void;
 }
 
 // ############################################################################
@@ -64,18 +82,27 @@ export const MermaidClassDiagram: React.FC<MermaidClassDiagramProps> = ({
   entityDefinitions,
   options = {},
   height = "auto",
+  onClassClick,
 }) => {
   const miroirTheme = useMiroirTheme();
   const containerRef = useRef<HTMLDivElement>(null);
   const svgContainerRef = useRef<HTMLDivElement>(null);
   const toolbeltRef = useRef<SvgToolbelt | null>(null);
   const [svgContent, setSvgContent] = useState<string>("");
+  const [diagramText, setDiagramText] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
   const [direction, setDirection] = useState<"TB" | "LR">(
     (options.direction === "TB" || options.direction === "LR") ? options.direction : "TB"
   );
   const [showInfra, setShowInfra] = useState<boolean>(options.showInfrastructureAttributes ?? false);
   const renderIdRef = useRef(0);
+
+  // Stable refs so the svgContent useEffect always has the latest values without
+  // needing to re-attach DOM listeners on every render.
+  const onClassClickRef = useRef(onClassClick);
+  const classClickLinksRef = useRef(options?.classClickLinks);
+  onClassClickRef.current = onClassClick;
+  classClickLinksRef.current = options?.classClickLinks;
 
   // Derive theme-aware colors for Mermaid
   const isDark = miroirTheme.currentTheme.colors.background
@@ -124,11 +151,15 @@ export const MermaidClassDiagram: React.FC<MermaidClassDiagramProps> = ({
         mermaidInitialized = true;
       }
 
+      // NOTE: mermaid.render() attaches `click … call` listeners to a temporary DOM node
+      // and those listeners are NOT serialised into the SVG string.  We therefore do NOT
+      // use window.miroirDiagramClassClick here; instead we attach click listeners after
+      // the SVG is inserted into the real DOM (see the svgContent useEffect below).
       const diagramText = entityDefinitionsToMermaidClassDiagram(
         entityDefinitions,
         diagramOptions,
       );
-
+      setDiagramText(diagramText);
       renderIdRef.current += 1;
       const id = `miroir-class-diagram-${renderIdRef.current}`;
 
@@ -147,6 +178,7 @@ export const MermaidClassDiagram: React.FC<MermaidClassDiagramProps> = ({
     direction,
     showInfra,
     theme: isDark,
+    hasClickLinks: !!options?.classClickLinks && Object.keys(options.classClickLinks).length > 0,
   });
 
   // Trigger rendering after the DOM is committed (ref is attached).
@@ -212,6 +244,28 @@ export const MermaidClassDiagram: React.FC<MermaidClassDiagramProps> = ({
     const el = svgContainerRef.current;
     el.addEventListener("wheel", handleWheel, { capture: true, passive: false });
 
+    // Attach click handlers to every node Mermaid marked as clickable.
+    // Mermaid sets class="node … clickable" and id="classId-{ClassName}-{N}" on those nodes.
+    // We parse the class name from the id, look up the entity-definition UUID from
+    // classClickLinks, and dispatch to onClassClick.
+    const clickLinks = classClickLinksRef.current;
+    if (clickLinks && Object.keys(clickLinks).length > 0) {
+      const clickableNodes = el.querySelectorAll<SVGGElement>(".node.clickable");
+      clickableNodes.forEach((node) => {
+        const nodeId = node.getAttribute("id"); // e.g. "classId-Author-9"
+        const match = nodeId?.match(/^classId-(.+)-\d+$/);
+        if (!match) return;
+        const className = match[1];
+        const uuid = clickLinks[className];
+        if (!uuid) return;
+        node.style.cursor = "pointer";
+        node.addEventListener("click", () => {
+          log.info("Class node clicked", { className, uuid });
+          onClassClickRef.current?.(uuid);
+        });
+      });
+    }
+
     return () => {
       el.removeEventListener("wheel", handleWheel, { capture: true });
       enhancer.destroy();
@@ -242,6 +296,7 @@ export const MermaidClassDiagram: React.FC<MermaidClassDiagramProps> = ({
         componentName="MermaidClassDiagram"
         elements={[
           { label: "MermaidClassDiagram entityDefinitions", data: entityDefinitions },
+          { label: "MermaidClassDiagram diagramText", data: diagramText },
           { label: "MermaidClassDiagram diagramKey", data: diagramKey },
           { label: "MermaidClassDiagram options", data: diagramOptions },
           // { label: "MermaidClassDiagram themeColors", data: themeColors },

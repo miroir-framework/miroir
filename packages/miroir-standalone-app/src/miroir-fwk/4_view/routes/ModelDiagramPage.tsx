@@ -6,6 +6,7 @@
  */
 
 import { useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import { Box, Typography } from "@mui/material";
 import {
   LoggerInterface,
@@ -20,7 +21,7 @@ import {
 
 import { packageName } from "../../../constants.js";
 import { PageContainer } from "../components/Page/PageContainer.js";
-import { MermaidClassDiagram } from "miroir-diagram-class";
+import { MermaidClassDiagram, buildEntityDefinitionClickLinks } from "miroir-diagram-class";
 import { cleanLevel } from "../constants.js";
 import { useMiroirTheme } from "../contexts/MiroirThemeContext.js";
 import { useMiroirContextService } from "miroir-react";
@@ -28,9 +29,9 @@ import { useCurrentModel, useCurrentModelEnvironment } from "../ReduxHooks.js";
 import { DebugHelper } from "miroir-react";
 import { usePageConfiguration } from "../services/usePageConfiguration.js";
 import { adminSelfApplication, entityApplicationForAdmin } from "miroir-test-app_deployment-admin";
-import { TypedValueObjectEditorWithFormik } from "../components/Reports/TypedValueObjectEditorWithFormik.js";
 import { Formik, type FormikProps } from "formik";
 import { TypedValueObjectEditor } from "../components/Reports/TypedValueObjectEditor.js";
+import { reportEntityDefinitionDetails } from "miroir-test-app_deployment-miroir";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -42,6 +43,7 @@ MiroirLoggerFactory.registerLoggerToStart(
 
 // ################################################################################################
 export const ModelDiagramPage: React.FC<any> = () => {
+  const navigate = useNavigate();
   const { fetchConfigurations } = usePageConfiguration({
     autoFetchOnMount: true,
     successMessage: "ModelDiagramPage configurations loaded successfully",
@@ -130,6 +132,14 @@ export const ModelDiagramPage: React.FC<any> = () => {
         // const entityDefinitions = defaultMiroirMetaModel.entityDefinitions ?? [];
         const entityDefinitions = currentModel.entityDefinitions ?? [];
 
+        const entityDefinitionClickLinks = buildEntityDefinitionClickLinks(entityDefinitions);
+
+        const handleClassClick = (entityDefUuid: string) => {
+          log.info("Class clicked", { entityDefUuid });
+          navigate(
+            `/report/${application}/${deploymentUuid}/model/${(reportEntityDefinitionDetails as any).uuid}/${entityDefUuid}`,
+          );
+        };
         return (
           <PageContainer padding={2}>
             <DebugHelper
@@ -194,7 +204,9 @@ export const ModelDiagramPage: React.FC<any> = () => {
                 options={{
                   title: `${applicationName} Model`,
                   direction: entityDefinitions.length > 10 ? "TB" : "LR", // Top-Bottom if many entities, else Left-Right
+                  classClickLinks: entityDefinitionClickLinks,
                 }}
+                onClassClick={handleClassClick}
                 height="calc(100vh - 220px)"
               />
             </Box>
