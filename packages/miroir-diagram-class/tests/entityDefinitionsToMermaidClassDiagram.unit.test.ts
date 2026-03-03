@@ -19,6 +19,10 @@ import {
   buildEntityDefinitionClickLinks,
   type ClassDiagramOptions,
 } from "../src/2_domain/entityDefinitionsToMermaidClassDiagram.js";
+import {
+  entityDefinitionsToMermaidErDiagram,
+  type ErDiagramOptions,
+} from "../src/2_domain/entityDefinitionsToMermaidErDiagram.js";
 
 // ############################################################################
 // Test fixtures – minimal EntityDefinitions modelled after the Library app
@@ -706,5 +710,126 @@ describe("entityDefinitionsToMermaidClassDiagram with classClickLinks", () => {
     const clickIndex = diagram.indexOf('click Country call miroirDiagramClassClick("56628e31-3db5-4c5c-9328-4ff7ce54c36a")');
     expect(classDefIndex).toBeGreaterThanOrEqual(0);
     expect(clickIndex).toBeGreaterThan(classDefIndex);
+  });
+});
+
+// ############################################################################
+// entityDefinitionsToMermaidErDiagram
+// ############################################################################
+
+describe("entityDefinitionsToMermaidErDiagram", () => {
+  it("returns just 'erDiagram' for empty input", () => {
+    const diagram = entityDefinitionsToMermaidErDiagram([]);
+    expect(diagram.trim()).toBe("erDiagram");
+  });
+
+  it("emits an erDiagram block, not classDiagram", () => {
+    const diagram = entityDefinitionsToMermaidErDiagram([countryEntityDefinition]);
+    expect(diagram).toContain("erDiagram");
+    expect(diagram).not.toContain("classDiagram");
+  });
+
+  it("emits an entity block for each entity definition", () => {
+    const diagram = entityDefinitionsToMermaidErDiagram([countryEntityDefinition, authorEntityDefinition]);
+    expect(diagram).toContain("Country {");
+    expect(diagram).toContain("Author {");
+  });
+
+  it("excludes infrastructure attributes by default", () => {
+    const diagram = entityDefinitionsToMermaidErDiagram([countryEntityDefinition]);
+    expect(diagram).not.toMatch(/\buuid\s+uuid\b/);
+    expect(diagram).not.toContain("parentName");
+    expect(diagram).not.toContain("parentUuid");
+    expect(diagram).not.toContain("conceptLevel");
+    expect(diagram).toContain("name");
+  });
+
+  it("includes infrastructure attributes when showInfrastructureAttributes is true", () => {
+    const diagram = entityDefinitionsToMermaidErDiagram([countryEntityDefinition], {
+      showInfrastructureAttributes: true,
+    });
+    expect(diagram).toContain("parentName");
+    expect(diagram).toContain("parentUuid");
+  });
+
+  it("marks FK attributes with FK keyword inside the entity block", () => {
+    const diagram = entityDefinitionsToMermaidErDiagram([authorEntityDefinition]);
+    expect(diagram).toMatch(/uuid\s+country\s+FK/);
+  });
+
+  it("emits a relationship line for each FK", () => {
+    const diagram = entityDefinitionsToMermaidErDiagram([authorEntityDefinition, countryEntityDefinition]);
+    // Author.country is optional FK → }o--||
+    expect(diagram).toContain('Author }o--|| Country : "country"');
+  });
+
+  it("uses required cardinality (}|) for non-optional FK", () => {
+    const diagram = entityDefinitionsToMermaidErDiagram(allEntityDefinitions);
+    // Book.author is required FK
+    expect(diagram).toContain('Book }|--|| Author : "author"');
+  });
+
+  it("uses optional cardinality (}o) for optional FK", () => {
+    const diagram = entityDefinitionsToMermaidErDiagram(allEntityDefinitions);
+    // Author.country is optional FK
+    expect(diagram).toContain('Author }o--|| Country : "country"');
+  });
+
+  it("emits relationships for all entities with FKs", () => {
+    const diagram = entityDefinitionsToMermaidErDiagram(allEntityDefinitions);
+    expect(diagram).toContain('Author }o--|| Country : "country"');
+    expect(diagram).toContain('Book }|--|| Author : "author"');
+    expect(diagram).toContain('Book }|--|| Publisher : "publisher"');
+    expect(diagram).toContain('Publisher }o--|| Country : "country"');
+  });
+
+  it("emits no relationship lines when there are no FKs", () => {
+    const diagram = entityDefinitionsToMermaidErDiagram([countryEntityDefinition]);
+    // Country has no FK attributes
+    expect(diagram).not.toMatch(/--\|\|/);
+  });
+
+  it("supports showTitle option", () => {
+    const diagram = entityDefinitionsToMermaidErDiagram([countryEntityDefinition], {
+      showTitle: true,
+      title: "Library ER",
+    });
+    expect(diagram).toContain("title: Library ER");
+  });
+
+  it("does not emit title when showTitle is false", () => {
+    const diagram = entityDefinitionsToMermaidErDiagram([countryEntityDefinition], {
+      showTitle: false,
+      title: "Library ER",
+    });
+    expect(diagram).not.toContain("title:");
+  });
+
+  it("does not emit click directives (erDiagram parser does not support them)", () => {
+    // Mermaid erDiagram does not support `click … call` directives.  The
+    // classClickLinks option is accepted for UUID lookup by DOM listeners in
+    // the rendering component, but no directive is written into the diagram text.
+    const clickLinks = { Country: "56628e31-3db5-4c5c-9328-4ff7ce54c36a" };
+    const diagram = entityDefinitionsToMermaidErDiagram([countryEntityDefinition], {
+      classClickLinks: clickLinks,
+    });
+    expect(diagram).not.toContain("click ");
+  });
+
+  it("does not emit click directives when classClickLinks is absent", () => {
+    const diagram = entityDefinitionsToMermaidErDiagram([countryEntityDefinition]);
+    expect(diagram).not.toContain("click ");
+  });
+
+  it("sanitises entity names with special characters", () => {
+    const specialDef: EntityDefinition = {
+      ...countryEntityDefinition,
+      uuid: "aaaa-1111",
+      name: "My-Entity",
+      entityUuid: "bbbb-2222",
+    };
+    const diagram = entityDefinitionsToMermaidErDiagram([specialDef]);
+    expect(diagram).toContain("My_Entity {");
+    expect(diagram).not.toContain("My-Entity");
   });
 });

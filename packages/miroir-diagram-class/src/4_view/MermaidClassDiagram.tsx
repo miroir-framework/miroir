@@ -22,6 +22,10 @@ import {
   entityDefinitionsToMermaidClassDiagram,
   type ClassDiagramOptions,
 } from "../2_domain/entityDefinitionsToMermaidClassDiagram.js";
+import {
+  entityDefinitionsToMermaidErDiagram,
+  type ErDiagramOptions,
+} from "../2_domain/entityDefinitionsToMermaidErDiagram.js";
 import { DebugHelper, useMiroirTheme } from "miroir-react";
 import { cleanLevel, packageName } from "../constants.js";
 
@@ -95,6 +99,7 @@ export const MermaidClassDiagram: React.FC<MermaidClassDiagramProps> = ({
     (options.direction === "TB" || options.direction === "LR") ? options.direction : "TB"
   );
   const [showInfra, setShowInfra] = useState<boolean>(options.showInfrastructureAttributes ?? false);
+  const [diagramMode, setDiagramMode] = useState<"class" | "er">("class");
   const renderIdRef = useRef(0);
 
   // Stable refs so the svgContent useEffect always has the latest values without
@@ -155,22 +160,33 @@ export const MermaidClassDiagram: React.FC<MermaidClassDiagramProps> = ({
       // and those listeners are NOT serialised into the SVG string.  We therefore do NOT
       // use window.miroirDiagramClassClick here; instead we attach click listeners after
       // the SVG is inserted into the real DOM (see the svgContent useEffect below).
-      const diagramText = entityDefinitionsToMermaidClassDiagram(
-        entityDefinitions,
-        diagramOptions,
-      );
-      setDiagramText(diagramText);
+      let generatedDiagramText: string;
+      if (diagramMode === "er") {
+        const erOptions: ErDiagramOptions = {
+          showInfrastructureAttributes: diagramOptions.showInfrastructureAttributes,
+          showTitle: diagramOptions.showTitle,
+          title: diagramOptions.title,
+          classClickLinks: diagramOptions.classClickLinks,
+        };
+        generatedDiagramText = entityDefinitionsToMermaidErDiagram(entityDefinitions, erOptions);
+      } else {
+        generatedDiagramText = entityDefinitionsToMermaidClassDiagram(
+          entityDefinitions,
+          diagramOptions,
+        );
+      }
+      setDiagramText(generatedDiagramText);
       renderIdRef.current += 1;
       const id = `miroir-class-diagram-${renderIdRef.current}`;
 
-      const { svg } = await mermaid.render(id, diagramText);
+      const { svg } = await mermaid.render(id, generatedDiagramText);
       setSvgContent(svg);
       setError(null);
     } catch (err: any) {
       setError(err.message ?? "Failed to render diagram");
       setSvgContent("");
     }
-  }, [entityDefinitions, diagramOptions, isDark, themeColors]);
+  }, [entityDefinitions, diagramOptions, isDark, themeColors, diagramMode]);
 
   // Key capturing all inputs that should trigger a re-render.
   const diagramKey = JSON.stringify({
@@ -178,6 +194,7 @@ export const MermaidClassDiagram: React.FC<MermaidClassDiagramProps> = ({
     direction,
     showInfra,
     theme: isDark,
+    diagramMode,
     hasClickLinks: !!options?.classClickLinks && Object.keys(options.classClickLinks).length > 0,
   });
 
@@ -194,11 +211,18 @@ export const MermaidClassDiagram: React.FC<MermaidClassDiagramProps> = ({
   useEffect(() => {
     if (!svgContainerRef.current || !svgContent) return;
 
+    const el = svgContainerRef.current;
+
+    // Inject SVG string directly into the DOM – avoids dangerouslySetInnerHTML in JSX
+    // and keeps all DOM manipulation (injection + toolbelt init + click listeners) in
+    // one place.
+    el.innerHTML = svgContent;
+
     // Destroy any previous instance before creating a new one.
     toolbeltRef.current?.destroy();
     toolbeltRef.current = null;
 
-    const enhancer = new SvgToolbelt(svgContainerRef.current, {
+    const enhancer = new SvgToolbelt(el, {
       minScale: ZOOM_MIN,
       maxScale: ZOOM_MAX,
       zoomStep: ZOOM_STEP,
@@ -241,7 +265,6 @@ export const MermaidClassDiagram: React.FC<MermaidClassDiagramProps> = ({
       enhancer.applyTransform();
     };
 
-    const el = svgContainerRef.current;
     el.addEventListener("wheel", handleWheel, { capture: true, passive: false });
 
     // Attach click handlers to every node Mermaid marked as clickable.
@@ -282,6 +305,10 @@ export const MermaidClassDiagram: React.FC<MermaidClassDiagramProps> = ({
     setShowInfra((prev) => !prev);
   };
 
+  const handleModeChange = (_: unknown, newMode: "class" | "er" | null) => {
+    if (newMode) setDiagramMode(newMode);
+  };
+
   return (
     <Box
       sx={{
@@ -318,7 +345,7 @@ export const MermaidClassDiagram: React.FC<MermaidClassDiagramProps> = ({
           flexWrap: "wrap",
         }}
       >
-        {/* Direction toggle */}
+        {/* Direction toggle – only relevant for class diagrams */}
         <Typography variant="body2" sx={{ color: themeColors.text, fontWeight: 500 }}>
           Direction:
         </Typography>
@@ -329,11 +356,38 @@ export const MermaidClassDiagram: React.FC<MermaidClassDiagramProps> = ({
           size="small"
           sx={{ padding: "8px" }}
         >
-          <ToggleButton value="TB" sx={{ fontSize: "0.75rem", py: 0.25, px: 1, padding: "8px" }}>
+          <ToggleButton
+            value="TB"
+            disabled={diagramMode === "er"}
+            sx={{ fontSize: "0.75rem", py: 0.25, px: 1, padding: "8px" }}
+          >
             Top→Bottom
           </ToggleButton>
-          <ToggleButton value="LR" sx={{ fontSize: "0.75rem", py: 0.25, px: 1, padding: "8px" }}>
+          <ToggleButton
+            value="LR"
+            disabled={diagramMode === "er"}
+            sx={{ fontSize: "0.75rem", py: 0.25, px: 1, padding: "8px" }}
+          >
             Left→Right
+          </ToggleButton>
+        </ToggleButtonGroup>
+
+        {/* Diagram mode toggle: Class diagram vs ER diagram */}
+        <Typography variant="body2" sx={{ color: themeColors.text, fontWeight: 500 }}>
+          Diagram:
+        </Typography>
+        <ToggleButtonGroup
+          value={diagramMode}
+          exclusive
+          onChange={handleModeChange}
+          size="small"
+          sx={{ padding: "8px" }}
+        >
+          <ToggleButton value="class" sx={{ fontSize: "0.75rem", py: 0.25, px: 1, padding: "8px" }}>
+            Class
+          </ToggleButton>
+          <ToggleButton value="er" sx={{ fontSize: "0.75rem", py: 0.25, px: 1, padding: "8px" }}>
+            ER
           </ToggleButton>
         </ToggleButtonGroup>
 
@@ -374,26 +428,33 @@ export const MermaidClassDiagram: React.FC<MermaidClassDiagramProps> = ({
           position: "relative",
         }}
       >
-        {error ? (
+        {error && (
           <Typography color="error" variant="body2">
             Diagram rendering error: {error}
           </Typography>
-        ) : entityDefinitions.length === 0 ? (
-          <Typography variant="body2" sx={{ color: themeColors.text, opacity: 0.6, }}>
+        )}
+        {!error && entityDefinitions.length === 0 && (
+          <Typography variant="body2" sx={{ color: themeColors.text, opacity: 0.6 }}>
             No entity definitions available for the current application model.
           </Typography>
-        ) : !svgContent ? (
-          <Typography variant="body2" sx={{ color: themeColors.text, opacity: 0.6, }}>
+        )}
+        {!error && entityDefinitions.length > 0 && !svgContent && (
+          <Typography variant="body2" sx={{ color: themeColors.text, opacity: 0.6 }}>
             Rendering diagram...
           </Typography>
-        ) : (
-          // svgContainerRef is the svg-toolbelt viewport: contains exactly one <svg>
-          <Box
-            ref={svgContainerRef}
-            sx={{ width: "100%", height: "100%", minHeight: "300px" }}
-            dangerouslySetInnerHTML={{ __html: svgContent }}
-          />
         )}
+        {/* svgContainerRef is always mounted so the ref is stable across re-renders.
+            SVG content is injected via el.innerHTML in the useEffect below.
+            display:none hides it until the SVG is ready. */}
+        <Box
+          ref={svgContainerRef}
+          sx={{
+            width: "100%",
+            height: "100%",
+            minHeight: "300px",
+            display: (!error && svgContent) ? "block" : "none",
+          }}
+        />
       </Box>
     </Box>
   );
