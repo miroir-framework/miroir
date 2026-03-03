@@ -21778,7 +21778,7 @@ export const miroirFundamentalJzodSchema = {
                   "type": "any"
                 }
               },
-              "definition": {
+              "actionSequence": {
                 "type": "array",
                 "tag": {
                   "value": {
@@ -22107,7 +22107,7 @@ export const miroirFundamentalJzodSchema = {
                       "type": "any"
                     }
                   },
-                  "definition": {
+                  "actionSequence": {
                     "type": "array",
                     "tag": {
                       "value": {
@@ -60567,7 +60567,7 @@ export const miroirFundamentalJzodSchema = {
                       "type": "any"
                     }
                   },
-                  "definition": {
+                  "actionSequence": {
                     "type": "array",
                     "tag": {
                       "value": {
@@ -62921,7 +62921,7 @@ export const miroirFundamentalJzodSchema = {
                   "type": "any"
                 }
               },
-              "definition": {
+              "actionSequence": {
                 "type": "array",
                 "tag": {
                   "value": {
@@ -74972,7 +74972,7 @@ export const miroirFundamentalJzodSchema = {
                       "type": "any"
                     }
                   },
-                  "definition": {
+                  "actionSequence": {
                     "type": "array",
                     "tag": {
                       "value": {
@@ -77326,7 +77326,7 @@ export const miroirFundamentalJzodSchema = {
                   "type": "any"
                 }
               },
-              "definition": {
+              "actionSequence": {
                 "type": "array",
                 "tag": {
                   "value": {
@@ -87208,7 +87208,7 @@ export const miroirFundamentalJzodSchema = {
                       "type": "any"
                     }
                   },
-                  "definition": {
+                  "actionSequence": {
                     "type": "array",
                     "tag": {
                       "value": {
@@ -87471,7 +87471,7 @@ export const miroirFundamentalJzodSchema = {
                       "type": "any"
                     }
                   },
-                  "definition": {
+                  "actionSequence": {
                     "type": "array",
                     "tag": {
                       "value": {

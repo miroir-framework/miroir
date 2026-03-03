@@ -2281,7 +2281,7 @@ export class DomainController implements DomainControllerInterface {
     //   Object.keys(localActionParams),
     // );
 
-    for (const currentAction of compositeActionSequence.payload.definition) {
+    for (const currentAction of compositeActionSequence.payload.actionSequence) {
       let actionResult: Action2ReturnType | undefined = undefined;
       try {
         log.info(
@@ -2462,7 +2462,7 @@ export class DomainController implements DomainControllerInterface {
     //   Object.keys(localActionParams),
     // );
 
-    for (const currentAction of buildPlusRuntimeCompositeAction.payload.definition) {
+    for (const currentAction of buildPlusRuntimeCompositeAction.payload.actionSequence) {
       let actionResult: Action2ReturnType | undefined = undefined;
       try {
         LoggerGlobalContext.setAction(currentAction.actionLabel);
@@ -2773,7 +2773,7 @@ export class DomainController implements DomainControllerInterface {
       "build",
       [],
       buildPlusRuntimeCompositeAction.actionLabel,
-      buildPlusRuntimeCompositeAction.payload.definition as any as TransformerForBuildPlusRuntime,
+      buildPlusRuntimeCompositeAction.payload.actionSequence as any as TransformerForBuildPlusRuntime,
       modelEnvironment,
       { ...actionParamValues, ...resolvedCompositeActionTemplates }, // queryParams
       localContext, // contextResults
@@ -2821,7 +2821,7 @@ export class DomainController implements DomainControllerInterface {
       endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
       payload: {
         application: "IGNORED",
-        definition: resolvedActionDefinition as any,
+        actionSequence: resolvedActionDefinition as any,
         templates: resolvedCompositeActionTemplates,
       },
     };
@@ -3250,16 +3250,16 @@ export class DomainController implements DomainControllerInterface {
       resolved,
     });
     // log.info("handleCompositeActionTemplate", actionLabel, "localActionParams", localActionParams);
-    // log.info(
-    //   "handleCompositeActionTemplate",
-    //   actionLabel,
-    //   "resolvedCompositeActionDefinition",
-    //   resolved.resolvedCompositeActionDefinition
-    //   // JSON.stringify(resolved.resolvedCompositeActionDefinition, null, 2)
-    // );
+    log.info(
+      "handleCompositeActionTemplate",
+      actionLabel,
+      "resolvedCompositeActionDefinition",
+      resolved.resolvedCompositeActionDefinition
+      // JSON.stringify(resolved.resolvedCompositeActionDefinition, null, 2)
+    );
 
     // TODO: replace with handleCompositeAction
-    for (const currentAction of resolved.resolvedCompositeActionDefinition.payload.definition) {
+    for (const currentAction of resolved.resolvedCompositeActionDefinition.payload.actionSequence) {
       log.info(
         "handleCompositeActionTemplate",
         actionLabel,
@@ -3532,8 +3532,8 @@ export class DomainController implements DomainControllerInterface {
           endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
           payload: {
             application: "IGNORED",
-            definition: [
-              ...testAction.compositeActionSequence.payload.definition,
+            actionSequence: [
+              ...testAction.compositeActionSequence.payload.actionSequence,
               ...testAction.testCompositeActionAssertions,
             ],
           },
@@ -3551,8 +3551,8 @@ export class DomainController implements DomainControllerInterface {
           endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
           payload: {
             application: "IGNORED",
-            definition: [
-              ...testAction.compositeActionSequence.payload.definition,
+            actionSequence: [
+              ...testAction.compositeActionSequence.payload.actionSequence,
               ...testAction.testCompositeActionAssertions,
             ],
           },
@@ -3749,8 +3749,8 @@ export class DomainController implements DomainControllerInterface {
               endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
               payload: {
                 application: "IGNORED",
-                definition: [
-                  ...testCompositeAction[1].compositeActionSequence.payload.definition,
+                actionSequence: [
+                  ...testCompositeAction[1].compositeActionSequence.payload.actionSequence,
                   ...testCompositeAction[1].testCompositeActionAssertions,
                 ],
               },
@@ -3810,8 +3810,8 @@ export class DomainController implements DomainControllerInterface {
               endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
               payload: {
                 application: "IGNORED",
-                definition: [
-                  ...testCompositeAction[1].compositeActionSequence.payload.definition,
+                actionSequence: [
+                  ...testCompositeAction[1].compositeActionSequence.payload.actionSequence,
                   ...testCompositeAction[1].testCompositeActionAssertions,
                 ],
               },
@@ -4015,7 +4015,7 @@ export class DomainController implements DomainControllerInterface {
       resolvedAction.resolvedTestCompositeActionDefinition.testCompositeActions,
     ).filter(
       (e: [string, TestCompositeAction]) =>
-        (e[1].compositeActionSequence.payload.definition as any).queryFailure != undefined,
+        (e[1].compositeActionSequence.payload.actionSequence as any).queryFailure != undefined,
     );
 
     if (resolveErrors.length > 0) {

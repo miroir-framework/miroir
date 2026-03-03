@@ -57,9 +57,9 @@ describe('resolveTestCompositeActionTemplate', () => {
       testCompositeActionAssertions: [],
       compositeActionTemplate: {
         actionType: "compositeActionSequence",
-        actionLabel: "testCompositeAction",        endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+        actionLabel: "testCompositeAction",
+        endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
         payload: {
-          application: "NOT_USED",
           templates: {
             newEntityDefinition: {
               name: {
@@ -100,11 +100,12 @@ describe('resolveTestCompositeActionTemplate', () => {
               },
             },
           },
-          definition: [
+          actionSequence: [
             // createEntity
             {
               actionType: "createEntity",
-              actionLabel: "createEntity",              endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+              actionLabel: "createEntity",
+              endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
               payload: {
                 application: {
                   transformerType: "getFromParameters",
@@ -190,13 +191,14 @@ describe('resolveTestCompositeActionTemplate', () => {
       testCompositeActionAssertions: [],
       compositeActionSequence: {
         actionType: "compositeActionSequence",
-        actionLabel: "testCompositeAction",        endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+        actionLabel: "testCompositeAction",
+        endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
         payload: {
-          application: "NOT_USED",
-          definition: [
+          actionSequence: [
             {
               actionType: "createEntity",
-              actionLabel: "createEntity",              endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+              actionLabel: "createEntity",
+              endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
               payload: {
                 application: currentApplicationUuid,
                 // deploymentUuid: currentDeploymentUuid,
@@ -302,13 +304,14 @@ describe('resolveTestCompositeActionTemplateSuite', () => {
           testLabel: "Action 1",
           compositeActionTemplate: {
             actionType: "compositeActionSequence",
-            actionLabel: "simpleAction1",            endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+            actionLabel: "simpleAction1",
+            endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             payload: {
-              application: "NOT_USED",
-              definition: [
+              actionSequence: [
                 {
                   actionType: "createEntity",
-                  actionLabel: "createEntity",                  // deploymentUuid: {
+                  actionLabel: "createEntity",
+                  // deploymentUuid: {
                   //   transformerType: "getFromParameters",
                   //   interpolation: "build",
                   //   referenceName: "currentDeploymentUuid",
@@ -368,13 +371,14 @@ describe('resolveTestCompositeActionTemplateSuite', () => {
           testCompositeActionAssertions: [],
           compositeActionSequence: {
             actionType: "compositeActionSequence",
-            actionLabel: "simpleAction1",            endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+            actionLabel: "simpleAction1",
+            endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             payload: {
-              application: "NOT_USED",
-              definition: [
+              actionSequence: [
                 {
                   actionType: "createEntity",
-                  actionLabel: "createEntity",                  endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                  actionLabel: "createEntity",
+                  endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   // deploymentUuid: currentDeploymentUuid,
                   payload: {
                     application: currentApplicationUuid,

@@ -32,18 +32,16 @@
     "actionTemplate": {
       "actionType": "compositeActionSequence",
       "actionLabel": "dropApplicationSequence",
-      "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
       "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
       "payload": {
-        "application": "NOT_USED_IN_COMPOSITE_TEMPLATE",
-        "definition": [
+        "actionSequence": [
           {
             "actionType": "compositeRunBoxedQueryAction",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "getDeploymentForApplication",
             "nameGivenToResult": "deploymentInfo",
             "payload": {
               "actionType": "runBoxedQueryAction",
-              "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
               "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
               "payload": {
                 "application": "55af124e-8c05-4bae-a3ef-0933d41daa92",
@@ -78,7 +76,6 @@
           {
             "actionType": "storeManagementAction_deleteStore",
             "actionLabel": "deleteStore",
-            "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
             "endpoint": "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
             "payload": {
               "application": {

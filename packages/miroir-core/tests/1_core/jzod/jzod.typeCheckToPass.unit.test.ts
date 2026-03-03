@@ -5337,8 +5337,7 @@ const tests: { [k: string]: testFormat } = {
           type: "object",
           tag: {
             value: {
-              description: "The attributes of the object schema.",
-              editable: true,
+              description: "The attributes of the object schema."
             },
           },
           definition: {
@@ -7046,7 +7045,6 @@ const tests: { [k: string]: testFormat } = {
             value: {
               id: 1,
               defaultLabel: "Interpolation",
-              editable: true,
               initializeTo: {
                 initializeToType: "value",
                 value: "build",
@@ -7061,7 +7059,6 @@ const tests: { [k: string]: testFormat } = {
       },
       tag: {
         value: {
-          editable: true,
           editorButton: {
             label: "Apply Transformer to a List",
             transformer: {
@@ -7113,7 +7110,6 @@ const tests: { [k: string]: testFormat } = {
             value: {
               id: 1,
               defaultLabel: "Interpolation",
-              editable: true,
               initializeTo: {
                 initializeToType: "value",
                 value: "build",
@@ -7136,7 +7132,6 @@ const tests: { [k: string]: testFormat } = {
                 value: {
                   id: 1,
                   defaultLabel: "Interpolation",
-                  editable: true,
                   initializeTo: {
                     initializeToType: "value",
                     value: "build",
@@ -7152,7 +7147,6 @@ const tests: { [k: string]: testFormat } = {
           },
           tag: {
             value: {
-              editable: true,
               editorButton: {
                 label: "Apply Transformer to a List",
                 transformer: {
@@ -7175,7 +7169,6 @@ const tests: { [k: string]: testFormat } = {
       },
       tag: {
         value: {
-          editable: true,
           editorButton: {
             label: "Apply Transformer to a List",
             transformer: {
@@ -7240,7 +7233,6 @@ const tests: { [k: string]: testFormat } = {
             value: {
               id: 1,
               defaultLabel: "Interpolation",
-              editable: true,
               initializeTo: {
                 initializeToType: "value",
                 value: "build",
@@ -7266,7 +7258,6 @@ const tests: { [k: string]: testFormat } = {
                     value: {
                       id: 1,
                       defaultLabel: "Interpolation",
-                      editable: true,
                       initializeTo: {
                         initializeToType: "value",
                         value: "build",
@@ -7282,7 +7273,6 @@ const tests: { [k: string]: testFormat } = {
               },
               tag: {
                 value: {
-                  editable: true,
                   editorButton: {
                     label: "Apply Transformer to a List",
                     transformer: {
@@ -7313,7 +7303,6 @@ const tests: { [k: string]: testFormat } = {
                     value: {
                       id: 1,
                       defaultLabel: "Interpolation",
-                      editable: true,
                       initializeTo: {
                         initializeToType: "value",
                         value: "build",
@@ -7328,7 +7317,6 @@ const tests: { [k: string]: testFormat } = {
               },
               tag: {
                 value: {
-                  editable: true,
                   editorButton: {
                     label: "Apply Transformer to a List",
                     transformer: {
@@ -7362,7 +7350,6 @@ const tests: { [k: string]: testFormat } = {
                     value: {
                       id: 1,
                       defaultLabel: "Interpolation",
-                      editable: true,
                       initializeTo: {
                         initializeToType: "value",
                         value: "build",
@@ -7386,7 +7373,6 @@ const tests: { [k: string]: testFormat } = {
               },
               tag: {
                 value: {
-                  editable: true,
                   editorButton: {
                     label: "Apply Transformer to a List",
                     transformer: {
@@ -7411,7 +7397,6 @@ const tests: { [k: string]: testFormat } = {
       },
       tag: {
         value: {
-          editable: true,
           editorButton: {
             label: "Apply Transformer to a List",
             transformer: {
@@ -7441,7 +7426,7 @@ const tests: { [k: string]: testFormat } = {
             value: {
               id: 1,
               defaultLabel: "Uuid",
-              editable: false,
+              display: { editable: false },
             },
           },
         },
@@ -7452,7 +7437,7 @@ const tests: { [k: string]: testFormat } = {
             value: {
               id: 2,
               defaultLabel: "Entity Name",
-              editable: false,
+              display: { editable: false },
             },
           },
         },
@@ -7462,7 +7447,7 @@ const tests: { [k: string]: testFormat } = {
             value: {
               id: 3,
               defaultLabel: "Entity Uuid",
-              editable: false,
+              display: { editable: false },
             },
           },
         },
@@ -7473,7 +7458,7 @@ const tests: { [k: string]: testFormat } = {
             value: {
               id: 4,
               defaultLabel: "Entity Definition Version Uuid",
-              editable: false,
+              display: { editable: false },
             },
           },
         },
@@ -7483,7 +7468,6 @@ const tests: { [k: string]: testFormat } = {
             value: {
               id: 5,
               defaultLabel: "Name",
-              editable: true,
             },
           },
         },
@@ -7493,7 +7477,6 @@ const tests: { [k: string]: testFormat } = {
             value: {
               id: 6,
               defaultLabel: "Default Label",
-              editable: true,
             },
           },
         },
@@ -7504,7 +7487,6 @@ const tests: { [k: string]: testFormat } = {
             value: {
               id: 7,
               defaultLabel: "Description",
-              editable: true,
             },
           },
         },
@@ -7650,7 +7632,7 @@ const tests: { [k: string]: testFormat } = {
             value: {
               id: 1,
               defaultLabel: "Uuid",
-              editable: false,
+              display: { editable: false },
             },
           },
         },
@@ -7660,7 +7642,6 @@ const tests: { [k: string]: testFormat } = {
             value: {
               id: 5,
               defaultLabel: "Name",
-              editable: true,
             },
           },
         },
@@ -7670,7 +7651,6 @@ const tests: { [k: string]: testFormat } = {
             value: {
               id: 6,
               defaultLabel: "Default Label",
-              editable: true,
             },
           },
         },
@@ -7681,7 +7661,6 @@ const tests: { [k: string]: testFormat } = {
             value: {
               id: 7,
               defaultLabel: "Description",
-              editable: true,
             },
           },
         },
@@ -7691,7 +7670,7 @@ const tests: { [k: string]: testFormat } = {
             value: {
               id: 3,
               defaultLabel: "Entity Uuid",
-              editable: false,
+              display: { editable: false },
             },
           },
         },
@@ -7702,7 +7681,7 @@ const tests: { [k: string]: testFormat } = {
             value: {
               id: 4,
               defaultLabel: "Entity Definition Version Uuid",
-              editable: false,
+              display: { editable: false },
             },
           },
         },
@@ -7713,7 +7692,7 @@ const tests: { [k: string]: testFormat } = {
             value: {
               id: 2,
               defaultLabel: "Entity Name",
-              editable: false,
+              display: { editable: false },
             },
           },
         },
@@ -8290,7 +8269,6 @@ const tests: { [k: string]: testFormat } = {
                                     value: {
                                       description:
                                         "The type of a plain attribute (not object, not array) with no validation.",
-                                      editable: true,
                                       initializeTo: {
                                         initializeToType: "value",
                                         value: "any",
@@ -8314,7 +8292,6 @@ const tests: { [k: string]: testFormat } = {
                                 value: {
                                   description:
                                     "A plain attribute (not object, not array) with no validation.",
-                                  editable: true,
                                   initializeTo: {
                                     initializeToType: "value",
                                     value: null,
@@ -9136,7 +9113,6 @@ const tests: { [k: string]: testFormat } = {
                         value: {
                           description:
                             "The type of a plain attribute (not object, not array) with no validation.",
-                          editable: true,
                           initializeTo: {
                             initializeToType: "value",
                             value: "any",
@@ -9159,7 +9135,6 @@ const tests: { [k: string]: testFormat } = {
                   tag: {
                     value: {
                       description: "A plain attribute (not object, not array) with no validation.",
-                      editable: true,
                       initializeTo: {
                         initializeToType: "value",
                         value: null,
@@ -9546,7 +9521,7 @@ const tests: { [k: string]: testFormat } = {
               id: 1,
               canBeTemplate: true,
               defaultLabel: "Uuid",
-              editable: false,
+              display: { editable: false },
             },
           },
         },
@@ -9593,7 +9568,7 @@ const tests: { [k: string]: testFormat } = {
                       id: 3,
                       canBeTemplate: true,
                       defaultLabel: "Parent Name",
-                      editable: false,
+                      display: { editable: false },
                     },
                   },
                 },
@@ -9602,10 +9577,9 @@ const tests: { [k: string]: testFormat } = {
                   tag: {
                     value: {
                       id: 4,
-                      editable: false,
+                      display: { editable: false },
                       canBeTemplate: true,
                       defaultLabel: "Parent Uuid",
-                      targetEntity: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
                       foreignKeyParams: {
                         targetEntity: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
                       },
@@ -9634,7 +9608,6 @@ const tests: { [k: string]: testFormat } = {
                     value: {
                       id: 1,
                       defaultLabel: "Interpolation",
-                      editable: true,
                       initializeTo: {
                         initializeToType: "value",
                         value: "build",
@@ -9657,7 +9630,6 @@ const tests: { [k: string]: testFormat } = {
                         value: {
                           id: 1,
                           defaultLabel: "Interpolation",
-                          editable: true,
                           initializeTo: {
                             initializeToType: "value",
                             value: "build",
@@ -9673,7 +9645,6 @@ const tests: { [k: string]: testFormat } = {
                   },
                   tag: {
                     value: {
-                      editable: true,
                       editorButton: {
                         label: "Apply Transformer to a List",
                         transformer: {
@@ -9696,7 +9667,6 @@ const tests: { [k: string]: testFormat } = {
               },
               tag: {
                 value: {
-                  editable: true,
                   editorButton: {
                     label: "Apply Transformer to a List",
                     transformer: {
@@ -9727,7 +9697,6 @@ const tests: { [k: string]: testFormat } = {
                     value: {
                       id: 1,
                       defaultLabel: "Interpolation",
-                      editable: true,
                       initializeTo: {
                         initializeToType: "value",
                         value: "build",
@@ -9753,7 +9722,6 @@ const tests: { [k: string]: testFormat } = {
                             value: {
                               id: 1,
                               defaultLabel: "Interpolation",
-                              editable: true,
                               initializeTo: {
                                 initializeToType: "value",
                                 value: "build",
@@ -9769,7 +9737,6 @@ const tests: { [k: string]: testFormat } = {
                       },
                       tag: {
                         value: {
-                          editable: true,
                           editorButton: {
                             label: "Apply Transformer to a List",
                             transformer: {
@@ -9800,7 +9767,6 @@ const tests: { [k: string]: testFormat } = {
                             value: {
                               id: 1,
                               defaultLabel: "Interpolation",
-                              editable: true,
                               initializeTo: {
                                 initializeToType: "value",
                                 value: "build",
@@ -9815,7 +9781,6 @@ const tests: { [k: string]: testFormat } = {
                       },
                       tag: {
                         value: {
-                          editable: true,
                           editorButton: {
                             label: "Apply Transformer to a List",
                             transformer: {
@@ -9849,7 +9814,6 @@ const tests: { [k: string]: testFormat } = {
                             value: {
                               id: 1,
                               defaultLabel: "Interpolation",
-                              editable: true,
                               initializeTo: {
                                 initializeToType: "value",
                                 value: "build",
@@ -9873,7 +9837,6 @@ const tests: { [k: string]: testFormat } = {
                       },
                       tag: {
                         value: {
-                          editable: true,
                           editorButton: {
                             label: "Apply Transformer to a List",
                             transformer: {
@@ -9898,7 +9861,6 @@ const tests: { [k: string]: testFormat } = {
               },
               tag: {
                 value: {
-                  editable: true,
                   editorButton: {
                     label: "Apply Transformer to a List",
                     transformer: {
@@ -9929,7 +9891,6 @@ const tests: { [k: string]: testFormat } = {
                     value: {
                       id: 1,
                       defaultLabel: "Interpolation",
-                      editable: true,
                       initializeTo: {
                         initializeToType: "value",
                         value: "build",
@@ -9952,7 +9913,6 @@ const tests: { [k: string]: testFormat } = {
                         value: {
                           id: 1,
                           defaultLabel: "Interpolation",
-                          editable: true,
                           initializeTo: {
                             initializeToType: "value",
                             value: "build",
@@ -9968,7 +9928,6 @@ const tests: { [k: string]: testFormat } = {
                   },
                   tag: {
                     value: {
-                      editable: true,
                       editorButton: {
                         label: "Apply Transformer to a List",
                         transformer: {
@@ -9999,7 +9958,6 @@ const tests: { [k: string]: testFormat } = {
                         value: {
                           id: 1,
                           defaultLabel: "Interpolation",
-                          editable: true,
                           initializeTo: {
                             initializeToType: "value",
                             value: "build",
@@ -10015,7 +9973,6 @@ const tests: { [k: string]: testFormat } = {
                   },
                   tag: {
                     value: {
-                      editable: true,
                       editorButton: {
                         label: "Apply Transformer to a List",
                         transformer: {
@@ -10039,7 +9996,6 @@ const tests: { [k: string]: testFormat } = {
               },
               tag: {
                 value: {
-                  editable: true,
                   editorButton: {
                     label: "Apply Transformer to a List",
                     transformer: {
@@ -10075,10 +10031,11 @@ const tests: { [k: string]: testFormat } = {
     },
     testValueObject: {
       actionType: "compositeActionSequence",
-      actionLabel: "test",      endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+      actionLabel: "test",
+      endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
       payload: {
         templates: {},
-        definition: [
+        actionSequence: [
           {
             actionType: "createEntity",
             actionLabel: "createEntity",
@@ -10086,7 +10043,8 @@ const tests: { [k: string]: testFormat } = {
               transformerType: "getFromParameters",
               interpolation: "build",
               referenceName: "testDeploymentUuid",
-            },            endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+            },
+            endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
             payload: {
               entities: [
                 {
@@ -10162,7 +10120,6 @@ const tests: { [k: string]: testFormat } = {
                             value: {
                               id: 1,
                               defaultLabel: "Interpolation",
-                              editable: true,
                               initializeTo: {
                                 initializeToType: "value",
                                 value: "build",
@@ -10178,7 +10135,6 @@ const tests: { [k: string]: testFormat } = {
                       },
                       tag: {
                         value: {
-                          editable: true,
                           editorButton: {
                             label: "Apply Transformer to a List",
                             transformer: {
@@ -10226,7 +10182,6 @@ const tests: { [k: string]: testFormat } = {
                                         value: {
                                           id: 1,
                                           defaultLabel: "Interpolation",
-                                          editable: true,
                                           initializeTo: {
                                             initializeToType: "value",
                                             value: "build",
@@ -10242,7 +10197,6 @@ const tests: { [k: string]: testFormat } = {
                                   },
                                   tag: {
                                     value: {
-                                      editable: true,
                                       editorButton: {
                                         label: "Apply Transformer to a List",
                                         transformer: {
@@ -10273,7 +10227,6 @@ const tests: { [k: string]: testFormat } = {
                                         value: {
                                           id: 1,
                                           defaultLabel: "Interpolation",
-                                          editable: true,
                                           initializeTo: {
                                             initializeToType: "value",
                                             value: "build",
@@ -10289,7 +10242,6 @@ const tests: { [k: string]: testFormat } = {
                                   },
                                   tag: {
                                     value: {
-                                      editable: true,
                                       editorButton: {
                                         label: "Apply Transformer to a List",
                                         transformer: {
@@ -10364,7 +10316,7 @@ const tests: { [k: string]: testFormat } = {
             value: {
               id: 1,
               defaultLabel: "Uuid",
-              editable: false,
+              display: { editable: false },
             },
           },
         },
@@ -10375,7 +10327,7 @@ const tests: { [k: string]: testFormat } = {
             value: {
               id: 2,
               defaultLabel: "Entity Name",
-              editable: false,
+              display: { editable: false },
             },
           },
         },
@@ -10390,7 +10342,7 @@ const tests: { [k: string]: testFormat } = {
             value: {
               id: 3,
               defaultLabel: "Entity Uuid",
-              editable: false,
+              display: { editable: false },
             },
           },
         },
@@ -10400,7 +10352,6 @@ const tests: { [k: string]: testFormat } = {
             value: {
               id: 4,
               defaultLabel: "Name",
-              editable: true,
             },
           },
         },
@@ -10416,8 +10367,9 @@ const tests: { [k: string]: testFormat } = {
             value: {
               id: 5,
               defaultLabel: "Author",
-              targetEntity: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
-              editable: true,
+              foreignKeyParams: {
+                targetEntity: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+              }
             },
           },
         },
@@ -10433,8 +10385,9 @@ const tests: { [k: string]: testFormat } = {
             value: {
               id: 5,
               defaultLabel: "Publisher",
-              targetEntity: "a027c379-8468-43a5-ba4d-bf618be25cab",
-              editable: true,
+              foreignKeyParams: {
+                targetEntity: "a027c379-8468-43a5-ba4d-bf618be25cab",
+              }
             },
           },
         },
@@ -10454,7 +10407,7 @@ const tests: { [k: string]: testFormat } = {
             value: {
               id: 1,
               defaultLabel: "Uuid",
-              editable: false,
+              display: { editable: false },
             },
           },
         },
@@ -10465,7 +10418,7 @@ const tests: { [k: string]: testFormat } = {
             value: {
               id: 2,
               defaultLabel: "Entity Name",
-              editable: false,
+              display: { editable: false },
             },
           },
         },
@@ -10480,7 +10433,7 @@ const tests: { [k: string]: testFormat } = {
             value: {
               id: 3,
               defaultLabel: "Entity Uuid",
-              editable: false,
+              display: { editable: false },
             },
           },
         },
@@ -10490,7 +10443,6 @@ const tests: { [k: string]: testFormat } = {
             value: {
               id: 4,
               defaultLabel: "Name",
-              editable: true,
             },
           },
         },
@@ -10506,8 +10458,9 @@ const tests: { [k: string]: testFormat } = {
             value: {
               id: 5,
               defaultLabel: "Author",
-              targetEntity: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
-              editable: true,
+              foreignKeyParams: {
+                targetEntity: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+              }
             },
           },
         },
@@ -10523,8 +10476,9 @@ const tests: { [k: string]: testFormat } = {
             value: {
               id: 5,
               defaultLabel: "Publisher",
+              foreignKeyParams: {
               targetEntity: "a027c379-8468-43a5-ba4d-bf618be25cab",
-              editable: true,
+              }
             },
           },
         },
@@ -10568,7 +10522,7 @@ const tests: { [k: string]: testFormat } = {
               value: {
                 id: 1,
                 defaultLabel: "Uuid",
-                editable: false,
+                display: { editable: false },
               },
             },
           },
@@ -10579,7 +10533,7 @@ const tests: { [k: string]: testFormat } = {
               value: {
                 id: 2,
                 defaultLabel: "Entity Name",
-                editable: false,
+                display: { editable: false },
               },
             },
           },
@@ -10589,7 +10543,7 @@ const tests: { [k: string]: testFormat } = {
               value: {
                 id: 3,
                 defaultLabel: "Entity Uuid",
-                editable: false,
+                display: { editable: false },
               },
             },
           },
@@ -10601,7 +10555,7 @@ const tests: { [k: string]: testFormat } = {
               value: {
                 id: 5,
                 defaultLabel: "Concept Level",
-                editable: false,
+                display: { editable: false },
               },
             },
           },
@@ -10651,7 +10605,7 @@ const tests: { [k: string]: testFormat } = {
             value: {
               id: 1,
               defaultLabel: "Uuid",
-              editable: false,
+              display: { editable: false },
             },
           },
         },
@@ -10661,7 +10615,7 @@ const tests: { [k: string]: testFormat } = {
             value: {
               id: 2,
               defaultLabel: "Entity Name",
-              editable: false,
+              display: { editable: false },
             },
           },
         },
@@ -10671,7 +10625,7 @@ const tests: { [k: string]: testFormat } = {
             value: {
               id: 3,
               defaultLabel: "Entity Uuid",
-              editable: false,
+              display: { editable: false },
             },
           },
         },
@@ -10682,7 +10636,7 @@ const tests: { [k: string]: testFormat } = {
             value: {
               id: 4,
               defaultLabel: "Entity Definition Version Uuid",
-              editable: false,
+              display: { editable: false },
             },
           },
         },
@@ -10692,7 +10646,7 @@ const tests: { [k: string]: testFormat } = {
             value: {
               id: 6,
               defaultLabel: "Entity Uuid of the Entity which this definition is the definition",
-              editable: false,
+              display: { editable: false },
             },
           },
         },
@@ -10704,7 +10658,7 @@ const tests: { [k: string]: testFormat } = {
             value: {
               id: 7,
               defaultLabel: "Concept Level",
-              editable: false,
+              display: { editable: false },
             },
           },
         },
@@ -10714,7 +10668,7 @@ const tests: { [k: string]: testFormat } = {
             value: {
               id: 5,
               defaultLabel: "Name",
-              editable: false,
+              display: { editable: false },
             },
           },
         },
@@ -10728,7 +10682,7 @@ const tests: { [k: string]: testFormat } = {
             value: {
               id: 9,
               defaultLabel: "Default Report used to display instances of this Entity",
-              editable: false,
+              display: { editable: false },
               foreignKeyParams: {
                 targetEntity: "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
                 targetEntityApplicationSection: "model",
@@ -10757,7 +10711,6 @@ const tests: { [k: string]: testFormat } = {
           tag: {
             value: {
               id: 10,
-              editable: true,
             },
           },
         },
@@ -10780,7 +10733,6 @@ const tests: { [k: string]: testFormat } = {
                         value: {
                           description:
                             "The type of a plain attribute (not object, not array) with no validation.",
-                          editable: true,
                           initializeTo: {
                             initializeToType: "value",
                             value: "any",
@@ -10827,7 +10779,6 @@ const tests: { [k: string]: testFormat } = {
                   tag: {
                     value: {
                       description: "A plain attribute (not object, not array) with no validation.",
-                      editable: true,
                       initializeTo: {
                         initializeToType: "value",
                         value: null,
@@ -11182,7 +11133,6 @@ const tests: { [k: string]: testFormat } = {
                         value: {
                           description:
                             "The type of a plain attribute (not object, not array) with no validation.",
-                          editable: true,
                           initializeTo: {
                             initializeToType: "value",
                             value: "any",
@@ -11229,7 +11179,6 @@ const tests: { [k: string]: testFormat } = {
                   tag: {
                     value: {
                       description: "A plain attribute (not object, not array) with no validation.",
-                      editable: true,
                       initializeTo: {
                         initializeToType: "value",
                         value: null,
@@ -11932,7 +11881,6 @@ const tests: { [k: string]: testFormat } = {
                         value: {
                           description:
                             "The type of a plain attribute (not object, not array) with no validation.",
-                          editable: true,
                           initializeTo: {
                             initializeToType: "value",
                             value: "any",
@@ -11987,7 +11935,6 @@ const tests: { [k: string]: testFormat } = {
                   tag: {
                     value: {
                       description: "A plain attribute (not object, not array) with no validation.",
-                      editable: true,
                       initializeTo: {
                         initializeToType: "value",
                         value: null,
@@ -12004,7 +11951,6 @@ const tests: { [k: string]: testFormat } = {
                         value: {
                           description:
                             "The type of a plain attribute (not object, not array) with no validation.",
-                          editable: true,
                           initializeTo: {
                             initializeToType: "value",
                             value: "any",
@@ -12059,7 +12005,6 @@ const tests: { [k: string]: testFormat } = {
                   tag: {
                     value: {
                       description: "A plain attribute (not object, not array) with no validation.",
-                      editable: true,
                       initializeTo: {
                         initializeToType: "value",
                         value: null,
@@ -12110,7 +12055,7 @@ const tests: { [k: string]: testFormat } = {
                 value: {
                   id: 1,
                   defaultLabel: "Uuid",
-                  editable: false,
+                  display: { editable: false },
                 },
               },
             },
@@ -12125,7 +12070,7 @@ const tests: { [k: string]: testFormat } = {
                 value: {
                   id: 1,
                   defaultLabel: "Uuid",
-                  editable: false,
+                  display: { editable: false },
                 },
               },
             },
@@ -12141,7 +12086,7 @@ const tests: { [k: string]: testFormat } = {
                 value: {
                   id: 1,
                   defaultLabel: "Uuid",
-                  editable: false,
+                  display: { editable: false },
                 },
               },
             },
@@ -12376,7 +12321,7 @@ const tests: { [k: string]: testFormat } = {
                             value: {
                               id: 1,
                               defaultLabel: "Uuid",
-                              editable: false,
+                              display: { editable: false },
                             },
                           },
                         },
@@ -12391,7 +12336,7 @@ const tests: { [k: string]: testFormat } = {
                             value: {
                               id: 1,
                               defaultLabel: "Uuid",
-                              editable: false,
+                              display: { editable: false },
                             },
                           },
                         },
@@ -12435,7 +12380,7 @@ const tests: { [k: string]: testFormat } = {
                             value: {
                               id: 1,
                               defaultLabel: "Uuid",
-                              editable: false,
+                              display: { editable: false },
                             },
                           },
                         },
@@ -12450,7 +12395,7 @@ const tests: { [k: string]: testFormat } = {
                             value: {
                               id: 1,
                               defaultLabel: "Uuid",
-                              editable: false,
+                              display: { editable: false },
                             },
                           },
                         },
@@ -12494,7 +12439,7 @@ const tests: { [k: string]: testFormat } = {
                             value: {
                               id: 1,
                               defaultLabel: "Uuid",
-                              editable: false,
+                              display: { editable: false },
                             },
                           },
                         },
@@ -12509,7 +12454,7 @@ const tests: { [k: string]: testFormat } = {
                             value: {
                               id: 1,
                               defaultLabel: "Uuid",
-                              editable: false,
+                              display: { editable: false },
                             },
                           },
                         },
@@ -12553,7 +12498,7 @@ const tests: { [k: string]: testFormat } = {
                             value: {
                               id: 1,
                               defaultLabel: "Uuid",
-                              editable: false,
+                              display: { editable: false },
                             },
                           },
                         },
@@ -12568,7 +12513,7 @@ const tests: { [k: string]: testFormat } = {
                             value: {
                               id: 1,
                               defaultLabel: "Uuid",
-                              editable: false,
+                              display: { editable: false },
                             },
                           },
                         },
@@ -12628,7 +12573,7 @@ const tests: { [k: string]: testFormat } = {
                             value: {
                               id: 1,
                               defaultLabel: "Uuid",
-                              editable: false,
+                              display: { editable: false },
                             },
                           },
                         },
@@ -12643,7 +12588,7 @@ const tests: { [k: string]: testFormat } = {
                             value: {
                               id: 1,
                               defaultLabel: "Uuid",
-                              editable: false,
+                              display: { editable: false },
                             },
                           },
                         },
@@ -12687,7 +12632,7 @@ const tests: { [k: string]: testFormat } = {
                             value: {
                               id: 1,
                               defaultLabel: "Uuid",
-                              editable: false,
+                              display: { editable: false },
                             },
                           },
                         },
@@ -12702,7 +12647,7 @@ const tests: { [k: string]: testFormat } = {
                             value: {
                               id: 1,
                               defaultLabel: "Uuid",
-                              editable: false,
+                              display: { editable: false },
                             },
                           },
                         },
@@ -12746,7 +12691,7 @@ const tests: { [k: string]: testFormat } = {
                             value: {
                               id: 1,
                               defaultLabel: "Uuid",
-                              editable: false,
+                              display: { editable: false },
                             },
                           },
                         },
@@ -12761,7 +12706,7 @@ const tests: { [k: string]: testFormat } = {
                             value: {
                               id: 1,
                               defaultLabel: "Uuid",
-                              editable: false,
+                              display: { editable: false },
                             },
                           },
                         },
@@ -12805,7 +12750,7 @@ const tests: { [k: string]: testFormat } = {
                             value: {
                               id: 1,
                               defaultLabel: "Uuid",
-                              editable: false,
+                              display: { editable: false },
                             },
                           },
                         },
@@ -12820,7 +12765,7 @@ const tests: { [k: string]: testFormat } = {
                             value: {
                               id: 1,
                               defaultLabel: "Uuid",
-                              editable: false,
+                              display: { editable: false },
                             },
                           },
                         },
@@ -12864,7 +12809,7 @@ const tests: { [k: string]: testFormat } = {
                             value: {
                               id: 1,
                               defaultLabel: "Uuid",
-                              editable: false,
+                              display: { editable: false },
                             },
                           },
                         },
@@ -12879,7 +12824,7 @@ const tests: { [k: string]: testFormat } = {
                             value: {
                               id: 1,
                               defaultLabel: "Uuid",
-                              editable: false,
+                              display: { editable: false },
                             },
                           },
                         },
@@ -12923,7 +12868,7 @@ const tests: { [k: string]: testFormat } = {
                             value: {
                               id: 1,
                               defaultLabel: "Uuid",
-                              editable: false,
+                              display: { editable: false },
                             },
                           },
                         },
@@ -12938,7 +12883,7 @@ const tests: { [k: string]: testFormat } = {
                             value: {
                               id: 1,
                               defaultLabel: "Uuid",
-                              editable: false,
+                              display: { editable: false },
                             },
                           },
                         },

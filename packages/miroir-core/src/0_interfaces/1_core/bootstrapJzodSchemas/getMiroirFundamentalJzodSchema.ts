@@ -2903,7 +2903,7 @@ export function getMiroirFundamentalJzodSchema(
         },
         compositeActionDefinition: domainEndpointVersionV1.definition.actions.find(
           (a: any) => a.actionParameters?.actionType?.definition == "compositeActionSequence",
-        )?.actionParameters.payload.definition.definition.definition,
+        )?.actionParameters.payload.definition.actionSequence.definition,
         compositeActionSequence: {
           type: "object",
           definition: domainEndpointVersionV1.definition.actions.find(
@@ -3004,7 +3004,7 @@ export function getMiroirFundamentalJzodSchema(
         // ################################################################################
         compositeRunTestAssertion: domainEndpointVersionV1.definition.actions
           .find((a: any) => a.actionParameters?.actionType?.definition == "compositeActionSequence")
-          ?.actionParameters.payload.definition.definition.definition.definition.find(
+          ?.actionParameters.payload.definition.actionSequence.definition.definition.find(
             (a: any) => a.definition?.actionType?.definition == "compositeRunTestAssertion",
           ),
         domainAction: {

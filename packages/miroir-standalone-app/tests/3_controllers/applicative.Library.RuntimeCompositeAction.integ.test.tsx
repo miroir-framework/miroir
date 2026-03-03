@@ -619,7 +619,7 @@ const createEntityCompositeAction: CompositeActionSequence = {
       // menu update
       entityMenu,
     },
-    definition: [
+    actionSequence: [
       // createEntity
       {
         // actionType: "modelAction",
@@ -1110,7 +1110,7 @@ const testSuites: Record<string, TestCompositeActionParams> = {
             // templates: createEntityCompositeAction.templates,
             endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             payload: {
-              definition: [
+              actionSequence: [
                 ...(createEntityCompositeAction as any).definition,
                 createReportsCompositeAction,
                 // commit

@@ -112,8 +112,7 @@ export function createApplicationCompositeAction(
     actionLabel: "beforeAll",
     endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
     payload: {
-      application: adminSelfApplication.uuid,  //
-      definition: [
+      actionSequence: [
         {
           actionType: "createInstance",
           actionLabel: "createApplicationForAdminAction",
@@ -128,7 +127,7 @@ export function createApplicationCompositeAction(
                 parentUuid: entityApplicationForAdmin.uuid,
                 name: newApplicationName,
                 defaultLabel: `The ${newApplicationName} Application.`,
-                description: `This Admin Application contains the ${newApplicationName} model and data.`,
+                description: `This Application contains the ${newApplicationName} model and data.`,
                 selfApplication: newSelfApplicationUuid,
               } as AdminApplication,
             ],
@@ -161,8 +160,7 @@ export function createDeploymentCompositeAction(
     actionLabel: "createDeploymentCompositeAction",
     endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
     payload: {
-      application: selfApplicationUuid, // to be ignored?
-      definition: [
+      actionSequence: [
         {
           actionType: "storeManagementAction_openStore",
           actionLabel: "storeManagementAction_openStore for " + applicationName + " admin",
@@ -305,8 +303,7 @@ export function resetAndinitializeDeploymentCompositeAction(
     actionLabel: "resetAndinitializeDeploymentCompositeAction",
     endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
     payload: {
-      application: applicationUuid, // to be ignored?
-      definition: [
+      actionSequence: [
         {
           actionType: "resetModel",
           actionLabel: "resetAndinitializeDeploymentCompositeAction_resetModel",
@@ -391,7 +388,7 @@ export function dropApplicationAndDeploymentCompositeAction(
     endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
     payload: {
       application: applicationUuid, // to be ignored?
-      definition: [
+      actionSequence: [
         {
           actionType: "storeManagementAction_deleteStore",
           actionLabel: "deleteStore",

@@ -2709,19 +2709,19 @@ export function handleTransformer_boolExpr(
     default:          condition = false;                         break;
   }
 
-  log.info(
-    "handleTransformer_boolExpr",
-    "label",
-    label,
-    "operator",
-    op,
-    "leftValue",
-    leftValue,
-    "rightValue",
-    rightValue,
-    "result",
-    condition,
-  );
+  // log.info(
+  //   "handleTransformer_boolExpr",
+  //   "label",
+  //   label,
+  //   "operator",
+  //   op,
+  //   "leftValue",
+  //   leftValue,
+  //   "rightValue",
+  //   rightValue,
+  //   "result",
+  //   condition,
+  // );
   return condition;
 }
 

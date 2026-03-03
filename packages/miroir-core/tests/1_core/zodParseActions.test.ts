@@ -585,7 +585,7 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
       payload: {
         application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15", // IGNORED
         // deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
-        definition: [
+        actionSequence: [
           {
             actionType: "createInstance",
             endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",

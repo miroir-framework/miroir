@@ -422,7 +422,8 @@ const newEntityDetailsReport = {
 
 const createEntityCompositeActionTemplate: CompositeActionTemplate = {
   actionType: "compositeActionSequence",
-  actionLabel: "createEntityCompositeActionTemplate",  endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+  actionLabel: "createEntityCompositeActionTemplate",
+  endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
   payload: {
     templates: {
       // all
@@ -648,13 +649,19 @@ const createEntityCompositeActionTemplate: CompositeActionTemplate = {
       {
         // actionType: "modelAction",
         actionType: "createEntity",
-        actionLabel: "createEntity",        endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+        actionLabel: "createEntity",
+        endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
         payload: {
-          deploymentUuid: {
-            transformerType: "getFromParameters",
-            interpolation: "build",
-            referenceName: "testAdminConfigurationDeploymentUuid",
+          application: {
+              transformerType: "getFromParameters",
+              interpolation: "build",
+              referenceName: "testSelfApplicationUuid",
           },
+          // deploymentUuid: {
+          //   transformerType: "getFromParameters",
+          //   interpolation: "build",
+          //   referenceName: "testAdminConfigurationDeploymentUuid",
+          // },
           entities: [
             {
               entity: {
@@ -832,7 +839,8 @@ const createEntityCompositeActionTemplateAssertions = [
 const createReportsCompositeActionTemplate: BuildPlusRuntimeDomainAction =
   {
     actionType: "transactionalInstanceAction",
-    actionLabel: "createReports",    endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+    actionLabel: "createReports",
+    endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
     payload: {
       deploymentUuid: {
         transformerType: "getFromParameters",
@@ -842,7 +850,8 @@ const createReportsCompositeActionTemplate: BuildPlusRuntimeDomainAction =
       instanceAction: {
         actionType: "instanceAction",
         actionName: "createInstance",
-        applicationSection: "model",        endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+        applicationSection: "model",
+        endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
         payload: {
           deploymentUuid: {
             transformerType: "getFromParameters",
@@ -1195,7 +1204,8 @@ const testTemplateSuitesDEFUNCT: Record<string, TestCompositeActionParams> = {
           testLabel: "createEntityAndReportFromSpreadsheet",
           compositeActionTemplate: {
             actionType: "compositeActionSequence",
-            actionLabel: "createEntityAndReportFromSpreadsheet",            endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+            actionLabel: "createEntityAndReportFromSpreadsheet",
+            endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             payload: {
               templates: (createEntityCompositeActionTemplate.payload as any).templates, // TODO: fix typing
               definition: [

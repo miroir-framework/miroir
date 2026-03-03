@@ -226,7 +226,7 @@
                 }
               }
             },
-            "definition": [
+            "actionSequence": [
               {
                 "actionType": "createEntity",
                 "actionLabel": "createEntity",

@@ -330,11 +330,11 @@ export const ImportEntityFromSpreadsheetRunner: React.FC<CreateEntityToolProps> 
       actionLabel: "createEntity",
       endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
       payload: {
-        application: "NOT_USED_HERE",
-        definition: [
+        actionSequence: [
           // Step 1: Query to get the deployment UUID from the selected application
           {
             actionType: "compositeRunBoxedQueryAction",
+            endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             actionLabel: "getDeploymentForApplication",
             nameGivenToResult: "deploymentInfo",
             payload: {

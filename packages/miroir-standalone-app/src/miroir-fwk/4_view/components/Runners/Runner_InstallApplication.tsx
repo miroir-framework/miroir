@@ -716,8 +716,7 @@ export const Runner_InstallApplication: React.FC<DeployApplicationRunnerProps> =
       actionLabel: "createApplicationForAdminAction",
       endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
       payload: {
-        application: "NOT_USED_HERE",
-        definition: [
+        actionSequence: [
           {
             actionType: "createInstance",
             actionLabel: "createApplicationForAdminAction_instances",
@@ -746,7 +745,7 @@ export const Runner_InstallApplication: React.FC<DeployApplicationRunnerProps> =
                   description: {
                     transformerType: "mustacheStringTemplate",
                     interpolation: "build",
-                    definition: `This Admin Application contains the {{deployApplication.applicationBundle.applicationName}} model and data.`,
+                    definition: `This Application contains the {{deployApplication.applicationBundle.applicationName}} model and data.`,
                   } as any,
                   selfApplication: testSelfApplicationUuid,
                 } as AdminApplication,
@@ -762,8 +761,7 @@ export const Runner_InstallApplication: React.FC<DeployApplicationRunnerProps> =
       actionLabel: "createDeployment",
       endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
       payload: {
-        application: "NOT_USED_HERE",
-        definition: [
+        actionSequence: [
           {
             actionType: "storeManagementAction_openStore",
             actionLabel: "storeManagementAction_openStore",
@@ -829,8 +827,7 @@ export const Runner_InstallApplication: React.FC<DeployApplicationRunnerProps> =
       actionLabel: "resetAndInitializeDeployment",
       endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
       payload: {
-        application: "NOT_USED_IN_compositeActionSequence",
-        definition: [
+        actionSequence: [
           {
             actionType: "resetModel",
             actionLabel: "resetApplicationStore",
@@ -933,11 +930,10 @@ export const Runner_InstallApplication: React.FC<DeployApplicationRunnerProps> =
       actionLabel: "deployApplication",
       endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
       payload: {
-        application: "NOT_USED_IN_TEMPLATE",
-        definition: [
-          ...(localCreateApplicationCompositeActionTemplate.payload.definition as any),
-          ...localCreateDeploymentCompositeActionTemplate.payload.definition,
-          ...localResetAndinitializeDeploymentCompositeActionTemplate.payload.definition,
+        actionSequence: [
+          ...(localCreateApplicationCompositeActionTemplate.payload.actionSequence as any),
+          ...localCreateDeploymentCompositeActionTemplate.payload.actionSequence,
+          ...localResetAndinitializeDeploymentCompositeActionTemplate.payload.actionSequence,
         ],
       },
     };

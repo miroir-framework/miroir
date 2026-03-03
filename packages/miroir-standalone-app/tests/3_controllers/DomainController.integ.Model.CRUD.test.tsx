@@ -389,8 +389,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
             actionLabel: "testLibraryBooks",
             endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             payload: {
-              application: "NOT_USED_HERE",
-              definition: [
+              actionSequence: [
                 {
                   actionType: "rollback",
                   // actionType: "modelAction",
@@ -482,8 +481,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
             actionLabel: "AddBookInstanceThenRollback",
             endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             payload: {
-              application: "NOT_USED_HERE",
-              definition: [
+              actionSequence: [
                 {
                   actionType: "rollback",
                   actionLabel: "refreshMiroirLocalCache",
@@ -609,8 +607,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
             actionLabel: "AddBookInstanceThenRollback",
             endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             payload: {
-              application: "NOT_USED_HERE",
-              definition: [
+              actionSequence: [
                 {
                   actionType: "rollback",
                   // actionType: "modelAction",
@@ -732,8 +729,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
             actionLabel: "AddBookInstanceThenRollback",
             endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             payload: {
-              application: "NOT_USED_HERE",
-              definition: [
+              actionSequence: [
                 {
                   actionType: "rollback",
                   // actionType: "modelAction",
@@ -934,8 +930,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
             actionLabel: "AddBookInstanceThenRollback",
             endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             payload: {
-              application: "NOT_USED_HERE",
-              definition: [
+              actionSequence: [
                 {
                   actionType: "rollback",
                   actionLabel: "refreshMiroirLocalCache",
@@ -1072,8 +1067,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
             actionLabel: "AddBookInstanceThenRollback",
             endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             payload: {
-              application: "NOT_USED_HERE",
-              definition: [
+              actionSequence: [
                 {
                   actionType: "rollback",
                   actionLabel: "refreshMiroirLocalCache",
@@ -1210,8 +1204,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
             actionLabel: "AddBookInstanceThenRollback",
             endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             payload: {
-              application: "NOT_USED_HERE",
-              definition: [
+              actionSequence: [
                 {
                   actionType: "rollback",
                   actionLabel: "refreshMiroirLocalCache",
