@@ -41,7 +41,9 @@
                       "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                       "targetEntityOrderInstancesBy": "name"
                     },
-                    "editable": false
+                    "display": {
+                      "editable": false
+                    }
                   }
                 }
               },
@@ -99,7 +101,6 @@
                 "tag": {
                   "value": {
                     "defaultLabel": "Actions Definition",
-                    "editable": true,
                     "canBeTemplate": false
                   }
                 },
