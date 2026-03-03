@@ -128,7 +128,7 @@ function serializeRestResult(result: any): any {
   if (result && typeof result === "object" && !("errorType" in result)) {
     const headers =
       result.headers instanceof Headers
-        ? Object.fromEntries((result.headers as Headers).entries())
+        ? Object.fromEntries(Object.entries((result.headers as Headers)))
         : result.headers ?? {};
     return { ...result, headers };
   }
