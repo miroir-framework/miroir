@@ -3,33 +3,37 @@
  * Provides functions to extract MetaModel from state.
  */
 
-import { deployment_Miroir } from "miroir-test-app_deployment-admin";
 import {
-  type MetaModel,
-  getReduxDeploymentsStateIndex,
-  entitySelfApplicationVersion,
-  entityStoreBasedConfiguration,
+  defaultMiroirMetaModel,
+  entityEndpointVersion,
   entityEntity,
   entityEntityDefinition,
   entityJzodSchema,
   entityMenu,
-  entityReport,
   entityQueryVersion,
-  type ApplicationVersion,
-  type StoreBasedConfiguration,
-  type MetaEntity,
-  type EntityDefinition,
-  type MlSchema,
-  type Menu,
-  type Report,
-  type Query,
-  type MiroirModelEnvironment,
+  entityReport,
+  entityRunner,
+  entitySelfApplicationVersion,
+  entityStoreBasedConfiguration,
+  getReduxDeploymentsStateIndex,
   miroirFundamentalJzodSchema,
-  defaultMiroirMetaModel,
-  entityEndpointVersion,
-  type Uuid,
   type ApplicationDeploymentMap,
+  type ApplicationVersion,
+  type EntityDefinition,
+  type Menu,
+  type MetaEntity,
+  type MetaModel,
+  type MiroirModelEnvironment,
+  type MlSchema,
+  type Query,
+  type Report,
+  type Runner,
+  type StoreBasedConfiguration,
+  type StoredMiroirTheme,
+  type Uuid
 } from "miroir-core";
+import { deployment_Miroir } from "miroir-test-app_deployment-admin";
+import { entityTheme } from "miroir-test-app_deployment-miroir";
 import type { LocalCacheSliceState } from "./localCacheZustandInterface.js";
 
 // #########################################################################################
@@ -91,6 +95,13 @@ export function currentModel(
       state.current[
         getReduxDeploymentsStateIndex(deploymentUuid, modelSection, entityQueryVersion.uuid)
       ];
+    const runners =
+      state.current[
+        getReduxDeploymentsStateIndex(deploymentUuid, modelSection, entityRunner.uuid)
+      ];
+    const themes = state.current[
+      getReduxDeploymentsStateIndex(deploymentUuid, modelSection, entityTheme.uuid)
+    ];
     const currentApplicationDefinitions = state.current[
         getReduxDeploymentsStateIndex(
           deploymentUuid,
@@ -101,7 +112,7 @@ export function currentModel(
     const currentApplicationDefinition = currentApplicationDefinitions
       ? Object.values(currentApplicationDefinitions)[0]
       : null;
-    const result = {
+    const result: MetaModel = {
       applicationUuid: application,
       applicationName: currentApplicationDefinition
         ? (currentApplicationDefinition as any).name
@@ -110,9 +121,9 @@ export function currentModel(
         ? Object.values(applicationVersions.entities)
         : []) as ApplicationVersion[],
       applicationVersionCrossEntityDefinition: [],
-      configuration: (configuration && configuration.entities
-        ? Object.values(configuration.entities)
-        : []) as StoreBasedConfiguration[],
+      // configuration: (configuration && configuration.entities
+      //   ? Object.values(configuration.entities)
+      //   : []) as StoreBasedConfiguration[],
       endpoints: (endpoints && endpoints.entities
         ? Object.values(endpoints.entities)
         : []) as MetaModel["endpoints"],
@@ -130,6 +141,8 @@ export function currentModel(
       storedQueries: (queries && queries.entities
         ? Object.values(queries.entities)
         : []) as Query[],
+      runners: (runners && runners.entities ? Object.values(runners.entities) : []) as Runner[],
+      themes: (themes && themes.entities ? Object.values(themes.entities) : []) as StoredMiroirTheme[],
     };
     return result;
   }

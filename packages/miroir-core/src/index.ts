@@ -686,6 +686,7 @@ export {
   defaultMiroirMetaModel,
   defaultMiroirModelEnvironment,
   // getCurrentEntityDefinition,
+  emptyApplicationModel,
   getApplicationSection,
   getReportsAndEntitiesDefinitionsForDeploymentUuid,
   metaModelEntities,
@@ -698,7 +699,14 @@ export {
   TestFramework
 } from "./1_core/test-expect";
 export {
-  base64ToBlob, fileToBase64, formatFileSize, getBlobFileIcon, mergeIfUnique, pushIfUnique, validateMimeType
+  base64ToBlob,
+  fileToBase64,
+  formatFileSize,
+  getBlobFileIcon,
+  mergeIfUnique,
+  pushIfUnique,
+  validateMimeType,
+  formatYYYYMMDD_HHMMSS,
 } from "./1_core/tools.js";
 export { zodErrorDeepestIssueLeaves, zodErrorFirstIssueLeaf } from "./1_core/zodParseErrorHandler";
 export {

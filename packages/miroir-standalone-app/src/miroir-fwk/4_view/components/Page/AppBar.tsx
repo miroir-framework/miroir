@@ -1,7 +1,6 @@
 import {
   Box,
   Button,
-  Icon,
   IconButton,
   Toolbar,
   Tooltip
@@ -10,17 +9,17 @@ import { default as MuiAppBar, AppBarProps as MuiAppBarProps } from '@mui/materi
 import { styled } from '@mui/material/styles';
 import { ChevronLeftIcon, ChevronRightIcon, Edit, EditOff } from '../Themes/MaterialSymbolWrappers';
 
-import { LoggerInterface, MiroirLoggerFactory, MiroirMenuItem } from 'miroir-core';
+import { defaultSelfApplicationDeploymentMap, LoggerInterface, MiroirLoggerFactory, MiroirMenuItem } from 'miroir-core';
 
+import { useMiroirContextService } from 'miroir-react';
+import { adminApplication_Miroir } from 'miroir-test-app_deployment-admin';
 import { Link, useNavigate } from 'react-router-dom';
 import { packageName } from '../../../../constants.js';
 import { cleanLevel } from '../../constants.js';
 import { useMiroirTheme } from '../../contexts/MiroirThemeContext.js';
-import { useDomainControllerService, useMiroirContextService } from 'miroir-react';
 import { usePageConfiguration } from '../../services/index.js';
 import { ThemedIcon, ThemedIconButton } from '../Themes/IconComponents.js';
 import { SidebarWidth } from './SidebarSection.js';
-import type { MiroirMenuPageLink } from 'miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -109,6 +108,17 @@ export function AppBar(props:AppBarProps) {
         />
       </IconButton>
     </Link>,
+    {
+      miroirMenuItemType: "miroirMenuReportLink",
+      label: "Home",
+      section: "data",
+      selfApplication: adminApplication_Miroir.uuid,
+      reportUuid: "29ef8018-43fc-4ee9-a736-6f9d625be7b7",
+      icon: {
+        iconType: "mui",
+        name: "construction",
+      },
+    },
     props.onEditModeToggle ? (
       <Tooltip
         title={
@@ -310,22 +320,75 @@ export function AppBar(props:AppBarProps) {
               if (!("miroirMenuItemType" in item)) {
                 return item as JSX.Element;
               }
-              const castItem = item as MiroirMenuPageLink;
-              return (
-                (castItem as any).miroirMenuItemType === "miroirMenuPageLink" && (
-                  <Button
-                    key={castItem.label}
-                    onClick={(e: any) => goToLabelPage(e, castItem.targetRoot ?? castItem.label)}
-                    sx={{
-                      my: 2,
-                      color: miroirTheme.currentTheme.components.appBar.textColor,
-                      display: "block",
-                    }}
-                  >
-                    {castItem.icon ? <ThemedIcon icon={castItem.icon} /> : castItem.label}
-                  </Button>
-                )
-              );
+              switch (item.miroirMenuItemType) {
+                case "miroirMenuPageLink": {
+                  return (
+                    <Button
+                      key={item.label}
+                      onClick={(e: any) => goToLabelPage(e, item.targetRoot ?? item.label)}
+                      sx={{
+                        my: 2,
+                        color: miroirTheme.currentTheme.components.appBar.textColor,
+                        display: "block",
+                      }}
+                    >
+                      {item.icon ? <ThemedIcon icon={item.icon} /> : item.label}
+                    </Button>
+                  );
+                }
+                case "miroirMenuReportLink":
+                  // <Link
+                  //   to={`/report/${item.selfApplication}/${(context.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap)[item.selfApplication]}/${item.section}/${item.reportUuid}/${item.instanceUuid ?? "xxxxxx"}`}
+                  // >
+                  //  {/* {item.icon ? <ThemedIcon icon={item.icon} /> : item.label} */}
+                  {
+                    return (
+                       <Button
+                         key={item.label}
+                         onClick={(e: any) =>
+                           goToLabelPage(
+                             e,
+                             `report/${item.selfApplication}/${
+                               (context.applicationDeploymentMap ??
+                                 defaultSelfApplicationDeploymentMap)[item.selfApplication]
+                             }/${item.section}/${item.reportUuid}/${item.instanceUuid ?? "xxxxxx"}`,
+                           )
+                         }
+                         sx={{
+                           my: 2,
+                           color: miroirTheme.currentTheme.components.appBar.textColor,
+                           display: "block",
+                         }}
+                       >
+                         {item.icon ? <ThemedIcon icon={item.icon} /> : item.label}
+                       </Button>
+                      // </Link>
+                      // <Button
+                      //   key={item.label}
+                      //   onClick={(e: any) =>
+                      //     goToLabelPage(
+                      //       e,
+                      //       `/report/${item.selfApplication}/${
+                      //         (context.applicationDeploymentMap ??
+                      //           defaultSelfApplicationDeploymentMap)[item.selfApplication]
+                      //       }/${item.section}/${item.reportUuid}/${item.instanceUuid ?? "xxxxxx"}`,
+                      //     )
+                      //   }
+                      //   sx={{
+                      //     my: 2,
+                      //     color: miroirTheme.currentTheme.components.appBar.textColor,
+                      //     display: "block",
+                      //   }}
+                      // >
+                      //   {item.icon ? <ThemedIcon icon={item.icon} /> : item.label}
+                      // </Button>
+                    );
+                  }
+                  break;
+                default:
+                  log.warn("Unknown miroirMenuItemType: ", item);
+                  return null;
+              }
             })}
           </Box>
           {/* Edit Mode Toggle Button */}

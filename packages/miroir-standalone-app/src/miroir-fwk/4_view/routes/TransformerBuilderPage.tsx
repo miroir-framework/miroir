@@ -137,7 +137,8 @@ export const TransformerBuilderPage: React.FC<any> = (
           currentApplicationDeploymentMap,
           {
             extractor: {
-              queryType: "boxedExtractorOrCombinerReturningObject",              contextResults: {},
+              queryType: "boxedExtractorOrCombinerReturningObject",
+              contextResults: {},
               pageParams: {},
               queryParams: {},
               select: {
@@ -298,7 +299,7 @@ export const TransformerBuilderPage: React.FC<any> = (
   //         }
   //       }
 
-  //       // const deleteNewApplicationResult = await domainController.handleCompositeAction(
+  //       // cotestUtils_deleteApplicationDeploymentt domainController.handleCompositeAction(
   //       //   testOnLibrary_deleteLibraryDeployment({
   //       //   miroirConfigType: "client",
   //       //   client: {

@@ -54,7 +54,7 @@ export const libraryEntitesAndInstancesWithoutBook3: ApplicationEntitiesAndInsta
 ];
 
 
-export function testOnLibrary_resetLibraryDeployment(
+export function testUtils_resetApplicationDeployment(
   application: Uuid = selfApplicationDeploymentLibrary.uuid,
 ): CompositeActionSequence {
   return {
@@ -65,7 +65,7 @@ export function testOnLibrary_resetLibraryDeployment(
       actionSequence: [
         {
           actionType: "resetModel",
-          actionLabel: "resetLibraryStore",
+          actionLabel: "resetApplicationModel",
           endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
           payload: {
             application,
@@ -75,13 +75,13 @@ export function testOnLibrary_resetLibraryDeployment(
     },
   };
 }
-export function testOnLibrary_deleteLibraryDeployment(
+export function testUtils_deleteApplicationDeployment(
   miroirConfig: MiroirConfigClient,
   application: Uuid,
   deploymentUuid: Uuid,
 ): CompositeActionSequence {
   console.log(
-    "testOnLibrary_deleteLibraryDeployment",
+    "testUtils_deleteApplicationDeployment",
     deploymentUuid,
     JSON.stringify(miroirConfig, null, 2),
   );

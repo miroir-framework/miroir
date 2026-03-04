@@ -29,12 +29,15 @@ import {
   ResolvedJzodSchemaReturnType,
   selfApplicationMiroir,
   type ApplicationDeploymentMap,
+  type ApplicationSection,
   type EntityInstance
 } from "miroir-core";
 import {
   LocalCache,
   LocalCacheProvider,
+  MiroirContextReactProvider,
   PersistenceReduxSaga,
+  useMiroirContextService,
 } from "miroir-react";
 
 // import { rootLessListKeyMapDEFUNCT } from "miroir-core";
@@ -63,7 +66,7 @@ import { ReportPageContextProvider } from "../../src/miroir-fwk/4_view/component
 import { DocumentOutlineContextProvider } from "../../src/miroir-fwk/4_view/components/ValueObjectEditor/InstanceEditorOutlineContext";
 import { JzodElementEditor } from "../../src/miroir-fwk/4_view/components/ValueObjectEditor/JzodElementEditor";
 import { JzodEditorPropsRoot } from "../../src/miroir-fwk/4_view/components/ValueObjectEditor/JzodElementEditorInterface";
-import { MiroirContextReactProvider, useMiroirContextService } from "../../src/miroir-fwk/4_view/MiroirContextReactProvider";
+// import { MiroirContextReactProvider, useMiroirContextService } from "../../src/miroir-fwk/4_view/MiroirContextReactProvider";
 import { useCurrentModel, useCurrentModelEnvironment } from "../../src/miroir-fwk/4_view/ReduxHooks";
 import { emptyObject } from "../../src/miroir-fwk/4_view/routes/TransformerBuilderPage.js";
 
@@ -620,8 +623,11 @@ export function getWrapperLoadingLocalCache(
   console.log("getWrapperForLocalJzodElementEditor", "defaultMiroirMetaModel.entities", JSON.stringify(defaultMiroirMetaModel.entities));
     // const resultForLoadingLibraryAppInstances: Action2ReturnType = localCache.handleLocalCacheAction({
   const resultForLoadingMiroirMetaModel: Action2ReturnType = localCache.handleLocalCacheAction({
-    actionType: "loadNewInstancesInLocalCache",    endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-    payload: {      objects: [
+    actionType: "loadNewInstancesInLocalCache",
+    endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+    payload: {
+      application: selfApplicationMiroir.uuid,
+      objects: [
         {
           parentName: entityEntity.name,
           parentUuid: entityEntity.uuid,
@@ -676,13 +682,17 @@ export function getWrapperLoadingLocalCache(
   localCache.handleLocalCacheAction(
     // needed so that "loading" instances become "current"
     {
-      actionType: "rollback",      endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-      payload: {      },
+      actionType: "rollback",
+      endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+      payload: {
+        application: selfApplicationMiroir.uuid,
+      },
     },
     applicationDeploymentMap,
   );
   const resultForLoadingLibraryApplicationModel: Action2ReturnType = localCache.handleLocalCacheAction({
-    actionType: "loadNewInstancesInLocalCache",    endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+    actionType: "loadNewInstancesInLocalCache",
+    endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
     payload: {
       application: selfApplicationLibrary.uuid,
       objects: [
@@ -751,7 +761,8 @@ export function getWrapperLoadingLocalCache(
   localCache.handleLocalCacheAction(
     // needed so that "loading" instances become "current"
     {
-      actionType: "rollback",      endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+      actionType: "rollback",
+      endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       payload: {
         application: selfApplicationLibrary.uuid,
       },
@@ -759,7 +770,8 @@ export function getWrapperLoadingLocalCache(
   );
 
   const resultForLoadingLibraryApplicationInstances: Action2ReturnType = localCache.handleLocalCacheAction({
-    actionType: "loadNewInstancesInLocalCache",    endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+    actionType: "loadNewInstancesInLocalCache",
+    endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
     payload: {
       application: selfApplicationLibrary.uuid,
       objects: libraryApplicationInstances,
@@ -774,7 +786,8 @@ export function getWrapperLoadingLocalCache(
   localCache.handleLocalCacheAction(
     // needed so that "loading" instances become "current"
     {
-      actionType: "rollback",      endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+      actionType: "rollback",
+      endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       payload: {
         application: selfApplicationLibrary.uuid,
       },

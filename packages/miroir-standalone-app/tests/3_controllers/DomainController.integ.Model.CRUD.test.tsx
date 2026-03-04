@@ -1,12 +1,10 @@
 import { describe, expect } from "vitest";
 
 import { fetch as crossFetch } from "cross-fetch";
-// import process from "process";
+import process from "process";
 
 import {
   ConfigurationService,
-  // configurationService,
-  // defaultLibraryModelEnvironment,
   defaultMiroirMetaModel,
   displayTestSuiteResultsDetails,
   DomainControllerInterface,
@@ -48,8 +46,8 @@ import { miroirAppStartup } from "../../src/startup.js";
 
 // import { packageName } from "miroir-core/src/constants.js";
 import {
-  testOnLibrary_deleteLibraryDeployment,
-  testOnLibrary_resetLibraryDeployment,
+  testUtils_deleteApplicationDeployment,
+  testUtils_resetApplicationDeployment,
 } from "../../src/miroir-fwk/4-tests/tests-utils-testOnLibrary.js";
 // import { loglevelnext } from '../../src/loglevelnextImporter.js';
 import { loglevelnext } from "../../src/loglevelnextImporter.js";
@@ -88,11 +86,11 @@ import { packageName } from "../../src/constants.js";
 import { cleanLevel } from "./constants.js";
 // import { entityBook } from "miroir-core";
 
-const env: any = (import.meta as any).env;
+const env: any = process.env;
 console.log("@@@@@@@@@@@@@@@@@@ env", env);
 
-const myConsoleLog = (...args: any[]) => console.log(fileName, ...args);
 const fileName = "DomainController.integ.Data.CRUD.test";
+const myConsoleLog = (...args: any[]) => console.log(fileName, ...args);
 myConsoleLog(fileName, "received env", JSON.stringify(env, null, 2));
 
 let miroirConfig: any;
@@ -374,8 +372,8 @@ const testActions: Record<string, TestCompositeActionParams> = {
         defaultLibraryModelEnvironment.currentModel as any,
         [entityPublisher.uuid],
       ),
-      afterEach: testOnLibrary_resetLibraryDeployment(deployment_Library_DO_NO_USE.uuid),
-      afterAll: testOnLibrary_deleteLibraryDeployment(
+      afterEach: testUtils_resetApplicationDeployment(deployment_Library_DO_NO_USE.uuid),
+      afterAll: testUtils_deleteApplicationDeployment(
         miroirConfig,
         selfApplicationLibrary.uuid,
         deployment_Library_DO_NO_USE.uuid,

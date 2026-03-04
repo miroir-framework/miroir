@@ -1079,11 +1079,11 @@ const testSuites: Record<string, TestCompositeActionParams> = {
         emptyMetaModel
       ),
       testParams: {},
-      // afterEach: testOnLibrary_resetLibraryDeployment(
+      // afterEach: testUtils_resetApplicationDeployment(
       //   miroirConfig,
       //   testAdminConfigurationDeploymentUuid
       // ),
-      // afterAll: testOnLibrary_deleteLibraryDeployment(miroirConfig, testAdminConfigurationDeploymentUuid),
+      // afterAll: testUtils_deleteApplicationDeployment(miroirConfig, testAdminConfigurationDeploymentUuid),
       testCompositeActions: {
         // "create new Entity from spreadsheet": {
         //   testType: "testCompositeActionTemplate",

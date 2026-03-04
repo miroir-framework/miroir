@@ -1,6 +1,6 @@
 import { describe, expect } from "vitest";
 
-// import process from "process";
+import process from "process";
 
 import type { ApplicationDeploymentMap, EndpointDefinition, MlSchema } from "miroir-core";
 import {
@@ -78,13 +78,14 @@ import {
 } from "miroir-test-app_deployment-library";
 import { loglevelnext } from "../../src/loglevelnextImporter.js";
 import {
-  testOnLibrary_deleteLibraryDeployment,
-  testOnLibrary_resetLibraryDeployment
+  testUtils_deleteApplicationDeployment,
+  testUtils_resetApplicationDeployment
 } from "../../src/miroir-fwk/4-tests/tests-utils-testOnLibrary.js";
 import { loadTestConfigFiles } from "../utils/fileTools.js";
 import { cleanLevel, packageName } from "./constants.js";
 
-const env: any = (import.meta as any).env;
+// const env: any = (import.meta as any).env;
+const env: any = process.env;
 
 console.log("@@@@@@@@@@@@@@@@@@ env", env);
 
@@ -363,8 +364,8 @@ const testActions: Record<string, TestCompositeActionParams> = {
         defaultLibraryModelEnvironment.currentModel as any,
         [entityAuthor.uuid, entityBook.uuid, entityPublisher.uuid],
       ),
-      afterEach: testOnLibrary_resetLibraryDeployment(deployment_Library_DO_NO_USE.uuid),
-      afterAll: testOnLibrary_deleteLibraryDeployment(
+      afterEach: testUtils_resetApplicationDeployment(deployment_Library_DO_NO_USE.uuid),
+      afterAll: testUtils_deleteApplicationDeployment(
         miroirConfig,
         selfApplicationLibrary.uuid,
         deployment_Library_DO_NO_USE.uuid,
@@ -497,7 +498,6 @@ const testActions: Record<string, TestCompositeActionParams> = {
               actionSequence: [
                 {
                   actionType: "rollback",
-                  // actionType: "modelAction",
                   actionLabel: "refreshMiroirLocalCache",
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   payload: {
@@ -506,16 +506,13 @@ const testActions: Record<string, TestCompositeActionParams> = {
                 },
                 {
                   actionType: "rollback",
-                  // actionType: "modelAction",
                   actionLabel: "refreshLibraryLocalCache",
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   payload: {
                     application: testApplicationUuid,
-                    // deploymentUuid: testApplicationDeploymentUuid,
                   },
                 },
                 {
-                  // actionType: "instanceAction",
                   actionType: "createInstance",
                   actionLabel: "addBook3",
                   endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
@@ -535,12 +532,10 @@ const testActions: Record<string, TestCompositeActionParams> = {
                     endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
                     payload: {
                       application: testApplicationUuid,
-                      // deploymentUuid: testApplicationDeploymentUuid,
                       applicationSection: "data", // TODO: give only selfApplication section in individual queries?
                       query: {
                         queryType: "boxedQueryWithExtractorCombinerTransformer",
                         application: testApplicationUuid,
-                        // deploymentUuid: testApplicationDeploymentUuid,
                         pageParams: {
                           currentDeploymentUuid: testApplicationDeploymentUuid,
                         },

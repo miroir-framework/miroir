@@ -43,14 +43,14 @@ export const runnerConfigs: RunnerConfig[] = [
     title: "Drop Application (and Deployment)",
     component: Runner_DropApplication,
   },
-  // {
-  //   title: "Create Entity",
-  //   component: Runner_CreateEntity,
-  // },
-  // {
-  //   title: "Drop Entity",
-  //   component: Runner_DeleteEntity,
-  // },
+  {
+    title: "Create Entity",
+    component: Runner_CreateEntity,
+  },
+  {
+    title: "Drop Entity",
+    component: Runner_DeleteEntity,
+  },
   // // // // {
   // // // //   title: "Import Entity From Spreadsheet",
   // // // //   component: ImportEntityFromSpreadsheetRunner,

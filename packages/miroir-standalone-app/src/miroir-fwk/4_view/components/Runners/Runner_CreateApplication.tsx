@@ -18,6 +18,7 @@ import type {
 import {
   defaultMiroirMetaModel,
   defaultSelfApplicationDeploymentMap,
+  formatYYYYMMDD_HHMMSS,
   getDefaultValueForJzodSchemaWithResolutionNonHook,
   MiroirLoggerFactory,
   noValue,
@@ -48,18 +49,6 @@ let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
   MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "Runner_CreateApplication"), "UI",
 ).then((logger: LoggerInterface) => {log = logger});
-
-// ################################################################################################
-function formatYYYYMMDD_HHMMSS(date = new Date()) {
-  const pad = (n: number) => String(n).padStart(2, "0");
-  const yyyy = date.getFullYear();
-  const MM = pad(date.getMonth() + 1);
-  const dd = pad(date.getDate());
-  const HH = pad(date.getHours());
-  const mm = pad(date.getMinutes());
-  const ss = pad(date.getSeconds());
-  return `${yyyy}${MM}${dd}_${HH}${mm}${ss}`;
-}
 
 // ################################################################################################
 export interface CreateApplicationToolProps {

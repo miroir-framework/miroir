@@ -309,7 +309,23 @@ export function getReportsAndEntitiesDefinitionsForDeploymentUuid(
   }
 }
 
+export const emptyApplicationModel: MetaModel = {
+  applicationUuid: "",
+  applicationName: "",
+  applicationVersions: [],
+  applicationVersionCrossEntityDefinition: [],
+  endpoints: [],
+  entities: [],
+  entityDefinitions: [],
+  jzodSchemas: [],
+  menus: [],
+  reports: [],
+  runners: [],
+  storedQueries: [],
+  themes: [],
+}
 
+// ################################################################################################
 const modelIcons: Record<string, string> = {
   Miroir: "hive",
   assistant: "wand_stars", //"smart_toy", //"psychology",
