@@ -693,6 +693,7 @@ export {
   miroirModelEntities,
 } from "./1_core/Model.js";
 export { defaultReport } from "./1_core/Report.js";
+export { testBuildPlusRuntimeCompositeActionSuiteForRunner } from "./1_core/Runner.js";
 export {
   describe,
   expect,

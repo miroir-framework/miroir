@@ -2904,6 +2904,73 @@ export function getMiroirFundamentalJzodSchema(
         compositeActionDefinition: domainEndpointVersionV1.definition.actions.find(
           (a: any) => a.actionParameters?.actionType?.definition == "compositeActionSequence",
         )?.actionParameters.payload.definition.actionSequence.definition,
+        compositeRunTestAssertion: {
+          type: "object",
+          tag: {
+            value: {
+              display: {
+                displayedAttributeValueWhenFolded: "actionLabel",
+              },
+            },
+          },
+          definition: {
+            actionType: {
+              type: "literal",
+              tag: {
+                value: {
+                  canBeTemplate: false,
+                },
+              },
+              definition: "compositeRunTestAssertion",
+            },
+            actionLabel: {
+              type: "string",
+              optional: true,
+            },
+            nameGivenToResult: {
+              type: "string",
+            },
+            testAssertion: {
+              type: "schemaReference",
+              definition: {
+                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                relativePath: "testAssertion",
+              },
+            },
+          },
+        },
+        compositeAction: {
+          type: "union",
+          tag: {
+            value: {
+              canBeTemplate: false,
+            },
+          },
+          discriminator: "actionType",
+          definition: [
+            {
+              type: "schemaReference",
+              definition: {
+                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                relativePath: "domainAction",
+              },
+            },
+            {
+              type: "schemaReference",
+              definition: {
+                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                relativePath: "compositeActionSequence",
+              },
+            },
+            {
+              type: "schemaReference",
+              definition: {
+                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                relativePath: "compositeRunTestAssertion",
+              },
+            },
+          ],
+        },
         compositeActionSequence: {
           type: "object",
           definition: domainEndpointVersionV1.definition.actions.find(
@@ -3002,11 +3069,11 @@ export function getMiroirFundamentalJzodSchema(
         // ################################################################################
         // ################################################################################
         // ################################################################################
-        compositeRunTestAssertion: domainEndpointVersionV1.definition.actions
-          .find((a: any) => a.actionParameters?.actionType?.definition == "compositeActionSequence")
-          ?.actionParameters.payload.definition.actionSequence.definition.definition.find(
-            (a: any) => a.definition?.actionType?.definition == "compositeRunTestAssertion",
-          ),
+        // compositeRunTestAssertion: domainEndpointVersionV1.definition.actions
+        //   .find((a: any) => a.actionParameters?.actionType?.definition == "compositeActionSequence")
+        //   ?.actionParameters.payload.definition.actionSequence.definition.definition.find(
+        //     (a: any) => a.definition?.actionType?.definition == "compositeRunTestAssertion",
+        //   ),
         domainAction: {
           type: "union",
           discriminator: "actionType",
@@ -3289,9 +3356,9 @@ export function getMiroirFundamentalJzodSchema(
           {
             type: "never",
           },
-          tableThemeSchema: tableThemeSchemaJson,
-          storedMiroirTheme: miroirThemeSchemaJson,
-          miroirThemeFull: makeObjectsMandatory(miroirThemeSchemaJson as any),
+        tableThemeSchema: tableThemeSchemaJson,
+        storedMiroirTheme: miroirThemeSchemaJson,
+        miroirThemeFull: makeObjectsMandatory(miroirThemeSchemaJson as any),
       },
       definition: {
         absolutePath: miroirFundamentalJzodSchemaUuid,
