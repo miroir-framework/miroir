@@ -226,7 +226,7 @@ export function useDeploymentUuidFromApplicationUuid2(
   if (deploymentUuidQueryResults instanceof Domain2ElementFailed) {
     // should never happen
     throw new Error(
-      "Runner_DeleteEntity: failed to get report data: " +
+      "Runner_DropEntity: failed to get report data: " +
         JSON.stringify(deploymentUuidQueryResults, null, 2)
     );
   }
@@ -292,7 +292,7 @@ export function useDeploymentUuidFromApplicationUuid(
   if (deploymentUuidQueryResults instanceof Domain2ElementFailed) {
     // should never happen
     throw new Error(
-      "Runner_DeleteEntity: failed to get report data: " +
+      "Runner_DropEntity: failed to get report data: " +
         JSON.stringify(deploymentUuidQueryResults, null, 2)
     );
   }

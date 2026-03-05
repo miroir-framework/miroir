@@ -9,7 +9,7 @@ import {
 } from "miroir-core";
 import { Runner_CreateApplication } from './Runner_CreateApplication';
 import { Runner_CreateEntity } from './Runner_CreateEntity';
-import { Runner_DeleteEntity } from './Runner_DeleteEntity';
+import { Runner_DropEntity } from './Runner_DropEntity';
 import { Runner_DropApplication } from './Runner_DropApplication';
 import { Runner_InstallApplication } from './Runner_InstallApplication';
 import { packageName } from '../../../../constants';
@@ -49,7 +49,7 @@ export const runnerConfigs: RunnerConfig[] = [
   },
   // {
   //   title: "Drop Entity",
-  //   component: Runner_DeleteEntity,
+  //   component: Runner_DropEntity,
   // },
   // // // // {
   // // // //   title: "Import Entity From Spreadsheet",

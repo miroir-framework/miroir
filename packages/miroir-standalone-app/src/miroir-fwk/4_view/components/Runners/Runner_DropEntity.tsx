@@ -14,7 +14,7 @@ import { StoredRunnerView } from "./RunnerView.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "Runner_DeleteEntity"),
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "Runner_DropEntity"),
   "UI"
 ).then((logger: LoggerInterface) => {
   log = logger;
@@ -27,13 +27,9 @@ export interface CreateEntityToolProps {
 
 
 // ################################################################################################
-export const Runner_DeleteEntity: React.FC<CreateEntityToolProps> = ({
-  // application,
+export const Runner_DropEntity: React.FC<CreateEntityToolProps> = ({
   applicationDeploymentMap,
-  // deploymentUuid,
 }) => {
-  
-  // const applicationDeploymentMap: ApplicationDeploymentMap | undefined = useApplicationDeploymentMap();
   
   return (
     <StoredRunnerView

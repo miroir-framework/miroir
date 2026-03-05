@@ -6,8 +6,6 @@ import { v4 as uuidv4 } from "uuid";
 import { beforeEach, describe, expect, it } from "vitest";
 
 import {
-  type ApplicationDeploymentMap,
-  type Deployment,
   type DomainControllerInterface,
   type LoggerInterface,
   type LoggerOptions,
@@ -18,7 +16,6 @@ import {
   type TestCompositeActionParams,
   ConfigurationService,
   defaultMiroirMetaModel,
-  defaultSelfApplicationDeploymentMap,
   emptyApplicationModel,
   formatYYYYMMDD_HHMMSS,
   MiroirActivityTracker,
@@ -33,11 +30,6 @@ import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
 import { miroirMongoDbStoreSectionStartup } from "miroir-store-mongodb";
 import { miroirPostgresStoreSectionStartup } from "miroir-store-postgres";
 import {
-  deployment_Admin,
-  deployment_Miroir
-} from "miroir-test-app_deployment-admin";
-import {
-  deployment_Library_DO_NO_USE,
   endpointDocument,
   entityAuthor,
   entityDefinitionAuthor
@@ -52,6 +44,7 @@ import {
   afterAllTests,
   beforeAllTests,
   beforeEachTest,
+  getTestConfig,
   testApplicationStorageConfiguration,
 } from "./RunnerIntegTestTools";
 
@@ -102,29 +95,18 @@ const testApplicationUuid = uuidv4();
 const testApplicationDeploymentUuid = uuidv4();
 const testApplicationName = "testApplication_" + formatYYYYMMDD_HHMMSS(new Date());
 
-const applicationDeploymentMap: ApplicationDeploymentMap = {
-  ...defaultSelfApplicationDeploymentMap,
-  [testApplicationUuid]: testApplicationDeploymentUuid,
-}
-
-const miroirDeploymentStorageConfiguration: StoreUnitConfiguration = miroirConfig.client.emulateServer
-  ? miroirConfig.client.deploymentStorageConfig[deployment_Miroir.uuid]
-  : miroirConfig.client.serverConfig.storeSectionConfiguration[deployment_Miroir.uuid];
-
-const adminDeploymentStorageConfiguration: StoreUnitConfiguration = miroirConfig.client.emulateServer
-  ? miroirConfig.client.deploymentStorageConfig[deployment_Admin.uuid]
-  : miroirConfig.client.serverConfig.storeSectionConfiguration[deployment_Admin.uuid];
-
-  
-const adminDeployment: Deployment = {
-  ...deployment_Admin,
-  configuration: adminDeploymentStorageConfiguration,
-};
-
-
-const libraryDeploymentStorageConfiguration: StoreUnitConfiguration = miroirConfig.client.emulateServer
-  ? miroirConfig.client.deploymentStorageConfig[deployment_Library_DO_NO_USE.uuid]
-  : miroirConfig.client.serverConfig.storeSectionConfiguration[deployment_Library_DO_NO_USE.uuid];
+const {
+  applicationDeploymentMap,
+  miroirDeploymentStorageConfiguration,
+  adminDeploymentStorageConfiguration,
+  adminDeployment,
+  libraryDeploymentStorageConfiguration,
+} = getTestConfig(
+  miroirConfig,
+  testApplicationDeploymentUuid,
+  testApplicationName,
+  testApplicationUuid,
+);
 
 let testDeploymentStorageConfiguration: StoreUnitConfiguration = testApplicationStorageConfiguration(
   libraryDeploymentStorageConfiguration,
