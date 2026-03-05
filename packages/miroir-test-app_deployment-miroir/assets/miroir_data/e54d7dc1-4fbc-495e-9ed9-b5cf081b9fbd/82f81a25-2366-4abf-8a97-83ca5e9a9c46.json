@@ -1,0 +1,184 @@
+{
+  "uuid": "82f81a25-2366-4abf-8a97-83ca5e9a9c46",
+  "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+  "parentUuid": "e54d7dc1-4fbc-495e-9ed9-b5cf081b9fbd",
+  "name": "createEntity",
+  "defaultLabel": "Create Entity",
+  "parentName": "Runner",
+  "definition": {
+    "runnerType": "customRunner",
+    "formMLSchema": {
+      "formMLSchemaType": "mlSchema",
+      "initialFormValues": {
+        "transformerType": "dataflowObject",
+        "target": "result",
+        "definition": {
+          "entityUuid": {
+            "transformerType": "generateUuid"
+          },
+          "result": {
+            "application": "31f3a03a-f150-416d-9315-d3a752cb4eb4",
+            "entity": {
+              "uuid": {
+                "transformerType": "getFromContext",
+                "interpolation": "runtime",
+                "referencePath": ["entityUuid"]
+              },
+              "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+              "parentName": "Entity",
+              "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
+              "name": ""
+            },
+            "entityDefinition": {
+              "uuid": {
+                "transformerType": "generateUuid"
+              },
+              "parentName": "EntityDefinition",
+              "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+              "parentDefinitionVersionUuid": "c50240e7-c451-46c2-b60a-07b3172a5ef9",
+              "name": "",
+              "entityUuid": {
+                "transformerType": "getFromContext",
+                "interpolation": "runtime",
+                "referencePath": ["entityUuid"]
+              },
+              "mlSchema": {
+                "type": "object",
+                "definition": {
+                  "uuid": {
+                    "type": "uuid",
+                    "tag": {
+                      "value": {
+                        "id": 1,
+                        "defaultLabel": "Uuid",
+                        "display": { "editable": false }
+                      }
+                    }
+                  },
+                  "parentName": {
+                    "type": "string",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "id": 2,
+                        "defaultLabel": "Entity Name",
+                        "display": { "editable": false }
+                      }
+                    }
+                  },
+                  "parentUuid": {
+                    "type": "uuid",
+                    "tag": {
+                      "value": {
+                        "id": 3,
+                        "defaultLabel": "Entity Uuid",
+                        "display": { "editable": false }
+                      }
+                    }
+                  },
+                  "parentDefinitionVersionUuid": {
+                    "type": "uuid",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "id": 4,
+                        "defaultLabel": "Entity Definition Version Uuid",
+                        "display": { "editable": false }
+                      }
+                    }
+                  },
+                  "name": {
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Name",
+                        "display": { "editable": true }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "mlSchema": {
+        "type": "object",
+        "definition": {
+          "application": {
+            "type": "uuid",
+            "nullable": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "Application",
+                "editable": true,
+                "foreignKeyParams": {
+                  "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
+                  "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+                  "targetEntityOrderInstancesBy": "name"
+                }
+              }
+            }
+          },
+          "entity": {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "entity"
+            }
+          },
+          "entityDefinition": {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "entityDefinition"
+            }
+          }
+        }
+      }
+    },
+    "actionTemplate": {
+      "actionType": "compositeActionSequence",
+      "actionLabel": "createEntitySequence",
+      "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+      "payload": {
+        "actionSequence": [
+          {
+            "actionType": "createEntity",
+            "actionLabel": "Create Entity",
+            "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+            "payload": {
+              "application": {
+                "transformerType": "mustacheStringTemplate",
+                "definition": "{{createEntity.application}}"
+              },
+              "entities": [
+                {
+                  "entity": {
+                    "transformerType": "getFromParameters",
+                    "referencePath": ["createEntity", "entity"]
+                  },
+                  "entityDefinition": {
+                    "transformerType": "getFromParameters",
+                    "referencePath": ["createEntity", "entityDefinition"]
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "actionType": "commit",
+            "actionLabel": "commit",
+            "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+            "payload": {
+              "application": {
+                "transformerType": "mustacheStringTemplate",
+                "definition": "{{createEntity.application}}"
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+}

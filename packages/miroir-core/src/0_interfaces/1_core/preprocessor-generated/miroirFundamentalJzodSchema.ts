@@ -9090,10 +9090,7 @@ export const miroirFundamentalJzodSchema = {
             "tag": {
               "value": {
                 "id": 5,
-                "defaultLabel": "Name",
-                "display": {
-                  "editable": false
-                }
+                "defaultLabel": "Name"
               }
             }
           },
@@ -16717,6 +16714,23 @@ export const miroirFundamentalJzodSchema = {
                             "type": "literal",
                             "definition": "mlSchema"
                           },
+                          "initialFormValues": {
+                            "type": "record",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Initial Form Values",
+                                "description": "Initial values for the form fields, required when the formMLSchemaType is 'transformer', in the case the transformer depends on the form values"
+                              }
+                            },
+                            "definition": {
+                              "type": "schemaReference",
+                              "definition": {
+                                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                "relativePath": "transformerForBuildPlusRuntime"
+                              }
+                            }
+                          },
                           "mlSchema": {
                             "type": "schemaReference",
                             "definition": {
@@ -16743,7 +16757,11 @@ export const miroirFundamentalJzodSchema = {
                               }
                             },
                             "definition": {
-                              "type": "any"
+                              "type": "schemaReference",
+                              "definition": {
+                                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                "relativePath": "transformerForBuildPlusRuntime"
+                              }
                             }
                           },
                           "transformer": {
@@ -40147,9 +40165,6 @@ export const miroirFundamentalJzodSchema = {
                   "value": {
                     "id": 5,
                     "defaultLabel": "Name",
-                    "display": {
-                      "editable": false
-                    },
                     "isTemplate": true
                   }
                 },
@@ -40160,10 +40175,7 @@ export const miroirFundamentalJzodSchema = {
                     "tag": {
                       "value": {
                         "id": 5,
-                        "defaultLabel": "Name",
-                        "display": {
-                          "editable": false
-                        }
+                        "defaultLabel": "Name"
                       }
                     }
                   },
@@ -63899,10 +63911,7 @@ export const miroirFundamentalJzodSchema = {
             "tag": {
               "value": {
                 "id": 5,
-                "defaultLabel": "Name",
-                "display": {
-                  "editable": false
-                }
+                "defaultLabel": "Name"
               }
             }
           },
@@ -78304,10 +78313,7 @@ export const miroirFundamentalJzodSchema = {
             "tag": {
               "value": {
                 "id": 5,
-                "defaultLabel": "Name",
-                "display": {
-                  "editable": false
-                }
+                "defaultLabel": "Name"
               }
             }
           },

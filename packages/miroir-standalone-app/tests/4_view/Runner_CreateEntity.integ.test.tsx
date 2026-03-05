@@ -70,6 +70,7 @@ import {
 import { miroirAppStartup } from "../../src/startup";
 import { loadTestConfigFiles } from "../utils/fileTools";
 import { transform } from "happy-dom/lib/PropertySymbol";
+import { runnerCreateEntity } from "miroir-test-app_deployment-miroir";
 
 // ################################################################################################
 const pageLabel = "Runner_CreateEntity.integ.test";
@@ -363,7 +364,16 @@ const testActions: Record<string, TestCompositeActionParams> = {
     //     }
     //   }
     // },
-    testParams: {},
+    testParams: {
+      [runnerName]: {
+        transformerType: "returnValue",
+        value: {
+          application: testApplicationUuid,
+          entity: entityAuthor,
+          entityDefinition: entityDefinitionAuthor,
+        },
+      },
+    },
     testCompositeAction: {
       testType: "testBuildPlusRuntimeCompositeActionSuite",
       testLabel: pageLabel,
@@ -414,17 +424,6 @@ const testActions: Record<string, TestCompositeActionParams> = {
       //   testApplicationUuid,
       //   testApplicationDeploymentUuid,
       // ),
-      // testCompositeActions: {
-      testParams: {
-        [runnerName]: {
-          transformerType: "returnValue",
-          value: {
-            application: testApplicationUuid,
-            entity: entityAuthor,
-            entityDefinition: entityDefinitionAuthor,
-          },
-        },
-      },
       testCompositeActions: {
         // "Refresh all Instances": {
         //   testType: "testCompositeAction",
@@ -560,37 +559,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
                     application: testApplicationUuid,
                   },
                 },
-                runnerActionTemplate as any,
-                // {
-                //   ...runnerActionTemplate,
-                //   payload: {
-                //     ...runnerActionTemplate.payload,
-                //     templates: {
-                //       [runnerName]: {
-                //         transformerType: "returnValue",
-                //         value: {
-                //           application: testApplicationUuid,
-                //           entity: entityAuthor,
-                //           entityDefinition: entityDefinitionAuthor,
-                //         }
-                //       }
-                //     }
-                //   } as any,
-                // } as any,
-                // {
-                //   actionType: "createEntity",
-                //   actionLabel: "addEntityAuthor",
-                //   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                //   payload: {
-                //     application: testApplicationUuid,
-                //     entities: [
-                //       {
-                //         entity: entityAuthor as Entity,
-                //         entityDefinition: entityDefinitionAuthor as EntityDefinition,
-                //       },
-                //     ],
-                //   },
-                // },
+                runnerCreateEntity.definition.actionTemplate as any,
                 {
                   actionType: "commit",
                   actionLabel: "commitLibraryLocalCache",

@@ -63,8 +63,7 @@
         "tag": {
           "value": {
             "id": 5,
-            "defaultLabel": "Name",
-            "display": { "editable": false }
+            "defaultLabel": "Name"
           }
         }
       },
