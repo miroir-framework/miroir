@@ -7,6 +7,7 @@ import {
   Uuid,
   type ApplicationEntitiesAndInstances
 } from "miroir-core";
+import { adminSelfApplication, entityDeployment } from "miroir-test-app_deployment-admin";
 import {
   entityAuthor,
   entityDefinitionAuthor,
@@ -102,6 +103,27 @@ export function testUtils_deleteApplicationDeployment(
               ? miroirConfig.client.deploymentStorageConfig[deploymentUuid]
               : miroirConfig.client.serverConfig.storeSectionConfiguration[deploymentUuid],
           }
+        },
+        {
+          actionType: "deleteInstance",
+          actionLabel: "DeleteDeploymentInstances for " + application,
+          endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+          payload: {
+            application: adminSelfApplication.uuid,
+            applicationSection: "data",
+            objects: [
+              {
+                uuid: deploymentUuid,
+                // parentName: "Deployment",
+                parentUuid: entityDeployment.uuid,
+                // name: `Deployment of application ${applicationName}`,
+                // defaultLabel: `The deployment of application ${applicationName}`,
+                // description: `The description of deployment of application ${applicationName}`,
+                // selfApplication: selfApplicationUuid, // TODO: this should be selfApplication
+                // configuration: newDeploymentConfiguration,
+              } as EntityInstance,
+            ],
+          },
         },
       ],
     },

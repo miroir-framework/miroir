@@ -354,16 +354,6 @@ const testActions: Record<string, TestCompositeActionParams> = {
     testActionType: "testBuildPlusRuntimeCompositeActionSuite",
     testActionLabel: pageLabel,
     application: testApplicationUuid,
-    // testParams: {
-    //   [runnerName]: {
-    //     transformerType: "returnValue",
-    //     value: {
-    //       application: testApplicationUuid,
-    //       entity: entityAuthor,
-    //       entityDefinition: entityDefinitionAuthor,
-    //     }
-    //   }
-    // },
     testParams: {
       [runnerName]: {
         transformerType: "returnValue",
@@ -418,12 +408,12 @@ const testActions: Record<string, TestCompositeActionParams> = {
         testApplicationModelEnvironment.currentModel as any,
         [entityPublisher.uuid],
       ),
-      // afterEach: testUtils_resetApplicationDeployment(testApplicationDeploymentUuid),
-      // afterAll: testUtils_deleteApplicationDeployment(
-      //   internalMiroirConfig,
-      //   testApplicationUuid,
-      //   testApplicationDeploymentUuid,
-      // ),
+      afterEach: testUtils_resetApplicationDeployment(testApplicationUuid),
+      afterAll: testUtils_deleteApplicationDeployment(
+        internalMiroirConfig,
+        testApplicationUuid,
+        testApplicationDeploymentUuid,
+      ),
       testCompositeActions: {
         // "Refresh all Instances": {
         //   testType: "testCompositeAction",
@@ -532,16 +522,6 @@ const testActions: Record<string, TestCompositeActionParams> = {
             actionLabel: "AddAuthorEntityAndCommit",
             endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             payload: {
-              // templates: {
-              //   [runnerName]: {
-              //     transformerType: "returnValue",
-              //     value: {
-              //       application: testApplicationUuid,
-              //       entity: entityAuthor,
-              //       entityDefinition: entityDefinitionAuthor,
-              //     },
-              //   },
-              // },
               actionSequence: [
                 {
                   actionType: "rollback",
@@ -631,20 +611,20 @@ const testActions: Record<string, TestCompositeActionParams> = {
                 },
               },
             },
-            // {
-            //   actionType: "compositeRunTestAssertion",
-            //   actionLabel: "checkEntityBooks",
-            //   nameGivenToResult: "checkEntityList",
-            //   testAssertion: {
-            //     testType: "testAssertion",
-            //     testLabel: "checkEntityBooks",
-            //     definition: {
-            //       resultAccessPath: ["libraryEntityList", "entities"],
-            //       ignoreAttributes: ["author", "storageAccess"],
-            //       expectedValue: [],
-            //     },
-            //   },
-            // },
+            {
+              actionType: "compositeRunTestAssertion",
+              actionLabel: "checkEntityBooks",
+              nameGivenToResult: "checkEntityList",
+              testAssertion: {
+                testType: "testAssertion",
+                testLabel: "checkEntityBooks",
+                definition: {
+                  resultAccessPath: ["libraryEntityList", "entities"],
+                  ignoreAttributes: ["author", "storageAccess"],
+                  expectedValue: [entityAuthor],
+                },
+              },
+            },
           ],
         },
         // "Add Entity Author then rollback": {
