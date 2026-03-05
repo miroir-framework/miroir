@@ -5,27 +5,20 @@ import "@testing-library/jest-dom";
 import { v4 as uuidv4 } from "uuid";
 import { beforeEach, describe, expect, it } from "vitest";
 
-import crossFetch from "cross-fetch";
 import {
   type ApplicationDeploymentMap,
   type Deployment,
   type DomainControllerInterface,
-  type LocalCacheInterface,
   type LoggerInterface,
   type LoggerOptions,
-  type MiroirContextInterface,
   type MiroirModelEnvironment,
   type MlSchema,
-  type PersistenceStoreControllerManagerInterface,
   type Runner,
   type StoreUnitConfiguration,
   type TestCompositeActionParams,
   ConfigurationService,
-  createDeploymentCompositeAction,
   defaultMiroirMetaModel,
-  defaultMiroirModelEnvironment,
   defaultSelfApplicationDeploymentMap,
-  displayTestSuiteResultsDetails,
   emptyApplicationModel,
   formatYYYYMMDD_HHMMSS,
   MiroirActivityTracker,
@@ -33,8 +26,6 @@ import {
   MiroirEventService,
   miroirFundamentalJzodSchema,
   MiroirLoggerFactory,
-  resetAndInitApplicationDeployment,
-  selfApplicationDeploymentMiroir,
   testBuildPlusRuntimeCompositeActionSuiteForRunner
 } from "miroir-core";
 import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
@@ -42,9 +33,8 @@ import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
 import { miroirMongoDbStoreSectionStartup } from "miroir-store-mongodb";
 import { miroirPostgresStoreSectionStartup } from "miroir-store-postgres";
 import {
-  adminApplication_Miroir,
   deployment_Admin,
-  deployment_Miroir,
+  deployment_Miroir
 } from "miroir-test-app_deployment-admin";
 import {
   deployment_Library_DO_NO_USE,
@@ -55,9 +45,15 @@ import {
 import { entityEntity, runnerCreateEntity } from "miroir-test-app_deployment-miroir";
 import { env } from "process";
 import { loglevelnext } from "../../src/loglevelnextImporter";
-import { runTestOrTestSuite, setupMiroirTest } from "../../src/miroir-fwk/4-tests/tests-utils";
+import { runTestOrTestSuite } from "../../src/miroir-fwk/4-tests/tests-utils";
 import { miroirAppStartup } from "../../src/startup";
 import { loadTestConfigFiles } from "../utils/fileTools";
+import {
+  afterAllTests,
+  beforeAllTests,
+  beforeEachTest,
+  testApplicationStorageConfiguration,
+} from "./RunnerIntegTestTools";
 
 // ################################################################################################
 const pageLabel = "Runner_CreateEntity.integ.test";
@@ -108,7 +104,6 @@ const testApplicationName = "testApplication_" + formatYYYYMMDD_HHMMSS(new Date(
 
 const applicationDeploymentMap: ApplicationDeploymentMap = {
   ...defaultSelfApplicationDeploymentMap,
-  // [selfApplicationLibrary.uuid]: deployment_Library_DO_NO_USE.uuid,
   [testApplicationUuid]: testApplicationDeploymentUuid,
 }
 
@@ -131,68 +126,10 @@ const libraryDeploymentStorageConfiguration: StoreUnitConfiguration = miroirConf
   ? miroirConfig.client.deploymentStorageConfig[deployment_Library_DO_NO_USE.uuid]
   : miroirConfig.client.serverConfig.storeSectionConfiguration[deployment_Library_DO_NO_USE.uuid];
 
-let testDeploymentStorageConfiguration: StoreUnitConfiguration;
-switch (libraryDeploymentStorageConfiguration.model.emulatedServerType) {
-  case "indexedDb": {
-    testDeploymentStorageConfiguration = {
-      admin: libraryDeploymentStorageConfiguration.admin,
-      model: {
-        emulatedServerType: "indexedDb",
-        indexedDbName: testApplicationName,
-      },
-      data: {
-        emulatedServerType: "indexedDb",
-        indexedDbName: testApplicationName,
-      },
-    };
-    break;
-  }
-  case "filesystem": {
-    testDeploymentStorageConfiguration = {
-      admin: libraryDeploymentStorageConfiguration.admin,
-      model: {
-        emulatedServerType: "filesystem",
-        directory: "./test_data/" + testApplicationName,
-      },
-      data: {
-        emulatedServerType: "filesystem",
-        directory: "./test_data/" + testApplicationName,
-      },
-    };
-    break;
-  }
-  case "sql": {
-    testDeploymentStorageConfiguration = {
-      admin: libraryDeploymentStorageConfiguration.admin,
-      model: {
-        emulatedServerType: "sql",
-        connectionString: "postgres://postgres:postgres@localhost:5432/postgres",
-        schema: testApplicationName,
-      },
-      data: {
-        emulatedServerType: "sql",
-        connectionString: "postgres://postgres:postgres@localhost:5432/postgres",
-        schema: testApplicationName,
-      },
-    };
-    break;
-  }
-  case "mongodb": {
-    testDeploymentStorageConfiguration = {
-      admin: libraryDeploymentStorageConfiguration.admin,
-      model: {
-        emulatedServerType: "mongodb",
-        connectionString: "mongodb://localhost:27017",
-        database: testApplicationName,
-      },
-      data: {
-        emulatedServerType: "mongodb",
-        connectionString: "mongodb://localhost:27017",
-        database: testApplicationName,
-      },
-    };
-  }
-}
+let testDeploymentStorageConfiguration: StoreUnitConfiguration = testApplicationStorageConfiguration(
+  libraryDeploymentStorageConfiguration,
+  testApplicationName,
+);
 
 const internalMiroirConfig = {
   ...miroirConfig,
@@ -222,72 +159,37 @@ const internalMiroirConfig = {
     )
   }
 }
-// const testDeploymentStorageConfiguration = miroirConfig.client.emulateServer
-//   ? miroirConfig.client.deploymentStorageConfig[testApplicationDeploymentUuid]
-//   : miroirConfig.client.serverConfig.storeSectionConfiguration[testApplicationDeploymentUuid];
 
 let domainController: DomainControllerInterface;
-let localCache: LocalCacheInterface;
-let miroirContext: MiroirContextInterface;
-let persistenceStoreControllerManager: PersistenceStoreControllerManagerInterface;
 
 beforeAll(async () => {
-  // Establish requests interception layer before all tests.
-  console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ beforeAll");
   const {
-    persistenceStoreControllerManagerForClient: localpersistenceStoreControllerManager,
     domainController: localdomainController,
-    localCache: locallocalCache,
-    miroirContext: localmiroirContext,
-  } = await setupMiroirTest(miroirConfig, miroirActivityTracker, miroirEventService, crossFetch);
-
-  persistenceStoreControllerManager = localpersistenceStoreControllerManager;
-  domainController = localdomainController;
-  localCache = locallocalCache;
-  miroirContext = localmiroirContext;
-
-  // create the Miroir app deployment containing the meta-model
-  const createMiroirDeploymentCompositeAction = createDeploymentCompositeAction(
-    "miroir",
-    deployment_Miroir.uuid,
-    adminApplication_Miroir.uuid,
+  } = await  beforeAllTests(
+    internalMiroirConfig,
+    miroirActivityTracker,
+    miroirEventService,
     adminDeployment,
     miroirDeploymentStorageConfiguration,
-  );
-  const createDeploymentResult = await domainController.handleCompositeAction(
-    createMiroirDeploymentCompositeAction,
+    // testDeploymentStorageConfiguration,
     applicationDeploymentMap,
-    defaultMiroirModelEnvironment,
-    {},
   );
-  if (createDeploymentResult.status !== "ok") {
-    log.error(
-      "Failed to create Miroir deployment, createMiroirDeploymentCompositeAction:",
-      JSON.stringify(createMiroirDeploymentCompositeAction, null, 2)
-    );
-    throw new Error("Failed to create Miroir deployment: " + JSON.stringify(createDeploymentResult));
-  }
-  console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ beforeAll DONE");
-
-  return Promise.resolve();
+  domainController = localdomainController;
 });
 
 // executed only once like beforeAll, since there is only 1 test suite
 beforeEach(async () => {
-  await resetAndInitApplicationDeployment(domainController, applicationDeploymentMap, [
-    selfApplicationDeploymentMiroir as Deployment,
-  ]);
-  document.body.innerHTML = "";
+  await beforeEachTest(
+    domainController,
+    applicationDeploymentMap,
+  );
 });
 
 afterAll(async () => {
-  // await deleteAndCloseApplicationDeployments(miroirConfig, domainController, defaultSelfApplicationDeploymentMap, adminApplicationDeploymentConfigurations);
-  displayTestSuiteResultsDetails(
-    Object.keys(testActions)[0],
-    [],
-    miroirActivityTracker
+  await afterAllTests(
+    miroirActivityTracker,
+    testActions,
   );
-  return Promise.resolve();
 });
 
 const testApplicationModelEnvironment: MiroirModelEnvironment = {
@@ -399,6 +301,7 @@ const testActions: Record<string, TestCompositeActionParams> =
     testApplicationModelEnvironment,
   );
 
+// ################################################################################################
 describe.sequential(
   pageLabel,
   () => {
@@ -418,5 +321,6 @@ describe.sequential(
       },
       globalTimeOut
     );
-  } //  end describe('DomainController.Data.CRUD.React',
+  }
 );
+
