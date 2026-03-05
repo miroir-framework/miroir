@@ -109,20 +109,20 @@ export function getCreateEntityActionTemplate(
             ],
           } as any,
         },
-        // {
-        //   actionType: "commit",
-        //   actionLabel: "commit",
-        //   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-        //   payload: {
-        //     application: {
-        //       transformerType: "mustacheStringTemplate",
-        //       definition: "{{createEntity.application}}",
-        //     } as any,
-        //   },
-        // },
+    //     // {
+    //     //   actionType: "commit",
+    //     //   actionLabel: "commit",
+    //     //   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+    //     //   payload: {
+    //     //     application: {
+    //     //       transformerType: "mustacheStringTemplate",
+    //     //       definition: "{{createEntity.application}}",
+    //     //     } as any,
+    //     //   },
+    //     // },
       ],
     },
-  };
+  } as any;
 }
 
 

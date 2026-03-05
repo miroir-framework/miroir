@@ -10,7 +10,6 @@ import {
   type ApplicationDeploymentMap,
   type Deployment,
   type DomainControllerInterface,
-  type EndpointDefinition,
   type Entity,
   type EntityDefinition,
   type JzodElement,
@@ -57,19 +56,20 @@ import {
   entityAuthor,
   entityDefinitionAuthor,
   entityPublisher,
-  getDefaultLibraryModelEnvironmentDEFUNCT,
   selfApplicationModelBranchLibraryMasterBranch,
   selfApplicationVersionLibraryInitialVersion
 } from "miroir-test-app_deployment-library";
 import { env } from "process";
 import { loglevelnext } from "../../src/loglevelnextImporter";
 import { runTestOrTestSuite, setupMiroirTest } from "../../src/miroir-fwk/4-tests/tests-utils";
+import { getCreateEntityActionTemplate } from "../../src/miroir-fwk/4_view/components/Runners/Runner_CreateEntity";
 import {
   testUtils_deleteApplicationDeployment,
   testUtils_resetApplicationDeployment,
 } from "../../src/miroir-fwk/4-tests/tests-utils-testOnLibrary";
 import { miroirAppStartup } from "../../src/startup";
 import { loadTestConfigFiles } from "../utils/fileTools";
+import { transform } from "happy-dom/lib/PropertySymbol";
 
 // ################################################################################################
 const pageLabel = "Runner_CreateEntity.integ.test";
@@ -118,36 +118,10 @@ const columnForTestDefinition: JzodElement = {
   tag: { value: { id: 6, defaultLabel: "Gender (narrow-minded)"} },
 };
 
-// const testApplicationUuid = selfApplicationLibrary.uuid;
 const testApplicationUuid = uuidv4();
-// const testApplicationDeploymentUuid = deployment_Library_DO_NO_USE.uuid;
 const testApplicationDeploymentUuid = uuidv4();
 const testApplicationName = "testApplication_" + formatYYYYMMDD_HHMMSS(new Date());
 
-// const deployment_Miroir: Deployment = {
-//   uuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
-//   parentName: "Deployment",
-//   parentUuid: "7959d814-400c-4e80-988f-a00fe582ab98",
-//   name: "DefaultMiroirApplicationDeployment",
-//   defaultLabel:
-//     "Miroir SelfApplication Deployment Configuration declaring Miroir SelfApplication Deployment in Admin schema. Run-time-only / DEFUNCT?",
-//   selfApplication: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-//   description: "The default Deployment for SelfApplication Miroir",
-//   configuration: {
-//     admin: {
-//       emulatedServerType: "filesystem",
-//       directory: "../miroir-core/src/assets/admin",
-//     },
-//     model: {
-//       emulatedServerType: "filesystem",
-//       directory: "../miroir-test-app_deployment-miroir/assets/miroir_model",
-//     },
-//     data: {
-//       emulatedServerType: "filesystem",
-//       directory: "../miroir-test-app_deployment-miroir/assets/miroir_data",
-//     },
-//   },
-// };
 
 const deployment_testApplication: Deployment = {
   uuid: "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
@@ -368,20 +342,30 @@ const testApplicationModelEnvironment: MiroirModelEnvironment = {
   deploymentUuid: testApplicationDeploymentUuid,
   currentModel: emptyApplicationModel,
 }
-// const testApplicationModelEnvironment = getDefaultLibraryModelEnvironmentDEFUNCT(
-//   miroirFundamentalJzodSchema as MlSchema,
-//   defaultMiroirMetaModel,
-//   endpointDocument as EndpointDefinition,
-//   testApplicationDeploymentUuid,
-// );
+
+const runnerName: string = "createEntity";
+
+const runnerActionTemplate = getCreateEntityActionTemplate(runnerName, "create Entity Author");
 
 const testActions: Record<string, TestCompositeActionParams> = {
   [pageLabel]: {
-    testActionType: "testCompositeActionSuite",
+    // testActionType: "testCompositeActionSuite",
+    testActionType: "testBuildPlusRuntimeCompositeActionSuite",
     testActionLabel: pageLabel,
     application: testApplicationUuid,
+    // testParams: {
+    //   [runnerName]: {
+    //     transformerType: "returnValue",
+    //     value: {
+    //       application: testApplicationUuid,
+    //       entity: entityAuthor,
+    //       entityDefinition: entityDefinitionAuthor,
+    //     }
+    //   }
+    // },
+    testParams: {},
     testCompositeAction: {
-      testType: "testCompositeActionSuite",
+      testType: "testBuildPlusRuntimeCompositeActionSuite",
       testLabel: pageLabel,
       beforeAll: createDeploymentCompositeAction(
         testApplicationName,
@@ -396,7 +380,6 @@ const testActions: Record<string, TestCompositeActionParams> = {
         {
           dataStoreType: "app", // TODO: comparison between deployment and selfAdminConfigurationDeployment
           metaModel: defaultMiroirMetaModel,
-          // selfApplication: selfApplicationLibrary,
           selfApplication: {
             uuid: "5af03c98-fe5e-490b-b08f-e1230971c57f",
             parentName: "SelfApplication",
@@ -404,8 +387,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
             name: testApplicationName,
             defaultLabel: `The ${testApplicationName} selfApplication.`,
             description: `The model and data of the ${testApplicationName} selfApplication.`,
-            homePageUrl:
-              `/report/${testApplicationUuid}/${testApplicationDeploymentUuid}/data/9c0cdb97-9537-4ee2-8053-a6ece3e0afe8/xxxxx`,
+            homePageUrl: `/report/${testApplicationUuid}/${testApplicationDeploymentUuid}/data/9c0cdb97-9537-4ee2-8053-a6ece3e0afe8/xxxxx`,
           },
           // deployment: selfApplicationDeploymentLibrary,
           applicationModelBranch: selfApplicationModelBranchLibraryMasterBranch,
@@ -426,13 +408,23 @@ const testActions: Record<string, TestCompositeActionParams> = {
         testApplicationModelEnvironment.currentModel as any,
         [entityPublisher.uuid],
       ),
-      afterEach: testUtils_resetApplicationDeployment(testApplicationDeploymentUuid),
-      afterAll: testUtils_deleteApplicationDeployment(
-        // miroirConfig,
-        internalMiroirConfig,
-        testApplicationUuid,
-        testApplicationDeploymentUuid,
-      ),
+      // afterEach: testUtils_resetApplicationDeployment(testApplicationDeploymentUuid),
+      // afterAll: testUtils_deleteApplicationDeployment(
+      //   internalMiroirConfig,
+      //   testApplicationUuid,
+      //   testApplicationDeploymentUuid,
+      // ),
+      // testCompositeActions: {
+      testParams: {
+        [runnerName]: {
+          transformerType: "returnValue",
+          value: {
+            application: testApplicationUuid,
+            entity: entityAuthor,
+            entityDefinition: entityDefinitionAuthor,
+          },
+        },
+      },
       testCompositeActions: {
         // "Refresh all Instances": {
         //   testType: "testCompositeAction",
@@ -527,13 +519,30 @@ const testActions: Record<string, TestCompositeActionParams> = {
         //   ],
         // },
         "Add Entity Author and Commit": {
-          testType: "testCompositeAction",
+          testType: "testBuildPlusRuntimeCompositeAction",
           testLabel: "Add Entity Author and Commit",
+          testParams: {
+            [runnerName]: {
+                application: testApplicationUuid,
+                entity: entityAuthor,
+                entityDefinition: entityDefinitionAuthor,
+            },
+          },
           compositeActionSequence: {
             actionType: "compositeActionSequence",
-            actionLabel: "AddBookInstanceThenRollback",
+            actionLabel: "AddAuthorEntityAndCommit",
             endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             payload: {
+              // templates: {
+              //   [runnerName]: {
+              //     transformerType: "returnValue",
+              //     value: {
+              //       application: testApplicationUuid,
+              //       entity: entityAuthor,
+              //       entityDefinition: entityDefinitionAuthor,
+              //     },
+              //   },
+              // },
               actionSequence: [
                 {
                   actionType: "rollback",
@@ -551,20 +560,37 @@ const testActions: Record<string, TestCompositeActionParams> = {
                     application: testApplicationUuid,
                   },
                 },
-                {
-                  actionType: "createEntity",
-                  actionLabel: "addEntityAuthor",
-                  endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                  payload: {
-                    application: testApplicationUuid,
-                    entities: [
-                      {
-                        entity: entityAuthor as Entity,
-                        entityDefinition: entityDefinitionAuthor as EntityDefinition,
-                      },
-                    ],
-                  },
-                },
+                runnerActionTemplate as any,
+                // {
+                //   ...runnerActionTemplate,
+                //   payload: {
+                //     ...runnerActionTemplate.payload,
+                //     templates: {
+                //       [runnerName]: {
+                //         transformerType: "returnValue",
+                //         value: {
+                //           application: testApplicationUuid,
+                //           entity: entityAuthor,
+                //           entityDefinition: entityDefinitionAuthor,
+                //         }
+                //       }
+                //     }
+                //   } as any,
+                // } as any,
+                // {
+                //   actionType: "createEntity",
+                //   actionLabel: "addEntityAuthor",
+                //   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                //   payload: {
+                //     application: testApplicationUuid,
+                //     entities: [
+                //       {
+                //         entity: entityAuthor as Entity,
+                //         entityDefinition: entityDefinitionAuthor as EntityDefinition,
+                //       },
+                //     ],
+                //   },
+                // },
                 {
                   actionType: "commit",
                   actionLabel: "commitLibraryLocalCache",

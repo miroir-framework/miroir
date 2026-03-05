@@ -2820,7 +2820,7 @@ export class DomainController implements DomainControllerInterface {
       actionLabel: buildPlusRuntimeCompositeAction.actionLabel,
       endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
       payload: {
-        application: "IGNORED",
+        // application: "IGNORED",
         actionSequence: resolvedActionDefinition as any,
         templates: resolvedCompositeActionTemplates,
       },
@@ -3531,7 +3531,7 @@ export class DomainController implements DomainControllerInterface {
           ...testAction.compositeActionSequence,
           endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
           payload: {
-            application: "IGNORED",
+            // application: "IGNORED",
             actionSequence: [
               ...testAction.compositeActionSequence.payload.actionSequence,
               ...testAction.testCompositeActionAssertions,
@@ -3550,7 +3550,7 @@ export class DomainController implements DomainControllerInterface {
           ...testAction.compositeActionSequence,
           endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
           payload: {
-            application: "IGNORED",
+            // application: "IGNORED",
             actionSequence: [
               ...testAction.compositeActionSequence.payload.actionSequence,
               ...testAction.testCompositeActionAssertions,
@@ -3748,7 +3748,16 @@ export class DomainController implements DomainControllerInterface {
               ...testCompositeAction[1].compositeActionSequence,
               endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
               payload: {
-                application: "IGNORED",
+                // application: "IGNORED",
+                ...(testCompositeAction[1].compositeActionSequence.payload.templates ||
+                testCompositeAction[1].testParams
+                  ? {
+                      templates: {
+                        ...testCompositeAction[1].compositeActionSequence.payload.templates,
+                        ...testCompositeAction[1].testParams,
+                      },
+                    }
+                  : {}),
                 actionSequence: [
                   ...testCompositeAction[1].compositeActionSequence.payload.actionSequence,
                   ...testCompositeAction[1].testCompositeActionAssertions,
@@ -3809,7 +3818,7 @@ export class DomainController implements DomainControllerInterface {
               ...testCompositeAction[1].compositeActionSequence,
               endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
               payload: {
-                application: "IGNORED",
+                // application: "IGNORED",
                 actionSequence: [
                   ...testCompositeAction[1].compositeActionSequence.payload.actionSequence,
                   ...testCompositeAction[1].testCompositeActionAssertions,
