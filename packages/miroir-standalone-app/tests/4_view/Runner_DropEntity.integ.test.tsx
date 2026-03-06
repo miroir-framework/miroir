@@ -9,6 +9,7 @@ import {
   type DomainControllerInterface,
   type LoggerInterface,
   type LoggerOptions,
+  type MetaModel,
   type MiroirModelEnvironment,
   type MlSchema,
   type Runner,
@@ -47,6 +48,7 @@ import {
   getTestConfig,
   testApplicationStorageConfiguration,
 } from "./RunnerIntegTestTools";
+import type { RunnerTestParams } from "./Runner_CreateEntity.integ.test";
 
 // ################################################################################################
 const pageLabel = "Runner_DropEntity.integ.test";
@@ -169,26 +171,18 @@ beforeEach(async () => {
 afterAll(async () => {
   await afterAllTests(
     miroirActivityTracker,
-    testActions,
+    runnerDropEntity.name,
   );
 });
 
-const testApplicationModelEnvironment: MiroirModelEnvironment = {
-  miroirFundamentalJzodSchema: miroirFundamentalJzodSchema as MlSchema,
-  miroirMetaModel: defaultMiroirMetaModel,
-  endpointsByUuid: {[endpointDocument.uuid]: endpointDocument},
-  deploymentUuid: testApplicationDeploymentUuid,
-  currentModel: emptyApplicationModel,
-}
-
-const testActions: Record<string, TestCompositeActionParams> =
-  testBuildPlusRuntimeCompositeActionSuiteForRunner(
+const runnerTestParams: Record<string, RunnerTestParams> = {
+  [runnerDropEntity.name]: {
     pageLabel,
-    runnerDropEntity as unknown as Runner,
+    runner: runnerDropEntity as unknown as Runner,
     testApplicationUuid,
     testApplicationDeploymentUuid,
     testApplicationName,
-    {
+    testParams: {
       ["createEntity"]: {
         transformerType: "returnValue",
         value: {
@@ -205,7 +199,7 @@ const testActions: Record<string, TestCompositeActionParams> =
         },
       },
     }, // testParams
-    [
+    preTestCompositeActions: [
       {
         // performs query on local cache for emulated server, and on server for remote server
         actionType: "compositeRunBoxedQueryAction",
@@ -243,7 +237,7 @@ const testActions: Record<string, TestCompositeActionParams> =
         },
       },
     ], // preTestCompositeActions
-    [
+    testCompositeActionAssertions: [
       {
         actionType: "compositeRunTestAssertion",
         actionLabel: "checkNumberOfEntities",
@@ -281,22 +275,38 @@ const testActions: Record<string, TestCompositeActionParams> =
         },
       },
     ],
-    //
     internalMiroirConfig,
     adminDeployment,
     testDeploymentStorageConfiguration,
-    testApplicationModelEnvironment,
-    [runnerCreateEntity.definition.actionTemplate as any], // preRunnerCompositeActions: create the entity before dropping it
-    "Create and Drop Entity Author",
-  );
+    initialModel: emptyApplicationModel,
+    preRunnerCompositeActions: [runnerCreateEntity.definition.actionTemplate as any], // preRunnerCompositeActions: create the entity before dropping it
+    testCompositeActionLabel: "Create and Drop Entity Author",
+  },
+};
 
-// ################################################################################################
 describe.sequential(
   pageLabel,
   () => {
-    it.each(Object.entries(testActions))(
+    it.each(Object.entries(runnerTestParams))(
       "test %s",
-      async (currentTestSuiteName, testAction: TestCompositeActionParams) => {
+      async (currentTestSuiteName, testParams: RunnerTestParams) => {
+        const testAction = testBuildPlusRuntimeCompositeActionSuiteForRunner(
+          testParams.pageLabel,
+          testParams.runner,
+          testParams.testApplicationUuid,
+          testParams.testApplicationDeploymentUuid,
+          testParams.testApplicationName,
+          testParams.testParams,
+          testParams.preTestCompositeActions,
+          testParams.testCompositeActionAssertions,
+          //
+          testParams.internalMiroirConfig,
+          testParams.adminDeployment,
+          testParams.testDeploymentStorageConfiguration,
+          testParams.initialModel,
+          testParams.preRunnerCompositeActions,
+          testParams.testCompositeActionLabel,
+        );
         const testSuiteResults = await runTestOrTestSuite(
           domainController,
           testAction,

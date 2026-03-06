@@ -6,9 +6,14 @@ import { v4 as uuidv4 } from "uuid";
 import { beforeEach, describe, expect, it } from "vitest";
 
 import {
+  type CompositeAction,
+  type CompositeRunTestAssertion,
+  type Deployment,
   type DomainControllerInterface,
   type LoggerInterface,
   type LoggerOptions,
+  type MetaModel,
+  type MiroirConfigClient,
   type MiroirModelEnvironment,
   type MlSchema,
   type Runner,
@@ -170,26 +175,46 @@ beforeEach(async () => {
 afterAll(async () => {
   await afterAllTests(
     miroirActivityTracker,
-    testActions,
+    runnerCreateEntity.name,
   );
 });
 
-const testApplicationModelEnvironment: MiroirModelEnvironment = {
-  miroirFundamentalJzodSchema: miroirFundamentalJzodSchema as MlSchema,
-  miroirMetaModel: defaultMiroirMetaModel,
-  endpointsByUuid: {[endpointDocument.uuid]: endpointDocument},
-  deploymentUuid: testApplicationDeploymentUuid,
-  currentModel: emptyApplicationModel,
+// const testApplicationModelEnvironment: MiroirModelEnvironment = {
+//   miroirFundamentalJzodSchema: miroirFundamentalJzodSchema as MlSchema,
+//   miroirMetaModel: defaultMiroirMetaModel,
+//   endpointsByUuid: {[endpointDocument.uuid]: endpointDocument},
+//   deploymentUuid: testApplicationDeploymentUuid,
+//   currentModel: emptyApplicationModel,
+// }
+
+export interface RunnerTestParams {
+  pageLabel: string,
+  runner: Runner,
+  testApplicationUuid: string,
+  testApplicationDeploymentUuid: string,
+  testApplicationName: string,
+  testParams: Record<string, any>,
+  preTestCompositeActions: CompositeAction[],
+  testCompositeActionAssertions: CompositeRunTestAssertion[],
+  //
+  internalMiroirConfig: MiroirConfigClient,
+  adminDeployment: Deployment,
+  testDeploymentStorageConfiguration: StoreUnitConfiguration,
+  // testApplicationModelEnvironment: MiroirModelEnvironment,
+  initialModel: MetaModel,
+  preRunnerCompositeActions?: CompositeAction[],
+  testCompositeActionLabel?: string,
+
 }
 
-const testActions: Record<string, TestCompositeActionParams> =
-  testBuildPlusRuntimeCompositeActionSuiteForRunner(
+const runnerTestParams: Record<string, RunnerTestParams> = {
+  [runnerCreateEntity.name]: {
     pageLabel,
-    runnerCreateEntity as Runner,
+    runner: runnerCreateEntity as Runner,
     testApplicationUuid,
     testApplicationDeploymentUuid,
     testApplicationName,
-    {
+    testParams: {
       [runnerCreateEntity.name]: {
         transformerType: "returnValue",
         value: {
@@ -199,7 +224,7 @@ const testActions: Record<string, TestCompositeActionParams> =
         },
       },
     }, // testParams
-    [
+    preTestCompositeActions: [
       {
         // performs query on local cache for emulated server, and on server for remote server
         actionType: "compositeRunBoxedQueryAction",
@@ -237,7 +262,7 @@ const testActions: Record<string, TestCompositeActionParams> =
         },
       },
     ], // preTestCompositeActions
-    [
+    testCompositeActionAssertions: [
       // TODO: test length of entityBookList.books!
       {
         actionType: "compositeRunTestAssertion",
@@ -276,20 +301,139 @@ const testActions: Record<string, TestCompositeActionParams> =
         },
       },
     ],
-    //
     internalMiroirConfig,
     adminDeployment,
     testDeploymentStorageConfiguration,
-    testApplicationModelEnvironment,
-  );
+    initialModel: emptyApplicationModel,
+  },
+};
+
+// const testActions: Record<string, TestCompositeActionParams> = {
+//   [runnerCreateEntity.name]: testBuildPlusRuntimeCompositeActionSuiteForRunner(
+//     pageLabel,
+//     runnerCreateEntity as Runner,
+//     testApplicationUuid,
+//     testApplicationDeploymentUuid,
+//     testApplicationName,
+//     {
+//       [runnerCreateEntity.name]: {
+//         transformerType: "returnValue",
+//         value: {
+//           application: testApplicationUuid,
+//           entity: entityAuthor,
+//           entityDefinition: entityDefinitionAuthor,
+//         },
+//       },
+//     }, // testParams
+//     [
+//       {
+//         // performs query on local cache for emulated server, and on server for remote server
+//         actionType: "compositeRunBoxedQueryAction",
+//         endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+//         actionLabel: "calculateNewEntityDefinionAndReports",
+//         nameGivenToResult: "libraryEntityList",
+//         payload: {
+//           actionType: "runBoxedQueryAction",
+//           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+//           payload: {
+//             application: testApplicationUuid,
+//             applicationSection: "model", // TODO: give only selfApplication section in individual queries?
+//             query: {
+//               queryType: "boxedQueryWithExtractorCombinerTransformer",
+//               application: testApplicationUuid,
+//               pageParams: {
+//                 currentDeploymentUuid: testApplicationDeploymentUuid,
+//               },
+//               queryParams: {},
+//               contextResults: {},
+//               extractors: {
+//                 entities: {
+//                   extractorOrCombinerType: "extractorByEntityReturningObjectList",
+//                   applicationSection: "model",
+//                   parentName: entityEntity.name,
+//                   parentUuid: entityEntity.uuid,
+//                   orderBy: {
+//                     attributeName: "name",
+//                     direction: "ASC",
+//                   },
+//                 },
+//               },
+//             },
+//           },
+//         },
+//       },
+//     ], // preTestCompositeActions
+//     [
+//       // TODO: test length of entityBookList.books!
+//       {
+//         actionType: "compositeRunTestAssertion",
+//         actionLabel: "checkNumberOfEntities",
+//         nameGivenToResult: "checkNumberOfEntities",
+//         testAssertion: {
+//           testType: "testAssertion",
+//           testLabel: "checkNumberOfEntities",
+//           definition: {
+//             resultAccessPath: ["0"],
+//             resultTransformer: {
+//               transformerType: "aggregate",
+//               interpolation: "runtime",
+//               applyTo: {
+//                 transformerType: "getFromContext",
+//                 interpolation: "runtime",
+//                 referencePath: ["libraryEntityList", "entities"],
+//               },
+//             },
+//             expectedValue: { aggregate: 1 },
+//           },
+//         },
+//       },
+//       {
+//         actionType: "compositeRunTestAssertion",
+//         actionLabel: "checkEntityBooks",
+//         nameGivenToResult: "checkEntityList",
+//         testAssertion: {
+//           testType: "testAssertion",
+//           testLabel: "checkEntityBooks",
+//           definition: {
+//             resultAccessPath: ["libraryEntityList", "entities"],
+//             ignoreAttributes: ["author", "storageAccess"],
+//             expectedValue: [entityAuthor],
+//           },
+//         },
+//       },
+//     ],
+//     //
+//     internalMiroirConfig,
+//     adminDeployment,
+//     testDeploymentStorageConfiguration,
+//     emptyApplicationModel,
+//   ),
+// };  
 
 // ################################################################################################
 describe.sequential(
   pageLabel,
   () => {
-    it.each(Object.entries(testActions))(
+    it.each(Object.entries(runnerTestParams))(
       "test %s",
-      async (currentTestSuiteName, testAction: TestCompositeActionParams) => {
+      async (currentTestSuiteName, testParams: RunnerTestParams) => {
+        const testAction = testBuildPlusRuntimeCompositeActionSuiteForRunner(
+          testParams.pageLabel,
+          testParams.runner,
+          testParams.testApplicationUuid,
+          testParams.testApplicationDeploymentUuid,
+          testParams.testApplicationName,
+          testParams.testParams,
+          testParams.preTestCompositeActions,
+          testParams.testCompositeActionAssertions,
+          //
+          testParams.internalMiroirConfig,
+          testParams.adminDeployment,
+          testParams.testDeploymentStorageConfiguration,
+          testParams.initialModel,
+          testParams.preRunnerCompositeActions,
+          testParams.testCompositeActionLabel,
+        );
         const testSuiteResults = await runTestOrTestSuite(
           domainController,
           testAction,

@@ -99,11 +99,13 @@ export async function beforeEachTest(
 // ################################################################################################
 export async function afterAllTests(
   miroirActivityTracker: MiroirActivityTracker,
-  testActions: Record<string, TestCompositeActionParams>,
+  // testActions: Record<string, TestCompositeActionParams>,
+  displayTestResults: string,
 ): Promise<void> {
   // await deleteAndCloseApplicationDeployments(miroirConfig, domainController, defaultSelfApplicationDeploymentMap, adminApplicationDeploymentConfigurations);
   displayTestSuiteResultsDetails(
-    Object.keys(testActions)[0],
+    // Object.keys(testActions)[0],
+    displayTestResults,
     [],
     miroirActivityTracker
   );
@@ -180,6 +182,7 @@ export function testApplicationStorageConfiguration(
   return testDeploymentStorageConfiguration;
 }
 
+// ################################################################################################
 export function getTestConfig(
   miroirConfig: MiroirConfigClient,
   testApplicationDeploymentUuid: Uuid, 
