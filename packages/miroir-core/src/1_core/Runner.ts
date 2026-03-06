@@ -37,6 +37,8 @@ export function testBuildPlusRuntimeCompositeActionSuiteForRunner(
   adminDeployment: Deployment,
   testDeploymentStorageConfiguration: StoreUnitConfiguration,
   testApplicationModelEnvironment: MiroirModelEnvironment,
+  preRunnerCompositeActions?: CompositeAction[],
+  testCompositeActionLabel?: string,
 ): Record<string, TestCompositeActionParams> {
   if (runner.definition.runnerType !== "customRunner") {
     throw new Error(
@@ -93,13 +95,13 @@ export function testBuildPlusRuntimeCompositeActionSuiteForRunner(
           testApplicationDeploymentUuid,
         ),
         testCompositeActions: {
-          "Add Entity Author and Commit": {
+          [testCompositeActionLabel ?? "Add Entity Author and Commit"]: {
             testType: "testBuildPlusRuntimeCompositeAction",
-            testLabel: "Add Entity Author and Commit",
+            testLabel: testCompositeActionLabel ?? "Add Entity Author and Commit",
             testParams,
             compositeActionSequence: {
               actionType: "compositeActionSequence",
-              actionLabel: "AddAuthorEntityAndCommit",
+              actionLabel: testCompositeActionLabel ?? "AddAuthorEntityAndCommit",
               endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
               payload: {
                 actionSequence: [
@@ -119,6 +121,7 @@ export function testBuildPlusRuntimeCompositeActionSuiteForRunner(
                       application: testApplicationUuid,
                     },
                   },
+                  ...(preRunnerCompositeActions ?? []) as any[],
                   runner.definition.actionTemplate as any,
                   {
                     actionType: "commit",

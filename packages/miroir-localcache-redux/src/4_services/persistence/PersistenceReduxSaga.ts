@@ -343,10 +343,22 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
       this.params.persistenceStoreAccessMode,
       "action",
       action,
+      "application",
+      action.payload.application,
       "applicationDeploymentMap",
       applicationDeploymentMap,
       "deploymentUuid", deploymentUuid
     );
+    if (!deploymentUuid) {
+      throw new Error(
+        "PersistenceReduxSaga innerHandlePersistenceActionForLocalPersistenceStore could not find deploymentUuid for application " +
+          JSON.stringify(action.payload.application) +
+          " in applicationDeploymentMap " +
+          JSON.stringify(applicationDeploymentMap, null, 2) +
+          " for action " +
+          JSON.stringify(action, null, 2)
+      );
+    }
     if (this.params.persistenceStoreAccessMode != "local") {
       throw new Error(
         "PersistenceReduxSaga innerHandlePersistenceActionForLocalPersistenceStore called with persistenceStoreAccessMode = remote, this is not allowed!"
