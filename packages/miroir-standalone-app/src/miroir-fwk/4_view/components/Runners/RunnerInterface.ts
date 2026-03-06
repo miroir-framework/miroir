@@ -1,5 +1,6 @@
 import type { FormikHelpers } from "formik";
 import type { CompositeActionSequence, CompositeActionTemplate, TransformerForBuildPlusRuntime, JzodObject, BoxedQueryTemplateWithExtractorCombinerTransformer, BoxedQueryWithExtractorCombinerTransformer, MiroirModelEnvironment, Uuid, ApplicationDeploymentMap } from "miroir-core";
+import type { MlSchemaTemplate } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import type { ReactElement } from "react";
 
 // ################################################################################################
@@ -26,16 +27,19 @@ export type InitialFormValue<T extends Record<string, any>> = {
   transformer: TransformerForBuildPlusRuntime,
 }
 
-// #
+// ##################################################################################################
+// TODO: take it from the Runner entity definition!
 export type FormMLSchema =
   | {
       formMLSchemaType: "mlSchema";
+      initialFormValues?: Record<string, any>;
       mlSchema: JzodObject;
     }
   | {
       formMLSchemaType: "transformer";
       initialFormValues?: Record<string, any>;
-      transformer: TransformerForBuildPlusRuntime;
+      // transformer: TransformerForBuildPlusRuntime;
+      transformer: MlSchemaTemplate;
     };
 
 // ################################################################################################

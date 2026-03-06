@@ -15,7 +15,6 @@ import type {
   StoreUnitConfiguration,
   TestCompositeActionParams,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
-import type { MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
 import {
   createDeploymentCompositeAction,
   resetAndinitializeDeploymentCompositeAction,

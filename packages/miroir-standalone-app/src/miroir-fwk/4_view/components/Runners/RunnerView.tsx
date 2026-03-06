@@ -53,7 +53,6 @@ export function StoredRunnerView(props: {
   applicationUuid: Uuid,
   applicationDeploymentMap?: ApplicationDeploymentMap,
   runnerUuid: Uuid,
-  // storedRunner: Runner,
 }) {
   // const context = useMiroirContextService();
   const applicationDeploymentMap = props.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap;
@@ -335,7 +334,6 @@ export function StoredRunnerView(props: {
               applicationDeploymentMap={
                 props.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap
               }
-              // deploymentUuid={runnerDeploymentUuid}
               formMLSchema={formMLSchema}
               initialFormValue={initialFormValue}
               action={{
