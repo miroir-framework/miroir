@@ -643,6 +643,10 @@ export {
   dropApplicationAndDeploymentCompositeAction,
   EndpointApplicationMap,
   resetAndinitializeDeploymentCompositeAction,
+  getMiroirConfig,
+  testUtils_deleteApplicationDeployment,
+  testUtils_resetApplicationDeployment,
+  metaModelFilterEntities,
 } from "./1_core/Deployment";
 export { DomainInstanceUuidIndexToArray } from "./1_core/DomainState.js";
 export {

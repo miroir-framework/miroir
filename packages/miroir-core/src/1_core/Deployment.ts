@@ -484,3 +484,39 @@ export function testUtils_deleteApplicationDeployment(
   };
 }
 
+// ################################################################################################
+export function getMiroirConfig(
+  miroirConfig: MiroirConfigClient,
+  testDeploymentStorageConfiguration: StoreUnitConfiguration,
+  testApplicationDeploymentUuid: Uuid,
+) {
+  const internalMiroirConfig = {
+    ...miroirConfig,
+    client: {
+      ...miroirConfig.client,
+      ...(
+        miroirConfig.client.emulateServer?
+        {
+          deploymentStorageConfig: {
+            ...miroirConfig.client.deploymentStorageConfig,
+            [testApplicationDeploymentUuid]: testDeploymentStorageConfiguration,
+          }
+        }
+        : {}
+      ),
+      ...(
+        !miroirConfig.client.emulateServer?
+        {
+          serverConfig: {
+            ...miroirConfig.client.serverConfig,
+            storeSectionConfiguration: {
+              ...miroirConfig.client.serverConfig.storeSectionConfiguration,
+              [testApplicationDeploymentUuid]: testDeploymentStorageConfiguration,
+            }
+          }
+        }:{}
+      )
+    }
+  }
+  return internalMiroirConfig;
+}

@@ -6,36 +6,26 @@ import { v4 as uuidv4 } from "uuid";
 import { beforeEach, describe, expect, it } from "vitest";
 
 import {
-  type CompositeAction,
-  type CompositeRunTestAssertion,
-  type Deployment,
-  type DomainControllerInterface,
-  type LoggerInterface,
-  type LoggerOptions,
-  type MetaModel,
-  type MiroirConfigClient,
-  type MiroirModelEnvironment,
-  type MlSchema,
-  type Runner,
-  type StoreUnitConfiguration,
-  type TestCompositeActionParams,
   ConfigurationService,
-  defaultMiroirMetaModel,
   emptyApplicationModel,
   formatYYYYMMDD_HHMMSS,
+  getMiroirConfig,
   MiroirActivityTracker,
   miroirCoreStartup,
   MiroirEventService,
-  miroirFundamentalJzodSchema,
   MiroirLoggerFactory,
-  testBuildPlusRuntimeCompositeActionSuiteForRunner
+  testBuildPlusRuntimeCompositeActionSuiteForRunner,
+  type DomainControllerInterface,
+  type LoggerInterface,
+  type LoggerOptions,
+  type Runner,
+  type StoreUnitConfiguration
 } from "miroir-core";
 import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
 import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
 import { miroirMongoDbStoreSectionStartup } from "miroir-store-mongodb";
 import { miroirPostgresStoreSectionStartup } from "miroir-store-postgres";
 import {
-  endpointDocument,
   entityAuthor,
   entityDefinitionAuthor
 } from "miroir-test-app_deployment-library";
@@ -51,6 +41,7 @@ import {
   beforeEachTest,
   getTestConfig,
   testApplicationStorageConfiguration,
+  type RunnerTestParams,
 } from "./RunnerIntegTestTools";
 
 // ################################################################################################
@@ -118,37 +109,15 @@ let testDeploymentStorageConfiguration: StoreUnitConfiguration = testApplication
   testApplicationName,
 );
 
-const internalMiroirConfig = {
-  ...miroirConfig,
-  client: {
-    ...miroirConfig.client,
-    ...(
-      miroirConfig.client.emulateServer?
-      {
-        deploymentStorageConfig: {
-          ...miroirConfig.client.deploymentStorageConfig,
-          [testApplicationDeploymentUuid]: testDeploymentStorageConfiguration,
-        }
-      }
-      : {}
-    ),
-    ...(
-      !miroirConfig.client.emulateServer?
-      {
-        serverConfig: {
-          ...miroirConfig.client.serverConfig,
-          storeSectionConfiguration: {
-            ...miroirConfig.client.serverConfig.storeSectionConfiguration,
-            [testApplicationDeploymentUuid]: testDeploymentStorageConfiguration,
-          }
-        }
-      }:{}
-    )
-  }
-}
+const internalMiroirConfig = getMiroirConfig(
+  miroirConfig,
+  testDeploymentStorageConfiguration,
+  testApplicationDeploymentUuid,
+);
 
 let domainController: DomainControllerInterface;
 
+// ################################################################################################
 beforeAll(async () => {
   const {
     domainController: localdomainController,
@@ -158,7 +127,6 @@ beforeAll(async () => {
     miroirEventService,
     adminDeployment,
     miroirDeploymentStorageConfiguration,
-    // testDeploymentStorageConfiguration,
     applicationDeploymentMap,
   );
   domainController = localdomainController;
@@ -178,35 +146,8 @@ afterAll(async () => {
     runnerCreateEntity.name,
   );
 });
-
-// const testApplicationModelEnvironment: MiroirModelEnvironment = {
-//   miroirFundamentalJzodSchema: miroirFundamentalJzodSchema as MlSchema,
-//   miroirMetaModel: defaultMiroirMetaModel,
-//   endpointsByUuid: {[endpointDocument.uuid]: endpointDocument},
-//   deploymentUuid: testApplicationDeploymentUuid,
-//   currentModel: emptyApplicationModel,
-// }
-
-export interface RunnerTestParams {
-  pageLabel: string,
-  runner: Runner,
-  testApplicationUuid: string,
-  testApplicationDeploymentUuid: string,
-  testApplicationName: string,
-  testParams: Record<string, any>,
-  preTestCompositeActions: CompositeAction[],
-  testCompositeActionAssertions: CompositeRunTestAssertion[],
-  //
-  internalMiroirConfig: MiroirConfigClient,
-  adminDeployment: Deployment,
-  testDeploymentStorageConfiguration: StoreUnitConfiguration,
-  // testApplicationModelEnvironment: MiroirModelEnvironment,
-  initialModel: MetaModel,
-  preRunnerCompositeActions?: CompositeAction[],
-  testCompositeActionLabel?: string,
-
-}
-
+  
+// ################################################################################################
 const runnerTestParams: Record<string, RunnerTestParams> = {
   [runnerCreateEntity.name]: {
     pageLabel,
@@ -307,108 +248,6 @@ const runnerTestParams: Record<string, RunnerTestParams> = {
     initialModel: emptyApplicationModel,
   },
 };
-
-// const testActions: Record<string, TestCompositeActionParams> = {
-//   [runnerCreateEntity.name]: testBuildPlusRuntimeCompositeActionSuiteForRunner(
-//     pageLabel,
-//     runnerCreateEntity as Runner,
-//     testApplicationUuid,
-//     testApplicationDeploymentUuid,
-//     testApplicationName,
-//     {
-//       [runnerCreateEntity.name]: {
-//         transformerType: "returnValue",
-//         value: {
-//           application: testApplicationUuid,
-//           entity: entityAuthor,
-//           entityDefinition: entityDefinitionAuthor,
-//         },
-//       },
-//     }, // testParams
-//     [
-//       {
-//         // performs query on local cache for emulated server, and on server for remote server
-//         actionType: "compositeRunBoxedQueryAction",
-//         endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
-//         actionLabel: "calculateNewEntityDefinionAndReports",
-//         nameGivenToResult: "libraryEntityList",
-//         payload: {
-//           actionType: "runBoxedQueryAction",
-//           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-//           payload: {
-//             application: testApplicationUuid,
-//             applicationSection: "model", // TODO: give only selfApplication section in individual queries?
-//             query: {
-//               queryType: "boxedQueryWithExtractorCombinerTransformer",
-//               application: testApplicationUuid,
-//               pageParams: {
-//                 currentDeploymentUuid: testApplicationDeploymentUuid,
-//               },
-//               queryParams: {},
-//               contextResults: {},
-//               extractors: {
-//                 entities: {
-//                   extractorOrCombinerType: "extractorByEntityReturningObjectList",
-//                   applicationSection: "model",
-//                   parentName: entityEntity.name,
-//                   parentUuid: entityEntity.uuid,
-//                   orderBy: {
-//                     attributeName: "name",
-//                     direction: "ASC",
-//                   },
-//                 },
-//               },
-//             },
-//           },
-//         },
-//       },
-//     ], // preTestCompositeActions
-//     [
-//       // TODO: test length of entityBookList.books!
-//       {
-//         actionType: "compositeRunTestAssertion",
-//         actionLabel: "checkNumberOfEntities",
-//         nameGivenToResult: "checkNumberOfEntities",
-//         testAssertion: {
-//           testType: "testAssertion",
-//           testLabel: "checkNumberOfEntities",
-//           definition: {
-//             resultAccessPath: ["0"],
-//             resultTransformer: {
-//               transformerType: "aggregate",
-//               interpolation: "runtime",
-//               applyTo: {
-//                 transformerType: "getFromContext",
-//                 interpolation: "runtime",
-//                 referencePath: ["libraryEntityList", "entities"],
-//               },
-//             },
-//             expectedValue: { aggregate: 1 },
-//           },
-//         },
-//       },
-//       {
-//         actionType: "compositeRunTestAssertion",
-//         actionLabel: "checkEntityBooks",
-//         nameGivenToResult: "checkEntityList",
-//         testAssertion: {
-//           testType: "testAssertion",
-//           testLabel: "checkEntityBooks",
-//           definition: {
-//             resultAccessPath: ["libraryEntityList", "entities"],
-//             ignoreAttributes: ["author", "storageAccess"],
-//             expectedValue: [entityAuthor],
-//           },
-//         },
-//       },
-//     ],
-//     //
-//     internalMiroirConfig,
-//     adminDeployment,
-//     testDeploymentStorageConfiguration,
-//     emptyApplicationModel,
-//   ),
-// };  
 
 // ################################################################################################
 describe.sequential(

@@ -3,15 +3,18 @@ import "@testing-library/jest-dom";
 import crossFetch from "cross-fetch";
 import {
   type ApplicationDeploymentMap,
+  type CompositeAction,
+  type CompositeRunTestAssertion,
   type Deployment,
   type DomainControllerInterface,
   type LocalCacheInterface,
+  type MetaModel,
   type MiroirActivityTracker,
   type MiroirConfigClient,
   type MiroirEventService,
   type PersistenceStoreControllerManager,
+  type Runner,
   type StoreUnitConfiguration,
-  type TestCompositeActionParams,
   type Uuid,
   createDeploymentCompositeAction,
   defaultMiroirModelEnvironment,
@@ -25,8 +28,27 @@ import {
   deployment_Admin,
   deployment_Miroir
 } from "miroir-test-app_deployment-admin";
-import { setupMiroirTest } from "../../src/miroir-fwk/4-tests/tests-utils";
 import { deployment_Library_DO_NO_USE } from "miroir-test-app_deployment-library";
+import { setupMiroirTest } from "../../src/miroir-fwk/4-tests/tests-utils";
+
+export interface RunnerTestParams {
+  pageLabel: string,
+  runner: Runner,
+  testApplicationUuid: string,
+  testApplicationDeploymentUuid: string,
+  testApplicationName: string,
+  testParams: Record<string, any>,
+  preTestCompositeActions: CompositeAction[],
+  testCompositeActionAssertions: CompositeRunTestAssertion[],
+  //
+  internalMiroirConfig: MiroirConfigClient,
+  adminDeployment: Deployment,
+  testDeploymentStorageConfiguration: StoreUnitConfiguration,
+  initialModel: MetaModel,
+  preRunnerCompositeActions?: CompositeAction[],
+  testCompositeActionLabel?: string,
+
+}
 
 // ################################################################################################
 export async function beforeAllTests(
