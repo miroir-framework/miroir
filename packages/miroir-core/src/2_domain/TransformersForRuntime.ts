@@ -1672,7 +1672,7 @@ export function transformer_resolveReference(
         transformerPath: [...transformerPath, usedReference],
         failureOrigin: ["transformer_resolveReference"],
         queryReference: transformerInnerReference.referenceName,
-        failureMessage: "no referenceName " + transformerInnerReference.referenceName,
+        failureMessage: "no referenceName " + transformerInnerReference.referenceName + " in " + paramOrContext,
         queryContext: JSON.stringify(Object.keys(bank)),
       });
     }

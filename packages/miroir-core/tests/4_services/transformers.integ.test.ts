@@ -166,11 +166,11 @@ const beforeAll = async () => {
     console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ connected!");
 
     await persistenceStoreController.initApplication(
-      defaultMiroirMetaModel,
       "miroir",
       testApplicationConfig.selfApplication,
       testApplicationConfig.applicationModelBranch,
-      testApplicationConfig.applicationVersion
+      testApplicationConfig.applicationVersion,
+      defaultMiroirMetaModel,
     );
 
     await persistenceStoreController.handleAction({

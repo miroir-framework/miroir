@@ -53,7 +53,7 @@ export function testBuildPlusRuntimeCompositeActionSuiteForRunner(
     testActionType: "testBuildPlusRuntimeCompositeActionSuite",
     testActionLabel: pageLabel,
     application: testApplicationUuid,
-    testParams: {},
+    testParams,
     // testParams, // TODO: have it working with testParams up here, make testParams optional
     testCompositeAction: {
       testType: "testBuildPlusRuntimeCompositeActionSuite",
@@ -98,15 +98,20 @@ export function testBuildPlusRuntimeCompositeActionSuiteForRunner(
         testApplicationDeploymentUuid,
       ),
       testCompositeActions: {
-        [testCompositeActionLabel ?? "Add Entity Author and Commit"]: {
+        [testCompositeActionLabel ?? "no_testCompositeActionLabel_given"]: {
           testType: "testBuildPlusRuntimeCompositeAction",
-          testLabel: testCompositeActionLabel ?? "Add Entity Author and Commit",
+          testLabel: testCompositeActionLabel ?? "no_testCompositeActionLabel_given",
           testParams,
           compositeActionSequence: {
             actionType: "compositeActionSequence",
-            actionLabel: testCompositeActionLabel ?? "AddAuthorEntityAndCommit",
+            actionLabel: testCompositeActionLabel ?? "no_testCompositeActionLabel_given",
             endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             payload: {
+              ...(runner.definition.actionTemplate.payload.templates
+                ? {
+                    templates: runner.definition.actionTemplate.payload.templates,
+                  }
+                : {}),
               actionSequence: [
                 {
                   actionType: "rollback",

@@ -698,9 +698,14 @@ export async function runTestOrTestSuite(
   try {
     switch (testAction.testActionType) {
       case 'testBuildPlusRuntimeCompositeActionSuite':
-      // case "testRuntimeCompositeActionSuite": 
       case "testCompositeActionSuite": {
-        const newParams = {...testActionParamValues??{}, ...(testAction.testCompositeAction as any)["testActionParams"]??{}};
+        // const newParams = {...testActionParamValues??{}, ...(testAction.testCompositeAction as any)["testActionParams"]??{}};
+        const newParams = {
+          ...(testActionParamValues ?? {}),
+          ...(testAction.testActionType == "testBuildPlusRuntimeCompositeActionSuite"
+            ? (testAction.testParams ?? {})
+            : {}),
+        };
         log.info(
           "running test testCompositeActionSuite",
           fullTestName,
@@ -719,7 +724,6 @@ export async function runTestOrTestSuite(
               domainController.currentModelEnvironment(
                 testAction.application,
                 applicationDeploymentMap,
-                // testAction.deploymentUuid
               ),
               newParams
             )
@@ -747,7 +751,6 @@ export async function runTestOrTestSuite(
         return queryResult;
       }
       case 'testBuildPlusRuntimeCompositeAction':
-      // case "testRuntimeCompositeAction": 
       case "testCompositeAction": {
         const queryResult: Action2ReturnType = await miroirActivityTracker.trackTest(
           fullTestName,

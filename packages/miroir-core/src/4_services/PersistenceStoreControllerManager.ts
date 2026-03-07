@@ -175,11 +175,11 @@ export class PersistenceStoreControllerManager implements PersistenceStoreContro
           "START"
         );
         await testLocalMiroirPersistenceStoreController.initApplication(
-          initApplicationParameters.metaModel,
           initApplicationParameters.dataStoreType,
           initApplicationParameters.selfApplication,
           initApplicationParameters.applicationModelBranch,
           initApplicationParameters.applicationVersion,
+          initApplicationParameters.metaModel,
         );
         console.log(
           "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ deployModule initApplication",

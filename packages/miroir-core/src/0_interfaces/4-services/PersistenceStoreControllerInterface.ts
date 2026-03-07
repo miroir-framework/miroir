@@ -179,12 +179,12 @@ export interface PersistenceStoreControllerInterface
   /**, PersistenceStoreInstanceSectionAbstractInterface */
   //  TODO: remove anything but handleAction from interface!
   initApplication(
-    metaModel: MetaModel,
     dataStoreType: DataStoreApplicationType,
     selfApplication: SelfApplication,
     applicationModelBranch: EntityInstance,
-    applicationVersion: EntityInstance
+    applicationVersion: EntityInstance,
     // applicationStoreBasedConfiguration: EntityInstance
+    metaModel: MetaModel,
   ): Promise<Action2ReturnType>;
 
   createModelStorageSpaceForInstancesOfEntity(

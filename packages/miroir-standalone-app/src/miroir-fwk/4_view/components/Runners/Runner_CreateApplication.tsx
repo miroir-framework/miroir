@@ -27,13 +27,12 @@ import {
   selfApplicationMiroir
 } from "miroir-core";
 import {
+  transformer,
   type AdminApplication
 } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { getMemoizedReduxDeploymentsStateSelectorMap, useSelector } from "miroir-react";
 import {
-  adminSelfApplication,
-  entityApplicationForAdmin,
-  entityDeployment,
+  entityDeployment
 } from "miroir-test-app_deployment-admin";
 import {
   selfApplicationLibrary,
@@ -221,344 +220,303 @@ function getCreateApplicationActionTemplate(
   // const testApplicationVersionUuid = uuidv4();
   const defaultDirectory = "tmp/miroir_data_storage";
 
-  const sqltestDeploymentStorageConfigurationTemplate: TransformerForBuildPlusRuntime = {
-    transformerType: "case",
-    discriminator: {
-      transformerType: "getFromParameters",
-      referencePath: ["createApplicationAndDeployment", "applicationStorage", "emulatedServerType"],
-    },
-    whens: [
-      // mongodb
-      {
-        when: "mongodb",
-        then: {
-          admin: {
-            emulatedServerType: "mongodb",
-            // connectionString: "mongodb://localhost:27017",
-            connectionString: {
-              transformerType: "getFromParameters",
-              referencePath: [
-                "createApplicationAndDeployment",
-                "applicationStorage",
-                "connectionString",
-              ],
-            },
-            database: "miroirAdmin",
-          },
-          model: {
-            emulatedServerType: "mongodb",
-            connectionString: {
-              transformerType: "getFromParameters",
-              referencePath: [
-                "createApplicationAndDeployment",
-                "applicationStorage",
-                "connectionString",
-              ],
-            },
-            database: {
-              transformerType: "+",
-              args: [
-                {
-                  transformerType: "mustacheStringTemplate",
-                  definition:
-                    "{{createApplicationAndDeployment.applicationStorage.applicationName}}",
-                },
-                "_model",
-              ],
-            },
-          },
-          data: {
-            emulatedServerType: "mongodb",
-            connectionString: {
-              transformerType: "getFromParameters",
-              referencePath: [
-                "createApplicationAndDeployment",
-                "applicationStorage",
-                "connectionString",
-              ],
-            },
-            database: {
-              transformerType: "+",
-              args: [
-                {
-                  transformerType: "mustacheStringTemplate",
-                  definition:
-                    "{{createApplicationAndDeployment.applicationStorage.applicationName}}",
-                },
-                "_data",
-              ],
-            },
-          },
-        },
-      },
-      // sql
-      {
-        when: "sql",
-        then: {
-          admin: {
-            emulatedServerType: "sql",
-            connectionString: {
-              transformerType: "getFromParameters",
-              referencePath: [
-                "createApplicationAndDeployment",
-                "applicationStorage",
-                "connectionString",
-              ],
-            },
-            schema: "miroirAdmin",
-          },
-          model: {
-            emulatedServerType: "sql",
-            connectionString: {
-              transformerType: "getFromParameters",
-              referencePath: [
-                "createApplicationAndDeployment",
-                "applicationStorage",
-                "connectionString",
-              ],
-            },
-            schema: {
-              transformerType: "mustacheStringTemplate",
-              definition: "{{createApplicationAndDeployment.applicationStorage.applicationName}}",
-            }, // TODO: separate model and data schemas
-          },
-          data: {
-            emulatedServerType: "sql",
-            connectionString: {
-              transformerType: "getFromParameters",
-              referencePath: [
-                "createApplicationAndDeployment",
-                "applicationStorage",
-                "connectionString",
-              ],
-            },
-            schema: {
-              transformerType: "mustacheStringTemplate",
-              definition: "{{createApplicationAndDeployment.applicationStorage.applicationName}}",
-            }, // TODO: separate model and data schemas
-          },
-        },
-      },
-      // indexedDb
-      {
-        when: "indexedDb",
-        then: {
-          admin: {
-            emulatedServerType: "indexedDb",
-            indexedDbName: {
-              transformerType: "+",
-              args: [
-                // {
-                //   transformerType: "getFromParameters",
-                //   referencePath: [
-                //     "createApplicationAndDeployment",
-                //     "applicationStorage",
-                //     "indexedDbName",
-                //   ],
-                // },
-                // prefix,
-                "admin",
-              ],
-            },
-          },
-          model: {
-            emulatedServerType: "indexedDb",
-            indexedDbName: {
-              transformerType: "+",
-              args: [
-                // {
-                //   transformerType: "getFromParameters",
-                //   referencePath: [
-                //     "createApplicationAndDeployment",
-                //     "applicationStorage",
-                //     "indexedDbName",
-                //   ],
-                // },
-                // "/",
-                // prefix,
-                {
-                  transformerType: "getFromParameters",
-                  referencePath: [
-                    "createApplicationAndDeployment",
-                    "applicationStorage",
-                    "applicationName",
-                  ],
-                },
-                "_model",
-              ],
-            },
-          },
-          data: {
-            emulatedServerType: "indexedDb",
-            indexedDbName: {
-              transformerType: "+",
-              args: [
-                // {
-                //   transformerType: "getFromParameters",
-                //   referencePath: [
-                //     "createApplicationAndDeployment",
-                //     "applicationStorage",
-                //     "indexedDbName",
-                //   ],
-                // },
-                // "/",
-                // prefix,
-                {
-                  transformerType: "getFromParameters",
-                  referencePath: [
-                    "createApplicationAndDeployment",
-                    "applicationStorage",
-                    "applicationName",
-                  ],
-                },
-                "_data",
-              ],
-            },
-          },
-        },
-      },
-      // filesystem
-      {
-        when: "filesystem",
-        then: {
-          admin: {
-            emulatedServerType: "filesystem",
-            directory: {
-              transformerType: "+",
-              args: [prefix, "/admin"],
-            },
-          },
-          model: {
-            emulatedServerType: "filesystem",
-            directory: {
-              transformerType: "+",
-              args: [
-                prefix,
-                {
-                  transformerType: "getFromParameters",
-                  referencePath: [
-                    "createApplicationAndDeployment",
-                    "applicationStorage",
-                    "applicationName",
-                  ],
-                },
-                "_model",
-              ],
-            },
-          },
-          data: {
-            emulatedServerType: "filesystem",
-            directory: {
-              transformerType: "+",
-              args: [
-                prefix,
-                {
-                  transformerType: "getFromParameters",
-                  referencePath: [
-                    "createApplicationAndDeployment",
-                    "applicationStorage",
-                    "applicationName",
-                  ],
-                },
-                "_data",
-              ],
-            },
-          },
-        },
-      },
-    ],
-    else: {
-      // default: filesystem
-      admin: {
-        emulatedServerType: "filesystem",
-        directory: defaultDirectory,
-      },
-      model: {
-        emulatedServerType: "filesystem",
-        directory: defaultDirectory,
-      },
-      data: {
-        emulatedServerType: "filesystem",
-        directory: defaultDirectory,
-      },
-    },
-  };
-  const initParametersForTest: InitApplicationParameters = {
-    dataStoreType: "app", // TODO: comparison between deployment and selfAdminConfigurationDeployment
-    metaModel: defaultMiroirMetaModel,
-    selfApplication: {
-      ...selfApplicationLibrary,
-      uuid: {
-        transformerType: "getFromParameters",
-        referenceName: "testSelfApplicationUuid"
-      } as any,
-      name: {
-        transformerType: "mustacheStringTemplate",
-        definition: "{{createApplicationAndDeployment.applicationStorage.applicationName}}",
-      } as any,
-      defaultLabel: {
-        transformerType: "mustacheStringTemplate",
-        definition:
-          "The {{createApplicationAndDeployment.applicationStorage.applicationName}} selfApplication",
-      } as any,
-      description: {
-        transformerType: "mustacheStringTemplate",
-        definition:
-          "The model and data of the {{createApplicationAndDeployment.applicationStorage.applicationName}} selfApplication",
-      } as any,
-    },
-    // deployment: {
-    //   ...selfApplicationDeploymentLibrary,
-    //   selfApplication: selfApplicationUuid,
-    //   uuid: adminConfigurationDeploymentUuid,
-    // },
-    applicationModelBranch: { // NOT USED!!
-      ...selfApplicationModelBranchLibraryMasterBranch,
-      // uuid: testApplicationModelBranchUuid,
-      uuid: {
-        transformerType: "getFromParameters",
-        referenceName: "testApplicationModelBranchUuid"
-      },
-      selfApplication: {
-        transformerType: "getFromParameters",
-        referenceName: "testSelfApplicationUuid"
-      },
-      headVersion: {
-        transformerType: "getFromParameters",
-        referenceName: "testApplicationVersionUuid"
-      },
-      description: {
-        transformerType: "mustacheStringTemplate",
-        definition:
-          "The master branch of the {{createApplicationAndDeployment.applicationStorage.applicationName}} SelfApplication",
-      },
-    } as any,
-    // applicationStoreBasedConfiguration: {
-    //   ...selfApplicationStoreBasedConfigurationLibrary,
-    //   defaultLabel: `The reference configuration for the ${applicationName} selfApplication storage`,
-    // } as any,
-    applicationVersion: { // NOT USED!!
-      ...selfApplicationVersionLibraryInitialVersion,
-      uuid: {
-        transformerType: "getFromParameters",
-        referenceName: "testApplicationVersionUuid"
-      },
-      selfApplication: {
-        transformerType: "getFromParameters",
-        referenceName: "testSelfApplicationUuid"
-      },
-      // branch: testApplicationModelBranchUuid,
-      branch: {
-        transformerType: "getFromParameters",
-        referenceName: "testApplicationModelBranchUuid"
-      },
-      description: {
-        transformerType: "mustacheStringTemplate",
-        definition:
-          "Initial {{createApplicationAndDeployment.applicationStorage.applicationName}} selfApplication version",
-      },
-    } as any,
-  };
+  // const sqltestDeploymentStorageConfigurationTemplate: TransformerForBuildPlusRuntime = {
+  //   transformerType: "case",
+  //   discriminator: {
+  //     transformerType: "getFromParameters",
+  //     referencePath: ["createApplicationAndDeployment", "applicationStorage", "emulatedServerType"],
+  //   },
+  //   whens: [
+  //     // mongodb
+  //     {
+  //       when: "mongodb",
+  //       then: {
+  //         admin: {
+  //           emulatedServerType: "mongodb",
+  //           connectionString: {
+  //             transformerType: "getFromParameters",
+  //             referencePath: [
+  //               "createApplicationAndDeployment",
+  //               "applicationStorage",
+  //               "connectionString",
+  //             ],
+  //           },
+  //           database: "miroirAdmin",
+  //         },
+  //         model: {
+  //           emulatedServerType: "mongodb",
+  //           connectionString: {
+  //             transformerType: "getFromParameters",
+  //             referencePath: [
+  //               "createApplicationAndDeployment",
+  //               "applicationStorage",
+  //               "connectionString",
+  //             ],
+  //           },
+  //           database: {
+  //             transformerType: "+",
+  //             args: [
+  //               {
+  //                 transformerType: "mustacheStringTemplate",
+  //                 definition:
+  //                   "{{createApplicationAndDeployment.applicationStorage.applicationName}}",
+  //               },
+  //               "_model",
+  //             ],
+  //           },
+  //         },
+  //         data: {
+  //           emulatedServerType: "mongodb",
+  //           connectionString: {
+  //             transformerType: "getFromParameters",
+  //             referencePath: [
+  //               "createApplicationAndDeployment",
+  //               "applicationStorage",
+  //               "connectionString",
+  //             ],
+  //           },
+  //           database: {
+  //             transformerType: "+",
+  //             args: [
+  //               {
+  //                 transformerType: "mustacheStringTemplate",
+  //                 definition:
+  //                   "{{createApplicationAndDeployment.applicationStorage.applicationName}}",
+  //               },
+  //               "_data",
+  //             ],
+  //           },
+  //         },
+  //       },
+  //     },
+  //     // sql
+  //     {
+  //       when: "sql",
+  //       then: {
+  //         admin: {
+  //           emulatedServerType: "sql",
+  //           connectionString: {
+  //             transformerType: "getFromParameters",
+  //             referencePath: [
+  //               "createApplicationAndDeployment",
+  //               "applicationStorage",
+  //               "connectionString",
+  //             ],
+  //           },
+  //           schema: "miroirAdmin",
+  //         },
+  //         model: {
+  //           emulatedServerType: "sql",
+  //           connectionString: {
+  //             transformerType: "getFromParameters",
+  //             referencePath: [
+  //               "createApplicationAndDeployment",
+  //               "applicationStorage",
+  //               "connectionString",
+  //             ],
+  //           },
+  //           schema: {
+  //             transformerType: "mustacheStringTemplate",
+  //             definition: "{{createApplicationAndDeployment.applicationStorage.applicationName}}",
+  //           }, // TODO: separate model and data schemas
+  //         },
+  //         data: {
+  //           emulatedServerType: "sql",
+  //           connectionString: {
+  //             transformerType: "getFromParameters",
+  //             referencePath: [
+  //               "createApplicationAndDeployment",
+  //               "applicationStorage",
+  //               "connectionString",
+  //             ],
+  //           },
+  //           schema: {
+  //             transformerType: "mustacheStringTemplate",
+  //             definition: "{{createApplicationAndDeployment.applicationStorage.applicationName}}",
+  //           }, // TODO: separate model and data schemas
+  //         },
+  //       },
+  //     },
+  //     // indexedDb
+  //     {
+  //       when: "indexedDb",
+  //       then: {
+  //         admin: {
+  //           emulatedServerType: "indexedDb",
+  //           indexedDbName: {
+  //             transformerType: "+",
+  //             args: [
+  //               "admin",
+  //             ],
+  //           },
+  //         },
+  //         model: {
+  //           emulatedServerType: "indexedDb",
+  //           indexedDbName: {
+  //             transformerType: "+",
+  //             args: [
+  //               {
+  //                 transformerType: "getFromParameters",
+  //                 referencePath: [
+  //                   "createApplicationAndDeployment",
+  //                   "applicationStorage",
+  //                   "applicationName",
+  //                 ],
+  //               },
+  //               "_model",
+  //             ],
+  //           },
+  //         },
+  //         data: {
+  //           emulatedServerType: "indexedDb",
+  //           indexedDbName: {
+  //             transformerType: "+",
+  //             args: [
+  //               {
+  //                 transformerType: "getFromParameters",
+  //                 referencePath: [
+  //                   "createApplicationAndDeployment",
+  //                   "applicationStorage",
+  //                   "applicationName",
+  //                 ],
+  //               },
+  //               "_data",
+  //             ],
+  //           },
+  //         },
+  //       },
+  //     },
+  //     // filesystem
+  //     {
+  //       when: "filesystem",
+  //       then: {
+  //         admin: {
+  //           emulatedServerType: "filesystem",
+  //           directory: {
+  //             transformerType: "+",
+  //             args: [prefix, "/admin"],
+  //           },
+  //         },
+  //         model: {
+  //           emulatedServerType: "filesystem",
+  //           directory: {
+  //             transformerType: "+",
+  //             args: [
+  //               prefix,
+  //               {
+  //                 transformerType: "getFromParameters",
+  //                 referencePath: [
+  //                   "createApplicationAndDeployment",
+  //                   "applicationStorage",
+  //                   "applicationName",
+  //                 ],
+  //               },
+  //               "_model",
+  //             ],
+  //           },
+  //         },
+  //         data: {
+  //           emulatedServerType: "filesystem",
+  //           directory: {
+  //             transformerType: "+",
+  //             args: [
+  //               prefix,
+  //               {
+  //                 transformerType: "getFromParameters",
+  //                 referencePath: [
+  //                   "createApplicationAndDeployment",
+  //                   "applicationStorage",
+  //                   "applicationName",
+  //                 ],
+  //               },
+  //               "_data",
+  //             ],
+  //           },
+  //         },
+  //       },
+  //     },
+  //   ],
+  //   else: {
+  //     // default: filesystem
+  //     admin: {
+  //       emulatedServerType: "filesystem",
+  //       directory: defaultDirectory,
+  //     },
+  //     model: {
+  //       emulatedServerType: "filesystem",
+  //       directory: defaultDirectory,
+  //     },
+  //     data: {
+  //       emulatedServerType: "filesystem",
+  //       directory: defaultDirectory,
+  //     },
+  //   },
+  // };
+  // const initParametersForTest: InitApplicationParameters = {
+  //   dataStoreType: "app", // TODO: comparison between deployment and selfAdminConfigurationDeployment
+  //   metaModel: defaultMiroirMetaModel,
+  //   selfApplication: {
+  //     ...selfApplicationLibrary,
+  //     uuid: {
+  //       transformerType: "getFromParameters",
+  //       referenceName: "testSelfApplicationUuid"
+  //     } as any,
+  //     name: {
+  //       transformerType: "mustacheStringTemplate",
+  //       definition: "{{createApplicationAndDeployment.applicationStorage.applicationName}}",
+  //     } as any,
+  //     defaultLabel: {
+  //       transformerType: "mustacheStringTemplate",
+  //       definition:
+  //         "The {{createApplicationAndDeployment.applicationStorage.applicationName}} selfApplication",
+  //     } as any,
+  //     description: {
+  //       transformerType: "mustacheStringTemplate",
+  //       definition:
+  //         "The model and data of the {{createApplicationAndDeployment.applicationStorage.applicationName}} selfApplication",
+  //     } as any,
+  //   },
+  //   applicationModelBranch: { // NOT USED!!
+  //     ...selfApplicationModelBranchLibraryMasterBranch,
+  //     uuid: {
+  //       transformerType: "getFromParameters",
+  //       referenceName: "testApplicationModelBranchUuid"
+  //     },
+  //     selfApplication: {
+  //       transformerType: "getFromParameters",
+  //       referenceName: "testSelfApplicationUuid"
+  //     },
+  //     headVersion: {
+  //       transformerType: "getFromParameters",
+  //       referenceName: "testApplicationVersionUuid"
+  //     },
+  //     description: {
+  //       transformerType: "mustacheStringTemplate",
+  //       definition:
+  //         "The master branch of the {{createApplicationAndDeployment.applicationStorage.applicationName}} SelfApplication",
+  //     },
+  //   } as any,
+  //   applicationVersion: { // NOT USED!!
+  //     ...selfApplicationVersionLibraryInitialVersion,
+  //     uuid: {
+  //       transformerType: "getFromParameters",
+  //       referenceName: "testApplicationVersionUuid"
+  //     },
+  //     selfApplication: {
+  //       transformerType: "getFromParameters",
+  //       referenceName: "testSelfApplicationUuid"
+  //     },
+  //     branch: {
+  //       transformerType: "getFromParameters",
+  //       referenceName: "testApplicationModelBranchUuid"
+  //     },
+  //     description: {
+  //       transformerType: "mustacheStringTemplate",
+  //       definition:
+  //         "Initial {{createApplicationAndDeployment.applicationStorage.applicationName}} selfApplication version",
+  //     },
+  //   } as any,
+  // };
 
   // const localCreateApplicationCompositeActionTemplate: CompositeActionSequence = {
   const localCreateApplicationCompositeActionTemplate: CompositeActionTemplate = {
@@ -566,7 +524,6 @@ function getCreateApplicationActionTemplate(
     actionLabel: "createApplicationForAdminAction",
     endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
     payload: {
-      // actionSequence: [
       actionSequence: [
         {
           actionType: "createInstance",
@@ -595,7 +552,6 @@ function getCreateApplicationActionTemplate(
                   transformerType: "mustacheStringTemplate",
                   definition: `This Application contains the {{createApplicationAndDeployment.applicationStorage.applicationName}} model and data.`,
                 } as any,
-                // selfApplication: testSelfApplicationUuid,
                 selfApplication: {
                   transformerType: "getFromParameters",
                   referenceName: "testSelfApplicationUuid",
@@ -625,7 +581,11 @@ function getCreateApplicationActionTemplate(
             } as any,
             deploymentUuid: testDeploymentUuid,
             configuration: {
-              [testDeploymentUuid]: sqltestDeploymentStorageConfigurationTemplate as any,
+              // [testDeploymentUuid]: sqltestDeploymentStorageConfigurationTemplate as any,
+              [testDeploymentUuid]: {
+                  transformerType: "getFromParameters",
+                  referenceName: "sqltestDeploymentStorageConfigurationTemplate",
+                } as any,
             },
           },
         },
@@ -639,7 +599,11 @@ function getCreateApplicationActionTemplate(
               referenceName: "testSelfApplicationUuid",
             } as any,
             deploymentUuid: testDeploymentUuid,
-            configuration: sqltestDeploymentStorageConfigurationTemplate as any,
+            // configuration: sqltestDeploymentStorageConfigurationTemplate as any,
+            configuration: {
+              transformerType: "getFromParameters",
+              referenceName: "sqltestDeploymentStorageConfigurationTemplate",
+            } as any,
           },
         },
         {
@@ -670,7 +634,11 @@ function getCreateApplicationActionTemplate(
                   transformerType: "getFromParameters",
                   referenceName: "testSelfApplicationUuid",
                 } as any,
-                configuration: sqltestDeploymentStorageConfigurationTemplate as any,
+                // configuration: sqltestDeploymentStorageConfigurationTemplate as any,
+                configuration: {
+                  transformerType: "getFromParameters",
+                  referenceName: "sqltestDeploymentStorageConfigurationTemplate",
+                } as any,
               } as Deployment, // TODO: this is actually a template of Deployment, hence the individual casts at attribute-level
             ],
           },
@@ -680,7 +648,6 @@ function getCreateApplicationActionTemplate(
   };
 
   const appEntitesAndInstances: any[] = [];
-  // const localResetAndinitializeDeploymentCompositeActionTemplate: CompositeActionSequence = {
   const localResetAndinitializeDeploymentCompositeActionTemplate: CompositeActionTemplate = {
     actionType: "compositeActionSequence",
     actionLabel: "resetAndInitializeDeployment",
@@ -710,19 +677,40 @@ function getCreateApplicationActionTemplate(
         },
         {
           actionType: "initModel",
-          actionLabel: "resetAndInitializeDeployment_initModel_" + testSelfApplicationUuid,
+          actionLabel: {
+            transformerType: "mustacheStringTemplate",
+            definition: "resetAndInitializeDeployment_initModel_{{testSelfApplicationUuid}}"
+          } as any,
           endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
           payload: {
             application: {
               transformerType: "getFromParameters",
               referenceName: "testSelfApplicationUuid",
             } as any,
+            // params: {
+            //   transformerType: "returnValue",
+            //   label: "initParametersForTest",
+            //   "interpolation": "runtime",
+            //   value: initParametersForTest,
+            // } as any, // TODO: fix type
             params: {
-              transformerType: "returnValue",
+              transformerType: "createObject",
               label: "initParametersForTest",
-              interpolation: "runtime",
-              value: initParametersForTest,
+              definition: {
+                transformerType: "returnValue",
+                "interpolation": "runtime",
+                value: {
+                  transformerType: "getFromParameters",
+                  referenceName: "initParametersForTest",
+                },
+              }
             } as any, // TODO: fix type
+            // params: {
+            //   transformerType: "getFromParameters",
+            //   label: "initParametersForTest",
+            //   // value: initParametersForTest,
+            //   referenceName: "initParametersForTest",
+            // } as any, // TODO: fix type
           },
         },
         {
@@ -801,6 +789,331 @@ function getCreateApplicationActionTemplate(
         testApplicationVersionUuid: {
           transformerType: "generateUuid",
         },
+        initParametersForTest: {
+          dataStoreType: "app", // TODO: comparison between deployment and selfAdminConfigurationDeployment
+          // metaModel: {
+          //   transformerType: "returnValue",
+          //   value: defaultMiroirMetaModel,
+          // },
+          selfApplication: {
+            ...selfApplicationLibrary,
+            uuid: {
+              // transformerType: "getFromParameters",
+              transformerType: "getFromContext",
+              interpolation: "runtime",
+              referenceName: "testSelfApplicationUuid",
+            } as any,
+            name: {
+              transformerType: "mustacheStringTemplate",
+              interpolation: "runtime",
+              definition: "{{createApplicationAndDeployment.applicationStorage.applicationName}}",
+            } as any,
+            defaultLabel: {
+              transformerType: "mustacheStringTemplate",
+              interpolation: "runtime",
+              definition:
+                "The {{createApplicationAndDeployment.applicationStorage.applicationName}} selfApplication",
+            } as any,
+            description: {
+              transformerType: "mustacheStringTemplate",
+              interpolation: "runtime",
+              definition:
+                "The model and data of the {{createApplicationAndDeployment.applicationStorage.applicationName}} selfApplication",
+            } as any,
+          },
+          applicationModelBranch: {
+            // NOT USED!!
+            ...selfApplicationModelBranchLibraryMasterBranch,
+            uuid: {
+              // transformerType: "getFromParameters",
+              transformerType: "getFromContext",
+              interpolation: "runtime",
+              referenceName: "testApplicationModelBranchUuid",
+            },
+            selfApplication: {
+              // transformerType: "getFromParameters",
+              transformerType: "getFromContext",
+              interpolation: "runtime",
+              referenceName: "testSelfApplicationUuid",
+            },
+            headVersion: {
+              // transformerType: "getFromParameters",
+              transformerType: "getFromContext",
+              interpolation: "runtime",
+              referenceName: "testApplicationVersionUuid",
+            },
+            description: {
+              transformerType: "mustacheStringTemplate",
+              interpolation: "runtime",
+              definition:
+                "The master branch of the {{createApplicationAndDeployment.applicationStorage.applicationName}} SelfApplication",
+            },
+          } as any,
+          applicationVersion: {
+            // NOT USED!!
+            ...selfApplicationVersionLibraryInitialVersion,
+            uuid: {
+              // transformerType: "getFromParameters",
+              transformerType: "getFromContext",
+              interpolation: "runtime",
+              referenceName: "testApplicationVersionUuid",
+            },
+            selfApplication: {
+              // transformerType: "getFromParameters",
+              transformerType: "getFromContext",
+              interpolation: "runtime",
+              referenceName: "testSelfApplicationUuid",
+            },
+            branch: {
+              // transformerType: "getFromParameters",
+              transformerType: "getFromContext",
+              interpolation: "runtime",
+              referenceName: "testApplicationModelBranchUuid",
+            },
+            description: {
+              transformerType: "mustacheStringTemplate",
+              interpolation: "runtime",
+              definition:
+                "Initial {{createApplicationAndDeployment.applicationStorage.applicationName}} selfApplication version",
+            },
+          } as any,
+        },
+        sqltestDeploymentStorageConfigurationTemplate: {
+          transformerType: "case",
+          discriminator: {
+            transformerType: "getFromParameters",
+            referencePath: [
+              "createApplicationAndDeployment",
+              "applicationStorage",
+              "emulatedServerType",
+            ],
+          },
+          whens: [
+            // mongodb
+            {
+              when: "mongodb",
+              then: {
+                admin: {
+                  emulatedServerType: "mongodb",
+                  connectionString: {
+                    transformerType: "getFromParameters",
+                    referencePath: [
+                      "createApplicationAndDeployment",
+                      "applicationStorage",
+                      "connectionString",
+                    ],
+                  },
+                  database: "miroirAdmin",
+                },
+                model: {
+                  emulatedServerType: "mongodb",
+                  connectionString: {
+                    transformerType: "getFromParameters",
+                    referencePath: [
+                      "createApplicationAndDeployment",
+                      "applicationStorage",
+                      "connectionString",
+                    ],
+                  },
+                  database: {
+                    transformerType: "+",
+                    args: [
+                      {
+                        transformerType: "mustacheStringTemplate",
+                        definition:
+                          "{{createApplicationAndDeployment.applicationStorage.applicationName}}",
+                      },
+                      "_model",
+                    ],
+                  },
+                },
+                data: {
+                  emulatedServerType: "mongodb",
+                  connectionString: {
+                    transformerType: "getFromParameters",
+                    referencePath: [
+                      "createApplicationAndDeployment",
+                      "applicationStorage",
+                      "connectionString",
+                    ],
+                  },
+                  database: {
+                    transformerType: "+",
+                    args: [
+                      {
+                        transformerType: "mustacheStringTemplate",
+                        definition:
+                          "{{createApplicationAndDeployment.applicationStorage.applicationName}}",
+                      },
+                      "_data",
+                    ],
+                  },
+                },
+              },
+            },
+            // sql
+            {
+              when: "sql",
+              then: {
+                admin: {
+                  emulatedServerType: "sql",
+                  connectionString: {
+                    transformerType: "getFromParameters",
+                    referencePath: [
+                      "createApplicationAndDeployment",
+                      "applicationStorage",
+                      "connectionString",
+                    ],
+                  },
+                  schema: "miroirAdmin",
+                },
+                model: {
+                  emulatedServerType: "sql",
+                  connectionString: {
+                    transformerType: "getFromParameters",
+                    referencePath: [
+                      "createApplicationAndDeployment",
+                      "applicationStorage",
+                      "connectionString",
+                    ],
+                  },
+                  schema: {
+                    transformerType: "mustacheStringTemplate",
+                    definition:
+                      "{{createApplicationAndDeployment.applicationStorage.applicationName}}",
+                  }, // TODO: separate model and data schemas
+                },
+                data: {
+                  emulatedServerType: "sql",
+                  connectionString: {
+                    transformerType: "getFromParameters",
+                    referencePath: [
+                      "createApplicationAndDeployment",
+                      "applicationStorage",
+                      "connectionString",
+                    ],
+                  },
+                  schema: {
+                    transformerType: "mustacheStringTemplate",
+                    definition:
+                      "{{createApplicationAndDeployment.applicationStorage.applicationName}}",
+                  }, // TODO: separate model and data schemas
+                },
+              },
+            },
+            // indexedDb
+            {
+              when: "indexedDb",
+              then: {
+                admin: {
+                  emulatedServerType: "indexedDb",
+                  indexedDbName: {
+                    transformerType: "+",
+                    args: ["admin"],
+                  },
+                },
+                model: {
+                  emulatedServerType: "indexedDb",
+                  indexedDbName: {
+                    transformerType: "+",
+                    args: [
+                      {
+                        transformerType: "getFromParameters",
+                        referencePath: [
+                          "createApplicationAndDeployment",
+                          "applicationStorage",
+                          "applicationName",
+                        ],
+                      },
+                      "_model",
+                    ],
+                  },
+                },
+                data: {
+                  emulatedServerType: "indexedDb",
+                  indexedDbName: {
+                    transformerType: "+",
+                    args: [
+                      {
+                        transformerType: "getFromParameters",
+                        referencePath: [
+                          "createApplicationAndDeployment",
+                          "applicationStorage",
+                          "applicationName",
+                        ],
+                      },
+                      "_data",
+                    ],
+                  },
+                },
+              },
+            },
+            // filesystem
+            {
+              when: "filesystem",
+              then: {
+                admin: {
+                  emulatedServerType: "filesystem",
+                  directory: {
+                    transformerType: "+",
+                    args: [prefix, "/admin"],
+                  },
+                },
+                model: {
+                  emulatedServerType: "filesystem",
+                  directory: {
+                    transformerType: "+",
+                    args: [
+                      prefix,
+                      {
+                        transformerType: "getFromParameters",
+                        referencePath: [
+                          "createApplicationAndDeployment",
+                          "applicationStorage",
+                          "applicationName",
+                        ],
+                      },
+                      "_model",
+                    ],
+                  },
+                },
+                data: {
+                  emulatedServerType: "filesystem",
+                  directory: {
+                    transformerType: "+",
+                    args: [
+                      prefix,
+                      {
+                        transformerType: "getFromParameters",
+                        referencePath: [
+                          "createApplicationAndDeployment",
+                          "applicationStorage",
+                          "applicationName",
+                        ],
+                      },
+                      "_data",
+                    ],
+                  },
+                },
+              },
+            },
+          ],
+          else: {
+            // default: filesystem
+            admin: {
+              emulatedServerType: "filesystem",
+              directory: defaultDirectory,
+            },
+            model: {
+              emulatedServerType: "filesystem",
+              directory: defaultDirectory,
+            },
+            data: {
+              emulatedServerType: "filesystem",
+              directory: defaultDirectory,
+            },
+          },
+        },
       },
       actionSequence: [
         ...(localCreateApplicationCompositeActionTemplate.payload.actionSequence as any),
@@ -845,7 +1158,7 @@ export const Runner_CreateApplication: React.FC<CreateApplicationToolProps> = ({
   const runnerName: string = "createApplicationAndDeployment";
 
   // State for MetaModel file upload
-  const [selectedMetaModel, setSelectedMetaModel] = useState<MetaModel | undefined>(undefined);
+  // const [selectedMetaModel, setSelectedMetaModel] = useState<MetaModel | undefined>(undefined);
 
   // ##############################################################################################
   const runnerDeploymentUuid = useMemo(() => {

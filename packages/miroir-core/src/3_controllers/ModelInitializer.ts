@@ -76,13 +76,13 @@ MiroirLoggerFactory.registerLoggerToStart(
 
 // ################################################################################################
 export async function modelInitialize(
-  metaModel:MetaModel,
   persistenceStoreController:PersistenceStoreControllerInterface,
   dataStoreType: DataStoreApplicationType,
   selfApplication: SelfApplication,
   selfApplicationModelBranch: EntityInstance,
   selfApplicationVersion: EntityInstance,
   // selfApplicationStoreBasedConfiguration: EntityInstance,
+  metaModel?:MetaModel,
 ): Promise<void> {
   log.info("modelInitialize selfApplication",selfApplication,'dataStoreType',dataStoreType);
   const logHeader = 'modelInitialize '+ selfApplication?.name;

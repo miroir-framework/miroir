@@ -960,6 +960,7 @@ export class DomainController implements DomainControllerInterface {
     return ACTION_OK;
   }
 
+  // ##############################################################################################
   async handleModelAction(
     modelAction: ModelAction,
     applicationDeploymentMap: ApplicationDeploymentMap,
@@ -1216,7 +1217,7 @@ export class DomainController implements DomainControllerInterface {
             applicationDeploymentMap,
             modelAction,
           );
-                    // If a model is provided, create entities from it
+          // If a model is provided, create entities from it
           if (modelActionInitModel.payload.model) {
             const model = modelActionInitModel.payload.model;
             log.info("handleModelAction resetModel creating entities from provided model", {
@@ -2715,25 +2716,24 @@ export class DomainController implements DomainControllerInterface {
           ...localActionParams,
           ...resolvedCompositeActionTemplates,
         };
-        // log.info(
-        //   "buildPlusRuntimeCompositeAction",
-        //   buildPlusRuntimeCompositeAction.actionLabel,
-        //   "resolving template",
-        //   t[0],
-        //   // t[1],
-        //   "newLocalParameters",
-        //   newLocalParameters
-        // );
+        log.info(
+          "buildPlusRuntimeCompositeAction",
+          buildPlusRuntimeCompositeAction.actionLabel,
+          "resolving template",
+          t[0],
+          // t[1],
+          "newLocalParameters",
+          JSON.stringify(Object.keys(newLocalParameters))
+        );
         const resolvedTemplate = transformer_extended_apply_wrapper(
           undefined, // activityTracker
-          "build",
+          "runtime",//"build", // WHY BUILD??? this should be "runtime"! there will be no further resolution of templates! see resolveCompositeActionTemplate for correct version
           [],
-          // "runtime",
           t[0],
           t[1] as any,
           modelEnvironment,
-          newLocalParameters, // queryParams
-          {}, // contextResults
+          localActionParams, // queryParams
+          newLocalParameters, // contextResults
           "value",
         );
         if (resolvedTemplate.queryFailure) {
@@ -2768,6 +2768,22 @@ export class DomainController implements DomainControllerInterface {
       }
     }
 
+    const queryParamsForActionResolution = { ...actionParamValues, ...resolvedCompositeActionTemplates };
+
+    log.info(
+      "handleBuildPlusRuntimeCompositeAction",
+      buildPlusRuntimeCompositeAction.actionLabel,
+      "resolving action with templates",
+      Object.keys(buildPlusRuntimeCompositeAction.payload.templates ?? {}),
+      "resolvedCompositeActionTemplates",
+      resolvedCompositeActionTemplates,
+      "actionParamValues",
+      actionParamValues,
+      // "queryParamsForActionResolution",
+      // queryParamsForActionResolution,
+      "localContext",
+      localContext,
+    );
     const resolvedActionDefinition: TransformerReturnType<any> = transformer_extended_apply_wrapper(
       undefined, // activityTracker
       "build",
@@ -2775,7 +2791,7 @@ export class DomainController implements DomainControllerInterface {
       buildPlusRuntimeCompositeAction.actionLabel,
       buildPlusRuntimeCompositeAction.payload.actionSequence as any as TransformerForBuildPlusRuntime,
       modelEnvironment,
-      { ...actionParamValues, ...resolvedCompositeActionTemplates }, // queryParams
+      queryParamsForActionResolution, // queryParams
       localContext, // contextResults
       "value",
     );
@@ -2815,24 +2831,30 @@ export class DomainController implements DomainControllerInterface {
       );
     }
 
-    const resolvedAction: BuildPlusRuntimeCompositeAction = {
+    // const resolvedAction: BuildPlusRuntimeCompositeAction = {
+    const resolvedAction: CompositeActionSequence = {
       actionType: "compositeActionSequence",
       actionLabel: buildPlusRuntimeCompositeAction.actionLabel,
       endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
       payload: {
-        // application: "IGNORED",
         actionSequence: resolvedActionDefinition as any,
         templates: resolvedCompositeActionTemplates,
       },
     };
 
-    return this.handleRuntimeCompositeActionDO_NOT_USE(
-      resolvedAction, //buildPlusRuntimeCompositeAction,
-      applicationDeploymentMap,
+    // return this.handleRuntimeCompositeActionDO_NOT_USE(
+    //   resolvedAction, //buildPlusRuntimeCompositeAction,
+    //   applicationDeploymentMap,
+    //   modelEnvironment,
+    //   actionParamValues,
+    // );
+    return this.handleCompositeActionInternal(
+      resolvedAction,
       modelEnvironment,
+      applicationDeploymentMap,
       actionParamValues,
     );
-    return Promise.resolve(ACTION_OK);
+    // return Promise.resolve(ACTION_OK);
   }
 
   // ##############################################################################################
@@ -3232,7 +3254,7 @@ export class DomainController implements DomainControllerInterface {
       compositeActionSequence,
       modelEnvironment,
       localActionParams,
-    ); // resolves "build" temp
+    ); // resolves templates with "runtime" step and action sequence with "build" step
 
     if (resolved instanceof TransformerFailure) {
       return new Action2Error(
@@ -3598,7 +3620,7 @@ export class DomainController implements DomainControllerInterface {
     actionParamValues: Record<string, any>,
   ): Promise<Action2VoidReturnType> {
     const localActionParams = { ...actionParamValues };
-    let localContext: Record<string, any> = { ...actionParamValues };
+    // let localContext: Record<string, any> = { ...actionParamValues };
 
     log.info(
       "handleTestCompositeActionSuite testAction",
@@ -3645,6 +3667,7 @@ export class DomainController implements DomainControllerInterface {
         log.info("handleTestCompositeActionSuite no beforeAll!");
       }
 
+      // ##########################################################################################
       // testAction.testCompositeActions
       for (const testCompositeAction of Object.entries(testAction.testCompositeActions) as [
         string,
@@ -3748,13 +3771,12 @@ export class DomainController implements DomainControllerInterface {
               ...testCompositeAction[1].compositeActionSequence,
               endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
               payload: {
-                // application: "IGNORED",
                 ...(testCompositeAction[1].compositeActionSequence.payload.templates ||
                 testCompositeAction[1].testParams
                   ? {
                       templates: {
-                        ...testCompositeAction[1].compositeActionSequence.payload.templates,
                         ...testCompositeAction[1].testParams,
+                        ...testCompositeAction[1].compositeActionSequence.payload.templates,
                       },
                     }
                   : {}),
@@ -3777,13 +3799,6 @@ export class DomainController implements DomainControllerInterface {
                   localActionParams,
                 ),
             );
-            //
-            //
-            // testResult = await this.handleBuildPlusRuntimeCompositeAction(
-            //   localTestCompositeAction,
-            //   localActionParams,
-            //   currentModel
-            // );
             break;
           }
           // case "testRuntimeCompositeAction": {
@@ -3953,7 +3968,8 @@ export class DomainController implements DomainControllerInterface {
         } else {
           log.info("handleTestCompositeActionSuite", testCompositeAction[0], "no afterEach!");
         }
-      }
+      } // end for testCompositeActions
+      // ##########################################################################################
 
       if (testAction.afterAll) {
         // TestSuiteContext.setTest("afterAll");

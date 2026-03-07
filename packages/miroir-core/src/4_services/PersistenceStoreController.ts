@@ -360,12 +360,13 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
     log.info("ActionRunner.ts initApplicationDeploymentStore model/initModel params", params);
     if (params.dataStoreType == "miroir") {
       // TODO: improve, test is dirty
+      // await modelInitialize(
       await this.initApplication(
-        params.metaModel,
         params.dataStoreType,
         params.selfApplication,
         params.applicationModelBranch,
-        params.applicationVersion
+        params.applicationVersion,
+        params.metaModel,
       );
       log.info(
         "ActionRunner.ts initApplicationDeploymentStore miroir model/initModel contents",
@@ -373,12 +374,13 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
       );
     } else {
       // different Proxy object!!!!!!
+      // await modelInitialize(
       await this.initApplication(
-        params.metaModel,
         "app",
         params.selfApplication,
         params.applicationModelBranch,
-        params.applicationVersion
+        params.applicationVersion,
+        params.metaModel,
       );
       log.info(
         "ActionRunner.ts initApplicationDeploymentStore app model/initModel contents",
@@ -389,19 +391,19 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
   }
   // #############################################################################################
   async initApplication(
-    metaModel: MetaModel,
     dataStoreType: DataStoreApplicationType,
     selfApplication: SelfApplication,
     selfApplicationModelBranch: EntityInstance,
-    selfApplicationVersion: EntityInstance
+    selfApplicationVersion: EntityInstance,
+    metaModel?: MetaModel,
   ): Promise<Action2ReturnType> {
     await modelInitialize(
-      metaModel,
       this,
       dataStoreType,
       selfApplication,
       selfApplicationModelBranch,
-      selfApplicationVersion
+      selfApplicationVersion,
+      metaModel,
     );
     return Promise.resolve(ACTION_OK);
   }

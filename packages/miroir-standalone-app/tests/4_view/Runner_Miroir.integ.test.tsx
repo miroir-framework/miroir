@@ -43,6 +43,7 @@ import {
   testApplicationStorageConfiguration,
   type RunnerTestParams,
 } from "./RunnerIntegTestTools";
+import { runnerCreateApplication } from "../../src/miroir-fwk/4_view/components/Runners/Runner_CreateApplication";
 
 // ################################################################################################
 const pageLabel = "Runner_Miroir.integ.test";
@@ -140,16 +141,25 @@ beforeEach(async () => {
 });
 
 afterAll(async () => {
+  // await afterAllTests(
+  //   miroirActivityTracker,
+  //   runnerCreateEntity.name,
+  // );
+  // await afterAllTests(
+  //   miroirActivityTracker,
+  //   runnerDropEntity.name,
+  // );
   await afterAllTests(
     miroirActivityTracker,
-    runnerCreateEntity.name,
-  );
-  await afterAllTests(
-    miroirActivityTracker,
-    runnerDropEntity.name,
+    localRunnerCreateApplication.name,
   );
 });
 
+const localRunnerCreateApplication = runnerCreateApplication(
+  testApplicationUuid,
+  testApplicationDeploymentUuid,
+  emptyApplicationModel,
+)
 const runnerTestParams: Record<string, RunnerTestParams> = {
   // [runnerCreateEntity.name]: {
   //   pageLabel,
@@ -355,14 +365,14 @@ const runnerTestParams: Record<string, RunnerTestParams> = {
   //   preRunnerCompositeActions: [runnerCreateEntity.definition.actionTemplate as any], // preRunnerCompositeActions: create the entity before dropping it
   //   testCompositeActionLabel: "Create and Drop Entity Author",
   // },
-  [runnerCreateEntity.name]: {
+  [localRunnerCreateApplication.name]: {
     pageLabel,
-    runner: runnerCreateEntity as Runner,
+    runner: localRunnerCreateApplication as Runner,
     testApplicationUuid,
     testApplicationDeploymentUuid,
     testApplicationName,
     testParams: {
-      [runnerCreateEntity.name]: {
+      [localRunnerCreateApplication.name]: {
         transformerType: "returnValue",
         value: {
           application: testApplicationUuid,
@@ -429,24 +439,24 @@ const runnerTestParams: Record<string, RunnerTestParams> = {
                 referencePath: ["libraryEntityList", "entities"],
               },
             },
-            expectedValue: { aggregate: 1 },
+            expectedValue: { aggregate: 0 },
           },
         },
       },
-      {
-        actionType: "compositeRunTestAssertion",
-        actionLabel: "checkEntityBooks",
-        nameGivenToResult: "checkEntityList",
-        testAssertion: {
-          testType: "testAssertion",
-          testLabel: "checkEntityBooks",
-          definition: {
-            resultAccessPath: ["libraryEntityList", "entities"],
-            ignoreAttributes: ["author", "storageAccess"],
-            expectedValue: [entityAuthor],
-          },
-        },
-      },
+      // {
+      //   actionType: "compositeRunTestAssertion",
+      //   actionLabel: "checkEntityBooks",
+      //   nameGivenToResult: "checkEntityList",
+      //   testAssertion: {
+      //     testType: "testAssertion",
+      //     testLabel: "checkEntityBooks",
+      //     definition: {
+      //       resultAccessPath: ["libraryEntityList", "entities"],
+      //       ignoreAttributes: ["author", "storageAccess"],
+      //       expectedValue: [entityAuthor],
+      //     },
+      //   },
+      // },
     ],
     internalMiroirConfig,
     adminDeployment,
