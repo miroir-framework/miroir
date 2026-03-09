@@ -1,0 +1,10 @@
+{
+  "uuid": "d7e8f9a0-1b2c-4d3e-9f4a-5b6c7d8e9f0a",
+  "parentName": "Book",
+  "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+  "conceptLevel": "Data",
+  "name": "Le Malade imaginaire",
+  "author": "d1e2f3a4-5b6c-4d7e-9f8a-9b0c1d2e3f4a",
+  "publisher": "516a7366-39e7-4998-82cb-80199a7fa667",
+  "year": 1673
+}

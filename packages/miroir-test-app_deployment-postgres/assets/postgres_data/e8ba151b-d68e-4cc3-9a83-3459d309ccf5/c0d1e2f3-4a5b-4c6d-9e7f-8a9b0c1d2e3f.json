@@ -1,0 +1,10 @@
+{
+  "uuid": "c0d1e2f3-4a5b-4c6d-9e7f-8a9b0c1d2e3f",
+  "parentName": "Book",
+  "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+  "conceptLevel": "Data",
+  "name": "Quoi de neuf, petit homme ?",
+  "author": "a8b9c0d1-2e3f-4a4b-9c5d-6e7f8a9b0c1d",
+  "publisher": "516a7366-39e7-4998-82cb-80199a7fa667",
+  "year": 1932
+}

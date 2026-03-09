@@ -1,0 +1,9 @@
+{
+  "uuid":"8ef08a6f-9083-4100-b471-8c94244ef25e",
+  "parentName":"ApplicationModelBranch",
+  "parentUuid":"cdb0aec6-b848-43ac-a058-fe2dbe5811f1",
+  "selfApplication":"84d28eb1-d98a-499e-bf24-62cade033da6",
+  "headVersion":"9316bfeb-be35-44d3-978b-bcc30897a2d6",
+  "name":"master",
+  "description": "The master branch of the Postgres Application"
+}

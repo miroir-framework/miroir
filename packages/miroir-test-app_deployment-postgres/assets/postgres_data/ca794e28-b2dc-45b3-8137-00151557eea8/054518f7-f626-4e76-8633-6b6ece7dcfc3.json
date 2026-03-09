@@ -1,0 +1,14 @@
+{
+  "uuid": "054518f7-f626-4e76-8633-6b6ece7dcfc3",
+  "parentName": "User",
+  "parentUuid": "ca794e28-b2dc-45b3-8137-00151557eea8",
+  "conceptLevel": "Model",
+  "name": "Pierre Martin",
+  "firstName": "Pierre",
+  "lastName": "Martin",
+  "street": "29 Avenue de la République",
+  "postalCode": "75011",
+  "city": "Paris",
+  "state": "",
+  "country": "b62fc20b-dcf5-4e3b-a247-62d0475cf60f"
+}

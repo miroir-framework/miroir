@@ -1,0 +1,9 @@
+{
+  "uuid": "a0b1c2d3-4e5f-4a6b-9c7d-8e9f0a1b2c3d",
+  "parentName": "Book",
+  "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+  "conceptLevel": "Data",
+  "name": "Complete Works",
+  "author": "f9a0b1c2-3d4e-4f5a-9b6c-7d8e9f0a1b2c",
+  "publisher": "e8f9a0b1-2c3d-4e4f-9a5b-6c7d8e9f0a1b"
+}

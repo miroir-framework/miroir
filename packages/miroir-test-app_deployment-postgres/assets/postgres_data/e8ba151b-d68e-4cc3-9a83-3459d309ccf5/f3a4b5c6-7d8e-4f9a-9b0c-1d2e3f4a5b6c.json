@@ -1,0 +1,10 @@
+{
+  "uuid": "f3a4b5c6-7d8e-4f9a-9b0c-1d2e3f4a5b6c",
+  "parentName": "Book",
+  "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+  "conceptLevel": "Data",
+  "name": "Le Misanthrope",
+  "author": "d1e2f3a4-5b6c-4d7e-9f8a-9b0c1d2e3f4a",
+  "publisher": "516a7366-39e7-4998-82cb-80199a7fa667",
+  "year": 1666
+}

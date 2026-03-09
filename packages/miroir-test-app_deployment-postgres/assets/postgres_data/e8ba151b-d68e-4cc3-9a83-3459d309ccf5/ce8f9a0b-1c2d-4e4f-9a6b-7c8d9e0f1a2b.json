@@ -1,0 +1,10 @@
+{
+  "uuid": "ce8f9a0b-1c2d-4e4f-9a6b-7c8d9e0f1a2b",
+  "parentName": "Book",
+  "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+  "conceptLevel": "Data",
+  "name": "Boule de Suif",
+  "author": "bd7e8f9a-0b1c-4d3e-9f5a-6b7c8d9e0f1a",
+  "publisher": "ac6d7e8f-9a0b-4c2d-9e4f-5a6b7c8d9e0f",
+  "year": 1880
+}

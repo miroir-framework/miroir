@@ -1,0 +1,9 @@
+{
+  "uuid": "065b7410-5aa1-4240-8d5c-49c3ba9d00f6",
+  "parentName": "Deployment",
+  "parentUuid": "35c5608a-7678-4f07-a4ec-76fc5bc35424",
+  "name": "DefaultPostgresDeployment",
+  "defaultLabel": "Postgres Application Deployment",
+  "selfApplication": "84d28eb1-d98a-499e-bf24-62cade033da6",
+  "description": "The default Deployment for Postgres Application"
+}

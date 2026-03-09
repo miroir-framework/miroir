@@ -1,0 +1,23 @@
+{
+  "uuid":"537fafe0-bb56-4e8b-883b-e65c0a05de17",
+  "parentName":"SelfApplicationDeploymentConfiguration",
+  "parentUuid":"35c5608a-7678-4f07-a4ec-76fc5bc35424",
+  "name":"PostgresApplicationFilesystemDeployment",
+  "defaultLabel":"PostgresApplicationFilesystemDeployment",
+  "selfApplication":"84d28eb1-d98a-499e-bf24-62cade033da6",
+  "description": "The default Filesystem Deployment for Postgres Application",
+  "configuration": {
+    "admin": {
+      "emulatedServerType": "filesystem",
+      "directory":"../miroir-core/src/assets/admin"
+    },
+    "model": {
+      "emulatedServerType": "filesystem",
+      "directory":"../miroir-test-app_deployment-postgres/assets/postgres_model"
+    },
+    "data": {
+      "emulatedServerType": "filesystem",
+      "directory":"../miroir-test-app_deployment-postgres/assets/postgres_data"
+    }
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "uuid": "a1b2c3d4-e5f6-47a8-b9c0-d1e2f3a4b5c6",
+  "parentName": "Author",
+  "parentUuid": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+  "conceptLevel": "Data",
+  "name": "Philip K. Dick",
+  "country": "2eda1207-4dcc-4af9-a3ba-ef75e7f12c11",
+  "language": "EN",
+  "birthDate": "1928-12-16T00:00:00.000Z"
+}

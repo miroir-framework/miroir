@@ -1,0 +1,14 @@
+{
+  "uuid": "bb193c1e-bbcb-4b36-97af-d39350dace6a",
+  "parentName": "User",
+  "parentUuid": "ca794e28-b2dc-45b3-8137-00151557eea8",
+  "conceptLevel": "Model",
+  "name": "François Dupont",
+  "firstName": "François",
+  "lastName": "Dupont",
+  "street": "22 Avenue Daumesnil",
+  "postalCode": "75012",
+  "city": "Paris",
+  "state": "",
+  "country": "b62fc20b-dcf5-4e3b-a247-62d0475cf60f"
+}
