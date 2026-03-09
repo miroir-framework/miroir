@@ -187,6 +187,8 @@ const entityAdapter: EntityAdapter<EntityInstance, string> = createEntityAdapter
 // Map of custom EntityAdapters for entities with non-UUID primary keys,
 // indexed by entityInstancesLocationIndex.
 const entityAdapterMap: Record<string, EntityAdapter<EntityInstance, string>> = {};
+// Map from entityInstancesLocationIndex → idAttribute name ("uuid" is default)
+const entityIdAttributeByIndex: Record<string, string> = {};
 
 function getOrCreateEntityAdapter(
   entityInstancesLocationIndex: string,
@@ -200,9 +202,14 @@ function getOrCreateEntityAdapter(
       selectId: (entity) => String((entity as any)[idAttribute]),
     });
     entityAdapterMap[entityInstancesLocationIndex] = customAdapter;
+    entityIdAttributeByIndex[entityInstancesLocationIndex] = idAttribute;
     return customAdapter;
   }
   return entityAdapter;
+}
+
+function getEntityIdAttribute(entityInstancesLocationIndex: string): string {
+  return entityIdAttributeByIndex[entityInstancesLocationIndex] ?? "uuid";
 }
 
 function registerEntityAdapterFromDefinition(
@@ -482,9 +489,11 @@ function handleInstanceAction(
             //   JSON.stringify(state[instanceCollectionEntityIndex])
             // );
 
+            const deleteIdAttribute = getEntityIdAttribute(instanceCollectionEntityIndex);
+            const deletePkValue = String((instance as any)[deleteIdAttribute]);
             sliceEntityAdapter.removeOne(
               state.current[instanceCollectionEntityIndex],
-              instance.uuid!
+              deletePkValue
             );
             log.info(
               "localCacheSliceObject handleInstanceAction delete state after removeOne for instance",
@@ -523,8 +532,10 @@ function handleInstanceAction(
           //   changes: i,
           // }));
           // log.info("localCacheSliceObject handleInstanceAction for entity", instanceCollection.parentUuid, instanceCollection.parentUuid, "updating", updates)
+          const updateIdAttribute = getEntityIdAttribute(instanceCollectionEntityIndex);
+          const updatePkValue = String((instance as any)[updateIdAttribute]);
           sliceEntityAdapter.updateOne(state.current[instanceCollectionEntityIndex], {
-            id: instance.uuid!,
+            id: updatePkValue,
             changes: instance,
           });
         }

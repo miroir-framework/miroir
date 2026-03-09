@@ -595,6 +595,47 @@ export async function createMiroirDeploymentGetPersistenceStoreController(
 }
 
 
+// ################################################################################################
+/**
+ * Common beforeAll setup: creates Miroir test environment and Miroir application deployment.
+ * Reduces boilerplate in integration test beforeAll hooks.
+ */
+export async function setupMiroirTestAndCreateMiroirDeployment(
+  miroirConfig: MiroirConfigClient,
+  miroirActivityTracker: MiroirActivityTracker,
+  miroirEventService: MiroirEventService,
+  miroirDeploymentUuid: string,
+  miroirSelfApplicationUuid: string,
+  adminDeployment: Deployment,
+  miroirDeploymentStorageConfiguration: StoreUnitConfiguration,
+  applicationDeploymentMap: ApplicationDeploymentMap,
+  customFetch?: any,
+): Promise<{
+  domainController: DomainControllerInterface;
+  persistenceStoreControllerManagerForClient: PersistenceStoreControllerManagerInterface;
+}> {
+  const { domainController, persistenceStoreControllerManagerForClient } = await setupMiroirTest(
+    miroirConfig, miroirActivityTracker, miroirEventService, customFetch,
+  );
+  const createMiroirDeploymentCompositeAction = createDeploymentCompositeAction(
+    "miroir",
+    miroirDeploymentUuid,
+    miroirSelfApplicationUuid,
+    adminDeployment,
+    miroirDeploymentStorageConfiguration,
+  );
+  const createDeploymentResult = await domainController.handleCompositeAction(
+    createMiroirDeploymentCompositeAction,
+    applicationDeploymentMap,
+    defaultMiroirModelEnvironment,
+    {},
+  );
+  if (createDeploymentResult.status !== "ok") {
+    throw new Error("Failed to create Miroir deployment: " + JSON.stringify(createDeploymentResult));
+  }
+  return { domainController, persistenceStoreControllerManagerForClient };
+}
+
 // #################################################################################################################
 export async function resetApplicationDeployments(
   deploymentConfigurations: DeploymentConfiguration[],

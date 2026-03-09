@@ -5,6 +5,7 @@ import process from "process";
 
 import {
   ConfigurationService,
+  createDeploymentCompositeAction,
   defaultMiroirMetaModel,
   displayTestSuiteResultsDetails,
   DomainControllerInterface,
@@ -14,12 +15,9 @@ import {
   entityEntityDefinition,
   EntityInstance,
   JzodElement,
-  LocalCacheInterface,
   LoggerInterface,
   LoggerOptions,
-  MetaEntity,
   MiroirActivityTracker,
-  MiroirContextInterface,
   miroirCoreStartup,
   MiroirEventService,
   miroirFundamentalJzodSchema,
@@ -28,13 +26,15 @@ import {
   resetAndInitApplicationDeployment,
   selfApplicationDeploymentMiroir,
   StoreUnitConfiguration,
-  TestCompositeActionParams
+  TestCompositeActionParams,
+  testUtils_deleteApplicationDeployment,
+  testUtils_resetApplicationDeployment
 } from "miroir-core";
 
 
 import {
   runTestOrTestSuite,
-  setupMiroirTest
+  setupMiroirTestAndCreateMiroirDeployment,
 } from "../../src/miroir-fwk/4-tests/tests-utils.js";
 
 import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
@@ -44,12 +44,6 @@ import { miroirPostgresStoreSectionStartup } from "miroir-store-postgres";
 import { miroirAppStartup } from "../../src/startup.js";
 
 
-// import { packageName } from "miroir-core/src/constants.js";
-import {
-  testUtils_deleteApplicationDeployment,
-  testUtils_resetApplicationDeployment,
-} from "../../src/miroir-fwk/4-tests/tests-utils-testOnLibrary.js";
-// import { loglevelnext } from '../../src/loglevelnextImporter.js';
 import { loglevelnext } from "../../src/loglevelnextImporter.js";
 import { loadTestConfigFiles } from "../utils/fileTools.js";
 
@@ -61,8 +55,6 @@ import type {
   MlSchema,
 } from "miroir-core";
 import {
-  createDeploymentCompositeAction,
-  defaultMiroirModelEnvironment,
   defaultSelfApplicationDeploymentMap,
   resetAndinitializeDeploymentCompositeAction,
   selfApplicationMiroir,
@@ -236,8 +228,6 @@ const testDeployment: Deployment = {
 //   deployment_Library_DO_NO_USE as any;
 
 let domainController: DomainControllerInterface;
-let localCache: LocalCacheInterface;
-let miroirContext: MiroirContextInterface;
 let persistenceStoreControllerManager: PersistenceStoreControllerManagerInterface;
 // let globalTestSuiteResults: TestSuiteResult = {};
 
@@ -272,36 +262,18 @@ beforeAll(async () => {
   const {
     persistenceStoreControllerManagerForClient: localpersistenceStoreControllerManager,
     domainController: localdomainController,
-    localCache: locallocalCache,
-    miroirContext: localmiroirContext,
-  } = await setupMiroirTest(miroirConfig, miroirActivityTracker, miroirEventService, crossFetch);
-
-  persistenceStoreControllerManager = localpersistenceStoreControllerManager;
-  domainController = localdomainController;
-  localCache = locallocalCache;
-  miroirContext = localmiroirContext;
-
-  // create the Miroir app deployment containing the meta-model
-  const createMiroirDeploymentCompositeAction = createDeploymentCompositeAction(
-    "miroir",
+  } = await setupMiroirTestAndCreateMiroirDeployment(
+    miroirConfig, miroirActivityTracker, miroirEventService,
     deployment_Miroir.uuid,
     adminApplication_Miroir.uuid,
     adminDeployment,
     miroirDeploymentStorageConfiguration,
-  );
-  const createDeploymentResult = await domainController.handleCompositeAction(
-    createMiroirDeploymentCompositeAction,
     applicationDeploymentMap,
-    defaultMiroirModelEnvironment,
-    {},
+    crossFetch,
   );
-  if (createDeploymentResult.status !== "ok") {
-    log.error(
-      "Failed to create Miroir deployment, createMiroirDeploymentCompositeAction:",
-      JSON.stringify(createMiroirDeploymentCompositeAction, null, 2)
-    );
-    throw new Error("Failed to create Miroir deployment: " + JSON.stringify(createDeploymentResult));
-  }
+
+  persistenceStoreControllerManager = localpersistenceStoreControllerManager;
+  domainController = localdomainController;
   console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ beforeAll DONE");
 
   return Promise.resolve();
@@ -360,7 +332,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
         },
         [
           {
-            entity: entityPublisher as MetaEntity,
+            entity: entityPublisher as Entity,
             entityDefinition: entityDefinitionPublisher as EntityDefinition,
             instances: [
               publisher1 as EntityInstance,

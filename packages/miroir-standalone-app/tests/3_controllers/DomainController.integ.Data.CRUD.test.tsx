@@ -2,7 +2,7 @@ import { describe, expect } from "vitest";
 
 import process from "process";
 
-import type { ApplicationDeploymentMap, EndpointDefinition, MlSchema } from "miroir-core";
+import type { ApplicationDeploymentMap, EndpointDefinition, Entity, MlSchema } from "miroir-core";
 import {
   ConfigurationService,
   createDeploymentCompositeAction,
@@ -12,7 +12,6 @@ import {
   EntityDefinition,
   EntityInstance,
   LoggerInterface,
-  MetaEntity,
   MiroirActivityTracker,
   miroirCoreStartup,
   MiroirEventService,
@@ -22,12 +21,14 @@ import {
   resetAndinitializeDeploymentCompositeAction,
   selfApplicationDeploymentMiroir,
   StoreUnitConfiguration,
+  testUtils_deleteApplicationDeployment,
+  testUtils_resetApplicationDeployment,
   type ApplicationEntitiesAndInstances
 } from "miroir-core";
 
 import {
   runTestOrTestSuite,
-  setupMiroirTest
+  setupMiroirTestAndCreateMiroirDeployment,
 } from "../../src/miroir-fwk/4-tests/tests-utils.js";
 
 import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
@@ -39,7 +40,6 @@ import { miroirAppStartup } from "../../src/startup.js";
 import {
   // defaultLibraryModelEnvironment,
   defaultMiroirMetaModel,
-  defaultMiroirModelEnvironment,
   defaultSelfApplicationDeploymentMap,
   selfApplicationMiroir,
   TestCompositeActionParams
@@ -77,10 +77,6 @@ import {
   selfApplicationVersionLibraryInitialVersion,
 } from "miroir-test-app_deployment-library";
 import { loglevelnext } from "../../src/loglevelnextImporter.js";
-import {
-  testUtils_deleteApplicationDeployment,
-  testUtils_resetApplicationDeployment
-} from "../../src/miroir-fwk/4-tests/tests-utils-testOnLibrary.js";
 import { loadTestConfigFiles } from "../utils/fileTools.js";
 import { cleanLevel, packageName } from "./constants.js";
 
@@ -245,12 +241,12 @@ let domainController: DomainControllerInterface;
 
 export const libraryEntitiesAndInstancesWithoutBook3: ApplicationEntitiesAndInstances = [
   {
-    entity: entityAuthor as MetaEntity,
+    entity: entityAuthor as Entity,
     entityDefinition: entityDefinitionAuthor as EntityDefinition,
     instances: [author1, author2, author3 as EntityInstance],
   },
   {
-    entity: entityBook as MetaEntity,
+    entity: entityBook as Entity,
     entityDefinition: entityDefinitionBook as EntityDefinition,
     instances: [
       book1 as EntityInstance,
@@ -262,7 +258,7 @@ export const libraryEntitiesAndInstancesWithoutBook3: ApplicationEntitiesAndInst
     ],
   },
   {
-    entity: entityPublisher as MetaEntity,
+    entity: entityPublisher as Entity,
     entityDefinition: entityDefinitionPublisher as EntityDefinition,
     instances: [
       publisher1 as EntityInstance,
@@ -273,42 +269,22 @@ export const libraryEntitiesAndInstancesWithoutBook3: ApplicationEntitiesAndInst
 ];
 
 beforeAll(async () => {
-  // Establish requests interception layer before all tests.
   myConsoleLog("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ beforeAll");
-  const {
-    domainController: localdomainController,
-  } = await setupMiroirTest(miroirConfig, miroirActivityTracker, miroirEventService);
-
-  domainController = localdomainController;
-
-  const createMiroirDeploymentCompositeAction = createDeploymentCompositeAction(
-    "miroir",
+  const { domainController: localdomainController } = await setupMiroirTestAndCreateMiroirDeployment(
+    miroirConfig, miroirActivityTracker, miroirEventService,
     deployment_Miroir.uuid,
     adminApplication_Miroir.uuid,
     adminDeployment,
     miroirDeploymentStorageConfiguration,
-  );
-  const createDeploymentResult = await domainController.handleCompositeAction(
-    createMiroirDeploymentCompositeAction,
     applicationDeploymentMap,
-    defaultMiroirModelEnvironment,
-    {},
   );
-  if (createDeploymentResult.status !== "ok") {
-    log.error(
-      "Failed to create Miroir deployment, createMiroirDeploymentCompositeAction:",
-      JSON.stringify(createMiroirDeploymentCompositeAction, null, 2)
-    );
-    throw new Error("Failed to create Miroir deployment: " + JSON.stringify(createDeploymentResult));
-  }
-  myConsoleLog("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ beforeAll DONE");
+  domainController = localdomainController;
 
-  // TODO: move it in TestCompositeAction.beforeEach
   await resetAndInitApplicationDeployment(domainController, applicationDeploymentMap, [
     selfApplicationDeploymentMiroir as Deployment,
   ]);
   document.body.innerHTML = "";
-
+  myConsoleLog("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ beforeAll DONE");
   return Promise.resolve();
 });
 
