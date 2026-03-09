@@ -73,6 +73,18 @@ MiroirLoggerFactory.registerLoggerToStart(
   log = logger;
 });
 
+// ##############################################################################################
+function getIdAttributeForEntity(
+  entityUuid: string,
+  modelEnvironment?: MiroirModelEnvironment
+): string {
+  if (!modelEnvironment?.currentModel?.entityDefinitions) return "uuid";
+  const entityDef = modelEnvironment.currentModel.entityDefinitions.find(
+    (ed: any) => ed.entityUuid === entityUuid
+  );
+  return (entityDef as any)?.idAttribute ?? "uuid";
+}
+
 export type ITransformerHandler<T> = (
   actionRuntimeTransformer: T,
   preparedStatementParametersCount: number,
@@ -341,7 +353,9 @@ function sqlStringForConstantTransformer(
 // ################################################################################################
 export function sqlStringForCombiner /*BoxedExtractorTemplateRunner*/(
   query: ExtractorOrCombiner,
-  schema: string
+  schema: string,
+  modelEnvironment?: MiroirModelEnvironment,
+  extractorsAndCombiners?: Record<string, ExtractorOrCombiner>,
 // ): Domain2QueryReturnType<SqlStringForCombinerReturnType> {
 ): SqlStringForCombinerReturnType { // TODO: do not throw exceptions
   // TODO: fetch parentName from parentUuid in query!
@@ -362,18 +376,23 @@ export function sqlStringForCombiner /*BoxedExtractorTemplateRunner*/(
     }
     case "combinerForObjectByRelation": {
       // TODO: deal with name clashes
+      const parentPkColumn = getIdAttributeForEntity(query.parentUuid, modelEnvironment);
       const result = `
         SELECT "${query.parentName}".* FROM "${schema}"."${query.parentName}", "${query.objectReference}"
-        WHERE "${query.parentName}"."uuid" = "${query.objectReference}"."${query.AttributeOfObjectToCompareToReferenceUuid}"`;
+        WHERE "${query.parentName}"."${parentPkColumn}" = "${query.objectReference}"."${query.AttributeOfObjectToCompareToReferenceUuid}"`;
       return {
         sqlString: result,
         resultAccessPath: [0],
       };
     }
     case "combinerByRelationReturningObjectList": {
+      // Resolve the PK column of the objectReference's entity
+      const objectRefEntry = extractorsAndCombiners?.[query.objectReference];
+      const objectRefEntityUuid = objectRefEntry && "parentUuid" in objectRefEntry ? objectRefEntry.parentUuid : undefined;
+      const objectRefPkColumn = objectRefEntityUuid ? getIdAttributeForEntity(objectRefEntityUuid, modelEnvironment) : "uuid";
       const result = `
       SELECT "${query.parentName}".* FROM "${schema}"."${query.parentName}", "${query.objectReference}"
-      WHERE "${query.parentName}"."${query.AttributeOfListObjectToCompareToReferenceUuid}" = "${query.objectReference}"."uuid"`;
+      WHERE "${query.parentName}"."${query.AttributeOfListObjectToCompareToReferenceUuid}" = "${query.objectReference}"."${objectRefPkColumn}"`;
       return {
         sqlString: result,
         resultAccessPath: undefined,
@@ -404,8 +423,9 @@ export function sqlStringForExtractor(
 ): RecursiveStringRecords {
   switch (extractor.extractorOrCombinerType) {
     case "extractorForObjectByDirectReference": {
+      const pkColumn = getIdAttributeForEntity(extractor.parentUuid, modelEnvironment);
       if (!extractor.applyTransformer) {
-        return `SELECT * FROM "${schema}"."${extractor.parentName}" WHERE "uuid" = '${extractor.instanceUuid}'`;
+        return `SELECT * FROM "${schema}"."${extractor.parentName}" WHERE "${pkColumn}" = '${extractor.instanceUuid}'`;
       }
       if (!modelEnvironment) {
         throw new Error("sqlForExtractor extractorForObjectByDirectReference needs modelEnvironment if applyTransformer is set");
@@ -415,7 +435,7 @@ export function sqlStringForExtractor(
         JSON.stringify(extractor.applyTransformer, null, 2),
         Object.keys(modelEnvironment)
       );
-      return `SELECT * FROM "${schema}"."${extractor.parentName}" WHERE "uuid" = '${extractor.instanceUuid}'`;
+      return `SELECT * FROM "${schema}"."${extractor.parentName}" WHERE "${pkColumn}" = '${extractor.instanceUuid}'`;
       break;
     }
     case "combinerForObjectByRelation": {
@@ -3912,7 +3932,10 @@ export function sqlStringForQuery(
   const combinerRawQueries: [string, SqlStringForCombinerReturnType][] = Object.entries(
     foreignKeyParams.extractor.combiners ?? {}
   ).map(([key, value]) => {
-    return [key, sqlStringForCombiner(value, schema)];
+    return [key, sqlStringForCombiner(value, schema, modelEnvironment, {
+      ...foreignKeyParams.extractor.extractors,
+      ...foreignKeyParams.extractor.combiners,
+    })];
   });
   log.info("sqlStringForQuery combinerRawQueries", JSON.stringify(combinerRawQueries, null, 2));
 

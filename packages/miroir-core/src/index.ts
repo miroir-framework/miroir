@@ -687,6 +687,11 @@ export {
   actionsWithDeploymentInPayload,
 } from "./1_core/Instance";
 export {
+  entityHasUuidPrimaryKey,
+  getEntityPrimaryKeyAttribute,
+  getInstancePrimaryKeyValue,
+} from "./1_core/EntityPrimaryKey";
+export {
   applicationModelEntities,
   defaultMetaModelEnvironment,
   defaultMiroirMetaModel,
@@ -1018,6 +1023,14 @@ const test1SelfApplication = require("./assets/test1_model/a659d350-dd97-4da9-91
 const menuDefaultTest1 = require("./assets/test1_model/dde4c883-ae6d-47c3-b6df-26bc6e3c1842/84c178cc-1b1b-497a-a035-9b3d756bb085.json"); //assert { type: "json" };
 
 export { menuDefaultTest1, test1SelfApplication };
+
+// ################################################################################################
+// TYPE ALIASES for backward compatibility during EntityInstancesUuidIndex → EntityInstancesIndex rename
+// ################################################################################################
+import type { EntityInstancesUuidIndex as _EntityInstancesUuidIndex } from "./0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+import { entityInstancesUuidIndex as _entityInstancesUuidIndex } from "./0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+export type EntityInstancesIndex = _EntityInstancesUuidIndex;
+export const entityInstancesIndex = _entityInstancesUuidIndex;
 
 // export { default as miroirThemeSchema } from "./assets/miroir_data/5e81e1b9-38be-487c-b3e5-53796c57fccf/2aa173df-285d-4ed2-8b70-736902ded03a.json" assert { type: "json" };
 // export { default as TableThemeSchema } from "./assets/miroir_data/5e81e1b9-38be-487c-b3e5-53796c57fccf/8e380a46-189d-40ff-a880-7d04f04da673.json";

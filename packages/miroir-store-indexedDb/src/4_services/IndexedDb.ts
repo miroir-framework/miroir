@@ -184,21 +184,23 @@ export class IndexedDb {
     return Promise.resolve(result);
   }
   // #############################################################################################
-  public async putValue(parentUuid: string, value: any):Promise<Action2VoidReturnType> {
+  public async putValue(parentUuid: string, value: any, idAttribute: string = "uuid"):Promise<Action2VoidReturnType> {
     const store = this.subLevels.get(parentUuid);
+    const pkValue = String((value as any)[idAttribute]);
     log.debug('IndexedDb in store',store,'hasSubLevel(',parentUuid,')', this.hasSubLevel(parentUuid),'PutValue of entity', parentUuid, 'value',value);
-    const result1 = store?await store.put(value.uuid, value, {valueEncoding: 'json'}):[];
+    const result1 = store?await store.put(pkValue, value, {valueEncoding: 'json'}):[];
     // log.info('IndexedDb PutValue written', tableName,);
     // return Promise.resolve(result1);
     return Promise.resolve(ACTION_OK);
   }
 
   // #############################################################################################
-  public async putBulkValue(tableName: string, values: any[]):Promise<any> {
+  public async putBulkValue(tableName: string, values: any[], idAttribute: string = "uuid"):Promise<any> {
     // const tx = this.db.transaction(tableName, 'readwrite');
     const store = this.subLevels.get(tableName);
     for (const value of values) {
-      const result = await store?.put(value.uuid,value, {valueEncoding: 'json'});
+      const pkValue = String((value as any)[idAttribute]);
+      const result = await store?.put(pkValue, value, {valueEncoding: 'json'});
       log.trace(this.logHeader, 'PutBulkValue ', JSON.stringify(result));
     }
     return this.getAllValue(tableName); // TODO: do not return the full table!

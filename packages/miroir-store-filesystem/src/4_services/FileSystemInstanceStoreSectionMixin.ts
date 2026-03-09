@@ -111,8 +111,8 @@ export function FileSystemInstanceStoreSectionMixin<TBase extends MixableFileSys
     }
 
     // #############################################################################################
-    getInstance(entityUuid: string, uuid: string): Promise<Action2EntityInstanceReturnType> {
-      const entityInstancePath = path.join(this.directory, entityUuid, fullName(uuid));
+    getInstance(entityUuid: string, instancePrimaryKey: string): Promise<Action2EntityInstanceReturnType> {
+      const entityInstancePath = path.join(this.directory, entityUuid, fullName(instancePrimaryKey));
       try {
         const fileContents = fs.readFileSync(entityInstancePath, { encoding: "utf-8" }).toString();
         return Promise.resolve({
@@ -124,7 +124,7 @@ export function FileSystemInstanceStoreSectionMixin<TBase extends MixableFileSys
         return Promise.resolve(
           new Action2Error(
             "FailedToGetInstance",
-            `failed to get instance ${uuid} of entity ${entityUuid}`,
+            `failed to get instance ${instancePrimaryKey} of entity ${entityUuid}`,
           ),
         );
       }
@@ -216,7 +216,9 @@ export function FileSystemInstanceStoreSectionMixin<TBase extends MixableFileSys
     // #########################################################################################
     upsertInstance(entityUuid: string, instance: EntityInstance): Promise<Action2VoidReturnType> {
       try {
-        const filePath = path.join(this.directory, entityUuid, fullName(instance.uuid));
+        const idAttribute = this.entityIdAttributes[entityUuid] ?? "uuid";
+        const pkValue = String((instance as any)[idAttribute]);
+        const filePath = path.join(this.directory, entityUuid, fullName(pkValue));
         log.info(
           this.logHeader,
           "upsertInstance called",
@@ -243,7 +245,7 @@ export function FileSystemInstanceStoreSectionMixin<TBase extends MixableFileSys
         return Promise.resolve(
           new Action2Error(
             "FailedToUpdateInstance",
-            `failed to upsert instance ${instance.uuid} of entity ${entityUuid}`,
+            `failed to upsert instance of entity ${entityUuid}`,
           ),
         );
       }
@@ -258,7 +260,7 @@ export function FileSystemInstanceStoreSectionMixin<TBase extends MixableFileSys
       // TODO: delete in parallel, not sequentially
       for (const o of instances) {
         // TODO: send back a proper "FailedToDeleteInstances" error if one of the deletes fails, with the details of the failed delete as payload
-        const tmpResult = await this.deleteInstance(parentUuid, { uuid: o.uuid } as EntityInstance);
+        const tmpResult = await this.deleteInstance(parentUuid, o);
         if (tmpResult.status !== "ok") {
           return tmpResult;
         }
@@ -268,14 +270,18 @@ export function FileSystemInstanceStoreSectionMixin<TBase extends MixableFileSys
 
     // #############################################################################################
     deleteInstance(entityUuid: string, instance: EntityInstance): Promise<Action2VoidReturnType> {
+      const idAttribute = this.entityIdAttributes[entityUuid] ?? "uuid";
+      const pkValue = (instance as any)[idAttribute];
       log.info(
         "FileSystemInstanceStore deleteInstance called",
         "directory",
         this.directory,
         "entityUuid",
         entityUuid,
-        "fullName(instance.uuid)",
-        fullName(instance.uuid),
+        "idAttribute",
+        idAttribute,
+        "pkValue",
+        pkValue,
         "instance",
         instance,
       );
@@ -287,15 +293,15 @@ export function FileSystemInstanceStoreSectionMixin<TBase extends MixableFileSys
           ),
         );
       }
-      if (!instance || !instance.uuid) {
+      if (!instance || !pkValue) {
         return Promise.resolve(
           new Action2Error(
             "FailedToDeleteInstance",
-            `deleteInstance called with empty instance or instance.uuid for entity ${entityUuid}`,
+            `deleteInstance called with empty instance or missing ${idAttribute} for entity ${entityUuid}`,
           ),
         );
       }
-      const filePath = path.join(this.directory, entityUuid, fullName(instance.uuid));
+      const filePath = path.join(this.directory, entityUuid, fullName(String(pkValue)));
       try {
         if (fs.existsSync(filePath)) {
           fs.rmSync(filePath);
@@ -324,7 +330,7 @@ export function FileSystemInstanceStoreSectionMixin<TBase extends MixableFileSys
         return Promise.resolve(
           new Action2Error(
             "FailedToDeleteInstance",
-            `failed to delete instance ${instance.uuid} of entity ${entityUuid}`,
+            `failed to delete instance of entity ${entityUuid}`,
           ),
         );
       }

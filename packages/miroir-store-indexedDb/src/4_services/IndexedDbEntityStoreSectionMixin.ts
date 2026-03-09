@@ -171,7 +171,7 @@ export function IndexedDbEntityStoreSectionMixin<TBase extends typeof MixedIndex
       await this.dataStore.renameStorageSpaceForInstancesOfEntity(
         (currentEntity.returnedDomainElement as EntityInstanceWithName).name,
         update.payload.targetValue,
-        modifiedEntity,
+        modifiedEntity as Entity,
         modifiedEntityDefinition
       );
       return Promise.resolve(ACTION_OK);

@@ -2,7 +2,7 @@ import {
   CompositeActionSequence,
   EntityDefinition,
   EntityInstance,
-  MetaEntity,
+  Entity,
   MiroirConfigClient,
   Uuid,
   type ApplicationEntitiesAndInstances
@@ -31,12 +31,12 @@ import {
 
 export const libraryEntitesAndInstancesWithoutBook3: ApplicationEntitiesAndInstances  = [
   {
-    entity: entityAuthor as MetaEntity,
+    entity: entityAuthor as Entity,
     entityDefinition: entityDefinitionAuthor as EntityDefinition,
     instances: [author1, author2, author3 as EntityInstance],
   },
   {
-    entity: entityBook as MetaEntity,
+    entity: entityBook as Entity,
     entityDefinition: entityDefinitionBook as EntityDefinition,
     instances: [
       book1 as EntityInstance,
@@ -48,7 +48,7 @@ export const libraryEntitesAndInstancesWithoutBook3: ApplicationEntitiesAndInsta
     ],
   },
   {
-    entity: entityPublisher as MetaEntity,
+    entity: entityPublisher as Entity,
     entityDefinition: entityDefinitionPublisher as EntityDefinition,
     instances: [publisher1 as EntityInstance, publisher2 as EntityInstance, publisher3 as EntityInstance],
   },

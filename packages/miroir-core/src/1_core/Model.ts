@@ -73,7 +73,7 @@ import {
 import { Transform } from "stream";
 // import { entityDefinitionEndpoint, reportEndpointVersionList } from "..";
 import { deployment_Miroir } from "miroir-test-app_deployment-admin";
-import { MetaEntity, Uuid } from "../0_interfaces/1_core/EntityDefinition";
+import { Uuid } from "../0_interfaces/1_core/EntityDefinition";
 import type { DeploymentUuidToReportsEntitiesDefinitions } from "../0_interfaces/1_core/Model";
 import { miroirFundamentalJzodSchema } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalJzodSchema";
 
@@ -97,13 +97,13 @@ import type { EntityInstanceWithName } from "../0_interfaces/1_core/Instance";
  * META-APPLICATION AND OTHER APPLICATIONS, AND THIS CONCERNS MAINLY THE META-APPLICATION ITSELF)
  * */
 // FIRST: CENTRALIZE LOGIC TO DETERMINE MODEL ENTITIES
-export const metaMetaModelEntities: MetaEntity[] = [
-  entityEntity as MetaEntity,
-  entityEntityDefinition as MetaEntity,
+export const metaMetaModelEntities: Entity[] = [
+  entityEntity as Entity,
+  entityEntityDefinition as Entity,
 ];
-export const metaMetaModelEntityUuids: Uuid[] = metaMetaModelEntities.map((e) => e.uuid);
+export const metaMetaModelEntityUuids: Uuid[] = metaMetaModelEntities.map((e) => e.uuid!);
 
-export const metaModelEntities: MetaEntity[] = [
+export const metaModelEntities: Entity[] = [
   entitySelfApplication,
   // entitySelfApplicationDeploymentConfiguration, // TODO: remove, deployments are not part of applications, they are external to them, belonging to a separate selfApplication, which contents is specific to each node (no transactions / historization)
   entityEndpointVersion,
@@ -117,18 +117,18 @@ export const metaModelEntities: MetaEntity[] = [
   entitySelfApplicationVersion,
   entityTheme,
   // entityStoreBasedConfiguration,
-] as MetaEntity[];
+] as Entity[];
 
-export const metaModelEntityUuids: Uuid[] = metaModelEntities.map((e) => e.uuid);
+export const metaModelEntityUuids: Uuid[] = metaModelEntities.map((e) => e.uuid!);
 // console.log("metaModelEntities", metaModelEntities)
 
-export const miroirModelEntities: MetaEntity[] = metaModelEntities.filter((e: MetaEntity) => {
+export const miroirModelEntities: Entity[] = metaModelEntities.filter((e: Entity) => {
   // console.log("filtering metaModelEntities entity", e)
   return e?.conceptLevel == "MetaModel";
 });
 
-export const applicationModelEntities: MetaEntity[] = metaModelEntities.filter(
-  (e: MetaEntity) => e?.conceptLevel != "MetaModel"
+export const applicationModelEntities: Entity[] = metaModelEntities.filter(
+  (e: Entity) => e?.conceptLevel != "MetaModel"
 );
 
 // #################################################################################################

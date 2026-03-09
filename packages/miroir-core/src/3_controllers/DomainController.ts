@@ -1,7 +1,7 @@
 
 import { v4 as uuidv4 } from 'uuid';
 
-import { MetaEntity, Uuid } from '../0_interfaces/1_core/EntityDefinition.js';
+import { Uuid } from '../0_interfaces/1_core/EntityDefinition.js';
 import {
   DomainControllerInterface,
   DomainState,
@@ -411,11 +411,11 @@ export class DomainController implements DomainControllerInterface {
           }
 
           // TODO: information has to come from localCacheSlice, not from hard-coded source!
-          const modelEntitiesToFetch: MetaEntity[] =
+          const modelEntitiesToFetch: Entity[] =
             deploymentUuid == deployment_Miroir.uuid
               ? miroirModelEntities
               : metaModelEntities;
-          const dataEntitiesToFetch: MetaEntity[] =
+          const dataEntitiesToFetch: Entity[] =
             deploymentUuid == deployment_Miroir.uuid
               ? (
                   context.dataEntitiesFromModelSection.returnedDomainElement?.instances ?? []
@@ -439,14 +439,14 @@ export class DomainController implements DomainControllerInterface {
           //   modelEntitiesToFetch.map((e) => e.name),
           // );
 
-          const toFetchEntities: { section: ApplicationSection; entity: MetaEntity }[] = [
+          const toFetchEntities: { section: ApplicationSection; entity: Entity }[] = [
             ...modelEntitiesToFetch.map((e) => ({
               section: "model" as ApplicationSection,
               entity: e,
             })),
             ...dataEntitiesToFetch.map((e) => ({
               section: "data" as ApplicationSection,
-              entity: e as MetaEntity,
+              entity: e as Entity,
             })),
           ];
           // log.debug(

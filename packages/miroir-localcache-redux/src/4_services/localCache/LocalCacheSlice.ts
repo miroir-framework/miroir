@@ -17,6 +17,7 @@ import {
   EntityInstance,
   EntityInstanceCollection,
   EntityInstancesUuidIndex,
+  getEntityPrimaryKeyAttribute,
   InstanceAction,
   LocalCacheAction,
   LoggerInterface,
@@ -179,11 +180,45 @@ export function selectDomainStateFromlocalCacheEntityZone(localCacheEntityZone:R
 // IMPLEMENTATION
 //#########################################################################################
 const entityAdapter: EntityAdapter<EntityInstance, string> = createEntityAdapter<EntityInstance, string>({
-  // Assume IDs are stored in a field other than `book.id`
-  selectId: (entity) => entity.uuid,
-  // Keep the "all IDs" array sorted based on book titles
-  // sortComparer: (a, b) => a.name.localeCompare(b.name),
+  selectId: (entity) => entity.uuid!,
 });
+
+//#########################################################################################
+// Map of custom EntityAdapters for entities with non-UUID primary keys,
+// indexed by entityInstancesLocationIndex.
+const entityAdapterMap: Record<string, EntityAdapter<EntityInstance, string>> = {};
+
+function getOrCreateEntityAdapter(
+  entityInstancesLocationIndex: string,
+  idAttribute?: string
+): EntityAdapter<EntityInstance, string> {
+  if (entityAdapterMap[entityInstancesLocationIndex]) {
+    return entityAdapterMap[entityInstancesLocationIndex];
+  }
+  if (idAttribute && idAttribute !== "uuid") {
+    const customAdapter = createEntityAdapter<EntityInstance, string>({
+      selectId: (entity) => String((entity as any)[idAttribute]),
+    });
+    entityAdapterMap[entityInstancesLocationIndex] = customAdapter;
+    return customAdapter;
+  }
+  return entityAdapter;
+}
+
+function registerEntityAdapterFromDefinition(
+  deploymentUuid: string,
+  section: ApplicationSection,
+  entityDefinitionInstance: EntityInstance
+): void {
+  const idAttribute = getEntityPrimaryKeyAttribute(entityDefinitionInstance as any);
+  if (idAttribute !== "uuid") {
+    const entityUuid = (entityDefinitionInstance as any).entityUuid;
+    if (entityUuid) {
+      const locationIndex = getReduxDeploymentsStateIndex(deploymentUuid, section, entityUuid);
+      getOrCreateEntityAdapter(locationIndex, idAttribute);
+    }
+  }
+}
 
 //#########################################################################################
 // DOES SIDE EFFECT ON STATE!!!!!!!!!!!!
@@ -196,18 +231,20 @@ function initializeLocalCacheSliceStateWithEntityAdapter(
 ) {
   // TODO: refactor so as to avoid side effects!
   const entityInstancesLocationIndex = getReduxDeploymentsStateIndex(deploymentUuid, section, entityUuid);
+  const currentAdapter = getOrCreateEntityAdapter(entityInstancesLocationIndex);
   if (!(state as any)[zone][entityInstancesLocationIndex]) {
-    (state as any)[zone][entityInstancesLocationIndex] = entityAdapter.getInitialState();
+    (state as any)[zone][entityInstancesLocationIndex] = currentAdapter.getInitialState();
   }
-  return entityAdapter;
+  return currentAdapter;
 }
 
 //#########################################################################################
 //# REDUCER FUNCTION
 //#########################################################################################
-function equalEntityInstances(newOnes:EntityInstance[],oldOnes:Record<string, EntityInstance>) {
+function equalEntityInstances(newOnes:EntityInstance[],oldOnes:Record<string, EntityInstance>, idAttribute: string = "uuid") {
   for (const newOne of newOnes) {
-    if (!oldOnes[newOne.uuid] || !equal(newOne,oldOnes[newOne.uuid])) {
+    const pkValue = String((newOne as any)[idAttribute]);
+    if (!oldOnes[pkValue] || !equal(newOne,oldOnes[pkValue])) {
       return false;
     }
   }
@@ -230,6 +267,12 @@ function loadNewEntityInstancesInLocalCache(
   //   instanceCollection
   // );
   const instanceCollectionEntityIndex = getReduxDeploymentsStateIndex(deploymentUuid, section, instanceCollection.parentUuid);
+  // Register custom adapters for entities with non-UUID PKs when loading EntityDefinitions
+  if (instanceCollection.parentUuid === entityDefinitionEntityDefinition.uuid) {
+    for (const inst of instanceCollection.instances ?? []) {
+      registerEntityAdapterFromDefinition(deploymentUuid, section, inst);
+    }
+  }
   // log.info(
   //   "ReplaceInstancesForDeploymentEntity for deployment",
   //   deploymentUuid,
@@ -374,11 +417,12 @@ function handleInstanceAction(
           // );
 
           if (instance.parentUuid == entityDefinitionEntityDefinition.uuid) {
-            // TODO: does it work? How?
-            // log.info(
-            //   "localCacheSliceObject handleInstanceAction creating entityAdapter for Entities",
-            //   instanceCollection.instances.map((i: any) => i["name"])
-            // );
+            // When creating an EntityDefinition, register a custom adapter if it uses a non-UUID PK
+            registerEntityAdapterFromDefinition(
+              deploymentUuid,
+              instanceAction.payload.applicationSection,
+              instance
+            );
 
             // instance.instances.forEach((i: EntityInstance) => {
               if (!instanceAction.payload.applicationSection) {
@@ -390,7 +434,7 @@ function handleInstanceAction(
               initializeLocalCacheSliceStateWithEntityAdapter(
                 deploymentUuid,
                 instanceAction.payload.applicationSection,
-                instance.uuid,
+                instance.uuid!,
                 "current",
                 state
               );
@@ -440,7 +484,7 @@ function handleInstanceAction(
 
             sliceEntityAdapter.removeOne(
               state.current[instanceCollectionEntityIndex],
-              instance.uuid
+              instance.uuid!
             );
             log.info(
               "localCacheSliceObject handleInstanceAction delete state after removeOne for instance",
@@ -480,7 +524,7 @@ function handleInstanceAction(
           // }));
           // log.info("localCacheSliceObject handleInstanceAction for entity", instanceCollection.parentUuid, instanceCollection.parentUuid, "updating", updates)
           sliceEntityAdapter.updateOne(state.current[instanceCollectionEntityIndex], {
-            id: instance.uuid,
+            id: instance.uuid!,
             changes: instance,
           });
         }

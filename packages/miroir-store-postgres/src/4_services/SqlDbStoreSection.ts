@@ -3,7 +3,7 @@ import {
   Action2VoidReturnType,
   EntityDefinition,
   LoggerInterface,
-  MetaEntity,
+  Entity,
   MiroirLoggerFactory,
   PersistenceStoreAbstractSectionInterface,
   StorageSpaceHandlerInterface,
@@ -61,7 +61,7 @@ export class SqlDbStoreSection
 
   // ##############################################################################################
   async bootFromPersistedState(
-    entities: MetaEntity[],
+    entities: Entity[],
     entityDefinitions: EntityDefinition[]
   ): Promise<Action2VoidReturnType> {
     log.info(
@@ -77,7 +77,7 @@ export class SqlDbStoreSection
     // );
     this.sqlSchemaTableAccess = entities
       // .filter(e=>['Entity','EntityDefinition'].indexOf(e.name)==-1)
-      .reduce((prev, curr: MetaEntity) => {
+      .reduce((prev, curr: Entity) => {
         const entityDefinition = entityDefinitions.find((e) => e.entityUuid == curr.uuid);
         log.info(
           this.logHeader,
@@ -96,13 +96,15 @@ export class SqlDbStoreSection
 
   // ##############################################################################################
   getAccessToDataSectionEntity(
-    entity: MetaEntity,
+    entity: Entity,
     entityDefinition: EntityDefinition
   ): EntityUuidIndexedSequelizeModel {
     // TODO: does side effect => refactor!
+    const idAttribute = (entityDefinition as any).idAttribute ?? "uuid";
     return {
       [entity.uuid]: {
         parentName: entity.parentName,
+        idAttribute,
         sequelizeModel: this.sequelize.define(
           entity.name,
           fromMiroirEntityDefinitionToSequelizeEntityDefinition(entityDefinition),
@@ -117,7 +119,7 @@ export class SqlDbStoreSection
 
   // ##############################################################################################
   async createStorageSpaceForInstancesOfEntity(
-    entity: MetaEntity,
+    entity: Entity,
     entityDefinition: EntityDefinition
   ): Promise<Action2VoidReturnType> {
     this.sqlSchemaTableAccess = Object.assign(
@@ -136,7 +138,7 @@ export class SqlDbStoreSection
   async renameStorageSpaceForInstancesOfEntity(
     oldName: string,
     newName: string,
-    entity: MetaEntity,
+    entity: Entity,
     entityDefinition: EntityDefinition
   ): Promise<Action2VoidReturnType> {
     const queryInterface = this.sequelize.getQueryInterface();
@@ -158,7 +160,7 @@ export class SqlDbStoreSection
 
   // // ##############################################################################################
   // async alterStorageSpaceForInstancesOfEntity(
-  //   entity: MetaEntity,
+  //   entity: Entity,
   //   entityDefinition: EntityDefinition
   // ): Promise<Action2VoidReturnType> {
   //   const queryInterface = this.sequelize.getQueryInterface();

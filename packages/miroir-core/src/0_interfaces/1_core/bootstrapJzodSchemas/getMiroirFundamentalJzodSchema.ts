@@ -710,6 +710,7 @@ export function getMiroirFundamentalJzodSchema(
           definition: {
             uuid: {
               type: "uuid",
+              optional: true,
               tag: { value: { id: 1, defaultLabel: "Uuid", editable: false, canBeTemplate: true } },
             },
             parentName: {

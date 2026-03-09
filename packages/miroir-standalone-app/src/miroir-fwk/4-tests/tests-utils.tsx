@@ -21,7 +21,7 @@ import {
   InstanceAction,
   LocalCacheInterface,
   LoggerInterface,
-  MetaEntity,
+  Entity,
   MiroirActivityTracker,
   MiroirConfigClient,
   MiroirContext,
@@ -229,11 +229,11 @@ export const DisplayLoadingInfo:FC<{reportUuid?:string}> = (props:{reportUuid?:s
 // ################################################################################################
 export async function addEntitiesAndInstancesForEmulatedServer(
   localAppPersistenceStoreController: PersistenceStoreControllerInterface,
-  entities: { entity: MetaEntity, entityDefinition: EntityDefinition, instances: EntityInstance[] }[],
+  entities: { entity: Entity, entityDefinition: EntityDefinition, instances: EntityInstance[] }[],
   reportBookList: EntityInstance,
 ) {
   for (const entity of entities) {
-    await localAppPersistenceStoreController.createEntity(entity.entity as MetaEntity, entity.entityDefinition as EntityDefinition);
+    await localAppPersistenceStoreController.createEntity(entity.entity as Entity, entity.entityDefinition as EntityDefinition);
   }
   await localAppPersistenceStoreController?.upsertInstance('model', reportBookList as EntityInstance);
   for (const entityInstances of entities) {
@@ -249,7 +249,7 @@ export async function addEntitiesAndInstancesForRealServer(
   localCache: LocalCacheInterface,
   deployment_Library_DO_NO_USE: EntityInstance,
   applicationDeploymentMap: ApplicationDeploymentMap,
-  entities: { entity: MetaEntity, entityDefinition: EntityDefinition, instances: EntityInstance[] }[],
+  entities: { entity: Entity, entityDefinition: EntityDefinition, instances: EntityInstance[] }[],
   act?: unknown,
 ) {
   const createAction: DomainAction = {
@@ -362,7 +362,7 @@ export async function addEntitiesAndInstances(
   miroirConfig: MiroirConfigClient,
   deployment_Library_DO_NO_USE: EntityInstance,
   applicationDeploymentMap: ApplicationDeploymentMap,
-  entities: { entity: MetaEntity, entityDefinition: EntityDefinition, instances: EntityInstance[] }[],
+  entities: { entity: Entity, entityDefinition: EntityDefinition, instances: EntityInstance[] }[],
   reportBookList: EntityInstance,
   act?: unknown,
 ) {
@@ -639,8 +639,8 @@ export async function deleteAndCloseApplicationDeployments(
   log.info('deleteAndCloseApplicationDeployments delete test stores.');
   for (const d of deploymentConfigurations) {
     const storeUnitConfiguration = miroirConfig.client.emulateServer
-    ? miroirConfig.client.deploymentStorageConfig[d.uuid]
-    : miroirConfig.client.serverConfig.storeSectionConfiguration[d.uuid];
+    ? miroirConfig.client.deploymentStorageConfig[d.uuid!]
+    : miroirConfig.client.serverConfig.storeSectionConfiguration[d.uuid!];
     const deletedStore = await domainController.handleAction({
       actionType: "storeManagementAction_deleteStore",
       endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",

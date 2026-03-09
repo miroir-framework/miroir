@@ -10,7 +10,6 @@ import {
   EntityInstance,
   EntityInstanceWithName,
   LoggerInterface,
-  MetaEntity,
   MiroirLoggerFactory,
   ModelActionAlterEntityAttribute,
   ModelActionRenameEntity,
@@ -63,7 +62,7 @@ export function SqlDbEntityStoreSectionMixin<TBase extends typeof MixedSqlDbInst
     // ##############################################################################################
     // TODO: does side effect => refactor!
     getAccessToModelSectionEntity(
-      entity: MetaEntity,
+      entity: Entity,
       entityDefinition: EntityDefinition
     ): EntityUuidIndexedSequelizeModel {
       return {
@@ -271,7 +270,7 @@ export function SqlDbEntityStoreSectionMixin<TBase extends typeof MixedSqlDbInst
       await this.dataStore.renameStorageSpaceForInstancesOfEntity(
         (currentEntity.returnedDomainElement as EntityInstanceWithName).name,
         update.payload.targetValue,
-        modifiedEntity,
+        modifiedEntity as Entity,
         modifiedEntityDefinition
       );
       return Promise.resolve(ACTION_OK);
@@ -354,7 +353,7 @@ export function SqlDbEntityStoreSectionMixin<TBase extends typeof MixedSqlDbInst
       (this.dataStore as any as SqlDbStoreSection).sqlSchemaTableAccess = {
         ...(this.dataStore as any as SqlDbStoreSection).sqlSchemaTableAccess,
         ...(this.dataStore as any as SqlDbStoreSection).getAccessToDataSectionEntity(
-          currentEntity.returnedDomainElement as MetaEntity,
+          currentEntity.returnedDomainElement as Entity,
           modifiedEntityDefinition
         ),
       };
@@ -365,7 +364,7 @@ export function SqlDbEntityStoreSectionMixin<TBase extends typeof MixedSqlDbInst
       );
 
       await (this.dataStore as any as SqlDbStoreSection).sqlSchemaTableAccess[
-        currentEntity.returnedDomainElement.uuid
+        currentEntity.returnedDomainElement.uuid!
       ].sequelizeModel.sync({ alter: true }); // TODO: replace sync!
 
       return Promise.resolve(ACTION_OK);

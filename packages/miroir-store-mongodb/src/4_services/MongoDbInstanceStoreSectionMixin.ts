@@ -97,9 +97,9 @@ export function MongoDbInstanceStoreSectionMixin<TBase extends MixableMongoDbSto
     }
 
     // #############################################################################################
-    async getInstance(parentUuid: string, uuid: string): Promise<Action2EntityInstanceReturnType> {
+    async getInstance(parentUuid: string, instancePrimaryKey: string): Promise<Action2EntityInstanceReturnType> {
       try {
-        const result = await this.localUuidMongoDb.getInstance(parentUuid, uuid);
+        const result = await this.localUuidMongoDb.getInstance(parentUuid, instancePrimaryKey);
         return Promise.resolve({
           status: "ok",
           returnedDomainElement: result,
@@ -108,7 +108,7 @@ export function MongoDbInstanceStoreSectionMixin<TBase extends MixableMongoDbSto
         return Promise.resolve(
           new Action2Error(
             "FailedToGetInstance",
-            `getInstance could not retrieve instance ${uuid} of entity ${parentUuid}: ` + error
+            `getInstance could not retrieve instance ${instancePrimaryKey} of entity ${parentUuid}: ` + error
           )
         );
       }

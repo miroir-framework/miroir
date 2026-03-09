@@ -360,7 +360,7 @@ export const selectEntityInstanceUuidIndexFromReduxDeploymentsState: SyncBoxedEx
   // log.info("selectEntityInstanceUuidIndexFromReduxDeploymentsState filteredInstancesArray", filteredInstancesArray);
 
   const result = filteredInstancesArray.reduce((acc: EntityInstancesUuidIndex, instance: EntityInstance) => {
-    acc[instance.uuid] = instance;
+    acc[instance.uuid!] = instance;
     return acc;
   }, {});
   // log.info("selectEntityInstanceUuidIndexFromReduxDeploymentsState filtered result", result);

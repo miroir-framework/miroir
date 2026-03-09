@@ -202,7 +202,7 @@ export const selectEntityInstanceUuidIndexFromDomainState: SyncBoxedExtractorRun
   );
   // log.info("selectEntityInstanceUuidIndexFromDomainState filteredInstancesArray", filteredInstancesArray);
   const result = filteredInstancesArray.reduce((acc: EntityInstancesUuidIndex, instance: EntityInstance) => {
-    acc[instance.uuid] = instance;
+    acc[instance.uuid!] = instance;
     return acc;
   }, {});
   // log.info("selectEntityInstanceUuidIndexFromDomainState filtered result", result);

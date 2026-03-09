@@ -1,4 +1,4 @@
-import type { MetaEntity, Uuid } from "../0_interfaces/1_core/EntityDefinition";
+import type { Uuid } from "../0_interfaces/1_core/EntityDefinition";
 import type {
   AdminApplication,
   CompositeActionSequence,
@@ -225,7 +225,7 @@ export function createDeploymentCompositeAction(
 
 // ################################################################################################
 export interface EntityDefinitionCouple {
-  // entity: MetaEntity;
+  // entity: Entity;
   entity: Entity;
   entityDefinition: EntityDefinition;
 }
@@ -236,7 +236,7 @@ export type ApplicationEntitiesDefinitionAndInstances = {
 export type ApplicationEntitiesAndInstances = ApplicationEntitiesDefinitionAndInstances[];
 
 export const emptyMetaModel: MetaModel = {
-  applicationUuid: noValue.uuid,
+  applicationUuid: noValue.uuid!,
   applicationName: "",
   entities: [],
   entityDefinitions: [],

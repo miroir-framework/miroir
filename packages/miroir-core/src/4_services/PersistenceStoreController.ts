@@ -669,16 +669,16 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
   async getInstance(
     section: ApplicationSection,
     entityUuid: string,
-    uuid: Uuid
+    instancePrimaryKey: Uuid
   ): Promise<Action2EntityInstanceReturnType> {
-    log.info(this.logHeader, "getInstance", "section", section, "entity", entityUuid, "uuid", uuid);
+    log.info(this.logHeader, "getInstance", "section", section, "entity", entityUuid, "instancePrimaryKey", instancePrimaryKey);
 
     // let result: EntityInstance | undefined;
     let result: Action2EntityInstanceReturnType;
     if (section == "data") {
-      result = await this.dataStoreSection.getInstance(entityUuid, uuid);
+      result = await this.dataStoreSection.getInstance(entityUuid, instancePrimaryKey);
     } else {
-      result = await this.modelStoreSection.getInstance(entityUuid, uuid);
+      result = await this.modelStoreSection.getInstance(entityUuid, instancePrimaryKey);
     }
     log.trace(
       this.logHeader,
@@ -687,8 +687,8 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
       section,
       "entity",
       entityUuid,
-      "uuid",
-      uuid,
+      "instancePrimaryKey",
+      instancePrimaryKey,
       "result",
       result
     );

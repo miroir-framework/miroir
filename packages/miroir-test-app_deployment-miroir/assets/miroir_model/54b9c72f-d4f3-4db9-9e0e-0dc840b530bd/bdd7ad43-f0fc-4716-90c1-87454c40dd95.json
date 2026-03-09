@@ -185,6 +185,16 @@
           }
         }
       },
+      "idAttribute": {
+        "type": "string",
+        "optional": true,
+        "tag": {
+          "value": {
+            "defaultLabel": "Id Attribute",
+            "description": "The attribute used as primary key for instances of this entity. Defaults to 'uuid' when absent."
+          }
+        }
+      },
       "mlSchema": {
         "type": "schemaReference",
         "definition": {

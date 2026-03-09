@@ -1,5 +1,5 @@
-import { MetaEntity } from "../../0_interfaces/1_core/EntityDefinition";
 import {
+  Entity,
   EntityDefinition,
   EntityInstance,
   EntityInstanceCollection,
@@ -28,14 +28,14 @@ export class ErrorDataStore implements PersistenceStoreDataSectionInterface {
   close(): Promise<Action2VoidReturnType> {
     throw new Error("Method not implemented.");
   }
-  bootFromPersistedState(entities: MetaEntity[], entityDefinitions: EntityDefinition[]): Promise<Action2VoidReturnType> {
+  bootFromPersistedState(entities: Entity[], entityDefinitions: EntityDefinition[]): Promise<Action2VoidReturnType> {
     throw new Error("Method not implemented.");
   }
   clear(): Promise<Action2VoidReturnType> {
     throw new Error("Method not implemented.");
   }
   createStorageSpaceForInstancesOfEntity(
-    entity: MetaEntity,
+    entity: Entity,
     entityDefinition: EntityDefinition
   ): Promise<Action2VoidReturnType> {
     throw new Error("Method not implemented.");
@@ -46,7 +46,7 @@ export class ErrorDataStore implements PersistenceStoreDataSectionInterface {
   renameStorageSpaceForInstancesOfEntity(
     oldName: string,
     newName: string,
-    entity: MetaEntity,
+    entity: Entity,
     entityDefinition: EntityDefinition
   ): Promise<Action2VoidReturnType> {
     throw new Error("Method not implemented.");
@@ -57,7 +57,7 @@ export class ErrorDataStore implements PersistenceStoreDataSectionInterface {
   getState(): Promise<{ [uuid: string]: EntityInstanceCollection }> {
     throw new Error("Method not implemented.");
   }
-  getInstance(parentUuid: string, uuid: string): Promise<Action2EntityInstanceSuccess> {
+  getInstance(parentUuid: string, instancePrimaryKey: string): Promise<Action2EntityInstanceSuccess> {
     throw new Error("Method not implemented.");
   }
   getInstances(parentUuid: string): Promise<Action2EntityInstanceCollection> {

@@ -362,7 +362,7 @@ export async function asyncInnerSelectElementFromQuery /*BoxedExtractorTemplateR
               extractors,
               resolvedQuery as ExtractorOrCombiner
             );
-            results.push([instance.uuid, result]);
+            results.push([instance.uuid ?? key, result]);
           }
         }
         return Object.fromEntries(results);

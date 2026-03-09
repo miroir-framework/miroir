@@ -82,7 +82,7 @@ export interface StorageSpaceHandlerInterface {
 // ###########################################################################################
 export interface PersistenceStoreInstanceSectionAbstractInterface
   extends PersistenceStoreAbstractSectionInterface {
-  getInstance(parentUuid: string, uuid: string): Promise<Action2EntityInstanceReturnType>;
+  getInstance(parentUuid: string, instancePrimaryKey: string): Promise<Action2EntityInstanceReturnType>;
   getInstances(parentUuid: string): Promise<Action2EntityInstanceCollectionOrFailure>;
   handleQueryTemplateActionForServerONLY(
     query: RunBoxedQueryTemplateAction,

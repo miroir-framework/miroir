@@ -7471,6 +7471,7 @@ export const miroirFundamentalJzodSchema = {
         "definition": {
           "uuid": {
             "type": "uuid",
+            "optional": true,
             "tag": {
               "value": {
                 "id": 1,
@@ -62977,6 +62978,7 @@ export const miroirFundamentalJzodSchema = {
         "definition": {
           "uuid": {
             "type": "union",
+            "optional": true,
             "tag": {
               "value": {
                 "id": 1,
@@ -62993,6 +62995,7 @@ export const miroirFundamentalJzodSchema = {
             "definition": [
               {
                 "type": "uuid",
+                "optional": true,
                 "tag": {
                   "value": {
                     "id": 1,
@@ -77309,6 +77312,7 @@ export const miroirFundamentalJzodSchema = {
         "definition": {
           "uuid": {
             "type": "union",
+            "optional": true,
             "tag": {
               "value": {
                 "id": 1,
@@ -77325,6 +77329,7 @@ export const miroirFundamentalJzodSchema = {
             "definition": [
               {
                 "type": "uuid",
+                "optional": true,
                 "tag": {
                   "value": {
                     "id": 1,

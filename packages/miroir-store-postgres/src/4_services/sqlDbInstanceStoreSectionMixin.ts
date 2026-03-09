@@ -160,7 +160,8 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
         case "boxedExtractorOrCombinerReturningObject": {
           switch (query.select.extractorOrCombinerType) {
             case "extractorForObjectByDirectReference": {
-              return `SELECT * FROM "${this.schema}"."${query.select.parentName}" WHERE "uuid" = '${query.select.instanceUuid}'`;
+              const pkColumn = this.sqlSchemaTableAccess[query.select.parentUuid]?.idAttribute ?? "uuid";
+              return `SELECT * FROM "${this.schema}"."${query.select.parentName}" WHERE "${pkColumn}" = '${query.select.instanceUuid}'`;
               break;
             }
             case "combinerForObjectByRelation": {
@@ -236,11 +237,11 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
     }
 
     // ##############################################################################################
-    async getInstance(parentUuid: string, uuid: string): Promise<Action2EntityInstanceReturnType> {
+    async getInstance(parentUuid: string, instancePrimaryKey: string): Promise<Action2EntityInstanceReturnType> {
       try {
         if (this.sqlSchemaTableAccess && this.sqlSchemaTableAccess[parentUuid]) {
           const result: EntityInstance = (
-            await this.sqlSchemaTableAccess[parentUuid].sequelizeModel.findByPk(uuid)
+            await this.sqlSchemaTableAccess[parentUuid].sequelizeModel.findByPk(instancePrimaryKey)
           )?.dataValues;
           log.info(this.logHeader, "getInstance", "result", result);
           return Promise.resolve({
@@ -261,16 +262,16 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
           "getInstance",
           "could not fetch instance from db: parentId",
           parentUuid,
-          "uuid",
-          uuid
+          "instancePrimaryKey",
+          instancePrimaryKey
         );
         return Promise.resolve(
           new Action2Error(
             "FailedToGetInstance",
             "could not fetch instance from db: parentId " +
               parentUuid +
-              ", uuid=" +
-              uuid +
+              ", instancePrimaryKey=" +
+              instancePrimaryKey +
               ": " +
               error
           )
@@ -563,7 +564,8 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
       }
       try {
         const sequelizeModel = this.sqlSchemaTableAccess[parentUuid].sequelizeModel;
-        await sequelizeModel.destroy({ where: { uuid: instance.uuid } });
+        const idAttribute = this.sqlSchemaTableAccess[parentUuid].idAttribute ?? "uuid";
+        await sequelizeModel.destroy({ where: { [idAttribute]: (instance as any)[idAttribute] } });
         return Promise.resolve(ACTION_OK);
       } catch (error) {
         log.warn(
