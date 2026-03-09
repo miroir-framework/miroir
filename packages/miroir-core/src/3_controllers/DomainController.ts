@@ -3629,7 +3629,7 @@ export class DomainController implements DomainControllerInterface {
       Object.keys(localActionParams),
     );
 
-    const testSuiteResult: Record<string, TestResult> = {};
+    // const testSuiteResult: Record<string, TestResult> = {};
 
     try {
       // TestSuiteContext.setTestSuite(testAction.testLabel);
@@ -3771,11 +3771,11 @@ export class DomainController implements DomainControllerInterface {
               ...testCompositeAction[1].compositeActionSequence,
               endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
               payload: {
-                ...(testCompositeAction[1].compositeActionSequence.payload.templates ||
-                testCompositeAction[1].testParams
+                ...(testCompositeAction[1].compositeActionSequence.payload.templates
+                  // || testCompositeAction[1].testParams
                   ? {
                       templates: {
-                        ...testCompositeAction[1].testParams,
+                        // ...testCompositeAction[1].testParams,
                         ...testCompositeAction[1].compositeActionSequence.payload.templates,
                       },
                     }

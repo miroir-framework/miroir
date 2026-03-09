@@ -632,7 +632,7 @@ export { ACTION_OK, BLOB_SIZE_WARNING_THRESHOLD, MAX_BLOB_FILE_SIZE } from "./1_
 export {
   ApplicationDeploymentMap,
   ApplicationEntitiesAndInstances,
-  createApplicationCompositeAction,
+  // createApplicationCompositeAction,
   createDeploymentCompositeAction,
   defaultDeployments,
   defaultDeploymentUuids,

@@ -31,10 +31,10 @@ export const runnerConfigs: RunnerConfig[] = [
   // //   title: "Endpoint Action Caller",
   // //   component: EndpointActionCaller,
   // // },
-  // {
-  //   title: "Install Existing Application",
-  //   component: Runner_InstallApplication,
-  // },
+  {
+    title: "Install Existing Application",
+    component: Runner_InstallApplication,
+  },
   {
     title: "Create Application (and Deployment)",
     component: Runner_CreateApplication,

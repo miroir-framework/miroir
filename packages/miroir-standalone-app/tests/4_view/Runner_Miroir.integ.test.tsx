@@ -6,11 +6,6 @@ import { v4 as uuidv4 } from "uuid";
 import { beforeEach, describe, expect, it } from "vitest";
 
 import {
-  type DomainControllerInterface,
-  type LoggerInterface,
-  type LoggerOptions,
-  type Runner,
-  type StoreUnitConfiguration,
   ConfigurationService,
   emptyApplicationModel,
   formatYYYYMMDD_HHMMSS,
@@ -19,7 +14,12 @@ import {
   miroirCoreStartup,
   MiroirEventService,
   MiroirLoggerFactory,
-  testBuildPlusRuntimeCompositeActionSuiteForRunner
+  testBuildPlusRuntimeCompositeActionSuiteForRunner,
+  type DomainControllerInterface,
+  type LoggerInterface,
+  type LoggerOptions,
+  type Runner,
+  type StoreUnitConfiguration
 } from "miroir-core";
 import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
 import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
@@ -33,6 +33,7 @@ import { entityEntity, runnerCreateEntity, runnerDropEntity } from "miroir-test-
 import { env } from "process";
 import { loglevelnext } from "../../src/loglevelnextImporter";
 import { runTestOrTestSuite } from "../../src/miroir-fwk/4-tests/tests-utils";
+import { getRunner_CreateApplication } from "../../src/miroir-fwk/4_view/components/Runners/Runner_CreateApplication";
 import { miroirAppStartup } from "../../src/startup";
 import { loadTestConfigFiles } from "../utils/fileTools";
 import {
@@ -43,7 +44,6 @@ import {
   testApplicationStorageConfiguration,
   type RunnerTestParams,
 } from "./RunnerIntegTestTools";
-import { runnerCreateApplication } from "../../src/miroir-fwk/4_view/components/Runners/Runner_CreateApplication";
 
 // ################################################################################################
 const pageLabel = "Runner_Miroir.integ.test";
@@ -155,9 +155,10 @@ afterAll(async () => {
   );
 });
 
-const localRunnerCreateApplication = runnerCreateApplication(
+const localRunnerCreateApplication = getRunner_CreateApplication(
   testApplicationUuid,
   testApplicationDeploymentUuid,
+  "createApplicationAndDeployment",
   emptyApplicationModel,
 )
 const runnerTestParams: Record<string, RunnerTestParams> = {
@@ -372,14 +373,22 @@ const runnerTestParams: Record<string, RunnerTestParams> = {
     testApplicationDeploymentUuid,
     testApplicationName,
     testParams: {
-      [localRunnerCreateApplication.name]: {
-        transformerType: "returnValue",
-        value: {
+      // [localRunnerCreateApplication.name]: {
+        // transformerType: "returnValue",
+        // value: {
           application: testApplicationUuid,
           entity: entityAuthor,
           entityDefinition: entityDefinitionAuthor,
-        },
-      },
+          createApplicationAndDeployment: {
+            applicationStorage: {
+              emulatedServerType: "sql",
+              connectionString: "postgres://postgres:postgres@localhost:5432/postgres",
+              applicationName: testApplicationName,
+              // deploymentName: testApplicationName + "_deployment"},
+            },
+          },
+        // },
+      // },
     }, // testParams
     preTestCompositeActions: [
       {
@@ -470,27 +479,27 @@ describe.sequential(
   () => {
     it.each(Object.entries(runnerTestParams))(
       "test %s",
-      async (currentTestSuiteName, testParams: RunnerTestParams) => {
-        const testAction = testBuildPlusRuntimeCompositeActionSuiteForRunner(
-          testParams.pageLabel,
-          testParams.runner,
-          testParams.testApplicationUuid,
-          testParams.testApplicationDeploymentUuid,
-          testParams.testApplicationName,
-          testParams.testParams,
-          testParams.preTestCompositeActions,
-          testParams.testCompositeActionAssertions,
+      async (currentTestSuiteName, runnerTestParams: RunnerTestParams) => {
+        const runnerTestAction = testBuildPlusRuntimeCompositeActionSuiteForRunner(
+          runnerTestParams.pageLabel,
+          runnerTestParams.runner,
+          runnerTestParams.testApplicationUuid,
+          runnerTestParams.testApplicationDeploymentUuid,
+          runnerTestParams.testApplicationName,
+          runnerTestParams.testParams,
+          runnerTestParams.preTestCompositeActions,
+          runnerTestParams.testCompositeActionAssertions,
           //
-          testParams.internalMiroirConfig,
-          testParams.adminDeployment,
-          testParams.testDeploymentStorageConfiguration,
-          testParams.initialModel,
-          testParams.preRunnerCompositeActions,
-          testParams.testCompositeActionLabel,
+          runnerTestParams.internalMiroirConfig,
+          runnerTestParams.adminDeployment,
+          runnerTestParams.testDeploymentStorageConfiguration,
+          runnerTestParams.initialModel,
+          runnerTestParams.preRunnerCompositeActions,
+          runnerTestParams.testCompositeActionLabel,
         );
         const testSuiteResults = await runTestOrTestSuite(
           domainController,
-          testAction,
+          runnerTestAction,
           applicationDeploymentMap,
           miroirActivityTracker,
           {}

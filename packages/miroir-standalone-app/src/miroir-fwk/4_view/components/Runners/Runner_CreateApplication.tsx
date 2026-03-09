@@ -210,10 +210,12 @@ export const Runner_CreateApplication_formMLSchema: FormMLSchema = {
   },
 };
 
+// ################################################################################################
 function getCreateApplicationActionTemplate(
   prefix: string,
   testSelfApplicationUuid: Uuid,
   testDeploymentUuid: Uuid,
+  testApplicationName: string,
   selectedMetaModel: MetaModel | undefined,
 ): CompositeActionTemplate {
   // const testApplicationModelBranchUuid = uuidv4();
@@ -1127,14 +1129,15 @@ function getCreateApplicationActionTemplate(
 
 // ################################################################################################
 
-export function runnerCreateApplication(
+export function getRunner_CreateApplication(
   testSelfApplicationUuid: Uuid,
   testDeploymentUuid: Uuid,
+  testApplicationName: string,
   initialMetaModel: MetaModel | undefined = undefined,
 ): Runner {
   return {
     uuid: uuidv4(),
-    name: "createApplicationAndDeployment",
+    name: testApplicationName,
     defaultLabel: "Create Application (and Deployment)",
     parentUuid: "e54d7dc1-4fbc-495e-9ed9-b5cf081b9fbd",
     application: testSelfApplicationUuid,
@@ -1145,17 +1148,19 @@ export function runnerCreateApplication(
         prefix,
         testSelfApplicationUuid,
         testDeploymentUuid,
+        testApplicationName,
         initialMetaModel,
       ),
     },
   };
 };
 
+export const runnerName: string = "createApplicationAndDeployment";
+
 // ################################################################################################
 export const Runner_CreateApplication: React.FC<CreateApplicationToolProps> = ({
   applicationDeploymentMap,
 }) => {
-  const runnerName: string = "createApplicationAndDeployment";
 
   // State for MetaModel file upload
   // const [selectedMetaModel, setSelectedMetaModel] = useState<MetaModel | undefined>(undefined);
@@ -1189,7 +1194,7 @@ export const Runner_CreateApplication: React.FC<CreateApplicationToolProps> = ({
   const testDeploymentUuid = uuidv4();
 
   const runner = useMemo(
-    () => runnerCreateApplication(testSelfApplicationUuid, testDeploymentUuid),
+    () => getRunner_CreateApplication(testSelfApplicationUuid, testDeploymentUuid, "shouldGetApplicationNameFromFormik"),
     [testSelfApplicationUuid, testDeploymentUuid],
   );
 
