@@ -7495,6 +7495,7 @@ export const miroirFundamentalJzodSchema = {
           },
           "parentUuid": {
             "type": "uuid",
+            "optional": true,
             "tag": {
               "value": {
                 "id": 3,
@@ -9219,6 +9220,16 @@ export const miroirFundamentalJzodSchema = {
                     }
                   }
                 }
+              }
+            }
+          },
+          "idAttribute": {
+            "type": "string",
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "Id Attribute",
+                "description": "The attribute used as primary key for instances of this entity. Defaults to 'uuid' when absent."
               }
             }
           },
@@ -18621,6 +18632,17 @@ export const miroirFundamentalJzodSchema = {
                       }
                     }
                   },
+                  "parentUuid": {
+                    "type": "uuid",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "id": 1,
+                        "defaultLabel": "Parent Uuid",
+                        "description": "UUID of parent entity under which instances will be created"
+                      }
+                    }
+                  },
                   "applicationSection": {
                     "type": "schemaReference",
                     "tag": {
@@ -18709,6 +18731,16 @@ export const miroirFundamentalJzodSchema = {
                         "display": {
                           "editable": false
                         }
+                      }
+                    }
+                  },
+                  "parentUuid": {
+                    "type": "uuid",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Parent Uuid",
+                        "description": "UUID of parent entity under which instances will be deleted"
                       }
                     }
                   },
@@ -18802,6 +18834,16 @@ export const miroirFundamentalJzodSchema = {
                     "definition": {
                       "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                       "relativePath": "applicationSection"
+                    }
+                  },
+                  "parentUuid": {
+                    "type": "uuid",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Parent Uuid",
+                        "description": "UUID of parent entity under which instances will be deleted"
+                      }
                     }
                   },
                   "includeInTransaction": {
@@ -18903,6 +18945,17 @@ export const miroirFundamentalJzodSchema = {
                       }
                     }
                   },
+                  "parentUuid": {
+                    "type": "uuid",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "id": 1,
+                        "defaultLabel": "Parent Uuid",
+                        "description": "UUID of parent entity under which instances will be created"
+                      }
+                    }
+                  },
                   "applicationSection": {
                     "type": "schemaReference",
                     "tag": {
@@ -18994,6 +19047,16 @@ export const miroirFundamentalJzodSchema = {
                       }
                     }
                   },
+                  "parentUuid": {
+                    "type": "uuid",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Parent Uuid",
+                        "description": "UUID of parent entity under which instances will be deleted"
+                      }
+                    }
+                  },
                   "applicationSection": {
                     "type": "schemaReference",
                     "definition": {
@@ -19078,6 +19141,16 @@ export const miroirFundamentalJzodSchema = {
                     "definition": {
                       "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                       "relativePath": "applicationSection"
+                    }
+                  },
+                  "parentUuid": {
+                    "type": "uuid",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Parent Uuid",
+                        "description": "UUID of parent entity under which instances will be deleted"
+                      }
                     }
                   },
                   "includeInTransaction": {
@@ -19165,6 +19238,16 @@ export const miroirFundamentalJzodSchema = {
                       "relativePath": "applicationSection"
                     }
                   },
+                  "parentUuid": {
+                    "type": "uuid",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Parent Uuid",
+                        "description": "UUID of parent entity under which instances will be deleted"
+                      }
+                    }
+                  },
                   "includeInTransaction": {
                     "type": "boolean",
                     "optional": true,
@@ -19245,6 +19328,16 @@ export const miroirFundamentalJzodSchema = {
                         "display": {
                           "editable": false
                         }
+                      }
+                    }
+                  },
+                  "parentUuid": {
+                    "type": "uuid",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Parent Uuid",
+                        "description": "UUID of parent entity"
                       }
                     }
                   },
@@ -19333,12 +19426,8 @@ export const miroirFundamentalJzodSchema = {
                     "type": "uuid",
                     "tag": {
                       "value": {
-                        "id": 1,
                         "defaultLabel": "Uuid",
-                        "description": "UUID of Entity (parent entity)",
-                        "display": {
-                          "editable": false
-                        }
+                        "description": "UUID of Entity (parent entity)"
                       }
                     }
                   },
@@ -40421,6 +40510,37 @@ export const miroirFundamentalJzodSchema = {
                   }
                 ]
               },
+              "idAttribute": {
+                "type": "union",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Id Attribute",
+                    "description": "The attribute used as primary key for instances of this entity. Defaults to 'uuid' when absent.",
+                    "isTemplate": true
+                  }
+                },
+                "discriminator": "transformerType",
+                "definition": [
+                  {
+                    "type": "string",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Id Attribute",
+                        "description": "The attribute used as primary key for instances of this entity. Defaults to 'uuid' when absent."
+                      }
+                    }
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "transformerForBuildCarryOnObject"
+                    }
+                  }
+                ]
+              },
               "mlSchema": {
                 "type": "union",
                 "tag": {
@@ -60603,6 +60723,17 @@ export const miroirFundamentalJzodSchema = {
                       }
                     }
                   },
+                  "parentUuid": {
+                    "type": "uuid",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "id": 1,
+                        "defaultLabel": "Parent Uuid",
+                        "description": "UUID of parent entity under which instances will be created"
+                      }
+                    }
+                  },
                   "applicationSection": {
                     "type": "schemaReference",
                     "tag": {
@@ -60727,6 +60858,16 @@ export const miroirFundamentalJzodSchema = {
                       }
                     }
                   },
+                  "parentUuid": {
+                    "type": "uuid",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Parent Uuid",
+                        "description": "UUID of parent entity under which instances will be deleted"
+                      }
+                    }
+                  },
                   "applicationSection": {
                     "type": "schemaReference",
                     "definition": {
@@ -60815,6 +60956,16 @@ export const miroirFundamentalJzodSchema = {
                       "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
                     }
                   },
+                  "parentUuid": {
+                    "type": "uuid",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Parent Uuid",
+                        "description": "UUID of parent entity under which instances will be deleted"
+                      }
+                    }
+                  },
                   "includeInTransaction": {
                     "type": "boolean",
                     "optional": true
@@ -60901,6 +61052,16 @@ export const miroirFundamentalJzodSchema = {
                     "definition": {
                       "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                       "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
+                    }
+                  },
+                  "parentUuid": {
+                    "type": "uuid",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Parent Uuid",
+                        "description": "UUID of parent entity under which instances will be deleted"
+                      }
                     }
                   },
                   "includeInTransaction": {
@@ -61013,6 +61174,16 @@ export const miroirFundamentalJzodSchema = {
                       }
                     }
                   },
+                  "parentUuid": {
+                    "type": "uuid",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Parent Uuid",
+                        "description": "UUID of parent entity"
+                      }
+                    }
+                  },
                   "objects": {
                     "type": "array",
                     "tag": {
@@ -61101,12 +61272,8 @@ export const miroirFundamentalJzodSchema = {
                     "type": "uuid",
                     "tag": {
                       "value": {
-                        "id": 1,
                         "defaultLabel": "Uuid",
-                        "description": "UUID of Entity (parent entity)",
-                        "display": {
-                          "editable": false
-                        }
+                        "description": "UUID of Entity (parent entity)"
                       }
                     }
                   },
@@ -62435,6 +62602,17 @@ export const miroirFundamentalJzodSchema = {
                       }
                     }
                   },
+                  "parentUuid": {
+                    "type": "uuid",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "id": 1,
+                        "defaultLabel": "Parent Uuid",
+                        "description": "UUID of parent entity under which instances will be created"
+                      }
+                    }
+                  },
                   "applicationSection": {
                     "type": "schemaReference",
                     "tag": {
@@ -62559,6 +62737,16 @@ export const miroirFundamentalJzodSchema = {
                       }
                     }
                   },
+                  "parentUuid": {
+                    "type": "uuid",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Parent Uuid",
+                        "description": "UUID of parent entity under which instances will be deleted"
+                      }
+                    }
+                  },
                   "applicationSection": {
                     "type": "schemaReference",
                     "definition": {
@@ -62652,6 +62840,16 @@ export const miroirFundamentalJzodSchema = {
                     "definition": {
                       "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                       "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
+                    }
+                  },
+                  "parentUuid": {
+                    "type": "uuid",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Parent Uuid",
+                        "description": "UUID of parent entity under which instances will be deleted"
+                      }
                     }
                   },
                   "includeInTransaction": {
@@ -63054,6 +63252,7 @@ export const miroirFundamentalJzodSchema = {
           },
           "parentUuid": {
             "type": "union",
+            "optional": true,
             "tag": {
               "value": {
                 "id": 3,
@@ -63070,6 +63269,7 @@ export const miroirFundamentalJzodSchema = {
             "definition": [
               {
                 "type": "uuid",
+                "optional": true,
                 "tag": {
                   "value": {
                     "id": 3,
@@ -63779,6 +63979,16 @@ export const miroirFundamentalJzodSchema = {
                     }
                   }
                 }
+              }
+            }
+          },
+          "idAttribute": {
+            "type": "string",
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "Id Attribute",
+                "description": "The attribute used as primary key for instances of this entity. Defaults to 'uuid' when absent."
               }
             }
           },
@@ -74937,6 +75147,17 @@ export const miroirFundamentalJzodSchema = {
                       }
                     }
                   },
+                  "parentUuid": {
+                    "type": "uuid",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "id": 1,
+                        "defaultLabel": "Parent Uuid",
+                        "description": "UUID of parent entity under which instances will be created"
+                      }
+                    }
+                  },
                   "applicationSection": {
                     "type": "schemaReference",
                     "tag": {
@@ -75061,6 +75282,16 @@ export const miroirFundamentalJzodSchema = {
                       }
                     }
                   },
+                  "parentUuid": {
+                    "type": "uuid",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Parent Uuid",
+                        "description": "UUID of parent entity under which instances will be deleted"
+                      }
+                    }
+                  },
                   "applicationSection": {
                     "type": "schemaReference",
                     "definition": {
@@ -75149,6 +75380,16 @@ export const miroirFundamentalJzodSchema = {
                       "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
                     }
                   },
+                  "parentUuid": {
+                    "type": "uuid",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Parent Uuid",
+                        "description": "UUID of parent entity under which instances will be deleted"
+                      }
+                    }
+                  },
                   "includeInTransaction": {
                     "type": "boolean",
                     "optional": true
@@ -75235,6 +75476,16 @@ export const miroirFundamentalJzodSchema = {
                     "definition": {
                       "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                       "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
+                    }
+                  },
+                  "parentUuid": {
+                    "type": "uuid",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Parent Uuid",
+                        "description": "UUID of parent entity under which instances will be deleted"
+                      }
                     }
                   },
                   "includeInTransaction": {
@@ -75347,6 +75598,16 @@ export const miroirFundamentalJzodSchema = {
                       }
                     }
                   },
+                  "parentUuid": {
+                    "type": "uuid",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Parent Uuid",
+                        "description": "UUID of parent entity"
+                      }
+                    }
+                  },
                   "objects": {
                     "type": "array",
                     "tag": {
@@ -75435,12 +75696,8 @@ export const miroirFundamentalJzodSchema = {
                     "type": "uuid",
                     "tag": {
                       "value": {
-                        "id": 1,
                         "defaultLabel": "Uuid",
-                        "description": "UUID of Entity (parent entity)",
-                        "display": {
-                          "editable": false
-                        }
+                        "description": "UUID of Entity (parent entity)"
                       }
                     }
                   },
@@ -76769,6 +77026,17 @@ export const miroirFundamentalJzodSchema = {
                       }
                     }
                   },
+                  "parentUuid": {
+                    "type": "uuid",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "id": 1,
+                        "defaultLabel": "Parent Uuid",
+                        "description": "UUID of parent entity under which instances will be created"
+                      }
+                    }
+                  },
                   "applicationSection": {
                     "type": "schemaReference",
                     "tag": {
@@ -76893,6 +77161,16 @@ export const miroirFundamentalJzodSchema = {
                       }
                     }
                   },
+                  "parentUuid": {
+                    "type": "uuid",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Parent Uuid",
+                        "description": "UUID of parent entity under which instances will be deleted"
+                      }
+                    }
+                  },
                   "applicationSection": {
                     "type": "schemaReference",
                     "definition": {
@@ -76986,6 +77264,16 @@ export const miroirFundamentalJzodSchema = {
                     "definition": {
                       "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                       "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
+                    }
+                  },
+                  "parentUuid": {
+                    "type": "uuid",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Parent Uuid",
+                        "description": "UUID of parent entity under which instances will be deleted"
+                      }
                     }
                   },
                   "includeInTransaction": {
@@ -77388,6 +77676,7 @@ export const miroirFundamentalJzodSchema = {
           },
           "parentUuid": {
             "type": "union",
+            "optional": true,
             "tag": {
               "value": {
                 "id": 3,
@@ -77404,6 +77693,7 @@ export const miroirFundamentalJzodSchema = {
             "definition": [
               {
                 "type": "uuid",
+                "optional": true,
                 "tag": {
                   "value": {
                     "id": 3,
@@ -78113,6 +78403,16 @@ export const miroirFundamentalJzodSchema = {
                     }
                   }
                 }
+              }
+            }
+          },
+          "idAttribute": {
+            "type": "string",
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "Id Attribute",
+                "description": "The attribute used as primary key for instances of this entity. Defaults to 'uuid' when absent."
               }
             }
           },

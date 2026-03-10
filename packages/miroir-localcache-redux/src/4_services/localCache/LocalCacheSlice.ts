@@ -25,6 +25,7 @@ import {
   ModelAction,
   ModelEntityActionTransformer,
   ReduxDeploymentsState,
+  resolveInstanceParentUuid,
   TransformerFailure,
   Uuid,
   defaultApplicationSection,
@@ -352,10 +353,15 @@ function handleInstanceAction(
         // const instances = instanceAction.payload.objects;
         for (let instance of instanceAction.payload.objects ??
           ([] as EntityInstance[])) {
+          const resolvedParentUuid = resolveInstanceParentUuid(instance, instanceAction.payload.parentUuid);
+          if (resolvedParentUuid instanceof Action2Error) {
+            log.error("handleInstanceAction createInstance failed to resolve parentUuid for instance", instance);
+            return resolvedParentUuid;
+          }
           const instanceCollectionEntityIndex = getReduxDeploymentsStateIndex(
             deploymentUuid,
             instanceAction.payload.applicationSection,
-            instance.parentUuid
+            resolvedParentUuid
           );
           // log.info(
           //   "handleInstanceAction createInstance for",
@@ -396,7 +402,7 @@ function handleInstanceAction(
             initializeLocalCacheSliceStateWithEntityAdapter(
               deploymentUuid,
               instanceAction.payload.applicationSection,
-              instance.parentUuid,
+              resolvedParentUuid,
               "current",
               state
             );
@@ -423,7 +429,7 @@ function handleInstanceAction(
           //   JSON.stringify(result, null, 2)
           // );
 
-          if (instance.parentUuid == entityDefinitionEntityDefinition.uuid) {
+          if (resolvedParentUuid == entityDefinitionEntityDefinition.uuid) {
             // When creating an EntityDefinition, register a custom adapter if it uses a non-UUID PK
             registerEntityAdapterFromDefinition(
               deploymentUuid,
@@ -462,10 +468,15 @@ function handleInstanceAction(
               instance
             );
 
+            const resolvedParentUuid = resolveInstanceParentUuid(instance, instanceAction.payload.parentUuid);
+            if (resolvedParentUuid instanceof Action2Error) {
+              log.error("handleInstanceAction deleteInstance failed to resolve parentUuid for instance", instance);
+              return resolvedParentUuid;
+            }
             const instanceCollectionEntityIndex = getReduxDeploymentsStateIndex(
               deploymentUuid,
               instanceAction.payload.applicationSection,
-              instance.parentUuid
+              resolvedParentUuid
             );
 
             // log.debug(
@@ -476,7 +487,7 @@ function handleInstanceAction(
             const sliceEntityAdapter = initializeLocalCacheSliceStateWithEntityAdapter(
               deploymentUuid,
               instanceAction.payload.applicationSection,
-              instance.parentUuid,
+              resolvedParentUuid,
               "current",
               state
             );
@@ -514,15 +525,20 @@ function handleInstanceAction(
       }
       case "updateInstance": {
         for (let instance of instanceAction.payload.objects) {
+          const resolvedParentUuid = resolveInstanceParentUuid(instance, instanceAction.payload.parentUuid);
+          if (resolvedParentUuid instanceof Action2Error) {
+            log.error("handleInstanceAction updateInstance failed to resolve parentUuid for instance", instance);
+            return resolvedParentUuid;
+          }
           const instanceCollectionEntityIndex = getReduxDeploymentsStateIndex(
             deploymentUuid,
             instanceAction.payload.applicationSection,
-            instance.parentUuid
+            resolvedParentUuid
           );
           const sliceEntityAdapter = initializeLocalCacheSliceStateWithEntityAdapter(
             deploymentUuid,
             instanceAction.payload.applicationSection,
-            instance.parentUuid,
+            resolvedParentUuid,
             "current",
             state
           );

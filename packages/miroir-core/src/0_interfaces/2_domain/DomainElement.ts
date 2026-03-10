@@ -194,6 +194,7 @@ export type ActionErrorType =
 | "FailedToResetAndInitMiroirAndApplicationDatabase"
 | "FailedToResolveTemplate"
 | "FailedToResolveAction"
+| "FailedToResolveParentUuid"
 | "FailedToRunBoxedExtractorOrQueryAction"
 | "FailedToUpsertInstance"
 | "FailedToUpdateInstance"

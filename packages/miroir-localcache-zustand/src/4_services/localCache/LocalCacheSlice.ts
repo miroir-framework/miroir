@@ -22,6 +22,7 @@ import {
   getLocalCacheIndexDeploymentUuid,
   getLocalCacheIndexEntityUuid,
   getReduxDeploymentsStateIndex,
+  resolveInstanceParentUuid,
   type Action2VoidReturnType,
   type ApplicationDeploymentMap
 } from "miroir-core";
@@ -257,16 +258,21 @@ function handleInstanceAction(
   switch (instanceAction.actionType) {
     case "createInstance": {
       for (const instance of instanceAction.payload.objects ?? []) {
+        const resolvedParentUuid = resolveInstanceParentUuid(instance, instanceAction.payload.parentUuid);
+        if (resolvedParentUuid instanceof Action2Error) {
+          log.error("handleInstanceAction createInstance failed to resolve parentUuid for instance", instance);
+          return;
+        }
         const index = getReduxDeploymentsStateIndex(
           deploymentUuid,
           instanceAction.payload.applicationSection ?? "data",
-          instance.parentUuid
+          resolvedParentUuid
         );
         
         initializeLocalCacheSliceState(
           deploymentUuid,
           instanceAction.payload.applicationSection ?? "data",
-          instance.parentUuid,
+          resolvedParentUuid,
           "current",
           state
         );
@@ -278,10 +284,15 @@ function handleInstanceAction(
     }
     case "deleteInstance": {
       for (const instance of instanceAction.payload.objects ?? []) {
+        const resolvedParentUuid = resolveInstanceParentUuid(instance, instanceAction.payload.parentUuid);
+        if (resolvedParentUuid instanceof Action2Error) {
+          log.error("handleInstanceAction deleteInstance failed to resolve parentUuid for instance", instance);
+          return;
+        }
         const index = getReduxDeploymentsStateIndex(
           deploymentUuid,
           instanceAction.payload.applicationSection,
-          instance.parentUuid
+          resolvedParentUuid
         );
         
         if (state.current[index]) {
@@ -293,10 +304,15 @@ function handleInstanceAction(
     }
     case "updateInstance": {
       for (const instance of instanceAction.payload.objects ?? []) {
+      const resolvedParentUuid = resolveInstanceParentUuid(instance, instanceAction.payload.parentUuid);
+      if (resolvedParentUuid instanceof Action2Error) {
+        log.error("handleInstanceAction updateInstance failed to resolve parentUuid for instance", instance);
+        return;
+      }
       const index = getReduxDeploymentsStateIndex(
         deploymentUuid,
         instanceAction.payload.applicationSection,
-        instance.parentUuid
+        resolvedParentUuid
       );
       
       if (state.current[index]) {

@@ -355,18 +355,17 @@ export function resetAndinitializeDeploymentCompositeAction(
             application: applicationUuid,
           },
         },
-        {
-          actionType: "createInstance",
+        ...appEntitesAndInstances.map((e) => ({
+          actionType: "createInstance" as const,
           actionLabel: "resetAndinitializeDeploymentCompositeAction_createInstances",
-          endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+          endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89" as const,
           payload: {
             application: applicationUuid,
-            applicationSection: "data",
-            objects: appEntitesAndInstances.flatMap((e) => 
-              e.instances
-            ),
+            applicationSection: "data" as const,
+            parentUuid: e.entity.uuid,
+            objects: e.instances,
           },
-        },
+        })),
       ],
     },
   };

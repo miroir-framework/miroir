@@ -218,15 +218,18 @@ export interface PersistenceStoreControllerInterface
   ): Promise<Action2EntityInstanceCollectionOrFailure>;
   upsertInstance(
     section: ApplicationSection,
-    instance: EntityInstance
+    instance: EntityInstance,
+    parentUuid?: string
   ): Promise<Action2VoidReturnType>;
   deleteInstance(
     section: ApplicationSection,
-    instance: EntityInstance
+    instance: EntityInstance,
+    parentUuid?: string
   ): Promise<Action2VoidReturnType>;
   deleteInstances(
     section: ApplicationSection,
-    instance: EntityInstance[]
+    instances: EntityInstance[],
+    payloadParentUuid?: string
   ): Promise<Action2VoidReturnType>;
 
   handleAction(

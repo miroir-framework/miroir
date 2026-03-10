@@ -57,6 +57,17 @@
                   }
                 }
               },
+              "parentUuid": {
+                "type": "uuid",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "id": 1,
+                    "defaultLabel": "Parent Uuid",
+                    "description": "UUID of parent entity under which instances will be created"
+                  }
+                }
+              },
               "applicationSection": {
                 "type": "schemaReference",
                 "tag": {
@@ -144,6 +155,16 @@
                   }
                 }
               },
+              "parentUuid": {
+                "type": "uuid",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Parent Uuid",
+                    "description": "UUID of parent entity under which instances will be deleted"
+                  }
+                }
+              },
               "applicationSection": {
                 "type": "schemaReference",
                 "definition": {
@@ -224,6 +245,16 @@
                 "definition": {
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                   "relativePath": "applicationSection"
+                }
+              },
+              "parentUuid": {
+                "type": "uuid",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Parent Uuid",
+                    "description": "UUID of parent entity under which instances will be deleted"
+                  }
                 }
               },
               "includeInTransaction": {
@@ -307,6 +338,16 @@
                   "relativePath": "applicationSection"
                 }
               },
+              "parentUuid": {
+                "type": "uuid",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Parent Uuid",
+                    "description": "UUID of parent entity under which instances will be deleted"
+                  }
+                }
+              },
               "includeInTransaction": {
                 "type": "boolean",
                 "optional": true,
@@ -383,6 +424,16 @@
                     "display": {
                       "editable": false
                     }
+                  }
+                }
+              },
+              "parentUuid": {
+                "type": "uuid",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Parent Uuid",
+                    "description": "UUID of parent entity"
                   }
                 }
               },
@@ -467,12 +518,8 @@
                 "type": "uuid",
                 "tag": {
                   "value": {
-                    "id": 1,
                     "defaultLabel": "Uuid",
-                    "description": "UUID of Entity (parent entity)",
-                    "display": {
-                      "editable": false
-                    }
+                    "description": "UUID of Entity (parent entity)"
                   }
                 }
               },

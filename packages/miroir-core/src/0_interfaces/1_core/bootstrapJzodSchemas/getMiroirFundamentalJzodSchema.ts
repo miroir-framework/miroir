@@ -722,6 +722,7 @@ export function getMiroirFundamentalJzodSchema(
             },
             parentUuid: {
               type: "uuid",
+              optional: true,
               tag: {
                 value: { id: 3, defaultLabel: "Entity Uuid", editable: false, canBeTemplate: true },
               },

@@ -690,6 +690,7 @@ export {
   entityHasUuidPrimaryKey,
   getEntityPrimaryKeyAttribute,
   getInstancePrimaryKeyValue,
+  resolveInstanceParentUuid,
 } from "./1_core/EntityPrimaryKey";
 export {
   applicationModelEntities,

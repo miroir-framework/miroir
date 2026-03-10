@@ -1,4 +1,5 @@
 import type { EntityDefinition, EntityInstance } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import { Action2Error } from "../0_interfaces/2_domain/DomainElement";
 
 // ##############################################################################################
 /**
@@ -24,4 +25,27 @@ export function getInstancePrimaryKeyValue(entityDefinition: EntityDefinition, i
  */
 export function entityHasUuidPrimaryKey(entityDefinition: EntityDefinition): boolean {
   return getEntityPrimaryKeyAttribute(entityDefinition) === "uuid";
+}
+
+// ##############################################################################################
+/**
+ * Resolves the parentUuid for an entity instance using the following strategy:
+ * 1. If the instance has a parentUuid attribute, use it.
+ * 2. Otherwise, fall back to the payloadParentUuid (from the action payload).
+ * 3. If neither is available, return an Action2Error.
+ */
+export function resolveInstanceParentUuid(
+  instance: EntityInstance,
+  payloadParentUuid?: string
+): string | Action2Error {
+  if (instance.parentUuid) {
+    return instance.parentUuid;
+  }
+  if (payloadParentUuid) {
+    return payloadParentUuid;
+  }
+  return new Action2Error(
+    "FailedToResolveParentUuid",
+    `Could not resolve parentUuid for instance ${JSON.stringify(instance)}: neither instance.parentUuid nor action payload.parentUuid is defined.`
+  );
 }
