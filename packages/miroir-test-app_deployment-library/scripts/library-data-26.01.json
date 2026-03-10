@@ -1,0 +1,966 @@
+{
+  "applicationUuid": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+  "instances": [
+    {
+      "uuid": "2eda1207-4dcc-4af9-a3ba-ef75e7f12c11",
+      "parentName": "Country",
+      "parentUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+      "name": "U.S.A.",
+      "iso3166-1Alpha-2": "US"
+    },
+    {
+      "uuid": "30b8e7c6-b75d-4db0-906f-fa81fa5c4cc0",
+      "parentName": "Country",
+      "parentUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+      "name": "Germany",
+      "iso3166-1Alpha-2": "DE"
+    },
+    {
+      "uuid": "962e4064-bf6c-42e6-9929-6fb318efc7ec",
+      "parentName": "Country",
+      "parentUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+      "name": "Belgium",
+      "iso3166-1Alpha-2": "BE"
+    },
+    {
+      "uuid": "b62fc20b-dcf5-4e3b-a247-62d0475cf60f",
+      "parentName": "Country",
+      "parentUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+      "name": "France",
+      "iso3166-1Alpha-2": "FR"
+    },
+    {
+      "uuid": "b6ddfb89-4301-48bf-9ed9-4ed6ee9261fe",
+      "parentName": "Country",
+      "parentUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+      "name": "United Kingdom",
+      "iso3166-1Alpha-2": "GB"
+    },
+    {
+      "uuid": "d3e4f5a6-7b8c-4d9e-af0a-1b2c3d4e5f6a",
+      "parentName": "Country",
+      "parentUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+      "name": "Japan",
+      "iso3166-1Alpha-2": "JP"
+    },
+    {
+      "uuid": "f618a9d2-f183-4312-8961-c88010345143",
+      "parentName": "Country",
+      "parentUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+      "name": "China",
+      "iso3166-1Alpha-2": "PRC"
+    },
+    {
+      "uuid": "1f550a2a-33f5-4a56-83ee-302701039494",
+      "parentName": "Publisher",
+      "parentUuid": "a027c379-8468-43a5-ba4d-bf618be25cab",
+      "name": "Penguin",
+      "icon": "",
+      "country": "b6ddfb89-4301-48bf-9ed9-4ed6ee9261fe"
+    },
+    {
+      "uuid": "516a7366-39e7-4998-82cb-80199a7fa667",
+      "parentName": "Publisher",
+      "parentUuid": "a027c379-8468-43a5-ba4d-bf618be25cab",
+      "name": "Folio",
+      "country": "b62fc20b-dcf5-4e3b-a247-62d0475cf60f"
+    },
+    {
+      "uuid": "5d1e2f3a-4b5c-4d7e-9f9a-0b1c2d3e4f5a",
+      "parentName": "Publisher",
+      "parentUuid": "a027c379-8468-43a5-ba4d-bf618be25cab",
+      "name": "Gallimard",
+      "icon": "",
+      "country": "b62fc20b-dcf5-4e3b-a247-62d0475cf60f"
+    },
+    {
+      "uuid": "a2b061dd-73d7-4029-81f6-d211b2a53650",
+      "parentName": "Publisher",
+      "parentUuid": "a027c379-8468-43a5-ba4d-bf618be25cab",
+      "name": "Owl of Minerva Press",
+      "country": "30b8e7c6-b75d-4db0-906f-fa81fa5c4cc0"
+    },
+    {
+      "uuid": "8c4d5e6f-7a8b-4c0d-9e2f-3a4b5c6d7e8f",
+      "parentName": "Publisher",
+      "parentUuid": "a027c379-8468-43a5-ba4d-bf618be25cab",
+      "name": "Vintage",
+      "icon": "",
+      "country": "2eda1207-4dcc-4af9-a3ba-ef75e7f12c11"
+    },
+    {
+      "uuid": "abfc7b84-70f5-4284-bddd-925dedc11111",
+      "parentName": "Publisher",
+      "parentUuid": "a027c379-8468-43a5-ba4d-bf618be25cab",
+      "name": "Le Livre De Poche",
+      "country": "b62fc20b-dcf5-4e3b-a247-62d0475cf60f"
+    },
+    {
+      "uuid": "ac6d7e8f-9a0b-4c2d-9e4f-5a6b7c8d9e0f",
+      "parentName": "Publisher",
+      "parentUuid": "a027c379-8468-43a5-ba4d-bf618be25cab",
+      "name": "Hachette",
+      "icon": "",
+      "country": "b62fc20b-dcf5-4e3b-a247-62d0475cf60f"
+    },
+    {
+      "uuid": "c1c97d54-aba8-4599-883a-7fe8f3874095",
+      "parentName": "Publisher",
+      "parentUuid": "a027c379-8468-43a5-ba4d-bf618be25cab",
+      "name": "Springer",
+      "country": "30b8e7c6-b75d-4db0-906f-fa81fa5c4cc0"
+    },
+    {
+      "uuid": "d5e6f7a8-9b0c-4d1e-af2f-3a4b5c6d7e8f",
+      "parentName": "Publisher",
+      "parentUuid": "a027c379-8468-43a5-ba4d-bf618be25cab",
+      "name": "éditions du commun",
+      "icon": "",
+      "country": "b62fc20b-dcf5-4e3b-a247-62d0475cf60f"
+    },
+    {
+      "uuid": "e8f9a0b1-2c3d-4e4f-9a5b-6c7d8e9f0a1b",
+      "parentName": "Publisher",
+      "parentUuid": "a027c379-8468-43a5-ba4d-bf618be25cab",
+      "name": "Oxford University Press",
+      "icon": "",
+      "country": "b6ddfb89-4301-48bf-9ed9-4ed6ee9261fe"
+    },
+    {
+      "uuid": "04c371ed-702d-4dd9-a06d-8a04eda5d24f",
+      "parentName": "User",
+      "parentUuid": "ca794e28-b2dc-45b3-8137-00151557eea8",
+      "conceptLevel": "Model",
+      "name": "Jeanne Dielman",
+      "firstName": "Jeanne",
+      "lastName": "Dielman",
+      "street": "23 quai du Commerce",
+      "postalCode": "1080",
+      "city": "bruxelles",
+      "state": "",
+      "country": "962e4064-bf6c-42e6-9929-6fb318efc7ec"
+    },
+    {
+      "uuid": "054518f7-f626-4e76-8633-6b6ece7dcfc3",
+      "parentName": "User",
+      "parentUuid": "ca794e28-b2dc-45b3-8137-00151557eea8",
+      "conceptLevel": "Model",
+      "name": "Pierre Martin",
+      "firstName": "Pierre",
+      "lastName": "Martin",
+      "street": "29 Avenue de la République",
+      "postalCode": "75011",
+      "city": "Paris",
+      "state": "",
+      "country": "b62fc20b-dcf5-4e3b-a247-62d0475cf60f"
+    },
+    {
+      "uuid": "9b957235-1202-4c31-a33f-7eb3258b70bb",
+      "parentName": "User",
+      "parentUuid": "ca794e28-b2dc-45b3-8137-00151557eea8",
+      "conceptLevel": "Model",
+      "name": "Marie Martin",
+      "firstName": "Marie",
+      "lastName": "Martin",
+      "street": "29 Avenue de la République",
+      "postalCode": "75011",
+      "city": "Paris",
+      "state": "",
+      "country": "b62fc20b-dcf5-4e3b-a247-62d0475cf60f"
+    },
+    {
+      "uuid": "bb193c1e-bbcb-4b36-97af-d39350dace6a",
+      "parentName": "User",
+      "parentUuid": "ca794e28-b2dc-45b3-8137-00151557eea8",
+      "conceptLevel": "Model",
+      "name": "François Dupont",
+      "firstName": "François",
+      "lastName": "Dupont",
+      "street": "22 Avenue Daumesnil",
+      "postalCode": "75012",
+      "city": "Paris",
+      "state": "",
+      "country": "b62fc20b-dcf5-4e3b-a247-62d0475cf60f"
+    },
+    {
+      "uuid": "d869ba03-d8ac-4b84-a821-e3348a52d167",
+      "parentName": "User",
+      "parentUuid": "ca794e28-b2dc-45b3-8137-00151557eea8",
+      "conceptLevel": "Model",
+      "name": "Laurence Jambois",
+      "firstName": "Laurence",
+      "lastName": "Jambois",
+      "street": "154 boulevard Saint-Germain",
+      "postalCode": "75006",
+      "city": "Paris",
+      "state": "",
+      "country": "b62fc20b-dcf5-4e3b-a247-62d0475cf60f"
+    },
+    {
+      "uuid": "05d8b728-08e5-4833-bc4f-ce54afd466ab",
+      "parentName": "Author",
+      "parentUuid": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+      "name": "Abe Kobo",
+      "country": "d3e4f5a6-7b8c-4d9e-af0a-1b2c3d4e5f6a"
+    },
+    {
+      "uuid": "3f8a9b2c-5d6e-4f7a-8b9c-0d1e2f3a4b5c",
+      "parentName": "Author",
+      "parentUuid": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+      "name": "Edgar Hilsenrath",
+      "country": "30b8e7c6-b75d-4db0-906f-fa81fa5c4cc0"
+    },
+    {
+      "uuid": "4441169e-0c22-4fbc-81b2-28c87cf48ab2",
+      "parentName": "Author",
+      "parentUuid": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+      "name": "Don Norman",
+      "country": "2eda1207-4dcc-4af9-a3ba-ef75e7f12c11",
+      "icon": null
+    },
+    {
+      "uuid": "6e2f3a4b-5c6d-4e8f-9a0b-1c2d3e4f5a6b",
+      "parentName": "Author",
+      "parentUuid": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+      "conceptLevel": "Data",
+      "name": "Albert Camus",
+      "country": "b62fc20b-dcf5-4e3b-a247-62d0475cf60f"
+    },
+    {
+      "uuid": "97ce4dc2-499a-4a66-b49f-4e6729e8869b",
+      "parentName": "Author",
+      "parentUuid": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+      "conceptLevel": "data",
+      "name": "James Ellroy",
+      "country": "2eda1207-4dcc-4af9-a3ba-ef75e7f12c11"
+    },
+    {
+      "uuid": "a1b2c3d4-e5f6-47a8-b9c0-d1e2f3a4b5c6",
+      "parentName": "Author",
+      "parentUuid": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+      "conceptLevel": "Data",
+      "name": "Philip K. Dick",
+      "country": "2eda1207-4dcc-4af9-a3ba-ef75e7f12c11",
+      "language": "EN",
+      "birthDate": "1928-12-16T00:00:00.000Z"
+    },
+    {
+      "uuid": "a8b9c0d1-2e3f-4a4b-9c5d-6e7f8a9b0c1d",
+      "parentName": "Author",
+      "parentUuid": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+      "conceptLevel": "Data",
+      "name": "Hans Fallada",
+      "country": "30b8e7c6-b75d-4db0-906f-fa81fa5c4cc0"
+    },
+    {
+      "uuid": "ac8e744e-8baf-4176-8d9a-df8a49f7b1b2",
+      "parentUuid": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+      "name": "Lao-tseu",
+      "country": "f618a9d2-f183-4312-8961-c88010345143"
+    },
+    {
+      "uuid": "b1c2d3e4-5f6a-4b7c-9d8e-9f0a1b2c3d4e",
+      "parentName": "Author",
+      "parentUuid": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+      "conceptLevel": "Data",
+      "name": "John Kennedy Toole",
+      "country": "2eda1207-4dcc-4af9-a3ba-ef75e7f12c11"
+    },
+    {
+      "uuid": "bd7e8f9a-0b1c-4d3e-9f5a-6b7c8d9e0f1a",
+      "parentName": "Author",
+      "parentUuid": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+      "conceptLevel": "Data",
+      "name": "Guy de Maupassant",
+      "country": "b62fc20b-dcf5-4e3b-a247-62d0475cf60f"
+    },
+    {
+      "uuid": "ce7b601d-be5f-4bc6-a5af-14091594046a",
+      "parentName": "Author",
+      "parentUuid": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+      "name": "Paul Veyne",
+      "country": "b62fc20b-dcf5-4e3b-a247-62d0475cf60f"
+    },
+    {
+      "uuid": "d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17",
+      "parentName": "Author",
+      "parentUuid": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+      "conceptLevel": "Data",
+      "name": "Cornell Woolrich",
+      "country": "2eda1207-4dcc-4af9-a3ba-ef75e7f12c11"
+    },
+    {
+      "uuid": "d1e2f3a4-5b6c-4d7e-9f8a-9b0c1d2e3f4a",
+      "parentName": "Author",
+      "parentUuid": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+      "conceptLevel": "Data",
+      "name": "Molière",
+      "country": "b62fc20b-dcf5-4e3b-a247-62d0475cf60f"
+    },
+    {
+      "uuid": "e4376314-d197-457c-aa5e-d2da5f8d5977",
+      "parentName": "Author",
+      "parentUuid": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+      "conceptLevel": "Data",
+      "name": "Catherine Guérards",
+      "country": "b62fc20b-dcf5-4e3b-a247-62d0475cf60f",
+      "language": "FR",
+      "birthDate": "1952-02-12T00:00:00.000Z"
+    },
+    {
+      "uuid": "e4f5a6b7-8c9d-4e0f-9a1b-2c3d4e5f6a7b",
+      "parentName": "Author",
+      "parentUuid": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+      "conceptLevel": "Data",
+      "name": "Yukio Mishima",
+      "country": "d3e4f5a6-7b8c-4d9e-af0a-1b2c3d4e5f6a"
+    },
+    {
+      "uuid": "e6f7a8b9-0c1d-4e2f-9a3b-4c5d6e7f8a9b",
+      "parentName": "Author",
+      "parentUuid": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+      "conceptLevel": "Data",
+      "name": "Manon Delatre",
+      "country": "b62fc20b-dcf5-4e3b-a247-62d0475cf60f"
+    },
+    {
+      "uuid": "f3b2e9a1-6c0a-4d2f-9a6b-8c1e2d7f4b55",
+      "parentName": "Author",
+      "parentUuid": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+      "name": "Graham Greene",
+      "country": "b6ddfb89-4301-48bf-9ed9-4ed6ee9261fe",
+      "icon": null
+    },
+    {
+      "uuid": "f9a0b1c2-3d4e-4f5a-9b6c-7d8e9f0a1b2c",
+      "parentName": "Author",
+      "parentUuid": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+      "conceptLevel": "Data",
+      "name": "William Shakespeare",
+      "country": "b6ddfb89-4301-48bf-9ed9-4ed6ee9261fe"
+    },
+    {
+      "uuid": "03ffcae1-b83f-4970-b3d9-04780d3d0780",
+      "parentName": "Book",
+      "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+      "name": "Ubik",
+      "author": "a1b2c3d4-e5f6-47a8-b9c0-d1e2f3a4b5c6",
+      "publisher": "1f550a2a-33f5-4a56-83ee-302701039494",
+      "year": 1969
+    },
+    {
+      "uuid": "08306972-f5ad-48d7-b1e2-5843c63613d3",
+      "parentName": "Book",
+      "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+      "conceptLevel": "Data",
+      "name": "La Femme Des Sables",
+      "author": "05d8b728-08e5-4833-bc4f-ce54afd466ab",
+      "publisher": "abfc7b84-70f5-4284-bddd-925dedc11111"
+    },
+    {
+      "uuid": "0e6f7a8b-9c0d-4e2f-9a4b-5c6d7e8f9a0b",
+      "parentName": "Book",
+      "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+      "conceptLevel": "Data",
+      "name": "The Black Dahlia",
+      "author": "97ce4dc2-499a-4a66-b49f-4e6729e8869b",
+      "publisher": "8c4d5e6f-7a8b-4c0d-9e2f-3a4b5c6d7e8f",
+      "year": 1987
+    },
+    {
+      "uuid": "1f7a8b9c-0d1e-4f3a-9b5c-6d7e8f9a0b1c",
+      "parentName": "Book",
+      "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+      "conceptLevel": "Data",
+      "name": "The Big Nowhere",
+      "author": "97ce4dc2-499a-4a66-b49f-4e6729e8869b",
+      "publisher": "8c4d5e6f-7a8b-4c0d-9e2f-3a4b5c6d7e8f",
+      "year": 1988
+    },
+    {
+      "uuid": "2a8b9c0d-1e2f-4a4b-9c6d-7e8f9a0b1c2d",
+      "parentName": "Book",
+      "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+      "conceptLevel": "Data",
+      "name": "L.A. Confidential",
+      "author": "97ce4dc2-499a-4a66-b49f-4e6729e8869b",
+      "publisher": "8c4d5e6f-7a8b-4c0d-9e2f-3a4b5c6d7e8f",
+      "year": 1990
+    },
+    {
+      "uuid": "394941f7-524b-4751-b0fb-cd1a4b7ea273",
+      "parentName": "Book",
+      "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+      "name": "Fuck America",
+      "author": "3f8a9b2c-5d6e-4f7a-8b9c-0d1e2f3a4b5c",
+      "publisher": "a2b061dd-73d7-4029-81f6-d211b2a53650"
+    },
+    {
+      "uuid": "3b9c0d1e-2f3a-4b5c-9d7e-8f9a0b1c2d3e",
+      "parentName": "Book",
+      "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+      "conceptLevel": "Data",
+      "name": "White Jazz",
+      "author": "97ce4dc2-499a-4a66-b49f-4e6729e8869b",
+      "publisher": "8c4d5e6f-7a8b-4c0d-9e2f-3a4b5c6d7e8f",
+      "year": 1992
+    },
+    {
+      "uuid": "4c0d1e2f-3a4b-4c6d-9e8f-9a0b1c2d3e4f",
+      "parentName": "Book",
+      "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+      "conceptLevel": "Data",
+      "name": "American Tabloid",
+      "author": "97ce4dc2-499a-4a66-b49f-4e6729e8869b",
+      "publisher": "8c4d5e6f-7a8b-4c0d-9e2f-3a4b5c6d7e8f",
+      "year": 1995
+    },
+    {
+      "uuid": "4cb917b3-3c53-4f9b-b000-b0e4c07a81f7",
+      "parentName": "Book",
+      "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+      "name": "Renata n'importe quoi",
+      "author": "e4376314-d197-457c-aa5e-d2da5f8d5977",
+      "conceptLevel": "Data",
+      "publisher": "516a7366-39e7-4998-82cb-80199a7fa667"
+    },
+    {
+      "uuid": "56ab3002-d21a-49e8-8419-191491a2b29c",
+      "parentName": "Book",
+      "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+      "name": "Do Androids Dream of Electric Sheep?",
+      "author": "a1b2c3d4-e5f6-47a8-b9c0-d1e2f3a4b5c6",
+      "publisher": "1f550a2a-33f5-4a56-83ee-302701039494",
+      "year": 1968
+    },
+    {
+      "uuid": "5f1a2b3c-4d5e-4f7a-9b9c-0d1e2f3a4b5c",
+      "parentName": "Book",
+      "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+      "conceptLevel": "Data",
+      "name": "Phantom Lady",
+      "author": "d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17",
+      "publisher": "1f550a2a-33f5-4a56-83ee-302701039494",
+      "year": 1942
+    },
+    {
+      "uuid": "6a2b3c4d-5e6f-4a8b-9c0d-1e2f3a4b5c6d",
+      "parentName": "Book",
+      "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+      "conceptLevel": "Data",
+      "name": "The Black Curtain",
+      "author": "d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17",
+      "publisher": "1f550a2a-33f5-4a56-83ee-302701039494",
+      "year": 1941
+    },
+    {
+      "uuid": "6fefa647-7ecf-4f83-b617-69d7d5094c37",
+      "parentName": "Book",
+      "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+      "name": "The Bride Wore Black",
+      "author": "d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17",
+      "conceptLevel": "",
+      "publisher": "c1c97d54-aba8-4599-883a-7fe8f3874095",
+      "year": 1940
+    },
+    {
+      "uuid": "7b3c4d5e-6f7a-4b9c-8d1e-2f3a4b5c6d7e",
+      "parentName": "Book",
+      "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+      "conceptLevel": "Data",
+      "name": "Waltz into Darkness",
+      "author": "d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17",
+      "publisher": "1f550a2a-33f5-4a56-83ee-302701039494",
+      "year": 1947
+    },
+    {
+      "uuid": "7f3a4b5c-6d7e-4f9a-8b1c-2d3e4f5a6b7c",
+      "parentName": "Book",
+      "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+      "conceptLevel": "Data",
+      "name": "L'Étranger",
+      "author": "6e2f3a4b-5c6d-4e8f-9a0b-1c2d3e4f5a6b",
+      "publisher": "5d1e2f3a-4b5c-4d7e-9f9a-0b1c2d3e4f5a",
+      "year": 1942
+    },
+    {
+      "uuid": "8a4b5c6d-7e8f-4a0b-9c2d-3e4f5a6b7c8d",
+      "parentName": "Book",
+      "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+      "conceptLevel": "Data",
+      "name": "La Peste",
+      "author": "6e2f3a4b-5c6d-4e8f-9a0b-1c2d3e4f5a6b",
+      "publisher": "5d1e2f3a-4b5c-4d7e-9f9a-0b1c2d3e4f5a",
+      "year": 1947
+    },
+    {
+      "uuid": "9672b6cd-a9f7-438a-9a6f-e128d2d851bd",
+      "parentName": "Book",
+      "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+      "name": "The End of the Affair",
+      "author": "f3b2e9a1-6c0a-4d2f-9a6b-8c1e2d7f4b55",
+      "publisher": "1f550a2a-33f5-4a56-83ee-302701039494",
+      "year": 1951
+    },
+    {
+      "uuid": "9b5c6d7e-8f9a-4b1c-ad3e-4f5a6b7c8d9e",
+      "parentName": "Book",
+      "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+      "conceptLevel": "Data",
+      "name": "La Chute",
+      "author": "6e2f3a4b-5c6d-4e8f-9a0b-1c2d3e4f5a6b",
+      "publisher": "5d1e2f3a-4b5c-4d7e-9f9a-0b1c2d3e4f5a",
+      "year": 1956
+    },
+    {
+      "uuid": "a0b1c2d3-4e5f-4a6b-9c7d-8e9f0a1b2c3d",
+      "parentName": "Book",
+      "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+      "conceptLevel": "Data",
+      "name": "Complete Works",
+      "author": "f9a0b1c2-3d4e-4f5a-9b6c-7d8e9f0a1b2c",
+      "publisher": "e8f9a0b1-2c3d-4e4f-9a5b-6c7d8e9f0a1b"
+    },
+    {
+      "uuid": "a2cd3e4f-5a6b-4c8d-9e0f-1a2b3c4d5e6f",
+      "parentName": "Book",
+      "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+      "conceptLevel": "Data",
+      "name": "Le Horla",
+      "author": "bd7e8f9a-0b1c-4d3e-9f5a-6b7c8d9e0f1a",
+      "publisher": "ac6d7e8f-9a0b-4c2d-9e4f-5a6b7c8d9e0f",
+      "year": 1887
+    },
+    {
+      "uuid": "a4b5c6d7-8e9f-4a0b-9c1d-2e3f4a5b6c7d",
+      "parentName": "Book",
+      "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+      "conceptLevel": "Data",
+      "name": "L'Avare",
+      "author": "d1e2f3a4-5b6c-4d7e-9f8a-9b0c1d2e3f4a",
+      "publisher": "516a7366-39e7-4998-82cb-80199a7fa667",
+      "year": 1668
+    },
+    {
+      "uuid": "a6b7c8d9-0e1f-4a2b-9c3d-4e5f6a7b8c9d",
+      "parentName": "Book",
+      "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+      "conceptLevel": "Data",
+      "name": "Confession d'un masque",
+      "author": "e4f5a6b7-8c9d-4e0f-9a1b-2c3d4e5f6a7b",
+      "publisher": "516a7366-39e7-4998-82cb-80199a7fa667",
+      "year": 1949
+    },
+    {
+      "uuid": "ae462db5-9514-4412-a697-23cd7e5ac4a9",
+      "parentName": "Book",
+      "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+      "name": "The Man in the High Castle",
+      "author": "a1b2c3d4-e5f6-47a8-b9c0-d1e2f3a4b5c6",
+      "publisher": "1f550a2a-33f5-4a56-83ee-302701039494",
+      "year": 1962
+    },
+    {
+      "uuid": "b3de4f5a-6b7c-4d9e-8f1a-2b3c4d5e6f7a",
+      "parentName": "Book",
+      "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+      "conceptLevel": "Data",
+      "name": "Fort comme la mort",
+      "author": "bd7e8f9a-0b1c-4d3e-9f5a-6b7c8d9e0f1a",
+      "publisher": "ac6d7e8f-9a0b-4c2d-9e4f-5a6b7c8d9e0f",
+      "year": 1889
+    },
+    {
+      "uuid": "b5c6d7e8-9f0a-4b1c-9d2e-3f4a5b6c7d8e",
+      "parentName": "Book",
+      "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+      "conceptLevel": "Data",
+      "name": "Le Bourgeois gentilhomme",
+      "author": "d1e2f3a4-5b6c-4d7e-9f8a-9b0c1d2e3f4a",
+      "publisher": "516a7366-39e7-4998-82cb-80199a7fa667",
+      "year": 1670
+    },
+    {
+      "uuid": "b7c8d9e0-1f2a-4b3c-9d4e-5f6a7b8c9d0e",
+      "parentName": "Book",
+      "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+      "conceptLevel": "Data",
+      "name": "La Mer de la fertilité",
+      "author": "e4f5a6b7-8c9d-4e0f-9a1b-2c3d4e5f6a7b",
+      "publisher": "516a7366-39e7-4998-82cb-80199a7fa667",
+      "year": 1969
+    },
+    {
+      "uuid": "b9c0d1e2-3f4a-4b5c-9d6e-7f8a9b0c1d2e",
+      "parentName": "Book",
+      "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+      "conceptLevel": "Data",
+      "name": "Seul dans Berlin",
+      "author": "a8b9c0d1-2e3f-4a4b-9c5d-6e7f8a9b0c1d",
+      "publisher": "516a7366-39e7-4998-82cb-80199a7fa667",
+      "year": 1947
+    },
+    {
+      "uuid": "c0d1e2f3-4a5b-4c6d-9e7f-8a9b0c1d2e3f",
+      "parentName": "Book",
+      "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+      "conceptLevel": "Data",
+      "name": "Quoi de neuf, petit homme ?",
+      "author": "a8b9c0d1-2e3f-4a4b-9c5d-6e7f8a9b0c1d",
+      "publisher": "516a7366-39e7-4998-82cb-80199a7fa667",
+      "year": 1932
+    },
+    {
+      "uuid": "c2d3e4f5-6a7b-4c8d-9e9f-0a1b2c3d4e5f",
+      "parentName": "Book",
+      "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+      "conceptLevel": "Data",
+      "name": "A Confederacy of Dunces",
+      "author": "b1c2d3e4-5f6a-4b7c-9d8e-9f0a1b2c3d4e",
+      "publisher": "1f550a2a-33f5-4a56-83ee-302701039494",
+      "year": 1980
+    },
+    {
+      "uuid": "c4ef5a6b-7c8d-4e0f-9a2b-3c4d5e6f7a8b",
+      "parentName": "Book",
+      "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+      "conceptLevel": "Data",
+      "name": "Notre Cœur",
+      "author": "bd7e8f9a-0b1c-4d3e-9f5a-6b7c8d9e0f1a",
+      "publisher": "ac6d7e8f-9a0b-4c2d-9e4f-5a6b7c8d9e0f",
+      "year": 1890
+    },
+    {
+      "uuid": "c634ee9c-ce08-406f-85c1-5f9ccbcfa3a6",
+      "parentName": "Book",
+      "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+      "name": "The Power and the Glory",
+      "author": "f3b2e9a1-6c0a-4d2f-9a6b-8c1e2d7f4b55",
+      "publisher": "1f550a2a-33f5-4a56-83ee-302701039494",
+      "year": 1940
+    },
+    {
+      "uuid": "c6852e89-3c3c-447f-b827-4b5b9d830975",
+      "parentName": "Book",
+      "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+      "conceptLevel": "Data",
+      "name": "Le Pain et le Cirque",
+      "author": "ce7b601d-be5f-4bc6-a5af-14091594046a",
+      "publisher": "516a7366-39e7-4998-82cb-80199a7fa667"
+    },
+    {
+      "uuid": "c6d7e8f9-0a1b-4c2d-9e3f-4a5b6c7d8e9f",
+      "parentName": "Book",
+      "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+      "conceptLevel": "Data",
+      "name": "Les Femmes savantes",
+      "author": "d1e2f3a4-5b6c-4d7e-9f8a-9b0c1d2e3f4a",
+      "publisher": "516a7366-39e7-4998-82cb-80199a7fa667",
+      "year": 1672
+    },
+    {
+      "uuid": "c8d9e0f1-2a3b-4c4d-9e5f-6a7b8c9d0e1f",
+      "parentName": "Book",
+      "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+      "conceptLevel": "Data",
+      "name": "Le Marin rejeté par la mer",
+      "author": "e4f5a6b7-8c9d-4e0f-9a1b-2c3d4e5f6a7b",
+      "publisher": "516a7366-39e7-4998-82cb-80199a7fa667",
+      "year": 1963
+    },
+    {
+      "uuid": "c97be567-bd70-449f-843e-cd1d64ac1ddd",
+      "parentName": "Book",
+      "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+      "name": "Rear Window",
+      "author": "d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17",
+      "conceptLevel": "",
+      "publisher": "1f550a2a-33f5-4a56-83ee-302701039494",
+      "year": 1942
+    },
+    {
+      "uuid": "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
+      "parentName": "Book",
+      "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+      "conceptLevel": "Data",
+      "name": "Et dans l'éternité je ne m'ennuierai pas",
+      "author": "ce7b601d-be5f-4bc6-a5af-14091594046a",
+      "publisher": "516a7366-39e7-4998-82cb-80199a7fa667",
+      "year": 2014
+    },
+    {
+      "uuid": "cc7f272c-07e7-4154-8ee4-4b69d6a64bed",
+      "parentName": "Book",
+      "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+      "name": "Brighton Rock",
+      "author": "f3b2e9a1-6c0a-4d2f-9a6b-8c1e2d7f4b55",
+      "publisher": "1f550a2a-33f5-4a56-83ee-302701039494",
+      "year": 1938
+    },
+    {
+      "uuid": "ce8f9a0b-1c2d-4e4f-9a6b-7c8d9e0f1a2b",
+      "parentName": "Book",
+      "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+      "conceptLevel": "Data",
+      "name": "Boule de Suif",
+      "author": "bd7e8f9a-0b1c-4d3e-9f5a-6b7c8d9e0f1a",
+      "publisher": "ac6d7e8f-9a0b-4c2d-9e4f-5a6b7c8d9e0f",
+      "year": 1880
+    },
+    {
+      "uuid": "d7e8f9a0-1b2c-4d3e-9f4a-5b6c7d8e9f0a",
+      "parentName": "Book",
+      "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+      "conceptLevel": "Data",
+      "name": "Le Malade imaginaire",
+      "author": "d1e2f3a4-5b6c-4d7e-9f8a-9b0c1d2e3f4a",
+      "publisher": "516a7366-39e7-4998-82cb-80199a7fa667",
+      "year": 1673
+    },
+    {
+      "uuid": "df9a0b1c-2d3e-4f5a-9b7c-8d9e0f1a2b3c",
+      "parentName": "Book",
+      "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+      "conceptLevel": "Data",
+      "name": "Une Vie",
+      "author": "bd7e8f9a-0b1c-4d3e-9f5a-6b7c8d9e0f1a",
+      "publisher": "ac6d7e8f-9a0b-4c2d-9e4f-5a6b7c8d9e0f",
+      "year": 1883
+    },
+    {
+      "uuid": "e0ab1c2d-3e4f-4a6b-9c8d-9e0f1a2b3c4d",
+      "parentName": "Book",
+      "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+      "conceptLevel": "Data",
+      "name": "Bel-Ami",
+      "author": "bd7e8f9a-0b1c-4d3e-9f5a-6b7c8d9e0f1a",
+      "publisher": "ac6d7e8f-9a0b-4c2d-9e4f-5a6b7c8d9e0f",
+      "year": 1885
+    },
+    {
+      "uuid": "e20e276b-619d-4e16-8816-b7ec37b53439",
+      "parentName": "Book",
+      "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+      "name": "The Design of Everyday Things",
+      "author": "4441169e-0c22-4fbc-81b2-28c87cf48ab2",
+      "conceptLevel": "",
+      "publisher": "c1c97d54-aba8-4599-883a-7fe8f3874095",
+      "year": 1988
+    },
+    {
+      "uuid": "e2f3a4b5-6c7d-4e8f-9a0b-1c2d3e4f5a6b",
+      "parentName": "Book",
+      "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+      "conceptLevel": "Data",
+      "name": "Le Tartuffe",
+      "author": "d1e2f3a4-5b6c-4d7e-9f8a-9b0c1d2e3f4a",
+      "publisher": "516a7366-39e7-4998-82cb-80199a7fa667",
+      "year": 1664
+    },
+    {
+      "uuid": "ea8d3eca-ed5b-45f2-9f09-caa7ddac6510",
+      "parentName": "Book",
+      "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+      "conceptLevel": "Data",
+      "name": "Tao-tö king",
+      "author": "ac8e744e-8baf-4176-8d9a-df8a49f7b1b2",
+      "publisher": "516a7366-39e7-4998-82cb-80199a7fa667"
+    },
+    {
+      "uuid": "f1bc2d3e-4f5a-4b7c-9d9e-0f1a2b3c4d5e",
+      "parentName": "Book",
+      "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+      "conceptLevel": "Data",
+      "name": "Pierre et Jean",
+      "author": "bd7e8f9a-0b1c-4d3e-9f5a-6b7c8d9e0f1a",
+      "publisher": "ac6d7e8f-9a0b-4c2d-9e4f-5a6b7c8d9e0f",
+      "year": 1888
+    },
+    {
+      "uuid": "f3a4b5c6-7d8e-4f9a-9b0c-1d2e3f4a5b6c",
+      "parentName": "Book",
+      "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+      "conceptLevel": "Data",
+      "name": "Le Misanthrope",
+      "author": "d1e2f3a4-5b6c-4d7e-9f8a-9b0c1d2e3f4a",
+      "publisher": "516a7366-39e7-4998-82cb-80199a7fa667",
+      "year": 1666
+    },
+    {
+      "uuid": "f5a6b7c8-9d0e-4f1a-9b2c-3d4e5f6a7b8c",
+      "parentName": "Book",
+      "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+      "conceptLevel": "Data",
+      "name": "Le Pavillon d'or",
+      "author": "e4f5a6b7-8c9d-4e0f-9a1b-2c3d4e5f6a7b",
+      "publisher": "516a7366-39e7-4998-82cb-80199a7fa667",
+      "year": 1956
+    },
+    {
+      "uuid": "f7a8b9c0-1d2e-4f3a-8b4c-5d6e7f8a9b0c",
+      "parentName": "Book",
+      "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+      "conceptLevel": "Data",
+      "name": "Se faire virer",
+      "author": "e6f7a8b9-0c1d-4e2f-9a3b-4c5d6e7f8a9b",
+      "publisher": "d5e6f7a8-9b0c-4d1e-af2f-3a4b5c6d7e8f",
+      "year": 2023
+    },
+    {
+      "uuid": "056021cf-b9cb-4008-b54c-66ede8d93fed",
+      "parentName": "LendingHistoryItem",
+      "parentUuid": "e81078f3-2de7-4301-bd79-d3a156aec149",
+      "book": "c6d7e8f9-0a1b-4c2d-9e3f-4a5b6c7d8e9f",
+      "user": "bb193c1e-bbcb-4b36-97af-d39350dace6a",
+      "startDate": "2025-12-29T20:34:58.531Z"
+    },
+    {
+      "uuid": "2b42e9dd-c850-4cd6-8a75-6e041c1c6c42",
+      "parentName": "LendingHistoryItem",
+      "parentUuid": "e81078f3-2de7-4301-bd79-d3a156aec149",
+      "book": "394941f7-524b-4751-b0fb-cd1a4b7ea273",
+      "user": "054518f7-f626-4e76-8633-6b6ece7dcfc3",
+      "startDate": "2025-06-01T00:00:00.000Z",
+      "note": "this is a note"
+    },
+    {
+      "uuid": "3a5d6aa1-05d5-4d9e-9b51-90bd4dc06f5b",
+      "parentName": "LendingHistoryItem",
+      "parentUuid": "e81078f3-2de7-4301-bd79-d3a156aec149",
+      "book": "e2f3a4b5-6c7d-4e8f-9a0b-1c2d3e4f5a6b",
+      "user": "9b957235-1202-4c31-a33f-7eb3258b70bb",
+      "startDate": "2026-02-13T01:56:15.009Z"
+    },
+    {
+      "uuid": "42adacfa-f81f-4c0e-ba37-9dfae3084276",
+      "parentName": "LendingHistoryItem",
+      "parentUuid": "e81078f3-2de7-4301-bd79-d3a156aec149",
+      "book": "d7e8f9a0-1b2c-4d3e-9f4a-5b6c7d8e9f0a",
+      "user": "04c371ed-702d-4dd9-a06d-8a04eda5d24f",
+      "startDate": "2026-02-01T00:15:31.237Z"
+    },
+    {
+      "uuid": "528bfd66-d0cd-4ecf-b804-3408e77fe6af",
+      "parentName": "LendingHistoryItem",
+      "parentUuid": "e81078f3-2de7-4301-bd79-d3a156aec149",
+      "user": "04c371ed-702d-4dd9-a06d-8a04eda5d24f",
+      "book": "e2f3a4b5-6c7d-4e8f-9a0b-1c2d3e4f5a6b",
+      "startDate": "2025-11-13T00:00:00.000Z",
+      "note": "ab"
+    },
+    {
+      "uuid": "63004d49-2a74-4729-b729-81eecf817b1d",
+      "parentName": "LendingHistoryItem",
+      "parentUuid": "e81078f3-2de7-4301-bd79-d3a156aec149",
+      "book": "b7c8d9e0-1f2a-4b3c-9d4e-5f6a7b8c9d0e",
+      "user": "9b957235-1202-4c31-a33f-7eb3258b70bb",
+      "startDate": "2026-01-14T11:19:40.169Z"
+    },
+    {
+      "uuid": "6cf1696b-5e32-4d82-98c8-d5011c625cac",
+      "parentName": "LendingHistoryItem",
+      "parentUuid": "e81078f3-2de7-4301-bd79-d3a156aec149",
+      "book": "a2cd3e4f-5a6b-4c8d-9e0f-1a2b3c4d5e6f",
+      "user": "04c371ed-702d-4dd9-a06d-8a04eda5d24f",
+      "startDate": "2026-01-12T22:06:25.796Z"
+    },
+    {
+      "uuid": "71f4eef8-1fe1-4dc0-b9ea-bb3d6f903839",
+      "parentName": "LendingHistoryItem",
+      "parentUuid": "e81078f3-2de7-4301-bd79-d3a156aec149",
+      "book": "c97be567-bd70-449f-843e-cd1d64ac1ddd",
+      "user": "054518f7-f626-4e76-8633-6b6ece7dcfc3",
+      "startDate": "2026-01-12T16:11:04.486Z"
+    },
+    {
+      "uuid": "79401205-39fe-486a-9849-a2ad29659a3d",
+      "parentName": "LendingHistoryItem",
+      "parentUuid": "e81078f3-2de7-4301-bd79-d3a156aec149",
+      "book": "4cb917b3-3c53-4f9b-b000-b0e4c07a81f7",
+      "user": "d869ba03-d8ac-4b84-a821-e3348a52d167",
+      "startDate": "2025-12-30T11:42:34.848Z"
+    },
+    {
+      "uuid": "807a830d-77ea-4f0b-9af4-fd2ece5fab66",
+      "parentName": "LendingHistoryItem",
+      "parentUuid": "e81078f3-2de7-4301-bd79-d3a156aec149",
+      "book": "4c0d1e2f-3a4b-4c6d-9e8f-9a0b1c2d3e4f",
+      "user": "d869ba03-d8ac-4b84-a821-e3348a52d167",
+      "startDate": "2026-01-05T11:40:30.934Z"
+    },
+    {
+      "uuid": "925a26e6-991d-43bb-b2ca-f6ec9a971f2b",
+      "parentName": "LendingHistoryItem",
+      "parentUuid": "e81078f3-2de7-4301-bd79-d3a156aec149",
+      "book": "4c0d1e2f-3a4b-4c6d-9e8f-9a0b1c2d3e4f",
+      "user": "d869ba03-d8ac-4b84-a821-e3348a52d167",
+      "startDate": "2026-01-14T11:08:52.162Z"
+    },
+    {
+      "uuid": "b271b3fc-bc9f-425d-80bb-2648387689a2",
+      "parentName": "LendingHistoryItem",
+      "parentUuid": "e81078f3-2de7-4301-bd79-d3a156aec149",
+      "book": "ce8f9a0b-1c2d-4e4f-9a6b-7c8d9e0f1a2b",
+      "user": "d869ba03-d8ac-4b84-a821-e3348a52d167",
+      "startDate": "2025-12-30T10:45:14.306Z"
+    },
+    {
+      "uuid": "ba117164-273a-47c4-89b5-ed4294244272",
+      "parentName": "LendingHistoryItem",
+      "parentUuid": "e81078f3-2de7-4301-bd79-d3a156aec149",
+      "book": "a0b1c2d3-4e5f-4a6b-9c7d-8e9f0a1b2c3d",
+      "user": "d869ba03-d8ac-4b84-a821-e3348a52d167",
+      "startDate": "2026-01-13T16:13:25.926Z"
+    },
+    {
+      "uuid": "d4bb53a0-49bd-4c81-a164-eb67764f4fea",
+      "parentName": "LendingHistoryItem",
+      "parentUuid": "e81078f3-2de7-4301-bd79-d3a156aec149",
+      "user": "bb193c1e-bbcb-4b36-97af-d39350dace6a",
+      "book": "a6b7c8d9-0e1f-4a2b-9c3d-4e5f6a7b8c9d",
+      "startDate": "2025-11-29T00:00:00.000Z",
+      "note": "ab"
+    },
+    {
+      "uuid": "de498736-85f3-4708-a582-a17c63e27b8d",
+      "parentName": "LendingHistoryItem",
+      "parentUuid": "e81078f3-2de7-4301-bd79-d3a156aec149",
+      "book": "d7e8f9a0-1b2c-4d3e-9f4a-5b6c7d8e9f0a",
+      "user": "bb193c1e-bbcb-4b36-97af-d39350dace6a",
+      "startDate": "2026-01-12T15:53:35.965Z"
+    },
+    {
+      "uuid": "de55f95c-2ac3-4459-85b1-59f24d793016",
+      "parentUuid": "e81078f3-2de7-4301-bd79-d3a156aec149",
+      "startDate": "2025-11-22T00:00:00.000Z",
+      "user": "bb193c1e-bbcb-4b36-97af-d39350dace6a",
+      "book": "ce8f9a0b-1c2d-4e4f-9a6b-7c8d9e0f1a2b"
+    },
+    {
+      "uuid": "e338776e-8f35-46e9-bcb4-0ee55a7a2992",
+      "parentName": "LendingHistoryItem",
+      "parentUuid": "e81078f3-2de7-4301-bd79-d3a156aec149",
+      "user": "054518f7-f626-4e76-8633-6b6ece7dcfc3",
+      "book": "a6b7c8d9-0e1f-4a2b-9c3d-4e5f6a7b8c9d",
+      "startDate": "2025-11-27T00:00:00.000Z",
+      "note": "ab"
+    },
+    {
+      "uuid": "e35e8cf0-1462-4d40-9029-d192984d98ae",
+      "parentName": "LendingHistoryItem",
+      "parentUuid": "e81078f3-2de7-4301-bd79-d3a156aec149",
+      "user": "054518f7-f626-4e76-8633-6b6ece7dcfc3",
+      "book": "4c0d1e2f-3a4b-4c6d-9e8f-9a0b1c2d3e4f",
+      "startDate": "2025-11-13T00:00:00.000Z",
+      "note": "ab"
+    },
+    {
+      "uuid": "e6489c95-bc97-4fd3-84b8-0f7b86dff701",
+      "parentName": "LendingHistoryItem",
+      "parentUuid": "e81078f3-2de7-4301-bd79-d3a156aec149",
+      "book": "a2cd3e4f-5a6b-4c8d-9e0f-1a2b3c4d5e6f",
+      "user": "9b957235-1202-4c31-a33f-7eb3258b70bb",
+      "startDate": "2026-01-14T11:29:40.055Z"
+    }
+  ]
+}

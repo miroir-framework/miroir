@@ -1,0 +1,2 @@
+export {default as applicationPostgres } from "../assets/deployment/84d28eb1-d98a-499e-bf24-62cade033da6.json"
+export {default as deploymentPostgres } from "../assets/deployment/537fafe0-bb56-4e8b-883b-e65c0a05de17.json"

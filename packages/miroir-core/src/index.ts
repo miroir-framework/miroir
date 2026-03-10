@@ -703,6 +703,12 @@ export {
   getReportsAndEntitiesDefinitionsForDeploymentUuid,
   metaModelEntities,
   miroirModelEntities,
+  extractApplicationData,
+  extractApplicationModel,
+  extractEntityInstances,
+  metaMetaModelEntities,
+  metaMetaModelEntityUuids,
+  metaModelEntityUuids,
 } from "./1_core/Model.js";
 export { defaultReport } from "./1_core/Report.js";
 export { testBuildPlusRuntimeCompositeActionSuiteForRunner } from "./1_core/Runner.js";
@@ -873,8 +879,8 @@ export {
 } from "./4_services/PersistenceStoreController.js";
 export { PersistenceStoreControllerManager } from "./4_services/PersistenceStoreControllerManager.js";
 export {
-  // createPersistenceStoreControllers,
-  startLocalPersistenceStoreControllers
+  startLocalPersistenceStoreControllers,
+  mountApplicationDeployment,
 } from "./4_services/PersistenceStoreControllerTools.js";
 export { RestClient } from "./4_services/RestClient.js";
 export { RestClientStub } from "./4_services/RestClientStub";

@@ -15,23 +15,24 @@ import {
   type MiroirConfigClient
 } from "miroir-core";
 
-import {
-  deployment_Library_DO_NO_USE
-} from "miroir-test-app_deployment-library";
+// import {
+//   deployment_Library_DO_NO_USE
+// } from "miroir-test-app_deployment-library";
 
-import {
-  entityAuthor,
-  entityBook,
-  entityCountry,
-  entityLendingHistoryItem,
-  entityPublisher,
-  entityUser,
-  selfApplicationLibrary,
-} from "miroir-test-app_deployment-library";
+// import {
+//   entityAuthor,
+//   entityBook,
+//   entityCountry,
+//   entityLendingHistoryItem,
+//   entityPublisher,
+//   entityUser,
+//   selfApplicationLibrary,
+// } from "miroir-test-app_deployment-library";
 
 import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
 import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
 import { miroirPostgresStoreSectionStartup } from "miroir-store-postgres";
+import { applicationPostgres, deploymentPostgres } from "../src/Postgres";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -176,18 +177,12 @@ export async function extractApplicationAndData(
 // ################################################################################################
 extractApplicationAndData(
   miroirConfig,
-  selfApplicationLibrary.uuid,
-  selfApplicationLibrary.name,
-  deployment_Library_DO_NO_USE.uuid,
-  resolve(__dirname, "..", "dist", "library-model.json"),
-  resolve(__dirname, "..", "dist", "library-data.json"),
+  applicationPostgres.uuid,
+  applicationPostgres.name,
+  deploymentPostgres.uuid,
+  resolve(__dirname, "..", "dist", "postgresManager-model.json"),
+  resolve(__dirname, "..", "dist", "postgresManager-data.json"),
   [
-    entityCountry as Entity,
-    entityPublisher as Entity,
-    entityUser as Entity,
-    entityAuthor as Entity,
-    entityBook as Entity,
-    entityLendingHistoryItem as Entity,
   ],
 );
 

@@ -27,6 +27,8 @@
   "scripts": {
     "copy-files": "copyfiles -u 1 assets/**/*.json dist/assets",
     "build": "tsup",
+    "extract-library-model": "tsx ./scripts/extract-library-model.ts",
+    "extract-postgresManager-model": "tsx ./scripts/extract-postgresManager-model.ts",
     "test": "vitest run --poolOptions.threads.singleThread -t",
     "testByFile": "vitest run --poolOptions.forks.singleFork --reporter=verbose"
   },
