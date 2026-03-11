@@ -25,17 +25,17 @@ import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
 import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
 import { miroirMongoDbStoreSectionStartup } from "miroir-store-mongodb";
 import { miroirPostgresStoreSectionStartup } from "miroir-store-postgres";
-import {
-  entityAuthor,
-  entityDefinitionAuthor
-} from "miroir-test-app_deployment-library";
 import { entityEntity, runnerCreateEntity, runnerDropEntity } from "miroir-test-app_deployment-miroir";
 import { env } from "process";
 import { loglevelnext } from "../../src/loglevelnextImporter";
 import { runTestOrTestSuite } from "../../src/miroir-fwk/4-tests/tests-utils";
 import { getRunner_CreateApplication } from "../../src/miroir-fwk/4_view/components/Runners/Runner_CreateApplication";
+import { getRunner_InstallApplication } from "../../src/miroir-fwk/4_view/components/Runners/Runner_InstallApplication";
 import { miroirAppStartup } from "../../src/startup";
 import { loadTestConfigFiles } from "../utils/fileTools";
+
+import simplifiedLibraryModel from "../assets/library_extract/simplified-library-model.json";
+import simplifiedLibraryData from "../assets/library_extract/simplified-library-data.json";
 import {
   afterAllTests,
   beforeAllTests,
@@ -92,6 +92,10 @@ const testApplicationUuid = uuidv4();
 const testApplicationDeploymentUuid = uuidv4();
 const testApplicationName = "testApplication_" + formatYYYYMMDD_HHMMSS(new Date());
 
+const installTestApplicationUuid = uuidv4();
+const installTestApplicationDeploymentUuid = uuidv4();
+const installTestApplicationName = "testInstallApp_" + formatYYYYMMDD_HHMMSS(new Date());
+
 const {
   applicationDeploymentMap,
   miroirDeploymentStorageConfiguration,
@@ -116,6 +120,22 @@ const internalMiroirConfig = getMiroirConfig(
   testApplicationDeploymentUuid,
 );
 
+// Install runner test config
+const testApplicationDeploymentMap = {
+  ...applicationDeploymentMap,
+  [testApplicationUuid]: testApplicationDeploymentUuid,
+  [installTestApplicationUuid]: installTestApplicationDeploymentUuid,
+};
+const installTestDeploymentStorageConfiguration: StoreUnitConfiguration = testApplicationStorageConfiguration(
+  libraryDeploymentStorageConfiguration,
+  installTestApplicationName,
+);
+const installInternalMiroirConfig = getMiroirConfig(
+  miroirConfig,
+  installTestDeploymentStorageConfiguration,
+  installTestApplicationDeploymentUuid,
+);
+
 let domainController: DomainControllerInterface;
 
 beforeAll(async () => {
@@ -136,7 +156,7 @@ beforeAll(async () => {
 beforeEach(async () => {
   await beforeEachTest(
     domainController,
-    applicationDeploymentMap,
+    testApplicationDeploymentMap,
   );
 });
 
@@ -149,9 +169,13 @@ afterAll(async () => {
   //   miroirActivityTracker,
   //   runnerDropEntity.name,
   // );
+  // await afterAllTests(
+  //   miroirActivityTracker,
+  //   localRunnerCreateApplication.name,
+  // );
   await afterAllTests(
     miroirActivityTracker,
-    localRunnerCreateApplication.name,
+    localRunnerInstallApplication.name,
   );
 });
 
@@ -160,6 +184,12 @@ const localRunnerCreateApplication = getRunner_CreateApplication(
   testApplicationDeploymentUuid,
   "createApplicationAndDeployment",
   emptyApplicationModel,
+)
+
+const localRunnerInstallApplication = getRunner_InstallApplication(
+  installTestApplicationUuid,
+  installTestApplicationDeploymentUuid,
+  "installApplication",
 )
 const runnerTestParams: Record<string, RunnerTestParams> = {
   // [runnerCreateEntity.name]: {
@@ -366,48 +396,143 @@ const runnerTestParams: Record<string, RunnerTestParams> = {
   //   preRunnerCompositeActions: [runnerCreateEntity.definition.actionTemplate as any], // preRunnerCompositeActions: create the entity before dropping it
   //   testCompositeActionLabel: "Create and Drop Entity Author",
   // },
-  [localRunnerCreateApplication.name]: {
+  // [localRunnerCreateApplication.name]: {
+  //   pageLabel,
+  //   runner: localRunnerCreateApplication as Runner,
+  //   testApplicationUuid,
+  //   testApplicationDeploymentUuid,
+  //   testApplicationName,
+  //   testParams: {
+  //     application: testApplicationUuid,
+  //     entity: entityAuthor,
+  //     entityDefinition: entityDefinitionAuthor,
+  //     createApplicationAndDeployment: {
+  //       applicationStorage: {
+  //         emulatedServerType: "sql",
+  //         connectionString: "postgres://postgres:postgres@localhost:5432/postgres",
+  //         applicationName: testApplicationName,
+  //       },
+  //     },
+  //   }, // testParams
+  //   preTestCompositeActions: [
+  //     {
+  //       // performs query on local cache for emulated server, and on server for remote server
+  //       actionType: "compositeRunBoxedQueryAction",
+  //       endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+  //       actionLabel: "calculateNewEntityDefinionAndReports",
+  //       nameGivenToResult: "libraryEntityList",
+  //       payload: {
+  //         actionType: "runBoxedQueryAction",
+  //         endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+  //         payload: {
+  //           application: testApplicationUuid,
+  //           applicationSection: "model", // TODO: give only selfApplication section in individual queries?
+  //           query: {
+  //             queryType: "boxedQueryWithExtractorCombinerTransformer",
+  //             application: testApplicationUuid,
+  //             pageParams: {
+  //               currentDeploymentUuid: testApplicationDeploymentUuid,
+  //             },
+  //             queryParams: {},
+  //             contextResults: {},
+  //             extractors: {
+  //               entities: {
+  //                 extractorOrCombinerType: "extractorByEntityReturningObjectList",
+  //                 applicationSection: "model",
+  //                 parentName: entityEntity.name,
+  //                 parentUuid: entityEntity.uuid,
+  //                 orderBy: {
+  //                   attributeName: "name",
+  //                   direction: "ASC",
+  //                 },
+  //               },
+  //             },
+  //           },
+  //         },
+  //       },
+  //     },
+  //   ], // preTestCompositeActions
+  //   testCompositeActionAssertions: [
+  //     // TODO: test length of entityBookList.books!
+  //     {
+  //       actionType: "compositeRunTestAssertion",
+  //       actionLabel: "checkNumberOfEntities",
+  //       nameGivenToResult: "checkNumberOfEntities",
+  //       testAssertion: {
+  //         testType: "testAssertion",
+  //         testLabel: "checkNumberOfEntities",
+  //         definition: {
+  //           resultAccessPath: ["0"],
+  //           resultTransformer: {
+  //             transformerType: "aggregate",
+  //             interpolation: "runtime",
+  //             applyTo: {
+  //               transformerType: "getFromContext",
+  //               interpolation: "runtime",
+  //               referencePath: ["libraryEntityList", "entities"],
+  //             },
+  //           },
+  //           expectedValue: { aggregate: 0 },
+  //         },
+  //       },
+  //     },
+  //     // {
+  //     //   actionType: "compositeRunTestAssertion",
+  //     //   actionLabel: "checkEntityBooks",
+  //     //   nameGivenToResult: "checkEntityList",
+  //     //   testAssertion: {
+  //     //     testType: "testAssertion",
+  //     //     testLabel: "checkEntityBooks",
+  //     //     definition: {
+  //     //       resultAccessPath: ["libraryEntityList", "entities"],
+  //     //       ignoreAttributes: ["author", "storageAccess"],
+  //     //       expectedValue: [entityAuthor],
+  //     //     },
+  //     //   },
+  //     // },
+  //   ],
+  //   internalMiroirConfig,
+  //   adminDeployment,
+  //   testDeploymentStorageConfiguration,
+  //   initialModel: emptyApplicationModel,
+  // },
+  [localRunnerInstallApplication.name]: {
     pageLabel,
-    runner: localRunnerCreateApplication as Runner,
-    testApplicationUuid,
-    testApplicationDeploymentUuid,
-    testApplicationName,
+    runner: localRunnerInstallApplication as Runner,
+    testApplicationUuid: installTestApplicationUuid,
+    testApplicationDeploymentUuid: installTestApplicationDeploymentUuid,
+    testApplicationName: installTestApplicationName,
     testParams: {
-      // [localRunnerCreateApplication.name]: {
-        // transformerType: "returnValue",
-        // value: {
-          application: testApplicationUuid,
-          entity: entityAuthor,
-          entityDefinition: entityDefinitionAuthor,
-          createApplicationAndDeployment: {
-            applicationStorage: {
-              emulatedServerType: "sql",
-              connectionString: "postgres://postgres:postgres@localhost:5432/postgres",
-              applicationName: testApplicationName,
-              // deploymentName: testApplicationName + "_deployment"},
-            },
-          },
-        // },
-      // },
+      deployApplication: {
+        applicationBundle: {
+          ...simplifiedLibraryModel,
+          applicationName: installTestApplicationName,
+        },
+        deploymentData: simplifiedLibraryData,
+        applicationStorage: {
+          emulatedServerType: "sql",
+          connectionString: "postgres://postgres:postgres@localhost:5432/postgres",
+        },
+      },
     }, // testParams
     preTestCompositeActions: [
       {
         // performs query on local cache for emulated server, and on server for remote server
         actionType: "compositeRunBoxedQueryAction",
         endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
-        actionLabel: "calculateNewEntityDefinionAndReports",
-        nameGivenToResult: "libraryEntityList",
+        actionLabel: "queryInstalledEntities",
+        nameGivenToResult: "installedEntityList",
         payload: {
           actionType: "runBoxedQueryAction",
           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
           payload: {
-            application: testApplicationUuid,
-            applicationSection: "model", // TODO: give only selfApplication section in individual queries?
+            application: installTestApplicationUuid,
+            applicationSection: "model",
             query: {
               queryType: "boxedQueryWithExtractorCombinerTransformer",
-              application: testApplicationUuid,
+              application: installTestApplicationUuid,
               pageParams: {
-                currentDeploymentUuid: testApplicationDeploymentUuid,
+                currentDeploymentUuid: installTestApplicationDeploymentUuid,
               },
               queryParams: {},
               contextResults: {},
@@ -429,7 +554,6 @@ const runnerTestParams: Record<string, RunnerTestParams> = {
       },
     ], // preTestCompositeActions
     testCompositeActionAssertions: [
-      // TODO: test length of entityBookList.books!
       {
         actionType: "compositeRunTestAssertion",
         actionLabel: "checkNumberOfEntities",
@@ -445,31 +569,34 @@ const runnerTestParams: Record<string, RunnerTestParams> = {
               applyTo: {
                 transformerType: "getFromContext",
                 interpolation: "runtime",
-                referencePath: ["libraryEntityList", "entities"],
+                referencePath: ["installedEntityList", "entities"],
               },
             },
-            expectedValue: { aggregate: 0 },
+            expectedValue: { aggregate: 2 },
           },
         },
       },
-      // {
-      //   actionType: "compositeRunTestAssertion",
-      //   actionLabel: "checkEntityBooks",
-      //   nameGivenToResult: "checkEntityList",
-      //   testAssertion: {
-      //     testType: "testAssertion",
-      //     testLabel: "checkEntityBooks",
-      //     definition: {
-      //       resultAccessPath: ["libraryEntityList", "entities"],
-      //       ignoreAttributes: ["author", "storageAccess"],
-      //       expectedValue: [entityAuthor],
-      //     },
-      //   },
-      // },
+      {
+        actionType: "compositeRunTestAssertion",
+        actionLabel: "checkInstalledEntities",
+        nameGivenToResult: "checkInstalledEntities",
+        testAssertion: {
+          testType: "testAssertion",
+          testLabel: "checkInstalledEntities",
+          definition: {
+            resultAccessPath: ["installedEntityList", "entities"],
+            ignoreAttributes: ["author", "storageAccess"],
+            expectedValue: [
+              simplifiedLibraryModel.entities.find((e: any) => e.name === "Author"),
+              simplifiedLibraryModel.entities.find((e: any) => e.name === "Country"),
+            ],
+          },
+        },
+      },
     ],
-    internalMiroirConfig,
+    internalMiroirConfig: installInternalMiroirConfig,
     adminDeployment,
-    testDeploymentStorageConfiguration,
+    testDeploymentStorageConfiguration: installTestDeploymentStorageConfiguration,
     initialModel: emptyApplicationModel,
   },
 };
@@ -500,7 +627,7 @@ describe.sequential(
         const testSuiteResults = await runTestOrTestSuite(
           domainController,
           runnerTestAction,
-          applicationDeploymentMap,
+          testApplicationDeploymentMap, // applicationDeploymentMap,
           miroirActivityTracker,
           {}
         );
