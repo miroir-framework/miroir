@@ -48,6 +48,7 @@ export interface RunnerTestParams {
   preRunnerCompositeActions?: CompositeAction[],
   testCompositeActionLabel?: string,
   skipCreateDeployment?: boolean,
+  skipDropDeployment?: boolean,
 }
 
 // ################################################################################################

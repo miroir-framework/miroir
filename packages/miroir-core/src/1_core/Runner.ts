@@ -42,6 +42,7 @@ export function testBuildPlusRuntimeCompositeActionSuiteForRunner(
   preRunnerCompositeActions?: CompositeAction[],
   testCompositeActionLabel?: string,
   skipCreateDeployment?: boolean,
+  skipDropDeployment?: boolean,
 ): TestCompositeActionParams {
   if (runner.definition.runnerType !== "customRunner") {
     throw new Error(
@@ -96,7 +97,7 @@ export function testBuildPlusRuntimeCompositeActionSuiteForRunner(
         ],
       ),
       afterEach: testUtils_resetApplicationDeployment(testApplicationUuid),
-      afterAll: testUtils_deleteApplicationDeployment(
+      afterAll: skipDropDeployment ? undefined : testUtils_deleteApplicationDeployment(
         internalMiroirConfig,
         testApplicationUuid,
         testApplicationDeploymentUuid,

@@ -26,7 +26,7 @@ import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
 import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
 import { miroirMongoDbStoreSectionStartup } from "miroir-store-mongodb";
 import { miroirPostgresStoreSectionStartup } from "miroir-store-postgres";
-import { entityEntity, runnerCreateEntity, runnerDropEntity } from "miroir-test-app_deployment-miroir";
+import { entityEntity, runnerCreateEntity, runnerDropEntity, runnerDropApplication } from "miroir-test-app_deployment-miroir";
 import { env } from "process";
 import { loglevelnext } from "../../src/loglevelnextImporter";
 import { runTestOrTestSuite } from "../../src/miroir-fwk/4-tests/tests-utils";
@@ -46,6 +46,8 @@ import {
   type RunnerTestParams,
 } from "./RunnerIntegTestTools";
 import { entityAuthor, entityDefinitionAuthor } from "miroir-test-app_deployment-library";
+import { adminSelfApplication, entityApplicationForAdmin } from "miroir-test-app_deployment-admin";
+import { ad } from "vitest/dist/chunks/reporters.d.BFLkQcL6.js";
 
 // ################################################################################################
 const pageLabel = "Runner_Miroir.integ.test";
@@ -489,19 +491,13 @@ const runnerTestParams: Record<string, RunnerTestParams> = {
     testApplicationName,
     testParams: {
       ["createEntity"]: { // used by the preRunnerCompositeAction to create the entity before dropping it
-        // transformerType: "returnValue",
-        // value: {
           application: testApplicationUuid,
           entity: entityAuthor,
           entityDefinition: entityDefinitionAuthor,
-        // },
       },
       [runnerDropEntity.name]: {
-        // transformerType: "returnValue",
-        // value: {
         application: testApplicationUuid,
         entity: entityAuthor.uuid,
-        // },
       },
     }, // testParams
     preTestCompositeActions: [
@@ -587,6 +583,102 @@ const runnerTestParams: Record<string, RunnerTestParams> = {
     preRunnerCompositeActions: [runnerCreateEntity.definition.actionTemplate as any], // preRunnerCompositeActions: create the entity before dropping it
     testCompositeActionLabel: "Create and Drop Entity Author",
   },
+  [runnerDropApplication.name]: {
+    pageLabel,
+    runner: runnerDropApplication as unknown as Runner,
+    testApplicationUuid,
+    testApplicationDeploymentUuid,
+    testApplicationName,
+    testParams: {
+      [runnerDropApplication.name]: {
+        application: testApplicationUuid,
+        entity: entityAuthor.uuid,
+      },
+    }, // testParams
+    preTestCompositeActions: [
+      {
+        // performs query on local cache for emulated server, and on server for remote server
+        actionType: "compositeRunBoxedQueryAction",
+        endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+        actionLabel: "calculateNewEntityDefinionAndReports",
+        nameGivenToResult: "adminApplicationList",
+        payload: {
+          actionType: "runBoxedQueryAction",
+          endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+          payload: {
+            application: adminSelfApplication.uuid,
+            applicationSection: "data",
+            query: {
+              queryType: "boxedQueryWithExtractorCombinerTransformer",
+              application: adminSelfApplication.uuid,
+              pageParams: {
+                // currentDeploymentUuid: testApplicationDeploymentUuid,
+              },
+              queryParams: {},
+              contextResults: {},
+              extractors: {
+                applications: {
+                  extractorOrCombinerType: "extractorByEntityReturningObjectList",
+                  applicationSection: "data",
+                  parentName: entityApplicationForAdmin.name,
+                  parentUuid: entityApplicationForAdmin.uuid,
+                  orderBy: {
+                    attributeName: "name",
+                    direction: "ASC",
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    ], // preTestCompositeActions
+    testCompositeActionAssertions: [
+      {
+        actionType: "compositeRunTestAssertion",
+        actionLabel: "checkNumberOfApplications",
+        nameGivenToResult: "checkNumberOfApplications",
+        testAssertion: {
+          testType: "testAssertion",
+          testLabel: "checkNumberOfApplications",
+          definition: {
+            resultAccessPath: ["0"],
+            resultTransformer: {
+              transformerType: "aggregate",
+              interpolation: "runtime",
+              applyTo: {
+                transformerType: "getFromContext",
+                interpolation: "runtime",
+                referencePath: ["adminApplicationList", "applications"],
+              },
+            },
+            expectedValue: { aggregate: 2 }, // 2 applications should remain after dropping the test application: the admin application itself, and the miroir meta-application
+          },
+        },
+      },
+      // {
+      //   actionType: "compositeRunTestAssertion",
+      //   actionLabel: "checkEntityList",
+      //   nameGivenToResult: "checkEntityList",
+      //   testAssertion: {
+      //     testType: "testAssertion",
+      //     testLabel: "checkEntityList",
+      //     definition: {
+      //       resultAccessPath: ["libraryEntityList", "entities"],
+      //       ignoreAttributes: ["author", "storageAccess"],
+      //       expectedValue: [],
+      //     },
+      //   },
+      // },
+    ],
+    internalMiroirConfig: installInternalMiroirConfig,
+    adminDeployment,
+    testDeploymentStorageConfiguration: installTestDeploymentStorageConfiguration,
+    initialModel: emptyApplicationModel,
+    // preRunnerCompositeActions: [runnerCreateEntity.definition.actionTemplate as any], // preRunnerCompositeActions: create the entity before dropping it
+    testCompositeActionLabel: "Drop test Application",
+    skipDropDeployment: true, // skip dropping deployment after test, since we are dropping the whole application (and thus the deployment) in the runner itself
+  },
 };
 
 describe.sequential(
@@ -612,6 +704,7 @@ describe.sequential(
           runnerTestParams.preRunnerCompositeActions,
           runnerTestParams.testCompositeActionLabel,
           runnerTestParams.skipCreateDeployment,
+          runnerTestParams.skipDropDeployment,
         );
         const testSuiteResults = await runTestOrTestSuite(
           domainController,
