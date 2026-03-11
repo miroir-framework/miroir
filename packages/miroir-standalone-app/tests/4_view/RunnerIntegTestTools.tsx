@@ -47,7 +47,7 @@ export interface RunnerTestParams {
   initialModel: MetaModel,
   preRunnerCompositeActions?: CompositeAction[],
   testCompositeActionLabel?: string,
-
+  skipCreateDeployment?: boolean,
 }
 
 // ################################################################################################

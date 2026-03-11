@@ -1676,14 +1676,14 @@ export function transformer_resolveReference(
         queryContext: JSON.stringify(Object.keys(bank)),
       });
     }
-    log.info(
-      "transformer_resolveReference resolved for",
-      JSON.stringify(transformerInnerReference, null, 2),
-      "bank",
-      JSON.stringify(Object.keys(bank), null, 2),
-      "found result",
-      JSON.stringify(bank[transformerInnerReference.referenceName], null, 2)
-    );
+    // log.info(
+    //   "transformer_resolveReference resolved for",
+    //   JSON.stringify(transformerInnerReference, null, 2),
+    //   "bank",
+    //   JSON.stringify(Object.keys(bank), null, 2),
+    //   "found result",
+    //   JSON.stringify(bank[transformerInnerReference.referenceName], null, 2)
+    // );
     return bank[transformerInnerReference.referenceName];
   }
 
@@ -1693,12 +1693,12 @@ export function transformer_resolveReference(
       const pathResult = transformerInnerReference.safe
         ? safeResolvePathOnObject(bank, transformerInnerReference.referencePath)
         : resolvePathOnObject(bank, transformerInnerReference.referencePath);
-      log.info(
-        "transformer_resolveReference resolved for",
-        JSON.stringify(transformerInnerReference, null, 2),
-        "found pathResult",
-        pathResult
-      );
+      // log.info(
+      //   "transformer_resolveReference resolved for",
+      //   JSON.stringify(transformerInnerReference, null, 2),
+      //   "found pathResult",
+      //   pathResult
+      // );
       return pathResult;
     } catch (error) {
       log.error(
@@ -1888,21 +1888,21 @@ export function transformer_mustacheStringTemplate_apply(
   reduxDeploymentsState?: ReduxDeploymentsState | undefined // used by getDefaultValueForJzodSchemaWithResolution only, somewhat redundant with modelEnvironment
 ): TransformerReturnType<any> {
   try {
-    log.info(
-      "transformer_mustacheStringTemplate_apply called for transformer",
-      transformer,
-      "queryParams",
-      queryParams,
-      // JSON.stringify(Object.keys(queryParams), null, 2),
-      "contextResults",
-      contextResults
-      // JSON.stringify(Object.keys(contextResults ?? {}), null, 2)
-    );
+    // log.info(
+    //   "transformer_mustacheStringTemplate_apply called for transformer",
+    //   transformer,
+    //   "queryParams",
+    //   queryParams,
+    //   // JSON.stringify(Object.keys(queryParams), null, 2),
+    //   "contextResults",
+    //   contextResults
+    //   // JSON.stringify(Object.keys(contextResults ?? {}), null, 2)
+    // );
     const result = mustache.render(
       transformer.definition,
       ((transformer as any)["interpolation"] ?? "build") == "runtime" ? contextResults : queryParams
     );
-    log.info("transformer_mustacheStringTemplate_apply result:", result);
+    // log.info("transformer_mustacheStringTemplate_apply result:", result);
     return result;
   } catch (error: any) {
     log.error(

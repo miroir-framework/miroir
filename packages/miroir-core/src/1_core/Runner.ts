@@ -41,7 +41,7 @@ export function testBuildPlusRuntimeCompositeActionSuiteForRunner(
   initialModel: MetaModel,
   preRunnerCompositeActions?: CompositeAction[],
   testCompositeActionLabel?: string,
-// ): Record<string, TestCompositeActionParams> {
+  skipCreateDeployment?: boolean,
 ): TestCompositeActionParams {
   if (runner.definition.runnerType !== "customRunner") {
     throw new Error(
@@ -58,14 +58,18 @@ export function testBuildPlusRuntimeCompositeActionSuiteForRunner(
     testCompositeAction: {
       testType: "testBuildPlusRuntimeCompositeActionSuite",
       testLabel: pageLabel,
-      beforeAll: createDeploymentCompositeAction(
-        testApplicationName,
-        testApplicationDeploymentUuid,
-        testApplicationUuid,
-        adminDeployment,
-        testDeploymentStorageConfiguration,
-      ),
-      beforeEach: resetAndinitializeDeploymentCompositeAction(
+      beforeAll: skipCreateDeployment
+        ? undefined
+        : createDeploymentCompositeAction(
+            testApplicationName,
+            testApplicationDeploymentUuid,
+            testApplicationUuid,
+            adminDeployment,
+            testDeploymentStorageConfiguration,
+          ),
+      beforeEach: skipCreateDeployment
+        ? undefined
+        : resetAndinitializeDeploymentCompositeAction(
         testApplicationUuid,
         testApplicationDeploymentUuid,
         {
@@ -121,14 +125,14 @@ export function testBuildPlusRuntimeCompositeActionSuiteForRunner(
                     application: selfApplicationMiroir.uuid,
                   },
                 },
-                {
+                ...(skipCreateDeployment ? [] : [{
                   actionType: "rollback",
-                  actionLabel: "refreshLibraryLocalCache",
+                  actionLabel: "refreshTestApplicationLocalCache",
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   payload: {
                     application: testApplicationUuid,
                   },
-                },
+                }]),
                 ...((preRunnerCompositeActions ?? []) as any[]),
                 runner.definition.actionTemplate as any,
                 {

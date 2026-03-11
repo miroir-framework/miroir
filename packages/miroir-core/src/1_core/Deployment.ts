@@ -145,7 +145,7 @@ MiroirLoggerFactory.registerLoggerToStart(
 export function createDeploymentCompositeAction(
   applicationName: string,
   newDeploymentUuid: Uuid,
-  selfApplicationUuid: Uuid,
+  applicationUuid: Uuid,
   adminDeploymentConfiguration: Deployment,
   newDeploymentConfiguration: StoreUnitConfiguration
 ): CompositeActionSequence {
@@ -180,7 +180,7 @@ export function createDeploymentCompositeAction(
           actionLabel: "storeManagementAction_openStore for " + applicationName,
           endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
           payload: {
-            application: selfApplicationUuid,
+            application: applicationUuid,
             deploymentUuid: newDeploymentUuid,
             configuration: {
               [newDeploymentUuid]: newDeploymentConfiguration,
@@ -192,7 +192,7 @@ export function createDeploymentCompositeAction(
           actionLabel: "storeManagementAction_createStore for " + applicationName,
           endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
           payload: {
-            application: selfApplicationUuid,
+            application: applicationUuid,
             deploymentUuid: newDeploymentUuid,
             configuration: newDeploymentConfiguration,
           },
@@ -206,13 +206,22 @@ export function createDeploymentCompositeAction(
             applicationSection: "data",
             objects: [
               {
+                uuid: applicationUuid,
+                parentName: entityApplicationForAdmin.name,
+                parentUuid: entityApplicationForAdmin.uuid,
+                name: applicationName,
+                defaultLabel: `The ${applicationName} Application.`,
+                description: `This Application contains the ${applicationName} model and data.`,
+                selfApplication: applicationUuid,
+              } as AdminApplication,
+              {
                 uuid: newDeploymentUuid,
                 parentName: "Deployment",
                 parentUuid: entityDeployment.uuid,
                 name: `Deployment of application ${applicationName}`,
                 defaultLabel: `The deployment of application ${applicationName}`,
                 description: `The description of deployment of application ${applicationName}`,
-                selfApplication: selfApplicationUuid, // TODO: this should be selfApplication
+                selfApplication: applicationUuid, // TODO: this should be selfApplication
                 configuration: newDeploymentConfiguration,
               } as Deployment,
             ],
@@ -476,7 +485,6 @@ export function testUtils_deleteApplicationDeployment(
         {
           actionType: "deleteInstance",
           actionLabel: "deleteAdminApplication",
-          // application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
           endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
           payload: {
             application: "55af124e-8c05-4bae-a3ef-0933d41daa92",
