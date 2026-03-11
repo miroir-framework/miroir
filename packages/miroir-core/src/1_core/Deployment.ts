@@ -429,6 +429,7 @@ export function testUtils_resetApplicationDeployment(
   };
 }
 // ################################################################################################
+// TODO: this should use the dropApplcation runner instead of duplicating its logic here
 export function testUtils_deleteApplicationDeployment(
   miroirConfig: MiroirConfigClient,
   application: Uuid,
@@ -441,13 +442,13 @@ export function testUtils_deleteApplicationDeployment(
   );
   return {
     actionType: "compositeActionSequence",
-    actionLabel: "deleteLibraryDeployment",
+    actionLabel: "deleteApplicationDeployment",
     endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
     payload: {
       actionSequence: [
         {
           actionType: "storeManagementAction_deleteStore",
-          actionLabel: "deleteLibraryStore",
+          actionLabel: "deleteApplicationStore",
           endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
           payload: {
             application,
@@ -455,7 +456,7 @@ export function testUtils_deleteApplicationDeployment(
             configuration: miroirConfig.client.emulateServer
               ? miroirConfig.client.deploymentStorageConfig[deploymentUuid]
               : miroirConfig.client.serverConfig.storeSectionConfiguration[deploymentUuid],
-          }
+          },
         },
         {
           actionType: "deleteInstance",
@@ -467,14 +468,24 @@ export function testUtils_deleteApplicationDeployment(
             objects: [
               {
                 uuid: deploymentUuid,
-                // parentName: "Deployment",
                 parentUuid: entityDeployment.uuid,
-                // name: `Deployment of application ${applicationName}`,
-                // defaultLabel: `The deployment of application ${applicationName}`,
-                // description: `The description of deployment of application ${applicationName}`,
-                // selfApplication: selfApplicationUuid, // TODO: this should be selfApplication
-                // configuration: newDeploymentConfiguration,
               } as EntityInstance,
+            ],
+          },
+        },
+        {
+          actionType: "deleteInstance",
+          actionLabel: "deleteAdminApplication",
+          // application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+          endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+          payload: {
+            application: "55af124e-8c05-4bae-a3ef-0933d41daa92",
+            applicationSection: "data",
+            objects: [
+              {
+                parentUuid: "25d935e7-9e93-42c2-aade-0472b883492b",
+                uuid: application,
+              },
             ],
           },
         },

@@ -17,7 +17,9 @@ import type {
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import {
   createDeploymentCompositeAction,
-  resetAndinitializeDeploymentCompositeAction
+  resetAndinitializeDeploymentCompositeAction,
+  testUtils_deleteApplicationDeployment,
+  testUtils_resetApplicationDeployment
 } from "./Deployment";
 import { defaultMiroirMetaModel } from "./Model";
 
@@ -89,12 +91,12 @@ export function testBuildPlusRuntimeCompositeActionSuiteForRunner(
           // entityPublisher.uuid
         ],
       ),
-      // afterEach: testUtils_resetApplicationDeployment(testApplicationUuid),
-      // afterAll: testUtils_deleteApplicationDeployment(
-      //   internalMiroirConfig,
-      //   testApplicationUuid,
-      //   testApplicationDeploymentUuid,
-      // ),
+      afterEach: testUtils_resetApplicationDeployment(testApplicationUuid),
+      afterAll: testUtils_deleteApplicationDeployment(
+        internalMiroirConfig,
+        testApplicationUuid,
+        testApplicationDeploymentUuid,
+      ),
       testCompositeActions: {
         [testCompositeActionLabel ?? "no_testCompositeActionLabel_given"]: {
           testType: "testBuildPlusRuntimeCompositeAction",

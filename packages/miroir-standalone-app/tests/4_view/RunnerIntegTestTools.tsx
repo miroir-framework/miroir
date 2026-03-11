@@ -122,14 +122,16 @@ export async function beforeEachTest(
 export async function afterAllTests(
   miroirActivityTracker: MiroirActivityTracker,
   // testActions: Record<string, TestCompositeActionParams>,
-  displayTestResults: string,
+  displayTestResults: string[],
 ): Promise<void> {
   // await deleteAndCloseApplicationDeployments(miroirConfig, domainController, defaultSelfApplicationDeploymentMap, adminApplicationDeploymentConfigurations);
-  displayTestSuiteResultsDetails(
-    // Object.keys(testActions)[0],
-    displayTestResults,
-    [],
-    miroirActivityTracker
+  displayTestResults.forEach((testName) =>
+    displayTestSuiteResultsDetails(
+      // Object.keys(testActions)[0],
+      testName,
+      [],
+      miroirActivityTracker,
+    ),
   );
   return Promise.resolve();
 };

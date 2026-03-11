@@ -161,21 +161,9 @@ beforeEach(async () => {
 });
 
 afterAll(async () => {
-  // await afterAllTests(
-  //   miroirActivityTracker,
-  //   runnerCreateEntity.name,
-  // );
-  // await afterAllTests(
-  //   miroirActivityTracker,
-  //   runnerDropEntity.name,
-  // );
-  // await afterAllTests(
-  //   miroirActivityTracker,
-  //   localRunnerCreateApplication.name,
-  // );
   await afterAllTests(
     miroirActivityTracker,
-    localRunnerInstallApplication.name,
+    Object.keys(runnerTestParams)
   );
 });
 
