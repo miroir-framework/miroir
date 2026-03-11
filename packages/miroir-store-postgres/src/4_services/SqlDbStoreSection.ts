@@ -91,6 +91,17 @@ export class SqlDbStoreSection
           return prev;
         }
       }, {});
+    // Auto-migrate: add missing columns for non-external entities (safe for schema evolution)
+    // for (const [entityUuid, access] of Object.entries(this.sqlSchemaTableAccess)) {
+    //   if (!access.isExternal) {
+    //     try {
+    //       await access.sequelizeModel.sync({ alter: true });
+    //       log.info(this.logHeader, "bootFromPersistedState sync alter succeeded for entity", entityUuid);
+    //     } catch (e) {
+    //       log.warn(this.logHeader, "bootFromPersistedState sync alter failed for entity", entityUuid, "error:", e);
+    //     }
+    //   }
+    // }
     return Promise.resolve(ACTION_OK);
   }
 
@@ -101,7 +112,7 @@ export class SqlDbStoreSection
   ): EntityUuidIndexedSequelizeModel {
     // TODO: does side effect => refactor!
     const idAttribute = (entityDefinition as any).idAttribute ?? "uuid";
-    const isExternal = entity.conceptLevel === "External";
+    const isExternal = entity.conceptLevel === "External" || !!(entityDefinition as any).externalDataSource;
     const effectiveSchema = isExternal && entityDefinition.externalDataSource?.schema
       ? entityDefinition.externalDataSource.schema
       : this.schema;
@@ -113,6 +124,7 @@ export class SqlDbStoreSection
         parentName: entity.parentName,
         idAttribute,
         isExternal,
+        effectiveSchema,
         sequelizeModel: this.sequelize.define(
           effectiveTableName,
           fromMiroirEntityDefinitionToSequelizeEntityDefinition(entityDefinition),
@@ -135,7 +147,7 @@ export class SqlDbStoreSection
       this.sqlSchemaTableAccess,
       this.getAccessToDataSectionEntity(entity, entityDefinition)
     );
-    if (entity.conceptLevel === "External") {
+    if (this.sqlSchemaTableAccess[entity.uuid]?.isExternal) {
       log.info(this.logHeader, "createStorageSpaceForInstancesOfEntity", "skipping table creation for external entity", entity.name);
     } else {
       log.info(this.logHeader, "createStorageSpaceForInstancesOfEntity", "creating data schema table", entity.name);

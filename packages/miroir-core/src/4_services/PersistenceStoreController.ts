@@ -725,13 +725,13 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
     if (instances instanceof Action2Error) {
       return new Action2Error(
         "FailedToGetInstances",
-        `getInstances failed for section: ${section}, entityUuid ${entityEntity.uuid}, error: ${instances.errorType}, ${instances.errorMessage}`
+        `getInstances failed for section: ${section}, entityUuid ${entityUuid}, error: ${instances.errorType}, ${instances.errorMessage}`
       );
     }
     if (instances.returnedDomainElement instanceof Domain2ElementFailed) {
       return new Action2Error(
         "FailedToGetInstances",
-        `getInstances failed for section: ${section}, entityUuid ${entityEntity.uuid}, error: ${instances}`
+        `getInstances failed for section: ${section}, entityUuid ${entityUuid}, error: ${instances}`
       );
     }
 

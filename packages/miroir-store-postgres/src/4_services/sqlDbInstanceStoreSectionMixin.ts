@@ -109,7 +109,9 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
           switch (query.select.extractorOrCombinerType) {
             case "extractorByEntityReturningObjectList": {
               const entitySchema = this.sqlSchemaTableAccess?.[query.select.parentUuid]?.isExternal
-                ? (modelEnvironment as any)?.currentModel?.entityDefinitions?.find((ed: any) => ed.entityUuid === query.select.parentUuid)?.externalDataSource?.schema ?? this.schema
+                ? ((modelEnvironment as any)?.currentModel?.entityDefinitions?.find(
+                    (ed: any) => ed.entityUuid === query.select.parentUuid,
+                  )?.externalDataSource?.schema ?? this.schema)
                 : this.schema;
               return (
                 `SELECT * FROM "${entitySchema}"."${query.select.parentName}"` +
@@ -165,7 +167,9 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
             case "extractorForObjectByDirectReference": {
               const pkColumn = this.sqlSchemaTableAccess[query.select.parentUuid]?.idAttribute ?? "uuid";
               const entitySchema = this.sqlSchemaTableAccess?.[query.select.parentUuid]?.isExternal
-                ? (modelEnvironment as any)?.currentModel?.entityDefinitions?.find((ed: any) => ed.entityUuid === query.select.parentUuid)?.externalDataSource?.schema ?? this.schema
+                ? ((modelEnvironment as any)?.currentModel?.entityDefinitions?.find(
+                    (ed: any) => ed.entityUuid === query.select.parentUuid,
+                  )?.externalDataSource?.schema ?? this.schema)
                 : this.schema;
               return `SELECT * FROM "${entitySchema}"."${query.select.parentName}" WHERE "${pkColumn}" = '${query.select.instanceUuid}'`;
               break;
@@ -246,8 +250,12 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
     async getInstance(parentUuid: string, instancePrimaryKey: string): Promise<Action2EntityInstanceReturnType> {
       try {
         if (this.sqlSchemaTableAccess && this.sqlSchemaTableAccess[parentUuid]) {
+          const entityAccess = this.sqlSchemaTableAccess[parentUuid];
+          const scopedModel = entityAccess.isExternal && entityAccess.effectiveSchema
+            ? entityAccess.sequelizeModel.schema(entityAccess.effectiveSchema)
+            : entityAccess.sequelizeModel;
           const result: EntityInstance = (
-            await this.sqlSchemaTableAccess[parentUuid].sequelizeModel.findByPk(instancePrimaryKey)
+            await scopedModel.findByPk(instancePrimaryKey)
           )?.dataValues;
           log.info(this.logHeader, "getInstance", "result", result);
           return Promise.resolve({
@@ -302,8 +310,11 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
           this.sqlSchemaTableAccess[parentUuid]?.sequelizeModel
         ) {
           log.info("getInstancesWithFilter calling this.sqlEntities findall", parentUuid);
-          const sequelizeModel = this.sqlSchemaTableAccess[parentUuid]?.sequelizeModel;
-          rawResult = (await sequelizeModel?.findAll({
+          const entityAccess = this.sqlSchemaTableAccess[parentUuid];
+          const scopedModel = entityAccess?.isExternal && entityAccess?.effectiveSchema
+            ? entityAccess.sequelizeModel.schema(entityAccess.effectiveSchema)
+            : entityAccess?.sequelizeModel;
+          rawResult = (await scopedModel?.findAll({
             where: { [filter.attribute]: { [Op.like]: "%" + filter.value + "%" } },
           })) as unknown as EntityInstance[];
           cleanResult = rawResult.map((i) => i["dataValues"]);
@@ -365,8 +376,11 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
           this.sqlSchemaTableAccess[parentUuid]?.sequelizeModel
         ) {
           log.info("getOrderedInstancesWithFilter calling this.sqlEntities findall", parentUuid);
-          const sequelizeModel = this.sqlSchemaTableAccess[parentUuid]?.sequelizeModel;
-          rawResult = (await sequelizeModel?.findAll({
+          const entityAccess2 = this.sqlSchemaTableAccess[parentUuid];
+          const scopedModel2 = entityAccess2?.isExternal && entityAccess2?.effectiveSchema
+            ? entityAccess2.sequelizeModel.schema(entityAccess2.effectiveSchema)
+            : entityAccess2?.sequelizeModel;
+          rawResult = (await scopedModel2?.findAll({
             where: { [filter.attribute]: { [Op.like]: "%" + filter.value + "%" } },
             order: [[orderBy.attributeName, orderBy.direction ?? "ASC"]],
           })) as unknown as EntityInstance[];
@@ -418,9 +432,12 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
           this.sqlSchemaTableAccess[parentUuid] &&
           this.sqlSchemaTableAccess[parentUuid]?.sequelizeModel
         ) {
-          log.info("getInstances calling this.sqlEntities findall", parentUuid);
-          const sequelizeModel = this.sqlSchemaTableAccess[parentUuid]?.sequelizeModel;
-          rawResult = (await sequelizeModel?.findAll()) as unknown as EntityInstance[];
+          const entityAccess3 = this.sqlSchemaTableAccess[parentUuid];
+          log.info("getInstances calling this.sqlEntities findall", parentUuid, JSON.stringify(entityAccess3, null, 2));
+          const scopedModel3 = entityAccess3?.isExternal && entityAccess3?.effectiveSchema
+            ? entityAccess3.sequelizeModel.schema(entityAccess3.effectiveSchema)
+            : entityAccess3?.sequelizeModel;
+          rawResult = (await scopedModel3?.findAll()) as unknown as EntityInstance[];
           cleanResult = rawResult.map((i) => i["dataValues"]);
           // log.info("getInstances result", JSON.stringify(cleanResult, null, 2));
         } else {
@@ -448,12 +465,14 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
           this.logHeader,
           "getInstances",
           "failed to fetch instances of entityUuid",
-          parentUuid
+          parentUuid,
+          "error:",
+          e
         );
         return Promise.resolve(
           new Action2Error(
             "FailedToGetInstances",
-            `sqlDbStoreName ${this.sqlDbStoreName} could not get instances for entity ${parentUuid}`
+            `sqlDbStoreName ${this.sqlDbStoreName} could not get instances for entity ${parentUuid}: ${e}`
           )
         );
       }

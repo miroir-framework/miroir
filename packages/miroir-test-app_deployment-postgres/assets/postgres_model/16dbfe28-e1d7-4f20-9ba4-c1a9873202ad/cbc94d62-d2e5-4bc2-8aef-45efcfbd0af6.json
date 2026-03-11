@@ -5,6 +5,6 @@
   "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
   "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
   "name":"pg_namespace",
-  "conceptLevel":"Model",
+  "conceptLevel":"External",
   "description": "The namespace of a PostgreSQL schema."
 }
