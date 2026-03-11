@@ -20,7 +20,7 @@ MiroirLoggerFactory.registerLoggerToStart(
 
 // export type SqlEntityDefinition = { [parentName in string]: ModelStatic<Model<any, any>> };
 export type EntityUuidIndexedSequelizeModel = {
-  [parentUuid in string]: { parentName?: string; idAttribute?: string; sequelizeModel: ModelStatic<Model<any, any>> };
+  [parentUuid in string]: { parentName?: string; idAttribute?: string; isExternal?: boolean; sequelizeModel: ModelStatic<Model<any, any>> };
 };
 
 // const dataTypesMapping: { [type in EntityAttributeType]: DataTypes.AbstractDataTypeConstructor } = {

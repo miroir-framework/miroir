@@ -679,7 +679,7 @@ export function getMiroirFundamentalJzodSchema(
             },
             conceptLevel: {
               type: "enum",
-              definition: ["MetaModel", "Model", "Data"],
+              definition: ["MetaModel", "Model", "Data", "External"],
               optional: true,
               tag: { value: { id: 4, defaultLabel: "Concept Level", editable: false } },
             },
@@ -729,7 +729,7 @@ export function getMiroirFundamentalJzodSchema(
             },
             conceptLevel: {
               type: "enum",
-              definition: ["MetaModel", "Model", "Data"],
+              definition: ["MetaModel", "Model", "Data", "External"],
               optional: true,
               tag: {
                 value: {

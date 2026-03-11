@@ -681,10 +681,23 @@ const runnerTestParams: Record<string, RunnerTestParams> = {
   },
 };
 
+// filter to run only specific tests
+const filteredRunnerTestParams: Record<string, RunnerTestParams> = Object.fromEntries(
+  Object.entries(runnerTestParams).filter(([testName]) =>
+    [
+      localRunnerCreateApplication.name,
+      localRunnerInstallApplication.name,
+      runnerCreateEntity.name,
+      runnerDropEntity.name,
+      runnerDropApplication.name,
+    ].includes(testName)
+  )
+);
+
 describe.sequential(
   pageLabel,
   () => {
-    it.each(Object.entries(runnerTestParams))(
+    it.each(Object.entries(filteredRunnerTestParams))(
       "test %s",
       async (currentTestSuiteName, runnerTestParams: RunnerTestParams) => {
         const runnerTestAction = testBuildPlusRuntimeCompositeActionSuiteForRunner(

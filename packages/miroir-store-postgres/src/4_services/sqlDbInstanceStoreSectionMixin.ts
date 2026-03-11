@@ -108,8 +108,11 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
           // TODO: use queryGenerator?
           switch (query.select.extractorOrCombinerType) {
             case "extractorByEntityReturningObjectList": {
+              const entitySchema = this.sqlSchemaTableAccess?.[query.select.parentUuid]?.isExternal
+                ? (modelEnvironment as any)?.currentModel?.entityDefinitions?.find((ed: any) => ed.entityUuid === query.select.parentUuid)?.externalDataSource?.schema ?? this.schema
+                : this.schema;
               return (
-                `SELECT * FROM "${this.schema}"."${query.select.parentName}"` +
+                `SELECT * FROM "${entitySchema}"."${query.select.parentName}"` +
                 (query.select.filter
                   ? ` WHERE ${query.select.filter.attributeName} LIKE '%${query.select.filter.value}%'`
                   : "")
@@ -161,7 +164,10 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
           switch (query.select.extractorOrCombinerType) {
             case "extractorForObjectByDirectReference": {
               const pkColumn = this.sqlSchemaTableAccess[query.select.parentUuid]?.idAttribute ?? "uuid";
-              return `SELECT * FROM "${this.schema}"."${query.select.parentName}" WHERE "${pkColumn}" = '${query.select.instanceUuid}'`;
+              const entitySchema = this.sqlSchemaTableAccess?.[query.select.parentUuid]?.isExternal
+                ? (modelEnvironment as any)?.currentModel?.entityDefinitions?.find((ed: any) => ed.entityUuid === query.select.parentUuid)?.externalDataSource?.schema ?? this.schema
+                : this.schema;
+              return `SELECT * FROM "${entitySchema}"."${query.select.parentName}" WHERE "${pkColumn}" = '${query.select.instanceUuid}'`;
               break;
             }
             case "combinerForObjectByRelation": {
@@ -480,6 +486,15 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
           )
         );
       }
+      if (this.sqlSchemaTableAccess[instance.parentUuid]?.isExternal) {
+        log.warn(this.logHeader, "upsertInstance", "rejected: entity is external (read-only)", instance.parentUuid);
+        return Promise.resolve(
+          new Action2Error(
+            "FailedToUpdateInstance",
+            `cannot upsert instance into external (read-only) entity ${instance.parentUuid}`
+          )
+        );
+      }
       try {
         log.info("upsertInstance for instance:", JSON.stringify(instance, null, 2));
         const sequelizeModel = this.sqlSchemaTableAccess[instance.parentUuid].sequelizeModel;
@@ -560,6 +575,15 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
         );
         return Promise.resolve(
           new Action2Error("FailedToDeleteInstance", `could not find entity ${parentUuid} in database schema ${this.schema}, available entities: ${Object.keys(this.sqlSchemaTableAccess ? this.sqlSchemaTableAccess : {})}`)
+        );
+      }
+      if (this.sqlSchemaTableAccess[parentUuid]?.isExternal) {
+        log.warn(this.logHeader, "deleteInstance", "rejected: entity is external (read-only)", parentUuid);
+        return Promise.resolve(
+          new Action2Error(
+            "FailedToDeleteInstance",
+            `cannot delete instance from external (read-only) entity ${parentUuid}`
+          )
         );
       }
       try {

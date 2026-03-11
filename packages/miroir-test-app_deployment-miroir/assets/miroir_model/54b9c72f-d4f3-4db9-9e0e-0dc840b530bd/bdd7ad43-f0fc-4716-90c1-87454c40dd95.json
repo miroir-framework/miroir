@@ -82,7 +82,8 @@
         "definition": [
           "MetaModel",
           "Model",
-          "Data"
+          "Data",
+          "External"
         ],
         "optional": true,
         "tag": {
@@ -192,6 +193,38 @@
           "value": {
             "defaultLabel": "Id Attribute",
             "description": "The attribute used as primary key for instances of this entity. Defaults to 'uuid' when absent."
+          }
+        }
+      },
+      "externalDataSource": {
+        "type": "object",
+        "optional": true,
+        "tag": {
+          "value": {
+            "defaultLabel": "External Data Source",
+            "description": "Configuration for entities whose data lives in an external (non-Miroir-managed) storage location. Only meaningful when the parent Entity has conceptLevel 'External'."
+          }
+        },
+        "definition": {
+          "schema": {
+            "type": "string",
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "Schema",
+                "description": "The database schema where an external table resides (e.g. 'pg_catalog'). Used by SQL stores only."
+              }
+            }
+          },
+          "tableName": {
+            "type": "string",
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "Table Name",
+                "description": "The physical table name in the external storage. Defaults to the entity name when absent."
+              }
+            }
           }
         }
       },

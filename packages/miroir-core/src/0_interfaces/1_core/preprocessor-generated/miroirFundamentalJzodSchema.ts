@@ -7427,7 +7427,8 @@ export const miroirFundamentalJzodSchema = {
             "definition": [
               "MetaModel",
               "Model",
-              "Data"
+              "Data",
+              "External"
             ],
             "optional": true,
             "tag": {
@@ -7510,7 +7511,8 @@ export const miroirFundamentalJzodSchema = {
             "definition": [
               "MetaModel",
               "Model",
-              "Data"
+              "Data",
+              "External"
             ],
             "optional": true,
             "tag": {
@@ -7580,7 +7582,8 @@ export const miroirFundamentalJzodSchema = {
         "definition": [
           "MetaModel",
           "Model",
-          "Data"
+          "Data",
+          "External"
         ],
         "optional": true,
         "tag": {
@@ -8960,7 +8963,8 @@ export const miroirFundamentalJzodSchema = {
             "definition": [
               "MetaModel",
               "Model",
-              "Data"
+              "Data",
+              "External"
             ],
             "optional": true,
             "tag": {
@@ -9113,7 +9117,8 @@ export const miroirFundamentalJzodSchema = {
             "definition": [
               "MetaModel",
               "Model",
-              "Data"
+              "Data",
+              "External"
             ],
             "optional": true,
             "tag": {
@@ -9230,6 +9235,38 @@ export const miroirFundamentalJzodSchema = {
               "value": {
                 "defaultLabel": "Id Attribute",
                 "description": "The attribute used as primary key for instances of this entity. Defaults to 'uuid' when absent."
+              }
+            }
+          },
+          "externalDataSource": {
+            "type": "object",
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "External Data Source",
+                "description": "Configuration for entities whose data lives in an external (non-Miroir-managed) storage location. Only meaningful when the parent Entity has conceptLevel 'External'."
+              }
+            },
+            "definition": {
+              "schema": {
+                "type": "string",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Schema",
+                    "description": "The database schema where an external table resides (e.g. 'pg_catalog'). Used by SQL stores only."
+                  }
+                }
+              },
+              "tableName": {
+                "type": "string",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Table Name",
+                    "description": "The physical table name in the external storage. Defaults to the entity name when absent."
+                  }
+                }
               }
             }
           },
@@ -39758,7 +39795,8 @@ export const miroirFundamentalJzodSchema = {
                     "definition": [
                       "MetaModel",
                       "Model",
-                      "Data"
+                      "Data",
+                      "External"
                     ],
                     "optional": true,
                     "tag": {
@@ -40194,7 +40232,8 @@ export const miroirFundamentalJzodSchema = {
                     "definition": [
                       "MetaModel",
                       "Model",
-                      "Data"
+                      "Data",
+                      "External"
                     ],
                     "optional": true,
                     "tag": {
@@ -40537,6 +40576,101 @@ export const miroirFundamentalJzodSchema = {
                     "definition": {
                       "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                       "relativePath": "transformerForBuildCarryOnObject"
+                    }
+                  }
+                ]
+              },
+              "externalDataSource": {
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "defaultLabel": "External Data Source",
+                    "description": "Configuration for entities whose data lives in an external (non-Miroir-managed) storage location. Only meaningful when the parent Entity has conceptLevel 'External'.",
+                    "isTemplate": true
+                  }
+                },
+                "type": "union",
+                "discriminator": "transformerType",
+                "definition": [
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "transformerForBuildCarryOnObject"
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "External Data Source",
+                        "description": "Configuration for entities whose data lives in an external (non-Miroir-managed) storage location. Only meaningful when the parent Entity has conceptLevel 'External'.",
+                        "isTemplate": true
+                      }
+                    },
+                    "definition": {
+                      "schema": {
+                        "type": "union",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Schema",
+                            "description": "The database schema where an external table resides (e.g. 'pg_catalog'). Used by SQL stores only.",
+                            "isTemplate": true
+                          }
+                        },
+                        "discriminator": "transformerType",
+                        "definition": [
+                          {
+                            "type": "string",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Schema",
+                                "description": "The database schema where an external table resides (e.g. 'pg_catalog'). Used by SQL stores only."
+                              }
+                            }
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              "relativePath": "transformerForBuildCarryOnObject"
+                            }
+                          }
+                        ]
+                      },
+                      "tableName": {
+                        "type": "union",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Table Name",
+                            "description": "The physical table name in the external storage. Defaults to the entity name when absent.",
+                            "isTemplate": true
+                          }
+                        },
+                        "discriminator": "transformerType",
+                        "definition": [
+                          {
+                            "type": "string",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Table Name",
+                                "description": "The physical table name in the external storage. Defaults to the entity name when absent."
+                              }
+                            }
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              "relativePath": "transformerForBuildCarryOnObject"
+                            }
+                          }
+                        ]
+                      }
                     }
                   }
                 ]
@@ -63296,7 +63430,8 @@ export const miroirFundamentalJzodSchema = {
                 "definition": [
                   "MetaModel",
                   "Model",
-                  "Data"
+                  "Data",
+                  "External"
                 ],
                 "optional": true,
                 "tag": {
@@ -63868,7 +64003,8 @@ export const miroirFundamentalJzodSchema = {
             "definition": [
               "MetaModel",
               "Model",
-              "Data"
+              "Data",
+              "External"
             ],
             "optional": true,
             "tag": {
@@ -63989,6 +64125,39 @@ export const miroirFundamentalJzodSchema = {
               "value": {
                 "defaultLabel": "Id Attribute",
                 "description": "The attribute used as primary key for instances of this entity. Defaults to 'uuid' when absent."
+              }
+            }
+          },
+          "externalDataSource": {
+            "type": "object",
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "External Data Source",
+                "description": "Configuration for entities whose data lives in an external (non-Miroir-managed) storage location. Only meaningful when the parent Entity has conceptLevel 'External'.",
+                "isTemplate": true
+              }
+            },
+            "definition": {
+              "schema": {
+                "type": "string",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Schema",
+                    "description": "The database schema where an external table resides (e.g. 'pg_catalog'). Used by SQL stores only."
+                  }
+                }
+              },
+              "tableName": {
+                "type": "string",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Table Name",
+                    "description": "The physical table name in the external storage. Defaults to the entity name when absent."
+                  }
+                }
               }
             }
           },
@@ -77720,7 +77889,8 @@ export const miroirFundamentalJzodSchema = {
                 "definition": [
                   "MetaModel",
                   "Model",
-                  "Data"
+                  "Data",
+                  "External"
                 ],
                 "optional": true,
                 "tag": {
@@ -78292,7 +78462,8 @@ export const miroirFundamentalJzodSchema = {
             "definition": [
               "MetaModel",
               "Model",
-              "Data"
+              "Data",
+              "External"
             ],
             "optional": true,
             "tag": {
@@ -78413,6 +78584,39 @@ export const miroirFundamentalJzodSchema = {
               "value": {
                 "defaultLabel": "Id Attribute",
                 "description": "The attribute used as primary key for instances of this entity. Defaults to 'uuid' when absent."
+              }
+            }
+          },
+          "externalDataSource": {
+            "type": "object",
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "External Data Source",
+                "description": "Configuration for entities whose data lives in an external (non-Miroir-managed) storage location. Only meaningful when the parent Entity has conceptLevel 'External'.",
+                "isTemplate": true
+              }
+            },
+            "definition": {
+              "schema": {
+                "type": "string",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Schema",
+                    "description": "The database schema where an external table resides (e.g. 'pg_catalog'). Used by SQL stores only."
+                  }
+                }
+              },
+              "tableName": {
+                "type": "string",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Table Name",
+                    "description": "The physical table name in the external storage. Defaults to the entity name when absent."
+                  }
+                }
               }
             }
           },

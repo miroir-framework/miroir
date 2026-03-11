@@ -85,6 +85,19 @@ function getIdAttributeForEntity(
   return (entityDef as any)?.idAttribute ?? "uuid";
 }
 
+// ##############################################################################################
+function getSchemaForEntity(
+  entityUuid: string,
+  defaultSchema: string,
+  modelEnvironment?: MiroirModelEnvironment
+): string {
+  if (!modelEnvironment?.currentModel?.entityDefinitions) return defaultSchema;
+  const entityDef = modelEnvironment.currentModel.entityDefinitions.find(
+    (ed: any) => ed.entityUuid === entityUuid
+  );
+  return (entityDef as any)?.externalDataSource?.schema ?? defaultSchema;
+}
+
 export type ITransformerHandler<T> = (
   actionRuntimeTransformer: T,
   preparedStatementParametersCount: number,
@@ -424,8 +437,9 @@ export function sqlStringForExtractor(
   switch (extractor.extractorOrCombinerType) {
     case "extractorForObjectByDirectReference": {
       const pkColumn = getIdAttributeForEntity(extractor.parentUuid, modelEnvironment);
+      const effectiveSchema = getSchemaForEntity(extractor.parentUuid, schema, modelEnvironment);
       if (!extractor.applyTransformer) {
-        return `SELECT * FROM "${schema}"."${extractor.parentName}" WHERE "${pkColumn}" = '${extractor.instanceUuid}'`;
+        return `SELECT * FROM "${effectiveSchema}"."${extractor.parentName}" WHERE "${pkColumn}" = '${extractor.instanceUuid}'`;
       }
       if (!modelEnvironment) {
         throw new Error("sqlForExtractor extractorForObjectByDirectReference needs modelEnvironment if applyTransformer is set");
@@ -435,7 +449,7 @@ export function sqlStringForExtractor(
         JSON.stringify(extractor.applyTransformer, null, 2),
         Object.keys(modelEnvironment)
       );
-      return `SELECT * FROM "${schema}"."${extractor.parentName}" WHERE "${pkColumn}" = '${extractor.instanceUuid}'`;
+      return `SELECT * FROM "${effectiveSchema}"."${extractor.parentName}" WHERE "${pkColumn}" = '${extractor.instanceUuid}'`;
       break;
     }
     case "combinerForObjectByRelation": {
@@ -443,6 +457,7 @@ export function sqlStringForExtractor(
       break;
     }
     case "extractorByEntityReturningObjectList": {
+      const effectiveSchema = getSchemaForEntity(extractor.parentUuid, schema, modelEnvironment);
       let whereClause = "";
       if (extractor.filter) {
         const { attributeName, value, values, not, undefined: isUndefined } = extractor.filter;
@@ -467,7 +482,7 @@ export function sqlStringForExtractor(
             : ` WHERE "${attributeName}" ILIKE '%${value}%'`;
         }
       }
-      return `SELECT * FROM "${schema}"."${extractor.parentName}"${whereClause}`;
+      return `SELECT * FROM "${effectiveSchema}"."${extractor.parentName}"${whereClause}`;
       break;
     }
     case "extractorWrapperReturningObject":
