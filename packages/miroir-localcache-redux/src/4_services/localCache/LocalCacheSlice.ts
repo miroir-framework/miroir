@@ -216,11 +216,11 @@ function getEntityIdAttribute(entityInstancesLocationIndex: string): string {
 function registerEntityAdapterFromDefinition(
   deploymentUuid: string,
   section: ApplicationSection,
-  entityDefinitionInstance: EntityInstance
+  entityDefinition: EntityInstance
 ): void {
-  const idAttribute = getEntityPrimaryKeyAttribute(entityDefinitionInstance as any);
+  const idAttribute = getEntityPrimaryKeyAttribute(entityDefinition as any);
   if (idAttribute !== "uuid") {
-    const entityUuid = (entityDefinitionInstance as any).entityUuid;
+    const entityUuid = (entityDefinition as any).entityUuid;
     if (entityUuid) {
       const locationIndex = getReduxDeploymentsStateIndex(deploymentUuid, section, entityUuid);
       getOrCreateEntityAdapter(locationIndex, idAttribute);
@@ -249,15 +249,15 @@ function initializeLocalCacheSliceStateWithEntityAdapter(
 //#########################################################################################
 //# REDUCER FUNCTION
 //#########################################################################################
-function equalEntityInstances(newOnes:EntityInstance[],oldOnes:Record<string, EntityInstance>, idAttribute: string = "uuid") {
-  for (const newOne of newOnes) {
-    const pkValue = String((newOne as any)[idAttribute]);
-    if (!oldOnes[pkValue] || !equal(newOne,oldOnes[pkValue])) {
-      return false;
-    }
-  }
-  return true;
-}
+// function equalEntityInstances(newOnes:EntityInstance[],oldOnes:Record<string, EntityInstance>, idAttribute: string = "uuid") {
+//   for (const newOne of newOnes) {
+//     const pkValue = String((newOne as any)[idAttribute]);
+//     if (!oldOnes[pkValue] || !equal(newOne,oldOnes[pkValue])) {
+//       return false;
+//     }
+//   }
+//   return true;
+// }
 
 // ################################################################################################
 function loadNewEntityInstancesInLocalCache(
@@ -277,8 +277,8 @@ function loadNewEntityInstancesInLocalCache(
   const instanceCollectionEntityIndex = getReduxDeploymentsStateIndex(deploymentUuid, section, instanceCollection.parentUuid);
   // Register custom adapters for entities with non-UUID PKs when loading EntityDefinitions
   if (instanceCollection.parentUuid === entityDefinitionEntityDefinition.uuid) {
-    for (const inst of instanceCollection.instances ?? []) {
-      registerEntityAdapterFromDefinition(deploymentUuid, section, inst);
+    for (const entityDefinition of instanceCollection.instances ?? []) {
+      registerEntityAdapterFromDefinition(deploymentUuid, section, entityDefinition);
     }
   }
   // log.info(

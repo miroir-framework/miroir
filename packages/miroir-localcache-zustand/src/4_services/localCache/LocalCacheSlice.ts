@@ -18,6 +18,8 @@ import {
   ModelEntityActionTransformer,
   TransformerFailure,
   Uuid,
+  entityDefinitionEntityDefinition,
+  getEntityPrimaryKeyAttribute,
   getLocalCacheIndexDeploymentSection,
   getLocalCacheIndexDeploymentUuid,
   getLocalCacheIndexEntityUuid,
@@ -117,51 +119,68 @@ interface EntityState {
   entities: Record<string, EntityInstance>;
 }
 
+// Module-level map from entityInstancesLocationIndex → idAttribute name (default "uuid")
+const idAttributeByIndex: Record<string, string> = {};
+
+function getIdAttributeForIndex(index: string): string {
+  return idAttributeByIndex[index] ?? "uuid";
+}
+
+/**
+ * Called when loading or creating EntityDefinition instances.
+ * Registers the idAttribute for the entity identified by entityDefinition.entityUuid.
+ */
+function registerEntityDefinitionInLocalCache(
+  deploymentUuid: string,
+  section: ApplicationSection,
+  entityDefinition: EntityInstance
+): void {
+  const idAttribute = getEntityPrimaryKeyAttribute(entityDefinition as any);
+  if (idAttribute !== "uuid") {
+    const entityUuid = (entityDefinition as any).entityUuid;
+    if (entityUuid) {
+      const locationIndex = getReduxDeploymentsStateIndex(deploymentUuid, section, entityUuid);
+      idAttributeByIndex[locationIndex] = idAttribute;
+    }
+  }
+}
+
 function getInitialEntityState(): EntityState {
   return { ids: [], entities: {} };
 }
 
-function addManyToEntityState(state: EntityState, instances: EntityInstance[]): EntityState {
+function addManyToEntityState(state: EntityState, instances: EntityInstance[], idAttribute = "uuid"): EntityState {
   const newIds = [...state.ids];
   const newEntities = { ...state.entities };
   
   for (const instance of instances) {
-    if (!instance.uuid) {
-      throw new Error("addManyToEntityState received instance without uuid");
+    const pk = String((instance as any)[idAttribute]);
+    if (!newEntities[pk]) {
+      newIds.push(pk);
     }
-    if (!newEntities[instance.uuid]) {
-      newIds.push(instance.uuid);
-    }
-    newEntities[instance.uuid] = instance;
+    newEntities[pk] = instance;
   }
   
   return { ids: newIds, entities: newEntities };
 }
 
 // ################################################################################################
-function setAllInEntityState(instances: EntityInstance[]): EntityState {
-  for (const instance of instances) {
-    if (!instance.uuid) {
-      throw new Error("setAllInEntityState received instance without uuid");
-    }
-  }
+function setAllInEntityState(instances: EntityInstance[], idAttribute = "uuid"): EntityState {
   return {
-    ids: instances.map(i => i.uuid!)??[],
-    entities: Object.fromEntries(instances.map(i => [i.uuid!, i]))
+    ids: instances.map(i => String((i as any)[idAttribute])),
+    entities: Object.fromEntries(instances.map(i => [String((i as any)[idAttribute]), i]))
   };
 }
 
 // ################################################################################################
-function updateOneInEntityState(state: EntityState, instance: EntityInstance): EntityState {
-  if (!instance.uuid) {
-    throw new Error("updateOneInEntityState received instance without uuid");
-  }
-  if (!state.entities[instance.uuid]) {
+function updateOneInEntityState(state: EntityState, instance: EntityInstance, idAttribute = "uuid"): EntityState {
+  const pk = String((instance as any)[idAttribute]);
+  if (!state.entities[pk]) {
     return state;
   }
   return {
     ids: state.ids,
-    entities: { ...state.entities, [instance.uuid]: instance }
+    entities: { ...state.entities, [pk]: instance }
   };
 }
 
@@ -276,68 +295,49 @@ function handleInstanceAction(
           log.error("handleInstanceAction createInstance failed to resolve parentUuid for instance", instance);
           return;
         }
-        const index = getReduxDeploymentsStateIndex(
-          deploymentUuid,
-          instanceAction.payload.applicationSection ?? "data",
-          resolvedParentUuid
-        );
+        const section = instanceAction.payload.applicationSection ?? "data";
+        const index = getReduxDeploymentsStateIndex(deploymentUuid, section, resolvedParentUuid);
+        const idAttribute = getIdAttributeForIndex(index);
         
-        initializeLocalCacheSliceState(
-          deploymentUuid,
-          instanceAction.payload.applicationSection ?? "data",
-          resolvedParentUuid,
-          "current",
-          state
-        );
+        initializeLocalCacheSliceState(deploymentUuid, section, resolvedParentUuid, "current", state);
         
         const currentState = state.current[index] as EntityState;
-        state.current[index] = addManyToEntityState(currentState, [instance]);
+        state.current[index] = addManyToEntityState(currentState, [instance], idAttribute);
       }
       break;
     }
     case "deleteInstance": {
       for (const instance of instanceAction.payload.objects ?? []) {
-        if (!instance.uuid) {
-          throw new Error("deleteInstance action missing instance uuid");
-        }
         const resolvedParentUuid = resolveInstanceParentUuid(instance, instanceAction.payload.parentUuid);
         if (resolvedParentUuid instanceof Action2Error) {
           log.error("handleInstanceAction deleteInstance failed to resolve parentUuid for instance", instance);
           return;
         }
-        const index = getReduxDeploymentsStateIndex(
-          deploymentUuid,
-          instanceAction.payload.applicationSection,
-          resolvedParentUuid
-        );
+        const section = instanceAction.payload.applicationSection ?? "data";
+        const index = getReduxDeploymentsStateIndex(deploymentUuid, section, resolvedParentUuid);
+        const idAttribute = getIdAttributeForIndex(index);
+        const pk = String((instance as any)[idAttribute]);
         
         if (state.current[index]) {
-          // const ids = instanceAction.payload.objects.map((i: EntityInstance) => i.uuid);
-          state.current[index] = removeOneFromEntityState(state.current[index] as EntityState, instance.uuid);
+          state.current[index] = removeOneFromEntityState(state.current[index] as EntityState, pk);
         }
       }
       break;
     }
     case "updateInstance": {
       for (const instance of instanceAction.payload.objects ?? []) {
-      const resolvedParentUuid = resolveInstanceParentUuid(instance, instanceAction.payload.parentUuid);
-      if (resolvedParentUuid instanceof Action2Error) {
-        log.error("handleInstanceAction updateInstance failed to resolve parentUuid for instance", instance);
-        return;
-      }
-      const index = getReduxDeploymentsStateIndex(
-        deploymentUuid,
-        instanceAction.payload.applicationSection,
-        resolvedParentUuid
-      );
-      
-      if (state.current[index]) {
-        let currentState = state.current[index] as EntityState;
-        for (const instance of instanceAction.payload.objects ?? []) {
-          currentState = updateOneInEntityState(currentState, instance);
+        const resolvedParentUuid = resolveInstanceParentUuid(instance, instanceAction.payload.parentUuid);
+        if (resolvedParentUuid instanceof Action2Error) {
+          log.error("handleInstanceAction updateInstance failed to resolve parentUuid for instance", instance);
+          return;
         }
-        state.current[index] = currentState;
-      }
+        const section = instanceAction.payload.applicationSection ?? "data";
+        const index = getReduxDeploymentsStateIndex(deploymentUuid, section, resolvedParentUuid);
+        const idAttribute = getIdAttributeForIndex(index);
+        
+        if (state.current[index]) {
+          state.current[index] = updateOneInEntityState(state.current[index] as EntityState, instance, idAttribute);
+        }
       }
       break;
     }
@@ -355,19 +355,17 @@ function handleLoadNewInstancesAction(
   const deploymentUuid = applicationDeploymentMap[action.payload.application];
   
   for (const instanceCollection of action.payload.objects ?? []) {
-    const index = getReduxDeploymentsStateIndex(
-      deploymentUuid,
-      instanceCollection.applicationSection ?? "data",
-      instanceCollection.parentUuid
-    );
+    const section: ApplicationSection = instanceCollection.applicationSection ?? "data";
+    const index = getReduxDeploymentsStateIndex(deploymentUuid, section, instanceCollection.parentUuid);
     
-    initializeLocalCacheSliceState(
-      deploymentUuid,
-      instanceCollection.applicationSection ?? "data",
-      instanceCollection.parentUuid,
-      "loading",
-      state
-    );
+    // Register custom idAttribute when loading EntityDefinition instances
+    if (instanceCollection.parentUuid === entityDefinitionEntityDefinition.uuid) {
+      for (const entityDef of instanceCollection.instances ?? []) {
+        registerEntityDefinitionInLocalCache(deploymentUuid, section, entityDef);
+      }
+    }
+    
+    initializeLocalCacheSliceState(deploymentUuid, section, instanceCollection.parentUuid, "loading", state);
     
     // Normalize dates for serialization
     const instances = (instanceCollection.instances ?? []).map((i: EntityInstance) =>
@@ -380,7 +378,8 @@ function handleLoadNewInstancesAction(
         : i
     );
     
-    state.loading[index] = setAllInEntityState(instances);
+    const idAttribute = getIdAttributeForIndex(index);
+    state.loading[index] = setAllInEntityState(instances, idAttribute);
   }
 }
 

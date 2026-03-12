@@ -1,5 +1,6 @@
 import {
   ACTION_OK,
+  entityDefinitionEntityDefinition,
   type ApplicationDeploymentMap,
   type EntityInstance,
   type EntityInstanceCollection,
@@ -18,12 +19,15 @@ const testEntityUuid = "33333333-3333-3333-3333-333333333333";
 const testInstanceUuid = "44444444-4444-4444-4444-444444444444";
 const testInstance2Uuid = "55555555-5555-5555-5555-555555555555";
 
+// Entity with non-UUID primary key ("name" attribute)
+const testEntityUuidWithCustomPK = "66666666-6666-6666-6666-666666666666";
+const testCustomPKInstance1Name = "instance-alpha";
+const testCustomPKInstance2Name = "instance-beta";
+
 const applicationDeploymentMap: ApplicationDeploymentMap = {
   [testApplicationUuid]: testDeploymentUuid,
 };
 
-const instanceEndpointUuid = "ed520de4-55a9-4550-ac50-b1b713b72a89" as const;
-const modelEndpointUuid = "7947ae40-eb34-4149-887b-15a9021e714e" as const;
 
 // ################################################################################################
 //  HELPERS
@@ -56,7 +60,7 @@ function bootstrapLocalCache(
 
   const loadAction: InstanceAction = {
     actionType: "loadNewInstancesInLocalCache",
-    endpoint: instanceEndpointUuid,
+    endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
     payload: {
       application: testApplicationUuid,
       objects: [instanceCollection],
@@ -65,7 +69,7 @@ function bootstrapLocalCache(
 
   const rollbackAction: ModelAction = {
     actionType: "rollback",
-    endpoint: modelEndpointUuid,
+    endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
     payload: { application: testApplicationUuid },
   };
 
@@ -91,7 +95,7 @@ describe("LocalCache.unit.test", () => {
 
     const createAction: InstanceAction = {
       actionType: "createInstance",
-      endpoint: instanceEndpointUuid,
+      endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
       payload: {
         application: testApplicationUuid,
         applicationSection: "data",
@@ -127,7 +131,7 @@ describe("LocalCache.unit.test", () => {
 
     const createAction: InstanceAction = {
       actionType: "createInstance",
-      endpoint: instanceEndpointUuid,
+      endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
       payload: {
         application: testApplicationUuid,
         applicationSection: "data",
@@ -164,7 +168,7 @@ describe("LocalCache.unit.test", () => {
 
     const updateAction: InstanceAction = {
       actionType: "updateInstance",
-      endpoint: instanceEndpointUuid,
+      endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
       payload: {
         application: testApplicationUuid,
         applicationSection: "data",
@@ -200,7 +204,7 @@ describe("LocalCache.unit.test", () => {
 
     const deleteAction: InstanceAction = {
       actionType: "deleteInstance",
-      endpoint: instanceEndpointUuid,
+      endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
       payload: {
         application: testApplicationUuid,
         applicationSection: "data",
@@ -237,7 +241,7 @@ describe("LocalCache.unit.test", () => {
 
     const deleteAction: InstanceAction = {
       actionType: "deleteInstance",
-      endpoint: instanceEndpointUuid,
+      endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
       payload: {
         application: testApplicationUuid,
         applicationSection: "data",
@@ -268,7 +272,7 @@ describe("LocalCache.unit.test", () => {
 
     const createAction: InstanceAction = {
       actionType: "createInstance",
-      endpoint: instanceEndpointUuid,
+      endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
       payload: {
         application: testApplicationUuid,
         applicationSection: "model",
@@ -283,5 +287,226 @@ describe("LocalCache.unit.test", () => {
 
     const domainState = localCache.getDomainState();
     expect(domainState[testDeploymentUuid]?.model?.[testEntityUuid]?.[testInstanceUuid]).toEqual(instance);
+  });
+});
+
+// ################################################################################################
+// ################################################################################################
+// Tests for entities with non-UUID primary key (idAttribute)
+// ################################################################################################
+// ################################################################################################
+
+/**
+ * Registers a custom EntityAdapter (via loadNewInstancesInLocalCache with EntityDefinition instances)
+ * for an entity that uses a non-UUID primary key, then bootstraps the entity collection.
+ *
+ * Loading an EntityDefinition instance with parentUuid = entityDefinitionEntityDefinition.uuid
+ * triggers registerEntityAdapterFromDefinition inside loadNewEntityInstancesInLocalCache.
+ * The section must match the one used for the entity's data instances.
+ */
+function bootstrapLocalCacheWithCustomPK(
+  localCache: LocalCache,
+  entityUuid: string,
+  idAttribute: string,
+  instances: EntityInstance[],
+  applicationSection: "data" | "model" = "model"
+): void {
+  // Step 1: Load a mock EntityDefinition to trigger custom adapter registration.
+  // The EntityDefinition instances must be loaded with parentUuid = entityDefinitionEntityDefinition.uuid.
+  // The section must match the section used for the entity's data (model here, since that's
+  // how registerEntityAdapterFromDefinition indexes the adapter: by (deploymentUuid, section, entityUuid)).
+  const mockEntityDefinitionInstance: EntityInstance = {
+    uuid: "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+    parentUuid: entityDefinitionEntityDefinition.uuid,
+    entityUuid,
+    idAttribute,
+    name: "TestEntityWithCustomPK",
+  } as any;
+
+  const loadEntityDefsAction: InstanceAction = {
+    actionType: "loadNewInstancesInLocalCache",
+    endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+    payload: {
+      application: testApplicationUuid,
+      objects: [
+        {
+          parentUuid: entityDefinitionEntityDefinition.uuid,
+          applicationSection,
+          instances: [mockEntityDefinitionInstance],
+        } as EntityInstanceCollection,
+      ],
+    },
+  };
+  localCache.handleLocalCacheAction(loadEntityDefsAction, applicationDeploymentMap);
+
+  // Step 2: Bootstrap the entity's instance collection (loadNewInstances + rollback).
+  bootstrapLocalCache(localCache, instances, entityUuid, applicationSection);
+}
+
+describe("LocalCache.unit.test - custom idAttribute", () => {
+  // ##############################################################################################
+  it("createInstance stores instance keyed by custom idAttribute (name), not uuid", () => {
+    const localCache = new LocalCache();
+    bootstrapLocalCacheWithCustomPK(localCache, testEntityUuidWithCustomPK, "name", []);
+
+    const instance: EntityInstance = {
+      uuid: testInstanceUuid,
+      parentUuid: testEntityUuidWithCustomPK,
+      parentName: "TestEntityWithCustomPK",
+      name: testCustomPKInstance1Name,
+    } as any;
+
+    const createAction: InstanceAction = {
+      actionType: "createInstance",
+      endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+      payload: {
+        application: testApplicationUuid,
+        applicationSection: "model",
+        parentUuid: testEntityUuidWithCustomPK,
+        objects: [instance],
+      },
+    };
+
+    const result = localCache.handleLocalCacheAction(createAction, applicationDeploymentMap);
+    expect(result).toEqual(ACTION_OK);
+
+    const domainState = localCache.getDomainState();
+    const entityInstances = domainState[testDeploymentUuid]?.model?.[testEntityUuidWithCustomPK];
+    // Instance must be retrievable by name (custom PK), not by uuid
+    expect(entityInstances?.[testCustomPKInstance1Name]).toEqual(instance);
+    // Must NOT be stored under uuid key
+    expect(entityInstances?.[testInstanceUuid]).toBeUndefined();
+  });
+
+  // ##############################################################################################
+  it("createInstance stores multiple instances keyed by custom idAttribute", () => {
+    const localCache = new LocalCache();
+    bootstrapLocalCacheWithCustomPK(localCache, testEntityUuidWithCustomPK, "name", []);
+
+    const instance1: EntityInstance = {
+      uuid: testInstanceUuid,
+      parentUuid: testEntityUuidWithCustomPK,
+      parentName: "TestEntityWithCustomPK",
+      name: testCustomPKInstance1Name,
+    } as any;
+    const instance2: EntityInstance = {
+      uuid: testInstance2Uuid,
+      parentUuid: testEntityUuidWithCustomPK,
+      parentName: "TestEntityWithCustomPK",
+      name: testCustomPKInstance2Name,
+    } as any;
+
+    const createAction: InstanceAction = {
+      actionType: "createInstance",
+      endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+      payload: {
+        application: testApplicationUuid,
+        applicationSection: "model",
+        parentUuid: testEntityUuidWithCustomPK,
+        objects: [instance1, instance2],
+      },
+    };
+
+    const result = localCache.handleLocalCacheAction(createAction, applicationDeploymentMap);
+    expect(result).toEqual(ACTION_OK);
+
+    const domainState = localCache.getDomainState();
+    const entityInstances = domainState[testDeploymentUuid]?.model?.[testEntityUuidWithCustomPK];
+    expect(entityInstances?.[testCustomPKInstance1Name]).toEqual(instance1);
+    expect(entityInstances?.[testCustomPKInstance2Name]).toEqual(instance2);
+    expect(entityInstances?.[testInstanceUuid]).toBeUndefined();
+    expect(entityInstances?.[testInstance2Uuid]).toBeUndefined();
+  });
+
+  // ##############################################################################################
+  it("updateInstance updates instance keyed by custom idAttribute", () => {
+    const localCache = new LocalCache();
+    const instance: EntityInstance = {
+      uuid: testInstanceUuid,
+      parentUuid: testEntityUuidWithCustomPK,
+      parentName: "TestEntityWithCustomPK",
+      name: testCustomPKInstance1Name,
+      description: "original",
+    } as any;
+    bootstrapLocalCacheWithCustomPK(localCache, testEntityUuidWithCustomPK, "name", [instance]);
+
+    const updatedInstance: EntityInstance = {
+      uuid: testInstanceUuid,
+      parentUuid: testEntityUuidWithCustomPK,
+      parentName: "TestEntityWithCustomPK",
+      name: testCustomPKInstance1Name,
+      description: "updated",
+    } as any;
+
+    const updateAction: InstanceAction = {
+      actionType: "updateInstance",
+      endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+      payload: {
+        application: testApplicationUuid,
+        applicationSection: "model",
+        parentUuid: testEntityUuidWithCustomPK,
+        objects: [updatedInstance],
+      },
+    };
+
+    const result = localCache.handleLocalCacheAction(updateAction, applicationDeploymentMap);
+    expect(result).toEqual(ACTION_OK);
+
+    const domainState = localCache.getDomainState();
+    const entityInstances = domainState[testDeploymentUuid]?.model?.[testEntityUuidWithCustomPK];
+    expect((entityInstances?.[testCustomPKInstance1Name] as any)?.description).toBe("updated");
+  });
+
+  // ##############################################################################################
+  it("deleteInstance removes instance keyed by custom idAttribute", () => {
+    const localCache = new LocalCache();
+    const instance: EntityInstance = {
+      uuid: testInstanceUuid,
+      parentUuid: testEntityUuidWithCustomPK,
+      parentName: "TestEntityWithCustomPK",
+      name: testCustomPKInstance1Name,
+    } as any;
+    bootstrapLocalCacheWithCustomPK(localCache, testEntityUuidWithCustomPK, "name", [instance]);
+
+    // Verify instance is present before delete
+    const domainStateBefore = localCache.getDomainState();
+    expect(domainStateBefore[testDeploymentUuid]?.model?.[testEntityUuidWithCustomPK]?.[testCustomPKInstance1Name]).toBeDefined();
+
+    const deleteAction: InstanceAction = {
+      actionType: "deleteInstance",
+      endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+      payload: {
+        application: testApplicationUuid,
+        applicationSection: "model",
+        parentUuid: testEntityUuidWithCustomPK,
+        objects: [instance],
+      },
+    };
+
+    const result = localCache.handleLocalCacheAction(deleteAction, applicationDeploymentMap);
+    expect(result).toEqual(ACTION_OK);
+
+    const domainStateAfter = localCache.getDomainState();
+    expect(
+      domainStateAfter[testDeploymentUuid]?.model?.[testEntityUuidWithCustomPK]?.[testCustomPKInstance1Name]
+    ).toBeUndefined();
+  });
+
+  // ##############################################################################################
+  it("loadNewInstancesInLocalCache stores pre-loaded instances keyed by custom idAttribute", () => {
+    const localCache = new LocalCache();
+    const instance: EntityInstance = {
+      uuid: testInstanceUuid,
+      parentUuid: testEntityUuidWithCustomPK,
+      parentName: "TestEntityWithCustomPK",
+      name: testCustomPKInstance1Name,
+    } as any;
+    // bootstrapLocalCacheWithCustomPK calls loadNewInstances + rollback with the instance
+    bootstrapLocalCacheWithCustomPK(localCache, testEntityUuidWithCustomPK, "name", [instance]);
+
+    const domainState = localCache.getDomainState();
+    const entityInstances = domainState[testDeploymentUuid]?.model?.[testEntityUuidWithCustomPK];
+    expect(entityInstances?.[testCustomPKInstance1Name]).toEqual(instance);
+    expect(entityInstances?.[testInstanceUuid]).toBeUndefined();
   });
 });

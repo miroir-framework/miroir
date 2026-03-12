@@ -7,8 +7,7 @@ import {
   type ModelAction,
 } from "miroir-core";
 
-// import { LocalCache } from "miroir-localcache-redux";
-import { LocalCache } from "miroir-localcache-zustand";
+import { LocalCache } from "miroir-localcache-redux";
 
 // ################################################################################################
 // ################################################################################################
