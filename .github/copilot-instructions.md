@@ -228,11 +228,11 @@ data and Model for the example Library application can be found in:
 the library application model contains Entities `Author`, `Book`, `Country`, `Publisher`, and `User`. See files in directory `packages/miroir-core/src/assets/library_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/`
 
 the library application data can be found:
-- authors: `packages/miroir-core/src/assets/library_data/d7d7a144ff-d1b9-4135-800c-a7cfc1f38733/`
-- books: `packages/miroir-core/src/assets/library_data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/`
-- countries: `packages/miroir-core/src/assets/library_data/d3139a6d-0486-4ec8-bded-2a83a3c3cee4/`
-- publishers: `packages/miroir-core/src/assets/library_data/a027c379-8468-43a5-ba4d-bf618be25cab/`
-- users: `packages/miroir-core/src/assets/library_data/ca794e28-b2dc-45b3-8137-00151557eea8/`
+- authors: `packages/miroir-test-app_deployment-library/assets/library_data/d7d7a144ff-d1b9-4135-800c-a7cfc1f38733/`
+- books: `packages/miroir-test-app_deployment-library/assets/library_data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/`
+- countries: `packages/miroir-test-app_deployment-library/assets/library_data/d3139a6d-0486-4ec8-bded-2a83a3c3cee4/`
+- publishers: `packages/miroir-test-app_deployment-library/assets/library_data/a027c379-8468-43a5-ba4d-bf618be25cab/`
+- users: `packages/miroir-test-app_deployment-library/assets/library_data/ca794e28-b2dc-45b3-8137-00151557eea8/`
 
 ## Critical Dependencies
 
