@@ -126,6 +126,9 @@ function addManyToEntityState(state: EntityState, instances: EntityInstance[]): 
   const newEntities = { ...state.entities };
   
   for (const instance of instances) {
+    if (!instance.uuid) {
+      throw new Error("addManyToEntityState received instance without uuid");
+    }
     if (!newEntities[instance.uuid]) {
       newIds.push(instance.uuid);
     }
@@ -135,14 +138,24 @@ function addManyToEntityState(state: EntityState, instances: EntityInstance[]): 
   return { ids: newIds, entities: newEntities };
 }
 
+// ################################################################################################
 function setAllInEntityState(instances: EntityInstance[]): EntityState {
+  for (const instance of instances) {
+    if (!instance.uuid) {
+      throw new Error("setAllInEntityState received instance without uuid");
+    }
+  }
   return {
-    ids: instances.map(i => i.uuid),
-    entities: Object.fromEntries(instances.map(i => [i.uuid, i]))
+    ids: instances.map(i => i.uuid!)??[],
+    entities: Object.fromEntries(instances.map(i => [i.uuid!, i]))
   };
 }
 
+// ################################################################################################
 function updateOneInEntityState(state: EntityState, instance: EntityInstance): EntityState {
+  if (!instance.uuid) {
+    throw new Error("updateOneInEntityState received instance without uuid");
+  }
   if (!state.entities[instance.uuid]) {
     return state;
   }
@@ -284,6 +297,9 @@ function handleInstanceAction(
     }
     case "deleteInstance": {
       for (const instance of instanceAction.payload.objects ?? []) {
+        if (!instance.uuid) {
+          throw new Error("deleteInstance action missing instance uuid");
+        }
         const resolvedParentUuid = resolveInstanceParentUuid(instance, instanceAction.payload.parentUuid);
         if (resolvedParentUuid instanceof Action2Error) {
           log.error("handleInstanceAction deleteInstance failed to resolve parentUuid for instance", instance);
