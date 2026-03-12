@@ -35,7 +35,8 @@ import {
   getLocalCacheIndexEntityUuid,
   getReduxDeploymentsStateIndex,
   type ApplicationDeploymentMap,
-  type EntityInstanceWithName
+  type EntityInstanceWithName,
+  entityEntityDefinition
 } from "miroir-core";
 
 import { packageName } from "../../constants.js";
@@ -195,6 +196,13 @@ function getOrCreateEntityAdapter(
   entityInstancesLocationIndex: string,
   idAttribute?: string
 ): EntityAdapter<EntityInstance, string> {
+  log.info(
+    "getOrCreateEntityAdapter called for entityInstancesLocationIndex",
+    entityInstancesLocationIndex,
+    "with idAttribute",
+    idAttribute
+  );
+
   if (entityAdapterMap[entityInstancesLocationIndex]) {
     return entityAdapterMap[entityInstancesLocationIndex];
   }
@@ -213,17 +221,31 @@ function getEntityIdAttribute(entityInstancesLocationIndex: string): string {
   return entityIdAttributeByIndex[entityInstancesLocationIndex] ?? "uuid";
 }
 
+// ##########################################################################################
 function registerEntityAdapterFromDefinition(
   deploymentUuid: string,
-  section: ApplicationSection,
+  _section: ApplicationSection,
   entityDefinition: EntityInstance
 ): void {
   const idAttribute = getEntityPrimaryKeyAttribute(entityDefinition as any);
+  log.info(
+    "registerEntityAdapterFromDefinition called for entityDefinition",
+    entityDefinition,
+    "_section",
+    _section,
+    "with idAttribute",
+    idAttribute
+  );
+
   if (idAttribute !== "uuid") {
     const entityUuid = (entityDefinition as any).entityUuid;
     if (entityUuid) {
-      const locationIndex = getReduxDeploymentsStateIndex(deploymentUuid, section, entityUuid);
-      getOrCreateEntityAdapter(locationIndex, idAttribute);
+      // Register for all sections: EntityDefinitions are stored in "model" but their
+      // instances may be loaded/created/deleted under any ApplicationSection (e.g. "data").
+      for (const targetSection of ["model", "data"] as ApplicationSection[]) {
+        const locationIndex = getReduxDeploymentsStateIndex(deploymentUuid, targetSection, entityUuid);
+        getOrCreateEntityAdapter(locationIndex, idAttribute);
+      }
     }
   }
 }
@@ -238,7 +260,23 @@ function initializeLocalCacheSliceStateWithEntityAdapter(
   state: LocalCacheSliceState
 ) {
   // TODO: refactor so as to avoid side effects!
+  log.info(
+    "initializeLocalCacheSliceStateWithEntityAdapter called for deploymentUuid",
+    deploymentUuid,
+    "section",
+    section,
+    "entityUuid",
+    entityUuid,
+    "zone",
+    zone,
+    "state",
+    state
+  );
   const entityInstancesLocationIndex = getReduxDeploymentsStateIndex(deploymentUuid, section, entityUuid);
+  log.info(
+    "initializeLocalCacheSliceStateWithEntityAdapter got entityInstancesLocationIndex",
+    entityInstancesLocationIndex
+  );
   const currentAdapter = getOrCreateEntityAdapter(entityInstancesLocationIndex);
   if (!(state as any)[zone][entityInstancesLocationIndex]) {
     (state as any)[zone][entityInstancesLocationIndex] = currentAdapter.getInitialState();
@@ -266,35 +304,38 @@ function loadNewEntityInstancesInLocalCache(
   state: LocalCacheSliceState,
   instanceCollection: EntityInstanceCollection
 ) {
-  // log.info(
-  //   "loadNewEntityInstancesInLocalCache Redux called with deployment",
-  //   deploymentUuid,
-  //   "section",
-  //   section,
-  //   "instanceCollection",
-  //   instanceCollection
-  // );
-  const instanceCollectionEntityIndex = getReduxDeploymentsStateIndex(deploymentUuid, section, instanceCollection.parentUuid);
+  log.info(
+    "loadNewEntityInstancesInLocalCache Redux called with deployment",
+    deploymentUuid,
+    "section",
+    section,
+    "instanceCollection.parentUuid",
+    instanceCollection.parentUuid,
+    "instanceCollection",
+    instanceCollection
+  );
   // Register custom adapters for entities with non-UUID PKs when loading EntityDefinitions
-  if (instanceCollection.parentUuid === entityDefinitionEntityDefinition.uuid) {
+  // if (instanceCollection.parentUuid === entityDefinitionEntityDefinition.uuid) {
+  if (instanceCollection.parentUuid === entityEntityDefinition.uuid) {
     for (const entityDefinition of instanceCollection.instances ?? []) {
       registerEntityAdapterFromDefinition(deploymentUuid, section, entityDefinition);
     }
   }
-  // log.info(
-  //   "ReplaceInstancesForDeploymentEntity for deployment",
-  //   deploymentUuid,
-  //   "section",
-  //   section,
-  //   "instanceCollection",
-  //   instanceCollection,
-  //   "instanceCollectionEntityIndex",
-  //   instanceCollectionEntityIndex,
-  //   // "current state for this entity instances:",
-  //   // JSON.stringify((state as any).current[instanceCollectionEntityIndex])
-  //   // "entity",
-  //   // entity ? (entity as any)["name"] : "entity not found for deployment"
-  // );
+  const instanceCollectionEntityIndex = getReduxDeploymentsStateIndex(deploymentUuid, section, instanceCollection.parentUuid);
+  log.info(
+    "loadNewEntityInstancesInLocalCache for deployment",
+    deploymentUuid,
+    "section",
+    section,
+    "instanceCollection",
+    instanceCollection,
+    "instanceCollectionEntityIndex",
+    instanceCollectionEntityIndex,
+    // "current state for this entity instances:",
+    // JSON.stringify((state as any).current[instanceCollectionEntityIndex])
+    // "entity",
+    // entity ? (entity as any)["name"] : "entity not found for deployment"
+  );
   const sliceEntityAdapter = initializeLocalCacheSliceStateWithEntityAdapter(
     deploymentUuid,
     section,
@@ -315,12 +356,12 @@ function loadNewEntityInstancesInLocalCache(
       : i
   );
 
-  // log.info(
-  //   "loadNewEntityInstancesInLocalCache loading instances",
-  //   deploymentUuid,
-  //   section,
-  //   JSON.stringify(serializableInstances[0])
-  // );
+  log.info(
+    "loadNewEntityInstancesInLocalCache loading instances",
+    deploymentUuid,
+    section,
+    JSON.stringify(serializableInstances[0])
+  );
 
   (state as any).loading[instanceCollectionEntityIndex] = sliceEntityAdapter.setAll(
     (state as any).loading[instanceCollectionEntityIndex],

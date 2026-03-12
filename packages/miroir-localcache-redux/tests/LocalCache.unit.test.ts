@@ -1,6 +1,7 @@
 import {
   ACTION_OK,
   entityDefinitionEntityDefinition,
+  entityEntityDefinition,
   type ApplicationDeploymentMap,
   type EntityInstance,
   type EntityInstanceCollection,
@@ -317,7 +318,7 @@ function bootstrapLocalCacheWithCustomPK(
   // how registerEntityAdapterFromDefinition indexes the adapter: by (deploymentUuid, section, entityUuid)).
   const mockEntityDefinitionInstance: EntityInstance = {
     uuid: "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
-    parentUuid: entityDefinitionEntityDefinition.uuid,
+    parentUuid: entityEntityDefinition.uuid,
     entityUuid,
     idAttribute,
     name: "TestEntityWithCustomPK",
@@ -330,7 +331,7 @@ function bootstrapLocalCacheWithCustomPK(
       application: testApplicationUuid,
       objects: [
         {
-          parentUuid: entityDefinitionEntityDefinition.uuid,
+          parentUuid: entityEntityDefinition.uuid,
           applicationSection,
           instances: [mockEntityDefinitionInstance],
         } as EntityInstanceCollection,
@@ -508,5 +509,54 @@ describe("LocalCache.unit.test - custom idAttribute", () => {
     const entityInstances = domainState[testDeploymentUuid]?.model?.[testEntityUuidWithCustomPK];
     expect(entityInstances?.[testCustomPKInstance1Name]).toEqual(instance);
     expect(entityInstances?.[testInstanceUuid]).toBeUndefined();
+  });
+
+  // ##############################################################################################
+  // Reproduce the pg_namespace bug:
+  // EntityDefinition loaded under "model" section, but data instances loaded under "data" section.
+  // The custom adapter registered during EntityDef loading (indexed by "model" section) must also
+  // apply when loading/creating/updating/deleting instances in the "data" section.
+  it("cross-section: EntityDefinition in model, data instances in data, all keyed by custom idAttribute", () => {
+    const localCache = new LocalCache();
+
+    // Step 1: Load EntityDefinition under "model" section (real-app lifecycle)
+    const mockEntityDefinitionInstance: EntityInstance = {
+      uuid: "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+      parentUuid: entityEntityDefinition.uuid,
+      entityUuid: testEntityUuidWithCustomPK,
+      idAttribute: "name",
+      name: "TestEntityCrossSection",
+    } as any;
+
+    const loadEntityDefsAction: InstanceAction = {
+      actionType: "loadNewInstancesInLocalCache",
+      endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+      payload: {
+        application: testApplicationUuid,
+        objects: [
+          {
+            parentUuid: entityEntityDefinition.uuid,
+            applicationSection: "model",
+            instances: [mockEntityDefinitionInstance],
+          } as EntityInstanceCollection,
+        ],
+      },
+    };
+    localCache.handleLocalCacheAction(loadEntityDefsAction, applicationDeploymentMap);
+
+    // Step 2: Load data instances under "data" section
+    const inst1: EntityInstance = { parentUuid: testEntityUuidWithCustomPK, name: testCustomPKInstance1Name } as any;
+    const inst2: EntityInstance = { parentUuid: testEntityUuidWithCustomPK, name: testCustomPKInstance2Name } as any;
+    const inst3: EntityInstance = { parentUuid: testEntityUuidWithCustomPK, name: "instance-gamma" } as any;
+
+    bootstrapLocalCache(localCache, [inst1, inst2, inst3], testEntityUuidWithCustomPK, "data");
+
+    const domainState = localCache.getDomainState();
+    const entityInstances = domainState[testDeploymentUuid]?.data?.[testEntityUuidWithCustomPK];
+
+    // All 3 instances must appear, each keyed by their "name" value
+    expect(entityInstances?.[testCustomPKInstance1Name]).toEqual(inst1);
+    expect(entityInstances?.[testCustomPKInstance2Name]).toEqual(inst2);
+    expect(entityInstances?.["instance-gamma"]).toEqual(inst3);
   });
 });

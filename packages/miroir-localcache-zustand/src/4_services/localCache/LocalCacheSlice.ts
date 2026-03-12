@@ -129,18 +129,22 @@ function getIdAttributeForIndex(index: string): string {
 /**
  * Called when loading or creating EntityDefinition instances.
  * Registers the idAttribute for the entity identified by entityDefinition.entityUuid.
+ * Registers for all ApplicationSections since EntityDefinitions are stored in "model"
+ * but their instances may be loaded/created/deleted under any section (e.g. "data").
  */
 function registerEntityDefinitionInLocalCache(
   deploymentUuid: string,
-  section: ApplicationSection,
+  _section: ApplicationSection,
   entityDefinition: EntityInstance
 ): void {
   const idAttribute = getEntityPrimaryKeyAttribute(entityDefinition as any);
   if (idAttribute !== "uuid") {
     const entityUuid = (entityDefinition as any).entityUuid;
     if (entityUuid) {
-      const locationIndex = getReduxDeploymentsStateIndex(deploymentUuid, section, entityUuid);
-      idAttributeByIndex[locationIndex] = idAttribute;
+      for (const targetSection of ["model", "data"] as ApplicationSection[]) {
+        const locationIndex = getReduxDeploymentsStateIndex(deploymentUuid, targetSection, entityUuid);
+        idAttributeByIndex[locationIndex] = idAttribute;
+      }
     }
   }
 }
