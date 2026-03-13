@@ -41,6 +41,7 @@
     "build5": "npm run build",
     "copy-files": "copyfiles -u 1 src/**/*.json src/**/*.css dist/src",
     "test": "jest --verbose --silent=false -t",
+    "vitest": "cross-env VITE_TEST_MODE='true' vitest run --reporter=verbose --poolOptions.forks.singleFork --bail=1",
     "generate-ts-types": "tsx ./scripts/postgres-generate-ts-types.ts"
   },
   "author": "Miroir Framework <miroir-framework@protonmail.com>",

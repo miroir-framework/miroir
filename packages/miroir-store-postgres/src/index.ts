@@ -17,3 +17,8 @@ export {
 export {
   miroirPostgresStoreSectionStartup,
 } from './startup.js'
+export {
+  informationSchemaColumnsToJzodSchema,
+  postgresDataTypeToJzodTypeMap,
+} from './1_core/informationSchemaColumnsToJzodSchema.js'
+export type { InformationSchemaColumn } from './1_core/informationSchemaColumnsToJzodSchema.js'
