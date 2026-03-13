@@ -1720,7 +1720,9 @@ export function transformer_resolveReference(
           "no referencePath " +
           transformerInnerReference.referencePath.join(".") +
           " found in queryContext",
-        queryContext: JSON.stringify(Object.keys(bank)),
+        // queryContext: JSON.stringify(Object.keys(bank)),
+        // queryContext: JSON.stringify(bank),
+        queryContext: bank as any,
       });
     }
   }

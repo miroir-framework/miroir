@@ -46,7 +46,7 @@ import {
   type RunnerTestParams,
 } from "./RunnerIntegTestTools";
 import { entityAuthor, entityDefinitionAuthor } from "miroir-test-app_deployment-library";
-import { adminSelfApplication, entityApplicationForAdmin } from "miroir-test-app_deployment-admin";
+import { adminSelfApplication, entityApplicationForAdmin, entityDeployment } from "miroir-test-app_deployment-admin";
 import { ad } from "vitest/dist/chunks/reporters.d.BFLkQcL6.js";
 
 // ################################################################################################
@@ -295,6 +295,7 @@ const runnerTestParams: Record<string, RunnerTestParams> = {
         applicationBundle: {
           ...simplifiedLibraryModel,
           applicationName: installTestApplicationName,
+          applicationUuid: installTestApplicationUuid,
         },
         deploymentData: simplifiedLibraryData,
         applicationStorage: {
@@ -340,8 +341,74 @@ const runnerTestParams: Record<string, RunnerTestParams> = {
           },
         },
       },
+      {
+        // performs query on local cache for emulated server, and on server for remote server
+        actionType: "compositeRunBoxedQueryAction",
+        endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+        actionLabel: "queryInstalledDeployments",
+        nameGivenToResult: "installedDeploymentList",
+        payload: {
+          actionType: "runBoxedQueryAction",
+          endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+          payload: {
+            application: adminSelfApplication.uuid,
+            applicationSection: "data",
+            query: {
+              queryType: "boxedQueryWithExtractorCombinerTransformer",
+              application: adminSelfApplication.uuid,
+              queryParams: {},
+              contextResults: {},
+              extractors: {
+                deployments: {
+                  extractorOrCombinerType: "extractorByEntityReturningObjectList",
+                  applicationSection: "data",
+                  parentName: entityDeployment.name,
+                  parentUuid: entityDeployment.uuid,
+                  filter: {
+                    attributeName: "selfApplication",
+                    value: {
+                      transformerType: "getFromParameters",
+                      referencePath: ["deployApplication", "applicationBundle", "applicationUuid"],
+                    },
+                  },
+                  // filter: {
+                  //   attributeName: "selfApplication",
+                  //   value: installTestApplicationUuid,
+                  // },
+                  orderBy: {
+                    attributeName: "name",
+                    direction: "ASC",
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
     ], // preTestCompositeActions
     testCompositeActionAssertions: [
+      {
+        actionType: "compositeRunTestAssertion",
+        actionLabel: "checkDeployedApplication",
+        nameGivenToResult: "checkDeployedApplication",
+        testAssertion: {
+          testType: "testAssertion",
+          testLabel: "checkDeployedApplication",
+          definition: {
+            resultAccessPath: ["0"],
+            resultTransformer: {
+              transformerType: "aggregate",
+              interpolation: "runtime",
+              applyTo: {
+                transformerType: "getFromContext",
+                interpolation: "runtime",
+                referencePath: ["installedDeploymentList", "deployments"],
+              },
+            },
+            expectedValue: { aggregate: 1 },
+          },
+        },
+      },
       {
         actionType: "compositeRunTestAssertion",
         actionLabel: "checkNumberOfEntities",
