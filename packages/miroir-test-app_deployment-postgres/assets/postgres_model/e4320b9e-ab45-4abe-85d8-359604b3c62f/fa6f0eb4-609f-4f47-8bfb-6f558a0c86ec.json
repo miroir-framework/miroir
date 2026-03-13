@@ -1,0 +1,30 @@
+{
+  "uuid": "fa6f0eb4-609f-4f47-8bfb-6f558a0c86ec",
+  "parentName": "Query",
+  "parentUuid": "e4320b9e-ab45-4abe-85d8-359604b3c62f",
+  "name": "schemaTables",
+  "definition": {
+    "extractorTemplates": {
+      "columns": {
+        "parentUuid": "39e5c7a1-3f82-4bda-b8c4-2d576f9f10ae",
+        "extractorOrCombinerType": "extractorForObjectListByEntity"
+      }
+    },
+    "combinerTemplates": {},
+    "runtimeTransformers": {
+      "tablesWithsColumns": {
+        "transformerType": "aggregate",
+        "applyTo": {
+          "transformerType": "getFromContext",
+          "interpolation": "runtime",
+          "referenceName": "columns"
+        },
+        "groupBy": [
+          "table_catalog",
+          "table_schema",
+          "table_name"
+        ]
+      }
+    }
+  }
+}

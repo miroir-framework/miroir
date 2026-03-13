@@ -27,9 +27,12 @@ import {
 } from "miroir-core";
 
 import {
+  CodeBlock_ReadOnly,
+  DebugHelper,
   ThemedOnScreenHelper,
   useMiroirContextService,
   useViewParams,
+  type DebugElements,
   type FoldedStateTree
 } from "miroir-react";
 
@@ -409,6 +412,26 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
       props.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap,
     );
 
+  const debugElements: {elements: DebugElements} = useMemo(
+    () => ({
+      elements: Object.keys(queryTestRunResults || {}).length > 0 ?
+        Object.entries(queryTestRunResults as Record<string, any>).map(([key, value]) => ({
+          label: `queryTestRunResults.${key}`,
+          data: value,
+        }))
+        : []
+      //   // { label: "RootComponent miroirConfig", data: miroirConfig },
+    }),
+    [
+      queryTestRunResults
+      // miroirConfig,
+      // currentModel,
+      // adminAppModel,
+      // applicationDeploymentMap,
+      // deploymentUuidToReportsEntitiesDefinitionsMapping,
+      // context.viewParams.generalEditMode,
+      // adminDeploymentsQueryResult,
+    ]);
   // ##############################################################################################
   // ##############################################################################################
   // ##############################################################################################
@@ -507,9 +530,14 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
                       <div style={{ marginBottom: "8px", fontSize: "14px", color: "#666" }}>
                         Query executed successfully. Results:
                       </div>
-                      <ThemedCodeBlock>
+                      <>
+                      {/* <CodeBlock_ReadOnly value={JSON.stringify(queryTestRunResults, null, 2)} /> */}
+                      <DebugHelper componentName="ReportSectionEntityInstance" elements={debugElements.elements} />
+                      </>
+
+                      {/* <ThemedCodeBlock>
                         {JSON.stringify(queryTestRunResults, null, 2)}
-                      </ThemedCodeBlock>
+                      </ThemedCodeBlock> */}
                     </div>
                   )
                 ) : (

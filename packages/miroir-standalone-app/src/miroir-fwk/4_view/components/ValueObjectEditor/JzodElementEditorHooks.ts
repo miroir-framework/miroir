@@ -183,7 +183,6 @@ export function useJzodElementEditorHooks(
     applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap
   );
   let dbgInt = 0;
-  // log.info("useJzodElementEditorHooks ", dbgInt++, "aggregate", count, "caller", caller);
   
   // ################################################################################################
   // codeMirror state
@@ -224,10 +223,10 @@ export function useJzodElementEditorHooks(
     applicationDeploymentMap
   );
 
-  const defaultValueParams = useDefaultValueParams(
-    currentApplication,
-    currentDeploymentUuid,
-  )
+  // const defaultValueParams = useDefaultValueParams(
+  //   currentApplication,
+  //   currentDeploymentUuid,
+  // )
 
   const currentTypecheckKeyMap: KeyMapEntry | undefined =
     typeCheckKeyMap && typeCheckKeyMap[rootLessListKey]
@@ -239,7 +238,6 @@ export function useJzodElementEditorHooks(
   const [codeMirrorIsValidJson, setCodeMirrorIsValidJson] = useState(true);
 
   const [displayAsStructuredElement, setDisplayAsStructuredElement] = useState(true);
-  // log.info("useJzodElementEditorHooks ", dbgInt++, "aggregate", count, "caller", caller);
 
   // ################################################################################################
   // ################################################################################################
