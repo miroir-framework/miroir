@@ -29,6 +29,15 @@
             "reportUuid": "d60cb239-a0ef-44f7-b5e9-d9160b210a71",
             "icon": "category",
             "menuItemScope": "data"
+          },
+          {
+            "miroirMenuItemType": "miroirMenuReportLink",
+            "label": "Postgres Table Columns",
+            "section": "data",
+            "selfApplication": "84d28eb1-d98a-499e-bf24-62cade033da6",
+            "reportUuid": "5f8c2d19-7b3e-4a61-9d05-6e4b83f1c7a2",
+            "icon": "category",
+            "menuItemScope": "data"
           }
         ]
       }
