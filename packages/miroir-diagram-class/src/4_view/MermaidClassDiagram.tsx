@@ -26,7 +26,7 @@ import {
   entityDefinitionsToMermaidErDiagram,
   type ErDiagramOptions,
 } from "../2_domain/entityDefinitionsToMermaidErDiagram.js";
-import { DebugHelper, useMiroirTheme } from "miroir-react";
+import { JsonDisplayHelper, useMiroirTheme } from "miroir-react";
 import { cleanLevel, packageName } from "../constants.js";
 
 
@@ -319,7 +319,7 @@ export const MermaidClassDiagram: React.FC<MermaidClassDiagramProps> = ({
         height,
       }}
     >
-      <DebugHelper
+      <JsonDisplayHelper debug={true}
         componentName="MermaidClassDiagram"
         elements={[
           { label: "MermaidClassDiagram entityDefinitions", data: entityDefinitions },

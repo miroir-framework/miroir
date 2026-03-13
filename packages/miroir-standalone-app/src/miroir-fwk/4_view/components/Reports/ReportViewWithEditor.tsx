@@ -28,7 +28,7 @@ import {
   type RecordOfJzodObject,
   type ReduxDeploymentsState
 } from "miroir-core";
-import { DebugHelper, getMemoizedReduxDeploymentsStateJzodSchemaSelectorMap } from 'miroir-react';
+import { JsonDisplayHelper, getMemoizedReduxDeploymentsStateJzodSchemaSelectorMap } from 'miroir-react';
 import { useDomainControllerService, useMiroirContextService, useSnackbar } from "miroir-react";
 import { deployment_Miroir } from 'miroir-test-app_deployment-admin';
 import { packageName } from '../../../../constants.js';
@@ -454,7 +454,7 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
     <>
       {/* <span>ReportViewWithEditor generalEditMode: {generalEditMode ? "true" : "false"}</span> */}
       <Box sx={{ position: "relative" }}>
-        <DebugHelper
+        <JsonDisplayHelper debug={true}
           componentName="ReportViewWithEditor"
           elements={[
             { label: "deploymentUuid", data: { deploymentUuid: props.deploymentUuid } },

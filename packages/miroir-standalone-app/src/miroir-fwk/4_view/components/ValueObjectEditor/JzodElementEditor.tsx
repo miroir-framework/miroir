@@ -33,7 +33,7 @@ import {
 import { useMiroirContextService } from "miroir-react";
 import { RenderPerformanceMetrics } from "../../tools/renderPerformanceMeasure.js";
 import { ErrorFallbackComponent } from "../ErrorFallbackComponent.js";
-import { DebugHelper } from "miroir-react";
+import { JsonDisplayHelper } from "miroir-react";
 import { useReportPageContext } from "../Reports/ReportPageContext.js";
 import {
   ThemedCard,
@@ -650,7 +650,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
       ) {
         return (
           <>
-            <DebugHelper
+            <JsonDisplayHelper debug={true}
               componentName="JzodElementEditor"
               elements={[
                 {
@@ -1433,7 +1433,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
     <>
       {props.isTopLevel && (
         <>
-          <DebugHelper
+          <JsonDisplayHelper debug={true}
             componentName="JzodElementEditor"
             elements={[
               {

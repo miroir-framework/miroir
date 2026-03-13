@@ -67,7 +67,7 @@ import { MiroirThemeProvider, useMiroirTheme, type MiroirThemeOption } from '../
 import { useRenderTracker } from "../../tools/renderCountTracker.js";
 import AppBar from './AppBar.js';
 
-import { DebugHelper } from 'miroir-react';
+import { JsonDisplayHelper } from 'miroir-react';
 import { defaultStoredMiroirTheme } from 'miroir-test-app_deployment-miroir';
 import { packageName } from '../../../../constants.js';
 import {
@@ -847,7 +847,7 @@ export const RootComponent = (props: RootComponentProps) => {
                 style={{ padding: "1em" }}
               >
                 {context.viewParams.generalEditMode && <ThemedText>uuid: {uuidv4()}</ThemedText>}
-                <DebugHelper componentName="RootComponent" elements={debugElements.elements} />
+                <JsonDisplayHelper debug={true} componentName="RootComponent" elements={debugElements.elements} />
                 {/* {transactions && transactions.length > 0 && (
                   <ThemedText> transactions: {JSON.stringify(transactions)}</ThemedText>
                 )} */}

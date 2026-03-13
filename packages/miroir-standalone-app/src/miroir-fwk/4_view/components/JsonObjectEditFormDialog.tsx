@@ -23,7 +23,7 @@ import {
 } from "miroir-core";
 
 import {
-  DebugHelper,
+  JsonDisplayHelper,
   useDomainControllerService,
   useMiroirContextInnerFormOutput,
   useMiroirContextService
@@ -332,7 +332,7 @@ const JsonElementEditorDialog: React.FC<JsonElementEditorDialogProps> = ({
     >
       <ThemedDialogTitle>{label} add / edit Element {isEndpointEntity ? "(Endpoint)" : ""}</ThemedDialogTitle>
       <div>
-        <DebugHelper
+        <JsonDisplayHelper debug={true}
           componentName="JsonObjectEditFormDialog"
           elements={[
             {

@@ -24,7 +24,7 @@ import {
 
 import { useFormikContext } from 'formik';
 import {
-  DebugHelper,
+  JsonDisplayHelper,
   formikPath_EntityInstanceSelectorPanel,
   getMemoizedReduxDeploymentsStateSelectorMap,
   useMiroirContextService,
@@ -416,7 +416,7 @@ export function EntityInstanceSelectorPanel(props:{
   // ##############################################################################################
   return (
     <>
-      <DebugHelper
+      <JsonDisplayHelper debug={true}
         componentName="EntityInstanceSelectorPanel"
         elements={[{
           label: `EntityInstanceSelectorPanel`,
@@ -568,7 +568,7 @@ export function EntityInstanceSelectorPanel(props:{
           /* Show all instances */
           entityInstances.length > 0 ? (
             <>
-              <DebugHelper
+              <JsonDisplayHelper debug={true}
                 componentName="EntityInstanceSelectorPanel"
                 elements={[{
                   label: `TypedValueObjectEditor showing all ${

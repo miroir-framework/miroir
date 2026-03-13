@@ -23,7 +23,7 @@ import {
   type Uuid
 } from "miroir-core";
 import {
-  DebugHelper,
+  JsonDisplayHelper,
   getMemoizedReduxDeploymentsStateSelectorMap,
   ReduxStateWithUndoRedo,
   useMiroirContextService,
@@ -282,7 +282,7 @@ const ProgressiveArrayItem: React.FC<ProgressiveArrayItemProps> = ({
                 />
               )}
             >
-              <DebugHelper
+              <JsonDisplayHelper debug={true}
                 componentName="ProgressiveArrayItem"
                 elements={[{
                   label: `ProgressiveArrayItem rendering item at ${itemRootLessListKey}`,
@@ -771,7 +771,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
   // ##############################################################################################
   return (
     <div id={rootLessListKey} key={rootLessListKey}>
-      <DebugHelper
+      <JsonDisplayHelper debug={true}
         componentName="JzodArrayEditor"
         elements={[{
           label: `Rendering JzodArrayEditor for array at ${rootLessListKey || "ROOT"}`,

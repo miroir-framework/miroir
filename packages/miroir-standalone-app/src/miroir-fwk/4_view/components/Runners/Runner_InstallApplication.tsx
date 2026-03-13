@@ -35,7 +35,7 @@ import {
   transformer,
   type AdminApplication
 } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
-import { DebugHelper, getMemoizedReduxDeploymentsStateSelectorMap, useSelector } from "miroir-react";
+import { JsonDisplayHelper, getMemoizedReduxDeploymentsStateSelectorMap, useSelector } from "miroir-react";
 import {
   adminSelfApplication,
   entityApplicationForAdmin,
@@ -1170,7 +1170,7 @@ export const Runner_InstallApplication: React.FC<DeployApplicationRunnerProps> =
 
   return (
     <>
-      <DebugHelper
+      <JsonDisplayHelper debug={true}
         componentName="Create Application and Deployment"
         elements={[
           {

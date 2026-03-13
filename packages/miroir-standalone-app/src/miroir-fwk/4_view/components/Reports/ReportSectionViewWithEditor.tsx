@@ -24,7 +24,7 @@ import {
 } from "miroir-core";
 
 import { useFormikContext } from 'formik';
-import { DebugHelper, useMiroirContextService } from 'miroir-react';
+import { JsonDisplayHelper, useMiroirContextService } from 'miroir-react';
 import type { Params } from 'react-router-dom';
 import { packageName, type ReportUrlParamKeys } from '../../../../constants.js';
 import { cleanLevel } from '../../constants.js';
@@ -308,7 +308,7 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
             ReportSectionViewWithEditor renders: {navigationCount} (total: {totalCount})
           </ThemedText>
         )}
-        <DebugHelper
+        <JsonDisplayHelper debug={true}
           componentName="ReportSectionViewWithEditor"
           elements={[
             {

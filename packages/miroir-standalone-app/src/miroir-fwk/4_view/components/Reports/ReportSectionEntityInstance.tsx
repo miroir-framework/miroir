@@ -27,8 +27,7 @@ import {
 } from "miroir-core";
 
 import {
-  CodeBlock_ReadOnly,
-  DebugHelper,
+  JsonDisplayHelper,
   ThemedOnScreenHelper,
   useMiroirContextService,
   useViewParams,
@@ -532,7 +531,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
                       </div>
                       <>
                       {/* <CodeBlock_ReadOnly value={JSON.stringify(queryTestRunResults, null, 2)} /> */}
-                      <DebugHelper componentName="ReportSectionEntityInstance" elements={debugElements.elements} />
+                      <JsonDisplayHelper componentName="ReportSectionEntityInstance" elements={debugElements.elements} />
                       </>
 
                       {/* <ThemedCodeBlock>

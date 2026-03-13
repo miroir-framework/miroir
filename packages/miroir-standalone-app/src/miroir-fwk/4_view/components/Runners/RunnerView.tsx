@@ -25,7 +25,7 @@ import {
   transformer_extended_apply_wrapper
 } from "miroir-core";
 import {
-  DebugHelper,
+  JsonDisplayHelper,
   getMemoizedReduxDeploymentsStateSelectorMap,
   type ReduxStateWithUndoRedo,
   useDomainControllerService, useMiroirContextService,
@@ -283,7 +283,7 @@ export function StoredRunnerView(props: {
 
   return (
     <>
-      <DebugHelper
+      <JsonDisplayHelper debug={true}
         componentName="StoredRunnerView"
         elements={[
           {
@@ -491,7 +491,7 @@ export const RunnerView = <T extends Record<string, any>>(props: RunnerProps<T>)
         initiallyUnfolded={false}
         useCodeBlock={true}
       /> */}
-      <DebugHelper
+      <JsonDisplayHelper debug={true}
         componentName="RunnerView"
         elements={[{
           label: `RunnerView ${runnerName} initialValues`,

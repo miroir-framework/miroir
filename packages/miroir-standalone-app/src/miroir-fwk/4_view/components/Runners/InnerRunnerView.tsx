@@ -15,7 +15,7 @@ import {
 import { packageName } from "../../../../constants.js";
 import { cleanLevel } from "../../constants.js";
 import { useMiroirContextService } from "miroir-react";
-import { DebugHelper } from "miroir-react";
+import { JsonDisplayHelper } from "miroir-react";
 import { useCurrentModelEnvironment } from "../../ReduxHooks.js";
 import { TypedValueObjectEditor } from "../Reports/TypedValueObjectEditor.js";
 import type { RunnerProps } from "./RunnerInterface.js";
@@ -94,7 +94,7 @@ export const InnerRunnerView = <T extends Record<string, any>>({
 
   return (
     <>
-      <DebugHelper
+      <JsonDisplayHelper debug={true}
         componentName="InnerRunnerView"
         elements={[
           {

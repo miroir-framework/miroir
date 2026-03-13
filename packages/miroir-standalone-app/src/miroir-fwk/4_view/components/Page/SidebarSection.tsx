@@ -39,7 +39,7 @@ import { packageName } from '../../../../constants.js';
 import { useMiroirContextService } from 'miroir-react';
 import { useCurrentModel, useReduxDeploymentsStateQuerySelector } from '../../ReduxHooks.js';
 import { ErrorFallbackComponent } from '../ErrorFallbackComponent.js';
-import { DebugHelper } from 'miroir-react';
+import { JsonDisplayHelper } from 'miroir-react';
 import type { MiroirMenuItemDivider, MiroirMenuReportLink } from 'miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -243,7 +243,7 @@ export const SidebarSection:FC<SidebarSectionProps> = (props: SidebarSectionProp
                   <ThemedIcon icon="error" />
                 </ThemedListMiroirIcon>
                 <ThemedListItemText primary="Failed to load menu" />
-                <DebugHelper
+                <JsonDisplayHelper debug={true}
                   componentName="SidebarSection"
                   elements={[
                     {
@@ -257,7 +257,7 @@ export const SidebarSection:FC<SidebarSectionProps> = (props: SidebarSectionProp
           </ThemedList>
         ) : (
           <>
-            <DebugHelper
+            <JsonDisplayHelper debug={true}
               componentName="SidebarSection"
               elements={[
                 {

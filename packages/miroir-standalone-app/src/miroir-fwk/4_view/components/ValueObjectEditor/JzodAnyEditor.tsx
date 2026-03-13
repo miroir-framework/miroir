@@ -17,7 +17,7 @@ import {
   ReduxStateWithUndoRedo,
   useSelector,
 } from "miroir-react";
-import { DebugHelper } from "miroir-react";
+import { JsonDisplayHelper } from "miroir-react";
 import { useMiroirContextService } from "miroir-react";
 import { packageName } from "../../../../constants";
 import { cleanLevel } from "../../constants";
@@ -270,7 +270,7 @@ export const JzodAnyEditor: React.FC<JzodAnyEditorProps> = (
     return (
       <div key={rootLessListKey}>
         {/* fomat = "file" */}
-        <DebugHelper
+        <JsonDisplayHelper debug={true}
           componentName="JzodAnyEditor"
           elements={[{
             label: `JzodAnyEditor Render ${JzodAnyEditorRenderCount} for ${rootLessListKey} format=file`,
@@ -320,7 +320,7 @@ export const JzodAnyEditor: React.FC<JzodAnyEditorProps> = (
   return (
     <div key={rootLessListKey}>
       {/* <ThemedOnScreenHelper label="JzodAnyEditor" data={rootLessListKey} /> */}
-      <DebugHelper
+      <JsonDisplayHelper debug={true}
         componentName="JzodAnyEditor"
         elements={[{
           label: `JzodAnyEditor Render ${JzodAnyEditorRenderCount} for ${rootLessListKey} general case`,

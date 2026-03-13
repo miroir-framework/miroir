@@ -26,7 +26,7 @@ import { cleanLevel } from "../constants.js";
 import { useMiroirTheme } from "../contexts/MiroirThemeContext.js";
 import { useMiroirContextService } from "miroir-react";
 import { useCurrentModel, useCurrentModelEnvironment } from "../ReduxHooks.js";
-import { DebugHelper } from "miroir-react";
+import { JsonDisplayHelper } from "miroir-react";
 import { usePageConfiguration } from "../services/usePageConfiguration.js";
 import { adminSelfApplication, entityApplicationForAdmin } from "miroir-test-app_deployment-admin";
 import { Formik, type FormikProps } from "formik";
@@ -142,7 +142,7 @@ export const ModelDiagramPage: React.FC<any> = () => {
         };
         return (
           <PageContainer padding={2}>
-            <DebugHelper
+            <JsonDisplayHelper debug={true}
               componentName="ModelDiagramPage"
               elements={[
                 // { label: "ModelDiagramPage miroirTheme", data: miroirTheme },
