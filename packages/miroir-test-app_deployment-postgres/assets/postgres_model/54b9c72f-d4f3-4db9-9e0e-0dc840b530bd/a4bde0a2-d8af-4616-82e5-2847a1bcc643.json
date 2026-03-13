@@ -5,28 +5,31 @@
   "parentDefinitionVersionUuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
   "entityUuid": "cbc94d62-d2e5-4bc2-8aef-45efcfbd0af6",
   "conceptLevel": "External",
-  "name": "pg_namespace",
-  "description": "The namespace of a PostgreSQL schema.",
+  "name": "schemata",
+  "description": "The schemata of a PostgreSQL database.",
   "icon": "building",
   "defaultInstanceDetailsReportUuid": "21133a6b-c9b2-44bf-812a-e13d99e7235e",
-  "idAttribute": "oid",
+  "idAttribute": "schema_name",
   "externalDataSource": {
-    "schema": "pg_catalog"
+    "schema": "information_schema"
   },
   "cache": {
     "cacheAllInstancesOnRefresh": true
   },
-  "viewAttributes": ["oid", "nspname"],
   "mlSchema": {
     "type": "object",
     "definition": {
-      "oid": {
-        "type": "number",
-        "tag": { "value": { "id": 1, "defaultLabel": "Oid", "display": { "editable": false } } }
-      },
-      "nspname": {
+      "catalog_name": {
         "type": "string",
-        "tag": { "value": { "id": 2, "defaultLabel": "Name" } }
+        "tag": { "value": { "id": 1, "defaultLabel": "Catalog Name", "display": { "editable": false } } }
+      },
+      "schema_name": {
+        "type": "string",
+        "tag": { "value": { "id": 2, "defaultLabel": "Schema Name", "display": { "editable": false } } }
+      },
+      "schema_owner": {
+        "type": "string",
+        "tag": { "value": { "id": 3, "defaultLabel": "Schema Owner" } }
       }
     }
   }

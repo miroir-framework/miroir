@@ -14,10 +14,19 @@
         "items": [
           {
             "miroirMenuItemType": "miroirMenuReportLink",
-            "label": "Postgres Application",
+            "label": "Postgres Schemas",
             "section": "data",
             "selfApplication": "84d28eb1-d98a-499e-bf24-62cade033da6",
             "reportUuid": "d74c20b6-6e84-4b56-ae01-34f6a472af3d",
+            "icon": "category",
+            "menuItemScope": "data"
+          },
+          {
+            "miroirMenuItemType": "miroirMenuReportLink",
+            "label": "Postgres Tables",
+            "section": "data",
+            "selfApplication": "84d28eb1-d98a-499e-bf24-62cade033da6",
+            "reportUuid": "d60cb239-a0ef-44f7-b5e9-d9160b210a71",
             "icon": "category",
             "menuItemScope": "data"
           }

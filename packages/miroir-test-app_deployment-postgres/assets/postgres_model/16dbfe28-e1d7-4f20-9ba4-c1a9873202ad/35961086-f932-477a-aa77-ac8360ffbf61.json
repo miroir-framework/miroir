@@ -1,10 +1,10 @@
 {
-  "uuid":"cbc94d62-d2e5-4bc2-8aef-45efcfbd0af6",
+  "uuid":"35961086-f932-477a-aa77-ac8360ffbf61",
   "parentName":"Entity",
   "parentUuid":"16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
   "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
   "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
-  "name":"schemata",
+  "name":"tables",
   "conceptLevel":"External",
-  "description": "The namespace of a PostgreSQL schema."
+  "description": "The tables of a PostgreSQL schema."
 }

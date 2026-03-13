@@ -4,25 +4,25 @@
   "parentName": "Report",
   "parentUuid": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
   "conceptLevel": "Model",
-  "name": "NamespaceList",
-  "defaultLabel": "List of Namespaces",
+  "name": "SchemaList",
+  "defaultLabel": "List of Schemas",
   "definition": {
     "reportParameters": {},
     "extractorTemplates": {
-      "namespaces": {
+      "schemas": {
         "extractorOrCombinerType": "extractorForObjectListByEntity",
-        "parentName": "pg_namespace",
+        "parentName": "schemata",
         "parentUuid": "cbc94d62-d2e5-4bc2-8aef-45efcfbd0af6"
       }
     },
     "section": {
       "type": "objectListReportSection",
       "definition": {
-        "parentName": "pg_namespace",
+        "parentName": "schemata",
         "parentUuid": "cbc94d62-d2e5-4bc2-8aef-45efcfbd0af6",
-        "label": "Namespaces",
-        "fetchedDataReference": "namespaces",
-        "sortByAttribute": "nspname"
+        "label": "Schemas",
+        "fetchedDataReference": "schemas",
+        "sortByAttribute": "schema_name"
       }
     }
   }
