@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useCallback } from "react";
 import { v4 as uuidv4 } from 'uuid';
 
 import type {
@@ -52,6 +52,7 @@ import { useCurrentModelEnvironment, useReduxDeploymentsStateQuerySelectorForCle
 import { devRelativePathPrefix, prodRelativePathPrefix } from '../Themes/FileSelector.js';
 import type { FormMLSchema } from "./RunnerInterface.js";
 import { RunnerView } from "./RunnerView.js";
+import { operator } from "happy-dom/lib/PropertySymbol.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -623,9 +624,24 @@ export function getInstallApplicationActionTemplate(
             } as any,
             applicationSection: "data",
             objects: {
-              transformerType: "getFromContext",
-              interpolation: "runtime",
-              referencePath: ["deployApplication", "deploymentData", "instances"],
+              transformerType: "ifThenElse",
+              if: {
+                transformerType: "boolExpr",
+                operator: "isNotNull",
+                left: {
+                  transformerType: "getFromParameters",
+                  safe: true,
+                  referencePath: ["deployApplication", "deploymentData", "instances"],
+                },
+              },
+              then: {
+                transformerType: "getFromParameters",
+                referencePath: ["deployApplication", "deploymentData", "instances"],
+              },
+              else: {
+                transformerType: "returnValue",
+                value: [],
+              },
             } as any,
           },
         },
@@ -1022,6 +1038,11 @@ export const Runner_InstallApplication: React.FC<DeployApplicationRunnerProps> =
     [testSelfApplicationUuid]: testDeploymentUuid,
   };
 
+  const runnerApplicationDeploymentMap = useCallback((values: any) => ({
+    ...applicationDeploymentMap,
+    [values.deployApplication?.applicationBundle?.applicationUuid ?? "NO_APPLICATION_UUID"]: testDeploymentUuid,
+  }), [applicationDeploymentMap, testDeploymentUuid]);
+
   const createApplicationActionTemplate = useMemo((): CompositeActionTemplate => {
     const createApplicationActionTemplate: CompositeActionTemplate =
       getInstallApplicationActionTemplate(
@@ -1030,7 +1051,6 @@ export const Runner_InstallApplication: React.FC<DeployApplicationRunnerProps> =
 
     return createApplicationActionTemplate;
   }, [
-    applicationDeploymentMap,
     testApplicationModelBranchUuid,
     testDeploymentUuid,
     testSelfApplicationUuid,
@@ -1168,6 +1188,7 @@ export const Runner_InstallApplication: React.FC<DeployApplicationRunnerProps> =
       <RunnerView
         runnerName={runnerName}
         applicationDeploymentMap={applicationDeploymentMapWithNewApplication}
+        runnerApplicationDeploymentMap={runnerApplicationDeploymentMap}
         formMLSchema={formMLSchema}
         initialFormValue={initialFormValue}
         action={{

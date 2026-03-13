@@ -25,6 +25,27 @@
                 "transformerTests": [
                   {
                     "transformerTestType": "transformerTest",
+                    "transformerTestLabel": "resolve basic build transformer return value for empty Array",
+                    "transformerName": "returnValue_emptyArray",
+                    "runTestStep": "build",
+                    "transformer": {
+                      "transformerType": "returnValue",
+                      "mlSchema": {
+                        "type": "array",
+                        "definition": {
+                          "type": "any"
+                        }
+                      },
+                      "interpolation": "build",
+                      "value": [
+                      ]
+                    },
+                    "transformerParams": {},
+                    "expectedValue": [
+                    ]
+                  },
+                  {
+                    "transformerTestType": "transformerTest",
                     "transformerTestLabel": "resolve basic build transformer constantArray",
                     "transformerName": "constantArrayAtBuild",
                     "runTestStep": "build",
@@ -52,7 +73,7 @@
               },
               {
                 "transformerTestType": "transformerTestSuite",
-                "transformerTestLabel": "constantArray",
+                "transformerTestLabel": "constantUuid",
                 "transformerTests": [
                   {
                     "transformerTestType": "transformerTest",
@@ -307,6 +328,32 @@
                   {
                     "aggregate": 3
                   }
+                ]
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "resolve ifThenElse returning empty array",
+                "transformerName": "ifThenElseReturningEmptyArray",
+                "runTestStep": "build",
+                "transformer": {
+                  "transformerType": "ifThenElse",
+                  "if": {
+                    "transformerType": "returnValue",
+                    "value": false
+                  },
+                  "then": {
+                    "transformerType": "getFromParameters",
+                    "referencePath": ["smallStringArray"]
+                  },
+                  "else": {
+                    "transformerType": "returnValue",
+                    "value": []
+                  }
+                },
+                "transformerParams": {
+                  "smallStringArray": ["a", "b", "c"]
+                },
+                "expectedValue": [
                 ]
               }
             ]
@@ -1285,7 +1332,7 @@
                       "transformerType": "returnValue",
                       "interpolation": "runtime",
                       "mlSchema": {
-                        "type": "null"
+                        "type": "record", "definition": { "type": "any"}
                       },
                       "value": null
                     }
@@ -1445,7 +1492,7 @@
                       "transformerType": "returnValue",
                       "interpolation": "runtime",
                       "mlSchema": {
-                        "type": "null"
+                        "type": "record", "definition": { "type": "any"}
                       },
                       "value": null
                     }
@@ -1485,7 +1532,7 @@
                       "transformerType": "returnValue",
                       "interpolation": "runtime",
                       "mlSchema": {
-                        "type": "null"
+                        "type": "record", "definition": { "type": "any"}
                       },
                       "value": null
                     }
@@ -2069,7 +2116,7 @@
                       "transformerType": "returnValue",
                       "interpolation": "runtime",
                       "mlSchema": {
-                        "type": "null"
+                        "type": "record", "definition": { "type": "any"}
                       },
                       "value": null
                     }
@@ -2383,7 +2430,7 @@
                     "transformerType": "returnValue",
                     "interpolation": "runtime",
                     "mlSchema": {
-                      "type": "null"
+                      "type": "record", "definition": { "type": "any"}
                     },
                     "value": null
                   },
@@ -2443,7 +2490,7 @@
                     "transformerType": "returnValue",
                     "interpolation": "runtime",
                     "mlSchema": {
-                      "type": "null"
+                      "type": "record", "definition": { "type": "any"}
                     },
                     "value": null
                   },
@@ -2463,7 +2510,7 @@
                     "transformerType": "returnValue",
                     "interpolation": "runtime",
                     "mlSchema": {
-                      "type": "null"
+                      "type": "record", "definition": { "type": "any"}
                     },
                     "value": null
                   },

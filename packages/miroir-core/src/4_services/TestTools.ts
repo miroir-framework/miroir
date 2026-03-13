@@ -368,7 +368,7 @@ export async function runTransformerTestInMemory(
     log.info(
       "################################ runTransformerTestInMemory result",
       // resultWithRetain
-      JSON.stringify(transformerTest.ignoreAttributes),
+      "(ignoreAttributes=" + JSON.stringify(transformerTest.ignoreAttributes) + ")",
       JSON.stringify(normalizedResult, null, 2),
       "expected",
       JSON.stringify(normalizedExpected, null, 2)
@@ -758,7 +758,8 @@ export function runTransformerIntegrationTest(sqlDbDataStore: any) {
       };
     } else {
       queryResult = await sqlDbDataStore.handleBoxedQueryAction({
-        actionType: "runBoxedQueryAction",        endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+        actionType: "runBoxedQueryAction",
+        endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
         payload: {
           deploymentUuid: "", // NO ACCESS TO STORED DATA DURING TRANSFORMER TESTS
           applicationSection: "data",

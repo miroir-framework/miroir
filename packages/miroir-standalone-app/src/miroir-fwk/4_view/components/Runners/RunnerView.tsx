@@ -415,9 +415,13 @@ export const RunnerView = <T extends Record<string, any>>(props: RunnerProps<T>)
           )
       : initialFormValue;
 
-  
+  // ##############################################################################################
   const handleSubmit = async (values: T, formikHelpers: FormikHelpers<T>) => {
     log.info("RunnerView handleSubmit", action.actionType, "action", action, "values", values);
+
+    const applicationDeploymentMapForAction = props.runnerApplicationDeploymentMap
+      ? props.runnerApplicationDeploymentMap(values)
+      : applicationDeploymentMap;
 
     switch (action.actionType) {
       case "onSubmit": {
@@ -431,7 +435,7 @@ export const RunnerView = <T extends Record<string, any>>(props: RunnerProps<T>)
         // return async () => {
           const result = await domainController.handleCompositeAction(
             action.compositeActionSequence,
-            props.applicationDeploymentMap,
+            applicationDeploymentMapForAction,
             currentModelEnvironment,
             values as Record<string, any>
           );
@@ -447,7 +451,7 @@ export const RunnerView = <T extends Record<string, any>>(props: RunnerProps<T>)
         // return async () => {
           const result = await domainController.handleCompositeActionTemplate(
             action.compositeActionTemplate,
-            props.applicationDeploymentMap,
+            applicationDeploymentMapForAction,
             currentModelEnvironment,
             values as Record<string, any>
           );
