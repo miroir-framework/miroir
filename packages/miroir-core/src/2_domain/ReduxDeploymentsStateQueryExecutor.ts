@@ -101,9 +101,9 @@ export function executeReduxDeploymentsStateQuery<T>(
 
 // ################################################################################################
 /**
- * Gets entity instances UUID index for a specific entity without hooks
+ * Gets entity instances index for a specific entity without hooks
  */
-export function getEntityInstancesUuidIndexNonHook(
+export function getEntityInstancesIndexNonHook(
   deploymentEntityState: ReduxDeploymentsState,
   modelEnvironment: MiroirModelEnvironment,
   application: Uuid,
@@ -114,7 +114,7 @@ export function getEntityInstancesUuidIndexNonHook(
 // ): EntityInstancesUuidIndex {
 ): EntityInstance[] {
   log.info(
-    "getEntityInstancesUuidIndexNonHook called with",
+    "getEntityInstancesIndexNonHook called with",
     "deploymentEntityState",
     deploymentEntityState,
     "currentDeploymentUuid",
@@ -165,9 +165,9 @@ export function getEntityInstancesUuidIndexNonHook(
 
 // ################################################################################################
 /**
- * Gets entity instances UUID index for multiple entities without hooks
+ * Gets entity instances index for multiple entities without hooks
  */
-export function getMultipleEntityInstancesUuidIndexNonHook(
+export function getMultipleEntityInstancesIndexNonHook(
   deploymentEntityState: ReduxDeploymentsState,
   modelEnvironment: MiroirModelEnvironment,
   application: Uuid,

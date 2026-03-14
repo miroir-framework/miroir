@@ -10,7 +10,7 @@ import {
   defaultSelfApplicationDeploymentMap,
   defaultTransformerInput,
   defaultTransformers,
-  getEntityInstancesUuidIndexNonHook,
+  getEntityInstancesIndexNonHook,
   noValue,
   type ApplicationDeploymentMap,
   type Entity,
@@ -234,7 +234,7 @@ export function EntityInstanceSelectorPanel(props:{
   // Fetch all instances of the target entity with stable reference
   const entityInstances: EntityInstance[] = useMemo(() => {
     try {
-      return getEntityInstancesUuidIndexNonHook(
+      return getEntityInstancesIndexNonHook(
         deploymentEntityState,
         currentMiroirModelEnvironment,
         inputSelector_applicationUuid,

@@ -5,7 +5,7 @@ import {
   entityEntityDefinition,
   foldableElementTypes,
   getDefaultValueForJzodSchemaWithResolutionNonHook,
-  getEntityInstancesUuidIndexNonHook,
+  getEntityInstancesIndexNonHook,
   JzodArray,
   JzodElement,
   JzodTuple,
@@ -541,7 +541,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
               JSON.stringify(currentDeploymentUuid, null, 2)
           );
         }
-        const entityDefinitions  =  getEntityInstancesUuidIndexNonHook(
+        const entityDefinitions  =  getEntityInstancesIndexNonHook(
           deploymentEntityState,
           currentMiroirModelEnvironment,
           props.currentApplication,

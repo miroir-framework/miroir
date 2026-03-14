@@ -51,6 +51,7 @@ import {  type MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer
 import { transformer_extended_apply } from "./TransformersForRuntime";
 import type { ApplicationDeploymentMap } from "../1_core/Deployment";
 import { defaultApplicationSection } from "../0_interfaces/1_core/Model";
+import { getForeignKeyValue } from "../1_core/EntityPrimaryKey";
 // import { transformer_InnerReference_resolve } from "./TransformersForRuntime";
 
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -426,9 +427,17 @@ export const selectEntityInstanceFromObjectQueryAndDomainState: SyncBoxedExtract
       //   JSON.stringify(foreignKeyParams.query.contextResults, undefined, 2)
       // );
       const targetObject = domainState[deploymentUuid][applicationSection][entityUuidReference];
-      const result = targetObject[
-        referenceObject[querySelectorParams.AttributeOfObjectToCompareToReferenceUuid]
-      ];
+      const fkValue = getForeignKeyValue(
+        querySelectorParams.AttributeOfObjectToCompareToReferenceUuid,
+        referenceObject
+      );
+      if (fkValue == null) {
+        return new Domain2ElementFailed({
+          queryFailure: "IncorrectParameters",
+          queryContext: "combinerForObjectByRelation could not resolve FK value from reference object",
+        });
+      }
+      const result = targetObject[fkValue];
       // log.info("selectEntityInstanceFromObjectQueryAndDomainState combinerForObjectByRelation referenceObject", referenceObject);
       // log.info("selectEntityInstanceFromObjectQueryAndDomainState combinerForObjectByRelation attribute of reference", querySelectorParams.AttributeOfObjectToCompareToReferenceUuid);
       // log.info("selectEntityInstanceFromObjectQueryAndDomainState combinerForObjectByRelation targetObject", targetObject);

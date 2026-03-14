@@ -33,6 +33,7 @@ import {
   selectJzodSchemaByDomainModelQueryFromDomainStateNew,
   selectJzodSchemaBySingleSelectQueryFromDomainStateNew,
   serializeCompositeKeyValue,
+  getForeignKeyValue,
   transformer_InnerReference_resolve,
   type ApplicationDeploymentMap
 } from "miroir-core";
@@ -193,9 +194,24 @@ export class FileSystemExtractorRunner implements ExtractorOrQueryPersistenceSto
           };
         }
 
+        const fkValue = getForeignKeyValue(
+          querySelectorParams.AttributeOfObjectToCompareToReferenceUuid,
+          referenceObject
+        );
+
+        if (fkValue == null) {
+          return {
+            elementType: "failure",
+            queryFailure: "IncorrectParameters",
+            failureOrigin: ["FileSystemExtractorRunner", "combinerForObjectByRelation"],
+            queryParameters: JSON.stringify(foreignKeyParams.extractor.pageParams ?? {}),
+            queryContext: "Could not resolve FK value from reference object",
+          };
+        }
+
         const result = await this.persistenceStoreController.getInstance(
           entityUuidReference,
-          referenceObject[querySelectorParams.AttributeOfObjectToCompareToReferenceUuid]
+          fkValue
         );
 
         if (

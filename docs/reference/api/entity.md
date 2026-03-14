@@ -73,6 +73,7 @@ interface EntityDefinition {
   entityUuid: string;              // References the Entity being defined
   conceptLevel?: "MetaModel" | "Model" | "Data";
   description?: string;
+  idAttribute?: string | string[]; // Primary key attribute(s) — defaults to "uuid"
   defaultInstanceDetailsReportUuid?: string;
   jzodSchema: JzodObject;          // Jzod schema defining structure
 }
@@ -87,6 +88,7 @@ interface EntityDefinition {
 | `name` | string | ✅ Yes | Version name (e.g., "Book_v1", "Book_v2") |
 | `entityUuid` | string (UUID) | ✅ Yes | References the Entity this defines |
 | `jzodSchema` | JzodObject | ✅ Yes | Structure definition in Jzod format |
+| `idAttribute` | string \| string[] | No | Primary key attribute(s). Defaults to `"uuid"`. Use a string for single-attribute PK (e.g. `"code"`), or a string array for composite PK (e.g. `["region", "code"]`). |
 | `conceptLevel` | enum | No | Level in meta-model hierarchy |
 | `description` | string | No | Optional documentation |
 | `defaultInstanceDetailsReportUuid` | string (UUID) | No | Default report for displaying instances |

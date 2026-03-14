@@ -691,7 +691,9 @@ export {
   entityHasUuidPrimaryKey,
   getEntityPrimaryKeyAttribute,
   getEntityPrimaryKeyAttributes,
+  getForeignKeyValue,
   getInstancePrimaryKeyValue,
+  instanceMatchesForeignKey,
   parseCompositeKeyValue,
   resolveInstanceParentUuid,
   serializeCompositeKeyValue,
@@ -814,8 +816,10 @@ export {
 export {
   createReduxDeploymentsStateSelectorMap,
   executeReduxDeploymentsStateQuery,
-  getEntityInstancesUuidIndexNonHook,
-  getMultipleEntityInstancesUuidIndexNonHook
+  getEntityInstancesIndexNonHook,
+  getEntityInstancesIndexNonHook as getEntityInstancesUuidIndexNonHook, // backward compat
+  getMultipleEntityInstancesIndexNonHook,
+  getMultipleEntityInstancesIndexNonHook as getMultipleEntityInstancesUuidIndexNonHook, // backward compat
 } from "./2_domain/ReduxDeploymentsStateQueryExecutor.js";
 export {
   extractEntityJzodSchemaFromReduxDeploymentsState, GetExtractorRunnerParamsForReduxDeploymentsState,

@@ -14429,7 +14429,18 @@ export const miroirFundamentalJzodSchema = {
             "context": {}
           },
           "AttributeOfObjectToCompareToReferenceUuid": {
-            "type": "string"
+            "type": "union",
+            "definition": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "array",
+                "definition": {
+                  "type": "string"
+                }
+              }
+            ]
           },
           "applyTransformer": {
             "type": "schemaReference",
@@ -14629,7 +14640,18 @@ export const miroirFundamentalJzodSchema = {
             "optional": true
           },
           "AttributeOfListObjectToCompareToReferenceUuid": {
-            "type": "string"
+            "type": "union",
+            "definition": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "array",
+                "definition": {
+                  "type": "string"
+                }
+              }
+            ]
           },
           "applyTransformer": {
             "type": "schemaReference",
@@ -14688,7 +14710,18 @@ export const miroirFundamentalJzodSchema = {
             "optional": true
           },
           "AttributeOfListObjectToCompareToReferenceUuid": {
-            "type": "string"
+            "type": "union",
+            "definition": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "array",
+                "definition": {
+                  "type": "string"
+                }
+              }
+            ]
           },
           "applyTransformer": {
             "type": "schemaReference",
@@ -15041,7 +15074,18 @@ export const miroirFundamentalJzodSchema = {
             "type": "string"
           },
           "AttributeOfObjectToCompareToReferenceUuid": {
-            "type": "string"
+            "type": "union",
+            "definition": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "array",
+                "definition": {
+                  "type": "string"
+                }
+              }
+            ]
           },
           "applyTransformer": {
             "type": "schemaReference",
@@ -54976,10 +55020,28 @@ export const miroirFundamentalJzodSchema = {
               },
               "AttributeOfObjectToCompareToReferenceUuid": {
                 "type": "union",
-                "discriminator": "transformerType",
                 "definition": [
                   {
                     "type": "string"
+                  },
+                  {
+                    "type": "array",
+                    "definition": {
+                      "type": "union",
+                      "discriminator": "transformerType",
+                      "definition": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "schemaReference",
+                          "definition": {
+                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            "relativePath": "transformerForBuildCarryOnObject"
+                          }
+                        }
+                      ]
+                    }
                   },
                   {
                     "type": "schemaReference",
@@ -54988,6 +55050,9 @@ export const miroirFundamentalJzodSchema = {
                       "relativePath": "transformerForBuildCarryOnObject"
                     }
                   }
+                ],
+                "discriminator": [
+                  "transformerType"
                 ]
               },
               "applyTransformer": {
@@ -56679,10 +56744,28 @@ export const miroirFundamentalJzodSchema = {
               },
               "AttributeOfListObjectToCompareToReferenceUuid": {
                 "type": "union",
-                "discriminator": "transformerType",
                 "definition": [
                   {
                     "type": "string"
+                  },
+                  {
+                    "type": "array",
+                    "definition": {
+                      "type": "union",
+                      "discriminator": "transformerType",
+                      "definition": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "schemaReference",
+                          "definition": {
+                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            "relativePath": "transformerForBuildCarryOnObject"
+                          }
+                        }
+                      ]
+                    }
                   },
                   {
                     "type": "schemaReference",
@@ -56691,6 +56774,9 @@ export const miroirFundamentalJzodSchema = {
                       "relativePath": "transformerForBuildCarryOnObject"
                     }
                   }
+                ],
+                "discriminator": [
+                  "transformerType"
                 ]
               },
               "applyTransformer": {
@@ -57128,10 +57214,28 @@ export const miroirFundamentalJzodSchema = {
               },
               "AttributeOfObjectToCompareToReferenceUuid": {
                 "type": "union",
-                "discriminator": "transformerType",
                 "definition": [
                   {
                     "type": "string"
+                  },
+                  {
+                    "type": "array",
+                    "definition": {
+                      "type": "union",
+                      "discriminator": "transformerType",
+                      "definition": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "schemaReference",
+                          "definition": {
+                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            "relativePath": "transformerForBuildCarryOnObject"
+                          }
+                        }
+                      ]
+                    }
                   },
                   {
                     "type": "schemaReference",
@@ -57140,6 +57244,9 @@ export const miroirFundamentalJzodSchema = {
                       "relativePath": "transformerForBuildCarryOnObject"
                     }
                   }
+                ],
+                "discriminator": [
+                  "transformerType"
                 ]
               },
               "applyTransformer": {
@@ -57533,10 +57640,28 @@ export const miroirFundamentalJzodSchema = {
               },
               "AttributeOfListObjectToCompareToReferenceUuid": {
                 "type": "union",
-                "discriminator": "transformerType",
                 "definition": [
                   {
                     "type": "string"
+                  },
+                  {
+                    "type": "array",
+                    "definition": {
+                      "type": "union",
+                      "discriminator": "transformerType",
+                      "definition": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "schemaReference",
+                          "definition": {
+                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            "relativePath": "transformerForBuildCarryOnObject"
+                          }
+                        }
+                      ]
+                    }
                   },
                   {
                     "type": "schemaReference",
@@ -57545,6 +57670,9 @@ export const miroirFundamentalJzodSchema = {
                       "relativePath": "transformerForBuildCarryOnObject"
                     }
                   }
+                ],
+                "discriminator": [
+                  "transformerType"
                 ]
               },
               "applyTransformer": {
@@ -70431,7 +70559,18 @@ export const miroirFundamentalJzodSchema = {
             }
           },
           "AttributeOfObjectToCompareToReferenceUuid": {
-            "type": "string"
+            "type": "union",
+            "definition": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "array",
+                "definition": {
+                  "type": "string"
+                }
+              }
+            ]
           },
           "applyTransformer": {
             "type": "schemaReference",
@@ -70963,7 +71102,18 @@ export const miroirFundamentalJzodSchema = {
             "type": "string"
           },
           "AttributeOfObjectToCompareToReferenceUuid": {
-            "type": "string"
+            "type": "union",
+            "definition": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "array",
+                "definition": {
+                  "type": "string"
+                }
+              }
+            ]
           },
           "applyTransformer": {
             "type": "schemaReference",
@@ -71161,7 +71311,18 @@ export const miroirFundamentalJzodSchema = {
             "optional": true
           },
           "AttributeOfListObjectToCompareToReferenceUuid": {
-            "type": "string"
+            "type": "union",
+            "definition": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "array",
+                "definition": {
+                  "type": "string"
+                }
+              }
+            ]
           },
           "applyTransformer": {
             "type": "schemaReference",
@@ -72252,7 +72413,18 @@ export const miroirFundamentalJzodSchema = {
             "optional": true
           },
           "AttributeOfListObjectToCompareToReferenceUuid": {
-            "type": "string"
+            "type": "union",
+            "definition": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "array",
+                "definition": {
+                  "type": "string"
+                }
+              }
+            ]
           },
           "applyTransformer": {
             "type": "schemaReference",
@@ -84902,7 +85074,18 @@ export const miroirFundamentalJzodSchema = {
             }
           },
           "AttributeOfObjectToCompareToReferenceUuid": {
-            "type": "string"
+            "type": "union",
+            "definition": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "array",
+                "definition": {
+                  "type": "string"
+                }
+              }
+            ]
           },
           "applyTransformer": {
             "type": "schemaReference",
@@ -85434,7 +85617,18 @@ export const miroirFundamentalJzodSchema = {
             "type": "string"
           },
           "AttributeOfObjectToCompareToReferenceUuid": {
-            "type": "string"
+            "type": "union",
+            "definition": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "array",
+                "definition": {
+                  "type": "string"
+                }
+              }
+            ]
           },
           "applyTransformer": {
             "type": "schemaReference",
@@ -85632,7 +85826,18 @@ export const miroirFundamentalJzodSchema = {
             "optional": true
           },
           "AttributeOfListObjectToCompareToReferenceUuid": {
-            "type": "string"
+            "type": "union",
+            "definition": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "array",
+                "definition": {
+                  "type": "string"
+                }
+              }
+            ]
           },
           "applyTransformer": {
             "type": "schemaReference",
@@ -86723,7 +86928,18 @@ export const miroirFundamentalJzodSchema = {
             "optional": true
           },
           "AttributeOfListObjectToCompareToReferenceUuid": {
-            "type": "string"
+            "type": "union",
+            "definition": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "array",
+                "definition": {
+                  "type": "string"
+                }
+              }
+            ]
           },
           "applyTransformer": {
             "type": "schemaReference",

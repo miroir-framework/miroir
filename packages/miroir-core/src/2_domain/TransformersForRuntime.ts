@@ -112,7 +112,7 @@ import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory";
 import { packageName } from "../constants";
 import { resolvePathOnObject, safeResolvePathOnObject } from "../tools";
 import { cleanLevel } from "./constants";
-import { getEntityInstancesUuidIndexNonHook } from "./ReduxDeploymentsStateQueryExecutor";
+import { getEntityInstancesIndexNonHook } from "./ReduxDeploymentsStateQueryExecutor";
 import { getInstancePrimaryKeyValue } from "../1_core/EntityPrimaryKey";
 // import { transformer_spreadSheetToJzodSchema } from "./Transformer_Spreadsheet";
 import {
@@ -430,7 +430,7 @@ export function getDefaultValueForJzodSchemaWithResolution(
             "getDefaultValueForJzodSchemaWithResolution called with UUID foreign key but no applicationDeploymentMap provided"
           );
         }
-        const foreignKeyObjects: EntityInstance[] = getEntityInstancesUuidIndexNonHook(
+        const foreignKeyObjects: EntityInstance[] = getEntityInstancesIndexNonHook(
           reduxDeploymentsState,
           miroirEnvironment,
           application,

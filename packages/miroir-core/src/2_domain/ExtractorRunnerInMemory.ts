@@ -32,6 +32,7 @@ import { PersistenceStoreInstanceSectionAbstractInterface } from "../0_interface
 import type { ApplicationDeploymentMap } from "../1_core/Deployment";
 import {
   getEntityPrimaryKeyAttributes,
+  getForeignKeyValue,
   serializeCompositeKeyValue,
 } from "../1_core/EntityPrimaryKey";
 import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory";
@@ -142,23 +143,33 @@ export class ExtractorRunnerInMemory implements ExtractorOrQueryPersistenceStore
       });
     }
 
+    const fkValue = getForeignKeyValue(
+      querySelectorParams.AttributeOfObjectToCompareToReferenceUuid,
+      referenceObject
+    );
+
+    if (fkValue == null) {
+      return new Domain2ElementFailed({
+        queryFailure: "IncorrectParameters",
+        queryParameters: JSON.stringify(foreignKeyParams.extractor.pageParams),
+        queryContext:
+          "extractRunnerInMemory extractEntityInstance combinerForObjectByRelation could not resolve FK value from reference object",
+      });
+    }
+
     const result = await this.persistenceStoreController.getInstance(
       entityUuidReference,
-      referenceObject[querySelectorParams.AttributeOfObjectToCompareToReferenceUuid]
+      fkValue
     );
 
     if (result instanceof Action2Error) {
-      const failureMessage = `could not find instance of Entity ${entityUuidReference} with uuid=${
-        referenceObject[querySelectorParams.AttributeOfObjectToCompareToReferenceUuid]
-      }`;
+      const failureMessage = `could not find instance of Entity ${entityUuidReference} with pk=${fkValue}`;
       return new Domain2ElementFailed({
         queryFailure: "InstanceNotFound",
         deploymentUuid,
         applicationSection,
         entityUuid: entityUuidReference,
-        failureMessage: `could not find instance of Entity ${entityUuidReference} with uuid=${
-          referenceObject[querySelectorParams.AttributeOfObjectToCompareToReferenceUuid]
-        }`,
+        failureMessage,
         errorStack:
           typeof result.errorStack == "string"
             ? [failureMessage, result.errorStack]
@@ -166,9 +177,7 @@ export class ExtractorRunnerInMemory implements ExtractorOrQueryPersistenceStore
       });
     }
 
-    const failureMessage = `could not find instance of Entity ${entityUuidReference} with uuid=${
-      referenceObject[querySelectorParams.AttributeOfObjectToCompareToReferenceUuid]
-    }`;
+    const failureMessage = `could not find instance of Entity ${entityUuidReference} with pk=${fkValue}`;
     if (result.returnedDomainElement instanceof Domain2ElementFailed) {
       return new Domain2ElementFailed({
         queryFailure: "InstanceNotFound",

@@ -125,6 +125,49 @@ export function entityHasUuidPrimaryKey(entityDefinition: EntityDefinition): boo
 
 // ##############################################################################################
 /**
+ * Returns the FK value(s) from a reference object for a given FK attribute specification.
+ * For single-attribute FK (string), returns the single attribute value from the reference object.
+ * For composite FK (string[]), serializes the multiple FK attribute values into a composite key string.
+ * This is used by combiners to resolve FK→PK joins: the returned string can be used
+ * to look up the target instance in an index keyed by serialized PK values.
+ */
+export function getForeignKeyValue(
+  fkAttribute: string | string[],
+  referenceObject: Record<string, any>
+): string | undefined {
+  if (!Array.isArray(fkAttribute)) {
+    const val = referenceObject[fkAttribute];
+    return val != null ? String(val) : undefined;
+  }
+  // Composite FK: serialize positionally
+  if (fkAttribute.some(attr => referenceObject[attr] == null)) {
+    return undefined;
+  }
+  return fkAttribute.map(attr => escapeKeyComponent(String(referenceObject[attr]))).join(COMPOSITE_KEY_SEPARATOR);
+}
+
+// ##############################################################################################
+/**
+ * Tests whether an instance matches a FK→PK join condition.
+ * For single-attribute FK (string), checks if instance[fkAttr] === referenceValue.
+ * For composite FK (string[]), checks if each instance[fkAttr[i]] matches the
+ * corresponding component of the serialized reference value.
+ */
+export function instanceMatchesForeignKey(
+  fkAttribute: string | string[],
+  instance: Record<string, any>,
+  referenceValue: string
+): boolean {
+  if (!Array.isArray(fkAttribute)) {
+    return (instance as any)[fkAttribute] === referenceValue;
+  }
+  // Composite FK: parse the reference value and compare each attribute
+  const parts = parseCompositeKeyValue(fkAttribute, referenceValue);
+  return fkAttribute.every(attr => String(instance[attr] ?? "") === parts[attr]);
+}
+
+// ##############################################################################################
+/**
  * Resolves the parentUuid for an entity instance using the following strategy:
  * 1. If the instance has a parentUuid attribute, use it.
  * 2. Otherwise, fall back to the payloadParentUuid (from the action payload).

@@ -44,6 +44,7 @@ import {
 import { type MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
 import { transformer_extended_apply } from "./TransformersForRuntime";
 import type { ApplicationDeploymentMap } from "../1_core/Deployment";
+import { getForeignKeyValue } from "../1_core/EntityPrimaryKey";
 import { defaultApplicationSection } from "../0_interfaces/1_core/Model";
 // import { transformer_InnerReference_resolve } from "./TransformersForRuntime";
 
@@ -179,9 +180,18 @@ export const selectEntityInstanceFromReduxDeploymentsState: SyncBoxedExtractorRu
         });
       }
       
-      const foreignKeyObject = deploymentEntityState[index].entities[
-        actualReferenceObject[querySelectorParams.AttributeOfObjectToCompareToReferenceUuid]
-      ];
+      const fkValue = getForeignKeyValue(
+        querySelectorParams.AttributeOfObjectToCompareToReferenceUuid,
+        actualReferenceObject
+      );
+      if (fkValue == null) {
+        return new Domain2ElementFailed({
+          queryFailure: "IncorrectParameters",
+          queryContext: "selectEntityInstanceFromReduxDeploymentsState combinerForObjectByRelation could not resolve FK value",
+        });
+      }
+      
+      const foreignKeyObject = deploymentEntityState[index].entities[fkValue];
       
       if (querySelectorParams.applyTransformer) {
         // log.info(

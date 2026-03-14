@@ -146,6 +146,24 @@ The Deployment of every Application is stored in two parts (here filesystem stor
 
 The Entities are bootstrapped to themselves as meta-classes (there is an Entity named "Entity"). EntityDefinition is also bootstrapped to itself as a meta-class (there is an EntityDefinition named EntityDefinition, which jzodSchema defines the format of all EntityDefinitions, including itself).
 
+### Primary Key Support
+
+EntityDefinitions support three kinds of primary keys via the `idAttribute` field:
+- **UUID PK** (default): `idAttribute` is absent or `"uuid"` — standard UUID-based identity.
+- **Non-UUID single PK**: `idAttribute` is a single string naming any attribute (e.g. `"code"`).
+- **Composite PK**: `idAttribute` is a `string[]` array (e.g. `["region", "code"]`).
+
+Helper functions for PK handling are in `packages/miroir-core/src/1_core/EntityPrimaryKey.ts`:
+- `getEntityPrimaryKeyAttribute(entityDefinition)` — returns `string | string[]`
+- `getEntityPrimaryKeyAttributes(entityDefinition)` — always returns `string[]`
+- `entityHasCompositePrimaryKey(entityDefinition)` / `entityHasUuidPrimaryKey(entityDefinition)`
+- `serializeCompositeKeyValue(attributes, instance)` / `parseCompositeKeyValue(serialized)` — composite key serialization using `|` separator with `\` escaping
+- `getInstancePrimaryKeyValue(entityDefinition, instance)` — returns the PK value as a string (serialized for composite)
+- `getForeignKeyValue(fkAttribute, referenceObject)` — resolves FK value from a reference object; `fkAttribute` can be `string | string[]`
+- `instanceMatchesForeignKey(fkAttribute, instance, referenceValue)` — tests FK match for both single and composite keys
+
+Combiner FK attributes (`AttributeOfObjectToCompareToReferenceUuid`, `AttributeOfListObjectToCompareToReferenceUuid`) accept `string | string[]` to support composite-PK joins. All store backends (filesystem, IndexedDB, PostgreSQL) and local caches (Redux, Zustand) support composite PKs.
+
 ### Miroir Core Concepts: Model
 
 Other core concepts are defined as Entities / EntityDefinitions, for example:

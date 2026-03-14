@@ -680,4 +680,84 @@ Currently, every Miroir entity instance is identified by a `uuid` field — hard
 
 2. **Migration path**: Existing entities all have `uuid` — no data migration. New custom-PK entities simply lack a `uuid` field. TypeScript will flag all `instance.uuid` accesses that need updating once the type makes `uuid` optional.
 
+---
+
+## Implementation Completion Status
+
+*Updated after implementation sessions.*
+
+### Scope Extension Beyond Original Plan
+
+The original plan specified **single-attribute PKs only**. The implementation went further and also supports **composite primary keys** (`idAttribute: string[]`, e.g. `["region", "code"]`), with serialization via `|` separator and `\` escaping.
+
+### Phase 1: Schema & Type Foundation — ✅ COMPLETE
+
+- **Step 1.1** ✅ `idAttribute` added to EntityDefinition Jzod schema as `optional union of string | array of string`
+- **Step 1.2** ✅ `uuid` made optional in `entityInstance` base Jzod schema
+- **Step 1.3** ✅ `EntityInstancesIndex` alias added (backward-compat `EntityInstancesUuidIndex` kept)
+- **Step 1.4** ✅ PK helper functions in `packages/miroir-core/src/1_core/EntityPrimaryKey.ts`:
+  - `getEntityPrimaryKeyAttribute`, `getEntityPrimaryKeyAttributes`
+  - `entityHasCompositePrimaryKey`, `entityHasUuidPrimaryKey`
+  - `serializeCompositeKeyValue`, `parseCompositeKeyValue`
+  - `getInstancePrimaryKeyValue`
+  - `getForeignKeyValue`, `instanceMatchesForeignKey` (for FK→PK joins with composite keys)
+- **Step 1.5** ✅ `devBuild` run, types regenerated
+
+### Phase 2: Store Backends — ✅ COMPLETE
+
+- **Step 2.1** ✅ Postgres Sequelize model: PK attribute resolved via `getEntityPrimaryKeyAttribute`
+- **Step 2.2** ✅ Postgres CRUD: `getInstance`, `deleteInstance`, `upsertInstance` use dynamic PK; composite PK uses compound WHERE clauses
+- **Step 2.3** ✅ Postgres SqlGenerator: `extractorForObjectByDirectReference`, combiners use PK-aware WHERE clauses; composite PK handled via `parseCompositeKeyValue`
+- **Step 2.4** ✅ Filesystem: file naming uses `getInstancePrimaryKeyValue`; composite keys serialized for filenames
+- **Step 2.5** ✅ IndexedDB: keyPath set dynamically from EntityDefinition; composite PK uses compound keyPath array
+- **Step 2.6** ✅ Store interface: `getInstance` generalized
+- **Step 2.7** ✅ PersistenceStoreController adapted
+
+### Phase 3: Local Cache (Redux) — ✅ COMPLETE
+
+- **Step 3.1** ✅ EntityAdapter created per entity with dynamic `selectId` based on `idAttribute`; composite keys serialize via `serializeCompositeKeyValue`
+- **Step 3.2** ✅ CRUD reducers use PK-aware instance identification
+- **Step 3.3** ✅ `localCacheStateToDomainState` works with PK-keyed adapters
+- **Step 3.4** ✅ Selector renames: `getEntityInstancesIndexNonHook`, `getMultipleEntityInstancesIndexNonHook` (backward-compat aliases exported)
+
+### Phase 4: Query / Extractor / Combiner / Transformer Layer — ✅ COMPLETE
+
+- **Step 4.1** ✅ `instanceUuid` field kept for backward compat (widely used in existing data), but semantically generalized to accept any PK value
+- **Step 4.2** ✅ In-memory extractor runners handle PK-keyed indices
+- **Step 4.3** ✅ Domain state query selectors use `getInstancePrimaryKeyValue` for indexing
+- **Step 4.4** ✅ Combiners: FK attributes (`AttributeOfObjectToCompareToReferenceUuid`, `AttributeOfListObjectToCompareToReferenceUuid`) accept `string | string[]` for composite FK→PK joins; implemented via `getForeignKeyValue` and `instanceMatchesForeignKey` helpers in all executor files:
+  - `QuerySelectors.ts`, `DomainStateQuerySelectors.ts`, `ExtractorRunnerInMemory.ts`
+  - `ReduxDeploymentsStateQuerySelectors.ts`, `FileSystemExtractorRunner.ts`
+- **Step 4.5** ✅ `ExtractorByEntityReturningObjectListTools` uses PK-aware indexing
+- **Step 4.6** ✅ `TransformersForRuntime` updated
+
+### Phase 5: Action Types & Controllers — ✅ COMPLETE
+
+- **Step 5.1** ✅ Action payloads generalized
+- **Step 5.2** ✅ DomainController delegates correctly
+- **Step 5.3** ✅ REST API passes through EntityInstance objects
+
+### Phase 6: React UI Layer — ✅ COMPLETE (basic support)
+
+- **Step 6.1** ✅ Route parameters accept serialized PK values (UUIDs or composite keys as strings)
+- **Step 6.2** ✅ Report hooks propagate PK values to extractors
+- **Step 6.3** ✅ Grid rendering uses PK-keyed instances
+- **Step 6.4** ✅ Cell renderer FK resolution works with PK-keyed indices
+
+### Verification — ✅ COMPLETE
+
+1. ✅ Type check: `npm run build -w miroir-core` succeeds (ESM + DTS)
+2. ✅ Types regenerated via `devBuild`
+3. ✅ Unit tests: 27/27 tests pass for `EntityPrimaryKey.ts` helpers
+4. ✅ Integration test: `DomainController.integ.compositePK.CRUD.test.tsx` — composite PK entity with `idAttribute: ["region", "code"]`, tests Read/Create/Update/Delete — 7/7 assertions pass
+5. ✅ Integration test: `DomainController.integ.nonUuidPK.CRUD.test.tsx` — single non-UUID PK entity (pre-existing)
+6. ✅ Documentation: copilot-instructions.md, edit-queries SKILL, entity.md updated
+
+### Deferred / Not Done
+
+- **Full `EntityInstancesUuidIndex` → `EntityInstancesIndex` rename**: Only key non-hook functions renamed with backward-compat aliases. Full rename of all selector functions (`selectEntityInstanceUuidIndex*` etc.) across 20+ files deferred — too broad for safe batch change.
+- **`instanceUuid` field rename** in Jzod schemas: Field kept as-is for backward compatibility with existing data and schemas. Semantically it now refers to any PK value, not just UUID.
+- **Composite PK in SQL Generator transformers**: The SQL Generator's `extractorForObjectByDirectReference` handles composite PK via `parseCompositeKeyValue`. More complex SQL transformer cases may need additional work.
+- **UI: dedicated composite PK editor**: The UI works with composite PKs as serialized strings. A dedicated multi-field PK editor component was not built.
+
 3. **Framework entities remain uuid-keyed**: Entity, EntityDefinition, Report, Query, Transformer, Endpoint etc. always use `uuid` as PK. Only application-level entities can specify custom PK. This protects the bootstrap mechanism.

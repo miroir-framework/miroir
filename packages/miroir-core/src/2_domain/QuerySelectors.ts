@@ -43,6 +43,7 @@ import {
 } from "../0_interfaces/2_domain/ExtractorRunnerInterface";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import type { ApplicationDeploymentMap } from "../1_core/Deployment";
+import { getForeignKeyValue, instanceMatchesForeignKey } from "../1_core/EntityPrimaryKey";
 import { defaultMiroirModelEnvironment, getApplicationSection } from "../1_core/Model";
 import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory";
 import { packageName } from "../constants";
@@ -217,7 +218,10 @@ export const applyExtractorForSingleObjectListToSelectedInstancesListInMemory = 
       ;
       let otherIndex:string | undefined = undefined
       if (referenceObject) {
-        otherIndex = (referenceObject ?? {})[relationQuery.objectReferenceAttribute ?? "uuid"];
+        otherIndex = getForeignKeyValue(
+          relationQuery.objectReferenceAttribute ?? "uuid",
+          referenceObject ?? {}
+        );
       } else {
         log.error(
           "applyExtractorForSingleObjectListToSelectedInstancesListInMemory combinerByRelationReturningObjectList could not find objectReference in contextResults, objectReference=",
@@ -227,10 +231,10 @@ export const applyExtractorForSingleObjectListToSelectedInstancesListInMemory = 
         );
       }
 
+      const fkAttribute = relationQuery.AttributeOfListObjectToCompareToReferenceUuid ?? "dummy";
       const finalInstanceList = selectedInstancesList.filter((i: EntityInstance) => {
-          const localIndex = relationQuery.AttributeOfListObjectToCompareToReferenceUuid ?? "dummy";
-          // TODO: allow for runtime reference, with runtime trnasformer reference
-          return (i as any)[localIndex] === otherIndex;
+          if (otherIndex === undefined) return false;
+          return instanceMatchesForeignKey(fkAttribute, i, otherIndex);
         }
       ) as EntityInstance[];
 
@@ -403,9 +407,10 @@ export const applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemo
       if (
         ((query.contextResults ?? {})[relationQuery.objectReference])
       ) {
-        otherIndex = (((query.contextResults ?? {})[
-          relationQuery.objectReference
-        ] as any) ?? {})[relationQuery.objectReferenceAttribute ?? "uuid"];
+        otherIndex = getForeignKeyValue(
+          relationQuery.objectReferenceAttribute ?? "uuid",
+          (((query.contextResults ?? {})[relationQuery.objectReference]) as any) ?? {}
+        );
       } else {
         log.error(
           "applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory combinerByRelationReturningObjectList could not find objectReference in contextResults, objectReference=",
@@ -424,14 +429,12 @@ export const applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemo
           JSON.stringify(query, undefined, 2)
         )
       }
+      const fkAttribute2 = relationQuery.AttributeOfListObjectToCompareToReferenceUuid ?? "dummy";
       return Object.fromEntries(
         Object.entries(selectedInstancesUuidIndex ?? {}).filter(
           (i: [string, EntityInstance]) => {
-            const localIndex = relationQuery.AttributeOfListObjectToCompareToReferenceUuid ?? "dummy";
-
-
-            // TODO: allow for runtime reference, with runtime trnasformer reference
-            return (i[1] as any)[localIndex] === otherIndex
+            if (otherIndex === undefined) return false;
+            return instanceMatchesForeignKey(fkAttribute2, i[1], otherIndex);
           }
         )
       );

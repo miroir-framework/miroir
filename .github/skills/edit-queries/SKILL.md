@@ -285,9 +285,11 @@ Follow a foreign key to get related object (N:1):
   parentName: "Publisher",
   parentUuid: "a027c379-8468-43a5-ba4d-bf618be25cab",
   objectReference: "book",  // Reference to extractor result
-  AttributeOfObjectToCompareToReferenceUuid: "publisher",  // FK attribute
+  AttributeOfObjectToCompareToReferenceUuid: "publisher",  // FK attribute (string or string[] for composite PK joins)
 }
 ```
+
+**Composite PK joins**: `AttributeOfObjectToCompareToReferenceUuid` accepts `string | string[]`. When an array is provided, the FK is resolved as a composite key (serialized with `|` separator).
 
 ### combinerByRelationReturningObjectList
 Get all related objects (1:N):
@@ -298,9 +300,11 @@ Get all related objects (1:N):
   parentName: "Book",
   parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
   objectReference: "author",  // Reference to extractor result
-  AttributeOfListObjectToCompareToReferenceUuid: "author",  // FK attribute
+  AttributeOfListObjectToCompareToReferenceUuid: "author",  // FK attribute (string or string[] for composite PK joins)
 }
 ```
+
+**Composite PK joins**: `AttributeOfListObjectToCompareToReferenceUuid` also accepts `string | string[]`.
 
 ### combinerByManyToManyRelationReturningObjectList
 Many-to-many relation through a list:

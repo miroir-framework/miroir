@@ -251,7 +251,11 @@
                 }
               },
               "AttributeOfObjectToCompareToReferenceUuid": {
-                "type": "string"
+                "type": "union",
+                "definition": [
+                  { "type": "string" },
+                  { "type": "array", "definition": { "type": "string" } }
+                ]
               },
               "applyTransformer": {
                 "type": "schemaReference",
@@ -428,7 +432,11 @@
                 "optional": true
               },
               "AttributeOfListObjectToCompareToReferenceUuid": {
-                "type": "string"
+                "type": "union",
+                "definition": [
+                  { "type": "string" },
+                  { "type": "array", "definition": { "type": "string" } }
+                ]
               },
               "applyTransformer": {
                 "type": "schemaReference",
@@ -480,7 +488,11 @@
                 "optional": true
               },
               "AttributeOfListObjectToCompareToReferenceUuid": {
-                "type": "string"
+                "type": "union",
+                "definition": [
+                  { "type": "string" },
+                  { "type": "array", "definition": { "type": "string" } }
+                ]
               },
               "applyTransformer": {
                 "type": "schemaReference",
@@ -786,7 +798,11 @@
                 "type": "string"
               },
               "AttributeOfObjectToCompareToReferenceUuid": {
-                "type": "string"
+                "type": "union",
+                "definition": [
+                  { "type": "string" },
+                  { "type": "array", "definition": { "type": "string" } }
+                ]
               },
               "applyTransformer": {
                 "type": "schemaReference",
