@@ -52,10 +52,7 @@
             "display": {
               "editable": false
             },
-            "defaultLabel": "Table Name",
-            "foreignKeyParams": {
-              "targetEntity": "35961086-f932-477a-aa77-ac8360ffbf61"
-            }
+            "defaultLabel": "Table Name"
           }
         },
         "type": "string"
@@ -91,10 +88,7 @@
             "display": {
               "editable": false
             },
-            "defaultLabel": "Table Schema",
-            "foreignKeyParams": {
-              "targetEntity": "cbc94d62-d2e5-4bc2-8aef-45efcfbd0af6"
-            }
+            "defaultLabel": "Table Schema"
           }
         },
         "type": "string"

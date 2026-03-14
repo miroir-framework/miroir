@@ -1,0 +1,60 @@
+{
+  "uuid": "7c80d9ec-35b2-4cb8-8164-c5fe4e20687f",
+  "parentName": "Report",
+  "parentUuid": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+  "parentDefinitionVersionUuid": null,
+  "conceptLevel": "Model",
+  "name": "TableDetails",
+  "defaultLabel": "Detailed information about a Table",
+  "type": null,
+  "selfApplication": "84d28eb1-d98a-499e-bf24-62cade033da6",
+  "definition": {
+    "extractorTemplates": {
+      "table": {
+        "parentName": "tables",
+        "parentUuid": "35961086-f932-477a-aa77-ac8360ffbf61",
+        "instanceUuid": {
+          "referenceName": "instanceUuid",
+          "transformerType": "getFromParameters"
+        },
+        "extractorOrCombinerType": "extractorForObjectByDirectReference"
+      }
+    },
+    "combinerTemplates": {
+      "columnsOfTable": {
+        "parentName": "columns",
+        "parentUuid": "39e5c7a1-3f82-4bda-b8c4-2d576f9f10ae",
+        "objectReference": {
+          "interpolation": "runtime",
+          "referenceName": "table",
+          "transformerType": "getFromContext"
+        },
+        "extractorOrCombinerType": "combinerByRelationReturningObjectList",
+        "AttributeOfListObjectToCompareToReferenceUuid": "table_name"
+      }
+    },
+    "runtimeTransformers": {},
+    "section": {
+      "type": "list",
+      "definition": [
+        {
+          "type": "objectInstanceReportSection",
+          "definition": {
+            "parentUuid": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+            "fetchedDataReference": "table"
+          }
+        },
+        {
+          "type": "objectListReportSection",
+          "definition": {
+            "label": "Columns of (${table.table_name})",
+            "parentName": "Column",
+            "parentUuid": "39e5c7a1-3f82-4bda-b8c4-2d576f9f10ae",
+            "sortByAttribute": "column_name",
+            "fetchedDataReference": "columnsOfTable"
+          }
+        }
+      ]
+    }
+  }
+}
