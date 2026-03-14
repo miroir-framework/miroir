@@ -353,6 +353,11 @@ export const selectEntityInstanceUuidIndexFromReduxDeploymentsState: SyncBoxedEx
     return entityInstances;
   }
   // Apply filter and orderBy
+  // Build reverse map to preserve original PK keys from the EntityAdapter
+  const instanceToKey = new Map<EntityInstance, string>();
+  for (const [key, instance] of Object.entries(entityInstances)) {
+    instanceToKey.set(instance, key);
+  }
   const filteredInstancesArray = applyExtractorFilterAndOrderBy(
     Object.values(entityInstances),
     localSelect
@@ -360,7 +365,7 @@ export const selectEntityInstanceUuidIndexFromReduxDeploymentsState: SyncBoxedEx
   // log.info("selectEntityInstanceUuidIndexFromReduxDeploymentsState filteredInstancesArray", filteredInstancesArray);
 
   const result = filteredInstancesArray.reduce((acc: EntityInstancesUuidIndex, instance: EntityInstance) => {
-    acc[instance.uuid!] = instance;
+    acc[instanceToKey.get(instance) ?? instance.uuid!] = instance;
     return acc;
   }, {});
   // log.info("selectEntityInstanceUuidIndexFromReduxDeploymentsState filtered result", result);

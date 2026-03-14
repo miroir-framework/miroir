@@ -54,6 +54,9 @@ export class ErrorDataStore implements PersistenceStoreDataSectionInterface {
   getEntityUuids(): string[] {
     throw new Error("Method not implemented.");
   }
+  getEntityIdAttribute(entityUuid: string): string | string[] {
+    throw new Error("Method not implemented.");
+  }
   getState(): Promise<{ [uuid: string]: EntityInstanceCollection }> {
     throw new Error("Method not implemented.");
   }

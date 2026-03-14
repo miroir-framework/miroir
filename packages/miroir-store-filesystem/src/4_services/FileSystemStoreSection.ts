@@ -34,7 +34,7 @@ export class FileSystemStoreSection
   implements PersistenceStoreAbstractSectionInterface, StorageSpaceHandlerInterface
 {
   // Map from entity UUID to idAttribute (defaults to "uuid" when absent)
-  public entityIdAttributes: Record<string, string> = {};
+  public entityIdAttributes: Record<string, string | string[]> = {};
   // public filesystemStoreName: string;
   // public directory: string;
 
@@ -68,6 +68,11 @@ export class FileSystemStoreSection
   getEntityUuids(): string[] {
     const files = fs.readdirSync(this.directory);
     return files;
+  }
+
+  // #############################################################################################
+  getEntityIdAttribute(entityUuid: string): string | string[] {
+    return this.entityIdAttributes[entityUuid] ?? "uuid";
   }
 
   // #############################################################################################

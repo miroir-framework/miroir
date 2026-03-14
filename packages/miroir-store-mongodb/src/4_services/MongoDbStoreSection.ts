@@ -58,6 +58,11 @@ export class MongoDbStoreSection
     return this.localUuidMongoDb.getCollections();
   }
 
+  // ##############################################################################################
+  getEntityIdAttribute(entityUuid: string): string | string[] {
+    return "uuid"; // MongoDB store does not yet support custom PKs
+  }
+
   // #############################################################################################
   async createStorageSpaceForInstancesOfEntity(
     entity: Entity,

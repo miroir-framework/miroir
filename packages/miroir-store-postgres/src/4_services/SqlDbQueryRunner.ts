@@ -31,6 +31,7 @@ import {
   selectFetchQueryJzodSchemaFromDomainStateNew,
   selectJzodSchemaByDomainModelQueryFromDomainStateNew,
   selectJzodSchemaBySingleSelectQueryFromDomainStateNew,
+  serializeCompositeKeyValue,
   type ApplicationDeploymentMap,
   type ExtractorRunnerInMemory,
   type MiroirModelEnvironment
@@ -526,7 +527,10 @@ export class SqlDbQueryRunner {
       if (result instanceof Domain2ElementFailed) {
         return result;
       }
-      const entityInstanceUuidIndex = Object.fromEntries(result.map((i) => [i.uuid, i]));
+      const entityUuid = extractorRunnerParams.extractor.select.parentUuid;
+      const idAttribute = this.persistenceStoreController.getEntityIdAttribute(entityUuid);
+      const pkAttrs = Array.isArray(idAttribute) ? idAttribute : [idAttribute];
+      const entityInstanceUuidIndex = Object.fromEntries(result.map((i) => [serializeCompositeKeyValue(pkAttrs, i), i]));
       return entityInstanceUuidIndex;
     });
   };
@@ -594,7 +598,10 @@ export class SqlDbQueryRunner {
       if (result instanceof Domain2ElementFailed) {
         return result;
       }
-      const entityInstanceUuidIndex = Object.fromEntries(result.map((i) => [i.uuid, i]));
+      const entityUuid = extractorRunnerParams.extractor.select.parentUuid;
+      const idAttribute = this.persistenceStoreController.getEntityIdAttribute(entityUuid);
+      const pkAttrs = Array.isArray(idAttribute) ? idAttribute : [idAttribute];
+      const entityInstanceUuidIndex = Object.fromEntries(result.map((i) => [serializeCompositeKeyValue(pkAttrs, i), i]));
       return entityInstanceUuidIndex;
     });
   };

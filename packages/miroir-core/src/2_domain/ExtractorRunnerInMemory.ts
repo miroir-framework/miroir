@@ -30,6 +30,10 @@ import {
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import { PersistenceStoreInstanceSectionAbstractInterface } from "../0_interfaces/4-services/PersistenceStoreControllerInterface";
 import type { ApplicationDeploymentMap } from "../1_core/Deployment";
+import {
+  getEntityPrimaryKeyAttributes,
+  serializeCompositeKeyValue,
+} from "../1_core/EntityPrimaryKey";
 import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory";
 import { packageName } from "../constants";
 import {
@@ -413,7 +417,10 @@ export class ExtractorRunnerInMemory implements ExtractorOrQueryPersistenceStore
         if (result instanceof Domain2ElementFailed) {
           return result;
         }
-        const entityInstanceUuidIndex = Object.fromEntries(result.map((i: any) => [i.uuid, i]));
+        const entityUuid = extractorRunnerParams.extractor.select.parentUuid;
+        const idAttribute = this.persistenceStoreController.getEntityIdAttribute(entityUuid);
+        const pkAttrs = Array.isArray(idAttribute) ? idAttribute : [idAttribute];
+        const entityInstanceUuidIndex = Object.fromEntries(result.map((i: any) => [serializeCompositeKeyValue(pkAttrs, i), i]));
         return entityInstanceUuidIndex;
       }
     );

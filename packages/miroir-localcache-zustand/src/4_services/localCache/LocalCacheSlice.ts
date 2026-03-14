@@ -20,6 +20,7 @@ import {
   Uuid,
   entityDefinitionEntityDefinition,
   getEntityPrimaryKeyAttribute,
+  serializeCompositeKeyValue,
   getLocalCacheIndexDeploymentSection,
   getLocalCacheIndexDeploymentUuid,
   getLocalCacheIndexEntityUuid,
@@ -119,10 +120,10 @@ interface EntityState {
   entities: Record<string, EntityInstance>;
 }
 
-// Module-level map from entityInstancesLocationIndex → idAttribute name (default "uuid")
-const idAttributeByIndex: Record<string, string> = {};
+// Module-level map from entityInstancesLocationIndex → idAttribute name(s) (default "uuid")
+const idAttributeByIndex: Record<string, string | string[]> = {};
 
-function getIdAttributeForIndex(index: string): string {
+function getIdAttributeForIndex(index: string): string | string[] {
   return idAttributeByIndex[index] ?? "uuid";
 }
 
@@ -153,12 +154,13 @@ function getInitialEntityState(): EntityState {
   return { ids: [], entities: {} };
 }
 
-function addManyToEntityState(state: EntityState, instances: EntityInstance[], idAttribute = "uuid"): EntityState {
+function addManyToEntityState(state: EntityState, instances: EntityInstance[], idAttribute: string | string[] = "uuid"): EntityState {
   const newIds = [...state.ids];
   const newEntities = { ...state.entities };
+  const pkAttrs = Array.isArray(idAttribute) ? idAttribute : [idAttribute];
   
   for (const instance of instances) {
-    const pk = String((instance as any)[idAttribute]);
+    const pk = serializeCompositeKeyValue(pkAttrs, instance);
     if (!newEntities[pk]) {
       newIds.push(pk);
     }
@@ -169,16 +171,18 @@ function addManyToEntityState(state: EntityState, instances: EntityInstance[], i
 }
 
 // ################################################################################################
-function setAllInEntityState(instances: EntityInstance[], idAttribute = "uuid"): EntityState {
+function setAllInEntityState(instances: EntityInstance[], idAttribute: string | string[] = "uuid"): EntityState {
+  const pkAttrs = Array.isArray(idAttribute) ? idAttribute : [idAttribute];
   return {
-    ids: instances.map(i => String((i as any)[idAttribute])),
-    entities: Object.fromEntries(instances.map(i => [String((i as any)[idAttribute]), i]))
+    ids: instances.map(i => serializeCompositeKeyValue(pkAttrs, i)),
+    entities: Object.fromEntries(instances.map(i => [serializeCompositeKeyValue(pkAttrs, i), i]))
   };
 }
 
 // ################################################################################################
-function updateOneInEntityState(state: EntityState, instance: EntityInstance, idAttribute = "uuid"): EntityState {
-  const pk = String((instance as any)[idAttribute]);
+function updateOneInEntityState(state: EntityState, instance: EntityInstance, idAttribute: string | string[] = "uuid"): EntityState {
+  const pkAttrs = Array.isArray(idAttribute) ? idAttribute : [idAttribute];
+  const pk = serializeCompositeKeyValue(pkAttrs, instance);
   if (!state.entities[pk]) {
     return state;
   }
@@ -320,7 +324,8 @@ function handleInstanceAction(
         const section = instanceAction.payload.applicationSection ?? "data";
         const index = getReduxDeploymentsStateIndex(deploymentUuid, section, resolvedParentUuid);
         const idAttribute = getIdAttributeForIndex(index);
-        const pk = String((instance as any)[idAttribute]);
+        const pkAttrs = Array.isArray(idAttribute) ? idAttribute : [idAttribute];
+        const pk = serializeCompositeKeyValue(pkAttrs, instance);
         
         if (state.current[index]) {
           state.current[index] = removeOneFromEntityState(state.current[index] as EntityState, pk);

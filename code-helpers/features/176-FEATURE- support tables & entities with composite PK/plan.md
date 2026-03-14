@@ -1,5 +1,32 @@
 # Plan: Composite PK Support for Miroir Entities (Issue #176)
 
+## Implementation Status (updated after implementation pass)
+
+| Phase | Status | Notes |
+|-------|--------|-------|
+| 1.1 EntityDefinition Jzod schema | ✅ Done | `idAttribute` → union of `string \| string[]` |
+| 1.2 Regenerate TS types | ✅ Done | `devBuild` produces `idAttribute?: (string \| string[]) \| undefined` |
+| 1.3 Composite key serialization | ✅ Done | `EntityPrimaryKey.ts` rewritten with `serializeCompositeKeyValue`/`parseCompositeKeyValue`, `\|` separator with `\\` escaping |
+| 1.4 Rename `EntityInstancesUuidIndex` | ⏳ Deferred | Cosmetic, can be done later |
+| 2.1 PostgreSQL store | ✅ Done | Sequelize composite PK, `findOne` for composite, SQL WHERE/JOIN multi-column |
+| 2.2 Filesystem store | ✅ Done | Composite key as filename, `entityIdAttributes` map updated |
+| 2.3 IndexedDB store | ✅ Done | Composite key as LevelDB key, `entityIdAttributes` map updated |
+| 3.1 Redux LocalCache | ✅ Done | `selectId` serialization, `entityIdAttributeByIndex` type, CRUD ops |
+| 3.2 Zustand LocalCache | ✅ Done | Entity state functions, `idAttributeByIndex` type |
+| 4.1-4.3 Extractors/Combiners/Index | ✅ Done | `getEntityIdAttribute()` on store interface, in-memory/FS/SQL extractors updated. **Combiner FK→PK multi-attribute joins deferred** (requires Jzod schema change to `AttributeOfListObjectToCompareToReferenceUuid`) |
+| 4.4 Transformers FK resolution | ✅ Done | `getDefaultValueForJzodSchemaWithResolution` uses `getInstancePrimaryKeyValue` instead of `.uuid` |
+| 5 Action types & Controllers | ✅ Done | Already use opaque `string` for PK values, no changes needed |
+| 6 React UI | ✅ Done | Serialized composite key flows through React Router naturally, minimal changes needed |
+| 7 Build verification | ✅ Done | All packages build: miroir-core, miroir-store-postgres, miroir-store-filesystem, miroir-store-indexedDb, miroir-localcache-redux, miroir-localcache-zustand, miroir-react, miroir-mcp, miroir-server, miroir-standalone-app (type-check) |
+
+### Deferred items
+- Combiner FK→PK multi-attribute joins (requires schema change to `AttributeOfListObjectToCompareToReferenceUuid`)
+- `EntityInstancesUuidIndex` → `EntityInstancesIndex` rename (cosmetic, large mechanical refactor)
+- Integration tests with composite-PK entity definitions
+- React UI testing with actual composite PK entities
+
+---
+
 ## TL;DR
 
 Extend the existing single-attribute `idAttribute` (delivered in Feature #173) to support composite primary keys by changing `idAttribute` from `string | undefined` to `string | string[] | undefined`. This impacts **every layer**: schema/types, core helpers, all 3 store backends, both local caches (Redux & Zustand), query/extractor/combiner layer, SQL generation, transformers, action types, REST API, and React UI. The critical design decision is the **composite key serialization strategy** — all layers that index by PK string must consistently serialize composite keys to a single canonical string.

@@ -187,14 +187,18 @@
         }
       },
       "idAttribute": {
-        "type": "string",
+        "type": "union",
         "optional": true,
         "tag": {
           "value": {
             "defaultLabel": "Id Attribute",
-            "description": "The attribute used as primary key for instances of this entity. Defaults to 'uuid' when absent."
+            "description": "The attribute(s) used as primary key for instances of this entity. Defaults to 'uuid' when absent. Can be a single attribute name (string) or an array of attribute names for composite primary keys."
           }
-        }
+        },
+        "definition": [
+          { "type": "string" },
+          { "type": "array", "definition": { "type": "string" } }
+        ]
       },
       "externalDataSource": {
         "type": "object",

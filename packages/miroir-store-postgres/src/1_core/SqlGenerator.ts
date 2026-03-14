@@ -77,12 +77,80 @@ MiroirLoggerFactory.registerLoggerToStart(
 function getIdAttributeForEntity(
   entityUuid: string,
   modelEnvironment?: MiroirModelEnvironment
-): string {
+): string | string[] {
   if (!modelEnvironment?.currentModel?.entityDefinitions) return "uuid";
   const entityDef = modelEnvironment.currentModel.entityDefinitions.find(
     (ed: any) => ed.entityUuid === entityUuid
   );
   return (entityDef as any)?.idAttribute ?? "uuid";
+}
+
+// ##############################################################################################
+/**
+ * Builds a SQL WHERE clause for a primary key lookup.
+ * For single-attribute PKs: WHERE "col" = 'value'
+ * For composite PKs: WHERE "col1" = 'v1' AND "col2" = 'v2' ...
+ * The serializedValue for composite keys uses | as separator with \ escaping.
+ */
+function sqlWhereClauseForPk(
+  pkAttribute: string | string[],
+  serializedValue: string,
+  tableAlias?: string,
+): string {
+  const prefix = tableAlias ? `"${tableAlias}".` : "";
+  if (!Array.isArray(pkAttribute)) {
+    return `${prefix}"${pkAttribute}" = '${serializedValue}'`;
+  }
+  // Composite PK: parse the serialized key
+  const parts = parseSerializedCompositePkValue(pkAttribute, serializedValue);
+  return pkAttribute
+    .map((attr, idx) => `${prefix}"${attr}" = '${parts[idx]}'`)
+    .join(" AND ");
+}
+
+// ##############################################################################################
+/**
+ * Builds SQL JOIN conditions for composite FK→PK joins.
+ * For single-attribute: "parent"."pkCol" = "ref"."fkCol"
+ * For composite: "parent"."pk1" = "ref"."fk1" AND "parent"."pk2" = "ref"."fk2"
+ */
+function sqlJoinConditionForPk(
+  parentPkAttribute: string | string[],
+  fkAttribute: string | string[],
+  parentAlias: string,
+  refAlias: string,
+): string {
+  const pkAttrs = Array.isArray(parentPkAttribute) ? parentPkAttribute : [parentPkAttribute];
+  const fkAttrs = Array.isArray(fkAttribute) ? fkAttribute : [fkAttribute];
+  return pkAttrs
+    .map((pk, idx) => `"${parentAlias}"."${pk}" = "${refAlias}"."${fkAttrs[idx]}"`)
+    .join(" AND ");
+}
+
+// ##############################################################################################
+/**
+ * Parse a serialized composite key value into its component parts.
+ * Uses | as separator with \ escaping.
+ */
+function parseSerializedCompositePkValue(pkAttributes: string[], serializedKey: string): string[] {
+  if (pkAttributes.length === 1) {
+    return [serializedKey];
+  }
+  const parts: string[] = [];
+  let current = "";
+  for (let i = 0; i < serializedKey.length; i++) {
+    if (serializedKey[i] === "\\" && i + 1 < serializedKey.length) {
+      current += serializedKey[i + 1];
+      i++;
+    } else if (serializedKey[i] === "|") {
+      parts.push(current);
+      current = "";
+    } else {
+      current += serializedKey[i];
+    }
+  }
+  parts.push(current);
+  return parts;
 }
 
 // ##############################################################################################
@@ -390,9 +458,15 @@ export function sqlStringForCombiner /*BoxedExtractorTemplateRunner*/(
     case "combinerForObjectByRelation": {
       // TODO: deal with name clashes
       const parentPkColumn = getIdAttributeForEntity(query.parentUuid, modelEnvironment);
+      const joinCondition = sqlJoinConditionForPk(
+        parentPkColumn,
+        query.AttributeOfObjectToCompareToReferenceUuid,
+        query.parentName ?? "",
+        query.objectReference,
+      );
       const result = `
         SELECT "${query.parentName}".* FROM "${schema}"."${query.parentName}", "${query.objectReference}"
-        WHERE "${query.parentName}"."${parentPkColumn}" = "${query.objectReference}"."${query.AttributeOfObjectToCompareToReferenceUuid}"`;
+        WHERE ${joinCondition}`;
       return {
         sqlString: result,
         resultAccessPath: [0],
@@ -403,9 +477,15 @@ export function sqlStringForCombiner /*BoxedExtractorTemplateRunner*/(
       const objectRefEntry = extractorsAndCombiners?.[query.objectReference];
       const objectRefEntityUuid = objectRefEntry && "parentUuid" in objectRefEntry ? objectRefEntry.parentUuid : undefined;
       const objectRefPkColumn = objectRefEntityUuid ? getIdAttributeForEntity(objectRefEntityUuid, modelEnvironment) : "uuid";
+      const joinCondition2 = sqlJoinConditionForPk(
+        objectRefPkColumn,
+        query.AttributeOfListObjectToCompareToReferenceUuid,
+        query.objectReference,
+        query.parentName ?? "",
+      );
       const result = `
       SELECT "${query.parentName}".* FROM "${schema}"."${query.parentName}", "${query.objectReference}"
-      WHERE "${query.parentName}"."${query.AttributeOfListObjectToCompareToReferenceUuid}" = "${query.objectReference}"."${objectRefPkColumn}"`;
+      WHERE ${joinCondition2}`;
       return {
         sqlString: result,
         resultAccessPath: undefined,
@@ -438,8 +518,9 @@ export function sqlStringForExtractor(
     case "extractorForObjectByDirectReference": {
       const pkColumn = getIdAttributeForEntity(extractor.parentUuid, modelEnvironment);
       const effectiveSchema = getSchemaForEntity(extractor.parentUuid, schema, modelEnvironment);
+      const whereClausePk = sqlWhereClauseForPk(pkColumn, extractor.instanceUuid);
       if (!extractor.applyTransformer) {
-        return `SELECT * FROM "${effectiveSchema}"."${extractor.parentName}" WHERE "${pkColumn}" = '${extractor.instanceUuid}'`;
+        return `SELECT * FROM "${effectiveSchema}"."${extractor.parentName}" WHERE ${whereClausePk}`;
       }
       if (!modelEnvironment) {
         throw new Error("sqlForExtractor extractorForObjectByDirectReference needs modelEnvironment if applyTransformer is set");
@@ -449,7 +530,7 @@ export function sqlStringForExtractor(
         JSON.stringify(extractor.applyTransformer, null, 2),
         Object.keys(modelEnvironment)
       );
-      return `SELECT * FROM "${effectiveSchema}"."${extractor.parentName}" WHERE "${pkColumn}" = '${extractor.instanceUuid}'`;
+      return `SELECT * FROM "${effectiveSchema}"."${extractor.parentName}" WHERE ${whereClausePk}`;
       break;
     }
     case "combinerForObjectByRelation": {

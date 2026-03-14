@@ -49,6 +49,11 @@ export class SqlDbStoreSection
     return Object.keys(this.sqlSchemaTableAccess);
   }
 
+  // ##############################################################################################
+  getEntityIdAttribute(entityUuid: string): string | string[] {
+    return this.sqlSchemaTableAccess[entityUuid]?.idAttribute ?? "uuid";
+  }
+
   // ######################################################################################
   async clear(): Promise<Action2VoidReturnType> {
     log.info(this.logHeader, "clear start, entities", this.getEntityUuids());
@@ -111,7 +116,7 @@ export class SqlDbStoreSection
     entityDefinition: EntityDefinition
   ): EntityUuidIndexedSequelizeModel {
     // TODO: does side effect => refactor!
-    const idAttribute = (entityDefinition as any).idAttribute ?? "uuid";
+    const idAttribute: string | string[] = (entityDefinition as any).idAttribute ?? "uuid";
     const isExternal = entity.conceptLevel === "External" || !!(entityDefinition as any).externalDataSource;
     const effectiveSchema = isExternal && entityDefinition.externalDataSource?.schema
       ? entityDefinition.externalDataSource.schema

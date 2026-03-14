@@ -254,9 +254,17 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
           const scopedModel = entityAccess.isExternal && entityAccess.effectiveSchema
             ? entityAccess.sequelizeModel.schema(entityAccess.effectiveSchema)
             : entityAccess.sequelizeModel;
-          const result: EntityInstance = (
-            await scopedModel.findByPk(instancePrimaryKey)
-          )?.dataValues;
+          const idAttribute = entityAccess.idAttribute ?? "uuid";
+          let result: EntityInstance;
+          if (Array.isArray(idAttribute)) {
+            // Composite PK: parse serialized key and use findOne with WHERE
+            const pkAttributes = idAttribute;
+            const { parseCompositeKeyValue } = await import("miroir-core");
+            const pkValues = parseCompositeKeyValue(pkAttributes, instancePrimaryKey);
+            result = (await scopedModel.findOne({ where: pkValues }))?.dataValues;
+          } else {
+            result = (await scopedModel.findByPk(instancePrimaryKey))?.dataValues;
+          }
           log.info(this.logHeader, "getInstance", "result", result);
           return Promise.resolve({
             status: "ok",
@@ -608,7 +616,16 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
       try {
         const sequelizeModel = this.sqlSchemaTableAccess[parentUuid].sequelizeModel;
         const idAttribute = this.sqlSchemaTableAccess[parentUuid].idAttribute ?? "uuid";
-        await sequelizeModel.destroy({ where: { [idAttribute]: (instance as any)[idAttribute] } });
+        if (Array.isArray(idAttribute)) {
+          // Composite PK: build WHERE clause with all PK columns
+          const whereClause: Record<string, any> = {};
+          for (const attr of idAttribute) {
+            whereClause[attr] = (instance as any)[attr];
+          }
+          await sequelizeModel.destroy({ where: whereClause });
+        } else {
+          await sequelizeModel.destroy({ where: { [idAttribute]: (instance as any)[idAttribute] } });
+        }
         return Promise.resolve(ACTION_OK);
       } catch (error) {
         log.warn(

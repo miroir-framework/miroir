@@ -18,6 +18,7 @@ import {
   EntityInstanceCollection,
   EntityInstancesUuidIndex,
   getEntityPrimaryKeyAttribute,
+  serializeCompositeKeyValue,
   InstanceAction,
   LocalCacheAction,
   LoggerInterface,
@@ -189,12 +190,12 @@ const entityAdapter: EntityAdapter<EntityInstance, string> = createEntityAdapter
 // Map of custom EntityAdapters for entities with non-UUID primary keys,
 // indexed by entityInstancesLocationIndex.
 const entityAdapterMap: Record<string, EntityAdapter<EntityInstance, string>> = {};
-// Map from entityInstancesLocationIndex → idAttribute name ("uuid" is default)
-const entityIdAttributeByIndex: Record<string, string> = {};
+// Map from entityInstancesLocationIndex → idAttribute name(s) ("uuid" is default)
+const entityIdAttributeByIndex: Record<string, string | string[]> = {};
 
 function getOrCreateEntityAdapter(
   entityInstancesLocationIndex: string,
-  idAttribute?: string
+  idAttribute?: string | string[]
 ): EntityAdapter<EntityInstance, string> {
   log.info(
     "getOrCreateEntityAdapter called for entityInstancesLocationIndex",
@@ -207,8 +208,9 @@ function getOrCreateEntityAdapter(
     return entityAdapterMap[entityInstancesLocationIndex];
   }
   if (idAttribute && idAttribute !== "uuid") {
+    const pkAttrs = Array.isArray(idAttribute) ? idAttribute : [idAttribute];
     const customAdapter = createEntityAdapter<EntityInstance, string>({
-      selectId: (entity) => String((entity as any)[idAttribute]),
+      selectId: (entity) => serializeCompositeKeyValue(pkAttrs, entity),
     });
     entityAdapterMap[entityInstancesLocationIndex] = customAdapter;
     entityIdAttributeByIndex[entityInstancesLocationIndex] = idAttribute;
@@ -217,7 +219,7 @@ function getOrCreateEntityAdapter(
   return entityAdapter;
 }
 
-function getEntityIdAttribute(entityInstancesLocationIndex: string): string {
+function getEntityIdAttribute(entityInstancesLocationIndex: string): string | string[] {
   return entityIdAttributeByIndex[entityInstancesLocationIndex] ?? "uuid";
 }
 
@@ -542,7 +544,8 @@ function handleInstanceAction(
             // );
 
             const deleteIdAttribute = getEntityIdAttribute(instanceCollectionEntityIndex);
-            const deletePkValue = String((instance as any)[deleteIdAttribute]);
+            const deletePkAttrs = Array.isArray(deleteIdAttribute) ? deleteIdAttribute : [deleteIdAttribute];
+            const deletePkValue = serializeCompositeKeyValue(deletePkAttrs, instance);
             sliceEntityAdapter.removeOne(
               state.current[instanceCollectionEntityIndex],
               deletePkValue
@@ -590,7 +593,8 @@ function handleInstanceAction(
           // }));
           // log.info("localCacheSliceObject handleInstanceAction for entity", instanceCollection.parentUuid, instanceCollection.parentUuid, "updating", updates)
           const updateIdAttribute = getEntityIdAttribute(instanceCollectionEntityIndex);
-          const updatePkValue = String((instance as any)[updateIdAttribute]);
+          const updatePkAttrs = Array.isArray(updateIdAttribute) ? updateIdAttribute : [updateIdAttribute];
+          const updatePkValue = serializeCompositeKeyValue(updatePkAttrs, instance);
           sliceEntityAdapter.updateOne(state.current[instanceCollectionEntityIndex], {
             id: updatePkValue,
             changes: instance,

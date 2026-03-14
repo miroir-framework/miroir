@@ -26,7 +26,7 @@ export class IndexedDbStoreSection
   extends IndexedDbStore
   implements PersistenceStoreAbstractSectionInterface, StorageSpaceHandlerInterface
 {
-  public entityIdAttributes: Record<string, string> = {};
+  public entityIdAttributes: Record<string, string | string[]> = {};
 
   // ##############################################################################################
   constructor(
@@ -60,6 +60,11 @@ export class IndexedDbStoreSection
   // ##############################################################################################
   getEntityUuids(): string[] {
     return this.localUuidIndexedDb.getSubLevels();
+  }
+
+  // ##############################################################################################
+  getEntityIdAttribute(entityUuid: string): string | string[] {
+    return this.entityIdAttributes[entityUuid] ?? "uuid";
   }
 
   // #############################################################################################

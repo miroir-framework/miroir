@@ -9229,14 +9229,25 @@ export const miroirFundamentalJzodSchema = {
             }
           },
           "idAttribute": {
-            "type": "string",
+            "type": "union",
             "optional": true,
             "tag": {
               "value": {
                 "defaultLabel": "Id Attribute",
-                "description": "The attribute used as primary key for instances of this entity. Defaults to 'uuid' when absent."
+                "description": "The attribute(s) used as primary key for instances of this entity. Defaults to 'uuid' when absent. Can be a single attribute name (string) or an array of attribute names for composite primary keys."
               }
-            }
+            },
+            "definition": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "array",
+                "definition": {
+                  "type": "string"
+                }
+              }
+            ]
           },
           "externalDataSource": {
             "type": "object",
@@ -40555,20 +40566,31 @@ export const miroirFundamentalJzodSchema = {
                 "tag": {
                   "value": {
                     "defaultLabel": "Id Attribute",
-                    "description": "The attribute used as primary key for instances of this entity. Defaults to 'uuid' when absent.",
+                    "description": "The attribute(s) used as primary key for instances of this entity. Defaults to 'uuid' when absent. Can be a single attribute name (string) or an array of attribute names for composite primary keys.",
                     "isTemplate": true
                   }
                 },
-                "discriminator": "transformerType",
                 "definition": [
                   {
-                    "type": "string",
-                    "optional": true,
-                    "tag": {
-                      "value": {
-                        "defaultLabel": "Id Attribute",
-                        "description": "The attribute used as primary key for instances of this entity. Defaults to 'uuid' when absent."
-                      }
+                    "type": "string"
+                  },
+                  {
+                    "type": "array",
+                    "definition": {
+                      "type": "union",
+                      "discriminator": "transformerType",
+                      "definition": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "schemaReference",
+                          "definition": {
+                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            "relativePath": "transformerForBuildCarryOnObject"
+                          }
+                        }
+                      ]
                     }
                   },
                   {
@@ -40578,6 +40600,9 @@ export const miroirFundamentalJzodSchema = {
                       "relativePath": "transformerForBuildCarryOnObject"
                     }
                   }
+                ],
+                "discriminator": [
+                  "transformerType"
                 ]
               },
               "externalDataSource": {
@@ -64119,14 +64144,26 @@ export const miroirFundamentalJzodSchema = {
             }
           },
           "idAttribute": {
-            "type": "string",
+            "type": "union",
             "optional": true,
             "tag": {
               "value": {
                 "defaultLabel": "Id Attribute",
-                "description": "The attribute used as primary key for instances of this entity. Defaults to 'uuid' when absent."
+                "description": "The attribute(s) used as primary key for instances of this entity. Defaults to 'uuid' when absent. Can be a single attribute name (string) or an array of attribute names for composite primary keys.",
+                "isTemplate": true
               }
-            }
+            },
+            "definition": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "array",
+                "definition": {
+                  "type": "string"
+                }
+              }
+            ]
           },
           "externalDataSource": {
             "type": "object",
@@ -78578,14 +78615,26 @@ export const miroirFundamentalJzodSchema = {
             }
           },
           "idAttribute": {
-            "type": "string",
+            "type": "union",
             "optional": true,
             "tag": {
               "value": {
                 "defaultLabel": "Id Attribute",
-                "description": "The attribute used as primary key for instances of this entity. Defaults to 'uuid' when absent."
+                "description": "The attribute(s) used as primary key for instances of this entity. Defaults to 'uuid' when absent. Can be a single attribute name (string) or an array of attribute names for composite primary keys.",
+                "isTemplate": true
               }
-            }
+            },
+            "definition": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "array",
+                "definition": {
+                  "type": "string"
+                }
+              }
+            ]
           },
           "externalDataSource": {
             "type": "object",

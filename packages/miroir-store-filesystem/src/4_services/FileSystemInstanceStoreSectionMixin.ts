@@ -217,7 +217,9 @@ export function FileSystemInstanceStoreSectionMixin<TBase extends MixableFileSys
     upsertInstance(entityUuid: string, instance: EntityInstance): Promise<Action2VoidReturnType> {
       try {
         const idAttribute = this.entityIdAttributes[entityUuid] ?? "uuid";
-        const pkValue = String((instance as any)[idAttribute]);
+        const pkValue = Array.isArray(idAttribute)
+          ? idAttribute.map(attr => encodeURIComponent(String((instance as any)[attr]))).join("_")
+          : String((instance as any)[idAttribute]);
         const filePath = path.join(this.directory, entityUuid, fullName(pkValue));
         log.info(
           this.logHeader,
@@ -271,7 +273,9 @@ export function FileSystemInstanceStoreSectionMixin<TBase extends MixableFileSys
     // #############################################################################################
     deleteInstance(entityUuid: string, instance: EntityInstance): Promise<Action2VoidReturnType> {
       const idAttribute = this.entityIdAttributes[entityUuid] ?? "uuid";
-      const pkValue = (instance as any)[idAttribute];
+      const pkValue = Array.isArray(idAttribute)
+        ? idAttribute.map(attr => encodeURIComponent(String((instance as any)[attr]))).join("_")
+        : (instance as any)[idAttribute];
       log.info(
         "FileSystemInstanceStore deleteInstance called",
         "directory",

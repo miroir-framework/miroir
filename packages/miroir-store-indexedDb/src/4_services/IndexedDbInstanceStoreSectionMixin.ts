@@ -138,10 +138,11 @@ export function IndexedDbInstanceStoreSectionMixin<TBase extends MixableIndexedD
       log.info(this.logHeader, "upsertInstance called", instance.parentUuid, instance);
 
       try {
-        if (this.localUuidIndexedDb.hasSubLevel(instance.parentUuid)) {
+        if (this.localUuidIndexedDb.hasSubLevel(instance.parentUuid ?? parentUuid)) {
           // const upsertResult = await this.localUuidIndexedDb.putValue(instance.parentUuid, instance);
-          const idAttribute = this.entityIdAttributes[instance.parentUuid] ?? "uuid";
-          return this.localUuidIndexedDb.putValue(instance.parentUuid, instance, idAttribute);
+          const effectiveParentUuid = instance.parentUuid ?? parentUuid;
+          const idAttribute = this.entityIdAttributes[effectiveParentUuid] ?? "uuid";
+          return this.localUuidIndexedDb.putValue(effectiveParentUuid, instance, idAttribute);
           log.info(this.logHeader, "upsertInstance", instance.parentUuid, "done");
           // const tmp = await this.getInstances(instance.parentUuid);
           // log.debug(this.logHeader, "upsertInstance", instance.parentUuid, "found existing", tmp);
@@ -222,7 +223,9 @@ export function IndexedDbInstanceStoreSectionMixin<TBase extends MixableIndexedD
       try {
         // const deleteResult = await this.localUuidIndexedDb.deleteEntityInstance(parentUuid, instance.uuid);
         const idAttribute = this.entityIdAttributes[parentUuid] ?? "uuid";
-        const pkValue = String((instance as any)[idAttribute]);
+        const pkValue = Array.isArray(idAttribute)
+          ? idAttribute.map(attr => String((instance as any)[attr])).join("|")
+          : String((instance as any)[idAttribute]);
         return this.localUuidIndexedDb.deleteEntityInstance(parentUuid, pkValue);
         // if (deleteResult. === false) {
         //   log.error(this.logHeader, "deleteInstance failed.", "entity", parentUuid, "instance", instance);

@@ -56,6 +56,7 @@ export interface PersistenceStoreAbstractSectionInterface extends PersistenceSto
     entityDefinitions : EntityDefinition[],
   ):Promise<Action2VoidReturnType>;
   getEntityUuids():string[];
+  getEntityIdAttribute(entityUuid: string): string | string[];
   clear():Promise<Action2VoidReturnType>;
 }
 

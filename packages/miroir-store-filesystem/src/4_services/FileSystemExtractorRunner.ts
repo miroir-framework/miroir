@@ -32,6 +32,7 @@ import {
   selectFetchQueryJzodSchemaFromDomainStateNew,
   selectJzodSchemaByDomainModelQueryFromDomainStateNew,
   selectJzodSchemaBySingleSelectQueryFromDomainStateNew,
+  serializeCompositeKeyValue,
   transformer_InnerReference_resolve,
   type ApplicationDeploymentMap
 } from "miroir-core";
@@ -290,7 +291,10 @@ export class FileSystemExtractorRunner implements ExtractorOrQueryPersistenceSto
       if (result instanceof Domain2ElementFailed) {
         return result;
       }
-      const entityInstanceUuidIndex = Object.fromEntries(result.map((i: any) => [i.uuid, i]));
+      const entityUuid = extractorRunnerParams.extractor.select.parentUuid;
+      const idAttribute = this.persistenceStoreController.getEntityIdAttribute(entityUuid);
+      const pkAttrs = Array.isArray(idAttribute) ? idAttribute : [idAttribute];
+      const entityInstanceUuidIndex = Object.fromEntries(result.map((i: any) => [serializeCompositeKeyValue(pkAttrs, i), i]));
       return entityInstanceUuidIndex;
     });
   };

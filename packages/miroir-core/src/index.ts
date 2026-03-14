@@ -687,10 +687,14 @@ export {
   actionsWithDeploymentInPayload,
 } from "./1_core/Instance";
 export {
+  entityHasCompositePrimaryKey,
   entityHasUuidPrimaryKey,
   getEntityPrimaryKeyAttribute,
+  getEntityPrimaryKeyAttributes,
   getInstancePrimaryKeyValue,
+  parseCompositeKeyValue,
   resolveInstanceParentUuid,
+  serializeCompositeKeyValue,
 } from "./1_core/EntityPrimaryKey";
 export {
   applicationModelEntities,

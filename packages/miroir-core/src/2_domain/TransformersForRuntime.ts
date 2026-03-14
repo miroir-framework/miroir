@@ -113,6 +113,7 @@ import { packageName } from "../constants";
 import { resolvePathOnObject, safeResolvePathOnObject } from "../tools";
 import { cleanLevel } from "./constants";
 import { getEntityInstancesUuidIndexNonHook } from "./ReduxDeploymentsStateQueryExecutor";
+import { getInstancePrimaryKeyValue } from "../1_core/EntityPrimaryKey";
 // import { transformer_spreadSheetToJzodSchema } from "./Transformer_Spreadsheet";
 import {
   mlsTransformers,
@@ -439,7 +440,13 @@ export function getDefaultValueForJzodSchemaWithResolution(
           effectiveSchema.tag.value.foreignKeyParams.targetEntityOrderInstancesBy
         );
 
-        const result = Object.values(foreignKeyObjects)[0]?.uuid;
+        const firstInstance = Object.values(foreignKeyObjects)[0];
+        const targetEntityDef = miroirEnvironment.currentModel.entityDefinitions.find(
+          ed => ed.entityUuid === effectiveSchema.tag?.value?.foreignKeyParams?.targetEntity
+        );
+        const result = firstInstance && targetEntityDef
+          ? getInstancePrimaryKeyValue(targetEntityDef, firstInstance)
+          : firstInstance?.uuid;
         return result;
       }
       const result = uuidv4();
