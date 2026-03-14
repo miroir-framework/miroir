@@ -198,7 +198,8 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   // Track performance immediately for initial render
   const componentKey = `ReportSectionEntityInstance-${props.initialInstanceValueDEFUNCT?.uuid || props.entityUuidDEFUNCT}`;
 
-  const [isResultsCollapsed, setIsResultsCollapsed] = useState(true);
+  const [isResultsCollapsed, setIsResultsCollapsed] = useState(false);
+  // const [isResultsCollapsed, setIsResultsCollapsed] = useState(true);
 
   // Use outline context for outline state management
   const outlineContext = useDocumentOutlineContext();
@@ -496,7 +497,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
               backgroundColor: "#f8f9fa",
             }}
           >
-            <div
+            {/* <div
               style={{
                 display: "flex",
                 alignItems: "center",
@@ -511,10 +512,10 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
               <span style={{ color: "#666", fontSize: "14px" }}>
                 {isResultsCollapsed ? "▶" : "▼"}
               </span>
-            </div>
+            </div> */}
 
             {/* query test run results */}
-            {!isResultsCollapsed && (
+            {/* {!isResultsCollapsed && ( */}
               <div style={{ padding: "16px" }}>
                 {queryTestRunResults ? (
                   queryTestRunResults.elementType === "failure" ? (
@@ -530,13 +531,8 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
                         Query executed successfully. Results:
                       </div>
                       <>
-                      {/* <CodeBlock_ReadOnly value={JSON.stringify(queryTestRunResults, null, 2)} /> */}
                       <JsonDisplayHelper componentName="ReportSectionEntityInstance" elements={debugElements.elements} />
                       </>
-
-                      {/* <ThemedCodeBlock>
-                        {JSON.stringify(queryTestRunResults, null, 2)}
-                      </ThemedCodeBlock> */}
                     </div>
                   )
                 ) : (
@@ -554,7 +550,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
                   </div>
                 )}
               </div>
-            )}
+            {/* )} */}
           </div>
         )}
 

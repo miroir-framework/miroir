@@ -3,73 +3,177 @@
   "parentName": "EntityDefinition",
   "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
   "parentDefinitionVersionUuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
+  "name": "columns",
   "entityUuid": "39e5c7a1-3f82-4bda-b8c4-2d576f9f10ae",
   "conceptLevel": "External",
-  "name": "columns",
   "description": "The columns of a PostgreSQL schema.",
-  "icon": "building",
   "defaultInstanceDetailsReportUuid": "21133a6b-c9b2-44bf-812a-e13d99e7235e",
+  "viewAttributes": null,
+  "icon": "building",
+  "display": null,
+  "cache": {
+    "cacheAllInstancesOnRefresh": true
+  },
   "idAttribute": "column_name",
   "externalDataSource": {
     "schema": "information_schema"
   },
-  "cache": {
-    "cacheAllInstancesOnRefresh": true
-  },
   "mlSchema": {
     "type": "object",
     "definition": {
-      "table_catalog": {
-        "type": "string",
-        "tag": { "value": { "id": 1, "defaultLabel": "Table Catalog", "display": { "editable": false } } }
-      },
-      "table_schema": {
-        "type": "string",
-        "tag": { "value": { "id": 2, "defaultLabel": "Table Schema", "display": { "editable": false } } }
-      },
-      "table_name": {
-        "type": "string",
-        "tag": { "value": { "id": 3, "defaultLabel": "Table Name", "display": { "editable": false } } }
-      },
-      "column_name": {
-        "type": "string",
-        "tag": { "value": { "id": 4, "defaultLabel": "Column Name", "display": { "editable": false } } }
-      },
-      "ordinal_position": {
-        "type": "number",
-        "tag": { "value": { "id": 5, "defaultLabel": "Ordinal Position", "display": { "editable": false } } }
-      },
-      "column_default": {
-        "type": "string",
-        "optional": true,
-        "tag": { "value": { "id": 6, "defaultLabel": "Column Default", "display": { "editable": false } } }
-      },
-      "is_nullable": {
-        "type": "string",
-        "tag": { "value": { "id": 7, "defaultLabel": "Is Nullable", "display": { "editable": false } } }
+      "udt_name": {
+        "tag": {
+          "value": {
+            "id": 12,
+            "display": {
+              "editable": false
+            },
+            "defaultLabel": "UDT Name"
+          }
+        },
+        "type": "string"
       },
       "data_type": {
-        "type": "string",
-        "tag": { "value": { "id": 8, "defaultLabel": "Data Type", "display": { "editable": false } } }
+        "tag": {
+          "value": {
+            "id": 8,
+            "display": {
+              "editable": false
+            },
+            "defaultLabel": "Data Type"
+          }
+        },
+        "type": "string"
       },
-      "character_maximum_length": {
-        "type": "number",
-        "optional": true,
-        "tag": { "value": { "id": 9, "defaultLabel": "Character Max Length", "display": { "editable": false } } }
+      "table_name": {
+        "tag": {
+          "value": {
+            "id": 3,
+            "display": {
+              "editable": false
+            },
+            "defaultLabel": "Table Name",
+            "foreignKeyParams": {
+              "targetEntity": "35961086-f932-477a-aa77-ac8360ffbf61"
+            }
+          }
+        },
+        "type": "string"
       },
-      "numeric_precision": {
-        "type": "number",
-        "optional": true,
-        "tag": { "value": { "id": 10, "defaultLabel": "Numeric Precision", "display": { "editable": false } } }
+      "column_name": {
+        "tag": {
+          "value": {
+            "id": 4,
+            "display": {
+              "editable": false
+            },
+            "defaultLabel": "Column Name"
+          }
+        },
+        "type": "string"
+      },
+      "is_nullable": {
+        "tag": {
+          "value": {
+            "id": 7,
+            "display": {
+              "editable": false
+            },
+            "defaultLabel": "Is Nullable"
+          }
+        },
+        "type": "string"
+      },
+      "table_schema": {
+        "tag": {
+          "value": {
+            "id": 2,
+            "display": {
+              "editable": false
+            },
+            "defaultLabel": "Table Schema",
+            "foreignKeyParams": {
+              "targetEntity": "cbc94d62-d2e5-4bc2-8aef-45efcfbd0af6"
+            }
+          }
+        },
+        "type": "string"
       },
       "numeric_scale": {
+        "tag": {
+          "value": {
+            "id": 11,
+            "display": {
+              "editable": false
+            },
+            "defaultLabel": "Numeric Scale"
+          }
+        },
         "type": "number",
-        "optional": true,
-        "tag": { "value": { "id": 11, "defaultLabel": "Numeric Scale", "display": { "editable": false } } }
+        "optional": true
       },
-      "udt_name": {
+      "table_catalog": {
+        "tag": {
+          "value": {
+            "id": 1,
+            "display": {
+              "editable": false
+            },
+            "defaultLabel": "Table Catalog"
+          }
+        },
+        "type": "string"
+      },
+      "column_default": {
+        "tag": {
+          "value": {
+            "id": 6,
+            "display": {
+              "editable": false
+            },
+            "defaultLabel": "Column Default"
+          }
+        },
         "type": "string",
-        "tag": { "value": { "id": 12, "defaultLabel": "UDT Name", "display": { "editable": false } } }
+        "optional": true
+      },
+      "ordinal_position": {
+        "tag": {
+          "value": {
+            "id": 5,
+            "display": {
+              "editable": false
+            },
+            "defaultLabel": "Ordinal Position"
+          }
+        },
+        "type": "number"
+      },
+      "numeric_precision": {
+        "tag": {
+          "value": {
+            "id": 10,
+            "display": {
+              "editable": false
+            },
+            "defaultLabel": "Numeric Precision"
+          }
+        },
+        "type": "number",
+        "optional": true
+      },
+      "character_maximum_length": {
+        "tag": {
+          "value": {
+            "id": 9,
+            "display": {
+              "editable": false
+            },
+            "defaultLabel": "Character Max Length"
+          }
+        },
+        "type": "number",
+        "optional": true
       }
     }
   }

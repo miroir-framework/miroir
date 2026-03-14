@@ -26,12 +26,16 @@ The `miroir-core` and other packages follow a strict layered architecture in `sr
 ## Package Dependencies & Build Order
 
 Core dependency graph (must be built in this order):
-1. `miroir-core` (foundation with generated types)
-2. `miroir-localcache-redux`, `miroir-store-*` packages  
-3. `miroir-react`, `miroir-server`
-4. `miroir-standalone-app`, `miroir-designer`
+1. `miroir-test-app_deployment-miroir`, `miroir-test-app_deployment-admin` (definition of core types and concepts as Jzod schemas)
+2. `miroir-core` (foundation with generated types)
+3. `miroir-localcache*`, `miroir-store-*` packages  
+4. `miroir-react`, `miroir-mcp`, `miroir-diagram-class`
+5. `miroir-server`, `miroir-standalone-app`, `miroir-cli`
+7. `miroir-test-app_deployment-library`, `miroir-test-app_deployment-postgres` (example applications), miroir-standalone-app-electron (desktop application)
 
-**Note**: `miroir-core` has a `devBuild` step to generate TypeScript types (the files in `packages\miroir-core\src\0_interfaces\1_core\preprocessor-generated`) from Jzod schemas. It must be built every time some core schema in `packages\miroir-core\src\assets\miroir_data` or `packages\miroir-core\src\assets\miroir_model` is modified.
+`miroir-designer`, `miroir-runtime` are not used.
+
+**Note**: `miroir-core` has a `devBuild` step to generate TypeScript types (the files in `packages\miroir-core\src\0_interfaces\1_core\preprocessor-generated`) from Jzod schemas. It must be built every time some core schema in `packages/miroir-test-app_deployment-miroir/assets` is modified, after building `miroir-test-app_deployment-miroir` itself.
 
 **Note**: `miroir-runtime` and `miroir-query-jsonata` are additional packages in the ecosystem.
 
