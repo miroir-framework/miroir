@@ -354,6 +354,8 @@ export function getMiroirFundamentalJzodSchema(
         transformerForBuild_getFromParameters:
           miroirTransformersForBuild.transformer_getFromParameters,
         transformerForBuild_getUniqueValues: miroirTransformersForBuild.transformer_getUniqueValues,
+        transformerForBuild_ansiColumnsToJzodSchema:
+          miroirTransformersForBuild.transformer_ansiColumnsToJzodSchema,
         // MLS
         ...Object.fromEntries(
           Object.entries(mlsTransformers).map(([key, value]) => [
@@ -446,6 +448,8 @@ export function getMiroirFundamentalJzodSchema(
           miroirTransformersForBuildPlusRuntime.transformer_createObjectFromPairs,
         transformerForBuildPlusRuntime_getUniqueValues:
           miroirTransformersForBuildPlusRuntime.transformer_getUniqueValues,
+        transformerForBuildPlusRuntime_ansiColumnsToJzodSchema:
+          miroirTransformersForBuildPlusRuntime.transformer_ansiColumnsToJzodSchema,
         // MLS
         ...Object.fromEntries(
           Object.entries(mlsTransformers).map(([key, value]) => [
@@ -3628,6 +3632,7 @@ export function getMiroirFundamentalJzodSchema(
     "transformerForBuild_createObjectFromPairs",
     "transformerForBuild_getFromParameters",
     "transformerForBuild_getUniqueValues",
+    "transformerForBuild_ansiColumnsToJzodSchema",
     // "transformerForBuild_InnerReference"
   ].forEach((key) => {
     domainActionDependencySet.add(key);

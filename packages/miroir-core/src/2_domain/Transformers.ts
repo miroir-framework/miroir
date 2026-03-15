@@ -34,6 +34,7 @@ import {
   transformer_unfoldSchemaOnce_json,
   transformer_jzodTypeCheck_json,
   transformer_getActiveDeployment_json,
+  transformer_ansiColumnsToJzodSchema_json,
 } from "miroir-test-app_deployment-miroir";
 
 // ################################################################################################
@@ -76,6 +77,7 @@ export const transformer_unfoldSchemaOnce: TransformerDefinition = transformer_u
 export const transformer_jzodTypeCheck: TransformerDefinition = transformer_jzodTypeCheck_json as TransformerDefinition;
 // admin
 export const transformer_getActiveDeployment: TransformerDefinition = transformer_getActiveDeployment_json as TransformerDefinition;
+export const transformer_ansiColumnsToJzodSchema: TransformerDefinition = transformer_ansiColumnsToJzodSchema_json as TransformerDefinition;
 
 export const adminTransformers: Record<string,TransformerDefinition> = {
   transformer_getActiveDeployment,
@@ -117,6 +119,7 @@ export const miroirCoreTransformers: Record<string,TransformerDefinition> = {
   transformer_mustacheStringTemplate,
   transformer_generateUuid,
   transformer_mergeIntoObject,
+  transformer_ansiColumnsToJzodSchema,
   // transformer_constantBigint,
   // MLS
   ...mlsTransformers,

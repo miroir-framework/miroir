@@ -108,6 +108,7 @@ import {
   resolveConditionalSchemaTransformer,
 } from "../1_core/jzod/resolveConditionalSchema";
 import { handleTransformer_menu_AddItem } from "../1_core/Menu";
+import { ansiColumnsToJzodSchema } from "../1_core/ansiColumnsToJzodSchema";
 import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory";
 import { packageName } from "../constants";
 import { resolvePathOnObject, safeResolvePathOnObject } from "../tools";
@@ -147,6 +148,7 @@ import {
   type ResolveBuildTransformersTo,
   type Step,
   transformer_getActiveDeployment,
+  transformer_ansiColumnsToJzodSchema,
 } from "./Transformers";
 import type { MiroirActivityTrackerInterface } from "../0_interfaces/3_controllers/MiroirActivityTrackerInterface";
 import { defaultAdminApplicationDeploymentMapNOTGOOD, type ApplicationDeploymentMap } from "../1_core/Deployment";
@@ -738,6 +740,7 @@ const inMemoryTransformerImplementations: Record<string, ITransformerHandler<any
   transformer_resolveSchemaReferenceInContext: resolveSchemaReferenceInContextTransformer,
   transformer_unfoldSchemaOnce: unfoldSchemaOnceTransformer,
   transformer_jzodTypeCheck: jzodTypeCheckTransformer,
+  handleTransformer_ansiColumnsToJzodSchema,
 };
 
 // transformer_defaultValueForMLSchema
@@ -771,6 +774,7 @@ export const applicationTransformerDefinitions: Record<string, TransformerDefini
   createObjectFromPairs: transformer_createObjectFromPairs,
   getFromParameters: transformer_getFromParameters,
   getUniqueValues: transformer_getUniqueValues,
+  ansiColumnsToJzodSchema: transformer_ansiColumnsToJzodSchema,
   // MLS
   ...Object.fromEntries(
     Object.entries(mlsTransformers).map(([key, value]) => [
@@ -3994,4 +3998,60 @@ export function getInnermostTransformerError(error: TransformerFailure): Transfo
     // }
   }
   return error;
+}
+
+// ################################################################################################
+export function handleTransformer_ansiColumnsToJzodSchema(
+  step: Step,
+  transformerPath: string[],
+  label: string | undefined,
+  transformer: any,
+  resolveBuildTransformersTo: ResolveBuildTransformersTo,
+  modelEnvironment: MiroirModelEnvironment,
+  transformerParams: Record<string, any>,
+  contextResults?: Record<string, any>,
+  reduxDeploymentsState?: ReduxDeploymentsState | undefined
+): TransformerReturnType<any> {
+  const resolvedReference = resolveApplyTo_legacy(
+    transformer,
+    step,
+    transformerPath,
+    resolveBuildTransformersTo,
+    modelEnvironment,
+    transformerParams,
+    contextResults,
+    label
+  );
+
+  if (resolvedReference instanceof TransformerFailure) {
+    return new TransformerFailure({
+      queryFailure: "FailedTransformer",
+      transformerPath,
+      failureOrigin: ["handleTransformer_ansiColumnsToJzodSchema"],
+      queryContext: "handleTransformer_ansiColumnsToJzodSchema can not resolve applyTo",
+      innerError: resolvedReference,
+    });
+  }
+
+  if (!Array.isArray(resolvedReference)) {
+    return new TransformerFailure({
+      queryFailure: "FailedTransformer",
+      transformerPath,
+      failureOrigin: ["handleTransformer_ansiColumnsToJzodSchema"],
+      failureMessage:
+        "handleTransformer_ansiColumnsToJzodSchema called on something that is not an array: " +
+        typeof resolvedReference,
+    });
+  }
+
+  try {
+    return ansiColumnsToJzodSchema(resolvedReference as any);
+  } catch (e: any) {
+    return new TransformerFailure({
+      queryFailure: "FailedTransformer",
+      transformerPath,
+      failureOrigin: ["handleTransformer_ansiColumnsToJzodSchema"],
+      failureMessage: e?.message ?? String(e),
+    });
+  }
 }

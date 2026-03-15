@@ -6213,6 +6213,230 @@
                 }
               }
             ]
+          },
+          {
+            "transformerTestType": "transformerTestSuite",
+            "transformerTestLabel": "ansiColumnsToJzodSchema",
+            "skip": false,
+            "transformerTests": [
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "ansiColumnsToJzodSchema converts basic column types to a Jzod object schema",
+                "transformerName": "ansiColumnsToJzodSchema",
+                "transformer": {
+                  "transformerType": "ansiColumnsToJzodSchema",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referenceName": "columns"
+                  }
+                },
+                "transformerParams": {},
+                "transformerRuntimeContext": {
+                  "columns": [
+                    {
+                      "table_catalog": "testdb",
+                      "table_schema": "public",
+                      "table_name": "test_table",
+                      "column_name": "id",
+                      "ordinal_position": 1,
+                      "column_default": null,
+                      "is_nullable": "NO",
+                      "data_type": "uuid",
+                      "character_maximum_length": null,
+                      "udt_name": "uuid"
+                    },
+                    {
+                      "table_catalog": "testdb",
+                      "table_schema": "public",
+                      "table_name": "test_table",
+                      "column_name": "name",
+                      "ordinal_position": 2,
+                      "column_default": null,
+                      "is_nullable": "NO",
+                      "data_type": "character varying",
+                      "character_maximum_length": 255,
+                      "udt_name": "varchar"
+                    },
+                    {
+                      "table_catalog": "testdb",
+                      "table_schema": "public",
+                      "table_name": "test_table",
+                      "column_name": "count",
+                      "ordinal_position": 3,
+                      "column_default": null,
+                      "is_nullable": "YES",
+                      "data_type": "integer",
+                      "character_maximum_length": null,
+                      "udt_name": "int4"
+                    },
+                    {
+                      "table_catalog": "testdb",
+                      "table_schema": "public",
+                      "table_name": "test_table",
+                      "column_name": "metadata",
+                      "ordinal_position": 4,
+                      "column_default": null,
+                      "is_nullable": "YES",
+                      "data_type": "jsonb",
+                      "character_maximum_length": null,
+                      "udt_name": "jsonb"
+                    }
+                  ]
+                },
+                "expectedValue": {
+                  "type": "object",
+                  "definition": {
+                    "id": {
+                      "type": "uuid",
+                      "tag": {
+                        "value": {
+                          "id": 1,
+                          "defaultLabel": "id"
+                        }
+                      }
+                    },
+                    "name": {
+                      "type": "string",
+                      "tag": {
+                        "value": {
+                          "id": 2,
+                          "defaultLabel": "name"
+                        }
+                      }
+                    },
+                    "count": {
+                      "type": "number",
+                      "tag": {
+                        "value": {
+                          "id": 3,
+                          "defaultLabel": "count"
+                        }
+                      },
+                      "optional": true
+                    },
+                    "metadata": {
+                      "type": "object",
+                      "definition": {},
+                      "tag": {
+                        "value": {
+                          "id": 4,
+                          "defaultLabel": "metadata"
+                        }
+                      },
+                      "optional": true
+                    }
+                  }
+                }
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "ansiColumnsToJzodSchema sorts columns by ordinal_position",
+                "transformerName": "ansiColumnsToJzodSchema",
+                "transformer": {
+                  "transformerType": "ansiColumnsToJzodSchema",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referenceName": "columns"
+                  }
+                },
+                "transformerParams": {},
+                "transformerRuntimeContext": {
+                  "columns": [
+                    {
+                      "table_catalog": "testdb",
+                      "table_schema": "public",
+                      "table_name": "test_table",
+                      "column_name": "b_col",
+                      "ordinal_position": 2,
+                      "column_default": null,
+                      "is_nullable": "NO",
+                      "data_type": "text",
+                      "character_maximum_length": null,
+                      "udt_name": "text"
+                    },
+                    {
+                      "table_catalog": "testdb",
+                      "table_schema": "public",
+                      "table_name": "test_table",
+                      "column_name": "a_col",
+                      "ordinal_position": 1,
+                      "column_default": null,
+                      "is_nullable": "NO",
+                      "data_type": "boolean",
+                      "character_maximum_length": null,
+                      "udt_name": "bool"
+                    }
+                  ]
+                },
+                "expectedValue": {
+                  "type": "object",
+                  "definition": {
+                    "a_col": {
+                      "type": "boolean",
+                      "tag": {
+                        "value": {
+                          "id": 1,
+                          "defaultLabel": "a_col"
+                        }
+                      }
+                    },
+                    "b_col": {
+                      "type": "string",
+                      "tag": {
+                        "value": {
+                          "id": 2,
+                          "defaultLabel": "b_col"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "ansiColumnsToJzodSchema fails for unsupported data_type",
+                "transformerName": "ansiColumnsToJzodSchemaFailed",
+                "transformer": {
+                  "transformerType": "ansiColumnsToJzodSchema",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referenceName": "columns"
+                  }
+                },
+                "transformerParams": {},
+                "transformerRuntimeContext": {
+                  "columns": [
+                    {
+                      "table_catalog": "testdb",
+                      "table_schema": "public",
+                      "table_name": "test_table",
+                      "column_name": "unsupported_col",
+                      "ordinal_position": 1,
+                      "column_default": null,
+                      "is_nullable": "NO",
+                      "data_type": "bytea",
+                      "character_maximum_length": null,
+                      "udt_name": "bytea"
+                    }
+                  ]
+                },
+                "retainAttributes": [
+                  "queryFailure"
+                ],
+                "unitTestExpectedValue": {
+                  "queryFailure": "FailedTransformer"
+                },
+                "integrationTestExpectedValue": {
+                  "queryFailure": "QueryNotExecutable"
+                }
+              }
+            ]
           }
         ]
       }

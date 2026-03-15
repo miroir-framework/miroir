@@ -1,0 +1,54 @@
+{
+  "uuid": "53b8073b-72d5-4c3f-8b5a-79c90744b5b7",
+  "name": "ansiColumnsToJzodSchema",
+  "defaultLabel": "ansiColumnsToJzodSchema",
+  "description": "Converts a list of information_schema.columns rows into a Jzod object schema. Nullable columns get optional: true. JSONB/JSON columns produce { type: \"object\", definition: {} }.",
+  "parentUuid": "a557419d-a288-4fb8-8a1e-971c86c113b8",
+  "parentDefinitionVersionUuid": "54a16d69-c1f0-4dd7-aba4-a2cda883586c",
+  "parentName": "TransformerDefinition",
+  "classification": "basic",
+  "transformerInterface": {
+    "inputOutput": {
+      "input": "array",
+      "output": "object"
+    },
+    "transformerParameterSchema": {
+      "transformerType": {
+        "type": "literal",
+        "definition": "ansiColumnsToJzodSchema"
+      },
+      "transformerDefinition": {
+        "type": "object",
+        "definition": {
+          "applyTo": {
+            "type": "any",
+            "optional": true,
+            "description": "The input array of information_schema.columns rows. The actual type is set by the platform depending on interpolation for the transformer."
+          }
+        }
+      }
+    },
+    "transformerResultSchema": {
+      "returns": "mlSchema",
+      "definition": {
+        "type": "object",
+        "definition": {
+          "type": {
+            "type": "literal",
+            "definition": "object"
+          },
+          "definition": {
+            "type": "record",
+            "definition": {
+              "type": "any"
+            }
+          }
+        }
+      }
+    }
+  },
+  "transformerImplementation": {
+    "transformerImplementationType": "libraryImplementation",
+    "inMemoryImplementationFunctionName": "handleTransformer_ansiColumnsToJzodSchema"
+  }
+}
