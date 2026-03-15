@@ -1,0 +1,62 @@
+{
+  "uuid": "a72bb361-3126-4aa1-85cc-0be4d6838c84",
+  "parentName": "Report",
+  "parentUuid": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+  "parentDefinitionVersionUuid": null,
+  "conceptLevel": "Model",
+  "name": "SchemaDetails",
+  "defaultLabel": "Detailed information about a Schema",
+  "type": null,
+  "selfApplication": "84d28eb1-d98a-499e-bf24-62cade033da6",
+  "definition": {
+    "section": {
+      "type": "list",
+      "definition": [
+        {
+          "type": "objectInstanceReportSection",
+          "definition": {
+            "parentUuid": "cbc94d62-d2e5-4bc2-8aef-45efcfbd0af6",
+            "fetchedDataReference": "schema",
+            "label": "Details of ${instance.schema_name}"
+          }
+        },
+        {
+          "type": "objectListReportSection",
+          "definition": {
+            "label": "Tables of (${schema.schema_name})",
+            "parentName": "Table",
+            "parentUuid": "35961086-f932-477a-aa77-ac8360ffbf61",
+            "sortByAttribute": "table_name",
+            "fetchedDataReference": "tablesOfSchema"
+          }
+        }
+      ]
+    },
+    "combinerTemplates": {
+      "tablesOfSchema": {
+        "parentName": "tables",
+        "parentUuid": "35961086-f932-477a-aa77-ac8360ffbf61",
+        "objectReference": {
+          "interpolation": "runtime",
+          "referenceName": "schema",
+          "transformerType": "getFromContext"
+        },
+        "extractorOrCombinerType": "combinerByRelationReturningObjectList",
+        "objectReferenceAttribute": "schema_name",
+        "AttributeOfListObjectToCompareToReferenceUuid": "table_schema"
+      }
+    },
+    "extractorTemplates": {
+      "schema": {
+        "parentName": "schemata",
+        "parentUuid": "cbc94d62-d2e5-4bc2-8aef-45efcfbd0af6",
+        "instanceUuid": {
+          "referenceName": "instanceUuid",
+          "transformerType": "getFromParameters"
+        },
+        "extractorOrCombinerType": "extractorForObjectByDirectReference"
+      }
+    },
+    "runtimeTransformers": {}
+  }
+}

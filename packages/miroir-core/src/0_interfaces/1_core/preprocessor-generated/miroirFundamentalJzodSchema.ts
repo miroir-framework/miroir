@@ -11789,10 +11789,7 @@ export const miroirFundamentalJzodSchema = {
                 "tag": {
                   "value": {
                     "id": 1,
-                    "defaultLabel": "Label",
-                    "display": {
-                      "editable": false
-                    }
+                    "defaultLabel": "Label"
                   }
                 }
               },
@@ -11806,10 +11803,7 @@ export const miroirFundamentalJzodSchema = {
                 "tag": {
                   "value": {
                     "id": 2,
-                    "defaultLabel": "Entity Uuid",
-                    "display": {
-                      "editable": false
-                    }
+                    "defaultLabel": "Entity Uuid"
                   }
                 }
               },
@@ -11819,10 +11813,7 @@ export const miroirFundamentalJzodSchema = {
                 "tag": {
                   "value": {
                     "id": 3,
-                    "defaultLabel": "Fetched Data Reference",
-                    "display": {
-                      "editable": false
-                    }
+                    "defaultLabel": "Fetched Data Reference"
                   }
                 }
               },
@@ -13020,10 +13011,7 @@ export const miroirFundamentalJzodSchema = {
                         "tag": {
                           "value": {
                             "id": 1,
-                            "defaultLabel": "Label",
-                            "display": {
-                              "editable": false
-                            }
+                            "defaultLabel": "Label"
                           }
                         }
                       },
@@ -13037,10 +13025,7 @@ export const miroirFundamentalJzodSchema = {
                         "tag": {
                           "value": {
                             "id": 2,
-                            "defaultLabel": "Entity Uuid",
-                            "display": {
-                              "editable": false
-                            }
+                            "defaultLabel": "Entity Uuid"
                           }
                         }
                       },
@@ -13050,10 +13035,7 @@ export const miroirFundamentalJzodSchema = {
                         "tag": {
                           "value": {
                             "id": 3,
-                            "defaultLabel": "Fetched Data Reference",
-                            "display": {
-                              "editable": false
-                            }
+                            "defaultLabel": "Fetched Data Reference"
                           }
                         }
                       },
@@ -42919,10 +42901,7 @@ export const miroirFundamentalJzodSchema = {
                                 "tag": {
                                   "value": {
                                     "id": 1,
-                                    "defaultLabel": "Label",
-                                    "display": {
-                                      "editable": false
-                                    }
+                                    "defaultLabel": "Label"
                                   }
                                 }
                               },
@@ -42936,10 +42915,7 @@ export const miroirFundamentalJzodSchema = {
                                 "tag": {
                                   "value": {
                                     "id": 2,
-                                    "defaultLabel": "Entity Uuid",
-                                    "display": {
-                                      "editable": false
-                                    }
+                                    "defaultLabel": "Entity Uuid"
                                   }
                                 }
                               },
@@ -42949,10 +42925,7 @@ export const miroirFundamentalJzodSchema = {
                                 "tag": {
                                   "value": {
                                     "id": 3,
-                                    "defaultLabel": "Fetched Data Reference",
-                                    "display": {
-                                      "editable": false
-                                    }
+                                    "defaultLabel": "Fetched Data Reference"
                                   }
                                 }
                               },
@@ -54262,9 +54235,6 @@ export const miroirFundamentalJzodSchema = {
                           "value": {
                             "id": 1,
                             "defaultLabel": "Label",
-                            "display": {
-                              "editable": false
-                            },
                             "isTemplate": true
                           }
                         },
@@ -54276,10 +54246,7 @@ export const miroirFundamentalJzodSchema = {
                             "tag": {
                               "value": {
                                 "id": 1,
-                                "defaultLabel": "Label",
-                                "display": {
-                                  "editable": false
-                                }
+                                "defaultLabel": "Label"
                               }
                             }
                           },
@@ -54303,9 +54270,6 @@ export const miroirFundamentalJzodSchema = {
                           "value": {
                             "id": 2,
                             "defaultLabel": "Entity Uuid",
-                            "display": {
-                              "editable": false
-                            },
                             "isTemplate": true
                           }
                         },
@@ -54321,10 +54285,7 @@ export const miroirFundamentalJzodSchema = {
                             "tag": {
                               "value": {
                                 "id": 2,
-                                "defaultLabel": "Entity Uuid",
-                                "display": {
-                                  "editable": false
-                                }
+                                "defaultLabel": "Entity Uuid"
                               }
                             }
                           },
@@ -54344,9 +54305,6 @@ export const miroirFundamentalJzodSchema = {
                           "value": {
                             "id": 3,
                             "defaultLabel": "Fetched Data Reference",
-                            "display": {
-                              "editable": false
-                            },
                             "isTemplate": true
                           }
                         },
@@ -54358,10 +54316,7 @@ export const miroirFundamentalJzodSchema = {
                             "tag": {
                               "value": {
                                 "id": 3,
-                                "defaultLabel": "Fetched Data Reference",
-                                "display": {
-                                  "editable": false
-                                }
+                                "defaultLabel": "Fetched Data Reference"
                               }
                             }
                           },
@@ -65828,10 +65783,7 @@ export const miroirFundamentalJzodSchema = {
                         "tag": {
                           "value": {
                             "id": 1,
-                            "defaultLabel": "Label",
-                            "display": {
-                              "editable": false
-                            }
+                            "defaultLabel": "Label"
                           }
                         }
                       },
@@ -65845,10 +65797,7 @@ export const miroirFundamentalJzodSchema = {
                         "tag": {
                           "value": {
                             "id": 2,
-                            "defaultLabel": "Entity Uuid",
-                            "display": {
-                              "editable": false
-                            }
+                            "defaultLabel": "Entity Uuid"
                           }
                         }
                       },
@@ -65858,10 +65807,7 @@ export const miroirFundamentalJzodSchema = {
                         "tag": {
                           "value": {
                             "id": 3,
-                            "defaultLabel": "Fetched Data Reference",
-                            "display": {
-                              "editable": false
-                            }
+                            "defaultLabel": "Fetched Data Reference"
                           }
                         }
                       },
@@ -70933,10 +70879,7 @@ export const miroirFundamentalJzodSchema = {
                 "tag": {
                   "value": {
                     "id": 1,
-                    "defaultLabel": "Label",
-                    "display": {
-                      "editable": false
-                    }
+                    "defaultLabel": "Label"
                   }
                 }
               },
@@ -70950,10 +70893,7 @@ export const miroirFundamentalJzodSchema = {
                 "tag": {
                   "value": {
                     "id": 2,
-                    "defaultLabel": "Entity Uuid",
-                    "display": {
-                      "editable": false
-                    }
+                    "defaultLabel": "Entity Uuid"
                   }
                 }
               },
@@ -70963,10 +70903,7 @@ export const miroirFundamentalJzodSchema = {
                 "tag": {
                   "value": {
                     "id": 3,
-                    "defaultLabel": "Fetched Data Reference",
-                    "display": {
-                      "editable": false
-                    }
+                    "defaultLabel": "Fetched Data Reference"
                   }
                 }
               },
@@ -80343,10 +80280,7 @@ export const miroirFundamentalJzodSchema = {
                         "tag": {
                           "value": {
                             "id": 1,
-                            "defaultLabel": "Label",
-                            "display": {
-                              "editable": false
-                            }
+                            "defaultLabel": "Label"
                           }
                         }
                       },
@@ -80360,10 +80294,7 @@ export const miroirFundamentalJzodSchema = {
                         "tag": {
                           "value": {
                             "id": 2,
-                            "defaultLabel": "Entity Uuid",
-                            "display": {
-                              "editable": false
-                            }
+                            "defaultLabel": "Entity Uuid"
                           }
                         }
                       },
@@ -80373,10 +80304,7 @@ export const miroirFundamentalJzodSchema = {
                         "tag": {
                           "value": {
                             "id": 3,
-                            "defaultLabel": "Fetched Data Reference",
-                            "display": {
-                              "editable": false
-                            }
+                            "defaultLabel": "Fetched Data Reference"
                           }
                         }
                       },
@@ -85448,10 +85376,7 @@ export const miroirFundamentalJzodSchema = {
                 "tag": {
                   "value": {
                     "id": 1,
-                    "defaultLabel": "Label",
-                    "display": {
-                      "editable": false
-                    }
+                    "defaultLabel": "Label"
                   }
                 }
               },
@@ -85465,10 +85390,7 @@ export const miroirFundamentalJzodSchema = {
                 "tag": {
                   "value": {
                     "id": 2,
-                    "defaultLabel": "Entity Uuid",
-                    "display": {
-                      "editable": false
-                    }
+                    "defaultLabel": "Entity Uuid"
                   }
                 }
               },
@@ -85478,10 +85400,7 @@ export const miroirFundamentalJzodSchema = {
                 "tag": {
                   "value": {
                     "id": 3,
-                    "defaultLabel": "Fetched Data Reference",
-                    "display": {
-                      "editable": false
-                    }
+                    "defaultLabel": "Fetched Data Reference"
                   }
                 }
               },

@@ -9,7 +9,7 @@
   "description": "The tables of a PostgreSQL schema.",
   "icon": "building",
   "defaultInstanceDetailsReportUuid": "7c80d9ec-35b2-4cb8-8164-c5fe4e20687f",
-  "idAttribute": "table_name",
+  "idAttribute": ["table_catalog", "table_schema", "table_name"],
   "externalDataSource": {
     "schema": "information_schema"
   },

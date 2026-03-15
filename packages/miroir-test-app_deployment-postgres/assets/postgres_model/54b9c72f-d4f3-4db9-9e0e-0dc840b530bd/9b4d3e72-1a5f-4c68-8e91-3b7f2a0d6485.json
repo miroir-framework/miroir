@@ -14,7 +14,7 @@
   "cache": {
     "cacheAllInstancesOnRefresh": true
   },
-  "idAttribute": "column_name",
+  "idAttribute": ["table_catalog", "table_schema", "table_name", "column_name"],
   "externalDataSource": {
     "schema": "information_schema"
   },

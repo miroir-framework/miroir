@@ -11,17 +11,18 @@
   "definition": {
     "extractorTemplates": {
       "table": {
+        "extractorOrCombinerType": "extractorForObjectByDirectReference",
         "parentName": "tables",
         "parentUuid": "35961086-f932-477a-aa77-ac8360ffbf61",
         "instanceUuid": {
           "referenceName": "instanceUuid",
           "transformerType": "getFromParameters"
-        },
-        "extractorOrCombinerType": "extractorForObjectByDirectReference"
+        }
       }
     },
     "combinerTemplates": {
       "columnsOfTable": {
+        "extractorOrCombinerType": "combinerByRelationReturningObjectList",
         "parentName": "columns",
         "parentUuid": "39e5c7a1-3f82-4bda-b8c4-2d576f9f10ae",
         "objectReference": {
@@ -29,7 +30,7 @@
           "referenceName": "table",
           "transformerType": "getFromContext"
         },
-        "extractorOrCombinerType": "combinerByRelationReturningObjectList",
+        "objectReferenceAttribute": "table_name",
         "AttributeOfListObjectToCompareToReferenceUuid": "table_name"
       }
     },
@@ -40,7 +41,8 @@
         {
           "type": "objectInstanceReportSection",
           "definition": {
-            "parentUuid": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+            "label": "Details of table ${instance.table_name}",
+            "parentUuid": "35961086-f932-477a-aa77-ac8360ffbf61",
             "fetchedDataReference": "table"
           }
         },

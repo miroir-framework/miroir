@@ -150,6 +150,7 @@ export function getInstallApplicationActionTemplate(
       referencePath: ["deployApplication", "applicationStorage", "emulatedServerType"],
     },
     whens: [
+      // mongodb
       {
         when: "mongodb",
         then: {
@@ -197,6 +198,7 @@ export function getInstallApplicationActionTemplate(
           },
         },
       },
+      // sql
       {
         when: "sql",
         then: {
@@ -215,8 +217,17 @@ export function getInstallApplicationActionTemplate(
               referencePath: ["deployApplication", "applicationStorage", "connectionString"],
             },
             schema: {
-              transformerType: "getFromParameters",
-              referencePath: ["deployApplication", "applicationBundle", "applicationName"],
+              // transformerType: "getFromParameters",
+              // referencePath: ["deployApplication", "applicationBundle", "applicationName"],
+              transformerType: "+",
+              args: [
+                // prefix,
+                {
+                  transformerType: "getFromParameters",
+                  referencePath: ["deployApplication", "applicationBundle", "applicationName"],
+                },
+                "_model",
+              ],
             },
           },
           data: {
@@ -226,12 +237,20 @@ export function getInstallApplicationActionTemplate(
               referencePath: ["deployApplication", "applicationStorage", "connectionString"],
             },
             schema: {
-              transformerType: "getFromParameters",
-              referencePath: ["deployApplication", "applicationBundle", "applicationName"],
+              transformerType: "+",
+              args: [
+                // prefix,
+                {
+                  transformerType: "getFromParameters",
+                  referencePath: ["deployApplication", "applicationBundle", "applicationName"],
+                },
+                "_data",
+              ],
             },
           },
         },
       },
+      // indexedDb
       {
         when: "indexedDb",
         then: {
@@ -272,6 +291,7 @@ export function getInstallApplicationActionTemplate(
           },
         },
       },
+      // filesystem
       {
         when: "filesystem",
         then: {

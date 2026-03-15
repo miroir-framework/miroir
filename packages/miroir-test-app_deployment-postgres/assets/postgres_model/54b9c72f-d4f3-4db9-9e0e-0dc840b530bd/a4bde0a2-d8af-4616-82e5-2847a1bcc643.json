@@ -8,8 +8,8 @@
   "name": "schemata",
   "description": "The schemata of a PostgreSQL database.",
   "icon": "building",
-  "defaultInstanceDetailsReportUuid": "21133a6b-c9b2-44bf-812a-e13d99e7235e",
-  "idAttribute": "schema_name",
+  "defaultInstanceDetailsReportUuid": "a72bb361-3126-4aa1-85cc-0be4d6838c84",
+  "idAttribute": ["catalog_name", "schema_name"],
   "externalDataSource": {
     "schema": "information_schema"
   },
