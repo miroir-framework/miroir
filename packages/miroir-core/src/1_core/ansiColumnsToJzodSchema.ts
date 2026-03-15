@@ -55,7 +55,7 @@ export const postgresDataTypeToJzodTypeMap: Record<string, string> = {
  * - JSONB/JSON columns produce `{ type: "object", definition: {} }` (unstructured).
  * - Throws if a `data_type` value is not present in `postgresDataTypeToJzodTypeMap`.
  */
-export function informationSchemaColumnsToJzodSchema(
+export function ansiColumnsToJzodSchema(
   columns: InformationSchemaColumn[]
 ): { type: "object"; definition: Record<string, JzodElement> } {
   const sortedColumns = [...columns].sort(

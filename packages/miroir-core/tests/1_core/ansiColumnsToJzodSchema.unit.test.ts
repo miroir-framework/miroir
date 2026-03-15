@@ -3,9 +3,9 @@ import * as fs from "fs";
 import { join } from "path";
 import {
   InformationSchemaColumn,
-  informationSchemaColumnsToJzodSchema,
-} from "../src/1_core/informationSchemaColumnsToJzodSchema";
-import { getAttributeTypesFromJzodSchema }  from "../src/1_core/mlSchema";
+  ansiColumnsToJzodSchema,
+} from "../../src/1_core/ansiColumnsToJzodSchema";
+import { getAttributeTypesFromJzodSchema }  from "../../../miroir-store-postgres/src/1_core/mlSchema";
 
 // ################################################################################################
 // CSV parsing helpers — file I/O is intentionally confined to the test layer.
@@ -85,7 +85,7 @@ function makeColumn(
 
 // ################################################################################################
 
-describe("informationSchemaColumnsToJzodSchema.unit", () => {
+describe("ansiColumnsToJzodSchema.unit", () => {
   // ##############################################################################################
   it("should map all supported postgres scalar and structured types", () => {
     const columns: InformationSchemaColumn[] = [
@@ -107,7 +107,7 @@ describe("informationSchemaColumnsToJzodSchema.unit", () => {
       makeColumn("initial",     "16", "NO",  "character"),
     ];
 
-    const result = informationSchemaColumnsToJzodSchema(columns);
+    const result = ansiColumnsToJzodSchema(columns);
 
     expect(result.type).toEqual("object");
 
@@ -208,14 +208,14 @@ describe("informationSchemaColumnsToJzodSchema.unit", () => {
 
   // ##############################################################################################
   it("should return an empty definition for an empty columns array", () => {
-    const result = informationSchemaColumnsToJzodSchema([]);
+    const result = ansiColumnsToJzodSchema([]);
     expect(result).toEqual({ type: "object", definition: {} });
   });
 
   // ##############################################################################################
   it("should throw for an unsupported postgres data_type", () => {
     const columns = [makeColumn("raw", "1", "NO", "xml")];
-    expect(() => informationSchemaColumnsToJzodSchema(columns)).toThrowError(
+    expect(() => ansiColumnsToJzodSchema(columns)).toThrowError(
       "Postgres data_type xml not supported"
     );
   });
@@ -227,7 +227,7 @@ describe("informationSchemaColumnsToJzodSchema.unit", () => {
       makeColumn("a_col", "1", "NO", "text"),
       makeColumn("b_col", "2", "NO", "integer"),
     ];
-    const result = informationSchemaColumnsToJzodSchema(columns);
+    const result = ansiColumnsToJzodSchema(columns);
 
     expect(Object.keys(result.definition)).toEqual(["a_col", "b_col", "c_col"]);
     expect((result.definition.a_col as any).tag.value.id).toBe(1);
@@ -238,21 +238,21 @@ describe("informationSchemaColumnsToJzodSchema.unit", () => {
   // ##############################################################################################
   it("should not set optional on NOT NULL columns", () => {
     const columns = [makeColumn("name", "1", "NO", "text")];
-    const result = informationSchemaColumnsToJzodSchema(columns);
+    const result = ansiColumnsToJzodSchema(columns);
     expect((result.definition.name as any).optional).toBeUndefined();
   });
 
   // ##############################################################################################
   it("should set optional: true on nullable columns", () => {
     const columns = [makeColumn("description", "1", "YES", "text")];
-    const result = informationSchemaColumnsToJzodSchema(columns);
+    const result = ansiColumnsToJzodSchema(columns);
     expect((result.definition.description as any).optional).toBe(true);
   });
 
   // ##############################################################################################
   it("should resolve tag id from ordinal_position even when passed as a string", () => {
     const columns = [makeColumn("col", "42", "NO", "integer")];
-    const result = informationSchemaColumnsToJzodSchema(columns);
+    const result = ansiColumnsToJzodSchema(columns);
     expect((result.definition.col as any).tag.value.id).toBe(42);
     expect(typeof (result.definition.col as any).tag.value.id).toBe("number");
   });
@@ -268,7 +268,7 @@ describe("informationSchemaColumnsToJzodSchema.unit", () => {
       makeColumn("is_active",  "3", "NO",  "boolean"),
       makeColumn("born_on",    "4", "YES", "date"),
     ];
-    const schema = informationSchemaColumnsToJzodSchema(columns);
+    const schema = ansiColumnsToJzodSchema(columns);
     expect(() => getAttributeTypesFromJzodSchema(schema)).not.toThrow();
 
     const reversed = getAttributeTypesFromJzodSchema(schema);
@@ -285,7 +285,7 @@ describe("informationSchemaColumnsToJzodSchema.unit", () => {
       "utf-8"
     );
     const columns = parseCSV(csv);
-    const result = informationSchemaColumnsToJzodSchema(columns);
+    const result = ansiColumnsToJzodSchema(columns);
 
     expect(result).toEqual({
       type: "object",

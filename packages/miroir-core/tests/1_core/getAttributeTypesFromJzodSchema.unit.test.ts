@@ -1,5 +1,5 @@
 // import { describe, it, expect } from "jest";
-import { getAttributeTypesFromJzodSchema } from "../src/1_core/mlSchema";
+import { getAttributeTypesFromJzodSchema } from "../../../miroir-store-postgres/src/1_core/mlSchema";
 
 
 describe("getAttributeTypesFromJzodSchema.unit", () => {
