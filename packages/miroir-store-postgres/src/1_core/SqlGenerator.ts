@@ -491,8 +491,8 @@ export function sqlStringForCombiner /*BoxedExtractorTemplateRunner*/(
         resultAccessPath: undefined,
       };
     }
-    case "combinerByManyToManyRelationReturningObjectList":
-    case "extractorCombinerByHeteronomousManyToManyReturningListOfObjectList":
+    case "combinerManyToMany":
+    case "combinerByHeteronomousManyToMany":
     case "literal":
     case "extractorOrCombinerContextReference": {
       throw new Error("asyncInnerSelectElementFromQuery queryType not implemented: " + JSON.stringify(query));
@@ -569,7 +569,7 @@ export function sqlStringForExtractor(
     case "extractorWrapperReturningObject":
     case "extractorWrapperReturningList":
     case "combinerOneToMany":
-    case "combinerByManyToManyRelationReturningObjectList": {
+    case "combinerManyToMany": {
       throw new Error(
         "sqlForExtractor not implemented for extractorOrCombinerType: " +
           extractor.extractorOrCombinerType

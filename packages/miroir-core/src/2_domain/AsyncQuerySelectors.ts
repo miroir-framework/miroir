@@ -169,7 +169,7 @@ export async function asyncInnerSelectElementFromQuery /*BoxedExtractorTemplateR
     // Impure Monads
     case "extractorInstancesByEntity":
     case "combinerOneToMany":
-    case "combinerByManyToManyRelationReturningObjectList": {
+    case "combinerManyToMany": {
       const applicationSection =
         extractorOrCombiner.applicationSection ??
         getApplicationSection(application, extractorOrCombiner.parentUuid);
@@ -292,7 +292,7 @@ export async function asyncInnerSelectElementFromQuery /*BoxedExtractorTemplateR
       return results;
       break;
     }
-    case "extractorCombinerByHeteronomousManyToManyReturningListOfObjectList": {
+    case "combinerByHeteronomousManyToMany": {
       // join
       const rootQueryResults =
         typeof extractorOrCombiner.rootExtractorOrReference === "string"

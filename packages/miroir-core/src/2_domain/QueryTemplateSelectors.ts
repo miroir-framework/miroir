@@ -75,7 +75,8 @@ export async function handleQueryTemplateAction(
   return handleBoxedQueryAction(
     origin,
     {
-      actionType: "runBoxedQueryAction",      endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+      actionType: "runBoxedQueryAction",
+      endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
       payload: {
         application: queryTemplateAction.payload.application,
         applicationSection: queryTemplateAction.payload.applicationSection ?? defaultApplicationSection,
@@ -144,7 +145,7 @@ export const extractzodSchemaForSingleSelectQueryTemplate = <StateType>(
     foreignKeyParams.query.select.extractorOrCombinerType=="literal" ||
     foreignKeyParams.query.select.extractorOrCombinerType=="extractorByExtractorWrapperReturningObject" ||
     foreignKeyParams.query.select.extractorOrCombinerType=="extractorByExtractorWrapperReturningList" ||
-    foreignKeyParams.query.select.extractorOrCombinerType=="extractorCombinerByHeteronomousManyToManyReturningListOfObjectList" 
+    foreignKeyParams.query.select.extractorOrCombinerType=="combinerByHeteronomousManyToMany"
   ) {
     throw new Error(
       "extractzodSchemaForSingleSelectQuery can not deal with context reference: query=" +
@@ -192,7 +193,7 @@ export const extractzodSchemaForSingleSelectQueryTemplate = <StateType>(
       extractorRunnerMap: foreignKeyParams.extractorRunnerMap,
       query: {
         queryType: "getEntityDefinition",
-        contextResults: {},
+        // contextResults: {},
         pageParams: foreignKeyParams.query.pageParams,
         queryParams: foreignKeyParams.query.queryParams,
         entityUuid: entityUuidDomainElement,

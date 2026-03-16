@@ -14647,7 +14647,7 @@ export const miroirFundamentalJzodSchema = {
           }
         ]
       },
-      "extractorTemplateForObjectListByEntity": {
+      "extractorTemplateInstancesByEntity": {
         "type": "object",
         "extend": {
           "type": "schemaReference",
@@ -14794,7 +14794,7 @@ export const miroirFundamentalJzodSchema = {
           }
         }
       },
-      "combinerTemplateByRelationReturningObjectList": {
+      "combinerTemplateOneToMany": {
         "type": "object",
         "extend": {
           "type": "schemaReference",
@@ -14864,7 +14864,7 @@ export const miroirFundamentalJzodSchema = {
           }
         }
       },
-      "extractorTemplateByManyToManyRelationReturningObjectList": {
+      "combinerTemplateManyToMany": {
         "type": "object",
         "extend": {
           "type": "schemaReference",
@@ -14878,7 +14878,7 @@ export const miroirFundamentalJzodSchema = {
         "definition": {
           "extractorOrCombinerType": {
             "type": "literal",
-            "definition": "combinerByManyToManyRelationReturningObjectList"
+            "definition": "combinerManyToMany"
           },
           "orderBy": {
             "type": "object",
@@ -14931,7 +14931,7 @@ export const miroirFundamentalJzodSchema = {
           {
             "type": "schemaReference",
             "definition": {
-              "relativePath": "extractorTemplateForObjectListByEntity",
+              "relativePath": "extractorTemplateInstancesByEntity",
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
             },
             "context": {}
@@ -14939,7 +14939,7 @@ export const miroirFundamentalJzodSchema = {
           {
             "type": "schemaReference",
             "definition": {
-              "relativePath": "combinerTemplateByRelationReturningObjectList",
+              "relativePath": "combinerTemplateOneToMany",
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
             },
             "context": {}
@@ -14947,7 +14947,7 @@ export const miroirFundamentalJzodSchema = {
           {
             "type": "schemaReference",
             "definition": {
-              "relativePath": "extractorTemplateByManyToManyRelationReturningObjectList",
+              "relativePath": "combinerTemplateManyToMany",
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
             },
             "context": {}
@@ -14976,12 +14976,12 @@ export const miroirFundamentalJzodSchema = {
           }
         ]
       },
-      "extractorTemplateByExtractorCombiner": {
+      "combinerTemplateByHeteronomousManyToMany": {
         "type": "object",
         "definition": {
           "extractorOrCombinerType": {
             "type": "literal",
-            "definition": "extractorCombinerByHeteronomousManyToManyReturningListOfObjectList"
+            "definition": "combinerByHeteronomousManyToMany"
           },
           "rootExtractorOrReference": {
             "type": "union",
@@ -15116,7 +15116,7 @@ export const miroirFundamentalJzodSchema = {
           {
             "type": "schemaReference",
             "definition": {
-              "relativePath": "extractorTemplateByExtractorCombiner",
+              "relativePath": "combinerTemplateByHeteronomousManyToMany",
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
             },
             "context": {}
@@ -15408,7 +15408,7 @@ export const miroirFundamentalJzodSchema = {
           }
         ]
       },
-      "combinerByManyToManyRelationReturningObjectList": {
+      "combinerManyToMany": {
         "type": "object",
         "extend": {
           "type": "schemaReference",
@@ -15431,7 +15431,7 @@ export const miroirFundamentalJzodSchema = {
                 "defaultLabel": "Extractor Or Combiner Type"
               }
             },
-            "definition": "combinerByManyToManyRelationReturningObjectList"
+            "definition": "combinerManyToMany"
           },
           "orderBy": {
             "type": "object",
@@ -15495,7 +15495,7 @@ export const miroirFundamentalJzodSchema = {
           {
             "type": "schemaReference",
             "definition": {
-              "relativePath": "combinerByManyToManyRelationReturningObjectList",
+              "relativePath": "combinerManyToMany",
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
             },
             "context": {}
@@ -15525,7 +15525,7 @@ export const miroirFundamentalJzodSchema = {
           {
             "type": "schemaReference",
             "definition": {
-              "relativePath": "combinerByManyToManyRelationReturningObjectList",
+              "relativePath": "combinerManyToMany",
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
             },
             "context": {}
@@ -15554,7 +15554,7 @@ export const miroirFundamentalJzodSchema = {
           }
         ]
       },
-      "extractorCombinerByHeteronomousManyToManyReturningListOfObjectList": {
+      "combinerByHeteronomousManyToMany": {
         "type": "object",
         "definition": {
           "extractorOrCombinerType": {
@@ -15568,7 +15568,7 @@ export const miroirFundamentalJzodSchema = {
                 "defaultLabel": "Extractor Or Combiner Type"
               }
             },
-            "definition": "extractorCombinerByHeteronomousManyToManyReturningListOfObjectList"
+            "definition": "combinerByHeteronomousManyToMany"
           },
           "orderBy": {
             "type": "object",
@@ -15774,7 +15774,7 @@ export const miroirFundamentalJzodSchema = {
           {
             "type": "schemaReference",
             "definition": {
-              "relativePath": "extractorCombinerByHeteronomousManyToManyReturningListOfObjectList",
+              "relativePath": "combinerByHeteronomousManyToMany",
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
             },
             "context": {}
@@ -52833,7 +52833,7 @@ export const miroirFundamentalJzodSchema = {
           {
             "type": "schemaReference",
             "definition": {
-              "relativePath": "mlElementTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorTemplateByExtractorCombiner",
+              "relativePath": "mlElementTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_combinerTemplateByHeteronomousManyToMany",
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
             }
           },
@@ -52918,7 +52918,7 @@ export const miroirFundamentalJzodSchema = {
           {
             "type": "schemaReference",
             "definition": {
-              "relativePath": "mlElementTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorCombinerByHeteronomousManyToManyReturningListOfObjectList",
+              "relativePath": "mlElementTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_combinerByHeteronomousManyToMany",
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
             }
           },
@@ -55216,21 +55216,21 @@ export const miroirFundamentalJzodSchema = {
           {
             "type": "schemaReference",
             "definition": {
-              "relativePath": "mlElementTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorTemplateForObjectListByEntity",
+              "relativePath": "mlElementTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorTemplateInstancesByEntity",
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
             }
           },
           {
             "type": "schemaReference",
             "definition": {
-              "relativePath": "mlElementTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_combinerTemplateByRelationReturningObjectList",
+              "relativePath": "mlElementTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_combinerTemplateOneToMany",
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
             }
           },
           {
             "type": "schemaReference",
             "definition": {
-              "relativePath": "mlElementTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorTemplateByManyToManyRelationReturningObjectList",
+              "relativePath": "mlElementTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_combinerTemplateManyToMany",
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
             }
           },
@@ -55329,7 +55329,7 @@ export const miroirFundamentalJzodSchema = {
           }
         ]
       },
-      "mlElementTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorTemplateByExtractorCombiner": {
+      "mlElementTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_combinerTemplateByHeteronomousManyToMany": {
         "type": "union",
         "discriminator": "transformerType",
         "definition": [
@@ -55345,7 +55345,7 @@ export const miroirFundamentalJzodSchema = {
             "definition": {
               "extractorOrCombinerType": {
                 "type": "literal",
-                "definition": "extractorCombinerByHeteronomousManyToManyReturningListOfObjectList"
+                "definition": "combinerByHeteronomousManyToMany"
               },
               "rootExtractorOrReference": {
                 "type": "union",
@@ -55536,7 +55536,7 @@ export const miroirFundamentalJzodSchema = {
           {
             "type": "schemaReference",
             "definition": {
-              "relativePath": "mlElementTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_combinerByManyToManyRelationReturningObjectList",
+              "relativePath": "mlElementTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_combinerManyToMany",
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
             }
           },
@@ -55628,7 +55628,7 @@ export const miroirFundamentalJzodSchema = {
           }
         ]
       },
-      "mlElementTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorCombinerByHeteronomousManyToManyReturningListOfObjectList": {
+      "mlElementTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_combinerByHeteronomousManyToMany": {
         "type": "union",
         "discriminator": "transformerType",
         "definition": [
@@ -55653,7 +55653,7 @@ export const miroirFundamentalJzodSchema = {
                     "defaultLabel": "Extractor Or Combiner Type"
                   }
                 },
-                "definition": "extractorCombinerByHeteronomousManyToManyReturningListOfObjectList"
+                "definition": "combinerByHeteronomousManyToMany"
               },
               "orderBy": {
                 "optional": true,
@@ -56697,7 +56697,7 @@ export const miroirFundamentalJzodSchema = {
           }
         ]
       },
-      "mlElementTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorTemplateForObjectListByEntity": {
+      "mlElementTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorTemplateInstancesByEntity": {
         "type": "union",
         "discriminator": "transformerType",
         "definition": [
@@ -56892,7 +56892,7 @@ export const miroirFundamentalJzodSchema = {
           }
         ]
       },
-      "mlElementTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_combinerTemplateByRelationReturningObjectList": {
+      "mlElementTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_combinerTemplateOneToMany": {
         "type": "union",
         "discriminator": "transformerType",
         "definition": [
@@ -57053,7 +57053,7 @@ export const miroirFundamentalJzodSchema = {
           }
         ]
       },
-      "mlElementTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorTemplateByManyToManyRelationReturningObjectList": {
+      "mlElementTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_combinerTemplateManyToMany": {
         "type": "union",
         "discriminator": "transformerType",
         "definition": [
@@ -57079,7 +57079,7 @@ export const miroirFundamentalJzodSchema = {
             "definition": {
               "extractorOrCombinerType": {
                 "type": "literal",
-                "definition": "combinerByManyToManyRelationReturningObjectList"
+                "definition": "combinerManyToMany"
               },
               "orderBy": {
                 "optional": true,
@@ -57949,7 +57949,7 @@ export const miroirFundamentalJzodSchema = {
           }
         ]
       },
-      "mlElementTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_combinerByManyToManyRelationReturningObjectList": {
+      "mlElementTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_combinerManyToMany": {
         "type": "union",
         "discriminator": "transformerType",
         "definition": [
@@ -57984,7 +57984,7 @@ export const miroirFundamentalJzodSchema = {
                     "defaultLabel": "Extractor Or Combiner Type"
                   }
                 },
-                "definition": "combinerByManyToManyRelationReturningObjectList"
+                "definition": "combinerManyToMany"
               },
               "orderBy": {
                 "optional": true,
@@ -69352,7 +69352,7 @@ export const miroirFundamentalJzodSchema = {
           {
             "type": "schemaReference",
             "definition": {
-              "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorCombinerByHeteronomousManyToManyReturningListOfObjectList",
+              "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_combinerByHeteronomousManyToMany",
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
             }
           },
@@ -70083,7 +70083,7 @@ export const miroirFundamentalJzodSchema = {
           {
             "type": "schemaReference",
             "definition": {
-              "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorTemplateByExtractorCombiner",
+              "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_combinerTemplateByHeteronomousManyToMany",
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
             }
           },
@@ -70418,7 +70418,7 @@ export const miroirFundamentalJzodSchema = {
           {
             "type": "schemaReference",
             "definition": {
-              "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_combinerByManyToManyRelationReturningObjectList",
+              "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_combinerManyToMany",
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
             }
           }
@@ -70451,7 +70451,7 @@ export const miroirFundamentalJzodSchema = {
           }
         ]
       },
-      "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorCombinerByHeteronomousManyToManyReturningListOfObjectList": {
+      "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_combinerByHeteronomousManyToMany": {
         "type": "object",
         "definition": {
           "extractorOrCombinerType": {
@@ -70465,7 +70465,7 @@ export const miroirFundamentalJzodSchema = {
                 "defaultLabel": "Extractor Or Combiner Type"
               }
             },
-            "definition": "extractorCombinerByHeteronomousManyToManyReturningListOfObjectList"
+            "definition": "combinerByHeteronomousManyToMany"
           },
           "orderBy": {
             "type": "object",
@@ -70833,21 +70833,21 @@ export const miroirFundamentalJzodSchema = {
           {
             "type": "schemaReference",
             "definition": {
-              "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorTemplateForObjectListByEntity",
+              "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorTemplateInstancesByEntity",
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
             }
           },
           {
             "type": "schemaReference",
             "definition": {
-              "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_combinerTemplateByRelationReturningObjectList",
+              "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_combinerTemplateOneToMany",
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
             }
           },
           {
             "type": "schemaReference",
             "definition": {
-              "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorTemplateByManyToManyRelationReturningObjectList",
+              "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_combinerTemplateManyToMany",
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
             }
           }
@@ -70902,12 +70902,12 @@ export const miroirFundamentalJzodSchema = {
           }
         }
       },
-      "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorTemplateByExtractorCombiner": {
+      "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_combinerTemplateByHeteronomousManyToMany": {
         "type": "object",
         "definition": {
           "extractorOrCombinerType": {
             "type": "literal",
-            "definition": "extractorCombinerByHeteronomousManyToManyReturningListOfObjectList"
+            "definition": "combinerByHeteronomousManyToMany"
           },
           "rootExtractorOrReference": {
             "type": "union",
@@ -71652,7 +71652,7 @@ export const miroirFundamentalJzodSchema = {
           }
         }
       },
-      "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_combinerByManyToManyRelationReturningObjectList": {
+      "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_combinerManyToMany": {
         "type": "object",
         "extend": [
           {
@@ -71676,7 +71676,7 @@ export const miroirFundamentalJzodSchema = {
                 "defaultLabel": "Extractor Or Combiner Type"
               }
             },
-            "definition": "combinerByManyToManyRelationReturningObjectList"
+            "definition": "combinerManyToMany"
           },
           "orderBy": {
             "type": "object",
@@ -72616,7 +72616,7 @@ export const miroirFundamentalJzodSchema = {
           }
         }
       },
-      "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorTemplateForObjectListByEntity": {
+      "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorTemplateInstancesByEntity": {
         "type": "object",
         "extend": [
           {
@@ -72690,7 +72690,7 @@ export const miroirFundamentalJzodSchema = {
           }
         }
       },
-      "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_combinerTemplateByRelationReturningObjectList": {
+      "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_combinerTemplateOneToMany": {
         "type": "object",
         "extend": [
           {
@@ -72761,7 +72761,7 @@ export const miroirFundamentalJzodSchema = {
           }
         }
       },
-      "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorTemplateByManyToManyRelationReturningObjectList": {
+      "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_combinerTemplateManyToMany": {
         "type": "object",
         "extend": [
           {
@@ -72776,7 +72776,7 @@ export const miroirFundamentalJzodSchema = {
         "definition": {
           "extractorOrCombinerType": {
             "type": "literal",
-            "definition": "combinerByManyToManyRelationReturningObjectList"
+            "definition": "combinerManyToMany"
           },
           "orderBy": {
             "type": "object",
@@ -83930,7 +83930,7 @@ export const miroirFundamentalJzodSchema = {
           {
             "type": "schemaReference",
             "definition": {
-              "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorCombinerByHeteronomousManyToManyReturningListOfObjectList",
+              "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_combinerByHeteronomousManyToMany",
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
             }
           },
@@ -84661,7 +84661,7 @@ export const miroirFundamentalJzodSchema = {
           {
             "type": "schemaReference",
             "definition": {
-              "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorTemplateByExtractorCombiner",
+              "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_combinerTemplateByHeteronomousManyToMany",
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
             }
           },
@@ -84996,7 +84996,7 @@ export const miroirFundamentalJzodSchema = {
           {
             "type": "schemaReference",
             "definition": {
-              "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_combinerByManyToManyRelationReturningObjectList",
+              "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_combinerManyToMany",
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
             }
           }
@@ -85029,7 +85029,7 @@ export const miroirFundamentalJzodSchema = {
           }
         ]
       },
-      "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorCombinerByHeteronomousManyToManyReturningListOfObjectList": {
+      "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_combinerByHeteronomousManyToMany": {
         "type": "object",
         "definition": {
           "extractorOrCombinerType": {
@@ -85043,7 +85043,7 @@ export const miroirFundamentalJzodSchema = {
                 "defaultLabel": "Extractor Or Combiner Type"
               }
             },
-            "definition": "extractorCombinerByHeteronomousManyToManyReturningListOfObjectList"
+            "definition": "combinerByHeteronomousManyToMany"
           },
           "orderBy": {
             "type": "object",
@@ -85411,21 +85411,21 @@ export const miroirFundamentalJzodSchema = {
           {
             "type": "schemaReference",
             "definition": {
-              "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorTemplateForObjectListByEntity",
+              "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorTemplateInstancesByEntity",
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
             }
           },
           {
             "type": "schemaReference",
             "definition": {
-              "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_combinerTemplateByRelationReturningObjectList",
+              "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_combinerTemplateOneToMany",
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
             }
           },
           {
             "type": "schemaReference",
             "definition": {
-              "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorTemplateByManyToManyRelationReturningObjectList",
+              "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_combinerTemplateManyToMany",
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
             }
           }
@@ -85480,12 +85480,12 @@ export const miroirFundamentalJzodSchema = {
           }
         }
       },
-      "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorTemplateByExtractorCombiner": {
+      "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_combinerTemplateByHeteronomousManyToMany": {
         "type": "object",
         "definition": {
           "extractorOrCombinerType": {
             "type": "literal",
-            "definition": "extractorCombinerByHeteronomousManyToManyReturningListOfObjectList"
+            "definition": "combinerByHeteronomousManyToMany"
           },
           "rootExtractorOrReference": {
             "type": "union",
@@ -86230,7 +86230,7 @@ export const miroirFundamentalJzodSchema = {
           }
         }
       },
-      "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_combinerByManyToManyRelationReturningObjectList": {
+      "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_combinerManyToMany": {
         "type": "object",
         "extend": [
           {
@@ -86254,7 +86254,7 @@ export const miroirFundamentalJzodSchema = {
                 "defaultLabel": "Extractor Or Combiner Type"
               }
             },
-            "definition": "combinerByManyToManyRelationReturningObjectList"
+            "definition": "combinerManyToMany"
           },
           "orderBy": {
             "type": "object",
@@ -87194,7 +87194,7 @@ export const miroirFundamentalJzodSchema = {
           }
         }
       },
-      "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorTemplateForObjectListByEntity": {
+      "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorTemplateInstancesByEntity": {
         "type": "object",
         "extend": [
           {
@@ -87268,7 +87268,7 @@ export const miroirFundamentalJzodSchema = {
           }
         }
       },
-      "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_combinerTemplateByRelationReturningObjectList": {
+      "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_combinerTemplateOneToMany": {
         "type": "object",
         "extend": [
           {
@@ -87339,7 +87339,7 @@ export const miroirFundamentalJzodSchema = {
           }
         }
       },
-      "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorTemplateByManyToManyRelationReturningObjectList": {
+      "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_combinerTemplateManyToMany": {
         "type": "object",
         "extend": [
           {
@@ -87354,7 +87354,7 @@ export const miroirFundamentalJzodSchema = {
         "definition": {
           "extractorOrCombinerType": {
             "type": "literal",
-            "definition": "combinerByManyToManyRelationReturningObjectList"
+            "definition": "combinerManyToMany"
           },
           "orderBy": {
             "type": "object",

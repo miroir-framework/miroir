@@ -65,7 +65,6 @@ const emptyDomainObject: Record<string, any> = { };
 export const dummyDomainManyQueryWithDeploymentUuid: BoxedQueryWithExtractorCombinerTransformer = {
   queryType: "boxedQueryWithExtractorCombinerTransformer",
   application: "",
-  // deploymentUuid: "",
   pageParams: {},
   queryParams: {},
   contextResults: emptyDomainObject,
@@ -76,8 +75,6 @@ export const dummyDomainManyQueryWithDeploymentUuid: BoxedQueryWithExtractorComb
 export const dummyDomainManyQueryTemplateWithDeploymentUuid: BoxedQueryTemplateWithExtractorCombinerTransformer = {
   queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
   application: "",
-  // applicationDeploymentMap: {},
-  // deploymentUuid: "",
   pageParams: {},
   queryParams: {},
   contextResults: emptyDomainObject,
@@ -88,8 +85,6 @@ export const dummyDomainManyQueryTemplateWithDeploymentUuid: BoxedQueryTemplateW
 export const dummyDomainModelGetFetchParamJzodSchemaQueryParams: QueryByTemplateGetParamJzodSchema = {
   queryType: "queryByTemplateGetParamJzodSchema",
   application: "",
-  // applicationDeploymentMap: {},
-  // deploymentUuid: "",
   pageParams: {
     applicationSection: defaultApplicationSection,
     deploymentUuid: "" ,
@@ -100,8 +95,6 @@ export const dummyDomainModelGetFetchParamJzodSchemaQueryParams: QueryByTemplate
   fetchParams: {
     queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
     application: "",
-    // applicationDeploymentMap: {},
-    // deploymentUuid: "",
     pageParams: {},
     queryParams: {},
     contextResults: {},

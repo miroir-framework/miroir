@@ -448,7 +448,7 @@ describe("selectUnionBranchFromDiscriminator", () => {
           AttributeOfListObjectToCompareToReferenceUuid: { type: "string" },
         },
       },
-      // combinerByManyToManyRelationReturningObjectList
+      // combinerManyToMany
       {
         type: "object",
         extend: {
@@ -463,7 +463,7 @@ describe("selectUnionBranchFromDiscriminator", () => {
         definition: {
           extractorOrCombinerType: {
             type: "literal",
-            definition: "combinerByManyToManyRelationReturningObjectList",
+            definition: "combinerManyToMany",
           },
           orderBy: {
             type: "object",
@@ -488,13 +488,13 @@ describe("selectUnionBranchFromDiscriminator", () => {
           },
         },
       },
-      // extractorCombinerByHeteronomousManyToManyReturningListOfObjectList
+      // combinerByHeteronomousManyToMany
       {
         type: "object",
         definition: {
           extractorOrCombinerType: {
             type: "literal",
-            definition: "extractorCombinerByHeteronomousManyToManyReturningListOfObjectList",
+            definition: "combinerByHeteronomousManyToMany",
           },
           rootExtractorOrReference: {
             type: "union",
@@ -584,7 +584,7 @@ describe("selectUnionBranchFromDiscriminator", () => {
           },
         },
       },
-      // extractorTemplateForObjectListByEntity
+      // extractorTemplateInstancesByEntity
       {
         type: "object",
         extend: {
@@ -599,7 +599,7 @@ describe("selectUnionBranchFromDiscriminator", () => {
         definition: {
           extractorOrCombinerType: {
             type: "literal",
-            definition: "extractorTemplateForObjectListByEntity",
+            definition: "extractorTemplateInstancesByEntity",
           },
           orderBy: {
             type: "object",
@@ -663,7 +663,7 @@ describe("selectUnionBranchFromDiscriminator", () => {
       //     AttributeOfListObjectToCompareToReferenceUuid: { type: "string" },
       //   },
       // },
-      // // combinerByManyToManyRelationReturningObjectList !!!!!!!!!!!!!!!!!!!!!!!!!!
+      // // combinerManyToMany !!!!!!!!!!!!!!!!!!!!!!!!!!
       // {
       //   type: "object",
       //   extend: {
@@ -678,7 +678,7 @@ describe("selectUnionBranchFromDiscriminator", () => {
       //   definition: {
       //     extractorOrCombinerType: {
       //       type: "literal",
-      //       definition: "combinerByManyToManyRelationReturningObjectList",
+      //       definition: "combinerManyToMany",
       //     },
       //     orderBy: {
       //       type: "object",

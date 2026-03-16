@@ -290,7 +290,7 @@ export class SqlDbQueryRunner {
         );
       }
       case "combinerOneToMany":
-      case "combinerByManyToManyRelationReturningObjectList": {
+      case "combinerManyToMany": {
         if (!foreignKeyParams.extractorRunnerMap) {
           throw new Error(
             "asyncSqlDbExtractEntityInstanceListWithObjectListExtractor missing extractorRunnerMap"
@@ -352,7 +352,7 @@ export class SqlDbQueryRunner {
         );
       }
       case "combinerOneToMany":
-      case "combinerByManyToManyRelationReturningObjectList": {
+      case "combinerManyToMany": {
         if (!foreignKeyParams.extractorRunnerMap) {
           throw new Error(
             "asyncSqlDbExtractEntityInstanceUuidIndexWithObjectListExtractor missing extractorRunnerMap"

@@ -5,7 +5,6 @@ import {
   Action2ReturnType,
   ApplicationSection,
   ConfigurationService,
-  configurationService,
   createDeploymentCompositeAction,
   defaultLevels,
   defaultMiroirModelEnvironment,
@@ -34,7 +33,8 @@ import {
   unNullify,
   type AdminApplicationDeploymentConfiguration,
   type ApplicationDeploymentMap,
-  type Deployment
+  type Deployment,
+  type Entity
 } from "miroir-core";
 
 
@@ -87,7 +87,8 @@ let localAppPersistenceStoreController: PersistenceStoreControllerInterface;
 // let miroirContext: MiroirContext;
 let persistenceStoreControllerManager: PersistenceStoreControllerManagerInterface | undefined;
 
-const env:any = (import.meta as any).env
+// const env:any = (import.meta as any).env
+const env:any = process.env
 console.log("@@@@@@@@@@@@@@@@@@ env", env);
 
 const {miroirConfig, logConfig:loggerOptions} = await loadTestConfigFiles(env);
@@ -249,7 +250,7 @@ beforeEach(
       [
         // authors
         {
-          entity: entityAuthor as MetaEntity,
+          entity: entityAuthor as Entity,
           entityDefinition: entityDefinitionAuthor as EntityDefinition,
           instances: [
             author1,
@@ -259,7 +260,7 @@ beforeEach(
         },
         // books
         {
-          entity: entityBook as MetaEntity,
+          entity: entityBook as Entity,
           entityDefinition: entityDefinitionBook as EntityDefinition,
           instances: [
             book1 as EntityInstance,
@@ -272,7 +273,7 @@ beforeEach(
         },
         // publishers
         {
-          entity: entityPublisher as MetaEntity,
+          entity: entityPublisher as Entity,
           entityDefinition: entityDefinitionPublisher as EntityDefinition,
           instances: [
             publisher1,
@@ -885,7 +886,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
                       } as any,
                       objectReference: {
                         transformerType: "getFromContext",
-                        interpolation: "runtime"combinerOneToMany
+                        interpolation: "runtime",
                         referenceName: "book",
                       },
                       AttributeOfObjectToCompareToReferenceUuid: "author",

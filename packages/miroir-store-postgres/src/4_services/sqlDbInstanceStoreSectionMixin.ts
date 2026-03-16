@@ -124,9 +124,9 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
             case "combinerOneToMany": {
               throw new Error("sqlForQuery combinerOneToMany not implemented");
             }
-            case "combinerByManyToManyRelationReturningObjectList": {
+            case "combinerManyToMany": {
               throw new Error(
-                "sqlForQuery combinerByManyToManyRelationReturningObjectList not implemented"
+                "sqlForQuery combinerManyToMany not implemented"
               );
 
               break;

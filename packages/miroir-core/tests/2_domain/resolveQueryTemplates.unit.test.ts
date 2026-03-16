@@ -165,7 +165,7 @@ describe("resolveQueryTemplates.unit.test", () => {
             AttributeOfListObjectToCompareToReferenceUuid: "author",
           },
           publishersOfBooks: {
-            extractorOrCombinerType: "combinerByManyToManyRelationReturningObjectList",
+            extractorOrCombinerType: "combinerManyToMany",
             parentName: "Publisher",
             parentUuid: {
               transformerType: "returnValue",
@@ -239,7 +239,7 @@ describe("resolveQueryTemplates.unit.test", () => {
             AttributeOfListObjectToCompareToReferenceUuid: "author",
           },
           publishersOfBooks: {
-            extractorOrCombinerType: "combinerByManyToManyRelationReturningObjectList",
+            extractorOrCombinerType: "combinerManyToMany",
             parentName: "Publisher",
             parentUuid: "a027c379-8468-43a5-ba4d-bf618be25cab",
             objectListReference: "booksOfAuthor",

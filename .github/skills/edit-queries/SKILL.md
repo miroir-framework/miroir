@@ -306,12 +306,12 @@ Get all related objects (1:N):
 
 **Composite PK joins**: `AttributeOfListObjectToCompareToReferenceUuid` also accepts `string | string[]`.
 
-### combinerByManyToManyRelationReturningObjectList
+### combinerManyToMany
 Many-to-many relation through a list:
 
 ```typescript
 {
-  extractorOrCombinerType: "combinerByManyToManyRelationReturningObjectList",
+  extractorOrCombinerType: "combinerManyToMany",
   parentName: "Publisher",
   parentUuid: "a027c379-8468-43a5-ba4d-bf618be25cab",
   objectListReference: "booksOfAuthor",  // Reference to list result
@@ -692,7 +692,7 @@ selectEntityInstanceUuidIndexFromDomainState
     ↓
 applyExtractorForSingleObjectListToSelectedInstancesListInMemory
     → combinerOneToMany (N:1 or 1:N FK join)
-    → combinerByManyToManyRelationReturningObjectList (M:N relation)
+    → combinerManyToMany (M:N relation)
     → Apply applyTransformer (if present)
     → Store in contextResults[combinerName]
     ↓
@@ -760,7 +760,7 @@ combiners: {
 // Result: books where book.publisher === publisher.uuid
 ```
 
-#### M:N Join (`combinerByManyToManyRelationReturningObjectList`)
+#### M:N Join (`combinerManyToMany`)
 
 **Conceptual SQL equivalent**:
 ```sql

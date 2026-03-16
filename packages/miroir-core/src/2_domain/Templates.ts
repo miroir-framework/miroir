@@ -194,7 +194,7 @@ export function resolveExtractorTemplate(
       };
       break;
     }
-    case "combinerByManyToManyRelationReturningObjectList": {
+    case "combinerManyToMany": {
       return {
         extractorOrCombinerType: extractorOrCombinerTemplate.extractorOrCombinerType,
         ...cleanQueryTemplate,
@@ -215,8 +215,8 @@ export function resolveExtractorTemplate(
         objectListReference:
           extractorOrCombinerTemplate.objectListReference.transformerType == "getFromContext"
             ? extractorOrCombinerTemplate.objectListReference.referenceName ??
-              "ERROR CONVERTING OBJECT REFERENCE FOR combinerByManyToManyRelationReturningObjectList extractor template: no referenceName"
-            : "ERROR CONVERTING OBJECT REFERENCE FOR combinerByManyToManyRelationReturningObjectList extractor template: objectReference is not a getFromContext",
+              "ERROR CONVERTING OBJECT REFERENCE FOR combinerManyToMany extractor template: no referenceName"
+            : "ERROR CONVERTING OBJECT REFERENCE FOR combinerManyToMany extractor template: objectReference is not a getFromContext",
       };
       break;
     }
@@ -246,7 +246,7 @@ export function resolveExtractorTemplate(
       };
       break;
     }
-    case "extractorCombinerByHeteronomousManyToManyReturningListOfObjectList": {
+    case "combinerByHeteronomousManyToMany": {
       return {
         extractorOrCombinerType: extractorOrCombinerTemplate.extractorOrCombinerType,
         ...cleanQueryTemplate,

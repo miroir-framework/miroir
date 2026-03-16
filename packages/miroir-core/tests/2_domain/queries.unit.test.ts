@@ -154,10 +154,6 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
     query: {
       queryType: "boxedQueryWithExtractorCombinerTransformer",
       application: selfApplicationLibrary.uuid,
-      // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
-      contextResults: {},
-      pageParams: {},
-      queryParams: {},
       extractors: {
         book: {
           extractorOrCombinerType: "extractorByPrimaryKey",
@@ -178,14 +174,10 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
       },
     },
   },
-  "error on non-existing object uuid: InstanceNotFound": {
+  "error on non-existing object uuid: InstanceNotFound (extractorByPrimaryKey)": {
     queryTemplate: {
       queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
       application: selfApplicationLibrary.uuid,
-      // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
-      contextResults: {},
-      pageParams: {},
-      queryParams: {},
       extractorTemplates: {
         book: {
           extractorOrCombinerType: "extractorByPrimaryKey",
@@ -208,10 +200,6 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
     query: {
       queryType: "boxedQueryWithExtractorCombinerTransformer",
       application: selfApplicationLibrary.uuid,
-      // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
-      contextResults: {},
-      pageParams: {},
-      queryParams: {},
       extractors: {
         book: {
           extractorOrCombinerType: "extractorByPrimaryKey",
@@ -231,7 +219,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
       },
     },
   },
-  "select 1 object from Domain State": {
+  "select 1 object from Domain State (extractorByPrimaryKey)": {
     queryTemplate: {
       queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
       application: selfApplicationLibrary.uuid,
@@ -283,7 +271,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
       },
     },
   },
-  "select 1 object from Domain State and apply transformer on foreign key": {
+  "select 1 object from Domain State and apply transformer on foreign key (extractorByPrimaryKey with applyTransformer)": {
     // queryTemplate: {
     //   queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
     //   deploymentUuid: deployment_Library_DO_NO_USE.uuid,
@@ -310,10 +298,6 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
     query: {
       queryType: "boxedQueryWithExtractorCombinerTransformer",
       application: selfApplicationLibrary.uuid,
-      // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
-      contextResults: {},
-      pageParams: {},
-      queryParams: {},
       extractors: {
         book: {
           extractorOrCombinerType: "extractorByPrimaryKey",
@@ -622,14 +606,11 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
         },
       },
     },
-  "select publishers of books by author using combinerByManyToManyRelationReturningObjectList with applyTransformer":
+  "select publishers of books by author using combinerManyToMany with applyTransformer (extractorByPrimaryKey, combinerOneToMany, combinerManyToMany with applyTransformer)":
     {
       queryTemplate: {
         queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
         application: selfApplicationLibrary.uuid,
-        contextResults: {},
-        pageParams: {},
-        queryParams: {},
         extractorTemplates: {
           author: {
             extractorOrCombinerType: "extractorByPrimaryKey",
@@ -637,13 +618,11 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
             parentUuid: {
               transformerType: "returnValue",
               mlSchema: { type: "uuid" },
-              interpolation: "build",
               value: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
             } as any, // TODO: fix type
             instanceUuid: {
               transformerType: "returnValue",
               mlSchema: { type: "uuid" },
-              interpolation: "build",
               value: "ce7b601d-be5f-4bc6-a5af-14091594046a", // Paul Veyne
             },
           },
@@ -655,7 +634,6 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
             parentUuid: {
               transformerType: "returnValue",
               mlSchema: { type: "uuid" },
-              interpolation: "build",
               value: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
             } as any, // TODO: fix type
             objectReference: {
@@ -666,12 +644,11 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
             AttributeOfListObjectToCompareToReferenceUuid: "author",
           },
           publishersOfBooks: {
-            extractorOrCombinerType: "combinerByManyToManyRelationReturningObjectList",
+            extractorOrCombinerType: "combinerManyToMany",
             parentName: "Publisher",
             parentUuid: {
               transformerType: "returnValue",
               mlSchema: { type: "uuid" },
-              interpolation: "build",
               value: "a027c379-8468-43a5-ba4d-bf618be25cab",
             } as any, // TODO: fix type
             objectListReference: {
@@ -728,7 +705,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
       //       AttributeOfListObjectToCompareToReferenceUuid: "author",
       //     },
       //     publishersOfBooks: {
-      //       extractorOrCombinerType: "combinerByManyToManyRelationReturningObjectList",
+      //       extractorOrCombinerType: "combinerManyToMany",
       //       parentName: "Publisher",
       //       parentUuid: "a027c379-8468-43a5-ba4d-bf618be25cab",
       //       objectListReference: "booksOfAuthor",
@@ -773,7 +750,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
         },
       },
     },
-  "select Authors": {
+  "select Authors (extractorInstancesByEntity)": {
     queryTemplate: {
       queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
       application: selfApplicationLibrary.uuid,
@@ -848,7 +825,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
       },
     },
   },
-  "select Authors with filter": {
+  "select Authors with filter (extractorInstancesByEntity)": {
     queryTemplate: {
       queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
       application: selfApplicationLibrary.uuid,
@@ -881,12 +858,9 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
     query: {
       queryType: "boxedQueryWithExtractorCombinerTransformer",
       application: selfApplicationLibrary.uuid,
-      // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
-      contextResults: {},
       pageParams: {
         applicationSection: "data",
       },
-      queryParams: {},
       extractors: {
         authors: {
           extractorOrCombinerType: "extractorInstancesByEntity",
@@ -921,7 +895,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
       },
     },
   },
-  "select Authors with values filter (multiple values)": {
+  "select Authors with values filter (multiple values) (extractorInstancesByEntity)": {
     query: {
       queryType: "boxedQueryWithExtractorCombinerTransformer",
       application: selfApplicationLibrary.uuid,
@@ -963,7 +937,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
       },
     },
   },
-  "select Authors with values filter and not flag": {
+  "select Authors with values filter and not flag (extractorInstancesByEntity)": {
     query: {
       queryType: "boxedQueryWithExtractorCombinerTransformer",
       application: selfApplicationLibrary.uuid,
@@ -1008,7 +982,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
       },
     },
   },
-  "select Books of Publisher of given Book from Domain State": {
+  "select Books of Publisher of given Book from Domain State (extractorByPrimaryKey, combinerOneToOne, combinerOneToMany)": {
     queryTemplate: {
       queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
       application: selfApplicationLibrary.uuid,
@@ -1075,11 +1049,11 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
     query: {
       queryType: "boxedQueryWithExtractorCombinerTransformer",
       application: selfApplicationLibrary.uuid,
-      contextResults: {},
+      // contextResults: {},
       pageParams: {
         applicationSection: "data",
       },
-      queryParams: {},
+      // queryParams: {},
       extractors: {
         book: {
           extractorOrCombinerType: "extractorByPrimaryKey",
@@ -1128,7 +1102,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
       },
     },
   },
-  "select custom-built result: Books of Publisher of given Book from Domain State": {
+  "select custom-built result: Books of Publisher of given Book from Domain State (extractorByPrimaryKey, combinerOneToOne, combinerOneToMany)": {
     queryTemplate: {
       queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
       application: selfApplicationLibrary.uuid,
@@ -1218,11 +1192,11 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
     query: {
       queryType: "boxedQueryWithExtractorCombinerTransformer",
       application: selfApplicationLibrary.uuid,
-      contextResults: {},
+      // contextResults: {},
       pageParams: {
         applicationSection: "data",
       },
-      queryParams: {},
+      // queryParams: {},
       extractors: {
         book: {
           extractorOrCombinerType: "extractorByPrimaryKey",
@@ -1325,7 +1299,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
       },
     },
   },
-  "select custom-built result: return Books of Author from Domain State": {
+  "select custom-built result: return Books of Author from Domain State (extractorByPrimaryKey, combinerOneToMany)": {
     queryTemplate: {
       queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
       application: selfApplicationLibrary.uuid,
@@ -1370,11 +1344,11 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
       queryType: "boxedQueryWithExtractorCombinerTransformer",
       application: selfApplicationLibrary.uuid,
       // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
-      contextResults: {},
+      // contextResults: {},
       pageParams: {
         applicationSection: "data",
       },
-      queryParams: {},
+      // queryParams: {},
       extractors: {
         author: {
           extractorOrCombinerType: "extractorByPrimaryKey",
@@ -1427,7 +1401,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
       },
     },
   },
-  "select custom-built result: return couple Author name - Book title for Books of Author from Domain State":
+  "select custom-built result: return couple Author name - Book title for Books of Author from Domain State (extractorByPrimaryKey, combinerOneToMany with applyTransformer)":
     {
       queryTemplate: {
         queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
@@ -1488,12 +1462,11 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
       query: {
         queryType: "boxedQueryWithExtractorCombinerTransformer",
         application: selfApplicationLibrary.uuid,
-        // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
-        contextResults: {},
+        // contextResults: {},
         pageParams: {
           applicationSection: "data",
         },
-        queryParams: {},
+        // queryParams: {},
         extractors: {
           author: {
             extractorOrCombinerType: "extractorByPrimaryKey",
@@ -1586,7 +1559,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
         // },
       },
     },
-  "select custom-built result with extractorCombinerByHeteronomousManyToManyReturningListOfObjectList: instances of all Entites from Domain State, indexed by Entity Uuid":
+  "select custom-built result with combinerByHeteronomousManyToMany: instances of all Entites from Domain State, indexed by Entity Uuid":
     {
       queryTemplate: {
         queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
@@ -1613,7 +1586,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
         combinerTemplates: {
           instancesOfEntities: {
             extractorOrCombinerType:
-              "extractorCombinerByHeteronomousManyToManyReturningListOfObjectList", // heteronomous many-to-many join, not possible with SQL
+              "combinerByHeteronomousManyToMany", // heteronomous many-to-many join, not possible with SQL
             rootExtractorOrReference: "entities",
             subQueryTemplate: {
               query: {
@@ -1640,12 +1613,9 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
       query: {
         queryType: "boxedQueryWithExtractorCombinerTransformer",
         application: selfApplicationLibrary.uuid,
-        // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
-        contextResults: {},
         pageParams: {
           applicationSection: "data",
         },
-        queryParams: {},
         extractors: {
           entities: {
             extractorOrCombinerType: "extractorInstancesByEntity",
@@ -1657,14 +1627,13 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
         combiners: {
           instancesOfEntities: {
             extractorOrCombinerType:
-              "extractorCombinerByHeteronomousManyToManyReturningListOfObjectList", // heteronomous many-to-many join, possible but akward with SQL (huge "select" clause, dealing with homonym attributes)
+              "combinerByHeteronomousManyToMany", // heteronomous many-to-many join, possible but akward with SQL (huge "select" clause, dealing with homonym attributes)
             rootExtractorOrReference: "entities",
             subQueryTemplate: {
               query: {
                 extractorOrCombinerType: "extractorInstancesByEntity",
                 parentUuid: {
                   transformerType: "getFromParameters",
-                  interpolation: "build",
                   referenceName: "uuid",
                 } as any, // TODO: fix type
               },
@@ -1694,7 +1663,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
         },
       },
     },
-  "select Unique Publisher Uuids of Books": {
+  "select Unique Publisher Uuids of Books (extractorInstancesByEntity, runtimeTransformer)": {
     queryTemplate: {
       queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
       application: selfApplicationLibrary.uuid,
@@ -1731,11 +1700,9 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
     query: {
       queryType: "boxedQueryWithExtractorCombinerTransformer",
       application: selfApplicationLibrary.uuid,
-      contextResults: {},
       pageParams: {
         applicationSection: "data",
       },
-      queryParams: {},
       extractors: {
         books: {
           extractorOrCombinerType: "extractorInstancesByEntity",
@@ -1770,6 +1737,18 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
 };
 
 
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
 function cleanupResult(
   preResult: Domain2QueryReturnType<Record<string, any>>,
   testAssertionParams: { resultAccessPath?: string[]; expectedResult: any }
@@ -1792,6 +1771,9 @@ const applicationDeploymentMap: ApplicationDeploymentMap = {
   [selfApplicationLibrary.uuid]: deployment_Library_DO_NO_USE.uuid,
 };
 
+const testQueries: boolean = true; // set to false to skip all tests in this file
+const testQueryTemplates: boolean = false; // set to false to skip tests related to query templates in this file
+
 describe("queries.unit", () => {
   // ###########################################################################################
   it.each(Object.entries(testExtractorParams))(
@@ -1801,7 +1783,7 @@ describe("queries.unit", () => {
       expect(currentTestName != undefined).toBeTruthy();
       expect(testParams.testAssertions).toBeDefined();
       // Testing Extractors
-      if (testParams.query) {
+      if (testQueries && testParams.query) {
         // Domain State
         if (testParams.runQueryFromDomainState && testParams.getQueryRunnerParamsForDomainState) {
           const preResult = testParams.runQueryFromDomainState(
@@ -1851,7 +1833,7 @@ describe("queries.unit", () => {
       }
       // ################################################################################################
       // Testing Extractor Templates
-      if (testParams.queryTemplate) {
+      if (testQueryTemplates && testParams.queryTemplate) {
         // Domain State
         if (
           testParams.getQueryTemplateRunnerParamsForDomainState &&

@@ -442,7 +442,7 @@ Complex join returning list of object lists:
     },
     combiners: {
       instancesOfEntities: {
-        extractorOrCombinerType: "extractorCombinerByHeteronomousManyToManyReturningListOfObjectList",
+        extractorOrCombinerType: "combinerByHeteronomousManyToMany",
         rootExtractorOrReference: "entities",
         subQueryTemplate: {
           query: {

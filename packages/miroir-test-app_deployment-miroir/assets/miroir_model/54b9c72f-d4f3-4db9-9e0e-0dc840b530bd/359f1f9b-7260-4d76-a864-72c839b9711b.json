@@ -323,7 +323,7 @@
               }
             ]
           },
-          "extractorTemplateForObjectListByEntity": {
+          "extractorTemplateInstancesByEntity": {
             "type": "object",
             "extend": {
               "type": "schemaReference",
@@ -448,7 +448,7 @@
               }
             }
           },
-          "combinerTemplateByRelationReturningObjectList": {
+          "combinerTemplateOneToMany": {
             "type": "object",
             "extend": {
               "type": "schemaReference",
@@ -504,7 +504,7 @@
               }
             }
           },
-          "extractorTemplateByManyToManyRelationReturningObjectList": {
+          "combinerTemplateManyToMany": {
             "type": "object",
             "extend": {
               "type": "schemaReference",
@@ -516,7 +516,7 @@
             "definition": {
               "extractorOrCombinerType": {
                 "type": "literal",
-                "definition": "combinerByManyToManyRelationReturningObjectList"
+                "definition": "combinerManyToMany"
               },
               "orderBy": {
                 "type": "object",
@@ -564,19 +564,19 @@
               {
                 "type": "schemaReference",
                 "definition": {
-                  "relativePath": "extractorTemplateForObjectListByEntity"
+                  "relativePath": "extractorTemplateInstancesByEntity"
                 }
               },
               {
                 "type": "schemaReference",
                 "definition": {
-                  "relativePath": "combinerTemplateByRelationReturningObjectList"
+                  "relativePath": "combinerTemplateOneToMany"
                 }
               },
               {
                 "type": "schemaReference",
                 "definition": {
-                  "relativePath": "extractorTemplateByManyToManyRelationReturningObjectList"
+                  "relativePath": "combinerTemplateManyToMany"
                 }
               }
             ]
@@ -599,12 +599,12 @@
               }
             ]
           },
-          "extractorTemplateByExtractorCombiner": {
+          "combinerTemplateByHeteronomousManyToMany": {
             "type": "object",
             "definition": {
               "extractorOrCombinerType": {
                 "type": "literal",
-                "definition": "extractorCombinerByHeteronomousManyToManyReturningListOfObjectList"
+                "definition": "combinerByHeteronomousManyToMany"
               },
               "rootExtractorOrReference": {
                 "type": "union",
@@ -722,7 +722,7 @@
               {
                 "type": "schemaReference",
                 "definition": {
-                  "relativePath": "extractorTemplateByExtractorCombiner"
+                  "relativePath": "combinerTemplateByHeteronomousManyToMany"
                 }
               },
               {
@@ -974,7 +974,7 @@
               }
             ]
           },
-          "combinerByManyToManyRelationReturningObjectList": {
+          "combinerManyToMany": {
             "type": "object",
             "extend": {
               "type": "schemaReference",
@@ -993,7 +993,7 @@
                     "defaultLabel": "Extractor Or Combiner Type"
                   }
                 },
-                "definition": "combinerByManyToManyRelationReturningObjectList"
+                "definition": "combinerManyToMany"
               },
               "orderBy": {
                 "type": "object",
@@ -1049,7 +1049,7 @@
               {
                 "type": "schemaReference",
                 "definition": {
-                  "relativePath": "combinerByManyToManyRelationReturningObjectList"
+                  "relativePath": "combinerManyToMany"
                 }
               }
             ]
@@ -1073,7 +1073,7 @@
               {
                 "type": "schemaReference",
                 "definition": {
-                  "relativePath": "combinerByManyToManyRelationReturningObjectList"
+                  "relativePath": "combinerManyToMany"
                 }
               }
             ]
@@ -1096,7 +1096,7 @@
               }
             ]
           },
-          "extractorCombinerByHeteronomousManyToManyReturningListOfObjectList": {
+          "combinerByHeteronomousManyToMany": {
             "type": "object",
             "definition": {
               "extractorOrCombinerType": {
@@ -1108,7 +1108,7 @@
                     "defaultLabel": "Extractor Or Combiner Type"
                   }
                 },
-                "definition": "extractorCombinerByHeteronomousManyToManyReturningListOfObjectList"
+                "definition": "combinerByHeteronomousManyToMany"
               },
               "orderBy": {
                 "type": "object",
@@ -1284,7 +1284,7 @@
               {
                 "type": "schemaReference",
                 "definition": {
-                  "relativePath": "extractorCombinerByHeteronomousManyToManyReturningListOfObjectList"
+                  "relativePath": "combinerByHeteronomousManyToMany"
                 }
               },
               {

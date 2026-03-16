@@ -16,7 +16,7 @@
     },
     "combinerTemplates": {
       "BookWithPublisher": {
-        "extractorOrCombinerType": "combinerByManyToManyRelationReturningObjectList",
+        "extractorOrCombinerType": "combinerManyToMany",
         "label": "BookCountByPublisher_BookWithPublisher",
         "applicationSection": "data",
         "parentName": "Book",

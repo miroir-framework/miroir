@@ -37,7 +37,7 @@
         "AttributeOfListObjectToCompareToReferenceUuid": "publisher"
       },
       "BooksWithAuthor": {
-        "extractorOrCombinerType": "combinerByManyToManyRelationReturningObjectList",
+        "extractorOrCombinerType": "combinerManyToMany",
         "applicationSection": "data",
         "parentName": "Book",
         "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",

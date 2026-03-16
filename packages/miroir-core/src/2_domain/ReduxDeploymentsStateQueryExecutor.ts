@@ -204,7 +204,6 @@ export function getMultipleEntityInstancesIndexNonHook(
     {
       queryType: "boxedQueryWithExtractorCombinerTransformer",
       application,
-      // deploymentUuid: currentDeploymentUuid,
       pageParams: {},
       queryParams: {},
       contextResults: {},

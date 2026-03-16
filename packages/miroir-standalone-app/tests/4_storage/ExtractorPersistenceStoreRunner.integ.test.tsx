@@ -115,7 +115,8 @@ let localAppPersistenceStoreController: PersistenceStoreControllerInterface;
 // let miroirContext: MiroirContext;
 let persistenceStoreControllerManager: PersistenceStoreControllerManagerInterface;
 
-const env:any = (import.meta as any).env
+// const env:any = (import.meta as any).env
+const env:any = process.env
 console.log("@@@@@@@@@@@@@@@@@@ env", env);
 
 const {miroirConfig, logConfig:importedLoggerOptions} = await loadTestConfigFiles(env);
@@ -193,12 +194,12 @@ console.log("@@@@@@@@@@@@@@@@@@ miroirConfig", miroirConfig);
 
 export const libraryEntitiesAndInstances: ApplicationEntitiesAndInstances = [
   {
-    entity: entityAuthor as MetaEntity,
+    entity: entityAuthor as Entity,
     entityDefinition: entityDefinitionAuthor as EntityDefinition,
     instances: [author1, author2, author3 as EntityInstance],
   },
   {
-    entity: entityBook as MetaEntity,
+    entity: entityBook as Entity,
     entityDefinition: entityDefinitionBook as EntityDefinition,
     instances: [
       book1 as EntityInstance,
@@ -210,7 +211,7 @@ export const libraryEntitiesAndInstances: ApplicationEntitiesAndInstances = [
     ],
   },
   {
-    entity: entityPublisher as MetaEntity,
+    entity: entityPublisher as Entity,
     entityDefinition: entityDefinitionPublisher as EntityDefinition,
     instances: [
       publisher1 as EntityInstance,
@@ -396,9 +397,6 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", async (
                   queryType: "boxedQueryWithExtractorCombinerTransformer",
                   application: selfApplicationLibrary.uuid,
                   runAsSql,
-                  pageParams: {},
-                  queryParams: {},
-                  contextResults: {},
                   extractors: {
                     entities: {
                       extractorOrCombinerType: "extractorInstancesByEntity",
@@ -454,9 +452,6 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", async (
                 query: {
                   queryType: "boxedQueryWithExtractorCombinerTransformer",
                   application: selfApplicationMiroir.uuid,
-                  pageParams: {},
-                  queryParams: {},
-                  contextResults: {},
                   extractors: {
                     entity: {
                       extractorOrCombinerType: "extractorByPrimaryKey",
@@ -518,9 +513,6 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", async (
                   queryType: "boxedQueryWithExtractorCombinerTransformer",
                   application: selfApplicationLibrary.uuid,
                   runAsSql,
-                  pageParams: {},
-                  queryParams: {},
-                  contextResults: {},
                   extractors: {
                     entities: {
                       extractorOrCombinerType: "extractorInstancesByEntity",
@@ -574,16 +566,11 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", async (
               endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
               payload: {
                 application: selfApplicationLibrary.uuid,
-                // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
                 applicationSection: applicationSection,
                 query: {
                   queryType: "boxedQueryWithExtractorCombinerTransformer",
                   application: selfApplicationLibrary.uuid,
-                  // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
                   runAsSql,
-                  pageParams: {},
-                  queryParams: {},
-                  contextResults: {},
                   extractors: {
                     menus: {
                       extractorOrCombinerType: "extractorInstancesByEntity",
@@ -634,9 +621,6 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", async (
                 queryType: "boxedQueryWithExtractorCombinerTransformer",
                 application: selfApplicationLibrary.uuid,
                 runAsSql,
-                pageParams: {},
-                queryParams: {},
-                contextResults: {},
                 extractors: {
                   entities: {
                     extractorOrCombinerType: "extractorInstancesByEntity",
@@ -685,16 +669,11 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", async (
             endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
             payload: {
               application: selfApplicationLibrary.uuid,
-              // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
               applicationSection: applicationSection,
               query: {
                 application: selfApplicationLibrary.uuid,
                 queryType: "boxedQueryWithExtractorCombinerTransformer",
                 runAsSql,
-                pageParams: {},
-                queryParams: {},
-                contextResults: {},
-                // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
                 extractors: {
                   books: {
                     extractorOrCombinerType: "extractorInstancesByEntity",
@@ -712,7 +691,6 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", async (
                       interpolation: "runtime",
                       referenceName: "books",
                     },
-                    // referencedTransformer: "books",
                     attribute: "author",
                     orderBy: "author",
                   },
@@ -749,16 +727,11 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", async (
           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
           payload: {
             application: selfApplicationLibrary.uuid,
-            // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
             applicationSection: applicationSection,
             query: {
               application: selfApplicationLibrary.uuid,
               queryType: "boxedQueryWithExtractorCombinerTransformer",
               runAsSql,
-              pageParams: {},
-              queryParams: {},
-              contextResults: {},
-              // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
               extractors: {
                 books: {
                   extractorOrCombinerType: "extractorInstancesByEntity",
@@ -776,7 +749,6 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", async (
                     interpolation: "runtime",
                     referenceName: "books",
                   },
-                  // referencedTransformer: "books",
                 },
               },
             },
@@ -809,16 +781,11 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", async (
             endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
             payload: {
               application: selfApplicationLibrary.uuid,
-              // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
               applicationSection: applicationSection,
               query: {
                 application: selfApplicationLibrary.uuid,
                 queryType: "boxedQueryWithExtractorCombinerTransformer",
                 runAsSql,
-                pageParams: {},
-                queryParams: {},
-                contextResults: {},
-                // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
                 extractors: {
                   books: {
                     extractorOrCombinerType: "extractorInstancesByEntity",
@@ -837,7 +804,6 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", async (
                     transformerType: "aggregate",
                     interpolation: "runtime",
                     groupBy: "author",
-                    // orderBy: "author",
                   },
                 },
               },
@@ -848,7 +814,6 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", async (
         console.log("queryResult", JSON.stringify(queryResult, null, 2));
         return queryResult;
       },
-      // (a) => (a as any).returnedDomainElement.countBooksByAuthors,
       (a) => (a as any).returnedDomainElement.countBooksByAuthors.sort((a: any, b: any) => a.author.localeCompare(b.author)),
       undefined, // name to give to result
       undefined,
@@ -874,16 +839,11 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", async (
             endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
             payload: {
               application: selfApplicationLibrary.uuid,
-              // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
               applicationSection: applicationSection,
               query: {
                 application: selfApplicationLibrary.uuid,
                 queryType: "boxedQueryWithExtractorCombinerTransformer",
                 runAsSql,
-                pageParams: {},
-                queryParams: {},
-                contextResults: {},
-                // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
                 extractors: {
                   book: {
                     extractorOrCombinerType: "extractorByPrimaryKey",
@@ -899,10 +859,6 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", async (
                     parentName: "Publisher",
                     parentUuid: "a027c379-8468-43a5-ba4d-bf618be25cab",
                     objectReference: "book",
-                    // objectReference: {
-                    //   transformerType: "getFromContext"
-                    //   referenceName: "book"
-                    // },
                     AttributeOfObjectToCompareToReferenceUuid: "publisher",
                   },
                 },
@@ -941,13 +897,8 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", async (
               applicationSection: applicationSection,
               query: {
                 queryType: "boxedQueryWithExtractorCombinerTransformer",
-                // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
                 application: selfApplicationLibrary.uuid,
                 runAsSql,
-                pageParams: {},
-                queryParams: {},
-                contextResults: {},
-                // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
                 extractors: {
                   author: {
                     extractorOrCombinerType: "extractorByPrimaryKey",
@@ -1111,18 +1062,11 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", async (
           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
           payload: {
             application: selfApplicationLibrary.uuid,
-            // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
             applicationSection: applicationSection,
             query: {
               queryType: "boxedQueryWithExtractorCombinerTransformer",
               application: selfApplicationLibrary.uuid,
               runAsSql,
-              pageParams: {},
-              queryParams: {
-                // instanceUuid: "c6852e89-3c3c-447f-b827-4b5b9d830975",
-              },
-              contextResults: {},
-              // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
               extractors: {
                 book: {
                   extractorOrCombinerType: "extractorByPrimaryKey",
@@ -1199,16 +1143,11 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", async (
             endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
             payload: {
               application: selfApplicationLibrary.uuid,
-              // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
               applicationSection: applicationSection,
               query: {
                 queryType: "boxedQueryWithExtractorCombinerTransformer",
                 application: selfApplicationLibrary.uuid,
                 runAsSql,
-                pageParams: {},
-                queryParams: {},
-                contextResults: {},
-                // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
                 extractors: {
                   books: {
                     extractorOrCombinerType: "extractorInstancesByEntity",

@@ -165,7 +165,7 @@ if (relationQuery.applyTransformer) {
 - `otherIndex` = publisher.uuid
 - Filter books where `book.publisher === otherIndex`
 
-#### 3. `combinerByManyToManyRelationReturningObjectList` (M:N)
+#### 3. `combinerManyToMany` (M:N)
 Filters instances by matching against a list of references:
 ```typescript
 const otherList = query.contextResults[relationQuery.objectListReference];
