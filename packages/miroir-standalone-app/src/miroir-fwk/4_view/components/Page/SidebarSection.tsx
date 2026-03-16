@@ -175,7 +175,7 @@ export const SidebarSection:FC<SidebarSectionProps> = (props: SidebarSectionProp
               contextResults: {},
               extractors: {
                 menus: {
-                  extractorOrCombinerType: "extractorForObjectByDirectReference",
+                  extractorOrCombinerType: "extractorByPrimaryKey",
                   parentName: "Menu",
                   applicationSection: getApplicationSection(props.applicationUuid, entityMenu.uuid),
                   parentUuid: entityMenu.uuid,

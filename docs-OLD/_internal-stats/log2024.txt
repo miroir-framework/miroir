@@ -458,7 +458,7 @@ commit 89a895bce4a314101f8c097aa17a9b0d9186b11e
 Author: Miroir Framework <miroir-framework@protonmail.com>
 Date:   Fri Nov 22 18:37:42 2024 +0100
 
-    bugfix: handle "combinerForObjectByRelation" combiner in QuerySelector (was commented out)
+    bugfix: handle "combinerOneToOne" combiner in QuerySelector (was commented out)
 
  15 files changed, 139 insertions(+), 204 deletions(-)
 

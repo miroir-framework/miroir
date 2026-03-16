@@ -217,7 +217,7 @@ export const RootComponent = (props: RootComponentProps) => {
                 contextResults: {},
                 extractors: {
                   deployments: {
-                    extractorOrCombinerType: "extractorByEntityReturningObjectList",
+                    extractorOrCombinerType: "extractorInstancesByEntity",
                     label: "RootComponent_adminDeployments",
                     parentName: "Deployment",
                     applicationSection: getApplicationSection(

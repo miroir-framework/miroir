@@ -10,7 +10,7 @@
     "reportParameters": {},
     "extractorTemplates": {
       "tables": {
-        "extractorOrCombinerType": "extractorForObjectListByEntity",
+        "extractorOrCombinerType": "extractorInstancesByEntity",
         "parentName": "tables",
         "parentUuid": "35961086-f932-477a-aa77-ac8360ffbf61"
       }

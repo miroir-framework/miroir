@@ -441,8 +441,8 @@ export function sqlStringForCombiner /*BoxedExtractorTemplateRunner*/(
 ): SqlStringForCombinerReturnType { // TODO: do not throw exceptions
   // TODO: fetch parentName from parentUuid in query!
   switch (query.extractorOrCombinerType) {
-    case "extractorByEntityReturningObjectList":
-    case "extractorForObjectByDirectReference": {
+    case "extractorInstancesByEntity":
+    case "extractorByPrimaryKey": {
       throw new Error("asyncInnerSelectElementFromQuery queryType not implemented: " + JSON.stringify(query));
       // const result = this.persistenceStoreController.sqlForExtractor(query)
       // return {
@@ -455,7 +455,7 @@ export function sqlStringForCombiner /*BoxedExtractorTemplateRunner*/(
     case "extractorWrapperReturningList": {
       throw new Error("asyncInnerSelectElementFromQuery queryType not implemented: " + JSON.stringify(query));
     }
-    case "combinerForObjectByRelation": {
+    case "combinerOneToOne": {
       // TODO: deal with name clashes
       const parentPkColumn = getIdAttributeForEntity(query.parentUuid, modelEnvironment);
       const joinCondition = sqlJoinConditionForPk(
@@ -472,7 +472,7 @@ export function sqlStringForCombiner /*BoxedExtractorTemplateRunner*/(
         resultAccessPath: [0],
       };
     }
-    case "combinerByRelationReturningObjectList": {
+    case "combinerOneToMany": {
       // Resolve the PK column of the objectReference's entity
       const objectRefEntry = extractorsAndCombiners?.[query.objectReference];
       const objectRefEntityUuid = objectRefEntry && "parentUuid" in objectRefEntry ? objectRefEntry.parentUuid : undefined;
@@ -515,7 +515,7 @@ export function sqlStringForExtractor(
   modelEnvironment: MiroirModelEnvironment,
 ): RecursiveStringRecords {
   switch (extractor.extractorOrCombinerType) {
-    case "extractorForObjectByDirectReference": {
+    case "extractorByPrimaryKey": {
       const pkColumn = getIdAttributeForEntity(extractor.parentUuid, modelEnvironment);
       const effectiveSchema = getSchemaForEntity(extractor.parentUuid, schema, modelEnvironment);
       const whereClausePk = sqlWhereClauseForPk(pkColumn, extractor.instanceUuid);
@@ -523,21 +523,21 @@ export function sqlStringForExtractor(
         return `SELECT * FROM "${effectiveSchema}"."${extractor.parentName}" WHERE ${whereClausePk}`;
       }
       if (!modelEnvironment) {
-        throw new Error("sqlForExtractor extractorForObjectByDirectReference needs modelEnvironment if applyTransformer is set");
+        throw new Error("sqlForExtractor extractorByPrimaryKey needs modelEnvironment if applyTransformer is set");
       }
       log.info(
-        "sqlForExtractor extractorForObjectByDirectReference with applyTransformer",
+        "sqlForExtractor extractorByPrimaryKey with applyTransformer",
         JSON.stringify(extractor.applyTransformer, null, 2),
         Object.keys(modelEnvironment)
       );
       return `SELECT * FROM "${effectiveSchema}"."${extractor.parentName}" WHERE ${whereClausePk}`;
       break;
     }
-    case "combinerForObjectByRelation": {
-      throw new Error("sqlForExtractor combinerForObjectByRelation not implemented");
+    case "combinerOneToOne": {
+      throw new Error("sqlForExtractor combinerOneToOne not implemented");
       break;
     }
-    case "extractorByEntityReturningObjectList": {
+    case "extractorInstancesByEntity": {
       const effectiveSchema = getSchemaForEntity(extractor.parentUuid, schema, modelEnvironment);
       let whereClause = "";
       if (extractor.filter) {
@@ -568,7 +568,7 @@ export function sqlStringForExtractor(
     }
     case "extractorWrapperReturningObject":
     case "extractorWrapperReturningList":
-    case "combinerByRelationReturningObjectList":
+    case "combinerOneToMany":
     case "combinerByManyToManyRelationReturningObjectList": {
       throw new Error(
         "sqlForExtractor not implemented for extractorOrCombinerType: " +

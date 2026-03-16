@@ -344,7 +344,7 @@ export function useJzodElementEditorHooks(
               contextResults: {},
               extractors: {
                 [currentTypecheckKeyMap.resolvedSchema.tag?.value?.foreignKeyParams?.targetEntity]: {
-                  extractorOrCombinerType: "extractorByEntityReturningObjectList",
+                  extractorOrCombinerType: "extractorInstancesByEntity",
                   label: "jzodElementEditorHooks foreign key objects",
                   applicationSection,
                   parentName: "",

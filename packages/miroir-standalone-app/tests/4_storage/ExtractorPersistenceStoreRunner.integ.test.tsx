@@ -401,7 +401,7 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", async (
                   contextResults: {},
                   extractors: {
                     entities: {
-                      extractorOrCombinerType: "extractorByEntityReturningObjectList",
+                      extractorOrCombinerType: "extractorInstancesByEntity",
                       applicationSection: applicationSection,
                       parentName: "Entity",
                       parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
@@ -459,7 +459,7 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", async (
                   contextResults: {},
                   extractors: {
                     entity: {
-                      extractorOrCombinerType: "extractorForObjectByDirectReference",
+                      extractorOrCombinerType: "extractorByPrimaryKey",
                       applicationSection: "model",
                       parentName: "Entity",
                       parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
@@ -523,7 +523,7 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", async (
                   contextResults: {},
                   extractors: {
                     entities: {
-                      extractorOrCombinerType: "extractorByEntityReturningObjectList",
+                      extractorOrCombinerType: "extractorInstancesByEntity",
                       applicationSection: applicationSection,
                       parentName: entityEntity.name,
                       parentUuid: entityEntity.uuid,
@@ -586,7 +586,7 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", async (
                   contextResults: {},
                   extractors: {
                     menus: {
-                      extractorOrCombinerType: "extractorByEntityReturningObjectList",
+                      extractorOrCombinerType: "extractorInstancesByEntity",
                       applicationSection: applicationSection,
                       parentName: "Menu",
                       parentUuid: entityMenu.uuid,
@@ -639,7 +639,7 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", async (
                 contextResults: {},
                 extractors: {
                   entities: {
-                    extractorOrCombinerType: "extractorByEntityReturningObjectList",
+                    extractorOrCombinerType: "extractorInstancesByEntity",
                     applicationSection: applicationSection,
                     parentName: "Entity",
                     parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
@@ -697,7 +697,7 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", async (
                 // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
                 extractors: {
                   books: {
-                    extractorOrCombinerType: "extractorByEntityReturningObjectList",
+                    extractorOrCombinerType: "extractorInstancesByEntity",
                     applicationSection: applicationSection,
                     parentName: "Book",
                     parentUuid: entityBook.uuid,
@@ -761,7 +761,7 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", async (
               // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
               extractors: {
                 books: {
-                  extractorOrCombinerType: "extractorByEntityReturningObjectList",
+                  extractorOrCombinerType: "extractorInstancesByEntity",
                   applicationSection: applicationSection,
                   parentName: "Book",
                   parentUuid: entityBook.uuid,
@@ -821,7 +821,7 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", async (
                 // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
                 extractors: {
                   books: {
-                    extractorOrCombinerType: "extractorByEntityReturningObjectList",
+                    extractorOrCombinerType: "extractorInstancesByEntity",
                     applicationSection: applicationSection,
                     parentName: "Book",
                     parentUuid: entityBook.uuid,
@@ -862,7 +862,7 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", async (
   });
 
   // ################################################################################################
-  it("select publisher of book: combinerForObjectByRelation combiner", async () => {
+  it("select publisher of book: combinerOneToOne combiner", async () => {
     await chainVitestSteps(
       "ExtractorPersistenceStoreRunner_selectUniqueEntityApplication",
       {},
@@ -886,7 +886,7 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", async (
                 // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
                 extractors: {
                   book: {
-                    extractorOrCombinerType: "extractorForObjectByDirectReference",
+                    extractorOrCombinerType: "extractorByPrimaryKey",
                     applicationSection: applicationSection,
                     parentName: "Book",
                     parentUuid: entityBook.uuid,
@@ -895,7 +895,7 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", async (
                 },
                 combiners: {
                   publisher: {
-                    extractorOrCombinerType: "combinerForObjectByRelation",
+                    extractorOrCombinerType: "combinerOneToOne",
                     parentName: "Publisher",
                     parentUuid: "a027c379-8468-43a5-ba4d-bf618be25cab",
                     objectReference: "book",
@@ -925,7 +925,7 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", async (
   });
 
   // ################################################################################################
-  it("select Books of Author: combinerByRelationReturningObjectList combiner", async () => {
+  it("select Books of Author: combinerOneToMany combiner", async () => {
     await chainVitestSteps(
       "ExtractorPersistenceStoreRunner_selectUniqueEntityApplication",
       {},
@@ -950,7 +950,7 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", async (
                 // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
                 extractors: {
                   author: {
-                    extractorOrCombinerType: "extractorForObjectByDirectReference",
+                    extractorOrCombinerType: "extractorByPrimaryKey",
                     applicationSection: applicationSection,
                     parentName: entityAuthor.name,
                     parentUuid: entityAuthor.uuid,
@@ -960,7 +960,7 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", async (
                 combiners: {
                   booksOfAuthor: {
                     //join with only returnValue references
-                    extractorOrCombinerType: "combinerByRelationReturningObjectList",
+                    extractorOrCombinerType: "combinerOneToMany",
                     parentName: entityBook.name,
                     parentUuid: entityBook.uuid,
                     objectReference: "author",
@@ -1015,7 +1015,7 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", async (
   //             deploymentUuid: deployment_Library_DO_NO_USE.uuid,
   //             extractors: {
   //               books: {
-  //                 extractorOrCombinerType: "extractorByEntityReturningObjectList",
+  //                 extractorOrCombinerType: "extractorInstancesByEntity",
   //                 applicationSection: applicationSection,
   //                 parentName: "Book",
   //                 parentUuid: entityBook.uuid,
@@ -1125,7 +1125,7 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", async (
               // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
               extractors: {
                 book: {
-                  extractorOrCombinerType: "extractorForObjectByDirectReference",
+                  extractorOrCombinerType: "extractorByPrimaryKey",
                   parentName: "Book",
                   parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
                   instanceUuid: "c6852e89-3c3c-447f-b827-4b5b9d830975",
@@ -1133,14 +1133,14 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", async (
               },
               combiners: {
                 author: {
-                  extractorOrCombinerType: "combinerForObjectByRelation",
+                  extractorOrCombinerType: "combinerOneToOne",
                   parentName: "Author",
                   parentUuid: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
                   objectReference: "book",
                   AttributeOfObjectToCompareToReferenceUuid: "author",
                 },
                 booksOfAuthor: {
-                  extractorOrCombinerType: "combinerByRelationReturningObjectList",
+                  extractorOrCombinerType: "combinerOneToMany",
                   parentName: "Book",
                   parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
                   objectReference: "author",
@@ -1211,7 +1211,7 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", async (
                 // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
                 extractors: {
                   books: {
-                    extractorOrCombinerType: "extractorByEntityReturningObjectList",
+                    extractorOrCombinerType: "extractorInstancesByEntity",
                     applicationSection: applicationSection,
                     parentName: "Book",
                     parentUuid: entityBook.uuid,
@@ -1295,7 +1295,7 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", async (
   //                 contextResults: {},
   //                 // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
   //                 select: {
-  //                   extractorOrCombinerType: "extractorForObjectByDirectReference",
+  //                   extractorOrCombinerType: "extractorByPrimaryKey",
   //                   applicationSection: applicationSection,
   //                   parentName: "Book",
   //                   parentUuid: entityBook.uuid,
@@ -1357,7 +1357,7 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", async (
   //             deploymentUuid: deployment_Library_DO_NO_USE.uuid,
   //             extractors: {
   //               book: {
-  //                 extractorOrCombinerType: "extractorForObjectByDirectReference",
+  //                 extractorOrCombinerType: "extractorByPrimaryKey",
   //                 applicationSection: applicationSection,
   //                 parentName: "Book",
   //                 parentUuid: entityBook.uuid,

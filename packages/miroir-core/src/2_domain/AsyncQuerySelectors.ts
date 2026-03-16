@@ -167,8 +167,8 @@ export async function asyncInnerSelectElementFromQuery /*BoxedExtractorTemplateR
     }
     // ############################################################################################
     // Impure Monads
-    case "extractorByEntityReturningObjectList":
-    case "combinerByRelationReturningObjectList":
+    case "extractorInstancesByEntity":
+    case "combinerOneToMany":
     case "combinerByManyToManyRelationReturningObjectList": {
       const applicationSection =
         extractorOrCombiner.applicationSection ??
@@ -213,8 +213,8 @@ export async function asyncInnerSelectElementFromQuery /*BoxedExtractorTemplateR
       return Promise.resolve(result);
       break;
     }
-    case "combinerForObjectByRelation":
-    case "extractorForObjectByDirectReference": {
+    case "combinerOneToOne":
+    case "extractorByPrimaryKey": {
       // log.info(
       //   "############ asyncInnerSelectElementFromQuery",
       //   extractorOrCombiner.extractorOrCombinerType,

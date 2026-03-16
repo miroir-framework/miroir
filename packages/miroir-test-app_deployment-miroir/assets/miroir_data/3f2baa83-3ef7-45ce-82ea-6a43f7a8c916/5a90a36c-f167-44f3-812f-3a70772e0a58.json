@@ -9,7 +9,7 @@
   "definition": {
     "extractorTemplates": {
       "blob": {
-        "extractorOrCombinerType": "extractorForObjectByDirectReference",
+        "extractorOrCombinerType": "extractorByPrimaryKey",
         "applicationSection": "data",
         "parentName": "Blob",
         "parentUuid": "62209e4a-e429-4d7d-9b28-dcc1da6b51a2",

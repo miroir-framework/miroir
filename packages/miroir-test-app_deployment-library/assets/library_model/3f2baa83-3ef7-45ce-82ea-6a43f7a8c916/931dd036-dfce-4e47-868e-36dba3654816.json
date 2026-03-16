@@ -11,7 +11,7 @@
     "reportParameters": {},
     "extractorTemplates": {
       "tests": {
-        "extractorOrCombinerType": "extractorForObjectListByEntity",
+        "extractorOrCombinerType": "extractorInstancesByEntity",
         "parentName": "Test",
         "parentUuid": "9ad64893-5f8f-4eaf-91aa-ffae110f88c8"
       }

@@ -225,7 +225,7 @@ const runnerTestParams: Record<string, RunnerTestParams> = {
               contextResults: {},
               extractors: {
                 entities: {
-                  extractorOrCombinerType: "extractorByEntityReturningObjectList",
+                  extractorOrCombinerType: "extractorInstancesByEntity",
                   applicationSection: "model",
                   parentName: entityEntity.name,
                   parentUuid: entityEntity.uuid,
@@ -327,7 +327,7 @@ const runnerTestParams: Record<string, RunnerTestParams> = {
               contextResults: {},
               extractors: {
                 entities: {
-                  extractorOrCombinerType: "extractorByEntityReturningObjectList",
+                  extractorOrCombinerType: "extractorInstancesByEntity",
                   applicationSection: "model",
                   parentName: entityEntity.name,
                   parentUuid: entityEntity.uuid,
@@ -360,7 +360,7 @@ const runnerTestParams: Record<string, RunnerTestParams> = {
               contextResults: {},
               extractors: {
                 deployments: {
-                  extractorOrCombinerType: "extractorByEntityReturningObjectList",
+                  extractorOrCombinerType: "extractorInstancesByEntity",
                   applicationSection: "data",
                   parentName: entityDeployment.name,
                   parentUuid: entityDeployment.uuid,
@@ -491,7 +491,7 @@ const runnerTestParams: Record<string, RunnerTestParams> = {
               contextResults: {},
               extractors: {
                 entities: {
-                  extractorOrCombinerType: "extractorByEntityReturningObjectList",
+                  extractorOrCombinerType: "extractorInstancesByEntity",
                   applicationSection: "model",
                   parentName: entityEntity.name,
                   parentUuid: entityEntity.uuid,
@@ -590,7 +590,7 @@ const runnerTestParams: Record<string, RunnerTestParams> = {
               contextResults: {},
               extractors: {
                 entities: {
-                  extractorOrCombinerType: "extractorByEntityReturningObjectList",
+                  extractorOrCombinerType: "extractorInstancesByEntity",
                   applicationSection: "model",
                   parentName: entityEntity.name,
                   parentUuid: entityEntity.uuid,
@@ -685,7 +685,7 @@ const runnerTestParams: Record<string, RunnerTestParams> = {
               contextResults: {},
               extractors: {
                 applications: {
-                  extractorOrCombinerType: "extractorByEntityReturningObjectList",
+                  extractorOrCombinerType: "extractorInstancesByEntity",
                   applicationSection: "data",
                   parentName: entityApplicationForAdmin.name,
                   parentUuid: entityApplicationForAdmin.uuid,

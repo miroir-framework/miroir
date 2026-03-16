@@ -110,7 +110,7 @@
                         "transformerType": "createObject",
                         "definition": {
                           "instanceList": {
-                            "extractorOrCombinerType": "extractorByEntityReturningObjectList",
+                            "extractorOrCombinerType": "extractorInstancesByEntity",
                             "parentName": {
                               "transformerType": "getFromParameters",
                               "referenceName": "newEntityName"
@@ -182,7 +182,7 @@
                       "elementToDisplay": {
                         "transformerType": "returnValue",
                         "value": {
-                          "extractorOrCombinerType": "extractorForObjectByDirectReference",
+                          "extractorOrCombinerType": "extractorByPrimaryKey",
                           "parentName": {
                             "transformerType": "getFromContext",
                             "referenceName": "newEntityName"
@@ -323,7 +323,7 @@
                       "contextResults": {},
                       "extractors": {
                         "entityDefinitions": {
-                          "extractorOrCombinerType": "extractorByEntityReturningObjectList",
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
                           "applicationSection": "model",
                           "parentName": {
                             "transformerType": "getFromParameters",
@@ -372,7 +372,7 @@
                       "contextResults": {},
                       "extractors": {
                         "entities": {
-                          "extractorOrCombinerType": "extractorByEntityReturningObjectList",
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
                           "applicationSection": "model",
                           "parentName": {
                             "transformerType": "getFromParameters",
@@ -422,7 +422,7 @@
                       "contextResults": {},
                       "extractors": {
                         "reports": {
-                          "extractorOrCombinerType": "extractorByEntityReturningObjectList",
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
                           "applicationSection": "model",
                           "parentName": {
                             "transformerType": "getFromParameters",
@@ -466,7 +466,7 @@
                       "contextResults": {},
                       "extractors": {
                         "menuList": {
-                          "extractorOrCombinerType": "extractorByEntityReturningObjectList",
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
                           "applicationSection": "model",
                           "parentName": {
                             "transformerType": "getFromParameters",
@@ -606,7 +606,7 @@
                       "contextResults": {},
                       "extractors": {
                         "menuList": {
-                          "extractorOrCombinerType": "extractorByEntityReturningObjectList",
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
                           "applicationSection": "model",
                           "parentName": "Menu",
                           "parentUuid": {

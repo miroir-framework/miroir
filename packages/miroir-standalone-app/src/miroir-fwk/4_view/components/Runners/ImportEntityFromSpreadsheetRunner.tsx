@@ -173,7 +173,7 @@ export const ImportEntityFromSpreadsheetRunner: React.FC<CreateEntityToolProps> 
   //   extractorTemplates: {
   //     deployments: {
   //       label: "deployments of the application",
-  //       extractorOrCombinerType: "extractorForObjectListByEntity",
+  //       extractorOrCombinerType: "extractorInstancesByEntity",
   //       parentUuid: entityDeployment.uuid,
   //       parentName: entityDeployment.name,
   //       applicationSection: "data",
@@ -214,7 +214,7 @@ export const ImportEntityFromSpreadsheetRunner: React.FC<CreateEntityToolProps> 
   //               extractors: {
   //                 deployments: {
   //                   label: "deployments of the application",
-  //                   extractorOrCombinerType: "extractorByEntityReturningObjectList",
+  //                   extractorOrCombinerType: "extractorInstancesByEntity",
   //                   parentUuid: entityDeployment.uuid,
   //                   parentName: entityDeployment.name,
   //                   applicationSection: "data",
@@ -264,7 +264,7 @@ export const ImportEntityFromSpreadsheetRunner: React.FC<CreateEntityToolProps> 
   //               extractors: {
   //                 entityDefinitions: {
   //                   label: "entityDefinitions of the deployment",
-  //                   extractorOrCombinerType: "extractorByEntityReturningObjectList",
+  //                   extractorOrCombinerType: "extractorInstancesByEntity",
   //                   parentUuid: entityEntityDefinition.uuid,
   //                   parentName: entityEntityDefinition.name,
   //                   applicationSection: "model",
@@ -352,7 +352,7 @@ export const ImportEntityFromSpreadsheetRunner: React.FC<CreateEntityToolProps> 
                   extractors: {
                     deployments: {
                       label: "deployments of the application",
-                      extractorOrCombinerType: "extractorByEntityReturningObjectList",
+                      extractorOrCombinerType: "extractorInstancesByEntity",
                       parentUuid: entityDeployment.uuid,
                       parentName: entityDeployment.name,
                       applicationSection: "data",

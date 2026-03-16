@@ -98,7 +98,7 @@ export const selectEntityInstanceFromReduxDeploymentsState: SyncBoxedExtractorRu
   const index = getReduxDeploymentsStateIndex(deploymentUuid, applicationSection, entityUuidReference);
 
   switch (querySelectorParams?.extractorOrCombinerType) {
-    case "combinerForObjectByRelation": {
+    case "combinerOneToOne": {
       // TODO: reference object is implicitly a getFromContext here, should be made explicit?!
       // TODO: gives a condition for "build" resolution to yield value not constantTransformer, this is actually not relevant, the interface must be corrected.
       // const referenceObject = transformer_InnerReference_resolve(
@@ -121,12 +121,12 @@ export const selectEntityInstanceFromReduxDeploymentsState: SyncBoxedExtractorRu
       if (referenceObject.elementType == "failure") {
         return new Domain2ElementFailed({
           queryFailure: "ReferenceNotFound",
-          queryContext: "selectEntityInstanceFromReduxDeploymentsState combinerForObjectByRelation " + JSON.stringify(referenceObject),
+          queryContext: "selectEntityInstanceFromReduxDeploymentsState combinerOneToOne " + JSON.stringify(referenceObject),
         });
       }
       if (!querySelectorParams.AttributeOfObjectToCompareToReferenceUuid) {
         log.error(
-          "selectEntityInstanceFromReduxDeploymentsState combinerForObjectByRelation, querySelectorParams",
+          "selectEntityInstanceFromReduxDeploymentsState combinerOneToOne, querySelectorParams",
           querySelectorParams,
           "entityUuid",
           entityUuidReference,
@@ -147,7 +147,7 @@ export const selectEntityInstanceFromReduxDeploymentsState: SyncBoxedExtractorRu
       }
 
       if (!deploymentEntityState[index]) {
-        log.error("selectEntityInstanceFromReduxDeploymentsState combinerForObjectByRelation, could not find index", index, "in deploymentEntityState", deploymentEntityState);
+        log.error("selectEntityInstanceFromReduxDeploymentsState combinerOneToOne, could not find index", index, "in deploymentEntityState", deploymentEntityState);
         return new Domain2ElementFailed({
           queryFailure: "EntityNotFound",
           deploymentUuid,
@@ -157,7 +157,7 @@ export const selectEntityInstanceFromReduxDeploymentsState: SyncBoxedExtractorRu
       }
 
       // log.info(
-      //   "selectEntityInstanceFromReduxDeploymentsState combinerForObjectByRelation, ############# reference",
+      //   "selectEntityInstanceFromReduxDeploymentsState combinerOneToOne, ############# reference",
       //   querySelectorParams,
       //   "######### context entityUuid",
       //   entityUuidReference,
@@ -168,15 +168,15 @@ export const selectEntityInstanceFromReduxDeploymentsState: SyncBoxedExtractorRu
       //   "######### contextResults",
       //   JSON.stringify(foreignKeyParams.query.contextResults, undefined, 2)
       // );
-      // log.info("selectEntityInstanceFromReduxDeploymentsState combinerForObjectByRelation referenceObject:", referenceObject);
+      // log.info("selectEntityInstanceFromReduxDeploymentsState combinerOneToOne referenceObject:", referenceObject);
       
       // In ReduxDeploymentsStateQuerySelectors, referenceObject is the actual object, not a Domain2Element wrapper
       const actualReferenceObject = referenceObject.elementValue || referenceObject;
       if (!actualReferenceObject) {
-        log.error("selectEntityInstanceFromReduxDeploymentsState combinerForObjectByRelation actualReferenceObject is undefined");
+        log.error("selectEntityInstanceFromReduxDeploymentsState combinerOneToOne actualReferenceObject is undefined");
         return new Domain2ElementFailed({
           queryFailure: "ReferenceNotFound",
-          queryContext: "selectEntityInstanceFromReduxDeploymentsState combinerForObjectByRelation actualReferenceObject is undefined, referenceObject=" + JSON.stringify(referenceObject),
+          queryContext: "selectEntityInstanceFromReduxDeploymentsState combinerOneToOne actualReferenceObject is undefined, referenceObject=" + JSON.stringify(referenceObject),
         });
       }
       
@@ -187,7 +187,7 @@ export const selectEntityInstanceFromReduxDeploymentsState: SyncBoxedExtractorRu
       if (fkValue == null) {
         return new Domain2ElementFailed({
           queryFailure: "IncorrectParameters",
-          queryContext: "selectEntityInstanceFromReduxDeploymentsState combinerForObjectByRelation could not resolve FK value",
+          queryContext: "selectEntityInstanceFromReduxDeploymentsState combinerOneToOne could not resolve FK value",
         });
       }
       
@@ -195,7 +195,7 @@ export const selectEntityInstanceFromReduxDeploymentsState: SyncBoxedExtractorRu
       
       if (querySelectorParams.applyTransformer) {
         // log.info(
-        //   "selectEntityInstanceFromReduxDeploymentsState combinerForObjectByRelation, applying transformer",
+        //   "selectEntityInstanceFromReduxDeploymentsState combinerOneToOne, applying transformer",
         //   querySelectorParams.applyTransformer,
         //   "referenceObject",
         //   actualReferenceObject,
@@ -206,7 +206,7 @@ export const selectEntityInstanceFromReduxDeploymentsState: SyncBoxedExtractorRu
         const transformedResult = transformer_extended_apply(
           "runtime",
           [], // transformerPath
-          "combinerForObjectByRelation",
+          "combinerOneToOne",
           querySelectorParams.applyTransformer,
           "value",
           // {...modelEnvironment, ...foreignKeyParams.extractor.queryParams},
@@ -220,7 +220,7 @@ export const selectEntityInstanceFromReduxDeploymentsState: SyncBoxedExtractorRu
         );
         
         // log.info(
-        //   "selectEntityInstanceFromReduxDeploymentsState combinerForObjectByRelation, after applyTransformer",
+        //   "selectEntityInstanceFromReduxDeploymentsState combinerOneToOne, after applyTransformer",
         //   querySelectorParams.applyTransformer,
         //   "transformedResult",
         //   JSON.stringify(transformedResult)
@@ -243,10 +243,10 @@ export const selectEntityInstanceFromReduxDeploymentsState: SyncBoxedExtractorRu
       return foreignKeyObject;
       break;
     }
-    case "extractorForObjectByDirectReference": {
+    case "extractorByPrimaryKey": {
       // TODO: instanceUuid is implicitly a constant here, should be made explicit?!
       const instanceDomainElement = querySelectorParams.instanceUuid;
-      // log.info("selectEntityInstanceFromReduxDeploymentsState extractorForObjectByDirectReference found domainState", JSON.stringify(domainState))
+      // log.info("selectEntityInstanceFromReduxDeploymentsState extractorByPrimaryKey found domainState", JSON.stringify(domainState))
 
       // log.info(
       //   "selectEntityInstanceFromReduxDeploymentsState found instanceUuid",
@@ -255,7 +255,7 @@ export const selectEntityInstanceFromReduxDeploymentsState: SyncBoxedExtractorRu
 
       // log.info("selectEntityInstanceFromReduxDeploymentsState resolved instanceUuid =", instanceDomainElement);
       if (!deploymentEntityState[index]) {
-        // log.error("selectEntityInstanceFromReduxDeploymentsState extractorForObjectByDirectReference, could not find index", index, "in deploymentEntityState", deploymentEntityState);
+        // log.error("selectEntityInstanceFromReduxDeploymentsState extractorByPrimaryKey, could not find index", index, "in deploymentEntityState", deploymentEntityState);
         return new Domain2ElementFailed({
           queryFailure: "EntityNotFound",
           deploymentUuid,
@@ -274,7 +274,7 @@ export const selectEntityInstanceFromReduxDeploymentsState: SyncBoxedExtractorRu
       }
 
       // log.info(
-      //   "selectEntityInstanceFromReduxDeploymentsState extractorForObjectByDirectReference, ############# reference",
+      //   "selectEntityInstanceFromReduxDeploymentsState extractorByPrimaryKey, ############# reference",
       //   querySelectorParams,
       //   "entityUuidReference",
       //   entityUuidReference,
@@ -357,7 +357,7 @@ export const selectEntityInstanceUuidIndexFromReduxDeploymentsState: SyncBoxedEx
   const entityInstances = deploymentEntityState[deploymentEntityStateIndex].entities;
   const localSelect = foreignKeyParams.extractor.select;
   if (
-    localSelect.extractorOrCombinerType !== "extractorByEntityReturningObjectList" ||
+    localSelect.extractorOrCombinerType !== "extractorInstancesByEntity" ||
     (!localSelect.filter && !localSelect.orderBy)
   ) {
     return entityInstances;

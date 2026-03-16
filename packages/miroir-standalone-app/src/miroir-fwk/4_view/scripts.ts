@@ -115,7 +115,7 @@ export const deleteCascade = async (p: {
         Object.keys(foreignKeysPointingToEntity).map((entityUuid) => [
           entityUuid,
           { // TODO: FILTER ON FK TO ONLY THE ONES POINTING TO THE DELETED INSTANCES
-            extractorOrCombinerType: "extractorForObjectListByEntity",
+            extractorOrCombinerType: "extractorInstancesByEntity",
             application: p.application,
             applicationSection: p.applicationSection,
             parentName: "",

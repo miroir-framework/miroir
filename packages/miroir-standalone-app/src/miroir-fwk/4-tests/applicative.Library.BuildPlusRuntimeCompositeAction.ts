@@ -284,7 +284,7 @@ export function getTestSuitesForBuildPlusRuntimeCompositeAction(miroirConfig: an
                 //     definition: {
                 //       extractors: {
                 //         instanceList: {
-                //           extractorOrCombinerType: "extractorByEntityReturningObjectList",
+                //           extractorOrCombinerType: "extractorInstancesByEntity",
                 //           parentName: {
                 //             transformerType: "getFromParameters",
                 //             interpolation: "build",
@@ -353,7 +353,7 @@ export function getTestSuitesForBuildPlusRuntimeCompositeAction(miroirConfig: an
                 //           transformerType: "returnValue",
                 //           interpolation: "build",
                 //           value: {
-                //             extractorOrCombinerType: "extractorForObjectByDirectReference",
+                //             extractorOrCombinerType: "extractorByPrimaryKey",
                 //             parentName: {
                 //               transformerType: "getFromContext",
                 //               interpolation: "build",
@@ -538,7 +538,7 @@ export function getTestSuitesForBuildPlusRuntimeCompositeAction(miroirConfig: an
                           contextResults: {},
                           extractors: {
                             entityDefinitions: {
-                              extractorOrCombinerType: "extractorByEntityReturningObjectList",
+                              extractorOrCombinerType: "extractorInstancesByEntity",
                               applicationSection: "model",
                               parentName: {
                                 transformerType: "getFromParameters",
@@ -603,7 +603,7 @@ export function getTestSuitesForBuildPlusRuntimeCompositeAction(miroirConfig: an
                           contextResults: {},
                           extractors: {
                             entities: {
-                              extractorOrCombinerType: "extractorByEntityReturningObjectList",
+                              extractorOrCombinerType: "extractorInstancesByEntity",
                               applicationSection: "model",
                               parentName: {
                                 transformerType: "getFromParameters",
@@ -660,7 +660,7 @@ export function getTestSuitesForBuildPlusRuntimeCompositeAction(miroirConfig: an
                   // //         contextResults: {},
                   // //         extractors: {
                   // //           reports: {
-                  // //             extractorOrCombinerType: "extractorByEntityReturningObjectList",
+                  // //             extractorOrCombinerType: "extractorInstancesByEntity",
                   // //             applicationSection: "model",
                   // //             parentName: {
                   // //               transformerType: "getFromParameters",
@@ -710,7 +710,7 @@ export function getTestSuitesForBuildPlusRuntimeCompositeAction(miroirConfig: an
                   // //         contextResults: {},
                   // //         extractors: {
                   // //           menuList: {
-                  // //             extractorOrCombinerType: "extractorByEntityReturningObjectList",
+                  // //             extractorOrCombinerType: "extractorInstancesByEntity",
                   // //             applicationSection: "model",
                   // //             parentName: {
                   // //               transformerType: "getFromParameters",
@@ -856,7 +856,7 @@ export function getTestSuitesForBuildPlusRuntimeCompositeAction(miroirConfig: an
                   // //         contextResults: {},
                   // //         extractors: {
                   // //           menuList: {
-                  // //             extractorOrCombinerType: "extractorByEntityReturningObjectList",
+                  // //             extractorOrCombinerType: "extractorInstancesByEntity",
                   // //             applicationSection: "model",
                   // //             parentName: "Menu",
                   // //             parentUuid: {

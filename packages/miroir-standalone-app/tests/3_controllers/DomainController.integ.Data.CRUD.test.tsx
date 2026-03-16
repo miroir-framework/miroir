@@ -394,7 +394,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
                         contextResults: {},
                         extractors: {
                           books: {
-                            extractorOrCombinerType: "extractorByEntityReturningObjectList",
+                            extractorOrCombinerType: "extractorInstancesByEntity",
                             applicationSection: "data",
                             parentName: "Book",
                             parentUuid: entityBook.uuid,
@@ -519,7 +519,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
                         contextResults: {},
                         extractors: {
                           books: {
-                            extractorOrCombinerType: "extractorByEntityReturningObjectList",
+                            extractorOrCombinerType: "extractorInstancesByEntity",
                             applicationSection: "data",
                             parentName: "Book",
                             parentUuid: entityBook.uuid,
@@ -639,7 +639,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
                         contextResults: {},
                         extractors: {
                           books: {
-                            extractorOrCombinerType: "extractorByEntityReturningObjectList",
+                            extractorOrCombinerType: "extractorInstancesByEntity",
                             applicationSection: "data",
                             parentName: "Book",
                             parentUuid: entityBook.uuid,
@@ -758,7 +758,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
                         contextResults: {},
                         extractors: {
                           books: {
-                            extractorOrCombinerType: "extractorByEntityReturningObjectList",
+                            extractorOrCombinerType: "extractorInstancesByEntity",
                             applicationSection: "data",
                             parentName: "Book",
                             parentUuid: entityBook.uuid,
@@ -892,7 +892,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
                         contextResults: {},
                         extractors: {
                           books: {
-                            extractorOrCombinerType: "extractorByEntityReturningObjectList",
+                            extractorOrCombinerType: "extractorInstancesByEntity",
                             applicationSection: "data",
                             parentName: "Book",
                             parentUuid: entityBook.uuid,
@@ -1023,7 +1023,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
                         contextResults: {},
                         extractors: {
                           books: {
-                            extractorOrCombinerType: "extractorByEntityReturningObjectList",
+                            extractorOrCombinerType: "extractorInstancesByEntity",
                             applicationSection: "data",
                             parentName: "Book",
                             parentUuid: entityBook.uuid,

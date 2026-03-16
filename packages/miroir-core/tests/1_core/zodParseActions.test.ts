@@ -502,8 +502,8 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
           queryParams: {},
           contextResults: {},
           extractors: {
-            extractorForObjectByDirectReference: {
-              extractorOrCombinerType: "extractorForObjectByDirectReference",
+            extractorByPrimaryKey: {
+              extractorOrCombinerType: "extractorByPrimaryKey",
               parentUuid: entityMenu.uuid,
               parentName: entityMenu.name,
               applicationSection: "model",
@@ -518,10 +518,10 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
   // ##############################################################################################
   // ExtractorTemplate, QueryTemplate #############################################################
   // ##############################################################################################
-  "combinerByRelationReturningObjectList is parsable": {
+  "combinerOneToMany is parsable": {
     zodSchema: extractorOrCombinerTemplate,
     action: {
-      extractorOrCombinerType: "combinerByRelationReturningObjectList",
+      extractorOrCombinerType: "combinerOneToMany",
       parentUuid: {
         transformerType: "getFromParameters",
         interpolation: "build",
@@ -549,7 +549,7 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
       queryParams: {},
       extractorTemplates: {
         authors: {
-          extractorOrCombinerType: "extractorForObjectListByEntity",
+          extractorOrCombinerType: "extractorInstancesByEntity",
           parentName: "Author",
           parentUuid: {
             transformerType: "returnValue",

@@ -501,7 +501,7 @@ const createEntityCompositeAction: CompositeActionSequence = {
       //   definition: {
       //     extractors: {
       //       instanceList: {
-      //         extractorOrCombinerType: "extractorByEntityReturningObjectList",
+      //         extractorOrCombinerType: "extractorInstancesByEntity",
       //         parentName: {
       //           transformerType: "getFromContext",
       //           interpolation: "runtime",
@@ -571,7 +571,7 @@ const createEntityCompositeAction: CompositeActionSequence = {
       //         transformerType: "returnValue",
       //         interpolation: "runtime",
       //         value: {
-      //           extractorOrCombinerType: "extractorForObjectByDirectReference",
+      //           extractorOrCombinerType: "extractorByPrimaryKey",
       //           parentName: {
       //             transformerType: "getFromContext",
       //             interpolation: "runtime",
@@ -662,7 +662,7 @@ const createEntityCompositeActionPrepActions: any[] = [
         contextResults: {},
         extractors: {
           entityDefinitions: {
-            extractorOrCombinerType: "extractorByEntityReturningObjectList",
+            extractorOrCombinerType: "extractorInstancesByEntity",
             applicationSection: "model",
             parentName: entityEntityDefinition.name,
             parentUuid: entityEntityDefinition.uuid,
@@ -695,7 +695,7 @@ const createEntityCompositeActionPrepActions: any[] = [
         contextResults: {},
         extractors: {
           entities: {
-            extractorOrCombinerType: "extractorByEntityReturningObjectList",
+            extractorOrCombinerType: "extractorInstancesByEntity",
             applicationSection: "model",
             parentName: entityEntity.name,
             parentUuid: entityEntity.uuid,
@@ -790,7 +790,7 @@ const newEntityListReport = {
   definition: {
     extractors: {
       instanceList: {
-        extractorOrCombinerType: "extractorByEntityReturningObjectList",
+        extractorOrCombinerType: "extractorInstancesByEntity",
         parentName: newEntityName,
         parentUuid: newEntityUuid,
       },
@@ -817,7 +817,7 @@ const newEntityDetailsReport = {
   definition: {
     extractorTemplates: {
       elementToDisplay: {
-        extractorOrCombinerType: "extractorForObjectByDirectReference",
+        extractorOrCombinerType: "extractorByPrimaryKey",
         parentName: newEntityName,
         parentUuid: newEntityUuid,
         instanceUuid: {
@@ -880,7 +880,7 @@ const createReportsCompositeAction: DomainAction = {
             definition: {
               extractors: {
                 instanceList: {
-                  extractorOrCombinerType: "extractorByEntityReturningObjectList",
+                  extractorOrCombinerType: "extractorInstancesByEntity",
                   parentName: newEntityName,
                   parentUuid: createEntity_newEntity.uuid,
                 },
@@ -908,7 +908,7 @@ const createReportsCompositeAction: DomainAction = {
           //   definition: {
           //     extractorTemplates: {
           //       elementToDisplay: {
-          //         extractorOrCombinerType: "extractorForObjectByDirectReference",
+          //         extractorOrCombinerType: "extractorByPrimaryKey",
           //         parentName: newEntityName,
           //         parentUuid: newEntityUuid,
           //         instanceUuid: {
@@ -961,7 +961,7 @@ const createReportsCompositeActionPrepActions: any[] = [
         contextResults: {},
         extractors: {
           reports: {
-            extractorOrCombinerType: "extractorByEntityReturningObjectList",
+            extractorOrCombinerType: "extractorInstancesByEntity",
             applicationSection: "model",
             parentName: entityReport.name,
             parentUuid: entityReport.uuid,
@@ -1004,7 +1004,7 @@ const createReportsCompositeActionAssertions: CompositeRunTestAssertion[] = [
             definition: {
               extractorTemplates: {
                 elementToDisplay: {
-                  extractorOrCombinerType: "extractorForObjectByDirectReference",
+                  extractorOrCombinerType: "extractorByPrimaryKey",
                   parentName: newEntityName,
                   parentUuid: newEntityUuid,
                   // instanceUuid: {
@@ -1152,7 +1152,7 @@ const testSuites: Record<string, TestCompositeActionParams> = {
                         contextResults: {},
                         extractors: {
                           menuList: {
-                            extractorOrCombinerType: "extractorByEntityReturningObjectList",
+                            extractorOrCombinerType: "extractorInstancesByEntity",
                             applicationSection: "model",
                             parentName: entityMenu.name,
                             parentUuid: entityMenu.uuid,
@@ -1260,7 +1260,7 @@ const testSuites: Record<string, TestCompositeActionParams> = {
                         contextResults: {},
                         extractors: {
                           menuList: {
-                            extractorOrCombinerType: "extractorByEntityReturningObjectList",
+                            extractorOrCombinerType: "extractorInstancesByEntity",
                             applicationSection: "model",
                             parentName: "Menu",
                             parentUuid: entityMenu.uuid,
@@ -1453,7 +1453,7 @@ const testSuites: Record<string, TestCompositeActionParams> = {
         //             contextResults: {},
         //             extractorTemplates: {
         //               menuList: {
-        //                 extractorOrCombinerType: "extractorForObjectListByEntity",
+        //                 extractorOrCombinerType: "extractorInstancesByEntity",
         //                 applicationSection: "model",
         //                 parentName: "Menu",
         //                 parentUuid: {
@@ -1586,7 +1586,7 @@ const testSuites: Record<string, TestCompositeActionParams> = {
         //             contextResults: {},
         //             extractorTemplates: {
         //               menuList: {
-        //                 extractorOrCombinerType: "extractorForObjectListByEntity",
+        //                 extractorOrCombinerType: "extractorInstancesByEntity",
         //                 applicationSection: "model",
         //                 parentName: "Menu",
         //                 parentUuid: {

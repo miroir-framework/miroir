@@ -9,7 +9,7 @@
     "reportParameters": {},
     "extractorTemplates": {
       "transformerTests": {
-        "extractorOrCombinerType": "extractorForObjectListByEntity",
+        "extractorOrCombinerType": "extractorInstancesByEntity",
         "parentUuid": "681be9ca-c593-45f5-b45a-5f1d4969e91e"
       }
     },

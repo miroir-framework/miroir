@@ -9439,7 +9439,7 @@ const tests: { [k: string]: testFormat } = {
       contextResults: {},
       extractors: {
         menuList: {
-          extractorOrCombinerType: "extractorByEntityReturningObjectList",
+          extractorOrCombinerType: "extractorInstancesByEntity",
           applicationSection: "model",
           parentName: "Menu",
           // parentName: {
@@ -9545,7 +9545,7 @@ const tests: { [k: string]: testFormat } = {
               definition: {
                 extractorOrCombinerType: {
                   type: "literal",
-                  definition: "extractorByEntityReturningObjectList",
+                  definition: "extractorInstancesByEntity",
                 },
                 applicationSection: {
                   type: "enum",

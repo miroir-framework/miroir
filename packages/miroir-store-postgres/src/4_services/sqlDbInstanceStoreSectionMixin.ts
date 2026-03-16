@@ -107,7 +107,7 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
         case "boxedExtractorOrCombinerReturningObjectList": {
           // TODO: use queryGenerator?
           switch (query.select.extractorOrCombinerType) {
-            case "extractorByEntityReturningObjectList": {
+            case "extractorInstancesByEntity": {
               const entitySchema = this.sqlSchemaTableAccess?.[query.select.parentUuid]?.isExternal
                 ? ((modelEnvironment as any)?.currentModel?.entityDefinitions?.find(
                     (ed: any) => ed.entityUuid === query.select.parentUuid,
@@ -121,8 +121,8 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
               );
               break;
             }
-            case "combinerByRelationReturningObjectList": {
-              throw new Error("sqlForQuery combinerByRelationReturningObjectList not implemented");
+            case "combinerOneToMany": {
+              throw new Error("sqlForQuery combinerOneToMany not implemented");
             }
             case "combinerByManyToManyRelationReturningObjectList": {
               throw new Error(
@@ -164,7 +164,7 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
         }
         case "boxedExtractorOrCombinerReturningObject": {
           switch (query.select.extractorOrCombinerType) {
-            case "extractorForObjectByDirectReference": {
+            case "extractorByPrimaryKey": {
               const pkColumn = this.sqlSchemaTableAccess[query.select.parentUuid]?.idAttribute ?? "uuid";
               const entitySchema = this.sqlSchemaTableAccess?.[query.select.parentUuid]?.isExternal
                 ? ((modelEnvironment as any)?.currentModel?.entityDefinitions?.find(
@@ -174,8 +174,8 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
               return `SELECT * FROM "${entitySchema}"."${query.select.parentName}" WHERE "${pkColumn}" = '${query.select.instanceUuid}'`;
               break;
             }
-            case "combinerForObjectByRelation": {
-              throw new Error("sqlForQuery combinerForObjectByRelation not implemented");
+            case "combinerOneToOne": {
+              throw new Error("sqlForQuery combinerOneToOne not implemented");
             }
             default: {
               throw new Error(

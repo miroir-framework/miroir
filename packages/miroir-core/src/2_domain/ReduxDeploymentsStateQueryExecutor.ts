@@ -137,7 +137,7 @@ export function getEntityInstancesIndexNonHook(
       contextResults: {},
       extractors: {
         [targetEntity]: {
-          extractorOrCombinerType: "extractorByEntityReturningObjectList",
+          extractorOrCombinerType: "extractorInstancesByEntity",
           applicationSection: getApplicationSection(application, targetEntity),
           parentName: "",
           parentUuid: targetEntity,
@@ -188,7 +188,7 @@ export function getMultipleEntityInstancesIndexNonHook(
     targetEntities.map(({ entityUuid, orderBy }) => [
       entityUuid,
       {
-        extractorOrCombinerType: "extractorByEntityReturningObjectList" as const,
+        extractorOrCombinerType: "extractorInstancesByEntity" as const,
         applicationSection: getApplicationSection(application, entityUuid),
         parentName: "",
         parentUuid: entityUuid,

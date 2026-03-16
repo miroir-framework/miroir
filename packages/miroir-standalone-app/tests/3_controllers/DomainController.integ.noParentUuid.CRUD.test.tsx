@@ -312,7 +312,7 @@ const queryNoParentUuidInstances = {
         contextResults: {},
         extractors: {
           items: {
-            extractorOrCombinerType: "extractorByEntityReturningObjectList",
+            extractorOrCombinerType: "extractorInstancesByEntity",
             applicationSection: "data",
             parentName: "TestEntityNoParentUuid",
             parentUuid: entityNoParentUuidUuid,
@@ -495,7 +495,7 @@ const modelTestActions: Record<string, TestCompositeActionParams> = {
                         contextResults: {},
                         extractors: {
                           entities: {
-                            extractorOrCombinerType: "extractorByEntityReturningObjectList",
+                            extractorOrCombinerType: "extractorInstancesByEntity",
                             applicationSection: "model",
                             parentName: entityEntity.name,
                             parentUuid: entityEntity.uuid,

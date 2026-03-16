@@ -104,7 +104,7 @@ export const HomePage = (props: RootComponentProps) => {
             contextResults: {},
             extractors: {
               selfApplication: {
-                extractorOrCombinerType: "extractorForObjectByDirectReference",
+                extractorOrCombinerType: "extractorByPrimaryKey",
                 label: "HomePage_selfApplication",
                 parentName: "SelfApplication",
                 parentUuid: entitySelfApplication.uuid,

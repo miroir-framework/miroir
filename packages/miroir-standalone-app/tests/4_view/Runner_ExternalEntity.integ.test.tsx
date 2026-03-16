@@ -204,7 +204,7 @@ const runnerTestParams: Record<string, RunnerTestParams> = {
               contextResults: {},
               extractors: {
                 entities: {
-                  extractorOrCombinerType: "extractorByEntityReturningObjectList",
+                  extractorOrCombinerType: "extractorInstancesByEntity",
                   applicationSection: "model",
                   parentName: entityEntity.name,
                   parentUuid: entityEntity.uuid,
@@ -240,7 +240,7 @@ const runnerTestParams: Record<string, RunnerTestParams> = {
               contextResults: {},
               extractors: {
                 namespaces: {
-                  extractorOrCombinerType: "extractorByEntityReturningObjectList",
+                  extractorOrCombinerType: "extractorInstancesByEntity",
                   applicationSection: "data",
                   parentName: "pg_namespace",
                   parentUuid: pgNamespaceEntityUuid,

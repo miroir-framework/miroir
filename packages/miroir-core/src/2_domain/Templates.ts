@@ -43,7 +43,7 @@ export function resolveExtractorTemplate(
         definition: extractorOrCombinerTemplate.definition,
       };
     }
-    case "extractorForObjectListByEntity": {
+    case "extractorInstancesByEntity": {
       if (extractorOrCombinerTemplate.filter) {
         // const filterValue = transformer_extended_apply_wrapper(
         const filterValue = transformer_extended_apply(
@@ -58,7 +58,7 @@ export function resolveExtractorTemplate(
         )
         // TODO: check for failure!
         return {
-          extractorOrCombinerType: "extractorByEntityReturningObjectList",
+          extractorOrCombinerType: "extractorInstancesByEntity",
           ...cleanQueryTemplate,
           parentUuid:
             typeof extractorOrCombinerTemplate.parentUuid == "string"
@@ -82,7 +82,7 @@ export function resolveExtractorTemplate(
         };
       } else {
         return {
-          extractorOrCombinerType: "extractorByEntityReturningObjectList",
+          extractorOrCombinerType: "extractorInstancesByEntity",
           ...cleanQueryTemplate,
           parentUuid:
             typeof extractorOrCombinerTemplate.parentUuid == "string"
@@ -102,9 +102,9 @@ export function resolveExtractorTemplate(
       }
       break;
     }
-    case "extractorForObjectByDirectReference": {
+    case "extractorByPrimaryKey": {
       return {
-        extractorOrCombinerType: "extractorForObjectByDirectReference",
+        extractorOrCombinerType: "extractorByPrimaryKey",
         ...cleanQueryTemplate,
         parentUuid:
           typeof extractorOrCombinerTemplate.parentUuid == "string"
@@ -166,7 +166,7 @@ export function resolveExtractorTemplate(
       };
       break;
     }
-    case "combinerByRelationReturningObjectList": {
+    case "combinerOneToMany": {
       return {
         extractorOrCombinerType: extractorOrCombinerTemplate.extractorOrCombinerType,
         ...cleanQueryTemplate,
@@ -189,8 +189,8 @@ export function resolveExtractorTemplate(
           (extractorOrCombinerTemplate.objectReference as any)["transformerType"] ===
             "getFromContext"
             ? (extractorOrCombinerTemplate.objectReference as any)?.referenceName ??
-              "ERROR CONVERTING OBJECT REFERENCE FOR combinerByRelationReturningObjectList extractor template: no referenceName"
-            : "ERROR CONVERTING OBJECT REFERENCE FOR combinerByRelationReturningObjectList extractor template: objectReference is not a getFromContext",
+              "ERROR CONVERTING OBJECT REFERENCE FOR combinerOneToMany extractor template: no referenceName"
+            : "ERROR CONVERTING OBJECT REFERENCE FOR combinerOneToMany extractor template: objectReference is not a getFromContext",
       };
       break;
     }
@@ -220,7 +220,7 @@ export function resolveExtractorTemplate(
       };
       break;
     }
-    case "combinerForObjectByRelation": {
+    case "combinerOneToOne": {
       return {
         extractorOrCombinerType: extractorOrCombinerTemplate.extractorOrCombinerType,
         ...cleanQueryTemplate,
@@ -241,8 +241,8 @@ export function resolveExtractorTemplate(
         objectReference:
           extractorOrCombinerTemplate.objectReference.transformerType == "getFromContext"
             ? extractorOrCombinerTemplate.objectReference.referenceName ??
-              "ERROR CONVERTING OBJECT REFERENCE FOR combinerForObjectByRelation extractor template: no referenceName"
-            : "ERROR CONVERTING OBJECT REFERENCE FOR combinerForObjectByRelation extractor template: objectReference is not a getFromContext",
+              "ERROR CONVERTING OBJECT REFERENCE FOR combinerOneToOne extractor template: no referenceName"
+            : "ERROR CONVERTING OBJECT REFERENCE FOR combinerOneToOne extractor template: objectReference is not a getFromContext",
       };
       break;
     }

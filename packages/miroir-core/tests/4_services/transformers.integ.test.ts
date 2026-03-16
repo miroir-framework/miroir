@@ -239,7 +239,7 @@ afterAll(async () => {
 
 // const extractors: ExtractorOrCombinerRecord = {
 //   books: {
-//     extractorOrCombinerType: "extractorByEntityReturningObjectList",
+//     extractorOrCombinerType: "extractorInstancesByEntity",
 //     applicationSection: "data",
 //     parentName: "Book",
 //     parentUuid: entityBook.uuid,

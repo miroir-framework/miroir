@@ -189,7 +189,7 @@ export const selectEntityInstanceUuidIndexFromDomainState: SyncBoxedExtractorRun
 
   const entityInstances = domainState[deploymentUuid][applicationSection][entityUuid];
 
-  if (extractorParams.extractor.select.extractorOrCombinerType !== "extractorByEntityReturningObjectList"
+  if (extractorParams.extractor.select.extractorOrCombinerType !== "extractorInstancesByEntity"
     || (!extractorParams.extractor.select.filter && !extractorParams.extractor.select.orderBy)
   ) {
     return entityInstances;
@@ -352,7 +352,7 @@ export const selectEntityInstanceFromObjectQueryAndDomainState: SyncBoxedExtract
   // log.info("selectEntityInstanceFromObjectQueryAndDomainState entityUuidReference", entityUuidReference);
 
   switch (querySelectorParams?.extractorOrCombinerType) {
-    case "combinerForObjectByRelation": {
+    case "combinerOneToOne": {
       const referenceObject = transformer_extended_apply(
         "runtime",
         [], // transformerPath
@@ -373,7 +373,7 @@ export const selectEntityInstanceFromObjectQueryAndDomainState: SyncBoxedExtract
           queryFailure: "IncorrectParameters",
           queryParameters: JSON.stringify(foreignKeyParams.extractor.pageParams),
           queryContext:
-            "DomainStateQuerySelectors combinerForObjectByRelation did not find AttributeOfObjectToCompareToReferenceUuid in " +
+            "DomainStateQuerySelectors combinerOneToOne did not find AttributeOfObjectToCompareToReferenceUuid in " +
             JSON.stringify(querySelectorParams),
         });
       }
@@ -415,7 +415,7 @@ export const selectEntityInstanceFromObjectQueryAndDomainState: SyncBoxedExtract
       }
 
       // log.info(
-      //   "selectEntityInstanceFromObjectQueryAndDomainState combinerForObjectByRelation, ############# reference",
+      //   "selectEntityInstanceFromObjectQueryAndDomainState combinerOneToOne, ############# reference",
       //   querySelectorParams,
       //   "######### context entityUuid",
       //   entityUuidReference,
@@ -434,14 +434,14 @@ export const selectEntityInstanceFromObjectQueryAndDomainState: SyncBoxedExtract
       if (fkValue == null) {
         return new Domain2ElementFailed({
           queryFailure: "IncorrectParameters",
-          queryContext: "combinerForObjectByRelation could not resolve FK value from reference object",
+          queryContext: "combinerOneToOne could not resolve FK value from reference object",
         });
       }
       const result = targetObject[fkValue];
-      // log.info("selectEntityInstanceFromObjectQueryAndDomainState combinerForObjectByRelation referenceObject", referenceObject);
-      // log.info("selectEntityInstanceFromObjectQueryAndDomainState combinerForObjectByRelation attribute of reference", querySelectorParams.AttributeOfObjectToCompareToReferenceUuid);
-      // log.info("selectEntityInstanceFromObjectQueryAndDomainState combinerForObjectByRelation targetObject", targetObject);
-      // log.info("selectEntityInstanceFromObjectQueryAndDomainState combinerForObjectByRelation result", result);
+      // log.info("selectEntityInstanceFromObjectQueryAndDomainState combinerOneToOne referenceObject", referenceObject);
+      // log.info("selectEntityInstanceFromObjectQueryAndDomainState combinerOneToOne attribute of reference", querySelectorParams.AttributeOfObjectToCompareToReferenceUuid);
+      // log.info("selectEntityInstanceFromObjectQueryAndDomainState combinerOneToOne targetObject", targetObject);
+      // log.info("selectEntityInstanceFromObjectQueryAndDomainState combinerOneToOne result", result);
       
       if (querySelectorParams.applyTransformer) {
         const transformedResult = transformer_extended_apply(
@@ -455,7 +455,7 @@ export const selectEntityInstanceFromObjectQueryAndDomainState: SyncBoxedExtract
           { ...(foreignKeyParams.extractor.contextResults ?? {}), referenceObject, foreignKeyObject: result }
         );
         // log.info(
-        //   "selectEntityInstanceFromObjectQueryAndDomainState combinerForObjectByRelation, after applyTransformer",
+        //   "selectEntityInstanceFromObjectQueryAndDomainState combinerOneToOne, after applyTransformer",
         //   querySelectorParams.applyTransformer,
         //   "transformedResult",
         //   JSON.stringify(transformedResult, null, 2)
@@ -466,7 +466,7 @@ export const selectEntityInstanceFromObjectQueryAndDomainState: SyncBoxedExtract
       return result;
       break;
     }
-    case "extractorForObjectByDirectReference": {
+    case "extractorByPrimaryKey": {
       const instanceUuidDomainElement = querySelectorParams.instanceUuid;
 
       const currentObject = selectEntityInstanceDomainState(
@@ -504,7 +504,7 @@ export const selectEntityInstanceFromObjectQueryAndDomainState: SyncBoxedExtract
           return new Domain2ElementFailed({
             queryFailure: "IncorrectParameters",
             queryContext:
-              "DomainStateQuerySelectors extractorForObjectByDirectReference did not find targetEntity in attribute " +
+              "DomainStateQuerySelectors extractorByPrimaryKey did not find targetEntity in attribute " +
               attribute[0] +
               " of entity " +
               currentObjectEntityDefinition.name,

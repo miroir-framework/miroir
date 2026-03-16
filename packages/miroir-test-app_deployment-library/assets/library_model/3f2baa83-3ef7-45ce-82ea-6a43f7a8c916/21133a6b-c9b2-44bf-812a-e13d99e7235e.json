@@ -9,7 +9,7 @@
   "definition": {
     "extractorTemplates": {
       "publisher": {
-        "extractorOrCombinerType": "extractorForObjectByDirectReference",
+        "extractorOrCombinerType": "extractorByPrimaryKey",
         "parentName": "Author",
         "parentUuid": "a027c379-8468-43a5-ba4d-bf618be25cab",
         "instanceUuid": {
@@ -18,7 +18,7 @@
         }
       },
       "authors": {
-        "extractorOrCombinerType": "extractorForObjectListByEntity",
+        "extractorOrCombinerType": "extractorInstancesByEntity",
         "applicationSection": "data",
         "parentName": "Author",
         "parentUuid": "d7a144ff-d1b9-4135-800c-a7cfc1f38733"
@@ -26,7 +26,7 @@
     },
     "combinerTemplates": {
       "booksOfPublisher": {
-        "extractorOrCombinerType": "combinerByRelationReturningObjectList",
+        "extractorOrCombinerType": "combinerOneToMany",
         "parentName": "Book",
         "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
         "objectReference": {

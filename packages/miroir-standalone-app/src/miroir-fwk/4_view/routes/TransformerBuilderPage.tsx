@@ -142,7 +142,7 @@ export const TransformerBuilderPage: React.FC<any> = (
               pageParams: {},
               queryParams: {},
               select: {
-                extractorOrCombinerType: "extractorForObjectByDirectReference",
+                extractorOrCombinerType: "extractorByPrimaryKey",
                 applicationSection: "data",
                 parentUuid: entityTransformerTest.uuid,
                 instanceUuid: transformerTest_resolveConditionalSchema.uuid,

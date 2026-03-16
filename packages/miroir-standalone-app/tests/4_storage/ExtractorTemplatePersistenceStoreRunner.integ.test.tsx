@@ -355,7 +355,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
   //                 // deploymentUuid: deployment_Miroir.uuid,
   //                 // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
   //                 select: {
-  //                   extractorOrCombinerType: "extractorForObjectByDirectReference",
+  //                   extractorOrCombinerType: "extractorByPrimaryKey",
   //                   applicationSection: "model",
   //                   parentName: "Entity",
   //                   parentUuid: {
@@ -414,7 +414,8 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
         const queryResult: Action2ReturnType =
           await localAppPersistenceStoreController.handleQueryTemplateActionForServerONLY(
             {
-              actionType: "runBoxedQueryTemplateAction",              endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+              actionType: "runBoxedQueryTemplateAction",
+              endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
               payload: {
                 application: selfApplicationLibrary.uuid,
                 applicationSection: applicationSection,
@@ -428,7 +429,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
                   // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
                   extractorTemplates: {
                     entities: {
-                      extractorOrCombinerType: "extractorForObjectListByEntity",
+                      extractorOrCombinerType: "extractorInstancesByEntity",
                       applicationSection: applicationSection,
                       parentName: entityEntity.name,
                       parentUuid: entityEntity.uuid,
@@ -464,7 +465,8 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
         const queryResult =
           await localMiroirPersistenceStoreController.handleQueryTemplateActionForServerONLY(
             {
-              actionType: "runBoxedQueryTemplateAction",              endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+              actionType: "runBoxedQueryTemplateAction",
+              endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
               payload: {
                 application: selfApplicationLibrary.uuid,
                 // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
@@ -478,7 +480,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
                   // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
                   extractorTemplates: {
                     entities: {
-                      extractorOrCombinerType: "extractorForObjectListByEntity",
+                      extractorOrCombinerType: "extractorInstancesByEntity",
                       applicationSection: applicationSection,
                       parentName: "Entity",
                       parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
@@ -527,7 +529,8 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
         const queryResult =
           await localAppPersistenceStoreController.handleQueryTemplateActionForServerONLY(
             {
-              actionType: "runBoxedQueryTemplateAction",              endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+              actionType: "runBoxedQueryTemplateAction",
+              endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
               payload: {
                 application: selfApplicationLibrary.uuid,
                 // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
@@ -541,7 +544,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
                   // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
                   extractorTemplates: {
                     books: {
-                      extractorOrCombinerType: "extractorForObjectListByEntity",
+                      extractorOrCombinerType: "extractorInstancesByEntity",
                       applicationSection: applicationSection,
                       parentName: "Book",
                       parentUuid: entityBook.uuid,
@@ -592,7 +595,8 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
         const queryResult =
           await localAppPersistenceStoreController.handleQueryTemplateActionForServerONLY(
             {
-              actionType: "runBoxedQueryTemplateAction",              endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+              actionType: "runBoxedQueryTemplateAction",
+              endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
               payload: {
                 application: selfApplicationLibrary.uuid,
                 applicationSection: applicationSection,
@@ -605,7 +609,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
                   // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
                   extractorTemplates: {
                     books: {
-                      extractorOrCombinerType: "extractorForObjectListByEntity",
+                      extractorOrCombinerType: "extractorInstancesByEntity",
                       applicationSection: applicationSection,
                       parentName: "Book",
                       parentUuid: entityBook.uuid,
@@ -648,7 +652,8 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
         const queryResult =
           await localAppPersistenceStoreController.handleQueryTemplateActionForServerONLY(
             {
-              actionType: "runBoxedQueryTemplateAction",              endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+              actionType: "runBoxedQueryTemplateAction",
+              endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
               payload: {
                 application: selfApplicationLibrary.uuid,
                 // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
@@ -662,7 +667,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
                   // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
                   extractorTemplates: {
                     books: {
-                      extractorOrCombinerType: "extractorForObjectListByEntity",
+                      extractorOrCombinerType: "extractorInstancesByEntity",
                       applicationSection: applicationSection,
                       parentName: "Book",
                       parentUuid: entityBook.uuid,
@@ -745,7 +750,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
   //           deploymentUuid: deployment_Library_DO_NO_USE.uuid,
   //           extractorTemplates: {
   //             books: {
-  //               extractorOrCombinerType: "extractorForObjectListByEntity",
+  //               extractorOrCombinerType: "extractorInstancesByEntity",
   //               applicationSection: applicationSection,
   //               parentName: "Book",
   //               parentUuid: {
@@ -837,7 +842,8 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
         const queryResult =
           await localAppPersistenceStoreController.handleQueryTemplateActionForServerONLY(
             {
-              actionType: "runBoxedQueryTemplateAction",              endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+              actionType: "runBoxedQueryTemplateAction",
+              endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
               payload: {
                 application: selfApplicationLibrary.uuid,
                 // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
@@ -853,7 +859,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
                   // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
                   extractorTemplates: {
                     book: {
-                      extractorOrCombinerType: "extractorForObjectByDirectReference",
+                      extractorOrCombinerType: "extractorByPrimaryKey",
                       parentName: "Book",
                       parentUuid: {
                         transformerType: "returnValue",
@@ -869,7 +875,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
                   },
                   combinerTemplates: {
                     author: {
-                      extractorOrCombinerType: "combinerForObjectByRelation",
+                      extractorOrCombinerType: "combinerOneToOne",
                       parentName: "Author",
                       parentUuid: {
                         transformerType: "returnValue",
@@ -879,13 +885,13 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
                       } as any,
                       objectReference: {
                         transformerType: "getFromContext",
-                        interpolation: "runtime",
+                        interpolation: "runtime"combinerOneToMany
                         referenceName: "book",
                       },
                       AttributeOfObjectToCompareToReferenceUuid: "author",
                     },
                     booksOfAuthor: {
-                      extractorOrCombinerType: "combinerByRelationReturningObjectList",
+                      extractorOrCombinerType: "combinerOneToMany",
                       parentName: "Book",
                       parentUuid: {
                         transformerType: "returnValue",

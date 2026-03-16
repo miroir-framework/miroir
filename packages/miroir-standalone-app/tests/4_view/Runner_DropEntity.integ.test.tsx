@@ -142,7 +142,7 @@ beforeEach(async () => {
 afterAll(async () => {
   await afterAllTests(
     miroirActivityTracker,
-    runnerDropEntity.name,
+    [runnerDropEntity.name],
   );
 });
 
@@ -193,7 +193,7 @@ const runnerTestParams: Record<string, RunnerTestParams> = {
               contextResults: {},
               extractors: {
                 entities: {
-                  extractorOrCombinerType: "extractorByEntityReturningObjectList",
+                  extractorOrCombinerType: "extractorInstancesByEntity",
                   applicationSection: "model",
                   parentName: entityEntity.name,
                   parentUuid: entityEntity.uuid,

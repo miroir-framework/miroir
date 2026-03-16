@@ -130,7 +130,7 @@
                   "extractors": {
                     "entityDefinitions": {
                       "label": "entityDefinitions of the deployment",
-                      "extractorOrCombinerType": "extractorByEntityReturningObjectList",
+                      "extractorOrCombinerType": "extractorInstancesByEntity",
                       "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
                       "parentName": "EntityDefinition",
                       "applicationSection": "model",

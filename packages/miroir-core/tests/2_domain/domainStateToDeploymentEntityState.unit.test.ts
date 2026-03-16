@@ -340,7 +340,7 @@ describe("domainStateToReduxDeploymentsState.unit.test", () => {
                 parameters: {},
                 selectData: {
                   books: {
-                    type: "combinerByRelationReturningObjectList",
+                    type: "combinerOneToMany",
                     parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
                   },
                 },

@@ -282,14 +282,14 @@ export class SqlDbQueryRunner {
     applicationDeploymentMap: ApplicationDeploymentMap
   ): Promise<Domain2QueryReturnType<EntityInstance[]>> => {
     switch (foreignKeyParams.extractor.select.extractorOrCombinerType) {
-      case "extractorByEntityReturningObjectList": {
+      case "extractorInstancesByEntity": {
         return this.extractEntityInstanceListWithFilter(
           foreignKeyParams,
           applicationDeploymentMap,
           defaultMetaModelEnvironment
         );
       }
-      case "combinerByRelationReturningObjectList":
+      case "combinerOneToMany":
       case "combinerByManyToManyRelationReturningObjectList": {
         if (!foreignKeyParams.extractorRunnerMap) {
           throw new Error(
@@ -344,14 +344,14 @@ export class SqlDbQueryRunner {
   ): Promise<Domain2QueryReturnType<EntityInstancesUuidIndex>> => {
     // let result: Promise<Domain2QueryReturnType<EntityInstancesUuidIndex>>;
     switch (foreignKeyParams.extractor.select.extractorOrCombinerType) {
-      case "extractorByEntityReturningObjectList": {
+      case "extractorInstancesByEntity": {
         return this.extractEntityInstanceUuidIndexWithFilter(
           foreignKeyParams,
           applicationDeploymentMap,
           defaultMetaModelEnvironment
         );
       }
-      case "combinerByRelationReturningObjectList":
+      case "combinerOneToMany":
       case "combinerByManyToManyRelationReturningObjectList": {
         if (!foreignKeyParams.extractorRunnerMap) {
           throw new Error(
@@ -644,7 +644,7 @@ export class SqlDbQueryRunner {
     let entityInstanceCollection: Action2EntityInstanceCollectionOrFailure;
     if (
       extractorRunnerParams.extractor.select.extractorOrCombinerType ==
-        "extractorByEntityReturningObjectList" &&
+        "extractorInstancesByEntity" &&
       extractorRunnerParams.extractor.select.filter
     ) {
       entityInstanceCollection = await this.persistenceStoreController.getInstancesWithFilter(

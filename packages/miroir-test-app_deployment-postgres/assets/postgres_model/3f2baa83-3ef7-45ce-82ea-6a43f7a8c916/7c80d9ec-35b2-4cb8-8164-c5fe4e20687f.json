@@ -11,7 +11,7 @@
   "definition": {
     "extractorTemplates": {
       "table": {
-        "extractorOrCombinerType": "extractorForObjectByDirectReference",
+        "extractorOrCombinerType": "extractorByPrimaryKey",
         "parentName": "tables",
         "parentUuid": "35961086-f932-477a-aa77-ac8360ffbf61",
         "instanceUuid": {
@@ -20,9 +20,9 @@
         }
       }
     },
-    "combinerTemplates": {
+  "combinerTemplates": {
       "columnsOfTable": {
-        "extractorOrCombinerType": "combinerByRelationReturningObjectList",
+        "extractorOrCombinerType": "combinerOneToMany",
         "parentName": "columns",
         "parentUuid": "39e5c7a1-3f82-4bda-b8c4-2d576f9f10ae",
         "objectReference": {

@@ -201,7 +201,7 @@ This section gives a slightly simplified syntax for better understanding of the 
 
 ```json
 {
-  "queryType": "extractorByEntityReturningObjectList",
+  "queryType": "extractorInstancesByEntity",
   "targetEntity": "Book"
 }
 ```

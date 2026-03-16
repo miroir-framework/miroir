@@ -17,7 +17,7 @@ import { test_createEntityAndReportFromSpreadsheetAndUpdateMenu } from "miroir-t
 // TS VALIDATION TESTS ############################################################################
 // ################################################################################################
 const transformerForBuildTest1: TransformerForBuild = {
-  extractorOrCombinerType: "extractorByEntityReturningObjectList",
+  extractorOrCombinerType: "extractorInstancesByEntity",
   parentName: {
     transformerType: "getFromParameters",
     interpolation: "build",
@@ -35,7 +35,7 @@ const transformerForBuildTest2: TransformerForBuild = {
   interpolation: "build",
   definition: {
     instanceList: {
-      extractorOrCombinerType: "extractorByEntityReturningObjectList",
+      extractorOrCombinerType: "extractorInstancesByEntity",
       parentName: {
         transformerType: "getFromParameters",
         interpolation: "build",
@@ -56,7 +56,7 @@ const transformerForBuildTest3: TransformerForBuild = {
     interpolation: "build",
     definition: {
       instanceList: {
-        extractorOrCombinerType: "extractorByEntityReturningObjectList",
+        extractorOrCombinerType: "extractorInstancesByEntity",
         parentName: {
           transformerType: "getFromParameters",
           interpolation: "build",
@@ -110,7 +110,7 @@ const transformerForBuildTest5: TransformerForBuild = {
       interpolation: "build",
       definition: {
         instanceList: {
-          extractorOrCombinerType: "extractorByEntityReturningObjectList",
+          extractorOrCombinerType: "extractorInstancesByEntity",
           parentName: {
             transformerType: "getFromParameters",
             interpolation: "build",
@@ -166,7 +166,7 @@ const transformerForBuildPlusRuntimeTest2: TransformerForBuildPlusRuntime = {
   interpolation: "runtime",
   definition: {
     instanceList: {
-      extractorOrCombinerType: "extractorByEntityReturningObjectList",
+      extractorOrCombinerType: "extractorInstancesByEntity",
       parentName: {
         transformerType: "getFromParameters",
         interpolation: "build",

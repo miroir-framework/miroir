@@ -10,7 +10,7 @@
     "reportParameters": {},
     "extractorTemplates": {
       "schemas": {
-        "extractorOrCombinerType": "extractorForObjectListByEntity",
+        "extractorOrCombinerType": "extractorInstancesByEntity",
         "parentName": "schemata",
         "parentUuid": "cbc94d62-d2e5-4bc2-8aef-45efcfbd0af6"
       }

@@ -9,7 +9,7 @@
     "reportParameters": {},
     "extractorTemplates": {
       "bundles": {
-        "extractorOrCombinerType": "extractorForObjectListByEntity",
+        "extractorOrCombinerType": "extractorInstancesByEntity",
         "parentName": "Bundle",
         "parentUuid": "9f9170da-538d-425c-8cb7-551640623eed"
       }

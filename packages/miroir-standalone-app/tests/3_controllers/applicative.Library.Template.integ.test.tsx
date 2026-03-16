@@ -367,7 +367,7 @@ const newEntityListReport = {
   definition: {
     extractors: {
       instanceList: {
-        extractorOrCombinerType: "extractorByEntityReturningObjectList",
+        extractorOrCombinerType: "extractorInstancesByEntity",
         parentName: newEntityName,
         parentUuid: newEntityUuid,
       },
@@ -394,7 +394,7 @@ const newEntityDetailsReport = {
   definition: {
     extractorTemplates: {
       elementToDisplay: {
-        extractorOrCombinerType: "extractorForObjectByDirectReference",
+        extractorOrCombinerType: "extractorByPrimaryKey",
         parentName: newEntityName,
         parentUuid: newEntityUuid,
         instanceUuid: {
@@ -526,7 +526,7 @@ const createEntityCompositeActionTemplate: CompositeActionTemplate = {
       //   definition: {
       //     extractors: {
       //       instanceList: {
-      //         extractorOrCombinerType: "extractorByEntityReturningObjectList",
+      //         extractorOrCombinerType: "extractorInstancesByEntity",
       //         parentName: {
       //           transformerType: "getFromContext",
       //           interpolation: "runtime",
@@ -596,7 +596,7 @@ const createEntityCompositeActionTemplate: CompositeActionTemplate = {
       //         transformerType: "returnValue",
       //         interpolation: "runtime",
       //         value: {
-      //           extractorOrCombinerType: "extractorForObjectByDirectReference",
+      //           extractorOrCombinerType: "extractorByPrimaryKey",
       //           parentName: {
       //             transformerType: "getFromContext",
       //             interpolation: "runtime",
@@ -716,7 +716,7 @@ const createEntityCompositeActionTemplatePrepActions: any[] = [
         contextResults: {},
         extractors: {
           entityDefinitions: {
-            extractorOrCombinerType: "extractorByEntityReturningObjectList",
+            extractorOrCombinerType: "extractorInstancesByEntity",
             applicationSection: "model",
             parentName: entityEntityDefinition.name,
             parentUuid: entityEntityDefinition.uuid,
@@ -762,7 +762,7 @@ const createEntityCompositeActionTemplatePrepActions: any[] = [
         contextResults: {},
         extractors: {
           entities: {
-            extractorOrCombinerType: "extractorByEntityReturningObjectList",
+            extractorOrCombinerType: "extractorInstancesByEntity",
             applicationSection: "model",
             parentName: entityEntity.name,
             parentUuid: entityEntity.uuid,
@@ -905,7 +905,7 @@ const createReportsCompositeActionTemplate: BuildPlusRuntimeDomainAction =
                   definition: {
                     extractors: {
                       instanceList: {
-                        extractorOrCombinerType: "extractorByEntityReturningObjectList",
+                        extractorOrCombinerType: "extractorInstancesByEntity",
                         parentName: {
                           transformerType: "getFromContext",
                           interpolation: "runtime",
@@ -975,7 +975,7 @@ const createReportsCompositeActionTemplate: BuildPlusRuntimeDomainAction =
                         transformerType: "returnValue",
                         interpolation: "runtime",
                         value: {
-                          extractorOrCombinerType: "extractorForObjectByDirectReference",
+                          extractorOrCombinerType: "extractorByPrimaryKey",
                           parentName: {
                             transformerType: "getFromContext",
                             interpolation: "runtime",
@@ -1073,7 +1073,7 @@ const createReportsCompositeActionPrepActions: any[] = [
         contextResults: {},
         extractors: {
           reports: {
-            extractorOrCombinerType: "extractorByEntityReturningObjectList",
+            extractorOrCombinerType: "extractorInstancesByEntity",
             applicationSection: "model",
             parentName: entityReport.name,
             parentUuid: entityReport.uuid,
@@ -1121,7 +1121,7 @@ const createReportsCompositeActionPrepActions: any[] = [
         contextResults: {},
         extractors: {
           entities: {
-            extractorOrCombinerType: "extractorByEntityReturningObjectList",
+            extractorOrCombinerType: "extractorInstancesByEntity",
             applicationSection: "model",
             parentName: entityReport.name,
             parentUuid: entityReport.uuid,
@@ -1325,7 +1325,7 @@ const testTemplateSuitesDEFUNCT: Record<string, TestCompositeActionParams> = {
         //             contextResults: {},
         //             extractorTemplates: {
         //               menuList: {
-        //                 extractorOrCombinerType: "extractorForObjectListByEntity",
+        //                 extractorOrCombinerType: "extractorInstancesByEntity",
         //                 applicationSection: "model",
         //                 parentName: "Menu",
         //                 parentUuid: {
@@ -1458,7 +1458,7 @@ const testTemplateSuitesDEFUNCT: Record<string, TestCompositeActionParams> = {
         //             contextResults: {},
         //             extractorTemplates: {
         //               menuList: {
-        //                 extractorOrCombinerType: "extractorForObjectListByEntity",
+        //                 extractorOrCombinerType: "extractorInstancesByEntity",
         //                 applicationSection: "model",
         //                 parentName: "Menu",
         //                 parentUuid: {

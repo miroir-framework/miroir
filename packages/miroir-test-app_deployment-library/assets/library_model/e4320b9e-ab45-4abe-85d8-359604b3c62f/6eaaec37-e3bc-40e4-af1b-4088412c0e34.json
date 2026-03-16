@@ -8,7 +8,7 @@
   "definition": {
     "extractorTemplates": {
       "countries": {
-        "extractorOrCombinerType": "extractorForObjectListByEntity",
+        "extractorOrCombinerType": "extractorInstancesByEntity",
         "applicationSection": "data",
         "parentName": "Country",
         "parentUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4"

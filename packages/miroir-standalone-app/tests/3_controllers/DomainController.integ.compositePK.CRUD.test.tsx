@@ -324,7 +324,7 @@ const queryCompositePKInstances = {
         contextResults: {},
         extractors: {
           compositeItems: {
-            extractorOrCombinerType: "extractorByEntityReturningObjectList",
+            extractorOrCombinerType: "extractorInstancesByEntity",
             applicationSection: "data",
             parentName: "TestEntityCompositePK",
             parentUuid: entityCompositePKUuid,

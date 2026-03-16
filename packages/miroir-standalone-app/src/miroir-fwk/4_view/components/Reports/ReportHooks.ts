@@ -199,7 +199,7 @@ export function useDeploymentUuidFromApplicationUuid2(
           extractorTemplates: {
             deployments: {
               label: "deployments of the application",
-              extractorOrCombinerType: "extractorForObjectListByEntity",
+              extractorOrCombinerType: "extractorInstancesByEntity",
               parentUuid: entityDeployment.uuid,
               parentName: entityDeployment.name,
               applicationSection: "data",
@@ -262,7 +262,7 @@ export function useDeploymentUuidFromApplicationUuid(
             extractorTemplates: {
               deployments: {
                 label: "deployments of the application",
-                extractorOrCombinerType: "extractorForObjectListByEntity",
+                extractorOrCombinerType: "extractorInstancesByEntity",
                 parentUuid: entityDeployment.uuid,
                 parentName: entityDeployment.name,
                 applicationSection: "data",
@@ -338,7 +338,7 @@ export function useTransformer(
             extractorTemplates: {
               transformers: {
                 label: "transformers of the given application",
-                extractorOrCombinerType: "extractorForObjectListByEntity",
+                extractorOrCombinerType: "extractorInstancesByEntity",
                 parentUuid: entityTransformerDefinition.uuid,
                 parentName: entityTransformerDefinition.name,
                 applicationSection: transformerDefinitionApplicationSection,
@@ -411,7 +411,7 @@ export function useRunner(
             extractors: {
               runners: {
                 label: "runners of the given application",
-                extractorOrCombinerType: "extractorForObjectByDirectReference",
+                extractorOrCombinerType: "extractorByPrimaryKey",
                 parentUuid: entityRunner.uuid,
                 parentName: entityRunner.name,
                 applicationSection: runnerApplicationSection,

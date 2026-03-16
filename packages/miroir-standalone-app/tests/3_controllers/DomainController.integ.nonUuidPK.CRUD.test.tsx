@@ -321,7 +321,7 @@ const queryCodeNumberInstances = {
         contextResults: {},
         extractors: {
           codeItems: {
-            extractorOrCombinerType: "extractorByEntityReturningObjectList",
+            extractorOrCombinerType: "extractorInstancesByEntity",
             applicationSection: "data",
             parentName: "TestEntityCodeNumber",
             parentUuid: entityCodeNumberUuid,
@@ -507,7 +507,7 @@ const modelTestActions: Record<string, TestCompositeActionParams> = {
                         contextResults: {},
                         extractors: {
                           entities: {
-                            extractorOrCombinerType: "extractorByEntityReturningObjectList",
+                            extractorOrCombinerType: "extractorInstancesByEntity",
                             applicationSection: "model",
                             parentName: entityEntity.name,
                             parentUuid: entityEntity.uuid,

@@ -2,7 +2,7 @@
 
 ## Overview
 
-This module provides centralized filter and orderBy functionality for `ExtractorByEntityReturningObjectList` extractors. It consolidates duplicated filter/orderBy logic that was previously scattered across multiple selector functions.
+This module provides centralized filter and orderBy functionality for `ExtractorInstancesByEntity` extractors. It consolidates duplicated filter/orderBy logic that was previously scattered across multiple selector functions.
 
 ## Functions
 
@@ -16,7 +16,7 @@ Filters an array of entity instances based on the given filter criteria.
 Sorts an array of entity instances based on the given orderBy criteria.
 
 ### `applyExtractorFilterAndOrderBy(instances, extractor)`
-Main entry point that applies both filter and orderBy operations from an `ExtractorByEntityReturningObjectList`.
+Main entry point that applies both filter and orderBy operations from an `ExtractorInstancesByEntity`.
 
 ## Refactored Functions
 

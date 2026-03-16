@@ -48,7 +48,7 @@
           "referenceName": "schema",
           "transformerType": "getFromContext"
         },
-        "extractorOrCombinerType": "combinerByRelationReturningObjectList",
+        "extractorOrCombinerType": "combinerOneToMany",
         "objectReferenceAttribute": "schema_name",
         "AttributeOfListObjectToCompareToReferenceUuid": "table_schema"
       }
@@ -61,7 +61,7 @@
           "referenceName": "instanceUuid",
           "transformerType": "getFromParameters"
         },
-        "extractorOrCombinerType": "extractorForObjectByDirectReference"
+        "extractorOrCombinerType": "extractorByPrimaryKey"
       }
     },
     "runtimeTransformers": {}
