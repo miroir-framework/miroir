@@ -4180,7 +4180,7 @@
           {
             "transformerTestType": "transformerTestSuite",
             "transformerTestLabel": "aggregate",
-            "skip": true,
+            "skip": false,
             "transformerTests": [
               {
                 "transformerTestType": "transformerTest",
@@ -4461,6 +4461,390 @@
                     "test2": 2,
                     "aggregate": 2
                   }
+                ]
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "sum returns total of numeric attribute values at runtime",
+                "transformerName": "sumForNumericAttribute",
+                "transformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "function": "sum",
+                  "attribute": "amount",
+                  "applyTo": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "value": [
+                      { "name": "a", "amount": 10 },
+                      { "name": "b", "amount": 20 },
+                      { "name": "c", "amount": 30 }
+                    ]
+                  }
+                },
+                "transformerParams": {},
+                "transformerRuntimeContext": {},
+                "expectedValue": [{ "sum": 60 }]
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "sum with groupBy returns totals per group at runtime",
+                "transformerName": "sumGrouped",
+                "transformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "function": "sum",
+                  "attribute": "amount",
+                  "groupBy": "category",
+                  "applyTo": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "value": [
+                      { "category": "A", "amount": 10 },
+                      { "category": "B", "amount": 20 },
+                      { "category": "A", "amount": 30 },
+                      { "category": "B", "amount": 5 }
+                    ]
+                  }
+                },
+                "transformerParams": {},
+                "transformerRuntimeContext": {},
+                "expectedValue": [
+                  { "category": "A", "sum": 40 },
+                  { "category": "B", "sum": 25 }
+                ]
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "avg returns average of numeric attribute values at runtime",
+                "transformerName": "avgForNumericAttribute",
+                "transformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "function": "avg",
+                  "attribute": "score",
+                  "applyTo": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "value": [
+                      { "score": 10 },
+                      { "score": 20 },
+                      { "score": 30 }
+                    ]
+                  }
+                },
+                "transformerParams": {},
+                "transformerRuntimeContext": {},
+                "expectedValue": [{ "avg": 20 }]
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "min returns minimum of numeric attribute values at runtime",
+                "transformerName": "minForNumericAttribute",
+                "transformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "function": "min",
+                  "attribute": "score",
+                  "applyTo": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "value": [
+                      { "score": 30 },
+                      { "score": 10 },
+                      { "score": 20 }
+                    ]
+                  }
+                },
+                "transformerParams": {},
+                "transformerRuntimeContext": {},
+                "expectedValue": [{ "min": 10 }]
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "max returns maximum of numeric attribute values at runtime",
+                "transformerName": "maxForNumericAttribute",
+                "transformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "function": "max",
+                  "attribute": "score",
+                  "applyTo": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "value": [
+                      { "score": 30 },
+                      { "score": 10 },
+                      { "score": 20 }
+                    ]
+                  }
+                },
+                "transformerParams": {},
+                "transformerRuntimeContext": {},
+                "expectedValue": [{ "max": 30 }]
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "json_agg collects attribute values into an array at runtime",
+                "transformerName": "jsonAggForAttribute",
+                "transformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "function": "json_agg",
+                  "attribute": "name",
+                  "groupBy": "category",
+                  "applyTo": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "value": [
+                      { "category": "fruit", "name": "apple" },
+                      { "category": "fruit", "name": "banana" },
+                      { "category": "veggie", "name": "carrot" }
+                    ]
+                  }
+                },
+                "transformerParams": {},
+                "transformerRuntimeContext": {},
+                "expectedValue": [
+                  { "category": "fruit", "json_agg": ["apple", "banana"] },
+                  { "category": "veggie", "json_agg": ["carrot"] }
+                ]
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "json_agg_strict omits null values at runtime",
+                "transformerName": "jsonAggStrictForAttribute",
+                "transformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "function": "json_agg_strict",
+                  "attribute": "name",
+                  "groupBy": "category",
+                  "applyTo": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "value": [
+                      { "category": "fruit", "name": "apple" },
+                      { "category": "fruit", "name": null },
+                      { "category": "fruit", "name": "banana" },
+                      { "category": "veggie", "name": null }
+                    ]
+                  }
+                },
+                "transformerParams": {},
+                "transformerRuntimeContext": {},
+                "expectedValue": [
+                  { "category": "fruit", "json_agg_strict": ["apple", "banana"] },
+                  { "category": "veggie", "json_agg_strict": [] }
+                ]
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "count with default function still uses aggregate result key (backward compat)",
+                "transformerName": "countDefaultFunction",
+                "transformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "value": [
+                      { "test": "a" },
+                      { "test": "b" }
+                    ]
+                  }
+                },
+                "transformerParams": {},
+                "transformerRuntimeContext": {},
+                "expectedValue": [{ "aggregate": 2 }]
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "count with explicit function uses count result key (AGG-3)",
+                "transformerName": "countExplicitFunction",
+                "transformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "function": "count",
+                  "applyTo": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "value": [
+                      { "test": "a" },
+                      { "test": "b" }
+                    ]
+                  }
+                },
+                "transformerParams": {},
+                "transformerRuntimeContext": {},
+                "expectedValue": [{ "count": 2 }]
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "count with explicit function and groupBy uses count result key (AGG-3)",
+                "transformerName": "countExplicitFunctionGroupBy",
+                "transformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "function": "count",
+                  "groupBy": "category",
+                  "applyTo": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "value": [
+                      { "category": "A" },
+                      { "category": "B" },
+                      { "category": "A" }
+                    ]
+                  }
+                },
+                "transformerParams": {},
+                "transformerRuntimeContext": {},
+                "expectedValue": [
+                  { "category": "A", "count": 2 },
+                  { "category": "B", "count": 1 }
+                ]
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "count with distinct flag counts unique attribute values (AGG-4)",
+                "transformerName": "countDistinct",
+                "transformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "function": "count",
+                  "attribute": "color",
+                  "distinct": true,
+                  "applyTo": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "value": [
+                      { "color": "red" },
+                      { "color": "blue" },
+                      { "color": "red" },
+                      { "color": "green" },
+                      { "color": "blue" }
+                    ]
+                  }
+                },
+                "transformerParams": {},
+                "transformerRuntimeContext": {},
+                "expectedValue": [{ "count": 3 }]
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "count with distinct and groupBy counts unique attribute values per group (AGG-4)",
+                "transformerName": "countDistinctGroupBy",
+                "transformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "function": "count",
+                  "attribute": "color",
+                  "distinct": true,
+                  "groupBy": "category",
+                  "applyTo": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "value": [
+                      { "category": "A", "color": "red" },
+                      { "category": "A", "color": "blue" },
+                      { "category": "A", "color": "red" },
+                      { "category": "B", "color": "green" },
+                      { "category": "B", "color": "green" }
+                    ]
+                  }
+                },
+                "transformerParams": {},
+                "transformerRuntimeContext": {},
+                "expectedValue": [
+                  { "category": "A", "count": 2 },
+                  { "category": "B", "count": 1 }
+                ]
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "sum with having filters groups by aggregate result (AGG-2)",
+                "transformerName": "sumWithHaving",
+                "transformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "function": "sum",
+                  "attribute": "amount",
+                  "groupBy": "category",
+                  "having": {
+                    "transformerType": "boolExpr",
+                    "interpolation": "runtime",
+                    "operator": ">",
+                    "left": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referenceName": "aggregateValue"
+                    },
+                    "right": {
+                      "transformerType": "returnValue",
+                      "interpolation": "runtime",
+                      "value": 30
+                    }
+                  },
+                  "applyTo": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "value": [
+                      { "category": "A", "amount": 10 },
+                      { "category": "B", "amount": 20 },
+                      { "category": "A", "amount": 30 },
+                      { "category": "B", "amount": 5 }
+                    ]
+                  }
+                },
+                "transformerParams": {},
+                "transformerRuntimeContext": {},
+                "expectedValue": [
+                  { "category": "A", "sum": 40 }
+                ]
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "count with having filters groups by count result (AGG-2)",
+                "transformerName": "countWithHaving",
+                "transformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "function": "count",
+                  "groupBy": "category",
+                  "having": {
+                    "transformerType": "boolExpr",
+                    "interpolation": "runtime",
+                    "operator": ">=",
+                    "left": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referenceName": "aggregateValue"
+                    },
+                    "right": {
+                      "transformerType": "returnValue",
+                      "interpolation": "runtime",
+                      "value": 2
+                    }
+                  },
+                  "applyTo": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "value": [
+                      { "category": "A" },
+                      { "category": "B" },
+                      { "category": "A" },
+                      { "category": "C" },
+                      { "category": "B" },
+                      { "category": "B" }
+                    ]
+                  }
+                },
+                "transformerParams": {},
+                "transformerRuntimeContext": {},
+                "expectedValue": [
+                  { "category": "A", "count": 2 },
+                  { "category": "B", "count": 3 }
                 ]
               }
             ]

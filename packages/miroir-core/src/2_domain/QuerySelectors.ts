@@ -873,6 +873,11 @@ export function innerSelectDomainElementFromExtractorOrCombiner/*BoxedExtractorT
                 (entry[1] as any).uuid ?? "no uuid found for entry " + entry[0],
                 resolvedQuery,
               ];
+            } else {
+              // log.info(
+              //   "innerSelectDomainElementFromExtractorOrCombiner for combinerByHeteronomousManyToMany resolvedQuery",
+              //   JSON.stringify(resolvedQuery, null, 2)
+              // );
             }
             const innerResult = innerSelectDomainElementFromExtractorOrCombiner(
               // recursive call

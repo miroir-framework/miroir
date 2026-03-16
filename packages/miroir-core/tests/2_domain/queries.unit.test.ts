@@ -1559,7 +1559,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
         // },
       },
     },
-  "select custom-built result with combinerByHeteronomousManyToMany: instances of all Entites from Domain State, indexed by Entity Uuid":
+  "select custom-built result with combinerByHeteronomousManyToMany: instances of all Entites from Domain State, indexed by Entity Uuid (extractorInstancesByEntity, combinerByHeteronomousManyToMany)":
     {
       queryTemplate: {
         queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
@@ -1773,6 +1773,36 @@ const applicationDeploymentMap: ApplicationDeploymentMap = {
 
 const testQueries: boolean = true; // set to false to skip all tests in this file
 const testQueryTemplates: boolean = false; // set to false to skip tests related to query templates in this file
+
+const filteredTestExtractorParams = Object.fromEntries(
+  Object.entries(testExtractorParams).filter(([name, testParams]) => {
+    if (name in [
+      // "error on non-existing Entity: EntityNotFound",
+      // "error on non-existing object uuid: InstanceNotFound (extractorByPrimaryKey)",
+      // "select 1 object from Domain State (extractorByPrimaryKey)",
+      // "select 1 object from Domain State and apply transformer on foreign key (extractorByPrimaryKey with applyTransformer)",
+      // "select 1 object from Domain State using direct query parameter reference",
+      // "select 1 object from the uuid found in an attribute of another object from Domain State",
+      // "select 1 object from the uuid found in an attribute of another object then use applyTransformer on it",
+      // "select publishers of books by author using combinerManyToMany with applyTransformer (extractorByPrimaryKey, combinerOneToMany, combinerManyToMany with applyTransformer)",
+      // "select Authors (extractorInstancesByEntity)",
+      // "select Authors with values filter (multiple values) (extractorInstancesByEntity)",
+      // "select Authors with values filter and not flag (extractorInstancesByEntity)",
+      // "select custom-built result: Books of Publisher of given Book from Domain State (extractorByPrimaryKey, combinerOneToOne, combinerOneToMany)",
+      // "select custom-built result: return Books of Author from Domain State (extractorByPrimaryKey, combinerOneToMany)",
+      // "select custom-built result: return couple Author name - Book title for Books of Author from Domain State (extractorByPrimaryKey, combinerOneToMany with applyTransformer)",
+      "select custom-built result with combinerByHeteronomousManyToMany: instances of all Entites from Domain State, indexed by Entity Uuid (extractorInstancesByEntity, combinerByHeteronomousManyToMany)",
+      // "select Unique Publisher Uuids of Books (extractorInstancesByEntity, runtimeTransformer)"
+    ]) return true;
+    // if (testQueries && testParams.query) {
+    //   return true;
+    // }
+    // if (testQueryTemplates && testParams.queryTemplate) {
+    //   return true;
+    // }
+    return false;
+  })
+);
 
 describe("queries.unit", () => {
   // ###########################################################################################

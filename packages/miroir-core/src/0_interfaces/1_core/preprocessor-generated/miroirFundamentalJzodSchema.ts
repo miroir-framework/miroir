@@ -3977,9 +3977,29 @@ export const miroirFundamentalJzodSchema = {
             },
             "context": {}
           },
+          "function": {
+            "type": "enum",
+            "optional": true,
+            "definition": [
+              "count",
+              "sum",
+              "avg",
+              "min",
+              "max",
+              "json_agg",
+              "json_agg_strict"
+            ],
+            "description": "The aggregate function to apply. Defaults to count (with legacy 'aggregate' result key) when omitted."
+          },
           "attribute": {
             "type": "string",
-            "optional": true
+            "optional": true,
+            "description": "The attribute to aggregate on. Required for sum, avg, min, max, json_agg, json_agg_strict. For count with distinct, specifies which attribute to count distinct values of."
+          },
+          "distinct": {
+            "type": "boolean",
+            "optional": true,
+            "description": "When true, only distinct values of attribute are considered. Primarily used with count."
           },
           "groupBy": {
             "type": "union",
@@ -3995,6 +4015,11 @@ export const miroirFundamentalJzodSchema = {
                 }
               }
             ]
+          },
+          "having": {
+            "type": "any",
+            "optional": true,
+            "description": "A boolean transformer evaluated for each group after aggregation. The aggregate result is available as 'aggregateValue' in the context. Groups where this evaluates to false are excluded."
           }
         }
       },
@@ -5694,9 +5719,29 @@ export const miroirFundamentalJzodSchema = {
             },
             "context": {}
           },
+          "function": {
+            "type": "enum",
+            "optional": true,
+            "definition": [
+              "count",
+              "sum",
+              "avg",
+              "min",
+              "max",
+              "json_agg",
+              "json_agg_strict"
+            ],
+            "description": "The aggregate function to apply. Defaults to count (with legacy 'aggregate' result key) when omitted."
+          },
           "attribute": {
             "type": "string",
-            "optional": true
+            "optional": true,
+            "description": "The attribute to aggregate on. Required for sum, avg, min, max, json_agg, json_agg_strict. For count with distinct, specifies which attribute to count distinct values of."
+          },
+          "distinct": {
+            "type": "boolean",
+            "optional": true,
+            "description": "When true, only distinct values of attribute are considered. Primarily used with count."
           },
           "groupBy": {
             "type": "union",
@@ -5712,6 +5757,11 @@ export const miroirFundamentalJzodSchema = {
                 }
               }
             ]
+          },
+          "having": {
+            "type": "any",
+            "optional": true,
+            "description": "A boolean transformer evaluated for each group after aggregation. The aggregate result is available as 'aggregateValue' in the context. Groups where this evaluates to false are excluded."
           }
         }
       },

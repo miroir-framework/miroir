@@ -20,6 +20,13 @@
           }
         },
         {
+          "type": "jsonReportSection",
+          "definition": {
+            "label": "Raw definition of columns for schema ${instance.schema_name}",
+            "fetchedDataReference": "columnsOfSchema"
+          }
+        },
+        {
           "type": "objectInstanceReportSection",
           "definition": {
             "parentUuid": "cbc94d62-d2e5-4bc2-8aef-45efcfbd0af6",
@@ -41,6 +48,7 @@
     },
     "combinerTemplates": {
       "tablesOfSchema": {
+        "extractorOrCombinerType": "combinerOneToMany",
         "parentName": "tables",
         "parentUuid": "35961086-f932-477a-aa77-ac8360ffbf61",
         "objectReference": {
@@ -48,7 +56,18 @@
           "referenceName": "schema",
           "transformerType": "getFromContext"
         },
+        "objectReferenceAttribute": "schema_name",
+        "AttributeOfListObjectToCompareToReferenceUuid": "table_schema"
+      },
+      "columnsOfSchema": {
         "extractorOrCombinerType": "combinerOneToMany",
+        "parentName": "columns",
+        "parentUuid": "39e5c7a1-3f82-4bda-b8c4-2d576f9f10ae",
+        "objectReference": {
+          "interpolation": "runtime",
+          "referenceName": "schema",
+          "transformerType": "getFromContext"
+        },
         "objectReferenceAttribute": "schema_name",
         "AttributeOfListObjectToCompareToReferenceUuid": "table_schema"
       }

@@ -743,13 +743,64 @@ function sqlStringForCountTransformer(
   if (referenceQuery instanceof Domain2ElementFailed) {
     return referenceQuery;
   }
+
+  // AGG-1/AGG-3/AGG-4: Determine aggregate function expression and result key
+  const aggFunction = actionRuntimeTransformer.function;
+  const resultKey = aggFunction ?? "aggregate";
+  const attribute = actionRuntimeTransformer.attribute;
+  const distinct = actionRuntimeTransformer.distinct;
+
+  function buildSqlAggExpr(valueExpr: string): string {
+    const distinctKeyword = distinct ? "DISTINCT " : "";
+    switch (aggFunction) {
+      case "sum":
+        return `SUM((${valueExpr})::numeric)::numeric`;
+      case "avg":
+        return `AVG((${valueExpr})::numeric)::numeric`;
+      case "min":
+        return `MIN((${valueExpr})::numeric)::numeric`;
+      case "max":
+        return `MAX((${valueExpr})::numeric)::numeric`;
+      case "json_agg":
+        return `JSON_AGG(${valueExpr})`;
+      case "json_agg_strict":
+        return `JSON_AGG(${valueExpr}) FILTER (WHERE ${valueExpr} IS NOT NULL AND ${valueExpr}::text != 'null')`;
+      case "count":
+        if (attribute && distinct) {
+          return `COUNT(${distinctKeyword}${valueExpr})::int`;
+        }
+        return `COUNT(*)::int`;
+      default:
+        // Legacy count behavior
+        return `COUNT(*)::int`;
+    }
+  }
+
+  // AGG-2: Build HAVING clause if present
+  let havingSql = "";
+  let havingPreparedParams: any[] = [];
+  if (actionRuntimeTransformer.having) {
+    const havingResult = sqlStringForRuntimeTransformer(
+      actionRuntimeTransformer.having as any,
+      preparedStatementParametersCount + (referenceQuery.preparedStatementParameters?.length ?? 0),
+      indentLevel,
+      queryParams,
+      definedContextEntries,
+      useAccessPathForContextReference,
+      false,
+    );
+    if (!(havingResult instanceof Domain2ElementFailed)) {
+      havingSql = `\nHAVING ${havingResult.sqlStringOrObject}`;
+      havingPreparedParams = havingResult.preparedStatementParameters ?? [];
+    }
+  }
+
   switch (referenceQuery.type) {
     case "json_array":
     case "json": {
       const groupBy = actionRuntimeTransformer.groupBy;
       if (groupBy && (typeof actionRuntimeTransformer.groupBy === 'string' || groupBy.length > 0)) {
         const groupByArray = (typeof groupBy === "string" ? [groupBy] : groupBy)
-        // const groupByArrayQuoted = groupByArray?.map(e=>`${tokenNameQuote}${e}${tokenNameQuote}`);
         const groupBySelectors = groupByArray?.map(
           (e) =>
             "value" +
@@ -761,101 +812,90 @@ function sqlStringForCountTransformer(
             `${tokenNameQuote}${e}${tokenNameQuote}`
         );
         const groupByAccessors = groupByArray?.map(e=> `value ->> ${tokenStringQuote}${e}${tokenStringQuote}`);
-// (slow) example of extracting and auto-casting values from a JSONB array in PostgreSQL if no type is known for the input values
-// WITH j AS (
-//   SELECT jsonb_array_elements(
-//     '[{"test1":"testA","test2":1}, {"test1":"testB","test2":"1"},
-//       {"test1":"testA","test2":2.0}, {"test1":"testC","test2":"2020-01-01T00:00:00Z"}]'::jsonb
-//   ) AS v
-// )
-// SELECT
-//   v ->> 'test1' AS test1,
-//   CASE
-//     WHEN jsonb_typeof(v->'test2') = 'number'
-//          AND (v->>'test2') ~ '^\-?\d+$' THEN (v->>'test2')::int
-//     WHEN jsonb_typeof(v->'test2') = 'string'
-//          AND (v->>'test2') ~ '^\-?\d+$' THEN (v->>'test2')::int
-//     ELSE NULL
-//   END AS test2_int
-// FROM j;
 
-// proper example of counting grouped by values when the type of the input values is known
-// WITH
-// "testList" AS (
-//   select '[{"test1":"testA","test2":1},{"test1":"testB","test2":1},{"test1":"testA","test2":2},{"test1":"testC","test2":2},{"test1":"testB","test2":1},{"test1":"testC","test2":2}]'::jsonb AS "constantObject"
-// ),
-// "transformer" AS (
-// SELECT "X"."test1", "X"."test2", COUNT(*)::int AS "aggregate"
-// FROM jsonb_to_recordset((SELECT "constantObject" FROM "testList")) AS "X"("test1" text, "test2" int)
-// GROUP BY "X"."test1", "X"."test2"
-// ORDER BY "X"."test1", "X"."test2"
-// )
-// SELECT * FROM "transformer"
+        // Build the aggregate expression for the value accessor
+        const valueAccessor = attribute
+          ? `value ->> ${tokenStringQuote}${attribute}${tokenStringQuote}`
+          : "*";
+        const aggExprNeedsAttribute = aggFunction && aggFunction !== "count" && !attribute;
+        if (aggExprNeedsAttribute) {
+          return new Domain2ElementFailed({
+            queryFailure: "QueryNotExecutable",
+            query: actionRuntimeTransformer as any,
+            failureMessage: `sqlStringForCountTransformer: aggregate function '${aggFunction}' requires 'attribute' to be specified`,
+          });
+        }
+        const aggExpr = (aggFunction && attribute) || (aggFunction === "count" && distinct && attribute)
+          ? buildSqlAggExpr(valueAccessor)
+          : buildSqlAggExpr(valueAccessor);
 
         return {
           type: "json",
           sqlStringOrObject: `
-SELECT ${groupBySelectors?.join(',')}, COUNT(*)::int AS "aggregate"
+SELECT ${groupBySelectors?.join(',')}, ${aggExpr} AS ${tokenNameQuote}${resultKey}${tokenNameQuote}
 FROM (${referenceQuery.sqlStringOrObject}) AS "count_applyTo",
     LATERAL jsonb_array_elements("count_applyTo"."${
       (referenceQuery as any).resultAccessPath[1]
     }") AS "count_applyTo_array"
-GROUP BY ${groupByAccessors?.join(", ")}
+GROUP BY ${groupByAccessors?.join(", ")}${havingSql}
 ORDER BY ${groupByAccessors?.join(", ")}
 `,
-          preparedStatementParameters: referenceQuery.preparedStatementParameters,
-          resultAccessPath: [], // TODO: inconsistency between simple 'count' and groupBy count
+          preparedStatementParameters: [
+            ...(referenceQuery.preparedStatementParameters ?? []),
+            ...havingPreparedParams,
+          ],
+          resultAccessPath: [],
           extraWith: referenceQuery.extraWith,
           encloseEndResultInArray: false,
         };
       } else {
+        const valueAccessor = attribute
+          ? `value ->> ${tokenStringQuote}${attribute}${tokenStringQuote}`
+          : "*";
+        const aggExpr = buildSqlAggExpr(valueAccessor);
+
         return {
           type: "json",
           sqlStringOrObject: `
-SELECT json_build_object('aggregate', COUNT(*)::int) AS "count_object"
+SELECT json_build_object('${resultKey}', ${aggExpr}) AS "count_object"
 FROM (${referenceQuery.sqlStringOrObject}) AS "count_applyTo",
     LATERAL jsonb_array_elements("count_applyTo"."${
       (referenceQuery as any).resultAccessPath[1]
     }") AS "count_applyTo_array"
 `,
-          preparedStatementParameters: referenceQuery.preparedStatementParameters,
+          preparedStatementParameters: [
+            ...(referenceQuery.preparedStatementParameters ?? []),
+            ...havingPreparedParams,
+          ],
           resultAccessPath: [0, "count_object"],
           extraWith: referenceQuery.extraWith,
           columnNameContainingJsonValue: "count_object",
           encloseEndResultInArray: true,
         };
-
       }
     }
     case "tableOf1JsonColumn":
-//       {
-//       const transformerSqlQuery = actionRuntimeTransformer.groupBy
-//         ? `SELECT "${actionRuntimeTransformer.groupBy}", COUNT(*)::int AS "aggregate" FROM (${referenceQuery.sqlStringOrObject}) AS "count_applyTo"
-//             GROUP BY "${actionRuntimeTransformer.groupBy}"
-// `
-//         : `SELECT COUNT(*)::int AS "aggregate" FROM (${referenceQuery.sqlStringOrObject}) AS "count_applyTo"
-// `;
-//       log.info("sqlStringForRuntimeTransformer count transformerSqlQuery", transformerSqlQuery);
-//       return {
-//         type: "table",
-//         sqlStringOrObject: transformerSqlQuery,
-//         resultAccessPath: undefined,
-//         preparedStatementParameters: referenceQuery.preparedStatementParameters,
-//       };
-//     }
     case "table": {
+      const valueAccessor = attribute
+        ? `"${attribute}"`
+        : "*";
+      const aggExpr = buildSqlAggExpr(valueAccessor);
+
       const transformerSqlQuery = actionRuntimeTransformer.groupBy
-        ? `SELECT "${actionRuntimeTransformer.groupBy}", COUNT(*)::int AS "aggregate" FROM (${referenceQuery.sqlStringOrObject}) AS "count_applyTo"
-            GROUP BY "${actionRuntimeTransformer.groupBy}"
+        ? `SELECT "${actionRuntimeTransformer.groupBy}", ${aggExpr} AS "${resultKey}" FROM (${referenceQuery.sqlStringOrObject}) AS "count_applyTo"
+            GROUP BY "${actionRuntimeTransformer.groupBy}"${havingSql}
 `
-        : `SELECT COUNT(*)::int AS "aggregate" FROM (${referenceQuery.sqlStringOrObject}) AS "count_applyTo"
+        : `SELECT ${aggExpr} AS "${resultKey}" FROM (${referenceQuery.sqlStringOrObject}) AS "count_applyTo"
 `;
       log.info("sqlStringForRuntimeTransformer count transformerSqlQuery", transformerSqlQuery);
       return {
         type: "table",
         sqlStringOrObject: transformerSqlQuery,
         resultAccessPath: undefined,
-        preparedStatementParameters: referenceQuery.preparedStatementParameters,
+        preparedStatementParameters: [
+          ...(referenceQuery.preparedStatementParameters ?? []),
+          ...havingPreparedParams,
+        ],
       };
     }
     case "scalar": {

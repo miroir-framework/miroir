@@ -2093,10 +2093,6 @@ export function handleCountTransformer(
     contextResults,
     label
   );
-  // log.info(
-  //   "handleCountTransformer extractorTransformer count resolvedReference=",
-  //   resolvedReference
-  // );
   if (resolvedReference instanceof TransformerFailure) {
     log.error(
       "handleCountTransformer extractorTransformer count can not apply to failed resolvedReference",
@@ -2104,7 +2100,7 @@ export function handleCountTransformer(
     );
     return new TransformerFailure({
       queryFailure: "FailedTransformer",
-      transformerPath, //: [...transformerPath, transformer.transformerType],
+      transformerPath,
       failureOrigin: ["handleCountTransformer"],
       queryContext: "count can not apply to failed resolvedReference",
       innerError: resolvedReference,
@@ -2112,14 +2108,13 @@ export function handleCountTransformer(
   }
 
   if (typeof resolvedReference != "object" || !Array.isArray(resolvedReference)) {
-    // if ( typeof resolvedReference != "object" || !Array.isArray(resolvedReference)) {
     log.error(
       "innerTransformer_apply extractorTransformer count can not apply to resolvedReference of wrong type",
       resolvedReference
     );
     return new TransformerFailure({
       queryFailure: "FailedTransformer",
-      transformerPath, //: [...transformerPath, transformer.transformerType],
+      transformerPath,
       failureOrigin: ["handleCountTransformer"],
       queryContext:
         "count can not apply to resolvedReference of wrong type: " + typeof resolvedReference,
@@ -2127,10 +2122,11 @@ export function handleCountTransformer(
     });
   }
 
-  // log.info(
-  //   "handleCountTransformer extractorTransformer count resolvedReference",
-  //   resolvedReference.length
-  // );
+  // Determine aggregate function: default to "count" for backward compat
+  const aggFunction = transformer.function;
+  // AGG-3: When function is explicitly specified, use function name as result key.
+  // When no function specified (legacy), use "aggregate" as result key for backward compat.
+  const resultKey = aggFunction ?? "aggregate";
 
   if (transformer.groupBy) {
     // Handle both single string and string array groupBy
@@ -2138,53 +2134,248 @@ export function handleCountTransformer(
       ? transformer.groupBy
       : [transformer.groupBy];
 
-    // Use a Map with composite key (JSON stringified) to track getUniqueValues combinations
-    const groupByMap = new Map<string, { attributes: Record<string, any>; aggregate: number }>();
+    const groupByMap = new Map<string, { attributes: Record<string, any>; aggValue: AggAccumulator }>();
 
     for (const entry of resolvedReference) {
-      // Build the grouping key from all groupBy attributes
       const attributes: Record<string, any> = {};
       for (const attr of groupByArray) {
         attributes[attr] = (entry as any)[attr];
       }
-
-      // Create a composite key for this combination
       const compositeKey = JSON.stringify(attributes);
 
       if (groupByMap.has(compositeKey)) {
         const existing = groupByMap.get(compositeKey)!;
-        existing.aggregate++;
+        accumulateAggValue(existing.aggValue, entry, aggFunction, transformer.attribute, transformer.distinct);
       } else {
-        groupByMap.set(compositeKey, { attributes, aggregate: 1 });
+        groupByMap.set(compositeKey, {
+          attributes,
+          aggValue: initAggValue(entry, aggFunction, transformer.attribute, transformer.distinct),
+        });
       }
     }
 
-    // log.info(
-    //   "handleCountTransformer extractorTransformer count with groupBy resolvedReference",
-    //   resolvedReference.length,
-    //   "groupByMap",
-    //   Array.from(groupByMap.entries())
-    // );
+    let result = Array.from(groupByMap.values())
+      .map(({ attributes, aggValue }) => ({
+        ...attributes,
+        [resultKey]: finalizeAggValue(aggValue, aggFunction),
+      }))
+      .sort((a, b) => {
+        for (const attr of groupByArray) {
+          if (a[attr] < b[attr]) return -1;
+          if (a[attr] > b[attr]) return 1;
+        }
+        return 0;
+      });
 
-    // Convert map to result array with attributes spread and count
-    const result = Array.from(groupByMap.values()).map(({ attributes, aggregate }) => ({
-      ...attributes,
-      aggregate,
-    }));
+    // AGG-2: having clause - filter groups after aggregation
+    if (transformer.having) {
+      result = result.filter((row) => {
+        const havingResult = defaultTransformers.transformer_extended_apply(
+          step,
+          [...transformerPath, "having"],
+          label,
+          transformer.having,
+          resolveBuildTransformersTo,
+          modelEnvironment,
+          transformerParams,
+          { ...contextResults, aggregateValue: row[resultKey] },
+        );
+        if (havingResult instanceof TransformerFailure) {
+          return false;
+        }
+        return !!havingResult;
+      });
+    }
 
-    // log.info(
-    //   "handleCountTransformer extractorTransformer count with groupBy result",
-    //   result
-    // );
     return result;
   } else {
-    // log.info(
-    //   "handleCountTransformer extractorTransformer count without groupBy resolvedReference",
-    //   resolvedReference.length
-    // );
-    return [{ aggregate: resolvedReference.length }];
+    // Ungrouped aggregation
+    const aggValue = resolvedReference.reduce(
+      (acc: any, entry: any) => {
+        accumulateAggValue(acc, entry, aggFunction, transformer.attribute, transformer.distinct);
+        return acc;
+      },
+      initAggValueForEmpty(aggFunction, transformer.distinct),
+    );
+
+    let result = [{ [resultKey]: finalizeAggValue(aggValue, aggFunction) }];
+
+    // AGG-2: having clause for ungrouped (rare but consistent)
+    if (transformer.having) {
+      result = result.filter((row) => {
+        const havingResult = defaultTransformers.transformer_extended_apply(
+          step,
+          [...transformerPath, "having"],
+          label,
+          transformer.having,
+          resolveBuildTransformersTo,
+          modelEnvironment,
+          transformerParams,
+          { ...contextResults, aggregateValue: row[resultKey] },
+        );
+        if (havingResult instanceof TransformerFailure) {
+          return false;
+        }
+        return !!havingResult;
+      });
+    }
+
+    return result;
   }
-  // break;
+}
+
+// ################################################################################################
+// Helper functions for aggregate computation
+// ################################################################################################
+type AggAccumulator = {
+  count: number;
+  sum?: number;
+  min?: number;
+  max?: number;
+  values?: any[];
+  distinctSet?: Set<string>;
+};
+
+function initAggValueForEmpty(
+  aggFunction: string | undefined,
+  distinct: boolean | undefined,
+): AggAccumulator {
+  return {
+    count: 0,
+    sum: 0,
+    values: [],
+    distinctSet: distinct ? new Set() : undefined,
+  };
+}
+
+function initAggValue(
+  entry: any,
+  aggFunction: string | undefined,
+  attribute: string | undefined,
+  distinct: boolean | undefined,
+): AggAccumulator {
+  const val = attribute != null ? entry[attribute] : undefined;
+  const acc: AggAccumulator = { count: 0, distinctSet: distinct ? new Set() : undefined };
+
+  switch (aggFunction) {
+    case "sum":
+      acc.sum = typeof val === "number" ? val : 0;
+      acc.count = 1;
+      break;
+    case "avg":
+      acc.sum = typeof val === "number" ? val : 0;
+      acc.count = 1;
+      break;
+    case "min":
+      acc.min = typeof val === "number" ? val : undefined;
+      acc.count = 1;
+      break;
+    case "max":
+      acc.max = typeof val === "number" ? val : undefined;
+      acc.count = 1;
+      break;
+    case "json_agg":
+      acc.values = [val];
+      acc.count = 1;
+      break;
+    case "json_agg_strict":
+      acc.values = val != null ? [val] : [];
+      acc.count = 1;
+      break;
+    case "count":
+      if (distinct && attribute != null) {
+        acc.distinctSet!.add(JSON.stringify(val));
+      }
+      acc.count = 1;
+      break;
+    default:
+      // Legacy "count" behavior (no function specified)
+      acc.count = 1;
+      break;
+  }
+  return acc;
+}
+
+function accumulateAggValue(
+  acc: AggAccumulator,
+  entry: any,
+  aggFunction: string | undefined,
+  attribute: string | undefined,
+  distinct: boolean | undefined,
+): void {
+  const val = attribute != null ? entry[attribute] : undefined;
+
+  switch (aggFunction) {
+    case "sum":
+      acc.sum = (acc.sum ?? 0) + (typeof val === "number" ? val : 0);
+      acc.count++;
+      break;
+    case "avg":
+      acc.sum = (acc.sum ?? 0) + (typeof val === "number" ? val : 0);
+      acc.count++;
+      break;
+    case "min":
+      if (typeof val === "number") {
+        acc.min = acc.min != null ? Math.min(acc.min, val) : val;
+      }
+      acc.count++;
+      break;
+    case "max":
+      if (typeof val === "number") {
+        acc.max = acc.max != null ? Math.max(acc.max, val) : val;
+      }
+      acc.count++;
+      break;
+    case "json_agg":
+      acc.values = acc.values ?? [];
+      acc.values.push(val);
+      acc.count++;
+      break;
+    case "json_agg_strict":
+      acc.values = acc.values ?? [];
+      if (val != null) {
+        acc.values.push(val);
+      }
+      acc.count++;
+      break;
+    case "count":
+      if (distinct && attribute != null) {
+        if (!acc.distinctSet) {
+          acc.distinctSet = new Set();
+        }
+        acc.distinctSet.add(JSON.stringify(val));
+      }
+      acc.count++;
+      break;
+    default:
+      // Legacy "count" behavior
+      acc.count++;
+      break;
+  }
+}
+
+function finalizeAggValue(
+  acc: AggAccumulator,
+  aggFunction: string | undefined,
+): any {
+  switch (aggFunction) {
+    case "sum":
+      return acc.sum ?? 0;
+    case "avg":
+      return acc.count > 0 ? (acc.sum ?? 0) / acc.count : 0;
+    case "min":
+      return acc.min ?? 0;
+    case "max":
+      return acc.max ?? 0;
+    case "json_agg":
+    case "json_agg_strict":
+      return acc.values ?? [];
+    case "count":
+      return acc.distinctSet ? acc.distinctSet.size : acc.count;
+    default:
+      // Legacy "count" behavior
+      return acc.count;
+  }
 }
 // ################################################################################################
 export function handleUniqueTransformer(

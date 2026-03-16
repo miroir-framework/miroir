@@ -1165,7 +1165,6 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", async (
                       interpolation: "runtime",
                       referenceName: "books",
                     },
-                    // referencedTransformer: "books",
                     index: 0,
                     orderBy: "name",
                   },

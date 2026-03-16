@@ -2,7 +2,7 @@
   "uuid": "4ee5c863-5ade-4706-92bd-1fc2d89c3766",
   "name": "aggregate",
   "defaultLabel": "aggregate",
-  "description": "Aggregates a list into a count object, optionally grouping by an attribute.",
+  "description": "Aggregates a list using an aggregate function (count, sum, avg, min, max, json_agg, json_agg_strict), optionally grouping by attributes. Supports distinct flag and having clause for post-group filtering.",
   "parentUuid": "a557419d-a288-4fb8-8a1e-971c86c113b8",
   "parentDefinitionVersionUuid": "54a16d69-c1f0-4dd7-aba4-a2cda883586c",
   "parentName": "TransformerDefinition",
@@ -25,9 +25,21 @@
             "optional": true,
             "description": "The list to aggregate. The actual type is set by the platform depending on interpolation for the transformer."
           },
+          "function": {
+            "type": "enum",
+            "optional": true,
+            "definition": ["count", "sum", "avg", "min", "max", "json_agg", "json_agg_strict"],
+            "description": "The aggregate function to apply. Defaults to count (with legacy 'aggregate' result key) when omitted."
+          },
           "attribute": {
             "type": "string",
-            "optional": true
+            "optional": true,
+            "description": "The attribute to aggregate on. Required for sum, avg, min, max, json_agg, json_agg_strict. For count with distinct, specifies which attribute to count distinct values of."
+          },
+          "distinct": {
+            "type": "boolean",
+            "optional": true,
+            "description": "When true, only distinct values of attribute are considered. Primarily used with count."
           },
           "groupBy": {
             "type": "union",
@@ -43,6 +55,11 @@
                 }
               }
             ]
+          },
+          "having": {
+            "type": "any",
+            "optional": true,
+            "description": "A boolean transformer evaluated for each group after aggregation. The aggregate result is available as 'aggregateValue' in the context. Groups where this evaluates to false are excluded."
           }
         }
       }
