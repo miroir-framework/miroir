@@ -257,6 +257,8 @@ export {
   objectInstanceReportSection,
   ObjectListReportSection,
   objectListReportSection,
+  ModelDiagramReportSection,
+  modelDiagramReportSection,
   RunnerReportSection,
   runnerReportSection,
   PersistenceAction, Query,

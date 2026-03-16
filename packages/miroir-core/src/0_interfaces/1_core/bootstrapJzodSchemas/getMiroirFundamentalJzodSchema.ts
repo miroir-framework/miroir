@@ -948,6 +948,7 @@ export function getMiroirFundamentalJzodSchema(
               "jsonReportSection",
               "listReportSection",
               "markdownReportSection",
+              "modelDiagramReportSection",
               "objectInstanceReportSection",
               "objectListReportSection",
               "runnerReportSection",

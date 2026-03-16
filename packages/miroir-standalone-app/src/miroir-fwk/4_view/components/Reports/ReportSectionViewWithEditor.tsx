@@ -37,6 +37,7 @@ import { ThemedBox, ThemedText } from '../Themes/index.js';
 import { ReportSectionEntityInstance, type ValueObjectEditMode } from './ReportSectionEntityInstance.js';
 import { ReportSectionListDisplay } from './ReportSectionListDisplay.js';
 import { ReportSectionMarkdown } from './ReportSectionMarkdown.js';
+import { ModelDiagramReportSectionView } from './ModelDiagramReportSectionView.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -144,6 +145,27 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
           props.reportSectionDEFUNCT.definition.fetchedDataReference ?? ""
         ]
       : undefined;
+
+  const modelDiagramEntityDefinitions: any[] = useMemo(() => {
+    if (reportSectionDefinitionFromFormik?.type !== "modelDiagramReportSection") return [];
+    const edInput = (reportSectionDefinitionFromFormik as any).definition?.entityDefinitions;
+    if (!edInput) return [];
+    if (Array.isArray(edInput)) return edInput;
+    // It's a transformer – evaluate it against formik.values as context
+    const result = transformer_extended_apply_wrapper(
+      context.miroirContext.miroirActivityTracker,
+      "runtime",
+      [],
+      (reportSectionDefinitionFromFormik as any).definition?.label ?? "modelDiagramReportSection entityDefinitions",
+      edInput,
+      defaultMiroirModelEnvironment,
+      formik.values,
+      formik.values,
+      "value",
+    );
+    if (!result || result instanceof TransformerFailure || !Array.isArray(result)) return [];
+    return result;
+  }, [reportSectionDefinitionFromFormik, formik.values]);
 
   const storedReportDisplayParameters: Params<ReportUrlParamKeys> | TransformerFailure | undefined = useMemo(() => {
     if (reportSectionDefinitionFromFormik?.type !== "storedReportDisplay") {
@@ -433,6 +455,17 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
               showPerformanceDisplay={props.showPerformanceDisplay}
             />
           </div>
+        )}
+        {reportSectionDefinitionFromFormik?.type == "modelDiagramReportSection" && (
+          <ModelDiagramReportSectionView
+            entityDefinitions={modelDiagramEntityDefinitions}
+            label={(reportSectionDefinitionFromFormik as any).definition?.label}
+            title={(reportSectionDefinitionFromFormik as any).definition?.title}
+            direction={(reportSectionDefinitionFromFormik as any).definition?.direction}
+            applicationSection={props.applicationSection}
+            deploymentUuid={props.deploymentUuid}
+            showPerformanceDisplay={props.showPerformanceDisplay}
+          />
         )}
         {reportSectionDefinitionFromFormik?.type == "runnerReportSection" && (
           <>

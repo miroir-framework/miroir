@@ -13,27 +13,6 @@
       "type": "list",
       "definition": [
         {
-          "type": "jsonReportSection",
-          "definition": {
-            "label": "Raw definition of columns by table for schema ${instance.schema_name}",
-            "fetchedDataReference": "columsOfSchemaByTable"
-          }
-        },
-        {
-          "type": "jsonReportSection",
-          "definition": {
-            "label": "Raw definition of tables for schema ${instance.schema_name}",
-            "fetchedDataReference": "tablesOfSchema"
-          }
-        },
-        {
-          "type": "jsonReportSection",
-          "definition": {
-            "label": "Raw definition of columns for schema ${instance.schema_name}",
-            "fetchedDataReference": "columnsOfSchema"
-          }
-        },
-        {
           "type": "objectInstanceReportSection",
           "definition": {
             "parentUuid": "cbc94d62-d2e5-4bc2-8aef-45efcfbd0af6",
@@ -49,6 +28,32 @@
             "parentUuid": "35961086-f932-477a-aa77-ac8360ffbf61",
             "sortByAttribute": "table_name",
             "fetchedDataReference": "tablesOfSchema"
+          }
+        },
+        {
+          "type": "modelDiagramReportSection",
+          "definition": {
+            "label": "Entity diagram for schema ${instance.schema_name}",
+            "title": "Schema ${instance.schema_name} – Entity Diagram",
+            "entityDefinitions": {
+              "transformerType": "getFromContext",
+              "referenceName": "entityDefinitionsOfSchema",
+              "interpolation": "runtime"
+            }
+          }
+        },
+        {
+          "type": "jsonReportSection",
+          "definition": {
+            "label": "Entity definitions by table for schema ${instance.schema_name}",
+            "fetchedDataReference": "entityDefinitionsOfSchema"
+          }
+        },
+        {
+          "type": "jsonReportSection",
+          "definition": {
+            "label": "Raw definition of columns by table for schema ${instance.schema_name}",
+            "fetchedDataReference": "columsOfSchemaByTable"
           }
         }
       ]
@@ -115,6 +120,31 @@
           "interpolation": "runtime"
         },
         "groupBy": "table_name"
+      },
+      "entityDefinitionsOfSchema": {
+        "transformerType": "mapList",
+        "interpolation": "runtime",
+        "applyTo": {
+          "transformerType": "getFromContext",
+          "referenceName": "columsOfSchemaByTable",
+          "interpolation": "runtime"
+        },
+        "referenceToOuterObject": "tableAggregate",
+        "elementTransformer": {
+          "name": {
+            "transformerType": "getFromContext",
+            "referencePath": ["tableAggregate", "table_name"],
+            "interpolation": "runtime"
+          },
+          "mlSchema": {
+            "transformerType": "ansiColumnsToJzodSchema",
+            "applyTo": {
+              "transformerType": "getFromContext",
+              "referencePath": ["tableAggregate", "json_agg"],
+              "interpolation": "runtime"
+            }
+          }
+        }
       }
     }
   }

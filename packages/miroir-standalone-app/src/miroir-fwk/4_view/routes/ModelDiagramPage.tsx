@@ -21,7 +21,7 @@ import {
 
 import { packageName } from "../../../constants.js";
 import { PageContainer } from "../components/Page/PageContainer.js";
-import { MermaidClassDiagram, buildEntityDefinitionClickLinks } from "miroir-diagram-class";
+import { ModelDiagramReportSectionView } from "../components/Reports/ModelDiagramReportSectionView.js";
 import { cleanLevel } from "../constants.js";
 import { useMiroirTheme } from "../contexts/MiroirThemeContext.js";
 import { useMiroirContextService } from "miroir-react";
@@ -132,8 +132,6 @@ export const ModelDiagramPage: React.FC<any> = () => {
         // const entityDefinitions = defaultMiroirMetaModel.entityDefinitions ?? [];
         const entityDefinitions = currentModel.entityDefinitions ?? [];
 
-        const entityDefinitionClickLinks = buildEntityDefinitionClickLinks(entityDefinitions);
-
         const handleClassClick = (entityDefUuid: string) => {
           log.info("Class clicked", { entityDefUuid });
           navigate(
@@ -199,13 +197,10 @@ export const ModelDiagramPage: React.FC<any> = () => {
                 {entityDefinitions.length > 0 && ` (${entityDefinitions.length} entities)`}
               </Typography>
 
-              <MermaidClassDiagram
+              <ModelDiagramReportSectionView
                 entityDefinitions={entityDefinitions}
-                options={{
-                  title: `${applicationName} Model`,
-                  direction: entityDefinitions.length > 10 ? "TB" : "LR", // Top-Bottom if many entities, else Left-Right
-                  classClickLinks: entityDefinitionClickLinks,
-                }}
+                title={`${applicationName} Model`}
+                direction={entityDefinitions.length > 10 ? "TB" : "LR"}
                 onClassClick={handleClassClick}
                 height="calc(100vh - 220px)"
               />
