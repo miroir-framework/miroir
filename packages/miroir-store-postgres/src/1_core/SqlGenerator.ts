@@ -749,6 +749,15 @@ function sqlStringForCountTransformer(
   const resultKey = aggFunction ?? "aggregate";
   const attribute = actionRuntimeTransformer.attribute;
   const distinct = actionRuntimeTransformer.distinct;
+  const attributeObject = actionRuntimeTransformer.attributeObject;
+
+  // Build a SQL expression for JSON_BUILD_OBJECT from attributeObject, using exprFn to produce each column expr
+  function buildJsonBuildObjectExpr(exprFn: (attrName: string) => string): string {
+    const pairs = Object.entries(attributeObject!).flatMap(([key, srcAttr]) => [
+      `'${key}'`, exprFn(srcAttr),
+    ]);
+    return `JSON_BUILD_OBJECT(${pairs.join(", ")})`;
+  }
 
   function buildSqlAggExpr(valueExpr: string): string {
     const distinctKeyword = distinct ? "DISTINCT " : "";
@@ -814,20 +823,20 @@ function sqlStringForCountTransformer(
         const groupByAccessors = groupByArray?.map(e=> `value ->> ${tokenStringQuote}${e}${tokenStringQuote}`);
 
         // Build the aggregate expression for the value accessor
-        const valueAccessor = attribute
-          ? `value ->> ${tokenStringQuote}${attribute}${tokenStringQuote}`
-          : "*";
-        const aggExprNeedsAttribute = aggFunction && aggFunction !== "count" && !attribute;
+        const aggExprNeedsAttribute = aggFunction && aggFunction !== "count" && !attribute && !attributeObject;
         if (aggExprNeedsAttribute) {
           return new Domain2ElementFailed({
             queryFailure: "QueryNotExecutable",
             query: actionRuntimeTransformer as any,
-            failureMessage: `sqlStringForCountTransformer: aggregate function '${aggFunction}' requires 'attribute' to be specified`,
+            failureMessage: `sqlStringForCountTransformer: aggregate function '${aggFunction}' requires 'attribute' or 'attributeObject' to be specified`,
           });
         }
-        const aggExpr = (aggFunction && attribute) || (aggFunction === "count" && distinct && attribute)
-          ? buildSqlAggExpr(valueAccessor)
-          : buildSqlAggExpr(valueAccessor);
+        // When attributeObject is set for json_agg/json_agg_strict, use JSON_BUILD_OBJECT
+        const aggExpr = attributeObject && (aggFunction === "json_agg" || aggFunction === "json_agg_strict")
+          ? buildSqlAggExpr(buildJsonBuildObjectExpr((srcAttr) => `value ->> ${tokenStringQuote}${srcAttr}${tokenStringQuote}`))
+          : buildSqlAggExpr(attribute
+              ? `value ->> ${tokenStringQuote}${attribute}${tokenStringQuote}`
+              : "*");
 
         return {
           type: "json",
@@ -849,10 +858,12 @@ ORDER BY ${groupByAccessors?.join(", ")}
           encloseEndResultInArray: false,
         };
       } else {
-        const valueAccessor = attribute
-          ? `value ->> ${tokenStringQuote}${attribute}${tokenStringQuote}`
-          : "*";
-        const aggExpr = buildSqlAggExpr(valueAccessor);
+        // When attributeObject is set for json_agg/json_agg_strict, use JSON_BUILD_OBJECT
+        const aggExpr = attributeObject && (aggFunction === "json_agg" || aggFunction === "json_agg_strict")
+          ? buildSqlAggExpr(buildJsonBuildObjectExpr((srcAttr) => `value ->> ${tokenStringQuote}${srcAttr}${tokenStringQuote}`))
+          : buildSqlAggExpr(attribute
+              ? `value ->> ${tokenStringQuote}${attribute}${tokenStringQuote}`
+              : "*");
 
         return {
           type: "json",
@@ -876,10 +887,10 @@ FROM (${referenceQuery.sqlStringOrObject}) AS "count_applyTo",
     }
     case "tableOf1JsonColumn":
     case "table": {
-      const valueAccessor = attribute
-        ? `"${attribute}"`
-        : "*";
-      const aggExpr = buildSqlAggExpr(valueAccessor);
+      // When attributeObject is set for json_agg/json_agg_strict, use JSON_BUILD_OBJECT
+      const aggExpr = attributeObject && (aggFunction === "json_agg" || aggFunction === "json_agg_strict")
+        ? buildSqlAggExpr(buildJsonBuildObjectExpr((srcAttr) => `"${srcAttr}"`))
+        : buildSqlAggExpr(attribute ? `"${attribute}"` : "*");
 
       const transformerSqlQuery = actionRuntimeTransformer.groupBy
         ? `SELECT "${actionRuntimeTransformer.groupBy}", ${aggExpr} AS "${resultKey}" FROM (${referenceQuery.sqlStringOrObject}) AS "count_applyTo"

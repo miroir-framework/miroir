@@ -2145,11 +2145,11 @@ export function handleCountTransformer(
 
       if (groupByMap.has(compositeKey)) {
         const existing = groupByMap.get(compositeKey)!;
-        accumulateAggValue(existing.aggValue, entry, aggFunction, transformer.attribute, transformer.distinct);
+        accumulateAggValue(existing.aggValue, entry, aggFunction, transformer.attribute, transformer.distinct, transformer.attributeObject);
       } else {
         groupByMap.set(compositeKey, {
           attributes,
-          aggValue: initAggValue(entry, aggFunction, transformer.attribute, transformer.distinct),
+          aggValue: initAggValue(entry, aggFunction, transformer.attribute, transformer.distinct, transformer.attributeObject),
         });
       }
     }
@@ -2192,7 +2192,7 @@ export function handleCountTransformer(
     // Ungrouped aggregation
     const aggValue = resolvedReference.reduce(
       (acc: any, entry: any) => {
-        accumulateAggValue(acc, entry, aggFunction, transformer.attribute, transformer.distinct);
+        accumulateAggValue(acc, entry, aggFunction, transformer.attribute, transformer.distinct, transformer.attributeObject);
         return acc;
       },
       initAggValueForEmpty(aggFunction, transformer.distinct),
@@ -2227,6 +2227,15 @@ export function handleCountTransformer(
 // ################################################################################################
 // Helper functions for aggregate computation
 // ################################################################################################
+// Returns true if val is null/undefined, or if val is a plain object where every value is null/undefined
+function isNullOrAllNull(val: any): boolean {
+  if (val == null) return true;
+  if (typeof val === "object" && !Array.isArray(val)) {
+    return Object.values(val).every((v) => v == null);
+  }
+  return false;
+}
+
 type AggAccumulator = {
   count: number;
   sum?: number;
@@ -2253,8 +2262,12 @@ function initAggValue(
   aggFunction: string | undefined,
   attribute: string | undefined,
   distinct: boolean | undefined,
+  attributeObject?: Record<string, string>,
 ): AggAccumulator {
-  const val = attribute != null ? entry[attribute] : undefined;
+  // When attributeObject is set, build an object for json_agg/json_agg_strict
+  const val = attributeObject != null
+    ? Object.fromEntries(Object.entries(attributeObject).map(([k, v]) => [k, entry[v]]))
+    : attribute != null ? entry[attribute] : undefined;
   const acc: AggAccumulator = { count: 0, distinctSet: distinct ? new Set() : undefined };
 
   switch (aggFunction) {
@@ -2279,7 +2292,7 @@ function initAggValue(
       acc.count = 1;
       break;
     case "json_agg_strict":
-      acc.values = val != null ? [val] : [];
+      acc.values = isNullOrAllNull(val) ? [] : [val];
       acc.count = 1;
       break;
     case "count":
@@ -2302,8 +2315,11 @@ function accumulateAggValue(
   aggFunction: string | undefined,
   attribute: string | undefined,
   distinct: boolean | undefined,
+  attributeObject?: Record<string, string>,
 ): void {
-  const val = attribute != null ? entry[attribute] : undefined;
+  const val = attributeObject != null
+    ? Object.fromEntries(Object.entries(attributeObject).map(([k, v]) => [k, entry[v]]))
+    : attribute != null ? entry[attribute] : undefined;
 
   switch (aggFunction) {
     case "sum":
@@ -2333,7 +2349,7 @@ function accumulateAggValue(
       break;
     case "json_agg_strict":
       acc.values = acc.values ?? [];
-      if (val != null) {
+      if (!isNullOrAllNull(val)) {
         acc.values.push(val);
       }
       acc.count++;

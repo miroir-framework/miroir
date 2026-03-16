@@ -4020,6 +4020,14 @@ export const miroirFundamentalJzodSchema = {
             "type": "any",
             "optional": true,
             "description": "A boolean transformer evaluated for each group after aggregation. The aggregate result is available as 'aggregateValue' in the context. Groups where this evaluates to false are excluded."
+          },
+          "attributeObject": {
+            "type": "record",
+            "optional": true,
+            "definition": {
+              "type": "string"
+            },
+            "description": "For json_agg and json_agg_strict: build an object for each row using this map (output key → source attribute name). Maps to JSON_BUILD_OBJECT in SQL. Takes precedence over 'attribute' for json_agg/json_agg_strict."
           }
         }
       },
@@ -5762,6 +5770,14 @@ export const miroirFundamentalJzodSchema = {
             "type": "any",
             "optional": true,
             "description": "A boolean transformer evaluated for each group after aggregation. The aggregate result is available as 'aggregateValue' in the context. Groups where this evaluates to false are excluded."
+          },
+          "attributeObject": {
+            "type": "record",
+            "optional": true,
+            "definition": {
+              "type": "string"
+            },
+            "description": "For json_agg and json_agg_strict: build an object for each row using this map (output key → source attribute name). Maps to JSON_BUILD_OBJECT in SQL. Takes precedence over 'attribute' for json_agg/json_agg_strict."
           }
         }
       },

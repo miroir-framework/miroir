@@ -4846,6 +4846,104 @@
                   { "category": "A", "count": 2 },
                   { "category": "B", "count": 3 }
                 ]
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "json_agg with attributeObject collects objects at runtime",
+                "transformerName": "jsonAggObject",
+                "transformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "function": "json_agg",
+                  "attributeObject": {
+                    "name": "name",
+                    "age": "age"
+                  },
+                  "applyTo": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "value": [
+                      { "name": "Alice", "age": 30, "dept": "eng" },
+                      { "name": "Bob", "age": 25, "dept": "eng" },
+                      { "name": "Carol", "age": 35, "dept": "hr" }
+                    ]
+                  }
+                },
+                "transformerParams": {},
+                "transformerRuntimeContext": {},
+                "expectedValue": [
+                  { "json_agg": [
+                    { "name": "Alice", "age": 30 },
+                    { "name": "Bob", "age": 25 },
+                    { "name": "Carol", "age": 35 }
+                  ]}
+                ]
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "json_agg with attributeObject and groupBy collects objects per group at runtime",
+                "transformerName": "jsonAggObjectGroupBy",
+                "transformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "function": "json_agg",
+                  "attributeObject": {
+                    "name": "name",
+                    "age": "age"
+                  },
+                  "groupBy": "dept",
+                  "applyTo": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "value": [
+                      { "name": "Alice", "age": 30, "dept": "eng" },
+                      { "name": "Bob", "age": 25, "dept": "eng" },
+                      { "name": "Carol", "age": 35, "dept": "hr" }
+                    ]
+                  }
+                },
+                "transformerParams": {},
+                "transformerRuntimeContext": {},
+                "expectedValue": [
+                  { "dept": "eng", "json_agg": [
+                    { "name": "Alice", "age": 30 },
+                    { "name": "Bob", "age": 25 }
+                  ]},
+                  { "dept": "hr", "json_agg": [
+                    { "name": "Carol", "age": 35 }
+                  ]}
+                ]
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "json_agg_strict with attributeObject omits null-valued objects at runtime",
+                "transformerName": "jsonAggStrictObject",
+                "transformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "function": "json_agg_strict",
+                  "attributeObject": {
+                    "name": "name",
+                    "score": "score"
+                  },
+                  "applyTo": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "value": [
+                      { "name": "Alice", "score": 10 },
+                      { "name": null, "score": null },
+                      { "name": "Carol", "score": 30 }
+                    ]
+                  }
+                },
+                "transformerParams": {},
+                "transformerRuntimeContext": {},
+                "expectedValue": [
+                  { "json_agg_strict": [
+                    { "name": "Alice", "score": 10 },
+                    { "name": "Carol", "score": 30 }
+                  ]}
+                ]
               }
             ]
           },

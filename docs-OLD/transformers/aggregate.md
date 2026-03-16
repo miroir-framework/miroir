@@ -10,6 +10,7 @@ Aggregates a list of objects — counting rows, summing/averaging numeric fields
   "interpolation": "runtime",
   "applyTo": <Transformer (→ list)>,
   "attribute": "<string>",
+  "attributeObject": { "<outputKey>": "<sourceAttribute>", ... },
   "groupBy": "<string | string[]>",
   "function": "count" | "sum" | "avg" | "min" | "max" | "json_agg" | "json_agg_strict",
   "distinct": true | false,
@@ -23,7 +24,8 @@ Aggregates a list of objects — counting rows, summing/averaging numeric fields
 | Field | Required | Type | Description |
 |---|---|---|---|
 | `applyTo` | **yes** | Transformer → list | Source list to aggregate |
-| `attribute` | no | string | Target attribute for aggregation. Required for `sum`, `avg`, `min`, `max`, `json_agg`, `json_agg_strict`. Optional for `count` (counts rows when absent, attribute occurrences when present). |
+| `attribute` | no | string | Single attribute to aggregate. Required for `sum`, `avg`, `min`, `max`. For `json_agg`/`json_agg_strict`, use either `attribute` (scalar values) or `attributeObject` (built objects). |
+| `attributeObject` | no | `Record<string, string>` | For `json_agg`/`json_agg_strict`: build an object per row. Map of output key → source attribute name. Takes precedence over `attribute`. Maps to `JSON_BUILD_OBJECT` in SQL. |
 | `groupBy` | no | string \| string[] | Group results by one or more attributes |
 | `function` | no | enum | Aggregate function. Defaults to `count` if omitted |
 | `distinct` | no | boolean | Count/aggregate only distinct attribute values |
@@ -119,6 +121,8 @@ Only groups where `sum(amount) > 100` are included in the result.
 
 `json_agg` collects all attribute values into an array. `json_agg_strict` excludes `null`/`undefined` values.
 
+**Scalar values** (single attribute):
+
 ```json
 {
   "transformerType": "aggregate",
@@ -131,6 +135,31 @@ Only groups where `sum(amount) > 100` are included in the result.
 
 Input: `[{name:"Alice"}, {name:"Bob"}]` → Output: `[{ "json_agg": ["Alice", "Bob"] }]`
 
+**Object values** via `attributeObject` (multiple attributes per row):
+
+```json
+{
+  "transformerType": "aggregate",
+  "interpolation": "runtime",
+  "function": "json_agg",
+  "attributeObject": {
+    "column_name": "column_name",
+    "data_type": "data_type",
+    "is_nullable": "is_nullable"
+  },
+  "groupBy": "table_name",
+  "applyTo": { "transformerType": "getFromContext", "interpolation": "runtime", "referenceName": "columnsOfSchema" }
+}
+```
+
+This is equivalent to the SQL:
+```sql
+SELECT table_name, JSON_AGG(JSON_BUILD_OBJECT('column_name', column_name, 'data_type', data_type, 'is_nullable', is_nullable))
+FROM information_schema.columns GROUP BY table_name
+```
+
+`json_agg_strict` with `attributeObject` omits rows where **all** values are null.
+
 ## SQL Mapping
 
 | In-memory | SQL |
@@ -142,6 +171,8 @@ Input: `[{name:"Alice"}, {name:"Bob"}]` → Output: `[{ "json_agg": ["Alice", "B
 | `function: "max"` | `MAX(attribute::numeric)::numeric` |
 | `function: "json_agg"` | `JSON_AGG(attribute)` |
 | `function: "json_agg_strict"` | `JSON_AGG(attribute) FILTER (WHERE attribute IS NOT NULL)` |
+| `function: "json_agg"` + `attributeObject` | `JSON_AGG(JSON_BUILD_OBJECT('k', col, ...))` |
+| `function: "json_agg_strict"` + `attributeObject` | `JSON_AGG(JSON_BUILD_OBJECT(...)) FILTER (WHERE ... IS NOT NULL)` |
 | `distinct: true` | `COUNT(DISTINCT attribute)` etc. |
 | `having: <transformer>` | `HAVING <sql-expr>` |
 

@@ -15,6 +15,13 @@
         {
           "type": "jsonReportSection",
           "definition": {
+            "label": "Raw definition of columns by table for schema ${instance.schema_name}",
+            "fetchedDataReference": "columsOfSchemaByTable"
+          }
+        },
+        {
+          "type": "jsonReportSection",
+          "definition": {
             "label": "Raw definition of tables for schema ${instance.schema_name}",
             "fetchedDataReference": "tablesOfSchema"
           }
@@ -83,6 +90,32 @@
         "extractorOrCombinerType": "extractorByPrimaryKey"
       }
     },
-    "runtimeTransformers": {}
+    "runtimeTransformers": {
+      "columsOfSchemaByTable": {
+        "transformerType": "aggregate",
+        "interpolation": "runtime",
+        "function": "json_agg",
+        "attributeObject": {
+          "udt_name": "udt_name",
+          "data_type": "data_type",
+          "table_name": "table_name",
+          "column_name": "column_name",
+          "is_nullable": "is_nullable",
+          "table_schema": "table_schema",
+          "numeric_scale": "numeric_scale",
+          "table_catalog": "table_catalog",
+          "column_default": "column_default",
+          "ordinal_position": "ordinal_position",
+          "numeric_precision": "numeric_precision",
+          "character_maximum_length": "character_maximum_length"
+        },
+        "applyTo": {
+          "transformerType": "getFromContext",
+          "referenceName": "columnsOfSchema",
+          "interpolation": "runtime"
+        },
+        "groupBy": "table_name"
+      }
+    }
   }
 }
