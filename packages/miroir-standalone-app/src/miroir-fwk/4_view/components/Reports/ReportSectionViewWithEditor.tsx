@@ -468,6 +468,36 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
             showPerformanceDisplay={props.showPerformanceDisplay}
           />
         )}
+        {
+          reportSectionDefinitionFromFormik?.type == "jsonReportSection" && (
+            <pre style={{ maxHeight: "400px", overflow: "auto", backgroundColor: "#f0f0f0", padding: "10px" }}>
+              {JSON.stringify(
+                // reportSectionDefinitionFromFormik,
+                // Object.keys(formik.values),
+                formik.values[reportSectionDefinitionFromFormik.definition.fetchedDataReference ?? ""],
+                null, 2
+              )}
+            </pre>
+            // <JsonDisplayHelper
+            //   debug={true}
+            //   componentName="ReportSectionViewWithEditor - jsonReportSection"
+            //   elements={[
+            //     {
+            //       label: "reportSectionDefinitionFromFormik",
+            //       data: reportSectionDefinitionFromFormik,
+            //       useCodeBlock: true,
+            //       copyButton: true,
+            //     },
+            //     {
+            //       label: "reportDataDEFUNCT.reportData",
+            //       data: props.reportDataDEFUNCT.reportData,
+            //       useCodeBlock: true,
+            //       copyButton: true,
+            //     },
+            //   ]}
+            // />
+          )
+        }
       </div>
     </>
   );

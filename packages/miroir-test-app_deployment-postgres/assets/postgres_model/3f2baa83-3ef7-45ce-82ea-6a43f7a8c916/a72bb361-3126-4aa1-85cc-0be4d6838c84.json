@@ -13,6 +13,13 @@
       "type": "list",
       "definition": [
         {
+          "type": "jsonReportSection",
+          "definition": {
+            "label": "Raw definition of tables for schema ${instance.schema_name}",
+            "fetchedDataReference": "tablesOfSchema"
+          }
+        },
+        {
           "type": "objectInstanceReportSection",
           "definition": {
             "parentUuid": "cbc94d62-d2e5-4bc2-8aef-45efcfbd0af6",

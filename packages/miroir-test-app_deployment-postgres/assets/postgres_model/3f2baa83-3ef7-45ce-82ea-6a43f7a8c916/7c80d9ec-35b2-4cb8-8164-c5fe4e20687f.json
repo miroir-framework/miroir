@@ -34,7 +34,16 @@
         "AttributeOfListObjectToCompareToReferenceUuid": "table_name"
       }
     },
-    "runtimeTransformers": {},
+    "runtimeTransformers": {
+      "tableMLSchema": {
+        "transformerType": "ansiColumnsToJzodSchema",
+        "applyTo": {
+          "transformerType": "getFromContext",
+          "referenceName": "columnsOfTable",
+          "interpolation": "runtime"
+        }
+      }
+    },
     "section": {
       "type": "list",
       "definition": [
@@ -44,6 +53,13 @@
             "label": "Details of table ${instance.table_name}",
             "parentUuid": "35961086-f932-477a-aa77-ac8360ffbf61",
             "fetchedDataReference": "table"
+          }
+        },
+        {
+          "type": "jsonReportSection",
+          "definition": {
+            "label": "Raw definition of table ${instance.table_name}",
+            "fetchedDataReference": "tableMLSchema"
           }
         },
         {
