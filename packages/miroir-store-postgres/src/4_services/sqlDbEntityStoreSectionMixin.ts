@@ -54,7 +54,7 @@ export function SqlDbEntityStoreSectionMixin<TBase extends typeof MixedSqlDbInst
       // dataStore: PersistenceStoreDataSectionInterface,
       ...args: any[]
     ) {
-      super(...args.slice(0, 5));
+      super(...args.slice(0, 5), args[6]);
       this.dataStore = args[5];
       // log.info(this.logHeader,'MixedIndexedDbEntityStoreSection constructor',this.dataStore);
     }

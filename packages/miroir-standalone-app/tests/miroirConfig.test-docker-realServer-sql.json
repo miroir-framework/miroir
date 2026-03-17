@@ -1,56 +1,62 @@
 {
   "client": {
     "emulateServer": false,
-    "serverConfig":{
-      "rootApiUrl":"https://localhost:3080",
+    "serverConfig": {
+      "rootApiUrl": "https://localhost:3080",
       "dataflowConfiguration": {
-        "type":"singleNode",
+        "type": "singleNode",
         "metaModel": {
           "location": {
-            "side":"server",
+            "side": "server",
             "type": "filesystem",
-            "location":"C:/Users/nono/Documents/devhome/miroir-app-dev/packages/miroir-core/src/assets"
+            "location": "C:/Users/nono/Documents/devhome/miroir-app-dev/packages/miroir-core/src/assets"
           }
         }
       },
       "storeSectionConfiguration": {
-        "10ff36f2-50a3-48d8-b80f-e48e5d13af8e":{
+        "10ff36f2-50a3-48d8-b80f-e48e5d13af8e": {
           "admin": {
             "emulatedServerType": "sql",
-            "connectionString":"postgres://postgres:postgres@host.docker.internal:5432/postgres",
-            "schema": "miroirAdmin"
+            "connectionString": "postgres://postgres:postgres@host.docker.internal:5432/postgres",
+            "schema": "miroirAdmin",
+            "forceOptionalToUndefined": true
           },
           "model": {
             "emulatedServerType": "sql",
-            "connectionString":"postgres://postgres:postgres@host.docker.internal:5432/postgres",
-            "schema": "miroir"
+            "connectionString": "postgres://postgres:postgres@host.docker.internal:5432/postgres",
+            "schema": "miroir",
+            "forceOptionalToUndefined": true
           },
           "data": {
             "emulatedServerType": "sql",
-            "connectionString":"postgres://postgres:postgres@host.docker.internal:5432/postgres",
-            "schema": "miroir"
+            "connectionString": "postgres://postgres:postgres@host.docker.internal:5432/postgres",
+            "schema": "miroir",
+            "forceOptionalToUndefined": true
           }
         },
         "f714bb2f-a12d-4e71-a03b-74dcedea6eb4": {
           "admin": {
             "emulatedServerType": "sql",
-            "connectionString":"postgres://postgres:postgres@host.docker.internal:5432/postgres",
-            "schema": "miroirAdmin"
+            "connectionString": "postgres://postgres:postgres@host.docker.internal:5432/postgres",
+            "schema": "miroirAdmin",
+            "forceOptionalToUndefined": true
           },
           "model": {
             "emulatedServerType": "sql",
-            "connectionString":"postgres://postgres:postgres@host.docker.internal:5432/postgres",
-            "schema": "library"
+            "connectionString": "postgres://postgres:postgres@host.docker.internal:5432/postgres",
+            "schema": "library",
+            "forceOptionalToUndefined": true
           },
           "data": {
             "emulatedServerType": "sql",
-            "connectionString":"postgres://postgres:postgres@host.docker.internal:5432/postgres",
-            "schema": "library"
+            "connectionString": "postgres://postgres:postgres@host.docker.internal:5432/postgres",
+            "schema": "library",
+            "forceOptionalToUndefined": true
           }
         }
       }
     },
-    "deploymentMode":"monoUser",
+    "deploymentMode": "monoUser",
     "monoUserAutentification": false,
     "monoUserVersionControl": false,
     "versionControlForDataConceptLevel": false

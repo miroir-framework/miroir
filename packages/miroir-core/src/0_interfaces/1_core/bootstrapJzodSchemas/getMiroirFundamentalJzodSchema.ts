@@ -1179,6 +1179,7 @@ export function getMiroirFundamentalJzodSchema(
             emulatedServerType: { type: "literal", definition: "sql" },
             connectionString: { type: "string" },
             schema: { type: "string" },
+            forceOptionalToUndefined: { type: "boolean", optional: true },
           },
         },
         mongoDbStoreSectionConfiguration: {

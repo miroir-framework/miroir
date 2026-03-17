@@ -9,7 +9,7 @@ import {
   StorageSpaceHandlerInterface,
   Uuid
 } from "miroir-core";
-import { EntityUuidIndexedSequelizeModel, fromMiroirEntityDefinitionToSequelizeEntityDefinition } from "../utils";
+import { EntityUuidIndexedSequelizeModel, fromMiroirEntityDefinitionToSequelizeEntityDefinition, getOptionalNonNullableAttributes } from "../utils";
 
 import { packageName } from "../constants";
 import { cleanLevel } from "./constants";
@@ -41,7 +41,7 @@ export class SqlDbStoreSection
     // logHeader:string,
     ...args: any[] // mixin constructors are limited to args:any[] parameters
   ) {
-    super(args[0], args[1], args[2], args[3], args[4]);
+    super(args[0], args[1], args[2], args[3], args[4], args[5]);
   }
 
   // ##############################################################################################
@@ -124,12 +124,16 @@ export class SqlDbStoreSection
     const effectiveTableName = isExternal && entityDefinition.externalDataSource?.tableName
       ? entityDefinition.externalDataSource.tableName
       : entity.name;
+    const optionalNonNullableAttributes = this.forceOptionalToUndefined
+      ? getOptionalNonNullableAttributes(entityDefinition)
+      : undefined;
     return {
       [entity.uuid]: {
         parentName: entity.parentName,
         idAttribute,
         isExternal,
         effectiveSchema,
+        optionalNonNullableAttributes,
         sequelizeModel: this.sequelize.define(
           effectiveTableName,
           fromMiroirEntityDefinitionToSequelizeEntityDefinition(entityDefinition),

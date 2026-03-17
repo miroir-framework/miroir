@@ -26,13 +26,15 @@ export class SqlDbDataStoreSection extends MixedSqlDbInstanceStoreSection implem
     sqlDbStoreName: string, // used only for debugging purposes
     dataConnectionString:string,
     dataSchema:string,
+    forceOptionalToUndefined: boolean = false,
   ) {
     super(
       applicationSection,
       sqlDbStoreName,
       dataConnectionString,
       dataSchema,
-      'SqlDbDataStoreSection ' + sqlDbStoreName + ' section data'
+      'SqlDbDataStoreSection ' + sqlDbStoreName + ' section data',
+      forceOptionalToUndefined,
     )
   }
 
