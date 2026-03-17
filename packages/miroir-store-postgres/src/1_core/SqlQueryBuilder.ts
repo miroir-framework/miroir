@@ -178,19 +178,20 @@ export function sqlQueryHereTableDefinition(
       break;
     }
     case "hereTable": {
+      const lateralPrefix = q.lateral ? "LATERAL " : "";
       if (typeof q.definition == "string") {
-        result = q.definition + (q.as ? " AS " + sqlNameQuote(q.as) : "");
+        result = lateralPrefix + q.definition + (q.as ? " AS " + sqlNameQuote(q.as) : "");
       } else {
         switch (q.definition.queryPart) {
           case "query": {
-            result = '(' + sqlQuery(indentLevel??0 + 1, q.definition) + ')' + (q.as ? " AS " + sqlNameQuote(q.as) : "");
+            result = lateralPrefix + '(' + sqlQuery(indentLevel??0 + 1, q.definition) + ')' + (q.as ? " AS " + sqlNameQuote(q.as) : "");
             break;
           }
           case "bypass":
           case "tableLiteral":
           case "tableColumnAccess":
           case "call": {
-            result = `${indent(indentLevel)}${sqlQueryHereTableExpression(indentLevel, q.definition)}${
+            result = `${indent(indentLevel)}${lateralPrefix}${sqlQueryHereTableExpression(indentLevel, q.definition)}${
               q.as ? " AS " + sqlNameQuote(q.as) : ""
             }`;
             break;
@@ -234,7 +235,88 @@ export function sqlQuery(indentLevel: number | undefined, q: SqlQuerySelectSchem
               .join(", ")));
 
   log.info("sqlQuery fromParts", fromParts);
-  return `SELECT ${selectParts}${flushAndIndentOrSpace(indentLevel)}${fromParts}${q.where ? `${flushAndIndentOrSpace(indentLevel)}WHERE ${q.where}` : ""}`;
+  const distinctOnClause = q.distinctOn ? `DISTINCT ON (${q.distinctOn}) ` : "";
+  const wherePart = q.where ? `${flushAndIndentOrSpace(indentLevel)}WHERE ${q.where}` : "";
+  const groupByPart = q.groupBy ? `${flushAndIndentOrSpace(indentLevel)}GROUP BY ${q.groupBy}` : "";
+  const havingPart = q.having ? `${flushAndIndentOrSpace(indentLevel)}HAVING ${q.having}` : "";
+  const orderByPart = q.orderBy ? `${flushAndIndentOrSpace(indentLevel)}ORDER BY ${q.orderBy}` : "";
+  const limitPart = q.limit !== undefined ? `${flushAndIndentOrSpace(indentLevel)}LIMIT ${q.limit}${q.offset !== undefined ? ` OFFSET ${q.offset}` : ""}` : "";
+  return `SELECT ${distinctOnClause}${selectParts}${flushAndIndentOrSpace(indentLevel)}${fromParts}${wherePart}${groupByPart}${havingPart}${orderByPart}${limitPart}`;
+}
+
+// #################################################################################################
+export type SqlStringForTransformerElementValueType = "json" | "scalar" | "table" | "json_array" | "tableOf1JsonColumn";
+
+function isJsonType(t: SqlStringForTransformerElementValueType): boolean {
+  return t === "json" || t === "json_array" || t === "tableOf1JsonColumn";
+}
+
+// #################################################################################################
+/**
+ * SQL expression for JS-style falsy check.
+ * JS falsy values: null, undefined, 0, false, "".
+ * For JSON/JSONB types: also checks for JSON null, false, 0, empty string.
+ * For scalar types: uses IS NULL plus text cast to check '0', 'false', ''.
+ */
+export function sqlIsFalsy(expr: string, type: SqlStringForTransformerElementValueType): string {
+  if (isJsonType(type)) {
+    return `(${expr} IS NULL OR ${expr} = 'null'::jsonb OR ${expr} = 'false'::jsonb OR ${expr} = '0'::jsonb OR ${expr} = '""'::jsonb)`;
+  } else {
+    return `(${expr} IS NULL OR ${expr}::text IN ('0', 'false', ''))`;
+  }
+}
+
+// #################################################################################################
+/**
+ * SQL expression for JS-style null check.
+ * Covers both SQL NULL and JSON null ('null'::jsonb) for JSON/JSONB types.
+ */
+export function sqlIsNull(expr: string, type: SqlStringForTransformerElementValueType): string {
+  if (isJsonType(type)) {
+    return `(${expr} IS NULL OR ${expr} = 'null'::jsonb)`;
+  } else {
+    return `${expr} IS NULL`;
+  }
+}
+
+// #################################################################################################
+/**
+ * SQL expression for JS-style isNotNull check.
+ * Value must be neither SQL NULL nor JSON null.
+ */
+export function sqlIsNotNull(expr: string, type: SqlStringForTransformerElementValueType): string {
+  if (isJsonType(type)) {
+    return `(${expr} IS NOT NULL AND ${expr} <> 'null'::jsonb)`;
+  } else {
+    return `${expr} IS NOT NULL`;
+  }
+}
+
+// #################################################################################################
+/**
+ * Build a SQL WITH clause (Common Table Expressions) from an array of CTEs and a final SELECT.
+ */
+export function sqlWith(
+  ctes: { name: string; sql: string }[],
+  finalSelect: string,
+  indentLevel: number = 0,
+): string {
+  if (ctes.length === 0) {
+    return finalSelect;
+  }
+  const separator = "," + flushAndIndent(indentLevel);
+  const cteParts = ctes
+    .map(
+      (cte) =>
+        sqlNameQuote(cte.name) +
+        " AS (" +
+        flushAndIndent(indentLevel + 1) +
+        cte.sql +
+        flushAndIndent(indentLevel) +
+        ")"
+    )
+    .join(separator);
+  return "WITH" + flushAndIndent(indentLevel) + cteParts + flushAndIndent(indentLevel) + finalSelect;
 }
 
 // #################################################################################################
@@ -533,6 +615,10 @@ export const sqlQuerySelectSchema: JzodReference = {
               type: "literal",
               definition: "hereTable",
             },
+            lateral: {
+              type: "boolean",
+              optional: true,
+            },
             definition: {
               type: "union",
               definition: [
@@ -620,6 +706,26 @@ export const sqlQuerySelectSchema: JzodReference = {
               //     relativePath: "sqlWhereItemSchema",
               //   },
               // },
+            },
+            groupBy: {
+              type: "string",
+              optional: true,
+            },
+            having: {
+              type: "string",
+              optional: true,
+            },
+            orderBy: {
+              type: "string",
+              optional: true,
+            },
+            limit: {
+              type: "number",
+              optional: true,
+            },
+            offset: {
+              type: "number",
+              optional: true,
             },
           },
         },

@@ -11876,6 +11876,96 @@ export const miroirFundamentalJzodSchema = {
           }
         }
       },
+      "modelDiagramReportSection": {
+        "type": "object",
+        "tag": {
+          "value": {
+            "display": {
+              "displayedAttributeValueWhenFolded": "definition.label"
+            }
+          }
+        },
+        "definition": {
+          "type": {
+            "type": "literal",
+            "definition": "modelDiagramReportSection"
+          },
+          "definition": {
+            "type": "object",
+            "definition": {
+              "label": {
+                "type": "string",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "id": 1,
+                    "defaultLabel": "Label"
+                  }
+                }
+              },
+              "title": {
+                "type": "string",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "id": 2,
+                    "defaultLabel": "Diagram Title"
+                  }
+                }
+              },
+              "direction": {
+                "type": "enum",
+                "optional": true,
+                "definition": [
+                  "TB",
+                  "BT",
+                  "LR",
+                  "RL"
+                ],
+                "tag": {
+                  "value": {
+                    "id": 3,
+                    "defaultLabel": "Diagram Direction",
+                    "display": {
+                      "editable": true
+                    },
+                    "initializeTo": {
+                      "initializeToType": "value",
+                      "value": "LR"
+                    }
+                  }
+                }
+              },
+              "entityDefinitions": {
+                "type": "union",
+                "discriminator": "transformerType",
+                "tag": {
+                  "value": {
+                    "id": 4,
+                    "defaultLabel": "Entity Definitions",
+                    "description": "Either an array of entity definitions or a transformer accessing the context"
+                  }
+                },
+                "definition": [
+                  {
+                    "type": "array",
+                    "definition": {
+                      "type": "any"
+                    }
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "transformerForBuildPlusRuntime"
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        }
+      },
       "jsonReportSection": {
         "type": "object",
         "tag": {
@@ -12367,6 +12457,13 @@ export const miroirFundamentalJzodSchema = {
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
               "relativePath": "markdownReportSection"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "modelDiagramReportSection"
             }
           },
           {
@@ -13136,6 +13233,96 @@ export const miroirFundamentalJzodSchema = {
                   }
                 }
               },
+              "modelDiagramReportSection": {
+                "type": "object",
+                "tag": {
+                  "value": {
+                    "display": {
+                      "displayedAttributeValueWhenFolded": "definition.label"
+                    }
+                  }
+                },
+                "definition": {
+                  "type": {
+                    "type": "literal",
+                    "definition": "modelDiagramReportSection"
+                  },
+                  "definition": {
+                    "type": "object",
+                    "definition": {
+                      "label": {
+                        "type": "string",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "id": 1,
+                            "defaultLabel": "Label"
+                          }
+                        }
+                      },
+                      "title": {
+                        "type": "string",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "id": 2,
+                            "defaultLabel": "Diagram Title"
+                          }
+                        }
+                      },
+                      "direction": {
+                        "type": "enum",
+                        "optional": true,
+                        "definition": [
+                          "TB",
+                          "BT",
+                          "LR",
+                          "RL"
+                        ],
+                        "tag": {
+                          "value": {
+                            "id": 3,
+                            "defaultLabel": "Diagram Direction",
+                            "display": {
+                              "editable": true
+                            },
+                            "initializeTo": {
+                              "initializeToType": "value",
+                              "value": "LR"
+                            }
+                          }
+                        }
+                      },
+                      "entityDefinitions": {
+                        "type": "union",
+                        "discriminator": "transformerType",
+                        "tag": {
+                          "value": {
+                            "id": 4,
+                            "defaultLabel": "Entity Definitions",
+                            "description": "Either an array of entity definitions or a transformer accessing the context"
+                          }
+                        },
+                        "definition": [
+                          {
+                            "type": "array",
+                            "definition": {
+                              "type": "any"
+                            }
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              "relativePath": "transformerForBuildPlusRuntime"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  }
+                }
+              },
               "jsonReportSection": {
                 "type": "object",
                 "tag": {
@@ -13630,6 +13817,13 @@ export const miroirFundamentalJzodSchema = {
                     "definition": {
                       "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                       "relativePath": "markdownReportSection"
+                    }
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "modelDiagramReportSection"
                     }
                   },
                   {
@@ -19960,7 +20154,9 @@ export const miroirFundamentalJzodSchema = {
                       "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                       "targetEntityOrderInstancesBy": "name"
                     },
-                    "editable": false
+                    "display": {
+                      "editable": false
+                    }
                   }
                 }
               },
@@ -22193,7 +22389,6 @@ export const miroirFundamentalJzodSchema = {
                 "tag": {
                   "value": {
                     "defaultLabel": "Actions Definition",
-                    "editable": true,
                     "canBeTemplate": false
                   }
                 },
@@ -22379,7 +22574,9 @@ export const miroirFundamentalJzodSchema = {
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
-                        "editable": false
+                        "display": {
+                          "editable": false
+                        }
                       }
                     }
                   },
@@ -22434,7 +22631,6 @@ export const miroirFundamentalJzodSchema = {
                     "tag": {
                       "value": {
                         "defaultLabel": "Actions Definition",
-                        "editable": true,
                         "canBeTemplate": false
                       }
                     },
@@ -43076,6 +43272,97 @@ export const miroirFundamentalJzodSchema = {
                           }
                         }
                       },
+                      "modelDiagramReportSection": {
+                        "type": "object",
+                        "tag": {
+                          "value": {
+                            "display": {
+                              "displayedAttributeValueWhenFolded": "definition.label"
+                            }
+                          }
+                        },
+                        "definition": {
+                          "type": {
+                            "type": "literal",
+                            "definition": "modelDiagramReportSection"
+                          },
+                          "definition": {
+                            "type": "object",
+                            "definition": {
+                              "label": {
+                                "type": "string",
+                                "optional": true,
+                                "tag": {
+                                  "value": {
+                                    "id": 1,
+                                    "defaultLabel": "Label"
+                                  }
+                                }
+                              },
+                              "title": {
+                                "type": "string",
+                                "optional": true,
+                                "tag": {
+                                  "value": {
+                                    "id": 2,
+                                    "defaultLabel": "Diagram Title"
+                                  }
+                                }
+                              },
+                              "direction": {
+                                "type": "enum",
+                                "optional": true,
+                                "definition": [
+                                  "TB",
+                                  "BT",
+                                  "LR",
+                                  "RL"
+                                ],
+                                "tag": {
+                                  "value": {
+                                    "id": 3,
+                                    "defaultLabel": "Diagram Direction",
+                                    "display": {
+                                      "editable": true
+                                    },
+                                    "initializeTo": {
+                                      "initializeToType": "value",
+                                      "value": "LR"
+                                    }
+                                  }
+                                }
+                              },
+                              "entityDefinitions": {
+                                "type": "union",
+                                "discriminator": "transformerType",
+                                "tag": {
+                                  "value": {
+                                    "id": 4,
+                                    "defaultLabel": "Entity Definitions",
+                                    "description": "Either an array of entity definitions or a transformer accessing the context"
+                                  }
+                                },
+                                "definition": [
+                                  {
+                                    "type": "array",
+                                    "definition": {
+                                      "type": "any"
+                                    }
+                                  },
+                                  {
+                                    "type": "schemaReference",
+                                    "definition": {
+                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                      "relativePath": "transformerForBuildPlusRuntime"
+                                    },
+                                    "context": {}
+                                  }
+                                ]
+                              }
+                            }
+                          }
+                        }
+                      },
                       "jsonReportSection": {
                         "type": "object",
                         "tag": {
@@ -43585,6 +43872,14 @@ export const miroirFundamentalJzodSchema = {
                             "definition": {
                               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                               "relativePath": "markdownReportSection"
+                            },
+                            "context": {}
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              "relativePath": "modelDiagramReportSection"
                             },
                             "context": {}
                           },
@@ -52714,6 +53009,13 @@ export const miroirFundamentalJzodSchema = {
             "type": "schemaReference",
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "mlElementTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_modelDiagramReportSection"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
               "relativePath": "mlElementTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_objectListReportSection"
             }
           },
@@ -54223,6 +54525,228 @@ export const miroirFundamentalJzodSchema = {
                                 "defaultLabel": "Fetched Data Reference"
                               }
                             }
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              "relativePath": "transformerForBuildCarryOnObject"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "mlElementTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_modelDiagramReportSection": {
+        "tag": {
+          "value": {
+            "display": {
+              "displayedAttributeValueWhenFolded": "definition.label"
+            },
+            "isTemplate": true
+          }
+        },
+        "type": "union",
+        "discriminator": "transformerType",
+        "definition": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "transformerForBuildCarryOnObject"
+            }
+          },
+          {
+            "type": "object",
+            "tag": {
+              "value": {
+                "display": {
+                  "displayedAttributeValueWhenFolded": "definition.label"
+                },
+                "isTemplate": true
+              }
+            },
+            "definition": {
+              "type": {
+                "type": "literal",
+                "definition": "modelDiagramReportSection"
+              },
+              "definition": {
+                "type": "union",
+                "discriminator": "transformerType",
+                "definition": [
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "transformerForBuildCarryOnObject"
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "definition": {
+                      "label": {
+                        "type": "union",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "id": 1,
+                            "defaultLabel": "Label",
+                            "isTemplate": true
+                          }
+                        },
+                        "discriminator": "transformerType",
+                        "definition": [
+                          {
+                            "type": "string",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "id": 1,
+                                "defaultLabel": "Label"
+                              }
+                            }
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              "relativePath": "transformerForBuildCarryOnObject"
+                            }
+                          }
+                        ]
+                      },
+                      "title": {
+                        "type": "union",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "id": 2,
+                            "defaultLabel": "Diagram Title",
+                            "isTemplate": true
+                          }
+                        },
+                        "discriminator": "transformerType",
+                        "definition": [
+                          {
+                            "type": "string",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "id": 2,
+                                "defaultLabel": "Diagram Title"
+                              }
+                            }
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              "relativePath": "transformerForBuildCarryOnObject"
+                            }
+                          }
+                        ]
+                      },
+                      "direction": {
+                        "type": "union",
+                        "optional": true,
+                        "definition": [
+                          {
+                            "type": "enum",
+                            "optional": true,
+                            "definition": [
+                              "TB",
+                              "BT",
+                              "LR",
+                              "RL"
+                            ],
+                            "tag": {
+                              "value": {
+                                "id": 3,
+                                "defaultLabel": "Diagram Direction",
+                                "display": {
+                                  "editable": true
+                                },
+                                "initializeTo": {
+                                  "initializeToType": "value",
+                                  "value": "LR"
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              "relativePath": "transformerForBuildCarryOnObject"
+                            }
+                          }
+                        ],
+                        "tag": {
+                          "value": {
+                            "id": 3,
+                            "defaultLabel": "Diagram Direction",
+                            "display": {
+                              "editable": true
+                            },
+                            "initializeTo": {
+                              "initializeToType": "value",
+                              "value": "LR"
+                            },
+                            "isTemplate": true
+                          }
+                        },
+                        "discriminator": "transformerType"
+                      },
+                      "entityDefinitions": {
+                        "type": "union",
+                        "discriminator": [
+                          [
+                            "transformerType",
+                            "transformerType"
+                          ]
+                        ],
+                        "tag": {
+                          "value": {
+                            "id": 4,
+                            "defaultLabel": "Entity Definitions",
+                            "description": "Either an array of entity definitions or a transformer accessing the context",
+                            "isTemplate": true
+                          }
+                        },
+                        "definition": [
+                          {
+                            "type": "array",
+                            "definition": {
+                              "type": "union",
+                              "discriminator": "transformerType",
+                              "definition": [
+                                {
+                                  "type": "any"
+                                },
+                                {
+                                  "type": "schemaReference",
+                                  "definition": {
+                                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                    "relativePath": "transformerForBuildCarryOnObject"
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              "relativePath": "transformerForBuildPlusRuntime"
+                            },
+                            "context": {}
                           },
                           {
                             "type": "schemaReference",
@@ -61137,7 +61661,9 @@ export const miroirFundamentalJzodSchema = {
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
-                        "editable": false
+                        "display": {
+                          "editable": false
+                        }
                       }
                     }
                   },
@@ -61192,7 +61718,6 @@ export const miroirFundamentalJzodSchema = {
                     "tag": {
                       "value": {
                         "defaultLabel": "Actions Definition",
-                        "editable": true,
                         "canBeTemplate": false,
                         "isTemplate": true
                       }
@@ -64994,7 +65519,6 @@ export const miroirFundamentalJzodSchema = {
                 "tag": {
                   "value": {
                     "defaultLabel": "Actions Definition",
-                    "editable": true,
                     "canBeTemplate": false,
                     "isTemplate": true
                   }
@@ -66102,6 +66626,99 @@ export const miroirFundamentalJzodSchema = {
                   }
                 }
               },
+              "modelDiagramReportSection": {
+                "type": "object",
+                "tag": {
+                  "value": {
+                    "display": {
+                      "displayedAttributeValueWhenFolded": "definition.label"
+                    },
+                    "isTemplate": true
+                  }
+                },
+                "definition": {
+                  "type": {
+                    "type": "literal",
+                    "definition": "modelDiagramReportSection"
+                  },
+                  "definition": {
+                    "type": "object",
+                    "definition": {
+                      "label": {
+                        "type": "string",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "id": 1,
+                            "defaultLabel": "Label"
+                          }
+                        }
+                      },
+                      "title": {
+                        "type": "string",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "id": 2,
+                            "defaultLabel": "Diagram Title"
+                          }
+                        }
+                      },
+                      "direction": {
+                        "type": "enum",
+                        "optional": true,
+                        "definition": [
+                          "TB",
+                          "BT",
+                          "LR",
+                          "RL"
+                        ],
+                        "tag": {
+                          "value": {
+                            "id": 3,
+                            "defaultLabel": "Diagram Direction",
+                            "display": {
+                              "editable": true
+                            },
+                            "initializeTo": {
+                              "initializeToType": "value",
+                              "value": "LR"
+                            }
+                          }
+                        }
+                      },
+                      "entityDefinitions": {
+                        "type": "union",
+                        "discriminator": "transformerType",
+                        "tag": {
+                          "value": {
+                            "id": 4,
+                            "defaultLabel": "Entity Definitions",
+                            "description": "Either an array of entity definitions or a transformer accessing the context",
+                            "isTemplate": true
+                          }
+                        },
+                        "definition": [
+                          {
+                            "type": "array",
+                            "definition": {
+                              "type": "any"
+                            }
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              "relativePath": "transformerForBuildPlusRuntime"
+                            },
+                            "context": {}
+                          }
+                        ]
+                      }
+                    }
+                  }
+                }
+              },
               "jsonReportSection": {
                 "type": "object",
                 "tag": {
@@ -66608,6 +67225,13 @@ export const miroirFundamentalJzodSchema = {
                     "definition": {
                       "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                       "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_markdownReportSection"
+                    }
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_modelDiagramReportSection"
                     }
                   },
                   {
@@ -70389,6 +71013,13 @@ export const miroirFundamentalJzodSchema = {
             "type": "schemaReference",
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_modelDiagramReportSection"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
               "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_objectListReportSection"
             }
           },
@@ -71185,6 +71816,13 @@ export const miroirFundamentalJzodSchema = {
         "definition": {
           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
           "relativePath": "markdownReportSection"
+        }
+      },
+      "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_modelDiagramReportSection": {
+        "type": "schemaReference",
+        "definition": {
+          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          "relativePath": "modelDiagramReportSection"
         }
       },
       "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_objectListReportSection": {
@@ -75715,7 +76353,9 @@ export const miroirFundamentalJzodSchema = {
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
-                        "editable": false
+                        "display": {
+                          "editable": false
+                        }
                       }
                     }
                   },
@@ -75770,7 +76410,6 @@ export const miroirFundamentalJzodSchema = {
                     "tag": {
                       "value": {
                         "defaultLabel": "Actions Definition",
-                        "editable": true,
                         "canBeTemplate": false,
                         "isTemplate": true
                       }
@@ -79572,7 +80211,6 @@ export const miroirFundamentalJzodSchema = {
                 "tag": {
                   "value": {
                     "defaultLabel": "Actions Definition",
-                    "editable": true,
                     "canBeTemplate": false,
                     "isTemplate": true
                   }
@@ -80680,6 +81318,99 @@ export const miroirFundamentalJzodSchema = {
                   }
                 }
               },
+              "modelDiagramReportSection": {
+                "type": "object",
+                "tag": {
+                  "value": {
+                    "display": {
+                      "displayedAttributeValueWhenFolded": "definition.label"
+                    },
+                    "isTemplate": true
+                  }
+                },
+                "definition": {
+                  "type": {
+                    "type": "literal",
+                    "definition": "modelDiagramReportSection"
+                  },
+                  "definition": {
+                    "type": "object",
+                    "definition": {
+                      "label": {
+                        "type": "string",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "id": 1,
+                            "defaultLabel": "Label"
+                          }
+                        }
+                      },
+                      "title": {
+                        "type": "string",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "id": 2,
+                            "defaultLabel": "Diagram Title"
+                          }
+                        }
+                      },
+                      "direction": {
+                        "type": "enum",
+                        "optional": true,
+                        "definition": [
+                          "TB",
+                          "BT",
+                          "LR",
+                          "RL"
+                        ],
+                        "tag": {
+                          "value": {
+                            "id": 3,
+                            "defaultLabel": "Diagram Direction",
+                            "display": {
+                              "editable": true
+                            },
+                            "initializeTo": {
+                              "initializeToType": "value",
+                              "value": "LR"
+                            }
+                          }
+                        }
+                      },
+                      "entityDefinitions": {
+                        "type": "union",
+                        "discriminator": "transformerType",
+                        "tag": {
+                          "value": {
+                            "id": 4,
+                            "defaultLabel": "Entity Definitions",
+                            "description": "Either an array of entity definitions or a transformer accessing the context",
+                            "isTemplate": true
+                          }
+                        },
+                        "definition": [
+                          {
+                            "type": "array",
+                            "definition": {
+                              "type": "any"
+                            }
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              "relativePath": "transformerForBuildPlusRuntime"
+                            },
+                            "context": {}
+                          }
+                        ]
+                      }
+                    }
+                  }
+                }
+              },
               "jsonReportSection": {
                 "type": "object",
                 "tag": {
@@ -81186,6 +81917,13 @@ export const miroirFundamentalJzodSchema = {
                     "definition": {
                       "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                       "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_markdownReportSection"
+                    }
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_modelDiagramReportSection"
                     }
                   },
                   {
@@ -84967,6 +85705,13 @@ export const miroirFundamentalJzodSchema = {
             "type": "schemaReference",
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_modelDiagramReportSection"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
               "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_objectListReportSection"
             }
           },
@@ -85763,6 +86508,13 @@ export const miroirFundamentalJzodSchema = {
         "definition": {
           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
           "relativePath": "markdownReportSection"
+        }
+      },
+      "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_modelDiagramReportSection": {
+        "type": "schemaReference",
+        "definition": {
+          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          "relativePath": "modelDiagramReportSection"
         }
       },
       "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_objectListReportSection": {
@@ -88138,7 +88890,9 @@ export const miroirFundamentalJzodSchema = {
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
-                        "editable": false
+                        "display": {
+                          "editable": false
+                        }
                       }
                     }
                   },
@@ -88193,7 +88947,6 @@ export const miroirFundamentalJzodSchema = {
                     "tag": {
                       "value": {
                         "defaultLabel": "Actions Definition",
-                        "editable": true,
                         "canBeTemplate": false,
                         "isTemplate": true
                       }
@@ -88346,7 +89099,9 @@ export const miroirFundamentalJzodSchema = {
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
-                        "editable": false
+                        "display": {
+                          "editable": false
+                        }
                       }
                     }
                   },
@@ -88401,7 +89156,6 @@ export const miroirFundamentalJzodSchema = {
                     "tag": {
                       "value": {
                         "defaultLabel": "Actions Definition",
-                        "editable": true,
                         "canBeTemplate": false,
                         "isTemplate": true
                       }
