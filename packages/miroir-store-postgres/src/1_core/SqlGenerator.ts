@@ -4571,7 +4571,7 @@ export function sqlStringForQuery(
   const ctes: { name: string; sql: string }[] = [];
   if (extractorRawQueries.length > 0) {
     for (const q of extractorRawQueries) {
-      ctes.push({ name: q[0], sql: q[1] as string });
+      ctes.push({ name: q[0] as string, sql: q[1] as string });
     }
   }
   if (combinerRawQueries.length > 0) {
