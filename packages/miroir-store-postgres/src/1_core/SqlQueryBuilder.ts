@@ -178,19 +178,20 @@ export function sqlQueryHereTableDefinition(
       break;
     }
     case "hereTable": {
+      const lateralPrefix = q.lateral ? "LATERAL " : "";
       if (typeof q.definition == "string") {
-        result = q.definition + (q.as ? " AS " + sqlNameQuote(q.as) : "");
+        result = lateralPrefix + q.definition + (q.as ? " AS " + sqlNameQuote(q.as) : "");
       } else {
         switch (q.definition.queryPart) {
           case "query": {
-            result = '(' + sqlQuery(indentLevel??0 + 1, q.definition) + ')' + (q.as ? " AS " + sqlNameQuote(q.as) : "");
+            result = lateralPrefix + '(' + sqlQuery(indentLevel??0 + 1, q.definition) + ')' + (q.as ? " AS " + sqlNameQuote(q.as) : "");
             break;
           }
           case "bypass":
           case "tableLiteral":
           case "tableColumnAccess":
           case "call": {
-            result = `${indent(indentLevel)}${sqlQueryHereTableExpression(indentLevel, q.definition)}${
+            result = `${indent(indentLevel)}${lateralPrefix}${sqlQueryHereTableExpression(indentLevel, q.definition)}${
               q.as ? " AS " + sqlNameQuote(q.as) : ""
             }`;
             break;
@@ -234,7 +235,13 @@ export function sqlQuery(indentLevel: number | undefined, q: SqlQuerySelectSchem
               .join(", ")));
 
   log.info("sqlQuery fromParts", fromParts);
-  return `SELECT ${selectParts}${flushAndIndentOrSpace(indentLevel)}${fromParts}${q.where ? `${flushAndIndentOrSpace(indentLevel)}WHERE ${q.where}` : ""}${q.groupBy ? `${flushAndIndentOrSpace(indentLevel)}GROUP BY ${q.groupBy}` : ""}`;
+  const distinctOnClause = q.distinctOn ? `DISTINCT ON (${q.distinctOn}) ` : "";
+  const wherePart = q.where ? `${flushAndIndentOrSpace(indentLevel)}WHERE ${q.where}` : "";
+  const groupByPart = q.groupBy ? `${flushAndIndentOrSpace(indentLevel)}GROUP BY ${q.groupBy}` : "";
+  const havingPart = q.having ? `${flushAndIndentOrSpace(indentLevel)}HAVING ${q.having}` : "";
+  const orderByPart = q.orderBy ? `${flushAndIndentOrSpace(indentLevel)}ORDER BY ${q.orderBy}` : "";
+  const limitPart = q.limit !== undefined ? `${flushAndIndentOrSpace(indentLevel)}LIMIT ${q.limit}${q.offset !== undefined ? ` OFFSET ${q.offset}` : ""}` : "";
+  return `SELECT ${distinctOnClause}${selectParts}${flushAndIndentOrSpace(indentLevel)}${fromParts}${wherePart}${groupByPart}${havingPart}${orderByPart}${limitPart}`;
 }
 
 // #################################################################################################
@@ -608,6 +615,10 @@ export const sqlQuerySelectSchema: JzodReference = {
               type: "literal",
               definition: "hereTable",
             },
+            lateral: {
+              type: "boolean",
+              optional: true,
+            },
             definition: {
               type: "union",
               definition: [
@@ -698,6 +709,22 @@ export const sqlQuerySelectSchema: JzodReference = {
             },
             groupBy: {
               type: "string",
+              optional: true,
+            },
+            having: {
+              type: "string",
+              optional: true,
+            },
+            orderBy: {
+              type: "string",
+              optional: true,
+            },
+            limit: {
+              type: "number",
+              optional: true,
+            },
+            offset: {
+              type: "number",
               optional: true,
             },
           },

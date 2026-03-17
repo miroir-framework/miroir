@@ -184,6 +184,36 @@ All migrated to use `sqlQuery` / `sqlSelectExpression` builder:
 | `ExtractorTemplatePersistenceStoreRunner.integ.test` | emulatedServer-sql | 6/6 passed |
 | `PersistenceStoreController.integ.test` | emulatedServer-sql | 11/11 passed |
 
-### Phase 3 — Remaining (NOT STARTED)
+### Plan (b) — Builder extensions for Phase 3 (DONE)
 
-Items 14–22 from Plan (a) are deferred. They require builder extensions (DISTINCT ON, LIMIT/OFFSET, ORDER BY, LATERAL) or involve higher complexity transformations.
+- **DISTINCT ON**: Added `distinctOn` field to `RootSqlQuery` schema, types, zod, and `sqlQuery` builder function.
+- **ORDER BY**: Added `orderBy` (string) field to `RootSqlQuery`.
+- **LIMIT / OFFSET**: Added `limit` (number) and `offset` (number) fields to `RootSqlQuery`.
+- **HAVING**: Added `having` (string) field to `RootSqlQuery`.
+- **LATERAL**: Added `lateral` (boolean) field to `SqlQueryHereTableDefinitionSchema` hereTable variant, with `LATERAL` prefix in `sqlQueryHereTableDefinition`.
+- **Jzod schema**: Updated `SqlQueryBuilder.ts` Jzod schema to include all new fields.
+- **TDD tests**: 16+ new unit tests for all extensions (ORDER BY, LIMIT/OFFSET, DISTINCT ON, LATERAL, HAVING, sqlWith, combined clauses). All 59 SqlQueryBuilder unit tests pass.
+
+### Plan (a) Phase 3 — Higher complexity migrations (DONE, 9 functions)
+
+14. `sqlStringForObjectFullTemplateTransformer` — `sqlQuery` with `bypass` for `jsonb_build_object`, `tableLiteral` from, `orderBy`
+15. `sqlStringForObjectAlterTransformer` — `sqlQuery` with `bypass` for ROW_NUMBER/merge expression, `where` clause
+16. `sqlStringForDataflowObjectTransformer` — `sqlQuery` for both target and non-target branches, `sqlNameQuote` for consistency
+17. `sqlStringForMapperListToListTransformer` — `sqlQuery` for nested 3-level subqueries and final SELECT in `extraWith`
+18. `sqlStringForCountTransformer` — `sqlQuery` with `groupBy`, `having`, `orderBy`, `LATERAL` hereTable entries; refactored `buildHavingSql` to return `havingExpression`
+19. `sqlStringForUniqueTransformer` — `sqlQuery` with `distinctOn`, `orderBy`, `LATERAL`, nested queries
+20. `sqlStringForListPickElementTransformer` — `sqlQuery` with `orderBy`, `limit`, `offset`, `LATERAL`, `bypass` for complex aggregates
+21. `sqlStringForQuery` — Replaced `queryParts[]` + `tokenSeparatorForWithRtn` assembly with `sqlWith(ctes, finalSelect)`; removed `tokenSeparatorForWithRtn` import
+22. `sqlStringForConstantAsExtractorTransformer` — `sqlQuery` with `bypass` for `jsonb_to_recordset`, `call` for `jsonb_array_elements`, `defineColumn` for scalar
+
+**Tests**: 177 passed, 2 failed (same as baseline) ✓
+
+### Final Regression Tests — Phase 3 (ALL PASSED)
+
+| Test Suite | Config | Result |
+|---|---|---|
+| `transformers.integ.test` | (in-memory) | 177 passed, 2 failed (baseline) |
+| `ExtractorPersistenceStoreRunner.integ.test` | emulatedServer-sql | 12/12 passed |
+| `ExtractorTemplatePersistenceStoreRunner.integ.test` | emulatedServer-sql | 6/6 passed |
+| `PersistenceStoreController.integ.test` | emulatedServer-sql | 11/11 passed |
+| `SqlQueryBuilder.test.ts` (unit) | vitest | 59/59 passed |

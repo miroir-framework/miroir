@@ -13,7 +13,8 @@ import {
   sqlQueryHereTableDefinition,
   sqlSelectColumns,
   sqlQueryHereTableExpression,
-  sqlQueryTableLiteral
+  sqlQueryTableLiteral,
+  sqlWith,
 } from "../src/1_core/SqlQueryBuilder";
 
 describe("SqlQueryBuilder", () => {
@@ -463,7 +464,7 @@ FROM z) AS "alias"`);
                 {
                   queryPart: "tableColumnAccess",
                   table: { queryPart: "tableLiteral", name: applyToLabel},
-                  col: (applyTo as any).columnNameContainingJsonValue,
+                  col: applyTo.columnNameContainingJsonValue,
                 },
               ],
             },
@@ -489,6 +490,270 @@ FROM z) AS "alias"`);
         `SELECT jsonb_object_agg("listReducerToSpreadObject_applyTo_pairs"."key", "listReducerToSpreadObject_applyTo_pairs"."value") AS "listReducerToSpreadObject"
 FROM "listReducerToSpreadObject_applyTo", jsonb_array_elements("listReducerToSpreadObject_applyTo"."objectList") AS "listReducerToSpreadObject_applyTo_elements", jsonb_each("listReducerToSpreadObject_applyTo_elements") AS "listReducerToSpreadObject_applyTo_pairs"`
       );
+    });
+  });
+
+  // #################################################################################################
+  describe("sqlQuery with ORDER BY", () => {
+    it("builds query with ORDER BY clause", () => {
+      expect(
+        sqlQuery(0, {
+          queryPart: "query",
+          select: "*",
+          from: [{ queryPart: "tableLiteral", name: "users" }],
+          orderBy: '"name" ASC',
+        })
+      ).toBe(`SELECT *
+FROM "users"
+ORDER BY "name" ASC`);
+    });
+
+    it("builds query with WHERE and ORDER BY", () => {
+      expect(
+        sqlQuery(0, {
+          queryPart: "query",
+          from: [{ queryPart: "tableLiteral", name: "users" }],
+          where: '"active" = true',
+          orderBy: '"name"',
+        })
+      ).toBe(`SELECT *
+FROM "users"
+WHERE "active" = true
+ORDER BY "name"`);
+    });
+
+    it("builds query with GROUP BY and ORDER BY", () => {
+      expect(
+        sqlQuery(0, {
+          queryPart: "query",
+          select: [{ queryPart: "defineColumn", value: "COUNT(*)", as: "cnt" }],
+          from: [{ queryPart: "tableLiteral", name: "orders" }],
+          groupBy: '"status"',
+          orderBy: '"status"',
+        })
+      ).toBe(`SELECT COUNT(*) AS "cnt"
+FROM "orders"
+GROUP BY "status"
+ORDER BY "status"`);
+    });
+  });
+
+  // #################################################################################################
+  describe("sqlQuery with LIMIT and OFFSET", () => {
+    it("builds query with LIMIT only", () => {
+      expect(
+        sqlQuery(0, {
+          queryPart: "query",
+          from: [{ queryPart: "tableLiteral", name: "users" }],
+          limit: 10,
+        })
+      ).toBe(`SELECT *
+FROM "users"
+LIMIT 10`);
+    });
+
+    it("builds query with LIMIT and OFFSET", () => {
+      expect(
+        sqlQuery(0, {
+          queryPart: "query",
+          from: [{ queryPart: "tableLiteral", name: "users" }],
+          limit: 1,
+          offset: 5,
+        })
+      ).toBe(`SELECT *
+FROM "users"
+LIMIT 1 OFFSET 5`);
+    });
+
+    it("builds query with ORDER BY, LIMIT and OFFSET", () => {
+      expect(
+        sqlQuery(0, {
+          queryPart: "query",
+          from: [{ queryPart: "tableLiteral", name: "users" }],
+          orderBy: '"name"',
+          limit: 1,
+          offset: 3,
+        })
+      ).toBe(`SELECT *
+FROM "users"
+ORDER BY "name"
+LIMIT 1 OFFSET 3`);
+    });
+  });
+
+  // #################################################################################################
+  describe("sqlQuery with DISTINCT ON", () => {
+    it("builds query with DISTINCT ON clause", () => {
+      expect(
+        sqlQuery(0, {
+          queryPart: "query",
+          distinctOn: '"name"',
+          from: [{ queryPart: "tableLiteral", name: "users" }],
+          orderBy: '"name"',
+        })
+      ).toBe(`SELECT DISTINCT ON ("name") *
+FROM "users"
+ORDER BY "name"`);
+    });
+
+    it("builds query with DISTINCT ON and specific columns", () => {
+      expect(
+        sqlQuery(0, {
+          queryPart: "query",
+          distinctOn: '"department"',
+          select: [{ queryPart: "defineColumn", value: '"name"' }],
+          from: [{ queryPart: "tableLiteral", name: "employees" }],
+          orderBy: '"department", "salary" DESC',
+        })
+      ).toBe(`SELECT DISTINCT ON ("department") "name"
+FROM "employees"
+ORDER BY "department", "salary" DESC`);
+    });
+  });
+
+  // #################################################################################################
+  describe("sqlQuery with LATERAL from", () => {
+    it("builds query with LATERAL subquery in FROM", () => {
+      expect(
+        sqlQuery(0, {
+          queryPart: "query",
+          from: [
+            { queryPart: "tableLiteral", name: "orders" },
+            {
+              queryPart: "hereTable",
+              lateral: true,
+              definition: {
+                queryPart: "call",
+                fct: "jsonb_array_elements",
+                params: [{ queryPart: "tableColumnAccess", table: "orders", col: "items" }],
+              },
+              as: "item",
+            },
+          ],
+        })
+      ).toBe(`SELECT *
+FROM "orders", LATERAL jsonb_array_elements("orders"."items") AS "item"`);
+    });
+
+    it("builds query with LATERAL subquery without AS", () => {
+      expect(
+        sqlQuery(undefined, {
+          queryPart: "query",
+          from: [
+            { queryPart: "tableLiteral", name: "t" },
+            {
+              queryPart: "hereTable",
+              lateral: true,
+              definition: { queryPart: "bypass", value: 'jsonb_each("t"."data")' },
+              as: "kv",
+            },
+          ],
+        })
+      ).toBe(`SELECT * FROM "t", LATERAL jsonb_each("t"."data") AS "kv"`);
+    });
+  });
+
+  // #################################################################################################
+  describe("sqlQuery with HAVING", () => {
+    it("builds query with GROUP BY and HAVING", () => {
+      expect(
+        sqlQuery(0, {
+          queryPart: "query",
+          select: [{ queryPart: "defineColumn", value: "COUNT(*)", as: "cnt" }],
+          from: [{ queryPart: "tableLiteral", name: "orders" }],
+          groupBy: '"status"',
+          having: "COUNT(*) > 5",
+        })
+      ).toBe(`SELECT COUNT(*) AS "cnt"
+FROM "orders"
+GROUP BY "status"
+HAVING COUNT(*) > 5`);
+    });
+
+    it("builds query with GROUP BY, HAVING, and ORDER BY", () => {
+      expect(
+        sqlQuery(0, {
+          queryPart: "query",
+          select: [
+            { queryPart: "defineColumn", value: '"department"' },
+            { queryPart: "defineColumn", value: "AVG(salary)", as: "avg_salary" },
+          ],
+          from: [{ queryPart: "tableLiteral", name: "employees" }],
+          groupBy: '"department"',
+          having: "AVG(salary) > 50000",
+          orderBy: '"department"',
+        })
+      ).toBe(`SELECT "department", AVG(salary) AS "avg_salary"
+FROM "employees"
+GROUP BY "department"
+HAVING AVG(salary) > 50000
+ORDER BY "department"`);
+    });
+  });
+
+  // #################################################################################################
+  describe("sqlWith", () => {
+    it("returns finalSelect when no CTEs", () => {
+      expect(sqlWith([], "SELECT * FROM t")).toBe("SELECT * FROM t");
+    });
+
+    it("builds WITH clause with single CTE", () => {
+      expect(
+        sqlWith([{ name: "cte1", sql: "SELECT 1 AS x" }], 'SELECT * FROM "cte1"', 0)
+      ).toBe(`WITH
+"cte1" AS (
+  SELECT 1 AS x
+)
+SELECT * FROM "cte1"`);
+    });
+
+    it("builds WITH clause with multiple CTEs", () => {
+      expect(
+        sqlWith(
+          [
+            { name: "a", sql: "SELECT 1" },
+            { name: "b", sql: "SELECT 2" },
+          ],
+          'SELECT * FROM "b"',
+          0
+        )
+      ).toBe(`WITH
+"a" AS (
+  SELECT 1
+),
+"b" AS (
+  SELECT 2
+)
+SELECT * FROM "b"`);
+    });
+  });
+
+  // #################################################################################################
+  describe("sqlQuery combined clauses (ORDER BY + GROUP BY + HAVING + LIMIT + OFFSET + DISTINCT ON)", () => {
+    it("builds a full query with all clauses", () => {
+      expect(
+        sqlQuery(0, {
+          queryPart: "query",
+          distinctOn: '"category"',
+          select: [
+            { queryPart: "defineColumn", value: '"category"' },
+            { queryPart: "defineColumn", value: "SUM(amount)", as: "total" },
+          ],
+          from: [{ queryPart: "tableLiteral", name: "sales" }],
+          where: '"year" = 2024',
+          groupBy: '"category"',
+          having: "SUM(amount) > 100",
+          orderBy: '"category"',
+          limit: 10,
+          offset: 0,
+        })
+      ).toBe(`SELECT DISTINCT ON ("category") "category", SUM(amount) AS "total"
+FROM "sales"
+WHERE "year" = 2024
+GROUP BY "category"
+HAVING SUM(amount) > 100
+ORDER BY "category"
+LIMIT 10 OFFSET 0`);
     });
   });
 });

@@ -51,15 +51,21 @@ export type SqlQueryHereTableDefinitionSchema = string | {
     value: string;
 } | SqlQueryTableLiteralSchema | {
     queryPart: "hereTable";
+    lateral?: boolean | undefined;
     definition: SqlQueryHereTableExpressionSchema | RootSqlQuery;
     as?: string | undefined;
 };
 export type RootSqlQuery = string | {
     queryPart: "query";
+    distinctOn?: string | undefined;
     select?: (string | SqlQueryDefineColumnSchema[]) | undefined;
     from?: (string | SqlQueryHereTableDefinitionSchema[]) | undefined;
     where?: string | undefined;
     groupBy?: string | undefined;
+    having?: string | undefined;
+    orderBy?: string | undefined;
+    limit?: number | undefined;
+    offset?: number | undefined;
 };
 export type SqlQuerySelectSchema = RootSqlQuery;
 
@@ -71,7 +77,7 @@ export const sqlQueryDefineColumnSchema: z.ZodType<SqlQueryDefineColumnSchema> =
 export const sqlWhereItemSchema: z.ZodType<SqlWhereItemSchema> = z.object({what:z.lazy(() =>sqlQuerySelectSchema), as:z.string()}).strict();
 export const sqlQueryFromSchema: z.ZodType<SqlQueryFromSchema> = z.union([z.string(), z.array(z.lazy(() =>sqlQueryTableLiteralSchema))]);
 export const sqlQueryHereTableExpressionSchema: z.ZodType<SqlQueryHereTableExpressionSchema> = z.union([z.string(), z.object({queryPart:z.literal("bypass"), value:z.string()}).strict(), z.lazy(() =>sqlQueryTableLiteralSchema), z.lazy(() =>sqlQueryTableColumnAccessSchema), z.object({queryPart:z.literal("call"), fct:z.string(), params:z.array(z.lazy(() =>sqlQueryHereTableExpressionSchema))}).strict()]);
-export const sqlQueryHereTableDefinitionSchema: z.ZodType<SqlQueryHereTableDefinitionSchema> = z.union([z.string(), z.object({queryPart:z.literal("bypass"), value:z.string()}).strict(), z.lazy(() =>sqlQueryTableLiteralSchema), z.object({queryPart:z.literal("hereTable"), definition:z.union([z.lazy(() =>sqlQueryHereTableExpressionSchema), z.lazy(() =>rootSqlQuery)]), as:z.string().optional()}).strict()]);
-export const rootSqlQuery: z.ZodType<RootSqlQuery> = z.union([z.string(), z.object({queryPart:z.literal("query"), select:z.union([z.string(), z.array(z.lazy(() =>sqlQueryDefineColumnSchema))]).optional(), from:z.union([z.string(), z.array(z.lazy(() =>sqlQueryHereTableDefinitionSchema))]).optional(), where:z.string().optional(), groupBy:z.string().optional()}).strict()]);
+export const sqlQueryHereTableDefinitionSchema: z.ZodType<SqlQueryHereTableDefinitionSchema> = z.union([z.string(), z.object({queryPart:z.literal("bypass"), value:z.string()}).strict(), z.lazy(() =>sqlQueryTableLiteralSchema), z.object({queryPart:z.literal("hereTable"), lateral:z.boolean().optional(), definition:z.union([z.lazy(() =>sqlQueryHereTableExpressionSchema), z.lazy(() =>rootSqlQuery)]), as:z.string().optional()}).strict()]);
+export const rootSqlQuery: z.ZodType<RootSqlQuery> = z.union([z.string(), z.object({queryPart:z.literal("query"), distinctOn:z.string().optional(), select:z.union([z.string(), z.array(z.lazy(() =>sqlQueryDefineColumnSchema))]).optional(), from:z.union([z.string(), z.array(z.lazy(() =>sqlQueryHereTableDefinitionSchema))]).optional(), where:z.string().optional(), groupBy:z.string().optional(), having:z.string().optional(), orderBy:z.string().optional(), limit:z.number().optional(), offset:z.number().optional()}).strict()]);
 export const sqlQuerySelectSchema = z.lazy(() =>rootSqlQuery);
 
