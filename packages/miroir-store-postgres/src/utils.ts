@@ -124,7 +124,10 @@ export function fromMiroirEntityDefinitionToSequelizeEntityDefinition(
 export function getOptionalNonNullableAttributes(entityDefinition: EntityDefinition): string[] {
   const mlSchema: JzodObject = entityDefinition.mlSchema ? entityDefinition.mlSchema : { type: "object", definition: {} };
   return Object.entries(mlSchema.definition)
-    .filter(([, attrDef]) => (attrDef as any)["optional"] === true && !(attrDef as any)["nullable"])
+    .filter(([, attrDef]) => {
+      const attr = attrDef as JzodElement & { optional?: boolean; nullable?: boolean };
+      return attr.optional === true && !attr.nullable;
+    })
     .map(([attrName]) => attrName);
 }
 

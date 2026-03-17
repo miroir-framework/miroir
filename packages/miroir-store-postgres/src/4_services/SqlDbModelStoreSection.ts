@@ -39,8 +39,8 @@ export class SqlDbModelStoreSection
       connectionString,
       schema,
       "SqlDbModelStoreSection " + sqlDbStoreName + " section model",
-      sqlDbDataStore,
       forceOptionalToUndefined,
+      sqlDbDataStore,
     );
   }
 
