@@ -32,6 +32,7 @@ import {
   entityRunner,
   type Runner,
   type StoredMiroirTheme,
+  type Entity,
 } from "miroir-core";
 import {
   selectCurrentReduxDeploymentsStateFromReduxState,
@@ -450,7 +451,7 @@ export const selectModelForDeploymentFromReduxState: () => (
           ? Object.values(applicationVersions)
           : []) as ApplicationVersion[],
         applicationVersionCrossEntityDefinition: [],
-        entities: (entities ? Object.values(entities) : []) as MetaEntity[],
+        entities: (entities ? Object.values(entities) : []) as Entity[],
         entityDefinitions: (entityDefinitions ? Object.values(entityDefinitions) : []) as EntityDefinition[],
         endpoints: (endpoints ? Object.values(endpoints) : []) as EndpointDefinition[],
         jzodSchemas: (jzodSchemas ? Object.values(jzodSchemas) : []) as MlSchema[],

@@ -2,11 +2,12 @@ import {
   CompositeActionSequence,
   EntityDefinition,
   EntityInstance,
-  MetaEntity,
+  Entity,
   MiroirConfigClient,
   Uuid,
   type ApplicationEntitiesAndInstances
 } from "miroir-core";
+import { adminSelfApplication, entityDeployment } from "miroir-test-app_deployment-admin";
 import {
   entityAuthor,
   entityDefinitionAuthor,
@@ -30,12 +31,12 @@ import {
 
 export const libraryEntitesAndInstancesWithoutBook3: ApplicationEntitiesAndInstances  = [
   {
-    entity: entityAuthor as MetaEntity,
+    entity: entityAuthor as Entity,
     entityDefinition: entityDefinitionAuthor as EntityDefinition,
     instances: [author1, author2, author3 as EntityInstance],
   },
   {
-    entity: entityBook as MetaEntity,
+    entity: entityBook as Entity,
     entityDefinition: entityDefinitionBook as EntityDefinition,
     instances: [
       book1 as EntityInstance,
@@ -47,61 +48,9 @@ export const libraryEntitesAndInstancesWithoutBook3: ApplicationEntitiesAndInsta
     ],
   },
   {
-    entity: entityPublisher as MetaEntity,
+    entity: entityPublisher as Entity,
     entityDefinition: entityDefinitionPublisher as EntityDefinition,
     instances: [publisher1 as EntityInstance, publisher2 as EntityInstance, publisher3 as EntityInstance],
   },
 ];
 
-
-export function testOnLibrary_resetLibraryDeployment(
-  application: Uuid = selfApplicationDeploymentLibrary.uuid,
-): CompositeActionSequence {
-  return {
-    actionType: "compositeActionSequence",
-    actionLabel: "afterEach",    endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
-    payload: {
-      application: "NOT_USED_HERE",
-      definition: [
-        {
-          actionType: "resetModel",
-          actionLabel: "resetLibraryStore",          endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-          payload: {
-            application,
-          },
-        },
-      ],
-    },
-  };
-}
-export function testOnLibrary_deleteLibraryDeployment(
-  miroirConfig: MiroirConfigClient,
-  application: Uuid,
-  deploymentUuid: Uuid,
-): CompositeActionSequence {
-  console.log(
-    "testOnLibrary_deleteLibraryDeployment",
-    deploymentUuid,
-    JSON.stringify(miroirConfig, null, 2),
-  );
-  return {
-    actionType: "compositeActionSequence",
-    actionLabel: "deleteLibraryDeployment",    endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
-    payload: {
-      application: "NOT_USED_HERE",
-      definition: [
-        {
-          actionType: "storeManagementAction_deleteStore",
-          actionLabel: "deleteLibraryStore",          endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
-          payload: {
-            application,
-            deploymentUuid,
-            configuration: miroirConfig.client.emulateServer
-              ? miroirConfig.client.deploymentStorageConfig[deploymentUuid]
-              : miroirConfig.client.serverConfig.storeSectionConfiguration[deploymentUuid],
-          }
-        },
-      ],
-    },
-  };
-}

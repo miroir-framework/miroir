@@ -1,12 +1,11 @@
 import { describe, expect } from "vitest";
 
 import { fetch as crossFetch } from "cross-fetch";
-// import process from "process";
+import process from "process";
 
 import {
   ConfigurationService,
-  // configurationService,
-  // defaultLibraryModelEnvironment,
+  createDeploymentCompositeAction,
   defaultMiroirMetaModel,
   displayTestSuiteResultsDetails,
   DomainControllerInterface,
@@ -16,12 +15,9 @@ import {
   entityEntityDefinition,
   EntityInstance,
   JzodElement,
-  LocalCacheInterface,
   LoggerInterface,
   LoggerOptions,
-  MetaEntity,
   MiroirActivityTracker,
-  MiroirContextInterface,
   miroirCoreStartup,
   MiroirEventService,
   miroirFundamentalJzodSchema,
@@ -30,13 +26,15 @@ import {
   resetAndInitApplicationDeployment,
   selfApplicationDeploymentMiroir,
   StoreUnitConfiguration,
-  TestCompositeActionParams
+  TestCompositeActionParams,
+  testUtils_deleteApplicationDeployment,
+  testUtils_resetApplicationDeployment
 } from "miroir-core";
 
 
 import {
   runTestOrTestSuite,
-  setupMiroirTest
+  setupMiroirTestAndCreateMiroirDeployment,
 } from "../../src/miroir-fwk/4-tests/tests-utils.js";
 
 import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
@@ -46,12 +44,6 @@ import { miroirPostgresStoreSectionStartup } from "miroir-store-postgres";
 import { miroirAppStartup } from "../../src/startup.js";
 
 
-// import { packageName } from "miroir-core/src/constants.js";
-import {
-  testOnLibrary_deleteLibraryDeployment,
-  testOnLibrary_resetLibraryDeployment,
-} from "../../src/miroir-fwk/4-tests/tests-utils-testOnLibrary.js";
-// import { loglevelnext } from '../../src/loglevelnextImporter.js';
 import { loglevelnext } from "../../src/loglevelnextImporter.js";
 import { loadTestConfigFiles } from "../utils/fileTools.js";
 
@@ -63,8 +55,6 @@ import type {
   MlSchema,
 } from "miroir-core";
 import {
-  createDeploymentCompositeAction,
-  defaultMiroirModelEnvironment,
   defaultSelfApplicationDeploymentMap,
   resetAndinitializeDeploymentCompositeAction,
   selfApplicationMiroir,
@@ -88,11 +78,11 @@ import { packageName } from "../../src/constants.js";
 import { cleanLevel } from "./constants.js";
 // import { entityBook } from "miroir-core";
 
-const env: any = (import.meta as any).env;
+const env: any = process.env;
 console.log("@@@@@@@@@@@@@@@@@@ env", env);
 
-const myConsoleLog = (...args: any[]) => console.log(fileName, ...args);
 const fileName = "DomainController.integ.Data.CRUD.test";
+const myConsoleLog = (...args: any[]) => console.log(fileName, ...args);
 myConsoleLog(fileName, "received env", JSON.stringify(env, null, 2));
 
 let miroirConfig: any;
@@ -238,8 +228,6 @@ const testDeployment: Deployment = {
 //   deployment_Library_DO_NO_USE as any;
 
 let domainController: DomainControllerInterface;
-let localCache: LocalCacheInterface;
-let miroirContext: MiroirContextInterface;
 let persistenceStoreControllerManager: PersistenceStoreControllerManagerInterface;
 // let globalTestSuiteResults: TestSuiteResult = {};
 
@@ -274,36 +262,18 @@ beforeAll(async () => {
   const {
     persistenceStoreControllerManagerForClient: localpersistenceStoreControllerManager,
     domainController: localdomainController,
-    localCache: locallocalCache,
-    miroirContext: localmiroirContext,
-  } = await setupMiroirTest(miroirConfig, miroirActivityTracker, miroirEventService, crossFetch);
-
-  persistenceStoreControllerManager = localpersistenceStoreControllerManager;
-  domainController = localdomainController;
-  localCache = locallocalCache;
-  miroirContext = localmiroirContext;
-
-  // create the Miroir app deployment containing the meta-model
-  const createMiroirDeploymentCompositeAction = createDeploymentCompositeAction(
-    "miroir",
+  } = await setupMiroirTestAndCreateMiroirDeployment(
+    miroirConfig, miroirActivityTracker, miroirEventService,
     deployment_Miroir.uuid,
     adminApplication_Miroir.uuid,
     adminDeployment,
     miroirDeploymentStorageConfiguration,
-  );
-  const createDeploymentResult = await domainController.handleCompositeAction(
-    createMiroirDeploymentCompositeAction,
     applicationDeploymentMap,
-    defaultMiroirModelEnvironment,
-    {},
+    crossFetch,
   );
-  if (createDeploymentResult.status !== "ok") {
-    log.error(
-      "Failed to create Miroir deployment, createMiroirDeploymentCompositeAction:",
-      JSON.stringify(createMiroirDeploymentCompositeAction, null, 2)
-    );
-    throw new Error("Failed to create Miroir deployment: " + JSON.stringify(createDeploymentResult));
-  }
+
+  persistenceStoreControllerManager = localpersistenceStoreControllerManager;
+  domainController = localdomainController;
   console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ beforeAll DONE");
 
   return Promise.resolve();
@@ -362,7 +332,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
         },
         [
           {
-            entity: entityPublisher as MetaEntity,
+            entity: entityPublisher as Entity,
             entityDefinition: entityDefinitionPublisher as EntityDefinition,
             instances: [
               publisher1 as EntityInstance,
@@ -374,8 +344,8 @@ const testActions: Record<string, TestCompositeActionParams> = {
         defaultLibraryModelEnvironment.currentModel as any,
         [entityPublisher.uuid],
       ),
-      afterEach: testOnLibrary_resetLibraryDeployment(deployment_Library_DO_NO_USE.uuid),
-      afterAll: testOnLibrary_deleteLibraryDeployment(
+      afterEach: testUtils_resetApplicationDeployment(deployment_Library_DO_NO_USE.uuid),
+      afterAll: testUtils_deleteApplicationDeployment(
         miroirConfig,
         selfApplicationLibrary.uuid,
         deployment_Library_DO_NO_USE.uuid,
@@ -389,8 +359,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
             actionLabel: "testLibraryBooks",
             endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             payload: {
-              application: "NOT_USED_HERE",
-              definition: [
+              actionSequence: [
                 {
                   actionType: "rollback",
                   // actionType: "modelAction",
@@ -431,7 +400,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
                         contextResults: {},
                         extractors: {
                           entities: {
-                            extractorOrCombinerType: "extractorByEntityReturningObjectList",
+                            extractorOrCombinerType: "extractorInstancesByEntity",
                             applicationSection: "model",
                             parentName: entityEntity.name,
                             parentUuid: entityEntity.uuid,
@@ -482,8 +451,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
             actionLabel: "AddBookInstanceThenRollback",
             endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             payload: {
-              application: "NOT_USED_HERE",
-              definition: [
+              actionSequence: [
                 {
                   actionType: "rollback",
                   actionLabel: "refreshMiroirLocalCache",
@@ -544,7 +512,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
                         contextResults: {},
                         extractors: {
                           entities: {
-                            extractorOrCombinerType: "extractorByEntityReturningObjectList",
+                            extractorOrCombinerType: "extractorInstancesByEntity",
                             applicationSection: "model",
                             parentName: entityEntity.name,
                             parentUuid: entityEntity.uuid,
@@ -609,8 +577,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
             actionLabel: "AddBookInstanceThenRollback",
             endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             payload: {
-              application: "NOT_USED_HERE",
-              definition: [
+              actionSequence: [
                 {
                   actionType: "rollback",
                   // actionType: "modelAction",
@@ -681,7 +648,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
                         contextResults: {},
                         extractors: {
                           entities: {
-                            extractorOrCombinerType: "extractorByEntityReturningObjectList",
+                            extractorOrCombinerType: "extractorInstancesByEntity",
                             applicationSection: "model",
                             parentName: entityEntity.name,
                             parentUuid: entityEntity.uuid,
@@ -732,8 +699,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
             actionLabel: "AddBookInstanceThenRollback",
             endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             payload: {
-              application: "NOT_USED_HERE",
-              definition: [
+              actionSequence: [
                 {
                   actionType: "rollback",
                   // actionType: "modelAction",
@@ -794,7 +760,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
                         contextResults: {},
                         extractors: {
                           entities: {
-                            extractorOrCombinerType: "extractorByEntityReturningObjectList",
+                            extractorOrCombinerType: "extractorInstancesByEntity",
                             applicationSection: "model",
                             parentName: entityEntity.name,
                             parentUuid: entityEntity.uuid,
@@ -833,7 +799,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
                         contextResults: {},
                         extractors: {
                           entities: {
-                            extractorOrCombinerType: "extractorByEntityReturningObjectList",
+                            extractorOrCombinerType: "extractorInstancesByEntity",
                             applicationSection: "model",
                             parentName: entityEntity.name,
                             parentUuid: entityEntity.uuid,
@@ -934,8 +900,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
             actionLabel: "AddBookInstanceThenRollback",
             endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             payload: {
-              application: "NOT_USED_HERE",
-              definition: [
+              actionSequence: [
                 {
                   actionType: "rollback",
                   actionLabel: "refreshMiroirLocalCache",
@@ -1003,7 +968,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
                         contextResults: {},
                         extractors: {
                           entities: {
-                            extractorOrCombinerType: "extractorByEntityReturningObjectList",
+                            extractorOrCombinerType: "extractorInstancesByEntity",
                             applicationSection: "model",
                             parentName: entityEntity.name,
                             parentUuid: entityEntity.uuid,
@@ -1072,8 +1037,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
             actionLabel: "AddBookInstanceThenRollback",
             endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             payload: {
-              application: "NOT_USED_HERE",
-              definition: [
+              actionSequence: [
                 {
                   actionType: "rollback",
                   actionLabel: "refreshMiroirLocalCache",
@@ -1140,7 +1104,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
                         contextResults: {},
                         extractors: {
                           entities: {
-                            extractorOrCombinerType: "extractorByEntityReturningObjectList",
+                            extractorOrCombinerType: "extractorInstancesByEntity",
                             applicationSection: "model",
                             parentName: entityEntity.name,
                             parentUuid: entityEntity.uuid,
@@ -1210,8 +1174,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
             actionLabel: "AddBookInstanceThenRollback",
             endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             payload: {
-              application: "NOT_USED_HERE",
-              definition: [
+              actionSequence: [
                 {
                   actionType: "rollback",
                   actionLabel: "refreshMiroirLocalCache",
@@ -1286,7 +1249,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
                         contextResults: {},
                         extractors: {
                           entityDefinitions: {
-                            extractorOrCombinerType: "extractorByEntityReturningObjectList",
+                            extractorOrCombinerType: "extractorInstancesByEntity",
                             applicationSection: "model",
                             parentName: entityEntityDefinition.name,
                             parentUuid: entityEntityDefinition.uuid,
@@ -1326,7 +1289,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
                         contextResults: {},
                         extractors: {
                           entityDefinitions: {
-                            extractorOrCombinerType: "extractorByEntityReturningObjectList",
+                            extractorOrCombinerType: "extractorInstancesByEntity",
                             applicationSection: "model",
                             parentName: entityEntityDefinition.name,
                             parentUuid: entityEntityDefinition.uuid,

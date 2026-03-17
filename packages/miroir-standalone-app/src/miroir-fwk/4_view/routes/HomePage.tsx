@@ -31,7 +31,7 @@ import {
   packageName
 } from "../../../constants.js";
 import { useQueryTemplateResults } from "../components/Reports/ReportHooks.js";
-import { DebugHelper } from "miroir-react";
+import { JsonDisplayHelper } from "miroir-react";
 import { cleanLevel } from "../constants.js";
 import { useCurrentModel } from "../ReduxHooks.js";
 import { RunnerList, runnerConfigs } from "../components/Runners/RunnersList.js";
@@ -104,7 +104,7 @@ export const HomePage = (props: RootComponentProps) => {
             contextResults: {},
             extractors: {
               selfApplication: {
-                extractorOrCombinerType: "extractorForObjectByDirectReference",
+                extractorOrCombinerType: "extractorByPrimaryKey",
                 label: "HomePage_selfApplication",
                 parentName: "SelfApplication",
                 parentUuid: entitySelfApplication.uuid,
@@ -158,7 +158,7 @@ export const HomePage = (props: RootComponentProps) => {
       }}
     >
       <h2>Welcome to the Miroir Platform!</h2>
-      <DebugHelper
+      <JsonDisplayHelper debug={true}
         componentName="HomePage"
         elements={[{
           label: `HomePage application: ${currentApplication} section: ${displayedApplicationSection}`,

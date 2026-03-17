@@ -27,9 +27,11 @@ import {
 } from "miroir-core";
 
 import {
+  JsonDisplayHelper,
   ThemedOnScreenHelper,
   useMiroirContextService,
   useViewParams,
+  type DebugElements,
   type FoldedStateTree
 } from "miroir-react";
 
@@ -196,7 +198,8 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   // Track performance immediately for initial render
   const componentKey = `ReportSectionEntityInstance-${props.initialInstanceValueDEFUNCT?.uuid || props.entityUuidDEFUNCT}`;
 
-  const [isResultsCollapsed, setIsResultsCollapsed] = useState(true);
+  const [isResultsCollapsed, setIsResultsCollapsed] = useState(false);
+  // const [isResultsCollapsed, setIsResultsCollapsed] = useState(true);
 
   // Use outline context for outline state management
   const outlineContext = useDocumentOutlineContext();
@@ -409,6 +412,26 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
       props.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap,
     );
 
+  const debugElements: {elements: DebugElements} = useMemo(
+    () => ({
+      elements: Object.keys(queryTestRunResults || {}).length > 0 ?
+        Object.entries(queryTestRunResults as Record<string, any>).map(([key, value]) => ({
+          label: `queryTestRunResults.${key}`,
+          data: value,
+        }))
+        : []
+      //   // { label: "RootComponent miroirConfig", data: miroirConfig },
+    }),
+    [
+      queryTestRunResults
+      // miroirConfig,
+      // currentModel,
+      // adminAppModel,
+      // applicationDeploymentMap,
+      // deploymentUuidToReportsEntitiesDefinitionsMapping,
+      // context.viewParams.generalEditMode,
+      // adminDeploymentsQueryResult,
+    ]);
   // ##############################################################################################
   // ##############################################################################################
   // ##############################################################################################
@@ -474,7 +497,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
               backgroundColor: "#f8f9fa",
             }}
           >
-            <div
+            {/* <div
               style={{
                 display: "flex",
                 alignItems: "center",
@@ -489,10 +512,10 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
               <span style={{ color: "#666", fontSize: "14px" }}>
                 {isResultsCollapsed ? "▶" : "▼"}
               </span>
-            </div>
+            </div> */}
 
             {/* query test run results */}
-            {!isResultsCollapsed && (
+            {/* {!isResultsCollapsed && ( */}
               <div style={{ padding: "16px" }}>
                 {queryTestRunResults ? (
                   queryTestRunResults.elementType === "failure" ? (
@@ -507,9 +530,9 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
                       <div style={{ marginBottom: "8px", fontSize: "14px", color: "#666" }}>
                         Query executed successfully. Results:
                       </div>
-                      <ThemedCodeBlock>
-                        {JSON.stringify(queryTestRunResults, null, 2)}
-                      </ThemedCodeBlock>
+                      <>
+                      <JsonDisplayHelper componentName="ReportSectionEntityInstance" elements={debugElements.elements} />
+                      </>
                     </div>
                   )
                 ) : (
@@ -527,7 +550,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
                   </div>
                 )}
               </div>
-            )}
+            {/* )} */}
           </div>
         )}
 

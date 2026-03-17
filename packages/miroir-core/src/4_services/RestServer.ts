@@ -460,7 +460,7 @@ export async function queryActionHandler(
   // const domainController = persistenceStoreControllerManager.getServerDomainControllerDEFUNCT();
   const runBoxedExtractorOrQueryAction: RunBoxedQueryAction =
     body.action? body.action as RunBoxedQueryAction: body as any as RunBoxedQueryAction;
-  const applicationDeploymentMap: ApplicationDeploymentMap = body?.applicationDeploymentMap?body.applicationDeploymentMap:{};
+  const applicationDeploymentMap: ApplicationDeploymentMap = body?.applicationDeploymentMap ?? {};
   log.info(
     "RestServer queryActionHandler",
     domainController.getPersistenceStoreAccessMode(),
@@ -474,7 +474,7 @@ export async function queryActionHandler(
   const result = await domainController.handleBoxedExtractorOrQueryAction(
     runBoxedExtractorOrQueryAction,
     applicationDeploymentMap,
-    defaultMiroirModelEnvironment, // TODO: pass the current model
+    defaultMiroirModelEnvironment, // TODO: NOT USED in handleBoxedExtractorOrQueryAction
   );
   // log.info(
   //   "RestServer queryActionHandler used domainController result=",

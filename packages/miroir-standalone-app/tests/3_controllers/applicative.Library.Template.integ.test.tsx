@@ -367,7 +367,7 @@ const newEntityListReport = {
   definition: {
     extractors: {
       instanceList: {
-        extractorOrCombinerType: "extractorByEntityReturningObjectList",
+        extractorOrCombinerType: "extractorInstancesByEntity",
         parentName: newEntityName,
         parentUuid: newEntityUuid,
       },
@@ -394,7 +394,7 @@ const newEntityDetailsReport = {
   definition: {
     extractorTemplates: {
       elementToDisplay: {
-        extractorOrCombinerType: "extractorForObjectByDirectReference",
+        extractorOrCombinerType: "extractorByPrimaryKey",
         parentName: newEntityName,
         parentUuid: newEntityUuid,
         instanceUuid: {
@@ -422,7 +422,8 @@ const newEntityDetailsReport = {
 
 const createEntityCompositeActionTemplate: CompositeActionTemplate = {
   actionType: "compositeActionSequence",
-  actionLabel: "createEntityCompositeActionTemplate",  endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+  actionLabel: "createEntityCompositeActionTemplate",
+  endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
   payload: {
     templates: {
       // all
@@ -525,7 +526,7 @@ const createEntityCompositeActionTemplate: CompositeActionTemplate = {
       //   definition: {
       //     extractors: {
       //       instanceList: {
-      //         extractorOrCombinerType: "extractorByEntityReturningObjectList",
+      //         extractorOrCombinerType: "extractorInstancesByEntity",
       //         parentName: {
       //           transformerType: "getFromContext",
       //           interpolation: "runtime",
@@ -595,7 +596,7 @@ const createEntityCompositeActionTemplate: CompositeActionTemplate = {
       //         transformerType: "returnValue",
       //         interpolation: "runtime",
       //         value: {
-      //           extractorOrCombinerType: "extractorForObjectByDirectReference",
+      //           extractorOrCombinerType: "extractorByPrimaryKey",
       //           parentName: {
       //             transformerType: "getFromContext",
       //             interpolation: "runtime",
@@ -648,13 +649,19 @@ const createEntityCompositeActionTemplate: CompositeActionTemplate = {
       {
         // actionType: "modelAction",
         actionType: "createEntity",
-        actionLabel: "createEntity",        endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+        actionLabel: "createEntity",
+        endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
         payload: {
-          deploymentUuid: {
-            transformerType: "getFromParameters",
-            interpolation: "build",
-            referenceName: "testAdminConfigurationDeploymentUuid",
+          application: {
+              transformerType: "getFromParameters",
+              interpolation: "build",
+              referenceName: "testSelfApplicationUuid",
           },
+          // deploymentUuid: {
+          //   transformerType: "getFromParameters",
+          //   interpolation: "build",
+          //   referenceName: "testAdminConfigurationDeploymentUuid",
+          // },
           entities: [
             {
               entity: {
@@ -709,7 +716,7 @@ const createEntityCompositeActionTemplatePrepActions: any[] = [
         contextResults: {},
         extractors: {
           entityDefinitions: {
-            extractorOrCombinerType: "extractorByEntityReturningObjectList",
+            extractorOrCombinerType: "extractorInstancesByEntity",
             applicationSection: "model",
             parentName: entityEntityDefinition.name,
             parentUuid: entityEntityDefinition.uuid,
@@ -755,7 +762,7 @@ const createEntityCompositeActionTemplatePrepActions: any[] = [
         contextResults: {},
         extractors: {
           entities: {
-            extractorOrCombinerType: "extractorByEntityReturningObjectList",
+            extractorOrCombinerType: "extractorInstancesByEntity",
             applicationSection: "model",
             parentName: entityEntity.name,
             parentUuid: entityEntity.uuid,
@@ -832,7 +839,8 @@ const createEntityCompositeActionTemplateAssertions = [
 const createReportsCompositeActionTemplate: BuildPlusRuntimeDomainAction =
   {
     actionType: "transactionalInstanceAction",
-    actionLabel: "createReports",    endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+    actionLabel: "createReports",
+    endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
     payload: {
       deploymentUuid: {
         transformerType: "getFromParameters",
@@ -842,7 +850,8 @@ const createReportsCompositeActionTemplate: BuildPlusRuntimeDomainAction =
       instanceAction: {
         actionType: "instanceAction",
         actionName: "createInstance",
-        applicationSection: "model",        endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+        applicationSection: "model",
+        endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
         payload: {
           deploymentUuid: {
             transformerType: "getFromParameters",
@@ -896,7 +905,7 @@ const createReportsCompositeActionTemplate: BuildPlusRuntimeDomainAction =
                   definition: {
                     extractors: {
                       instanceList: {
-                        extractorOrCombinerType: "extractorByEntityReturningObjectList",
+                        extractorOrCombinerType: "extractorInstancesByEntity",
                         parentName: {
                           transformerType: "getFromContext",
                           interpolation: "runtime",
@@ -966,7 +975,7 @@ const createReportsCompositeActionTemplate: BuildPlusRuntimeDomainAction =
                         transformerType: "returnValue",
                         interpolation: "runtime",
                         value: {
-                          extractorOrCombinerType: "extractorForObjectByDirectReference",
+                          extractorOrCombinerType: "extractorByPrimaryKey",
                           parentName: {
                             transformerType: "getFromContext",
                             interpolation: "runtime",
@@ -1064,7 +1073,7 @@ const createReportsCompositeActionPrepActions: any[] = [
         contextResults: {},
         extractors: {
           reports: {
-            extractorOrCombinerType: "extractorByEntityReturningObjectList",
+            extractorOrCombinerType: "extractorInstancesByEntity",
             applicationSection: "model",
             parentName: entityReport.name,
             parentUuid: entityReport.uuid,
@@ -1112,7 +1121,7 @@ const createReportsCompositeActionPrepActions: any[] = [
         contextResults: {},
         extractors: {
           entities: {
-            extractorOrCombinerType: "extractorByEntityReturningObjectList",
+            extractorOrCombinerType: "extractorInstancesByEntity",
             applicationSection: "model",
             parentName: entityReport.name,
             parentUuid: entityReport.uuid,
@@ -1168,11 +1177,11 @@ const testTemplateSuitesDEFUNCT: Record<string, TestCompositeActionParams> = {
         // libraryEntitesAndInstances
         []
       ),
-      // afterEach: testOnLibrary_resetLibraryDeployment(
+      // afterEach: testUtils_resetApplicationDeployment(
       //   miroirConfig,
       //   testAdminConfigurationDeploymentUuid
       // ),
-      // afterAll: testOnLibrary_deleteLibraryDeployment(miroirConfig, testAdminConfigurationDeploymentUuid),
+      // afterAll: testUtils_deleteApplicationDeployment(miroirConfig, testAdminConfigurationDeploymentUuid),
       testCompositeActions: {
         // "create new Entity from spreadsheet": {
         //   testType: "testCompositeActionTemplate",
@@ -1195,7 +1204,8 @@ const testTemplateSuitesDEFUNCT: Record<string, TestCompositeActionParams> = {
           testLabel: "createEntityAndReportFromSpreadsheet",
           compositeActionTemplate: {
             actionType: "compositeActionSequence",
-            actionLabel: "createEntityAndReportFromSpreadsheet",            endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+            actionLabel: "createEntityAndReportFromSpreadsheet",
+            endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             payload: {
               templates: (createEntityCompositeActionTemplate.payload as any).templates, // TODO: fix typing
               definition: [
@@ -1315,7 +1325,7 @@ const testTemplateSuitesDEFUNCT: Record<string, TestCompositeActionParams> = {
         //             contextResults: {},
         //             extractorTemplates: {
         //               menuList: {
-        //                 extractorOrCombinerType: "extractorForObjectListByEntity",
+        //                 extractorOrCombinerType: "extractorInstancesByEntity",
         //                 applicationSection: "model",
         //                 parentName: "Menu",
         //                 parentUuid: {
@@ -1448,7 +1458,7 @@ const testTemplateSuitesDEFUNCT: Record<string, TestCompositeActionParams> = {
         //             contextResults: {},
         //             extractorTemplates: {
         //               menuList: {
-        //                 extractorOrCombinerType: "extractorForObjectListByEntity",
+        //                 extractorOrCombinerType: "extractorInstancesByEntity",
         //                 applicationSection: "model",
         //                 parentName: "Menu",
         //                 parentUuid: {

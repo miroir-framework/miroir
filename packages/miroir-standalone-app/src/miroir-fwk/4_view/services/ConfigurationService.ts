@@ -96,7 +96,8 @@ export function fetchMiroirAndAppConfigurations(
   return domainController
     .handleAction(
       {
-        actionType: "rollback",        endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+        actionType: "rollback",
+        endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
         payload: {
           application: adminSelfApplication.uuid,
         },
@@ -124,7 +125,7 @@ export function fetchMiroirAndAppConfigurations(
         contextResults: {},
         extractorTemplates: {
           [subQueryName]: {
-            extractorOrCombinerType: "extractorForObjectListByEntity",
+            extractorOrCombinerType: "extractorInstancesByEntity",
             applicationSection: "data",
             parentName: "Deployment",
             parentUuid: {
@@ -140,7 +141,8 @@ export function fetchMiroirAndAppConfigurations(
       // return domainController.handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(
       return domainController.handleQueryTemplateActionForServerONLY(
         {
-          actionType: "runBoxedQueryTemplateAction",          endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+          actionType: "runBoxedQueryTemplateAction",
+          endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
           payload: {
             application: adminSelfApplication.uuid,
             applicationSection: "data",
@@ -229,7 +231,8 @@ export function fetchMiroirAndAppConfigurations(
         openStoreActions.push(
           domainController.handleAction(
             {
-              actionType: "storeManagementAction_openStore",              endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f" as const,
+              actionType: "storeManagementAction_openStore",
+              endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f" as const,
               payload: {
                 application: deployment.selfApplication,
                 deploymentUuid: deployment.uuid,
@@ -264,7 +267,8 @@ export function fetchMiroirAndAppConfigurations(
         rollbackActions.push(
           domainController.handleAction(
             {
-              actionType: "rollback",              endpoint: "7947ae40-eb34-4149-887b-15a9021e714e" as const,
+              actionType: "rollback",
+              endpoint: "7947ae40-eb34-4149-887b-15a9021e714e" as const,
               payload: {
                 application: deployment.selfApplication,
                 // deploymentUuid: deployment.uuid,

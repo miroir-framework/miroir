@@ -131,7 +131,7 @@
 //                         interpolation: "build",
 //                         definition: {
 //                           instanceList: {
-//                             extractorOrCombinerType: "extractorByEntityReturningObjectList",
+//                             extractorOrCombinerType: "extractorInstancesByEntity",
 //                             parentName: {
 //                               transformerType: "getFromParameters",
 //                               interpolation: "build",
@@ -218,7 +218,7 @@
 //                         transformerType: "returnValue",
 //                         interpolation: "build",
 //                         value: {
-//                           extractorOrCombinerType: "extractorForObjectByDirectReference",
+//                           extractorOrCombinerType: "extractorByPrimaryKey",
 //                           parentName: {
 //                             transformerType: "getFromContext",
 //                             interpolation: "build",
@@ -381,7 +381,7 @@
 //                       contextResults: {},
 //                       extractors: {
 //                         entityDefinitions: {
-//                           extractorOrCombinerType: "extractorByEntityReturningObjectList",
+//                           extractorOrCombinerType: "extractorInstancesByEntity",
 //                           applicationSection: "model",
 //                           parentName: {
 //                             transformerType: "getFromParameters",
@@ -436,7 +436,7 @@
 //                       contextResults: {},
 //                       extractors: {
 //                         entities: {
-//                           extractorOrCombinerType: "extractorByEntityReturningObjectList",
+//                           extractorOrCombinerType: "extractorInstancesByEntity",
 //                           applicationSection: "model",
 //                           parentName: {
 //                             transformerType: "getFromParameters",
@@ -491,7 +491,7 @@
 //                       contextResults: {},
 //                       extractors: {
 //                         reports: {
-//                           extractorOrCombinerType: "extractorByEntityReturningObjectList",
+//                           extractorOrCombinerType: "extractorInstancesByEntity",
 //                           applicationSection: "model",
 //                           parentName: {
 //                             transformerType: "getFromParameters",
@@ -540,7 +540,7 @@
 //                       contextResults: {},
 //                       extractors: {
 //                         menuList: {
-//                           extractorOrCombinerType: "extractorByEntityReturningObjectList",
+//                           extractorOrCombinerType: "extractorInstancesByEntity",
 //                           applicationSection: "model",
 //                           parentName: {
 //                             transformerType: "getFromParameters",
@@ -685,7 +685,7 @@
 //                       contextResults: {},
 //                       extractors: {
 //                         menuList: {
-//                           extractorOrCombinerType: "extractorByEntityReturningObjectList",
+//                           extractorOrCombinerType: "extractorInstancesByEntity",
 //                           applicationSection: "model",
 //                           parentName: "Menu",
 //                           parentUuid: {

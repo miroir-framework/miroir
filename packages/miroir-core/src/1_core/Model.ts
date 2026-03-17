@@ -73,7 +73,7 @@ import {
 import { Transform } from "stream";
 // import { entityDefinitionEndpoint, reportEndpointVersionList } from "..";
 import { deployment_Miroir } from "miroir-test-app_deployment-admin";
-import { MetaEntity, Uuid } from "../0_interfaces/1_core/EntityDefinition";
+import { Uuid } from "../0_interfaces/1_core/EntityDefinition";
 import type { DeploymentUuidToReportsEntitiesDefinitions } from "../0_interfaces/1_core/Model";
 import { miroirFundamentalJzodSchema } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalJzodSchema";
 
@@ -87,9 +87,15 @@ import {
   type ApplicationSection,
   type EndpointDefinition,
   type Runner,
+  type ApplicationVersion,
+  type StoredMiroirTheme,
+  type Query,
+  type DataSet,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import type { MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
 import type { EntityInstanceWithName } from "../0_interfaces/1_core/Instance";
+import type { PersistenceStoreControllerInterface } from "../0_interfaces/4-services/PersistenceStoreControllerInterface";
+import { Action2Error, Domain2ElementFailed } from "../0_interfaces/2_domain/DomainElement";
 // import { Endpoint } from "../3_controllers/Endpoint";
 
 /**
@@ -97,13 +103,13 @@ import type { EntityInstanceWithName } from "../0_interfaces/1_core/Instance";
  * META-APPLICATION AND OTHER APPLICATIONS, AND THIS CONCERNS MAINLY THE META-APPLICATION ITSELF)
  * */
 // FIRST: CENTRALIZE LOGIC TO DETERMINE MODEL ENTITIES
-export const metaMetaModelEntities: MetaEntity[] = [
-  entityEntity as MetaEntity,
-  entityEntityDefinition as MetaEntity,
+export const metaMetaModelEntities: Entity[] = [
+  entityEntity as Entity,
+  entityEntityDefinition as Entity,
 ];
-export const metaMetaModelEntityUuids: Uuid[] = metaMetaModelEntities.map((e) => e.uuid);
+export const metaMetaModelEntityUuids: Uuid[] = metaMetaModelEntities.map((e) => e.uuid!);
 
-export const metaModelEntities: MetaEntity[] = [
+export const metaModelEntities: Entity[] = [
   entitySelfApplication,
   // entitySelfApplicationDeploymentConfiguration, // TODO: remove, deployments are not part of applications, they are external to them, belonging to a separate selfApplication, which contents is specific to each node (no transactions / historization)
   entityEndpointVersion,
@@ -117,18 +123,18 @@ export const metaModelEntities: MetaEntity[] = [
   entitySelfApplicationVersion,
   entityTheme,
   // entityStoreBasedConfiguration,
-] as MetaEntity[];
+] as Entity[];
 
-export const metaModelEntityUuids: Uuid[] = metaModelEntities.map((e) => e.uuid);
+export const metaModelEntityUuids: Uuid[] = metaModelEntities.map((e) => e.uuid!);
 // console.log("metaModelEntities", metaModelEntities)
 
-export const miroirModelEntities: MetaEntity[] = metaModelEntities.filter((e: MetaEntity) => {
+export const miroirModelEntities: Entity[] = metaModelEntities.filter((e: Entity) => {
   // console.log("filtering metaModelEntities entity", e)
   return e?.conceptLevel == "MetaModel";
 });
 
-export const applicationModelEntities: MetaEntity[] = metaModelEntities.filter(
-  (e: MetaEntity) => e?.conceptLevel != "MetaModel"
+export const applicationModelEntities: Entity[] = metaModelEntities.filter(
+  (e: Entity) => e?.conceptLevel != "MetaModel"
 );
 
 // #################################################################################################
@@ -309,7 +315,23 @@ export function getReportsAndEntitiesDefinitionsForDeploymentUuid(
   }
 }
 
+export const emptyApplicationModel: MetaModel = {
+  applicationUuid: "",
+  applicationName: "",
+  applicationVersions: [],
+  applicationVersionCrossEntityDefinition: [],
+  endpoints: [],
+  entities: [],
+  entityDefinitions: [],
+  jzodSchemas: [],
+  menus: [],
+  reports: [],
+  runners: [],
+  storedQueries: [],
+  themes: [],
+}
 
+// ################################################################################################
 const modelIcons: Record<string, string> = {
   Miroir: "hive",
   assistant: "wand_stars", //"smart_toy", //"psychology",
@@ -340,3 +362,110 @@ const modelIcons: Record<string, string> = {
   SelfApplicationModelBranch: "self-application-model-branch",
   // StoreBasedConfiguration: "store-based-configuration",
 };
+
+
+// ###############################################################################################
+/**
+ * Extracts instances of a specific entity from the store.
+ * @param storeController - The persistence store controller.
+ * @param entityUuid - The UUID of the entity to extract instances for.
+ * @param entityName - The name of the entity (for logging purposes).
+ * @returns An array of instances of the specified entity.
+ */
+export async function extractEntityInstances(
+  storeController: PersistenceStoreControllerInterface,
+  applicationSection: ApplicationSection,
+  entityUuid: string,
+  entityName: string,
+) {
+  console.log(`   - Reading ${entityName}...`);
+  const result = await storeController.getInstances(applicationSection, entityUuid);
+
+  if (result instanceof Action2Error) {
+    throw new Error(`Error reading ${entityName}: ${result}`);
+  }
+  if (result.returnedDomainElement instanceof Domain2ElementFailed) {
+    throw new Error(
+      `Domain2Element conversion failed for ${entityName}: ${result.returnedDomainElement}`,
+    );
+  }
+
+  const instances = result.status === "ok" ? result.returnedDomainElement.instances : [];
+  console.log(`     Found ${instances.length} ${entityName}`);
+  return instances;
+}
+
+// ##############################################################################################
+/**
+ * Extracts the complete MetaModel from a filesystem-deployed Library application.
+ * This script mounts the store, reads all model elements dynamically, and outputs a JSON file.
+ */
+export async function extractApplicationModel(
+  storeController: PersistenceStoreControllerInterface,
+  applicationUuid: Uuid,
+  applicationName: string,
+  // persistenceStoreControllerManager: PersistenceStoreControllerManager
+) {
+  try {
+    // Read all model elements from the store
+    console.log("\n7. Reading model elements from filesystem store...");
+
+    // Extract all entities
+    const entities = await extractEntityInstances(storeController, "model", entityEntity.uuid, "entities");
+    const entityDefinitions = await extractEntityInstances(storeController, "model", entityEntityDefinition.uuid, "entity definitions");
+    const endpoints = await extractEntityInstances(storeController, "model", entityEndpointVersion.uuid, "endpoints");
+    const menus = await extractEntityInstances(storeController, "model", entityMenu.uuid, "menus");
+    const reports = await extractEntityInstances(storeController, "model", entityReport.uuid, "reports");
+    const jzodSchemas = await extractEntityInstances(storeController, "model", entityJzodSchema.uuid, "jzod schemas");
+    const queries = await extractEntityInstances(storeController, "model", entityQueryVersion.uuid, "queries");
+    const applicationVersions = await extractEntityInstances(storeController, "model", entitySelfApplicationVersion.uuid, "application versions");
+    const runners = await extractEntityInstances(storeController, "model", entityRunner.uuid, "runners");
+    const themes = await extractEntityInstances(storeController, "model", entityTheme.uuid, "themes");
+
+    // Assemble the MetaModel
+    console.log("\n8. Assembling MetaModel structure...");
+    const libraryMetaModel: MetaModel = {
+      applicationUuid: applicationUuid,
+      applicationName: applicationName,
+      entities: entities as Entity[],
+      entityDefinitions: entityDefinitions as EntityDefinition[],
+      endpoints: endpoints as EndpointDefinition[],
+      menus: menus as Menu[],
+      reports: reports as Report[],
+      storedQueries: queries as Query[],
+      jzodSchemas: jzodSchemas as MlSchema[],
+      applicationVersions: applicationVersions as ApplicationVersion[],
+      applicationVersionCrossEntityDefinition: [], // These would need to be read separately if needed
+      runners: runners as Runner[], 
+      themes: themes as StoredMiroirTheme[], // Themes are now included in the model extraction
+    };
+
+    return libraryMetaModel;
+  } catch (error) {
+    console.error("Error extracting Library MetaModel:");
+    throw error;
+  }
+}
+
+// ##############################################################################################
+export async function extractApplicationData(
+  storeController: PersistenceStoreControllerInterface,
+  applicationUuid: Uuid,
+  entities: Entity[],
+): Promise<DataSet> {
+  try {
+    console.log("\nExtracting data sets from filesystem store...");
+
+    const instances = await Promise.all(entities.map(entity => 
+      extractEntityInstances(storeController, "data", entity.uuid, entity.name)
+    ));
+
+    return Promise.resolve({
+      applicationUuid: applicationUuid,
+      instances: instances.flat() // Flatten the array of arrays into a single array of instances
+    });
+  } catch (error) {
+    console.error("Error extracting data sets:");
+    throw error;
+  }
+}

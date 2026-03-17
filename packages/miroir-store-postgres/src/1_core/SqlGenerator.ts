@@ -73,6 +73,99 @@ MiroirLoggerFactory.registerLoggerToStart(
   log = logger;
 });
 
+// ##############################################################################################
+function getIdAttributeForEntity(
+  entityUuid: string,
+  modelEnvironment?: MiroirModelEnvironment
+): string | string[] {
+  if (!modelEnvironment?.currentModel?.entityDefinitions) return "uuid";
+  const entityDef = modelEnvironment.currentModel.entityDefinitions.find(
+    (ed: any) => ed.entityUuid === entityUuid
+  );
+  return (entityDef as any)?.idAttribute ?? "uuid";
+}
+
+// ##############################################################################################
+/**
+ * Builds a SQL WHERE clause for a primary key lookup.
+ * For single-attribute PKs: WHERE "col" = 'value'
+ * For composite PKs: WHERE "col1" = 'v1' AND "col2" = 'v2' ...
+ * The serializedValue for composite keys uses | as separator with \ escaping.
+ */
+function sqlWhereClauseForPk(
+  pkAttribute: string | string[],
+  serializedValue: string,
+  tableAlias?: string,
+): string {
+  const prefix = tableAlias ? `"${tableAlias}".` : "";
+  if (!Array.isArray(pkAttribute)) {
+    return `${prefix}"${pkAttribute}" = '${serializedValue}'`;
+  }
+  // Composite PK: parse the serialized key
+  const parts = parseSerializedCompositePkValue(pkAttribute, serializedValue);
+  return pkAttribute
+    .map((attr, idx) => `${prefix}"${attr}" = '${parts[idx]}'`)
+    .join(" AND ");
+}
+
+// ##############################################################################################
+/**
+ * Builds SQL JOIN conditions for composite FK→PK joins.
+ * For single-attribute: "parent"."pkCol" = "ref"."fkCol"
+ * For composite: "parent"."pk1" = "ref"."fk1" AND "parent"."pk2" = "ref"."fk2"
+ */
+function sqlJoinConditionForPk(
+  parentPkAttribute: string | string[],
+  fkAttribute: string | string[],
+  parentAlias: string,
+  refAlias: string,
+): string {
+  const pkAttrs = Array.isArray(parentPkAttribute) ? parentPkAttribute : [parentPkAttribute];
+  const fkAttrs = Array.isArray(fkAttribute) ? fkAttribute : [fkAttribute];
+  return pkAttrs
+    .map((pk, idx) => `"${parentAlias}"."${pk}" = "${refAlias}"."${fkAttrs[idx]}"`)
+    .join(" AND ");
+}
+
+// ##############################################################################################
+/**
+ * Parse a serialized composite key value into its component parts.
+ * Uses | as separator with \ escaping.
+ */
+function parseSerializedCompositePkValue(pkAttributes: string[], serializedKey: string): string[] {
+  if (pkAttributes.length === 1) {
+    return [serializedKey];
+  }
+  const parts: string[] = [];
+  let current = "";
+  for (let i = 0; i < serializedKey.length; i++) {
+    if (serializedKey[i] === "\\" && i + 1 < serializedKey.length) {
+      current += serializedKey[i + 1];
+      i++;
+    } else if (serializedKey[i] === "|") {
+      parts.push(current);
+      current = "";
+    } else {
+      current += serializedKey[i];
+    }
+  }
+  parts.push(current);
+  return parts;
+}
+
+// ##############################################################################################
+function getSchemaForEntity(
+  entityUuid: string,
+  defaultSchema: string,
+  modelEnvironment?: MiroirModelEnvironment
+): string {
+  if (!modelEnvironment?.currentModel?.entityDefinitions) return defaultSchema;
+  const entityDef = modelEnvironment.currentModel.entityDefinitions.find(
+    (ed: any) => ed.entityUuid === entityUuid
+  );
+  return (entityDef as any)?.externalDataSource?.schema ?? defaultSchema;
+}
+
 export type ITransformerHandler<T> = (
   actionRuntimeTransformer: T,
   preparedStatementParametersCount: number,
@@ -167,6 +260,8 @@ export interface SqlContextEntry {
   renameTo?: string;
   attributeResultAccessPath?: (string | number)[];
   // tableResultAccessPath?: ResultAccessPath;
+  /** Raw SQL expression to inline directly (e.g. aggregate expressions for HAVING clauses). */
+  rawSqlExpression?: string;
 }
 
 // ################################################################################################
@@ -341,13 +436,15 @@ function sqlStringForConstantTransformer(
 // ################################################################################################
 export function sqlStringForCombiner /*BoxedExtractorTemplateRunner*/(
   query: ExtractorOrCombiner,
-  schema: string
+  schema: string,
+  modelEnvironment?: MiroirModelEnvironment,
+  extractorsAndCombiners?: Record<string, ExtractorOrCombiner>,
 // ): Domain2QueryReturnType<SqlStringForCombinerReturnType> {
 ): SqlStringForCombinerReturnType { // TODO: do not throw exceptions
   // TODO: fetch parentName from parentUuid in query!
   switch (query.extractorOrCombinerType) {
-    case "extractorByEntityReturningObjectList":
-    case "extractorForObjectByDirectReference": {
+    case "extractorInstancesByEntity":
+    case "extractorByPrimaryKey": {
       throw new Error("asyncInnerSelectElementFromQuery queryType not implemented: " + JSON.stringify(query));
       // const result = this.persistenceStoreController.sqlForExtractor(query)
       // return {
@@ -360,27 +457,44 @@ export function sqlStringForCombiner /*BoxedExtractorTemplateRunner*/(
     case "extractorWrapperReturningList": {
       throw new Error("asyncInnerSelectElementFromQuery queryType not implemented: " + JSON.stringify(query));
     }
-    case "combinerForObjectByRelation": {
+    case "combinerOneToOne": {
       // TODO: deal with name clashes
+      const parentPkColumn = getIdAttributeForEntity(query.parentUuid, modelEnvironment);
+      const joinCondition = sqlJoinConditionForPk(
+        parentPkColumn,
+        query.AttributeOfObjectToCompareToReferenceUuid,
+        query.parentName ?? "",
+        query.objectReference,
+      );
       const result = `
         SELECT "${query.parentName}".* FROM "${schema}"."${query.parentName}", "${query.objectReference}"
-        WHERE "${query.parentName}"."uuid" = "${query.objectReference}"."${query.AttributeOfObjectToCompareToReferenceUuid}"`;
+        WHERE ${joinCondition}`;
       return {
         sqlString: result,
         resultAccessPath: [0],
       };
     }
-    case "combinerByRelationReturningObjectList": {
+    case "combinerOneToMany": {
+      // Resolve the PK column of the objectReference's entity
+      const objectRefEntry = extractorsAndCombiners?.[query.objectReference];
+      const objectRefEntityUuid = objectRefEntry && "parentUuid" in objectRefEntry ? objectRefEntry.parentUuid : undefined;
+      const objectRefPkColumn = objectRefEntityUuid ? getIdAttributeForEntity(objectRefEntityUuid, modelEnvironment) : "uuid";
+      const joinCondition2 = sqlJoinConditionForPk(
+        objectRefPkColumn,
+        query.AttributeOfListObjectToCompareToReferenceUuid,
+        query.objectReference,
+        query.parentName ?? "",
+      );
       const result = `
       SELECT "${query.parentName}".* FROM "${schema}"."${query.parentName}", "${query.objectReference}"
-      WHERE "${query.parentName}"."${query.AttributeOfListObjectToCompareToReferenceUuid}" = "${query.objectReference}"."uuid"`;
+      WHERE ${joinCondition2}`;
       return {
         sqlString: result,
         resultAccessPath: undefined,
       };
     }
-    case "combinerByManyToManyRelationReturningObjectList":
-    case "extractorCombinerByHeteronomousManyToManyReturningListOfObjectList":
+    case "combinerManyToMany":
+    case "combinerByHeteronomousManyToMany":
     case "literal":
     case "extractorOrCombinerContextReference": {
       throw new Error("asyncInnerSelectElementFromQuery queryType not implemented: " + JSON.stringify(query));
@@ -403,26 +517,30 @@ export function sqlStringForExtractor(
   modelEnvironment: MiroirModelEnvironment,
 ): RecursiveStringRecords {
   switch (extractor.extractorOrCombinerType) {
-    case "extractorForObjectByDirectReference": {
+    case "extractorByPrimaryKey": {
+      const pkColumn = getIdAttributeForEntity(extractor.parentUuid, modelEnvironment);
+      const effectiveSchema = getSchemaForEntity(extractor.parentUuid, schema, modelEnvironment);
+      const whereClausePk = sqlWhereClauseForPk(pkColumn, extractor.instanceUuid);
       if (!extractor.applyTransformer) {
-        return `SELECT * FROM "${schema}"."${extractor.parentName}" WHERE "uuid" = '${extractor.instanceUuid}'`;
+        return `SELECT * FROM "${effectiveSchema}"."${extractor.parentName}" WHERE ${whereClausePk}`;
       }
       if (!modelEnvironment) {
-        throw new Error("sqlForExtractor extractorForObjectByDirectReference needs modelEnvironment if applyTransformer is set");
+        throw new Error("sqlForExtractor extractorByPrimaryKey needs modelEnvironment if applyTransformer is set");
       }
       log.info(
-        "sqlForExtractor extractorForObjectByDirectReference with applyTransformer",
+        "sqlForExtractor extractorByPrimaryKey with applyTransformer",
         JSON.stringify(extractor.applyTransformer, null, 2),
         Object.keys(modelEnvironment)
       );
-      return `SELECT * FROM "${schema}"."${extractor.parentName}" WHERE "uuid" = '${extractor.instanceUuid}'`;
+      return `SELECT * FROM "${effectiveSchema}"."${extractor.parentName}" WHERE ${whereClausePk}`;
       break;
     }
-    case "combinerForObjectByRelation": {
-      throw new Error("sqlForExtractor combinerForObjectByRelation not implemented");
+    case "combinerOneToOne": {
+      throw new Error("sqlForExtractor combinerOneToOne not implemented");
       break;
     }
-    case "extractorByEntityReturningObjectList": {
+    case "extractorInstancesByEntity": {
+      const effectiveSchema = getSchemaForEntity(extractor.parentUuid, schema, modelEnvironment);
       let whereClause = "";
       if (extractor.filter) {
         const { attributeName, value, values, not, undefined: isUndefined } = extractor.filter;
@@ -447,13 +565,13 @@ export function sqlStringForExtractor(
             : ` WHERE "${attributeName}" ILIKE '%${value}%'`;
         }
       }
-      return `SELECT * FROM "${schema}"."${extractor.parentName}"${whereClause}`;
+      return `SELECT * FROM "${effectiveSchema}"."${extractor.parentName}"${whereClause}`;
       break;
     }
     case "extractorWrapperReturningObject":
     case "extractorWrapperReturningList":
-    case "combinerByRelationReturningObjectList":
-    case "combinerByManyToManyRelationReturningObjectList": {
+    case "combinerOneToMany":
+    case "combinerManyToMany": {
       throw new Error(
         "sqlForExtractor not implemented for extractorOrCombinerType: " +
           extractor.extractorOrCombinerType
@@ -627,119 +745,220 @@ function sqlStringForCountTransformer(
   if (referenceQuery instanceof Domain2ElementFailed) {
     return referenceQuery;
   }
+
+  // AGG-1/AGG-3/AGG-4: Determine aggregate function expression and result key
+  const aggFunction = actionRuntimeTransformer.function;
+  const resultKey = aggFunction ?? "aggregate";
+  const attribute = actionRuntimeTransformer.attribute;
+  const distinct = actionRuntimeTransformer.distinct;
+  const attributeObject = actionRuntimeTransformer.attributeObject;
+
+  // Build a SQL expression for JSON_BUILD_OBJECT from attributeObject, using exprFn to produce each column expr
+  function buildJsonBuildObjectExpr(exprFn: (attrName: string) => string): string {
+    const pairs = Object.entries(attributeObject!).flatMap(([key, srcAttr]) => [
+      `'${key}'`, exprFn(srcAttr),
+    ]);
+    return `JSON_BUILD_OBJECT(${pairs.join(", ")})`;
+  }
+
+  // filterOverride: custom FILTER WHERE condition for json_agg_strict (needed for attributeObject case)
+  function buildSqlAggExpr(valueExpr: string, filterOverride?: string): string {
+    const distinctKeyword = distinct ? "DISTINCT " : "";
+    switch (aggFunction) {
+      case "sum":
+        return `SUM((${valueExpr})::numeric)::numeric`;
+      case "avg":
+        return `AVG((${valueExpr})::numeric)::numeric`;
+      case "min":
+        return `MIN((${valueExpr})::numeric)::numeric`;
+      case "max":
+        return `MAX((${valueExpr})::numeric)::numeric`;
+      case "json_agg":
+        return `JSON_AGG(${valueExpr})`;
+      case "json_agg_strict": {
+        const condition = filterOverride ?? `${valueExpr} IS NOT NULL`;
+        return `COALESCE(JSON_AGG(${valueExpr}) FILTER (WHERE ${condition}), '[]'::json)`;
+      }
+      case "count":
+        if (attribute && distinct) {
+          return `COUNT(${distinctKeyword}${valueExpr})::int`;
+        }
+        return `COUNT(*)::int`;
+      default:
+        // Legacy count behavior
+        return `COUNT(*)::int`;
+    }
+  }
+
+  // Helper: build a HAVING SQL clause injecting aggregateValue into context
+  function buildHavingSql(
+    aggExpr: string,
+    refParamsLength: number,
+  ): { havingSql: string; havingPreparedParams: any[] } {
+    if (!actionRuntimeTransformer.having) return { havingSql: "", havingPreparedParams: [] };
+    const havingContextEntries: Record<string, SqlContextEntry> = {
+      ...definedContextEntries,
+      aggregateValue: { type: "scalar", rawSqlExpression: aggExpr },
+    };
+    const havingResult = sqlStringForRuntimeTransformer(
+      actionRuntimeTransformer.having as any,
+      preparedStatementParametersCount + refParamsLength,
+      indentLevel,
+      queryParams,
+      havingContextEntries,
+      useAccessPathForContextReference,
+      false,
+    );
+    if (havingResult instanceof Domain2ElementFailed) {
+      log.warn("sqlStringForCountTransformer: HAVING clause generation failed:", JSON.stringify(havingResult));
+      return { havingSql: "", havingPreparedParams: [] };
+    }
+    return {
+      havingSql: `\nHAVING ${havingResult.sqlStringOrObject}`,
+      havingPreparedParams: havingResult.preparedStatementParameters ?? [],
+    };
+  }
+
   switch (referenceQuery.type) {
     case "json_array":
     case "json": {
       const groupBy = actionRuntimeTransformer.groupBy;
       if (groupBy && (typeof actionRuntimeTransformer.groupBy === 'string' || groupBy.length > 0)) {
-        const groupByArray = (typeof groupBy === "string" ? [groupBy] : groupBy)
-        // const groupByArrayQuoted = groupByArray?.map(e=>`${tokenNameQuote}${e}${tokenNameQuote}`);
-        const groupBySelectors = groupByArray?.map(
-          (e) =>
-            "value" +
-            " ->> " +
-            tokenStringQuote +
-            e +
-            tokenStringQuote +
-            " AS " +
-            `${tokenNameQuote}${e}${tokenNameQuote}`
-        );
-        const groupByAccessors = groupByArray?.map(e=> `value ->> ${tokenStringQuote}${e}${tokenStringQuote}`);
-// (slow) example of extracting and auto-casting values from a JSONB array in PostgreSQL if no type is known for the input values
-// WITH j AS (
-//   SELECT jsonb_array_elements(
-//     '[{"test1":"testA","test2":1}, {"test1":"testB","test2":"1"},
-//       {"test1":"testA","test2":2.0}, {"test1":"testC","test2":"2020-01-01T00:00:00Z"}]'::jsonb
-//   ) AS v
-// )
-// SELECT
-//   v ->> 'test1' AS test1,
-//   CASE
-//     WHEN jsonb_typeof(v->'test2') = 'number'
-//          AND (v->>'test2') ~ '^\-?\d+$' THEN (v->>'test2')::int
-//     WHEN jsonb_typeof(v->'test2') = 'string'
-//          AND (v->>'test2') ~ '^\-?\d+$' THEN (v->>'test2')::int
-//     ELSE NULL
-//   END AS test2_int
-// FROM j;
+        const groupByArray = (typeof groupBy === "string" ? [groupBy] : groupBy);
+        // Use value -> (jsonb) for GROUP BY so it matches the same expression used in json_build_object.
+        // Using value ->> (text) for GROUP BY while json_build_object uses value -> (jsonb) would cause
+        // PostgreSQL error 42803 (ungrouped column) since they are different expressions.
+        const groupByAccessors = groupByArray.map(e => `value -> ${tokenStringQuote}${e}${tokenStringQuote}`);
 
-// proper example of counting grouped by values when the type of the input values is known
-// WITH
-// "testList" AS (
-//   select '[{"test1":"testA","test2":1},{"test1":"testB","test2":1},{"test1":"testA","test2":2},{"test1":"testC","test2":2},{"test1":"testB","test2":1},{"test1":"testC","test2":2}]'::jsonb AS "constantObject"
-// ),
-// "transformer" AS (
-// SELECT "X"."test1", "X"."test2", COUNT(*)::int AS "aggregate"
-// FROM jsonb_to_recordset((SELECT "constantObject" FROM "testList")) AS "X"("test1" text, "test2" int)
-// GROUP BY "X"."test1", "X"."test2"
-// ORDER BY "X"."test1", "X"."test2"
-// )
-// SELECT * FROM "transformer"
+        // Build the aggregate expression for the value accessor
+        const aggExprNeedsAttribute = aggFunction && aggFunction !== "count" && !attribute && !attributeObject;
+        if (aggExprNeedsAttribute) {
+          return new Domain2ElementFailed({
+            queryFailure: "QueryNotExecutable",
+            query: actionRuntimeTransformer as any,
+            failureMessage: `sqlStringForCountTransformer: aggregate function '${aggFunction}' requires 'attribute' or 'attributeObject' to be specified`,
+          });
+        }
+        // For json_agg_strict with attributeObject: filter out rows where all source attrs are null.
+        // Use ->> (text extraction) for null detection because -> returns 'null'::jsonb (not SQL NULL)
+        // while ->> returns SQL NULL for JSON null values, making IS NOT NULL work correctly.
+        const jsonAggStrictAttrFilter = (aggFunction === "json_agg_strict" && attributeObject)
+          ? Object.values(attributeObject).map(
+              (srcAttr: string) => `(value ->> ${tokenStringQuote}${srcAttr}${tokenStringQuote}) IS NOT NULL`
+            ).join(" OR ")
+          : undefined;
+        // When attributeObject is set for json_agg/json_agg_strict, use JSON_BUILD_OBJECT with -> (preserves JSON types)
+        const aggExpr = attributeObject && (aggFunction === "json_agg" || aggFunction === "json_agg_strict")
+          ? buildSqlAggExpr(
+              buildJsonBuildObjectExpr((srcAttr) => `value -> ${tokenStringQuote}${srcAttr}${tokenStringQuote}`),
+              jsonAggStrictAttrFilter,
+            )
+          : buildSqlAggExpr(attribute
+              ? `value ->> ${tokenStringQuote}${attribute}${tokenStringQuote}`
+              : "*");
 
+        const refParamsLength = referenceQuery.preparedStatementParameters?.length ?? 0;
+        const { havingSql, havingPreparedParams } = buildHavingSql(aggExpr, refParamsLength);
+
+        // Build the json_build_object for each grouped row:
+        // Use value -> (jsonb, preserves type) for groupBy keys, and aggExpr for the aggregate
+        const jsonBuildObjectPairs = [
+          ...groupByArray.map(e => `'${e}', value -> ${tokenStringQuote}${e}${tokenStringQuote}`),
+          `'${resultKey}', ${aggExpr}`,
+        ].join(",\n      ");
+
+        const applyToCol = (referenceQuery as any).resultAccessPath[1];
         return {
           type: "json",
           sqlStringOrObject: `
-SELECT ${groupBySelectors?.join(',')}, COUNT(*)::int AS "aggregate"
-FROM (${referenceQuery.sqlStringOrObject}) AS "count_applyTo",
-    LATERAL jsonb_array_elements("count_applyTo"."${
-      (referenceQuery as any).resultAccessPath[1]
-    }") AS "count_applyTo_array"
-GROUP BY ${groupByAccessors?.join(", ")}
-ORDER BY ${groupByAccessors?.join(", ")}
+SELECT COALESCE(json_agg(count_grouped_row), '[]'::json) AS "count_grouped_result"
+FROM (
+  SELECT json_build_object(
+      ${jsonBuildObjectPairs}
+    ) AS count_grouped_row
+  FROM (${referenceQuery.sqlStringOrObject}) AS "count_applyTo",
+      LATERAL jsonb_array_elements("count_applyTo"."${applyToCol}") AS "count_applyTo_array"
+  GROUP BY ${groupByAccessors.join(", ")}${havingSql}
+  ORDER BY ${groupByAccessors.join(", ")}
+) AS "count_grouped"
 `,
-          preparedStatementParameters: referenceQuery.preparedStatementParameters,
-          resultAccessPath: [], // TODO: inconsistency between simple 'count' and groupBy count
+          preparedStatementParameters: [
+            ...(referenceQuery.preparedStatementParameters ?? []),
+            ...havingPreparedParams,
+          ],
+          resultAccessPath: [0, "count_grouped_result"],
+          columnNameContainingJsonValue: "count_grouped_result",
           extraWith: referenceQuery.extraWith,
           encloseEndResultInArray: false,
         };
       } else {
+        // For json_agg_strict with attributeObject: filter out rows where all source attrs are null.
+        // Use ->> for null detection (returns SQL NULL for JSON null), not -> (returns non-null 'null'::jsonb).
+        const jsonAggStrictAttrFilter = (aggFunction === "json_agg_strict" && attributeObject)
+          ? Object.values(attributeObject).map(
+              (srcAttr: string) => `(value ->> ${tokenStringQuote}${srcAttr}${tokenStringQuote}) IS NOT NULL`
+            ).join(" OR ")
+          : undefined;
+        // When attributeObject is set for json_agg/json_agg_strict, use JSON_BUILD_OBJECT with -> (preserves JSON types)
+        const aggExpr = attributeObject && (aggFunction === "json_agg" || aggFunction === "json_agg_strict")
+          ? buildSqlAggExpr(
+              buildJsonBuildObjectExpr((srcAttr) => `value -> ${tokenStringQuote}${srcAttr}${tokenStringQuote}`),
+              jsonAggStrictAttrFilter,
+            )
+          : buildSqlAggExpr(attribute
+              ? `value ->> ${tokenStringQuote}${attribute}${tokenStringQuote}`
+              : "*");
+
         return {
           type: "json",
           sqlStringOrObject: `
-SELECT json_build_object('aggregate', COUNT(*)::int) AS "count_object"
+SELECT json_build_object('${resultKey}', ${aggExpr}) AS "count_object"
 FROM (${referenceQuery.sqlStringOrObject}) AS "count_applyTo",
     LATERAL jsonb_array_elements("count_applyTo"."${
       (referenceQuery as any).resultAccessPath[1]
     }") AS "count_applyTo_array"
 `,
-          preparedStatementParameters: referenceQuery.preparedStatementParameters,
+          preparedStatementParameters: [
+            ...(referenceQuery.preparedStatementParameters ?? []),
+          ],
           resultAccessPath: [0, "count_object"],
           extraWith: referenceQuery.extraWith,
           columnNameContainingJsonValue: "count_object",
           encloseEndResultInArray: true,
         };
-
       }
     }
     case "tableOf1JsonColumn":
-//       {
-//       const transformerSqlQuery = actionRuntimeTransformer.groupBy
-//         ? `SELECT "${actionRuntimeTransformer.groupBy}", COUNT(*)::int AS "aggregate" FROM (${referenceQuery.sqlStringOrObject}) AS "count_applyTo"
-//             GROUP BY "${actionRuntimeTransformer.groupBy}"
-// `
-//         : `SELECT COUNT(*)::int AS "aggregate" FROM (${referenceQuery.sqlStringOrObject}) AS "count_applyTo"
-// `;
-//       log.info("sqlStringForRuntimeTransformer count transformerSqlQuery", transformerSqlQuery);
-//       return {
-//         type: "table",
-//         sqlStringOrObject: transformerSqlQuery,
-//         resultAccessPath: undefined,
-//         preparedStatementParameters: referenceQuery.preparedStatementParameters,
-//       };
-//     }
     case "table": {
+      // For json_agg_strict with attributeObject: filter out rows where all source attrs are null
+      const jsonAggStrictAttrFilter = (aggFunction === "json_agg_strict" && attributeObject)
+        ? Object.values(attributeObject).map(
+            (srcAttr: string) => `"${srcAttr}" IS NOT NULL`
+          ).join(" OR ")
+        : undefined;
+      // When attributeObject is set for json_agg/json_agg_strict, use JSON_BUILD_OBJECT
+      const aggExpr = attributeObject && (aggFunction === "json_agg" || aggFunction === "json_agg_strict")
+        ? buildSqlAggExpr(buildJsonBuildObjectExpr((srcAttr) => `"${srcAttr}"`), jsonAggStrictAttrFilter)
+        : buildSqlAggExpr(attribute ? `"${attribute}"` : "*");
+
+      const refParamsLength = referenceQuery.preparedStatementParameters?.length ?? 0;
+      const { havingSql, havingPreparedParams } = buildHavingSql(aggExpr, refParamsLength);
+
       const transformerSqlQuery = actionRuntimeTransformer.groupBy
-        ? `SELECT "${actionRuntimeTransformer.groupBy}", COUNT(*)::int AS "aggregate" FROM (${referenceQuery.sqlStringOrObject}) AS "count_applyTo"
-            GROUP BY "${actionRuntimeTransformer.groupBy}"
+        ? `SELECT "${actionRuntimeTransformer.groupBy}", ${aggExpr} AS "${resultKey}" FROM (${referenceQuery.sqlStringOrObject}) AS "count_applyTo"
+            GROUP BY "${actionRuntimeTransformer.groupBy}"${havingSql}
 `
-        : `SELECT COUNT(*)::int AS "aggregate" FROM (${referenceQuery.sqlStringOrObject}) AS "count_applyTo"
+        : `SELECT ${aggExpr} AS "${resultKey}" FROM (${referenceQuery.sqlStringOrObject}) AS "count_applyTo"
 `;
       log.info("sqlStringForRuntimeTransformer count transformerSqlQuery", transformerSqlQuery);
       return {
         type: "table",
         sqlStringOrObject: transformerSqlQuery,
         resultAccessPath: undefined,
-        preparedStatementParameters: referenceQuery.preparedStatementParameters,
+        preparedStatementParameters: [
+          ...(referenceQuery.preparedStatementParameters ?? []),
+          ...havingPreparedParams,
+        ],
       };
     }
     case "scalar": {
@@ -2063,13 +2282,15 @@ LATERAL jsonb_array_elements("listPickElement_applyTo"."${
 }") AS "listPickElement_applyTo_array"
 `;
         } else { // no orderBy
+          // Use jsonb_agg -> index instead of LIMIT/OFFSET so that out-of-bounds index returns NULL
+          // (LIMIT 1 OFFSET n returns 0 rows when n >= array length, causing undefined testResult)
           sqlResult = `
-SELECT "listPickElement_applyTo_array"."value" AS "pickFromList"
+SELECT jsonb_agg("listPickElement_applyTo_array"."value") -> ${limit} AS "pickFromList"
 FROM
 (${sqlForApplyTo.sqlStringOrObject}) AS "listPickElement_applyTo", 
 LATERAL jsonb_array_elements("listPickElement_applyTo"."${
 (sqlForApplyTo as any).resultAccessPath[1]
-}") AS "listPickElement_applyTo_array" LIMIT 1 OFFSET ${limit}
+}") AS "listPickElement_applyTo_array"
 `;
         }
         return {
@@ -3255,6 +3476,14 @@ function sqlStringForContextReferenceTransformer(
         JSON.stringify(Object.keys(definedContextEntries)),
     });
   }
+  // Short-circuit: if the entry carries a raw SQL expression (e.g. an aggregate for HAVING), return it directly.
+  if (definedContextEntry.rawSqlExpression !== undefined) {
+    return {
+      type: definedContextEntry.type,
+      sqlStringOrObject: definedContextEntry.rawSqlExpression,
+      usedContextEntries: [],
+    };
+  }
   const resultAccessPath = [
     ...(useAccessPathForContextReference?(definedContextEntry.attributeResultAccessPath ?? []):[]),
     ...(actionRuntimeTransformer?.referencePath?.slice(1) ?? []), // not consistent, works only because used referencePath has only 1 element
@@ -3912,7 +4141,10 @@ export function sqlStringForQuery(
   const combinerRawQueries: [string, SqlStringForCombinerReturnType][] = Object.entries(
     foreignKeyParams.extractor.combiners ?? {}
   ).map(([key, value]) => {
-    return [key, sqlStringForCombiner(value, schema)];
+    return [key, sqlStringForCombiner(value, schema, modelEnvironment, {
+      ...foreignKeyParams.extractor.extractors,
+      ...foreignKeyParams.extractor.combiners,
+    })];
   });
   log.info("sqlStringForQuery combinerRawQueries", JSON.stringify(combinerRawQueries, null, 2));
 

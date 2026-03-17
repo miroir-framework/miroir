@@ -1,6 +1,6 @@
 import {
   type EntityInstance,
-  type ExtractorByEntityReturningObjectList,
+  type ExtractorInstancesByEntity,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory.js";
 import { cleanLevel } from "./constants.js";
@@ -15,7 +15,7 @@ MiroirLoggerFactory.registerLoggerToStart(
 // ################################################################################################
 /**
  * A filter specification for filtering entity instances.
- * This is extracted from ExtractorByEntityReturningObjectList type.
+ * This is extracted from ExtractorInstancesByEntity type.
  */
 export type ExtractorFilter = {
   attributeName: string;
@@ -28,7 +28,7 @@ export type ExtractorFilter = {
 // ################################################################################################
 /**
  * An orderBy specification for sorting entity instances.
- * This is extracted from ExtractorByEntityReturningObjectList type.
+ * This is extracted from ExtractorInstancesByEntity type.
  */
 export type ExtractorOrderBy = {
   attributeName: string;
@@ -148,7 +148,7 @@ export const applyOrderBy = (
 
 // ################################################################################################
 /**
- * Applies both filter and orderBy from an ExtractorByEntityReturningObjectList to an array of instances.
+ * Applies both filter and orderBy from an ExtractorInstancesByEntity to an array of instances.
  * This is the main entry point for use in extractors.
  * 
  * @param instances - Array of entity instances to filter and sort
@@ -157,7 +157,7 @@ export const applyOrderBy = (
  */
 export const applyExtractorFilterAndOrderBy = (
   instances: EntityInstance[],
-  extractor: Pick<ExtractorByEntityReturningObjectList, 'filter' | 'orderBy'>
+  extractor: Pick<ExtractorInstancesByEntity, 'filter' | 'orderBy'>
 ): EntityInstance[] => {
   const filteredInstances = applyFilter(instances, extractor.filter);
   const orderedInstances = applyOrderBy(filteredInstances, extractor.orderBy);

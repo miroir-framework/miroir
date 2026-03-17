@@ -8,13 +8,13 @@
   "definition": {
     "extractorTemplates": {
       "books": {
-        "extractorOrCombinerType": "extractorForObjectListByEntity",
+        "extractorOrCombinerType": "extractorInstancesByEntity",
         "applicationSection": "data",
         "parentName": "Book",
         "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
       },
       "authors": {
-        "extractorOrCombinerType": "extractorForObjectListByEntity",
+        "extractorOrCombinerType": "extractorInstancesByEntity",
         "applicationSection": "data",
         "parentName": "Author",
         "parentUuid": "d7a144ff-d1b9-4135-800c-a7cfc1f38733"
@@ -22,7 +22,7 @@
     },
     "combinerTemplates": {
       "BooksWithAuthor": {
-        "extractorOrCombinerType": "combinerByManyToManyRelationReturningObjectList",
+        "extractorOrCombinerType": "combinerManyToMany",
         "applicationSection": "data",
         "parentName": "Book",
         "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",

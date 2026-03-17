@@ -1,0 +1,29 @@
+{
+  "uuid": "d60cb239-a0ef-44f7-b5e9-d9160b210a71",
+  "selfApplication": "84d28eb1-d98a-499e-bf24-62cade033da6",
+  "parentName": "Report",
+  "parentUuid": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+  "conceptLevel": "Model",
+  "name": "TableList",
+  "defaultLabel": "List of Tables",
+  "definition": {
+    "reportParameters": {},
+    "extractorTemplates": {
+      "tables": {
+        "extractorOrCombinerType": "extractorInstancesByEntity",
+        "parentName": "tables",
+        "parentUuid": "35961086-f932-477a-aa77-ac8360ffbf61"
+      }
+    },
+    "section": {
+      "type": "objectListReportSection",
+      "definition": {
+        "parentName": "tables",
+        "parentUuid": "35961086-f932-477a-aa77-ac8360ffbf61",
+        "label": "Tables",
+        "fetchedDataReference": "tables",
+        "sortByAttribute": "table_name"
+      }
+    }
+  }
+}

@@ -108,11 +108,13 @@ import {
   resolveConditionalSchemaTransformer,
 } from "../1_core/jzod/resolveConditionalSchema";
 import { handleTransformer_menu_AddItem } from "../1_core/Menu";
+import { ansiColumnsToJzodSchema } from "../1_core/ansiColumnsToJzodSchema";
 import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory";
 import { packageName } from "../constants";
 import { resolvePathOnObject, safeResolvePathOnObject } from "../tools";
 import { cleanLevel } from "./constants";
-import { getEntityInstancesUuidIndexNonHook } from "./ReduxDeploymentsStateQueryExecutor";
+import { getEntityInstancesIndexNonHook } from "./ReduxDeploymentsStateQueryExecutor";
+import { getInstancePrimaryKeyValue } from "../1_core/EntityPrimaryKey";
 // import { transformer_spreadSheetToJzodSchema } from "./Transformer_Spreadsheet";
 import {
   mlsTransformers,
@@ -146,6 +148,7 @@ import {
   type ResolveBuildTransformersTo,
   type Step,
   transformer_getActiveDeployment,
+  transformer_ansiColumnsToJzodSchema,
 } from "./Transformers";
 import type { MiroirActivityTrackerInterface } from "../0_interfaces/3_controllers/MiroirActivityTrackerInterface";
 import { defaultAdminApplicationDeploymentMapNOTGOOD, type ApplicationDeploymentMap } from "../1_core/Deployment";
@@ -429,7 +432,7 @@ export function getDefaultValueForJzodSchemaWithResolution(
             "getDefaultValueForJzodSchemaWithResolution called with UUID foreign key but no applicationDeploymentMap provided"
           );
         }
-        const foreignKeyObjects: EntityInstance[] = getEntityInstancesUuidIndexNonHook(
+        const foreignKeyObjects: EntityInstance[] = getEntityInstancesIndexNonHook(
           reduxDeploymentsState,
           miroirEnvironment,
           application,
@@ -439,7 +442,13 @@ export function getDefaultValueForJzodSchemaWithResolution(
           effectiveSchema.tag.value.foreignKeyParams.targetEntityOrderInstancesBy
         );
 
-        const result = Object.values(foreignKeyObjects)[0]?.uuid;
+        const firstInstance = Object.values(foreignKeyObjects)[0];
+        const targetEntityDef = miroirEnvironment.currentModel.entityDefinitions.find(
+          ed => ed.entityUuid === effectiveSchema.tag?.value?.foreignKeyParams?.targetEntity
+        );
+        const result = firstInstance && targetEntityDef
+          ? getInstancePrimaryKeyValue(targetEntityDef, firstInstance)
+          : firstInstance?.uuid;
         return result;
       }
       const result = uuidv4();
@@ -731,6 +740,7 @@ const inMemoryTransformerImplementations: Record<string, ITransformerHandler<any
   transformer_resolveSchemaReferenceInContext: resolveSchemaReferenceInContextTransformer,
   transformer_unfoldSchemaOnce: unfoldSchemaOnceTransformer,
   transformer_jzodTypeCheck: jzodTypeCheckTransformer,
+  handleTransformer_ansiColumnsToJzodSchema,
 };
 
 // transformer_defaultValueForMLSchema
@@ -764,6 +774,7 @@ export const applicationTransformerDefinitions: Record<string, TransformerDefini
   createObjectFromPairs: transformer_createObjectFromPairs,
   getFromParameters: transformer_getFromParameters,
   getUniqueValues: transformer_getUniqueValues,
+  ansiColumnsToJzodSchema: transformer_ansiColumnsToJzodSchema,
   // MLS
   ...Object.fromEntries(
     Object.entries(mlsTransformers).map(([key, value]) => [
@@ -1672,18 +1683,18 @@ export function transformer_resolveReference(
         transformerPath: [...transformerPath, usedReference],
         failureOrigin: ["transformer_resolveReference"],
         queryReference: transformerInnerReference.referenceName,
-        failureMessage: "no referenceName " + transformerInnerReference.referenceName,
+        failureMessage: "no referenceName " + transformerInnerReference.referenceName + " in " + paramOrContext,
         queryContext: JSON.stringify(Object.keys(bank)),
       });
     }
-    log.info(
-      "transformer_resolveReference resolved for",
-      JSON.stringify(transformerInnerReference, null, 2),
-      "bank",
-      JSON.stringify(Object.keys(bank), null, 2),
-      "found result",
-      JSON.stringify(bank[transformerInnerReference.referenceName], null, 2)
-    );
+    // log.info(
+    //   "transformer_resolveReference resolved for",
+    //   JSON.stringify(transformerInnerReference, null, 2),
+    //   "bank",
+    //   JSON.stringify(Object.keys(bank), null, 2),
+    //   "found result",
+    //   JSON.stringify(bank[transformerInnerReference.referenceName], null, 2)
+    // );
     return bank[transformerInnerReference.referenceName];
   }
 
@@ -1693,12 +1704,12 @@ export function transformer_resolveReference(
       const pathResult = transformerInnerReference.safe
         ? safeResolvePathOnObject(bank, transformerInnerReference.referencePath)
         : resolvePathOnObject(bank, transformerInnerReference.referencePath);
-      log.info(
-        "transformer_resolveReference resolved for",
-        JSON.stringify(transformerInnerReference, null, 2),
-        "found pathResult",
-        pathResult
-      );
+      // log.info(
+      //   "transformer_resolveReference resolved for",
+      //   JSON.stringify(transformerInnerReference, null, 2),
+      //   "found pathResult",
+      //   pathResult
+      // );
       return pathResult;
     } catch (error) {
       log.error(
@@ -1720,7 +1731,9 @@ export function transformer_resolveReference(
           "no referencePath " +
           transformerInnerReference.referencePath.join(".") +
           " found in queryContext",
-        queryContext: JSON.stringify(Object.keys(bank)),
+        // queryContext: JSON.stringify(Object.keys(bank)),
+        // queryContext: JSON.stringify(bank),
+        queryContext: bank as any,
       });
     }
   }
@@ -1888,21 +1901,21 @@ export function transformer_mustacheStringTemplate_apply(
   reduxDeploymentsState?: ReduxDeploymentsState | undefined // used by getDefaultValueForJzodSchemaWithResolution only, somewhat redundant with modelEnvironment
 ): TransformerReturnType<any> {
   try {
-    log.info(
-      "transformer_mustacheStringTemplate_apply called for transformer",
-      transformer,
-      "queryParams",
-      queryParams,
-      // JSON.stringify(Object.keys(queryParams), null, 2),
-      "contextResults",
-      contextResults
-      // JSON.stringify(Object.keys(contextResults ?? {}), null, 2)
-    );
+    // log.info(
+    //   "transformer_mustacheStringTemplate_apply called for transformer",
+    //   transformer,
+    //   "queryParams",
+    //   queryParams,
+    //   // JSON.stringify(Object.keys(queryParams), null, 2),
+    //   "contextResults",
+    //   contextResults
+    //   // JSON.stringify(Object.keys(contextResults ?? {}), null, 2)
+    // );
     const result = mustache.render(
       transformer.definition,
       ((transformer as any)["interpolation"] ?? "build") == "runtime" ? contextResults : queryParams
     );
-    log.info("transformer_mustacheStringTemplate_apply result:", result);
+    // log.info("transformer_mustacheStringTemplate_apply result:", result);
     return result;
   } catch (error: any) {
     log.error(
@@ -2080,10 +2093,6 @@ export function handleCountTransformer(
     contextResults,
     label
   );
-  // log.info(
-  //   "handleCountTransformer extractorTransformer count resolvedReference=",
-  //   resolvedReference
-  // );
   if (resolvedReference instanceof TransformerFailure) {
     log.error(
       "handleCountTransformer extractorTransformer count can not apply to failed resolvedReference",
@@ -2091,7 +2100,7 @@ export function handleCountTransformer(
     );
     return new TransformerFailure({
       queryFailure: "FailedTransformer",
-      transformerPath, //: [...transformerPath, transformer.transformerType],
+      transformerPath,
       failureOrigin: ["handleCountTransformer"],
       queryContext: "count can not apply to failed resolvedReference",
       innerError: resolvedReference,
@@ -2099,14 +2108,13 @@ export function handleCountTransformer(
   }
 
   if (typeof resolvedReference != "object" || !Array.isArray(resolvedReference)) {
-    // if ( typeof resolvedReference != "object" || !Array.isArray(resolvedReference)) {
     log.error(
       "innerTransformer_apply extractorTransformer count can not apply to resolvedReference of wrong type",
       resolvedReference
     );
     return new TransformerFailure({
       queryFailure: "FailedTransformer",
-      transformerPath, //: [...transformerPath, transformer.transformerType],
+      transformerPath,
       failureOrigin: ["handleCountTransformer"],
       queryContext:
         "count can not apply to resolvedReference of wrong type: " + typeof resolvedReference,
@@ -2114,10 +2122,11 @@ export function handleCountTransformer(
     });
   }
 
-  // log.info(
-  //   "handleCountTransformer extractorTransformer count resolvedReference",
-  //   resolvedReference.length
-  // );
+  // Determine aggregate function: default to "count" for backward compat
+  const aggFunction = transformer.function;
+  // AGG-3: When function is explicitly specified, use function name as result key.
+  // When no function specified (legacy), use "aggregate" as result key for backward compat.
+  const resultKey = aggFunction ?? "aggregate";
 
   if (transformer.groupBy) {
     // Handle both single string and string array groupBy
@@ -2125,53 +2134,264 @@ export function handleCountTransformer(
       ? transformer.groupBy
       : [transformer.groupBy];
 
-    // Use a Map with composite key (JSON stringified) to track getUniqueValues combinations
-    const groupByMap = new Map<string, { attributes: Record<string, any>; aggregate: number }>();
+    const groupByMap = new Map<string, { attributes: Record<string, any>; aggValue: AggAccumulator }>();
 
     for (const entry of resolvedReference) {
-      // Build the grouping key from all groupBy attributes
       const attributes: Record<string, any> = {};
       for (const attr of groupByArray) {
         attributes[attr] = (entry as any)[attr];
       }
-
-      // Create a composite key for this combination
       const compositeKey = JSON.stringify(attributes);
 
       if (groupByMap.has(compositeKey)) {
         const existing = groupByMap.get(compositeKey)!;
-        existing.aggregate++;
+        accumulateAggValue(existing.aggValue, entry, aggFunction, transformer.attribute, transformer.distinct, transformer.attributeObject);
       } else {
-        groupByMap.set(compositeKey, { attributes, aggregate: 1 });
+        groupByMap.set(compositeKey, {
+          attributes,
+          aggValue: initAggValue(entry, aggFunction, transformer.attribute, transformer.distinct, transformer.attributeObject),
+        });
       }
     }
 
-    // log.info(
-    //   "handleCountTransformer extractorTransformer count with groupBy resolvedReference",
-    //   resolvedReference.length,
-    //   "groupByMap",
-    //   Array.from(groupByMap.entries())
-    // );
+    let result = Array.from(groupByMap.values())
+      .map(({ attributes, aggValue }) => ({
+        ...attributes,
+        [resultKey]: finalizeAggValue(aggValue, aggFunction),
+      }))
+      .sort((a, b) => {
+        for (const attr of groupByArray) {
+          if (a[attr] < b[attr]) return -1;
+          if (a[attr] > b[attr]) return 1;
+        }
+        return 0;
+      });
 
-    // Convert map to result array with attributes spread and count
-    const result = Array.from(groupByMap.values()).map(({ attributes, aggregate }) => ({
-      ...attributes,
-      aggregate,
-    }));
+    // AGG-2: having clause - filter groups after aggregation
+    if (transformer.having) {
+      result = result.filter((row) => {
+        const havingResult = defaultTransformers.transformer_extended_apply(
+          step,
+          [...transformerPath, "having"],
+          label,
+          transformer.having,
+          resolveBuildTransformersTo,
+          modelEnvironment,
+          transformerParams,
+          { ...contextResults, aggregateValue: row[resultKey] },
+        );
+        if (havingResult instanceof TransformerFailure) {
+          return false;
+        }
+        return !!havingResult;
+      });
+    }
 
-    // log.info(
-    //   "handleCountTransformer extractorTransformer count with groupBy result",
-    //   result
-    // );
     return result;
   } else {
-    // log.info(
-    //   "handleCountTransformer extractorTransformer count without groupBy resolvedReference",
-    //   resolvedReference.length
-    // );
-    return [{ aggregate: resolvedReference.length }];
+    // Ungrouped aggregation
+    const aggValue = resolvedReference.reduce(
+      (acc: any, entry: any) => {
+        accumulateAggValue(acc, entry, aggFunction, transformer.attribute, transformer.distinct, transformer.attributeObject);
+        return acc;
+      },
+      initAggValueForEmpty(aggFunction, transformer.distinct),
+    );
+
+    let result = [{ [resultKey]: finalizeAggValue(aggValue, aggFunction) }];
+
+    // AGG-2: having clause for ungrouped (rare but consistent)
+    if (transformer.having) {
+      result = result.filter((row) => {
+        const havingResult = defaultTransformers.transformer_extended_apply(
+          step,
+          [...transformerPath, "having"],
+          label,
+          transformer.having,
+          resolveBuildTransformersTo,
+          modelEnvironment,
+          transformerParams,
+          { ...contextResults, aggregateValue: row[resultKey] },
+        );
+        if (havingResult instanceof TransformerFailure) {
+          return false;
+        }
+        return !!havingResult;
+      });
+    }
+
+    return result;
   }
-  // break;
+}
+
+// ################################################################################################
+// Helper functions for aggregate computation
+// ################################################################################################
+// Returns true if val is null/undefined, or if val is a plain object where every value is null/undefined
+function isNullOrAllNull(val: any): boolean {
+  if (val == null) return true;
+  if (typeof val === "object" && !Array.isArray(val)) {
+    return Object.values(val).every((v) => v == null);
+  }
+  return false;
+}
+
+type AggAccumulator = {
+  count: number;
+  sum?: number;
+  min?: number;
+  max?: number;
+  values?: any[];
+  distinctSet?: Set<string>;
+};
+
+function initAggValueForEmpty(
+  aggFunction: string | undefined,
+  distinct: boolean | undefined,
+): AggAccumulator {
+  return {
+    count: 0,
+    sum: 0,
+    values: [],
+    distinctSet: distinct ? new Set() : undefined,
+  };
+}
+
+function initAggValue(
+  entry: any,
+  aggFunction: string | undefined,
+  attribute: string | undefined,
+  distinct: boolean | undefined,
+  attributeObject?: Record<string, string>,
+): AggAccumulator {
+  // When attributeObject is set, build an object for json_agg/json_agg_strict
+  const val = attributeObject != null
+    ? Object.fromEntries(Object.entries(attributeObject).map(([k, v]) => [k, entry[v]]))
+    : attribute != null ? entry[attribute] : undefined;
+  const acc: AggAccumulator = { count: 0, distinctSet: distinct ? new Set() : undefined };
+
+  switch (aggFunction) {
+    case "sum":
+      acc.sum = typeof val === "number" ? val : 0;
+      acc.count = 1;
+      break;
+    case "avg":
+      acc.sum = typeof val === "number" ? val : 0;
+      acc.count = 1;
+      break;
+    case "min":
+      acc.min = typeof val === "number" ? val : undefined;
+      acc.count = 1;
+      break;
+    case "max":
+      acc.max = typeof val === "number" ? val : undefined;
+      acc.count = 1;
+      break;
+    case "json_agg":
+      acc.values = [val];
+      acc.count = 1;
+      break;
+    case "json_agg_strict":
+      acc.values = isNullOrAllNull(val) ? [] : [val];
+      acc.count = 1;
+      break;
+    case "count":
+      if (distinct && attribute != null) {
+        acc.distinctSet!.add(JSON.stringify(val));
+      }
+      acc.count = 1;
+      break;
+    default:
+      // Legacy "count" behavior (no function specified)
+      acc.count = 1;
+      break;
+  }
+  return acc;
+}
+
+function accumulateAggValue(
+  acc: AggAccumulator,
+  entry: any,
+  aggFunction: string | undefined,
+  attribute: string | undefined,
+  distinct: boolean | undefined,
+  attributeObject?: Record<string, string>,
+): void {
+  const val = attributeObject != null
+    ? Object.fromEntries(Object.entries(attributeObject).map(([k, v]) => [k, entry[v]]))
+    : attribute != null ? entry[attribute] : undefined;
+
+  switch (aggFunction) {
+    case "sum":
+      acc.sum = (acc.sum ?? 0) + (typeof val === "number" ? val : 0);
+      acc.count++;
+      break;
+    case "avg":
+      acc.sum = (acc.sum ?? 0) + (typeof val === "number" ? val : 0);
+      acc.count++;
+      break;
+    case "min":
+      if (typeof val === "number") {
+        acc.min = acc.min != null ? Math.min(acc.min, val) : val;
+      }
+      acc.count++;
+      break;
+    case "max":
+      if (typeof val === "number") {
+        acc.max = acc.max != null ? Math.max(acc.max, val) : val;
+      }
+      acc.count++;
+      break;
+    case "json_agg":
+      acc.values = acc.values ?? [];
+      acc.values.push(val);
+      acc.count++;
+      break;
+    case "json_agg_strict":
+      acc.values = acc.values ?? [];
+      if (!isNullOrAllNull(val)) {
+        acc.values.push(val);
+      }
+      acc.count++;
+      break;
+    case "count":
+      if (distinct && attribute != null) {
+        if (!acc.distinctSet) {
+          acc.distinctSet = new Set();
+        }
+        acc.distinctSet.add(JSON.stringify(val));
+      }
+      acc.count++;
+      break;
+    default:
+      // Legacy "count" behavior
+      acc.count++;
+      break;
+  }
+}
+
+function finalizeAggValue(
+  acc: AggAccumulator,
+  aggFunction: string | undefined,
+): any {
+  switch (aggFunction) {
+    case "sum":
+      return acc.sum ?? 0;
+    case "avg":
+      return acc.count > 0 ? (acc.sum ?? 0) / acc.count : 0;
+    case "min":
+      return acc.min ?? 0;
+    case "max":
+      return acc.max ?? 0;
+    case "json_agg":
+    case "json_agg_strict":
+      return acc.values ?? [];
+    case "count":
+      return acc.distinctSet ? acc.distinctSet.size : acc.count;
+    default:
+      // Legacy "count" behavior
+      return acc.count;
+  }
 }
 // ################################################################################################
 export function handleUniqueTransformer(
@@ -2709,19 +2929,19 @@ export function handleTransformer_boolExpr(
     default:          condition = false;                         break;
   }
 
-  log.info(
-    "handleTransformer_boolExpr",
-    "label",
-    label,
-    "operator",
-    op,
-    "leftValue",
-    leftValue,
-    "rightValue",
-    rightValue,
-    "result",
-    condition,
-  );
+  // log.info(
+  //   "handleTransformer_boolExpr",
+  //   "label",
+  //   label,
+  //   "operator",
+  //   op,
+  //   "leftValue",
+  //   leftValue,
+  //   "rightValue",
+  //   rightValue,
+  //   "result",
+  //   condition,
+  // );
   return condition;
 }
 
@@ -3985,4 +4205,60 @@ export function getInnermostTransformerError(error: TransformerFailure): Transfo
     // }
   }
   return error;
+}
+
+// ################################################################################################
+export function handleTransformer_ansiColumnsToJzodSchema(
+  step: Step,
+  transformerPath: string[],
+  label: string | undefined,
+  transformer: any,
+  resolveBuildTransformersTo: ResolveBuildTransformersTo,
+  modelEnvironment: MiroirModelEnvironment,
+  transformerParams: Record<string, any>,
+  contextResults?: Record<string, any>,
+  reduxDeploymentsState?: ReduxDeploymentsState | undefined
+): TransformerReturnType<any> {
+  const resolvedReference = resolveApplyTo_legacy(
+    transformer,
+    step,
+    transformerPath,
+    resolveBuildTransformersTo,
+    modelEnvironment,
+    transformerParams,
+    contextResults,
+    label
+  );
+
+  if (resolvedReference instanceof TransformerFailure) {
+    return new TransformerFailure({
+      queryFailure: "FailedTransformer",
+      transformerPath,
+      failureOrigin: ["handleTransformer_ansiColumnsToJzodSchema"],
+      queryContext: "handleTransformer_ansiColumnsToJzodSchema can not resolve applyTo",
+      innerError: resolvedReference,
+    });
+  }
+
+  if (!Array.isArray(resolvedReference)) {
+    return new TransformerFailure({
+      queryFailure: "FailedTransformer",
+      transformerPath,
+      failureOrigin: ["handleTransformer_ansiColumnsToJzodSchema"],
+      failureMessage:
+        "handleTransformer_ansiColumnsToJzodSchema called on something that is not an array: " +
+        typeof resolvedReference,
+    });
+  }
+
+  try {
+    return ansiColumnsToJzodSchema(resolvedReference as any);
+  } catch (e: any) {
+    return new TransformerFailure({
+      queryFailure: "FailedTransformer",
+      transformerPath,
+      failureOrigin: ["handleTransformer_ansiColumnsToJzodSchema"],
+      failureMessage: e?.message ?? String(e),
+    });
+  }
 }

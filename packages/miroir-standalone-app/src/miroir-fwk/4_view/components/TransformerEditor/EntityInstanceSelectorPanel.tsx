@@ -10,7 +10,7 @@ import {
   defaultSelfApplicationDeploymentMap,
   defaultTransformerInput,
   defaultTransformers,
-  getEntityInstancesUuidIndexNonHook,
+  getEntityInstancesIndexNonHook,
   noValue,
   type ApplicationDeploymentMap,
   type Entity,
@@ -24,7 +24,7 @@ import {
 
 import { useFormikContext } from 'formik';
 import {
-  DebugHelper,
+  JsonDisplayHelper,
   formikPath_EntityInstanceSelectorPanel,
   getMemoizedReduxDeploymentsStateSelectorMap,
   useMiroirContextService,
@@ -234,7 +234,7 @@ export function EntityInstanceSelectorPanel(props:{
   // Fetch all instances of the target entity with stable reference
   const entityInstances: EntityInstance[] = useMemo(() => {
     try {
-      return getEntityInstancesUuidIndexNonHook(
+      return getEntityInstancesIndexNonHook(
         deploymentEntityState,
         currentMiroirModelEnvironment,
         inputSelector_applicationUuid,
@@ -416,7 +416,7 @@ export function EntityInstanceSelectorPanel(props:{
   // ##############################################################################################
   return (
     <>
-      <DebugHelper
+      <JsonDisplayHelper debug={true}
         componentName="EntityInstanceSelectorPanel"
         elements={[{
           label: `EntityInstanceSelectorPanel`,
@@ -568,7 +568,7 @@ export function EntityInstanceSelectorPanel(props:{
           /* Show all instances */
           entityInstances.length > 0 ? (
             <>
-              <DebugHelper
+              <JsonDisplayHelper debug={true}
                 componentName="EntityInstanceSelectorPanel"
                 elements={[{
                   label: `TypedValueObjectEditor showing all ${

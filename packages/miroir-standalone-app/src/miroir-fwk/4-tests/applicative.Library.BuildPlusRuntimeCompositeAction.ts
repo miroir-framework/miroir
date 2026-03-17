@@ -166,11 +166,11 @@ export function getTestSuitesForBuildPlusRuntimeCompositeAction(miroirConfig: an
           [],
           emptyMetaModel,
         ),
-        // afterEach: testOnLibrary_resetLibraryDeployment(
+        // afterEach: testUtils_resetApplicationDeployment(
         //   testDeploymentConfiguration,
         //   testDeploymentUuid
         // ),
-        // afterAll: testOnLibrary_deleteLibraryDeployment(
+        // afterAll: testUtils_deleteApplicationDeployment(
         //   testDeploymentConfiguration,
         //   testDeploymentUuid
         // ),
@@ -182,7 +182,8 @@ export function getTestSuitesForBuildPlusRuntimeCompositeAction(miroirConfig: an
             compositeActionSequence: {
               actionType: "compositeActionSequence",
               endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
-              actionLabel: "createEntityAndReportFromSpreadsheetAndUpdateMenu",              // endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+              actionLabel: "createEntityAndReportFromSpreadsheetAndUpdateMenu",
+              // endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
               payload: {
                 application: {
                   transformerType: "getFromParameters",
@@ -283,7 +284,7 @@ export function getTestSuitesForBuildPlusRuntimeCompositeAction(miroirConfig: an
                 //     definition: {
                 //       extractors: {
                 //         instanceList: {
-                //           extractorOrCombinerType: "extractorByEntityReturningObjectList",
+                //           extractorOrCombinerType: "extractorInstancesByEntity",
                 //           parentName: {
                 //             transformerType: "getFromParameters",
                 //             interpolation: "build",
@@ -352,7 +353,7 @@ export function getTestSuitesForBuildPlusRuntimeCompositeAction(miroirConfig: an
                 //           transformerType: "returnValue",
                 //           interpolation: "build",
                 //           value: {
-                //             extractorOrCombinerType: "extractorForObjectByDirectReference",
+                //             extractorOrCombinerType: "extractorByPrimaryKey",
                 //             parentName: {
                 //               transformerType: "getFromContext",
                 //               interpolation: "build",
@@ -403,7 +404,8 @@ export function getTestSuitesForBuildPlusRuntimeCompositeAction(miroirConfig: an
                   // createEntity
                   {
                     actionType: "createEntity",
-                    actionLabel: "createEntity",                    endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                    actionLabel: "createEntity",
+                    endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                     payload: {
                       application: {
                         transformerType: "getFromParameters",
@@ -478,7 +480,8 @@ export function getTestSuitesForBuildPlusRuntimeCompositeAction(miroirConfig: an
                   // commit
                   {
                     actionType: "commit",
-                    actionLabel: "commit",                    endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                    actionLabel: "commit",
+                    endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                     payload: {
                       application: {
                         transformerType: "getFromParameters",
@@ -498,7 +501,8 @@ export function getTestSuitesForBuildPlusRuntimeCompositeAction(miroirConfig: an
                     actionLabel: "getListOfEntityDefinitions",
                     nameGivenToResult: "newApplicationEntityDefinitionList",
                     query: {
-                      actionType: "runBoxedQueryAction",                      endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+                      actionType: "runBoxedQueryAction",
+                      endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
                       payload: {
                         application: {
                           transformerType: "getFromParameters",
@@ -534,7 +538,7 @@ export function getTestSuitesForBuildPlusRuntimeCompositeAction(miroirConfig: an
                           contextResults: {},
                           extractors: {
                             entityDefinitions: {
-                              extractorOrCombinerType: "extractorByEntityReturningObjectList",
+                              extractorOrCombinerType: "extractorInstancesByEntity",
                               applicationSection: "model",
                               parentName: {
                                 transformerType: "getFromParameters",
@@ -562,7 +566,8 @@ export function getTestSuitesForBuildPlusRuntimeCompositeAction(miroirConfig: an
                     actionLabel: "getListOfEntities",
                     nameGivenToResult: "newApplicationEntityList",
                     query: {
-                      actionType: "runBoxedQueryAction",                      endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+                      actionType: "runBoxedQueryAction",
+                      endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
                       payload: {
                         application: {
                           transformerType: "getFromParameters",
@@ -598,7 +603,7 @@ export function getTestSuitesForBuildPlusRuntimeCompositeAction(miroirConfig: an
                           contextResults: {},
                           extractors: {
                             entities: {
-                              extractorOrCombinerType: "extractorByEntityReturningObjectList",
+                              extractorOrCombinerType: "extractorInstancesByEntity",
                               applicationSection: "model",
                               parentName: {
                                 transformerType: "getFromParameters",
@@ -655,7 +660,7 @@ export function getTestSuitesForBuildPlusRuntimeCompositeAction(miroirConfig: an
                   // //         contextResults: {},
                   // //         extractors: {
                   // //           reports: {
-                  // //             extractorOrCombinerType: "extractorByEntityReturningObjectList",
+                  // //             extractorOrCombinerType: "extractorInstancesByEntity",
                   // //             applicationSection: "model",
                   // //             parentName: {
                   // //               transformerType: "getFromParameters",
@@ -705,7 +710,7 @@ export function getTestSuitesForBuildPlusRuntimeCompositeAction(miroirConfig: an
                   // //         contextResults: {},
                   // //         extractors: {
                   // //           menuList: {
-                  // //             extractorOrCombinerType: "extractorByEntityReturningObjectList",
+                  // //             extractorOrCombinerType: "extractorInstancesByEntity",
                   // //             applicationSection: "model",
                   // //             parentName: {
                   // //               transformerType: "getFromParameters",
@@ -851,7 +856,7 @@ export function getTestSuitesForBuildPlusRuntimeCompositeAction(miroirConfig: an
                   // //         contextResults: {},
                   // //         extractors: {
                   // //           menuList: {
-                  // //             extractorOrCombinerType: "extractorByEntityReturningObjectList",
+                  // //             extractorOrCombinerType: "extractorInstancesByEntity",
                   // //             applicationSection: "model",
                   // //             parentName: "Menu",
                   // //             parentUuid: {

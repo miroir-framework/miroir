@@ -5,13 +5,21 @@
     "declaration": true,
     "declarationMap": true,
     "declarationDir": "dist/out-tsc/dts",
-    "target": "ESNext",
-    "module": "ESNext",
-    "moduleResolution": "node",
-    "resolveJsonModule": true,
     "rootDir": "./",
     "baseUrl": "./",
   },
-  "exclude": ["./node_modules/**","./src/**/*.spec.js", "./src/**/*.spec.jsx", "./src/**/*.spec.ts", "./src/**/*.spec.tsx"],
-  "include": ["./src/**/*.json", "./src/**/*.js", "./src/**/*.jsx", "./src/**/*.ts", "./src/**/*.tsx", "test/getAttributeTypesFromJzodSchema.test.ts"]
+  "exclude": [
+    "./node_modules/**",
+    "./src/**/*.spec.js",
+    "./src/**/*.spec.jsx",
+    "./src/**/*.spec.ts",
+    "./src/**/*.spec.tsx"
+  ],
+  "include": [
+    "./src/**/*.json",
+    "./src/**/*.js",
+    "./src/**/*.jsx",
+    "./src/**/*.ts",
+    "./src/**/*.tsx"
+ ]
 }

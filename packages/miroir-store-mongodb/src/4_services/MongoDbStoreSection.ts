@@ -6,7 +6,8 @@ import {
   MetaEntity,
   MiroirLoggerFactory,
   PersistenceStoreAbstractSectionInterface,
-  StorageSpaceHandlerInterface
+  StorageSpaceHandlerInterface,
+  type Entity
 } from "miroir-core";
 import { packageName } from "../constants.js";
 import { cleanLevel } from "./constants.js";
@@ -41,7 +42,7 @@ export class MongoDbStoreSection
   }
 
   // ##################################################################################################
-  bootFromPersistedState(entities: MetaEntity[], entityDefinitions: EntityDefinition[]): Promise<Action2VoidReturnType> {
+  bootFromPersistedState(entities: Entity[], entityDefinitions: EntityDefinition[]): Promise<Action2VoidReturnType> {
     log.info(this.logHeader, "bootFromPersistedState does nothing!");
     return Promise.resolve(ACTION_OK);
   }
@@ -57,9 +58,14 @@ export class MongoDbStoreSection
     return this.localUuidMongoDb.getCollections();
   }
 
+  // ##############################################################################################
+  getEntityIdAttribute(entityUuid: string): string | string[] {
+    return "uuid"; // MongoDB store does not yet support custom PKs
+  }
+
   // #############################################################################################
   async createStorageSpaceForInstancesOfEntity(
-    entity: MetaEntity,
+    entity: Entity,
     entityDefinition: EntityDefinition
   ): Promise<Action2VoidReturnType> {
     log.info(
@@ -131,7 +137,7 @@ export class MongoDbStoreSection
   renameStorageSpaceForInstancesOfEntity(
     oldName: string,
     newName: string,
-    entity: MetaEntity,
+    entity: Entity,
     entityDefinition: EntityDefinition
   ): Promise<Action2VoidReturnType> {
     log.warn(

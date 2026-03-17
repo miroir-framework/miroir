@@ -68,7 +68,8 @@
         "definition": [
           "MetaModel",
           "Model",
-          "Data"
+          "Data",
+          "External"
         ],
         "optional": true,
         "tag": {

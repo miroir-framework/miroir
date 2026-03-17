@@ -9,7 +9,7 @@
   "definition": {
     "extractorTemplates": {
       "elementToDisplay": {
-        "extractorOrCombinerType": "extractorForObjectByDirectReference",
+        "extractorOrCombinerType": "extractorByPrimaryKey",
         "parentName": "Theme",
         "parentUuid": "bdcf956a-771d-40a1-a878-06e0bf6efd3e",
         "instanceUuid": {

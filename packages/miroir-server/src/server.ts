@@ -238,7 +238,7 @@ const deploymentsQueryResults = await domainController.handleBoxedExtractorOrQue
       contextResults: {},
       extractors: {
         deployments: {
-          extractorOrCombinerType: "extractorByEntityReturningObjectList",
+          extractorOrCombinerType: "extractorInstancesByEntity",
           parentUuid: entityDeployment.uuid,
         }
       }

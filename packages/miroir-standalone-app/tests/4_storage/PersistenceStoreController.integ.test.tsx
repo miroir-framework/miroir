@@ -38,7 +38,8 @@ import {
   resetAndInitApplicationDeployment,
   type AdminApplicationDeploymentConfiguration,
   type ApplicationDeploymentMap,
-  type Deployment
+  type Deployment,
+  type Entity
 } from "miroir-core";
 import {
   deployment_Admin,
@@ -77,7 +78,8 @@ let localAppPersistenceStoreController: PersistenceStoreControllerInterface;
 let miroirContext: MiroirContext;
 let persistenceStoreControllerManager: PersistenceStoreControllerManagerInterface | undefined;
 
-const env:any = (import.meta as any).env
+// const env:any = (import.meta as any).env
+const env: any = process.env;
 console.log("@@@@@@@@@@@@@@@@@@ env", env);
 
 const myConsoleLog = (...args: any[]) => console.log(fileName, ...args);
@@ -438,6 +440,7 @@ describe.sequential("PersistenceStoreController.integ.test", () => {
         "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
         "5e81e1b9-38be-487c-b3e5-53796c57fccf",
         "a659d350-dd97-4da9-91de-524fa01745dc",
+        "bdcf956a-771d-40a1-a878-06e0bf6efd3e",
         "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24",
         "cdb0aec6-b848-43ac-a058-fe2dbe5811f1",
         "dde4c883-ae6d-47c3-b6df-26bc6e3c1842",
@@ -478,7 +481,7 @@ describe.sequential("PersistenceStoreController.integ.test", () => {
       {},
       async () =>
         localAppPersistenceStoreController.createEntity(
-          entityAuthor as MetaEntity,
+          entityAuthor as Entity,
           entityDefinitionAuthor as EntityDefinition
         ),
       undefined,
@@ -507,13 +510,17 @@ describe.sequential("PersistenceStoreController.integ.test", () => {
   it("rename Author Entity", async () => {
 
     // setup
-    const entityCreated = await localAppPersistenceStoreController.createEntity(entityAuthor as MetaEntity,entityDefinitionAuthor as EntityDefinition)
+    const entityCreated = await localAppPersistenceStoreController.createEntity(
+      entityAuthor as Entity,
+      entityDefinitionAuthor as EntityDefinition,
+    );
 
     expect(entityCreated, "failed to setup test case").toEqual(ACTION_OK)
     // test starts
     const modelActionRenameEntity:ModelActionRenameEntity =  {
       // actionType: "modelAction",
-      actionType: "renameEntity",      endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+      actionType: "renameEntity",
+      endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       payload: {
         application: selfApplicationLibrary.uuid,
         // deploymentUuid:deployment_Library_DO_NO_USE.uuid,
@@ -526,85 +533,115 @@ describe.sequential("PersistenceStoreController.integ.test", () => {
 
     await chainVitestSteps(
       "fetchEntities",
-      { },
-      async () => await localAppPersistenceStoreController.getInstances("model",entityEntity.uuid),
+      {},
+      async () => await localAppPersistenceStoreController.getInstances("model", entityEntity.uuid),
       (a, p) => (a as any).returnedDomainElement.instances as MetaEntity[],
       "entities", // name to give to result
       // "entityInstanceCollection", // expected result.elementType
       undefined,
       undefined, // test result
     )
-    .then (
-      (v) => chainVitestSteps(
-        "fetchEntityDefinitions",
-        v,
-        async () => await localAppPersistenceStoreController.getInstances("model", entityEntityDefinition.uuid),
-        (a, p) => (a as any).returnedDomainElement.instances as EntityDefinition[],
-        "entityDefinitions", // name to give to result
-        // "entityInstanceCollection", // expected result.elementType
-        undefined,
-        undefined, // expected result
+      .then((v) =>
+        chainVitestSteps(
+          "fetchEntityDefinitions",
+          v,
+          async () =>
+            await localAppPersistenceStoreController.getInstances(
+              "model",
+              entityEntityDefinition.uuid,
+            ),
+          (a, p) => (a as any).returnedDomainElement.instances as EntityDefinition[],
+          "entityDefinitions", // name to give to result
+          // "entityInstanceCollection", // expected result.elementType
+          undefined,
+          undefined, // expected result
+        ),
       )
-    )
-    .then (
-      (v) => chainVitestSteps(
-        "fetchEntityDefinitions",
-        v,
-        async () => await localAppPersistenceStoreController.renameEntityClean(modelActionRenameEntity),
-        undefined,
-        undefined, // name to give to result
-        undefined, // expected result.elementType
-        undefined, // expected result
+      .then((v) =>
+        chainVitestSteps(
+          "fetchEntityDefinitions",
+          v,
+          async () =>
+            await localAppPersistenceStoreController.renameEntityClean(modelActionRenameEntity),
+          undefined,
+          undefined, // name to give to result
+          undefined, // expected result.elementType
+          undefined, // expected result
+        ),
       )
-    )
-    .then((v) =>
-      chainVitestSteps(
-        "getEntityInstancesToCheckResult",
-        v,
-        async () => await localAppPersistenceStoreController.getInstances("model", entityEntity.uuid),
-        (a) => ignorePostgresExtraAttributesOnList((a as any).returnedDomainElement.instances, ["author", "icon", "display", "storageAccess"]),
-        undefined, // name to give to result
-        // "entityInstanceCollection",
-        undefined,
-        [
-          {
-            ...entityAuthor,
-            name: entityAuthor.name + "ssss",
-          },
-        ]
+      .then((v) =>
+        chainVitestSteps(
+          "getEntityInstancesToCheckResult",
+          v,
+          async () =>
+            await localAppPersistenceStoreController.getInstances("model", entityEntity.uuid),
+          (a) =>
+            ignorePostgresExtraAttributesOnList((a as any).returnedDomainElement.instances, [
+              "author",
+              "icon",
+              "display",
+              "storageAccess",
+              "externalDataSource",
+              "idAttribute",
+            ]),
+          undefined, // name to give to result
+          // "entityInstanceCollection",
+          undefined,
+          [
+            {
+              ...entityAuthor,
+              name: entityAuthor.name + "ssss",
+            },
+          ],
+        ),
       )
-    )
-    .then((v) =>
-      chainVitestSteps(
-        "getEntityDefinitionInstancesToCheckResult",
-        v,
-        async () => await localAppPersistenceStoreController.getInstances("model", entityEntityDefinition.uuid),
-        (a) => ignorePostgresExtraAttributesOnList((a as any).returnedDomainElement.instances, ["author", "icon", "display", "storageAccess"]),
-        undefined, // name to give to result
-        // "entityInstanceCollection",
-        undefined,
-        [
-          {
-            ...entityDefinitionAuthor,
-            name: entityDefinitionAuthor.name + "ssss",
-          },
-        ]
-      )
-    );
+      .then((v) =>
+        chainVitestSteps(
+          "getEntityDefinitionInstancesToCheckResult",
+          v,
+          async () =>
+            await localAppPersistenceStoreController.getInstances(
+              "model",
+              entityEntityDefinition.uuid,
+            ),
+          (a) =>
+            ignorePostgresExtraAttributesOnList((a as any).returnedDomainElement.instances, [
+              "author",
+              "icon",
+              "display",
+              "storageAccess",
+              "externalDataSource",
+              "idAttribute",
+            ]),
+          undefined, // name to give to result
+          // "entityInstanceCollection",
+          undefined,
+          [
+            {
+              ...entityDefinitionAuthor,
+              name: entityDefinitionAuthor.name + "ssss",
+            },
+          ],
+        ),
+      );
   });
 
   // ################################################################################################
   it("delete Author Entity", async () => {
 
     // setup
-    const entityCreated = await localAppPersistenceStoreController.createEntity(entityAuthor as MetaEntity,entityDefinitionAuthor as EntityDefinition)
+    const entityCreated = await localAppPersistenceStoreController.createEntity(
+      entityAuthor as Entity,
+      entityDefinitionAuthor as EntityDefinition,
+    );
 
     expect(entityCreated, "failed to setup test case").toEqual(ACTION_OK)
 
     // test starts
     const modelActionDropEntity:ModelActionDropEntity =  {
       // actionType: "modelAction",
-      actionType: "dropEntity",      endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+      actionType: "dropEntity",
+      endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       payload: {
         application: selfApplicationLibrary.uuid,
         // deploymentUuid:deployment_Library_DO_NO_USE.uuid,
@@ -635,7 +672,7 @@ describe.sequential("PersistenceStoreController.integ.test", () => {
       "entities", // name to give to result
       // "entityInstanceCollection", // expected result.elementType
       undefined,
-      undefined // test result
+      undefined, // test result
       // )
     )
       .then((v) =>
@@ -645,14 +682,14 @@ describe.sequential("PersistenceStoreController.integ.test", () => {
           async () =>
             await localAppPersistenceStoreController.getInstances(
               "model",
-              entityEntityDefinition.uuid
+              entityEntityDefinition.uuid,
             ),
           (a, p) => (a as any).returnedDomainElement.instances as EntityDefinition[],
           "entityDefinitions", // name to give to result
           // "entityInstanceCollection", // expected result.elementType
           undefined,
-          undefined // expected result
-        )
+          undefined, // expected result
+        ),
       )
       .then((v) =>
         chainVitestSteps(
@@ -660,13 +697,13 @@ describe.sequential("PersistenceStoreController.integ.test", () => {
           {},
           async () =>
             await localAppPersistenceStoreController.dropEntity(
-              modelActionDropEntity.payload.entityUuid
+              modelActionDropEntity.payload.entityUuid,
             ),
           undefined,
           undefined, // name to give to result
           undefined, // expected result.elementType
-          undefined // expected result
-        )
+          undefined, // expected result
+        ),
       )
       .then((v) =>
         chainVitestSteps(
@@ -678,8 +715,8 @@ describe.sequential("PersistenceStoreController.integ.test", () => {
           undefined, // name to give to result
           // "entityInstanceCollection",
           undefined,
-          []
-        )
+          [],
+        ),
       );
   });
 
@@ -687,7 +724,10 @@ describe.sequential("PersistenceStoreController.integ.test", () => {
   it("alter Author Entity: alter Author Entity attribute", async () => {
 
     // setup
-    const entityCreated = await localAppPersistenceStoreController.createEntity(entityAuthor as MetaEntity,entityDefinitionAuthor as EntityDefinition)
+    const entityCreated = await localAppPersistenceStoreController.createEntity(
+      entityAuthor as Entity,
+      entityDefinitionAuthor as EntityDefinition,
+    );
 
     expect(entityCreated, "failed to setup test case").toEqual(ACTION_OK)
     // test starts
@@ -698,7 +738,8 @@ describe.sequential("PersistenceStoreController.integ.test", () => {
     };
     const modelActionAlterAttribute:ModelAction =  {
       // actionType: "modelAction",
-      actionType: "alterEntityAttribute",      endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+      actionType: "alterEntityAttribute",
+      endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       payload: {
         application: selfApplicationLibrary.uuid,
         // deploymentUuid:deployment_Library_DO_NO_USE.uuid,
@@ -728,7 +769,7 @@ describe.sequential("PersistenceStoreController.integ.test", () => {
       "entities", // name to give to result
       // "entityInstanceCollection", // expected result.elementType
       undefined,
-      undefined // test result
+      undefined, // test result
     )
       .then((v) =>
         chainVitestSteps(
@@ -737,14 +778,14 @@ describe.sequential("PersistenceStoreController.integ.test", () => {
           async () =>
             await localAppPersistenceStoreController.getInstances(
               "model",
-              entityEntityDefinition.uuid
+              entityEntityDefinition.uuid,
             ),
           (a, p) => (a as any).returnedDomainElement.instances as EntityDefinition[],
           "entityDefinitions", // name to give to result
           // "entityInstanceCollection", // expected result.elementType
           undefined,
-          undefined // expected result
-        )
+          undefined, // expected result
+        ),
       )
       .then((v) =>
         chainVitestSteps(
@@ -752,13 +793,13 @@ describe.sequential("PersistenceStoreController.integ.test", () => {
           v,
           async () =>
             await localAppPersistenceStoreController.alterEntityAttribute(
-              modelActionAlterAttribute
+              modelActionAlterAttribute,
             ),
           undefined,
           undefined, // name to give to result
           undefined, // expected result.elementType
-          undefined // expected result
-        )
+          undefined, // expected result
+        ),
       )
       .then((v) =>
         chainVitestSteps(
@@ -767,11 +808,15 @@ describe.sequential("PersistenceStoreController.integ.test", () => {
           async () =>
             await localAppPersistenceStoreController.getInstances(
               "model",
-              entityEntityDefinition.uuid
+              entityEntityDefinition.uuid,
             ),
           (a) =>
             ignorePostgresExtraAttributesOnList((a as any).returnedDomainElement.instances, [
-              "icon", "display", "storageAccess",
+              "icon",
+              "display",
+              "storageAccess",
+              "externalDataSource",
+              "idAttribute",
             ]),
           undefined, // name to give to result
           // "entityInstanceCollection",
@@ -784,16 +829,16 @@ describe.sequential("PersistenceStoreController.integ.test", () => {
                 definition: {
                   ...Object.fromEntries(
                     Object.entries(entityDefinitionAuthor.mlSchema.definition).filter(
-                      (i) => !modelActionAlterAttribute.payload.removeColumns?.includes(i[0])
-                    )
+                      (i) => !modelActionAlterAttribute.payload.removeColumns?.includes(i[0]),
+                    ),
                   ),
                   icons: iconsDefinition,
                 },
                 // entityAuthor.name + "ssss",
               },
             },
-          ]
-        )
+          ],
+        ),
       );
     // .then((v) =>
     //   chainVitestSteps(
@@ -823,12 +868,16 @@ describe.sequential("PersistenceStoreController.integ.test", () => {
     await chainVitestSteps(
       "setup_createEntity",
       {},
-      async () => localAppPersistenceStoreController.createEntity(entityAuthor as MetaEntity,entityDefinitionAuthor as EntityDefinition),
+      async () =>
+        localAppPersistenceStoreController.createEntity(
+          entityAuthor as Entity,
+          entityDefinitionAuthor as EntityDefinition,
+        ),
       undefined,
       undefined, // name to give to result
       undefined, // expected result.elementType
       undefined, // expected result
-    )
+    );
 
     const instanceAdded = await localAppPersistenceStoreController?.upsertInstance('data', author1 as EntityInstance);
     expect(instanceAdded, "failed to add Author instance").toEqual(ACTION_OK)
@@ -872,7 +921,11 @@ describe.sequential("PersistenceStoreController.integ.test", () => {
     await chainVitestSteps(
       "setup_createEntity",
       {},
-      async () => localAppPersistenceStoreController.createEntity(entityAuthor as MetaEntity,entityDefinitionAuthor as EntityDefinition),
+      async () =>
+        localAppPersistenceStoreController.createEntity(
+          entityAuthor as Entity,
+          entityDefinitionAuthor as EntityDefinition,
+        ),
       undefined,
       undefined, // name to give to result
       undefined, // expected result.elementType
@@ -892,15 +945,20 @@ describe.sequential("PersistenceStoreController.integ.test", () => {
 
   // ################################################################################################
   it("update Author Instance", async () => {
-    await chainVitestSteps( // setup
+    await chainVitestSteps(
+      // setup
       "setup_createEntity",
       {},
-      async () => localAppPersistenceStoreController.createEntity(entityAuthor as MetaEntity,entityDefinitionAuthor as EntityDefinition),
+      async () =>
+        localAppPersistenceStoreController.createEntity(
+          entityAuthor as Entity,
+          entityDefinitionAuthor as EntityDefinition,
+        ),
       undefined,
       undefined, // name to give to result
       undefined, // expected result.elementType
       undefined, // expected result
-    )
+    );
 
     // test
     const instanceUpdated = await localAppPersistenceStoreController?.upsertInstance('data', {...author1, "name": author1.name + "ssss"} as EntityInstance);
@@ -925,11 +983,18 @@ describe.sequential("PersistenceStoreController.integ.test", () => {
   // ################################################################################################
   it("delete Author Instance", async () => {
     // setup
-    const entityCreated = await localAppPersistenceStoreController.createEntity(entityAuthor as MetaEntity,entityDefinitionAuthor as EntityDefinition)
+    const entityCreated = await localAppPersistenceStoreController.createEntity(
+      entityAuthor as Entity,
+      entityDefinitionAuthor as EntityDefinition,
+    );
     await chainVitestSteps( // setup
       "setup_createEntity",
       {},
-      async () => localAppPersistenceStoreController.createEntity(entityAuthor as MetaEntity,entityDefinitionAuthor as EntityDefinition),
+      async () =>
+        localAppPersistenceStoreController.createEntity(
+          entityAuthor as Entity,
+          entityDefinitionAuthor as EntityDefinition,
+        ),
       undefined,
       undefined, // name to give to result
       undefined, // expected result.elementType
@@ -973,7 +1038,7 @@ describe.sequential("PersistenceStoreController.integ.test", () => {
       "failed to delete Author"
     ).toEqual({
       errorType: "FailedToDeleteInstance",
-      errorMessage: "could not find entity d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+      errorMessage: "could not find entity d7a144ff-d1b9-4135-800c-a7cfc1f38733 in database schema library, available entities: ",
     });
   });
 

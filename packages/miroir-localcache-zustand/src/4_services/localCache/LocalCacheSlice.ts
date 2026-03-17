@@ -18,10 +18,14 @@ import {
   ModelEntityActionTransformer,
   TransformerFailure,
   Uuid,
+  entityDefinitionEntityDefinition,
+  getEntityPrimaryKeyAttribute,
+  serializeCompositeKeyValue,
   getLocalCacheIndexDeploymentSection,
   getLocalCacheIndexDeploymentUuid,
   getLocalCacheIndexEntityUuid,
   getReduxDeploymentsStateIndex,
+  resolveInstanceParentUuid,
   type Action2VoidReturnType,
   type ApplicationDeploymentMap
 } from "miroir-core";
@@ -116,38 +120,75 @@ interface EntityState {
   entities: Record<string, EntityInstance>;
 }
 
+// Module-level map from entityInstancesLocationIndex → idAttribute name(s) (default "uuid")
+const idAttributeByIndex: Record<string, string | string[]> = {};
+
+function getIdAttributeForIndex(index: string): string | string[] {
+  return idAttributeByIndex[index] ?? "uuid";
+}
+
+/**
+ * Called when loading or creating EntityDefinition instances.
+ * Registers the idAttribute for the entity identified by entityDefinition.entityUuid.
+ * Registers for all ApplicationSections since EntityDefinitions are stored in "model"
+ * but their instances may be loaded/created/deleted under any section (e.g. "data").
+ */
+function registerEntityDefinitionInLocalCache(
+  deploymentUuid: string,
+  _section: ApplicationSection,
+  entityDefinition: EntityInstance
+): void {
+  const idAttribute = getEntityPrimaryKeyAttribute(entityDefinition as any);
+  if (idAttribute !== "uuid") {
+    const entityUuid = (entityDefinition as any).entityUuid;
+    if (entityUuid) {
+      for (const targetSection of ["model", "data"] as ApplicationSection[]) {
+        const locationIndex = getReduxDeploymentsStateIndex(deploymentUuid, targetSection, entityUuid);
+        idAttributeByIndex[locationIndex] = idAttribute;
+      }
+    }
+  }
+}
+
 function getInitialEntityState(): EntityState {
   return { ids: [], entities: {} };
 }
 
-function addManyToEntityState(state: EntityState, instances: EntityInstance[]): EntityState {
+function addManyToEntityState(state: EntityState, instances: EntityInstance[], idAttribute: string | string[] = "uuid"): EntityState {
   const newIds = [...state.ids];
   const newEntities = { ...state.entities };
+  const pkAttrs = Array.isArray(idAttribute) ? idAttribute : [idAttribute];
   
   for (const instance of instances) {
-    if (!newEntities[instance.uuid]) {
-      newIds.push(instance.uuid);
+    const pk = serializeCompositeKeyValue(pkAttrs, instance);
+    if (!newEntities[pk]) {
+      newIds.push(pk);
     }
-    newEntities[instance.uuid] = instance;
+    newEntities[pk] = instance;
   }
   
   return { ids: newIds, entities: newEntities };
 }
 
-function setAllInEntityState(instances: EntityInstance[]): EntityState {
+// ################################################################################################
+function setAllInEntityState(instances: EntityInstance[], idAttribute: string | string[] = "uuid"): EntityState {
+  const pkAttrs = Array.isArray(idAttribute) ? idAttribute : [idAttribute];
   return {
-    ids: instances.map(i => i.uuid),
-    entities: Object.fromEntries(instances.map(i => [i.uuid, i]))
+    ids: instances.map(i => serializeCompositeKeyValue(pkAttrs, i)),
+    entities: Object.fromEntries(instances.map(i => [serializeCompositeKeyValue(pkAttrs, i), i]))
   };
 }
 
-function updateOneInEntityState(state: EntityState, instance: EntityInstance): EntityState {
-  if (!state.entities[instance.uuid]) {
+// ################################################################################################
+function updateOneInEntityState(state: EntityState, instance: EntityInstance, idAttribute: string | string[] = "uuid"): EntityState {
+  const pkAttrs = Array.isArray(idAttribute) ? idAttribute : [idAttribute];
+  const pk = serializeCompositeKeyValue(pkAttrs, instance);
+  if (!state.entities[pk]) {
     return state;
   }
   return {
     ids: state.ids,
-    entities: { ...state.entities, [instance.uuid]: instance }
+    entities: { ...state.entities, [pk]: instance }
   };
 }
 
@@ -257,55 +298,55 @@ function handleInstanceAction(
   switch (instanceAction.actionType) {
     case "createInstance": {
       for (const instance of instanceAction.payload.objects ?? []) {
-        const index = getReduxDeploymentsStateIndex(
-          deploymentUuid,
-          instanceAction.payload.applicationSection ?? "data",
-          instance.parentUuid
-        );
+        const resolvedParentUuid = resolveInstanceParentUuid(instance, instanceAction.payload.parentUuid);
+        if (resolvedParentUuid instanceof Action2Error) {
+          log.error("handleInstanceAction createInstance failed to resolve parentUuid for instance", instance);
+          return;
+        }
+        const section = instanceAction.payload.applicationSection ?? "data";
+        const index = getReduxDeploymentsStateIndex(deploymentUuid, section, resolvedParentUuid);
+        const idAttribute = getIdAttributeForIndex(index);
         
-        initializeLocalCacheSliceState(
-          deploymentUuid,
-          instanceAction.payload.applicationSection ?? "data",
-          instance.parentUuid,
-          "current",
-          state
-        );
+        initializeLocalCacheSliceState(deploymentUuid, section, resolvedParentUuid, "current", state);
         
         const currentState = state.current[index] as EntityState;
-        state.current[index] = addManyToEntityState(currentState, [instance]);
+        state.current[index] = addManyToEntityState(currentState, [instance], idAttribute);
       }
       break;
     }
     case "deleteInstance": {
       for (const instance of instanceAction.payload.objects ?? []) {
-        const index = getReduxDeploymentsStateIndex(
-          deploymentUuid,
-          instanceAction.payload.applicationSection,
-          instance.parentUuid
-        );
+        const resolvedParentUuid = resolveInstanceParentUuid(instance, instanceAction.payload.parentUuid);
+        if (resolvedParentUuid instanceof Action2Error) {
+          log.error("handleInstanceAction deleteInstance failed to resolve parentUuid for instance", instance);
+          return;
+        }
+        const section = instanceAction.payload.applicationSection ?? "data";
+        const index = getReduxDeploymentsStateIndex(deploymentUuid, section, resolvedParentUuid);
+        const idAttribute = getIdAttributeForIndex(index);
+        const pkAttrs = Array.isArray(idAttribute) ? idAttribute : [idAttribute];
+        const pk = serializeCompositeKeyValue(pkAttrs, instance);
         
         if (state.current[index]) {
-          // const ids = instanceAction.payload.objects.map((i: EntityInstance) => i.uuid);
-          state.current[index] = removeOneFromEntityState(state.current[index] as EntityState, instance.uuid);
+          state.current[index] = removeOneFromEntityState(state.current[index] as EntityState, pk);
         }
       }
       break;
     }
     case "updateInstance": {
       for (const instance of instanceAction.payload.objects ?? []) {
-      const index = getReduxDeploymentsStateIndex(
-        deploymentUuid,
-        instanceAction.payload.applicationSection,
-        instance.parentUuid
-      );
-      
-      if (state.current[index]) {
-        let currentState = state.current[index] as EntityState;
-        for (const instance of instanceAction.payload.objects ?? []) {
-          currentState = updateOneInEntityState(currentState, instance);
+        const resolvedParentUuid = resolveInstanceParentUuid(instance, instanceAction.payload.parentUuid);
+        if (resolvedParentUuid instanceof Action2Error) {
+          log.error("handleInstanceAction updateInstance failed to resolve parentUuid for instance", instance);
+          return;
         }
-        state.current[index] = currentState;
-      }
+        const section = instanceAction.payload.applicationSection ?? "data";
+        const index = getReduxDeploymentsStateIndex(deploymentUuid, section, resolvedParentUuid);
+        const idAttribute = getIdAttributeForIndex(index);
+        
+        if (state.current[index]) {
+          state.current[index] = updateOneInEntityState(state.current[index] as EntityState, instance, idAttribute);
+        }
       }
       break;
     }
@@ -323,19 +364,17 @@ function handleLoadNewInstancesAction(
   const deploymentUuid = applicationDeploymentMap[action.payload.application];
   
   for (const instanceCollection of action.payload.objects ?? []) {
-    const index = getReduxDeploymentsStateIndex(
-      deploymentUuid,
-      instanceCollection.applicationSection ?? "data",
-      instanceCollection.parentUuid
-    );
+    const section: ApplicationSection = instanceCollection.applicationSection ?? "data";
+    const index = getReduxDeploymentsStateIndex(deploymentUuid, section, instanceCollection.parentUuid);
     
-    initializeLocalCacheSliceState(
-      deploymentUuid,
-      instanceCollection.applicationSection ?? "data",
-      instanceCollection.parentUuid,
-      "loading",
-      state
-    );
+    // Register custom idAttribute when loading EntityDefinition instances
+    if (instanceCollection.parentUuid === entityDefinitionEntityDefinition.uuid) {
+      for (const entityDef of instanceCollection.instances ?? []) {
+        registerEntityDefinitionInLocalCache(deploymentUuid, section, entityDef);
+      }
+    }
+    
+    initializeLocalCacheSliceState(deploymentUuid, section, instanceCollection.parentUuid, "loading", state);
     
     // Normalize dates for serialization
     const instances = (instanceCollection.instances ?? []).map((i: EntityInstance) =>
@@ -348,7 +387,8 @@ function handleLoadNewInstancesAction(
         : i
     );
     
-    state.loading[index] = setAllInEntityState(instances);
+    const idAttribute = getIdAttributeForIndex(index);
+    state.loading[index] = setAllInEntityState(instances, idAttribute);
   }
 }
 

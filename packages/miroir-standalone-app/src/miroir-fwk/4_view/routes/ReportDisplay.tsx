@@ -33,7 +33,7 @@ import { ErrorFallbackComponent } from "../components/ErrorFallbackComponent.js"
 import { PerformanceDisplayContainer } from "../components/PerformanceDisplayContainer.js";
 import { useQueryTemplateResults } from "../components/Reports/ReportHooks.js";
 import { ReportViewWithEditor } from "../components/Reports/ReportViewWithEditor.js";
-import { DebugHelper } from "miroir-react";
+import { JsonDisplayHelper } from "miroir-react";
 import { ThemedBox, ThemedSpan } from "../components/Themes/index.js";
 import { cleanLevel } from "../constants.js";
 import { useMiroirTheme } from "../contexts/MiroirThemeContext.js";
@@ -157,7 +157,7 @@ export const ReportDisplay: React.FC<{
 
   return (
     <>
-      <DebugHelper
+      <JsonDisplayHelper debug={true}
         componentName="ReportDisplay"
         elements={[
           { label: "pageParams", data: pageParams },

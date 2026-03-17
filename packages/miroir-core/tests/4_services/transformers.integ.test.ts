@@ -61,7 +61,7 @@ import {
 import { MiroirActivityTracker } from '../../src/3_controllers/MiroirActivityTracker';
 import { MiroirEventService } from '../../src/3_controllers/MiroirEventService';
 
-import type { TransformerTestSuite } from '../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType';
+import type { Entity, TransformerTestSuite } from '../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType';
 import { transformerTest_miroirCoreTransformers } from "miroir-test-app_deployment-miroir";
 const transformerTestSuite_miroirTransformers: TransformerTestSuite = transformerTest_miroirCoreTransformers.definition as any;
 
@@ -166,11 +166,11 @@ const beforeAll = async () => {
     console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ connected!");
 
     await persistenceStoreController.initApplication(
-      defaultMiroirMetaModel,
       "miroir",
       testApplicationConfig.selfApplication,
       testApplicationConfig.applicationModelBranch,
-      testApplicationConfig.applicationVersion
+      testApplicationConfig.applicationVersion,
+      defaultMiroirMetaModel,
     );
 
     await persistenceStoreController.handleAction({
@@ -205,8 +205,10 @@ const beforeAll = async () => {
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       payload: {
         application: paramSelfApplicationUuid,
-        // deploymentUuid: paramAdminConfigurationDeploymentUuid,
-        entities: libraryEntitesAndInstances,
+        entities: libraryEntitesAndInstances.flatMap(e => ({
+          entity: e.entity as Entity,
+          entityDefinition: e.entityDefinition,
+        })),
       }
     });
     await persistenceStoreController.handleAction({
@@ -237,7 +239,7 @@ afterAll(async () => {
 
 // const extractors: ExtractorOrCombinerRecord = {
 //   books: {
-//     extractorOrCombinerType: "extractorByEntityReturningObjectList",
+//     extractorOrCombinerType: "extractorInstancesByEntity",
 //     applicationSection: "data",
 //     parentName: "Book",
 //     parentUuid: entityBook.uuid,

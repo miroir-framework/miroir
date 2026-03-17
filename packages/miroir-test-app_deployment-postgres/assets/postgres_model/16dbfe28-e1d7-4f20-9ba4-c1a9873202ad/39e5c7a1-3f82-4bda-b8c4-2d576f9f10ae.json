@@ -1,0 +1,10 @@
+{
+  "uuid": "39e5c7a1-3f82-4bda-b8c4-2d576f9f10ae",
+  "parentName": "Entity",
+  "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+  "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
+  "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+  "name": "columns",
+  "conceptLevel": "External",
+  "description": "The columns of a PostgreSQL schema."
+}

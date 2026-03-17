@@ -32,6 +32,8 @@ import {
   selectFetchQueryJzodSchemaFromDomainStateNew,
   selectJzodSchemaByDomainModelQueryFromDomainStateNew,
   selectJzodSchemaBySingleSelectQueryFromDomainStateNew,
+  serializeCompositeKeyValue,
+  getForeignKeyValue,
   transformer_InnerReference_resolve,
   type ApplicationDeploymentMap
 } from "miroir-core";
@@ -167,7 +169,7 @@ export class FileSystemExtractorRunner implements ExtractorOrQueryPersistenceSto
       entityUuidReference
     );
     switch (querySelectorParams?.extractorOrCombinerType) {
-      case "combinerForObjectByRelation": {
+      case "combinerOneToOne": {
         // const referenceObject = querySelectorParams.objectReference;
         const referenceObject = transformer_InnerReference_resolve(
           "runtime",
@@ -186,15 +188,30 @@ export class FileSystemExtractorRunner implements ExtractorOrQueryPersistenceSto
           return {
             elementType: "failure",
             queryFailure: "IncorrectParameters",
-            failureOrigin: ["FileSystemExtractorRunner", "combinerForObjectByRelation"],
+            failureOrigin: ["FileSystemExtractorRunner", "combinerOneToOne"],
             queryParameters: JSON.stringify(foreignKeyParams.extractor.pageParams ?? {}),
             queryContext: JSON.stringify(foreignKeyParams.extractor.contextResults ?? {}),
           };
         }
 
+        const fkValue = getForeignKeyValue(
+          querySelectorParams.AttributeOfObjectToCompareToReferenceUuid,
+          referenceObject
+        );
+
+        if (fkValue == null) {
+          return {
+            elementType: "failure",
+            queryFailure: "IncorrectParameters",
+            failureOrigin: ["FileSystemExtractorRunner", "combinerOneToOne"],
+            queryParameters: JSON.stringify(foreignKeyParams.extractor.pageParams ?? {}),
+            queryContext: "Could not resolve FK value from reference object",
+          };
+        }
+
         const result = await this.persistenceStoreController.getInstance(
           entityUuidReference,
-          referenceObject[querySelectorParams.AttributeOfObjectToCompareToReferenceUuid]
+          fkValue
         );
 
         if (
@@ -210,7 +227,7 @@ export class FileSystemExtractorRunner implements ExtractorOrQueryPersistenceSto
           };
         }
         // log.info(
-        //   "extractEntityInstance combinerForObjectByRelation, ############# reference",
+        //   "extractEntityInstance combinerOneToOne, ############# reference",
         //   querySelectorParams,
         //   "######### context entityUuid",
         //   entityUuidReference,
@@ -224,9 +241,9 @@ export class FileSystemExtractorRunner implements ExtractorOrQueryPersistenceSto
         return result.returnedDomainElement;
         break;
       }
-      case "extractorForObjectByDirectReference": {
+      case "extractorByPrimaryKey": {
         const instanceDomainElement = querySelectorParams.instanceUuid;
-        // log.info("extractEntityInstance extractorForObjectByDirectReference found domainState", JSON.stringify(domainState))
+        // log.info("extractEntityInstance extractorByPrimaryKey found domainState", JSON.stringify(domainState))
 
         log.info("extractEntityInstance found instanceUuid", JSON.stringify(instanceDomainElement));
 
@@ -250,7 +267,7 @@ export class FileSystemExtractorRunner implements ExtractorOrQueryPersistenceSto
           };
         }
         log.info(
-          "extractEntityInstance extractorForObjectByDirectReference, ############# reference",
+          "extractEntityInstance extractorByPrimaryKey, ############# reference",
           querySelectorParams,
           "entityUuidReference",
           entityUuidReference,
@@ -290,7 +307,10 @@ export class FileSystemExtractorRunner implements ExtractorOrQueryPersistenceSto
       if (result instanceof Domain2ElementFailed) {
         return result;
       }
-      const entityInstanceUuidIndex = Object.fromEntries(result.map((i: any) => [i.uuid, i]));
+      const entityUuid = extractorRunnerParams.extractor.select.parentUuid;
+      const idAttribute = this.persistenceStoreController.getEntityIdAttribute(entityUuid);
+      const pkAttrs = Array.isArray(idAttribute) ? idAttribute : [idAttribute];
+      const entityInstanceUuidIndex = Object.fromEntries(result.map((i: any) => [serializeCompositeKeyValue(pkAttrs, i), i]));
       return entityInstanceUuidIndex;
     });
   };

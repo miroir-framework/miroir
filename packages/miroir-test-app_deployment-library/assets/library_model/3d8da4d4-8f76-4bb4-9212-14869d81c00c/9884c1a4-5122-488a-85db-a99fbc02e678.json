@@ -51,7 +51,7 @@
             "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
             "payload": {
-              "definition": [
+              "actionSequence": [
                 {
                   "actionType": "compositeRunBoxedQueryTemplateAction",
                   "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
@@ -69,7 +69,7 @@
                         "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
                         "extractorTemplates": {
                           "targetBook": {
-                            "extractorOrCombinerType": "extractorForObjectByDirectReference",
+                            "extractorOrCombinerType": "extractorByPrimaryKey",
                             "label": "deployments of the application",
                             "applicationSection": "data",
                             "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",

@@ -9,15 +9,15 @@
   "configuration": {
     "admin": {
       "emulatedServerType": "filesystem",
-      "directory": "../miroir-standalone-app/tests/tmp/admin"
+      "directory": "../miroir-standalone-app/tests/assets/admin"
     },
     "model": {
       "emulatedServerType": "filesystem",
-      "directory": "../miroir-standalone-app/tests/tmp/admin_model"
+      "directory": "../miroir-standalone-app/tests/assets/admin_model"
     },
     "data": {
       "emulatedServerType": "filesystem",
-      "directory": "../miroir-standalone-app/tests/tmp/admin_data"
+      "directory": "../miroir-standalone-app/tests/assets/admin_data"
     }
   }
 }

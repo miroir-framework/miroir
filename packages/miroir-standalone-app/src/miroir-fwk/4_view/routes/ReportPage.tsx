@@ -23,7 +23,7 @@ import { usePageConfiguration } from "../services/index.js";
 import { useRenderTracker } from "../tools/renderCountTracker.js";
 import { RenderPerformanceMetrics } from "../tools/renderPerformanceMeasure.js";
 import { ReportDisplay } from "./ReportDisplay.js";
-import { DebugHelper } from "miroir-react";
+import { JsonDisplayHelper } from "miroir-react";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -92,7 +92,7 @@ export const ReportPage = () => {
           //   },
           // }}
         >
-          <DebugHelper
+          <JsonDisplayHelper debug={true}
             componentName="ReportPage"
             elements={[
               { label: "pageParams", data: pageParams, initiallyUnfolded: true, useCodeBlock: true },

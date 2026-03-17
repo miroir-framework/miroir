@@ -102,6 +102,18 @@ export interface ClassDiagramOptions {
 
   /** Title text when `showTitle` is true. */
   title?: string;
+
+  /**
+   * When provided, makes entity classes clickable in the diagram.
+   * Maps from sanitised entity name (Mermaid class identifier) to the entity
+   * definition UUID that will be passed to the `onClassClick` handler in the
+   * rendering component.
+   *
+   * Use `buildEntityDefinitionClickLinks` to build this map from EntityDefinitions.
+   *
+   * Generates Mermaid `click ClassName call miroirDiagramClassClick()` directives.
+   */
+  classClickLinks?: Record<string, string>;
 }
 
 // ############################################################################
@@ -167,6 +179,25 @@ export function buildEntityUuidToNameMap(
  */
 export function sanitiseMermaidId(name: string): string {
   return name.replace(/[^a-zA-Z0-9_]/g, "_");
+}
+
+/**
+ * Build a map from sanitised entity name to entity-definition UUID for all
+ * provided entity definitions.  The resulting map is ready to be passed as
+ * `ClassDiagramOptions.classClickLinks`.
+ *
+ * The map value is the EntityDefinition instance UUID (i.e. `entityDefinition.uuid`),
+ * NOT the entity UUID, because it is used as the `instanceUuid` segment in the
+ * report URL: `/report/:application/:deployment/:section/:reportUuid/:instanceUuid`.
+ */
+export function buildEntityDefinitionClickLinks(
+  entityDefinitions: EntityDefinition[],
+): Record<string, string> {
+  const links: Record<string, string> = {};
+  for (const ed of entityDefinitions) {
+    links[sanitiseMermaidId(ed.name)] = ed.uuid;
+  }
+  return links;
 }
 
 /**
@@ -328,6 +359,16 @@ export function entityDefinitionsToMermaidClassDiagram(
     for (const [entityName, defName] of Object.entries(options.entityColorAssignment)) {
       const id = sanitiseMermaidId(entityName);
       lines.push(`  class ${id} ${defName}`);
+    }
+  }
+
+  // Click directives – make classes navigable via the miroirDiagramClassClick window callback.
+  // The UUID is embedded as an argument so the callback receives it directly, without
+  // needing a reverse lookup by class name.
+  if (options.classClickLinks && Object.keys(options.classClickLinks).length > 0) {
+    lines.push("");
+    for (const [sanitisedName, uuid] of Object.entries(options.classClickLinks)) {
+      lines.push(`  click ${sanitisedName} call miroirDiagramClassClick("${uuid}")`);
     }
   }
 

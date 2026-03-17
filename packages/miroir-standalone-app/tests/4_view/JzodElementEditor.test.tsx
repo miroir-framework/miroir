@@ -42,7 +42,6 @@ import {
   testSectionName,
   waitAfterUserInteraction,
 } from "./JzodElementEditorTestTools";
-import { debug } from "console";
 import { defaultSelfApplicationDeploymentMap } from "miroir-core";
 import { book1, entityDefinitionBook } from "miroir-test-app_deployment-library";
 

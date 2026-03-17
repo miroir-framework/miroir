@@ -7,8 +7,8 @@ import {
   EntityInstancesUuidIndex,
   ExtractorOrCombinerReturningObject,
   RunBoxedQueryAction,
-  type CombinerForObjectByRelation,
-  type ExtractorForObjectByDirectReference
+  type CombinerOneToOne,
+  type ExtractorByPrimaryKey
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { type MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
 import { DomainState } from "../0_interfaces/2_domain/DomainControllerInterface";
@@ -30,6 +30,11 @@ import {
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import { PersistenceStoreInstanceSectionAbstractInterface } from "../0_interfaces/4-services/PersistenceStoreControllerInterface";
 import type { ApplicationDeploymentMap } from "../1_core/Deployment";
+import {
+  getEntityPrimaryKeyAttributes,
+  getForeignKeyValue,
+  serializeCompositeKeyValue,
+} from "../1_core/EntityPrimaryKey";
 import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory";
 import { packageName } from "../constants";
 import {
@@ -102,7 +107,7 @@ export class ExtractorRunnerInMemory implements ExtractorOrQueryPersistenceStore
   private async extractEntityInstanceByCombinerForObjectByRelation(
     foreignKeyParams: AsyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObject>,
     modelEnvironment: MiroirModelEnvironment,
-    querySelectorParams: CombinerForObjectByRelation,
+    querySelectorParams: CombinerOneToOne,
     deploymentUuid: string,
     applicationSection: ApplicationSection,
     entityUuidReference: string
@@ -125,7 +130,7 @@ export class ExtractorRunnerInMemory implements ExtractorOrQueryPersistenceStore
       foreignKeyParams.extractor.contextResults
     );
     log.info(
-      "extractEntityInstance combinerForObjectByRelation found referenceObject",
+      "extractEntityInstance combinerOneToOne found referenceObject",
       JSON.stringify(referenceObject, null, 2)
     );
     if (!querySelectorParams.AttributeOfObjectToCompareToReferenceUuid) {
@@ -138,23 +143,33 @@ export class ExtractorRunnerInMemory implements ExtractorOrQueryPersistenceStore
       });
     }
 
+    const fkValue = getForeignKeyValue(
+      querySelectorParams.AttributeOfObjectToCompareToReferenceUuid,
+      referenceObject
+    );
+
+    if (fkValue == null) {
+      return new Domain2ElementFailed({
+        queryFailure: "IncorrectParameters",
+        queryParameters: JSON.stringify(foreignKeyParams.extractor.pageParams),
+        queryContext:
+          "extractRunnerInMemory extractEntityInstance combinerOneToOne could not resolve FK value from reference object",
+      });
+    }
+
     const result = await this.persistenceStoreController.getInstance(
       entityUuidReference,
-      referenceObject[querySelectorParams.AttributeOfObjectToCompareToReferenceUuid]
+      fkValue
     );
 
     if (result instanceof Action2Error) {
-      const failureMessage = `could not find instance of Entity ${entityUuidReference} with uuid=${
-        referenceObject[querySelectorParams.AttributeOfObjectToCompareToReferenceUuid]
-      }`;
+      const failureMessage = `could not find instance of Entity ${entityUuidReference} with pk=${fkValue}`;
       return new Domain2ElementFailed({
         queryFailure: "InstanceNotFound",
         deploymentUuid,
         applicationSection,
         entityUuid: entityUuidReference,
-        failureMessage: `could not find instance of Entity ${entityUuidReference} with uuid=${
-          referenceObject[querySelectorParams.AttributeOfObjectToCompareToReferenceUuid]
-        }`,
+        failureMessage,
         errorStack:
           typeof result.errorStack == "string"
             ? [failureMessage, result.errorStack]
@@ -162,9 +177,7 @@ export class ExtractorRunnerInMemory implements ExtractorOrQueryPersistenceStore
       });
     }
 
-    const failureMessage = `could not find instance of Entity ${entityUuidReference} with uuid=${
-      referenceObject[querySelectorParams.AttributeOfObjectToCompareToReferenceUuid]
-    }`;
+    const failureMessage = `could not find instance of Entity ${entityUuidReference} with pk=${fkValue}`;
     if (result.returnedDomainElement instanceof Domain2ElementFailed) {
       return new Domain2ElementFailed({
         queryFailure: "InstanceNotFound",
@@ -176,7 +189,7 @@ export class ExtractorRunnerInMemory implements ExtractorOrQueryPersistenceStore
       });
     }
     log.info(
-      "extractEntityInstance combinerForObjectByRelation, ############# reference",
+      "extractEntityInstance combinerOneToOne, ############# reference",
       querySelectorParams,
       "######### context entityUuid",
       entityUuidReference,
@@ -200,7 +213,7 @@ export class ExtractorRunnerInMemory implements ExtractorOrQueryPersistenceStore
         {...(foreignKeyParams.extractor.contextResults ?? {}), referenceObject, foreignKeyObject: result.returnedDomainElement}
       );
       log.info(
-        "extractEntityInstance combinerForObjectByRelation, after applyTransformer",
+        "extractEntityInstance combinerOneToOne, after applyTransformer",
         querySelectorParams.applyTransformer,
         "transformedResult",
         JSON.stringify(transformedResult, null, 2)
@@ -214,13 +227,13 @@ export class ExtractorRunnerInMemory implements ExtractorOrQueryPersistenceStore
   private async extractEntityInstanceByDirectReference(
     foreignKeyParams: AsyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObject>,
     modelEnvironment: MiroirModelEnvironment,
-    querySelectorParams: ExtractorForObjectByDirectReference,
+    querySelectorParams: ExtractorByPrimaryKey,
     deploymentUuid: string,
     applicationSection: ApplicationSection,
     entityUuidReference: string
   ): Promise<Domain2QueryReturnType<EntityInstance>> {
     const instanceUuid = querySelectorParams.instanceUuid;
-    // log.info("extractEntityInstance extractorForObjectByDirectReference found domainState", JSON.stringify(domainState))
+    // log.info("extractEntityInstance extractorByPrimaryKey found domainState", JSON.stringify(domainState))
 
     log.info(
       "extractRunnerInMemory extractEntityInstance found instanceUuid",
@@ -260,7 +273,7 @@ export class ExtractorRunnerInMemory implements ExtractorOrQueryPersistenceStore
       });
     }
     log.info(
-      "extractRunnerInMemory extractEntityInstance extractorForObjectByDirectReference, ############# reference",
+      "extractRunnerInMemory extractEntityInstance extractorByPrimaryKey, ############# reference",
       querySelectorParams,
       "entityUuidReference",
       entityUuidReference,
@@ -369,21 +382,21 @@ export class ExtractorRunnerInMemory implements ExtractorOrQueryPersistenceStore
     );
 
     switch (querySelectorParams?.extractorOrCombinerType) {
-      case "combinerForObjectByRelation": {
+      case "combinerOneToOne": {
         return this.extractEntityInstanceByCombinerForObjectByRelation(
           foreignKeyParams,
           modelEnvironment,
-          querySelectorParams as ExtractorOrCombinerReturningObject & { extractorOrCombinerType: "combinerForObjectByRelation" },
+          querySelectorParams as ExtractorOrCombinerReturningObject & { extractorOrCombinerType: "combinerOneToOne" },
           deploymentUuid,
           applicationSection,
           entityUuidReference
         );
       }
-      case "extractorForObjectByDirectReference": {
+      case "extractorByPrimaryKey": {
         return this.extractEntityInstanceByDirectReference(
           foreignKeyParams,
           modelEnvironment,
-          querySelectorParams as ExtractorOrCombinerReturningObject & { extractorOrCombinerType: "extractorForObjectByDirectReference" },
+          querySelectorParams as ExtractorOrCombinerReturningObject & { extractorOrCombinerType: "extractorByPrimaryKey" },
           deploymentUuid,
           applicationSection,
           entityUuidReference
@@ -413,7 +426,10 @@ export class ExtractorRunnerInMemory implements ExtractorOrQueryPersistenceStore
         if (result instanceof Domain2ElementFailed) {
           return result;
         }
-        const entityInstanceUuidIndex = Object.fromEntries(result.map((i: any) => [i.uuid, i]));
+        const entityUuid = extractorRunnerParams.extractor.select.parentUuid;
+        const idAttribute = this.persistenceStoreController.getEntityIdAttribute(entityUuid);
+        const pkAttrs = Array.isArray(idAttribute) ? idAttribute : [idAttribute];
+        const entityInstanceUuidIndex = Object.fromEntries(result.map((i: any) => [serializeCompositeKeyValue(pkAttrs, i), i]));
         return entityInstanceUuidIndex;
       }
     );
@@ -478,7 +494,7 @@ export class ExtractorRunnerInMemory implements ExtractorOrQueryPersistenceStore
 
     if (
       extractorRunnerParams.extractor.select.extractorOrCombinerType ==
-        "extractorByEntityReturningObjectList" &&
+        "extractorInstancesByEntity" &&
       (extractorRunnerParams.extractor.select.filter || extractorRunnerParams.extractor.select.orderBy)
     ) {
       const localSelect = extractorRunnerParams.extractor.select;

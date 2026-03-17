@@ -8,7 +8,7 @@
   "definition": {
     "extractorTemplates": {
       "countries": {
-        "extractorOrCombinerType": "extractorForObjectListByEntity",
+        "extractorOrCombinerType": "extractorInstancesByEntity",
         "applicationSection": "data",
         "parentName": "Country",
         "parentUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4"
@@ -16,7 +16,7 @@
     },
     "combinerTemplates": {
       "AuthorWithCountry": {
-        "extractorOrCombinerType": "combinerByManyToManyRelationReturningObjectList",
+        "extractorOrCombinerType": "combinerManyToMany",
         "applicationSection": "data",
         "parentName": "Author",
         "parentUuid": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",

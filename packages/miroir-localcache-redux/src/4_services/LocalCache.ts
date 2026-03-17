@@ -111,7 +111,7 @@ export class LocalCache implements LocalCacheInterface {
   private staticReducers: ReduxReducerWithUndoRedoInterface;
 
   // ###############################################################################
-  constructor(persistenceStore: PersistenceReduxSaga) {
+  constructor(persistenceStore?: PersistenceReduxSaga) {
     this.staticReducers = createUndoRedoReducer(LocalCacheSlice.reducer);
 
     const ignoredActionsList = ["handlePersistenceAction", ...localCacheSliceGeneratedActionNames];
@@ -127,7 +127,7 @@ export class LocalCache implements LocalCacheInterface {
           },
         })
           .concat(promiseMiddleware)
-          .concat(persistenceStore.getSagaMiddleware());
+          .concat(persistenceStore ? persistenceStore.getSagaMiddleware() : []);
       },
     });
   } //end constructor

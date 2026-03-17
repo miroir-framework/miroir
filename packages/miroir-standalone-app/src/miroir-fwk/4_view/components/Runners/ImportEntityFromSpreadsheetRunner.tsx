@@ -173,7 +173,7 @@ export const ImportEntityFromSpreadsheetRunner: React.FC<CreateEntityToolProps> 
   //   extractorTemplates: {
   //     deployments: {
   //       label: "deployments of the application",
-  //       extractorOrCombinerType: "extractorForObjectListByEntity",
+  //       extractorOrCombinerType: "extractorInstancesByEntity",
   //       parentUuid: entityDeployment.uuid,
   //       parentName: entityDeployment.name,
   //       applicationSection: "data",
@@ -214,7 +214,7 @@ export const ImportEntityFromSpreadsheetRunner: React.FC<CreateEntityToolProps> 
   //               extractors: {
   //                 deployments: {
   //                   label: "deployments of the application",
-  //                   extractorOrCombinerType: "extractorByEntityReturningObjectList",
+  //                   extractorOrCombinerType: "extractorInstancesByEntity",
   //                   parentUuid: entityDeployment.uuid,
   //                   parentName: entityDeployment.name,
   //                   applicationSection: "data",
@@ -264,7 +264,7 @@ export const ImportEntityFromSpreadsheetRunner: React.FC<CreateEntityToolProps> 
   //               extractors: {
   //                 entityDefinitions: {
   //                   label: "entityDefinitions of the deployment",
-  //                   extractorOrCombinerType: "extractorByEntityReturningObjectList",
+  //                   extractorOrCombinerType: "extractorInstancesByEntity",
   //                   parentUuid: entityEntityDefinition.uuid,
   //                   parentName: entityEntityDefinition.name,
   //                   applicationSection: "model",
@@ -330,11 +330,11 @@ export const ImportEntityFromSpreadsheetRunner: React.FC<CreateEntityToolProps> 
       actionLabel: "createEntity",
       endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
       payload: {
-        application: "NOT_USED_HERE",
-        definition: [
+        actionSequence: [
           // Step 1: Query to get the deployment UUID from the selected application
           {
             actionType: "compositeRunBoxedQueryAction",
+            endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             actionLabel: "getDeploymentForApplication",
             nameGivenToResult: "deploymentInfo",
             payload: {
@@ -352,7 +352,7 @@ export const ImportEntityFromSpreadsheetRunner: React.FC<CreateEntityToolProps> 
                   extractors: {
                     deployments: {
                       label: "deployments of the application",
-                      extractorOrCombinerType: "extractorByEntityReturningObjectList",
+                      extractorOrCombinerType: "extractorInstancesByEntity",
                       parentUuid: entityDeployment.uuid,
                       parentName: entityDeployment.name,
                       applicationSection: "data",
@@ -543,11 +543,11 @@ export const ImportEntityFromSpreadsheetRunner: React.FC<CreateEntityToolProps> 
   return (
     <>
       {/* <ThemedOnScreenHelper
-        label={`Runner_DeleteEntity for ${runnerName} initialFormValue`}
+        label={`Runner_DropEntity for ${runnerName} initialFormValue`}
         data={initialFormValue}
       />
       <ThemedOnScreenHelper
-        label={`Runner_DeleteEntity for ${runnerName} deploymentUuidQuery`}
+        label={`Runner_DropEntity for ${runnerName} deploymentUuidQuery`}
         data={deploymentUuidQuery}
       /> */}
       <form>

@@ -42,17 +42,8 @@ MiroirLoggerFactory.registerLoggerToStart(
   MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "PersistenceReduxSaga")
 ).then((logger: LoggerInterface) => {log = logger});
 
-// export const actionsWithDeploymentInPayload = [
-//   ...instanceEndpointV1.definition.actions.map(
-//   (actionDef:any) => actionDef.actionParameters.actionType.definition
-// ),
-// ...modelEndpointV1.definition.actions.map(
-//   (actionDef:any) => actionDef.actionParameters.actionType.definition
-// )]
-
 export const delay = (ms:number) => new Promise(res => setTimeout(res, ms))
 
-// export type PersistenceReduxSagaReturnType = RemoteStoreActionReturnType | RestClientCallReturnType;
 export type PersistenceReduxSagaReturnType =
   | Action2ReturnType
   | CallEffect<Action2ReturnType>
@@ -73,6 +64,9 @@ export function getPersistenceActionReduxEventNames(persistenceActionNames:strin
 //# SLICE
 //#########################################################################################
 export type PersistenceStoreAccessParams = {
+  persistenceStoreAccessMode: "none",
+} |
+{
   persistenceStoreAccessMode: "local",
   localPersistenceStoreControllerManager: PersistenceStoreControllerManagerInterface
 } | {
@@ -104,6 +98,9 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
     // TODO: either remoteStoreNetworkClient or persistenceStoreControllerManager must be defined, not both! Force this distinction in the constructor.
     private params: PersistenceStoreAccessParams
   ) {
+    if (this.params.persistenceStoreAccessMode === "none") {
+      throw new Error("Persistence access mode 'none' is not supported for PersistenceReduxSaga. Please use 'local' or 'remote' and pass a persistence store along with it.");
+    }
     this.sagaMiddleware = (sagaMiddleware as any)();
   }
 
@@ -343,10 +340,22 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
       this.params.persistenceStoreAccessMode,
       "action",
       action,
+      "application",
+      action.payload.application,
       "applicationDeploymentMap",
       applicationDeploymentMap,
       "deploymentUuid", deploymentUuid
     );
+    if (!deploymentUuid) {
+      throw new Error(
+        "PersistenceReduxSaga innerHandlePersistenceActionForLocalPersistenceStore could not find deploymentUuid for application " +
+          JSON.stringify(action.payload.application) +
+          " in applicationDeploymentMap " +
+          JSON.stringify(applicationDeploymentMap, null, 2) +
+          " for action " +
+          JSON.stringify(action, null, 2)
+      );
+    }
     if (this.params.persistenceStoreAccessMode != "local") {
       throw new Error(
         "PersistenceReduxSaga innerHandlePersistenceActionForLocalPersistenceStore called with persistenceStoreAccessMode = remote, this is not allowed!"
@@ -1026,6 +1035,12 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
                 JSON.stringify(action)
             );
           }
+          if (this.params.persistenceStoreAccessMode === "none") {
+            throw new Error(
+              "PersistenceReduxSaga handleStoreOrBundleActionForLocalStore called with persistenceStoreAccessMode = none, this is not allowed!" +
+                JSON.stringify(action)
+            );
+          }
           return yield* this.innerHandlePersistenceActionForRemoteStore(
             action,
             applicationDeploymentMap,
@@ -1066,6 +1081,12 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
       > {
         const { action, applicationDeploymentMap } = p.payload;
         try {
+          if (this.params.persistenceStoreAccessMode === "none") {
+            throw new Error(
+              "PersistenceReduxSaga handleStoreOrBundleActionForLocalStore called with persistenceStoreAccessMode = none, this is not allowed!" +
+                JSON.stringify(action)
+            );
+          }
           return yield* this.innerHandleLocalStoreOrBundleAction(
             action,
             applicationDeploymentMap,

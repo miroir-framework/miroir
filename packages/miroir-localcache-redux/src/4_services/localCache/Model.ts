@@ -22,7 +22,7 @@ import {
   entityQueryVersion,
   type ApplicationVersion,
   type StoreBasedConfiguration,
-  type MetaEntity,
+  type Entity,
   type EntityDefinition,
   type MlSchema,
   type Menu,
@@ -131,7 +131,7 @@ export function currentModel(
         : []) as MetaModel["endpoints"],
       entities: (entities && entities.entities
         ? Object.values(entities.entities)
-        : []) as MetaEntity[],
+        : []) as Entity[],
       entityDefinitions: (entityDefinitions && entityDefinitions.entities
         ? Object.values(entityDefinitions.entities)
         : []) as EntityDefinition[],

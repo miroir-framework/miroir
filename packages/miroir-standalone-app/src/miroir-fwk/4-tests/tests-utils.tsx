@@ -21,7 +21,7 @@ import {
   InstanceAction,
   LocalCacheInterface,
   LoggerInterface,
-  MetaEntity,
+  Entity,
   MiroirActivityTracker,
   MiroirConfigClient,
   MiroirContext,
@@ -229,11 +229,11 @@ export const DisplayLoadingInfo:FC<{reportUuid?:string}> = (props:{reportUuid?:s
 // ################################################################################################
 export async function addEntitiesAndInstancesForEmulatedServer(
   localAppPersistenceStoreController: PersistenceStoreControllerInterface,
-  entities: { entity: MetaEntity, entityDefinition: EntityDefinition, instances: EntityInstance[] }[],
+  entities: { entity: Entity, entityDefinition: EntityDefinition, instances: EntityInstance[] }[],
   reportBookList: EntityInstance,
 ) {
   for (const entity of entities) {
-    await localAppPersistenceStoreController.createEntity(entity.entity as MetaEntity, entity.entityDefinition as EntityDefinition);
+    await localAppPersistenceStoreController.createEntity(entity.entity as Entity, entity.entityDefinition as EntityDefinition);
   }
   await localAppPersistenceStoreController?.upsertInstance('model', reportBookList as EntityInstance);
   for (const entityInstances of entities) {
@@ -249,7 +249,7 @@ export async function addEntitiesAndInstancesForRealServer(
   localCache: LocalCacheInterface,
   deployment_Library_DO_NO_USE: EntityInstance,
   applicationDeploymentMap: ApplicationDeploymentMap,
-  entities: { entity: MetaEntity, entityDefinition: EntityDefinition, instances: EntityInstance[] }[],
+  entities: { entity: Entity, entityDefinition: EntityDefinition, instances: EntityInstance[] }[],
   act?: unknown,
 ) {
   const createAction: DomainAction = {
@@ -362,7 +362,7 @@ export async function addEntitiesAndInstances(
   miroirConfig: MiroirConfigClient,
   deployment_Library_DO_NO_USE: EntityInstance,
   applicationDeploymentMap: ApplicationDeploymentMap,
-  entities: { entity: MetaEntity, entityDefinition: EntityDefinition, instances: EntityInstance[] }[],
+  entities: { entity: Entity, entityDefinition: EntityDefinition, instances: EntityInstance[] }[],
   reportBookList: EntityInstance,
   act?: unknown,
 ) {
@@ -595,6 +595,47 @@ export async function createMiroirDeploymentGetPersistenceStoreController(
 }
 
 
+// ################################################################################################
+/**
+ * Common beforeAll setup: creates Miroir test environment and Miroir application deployment.
+ * Reduces boilerplate in integration test beforeAll hooks.
+ */
+export async function setupMiroirTestAndCreateMiroirDeployment(
+  miroirConfig: MiroirConfigClient,
+  miroirActivityTracker: MiroirActivityTracker,
+  miroirEventService: MiroirEventService,
+  miroirDeploymentUuid: string,
+  miroirSelfApplicationUuid: string,
+  adminDeployment: Deployment,
+  miroirDeploymentStorageConfiguration: StoreUnitConfiguration,
+  applicationDeploymentMap: ApplicationDeploymentMap,
+  customFetch?: any,
+): Promise<{
+  domainController: DomainControllerInterface;
+  persistenceStoreControllerManagerForClient: PersistenceStoreControllerManagerInterface;
+}> {
+  const { domainController, persistenceStoreControllerManagerForClient } = await setupMiroirTest(
+    miroirConfig, miroirActivityTracker, miroirEventService, customFetch,
+  );
+  const createMiroirDeploymentCompositeAction = createDeploymentCompositeAction(
+    "miroir",
+    miroirDeploymentUuid,
+    miroirSelfApplicationUuid,
+    adminDeployment,
+    miroirDeploymentStorageConfiguration,
+  );
+  const createDeploymentResult = await domainController.handleCompositeAction(
+    createMiroirDeploymentCompositeAction,
+    applicationDeploymentMap,
+    defaultMiroirModelEnvironment,
+    {},
+  );
+  if (createDeploymentResult.status !== "ok") {
+    throw new Error("Failed to create Miroir deployment: " + JSON.stringify(createDeploymentResult));
+  }
+  return { domainController, persistenceStoreControllerManagerForClient };
+}
+
 // #################################################################################################################
 export async function resetApplicationDeployments(
   deploymentConfigurations: DeploymentConfiguration[],
@@ -639,8 +680,8 @@ export async function deleteAndCloseApplicationDeployments(
   log.info('deleteAndCloseApplicationDeployments delete test stores.');
   for (const d of deploymentConfigurations) {
     const storeUnitConfiguration = miroirConfig.client.emulateServer
-    ? miroirConfig.client.deploymentStorageConfig[d.uuid]
-    : miroirConfig.client.serverConfig.storeSectionConfiguration[d.uuid];
+    ? miroirConfig.client.deploymentStorageConfig[d.uuid!]
+    : miroirConfig.client.serverConfig.storeSectionConfiguration[d.uuid!];
     const deletedStore = await domainController.handleAction({
       actionType: "storeManagementAction_deleteStore",
       endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
@@ -698,9 +739,14 @@ export async function runTestOrTestSuite(
   try {
     switch (testAction.testActionType) {
       case 'testBuildPlusRuntimeCompositeActionSuite':
-      // case "testRuntimeCompositeActionSuite": 
       case "testCompositeActionSuite": {
-        const newParams = {...testActionParamValues??{}, ...(testAction.testCompositeAction as any)["testActionParams"]??{}};
+        // const newParams = {...testActionParamValues??{}, ...(testAction.testCompositeAction as any)["testActionParams"]??{}};
+        const newParams = {
+          ...(testActionParamValues ?? {}),
+          ...(testAction.testActionType == "testBuildPlusRuntimeCompositeActionSuite"
+            ? (testAction.testParams ?? {})
+            : {}),
+        };
         log.info(
           "running test testCompositeActionSuite",
           fullTestName,
@@ -719,7 +765,6 @@ export async function runTestOrTestSuite(
               domainController.currentModelEnvironment(
                 testAction.application,
                 applicationDeploymentMap,
-                // testAction.deploymentUuid
               ),
               newParams
             )
@@ -747,7 +792,6 @@ export async function runTestOrTestSuite(
         return queryResult;
       }
       case 'testBuildPlusRuntimeCompositeAction':
-      // case "testRuntimeCompositeAction": 
       case "testCompositeAction": {
         const queryResult: Action2ReturnType = await miroirActivityTracker.trackTest(
           fullTestName,

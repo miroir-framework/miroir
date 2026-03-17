@@ -56,6 +56,7 @@ export interface PersistenceStoreAbstractSectionInterface extends PersistenceSto
     entityDefinitions : EntityDefinition[],
   ):Promise<Action2VoidReturnType>;
   getEntityUuids():string[];
+  getEntityIdAttribute(entityUuid: string): string | string[];
   clear():Promise<Action2VoidReturnType>;
 }
 
@@ -82,7 +83,7 @@ export interface StorageSpaceHandlerInterface {
 // ###########################################################################################
 export interface PersistenceStoreInstanceSectionAbstractInterface
   extends PersistenceStoreAbstractSectionInterface {
-  getInstance(parentUuid: string, uuid: string): Promise<Action2EntityInstanceReturnType>;
+  getInstance(parentUuid: string, instancePrimaryKey: string): Promise<Action2EntityInstanceReturnType>;
   getInstances(parentUuid: string): Promise<Action2EntityInstanceCollectionOrFailure>;
   handleQueryTemplateActionForServerONLY(
     query: RunBoxedQueryTemplateAction,
@@ -179,12 +180,12 @@ export interface PersistenceStoreControllerInterface
   /**, PersistenceStoreInstanceSectionAbstractInterface */
   //  TODO: remove anything but handleAction from interface!
   initApplication(
-    metaModel: MetaModel,
     dataStoreType: DataStoreApplicationType,
     selfApplication: SelfApplication,
     applicationModelBranch: EntityInstance,
-    applicationVersion: EntityInstance
+    applicationVersion: EntityInstance,
     // applicationStoreBasedConfiguration: EntityInstance
+    metaModel: MetaModel,
   ): Promise<Action2ReturnType>;
 
   createModelStorageSpaceForInstancesOfEntity(
@@ -218,15 +219,18 @@ export interface PersistenceStoreControllerInterface
   ): Promise<Action2EntityInstanceCollectionOrFailure>;
   upsertInstance(
     section: ApplicationSection,
-    instance: EntityInstance
+    instance: EntityInstance,
+    parentUuid?: string
   ): Promise<Action2VoidReturnType>;
   deleteInstance(
     section: ApplicationSection,
-    instance: EntityInstance
+    instance: EntityInstance,
+    parentUuid?: string
   ): Promise<Action2VoidReturnType>;
   deleteInstances(
     section: ApplicationSection,
-    instance: EntityInstance[]
+    instances: EntityInstance[],
+    payloadParentUuid?: string
   ): Promise<Action2VoidReturnType>;
 
   handleAction(

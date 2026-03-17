@@ -118,7 +118,7 @@ export function resolveCompositeActionTemplate(
     "build",
     [],
     compositeActionLabel,
-    (compositeActionTemplate as any).payload.definition,
+    compositeActionTemplate.payload.actionSequence as any,
     currentModel,
     actionParamsAndTemplates,
     undefined,// localContext,
@@ -144,10 +144,11 @@ export function resolveCompositeActionTemplate(
   }
   const resolvedCompositeAction: CompositeActionSequence = {
     actionType: "compositeActionSequence",
-    actionLabel: compositeActionLabel,    endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+    actionLabel: compositeActionLabel,
+    endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
     payload: {
-      application: (compositeActionTemplate as CompositeActionSequence).payload.application,
-      definition: resolvedCompositeActionDefinition as any,
+      // application: (compositeActionTemplate as CompositeActionSequence).payload.application,
+      actionSequence: resolvedCompositeActionDefinition as any,
     }
   }
   log.info(

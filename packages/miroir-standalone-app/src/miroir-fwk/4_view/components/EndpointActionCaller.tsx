@@ -25,7 +25,7 @@ import {
   type TransformerForBuildPlusRuntime
 } from 'miroir-core';
 import {
-  DebugHelper,
+  JsonDisplayHelper,
   getMemoizedReduxDeploymentsStateSelectorMap,
   ReduxStateWithUndoRedo,
   useDomainControllerService,
@@ -467,9 +467,9 @@ export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
                 Use JzodElementEditor for dynamic form generation based on action parameters schema
               </Typography>
 
-              {/* DebugHelper */}
+              {/* JsonDisplayHelper */}
               <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
-                <DebugHelper
+                <JsonDisplayHelper debug={true}
                   componentName="EndpointActionCaller"
                   elements={[
                     {

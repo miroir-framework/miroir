@@ -207,6 +207,7 @@ export { default as transformer_resolveSchemaReferenceInContext_json } from "./a
 export { default as transformer_unfoldSchemaOnce_json } from "./assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/d5c9f2e3-8741-4b9a-a1d2-4e5f6789abcd.json" assert { type: "json" };
 export { default as transformer_jzodTypeCheck_json } from "./assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/a3f7b5c2-1e8d-4a9b-9c7e-6f2d3e8a1b5c.json" assert { type: "json" };
 export { default as transformer_getActiveDeployment_json } from "./assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/d554c31b-638b-4774-95e3-b2e307035a82.json" assert { type: "json" };
+export { default as transformer_ansiColumnsToJzodSchema_json } from "./assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/53b8073b-72d5-4c3f-8b5a-79c90744b5b7.json" assert { type: "json" };
 // Alias for menu transformer (exported from Transformers.ts as transformer_menu_addItem)
 export { default as transformer_menu_addItem_json } from "./assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/685440be-7f3f-4774-b90d-bafa82d6832b.json" assert { type: "json" };
 
@@ -215,6 +216,7 @@ export { default as transformer_menu_addItem_json } from "./assets/miroir_data/a
 // ################################################################################################
 export { default as runnerDropApplication } from "./assets/miroir_data/e54d7dc1-4fbc-495e-9ed9-b5cf081b9fbd/1cd065d8-dfb0-466f-974c-e81e993f2c66.json" assert { type: "json" };
 export { default as runnerDropEntity } from "./assets/miroir_data/e54d7dc1-4fbc-495e-9ed9-b5cf081b9fbd/44313751-b0e5-4132-bb12-a544806e759b.json" assert { type: "json" };
+export { default as runnerCreateEntity } from "./assets/miroir_data/e54d7dc1-4fbc-495e-9ed9-b5cf081b9fbd/82f81a25-2366-4abf-8a97-83ca5e9a9c46.json" assert { type: "json" };
 
 // ################################################################################################
 // Miroir Data - Blob (parentUuid = entityBlob = 62209e4a)

@@ -1,0 +1,26 @@
+{
+  "uuid": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
+  "parentName": "Deployment",
+  "parentUuid": "7959d814-400c-4e80-988f-a00fe582ab98",
+  "name": "Deployment of application library",
+  "defaultLabel": "The deployment of application library",
+  "description": "The description of deployment of application library",
+  "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+  "configuration": {
+    "admin": {
+      "emulatedServerType": "mongodb",
+      "connectionString": "mongodb://localhost:27017",
+      "database": "miroir-admin"
+    },
+    "model": {
+      "emulatedServerType": "mongodb",
+      "connectionString": "mongodb://localhost:27017",
+      "database": "miroir-app"
+    },
+    "data": {
+      "emulatedServerType": "mongodb",
+      "connectionString": "mongodb://localhost:27017",
+      "database": "miroir-app"
+    }
+  }
+}

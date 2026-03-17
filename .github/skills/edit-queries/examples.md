@@ -31,7 +31,7 @@ Fetch a single book by UUID:
     queryParams: {},
     extractors: {
       book: {
-        extractorOrCombinerType: "extractorForObjectByDirectReference",
+        extractorOrCombinerType: "extractorByPrimaryKey",
         parentName: "Book",
         parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
         instanceUuid: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
@@ -70,7 +70,7 @@ Fetch all authors whose name contains "or":
     queryParams: {},
     extractors: {
       authors: {
-        extractorOrCombinerType: "extractorForObjectListByEntity",
+        extractorOrCombinerType: "extractorInstancesByEntity",
         parentName: "Author",
         parentUuid: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
         filter: {
@@ -113,7 +113,7 @@ Fetch a book and its publisher:
     queryParams: {},
     extractors: {
       book: {
-        extractorOrCombinerType: "extractorForObjectByDirectReference",
+        extractorOrCombinerType: "extractorByPrimaryKey",
         parentName: "Book",
         parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
         instanceUuid: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
@@ -121,7 +121,7 @@ Fetch a book and its publisher:
     },
     combiners: {
       publisher: {
-        extractorOrCombinerType: "combinerForObjectByRelation",
+        extractorOrCombinerType: "combinerOneToOne",
         parentName: "Publisher",
         parentUuid: "a027c379-8468-43a5-ba4d-bf618be25cab",
         objectReference: "book",  // Reference to extractor result
@@ -166,7 +166,7 @@ Fetch an author and all their books:
     queryParams: {},
     extractors: {
       author: {
-        extractorOrCombinerType: "extractorForObjectByDirectReference",
+        extractorOrCombinerType: "extractorByPrimaryKey",
         parentName: "Author",
         parentUuid: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
         instanceUuid: "ce7b601d-be5f-4bc6-a5af-14091594046a",  // Paul Veyne
@@ -174,7 +174,7 @@ Fetch an author and all their books:
     },
     combiners: {
       books: {
-        extractorOrCombinerType: "combinerByRelationReturningObjectList",
+        extractorOrCombinerType: "combinerOneToMany",
         parentName: "Book",
         parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
         objectReference: "author",  // Reference to extractor result
@@ -211,7 +211,7 @@ Query template with build-time parameter substitution:
     queryParams: { wantedBookUuid: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f" },
     extractorTemplates: {
       book: {
-        extractorOrCombinerType: "extractorForObjectByDirectReference",
+        extractorOrCombinerType: "extractorByPrimaryKey",
         parentName: "Book",
         parentUuid: {
           transformerType: "returnValue",
@@ -236,7 +236,7 @@ Query template with build-time parameter substitution:
     queryParams: { wantedBookUuid: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f" },
     extractors: {
       book: {
-        extractorOrCombinerType: "extractorForObjectByDirectReference",
+        extractorOrCombinerType: "extractorByPrimaryKey",
         parentName: "Book",
         parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
         instanceUuid: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
@@ -272,7 +272,7 @@ Extract unique publishers from a book list:
     queryParams: {},
     extractors: {
       books: {
-        extractorOrCombinerType: "extractorByEntityReturningObjectList",
+        extractorOrCombinerType: "extractorInstancesByEntity",
         parentName: "Book",
         parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
       },
@@ -319,7 +319,7 @@ Transform extracted data inline:
     queryParams: {},
     extractors: {
       book: {
-        extractorOrCombinerType: "extractorForObjectByDirectReference",
+        extractorOrCombinerType: "extractorByPrimaryKey",
         parentName: "Book",
         parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
         instanceUuid: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
@@ -372,7 +372,7 @@ Test for proper error responses:
     queryParams: {},
     extractors: {
       book: {
-        extractorOrCombinerType: "extractorForObjectByDirectReference",
+        extractorOrCombinerType: "extractorByPrimaryKey",
         parentName: "Book",
         parentUuid: "INVALID-UUID",  // This entity doesn't exist
         instanceUuid: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
@@ -399,7 +399,7 @@ Test for proper error responses:
     queryParams: {},
     extractors: {
       book: {
-        extractorOrCombinerType: "extractorForObjectByDirectReference",
+        extractorOrCombinerType: "extractorByPrimaryKey",
         parentName: "Book",
         parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
         instanceUuid: "INVALID-INSTANCE-UUID",  // This instance doesn't exist
@@ -434,7 +434,7 @@ Complex join returning list of object lists:
     queryParams: {},
     extractors: {
       entities: {
-        extractorOrCombinerType: "extractorByEntityReturningObjectList",
+        extractorOrCombinerType: "extractorInstancesByEntity",
         applicationSection: "model",
         parentName: "Entity",
         parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
@@ -442,11 +442,11 @@ Complex join returning list of object lists:
     },
     combiners: {
       instancesOfEntities: {
-        extractorOrCombinerType: "extractorCombinerByHeteronomousManyToManyReturningListOfObjectList",
+        extractorOrCombinerType: "combinerByHeteronomousManyToMany",
         rootExtractorOrReference: "entities",
         subQueryTemplate: {
           query: {
-            extractorOrCombinerType: "extractorForObjectListByEntity",
+            extractorOrCombinerType: "extractorInstancesByEntity",
             parentUuid: {
               transformerType: "getFromParameters",
               interpolation: "build",

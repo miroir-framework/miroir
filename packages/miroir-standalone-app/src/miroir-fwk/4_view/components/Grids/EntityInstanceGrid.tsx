@@ -26,11 +26,13 @@ import {
   SyncQueryRunner,
   ViewParams,
   defaultViewParamsFromAdminStorageFetchQueryParams,
+  getEntityPrimaryKeyAttributes,
+  getInstancePrimaryKeyValue,
   selfApplicationMiroir
 } from "miroir-core";
 
 import {
-  DebugHelper,
+  JsonDisplayHelper,
   getMemoizedReduxDeploymentsStateSelectorMap,
   useMiroirContextInnerFormOutput,
   useMiroirContextService,
@@ -654,7 +656,12 @@ export const EntityInstanceGrid = (props: TableComponentProps) => {
 
       // Use setTimeout to defer navigation and prevent blocking the UI thread
       setTimeout(() => {
-        if (["name", "uuid"].includes(fieldName)) {
+        // Determine which columns navigate to the current instance's detail view:
+        // always "name", plus the PK attribute(s) of the entity
+        const pkAttributes = getEntityPrimaryKeyAttributes(props.currentEntityDefinition);
+        const navigableColumns = ["name", ...pkAttributes];
+
+        if (navigableColumns.includes(fieldName)) {
           // display current Entity Details for Entity Instance
           const applicationSection = ["MetaModel", "model"].includes(
             props.currentEntityDefinition.conceptLevel as any
@@ -662,8 +669,9 @@ export const EntityInstanceGrid = (props: TableComponentProps) => {
             ? "model"
             : context.applicationSection;
 
+          const primaryKeyValue = getInstancePrimaryKeyValue(props.currentEntityDefinition, rowData.rawValue);
           navigate(
-            `/report/${props.application}/${contextDeploymentUuid}/${applicationSection}/${props.currentEntityDefinition?.defaultInstanceDetailsReportUuid}/${rowData.rawValue.uuid}`
+            `/report/${props.application}/${contextDeploymentUuid}/${applicationSection}/${props.currentEntityDefinition?.defaultInstanceDetailsReportUuid}/${primaryKeyValue}`
           );
         } else {
           // Cache schema definition lookup
@@ -739,7 +747,12 @@ export const EntityInstanceGrid = (props: TableComponentProps) => {
 
       // Use setTimeout to defer navigation and prevent blocking the UI thread
       setTimeout(() => {
-        if (["name", "uuid"].includes(fieldName)) { // columns to navigate to current instance (the row object itself)
+        // Determine which columns navigate to the current instance's detail view:
+        // always "name", plus the PK attribute(s) of the entity
+        const pkAttributes = getEntityPrimaryKeyAttributes(props.currentEntityDefinition);
+        const navigableColumns = ["name", ...pkAttributes];
+
+        if (navigableColumns.includes(fieldName)) { // columns to navigate to current instance (the row object itself)
           // display current Entity Details for Entity Instance
           const applicationSection = ["MetaModel", "model"].includes(
             props.currentEntityDefinition.conceptLevel as any
@@ -747,8 +760,9 @@ export const EntityInstanceGrid = (props: TableComponentProps) => {
             ? "model"
             : context.applicationSection;
 
+          const primaryKeyValue = getInstancePrimaryKeyValue(props.currentEntityDefinition, event.data.rawValue);
           navigate(
-            `/report/${props.application}/${contextDeploymentUuid}/${applicationSection}/${props.currentEntityDefinition?.defaultInstanceDetailsReportUuid}/${event.data.rawValue.uuid}`
+            `/report/${props.application}/${contextDeploymentUuid}/${applicationSection}/${props.currentEntityDefinition?.defaultInstanceDetailsReportUuid}/${primaryKeyValue}`
           );
         } else { // other columns
           // Cache schema definition lookup
@@ -814,7 +828,7 @@ export const EntityInstanceGrid = (props: TableComponentProps) => {
       {/* <span>{props.type}</span>
       <br /> */}
       {/* <span>rowData: {JSON.stringify(props.rowData.instancesWithStringifiedJsonAttributes)}</span> */}
-      <DebugHelper
+      <JsonDisplayHelper debug={true}
         componentName="EntityInstanceGrid"
         elements={[
           {

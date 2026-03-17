@@ -26,12 +26,16 @@ The `miroir-core` and other packages follow a strict layered architecture in `sr
 ## Package Dependencies & Build Order
 
 Core dependency graph (must be built in this order):
-1. `miroir-core` (foundation with generated types)
-2. `miroir-localcache-redux`, `miroir-store-*` packages  
-3. `miroir-react`, `miroir-server`
-4. `miroir-standalone-app`, `miroir-designer`
+1. `miroir-test-app_deployment-miroir`, `miroir-test-app_deployment-admin` (definition of core types and concepts as Jzod schemas)
+2. `miroir-core` (foundation with generated types)
+3. `miroir-localcache*`, `miroir-store-*` packages  
+4. `miroir-react`, `miroir-mcp`, `miroir-diagram-class`
+5. `miroir-server`, `miroir-standalone-app`, `miroir-cli`
+7. `miroir-test-app_deployment-library`, `miroir-test-app_deployment-postgres` (example applications), miroir-standalone-app-electron (desktop application)
 
-**Note**: `miroir-core` has a `devBuild` step to generate TypeScript types (the files in `packages\miroir-core\src\0_interfaces\1_core\preprocessor-generated`) from Jzod schemas. It must be built every time some core schema in `packages\miroir-core\src\assets\miroir_data` or `packages\miroir-core\src\assets\miroir_model` is modified.
+`miroir-designer`, `miroir-runtime` are not used.
+
+**Note**: `miroir-core` has a `devBuild` step to generate TypeScript types (the files in `packages\miroir-core\src\0_interfaces\1_core\preprocessor-generated`) from Jzod schemas. It must be built every time some core schema in `packages/miroir-test-app_deployment-miroir/assets` is modified, after building `miroir-test-app_deployment-miroir` itself.
 
 **Note**: `miroir-runtime` and `miroir-query-jsonata` are additional packages in the ecosystem.
 
@@ -142,6 +146,24 @@ The Deployment of every Application is stored in two parts (here filesystem stor
 
 The Entities are bootstrapped to themselves as meta-classes (there is an Entity named "Entity"). EntityDefinition is also bootstrapped to itself as a meta-class (there is an EntityDefinition named EntityDefinition, which jzodSchema defines the format of all EntityDefinitions, including itself).
 
+### Primary Key Support
+
+EntityDefinitions support three kinds of primary keys via the `idAttribute` field:
+- **UUID PK** (default): `idAttribute` is absent or `"uuid"` — standard UUID-based identity.
+- **Non-UUID single PK**: `idAttribute` is a single string naming any attribute (e.g. `"code"`).
+- **Composite PK**: `idAttribute` is a `string[]` array (e.g. `["region", "code"]`).
+
+Helper functions for PK handling are in `packages/miroir-core/src/1_core/EntityPrimaryKey.ts`:
+- `getEntityPrimaryKeyAttribute(entityDefinition)` — returns `string | string[]`
+- `getEntityPrimaryKeyAttributes(entityDefinition)` — always returns `string[]`
+- `entityHasCompositePrimaryKey(entityDefinition)` / `entityHasUuidPrimaryKey(entityDefinition)`
+- `serializeCompositeKeyValue(attributes, instance)` / `parseCompositeKeyValue(serialized)` — composite key serialization using `|` separator with `\` escaping
+- `getInstancePrimaryKeyValue(entityDefinition, instance)` — returns the PK value as a string (serialized for composite)
+- `getForeignKeyValue(fkAttribute, referenceObject)` — resolves FK value from a reference object; `fkAttribute` can be `string | string[]`
+- `instanceMatchesForeignKey(fkAttribute, instance, referenceValue)` — tests FK match for both single and composite keys
+
+Combiner FK attributes (`AttributeOfObjectToCompareToReferenceUuid`, `AttributeOfListObjectToCompareToReferenceUuid`) accept `string | string[]` to support composite-PK joins. All store backends (filesystem, IndexedDB, PostgreSQL) and local caches (Redux, Zustand) support composite PKs.
+
 ### Miroir Core Concepts: Model
 
 Other core concepts are defined as Entities / EntityDefinitions, for example:
@@ -228,11 +250,11 @@ data and Model for the example Library application can be found in:
 the library application model contains Entities `Author`, `Book`, `Country`, `Publisher`, and `User`. See files in directory `packages/miroir-core/src/assets/library_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/`
 
 the library application data can be found:
-- authors: `packages/miroir-core/src/assets/library_data/d7d7a144ff-d1b9-4135-800c-a7cfc1f38733/`
-- books: `packages/miroir-core/src/assets/library_data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/`
-- countries: `packages/miroir-core/src/assets/library_data/d3139a6d-0486-4ec8-bded-2a83a3c3cee4/`
-- publishers: `packages/miroir-core/src/assets/library_data/a027c379-8468-43a5-ba4d-bf618be25cab/`
-- users: `packages/miroir-core/src/assets/library_data/ca794e28-b2dc-45b3-8137-00151557eea8/`
+- authors: `packages/miroir-test-app_deployment-library/assets/library_data/d7d7a144ff-d1b9-4135-800c-a7cfc1f38733/`
+- books: `packages/miroir-test-app_deployment-library/assets/library_data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/`
+- countries: `packages/miroir-test-app_deployment-library/assets/library_data/d3139a6d-0486-4ec8-bded-2a83a3c3cee4/`
+- publishers: `packages/miroir-test-app_deployment-library/assets/library_data/a027c379-8468-43a5-ba4d-bf618be25cab/`
+- users: `packages/miroir-test-app_deployment-library/assets/library_data/ca794e28-b2dc-45b3-8137-00151557eea8/`
 
 ## Critical Dependencies
 

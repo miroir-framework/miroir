@@ -172,7 +172,7 @@ export function MongoDbEntityStoreSectionMixin<TBase extends typeof MixedMongoDb
       await this.dataStore.renameStorageSpaceForInstancesOfEntity(
         (currentEntity.returnedDomainElement as EntityInstanceWithName).name,
         update.payload.targetValue,
-        modifiedEntity,
+        modifiedEntity as any, // TODO: fix type EntityInstanceWithName
         modifiedEntityDefinition
       );
       return Promise.resolve(ACTION_OK);

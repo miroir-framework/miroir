@@ -16,7 +16,7 @@ import {
 } from "miroir-core";
 import { packageName } from "../../constants.js";
 import { cleanLevel } from "./constants.js";
-import type { ExtractorTemplateForObjectListByEntity } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+import type { ExtractorTemplateInstancesByEntity } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -115,12 +115,12 @@ export const deleteCascade = async (p: {
         Object.keys(foreignKeysPointingToEntity).map((entityUuid) => [
           entityUuid,
           { // TODO: FILTER ON FK TO ONLY THE ONES POINTING TO THE DELETED INSTANCES
-            extractorOrCombinerType: "extractorForObjectListByEntity",
+            extractorOrCombinerType: "extractorInstancesByEntity",
             application: p.application,
             applicationSection: p.applicationSection,
             parentName: "",
             parentUuid: entityUuid,
-          } as ExtractorTemplateForObjectListByEntity,
+          } as ExtractorTemplateInstancesByEntity,
         ])
       ),
     };

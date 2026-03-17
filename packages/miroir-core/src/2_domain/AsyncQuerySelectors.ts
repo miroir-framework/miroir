@@ -167,9 +167,9 @@ export async function asyncInnerSelectElementFromQuery /*BoxedExtractorTemplateR
     }
     // ############################################################################################
     // Impure Monads
-    case "extractorByEntityReturningObjectList":
-    case "combinerByRelationReturningObjectList":
-    case "combinerByManyToManyRelationReturningObjectList": {
+    case "extractorInstancesByEntity":
+    case "combinerOneToMany":
+    case "combinerManyToMany": {
       const applicationSection =
         extractorOrCombiner.applicationSection ??
         getApplicationSection(application, extractorOrCombiner.parentUuid);
@@ -213,8 +213,8 @@ export async function asyncInnerSelectElementFromQuery /*BoxedExtractorTemplateR
       return Promise.resolve(result);
       break;
     }
-    case "combinerForObjectByRelation":
-    case "extractorForObjectByDirectReference": {
+    case "combinerOneToOne":
+    case "extractorByPrimaryKey": {
       // log.info(
       //   "############ asyncInnerSelectElementFromQuery",
       //   extractorOrCombiner.extractorOrCombinerType,
@@ -292,7 +292,7 @@ export async function asyncInnerSelectElementFromQuery /*BoxedExtractorTemplateR
       return results;
       break;
     }
-    case "extractorCombinerByHeteronomousManyToManyReturningListOfObjectList": {
+    case "combinerByHeteronomousManyToMany": {
       // join
       const rootQueryResults =
         typeof extractorOrCombiner.rootExtractorOrReference === "string"
@@ -362,7 +362,7 @@ export async function asyncInnerSelectElementFromQuery /*BoxedExtractorTemplateR
               extractors,
               resolvedQuery as ExtractorOrCombiner
             );
-            results.push([instance.uuid, result]);
+            results.push([instance.uuid ?? key, result]);
           }
         }
         return Object.fromEntries(results);

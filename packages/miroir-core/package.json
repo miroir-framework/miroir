@@ -26,6 +26,18 @@
     "dist/index.d.cts",
     "dist/src/worker.js"
   ],
+  "nx": {
+    "targets": {
+      "build": {
+        "executor": "nx:run-commands",
+        "options": {
+          "command": "npm run devBuild",
+          "cwd": "{projectRoot}"
+        },
+        "dependsOn": ["^build"]
+      }
+    }
+  },
   "scripts": {
     "copy-files": "copyfiles -u 1 src/**/*.json src/**/*.css dist/src",
     "build": "npm run copy-files && tsup",

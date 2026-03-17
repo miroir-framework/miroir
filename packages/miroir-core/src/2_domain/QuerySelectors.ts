@@ -5,8 +5,8 @@ import {
   BoxedExtractorOrCombinerReturningObjectList,
   BoxedExtractorOrCombinerReturningObjectOrObjectList,
   BoxedQueryWithExtractorCombinerTransformer,
-  CombinerByManyToManyRelationReturningObjectList,
-  CombinerByRelationReturningObjectList,
+  CombinerManyToMany,
+  CombinerOneToMany,
   DomainElement,
   DomainElementFailed,
   DomainElementSuccess,
@@ -43,6 +43,7 @@ import {
 } from "../0_interfaces/2_domain/ExtractorRunnerInterface";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import type { ApplicationDeploymentMap } from "../1_core/Deployment";
+import { getForeignKeyValue, instanceMatchesForeignKey } from "../1_core/EntityPrimaryKey";
 import { defaultMiroirModelEnvironment, getApplicationSection } from "../1_core/Model";
 import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory";
 import { packageName } from "../constants";
@@ -187,15 +188,15 @@ export const applyExtractorForSingleObjectListToSelectedInstancesListInMemory = 
     return selectedInstancesList;
   }
   switch (query.select.extractorOrCombinerType) {
-    case "extractorByEntityReturningObjectList": {
+    case "extractorInstancesByEntity": {
       const localQuery = query.select;
       // Use centralized filter and orderBy implementation
       return applyExtractorFilterAndOrderBy(selectedInstancesList, localQuery);
     }
-    case "combinerByRelationReturningObjectList": {
-      const relationQuery: CombinerByRelationReturningObjectList = query.select;
+    case "combinerOneToMany": {
+      const relationQuery: CombinerOneToMany = query.select;
       log.info(
-        "applyExtractorForSingleObjectListToSelectedInstancesListInMemory combinerByRelationReturningObjectList",
+        "applyExtractorForSingleObjectListToSelectedInstancesListInMemory combinerOneToMany",
         "query", JSON.stringify(query, undefined, 2),
         "selectedInstancesList",
         selectedInstancesList
@@ -217,25 +218,28 @@ export const applyExtractorForSingleObjectListToSelectedInstancesListInMemory = 
       ;
       let otherIndex:string | undefined = undefined
       if (referenceObject) {
-        otherIndex = (referenceObject ?? {})[relationQuery.objectReferenceAttribute ?? "uuid"];
+        otherIndex = getForeignKeyValue(
+          relationQuery.objectReferenceAttribute ?? "uuid",
+          referenceObject ?? {}
+        );
       } else {
         log.error(
-          "applyExtractorForSingleObjectListToSelectedInstancesListInMemory combinerByRelationReturningObjectList could not find objectReference in contextResults, objectReference=",
+          "applyExtractorForSingleObjectListToSelectedInstancesListInMemory combinerOneToMany could not find objectReference in contextResults, objectReference=",
           relationQuery.objectReference,
           "contextResults",
           query.contextResults
         );
       }
 
+      const fkAttribute = relationQuery.AttributeOfListObjectToCompareToReferenceUuid ?? "dummy";
       const finalInstanceList = selectedInstancesList.filter((i: EntityInstance) => {
-          const localIndex = relationQuery.AttributeOfListObjectToCompareToReferenceUuid ?? "dummy";
-          // TODO: allow for runtime reference, with runtime trnasformer reference
-          return (i as any)[localIndex] === otherIndex;
+          if (otherIndex === undefined) return false;
+          return instanceMatchesForeignKey(fkAttribute, i, otherIndex);
         }
       ) as EntityInstance[];
 
       log.info(
-        "applyExtractorForSingleObjectListToSelectedInstancesListInMemory combinerByRelationReturningObjectList",
+        "applyExtractorForSingleObjectListToSelectedInstancesListInMemory combinerOneToMany",
         "referenceObject", referenceObject,
         "otherIndex", otherIndex,
         "finalInstanceList", finalInstanceList
@@ -253,11 +257,11 @@ export const applyExtractorForSingleObjectListToSelectedInstancesListInMemory = 
 
       return transformedInstanceList;
     }
-    case "combinerByManyToManyRelationReturningObjectList": {
-      const relationQuery: CombinerByManyToManyRelationReturningObjectList = query.select;
+    case "combinerManyToMany": {
+      const relationQuery: CombinerManyToMany = query.select;
 
       // relationQuery.objectListReference is a queryContextReference
-      // log.info("applyExtractorForSingleObjectListToSelectedInstancesListInMemory combinerByManyToManyRelationReturningObjectList selectedInstancesList", selectedInstancesList)
+      // log.info("applyExtractorForSingleObjectListToSelectedInstancesListInMemory combinerManyToMany selectedInstancesList", selectedInstancesList)
       let otherList: Record<string, any> | undefined = undefined
       otherList = (((query.contextResults ?? {})[
         relationQuery.objectListReference
@@ -287,7 +291,7 @@ export const applyExtractorForSingleObjectListToSelectedInstancesListInMemory = 
               }
             } else {
               throw new Error(
-                "applyExtractorForSingleObjectListToSelectedInstancesListInMemory combinerByManyToManyRelationReturningObjectList can not use objectListReference, selectedInstances elementType=" +
+                "applyExtractorForSingleObjectListToSelectedInstancesListInMemory combinerManyToMany can not use objectListReference, selectedInstances elementType=" +
                   selectedInstancesList +
                   " typeof otherList=" +
                   typeof otherList +
@@ -333,7 +337,7 @@ export const applyExtractorForSingleObjectListToSelectedInstancesListInMemory = 
           : finalInstanceList;
 
         // log.info(
-        //   "applyExtractorForSingleObjectListToSelectedInstancesListInMemory combinerByManyToManyRelationReturningObjectList",
+        //   "applyExtractorForSingleObjectListToSelectedInstancesListInMemory combinerManyToMany",
         //   "selectedInstancesList",
         //   selectedInstancesList,
         //   "otherList",
@@ -346,7 +350,7 @@ export const applyExtractorForSingleObjectListToSelectedInstancesListInMemory = 
         return transformedInstanceList;
       } else {
         throw new Error(
-          "applyExtractorForSingleObjectListToSelectedInstancesListInMemory combinerByManyToManyRelationReturningObjectList could not find list for objectListReference, selectedInstances elementType=" +
+          "applyExtractorForSingleObjectListToSelectedInstancesListInMemory combinerManyToMany could not find list for objectListReference, selectedInstances elementType=" +
             selectedInstancesList
         );
       }
@@ -367,7 +371,7 @@ export const applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemo
   query: BoxedExtractorOrCombinerReturningObjectList,
 ): Domain2QueryReturnType<EntityInstancesUuidIndex> => {
   switch (query.select.extractorOrCombinerType) {
-    case "extractorByEntityReturningObjectList": {
+    case "extractorInstancesByEntity": {
       const localQuery = query.select;
       // log.info(
       //   "applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory filter",
@@ -396,27 +400,28 @@ export const applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemo
       return result;
       break;
     }
-    case "combinerByRelationReturningObjectList": {
-      const relationQuery: CombinerByRelationReturningObjectList = query.select;
+    case "combinerOneToMany": {
+      const relationQuery: CombinerOneToMany = query.select;
 
       let otherIndex:string | undefined = undefined
       if (
         ((query.contextResults ?? {})[relationQuery.objectReference])
       ) {
-        otherIndex = (((query.contextResults ?? {})[
-          relationQuery.objectReference
-        ] as any) ?? {})[relationQuery.objectReferenceAttribute ?? "uuid"];
+        otherIndex = getForeignKeyValue(
+          relationQuery.objectReferenceAttribute ?? "uuid",
+          (((query.contextResults ?? {})[relationQuery.objectReference]) as any) ?? {}
+        );
       } else {
         log.error(
-          "applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory combinerByRelationReturningObjectList could not find objectReference in contextResults, objectReference=",
+          "applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory combinerOneToMany could not find objectReference in contextResults, objectReference=",
           relationQuery.objectReference,
           "contextResults",
           query.contextResults
         );
       }
 
-      // log.info("applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory combinerByRelationReturningObjectList", JSON.stringify(selectedInstances))
-      // log.info("applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory combinerByRelationReturningObjectList", selectedInstances)
+      // log.info("applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory combinerOneToMany", JSON.stringify(selectedInstances))
+      // log.info("applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory combinerOneToMany", selectedInstances)
       // CAN NOT APPLY FILTER HERE, AS WE ARE WORKING ON AN INDEX
       if (relationQuery.orderBy) {
         log.warn(
@@ -424,24 +429,22 @@ export const applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemo
           JSON.stringify(query, undefined, 2)
         )
       }
+      const fkAttribute2 = relationQuery.AttributeOfListObjectToCompareToReferenceUuid ?? "dummy";
       return Object.fromEntries(
         Object.entries(selectedInstancesUuidIndex ?? {}).filter(
           (i: [string, EntityInstance]) => {
-            const localIndex = relationQuery.AttributeOfListObjectToCompareToReferenceUuid ?? "dummy";
-
-
-            // TODO: allow for runtime reference, with runtime trnasformer reference
-            return (i[1] as any)[localIndex] === otherIndex
+            if (otherIndex === undefined) return false;
+            return instanceMatchesForeignKey(fkAttribute2, i[1], otherIndex);
           }
         )
       );
 
     }
-    case "combinerByManyToManyRelationReturningObjectList": {
-      const relationQuery: CombinerByManyToManyRelationReturningObjectList = query.select;
+    case "combinerManyToMany": {
+      const relationQuery: CombinerManyToMany = query.select;
 
       // relationQuery.objectListReference is a queryContextReference
-      // log.info("applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory combinerByManyToManyRelationReturningObjectList", selectedInstancesUuidIndex)
+      // log.info("applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory combinerManyToMany", selectedInstancesUuidIndex)
       let otherList: Record<string, any> | undefined = undefined
       otherList = (((query.contextResults ?? {})[
         relationQuery.objectListReference
@@ -454,7 +457,7 @@ export const applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemo
 
             if (typeof otherList == "object" && !Array.isArray(otherList)) {
               // log.info(
-              //   "applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory combinerByManyToManyRelationReturningObjectList search otherList for attribute",
+              //   "applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory combinerManyToMany search otherList for attribute",
               //   otherListAttribute,
               //   "on object",
               //   selectedInstancesEntry[1],
@@ -471,7 +474,7 @@ export const applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemo
               return result;
             } else {
               throw new Error(
-                "applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory combinerByManyToManyRelationReturningObjectList can not use objectListReference, selectedInstances elementType=" +
+                "applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory combinerManyToMany can not use objectListReference, selectedInstances elementType=" +
                   selectedInstancesUuidIndex.elementType +
                   " typeof otherList=" +
                   typeof otherList +
@@ -516,7 +519,7 @@ export const applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemo
         }
       } else {
         throw new Error(
-          "applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory combinerByManyToManyRelationReturningObjectList could not find list for objectListReference, selectedInstances elementType=" +
+          "applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory combinerManyToMany could not find list for objectListReference, selectedInstances elementType=" +
             selectedInstancesUuidIndex.elementType
         );
       }
@@ -690,9 +693,9 @@ export function innerSelectDomainElementFromExtractorOrCombiner/*BoxedExtractorT
     }
     // ############################################################################################
     // Impure Monads
-    case "extractorByEntityReturningObjectList":
-    case "combinerByRelationReturningObjectList":
-    case "combinerByManyToManyRelationReturningObjectList": {
+    case "extractorInstancesByEntity":
+    case "combinerOneToMany":
+    case "combinerManyToMany": {
       const applicationSection =
         extractorOrCombiner.applicationSection ??
         getApplicationSection(application, extractorOrCombiner.parentUuid);
@@ -726,8 +729,8 @@ export function innerSelectDomainElementFromExtractorOrCombiner/*BoxedExtractorT
       );
       break;
     }
-    case "combinerForObjectByRelation":
-    case "extractorForObjectByDirectReference": {
+    case "combinerOneToOne":
+    case "extractorByPrimaryKey": {
       return extractorRunnerMap.extractEntityInstance(
         state,
         applicationDeploymentMap,
@@ -799,7 +802,7 @@ export function innerSelectDomainElementFromExtractorOrCombiner/*BoxedExtractorT
       );
       break;
     }
-    case "extractorCombinerByHeteronomousManyToManyReturningListOfObjectList": {
+    case "combinerByHeteronomousManyToMany": {
       // join
       const rootQueryResults: Domain2QueryReturnType<any> =
         typeof extractorOrCombiner.rootExtractorOrReference == "string"
@@ -837,7 +840,7 @@ export function innerSelectDomainElementFromExtractorOrCombiner/*BoxedExtractorT
             queryFailure: "IncorrectParameters",
             query: JSON.stringify(extractorOrCombiner.rootExtractorOrReference),
             queryContext:
-              "innerSelectDomainElementFromExtractorOrCombiner for extractorCombinerByHeteronomousManyToManyReturningListOfObjectList, rootExtractorOrReference could not be resolved, rootExtractorOrReference=" +
+              "innerSelectDomainElementFromExtractorOrCombiner for combinerByHeteronomousManyToMany, rootExtractorOrReference could not be resolved, rootExtractorOrReference=" +
               JSON.stringify(rootQueryResults, null, 2),
           },
         };
@@ -870,6 +873,11 @@ export function innerSelectDomainElementFromExtractorOrCombiner/*BoxedExtractorT
                 (entry[1] as any).uuid ?? "no uuid found for entry " + entry[0],
                 resolvedQuery,
               ];
+            } else {
+              // log.info(
+              //   "innerSelectDomainElementFromExtractorOrCombiner for combinerByHeteronomousManyToMany resolvedQuery",
+              //   JSON.stringify(resolvedQuery, null, 2)
+              // );
             }
             const innerResult = innerSelectDomainElementFromExtractorOrCombiner(
               // recursive call
@@ -895,7 +903,7 @@ export function innerSelectDomainElementFromExtractorOrCombiner/*BoxedExtractorT
             queryFailure: "IncorrectParameters",
             query: JSON.stringify(extractorOrCombiner.rootExtractorOrReference),
             queryContext:
-              "innerSelectDomainElementFromExtractorOrCombiner for extractorCombinerByHeteronomousManyToManyReturningListOfObjectList, rootExtractorOrReference is not an object, rootExtractorOrReference=" +
+              "innerSelectDomainElementFromExtractorOrCombiner for combinerByHeteronomousManyToMany, rootExtractorOrReference is not an object, rootExtractorOrReference=" +
               JSON.stringify(rootQueryResults, null, 2),
           },
         };
@@ -1156,7 +1164,7 @@ export const extractzodSchemaForSingleSelectQuery = <StateType>(
     extractorParams.query.select.extractorOrCombinerType=="extractorOrCombinerContextReference" ||
     extractorParams.query.select.extractorOrCombinerType=="extractorWrapperReturningObject" ||
     extractorParams.query.select.extractorOrCombinerType=="extractorWrapperReturningList" ||
-    extractorParams.query.select.extractorOrCombinerType=="extractorCombinerByHeteronomousManyToManyReturningListOfObjectList" 
+    extractorParams.query.select.extractorOrCombinerType=="combinerByHeteronomousManyToMany" 
   ) {
     throw new Error(
       "extractzodSchemaForSingleSelectQuery can not deal with context reference: query=" +

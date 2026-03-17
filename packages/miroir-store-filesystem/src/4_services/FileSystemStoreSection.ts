@@ -7,7 +7,7 @@ import {
   Action2VoidReturnType,
   EntityDefinition,
   LoggerInterface,
-  MetaEntity,
+  Entity,
   MiroirLoggerFactory,
   PersistenceStoreAbstractSectionInterface,
   StorageSpaceHandlerInterface
@@ -33,6 +33,8 @@ export class FileSystemStoreSection
   extends FileSystemStore
   implements PersistenceStoreAbstractSectionInterface, StorageSpaceHandlerInterface
 {
+  // Map from entity UUID to idAttribute (defaults to "uuid" when absent)
+  public entityIdAttributes: Record<string, string | string[]> = {};
   // public filesystemStoreName: string;
   // public directory: string;
 
@@ -50,8 +52,15 @@ export class FileSystemStoreSection
   }
 
   // #############################################################################################
-  bootFromPersistedState(entities: MetaEntity[], entityDefinitions: EntityDefinition[]): Promise<Action2VoidReturnType> {
+  bootFromPersistedState(entities: Entity[], entityDefinitions: EntityDefinition[]): Promise<Action2VoidReturnType> {
     log.info(this.logHeader, "bootFromPersistedState does nothing!");
+    // Register idAttribute for each entity
+    for (const ed of entityDefinitions) {
+      const idAttr = (ed as any).idAttribute ?? "uuid";
+      if (idAttr !== "uuid") {
+        this.entityIdAttributes[ed.entityUuid] = idAttr;
+      }
+    }
     return Promise.resolve(ACTION_OK);
   }
 
@@ -59,6 +68,11 @@ export class FileSystemStoreSection
   getEntityUuids(): string[] {
     const files = fs.readdirSync(this.directory);
     return files;
+  }
+
+  // #############################################################################################
+  getEntityIdAttribute(entityUuid: string): string | string[] {
+    return this.entityIdAttributes[entityUuid] ?? "uuid";
   }
 
   // #############################################################################################
@@ -74,7 +88,7 @@ export class FileSystemStoreSection
 
   // #############################################################################################
   createStorageSpaceForInstancesOfEntity(
-    entity: MetaEntity,
+    entity: Entity,
     entityDefinition: EntityDefinition
   ): Promise<Action2VoidReturnType> {
     log.info(this.logHeader, "createStorageSpaceForInstancesOfEntity", entity);
@@ -83,6 +97,11 @@ export class FileSystemStoreSection
       fs.mkdirSync(entityInstancesPath);
     } else {
       log.debug(this.logHeader, "createStorageSpaceForInstancesOfEntity storage space already exists for", entity.uuid);
+    }
+    // Register idAttribute for non-UUID PK entities
+    const idAttr = (entityDefinition as any).idAttribute ?? "uuid";
+    if (idAttr !== "uuid") {
+      this.entityIdAttributes[entity.uuid] = idAttr;
     }
     return Promise.resolve(ACTION_OK);
   }
@@ -115,7 +134,7 @@ export class FileSystemStoreSection
   renameStorageSpaceForInstancesOfEntity(
     oldName: string,
     newName: string,
-    entity: MetaEntity,
+    entity: Entity,
     entityDefinition: EntityDefinition
   ): Promise<Action2VoidReturnType> {
     log.info(this.logHeader, "renameStorageSpaceForInstancesOfEntity does nothing!");

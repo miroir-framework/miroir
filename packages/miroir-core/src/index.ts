@@ -114,8 +114,8 @@ export {
   // ExtendedTransformerForRuntime,
   Extractor,
   extractor,
-  ExtractorForObjectByDirectReference,
-  extractorForObjectByDirectReference,
+  ExtractorByPrimaryKey,
+  extractorByPrimaryKey,
   ExtractorOrCombiner,
   extractorOrCombiner,
   ExtractorOrCombinerRecord,
@@ -257,6 +257,8 @@ export {
   objectInstanceReportSection,
   ObjectListReportSection,
   objectListReportSection,
+  ModelDiagramReportSection,
+  modelDiagramReportSection,
   RunnerReportSection,
   runnerReportSection,
   PersistenceAction, Query,
@@ -397,7 +399,9 @@ export {
   ZodParseError,
   zodParseError,
   ZodParseErrorIssue,
-  zodParseErrorIssue
+  zodParseErrorIssue,
+  CompositeAction,
+  compositeAction,
 } from "./0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
 export {
@@ -630,7 +634,7 @@ export { ACTION_OK, BLOB_SIZE_WARNING_THRESHOLD, MAX_BLOB_FILE_SIZE } from "./1_
 export {
   ApplicationDeploymentMap,
   ApplicationEntitiesAndInstances,
-  createApplicationCompositeAction,
+  // createApplicationCompositeAction,
   createDeploymentCompositeAction,
   defaultDeployments,
   defaultDeploymentUuids,
@@ -641,6 +645,10 @@ export {
   dropApplicationAndDeploymentCompositeAction,
   EndpointApplicationMap,
   resetAndinitializeDeploymentCompositeAction,
+  getMiroirConfig,
+  testUtils_deleteApplicationDeployment,
+  testUtils_resetApplicationDeployment,
+  metaModelFilterEntities,
 } from "./1_core/Deployment";
 export { DomainInstanceUuidIndexToArray } from "./1_core/DomainState.js";
 export {
@@ -681,24 +689,51 @@ export {
   actionsWithDeploymentInPayload,
 } from "./1_core/Instance";
 export {
+  entityHasCompositePrimaryKey,
+  entityHasUuidPrimaryKey,
+  getEntityPrimaryKeyAttribute,
+  getEntityPrimaryKeyAttributes,
+  getForeignKeyValue,
+  getInstancePrimaryKeyValue,
+  instanceMatchesForeignKey,
+  parseCompositeKeyValue,
+  resolveInstanceParentUuid,
+  serializeCompositeKeyValue,
+} from "./1_core/EntityPrimaryKey";
+export {
   applicationModelEntities,
   defaultMetaModelEnvironment,
   defaultMiroirMetaModel,
   defaultMiroirModelEnvironment,
   // getCurrentEntityDefinition,
+  emptyApplicationModel,
   getApplicationSection,
   getReportsAndEntitiesDefinitionsForDeploymentUuid,
   metaModelEntities,
   miroirModelEntities,
+  extractApplicationData,
+  extractApplicationModel,
+  extractEntityInstances,
+  metaMetaModelEntities,
+  metaMetaModelEntityUuids,
+  metaModelEntityUuids,
 } from "./1_core/Model.js";
 export { defaultReport } from "./1_core/Report.js";
+export { testBuildPlusRuntimeCompositeActionSuiteForRunner } from "./1_core/Runner.js";
 export {
   describe,
   expect,
   TestFramework
 } from "./1_core/test-expect";
 export {
-  base64ToBlob, fileToBase64, formatFileSize, getBlobFileIcon, mergeIfUnique, pushIfUnique, validateMimeType
+  base64ToBlob,
+  fileToBase64,
+  formatFileSize,
+  getBlobFileIcon,
+  mergeIfUnique,
+  pushIfUnique,
+  validateMimeType,
+  formatYYYYMMDD_HHMMSS,
 } from "./1_core/tools.js";
 export { zodErrorDeepestIssueLeaves, zodErrorFirstIssueLeaf } from "./1_core/zodParseErrorHandler";
 export {
@@ -783,8 +818,10 @@ export {
 export {
   createReduxDeploymentsStateSelectorMap,
   executeReduxDeploymentsStateQuery,
-  getEntityInstancesUuidIndexNonHook,
-  getMultipleEntityInstancesUuidIndexNonHook
+  getEntityInstancesIndexNonHook,
+  getEntityInstancesIndexNonHook as getEntityInstancesUuidIndexNonHook, // backward compat
+  getMultipleEntityInstancesIndexNonHook,
+  getMultipleEntityInstancesIndexNonHook as getMultipleEntityInstancesUuidIndexNonHook, // backward compat
 } from "./2_domain/ReduxDeploymentsStateQueryExecutor.js";
 export {
   extractEntityJzodSchemaFromReduxDeploymentsState, GetExtractorRunnerParamsForReduxDeploymentsState,
@@ -852,8 +889,8 @@ export {
 } from "./4_services/PersistenceStoreController.js";
 export { PersistenceStoreControllerManager } from "./4_services/PersistenceStoreControllerManager.js";
 export {
-  // createPersistenceStoreControllers,
-  startLocalPersistenceStoreControllers
+  startLocalPersistenceStoreControllers,
+  mountApplicationDeployment,
 } from "./4_services/PersistenceStoreControllerTools.js";
 export { RestClient } from "./4_services/RestClient.js";
 export { RestClientStub } from "./4_services/RestClientStub";
@@ -1003,6 +1040,14 @@ const test1SelfApplication = require("./assets/test1_model/a659d350-dd97-4da9-91
 const menuDefaultTest1 = require("./assets/test1_model/dde4c883-ae6d-47c3-b6df-26bc6e3c1842/84c178cc-1b1b-497a-a035-9b3d756bb085.json"); //assert { type: "json" };
 
 export { menuDefaultTest1, test1SelfApplication };
+
+// ################################################################################################
+// TYPE ALIASES for backward compatibility during EntityInstancesUuidIndex → EntityInstancesIndex rename
+// ################################################################################################
+import type { EntityInstancesUuidIndex as _EntityInstancesUuidIndex } from "./0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+import { entityInstancesUuidIndex as _entityInstancesUuidIndex } from "./0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+export type EntityInstancesIndex = _EntityInstancesUuidIndex;
+export const entityInstancesIndex = _entityInstancesUuidIndex;
 
 // export { default as miroirThemeSchema } from "./assets/miroir_data/5e81e1b9-38be-487c-b3e5-53796c57fccf/2aa173df-285d-4ed2-8b70-736902ded03a.json" assert { type: "json" };
 // export { default as TableThemeSchema } from "./assets/miroir_data/5e81e1b9-38be-487c-b3e5-53796c57fccf/8e380a46-189d-40ff-a880-7d04f04da673.json";

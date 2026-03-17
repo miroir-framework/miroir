@@ -20,7 +20,7 @@ MiroirLoggerFactory.registerLoggerToStart(
 
 // export type SqlEntityDefinition = { [parentName in string]: ModelStatic<Model<any, any>> };
 export type EntityUuidIndexedSequelizeModel = {
-  [parentUuid in string]: { parentName?: string; sequelizeModel: ModelStatic<Model<any, any>> };
+  [parentUuid in string]: { parentName?: string; idAttribute?: string | string[]; isExternal?: boolean; effectiveSchema?: string; sequelizeModel: ModelStatic<Model<any, any>> };
 };
 
 // const dataTypesMapping: { [type in EntityAttributeType]: DataTypes.AbstractDataTypeConstructor } = {
@@ -61,6 +61,8 @@ export function fromMiroirEntityDefinitionToSequelizeEntityDefinition(
   entityDefinition: EntityDefinition
 ): ModelAttributes<Model, Attributes<Model>> {
   const mlSchema: JzodObject = entityDefinition.mlSchema ? entityDefinition.mlSchema : { type: "object", definition: {}};
+  const idAttribute: string | string[] = (entityDefinition as any).idAttribute ?? "uuid";
+  const pkAttributes: string[] = Array.isArray(idAttribute) ? idAttribute : [idAttribute];
   const jzodObjectAttributes = mlSchema.definition;
   const result = Object.fromEntries(
     Object.entries(jzodObjectAttributes).map((a: [string, JzodElement]) => {
@@ -104,7 +106,7 @@ export function fromMiroirEntityDefinitionToSequelizeEntityDefinition(
               : DataTypes.STRING,
           // allowNull: a[1].type == "simpleType" ? a[1].optional : false,
           allowNull: ((a[1] as any)["optional"] || (a[1] as any)["nullable"]) ?? false,
-          primaryKey: a[0] == "uuid",
+          primaryKey: pkAttributes.includes(a[0]),
         },
       ];
     })

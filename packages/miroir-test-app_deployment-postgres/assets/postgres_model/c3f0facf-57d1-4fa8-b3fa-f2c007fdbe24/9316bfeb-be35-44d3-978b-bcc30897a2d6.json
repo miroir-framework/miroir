@@ -1,0 +1,11 @@
+{
+  "uuid": "9316bfeb-be35-44d3-978b-bcc30897a2d6",
+  "parentName":"ApplicationVersion",
+  "parentUuid":"c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24",
+  "name":"Initial",
+  "selfApplication":"84d28eb1-d98a-499e-bf24-62cade033da6",
+  "branch":"9034141b-0d0d-4beb-82af-dfc02be15c2d",
+  "description": "Initial Postgres Application version",
+  "modelStructureMigration":[],
+  "modelCUDMigration":[]
+}

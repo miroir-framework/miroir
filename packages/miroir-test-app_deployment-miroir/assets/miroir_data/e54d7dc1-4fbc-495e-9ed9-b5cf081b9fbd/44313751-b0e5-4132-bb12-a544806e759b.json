@@ -1,5 +1,6 @@
 {
   "uuid": "44313751-b0e5-4132-bb12-a544806e759b",
+  "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "parentUuid": "e54d7dc1-4fbc-495e-9ed9-b5cf081b9fbd",
   "name": "dropEntity",
   "defaultLabel": "Drop Entity",
@@ -96,46 +97,7 @@
       "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
       "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
       "payload": {
-        "application": "31f3a03a-f150-416d-9315-d3a752cb4eb4",
-        "definition": [
-          {
-            "actionType": "compositeRunBoxedQueryAction",
-            "actionLabel": "getDeploymentForApplication",
-            "nameGivenToResult": "deploymentInfo",
-            "payload": {
-              "actionType": "runBoxedQueryAction",
-              "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-              "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-              "payload": {
-                "application": "55af124e-8c05-4bae-a3ef-0933d41daa92",
-                "applicationSection": "data",
-                "query": {
-                  "queryType": "boxedQueryWithExtractorCombinerTransformer",
-                  "application": "55af124e-8c05-4bae-a3ef-0933d41daa92",
-                  "pageParams": {},
-                  "queryParams": {},
-                  "contextResults": {},
-                  "extractors": {
-                    "deployments": {
-                      "label": "deployments of the application",
-                      "extractorOrCombinerType": "extractorByEntityReturningObjectList",
-                      "parentUuid": "7959d814-400c-4e80-988f-a00fe582ab98",
-                      "parentName": "Deployment",
-                      "applicationSection": "data",
-                      "filter": {
-                        "attributeName": "selfApplication",
-                        "value": {
-                          "transformerType": "mustacheStringTemplate",
-                          "interpolation": "build",
-                          "definition": "{{dropEntity.application}}"
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
+        "actionSequence": [
           {
             "actionType": "compositeRunBoxedQueryAction",
             "actionLabel": "getEntityDefinitionForEntity",
@@ -146,8 +108,7 @@
               "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
               "payload": {
                 "application": {
-                  "transformerType": "getFromContext",
-                  "interpolation": "runtime",
+                  "transformerType": "getFromParameters",
                   "referencePath": [
                     "dropEntity",
                     "application"
@@ -157,8 +118,7 @@
                 "query": {
                   "queryType": "boxedQueryWithExtractorCombinerTransformer",
                   "application": {
-                    "transformerType": "getFromContext",
-                    "interpolation": "runtime",
+                    "transformerType": "getFromParameters",
                     "referencePath": [
                       "dropEntity",
                       "application"
@@ -170,7 +130,7 @@
                   "extractors": {
                     "entityDefinitions": {
                       "label": "entityDefinitions of the deployment",
-                      "extractorOrCombinerType": "extractorByEntityReturningObjectList",
+                      "extractorOrCombinerType": "extractorInstancesByEntity",
                       "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
                       "parentName": "EntityDefinition",
                       "applicationSection": "model",
@@ -178,7 +138,6 @@
                         "attributeName": "entityUuid",
                         "value": {
                           "transformerType": "mustacheStringTemplate",
-                          "interpolation": "build",
                           "definition": "{{dropEntity.entity}}"
                         }
                       }
@@ -195,8 +154,7 @@
             "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
             "payload": {
               "application": {
-                "transformerType": "getFromContext",
-                "interpolation": "runtime",
+                "transformerType": "getFromParameters",
                 "referencePath": [
                   "dropEntity",
                   "application"
@@ -229,8 +187,7 @@
             "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
             "payload": {
               "application": {
-                "transformerType": "getFromContext",
-                "interpolation": "runtime",
+                "transformerType": "getFromParameters",
                 "referencePath": [
                   "dropEntity",
                   "application"

@@ -27,6 +27,9 @@
     "test": "vitest run --poolOptions.threads.singleThread -t",
     "testByFile": "vitest run --poolOptions.forks.singleFork --reporter=verbose"
   },
+  "nx": {
+    "implicitDependencies": ["!miroir-core"]
+  },
   "devDependencies": {
     "miroir-core": "*",
     "copyfiles": "^2.4.1",

@@ -1,0 +1,36 @@
+{
+  "uuid": "a4bde0a2-d8af-4616-82e5-2847a1bcc643",
+  "parentName": "EntityDefinition",
+  "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+  "parentDefinitionVersionUuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
+  "entityUuid": "cbc94d62-d2e5-4bc2-8aef-45efcfbd0af6",
+  "conceptLevel": "External",
+  "name": "schemata",
+  "description": "The schemata of a PostgreSQL database.",
+  "icon": "building",
+  "defaultInstanceDetailsReportUuid": "a72bb361-3126-4aa1-85cc-0be4d6838c84",
+  "idAttribute": ["catalog_name", "schema_name"],
+  "externalDataSource": {
+    "schema": "information_schema"
+  },
+  "cache": {
+    "cacheAllInstancesOnRefresh": true
+  },
+  "mlSchema": {
+    "type": "object",
+    "definition": {
+      "catalog_name": {
+        "type": "string",
+        "tag": { "value": { "id": 1, "defaultLabel": "Catalog Name", "display": { "editable": false } } }
+      },
+      "schema_name": {
+        "type": "string",
+        "tag": { "value": { "id": 2, "defaultLabel": "Schema Name", "display": { "editable": false } } }
+      },
+      "schema_owner": {
+        "type": "string",
+        "tag": { "value": { "id": 3, "defaultLabel": "Schema Owner" } }
+      }
+    }
+  }
+}

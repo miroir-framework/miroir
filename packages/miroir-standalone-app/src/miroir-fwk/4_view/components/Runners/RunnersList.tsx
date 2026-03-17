@@ -9,7 +9,7 @@ import {
 } from "miroir-core";
 import { Runner_CreateApplication } from './Runner_CreateApplication';
 import { Runner_CreateEntity } from './Runner_CreateEntity';
-import { Runner_DeleteEntity } from './Runner_DeleteEntity';
+import { Runner_DropEntity } from './Runner_DropEntity';
 import { Runner_DropApplication } from './Runner_DropApplication';
 import { Runner_InstallApplication } from './Runner_InstallApplication';
 import { packageName } from '../../../../constants';
@@ -27,29 +27,29 @@ export type RunnerConfig = {
   component: React.FC<any>; // TODO: give a proper type to the component props
 }
 export const runnerConfigs: RunnerConfig[] = [
-  // {
-  //   title: "Endpoint Action Caller",
-  //   component: EndpointActionCaller,
-  // },
+  // // {
+  // //   title: "Endpoint Action Caller",
+  // //   component: EndpointActionCaller,
+  // // },
   {
     title: "Install Existing Application",
     component: Runner_InstallApplication,
   },
-  // {
-  //   title: "Create Application (and Deployment)",
-  //   component: Runner_CreateApplication,
-  // },
+  {
+    title: "Create Application (and Deployment)",
+    component: Runner_CreateApplication,
+  },
   {
     title: "Drop Application (and Deployment)",
     component: Runner_DropApplication,
   },
-  // {
-  //   title: "Create Entity",
-  //   component: Runner_CreateEntity,
-  // },
+  {
+    title: "Create Entity",
+    component: Runner_CreateEntity,
+  },
   // {
   //   title: "Drop Entity",
-  //   component: Runner_DeleteEntity,
+  //   component: Runner_DropEntity,
   // },
   // // // // {
   // // // //   title: "Import Entity From Spreadsheet",

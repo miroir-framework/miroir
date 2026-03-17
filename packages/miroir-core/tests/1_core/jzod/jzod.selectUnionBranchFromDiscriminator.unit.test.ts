@@ -357,9 +357,9 @@ describe("selectUnionBranchFromDiscriminator", () => {
   });
 
   // #################################################################################################
-  it("returns the correct branch for combinerByRelationReturningObjectList in combinerTemplate", () => {
+  it("returns the correct branch for combinerOneToMany in combinerTemplate", () => {
     const unionObjectChoices: JzodObject[] = [
-      // extractorForObjectByDirectReference
+      // extractorByPrimaryKey
       {
         type: "object",
         extend: {
@@ -374,7 +374,7 @@ describe("selectUnionBranchFromDiscriminator", () => {
         definition: {
           extractorOrCombinerType: {
             type: "literal",
-            definition: "extractorForObjectByDirectReference",
+            definition: "extractorByPrimaryKey",
           },
           instanceUuid: {
             type: "schemaReference",
@@ -386,7 +386,7 @@ describe("selectUnionBranchFromDiscriminator", () => {
           },
         },
       },
-      // combinerForObjectByRelation
+      // combinerOneToOne
       {
         type: "object",
         extend: {
@@ -399,7 +399,7 @@ describe("selectUnionBranchFromDiscriminator", () => {
           context: {},
         },
         definition: {
-          extractorOrCombinerType: { type: "literal", definition: "combinerForObjectByRelation" },
+          extractorOrCombinerType: { type: "literal", definition: "combinerOneToOne" },
           objectReference: {
             type: "schemaReference",
             definition: {
@@ -411,7 +411,7 @@ describe("selectUnionBranchFromDiscriminator", () => {
           AttributeOfObjectToCompareToReferenceUuid: { type: "string" },
         },
       },
-      // combinerByRelationReturningObjectList
+      // combinerOneToMany
       {
         type: "object",
         extend: {
@@ -426,7 +426,7 @@ describe("selectUnionBranchFromDiscriminator", () => {
         definition: {
           extractorOrCombinerType: {
             type: "literal",
-            definition: "combinerByRelationReturningObjectList",
+            definition: "combinerOneToMany",
           },
           orderBy: {
             type: "object",
@@ -448,7 +448,7 @@ describe("selectUnionBranchFromDiscriminator", () => {
           AttributeOfListObjectToCompareToReferenceUuid: { type: "string" },
         },
       },
-      // combinerByManyToManyRelationReturningObjectList
+      // combinerManyToMany
       {
         type: "object",
         extend: {
@@ -463,7 +463,7 @@ describe("selectUnionBranchFromDiscriminator", () => {
         definition: {
           extractorOrCombinerType: {
             type: "literal",
-            definition: "combinerByManyToManyRelationReturningObjectList",
+            definition: "combinerManyToMany",
           },
           orderBy: {
             type: "object",
@@ -488,13 +488,13 @@ describe("selectUnionBranchFromDiscriminator", () => {
           },
         },
       },
-      // extractorCombinerByHeteronomousManyToManyReturningListOfObjectList
+      // combinerByHeteronomousManyToMany
       {
         type: "object",
         definition: {
           extractorOrCombinerType: {
             type: "literal",
-            definition: "extractorCombinerByHeteronomousManyToManyReturningListOfObjectList",
+            definition: "combinerByHeteronomousManyToMany",
           },
           rootExtractorOrReference: {
             type: "union",
@@ -584,7 +584,7 @@ describe("selectUnionBranchFromDiscriminator", () => {
           },
         },
       },
-      // extractorTemplateForObjectListByEntity
+      // extractorTemplateInstancesByEntity
       {
         type: "object",
         extend: {
@@ -599,7 +599,7 @@ describe("selectUnionBranchFromDiscriminator", () => {
         definition: {
           extractorOrCombinerType: {
             type: "literal",
-            definition: "extractorTemplateForObjectListByEntity",
+            definition: "extractorTemplateInstancesByEntity",
           },
           orderBy: {
             type: "object",
@@ -626,7 +626,7 @@ describe("selectUnionBranchFromDiscriminator", () => {
           },
         },
       },
-      // // combinerByRelationReturningObjectList !!!!!!!!!!!!!!!!!!!!!!!!!!
+      // // combinerOneToMany !!!!!!!!!!!!!!!!!!!!!!!!!!
       // {
       //   type: "object",
       //   extend: {
@@ -641,7 +641,7 @@ describe("selectUnionBranchFromDiscriminator", () => {
       //   definition: {
       //     extractorOrCombinerType: {
       //       type: "literal",
-      //       definition: "combinerByRelationReturningObjectList",
+      //       definition: "combinerOneToMany",
       //     },
       //     orderBy: {
       //       type: "object",
@@ -663,7 +663,7 @@ describe("selectUnionBranchFromDiscriminator", () => {
       //     AttributeOfListObjectToCompareToReferenceUuid: { type: "string" },
       //   },
       // },
-      // // combinerByManyToManyRelationReturningObjectList !!!!!!!!!!!!!!!!!!!!!!!!!!
+      // // combinerManyToMany !!!!!!!!!!!!!!!!!!!!!!!!!!
       // {
       //   type: "object",
       //   extend: {
@@ -678,7 +678,7 @@ describe("selectUnionBranchFromDiscriminator", () => {
       //   definition: {
       //     extractorOrCombinerType: {
       //       type: "literal",
-      //       definition: "combinerByManyToManyRelationReturningObjectList",
+      //       definition: "combinerManyToMany",
       //     },
       //     orderBy: {
       //       type: "object",
@@ -706,7 +706,7 @@ describe("selectUnionBranchFromDiscriminator", () => {
     ];
 
     const valueObject = {
-      extractorOrCombinerType: "combinerByRelationReturningObjectList",
+      extractorOrCombinerType: "combinerOneToMany",
       parentName: "Book",
       parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
       objectReference: {
@@ -799,7 +799,7 @@ describe("selectUnionBranchFromDiscriminator", () => {
           },
           extractorOrCombinerType: {
             type: "literal",
-            definition: "combinerByRelationReturningObjectList",
+            definition: "combinerOneToMany",
           },
           orderBy: {
             type: "object",

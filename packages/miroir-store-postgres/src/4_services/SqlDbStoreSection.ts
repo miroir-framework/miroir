@@ -3,7 +3,7 @@ import {
   Action2VoidReturnType,
   EntityDefinition,
   LoggerInterface,
-  MetaEntity,
+  Entity,
   MiroirLoggerFactory,
   PersistenceStoreAbstractSectionInterface,
   StorageSpaceHandlerInterface,
@@ -49,6 +49,11 @@ export class SqlDbStoreSection
     return Object.keys(this.sqlSchemaTableAccess);
   }
 
+  // ##############################################################################################
+  getEntityIdAttribute(entityUuid: string): string | string[] {
+    return this.sqlSchemaTableAccess[entityUuid]?.idAttribute ?? "uuid";
+  }
+
   // ######################################################################################
   async clear(): Promise<Action2VoidReturnType> {
     log.info(this.logHeader, "clear start, entities", this.getEntityUuids());
@@ -61,7 +66,7 @@ export class SqlDbStoreSection
 
   // ##############################################################################################
   async bootFromPersistedState(
-    entities: MetaEntity[],
+    entities: Entity[],
     entityDefinitions: EntityDefinition[]
   ): Promise<Action2VoidReturnType> {
     log.info(
@@ -77,7 +82,7 @@ export class SqlDbStoreSection
     // );
     this.sqlSchemaTableAccess = entities
       // .filter(e=>['Entity','EntityDefinition'].indexOf(e.name)==-1)
-      .reduce((prev, curr: MetaEntity) => {
+      .reduce((prev, curr: Entity) => {
         const entityDefinition = entityDefinitions.find((e) => e.entityUuid == curr.uuid);
         log.info(
           this.logHeader,
@@ -91,24 +96,46 @@ export class SqlDbStoreSection
           return prev;
         }
       }, {});
+    // Auto-migrate: add missing columns for non-external entities (safe for schema evolution)
+    // for (const [entityUuid, access] of Object.entries(this.sqlSchemaTableAccess)) {
+    //   if (!access.isExternal) {
+    //     try {
+    //       await access.sequelizeModel.sync({ alter: true });
+    //       log.info(this.logHeader, "bootFromPersistedState sync alter succeeded for entity", entityUuid);
+    //     } catch (e) {
+    //       log.warn(this.logHeader, "bootFromPersistedState sync alter failed for entity", entityUuid, "error:", e);
+    //     }
+    //   }
+    // }
     return Promise.resolve(ACTION_OK);
   }
 
   // ##############################################################################################
   getAccessToDataSectionEntity(
-    entity: MetaEntity,
+    entity: Entity,
     entityDefinition: EntityDefinition
   ): EntityUuidIndexedSequelizeModel {
     // TODO: does side effect => refactor!
+    const idAttribute: string | string[] = (entityDefinition as any).idAttribute ?? "uuid";
+    const isExternal = entity.conceptLevel === "External" || !!(entityDefinition as any).externalDataSource;
+    const effectiveSchema = isExternal && entityDefinition.externalDataSource?.schema
+      ? entityDefinition.externalDataSource.schema
+      : this.schema;
+    const effectiveTableName = isExternal && entityDefinition.externalDataSource?.tableName
+      ? entityDefinition.externalDataSource.tableName
+      : entity.name;
     return {
       [entity.uuid]: {
         parentName: entity.parentName,
+        idAttribute,
+        isExternal,
+        effectiveSchema,
         sequelizeModel: this.sequelize.define(
-          entity.name,
+          effectiveTableName,
           fromMiroirEntityDefinitionToSequelizeEntityDefinition(entityDefinition),
           {
             freezeTableName: true,
-            schema: this.schema,
+            schema: effectiveSchema,
           }
         ),
       },
@@ -117,7 +144,7 @@ export class SqlDbStoreSection
 
   // ##############################################################################################
   async createStorageSpaceForInstancesOfEntity(
-    entity: MetaEntity,
+    entity: Entity,
     entityDefinition: EntityDefinition
   ): Promise<Action2VoidReturnType> {
     this.sqlSchemaTableAccess = Object.assign(
@@ -125,10 +152,14 @@ export class SqlDbStoreSection
       this.sqlSchemaTableAccess,
       this.getAccessToDataSectionEntity(entity, entityDefinition)
     );
-    log.info(this.logHeader, "createStorageSpaceForInstancesOfEntity", "creating data schema table", entity.name);
-    const sequelizeModel = this.sqlSchemaTableAccess[entity.uuid].sequelizeModel;
-    await sequelizeModel.sync({ force: true }); // TODO: replace sync!
-    log.debug(this.logHeader, "createStorageSpaceForInstancesOfEntity", "done creating data schema table", entity.name);
+    if (this.sqlSchemaTableAccess[entity.uuid]?.isExternal) {
+      log.info(this.logHeader, "createStorageSpaceForInstancesOfEntity", "skipping table creation for external entity", entity.name);
+    } else {
+      log.info(this.logHeader, "createStorageSpaceForInstancesOfEntity", "creating data schema table", entity.name);
+      const sequelizeModel = this.sqlSchemaTableAccess[entity.uuid].sequelizeModel;
+      await sequelizeModel.sync({ force: true }); // TODO: replace sync!
+      log.debug(this.logHeader, "createStorageSpaceForInstancesOfEntity", "done creating data schema table", entity.name);
+    }
     return Promise.resolve(ACTION_OK);
   }
 
@@ -136,7 +167,7 @@ export class SqlDbStoreSection
   async renameStorageSpaceForInstancesOfEntity(
     oldName: string,
     newName: string,
-    entity: MetaEntity,
+    entity: Entity,
     entityDefinition: EntityDefinition
   ): Promise<Action2VoidReturnType> {
     const queryInterface = this.sequelize.getQueryInterface();
@@ -158,7 +189,7 @@ export class SqlDbStoreSection
 
   // // ##############################################################################################
   // async alterStorageSpaceForInstancesOfEntity(
-  //   entity: MetaEntity,
+  //   entity: Entity,
   //   entityDefinition: EntityDefinition
   // ): Promise<Action2VoidReturnType> {
   //   const queryInterface = this.sequelize.getQueryInterface();
@@ -182,15 +213,19 @@ export class SqlDbStoreSection
   async dropStorageSpaceForInstancesOfEntity(entityUuid: Uuid): Promise<Action2VoidReturnType> {
     if (this.sqlSchemaTableAccess && this.sqlSchemaTableAccess[entityUuid]) {
       const model = this.sqlSchemaTableAccess[entityUuid];
-      log.debug(
-        this.logHeader,
-        "dropStorageSpaceForInstancesOfEntity entityUuid",
-        entityUuid,
-        "parentName",
-        model.parentName
-      );
-      // this.sequelize.modelManager.removeModel(this.sequelize.model(model.parentName));
-      await model.sequelizeModel.drop();
+      if (model.isExternal) {
+        log.info(this.logHeader, "dropStorageSpaceForInstancesOfEntity", "skipping table drop for external entity", entityUuid);
+      } else {
+        log.debug(
+          this.logHeader,
+          "dropStorageSpaceForInstancesOfEntity entityUuid",
+          entityUuid,
+          "parentName",
+          model.parentName
+        );
+        // this.sequelize.modelManager.removeModel(this.sequelize.model(model.parentName));
+        await model.sequelizeModel.drop();
+      }
       delete this.sqlSchemaTableAccess[entityUuid];
     } else {
       log.warn("dropStorageSpaceForInstancesOfEntity entityUuid", entityUuid, "NOT FOUND.");

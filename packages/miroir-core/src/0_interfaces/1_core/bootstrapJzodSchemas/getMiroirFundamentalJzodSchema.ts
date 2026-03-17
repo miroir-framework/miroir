@@ -127,7 +127,7 @@ export function getMiroirFundamentalJzodSchema(
   // log.info(
   //   "getMiroirFundamentalJzodSchema entityDefinitionQueryVersionV1WithAbsoluteReferences",
   //   Object.keys(entityDefinitionQueryVersionV1WithAbsoluteReferences.context ?? {}).length,
-  //   JSON.stringify(entityDefinitionQueryVersionV1WithAbsoluteReferences.context.combinerForObjectByRelation ?? {}, null, 2)
+  //   JSON.stringify(entityDefinitionQueryVersionV1WithAbsoluteReferences.context.combinerOneToOne ?? {}, null, 2)
   // );
   // log.info("getMiroirFundamentalJzodSchema miroirTransformersJzodSchemas", JSON.stringify(miroirTransformersJzodSchemas.map(e=>e.name)), null, 2);
   // log.info("getMiroirFundamentalJzodSchema miroirTransformersForBuild", JSON.stringify(Object.keys(miroirTransformersForBuild), null, 2));
@@ -354,6 +354,8 @@ export function getMiroirFundamentalJzodSchema(
         transformerForBuild_getFromParameters:
           miroirTransformersForBuild.transformer_getFromParameters,
         transformerForBuild_getUniqueValues: miroirTransformersForBuild.transformer_getUniqueValues,
+        transformerForBuild_ansiColumnsToJzodSchema:
+          miroirTransformersForBuild.transformer_ansiColumnsToJzodSchema,
         // MLS
         ...Object.fromEntries(
           Object.entries(mlsTransformers).map(([key, value]) => [
@@ -446,6 +448,8 @@ export function getMiroirFundamentalJzodSchema(
           miroirTransformersForBuildPlusRuntime.transformer_createObjectFromPairs,
         transformerForBuildPlusRuntime_getUniqueValues:
           miroirTransformersForBuildPlusRuntime.transformer_getUniqueValues,
+        transformerForBuildPlusRuntime_ansiColumnsToJzodSchema:
+          miroirTransformersForBuildPlusRuntime.transformer_ansiColumnsToJzodSchema,
         // MLS
         ...Object.fromEntries(
           Object.entries(mlsTransformers).map(([key, value]) => [
@@ -679,7 +683,7 @@ export function getMiroirFundamentalJzodSchema(
             },
             conceptLevel: {
               type: "enum",
-              definition: ["MetaModel", "Model", "Data"],
+              definition: ["MetaModel", "Model", "Data", "External"],
               optional: true,
               tag: { value: { id: 4, defaultLabel: "Concept Level", editable: false } },
             },
@@ -710,6 +714,7 @@ export function getMiroirFundamentalJzodSchema(
           definition: {
             uuid: {
               type: "uuid",
+              optional: true,
               tag: { value: { id: 1, defaultLabel: "Uuid", editable: false, canBeTemplate: true } },
             },
             parentName: {
@@ -721,13 +726,14 @@ export function getMiroirFundamentalJzodSchema(
             },
             parentUuid: {
               type: "uuid",
+              optional: true,
               tag: {
                 value: { id: 3, defaultLabel: "Entity Uuid", editable: false, canBeTemplate: true },
               },
             },
             conceptLevel: {
               type: "enum",
-              definition: ["MetaModel", "Model", "Data"],
+              definition: ["MetaModel", "Model", "Data", "External"],
               optional: true,
               tag: {
                 value: {
@@ -939,8 +945,10 @@ export function getMiroirFundamentalJzodSchema(
               "accordionReportSection",
               "graphReportSection",
               "gridReportSection",
+              "jsonReportSection",
               "listReportSection",
               "markdownReportSection",
+              "modelDiagramReportSection",
               "objectInstanceReportSection",
               "objectListReportSection",
               "runnerReportSection",
@@ -1949,7 +1957,7 @@ export function getMiroirFundamentalJzodSchema(
               type: "schemaReference",
               definition: {
                 absolutePath: miroirFundamentalJzodSchemaUuid,
-                relativePath: "extractorOrCombinerReturningObject", // TODO: is this still an extractor, while it includes extractorTemplateCombinerForObjectByRelation?
+                relativePath: "extractorOrCombinerReturningObject", // TODO: is this still an extractor, while it includes extractorTemplateCombinerOneToOne?
               },
             },
           },
@@ -2903,7 +2911,74 @@ export function getMiroirFundamentalJzodSchema(
         },
         compositeActionDefinition: domainEndpointVersionV1.definition.actions.find(
           (a: any) => a.actionParameters?.actionType?.definition == "compositeActionSequence",
-        )?.actionParameters.payload.definition.definition.definition,
+        )?.actionParameters.payload.definition.actionSequence.definition,
+        compositeRunTestAssertion: {
+          type: "object",
+          tag: {
+            value: {
+              display: {
+                displayedAttributeValueWhenFolded: "actionLabel",
+              },
+            },
+          },
+          definition: {
+            actionType: {
+              type: "literal",
+              tag: {
+                value: {
+                  canBeTemplate: false,
+                },
+              },
+              definition: "compositeRunTestAssertion",
+            },
+            actionLabel: {
+              type: "string",
+              optional: true,
+            },
+            nameGivenToResult: {
+              type: "string",
+            },
+            testAssertion: {
+              type: "schemaReference",
+              definition: {
+                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                relativePath: "testAssertion",
+              },
+            },
+          },
+        },
+        compositeAction: {
+          type: "union",
+          tag: {
+            value: {
+              canBeTemplate: false,
+            },
+          },
+          discriminator: "actionType",
+          definition: [
+            {
+              type: "schemaReference",
+              definition: {
+                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                relativePath: "domainAction",
+              },
+            },
+            {
+              type: "schemaReference",
+              definition: {
+                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                relativePath: "compositeActionSequence",
+              },
+            },
+            {
+              type: "schemaReference",
+              definition: {
+                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                relativePath: "compositeRunTestAssertion",
+              },
+            },
+          ],
+        },
         compositeActionSequence: {
           type: "object",
           definition: domainEndpointVersionV1.definition.actions.find(
@@ -3002,11 +3077,11 @@ export function getMiroirFundamentalJzodSchema(
         // ################################################################################
         // ################################################################################
         // ################################################################################
-        compositeRunTestAssertion: domainEndpointVersionV1.definition.actions
-          .find((a: any) => a.actionParameters?.actionType?.definition == "compositeActionSequence")
-          ?.actionParameters.payload.definition.definition.definition.definition.find(
-            (a: any) => a.definition?.actionType?.definition == "compositeRunTestAssertion",
-          ),
+        // compositeRunTestAssertion: domainEndpointVersionV1.definition.actions
+        //   .find((a: any) => a.actionParameters?.actionType?.definition == "compositeActionSequence")
+        //   ?.actionParameters.payload.definition.actionSequence.definition.definition.find(
+        //     (a: any) => a.definition?.actionType?.definition == "compositeRunTestAssertion",
+        //   ),
         domainAction: {
           type: "union",
           discriminator: "actionType",
@@ -3289,9 +3364,9 @@ export function getMiroirFundamentalJzodSchema(
           {
             type: "never",
           },
-          tableThemeSchema: tableThemeSchemaJson,
-          storedMiroirTheme: miroirThemeSchemaJson,
-          miroirThemeFull: makeObjectsMandatory(miroirThemeSchemaJson as any),
+        tableThemeSchema: tableThemeSchemaJson,
+        storedMiroirTheme: miroirThemeSchemaJson,
+        miroirThemeFull: makeObjectsMandatory(miroirThemeSchemaJson as any),
       },
       definition: {
         absolutePath: miroirFundamentalJzodSchemaUuid,
@@ -3559,6 +3634,7 @@ export function getMiroirFundamentalJzodSchema(
     "transformerForBuild_createObjectFromPairs",
     "transformerForBuild_getFromParameters",
     "transformerForBuild_getUniqueValues",
+    "transformerForBuild_ansiColumnsToJzodSchema",
     // "transformerForBuild_InnerReference"
   ].forEach((key) => {
     domainActionDependencySet.add(key);

@@ -1,0 +1,8 @@
+{
+  "uuid": "852974fe-9678-465d-9f24-e504288d7c61",
+  "parentName":"Configuration",
+  "parentUuid":"7990c0c9-86c3-40a1-a121-036c91b55ed7",
+  "name":"Reference",
+  "defaultLabel": "The reference configuration for the Postgres Application storage",
+  "definition": {"currentApplicationVersion":"TBD"}
+}

@@ -230,24 +230,24 @@ interface BoxedQueryTemplateWithExtractorCombinerTransformer {
 
 ## Extractor Types
 
-### extractorForObjectByDirectReference
+### extractorByPrimaryKey
 Fetch a single object by UUID:
 
 ```typescript
 {
-  extractorOrCombinerType: "extractorForObjectByDirectReference",
+  extractorOrCombinerType: "extractorByPrimaryKey",
   parentName: "Book",
   parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",  // Entity UUID
   instanceUuid: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f", // Instance UUID
 }
 ```
 
-### extractorForObjectListByEntity
+### extractorInstancesByEntity
 Fetch all instances of an entity with optional filter:
 
 ```typescript
 {
-  extractorOrCombinerType: "extractorForObjectListByEntity",
+  extractorOrCombinerType: "extractorInstancesByEntity",
   parentName: "Author",
   parentUuid: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
   filter: {
@@ -261,12 +261,12 @@ Fetch all instances of an entity with optional filter:
 }
 ```
 
-### extractorByEntityReturningObjectList
+### extractorInstancesByEntity
 Fetch all instances without filter:
 
 ```typescript
 {
-  extractorOrCombinerType: "extractorByEntityReturningObjectList",
+  extractorOrCombinerType: "extractorInstancesByEntity",
   parentName: "Book",
   parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
 }
@@ -276,38 +276,42 @@ Fetch all instances without filter:
 
 ## Combiner Types
 
-### combinerForObjectByRelation
+### combinerOneToOne
 Follow a foreign key to get related object (N:1):
 
 ```typescript
 {
-  extractorOrCombinerType: "combinerForObjectByRelation",
+  extractorOrCombinerType: "combinerOneToOne",
   parentName: "Publisher",
   parentUuid: "a027c379-8468-43a5-ba4d-bf618be25cab",
   objectReference: "book",  // Reference to extractor result
-  AttributeOfObjectToCompareToReferenceUuid: "publisher",  // FK attribute
+  AttributeOfObjectToCompareToReferenceUuid: "publisher",  // FK attribute (string or string[] for composite PK joins)
 }
 ```
 
-### combinerByRelationReturningObjectList
+**Composite PK joins**: `AttributeOfObjectToCompareToReferenceUuid` accepts `string | string[]`. When an array is provided, the FK is resolved as a composite key (serialized with `|` separator).
+
+### combinerOneToMany
 Get all related objects (1:N):
 
 ```typescript
 {
-  extractorOrCombinerType: "combinerByRelationReturningObjectList",
+  extractorOrCombinerType: "combinerOneToMany",
   parentName: "Book",
   parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
   objectReference: "author",  // Reference to extractor result
-  AttributeOfListObjectToCompareToReferenceUuid: "author",  // FK attribute
+  AttributeOfListObjectToCompareToReferenceUuid: "author",  // FK attribute (string or string[] for composite PK joins)
 }
 ```
 
-### combinerByManyToManyRelationReturningObjectList
+**Composite PK joins**: `AttributeOfListObjectToCompareToReferenceUuid` also accepts `string | string[]`.
+
+### combinerManyToMany
 Many-to-many relation through a list:
 
 ```typescript
 {
-  extractorOrCombinerType: "combinerByManyToManyRelationReturningObjectList",
+  extractorOrCombinerType: "combinerManyToMany",
   parentName: "Publisher",
   parentUuid: "a027c379-8468-43a5-ba4d-bf618be25cab",
   objectListReference: "booksOfAuthor",  // Reference to list result
@@ -324,7 +328,7 @@ Templates allow dynamic values to be resolved at build time:
 ```typescript
 extractorTemplates: {
   book: {
-    extractorOrCombinerType: "extractorForObjectByDirectReference",
+    extractorOrCombinerType: "extractorByPrimaryKey",
     parentName: "Book",
     parentUuid: {
       transformerType: "returnValue",
@@ -356,7 +360,7 @@ Transform data inline on extractor/combiner results:
 
 ```typescript
 {
-  extractorOrCombinerType: "extractorForObjectByDirectReference",
+  extractorOrCombinerType: "extractorByPrimaryKey",
   parentName: "Book",
   parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
   instanceUuid: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
@@ -431,7 +435,7 @@ runtimeTransformers: {
     queryParams: {},
     extractorTemplates: {
       book: {
-        extractorOrCombinerType: "extractorForObjectByDirectReference",
+        extractorOrCombinerType: "extractorByPrimaryKey",
         parentName: "Book",
         parentUuid: {
           transformerType: "returnValue",
@@ -456,7 +460,7 @@ runtimeTransformers: {
     queryParams: {},
     extractors: {
       book: {
-        extractorOrCombinerType: "extractorForObjectByDirectReference",
+        extractorOrCombinerType: "extractorByPrimaryKey",
         parentName: "Book",
         parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
         instanceUuid: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
@@ -489,7 +493,7 @@ runtimeTransformers: {
     queryParams: {},
     extractors: {
       book: {
-        extractorOrCombinerType: "extractorForObjectByDirectReference",
+        extractorOrCombinerType: "extractorByPrimaryKey",
         parentName: "Book",
         parentUuid: "XXXXXX",  // Invalid UUID
         instanceUuid: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
@@ -520,7 +524,7 @@ runtimeTransformers: {
     queryParams: {},
     extractors: {
       book: {
-        extractorOrCombinerType: "extractorForObjectByDirectReference",
+        extractorOrCombinerType: "extractorByPrimaryKey",
         parentName: "Book",
         parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
         instanceUuid: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
@@ -528,7 +532,7 @@ runtimeTransformers: {
     },
     combiners: {
       publisher: {
-        extractorOrCombinerType: "combinerForObjectByRelation",
+        extractorOrCombinerType: "combinerOneToOne",
         parentName: "Publisher",
         parentUuid: "a027c379-8468-43a5-ba4d-bf618be25cab",
         objectReference: "book",
@@ -687,8 +691,8 @@ selectEntityInstanceUuidIndexFromDomainState
 [For each combiner in order]
     ↓
 applyExtractorForSingleObjectListToSelectedInstancesListInMemory
-    → combinerByRelationReturningObjectList (N:1 or 1:N FK join)
-    → combinerByManyToManyRelationReturningObjectList (M:N relation)
+    → combinerOneToMany (N:1 or 1:N FK join)
+    → combinerManyToMany (M:N relation)
     → Apply applyTransformer (if present)
     → Store in contextResults[combinerName]
     ↓
@@ -729,7 +733,7 @@ filter: { attributeName: "optionalField", undefined: true }
 
 ### Combiner Join Logic
 
-#### N:1 or 1:N Join (`combinerByRelationReturningObjectList`)
+#### N:1 or 1:N Join (`combinerOneToMany`)
 
 **Conceptual SQL equivalent**:
 ```sql
@@ -747,7 +751,7 @@ WHERE books.publisher = (SELECT uuid FROM context WHERE name = 'publisher')
 extractors: { publisher: { /* fetch publisher */ } },
 combiners: {
   books: {
-    extractorOrCombinerType: "combinerByRelationReturningObjectList",
+    extractorOrCombinerType: "combinerOneToMany",
     parentUuid: "e8ba151b-...", // Book entity
     objectReference: "publisher", // from contextResults
     AttributeOfListObjectToCompareToReferenceUuid: "publisher" // book.publisher
@@ -756,7 +760,7 @@ combiners: {
 // Result: books where book.publisher === publisher.uuid
 ```
 
-#### M:N Join (`combinerByManyToManyRelationReturningObjectList`)
+#### M:N Join (`combinerManyToMany`)
 
 **Conceptual SQL equivalent**:
 ```sql

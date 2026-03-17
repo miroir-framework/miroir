@@ -26,7 +26,7 @@ export const defaultViewParamsFromAdminStorageFetchQueryParams: (
       contextResults: {},
       extractors: {
         viewParams: {
-          extractorOrCombinerType: "extractorForObjectByDirectReference",
+          extractorOrCombinerType: "extractorByPrimaryKey",
           label: "ViewParams by direct reference",
           applicationSection: "data",
           parentName: entityViewParams.name,

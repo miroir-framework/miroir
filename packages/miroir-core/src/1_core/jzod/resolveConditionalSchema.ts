@@ -14,7 +14,7 @@ import { MiroirLoggerFactory } from "../../4_services/MiroirLoggerFactory";
 import { packageName } from "../../constants";
 import { RelativePath, resolveRelativePath } from '../../tools';
 import { cleanLevel } from "../constants";
-import { getEntityInstancesUuidIndexNonHook } from "../../2_domain/ReduxDeploymentsStateQueryExecutor";
+import { getEntityInstancesIndexNonHook } from "../../2_domain/ReduxDeploymentsStateQueryExecutor";
 import type { ResolveBuildTransformersTo, Step } from "../../2_domain/Transformers";
 import type { MiroirModelEnvironment } from "../../0_interfaces/1_core/Transformer";
 import { transformer_extended_apply, transformer_extended_apply_wrapper } from "../../2_domain/TransformersForRuntime";

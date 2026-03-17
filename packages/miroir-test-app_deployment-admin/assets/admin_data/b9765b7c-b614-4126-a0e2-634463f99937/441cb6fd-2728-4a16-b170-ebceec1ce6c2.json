@@ -6,7 +6,7 @@
   "defaultLabel": "Default ViewParams",
   "description": "Default ViewParams for any application / local deployment",
   "sidebarWidth": 267,
-  "gridType": "glide-data-grid",
+  "gridType": "ag-grid",
   "appTheme": "default",
   "postgresConnectionString": "postgres://postgres:postgres@localhost:5432/postgres",
   "mongoConnectionString": "mongodb://localhost:27017/"

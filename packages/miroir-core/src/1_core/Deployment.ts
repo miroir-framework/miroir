@@ -1,4 +1,4 @@
-import type { MetaEntity, Uuid } from "../0_interfaces/1_core/EntityDefinition";
+import type { Uuid } from "../0_interfaces/1_core/EntityDefinition";
 import type {
   AdminApplication,
   CompositeActionSequence,
@@ -41,6 +41,7 @@ import {
   adminApplication_Miroir
 } from "miroir-test-app_deployment-admin";
 import { noValue } from "./Instance";
+import { selfApplicationDeploymentLibrary } from "miroir-test-app_deployment-library";
 
 export const defaultDeployments: Deployment[] = [
   deployment_Miroir as Deployment,
@@ -99,53 +100,52 @@ MiroirLoggerFactory.registerLoggerToStart(
   log = logger;
 });
 
-// ################################################################################################
-export function createApplicationCompositeAction(
-  deploymentUuid: Uuid,
-  // newAdminAppApplicationUuid: Uuid,
-  newSelfApplicationUuid: Uuid,
-  newApplicationName: string,
-  deploymentConfiguration: StoreUnitConfiguration
-): CompositeActionSequence {
-  const result: CompositeActionSequence = {
-    actionType: "compositeActionSequence",
-    actionLabel: "beforeAll",
-    endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
-    payload: {
-      application: adminSelfApplication.uuid,  //
-      definition: [
-        {
-          actionType: "createInstance",
-          actionLabel: "createApplicationForAdminAction",
-          endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-          payload: {
-            application: newSelfApplicationUuid,
-            applicationSection: "data",
-            objects: [
-              {
-                uuid: newSelfApplicationUuid,
-                parentName: entityApplicationForAdmin.name,
-                parentUuid: entityApplicationForAdmin.uuid,
-                name: newApplicationName,
-                defaultLabel: `The ${newApplicationName} Application.`,
-                description: `This Admin Application contains the ${newApplicationName} model and data.`,
-                selfApplication: newSelfApplicationUuid,
-              } as AdminApplication,
-            ],
-          },
-        },
-      ],
-    }
-  };
-  // log.info("createApplicationCompositeAction result =", result);
-  return result;
-}
+// // ################################################################################################
+// export function createApplicationCompositeAction(
+//   deploymentUuid: Uuid,
+//   // newAdminAppApplicationUuid: Uuid,
+//   newSelfApplicationUuid: Uuid,
+//   newApplicationName: string,
+//   deploymentConfiguration: StoreUnitConfiguration
+// ): CompositeActionSequence {
+//   const result: CompositeActionSequence = {
+//     actionType: "compositeActionSequence",
+//     actionLabel: "beforeAll",
+//     endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+//     payload: {
+//       actionSequence: [
+//         {
+//           actionType: "createInstance",
+//           actionLabel: "createApplicationForAdminAction",
+//           endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+//           payload: {
+//             application: newSelfApplicationUuid,
+//             applicationSection: "data",
+//             objects: [
+//               {
+//                 uuid: newSelfApplicationUuid,
+//                 parentName: entityApplicationForAdmin.name,
+//                 parentUuid: entityApplicationForAdmin.uuid,
+//                 name: newApplicationName,
+//                 defaultLabel: `The ${newApplicationName} Application.`,
+//                 description: `This Application contains the ${newApplicationName} model and data.`,
+//                 selfApplication: newSelfApplicationUuid,
+//               } as AdminApplication,
+//             ],
+//           },
+//         },
+//       ],
+//     }
+//   };
+//   // log.info("createApplicationCompositeAction result =", result);
+//   return result;
+// }
 
 // ################################################################################################
 export function createDeploymentCompositeAction(
   applicationName: string,
   newDeploymentUuid: Uuid,
-  selfApplicationUuid: Uuid,
+  applicationUuid: Uuid,
   adminDeploymentConfiguration: Deployment,
   newDeploymentConfiguration: StoreUnitConfiguration
 ): CompositeActionSequence {
@@ -161,8 +161,7 @@ export function createDeploymentCompositeAction(
     actionLabel: "createDeploymentCompositeAction",
     endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
     payload: {
-      application: selfApplicationUuid, // to be ignored?
-      definition: [
+      actionSequence: [
         {
           actionType: "storeManagementAction_openStore",
           actionLabel: "storeManagementAction_openStore for " + applicationName + " admin",
@@ -181,7 +180,7 @@ export function createDeploymentCompositeAction(
           actionLabel: "storeManagementAction_openStore for " + applicationName,
           endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
           payload: {
-            application: selfApplicationUuid,
+            application: applicationUuid,
             deploymentUuid: newDeploymentUuid,
             configuration: {
               [newDeploymentUuid]: newDeploymentConfiguration,
@@ -193,7 +192,7 @@ export function createDeploymentCompositeAction(
           actionLabel: "storeManagementAction_createStore for " + applicationName,
           endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
           payload: {
-            application: selfApplicationUuid,
+            application: applicationUuid,
             deploymentUuid: newDeploymentUuid,
             configuration: newDeploymentConfiguration,
           },
@@ -207,13 +206,22 @@ export function createDeploymentCompositeAction(
             applicationSection: "data",
             objects: [
               {
+                uuid: applicationUuid,
+                parentName: entityApplicationForAdmin.name,
+                parentUuid: entityApplicationForAdmin.uuid,
+                name: applicationName,
+                defaultLabel: `The ${applicationName} Application.`,
+                description: `This Application contains the ${applicationName} model and data.`,
+                selfApplication: applicationUuid,
+              } as AdminApplication,
+              {
                 uuid: newDeploymentUuid,
                 parentName: "Deployment",
                 parentUuid: entityDeployment.uuid,
                 name: `Deployment of application ${applicationName}`,
                 defaultLabel: `The deployment of application ${applicationName}`,
                 description: `The description of deployment of application ${applicationName}`,
-                selfApplication: selfApplicationUuid, // TODO: this should be selfApplication
+                selfApplication: applicationUuid, // TODO: this should be selfApplication
                 configuration: newDeploymentConfiguration,
               } as Deployment,
             ],
@@ -226,7 +234,7 @@ export function createDeploymentCompositeAction(
 
 // ################################################################################################
 export interface EntityDefinitionCouple {
-  // entity: MetaEntity;
+  // entity: Entity;
   entity: Entity;
   entityDefinition: EntityDefinition;
 }
@@ -237,7 +245,7 @@ export type ApplicationEntitiesDefinitionAndInstances = {
 export type ApplicationEntitiesAndInstances = ApplicationEntitiesDefinitionAndInstances[];
 
 export const emptyMetaModel: MetaModel = {
-  applicationUuid: noValue.uuid,
+  applicationUuid: noValue.uuid!,
   applicationName: "",
   entities: [],
   entityDefinitions: [],
@@ -305,8 +313,7 @@ export function resetAndinitializeDeploymentCompositeAction(
     actionLabel: "resetAndinitializeDeploymentCompositeAction",
     endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
     payload: {
-      application: applicationUuid, // to be ignored?
-      definition: [
+      actionSequence: [
         {
           actionType: "resetModel",
           actionLabel: "resetAndinitializeDeploymentCompositeAction_resetModel",
@@ -357,18 +364,17 @@ export function resetAndinitializeDeploymentCompositeAction(
             application: applicationUuid,
           },
         },
-        {
-          actionType: "createInstance",
+        ...appEntitesAndInstances.map((e) => ({
+          actionType: "createInstance" as const,
           actionLabel: "resetAndinitializeDeploymentCompositeAction_createInstances",
-          endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+          endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89" as const,
           payload: {
             application: applicationUuid,
-            applicationSection: "data",
-            objects: appEntitesAndInstances.flatMap((e) => 
-              e.instances
-            ),
+            applicationSection: "data" as const,
+            parentUuid: e.entity.uuid,
+            objects: e.instances,
           },
-        },
+        })),
       ],
     },
   };
@@ -391,7 +397,7 @@ export function dropApplicationAndDeploymentCompositeAction(
     endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
     payload: {
       application: applicationUuid, // to be ignored?
-      definition: [
+      actionSequence: [
         {
           actionType: "storeManagementAction_deleteStore",
           actionLabel: "deleteStore",
@@ -407,4 +413,128 @@ export function dropApplicationAndDeploymentCompositeAction(
       ],
     }
   };
+}
+
+// ################################################################################################
+export function testUtils_resetApplicationDeployment(
+  application: Uuid = selfApplicationDeploymentLibrary.uuid,
+): CompositeActionSequence {
+  return {
+    actionType: "compositeActionSequence",
+    actionLabel: "afterEach",
+    endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+    payload: {
+      actionSequence: [
+        {
+          actionType: "resetModel",
+          actionLabel: "resetApplicationModel",
+          endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+          payload: {
+            application,
+          },
+        },
+      ],
+    },
+  };
+}
+// ################################################################################################
+// TODO: this should use the dropApplcation runner instead of duplicating its logic here
+export function testUtils_deleteApplicationDeployment(
+  miroirConfig: MiroirConfigClient,
+  application: Uuid,
+  deploymentUuid: Uuid,
+): CompositeActionSequence {
+  console.log(
+    "testUtils_deleteApplicationDeployment",
+    deploymentUuid,
+    JSON.stringify(miroirConfig, null, 2),
+  );
+  return {
+    actionType: "compositeActionSequence",
+    actionLabel: "deleteApplicationDeployment",
+    endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+    payload: {
+      actionSequence: [
+        {
+          actionType: "storeManagementAction_deleteStore",
+          actionLabel: "deleteApplicationStore",
+          endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
+          payload: {
+            application,
+            deploymentUuid,
+            configuration: miroirConfig.client.emulateServer
+              ? miroirConfig.client.deploymentStorageConfig[deploymentUuid]
+              : miroirConfig.client.serverConfig.storeSectionConfiguration[deploymentUuid],
+          },
+        },
+        {
+          actionType: "deleteInstance",
+          actionLabel: "DeleteDeploymentInstances for " + application,
+          endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+          payload: {
+            application: adminSelfApplication.uuid,
+            applicationSection: "data",
+            objects: [
+              {
+                uuid: deploymentUuid,
+                parentUuid: entityDeployment.uuid,
+              } as EntityInstance,
+            ],
+          },
+        },
+        {
+          actionType: "deleteInstance",
+          actionLabel: "deleteAdminApplication",
+          endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+          payload: {
+            application: "55af124e-8c05-4bae-a3ef-0933d41daa92",
+            applicationSection: "data",
+            objects: [
+              {
+                parentUuid: "25d935e7-9e93-42c2-aade-0472b883492b",
+                uuid: application,
+              },
+            ],
+          },
+        },
+      ],
+    },
+  };
+}
+
+// ################################################################################################
+export function getMiroirConfig(
+  miroirConfig: MiroirConfigClient,
+  testDeploymentStorageConfiguration: StoreUnitConfiguration,
+  testApplicationDeploymentUuid: Uuid,
+) {
+  const internalMiroirConfig = {
+    ...miroirConfig,
+    client: {
+      ...miroirConfig.client,
+      ...(
+        miroirConfig.client.emulateServer?
+        {
+          deploymentStorageConfig: {
+            ...miroirConfig.client.deploymentStorageConfig,
+            [testApplicationDeploymentUuid]: testDeploymentStorageConfiguration,
+          }
+        }
+        : {}
+      ),
+      ...(
+        !miroirConfig.client.emulateServer?
+        {
+          serverConfig: {
+            ...miroirConfig.client.serverConfig,
+            storeSectionConfiguration: {
+              ...miroirConfig.client.serverConfig.storeSectionConfiguration,
+              [testApplicationDeploymentUuid]: testDeploymentStorageConfiguration,
+            }
+          }
+        }:{}
+      )
+    }
+  }
+  return internalMiroirConfig;
 }

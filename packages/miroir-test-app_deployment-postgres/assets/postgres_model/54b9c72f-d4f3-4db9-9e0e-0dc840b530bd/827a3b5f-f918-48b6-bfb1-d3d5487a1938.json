@@ -1,0 +1,40 @@
+{
+  "uuid": "827a3b5f-f918-48b6-bfb1-d3d5487a1938",
+  "parentName": "EntityDefinition",
+  "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+  "parentDefinitionVersionUuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
+  "entityUuid": "35961086-f932-477a-aa77-ac8360ffbf61",
+  "conceptLevel": "External",
+  "name": "tables",
+  "description": "The tables of a PostgreSQL schema.",
+  "icon": "building",
+  "defaultInstanceDetailsReportUuid": "7c80d9ec-35b2-4cb8-8164-c5fe4e20687f",
+  "idAttribute": ["table_catalog", "table_schema", "table_name"],
+  "externalDataSource": {
+    "schema": "information_schema"
+  },
+  "cache": {
+    "cacheAllInstancesOnRefresh": true
+  },
+  "mlSchema": {
+    "type": "object",
+    "definition": {
+      "table_schema": {
+        "type": "string",
+        "tag": { "value": { "id": 1, "defaultLabel": "Schema Name", "display": { "editable": false } } }
+      },
+      "table_name": {
+        "type": "string",
+        "tag": { "value": { "id": 2, "defaultLabel": "Table Name", "display": { "editable": false } } }
+      },
+      "table_catalog": {
+        "type": "string",
+        "tag": { "value": { "id": 3, "defaultLabel": "Table Catalog", "display": { "editable": false } } }
+      },
+      "table_type": {
+        "type": "string",
+        "tag": { "value": { "id": 4, "defaultLabel": "Table Type", "display": { "editable": false } } }
+      }
+    }
+  }
+}

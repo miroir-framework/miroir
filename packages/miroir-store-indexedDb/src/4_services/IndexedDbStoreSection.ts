@@ -3,7 +3,7 @@ import {
   Action2VoidReturnType,
   EntityDefinition,
   LoggerInterface,
-  MetaEntity,
+  Entity,
   MiroirLoggerFactory,
   PersistenceStoreAbstractSectionInterface,
   StorageSpaceHandlerInterface
@@ -26,6 +26,8 @@ export class IndexedDbStoreSection
   extends IndexedDbStore
   implements PersistenceStoreAbstractSectionInterface, StorageSpaceHandlerInterface
 {
+  public entityIdAttributes: Record<string, string | string[]> = {};
+
   // ##############################################################################################
   constructor(
     // public indexedDbStoreName: string; // used only for debugging purposes
@@ -37,8 +39,15 @@ export class IndexedDbStoreSection
   }
 
   // ##################################################################################################
-  bootFromPersistedState(entities: MetaEntity[], entityDefinitions: EntityDefinition[]): Promise<Action2VoidReturnType> {
+  bootFromPersistedState(entities: Entity[], entityDefinitions: EntityDefinition[]): Promise<Action2VoidReturnType> {
     log.info(this.logHeader, "bootFromPersistedState does nothing!");
+    // Register idAttribute for each entity
+    for (const ed of entityDefinitions) {
+      const idAttr = (ed as any).idAttribute ?? "uuid";
+      if (idAttr !== "uuid") {
+        this.entityIdAttributes[ed.entityUuid] = idAttr;
+      }
+    }
     return Promise.resolve(ACTION_OK);
   }
 
@@ -53,9 +62,14 @@ export class IndexedDbStoreSection
     return this.localUuidIndexedDb.getSubLevels();
   }
 
+  // ##############################################################################################
+  getEntityIdAttribute(entityUuid: string): string | string[] {
+    return this.entityIdAttributes[entityUuid] ?? "uuid";
+  }
+
   // #############################################################################################
   async createStorageSpaceForInstancesOfEntity(
-    entity: MetaEntity,
+    entity: Entity,
     entityDefinition: EntityDefinition
   ): Promise<Action2VoidReturnType> {
     log.info(
@@ -92,6 +106,11 @@ export class IndexedDbStoreSection
         );
       }
     }
+    // Register idAttribute for non-UUID PK entities
+    const idAttr = (entityDefinition as any).idAttribute ?? "uuid";
+    if (idAttr !== "uuid") {
+      this.entityIdAttributes[entity.uuid] = idAttr;
+    }
     return Promise.resolve(ACTION_OK);
   }
 
@@ -124,7 +143,7 @@ export class IndexedDbStoreSection
   renameStorageSpaceForInstancesOfEntity(
     oldName: string,
     newName: string,
-    entity: MetaEntity,
+    entity: Entity,
     entityDefinition: EntityDefinition
   ): Promise<Action2VoidReturnType> {
     log.warn(

@@ -433,7 +433,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //   //       definition: {
   //   //         extractors: {
   //   //           instanceList: {
-  //   //             extractorOrCombinerType: "extractorByEntityReturningObjectList",
+  //   //             extractorOrCombinerType: "extractorInstancesByEntity",
   //   //             parentName: {
   //   //               transformerType: "getFromParameters",
   //   //               referenceName: "createEntity_newEntityName",
@@ -490,7 +490,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //   //       definition: {
   //   //         extractorTemplates: {
   //   //           elementToDisplay: {
-  //   //             extractorOrCombinerType: "extractorForObjectByDirectReference",
+  //   //             extractorOrCombinerType: "extractorByPrimaryKey",
   //   //             parentName: {
   //   //               transformerType: "getFromParameters",
   //   //               referenceName: "createEntity_newEntityName",
@@ -639,7 +639,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //   //           contextResults: {},
   //   //           extractorTemplates: {
   //   //             menuList: {
-  //   //               extractorOrCombinerType: "extractorForObjectListByEntity",
+  //   //               extractorOrCombinerType: "extractorInstancesByEntity",
   //   //               applicationSection: "model",
   //   //               parentName: "Menu",
   //   //               parentUuid: {
@@ -956,7 +956,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //         definition: {
   //           extractors: {
   //             listReportSectionElements: {
-  //               extractorOrCombinerType: "extractorByEntityReturningObjectList",
+  //               extractorOrCombinerType: "extractorInstancesByEntity",
   //               parentName: {
   //                 transformerType: "getFromParameters",
   //                 referenceName: "splitEntity_newEntityName",
@@ -1011,7 +1011,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //         definition: {
   //           extractorTemplates: {
   //             elementToDisplay: {
-  //               extractorOrCombinerType: "extractorForObjectByDirectReference",
+  //               extractorOrCombinerType: "extractorByPrimaryKey",
   //               parentName: {
   //                 transformerType: "getFromParameters",
   //                 referenceName: "splitEntity_newEntityName",
@@ -1043,7 +1043,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //               },
   //             },
   //             fountainsOfMunicipality: {
-  //               extractorOrCombinerType: "combinerByRelationReturningObjectList",
+  //               extractorOrCombinerType: "combinerOneToMany",
   //               parentName: "Fountain",
   //               parentUuid: {
   //                 transformerType: "getFromParameters",
@@ -1301,7 +1301,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //             contextResults: {},
   //             extractorTemplates: {
   //               menuUuidIndex: {
-  //                 extractorOrCombinerType: "extractorForObjectListByEntity",
+  //                 extractorOrCombinerType: "extractorInstancesByEntity",
   //                 applicationSection: "model",
   //                 parentName: "Menu",
   //                 parentUuid: {
@@ -1482,7 +1482,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //             extractorTemplates: {
   //               splittedEntityUuidIndex: {
   //                 // [splittedEntityName + "UuidIndex"]: {
-  //                 extractorOrCombinerType: "extractorForObjectListByEntity",
+  //                 extractorOrCombinerType: "extractorInstancesByEntity",
   //                 applicationSection: "data",
   //                 parentName: {
   //                   transformerType: "getFromParameters",

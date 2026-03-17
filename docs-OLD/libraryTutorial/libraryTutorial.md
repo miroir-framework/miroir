@@ -246,7 +246,7 @@ Add a new query by using the **"+"** icon on the Queries List. Fill it out with 
   "definition": {
     "extractorTemplates": {
       "books": {
-        "extractorOrCombinerType": "extractorForObjectListByEntity",
+        "extractorOrCombinerType": "extractorInstancesByEntity",
         "applicationSection": "data",
         "parentName": "Book",
         "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
@@ -429,7 +429,7 @@ Use the following definition or seize its equivalent in the UI.
                         "extractors": {
                           "targetBook": {
                             "label": "deployments of the application",
-                            "extractorOrCombinerType": "extractorForObjectByDirectReference",
+                            "extractorOrCombinerType": "extractorByPrimaryKey",
                             "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
                             "parentName": "Deployment",
                             "applicationSection": "data",

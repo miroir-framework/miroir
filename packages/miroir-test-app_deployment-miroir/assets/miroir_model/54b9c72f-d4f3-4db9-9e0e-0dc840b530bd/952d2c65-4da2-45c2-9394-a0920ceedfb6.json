@@ -391,8 +391,7 @@
                     "tag": {
                       "value": {
                         "id": 1,
-                        "defaultLabel": "Label",
-                        "display": { "editable": true }
+                        "defaultLabel": "Label"
                       }
                     }
                   },
@@ -401,8 +400,7 @@
                     "tag": {
                       "value": {
                         "id": 2,
-                        "defaultLabel": "Markdown Content",
-                        "display": { "editable": true }
+                        "defaultLabel": "Markdown Content"
                       }
                     }
                   },
@@ -412,8 +410,130 @@
                     "tag": {
                       "value": {
                         "id": 3,
-                        "defaultLabel": "Fetched Data Reference",
-                        "display": { "editable": false }
+                        "defaultLabel": "Fetched Data Reference"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "modelDiagramReportSection": {
+            "type": "object",
+            "tag": {
+              "value": {
+                "display": {
+                  "displayedAttributeValueWhenFolded": "definition.label"
+                }
+              }
+            },
+            "definition": {
+              "type": {
+                "type": "literal",
+                "definition": "modelDiagramReportSection"
+              },
+              "definition": {
+                "type": "object",
+                "definition": {
+                  "label": {
+                    "type": "string",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "id": 1,
+                        "defaultLabel": "Label"
+                      }
+                    }
+                  },
+                  "title": {
+                    "type": "string",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "id": 2,
+                        "defaultLabel": "Diagram Title"
+                      }
+                    }
+                  },
+                  "direction": {
+                    "type": "enum",
+                    "optional": true,
+                    "definition": ["TB", "BT", "LR", "RL"],
+                    "tag": {
+                      "value": {
+                        "id": 3,
+                        "defaultLabel": "Diagram Direction",
+                        "display": { "editable": true },
+                        "initializeTo": {
+                          "initializeToType": "value",
+                          "value": "LR"
+                        }
+                      }
+                    }
+                  },
+                  "entityDefinitions": {
+                    "type": "union",
+                    "discriminator": "transformerType",
+                    "tag": {
+                      "value": {
+                        "id": 4,
+                        "defaultLabel": "Entity Definitions",
+                        "description": "Either an array of entity definitions or a transformer accessing the context"
+                      }
+                    },
+                    "definition": [
+                      {
+                        "type": "array",
+                        "definition": {
+                          "type": "any"
+                        }
+                      },
+                      {
+                        "type": "schemaReference",
+                        "definition": {
+                          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                          "relativePath": "transformerForBuildPlusRuntime"
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "jsonReportSection": {
+            "type": "object",
+            "tag": {
+              "value": {
+                "display": {
+                  "displayedAttributeValueWhenFolded": "definition.label"
+                }
+              }
+            },
+            "definition": {
+              "type": {
+                "type": "literal",
+                "definition": "jsonReportSection"
+              },
+              "definition": {
+                "type": "object",
+                "definition": {
+                  "label": {
+                    "type": "string",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "id": 1,
+                        "defaultLabel": "Label"
+                      }
+                    }
+                  },
+                  "fetchedDataReference": {
+                    "type": "string",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Fetched Data Reference"
                       }
                     }
                   }
@@ -463,8 +583,7 @@
                     "tag": {
                       "value": {
                         "id": 1,
-                        "defaultLabel": "Label",
-                        "display": { "editable": false }
+                        "defaultLabel": "Label"
                       }
                     }
                   },
@@ -478,8 +597,7 @@
                     "tag": {
                       "value": {
                         "id": 2,
-                        "defaultLabel": "Entity Uuid",
-                        "display": { "editable": false }
+                        "defaultLabel": "Entity Uuid"
                       }
                     }
                   },
@@ -489,8 +607,7 @@
                     "tag": {
                       "value": {
                         "id": 3,
-                        "defaultLabel": "Fetched Data Reference",
-                        "display": { "editable": false }
+                        "defaultLabel": "Fetched Data Reference"
                       }
                     }
                   },
@@ -849,6 +966,13 @@
                 "type": "schemaReference",
                 "definition": {
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "jsonReportSection"
+                }
+              },
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                   "relativePath": "listReportSection"
                 }
               },
@@ -857,6 +981,13 @@
                 "definition": {
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                   "relativePath": "markdownReportSection"
+                }
+              },
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "modelDiagramReportSection"
                 }
               },
               {

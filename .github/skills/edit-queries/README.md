@@ -79,11 +79,11 @@ The [implementation.md](implementation.md) guide provides deep insights into:
 
 ### Multiple Values Filter (February 2026)
 
-The `filter` attribute in `extractorTemplateForObjectListByEntity` and `extractorByEntityReturningObjectList` now supports filtering on multiple values using the `values` array:
+The `filter` attribute in `extractorTemplateInstancesByEntity` and `extractorInstancesByEntity` now supports filtering on multiple values using the `values` array:
 
 ```typescript
 {
-  extractorOrCombinerType: "extractorByEntityReturningObjectList",
+  extractorOrCombinerType: "extractorInstancesByEntity",
   parentName: "Author",
   parentUuid: "...",
   filter: {

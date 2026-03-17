@@ -1,0 +1,125 @@
+{
+  "uuid": "dd168e5a-2a21-4d2d-a443-032c6d15eb22",
+  "parentName": "Menu",
+  "parentUuid": "dde4c883-ae6d-47c3-b6df-26bc6e3c1842",
+  "name": "PostgresManagerMenu",
+  "defaultLabel": "Postgres Manager Menu",
+  "description": "This is the default menu allowing to explore the Postgres Manager Application.",
+  "definition": {
+    "menuType": "complexMenu",
+    "definition": [
+      {
+        "title": "Postgres Manager",
+        "label": "Postgres Manager",
+        "items": [
+          {
+            "icon": "category",
+            "label": "Postgres Manager Application",
+            "section": "model",
+            "reportUuid": "cd24df86-204c-4a72-9ac0-87f2b92f25fe",
+            "instanceUuid": "84d28eb1-d98a-499e-bf24-62cade033da6",
+            "menuItemScope": "model",
+            "selfApplication": "84d28eb1-d98a-499e-bf24-62cade033da6",
+            "miroirMenuItemType": "miroirMenuReportLink"
+          },
+          {
+            "icon": "category",
+            "label": "Postgres Manager Entities",
+            "section": "model",
+            "reportUuid": "c9ea3359-690c-4620-9603-b5b402e4a2b9",
+            "menuItemScope": "model",
+            "selfApplication": "84d28eb1-d98a-499e-bf24-62cade033da6",
+            "miroirMenuItemType": "miroirMenuReportLink"
+          },
+          {
+            "icon": "category",
+            "label": "Postgres Manager Entity Definitions",
+            "section": "model",
+            "reportUuid": "f9aff35d-8636-4519-8361-c7648e0ddc68",
+            "menuItemScope": "model",
+            "selfApplication": "84d28eb1-d98a-499e-bf24-62cade033da6",
+            "miroirMenuItemType": "miroirMenuReportLink"
+          },
+          {
+            "icon": "saved_search",
+            "label": "Postgres Manager Queries",
+            "section": "model",
+            "reportUuid": "32e52150-ac95-4d96-91b7-f231b85fe76e",
+            "menuItemScope": "model",
+            "selfApplication": "84d28eb1-d98a-499e-bf24-62cade033da6",
+            "miroirMenuItemType": "miroirMenuReportLink"
+          },
+          {
+            "icon": "newspaper",
+            "label": "Postgres Manager Reports",
+            "section": "model",
+            "reportUuid": "1fc7e12e-90f2-4c0a-8ed9-ed35ce3a7855",
+            "menuItemScope": "model",
+            "selfApplication": "84d28eb1-d98a-499e-bf24-62cade033da6",
+            "miroirMenuItemType": "miroirMenuReportLink"
+          },
+          {
+            "icon": "list",
+            "label": "Postgres Manager Menus",
+            "section": "model",
+            "reportUuid": "ecfd8787-09cc-417d-8d2c-173633c9f998",
+            "menuItemScope": "model",
+            "selfApplication": "84d28eb1-d98a-499e-bf24-62cade033da6",
+            "miroirMenuItemType": "miroirMenuReportLink"
+          },
+          {
+            "icon": "list",
+            "label": "Postgres Manager Endpoints",
+            "section": "model",
+            "reportUuid": "ace3d5c9-b6a7-43e6-a277-595329e7532a",
+            "menuItemScope": "model",
+            "selfApplication": "84d28eb1-d98a-499e-bf24-62cade033da6",
+            "miroirMenuItemType": "miroirMenuReportLink"
+          },
+          {
+            "icon": "directions_run",
+            "label": "Postgres Manager Runners",
+            "section": "model",
+            "reportUuid": "3c26c31e-c988-40b2-af47-d7380e35ba80",
+            "menuItemScope": "model",
+            "selfApplication": "84d28eb1-d98a-499e-bf24-62cade033da6",
+            "miroirMenuItemType": "miroirMenuReportLink"
+          },
+          {
+            "label": "Postgres Manager Model-Data Divider",
+            "menuItemScope": "model",
+            "selfApplication": "84d28eb1-d98a-499e-bf24-62cade033da6",
+            "miroirMenuItemType": "miroirMenuItemDivider"
+          },
+          {
+            "miroirMenuItemType": "miroirMenuReportLink",
+            "label": "Postgres Schemas",
+            "section": "data",
+            "selfApplication": "84d28eb1-d98a-499e-bf24-62cade033da6",
+            "reportUuid": "d74c20b6-6e84-4b56-ae01-34f6a472af3d",
+            "icon": "category",
+            "menuItemScope": "data"
+          },
+          {
+            "miroirMenuItemType": "miroirMenuReportLink",
+            "label": "Postgres Tables",
+            "section": "data",
+            "selfApplication": "84d28eb1-d98a-499e-bf24-62cade033da6",
+            "reportUuid": "d60cb239-a0ef-44f7-b5e9-d9160b210a71",
+            "icon": "category",
+            "menuItemScope": "data"
+          },
+          {
+            "miroirMenuItemType": "miroirMenuReportLink",
+            "label": "Postgres Table Columns",
+            "section": "data",
+            "selfApplication": "84d28eb1-d98a-499e-bf24-62cade033da6",
+            "reportUuid": "5f8c2d19-7b3e-4a61-9d05-6e4b83f1c7a2",
+            "icon": "category",
+            "menuItemScope": "data"
+          }
+        ]
+      }
+    ]
+  }
+}

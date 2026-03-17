@@ -408,12 +408,12 @@ All three accept **primitive values** (string, number, boolean), **arrays**, and
 
 ### Recommendations
 
-| ID | Recommendation | Priority | Rationale |
-|---|---|---|---|
-| AGG-1 | Extend `aggregate` with `function: "count" \| "sum" \| "avg" \| "min" \| "max"` | High | All map directly to SQL aggregates. Essential for business reporting |
-| AGG-2 | Add `having` clause support to `aggregate`: `{ having: Transformer (→ boolean) }` | Medium | SQL `HAVING`; enables post-group filtering |
-| AGG-3 | Rename `aggregate` field in results from `aggregate` to the function name (e.g., `count`, `sum`) for clarity | Low | Result readability |
-| AGG-4 | Add `countDistinct` mode or `distinct` flag on `aggregate` | Medium | SQL `COUNT(DISTINCT ...)` |
+| ID | Recommendation | Priority | Status | Rationale |
+|---|---|---|---|---|
+| AGG-1 | Extend `aggregate` with `function: "count" \| "sum" \| "avg" \| "min" \| "max" \| "json_agg"  \| "json_agg_strict"` | High | **DONE** | All map directly to SQL aggregates. Essential for business reporting |
+| AGG-2 | Add `having` clause support to `aggregate`: `{ having: Transformer (→ boolean) }` | Medium | **DONE** | SQL `HAVING`; enables post-group filtering |
+| AGG-3 | Rename `aggregate` field in results from `aggregate` to the function name (e.g., `count`, `sum`) for clarity | Low | **DONE** | Result readability. Backward compatible: legacy (no `function`) still uses `"aggregate"` key |
+| AGG-4 | Add `distinct` flag on `aggregate` for `COUNT(DISTINCT ...)` and other aggregates | Medium | **DONE** | SQL `COUNT(DISTINCT ...)`; works with all aggregate functions |
 
 ---
 
@@ -674,7 +674,7 @@ Every transformer type exists in both `TransformerForBuild_X` and `TransformerFo
 |---|---|---|
 | Boolean | Strict equality; `in`/`notIn` operators; error on unknown operator | BOOL-1, BOOL-2, BOOL-4 |
 | Error handling | Fix `ifThenElse` and `dataflowObject` failure propagation | ERR-3, ERR-4 |
-| Aggregation | Support `sum`, `avg`, `min`, `max` — not just `count` | AGG-1 |
+| Aggregation | ~~Support `sum`, `avg`, `min`, `max` — not just `count`~~ | ~~AGG-1~~ **DONE** |
 | Objects | `pick` and `omit` transformers | OBJ-2, OBJ-3 |
 | Lists | `find`, `sortList`, `listLength` | LIST-2, LIST-3, LIST-4 |
 | Strings | String manipulation (`substring`, `trim`, `lower`, `upper`, `replace`, `split`, `join`, `length`) | STR-1 |
@@ -691,7 +691,7 @@ Every transformer type exists in both `TransformerForBuild_X` and `TransformerFo
 | Boolean | `between` operator; guard-style `case` | BOOL-3, COND-2 |
 | Objects | `getObjectKeys`, `removeKey`, `hasKey` | OBJ-1, OBJ-5, OBJ-7 |
 | Lists | `flatMap`, `concatLists`, `some`/`every`, `slice`, `groupBy` | LIST-5, LIST-6, LIST-7, LIST-8, LIST-12 |
-| Aggregation | `having` clause, `countDistinct` | AGG-2, AGG-4 |
+| Aggregation | ~~`having` clause, `countDistinct`~~ | ~~AGG-2, AGG-4~~ **DONE** |
 | Functions | `pipe`/`compose`, deprecate `applyFunction`, `callTransformer` | FN-1, FN-2, FN-3 |
 | Type system | `toBoolean`, `parseJson`, `jsonStringify`, `typeOf` | TYPE-3, TYPE-4, TYPE-5, TYPE-6 |
 | Side effects | `currentTimestamp` | SIDE-1 |

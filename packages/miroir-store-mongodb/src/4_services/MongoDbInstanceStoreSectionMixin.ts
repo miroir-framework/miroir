@@ -97,9 +97,9 @@ export function MongoDbInstanceStoreSectionMixin<TBase extends MixableMongoDbSto
     }
 
     // #############################################################################################
-    async getInstance(parentUuid: string, uuid: string): Promise<Action2EntityInstanceReturnType> {
+    async getInstance(parentUuid: string, instancePrimaryKey: string): Promise<Action2EntityInstanceReturnType> {
       try {
-        const result = await this.localUuidMongoDb.getInstance(parentUuid, uuid);
+        const result = await this.localUuidMongoDb.getInstance(parentUuid, instancePrimaryKey);
         return Promise.resolve({
           status: "ok",
           returnedDomainElement: result,
@@ -108,7 +108,7 @@ export function MongoDbInstanceStoreSectionMixin<TBase extends MixableMongoDbSto
         return Promise.resolve(
           new Action2Error(
             "FailedToGetInstance",
-            `getInstance could not retrieve instance ${uuid} of entity ${parentUuid}: ` + error
+            `getInstance could not retrieve instance ${instancePrimaryKey} of entity ${parentUuid}: ` + error
           )
         );
       }
@@ -141,14 +141,14 @@ export function MongoDbInstanceStoreSectionMixin<TBase extends MixableMongoDbSto
       log.info(this.logHeader, "upsertInstance called", instance.parentUuid, instance);
 
       try {
-        if (this.localUuidMongoDb.hasCollection(instance.parentUuid)) {
-          return this.localUuidMongoDb.putInstance(instance.parentUuid, instance);
+        if (this.localUuidMongoDb.hasCollection(instance.parentUuid ?? parentUuid)) {
+          return this.localUuidMongoDb.putInstance(instance.parentUuid ?? parentUuid, instance);
         } else {
-          log.error(this.logHeader, "upsertInstance", instance.parentUuid, "does not exist.");
+          log.error(this.logHeader, "upsertInstance", instance.parentUuid ?? parentUuid, "does not exist.");
           return Promise.resolve(
             new Action2Error(
               "FailedToUpdateInstance",
-              `failed to upsert instance ${instance.uuid} of entity ${parentUuid}`
+              `failed to upsert instance ${instance.uuid} of entity ${instance.parentUuid ?? parentUuid}`
             )
           );
         }
@@ -156,7 +156,7 @@ export function MongoDbInstanceStoreSectionMixin<TBase extends MixableMongoDbSto
         log.error(
           this.logHeader,
           "upsertInstance",
-          instance.parentUuid,
+          instance.parentUuid ?? parentUuid,
           "could not upsert instance",
           instance,
           error
@@ -164,7 +164,7 @@ export function MongoDbInstanceStoreSectionMixin<TBase extends MixableMongoDbSto
         return Promise.resolve(
           new Action2Error(
             "FailedToUpdateInstance",
-            `failed to upsert instance ${instance.uuid} of entity ${parentUuid}: `,
+            `failed to upsert instance ${instance.uuid} of entity ${instance.parentUuid ?? parentUuid}: `,
             error as any
           )
         );
@@ -205,21 +205,33 @@ export function MongoDbInstanceStoreSectionMixin<TBase extends MixableMongoDbSto
       parentUuid: string,
       instance: EntityInstance
     ): Promise<Action2VoidReturnType> {
+      const localParentUuid = instance.parentUuid ?? parentUuid;
+      if (!instance.uuid) {
+        return Promise.resolve(
+          new Action2Error(
+            "FailedToDeleteInstance",
+            `deleteInstance cannot delete instance of entity ${localParentUuid} without instance uuid`,
+            undefined, // errorStack
+            undefined, // innerError
+            instance // errorContext
+          )
+        );
+      }
       log.debug(
         this.logHeader,
         "deleteInstance started.",
         "entity",
-        parentUuid,
+        localParentUuid,
         "instance",
         instance
       );
       try {
-        return this.localUuidMongoDb.deleteInstance(parentUuid, instance.uuid);
+        return this.localUuidMongoDb.deleteInstance(localParentUuid, instance.uuid);
       } catch (error) {
         log.error(
           this.logHeader,
           "deleteInstance",
-          parentUuid,
+          localParentUuid,
           "could not delete instance",
           instance,
           error
@@ -227,7 +239,7 @@ export function MongoDbInstanceStoreSectionMixin<TBase extends MixableMongoDbSto
         return Promise.resolve(
           new Action2Error(
             "FailedToDeleteInstance",
-            `failed to delete instance ${instance.uuid} of entity ${parentUuid}: ` + error
+            `failed to delete instance ${instance.uuid} of entity ${localParentUuid}: ` + error
           )
         );
       }

@@ -38,7 +38,7 @@ import {
   measuredUnfoldJzodSchemaOnce
 } from "../../tools/hookPerformanceMeasure";
 import { ErrorFallbackComponent } from "../ErrorFallbackComponent";
-import { DebugHelper } from "miroir-react";
+import { JsonDisplayHelper } from "miroir-react";
 import { useReportPageContext } from "../Reports/ReportPageContext";
 import type { ValueObjectEditMode } from "../Reports/ReportSectionEntityInstance";
 import {
@@ -1206,7 +1206,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
 
   return (
     <div id={rootLessListKey} key={rootLessListKey}>
-      <DebugHelper
+      <JsonDisplayHelper debug={true}
         componentName="JzodObjectEditor"
         elements={[{
           label: `JzodObjectEditor: ${rootLessListKey}`,

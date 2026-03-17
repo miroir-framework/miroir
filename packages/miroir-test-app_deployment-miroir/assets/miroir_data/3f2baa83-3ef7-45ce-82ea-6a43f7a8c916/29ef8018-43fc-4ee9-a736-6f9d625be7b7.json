@@ -1,0 +1,50 @@
+{
+  "uuid": "29ef8018-43fc-4ee9-a736-6f9d625be7b7",
+  "parentUuid": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+  "name": "MiroirHome",
+  "defaultLabel": "Home",
+  "definition": {
+    "section": {
+      "type": "list",
+      "definition": [
+        {
+          "type": "markdownReportSection",
+          "definition": {
+            "content": "# Welcome to the Miroir Platform"
+          }
+        },
+        {
+          "type": "runnerReportSection",
+          "definition": {
+            "runnerReportSectionType": "storedRunner",
+            "label": "dropApplication",
+            "runner": "1cd065d8-dfb0-466f-974c-e81e993f2c66"
+          }
+        },
+        {
+          "type": "runnerReportSection",
+          "definition": {
+            "runnerReportSectionType": "storedRunner",
+            "label": "dropEntity",
+            "runner": "44313751-b0e5-4132-bb12-a544806e759b"
+          }
+        },
+        {
+          "type": "storedReportDisplay",
+          "definition": {
+            "transformerType": "returnValue",
+            "value": {
+              "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+              "deploymentUuid": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
+              "applicationSection": "data",
+              "reportUuid": "3d96f097-a0e4-47d8-aa6b-43fc13c3da68",
+              "instanceUuid": "3d96f097-a0e4-47d8-aa6b-43fc13c3da68"
+            }
+          }
+        }
+      ]
+    }
+  },
+  "parentName": "Report",
+  "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f"
+}

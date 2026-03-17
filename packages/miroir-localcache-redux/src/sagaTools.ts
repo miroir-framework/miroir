@@ -27,6 +27,9 @@ export function setupMiroirDomainController(
   miroirContext: MiroirContext,
   persistenceReduxSagaParams: PersistenceStoreAccessParams,
 ): DomainControllerInterface {
+  if (persistenceReduxSagaParams.persistenceStoreAccessMode === "none") {
+    throw new Error("Persistence access mode 'none' is not supported when setting up a DomainController. Please use 'local' or 'remote' and pass a persistence store along with it.");
+  }
   const persistenceSaga: PersistenceReduxSaga = new PersistenceReduxSaga(
     persistenceReduxSagaParams
   );

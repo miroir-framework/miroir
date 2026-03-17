@@ -1,0 +1,151 @@
+{
+  "uuid": "a72bb361-3126-4aa1-85cc-0be4d6838c84",
+  "parentName": "Report",
+  "parentUuid": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+  "parentDefinitionVersionUuid": null,
+  "conceptLevel": "Model",
+  "name": "SchemaDetails",
+  "defaultLabel": "Detailed information about a Schema",
+  "type": null,
+  "selfApplication": "84d28eb1-d98a-499e-bf24-62cade033da6",
+  "definition": {
+    "section": {
+      "type": "list",
+      "definition": [
+        {
+          "type": "objectInstanceReportSection",
+          "definition": {
+            "parentUuid": "cbc94d62-d2e5-4bc2-8aef-45efcfbd0af6",
+            "fetchedDataReference": "schema",
+            "label": "Details of ${instance.schema_name}"
+          }
+        },
+        {
+          "type": "objectListReportSection",
+          "definition": {
+            "label": "Tables of (${schema.schema_name})",
+            "parentName": "Table",
+            "parentUuid": "35961086-f932-477a-aa77-ac8360ffbf61",
+            "sortByAttribute": "table_name",
+            "fetchedDataReference": "tablesOfSchema"
+          }
+        },
+        {
+          "type": "modelDiagramReportSection",
+          "definition": {
+            "label": "Entity diagram for schema ${instance.schema_name}",
+            "title": "Schema ${instance.schema_name} – Entity Diagram",
+            "entityDefinitions": {
+              "transformerType": "getFromContext",
+              "referenceName": "entityDefinitionsOfSchema",
+              "interpolation": "runtime"
+            }
+          }
+        },
+        {
+          "type": "jsonReportSection",
+          "definition": {
+            "label": "Entity definitions by table for schema ${instance.schema_name}",
+            "fetchedDataReference": "entityDefinitionsOfSchema"
+          }
+        },
+        {
+          "type": "jsonReportSection",
+          "definition": {
+            "label": "Raw definition of columns by table for schema ${instance.schema_name}",
+            "fetchedDataReference": "columsOfSchemaByTable"
+          }
+        }
+      ]
+    },
+    "combinerTemplates": {
+      "tablesOfSchema": {
+        "extractorOrCombinerType": "combinerOneToMany",
+        "parentName": "tables",
+        "parentUuid": "35961086-f932-477a-aa77-ac8360ffbf61",
+        "objectReference": {
+          "interpolation": "runtime",
+          "referenceName": "schema",
+          "transformerType": "getFromContext"
+        },
+        "objectReferenceAttribute": "schema_name",
+        "AttributeOfListObjectToCompareToReferenceUuid": "table_schema"
+      },
+      "columnsOfSchema": {
+        "extractorOrCombinerType": "combinerOneToMany",
+        "parentName": "columns",
+        "parentUuid": "39e5c7a1-3f82-4bda-b8c4-2d576f9f10ae",
+        "objectReference": {
+          "interpolation": "runtime",
+          "referenceName": "schema",
+          "transformerType": "getFromContext"
+        },
+        "objectReferenceAttribute": "schema_name",
+        "AttributeOfListObjectToCompareToReferenceUuid": "table_schema"
+      }
+    },
+    "extractorTemplates": {
+      "schema": {
+        "parentName": "schemata",
+        "parentUuid": "cbc94d62-d2e5-4bc2-8aef-45efcfbd0af6",
+        "instanceUuid": {
+          "referenceName": "instanceUuid",
+          "transformerType": "getFromParameters"
+        },
+        "extractorOrCombinerType": "extractorByPrimaryKey"
+      }
+    },
+    "runtimeTransformers": {
+      "columsOfSchemaByTable": {
+        "transformerType": "aggregate",
+        "interpolation": "runtime",
+        "function": "json_agg",
+        "attributeObject": {
+          "udt_name": "udt_name",
+          "data_type": "data_type",
+          "table_name": "table_name",
+          "column_name": "column_name",
+          "is_nullable": "is_nullable",
+          "table_schema": "table_schema",
+          "numeric_scale": "numeric_scale",
+          "table_catalog": "table_catalog",
+          "column_default": "column_default",
+          "ordinal_position": "ordinal_position",
+          "numeric_precision": "numeric_precision",
+          "character_maximum_length": "character_maximum_length"
+        },
+        "applyTo": {
+          "transformerType": "getFromContext",
+          "referenceName": "columnsOfSchema",
+          "interpolation": "runtime"
+        },
+        "groupBy": "table_name"
+      },
+      "entityDefinitionsOfSchema": {
+        "transformerType": "mapList",
+        "interpolation": "runtime",
+        "applyTo": {
+          "transformerType": "getFromContext",
+          "referenceName": "columsOfSchemaByTable",
+          "interpolation": "runtime"
+        },
+        "referenceToOuterObject": "tableAggregate",
+        "elementTransformer": {
+          "name": {
+            "transformerType": "getFromContext",
+            "referencePath": ["tableAggregate", "table_name"],
+            "interpolation": "runtime"
+          },
+          "mlSchema": {
+            "transformerType": "ansiColumnsToJzodSchema",
+            "applyTo": {
+              "transformerType": "getFromContext",
+              "referencePath": ["tableAggregate", "json_agg"],
+              "interpolation": "runtime"
+            }
+          }
+        }
+      }
+    }
+  }
+}

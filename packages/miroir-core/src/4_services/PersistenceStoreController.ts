@@ -41,6 +41,7 @@ import {
   Domain2ElementFailed
 } from "../0_interfaces/2_domain/DomainElement";
 import { ACTION_OK } from "../1_core/constants";
+import { resolveInstanceParentUuid } from "../1_core/EntityPrimaryKey";
 import type { MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
 import type { ApplicationDeploymentMap } from "../1_core/Deployment";
 import { entityEntity, entityEntityDefinition } from "miroir-test-app_deployment-miroir";
@@ -272,7 +273,8 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
           // for (const instance of instanceCollection.instances) {
             const result = await this.upsertInstance(
               persistenceStoreControllerAction.payload.applicationSection,
-              instance
+              instance,
+              persistenceStoreControllerAction.payload.parentUuid
             );
             if (
               result instanceof Action2Error ||
@@ -297,7 +299,8 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
         // for (const instanceCollection of persistenceStoreControllerAction.payload.objects) {
           const result = await this.deleteInstances(
             persistenceStoreControllerAction.payload.applicationSection,
-            persistenceStoreControllerAction.payload.objects
+            persistenceStoreControllerAction.payload.objects,
+            persistenceStoreControllerAction.payload.parentUuid
           );
           if (
             result instanceof Action2Error ||
@@ -360,12 +363,13 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
     log.info("ActionRunner.ts initApplicationDeploymentStore model/initModel params", params);
     if (params.dataStoreType == "miroir") {
       // TODO: improve, test is dirty
+      // await modelInitialize(
       await this.initApplication(
-        params.metaModel,
         params.dataStoreType,
         params.selfApplication,
         params.applicationModelBranch,
-        params.applicationVersion
+        params.applicationVersion,
+        params.metaModel,
       );
       log.info(
         "ActionRunner.ts initApplicationDeploymentStore miroir model/initModel contents",
@@ -373,12 +377,13 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
       );
     } else {
       // different Proxy object!!!!!!
+      // await modelInitialize(
       await this.initApplication(
-        params.metaModel,
         "app",
         params.selfApplication,
         params.applicationModelBranch,
-        params.applicationVersion
+        params.applicationVersion,
+        params.metaModel,
       );
       log.info(
         "ActionRunner.ts initApplicationDeploymentStore app model/initModel contents",
@@ -389,19 +394,19 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
   }
   // #############################################################################################
   async initApplication(
-    metaModel: MetaModel,
     dataStoreType: DataStoreApplicationType,
     selfApplication: SelfApplication,
     selfApplicationModelBranch: EntityInstance,
-    selfApplicationVersion: EntityInstance
+    selfApplicationVersion: EntityInstance,
+    metaModel?: MetaModel,
   ): Promise<Action2ReturnType> {
     await modelInitialize(
-      metaModel,
       this,
       dataStoreType,
       selfApplication,
       selfApplicationModelBranch,
-      selfApplicationVersion
+      selfApplicationVersion,
+      metaModel,
     );
     return Promise.resolve(ACTION_OK);
   }
@@ -583,6 +588,11 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
   }
 
   // #############################################################################################
+  getEntityIdAttribute(entityUuid: string): string | string[] {
+    return this.dataStoreSection.getEntityIdAttribute(entityUuid);
+  }
+
+  // #############################################################################################
   getModelEntities(): string[] {
     return this.modelStoreSection.getEntityUuids();
   }
@@ -667,16 +677,16 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
   async getInstance(
     section: ApplicationSection,
     entityUuid: string,
-    uuid: Uuid
+    instancePrimaryKey: Uuid
   ): Promise<Action2EntityInstanceReturnType> {
-    log.info(this.logHeader, "getInstance", "section", section, "entity", entityUuid, "uuid", uuid);
+    log.info(this.logHeader, "getInstance", "section", section, "entity", entityUuid, "instancePrimaryKey", instancePrimaryKey);
 
     // let result: EntityInstance | undefined;
     let result: Action2EntityInstanceReturnType;
     if (section == "data") {
-      result = await this.dataStoreSection.getInstance(entityUuid, uuid);
+      result = await this.dataStoreSection.getInstance(entityUuid, instancePrimaryKey);
     } else {
-      result = await this.modelStoreSection.getInstance(entityUuid, uuid);
+      result = await this.modelStoreSection.getInstance(entityUuid, instancePrimaryKey);
     }
     log.trace(
       this.logHeader,
@@ -685,8 +695,8 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
       section,
       "entity",
       entityUuid,
-      "uuid",
-      uuid,
+      "instancePrimaryKey",
+      instancePrimaryKey,
       "result",
       result
     );
@@ -720,13 +730,13 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
     if (instances instanceof Action2Error) {
       return new Action2Error(
         "FailedToGetInstances",
-        `getInstances failed for section: ${section}, entityUuid ${entityEntity.uuid}, error: ${instances.errorType}, ${instances.errorMessage}`
+        `getInstances failed for section: ${section}, entityUuid ${entityUuid}, error: ${instances.errorType}, ${instances.errorMessage}`
       );
     }
     if (instances.returnedDomainElement instanceof Domain2ElementFailed) {
       return new Action2Error(
         "FailedToGetInstances",
-        `getInstances failed for section: ${section}, entityUuid ${entityEntity.uuid}, error: ${instances}`
+        `getInstances failed for section: ${section}, entityUuid ${entityUuid}, error: ${instances}`
       );
     }
 
@@ -748,13 +758,21 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
   // ##############################################################################################
   async upsertInstance(
     section: ApplicationSection,
-    instance: EntityInstance
+    instance: EntityInstance,
+    parentUuid?: string
   ): Promise<Action2VoidReturnType> {
+    const resolvedParentUuid = resolveInstanceParentUuid(instance, parentUuid);
+    if (resolvedParentUuid instanceof Action2Error) {
+      log.error(this.logHeader, "upsertInstance failed to resolve parentUuid for instance", instance);
+      return resolvedParentUuid;
+    }
     log.info(
       this.logHeader,
       "upsertInstance",
       "section",
       section,
+      "parentUuid",
+      resolvedParentUuid,
       "modelStoreName",
       "'" + this.modelStoreSection.getStoreName() + "'",
       "dataStoreName",
@@ -768,49 +786,55 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
     );
 
     if (section == "data") {
-      if (this.getEntityUuids().indexOf(instance.parentUuid) == -1) {
+      if (this.getEntityUuids().indexOf(resolvedParentUuid) == -1) {
         log.error(
           this.logHeader,
           "upsertInstance failed for section: ",
           section,
           "entityUuid",
-          instance.parentUuid,
+          resolvedParentUuid,
           "error: Entity not found in data section, existing entities: " + this.getEntityUuids()
         );
         return new Action2Error(
           "FailedToUpsertInstance",
-          `upsertInstance failed for section: ${section}, entityUuid ${instance.parentUuid}, error: Entity not found in data section, existing entities: ${this.getEntityUuids()}.`
+          `upsertInstance failed for section: ${section}, entityUuid ${resolvedParentUuid}, error: Entity not found in data section, existing entities: ${this.getEntityUuids()}.`
         );
       }
-      return this.dataStoreSection.upsertInstance(instance.parentUuid, instance);
+      return this.dataStoreSection.upsertInstance(resolvedParentUuid, instance);
     } else {
-      if (this.getModelEntities().indexOf(instance.parentUuid) == -1) {
+      if (this.getModelEntities().indexOf(resolvedParentUuid) == -1) {
         log.error(
           this.logHeader,
           "upsertInstance failed for section: ",
           section,
           "entityUuid",
-          instance.parentUuid,
+          resolvedParentUuid,
           "error: Entity not found in model section."
         );
         return new Action2Error(
           "FailedToUpsertInstance",
-          `upsertInstance failed for section: ${section}, entityUuid ${instance.parentUuid}, error: Entity not found in model section.`
+          `upsertInstance failed for section: ${section}, entityUuid ${resolvedParentUuid}, error: Entity not found in model section.`
         );
       }
-      return this.modelStoreSection.upsertInstance(instance.parentUuid, instance);
+      return this.modelStoreSection.upsertInstance(resolvedParentUuid, instance);
     }
   }
 
   // ##############################################################################################
   async deleteInstance(
     section: ApplicationSection,
-    instance: EntityInstance
+    instance: EntityInstance,
+    parentUuid?: string
   ): Promise<Action2VoidReturnType> {
+    const resolvedParentUuid = resolveInstanceParentUuid(instance, parentUuid);
+    if (resolvedParentUuid instanceof Action2Error) {
+      log.error(this.logHeader, "deleteInstance failed to resolve parentUuid for instance", instance);
+      return resolvedParentUuid;
+    }
     if (section == "data") {
-      return this.dataStoreSection.deleteInstance(instance.parentUuid, instance);
+      return this.dataStoreSection.deleteInstance(resolvedParentUuid, instance);
     } else {
-      return this.modelStoreSection.deleteInstance(instance.parentUuid, instance);
+      return this.modelStoreSection.deleteInstance(resolvedParentUuid, instance);
     }
     return Promise.resolve(ACTION_OK);
   }
@@ -818,13 +842,19 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
   // ##############################################################################################
   async deleteInstances(
     section: ApplicationSection,
-    instances: EntityInstance[]
+    instances: EntityInstance[],
+    payloadParentUuid?: string
   ): Promise<Action2VoidReturnType> {
     for (const instance of instances) {
+      const resolvedParentUuid = resolveInstanceParentUuid(instance, payloadParentUuid);
+      if (resolvedParentUuid instanceof Action2Error) {
+        log.error(this.logHeader, "deleteInstances failed to resolve parentUuid for instance", instance);
+        return resolvedParentUuid;
+      }
       if (section == "data") {
-        return this.dataStoreSection.deleteInstance(instance.parentUuid, instance);
+        return this.dataStoreSection.deleteInstance(resolvedParentUuid, instance);
       } else {
-        return this.modelStoreSection.deleteInstance(instance.parentUuid, instance);
+        return this.modelStoreSection.deleteInstance(resolvedParentUuid, instance);
       }
     }
     return Promise.resolve(ACTION_OK);

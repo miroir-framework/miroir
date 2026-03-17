@@ -1,0 +1,29 @@
+{
+  "uuid": "d74c20b6-6e84-4b56-ae01-34f6a472af3d",
+  "selfApplication": "84d28eb1-d98a-499e-bf24-62cade033da6",
+  "parentName": "Report",
+  "parentUuid": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+  "conceptLevel": "Model",
+  "name": "SchemaList",
+  "defaultLabel": "List of Schemas",
+  "definition": {
+    "reportParameters": {},
+    "extractorTemplates": {
+      "schemas": {
+        "extractorOrCombinerType": "extractorInstancesByEntity",
+        "parentName": "schemata",
+        "parentUuid": "cbc94d62-d2e5-4bc2-8aef-45efcfbd0af6"
+      }
+    },
+    "section": {
+      "type": "objectListReportSection",
+      "definition": {
+        "parentName": "schemata",
+        "parentUuid": "cbc94d62-d2e5-4bc2-8aef-45efcfbd0af6",
+        "label": "Schemas",
+        "fetchedDataReference": "schemas",
+        "sortByAttribute": "schema_name"
+      }
+    }
+  }
+}

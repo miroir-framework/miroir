@@ -30,7 +30,7 @@ import {
   type TransformerDefinition,
   type TransformerForBuildPlusRuntime
 } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
-import { DebugHelper } from 'miroir-react';
+import { JsonDisplayHelper } from 'miroir-react';
 import { useMiroirContextService } from 'miroir-react';
 import { packageName } from '../../../../constants';
 import { cleanLevel, lastSubmitButtonClicked } from '../../constants';
@@ -735,7 +735,7 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
                     flexGrow: 1,
                   }}
                 >
-                  <DebugHelper
+                  <JsonDisplayHelper debug={true}
                     componentName="TransformerEditor"
                     elements={[
                       {

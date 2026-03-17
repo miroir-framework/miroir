@@ -94,9 +94,9 @@ export function IndexedDbInstanceStoreSectionMixin<TBase extends MixableIndexedD
     }
 
     // #############################################################################################
-    async getInstance(parentUuid: string, uuid: string): Promise<Action2EntityInstanceReturnType> {
+    async getInstance(parentUuid: string, instancePrimaryKey: string): Promise<Action2EntityInstanceReturnType> {
       try {
-        const result = await this.localUuidIndexedDb.resolvePathOnObject(parentUuid, uuid);
+        const result = await this.localUuidIndexedDb.resolvePathOnObject(parentUuid, instancePrimaryKey);
         return Promise.resolve({
           status: "ok",
           returnedDomainElement: result,
@@ -105,7 +105,7 @@ export function IndexedDbInstanceStoreSectionMixin<TBase extends MixableIndexedD
         return Promise.resolve(
           new Action2Error(
             "FailedToGetInstance",
-            `getInstance could not retrieve instance ${uuid} of entity ${parentUuid}: ` + error
+            `getInstance could not retrieve instance ${instancePrimaryKey} of entity ${parentUuid}: ` + error
           )
         );
       }
@@ -138,9 +138,11 @@ export function IndexedDbInstanceStoreSectionMixin<TBase extends MixableIndexedD
       log.info(this.logHeader, "upsertInstance called", instance.parentUuid, instance);
 
       try {
-        if (this.localUuidIndexedDb.hasSubLevel(instance.parentUuid)) {
+        if (this.localUuidIndexedDb.hasSubLevel(instance.parentUuid ?? parentUuid)) {
           // const upsertResult = await this.localUuidIndexedDb.putValue(instance.parentUuid, instance);
-          return this.localUuidIndexedDb.putValue(instance.parentUuid, instance);
+          const effectiveParentUuid = instance.parentUuid ?? parentUuid;
+          const idAttribute = this.entityIdAttributes[effectiveParentUuid] ?? "uuid";
+          return this.localUuidIndexedDb.putValue(effectiveParentUuid, instance, idAttribute);
           log.info(this.logHeader, "upsertInstance", instance.parentUuid, "done");
           // const tmp = await this.getInstances(instance.parentUuid);
           // log.debug(this.logHeader, "upsertInstance", instance.parentUuid, "found existing", tmp);
@@ -184,7 +186,7 @@ export function IndexedDbInstanceStoreSectionMixin<TBase extends MixableIndexedD
       log.info(this.logHeader, "deleteInstances", parentUuid, instances);
       for (const o of instances) {
         try {
-          await this.deleteInstance(parentUuid, { uuid: o.uuid } as EntityInstance);
+          await this.deleteInstance(parentUuid, o);
         } catch (error) {
           log.error(
             this.logHeader,
@@ -220,7 +222,11 @@ export function IndexedDbInstanceStoreSectionMixin<TBase extends MixableIndexedD
       );
       try {
         // const deleteResult = await this.localUuidIndexedDb.deleteEntityInstance(parentUuid, instance.uuid);
-        return this.localUuidIndexedDb.deleteEntityInstance(parentUuid, instance.uuid);
+        const idAttribute = this.entityIdAttributes[parentUuid] ?? "uuid";
+        const pkValue = Array.isArray(idAttribute)
+          ? idAttribute.map(attr => String((instance as any)[attr])).join("|")
+          : String((instance as any)[idAttribute]);
+        return this.localUuidIndexedDb.deleteEntityInstance(parentUuid, pkValue);
         // if (deleteResult. === false) {
         //   log.error(this.logHeader, "deleteInstance failed.", "entity", parentUuid, "instance", instance);
         //   return Promise.resolve({

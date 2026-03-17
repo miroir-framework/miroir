@@ -91,6 +91,7 @@ export const reportSectionsFormSchema = (
     }
     case "objectListReportSection":
     case "markdownReportSection":
+    case "modelDiagramReportSection":
     case "graphReportSection":
     default:
       return {};
@@ -148,6 +149,7 @@ export const reportSectionsFormValue = (
       };
     }
     case "markdownReportSection":
+    case "modelDiagramReportSection":
     case "graphReportSection":
     default:
       return {};

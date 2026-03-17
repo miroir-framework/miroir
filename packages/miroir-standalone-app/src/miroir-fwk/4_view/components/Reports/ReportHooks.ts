@@ -199,7 +199,7 @@ export function useDeploymentUuidFromApplicationUuid2(
           extractorTemplates: {
             deployments: {
               label: "deployments of the application",
-              extractorOrCombinerType: "extractorForObjectListByEntity",
+              extractorOrCombinerType: "extractorInstancesByEntity",
               parentUuid: entityDeployment.uuid,
               parentName: entityDeployment.name,
               applicationSection: "data",
@@ -226,7 +226,7 @@ export function useDeploymentUuidFromApplicationUuid2(
   if (deploymentUuidQueryResults instanceof Domain2ElementFailed) {
     // should never happen
     throw new Error(
-      "Runner_DeleteEntity: failed to get report data: " +
+      "Runner_DropEntity: failed to get report data: " +
         JSON.stringify(deploymentUuidQueryResults, null, 2)
     );
   }
@@ -262,7 +262,7 @@ export function useDeploymentUuidFromApplicationUuid(
             extractorTemplates: {
               deployments: {
                 label: "deployments of the application",
-                extractorOrCombinerType: "extractorForObjectListByEntity",
+                extractorOrCombinerType: "extractorInstancesByEntity",
                 parentUuid: entityDeployment.uuid,
                 parentName: entityDeployment.name,
                 applicationSection: "data",
@@ -292,7 +292,7 @@ export function useDeploymentUuidFromApplicationUuid(
   if (deploymentUuidQueryResults instanceof Domain2ElementFailed) {
     // should never happen
     throw new Error(
-      "Runner_DeleteEntity: failed to get report data: " +
+      "Runner_DropEntity: failed to get report data: " +
         JSON.stringify(deploymentUuidQueryResults, null, 2)
     );
   }
@@ -338,7 +338,7 @@ export function useTransformer(
             extractorTemplates: {
               transformers: {
                 label: "transformers of the given application",
-                extractorOrCombinerType: "extractorForObjectListByEntity",
+                extractorOrCombinerType: "extractorInstancesByEntity",
                 parentUuid: entityTransformerDefinition.uuid,
                 parentName: entityTransformerDefinition.name,
                 applicationSection: transformerDefinitionApplicationSection,
@@ -411,7 +411,7 @@ export function useRunner(
             extractors: {
               runners: {
                 label: "runners of the given application",
-                extractorOrCombinerType: "extractorForObjectByDirectReference",
+                extractorOrCombinerType: "extractorByPrimaryKey",
                 parentUuid: entityRunner.uuid,
                 parentName: entityRunner.name,
                 applicationSection: runnerApplicationSection,

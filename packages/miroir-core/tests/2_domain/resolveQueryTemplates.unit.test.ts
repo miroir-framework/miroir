@@ -27,7 +27,7 @@ describe("resolveQueryTemplates.unit.test", () => {
   //     },
   //     contextResults: {},
   //     select: {
-  //         extractorOrCombinerType: "extractorForObjectByDirectReference",
+  //         extractorOrCombinerType: "extractorByPrimaryKey",
   //         parentName: "Book",
   //         parentUuid: {
   //           transformerType: "constantUuid",
@@ -56,7 +56,7 @@ describe("resolveQueryTemplates.unit.test", () => {
   //     deploymentUuid: "xxxxx",
   //     queryType: "boxedExtractorOrCombinerReturningObject",
   //     select: {
-  //       extractorOrCombinerType: "extractorForObjectByDirectReference",
+  //       extractorOrCombinerType: "extractorByPrimaryKey",
   //       parentName: "Book",
   //       parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
   //       instanceUuid: "xxxxx",
@@ -81,7 +81,7 @@ describe("resolveQueryTemplates.unit.test", () => {
         contextResults: {},
         extractorTemplates: {
           book: {
-            extractorOrCombinerType: "extractorForObjectByDirectReference",
+            extractorOrCombinerType: "extractorByPrimaryKey",
             parentName: "Book",
             parentUuid: {
               transformerType: "returnValue",
@@ -96,7 +96,7 @@ describe("resolveQueryTemplates.unit.test", () => {
             },
           },
           fountain: {
-            extractorOrCombinerType: "extractorForObjectByDirectReference",
+            extractorOrCombinerType: "extractorByPrimaryKey",
             parentName: "Fountain",
             parentUuid: {
               transformerType: "getFromParameters",
@@ -117,7 +117,7 @@ describe("resolveQueryTemplates.unit.test", () => {
         },
         combinerTemplates: {
           publisher: {
-            extractorOrCombinerType: "combinerForObjectByRelation",
+            extractorOrCombinerType: "combinerOneToOne",
             parentName: "Publisher",
             parentUuid: {
               transformerType: "returnValue",
@@ -133,7 +133,7 @@ describe("resolveQueryTemplates.unit.test", () => {
             AttributeOfObjectToCompareToReferenceUuid: "publisher",
           },
           booksOfPublisher: {
-            extractorOrCombinerType: "combinerByRelationReturningObjectList",
+            extractorOrCombinerType: "combinerOneToMany",
             parentName: "Book",
             parentUuid: {
               transformerType: "returnValue",
@@ -149,7 +149,7 @@ describe("resolveQueryTemplates.unit.test", () => {
             AttributeOfListObjectToCompareToReferenceUuid: "publisher",
           },
           booksOfAuthor: {
-            extractorOrCombinerType: "combinerByRelationReturningObjectList",
+            extractorOrCombinerType: "combinerOneToMany",
             parentName: "Book",
             parentUuid: {
               transformerType: "returnValue",
@@ -165,7 +165,7 @@ describe("resolveQueryTemplates.unit.test", () => {
             AttributeOfListObjectToCompareToReferenceUuid: "author",
           },
           publishersOfBooks: {
-            extractorOrCombinerType: "combinerByManyToManyRelationReturningObjectList",
+            extractorOrCombinerType: "combinerManyToMany",
             parentName: "Publisher",
             parentUuid: {
               transformerType: "returnValue",
@@ -200,13 +200,13 @@ describe("resolveQueryTemplates.unit.test", () => {
         queryType: "boxedQueryWithExtractorCombinerTransformer",
         extractors: {
           book: {
-            extractorOrCombinerType: "extractorForObjectByDirectReference",
+            extractorOrCombinerType: "extractorByPrimaryKey",
             parentName: "Book",
             parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
             instanceUuid: "xxxxx",
           },
           fountain: {
-            extractorOrCombinerType: "extractorForObjectByDirectReference",
+            extractorOrCombinerType: "extractorByPrimaryKey",
             parentName: "Fountain",
             parentUuid: "yyyyy",
             instanceUuid: {
@@ -218,28 +218,28 @@ describe("resolveQueryTemplates.unit.test", () => {
         },
         combiners: {
           publisher: {
-            extractorOrCombinerType: "combinerForObjectByRelation",
+            extractorOrCombinerType: "combinerOneToOne",
             parentName: "Publisher",
             parentUuid: "a027c379-8468-43a5-ba4d-bf618be25cab",
             objectReference: "book",
             AttributeOfObjectToCompareToReferenceUuid: "publisher",
           },
           booksOfPublisher: {
-            extractorOrCombinerType: "combinerByRelationReturningObjectList",
+            extractorOrCombinerType: "combinerOneToMany",
             parentName: "Book",
             parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
             objectReference: "publisher",
             AttributeOfListObjectToCompareToReferenceUuid: "publisher",
           },
           booksOfAuthor: {
-            extractorOrCombinerType: "combinerByRelationReturningObjectList",
+            extractorOrCombinerType: "combinerOneToMany",
             parentName: "Book",
             parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
             objectReference: "author",
             AttributeOfListObjectToCompareToReferenceUuid: "author",
           },
           publishersOfBooks: {
-            extractorOrCombinerType: "combinerByManyToManyRelationReturningObjectList",
+            extractorOrCombinerType: "combinerManyToMany",
             parentName: "Publisher",
             parentUuid: "a027c379-8468-43a5-ba4d-bf618be25cab",
             objectListReference: "booksOfAuthor",

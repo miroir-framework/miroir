@@ -133,13 +133,13 @@ applyExtractorForSingleObjectListToSelectedInstancesListInMemory(
 
 **Handles three extractor types**:
 
-#### 1. `extractorByEntityReturningObjectList`
+#### 1. `extractorInstancesByEntity`
 Simply applies filter and orderBy:
 ```typescript
 return applyExtractorFilterAndOrderBy(selectedInstancesList, localQuery);
 ```
 
-#### 2. `combinerByRelationReturningObjectList` (N:1 or 1:N)
+#### 2. `combinerOneToMany` (N:1 or 1:N)
 Filters instances by matching a foreign key attribute:
 ```typescript
 // Get reference object from context
@@ -165,7 +165,7 @@ if (relationQuery.applyTransformer) {
 - `otherIndex` = publisher.uuid
 - Filter books where `book.publisher === otherIndex`
 
-#### 3. `combinerByManyToManyRelationReturningObjectList` (M:N)
+#### 3. `combinerManyToMany` (M:N)
 Filters instances by matching against a list of references:
 ```typescript
 const otherList = query.contextResults[relationQuery.objectListReference];
@@ -305,7 +305,7 @@ Queries can apply transformers at two stages:
 Applied to each extracted/combined instance:
 ```typescript
 {
-  extractorOrCombinerType: "extractorForObjectByDirectReference",
+  extractorOrCombinerType: "extractorByPrimaryKey",
   // ... extractor config
   applyTransformer: {
     transformerType: "createObject",
@@ -355,7 +355,7 @@ runtimeTransformers: {
 ```typescript
 extractors: {
   book: {
-    extractorOrCombinerType: "extractorForObjectByDirectReference",
+    extractorOrCombinerType: "extractorByPrimaryKey",
     parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
     instanceUuid: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f"
   }
@@ -371,7 +371,7 @@ extractors: {
 ```typescript
 extractors: {
   authors: {
-    extractorOrCombinerType: "extractorForObjectListByEntity",
+    extractorOrCombinerType: "extractorInstancesByEntity",
     parentUuid: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
     filter: {
       attributeName: "name",
@@ -394,7 +394,7 @@ extractors: {
 },
 combiners: {
   publisher: {
-    extractorOrCombinerType: "combinerForObjectByRelation",
+    extractorOrCombinerType: "combinerOneToOne",
     parentUuid: "a027c379-8468-43a5-ba4d-bf618be25cab",
     objectReference: "book", // from contextResults
     AttributeOfObjectToCompareToReferenceUuid: "publisher"
@@ -522,7 +522,7 @@ log.info("selectEntityInstanceUuidIndexFromDomainState filtered result", result)
 
 In `QuerySelectors.ts`:
 ```typescript
-log.info("applyExtractorForSingleObjectListToSelectedInstancesListInMemory combinerByRelationReturningObjectList", ...);
+log.info("applyExtractorForSingleObjectListToSelectedInstancesListInMemory combinerOneToMany", ...);
 ```
 
 ### Inspecting Context

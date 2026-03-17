@@ -31,6 +31,7 @@ import {
   selectFetchQueryJzodSchemaFromDomainStateNew,
   selectJzodSchemaByDomainModelQueryFromDomainStateNew,
   selectJzodSchemaBySingleSelectQueryFromDomainStateNew,
+  serializeCompositeKeyValue,
   type ApplicationDeploymentMap,
   type ExtractorRunnerInMemory,
   type MiroirModelEnvironment
@@ -281,15 +282,15 @@ export class SqlDbQueryRunner {
     applicationDeploymentMap: ApplicationDeploymentMap
   ): Promise<Domain2QueryReturnType<EntityInstance[]>> => {
     switch (foreignKeyParams.extractor.select.extractorOrCombinerType) {
-      case "extractorByEntityReturningObjectList": {
+      case "extractorInstancesByEntity": {
         return this.extractEntityInstanceListWithFilter(
           foreignKeyParams,
           applicationDeploymentMap,
           defaultMetaModelEnvironment
         );
       }
-      case "combinerByRelationReturningObjectList":
-      case "combinerByManyToManyRelationReturningObjectList": {
+      case "combinerOneToMany":
+      case "combinerManyToMany": {
         if (!foreignKeyParams.extractorRunnerMap) {
           throw new Error(
             "asyncSqlDbExtractEntityInstanceListWithObjectListExtractor missing extractorRunnerMap"
@@ -343,15 +344,15 @@ export class SqlDbQueryRunner {
   ): Promise<Domain2QueryReturnType<EntityInstancesUuidIndex>> => {
     // let result: Promise<Domain2QueryReturnType<EntityInstancesUuidIndex>>;
     switch (foreignKeyParams.extractor.select.extractorOrCombinerType) {
-      case "extractorByEntityReturningObjectList": {
+      case "extractorInstancesByEntity": {
         return this.extractEntityInstanceUuidIndexWithFilter(
           foreignKeyParams,
           applicationDeploymentMap,
           defaultMetaModelEnvironment
         );
       }
-      case "combinerByRelationReturningObjectList":
-      case "combinerByManyToManyRelationReturningObjectList": {
+      case "combinerOneToMany":
+      case "combinerManyToMany": {
         if (!foreignKeyParams.extractorRunnerMap) {
           throw new Error(
             "asyncSqlDbExtractEntityInstanceUuidIndexWithObjectListExtractor missing extractorRunnerMap"
@@ -526,7 +527,10 @@ export class SqlDbQueryRunner {
       if (result instanceof Domain2ElementFailed) {
         return result;
       }
-      const entityInstanceUuidIndex = Object.fromEntries(result.map((i) => [i.uuid, i]));
+      const entityUuid = extractorRunnerParams.extractor.select.parentUuid;
+      const idAttribute = this.persistenceStoreController.getEntityIdAttribute(entityUuid);
+      const pkAttrs = Array.isArray(idAttribute) ? idAttribute : [idAttribute];
+      const entityInstanceUuidIndex = Object.fromEntries(result.map((i) => [serializeCompositeKeyValue(pkAttrs, i), i]));
       return entityInstanceUuidIndex;
     });
   };
@@ -594,7 +598,10 @@ export class SqlDbQueryRunner {
       if (result instanceof Domain2ElementFailed) {
         return result;
       }
-      const entityInstanceUuidIndex = Object.fromEntries(result.map((i) => [i.uuid, i]));
+      const entityUuid = extractorRunnerParams.extractor.select.parentUuid;
+      const idAttribute = this.persistenceStoreController.getEntityIdAttribute(entityUuid);
+      const pkAttrs = Array.isArray(idAttribute) ? idAttribute : [idAttribute];
+      const entityInstanceUuidIndex = Object.fromEntries(result.map((i) => [serializeCompositeKeyValue(pkAttrs, i), i]));
       return entityInstanceUuidIndex;
     });
   };
@@ -637,7 +644,7 @@ export class SqlDbQueryRunner {
     let entityInstanceCollection: Action2EntityInstanceCollectionOrFailure;
     if (
       extractorRunnerParams.extractor.select.extractorOrCombinerType ==
-        "extractorByEntityReturningObjectList" &&
+        "extractorInstancesByEntity" &&
       extractorRunnerParams.extractor.select.filter
     ) {
       entityInstanceCollection = await this.persistenceStoreController.getInstancesWithFilter(

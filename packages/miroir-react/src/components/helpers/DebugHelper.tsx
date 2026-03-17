@@ -1,20 +1,17 @@
 import React, { useState } from "react";
-import { ThemedOnScreenDebug } from "./ThemedHelper";
+import { ThemedOnScreenDebug, ThemedOnScreenHelper } from "./ThemedHelper";
 import { useMiroirContextService } from "../../contexts/MiroirContextReactProvider";
 import { useMiroirTheme } from "../../contexts/MiroirThemeContext";
-// import { useMiroirContextService } from "../../../../miroir-standalone-app/src/miroir-fwk/4_view/MiroirContextReactProvider.js";
-// import { useMiroirTheme } from "../../../../miroir-standalone-app/src/miroir-fwk/4_view/contexts/MiroirThemeContext.js";
-// import { ThemedOnScreenDebug } from "../../../../miroir-standalone-app/src/miroir-fwk/4_view/components/Themes/index.js";
 
 // ################################################################################################
-export type DebugElement = {
+export type JsonElementToDisplay = {
   label: string;
   data: any;
   initiallyUnfolded?: boolean;
   useCodeBlock?: boolean;
   copyButton?: boolean;
 };
-export type DebugElements = DebugElement[];
+export type DebugElements = JsonElementToDisplay[];
 
 // ################################################################################################
 const storeKey = (componentName: string, suffix: string) =>
@@ -36,21 +33,23 @@ const saveBool = (key: string, value: boolean): void => {
 };
 
 // ################################################################################################
-// Collapsible debug section for a component.
-// Renders nothing when showDebugInfo is off -- zero visual footprint.
+// Collapsible section for displaying structured JSON data.
+// When debug=true: only shown when showDebugInfo is on, rendered with warning colors and a 🔍 icon.
+// When debug=false: always displayed, with neutral styling.
 // Section open/close state is persisted in sessionStorage.
-// Each element delegates its own fold/unfold to ThemedOnScreenDebug (via ThemedOnScreenHelper).
-export const DebugHelper: React.FC<{
+export const JsonDisplayHelper: React.FC<{
   componentName: string;
   elements: DebugElements;
-}> = ({ componentName, elements }) => {
+  debug?: boolean;
+}> = ({ componentName, elements, debug = false }) => {
   const context = useMiroirContextService();
   const { currentTheme } = useMiroirTheme();
   const [isOpen, setIsOpen] = useState(() =>
     loadBool(storeKey(componentName, "__open"), false)
   );
 
-  if (!context.showDebugInfo || elements.length === 0) return null;
+  if (debug && (!context.showDebugInfo || elements.length === 0)) return null;
+  if (!debug && elements.length === 0) return null;
 
   const toggle = () => {
     setIsOpen((prev) => {
@@ -60,14 +59,24 @@ export const DebugHelper: React.FC<{
     });
   };
 
+  const borderColor = debug
+    ? (currentTheme.colors.warning ?? "#f59e0b")
+    : (currentTheme.colors.border ?? "#d1d5db");
+  const bgColor = debug
+    ? (currentTheme.colors.warningLight ?? "#fffbeb")
+    : (currentTheme.colors.surface ?? "#ffffff");
+  const headerColor = debug
+    ? (currentTheme.colors.textSecondary ?? "#484746")
+    : (currentTheme.colors.text ?? "#111827");
+
   return (
     <div
       style={{
-        border: `1px solid ${currentTheme.colors.warning ?? "#f59e0b"}`,
+        border: `1px solid ${borderColor}`,
         borderRadius: currentTheme.borderRadius.sm,
         margin: "4px 0",
         padding: "4px 8px",
-        backgroundColor: currentTheme.colors.warningLight ?? "#fffbeb",
+        backgroundColor: bgColor,
         fontFamily: "monospace",
       }}
     >
@@ -80,12 +89,12 @@ export const DebugHelper: React.FC<{
           gap: 6,
           fontSize: "12px",
           fontWeight: "bold",
-          color: currentTheme.colors.textSecondary ?? "#484746",
+          color: headerColor,
           userSelect: "none",
         }}
       >
         <span>{isOpen ? "▾" : "▸"}</span>
-        <span>🔍 {componentName}</span>
+        <span>{debug ? "🔍 " : ""}{componentName}</span>
         <span
           style={{
             color: currentTheme.colors.textSecondary,
@@ -98,18 +107,32 @@ export const DebugHelper: React.FC<{
       </div>
       {isOpen && (
         <div style={{ marginTop: 4 }}>
-          {elements.map((element, index) => (
-            <ThemedOnScreenDebug
-              key={`${element.label}_${index}`}
-              label={element.label}
-              data={element.data}
-              initiallyUnfolded={element.initiallyUnfolded ?? false}
-              useCodeBlock={element.useCodeBlock ?? true}
-              copyButton={element.copyButton ?? true}
-            />
-          ))}
+          {elements.map((element, index) =>
+            debug ? (
+              <ThemedOnScreenDebug
+                key={`${element.label}_${index}`}
+                label={element.label}
+                data={element.data}
+                initiallyUnfolded={element.initiallyUnfolded ?? false}
+                useCodeBlock={element.useCodeBlock ?? true}
+                copyButton={element.copyButton ?? true}
+              />
+            ) : (
+              <ThemedOnScreenHelper
+                key={`${element.label}_${index}`}
+                label={element.label}
+                data={element.data}
+                initiallyUnfolded={element.initiallyUnfolded ?? false}
+                useCodeBlock={element.useCodeBlock ?? true}
+                copyButton={element.copyButton ?? true}
+              />
+            )
+          )}
         </div>
       )}
     </div>
   );
 };
+
+// Backward-compatible alias
+export const DebugHelper = JsonDisplayHelper;

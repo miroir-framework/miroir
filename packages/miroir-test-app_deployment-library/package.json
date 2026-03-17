@@ -34,6 +34,9 @@
     "test": "vitest run --poolOptions.threads.singleThread -t",
     "testByFile": "vitest run --poolOptions.forks.singleFork --reporter=verbose"
   },
+  "nx": {
+    "implicitDependencies": ["!miroir-core"]
+  },
   "devDependencies": {
     "miroir-core": "*",
     "miroir-test-app_deployment-admin": "*",
