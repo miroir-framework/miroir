@@ -260,6 +260,8 @@ export interface SqlContextEntry {
   renameTo?: string;
   attributeResultAccessPath?: (string | number)[];
   // tableResultAccessPath?: ResultAccessPath;
+  /** Raw SQL expression to inline directly (e.g. aggregate expressions for HAVING clauses). */
+  rawSqlExpression?: string;
 }
 
 // ################################################################################################
@@ -759,7 +761,8 @@ function sqlStringForCountTransformer(
     return `JSON_BUILD_OBJECT(${pairs.join(", ")})`;
   }
 
-  function buildSqlAggExpr(valueExpr: string): string {
+  // filterOverride: custom FILTER WHERE condition for json_agg_strict (needed for attributeObject case)
+  function buildSqlAggExpr(valueExpr: string, filterOverride?: string): string {
     const distinctKeyword = distinct ? "DISTINCT " : "";
     switch (aggFunction) {
       case "sum":
@@ -772,8 +775,10 @@ function sqlStringForCountTransformer(
         return `MAX((${valueExpr})::numeric)::numeric`;
       case "json_agg":
         return `JSON_AGG(${valueExpr})`;
-      case "json_agg_strict":
-        return `JSON_AGG(${valueExpr}) FILTER (WHERE ${valueExpr} IS NOT NULL AND ${valueExpr}::text != 'null')`;
+      case "json_agg_strict": {
+        const condition = filterOverride ?? `${valueExpr} IS NOT NULL`;
+        return `COALESCE(JSON_AGG(${valueExpr}) FILTER (WHERE ${condition}), '[]'::json)`;
+      }
       case "count":
         if (attribute && distinct) {
           return `COUNT(${distinctKeyword}${valueExpr})::int`;
@@ -785,23 +790,33 @@ function sqlStringForCountTransformer(
     }
   }
 
-  // AGG-2: Build HAVING clause if present
-  let havingSql = "";
-  let havingPreparedParams: any[] = [];
-  if (actionRuntimeTransformer.having) {
+  // Helper: build a HAVING SQL clause injecting aggregateValue into context
+  function buildHavingSql(
+    aggExpr: string,
+    refParamsLength: number,
+  ): { havingSql: string; havingPreparedParams: any[] } {
+    if (!actionRuntimeTransformer.having) return { havingSql: "", havingPreparedParams: [] };
+    const havingContextEntries: Record<string, SqlContextEntry> = {
+      ...definedContextEntries,
+      aggregateValue: { type: "scalar", rawSqlExpression: aggExpr },
+    };
     const havingResult = sqlStringForRuntimeTransformer(
       actionRuntimeTransformer.having as any,
-      preparedStatementParametersCount + (referenceQuery.preparedStatementParameters?.length ?? 0),
+      preparedStatementParametersCount + refParamsLength,
       indentLevel,
       queryParams,
-      definedContextEntries,
+      havingContextEntries,
       useAccessPathForContextReference,
       false,
     );
-    if (!(havingResult instanceof Domain2ElementFailed)) {
-      havingSql = `\nHAVING ${havingResult.sqlStringOrObject}`;
-      havingPreparedParams = havingResult.preparedStatementParameters ?? [];
+    if (havingResult instanceof Domain2ElementFailed) {
+      log.warn("sqlStringForCountTransformer: HAVING clause generation failed:", JSON.stringify(havingResult));
+      return { havingSql: "", havingPreparedParams: [] };
     }
+    return {
+      havingSql: `\nHAVING ${havingResult.sqlStringOrObject}`,
+      havingPreparedParams: havingResult.preparedStatementParameters ?? [],
+    };
   }
 
   switch (referenceQuery.type) {
@@ -809,18 +824,11 @@ function sqlStringForCountTransformer(
     case "json": {
       const groupBy = actionRuntimeTransformer.groupBy;
       if (groupBy && (typeof actionRuntimeTransformer.groupBy === 'string' || groupBy.length > 0)) {
-        const groupByArray = (typeof groupBy === "string" ? [groupBy] : groupBy)
-        const groupBySelectors = groupByArray?.map(
-          (e) =>
-            "value" +
-            " ->> " +
-            tokenStringQuote +
-            e +
-            tokenStringQuote +
-            " AS " +
-            `${tokenNameQuote}${e}${tokenNameQuote}`
-        );
-        const groupByAccessors = groupByArray?.map(e=> `value ->> ${tokenStringQuote}${e}${tokenStringQuote}`);
+        const groupByArray = (typeof groupBy === "string" ? [groupBy] : groupBy);
+        // Use value -> (jsonb) for GROUP BY so it matches the same expression used in json_build_object.
+        // Using value ->> (text) for GROUP BY while json_build_object uses value -> (jsonb) would cause
+        // PostgreSQL error 42803 (ungrouped column) since they are different expressions.
+        const groupByAccessors = groupByArray.map(e => `value -> ${tokenStringQuote}${e}${tokenStringQuote}`);
 
         // Build the aggregate expression for the value accessor
         const aggExprNeedsAttribute = aggFunction && aggFunction !== "count" && !attribute && !attributeObject;
@@ -831,36 +839,72 @@ function sqlStringForCountTransformer(
             failureMessage: `sqlStringForCountTransformer: aggregate function '${aggFunction}' requires 'attribute' or 'attributeObject' to be specified`,
           });
         }
-        // When attributeObject is set for json_agg/json_agg_strict, use JSON_BUILD_OBJECT
+        // For json_agg_strict with attributeObject: filter out rows where all source attrs are null.
+        // Use ->> (text extraction) for null detection because -> returns 'null'::jsonb (not SQL NULL)
+        // while ->> returns SQL NULL for JSON null values, making IS NOT NULL work correctly.
+        const jsonAggStrictAttrFilter = (aggFunction === "json_agg_strict" && attributeObject)
+          ? Object.values(attributeObject).map(
+              (srcAttr: string) => `(value ->> ${tokenStringQuote}${srcAttr}${tokenStringQuote}) IS NOT NULL`
+            ).join(" OR ")
+          : undefined;
+        // When attributeObject is set for json_agg/json_agg_strict, use JSON_BUILD_OBJECT with -> (preserves JSON types)
         const aggExpr = attributeObject && (aggFunction === "json_agg" || aggFunction === "json_agg_strict")
-          ? buildSqlAggExpr(buildJsonBuildObjectExpr((srcAttr) => `value ->> ${tokenStringQuote}${srcAttr}${tokenStringQuote}`))
+          ? buildSqlAggExpr(
+              buildJsonBuildObjectExpr((srcAttr) => `value -> ${tokenStringQuote}${srcAttr}${tokenStringQuote}`),
+              jsonAggStrictAttrFilter,
+            )
           : buildSqlAggExpr(attribute
               ? `value ->> ${tokenStringQuote}${attribute}${tokenStringQuote}`
               : "*");
 
+        const refParamsLength = referenceQuery.preparedStatementParameters?.length ?? 0;
+        const { havingSql, havingPreparedParams } = buildHavingSql(aggExpr, refParamsLength);
+
+        // Build the json_build_object for each grouped row:
+        // Use value -> (jsonb, preserves type) for groupBy keys, and aggExpr for the aggregate
+        const jsonBuildObjectPairs = [
+          ...groupByArray.map(e => `'${e}', value -> ${tokenStringQuote}${e}${tokenStringQuote}`),
+          `'${resultKey}', ${aggExpr}`,
+        ].join(",\n      ");
+
+        const applyToCol = (referenceQuery as any).resultAccessPath[1];
         return {
           type: "json",
           sqlStringOrObject: `
-SELECT ${groupBySelectors?.join(',')}, ${aggExpr} AS ${tokenNameQuote}${resultKey}${tokenNameQuote}
-FROM (${referenceQuery.sqlStringOrObject}) AS "count_applyTo",
-    LATERAL jsonb_array_elements("count_applyTo"."${
-      (referenceQuery as any).resultAccessPath[1]
-    }") AS "count_applyTo_array"
-GROUP BY ${groupByAccessors?.join(", ")}${havingSql}
-ORDER BY ${groupByAccessors?.join(", ")}
+SELECT COALESCE(json_agg(count_grouped_row), '[]'::json) AS "count_grouped_result"
+FROM (
+  SELECT json_build_object(
+      ${jsonBuildObjectPairs}
+    ) AS count_grouped_row
+  FROM (${referenceQuery.sqlStringOrObject}) AS "count_applyTo",
+      LATERAL jsonb_array_elements("count_applyTo"."${applyToCol}") AS "count_applyTo_array"
+  GROUP BY ${groupByAccessors.join(", ")}${havingSql}
+  ORDER BY ${groupByAccessors.join(", ")}
+) AS "count_grouped"
 `,
           preparedStatementParameters: [
             ...(referenceQuery.preparedStatementParameters ?? []),
             ...havingPreparedParams,
           ],
-          resultAccessPath: [],
+          resultAccessPath: [0, "count_grouped_result"],
+          columnNameContainingJsonValue: "count_grouped_result",
           extraWith: referenceQuery.extraWith,
           encloseEndResultInArray: false,
         };
       } else {
-        // When attributeObject is set for json_agg/json_agg_strict, use JSON_BUILD_OBJECT
+        // For json_agg_strict with attributeObject: filter out rows where all source attrs are null.
+        // Use ->> for null detection (returns SQL NULL for JSON null), not -> (returns non-null 'null'::jsonb).
+        const jsonAggStrictAttrFilter = (aggFunction === "json_agg_strict" && attributeObject)
+          ? Object.values(attributeObject).map(
+              (srcAttr: string) => `(value ->> ${tokenStringQuote}${srcAttr}${tokenStringQuote}) IS NOT NULL`
+            ).join(" OR ")
+          : undefined;
+        // When attributeObject is set for json_agg/json_agg_strict, use JSON_BUILD_OBJECT with -> (preserves JSON types)
         const aggExpr = attributeObject && (aggFunction === "json_agg" || aggFunction === "json_agg_strict")
-          ? buildSqlAggExpr(buildJsonBuildObjectExpr((srcAttr) => `value ->> ${tokenStringQuote}${srcAttr}${tokenStringQuote}`))
+          ? buildSqlAggExpr(
+              buildJsonBuildObjectExpr((srcAttr) => `value -> ${tokenStringQuote}${srcAttr}${tokenStringQuote}`),
+              jsonAggStrictAttrFilter,
+            )
           : buildSqlAggExpr(attribute
               ? `value ->> ${tokenStringQuote}${attribute}${tokenStringQuote}`
               : "*");
@@ -876,7 +920,6 @@ FROM (${referenceQuery.sqlStringOrObject}) AS "count_applyTo",
 `,
           preparedStatementParameters: [
             ...(referenceQuery.preparedStatementParameters ?? []),
-            ...havingPreparedParams,
           ],
           resultAccessPath: [0, "count_object"],
           extraWith: referenceQuery.extraWith,
@@ -887,10 +930,19 @@ FROM (${referenceQuery.sqlStringOrObject}) AS "count_applyTo",
     }
     case "tableOf1JsonColumn":
     case "table": {
+      // For json_agg_strict with attributeObject: filter out rows where all source attrs are null
+      const jsonAggStrictAttrFilter = (aggFunction === "json_agg_strict" && attributeObject)
+        ? Object.values(attributeObject).map(
+            (srcAttr: string) => `"${srcAttr}" IS NOT NULL`
+          ).join(" OR ")
+        : undefined;
       // When attributeObject is set for json_agg/json_agg_strict, use JSON_BUILD_OBJECT
       const aggExpr = attributeObject && (aggFunction === "json_agg" || aggFunction === "json_agg_strict")
-        ? buildSqlAggExpr(buildJsonBuildObjectExpr((srcAttr) => `"${srcAttr}"`))
+        ? buildSqlAggExpr(buildJsonBuildObjectExpr((srcAttr) => `"${srcAttr}"`), jsonAggStrictAttrFilter)
         : buildSqlAggExpr(attribute ? `"${attribute}"` : "*");
+
+      const refParamsLength = referenceQuery.preparedStatementParameters?.length ?? 0;
+      const { havingSql, havingPreparedParams } = buildHavingSql(aggExpr, refParamsLength);
 
       const transformerSqlQuery = actionRuntimeTransformer.groupBy
         ? `SELECT "${actionRuntimeTransformer.groupBy}", ${aggExpr} AS "${resultKey}" FROM (${referenceQuery.sqlStringOrObject}) AS "count_applyTo"
@@ -2230,13 +2282,15 @@ LATERAL jsonb_array_elements("listPickElement_applyTo"."${
 }") AS "listPickElement_applyTo_array"
 `;
         } else { // no orderBy
+          // Use jsonb_agg -> index instead of LIMIT/OFFSET so that out-of-bounds index returns NULL
+          // (LIMIT 1 OFFSET n returns 0 rows when n >= array length, causing undefined testResult)
           sqlResult = `
-SELECT "listPickElement_applyTo_array"."value" AS "pickFromList"
+SELECT jsonb_agg("listPickElement_applyTo_array"."value") -> ${limit} AS "pickFromList"
 FROM
 (${sqlForApplyTo.sqlStringOrObject}) AS "listPickElement_applyTo", 
 LATERAL jsonb_array_elements("listPickElement_applyTo"."${
 (sqlForApplyTo as any).resultAccessPath[1]
-}") AS "listPickElement_applyTo_array" LIMIT 1 OFFSET ${limit}
+}") AS "listPickElement_applyTo_array"
 `;
         }
         return {
@@ -3421,6 +3475,14 @@ function sqlStringForContextReferenceTransformer(
         "sqlStringForContextReferenceTransformer not found in definedContextEntries: " +
         JSON.stringify(Object.keys(definedContextEntries)),
     });
+  }
+  // Short-circuit: if the entry carries a raw SQL expression (e.g. an aggregate for HAVING), return it directly.
+  if (definedContextEntry.rawSqlExpression !== undefined) {
+    return {
+      type: definedContextEntry.type,
+      sqlStringOrObject: definedContextEntry.rawSqlExpression,
+      usedContextEntries: [],
+    };
   }
   const resultAccessPath = [
     ...(useAccessPathForContextReference?(definedContextEntry.attributeResultAccessPath ?? []):[]),

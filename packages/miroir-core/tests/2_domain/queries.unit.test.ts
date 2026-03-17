@@ -1794,12 +1794,6 @@ const filteredTestExtractorParams = Object.fromEntries(
       "select custom-built result with combinerByHeteronomousManyToMany: instances of all Entites from Domain State, indexed by Entity Uuid (extractorInstancesByEntity, combinerByHeteronomousManyToMany)",
       // "select Unique Publisher Uuids of Books (extractorInstancesByEntity, runtimeTransformer)"
     ]) return true;
-    // if (testQueries && testParams.query) {
-    //   return true;
-    // }
-    // if (testQueryTemplates && testParams.queryTemplate) {
-    //   return true;
-    // }
     return false;
   })
 );

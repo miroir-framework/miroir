@@ -3420,13 +3420,11 @@
                   "value1": 100,
                   "value2": 50
                 },
+                "retainAttributes": [
+                  "queryFailure"
+                ],
                 "integrationTestExpectedValue": {
-                  "retainAttributes": [
-                    "queryFailure"
-                  ],
-                  "value": {
-                    "queryFailure": "QueryNotExecutable"
-                  }
+                  "queryFailure": "QueryNotExecutable"
                 },
                 "unitTestExpectedValue": 150
               }
@@ -5738,7 +5736,7 @@
                   "queryFailure": "FailedTransformer"
                 },
                 "integrationTestExpectedValue": {
-                  "queryFailure": "FailedTransformer"
+                  "queryFailure": "QueryNotExecutable"
                 }
               }
             ]
