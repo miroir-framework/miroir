@@ -30,7 +30,12 @@ packages/miroir-server/node_modules*/
 packages/miroir-server/miroir-db*/
 packages/miroir-server/tests/tmp*/
 packages/miroir-server/miroir-indexedDb*/
+packages/miroir-localcache/dist*/
+packages/miroir-localcache/node_modules*/
+packages/miroir-localcache-redux/dist*/
 packages/miroir-localcache-redux/node_modules*/
+packages/miroir-localcache-zustand/dist*/
+packages/miroir-localcache-zustand/node_modules*/
 packages/miroir-store-filesystem/dist*/
 packages/miroir-store-filesystem/node_modules*/
 packages/miroir-store-indexedDb/dist*/
@@ -40,8 +45,6 @@ packages/miroir-store-mongodb/node_modules*/
 packages/miroir-store-mongodb/tmp*/
 packages/miroir-store-postgres/node_modules*/
 packages/miroir-store-postgres/dist*/
-packages/miroir-localcache-redux/dist*/
-packages/miroir-localcache-zustand/dist*/
 packages/miroir-standalone-app/dist*/
 packages/miroir-standalone-app/build*/
 packages/miroir-standalone-app/indexedDb*/

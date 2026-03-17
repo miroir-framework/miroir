@@ -59,6 +59,7 @@ export type RootSqlQuery = string | {
     select?: (string | SqlQueryDefineColumnSchema[]) | undefined;
     from?: (string | SqlQueryHereTableDefinitionSchema[]) | undefined;
     where?: string | undefined;
+    groupBy?: string | undefined;
 };
 export type SqlQuerySelectSchema = RootSqlQuery;
 
@@ -71,6 +72,6 @@ export const sqlWhereItemSchema: z.ZodType<SqlWhereItemSchema> = z.object({what:
 export const sqlQueryFromSchema: z.ZodType<SqlQueryFromSchema> = z.union([z.string(), z.array(z.lazy(() =>sqlQueryTableLiteralSchema))]);
 export const sqlQueryHereTableExpressionSchema: z.ZodType<SqlQueryHereTableExpressionSchema> = z.union([z.string(), z.object({queryPart:z.literal("bypass"), value:z.string()}).strict(), z.lazy(() =>sqlQueryTableLiteralSchema), z.lazy(() =>sqlQueryTableColumnAccessSchema), z.object({queryPart:z.literal("call"), fct:z.string(), params:z.array(z.lazy(() =>sqlQueryHereTableExpressionSchema))}).strict()]);
 export const sqlQueryHereTableDefinitionSchema: z.ZodType<SqlQueryHereTableDefinitionSchema> = z.union([z.string(), z.object({queryPart:z.literal("bypass"), value:z.string()}).strict(), z.lazy(() =>sqlQueryTableLiteralSchema), z.object({queryPart:z.literal("hereTable"), definition:z.union([z.lazy(() =>sqlQueryHereTableExpressionSchema), z.lazy(() =>rootSqlQuery)]), as:z.string().optional()}).strict()]);
-export const rootSqlQuery: z.ZodType<RootSqlQuery> = z.union([z.string(), z.object({queryPart:z.literal("query"), select:z.union([z.string(), z.array(z.lazy(() =>sqlQueryDefineColumnSchema))]).optional(), from:z.union([z.string(), z.array(z.lazy(() =>sqlQueryHereTableDefinitionSchema))]).optional(), where:z.string().optional()}).strict()]);
+export const rootSqlQuery: z.ZodType<RootSqlQuery> = z.union([z.string(), z.object({queryPart:z.literal("query"), select:z.union([z.string(), z.array(z.lazy(() =>sqlQueryDefineColumnSchema))]).optional(), from:z.union([z.string(), z.array(z.lazy(() =>sqlQueryHereTableDefinitionSchema))]).optional(), where:z.string().optional(), groupBy:z.string().optional()}).strict()]);
 export const sqlQuerySelectSchema = z.lazy(() =>rootSqlQuery);
 

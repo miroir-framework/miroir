@@ -57,10 +57,15 @@ import {
   sqlColumnAccessOld,
   sqlDefineColumn,
   sqlFromOld,
+  sqlIsFalsy,
+  sqlIsNotNull,
+  sqlIsNull,
   sqlNameQuote,
   sqlQuery,
   sqlQueryHereTableDefinition,
   sqlSelectColumns,
+  sqlSelectExpression,
+  sqlWith,
 } from "./SqlQueryBuilder";
 import { getAttributeTypesFromJzodSchema, jzodToPostgresTypeMap } from "./mlSchema";
 import { SqlQuerySelectExpressionSchema } from "../generated";
@@ -353,7 +358,16 @@ const getConstantSql = (
   const result: SqlStringForTransformerElementValue = {
     type: targetType,
     sqlStringOrObject: topLevelTransformer
-      ? `select $${paramIndex}::${sqlTargetType} AS "${label}"`
+      ? sqlQuery(undefined, {
+          queryPart: "query",
+          select: [
+            {
+              queryPart: "defineColumn",
+              value: `$${paramIndex}::${sqlTargetType}`,
+              as: label,
+            },
+          ],
+        })
       : `$${paramIndex}::${sqlTargetType}`,
     preparedStatementParameters: [isJson(targetType) ? JSON.stringify(transformer.value) : transformer.value],
     resultAccessPath: topLevelTransformer ? [0, label] : undefined,
@@ -466,9 +480,15 @@ export function sqlStringForCombiner /*BoxedExtractorTemplateRunner*/(
         query.parentName ?? "",
         query.objectReference,
       );
-      const result = `
-        SELECT "${query.parentName}".* FROM "${schema}"."${query.parentName}", "${query.objectReference}"
-        WHERE ${joinCondition}`;
+      const result = sqlQuery(undefined, {
+        queryPart: "query",
+        select: [`"${query.parentName}".*`],
+        from: [
+          { queryPart: "hereTable", definition: { queryPart: "bypass", value: `"${schema}"."${query.parentName}"` } },
+          { queryPart: "hereTable", definition: { queryPart: "bypass", value: `"${query.objectReference}"` } },
+        ],
+        where: joinCondition,
+      });
       return {
         sqlString: result,
         resultAccessPath: [0],
@@ -485,9 +505,15 @@ export function sqlStringForCombiner /*BoxedExtractorTemplateRunner*/(
         query.objectReference,
         query.parentName ?? "",
       );
-      const result = `
-      SELECT "${query.parentName}".* FROM "${schema}"."${query.parentName}", "${query.objectReference}"
-      WHERE ${joinCondition2}`;
+      const result = sqlQuery(undefined, {
+        queryPart: "query",
+        select: [`"${query.parentName}".*`],
+        from: [
+          { queryPart: "hereTable", definition: { queryPart: "bypass", value: `"${schema}"."${query.parentName}"` } },
+          { queryPart: "hereTable", definition: { queryPart: "bypass", value: `"${query.objectReference}"` } },
+        ],
+        where: joinCondition2,
+      });
       return {
         sqlString: result,
         resultAccessPath: undefined,
@@ -522,7 +548,11 @@ export function sqlStringForExtractor(
       const effectiveSchema = getSchemaForEntity(extractor.parentUuid, schema, modelEnvironment);
       const whereClausePk = sqlWhereClauseForPk(pkColumn, extractor.instanceUuid);
       if (!extractor.applyTransformer) {
-        return `SELECT * FROM "${effectiveSchema}"."${extractor.parentName}" WHERE ${whereClausePk}`;
+        return sqlQuery(undefined, {
+          queryPart: "query",
+          from: [{ queryPart: "hereTable", definition: { queryPart: "bypass", value: `"${effectiveSchema}"."${extractor.parentName}"` } }],
+          where: whereClausePk,
+        });
       }
       if (!modelEnvironment) {
         throw new Error("sqlForExtractor extractorByPrimaryKey needs modelEnvironment if applyTransformer is set");
@@ -532,7 +562,11 @@ export function sqlStringForExtractor(
         JSON.stringify(extractor.applyTransformer, null, 2),
         Object.keys(modelEnvironment)
       );
-      return `SELECT * FROM "${effectiveSchema}"."${extractor.parentName}" WHERE ${whereClausePk}`;
+      return sqlQuery(undefined, {
+        queryPart: "query",
+        from: [{ queryPart: "hereTable", definition: { queryPart: "bypass", value: `"${effectiveSchema}"."${extractor.parentName}"` } }],
+        where: whereClausePk,
+      });
       break;
     }
     case "combinerOneToOne": {
@@ -541,31 +575,35 @@ export function sqlStringForExtractor(
     }
     case "extractorInstancesByEntity": {
       const effectiveSchema = getSchemaForEntity(extractor.parentUuid, schema, modelEnvironment);
-      let whereClause = "";
+      let whereClause: string | undefined = undefined;
       if (extractor.filter) {
         const { attributeName, value, values, not, undefined: isUndefined } = extractor.filter;
         
         // Handle undefined check
         if (isUndefined) {
           whereClause = not 
-            ? ` WHERE "${attributeName}" IS NOT NULL`
-            : ` WHERE "${attributeName}" IS NULL`;
+            ? `"${attributeName}" IS NOT NULL`
+            : `"${attributeName}" IS NULL`;
         }
         // Handle values array (multiple values)
         else if (values !== undefined && values.length > 0) {
           const valueList = values.map(v => `'${v}'`).join(', ');
           whereClause = not
-            ? ` WHERE "${attributeName}" NOT IN (${valueList})`
-            : ` WHERE "${attributeName}" IN (${valueList})`;
+            ? `"${attributeName}" NOT IN (${valueList})`
+            : `"${attributeName}" IN (${valueList})`;
         }
         // Handle single value
         else if (value !== undefined) {
           whereClause = not
-            ? ` WHERE "${attributeName}" NOT ILIKE '%${value}%'`
-            : ` WHERE "${attributeName}" ILIKE '%${value}%'`;
+            ? `"${attributeName}" NOT ILIKE '%${value}%'`
+            : `"${attributeName}" ILIKE '%${value}%'`;
         }
       }
-      return `SELECT * FROM "${effectiveSchema}"."${extractor.parentName}"${whereClause}`;
+      return sqlQuery(undefined, {
+        queryPart: "query",
+        from: [{ queryPart: "hereTable", definition: { queryPart: "bypass", value: `"${effectiveSchema}"."${extractor.parentName}"` } }],
+        where: whereClause,
+      });
       break;
     }
     case "extractorWrapperReturningObject":
@@ -990,42 +1028,6 @@ const jsOperatorToSqlOperatorMap: Record<string, string> = {
 }
 
 // ################################################################################################
-// Helper: SQL expression for JS-style falsy check.
-// JS falsy values: null, undefined, 0, false, "".
-// For JSON/JSONB types: also checks for JSON null ('null'::jsonb), JSON false, JSON 0, JSON empty string.
-// For scalar types: uses IS NULL plus a text cast to check for '0', 'false', or '' values.
-function sqlIsFalsy(expr: string, type: SqlStringForTransformerElementValueType): string {
-  if (isJson(type)) {
-    return `(${expr} IS NULL OR ${expr} = 'null'::jsonb OR ${expr} = 'false'::jsonb OR ${expr} = '0'::jsonb OR ${expr} = '""'::jsonb)`;
-  } else {
-    // scalar: cast to text and check known falsy string representations
-    return `(${expr} IS NULL OR ${expr}::text IN ('0', 'false', ''))`;
-  }
-}
-
-// ################################################################################################
-// Helper: SQL expression for JS-style null check.
-// Covers both SQL NULL and JSON null ('null'::jsonb) for JSON/JSONB types.
-function sqlIsNull(expr: string, type: SqlStringForTransformerElementValueType): string {
-  if (isJson(type)) {
-    return `(${expr} IS NULL OR ${expr} = 'null'::jsonb)`;
-  } else {
-    return `${expr} IS NULL`;
-  }
-}
-
-// ################################################################################################
-// Helper: SQL expression for JS-style isNotNull check.
-// Value must be neither SQL NULL nor JSON null.
-function sqlIsNotNull(expr: string, type: SqlStringForTransformerElementValueType): string {
-  if (isJson(type)) {
-    return `(${expr} IS NOT NULL AND ${expr} <> 'null'::jsonb)`;
-  } else {
-    return `${expr} IS NOT NULL`;
-  }
-}
-
-// ################################################################################################
 function sqlStringForConditionalTransformer(
   actionRuntimeTransformer: TransformerForBuildPlusRuntime_ifThenElse,
   preparedStatementParametersCount: number,
@@ -1110,14 +1112,17 @@ function sqlStringForConditionalTransformer(
   const conditionSql = ifResult.sqlStringOrObject;
 
   const columnName = withClauseColumnName ?? "ifThenElse";
+  const caseExpr = sqlSelectExpression(undefined, {
+    queryPart: "case",
+    when: conditionSql,
+    then: thenSql.sqlStringOrObject,
+    else: elseSql.sqlStringOrObject,
+  });
   return {
     type: "scalar",
     sqlStringOrObject:
       (topLevelTransformer ? "select " : "") +
-      "case when " + conditionSql +
-      " then " + thenSql.sqlStringOrObject +
-      " else " + elseSql.sqlStringOrObject +
-      " end" +
+      caseExpr +
       (topLevelTransformer ? ` AS "${columnName}"` : ""),
     preparedStatementParameters: [
       ...(ifResult.preparedStatementParameters ?? []),
@@ -1237,7 +1242,12 @@ function sqlStringForBoolExprTransformer(
 
   const columnName = withClauseColumnName ?? "boolExpr";
   // boolExpr always returns a boolean: wrap condition in CASE to yield true::boolean or false::boolean
-  const boolSql = "case when " + conditionSql + " then true::boolean else false::boolean end";
+  const boolSql = sqlSelectExpression(undefined, {
+    queryPart: "case",
+    when: conditionSql,
+    then: "true::boolean",
+    else: "false::boolean",
+  });
   return {
     type: "scalar",
     sqlStringOrObject:
@@ -1370,12 +1380,16 @@ function sqlStringForPlusTransformer(
         // Top-level needs a SELECT statement
         return {
           type: singleElement.type,
-          sqlStringOrObject: 
-            `select ` +
-            flushAndIndent(indentLevel + 1) +
-            singleElement.sqlStringOrObject +
-            ` AS "${withClauseColumnName ?? "plus"}"`
-          ,
+          sqlStringOrObject: sqlQuery(indentLevel, {
+            queryPart: "query",
+            select: [
+              {
+                queryPart: "defineColumn",
+                value: singleElement.sqlStringOrObject,
+                as: withClauseColumnName ?? "plus",
+              },
+            ],
+          }),
           preparedStatementParameters,
           resultAccessPath: [0, withClauseColumnName ?? "plus"],
           columnNameContainingJsonValue: withClauseColumnName ?? "plus",
@@ -1415,8 +1429,18 @@ function sqlStringForPlusTransformer(
 
   return {
     type: "scalar",
-    sqlStringOrObject: (topLevelTransformer ? "select " : "") + sqlExpression +
-      (topLevelTransformer ? ` AS "${withClauseColumnName??"plus"}"` : ""),
+    sqlStringOrObject: topLevelTransformer
+      ? sqlQuery(undefined, {
+          queryPart: "query",
+          select: [
+            {
+              queryPart: "defineColumn",
+              value: sqlExpression,
+              as: withClauseColumnName ?? "plus",
+            },
+          ],
+        })
+      : sqlExpression,
     preparedStatementParameters,
     resultAccessPath: topLevelTransformer ? [0, withClauseColumnName??"plus"] : undefined,
     columnNameContainingJsonValue: topLevelTransformer ? withClauseColumnName??"plus" : undefined,
@@ -1571,14 +1595,26 @@ function sqlStringForCaseTransformer(
 
   // Build FROM clause if context entries are used
   const uniqueUsedContextEntries = [...new Set(usedContextEntries)];
-  const fromClause = topLevelTransformer && uniqueUsedContextEntries.length > 0
-    ? ` FROM ${uniqueUsedContextEntries.map(e => `"${e}"`).join(", ")}`
-    : "";
+  const fromEntries: any[] = uniqueUsedContextEntries.map(e => ({
+    queryPart: "hereTable",
+    definition: { queryPart: "bypass", value: `"${e}"` },
+  }));
 
   return {
     type: "scalar",
-    sqlStringOrObject: (topLevelTransformer ? "select " : "") + caseExpression +
-      (topLevelTransformer ? ` AS "${withClauseColumnName ?? "case"}"${fromClause}` : ""),
+    sqlStringOrObject: topLevelTransformer
+      ? sqlQuery(undefined, {
+          queryPart: "query",
+          select: [
+            {
+              queryPart: "defineColumn",
+              value: caseExpression,
+              as: withClauseColumnName ?? "case",
+            },
+          ],
+          from: fromEntries.length > 0 ? fromEntries : undefined,
+        })
+      : caseExpression,
     preparedStatementParameters,
     resultAccessPath: topLevelTransformer ? [0, withClauseColumnName ?? "case"] : undefined,
     columnNameContainingJsonValue: topLevelTransformer ? withClauseColumnName ?? "case" : undefined,
@@ -2865,9 +2901,43 @@ function sqlStringForObjectEntriesTransformer(
       sql: applyTo.sqlStringOrObject,
     },
   ];
-  const sqlResult = `SELECT jsonb_agg(json_build_array(key, value)) AS "getObjectEntries" FROM "innerQuery", jsonb_each("innerQuery"."${
-    (applyTo as any).resultAccessPath[1]
-  }")`;
+  const sqlResult = sqlQuery(undefined, {
+    queryPart: "query",
+    select: [
+      {
+        queryPart: "defineColumn",
+        value: {
+          queryPart: "call",
+          fct: "jsonb_agg",
+          params: [
+            {
+              queryPart: "call",
+              fct: "json_build_array",
+              params: ["key", "value"],
+            },
+          ],
+        },
+        as: "getObjectEntries",
+      },
+    ],
+    from: [
+      { queryPart: "tableLiteral", name: "innerQuery" },
+      {
+        queryPart: "hereTable",
+        definition: {
+          queryPart: "call",
+          fct: "jsonb_each",
+          params: [
+            {
+              queryPart: "tableColumnAccess",
+              table: "innerQuery",
+              col: (applyTo as any).resultAccessPath[1],
+            },
+          ],
+        },
+      },
+    ],
+  });
 
   return {
     type: "json",
@@ -2908,9 +2978,37 @@ function sqlStringForObjectValuesTransformer(
       sql: applyTo.sqlStringOrObject,
     },
   ];
-  const sqlResult = `SELECT jsonb_agg(value) AS "getObjectValues" FROM "innerQuery", jsonb_each("innerQuery"."${
-    (applyTo as any).resultAccessPath[1]
-  }")`;
+  const sqlResult = sqlQuery(undefined, {
+    queryPart: "query",
+    select: [
+      {
+        queryPart: "defineColumn",
+        value: {
+          queryPart: "call",
+          fct: "jsonb_agg",
+          params: ["value"],
+        },
+        as: "getObjectValues",
+      },
+    ],
+    from: [
+      { queryPart: "tableLiteral", name: "innerQuery" },
+      {
+        queryPart: "hereTable",
+        definition: {
+          queryPart: "call",
+          fct: "jsonb_each",
+          params: [
+            {
+              queryPart: "tableColumnAccess",
+              table: "innerQuery",
+              col: (applyTo as any).resultAccessPath[1],
+            },
+          ],
+        },
+      },
+    ],
+  });
 
   return {
     type: "json",
@@ -3215,27 +3313,28 @@ function sqlStringForListReducerToSpreadObjectTransformer(
         ") = 'array' then " +
         returnValue +
       	`else ${queryFailureObjectSqlString} end`;
-      const sqlResult =
-        "SELECT " +
-        // returnValue +
-        checkForArrayAndReturnValue +
-        ' AS ' +
-        '"' + transformerLabel + '"' +
-        flushAndIndent(indentLevel) +
-        'FROM ' +
-        '"' + applyToLabel + '"' + 
-        ', jsonb_each(' +
-        '"' + applyToLabel + '"' + 
-        '.' +
-        '"' + (applyTo as any).columnNameContainingJsonValue + '"' + 
-        ') AS ' +
-        '"' + applyToLabelPairs + '"' +
-        flushAndIndent(indentLevel) +
-        "GROUP BY " +
-        '"' + applyToLabel + '"' + 
-        '.' +
-        '"' + (applyTo as any).columnNameContainingJsonValue + '"'
-        ;
+      const sqlResult = sqlQuery(indentLevel, {
+        queryPart: "query",
+        select: [
+          {
+            queryPart: "defineColumn",
+            value: checkForArrayAndReturnValue,
+            as: transformerLabel,
+          },
+        ],
+        from: [
+          { queryPart: "hereTable", definition: { queryPart: "bypass", value: `"${applyToLabel}"` } },
+          {
+            queryPart: "hereTable",
+            definition: {
+              queryPart: "bypass",
+              value: `jsonb_each("${applyToLabel}"."${(applyTo as any).columnNameContainingJsonValue}")`,
+            },
+            as: applyToLabelPairs,
+          },
+        ],
+        groupBy: `"${applyToLabel}"."${(applyTo as any).columnNameContainingJsonValue}"`,
+      });
       return {
         type: "json",
         sqlStringOrObject: sqlResult,
@@ -3518,16 +3617,20 @@ function sqlStringForContextReferenceTransformer(
     );
     const result: SqlStringForTransformerElementValue = {
       type: definedContextEntry.type,
-      sqlStringOrObject:
-        "SELECT " +
-        (resultAccessPath.length > 0 // TODO: base test on protectedResultAccessPathStringForJson, not on resultAccessPath
-          // ? resultAccessPathStringForJson + ' AS "' + usedReferenceName + '"'
-          ? protectedResultAccessPathStringForJson + ' AS "' + usedReferenceName + '"'
-          : "*") +
-        flushAndIndent(indentLevel) +
-        'FROM "' +
-        usedReferenceName +
-        '"',
+      sqlStringOrObject: sqlQuery(indentLevel, {
+        queryPart: "query",
+        select:
+          resultAccessPath.length > 0
+            ? [
+                {
+                  queryPart: "defineColumn",
+                  value: protectedResultAccessPathStringForJson,
+                  as: usedReferenceName,
+                },
+              ]
+            : undefined,
+        from: [{ queryPart: "tableLiteral", name: usedReferenceName }],
+      }),
       usedContextEntries: [usedReferenceName],
       resultAccessPath: [0, usedReferenceName],
       columnNameContainingJsonValue:
@@ -3793,7 +3896,16 @@ function sqlStringForNewUuidTransformer(
   return {
     type: "scalar",
     sqlStringOrObject: topLevelTransformer 
-      ? `select gen_random_uuid() AS "${columnName}"` 
+      ? sqlQuery(undefined, {
+          queryPart: "query",
+          select: [
+            {
+              queryPart: "defineColumn",
+              value: "gen_random_uuid()",
+              as: columnName,
+            },
+          ],
+        })
       : "gen_random_uuid()",
     preparedStatementParameters: [],
     resultAccessPath: topLevelTransformer ? [0, columnName] : undefined,
@@ -3868,7 +3980,16 @@ function sqlStringForMustacheStringTemplateTransformer(
     return {
       type: "scalar",
       sqlStringOrObject: topLevelTransformer
-        ? `SELECT $${paramIndex}::text AS "mustacheStringTemplate"`
+        ? sqlQuery(undefined, {
+            queryPart: "query",
+            select: [
+              {
+                queryPart: "defineColumn",
+                value: `$${paramIndex}::text`,
+                as: "mustacheStringTemplate",
+              },
+            ],
+          })
         : `$${paramIndex}::text`,
       preparedStatementParameters: [template],
     };
@@ -3965,19 +4086,30 @@ function sqlStringForMustacheStringTemplateTransformer(
   const concatenatedSql = sqlParts.join(" || ");
   
   // Build FROM clause if we have used context entries
-  const fromClause = usedContextEntries.length > 0
-    ? flushAndIndent(indentLevel) + "FROM " + [...new Set(usedContextEntries)].map(e => `"${e}"`).join(", ")
-    : "";
+  const uniqueUsedContextEntries = [...new Set(usedContextEntries)];
   
   const columnName = withClauseColumnName ?? 'mustacheStringTemplate';
   const result: SqlStringForTransformerElementValue = {
     type: "scalar",
     sqlStringOrObject: topLevelTransformer
-      ? `SELECT ${concatenatedSql} AS "${columnName}"${fromClause}`
+      ? sqlQuery(indentLevel, {
+          queryPart: "query",
+          select: [
+            {
+              queryPart: "defineColumn",
+              value: concatenatedSql,
+              as: columnName,
+            },
+          ],
+          from:
+            uniqueUsedContextEntries.length > 0
+              ? uniqueUsedContextEntries.map((e) => ({ queryPart: "tableLiteral" as const, name: e }))
+              : undefined,
+        })
       : concatenatedSql,
     preparedStatementParameters,
     resultAccessPath: topLevelTransformer ? [0, columnName] : undefined,
-    usedContextEntries: usedContextEntries.length > 0 ? [...new Set(usedContextEntries)] : undefined,
+    usedContextEntries: uniqueUsedContextEntries.length > 0 ? uniqueUsedContextEntries : undefined,
   };
   
   log.info(

@@ -234,7 +234,82 @@ export function sqlQuery(indentLevel: number | undefined, q: SqlQuerySelectSchem
               .join(", ")));
 
   log.info("sqlQuery fromParts", fromParts);
-  return `SELECT ${selectParts}${flushAndIndentOrSpace(indentLevel)}${fromParts}${q.where ? `${flushAndIndentOrSpace(indentLevel)}WHERE ${q.where}` : ""}`;
+  return `SELECT ${selectParts}${flushAndIndentOrSpace(indentLevel)}${fromParts}${q.where ? `${flushAndIndentOrSpace(indentLevel)}WHERE ${q.where}` : ""}${q.groupBy ? `${flushAndIndentOrSpace(indentLevel)}GROUP BY ${q.groupBy}` : ""}`;
+}
+
+// #################################################################################################
+export type SqlStringForTransformerElementValueType = "json" | "scalar" | "table" | "json_array" | "tableOf1JsonColumn";
+
+function isJsonType(t: SqlStringForTransformerElementValueType): boolean {
+  return t === "json" || t === "json_array" || t === "tableOf1JsonColumn";
+}
+
+// #################################################################################################
+/**
+ * SQL expression for JS-style falsy check.
+ * JS falsy values: null, undefined, 0, false, "".
+ * For JSON/JSONB types: also checks for JSON null, false, 0, empty string.
+ * For scalar types: uses IS NULL plus text cast to check '0', 'false', ''.
+ */
+export function sqlIsFalsy(expr: string, type: SqlStringForTransformerElementValueType): string {
+  if (isJsonType(type)) {
+    return `(${expr} IS NULL OR ${expr} = 'null'::jsonb OR ${expr} = 'false'::jsonb OR ${expr} = '0'::jsonb OR ${expr} = '""'::jsonb)`;
+  } else {
+    return `(${expr} IS NULL OR ${expr}::text IN ('0', 'false', ''))`;
+  }
+}
+
+// #################################################################################################
+/**
+ * SQL expression for JS-style null check.
+ * Covers both SQL NULL and JSON null ('null'::jsonb) for JSON/JSONB types.
+ */
+export function sqlIsNull(expr: string, type: SqlStringForTransformerElementValueType): string {
+  if (isJsonType(type)) {
+    return `(${expr} IS NULL OR ${expr} = 'null'::jsonb)`;
+  } else {
+    return `${expr} IS NULL`;
+  }
+}
+
+// #################################################################################################
+/**
+ * SQL expression for JS-style isNotNull check.
+ * Value must be neither SQL NULL nor JSON null.
+ */
+export function sqlIsNotNull(expr: string, type: SqlStringForTransformerElementValueType): string {
+  if (isJsonType(type)) {
+    return `(${expr} IS NOT NULL AND ${expr} <> 'null'::jsonb)`;
+  } else {
+    return `${expr} IS NOT NULL`;
+  }
+}
+
+// #################################################################################################
+/**
+ * Build a SQL WITH clause (Common Table Expressions) from an array of CTEs and a final SELECT.
+ */
+export function sqlWith(
+  ctes: { name: string; sql: string }[],
+  finalSelect: string,
+  indentLevel: number = 0,
+): string {
+  if (ctes.length === 0) {
+    return finalSelect;
+  }
+  const separator = "," + flushAndIndent(indentLevel);
+  const cteParts = ctes
+    .map(
+      (cte) =>
+        sqlNameQuote(cte.name) +
+        " AS (" +
+        flushAndIndent(indentLevel + 1) +
+        cte.sql +
+        flushAndIndent(indentLevel) +
+        ")"
+    )
+    .join(separator);
+  return "WITH" + flushAndIndent(indentLevel) + cteParts + flushAndIndent(indentLevel) + finalSelect;
 }
 
 // #################################################################################################
@@ -620,6 +695,10 @@ export const sqlQuerySelectSchema: JzodReference = {
               //     relativePath: "sqlWhereItemSchema",
               //   },
               // },
+            },
+            groupBy: {
+              type: "string",
+              optional: true,
             },
           },
         },
