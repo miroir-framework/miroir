@@ -27,7 +27,8 @@ export class SqlDbStore implements PersistenceStoreAbstractInterface {
     public sqlDbStoreName: string, // used only for debugging purposes
     public connectionString: string,
     public schema: string,
-    public logHeader: string
+    public logHeader: string,
+    public forceOptionalToUndefined: boolean = false
   ) // ...args: any[] // mixin constructors are limited to args:any[] parameters
   {
     log.info(

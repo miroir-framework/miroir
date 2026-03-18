@@ -51,11 +51,12 @@ export function SqlDbEntityStoreSectionMixin<TBase extends typeof MixedSqlDbInst
       // dataConnectionString:string,
       // dataSchema:string,
       // logHeader:string,
+      // forceOptionalToUndefined: boolean,
       // dataStore: PersistenceStoreDataSectionInterface,
       ...args: any[]
     ) {
-      super(...args.slice(0, 5));
-      this.dataStore = args[5];
+      super(...args.slice(0, 6));
+      this.dataStore = args[6];
       // log.info(this.logHeader,'MixedIndexedDbEntityStoreSection constructor',this.dataStore);
     }
 

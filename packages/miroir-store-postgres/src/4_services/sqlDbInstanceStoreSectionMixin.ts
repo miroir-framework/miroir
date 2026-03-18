@@ -27,6 +27,7 @@ import { packageName } from "../constants";
 import { cleanLevel } from "./constants";
 import { SqlDbQueryRunner } from "./SqlDbQueryRunner";
 import { RecursiveStringRecords, SqlDbExtractTemplateRunner } from "./SqlDbQueryTemplateRunner";
+import { stripNullOptionalAttributes } from "../utils";
 
 // const consoleLog: any = log.info.bind(console, packageName, cleanLevel, "SqlDbInstanceStoreSectionMixin");
 
@@ -265,6 +266,10 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
           } else {
             result = (await scopedModel.findByPk(instancePrimaryKey))?.dataValues;
           }
+          if (result && entityAccess.optionalNonNullableAttributes && entityAccess.optionalNonNullableAttributes.length > 0) {
+            const optionalNonNullable = entityAccess.optionalNonNullableAttributes;
+            result = stripNullOptionalAttributes(result as Record<string, any>, optionalNonNullable) as EntityInstance;
+          }
           log.info(this.logHeader, "getInstance", "result", result);
           return Promise.resolve({
             status: "ok",
@@ -326,6 +331,10 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
             where: { [filter.attribute]: { [Op.like]: "%" + filter.value + "%" } },
           })) as unknown as EntityInstance[];
           cleanResult = rawResult.map((i) => i["dataValues"]);
+          const optionalNonNullable1 = entityAccess.optionalNonNullableAttributes;
+          if (optionalNonNullable1 && optionalNonNullable1.length > 0) {
+            cleanResult = cleanResult.map((i) => stripNullOptionalAttributes(i as Record<string, any>, optionalNonNullable1) as EntityInstance);
+          }
           log.info("getInstancesWithFilter result", JSON.stringify(cleanResult, null, 2));
         } else {
           log.warn(
@@ -393,6 +402,10 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
             order: [[orderBy.attributeName, orderBy.direction ?? "ASC"]],
           })) as unknown as EntityInstance[];
           cleanResult = rawResult.map((i) => i["dataValues"]);
+          const optionalNonNullable2 = entityAccess2.optionalNonNullableAttributes;
+          if (optionalNonNullable2 && optionalNonNullable2.length > 0) {
+            cleanResult = cleanResult.map((i) => stripNullOptionalAttributes(i as Record<string, any>, optionalNonNullable2) as EntityInstance);
+          }
           log.info("getOrderedInstancesWithFilter result", cleanResult);
         } else {
           log.warn(
@@ -447,6 +460,10 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
             : entityAccess3?.sequelizeModel;
           rawResult = (await scopedModel3?.findAll()) as unknown as EntityInstance[];
           cleanResult = rawResult.map((i) => i["dataValues"]);
+          const optionalNonNullable3 = entityAccess3.optionalNonNullableAttributes;
+          if (optionalNonNullable3 && optionalNonNullable3.length > 0) {
+            cleanResult = cleanResult.map((i) => stripNullOptionalAttributes(i as Record<string, any>, optionalNonNullable3) as EntityInstance);
+          }
           // log.info("getInstances result", JSON.stringify(cleanResult, null, 2));
         } else {
           log.warn(

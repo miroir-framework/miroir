@@ -30,7 +30,8 @@ export class SqlDbModelStoreSection
     sqlDbStoreName: string, // used only for debugging purposes
     connectionString: string,
     schema: string,
-    sqlDbDataStore: PersistenceStoreDataSectionInterface
+    sqlDbDataStore: PersistenceStoreDataSectionInterface,
+    forceOptionalToUndefined: boolean = false,
   ) {
     super(
       applicationSection,
@@ -38,7 +39,8 @@ export class SqlDbModelStoreSection
       connectionString,
       schema,
       "SqlDbModelStoreSection " + sqlDbStoreName + " section model",
-      sqlDbDataStore
+      forceOptionalToUndefined,
+      sqlDbDataStore,
     );
   }
 

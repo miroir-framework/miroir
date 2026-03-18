@@ -3678,6 +3678,7 @@ export type SqlDbStoreSectionConfiguration = {
     emulatedServerType: "sql";
     connectionString: string;
     schema: string;
+    forceOptionalToUndefined?: boolean | undefined;
 };
 export type MongoDbStoreSectionConfiguration = {
     emulatedServerType: "mongodb";
@@ -17769,7 +17770,7 @@ export const metaModel: z.ZodType<MetaModel> = z.object({applicationUuid:z.strin
 export const _________________________________configuration_and_bundles_________________________________: z.ZodType<_________________________________configuration_and_bundles_________________________________> = z.never();
 export const indexedDbStoreSectionConfiguration: z.ZodType<IndexedDbStoreSectionConfiguration> = z.object({emulatedServerType:z.literal("indexedDb"), indexedDbName:z.string()}).strict();
 export const filesystemDbStoreSectionConfiguration: z.ZodType<FilesystemDbStoreSectionConfiguration> = z.object({emulatedServerType:z.literal("filesystem"), directory:z.string()}).strict();
-export const sqlDbStoreSectionConfiguration: z.ZodType<SqlDbStoreSectionConfiguration> = z.object({emulatedServerType:z.literal("sql"), connectionString:z.string(), schema:z.string()}).strict();
+export const sqlDbStoreSectionConfiguration: z.ZodType<SqlDbStoreSectionConfiguration> = z.object({emulatedServerType:z.literal("sql"), connectionString:z.string(), schema:z.string(), forceOptionalToUndefined:z.boolean().optional()}).strict();
 export const mongoDbStoreSectionConfiguration: z.ZodType<MongoDbStoreSectionConfiguration> = z.object({emulatedServerType:z.literal("mongodb"), connectionString:z.string(), database:z.string()}).strict();
 export const storeSectionConfiguration: z.ZodType<StoreSectionConfiguration> = z.union([z.lazy(() =>indexedDbStoreSectionConfiguration), z.lazy(() =>filesystemDbStoreSectionConfiguration), z.lazy(() =>sqlDbStoreSectionConfiguration), z.lazy(() =>mongoDbStoreSectionConfiguration)]);
 export const storeUnitConfiguration: z.ZodType<StoreUnitConfiguration> = z.object({admin:z.lazy(() =>storeSectionConfiguration), model:z.lazy(() =>storeSectionConfiguration), data:z.lazy(() =>storeSectionConfiguration)}).strict();

@@ -20,7 +20,7 @@ MiroirLoggerFactory.registerLoggerToStart(
 
 // export type SqlEntityDefinition = { [parentName in string]: ModelStatic<Model<any, any>> };
 export type EntityUuidIndexedSequelizeModel = {
-  [parentUuid in string]: { parentName?: string; idAttribute?: string | string[]; isExternal?: boolean; effectiveSchema?: string; sequelizeModel: ModelStatic<Model<any, any>> };
+  [parentUuid in string]: { parentName?: string; idAttribute?: string | string[]; isExternal?: boolean; effectiveSchema?: string; optionalNonNullableAttributes?: string[]; sequelizeModel: ModelStatic<Model<any, any>> };
 };
 
 // const dataTypesMapping: { [type in EntityAttributeType]: DataTypes.AbstractDataTypeConstructor } = {
@@ -113,6 +113,36 @@ export function fromMiroirEntityDefinitionToSequelizeEntityDefinition(
   );
   // log.info("miroir-store-postgres fromMiroirEntityDefinitionToSequelizeEntityDefinition",entityDefinition.name, "mlSchema",entityDefinition.mlSchema, "result", result);
   return result;
+}
+
+// ##############################################################################################
+/**
+ * Returns the list of attribute names that are optional (allowNull in DB) but NOT nullable
+ * (i.e. null means "absent", not a meaningful null value). These attributes should have their
+ * null values replaced by undefined when reading from the database.
+ */
+export function getOptionalNonNullableAttributes(entityDefinition: EntityDefinition): string[] {
+  const mlSchema: JzodObject = entityDefinition.mlSchema ? entityDefinition.mlSchema : { type: "object", definition: {} };
+  return Object.entries(mlSchema.definition)
+    .filter(([, attrDef]) => {
+      const attr = attrDef as JzodElement & { optional?: boolean; nullable?: boolean };
+      return attr.optional === true && !attr.nullable;
+    })
+    .map(([attrName]) => attrName);
+}
+
+// ##############################################################################################
+/**
+ * Removes entries whose value is null from an instance object, for the given list of attribute names.
+ * This converts postgres NULL values back to undefined for optional, non-nullable attributes.
+ */
+export function stripNullOptionalAttributes(instance: Record<string, any>, optionalNonNullableAttributes: string[]): Record<string, any> {
+  if (!optionalNonNullableAttributes || optionalNonNullableAttributes.length === 0) {
+    return instance;
+  }
+  return Object.fromEntries(
+    Object.entries(instance).filter(([key, value]) => !(optionalNonNullableAttributes.includes(key) && value === null))
+  );
 }
 // // ##############################################################################################
 // export function fromMiroirAttributeDefinitionToSequelizeModelAttributeColumnOptions(
