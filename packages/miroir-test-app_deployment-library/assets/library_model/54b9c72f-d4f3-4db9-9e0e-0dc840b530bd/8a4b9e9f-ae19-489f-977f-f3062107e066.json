@@ -33,7 +33,8 @@
             "display": {
               "editable": false
             },
-            "defaultLabel": "Uuid"
+            "defaultLabel": "Uuid",
+            "id": 1
           }
         },
         "type": "uuid"
@@ -44,7 +45,8 @@
             "display": {
               "editable": false
             },
-            "defaultLabel": "Entity Name"
+            "defaultLabel": "Entity Name",
+            "id": 2
           }
         },
         "type": "string",
@@ -56,7 +58,8 @@
             "display": {
               "editable": false
             },
-            "defaultLabel": "Entity Uuid"
+            "defaultLabel": "Entity Uuid",
+            "id": 3
           }
         },
         "type": "uuid"
@@ -67,7 +70,8 @@
             "display": {
               "editable": false
             },
-            "defaultLabel": "Concept Level"
+            "defaultLabel": "Concept Level",
+            "id": 4
           }
         },
         "type": "enum",
@@ -81,7 +85,8 @@
       "name": {
         "tag": {
           "value": {
-            "defaultLabel": "Name"
+            "defaultLabel": "Name",
+            "id": 5
           }
         },
         "type": "string"
@@ -89,7 +94,8 @@
       "firstName": {
         "tag": {
           "value": {
-            "defaultLabel": "First Name"
+            "defaultLabel": "First Name",
+            "id": 6
           }
         },
         "type": "string"
@@ -97,7 +103,8 @@
       "lastName": {
         "tag": {
           "value": {
-            "defaultLabel": "Last Name"
+            "defaultLabel": "Last Name",
+            "id": 7
           }
         },
         "type": "string"
@@ -105,7 +112,8 @@
       "street": {
         "tag": {
           "value": {
-            "defaultLabel": "Street Adress"
+            "defaultLabel": "Street Adress",
+            "id": 8
           }
         },
         "type": "string"
@@ -113,7 +121,8 @@
       "postalCode": {
         "tag": {
           "value": {
-            "defaultLabel": "Postal Code"
+            "defaultLabel": "Postal Code",
+            "id": 9
           }
         },
         "type": "string"
@@ -121,7 +130,8 @@
       "city": {
         "tag": {
           "value": {
-            "defaultLabel": "City"
+            "defaultLabel": "City",
+            "id": 10
           }
         },
         "type": "string"
@@ -129,7 +139,8 @@
       "state": {
         "tag": {
           "value": {
-            "defaultLabel": "State"
+            "defaultLabel": "State",
+            "id": 11
           }
         },
         "type": "string"
@@ -141,7 +152,8 @@
             "foreignKeyParams": {
               "targetEntity": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
               "targetEntityOrderInstancesBy": "name"
-            }
+            },
+            "id": 12
           }
         },
         "type": "uuid",
