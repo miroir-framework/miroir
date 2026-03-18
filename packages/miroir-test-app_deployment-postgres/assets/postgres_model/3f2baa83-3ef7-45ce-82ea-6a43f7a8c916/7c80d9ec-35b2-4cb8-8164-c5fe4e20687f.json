@@ -35,14 +35,6 @@
       }
     },
     "runtimeTransformers": {
-      "tableMLSchema": {
-        "transformerType": "ansiColumnsToJzodSchema",
-        "applyTo": {
-          "transformerType": "getFromContext",
-          "referenceName": "columnsOfTable",
-          "interpolation": "runtime"
-        }
-      }
     },
     "section": {
       "type": "list",

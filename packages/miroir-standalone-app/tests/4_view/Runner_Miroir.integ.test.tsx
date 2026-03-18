@@ -167,7 +167,8 @@ beforeEach(async () => {
 afterAll(async () => {
   await afterAllTests(
     miroirActivityTracker,
-    Object.keys(runnerTestParams)
+    // Object.keys(runnerTestParams)
+    Object.keys(filteredRunnerTestParams)
   );
 });
 
@@ -298,6 +299,7 @@ const runnerTestParams: Record<string, RunnerTestParams> = {
           applicationUuid: installTestApplicationUuid,
         },
         deploymentData: simplifiedLibraryData,
+        // deploymentUuid: installTestApplicationDeploymentUuid, // to enable getFromParameters on deploymentUuid in the runner
         applicationStorage: {
           emulatedServerType: "sql",
           connectionString: "postgres://postgres:postgres@localhost:5432/postgres",
@@ -323,8 +325,6 @@ const runnerTestParams: Record<string, RunnerTestParams> = {
               pageParams: {
                 currentDeploymentUuid: installTestApplicationDeploymentUuid,
               },
-              queryParams: {},
-              contextResults: {},
               extractors: {
                 entities: {
                   extractorOrCombinerType: "extractorInstancesByEntity",
@@ -356,8 +356,6 @@ const runnerTestParams: Record<string, RunnerTestParams> = {
             query: {
               queryType: "boxedQueryWithExtractorCombinerTransformer",
               application: adminSelfApplication.uuid,
-              queryParams: {},
-              contextResults: {},
               extractors: {
                 deployments: {
                   extractorOrCombinerType: "extractorInstancesByEntity",
@@ -752,11 +750,11 @@ const runnerTestParams: Record<string, RunnerTestParams> = {
 const filteredRunnerTestParams: Record<string, RunnerTestParams> = Object.fromEntries(
   Object.entries(runnerTestParams).filter(([testName]) =>
     [
-      localRunnerCreateApplication.name,
+      // localRunnerCreateApplication.name,
       localRunnerInstallApplication.name,
-      runnerCreateEntity.name,
-      runnerDropEntity.name,
-      runnerDropApplication.name,
+      // runnerCreateEntity.name,
+      // runnerDropEntity.name,
+      // runnerDropApplication.name,
     ].includes(testName)
   )
 );

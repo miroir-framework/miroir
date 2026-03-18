@@ -131,17 +131,21 @@
         },
         "referenceToOuterObject": "tableAggregate",
         "elementTransformer": {
+          "transformerType": "createObject",
+          "interpolation": "runtime",
+          "definition": {
           "name": {
-            "transformerType": "getFromContext",
-            "referencePath": ["tableAggregate", "table_name"],
-            "interpolation": "runtime"
-          },
-          "mlSchema": {
-            "transformerType": "ansiColumnsToJzodSchema",
-            "applyTo": {
               "transformerType": "getFromContext",
-              "referencePath": ["tableAggregate", "json_agg"],
+              "referencePath": ["tableAggregate", "table_name"],
               "interpolation": "runtime"
+            },
+            "mlSchema": {
+              "transformerType": "ansiColumnsToJzodSchema",
+              "applyTo": {
+                "transformerType": "getFromContext",
+                "referencePath": ["tableAggregate", "json_agg"],
+                "interpolation": "runtime"
+              }
             }
           }
         }

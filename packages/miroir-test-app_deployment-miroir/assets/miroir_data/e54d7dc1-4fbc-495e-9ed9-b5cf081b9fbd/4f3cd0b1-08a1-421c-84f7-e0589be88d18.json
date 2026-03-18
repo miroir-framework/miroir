@@ -1,0 +1,24 @@
+{
+  "uuid": "4f3cd0b1-08a1-421c-84f7-e0589be88d18",
+  "application": "49956a74-8867-4428-89d4-4cbf81ad4032",
+  "parentUuid": "e54d7dc1-4fbc-495e-9ed9-b5cf081b9fbd",
+  "name": "installApplication",
+  "defaultLabel": "",
+  "definition": {
+    "runnerType": "customRunner",
+    "formMLSchema": {
+      "formMLSchemaType": "mlSchema",
+      "mlSchema": {
+        "type": "any"
+      }
+    },
+    "actionTemplate": {
+      "actionType": "compositeActionSequence",
+      "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+      "payload": {
+        "actionSequence": []
+      }
+    }
+  },
+  "parentName": "Runner"
+}

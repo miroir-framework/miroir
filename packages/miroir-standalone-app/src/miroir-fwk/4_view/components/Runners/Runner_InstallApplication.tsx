@@ -137,11 +137,11 @@ export function getInstallApplicationActionTemplate(
   // testSelfApplicationUuid: Uuid,
   testDeploymentUuid: Uuid,
 ): CompositeActionTemplate {
-  const prefix =
-    process.env.NODE_ENV === "development" ? devRelativePathPrefix : prodRelativePathPrefix;
-  const testApplicationModelBranchUuid = uuidv4();
-  const testApplicationVersionUuid = uuidv4();
-  const defaultDirectory = "tmp/miroir_data_storage";
+  // const prefix =
+  //   process.env.NODE_ENV === "development" ? devRelativePathPrefix : prodRelativePathPrefix;
+  // const testApplicationModelBranchUuid = uuidv4();
+  // const testApplicationVersionUuid = uuidv4();
+  // const defaultDirectory = "tmp/miroir_data_storage";
 
   const sqltestDeploymentStorageConfigurationTemplate: TransformerForBuildPlusRuntime = {
     transformerType: "case",
@@ -217,11 +217,13 @@ export function getInstallApplicationActionTemplate(
               referencePath: ["deployApplication", "applicationStorage", "connectionString"],
             },
             schema: {
-              // transformerType: "getFromParameters",
-              // referencePath: ["deployApplication", "applicationBundle", "applicationName"],
               transformerType: "+",
               args: [
-                // prefix,
+                // {
+                //   transformerType: "getFromContext",
+                //   interpolation: "runtime",
+                //   referencePath: ["prefix"],
+                // },
                 {
                   transformerType: "getFromParameters",
                   referencePath: ["deployApplication", "applicationBundle", "applicationName"],
@@ -239,7 +241,11 @@ export function getInstallApplicationActionTemplate(
             schema: {
               transformerType: "+",
               args: [
-                // prefix,
+                // {
+                //   transformerType: "getFromContext",
+                //   interpolation: "runtime",
+                //   referencePath: ["prefix"],
+                // },
                 {
                   transformerType: "getFromParameters",
                   referencePath: ["deployApplication", "applicationBundle", "applicationName"],
@@ -258,7 +264,14 @@ export function getInstallApplicationActionTemplate(
             emulatedServerType: "indexedDb",
             indexedDbName: {
               transformerType: "+",
-              args: [prefix, "admin"],
+              args: [
+                {
+                  transformerType: "getFromContext",
+                  interpolation: "runtime",
+                  referencePath: ["prefix"],
+                },
+                "admin",
+              ],
             },
           },
           model: {
@@ -266,7 +279,11 @@ export function getInstallApplicationActionTemplate(
             indexedDbName: {
               transformerType: "+",
               args: [
-                prefix,
+                {
+                  transformerType: "getFromContext",
+                  interpolation: "runtime",
+                  referencePath: ["prefix"],
+                },
                 {
                   transformerType: "getFromParameters",
                   referencePath: ["deployApplication", "applicationBundle", "applicationName"],
@@ -280,7 +297,11 @@ export function getInstallApplicationActionTemplate(
             indexedDbName: {
               transformerType: "+",
               args: [
-                prefix,
+                {
+                  transformerType: "getFromContext",
+                  interpolation: "runtime",
+                  referencePath: ["prefix"],
+                },
                 {
                   transformerType: "getFromParameters",
                   referencePath: ["deployApplication", "applicationBundle", "applicationName"],
@@ -299,7 +320,14 @@ export function getInstallApplicationActionTemplate(
             emulatedServerType: "filesystem",
             directory: {
               transformerType: "+",
-              args: [prefix, "admin"],
+              args: [
+                {
+                  transformerType: "getFromContext",
+                  interpolation: "runtime",
+                  referencePath: ["prefix"],
+                },
+                "admin",
+              ],
             },
           },
           model: {
@@ -307,7 +335,11 @@ export function getInstallApplicationActionTemplate(
             directory: {
               transformerType: "+",
               args: [
-                prefix,
+                {
+                  transformerType: "getFromContext",
+                  interpolation: "runtime",
+                  referencePath: ["prefix"],
+                },
                 {
                   transformerType: "getFromParameters",
                   referencePath: ["deployApplication", "applicationBundle", "applicationName"],
@@ -321,7 +353,11 @@ export function getInstallApplicationActionTemplate(
             directory: {
               transformerType: "+",
               args: [
-                prefix,
+                {
+                  transformerType: "getFromContext",
+                  interpolation: "runtime",
+                  referencePath: ["prefix"],
+                },
                 {
                   transformerType: "getFromParameters",
                   referencePath: ["deployApplication", "applicationBundle", "applicationName"],
@@ -336,15 +372,24 @@ export function getInstallApplicationActionTemplate(
     else: {
       admin: {
         emulatedServerType: "filesystem",
-        directory: defaultDirectory,
+        directory: {
+          transformerType: "getFromParameters",
+          referencePath: ["defaultDirectory"],
+        },
       },
       model: {
         emulatedServerType: "filesystem",
-        directory: defaultDirectory,
+        directory: {
+          transformerType: "getFromParameters",
+          referencePath: ["defaultDirectory"],
+        },
       },
       data: {
         emulatedServerType: "filesystem",
-        directory: defaultDirectory,
+        directory: {
+          transformerType: "getFromParameters",
+          referencePath: ["defaultDirectory"],
+        },
       },
     },
   };
@@ -382,12 +427,18 @@ export function getInstallApplicationActionTemplate(
     },
     applicationModelBranch: {
       ...selfApplicationModelBranchLibraryMasterBranch,
-      uuid: testApplicationModelBranchUuid,
+      uuid: {
+        transformerType: "getFromParameters",
+        referencePath: ["testApplicationModelBranchUuid"],
+      } as any,
       selfApplication: {
         transformerType: "getFromParameters",
         referencePath: ["deployApplication", "applicationBundle", "applicationUuid"],
       } as any,
-      headVersion: testApplicationVersionUuid,
+      headVersion: {
+        transformerType: "getFromParameters",
+        referencePath: ["testApplicationVersionUuid"],
+      } as any,
       description: {
         transformerType: "mustacheStringTemplate",
         interpolation: "build",
@@ -397,12 +448,18 @@ export function getInstallApplicationActionTemplate(
     } as any,
     applicationVersion: {
       ...selfApplicationVersionLibraryInitialVersion,
-      uuid: testApplicationVersionUuid,
+      uuid: {
+        transformerType: "getFromParameters",
+        referencePath: ["testApplicationVersionUuid"],
+      } as any,
       selfApplication: {
         transformerType: "getFromParameters",
         referencePath: ["deployApplication", "applicationBundle", "applicationUuid"],
       } as any,
-      branch: testApplicationModelBranchUuid,
+      branch: {
+        transformerType: "getFromParameters",
+        referencePath: ["testApplicationModelBranchUuid"],
+      } as any,
       description: {
         transformerType: "mustacheStringTemplate",
         interpolation: "build",
@@ -474,10 +531,26 @@ export function getInstallApplicationActionTemplate(
               transformerType: "getFromParameters",
               referencePath: ["deployApplication", "applicationBundle", "applicationUuid"],
             } as any,
-            deploymentUuid: testDeploymentUuid,
+            deploymentUuid: {
+              transformerType: "getFromParameters",
+              referencePath: ["testDeploymentUuid"],
+            } as any,
             configuration: {
-              [testDeploymentUuid]: sqltestDeploymentStorageConfigurationTemplate as any,
-            },
+              transformerType: "createObjectFromPairs",
+              definition: [
+                {
+                  attributeKey: {
+                    transformerType: "getFromParameters",
+                    referencePath: ["testDeploymentUuid"],
+                  },
+                  attributeValue: {
+                    transformerType: "getFromParameters",
+                    referencePath: ["sqltestDeploymentStorageConfigurationTemplate"],
+                  },
+                },
+              ],
+              // [testDeploymentUuid]: sqltestDeploymentStorageConfigurationTemplate as any,
+            } as any,
           },
         },
         {
@@ -489,8 +562,15 @@ export function getInstallApplicationActionTemplate(
               transformerType: "getFromParameters",
               referencePath: ["deployApplication", "applicationBundle", "applicationUuid"],
             } as any,
-            deploymentUuid: testDeploymentUuid,
-            configuration: sqltestDeploymentStorageConfigurationTemplate as any,
+            deploymentUuid: {
+              transformerType: "getFromParameters",
+              referencePath: ["testDeploymentUuid"],
+            } as any,
+            // configuration: sqltestDeploymentStorageConfigurationTemplate as any,
+            configuration: {
+              transformerType: "getFromParameters",
+              referencePath: ["sqltestDeploymentStorageConfigurationTemplate"],
+            } as any,
           },
         },
         {
@@ -502,7 +582,10 @@ export function getInstallApplicationActionTemplate(
             applicationSection: "data",
             objects: [
               {
-                uuid: testDeploymentUuid,
+                uuid: {
+                  transformerType: "getFromParameters",
+                  referencePath: ["testDeploymentUuid"],
+                } as any,
                 parentName: "Deployment",
                 parentUuid: entityDeployment.uuid,
                 name: {
@@ -524,7 +607,11 @@ export function getInstallApplicationActionTemplate(
                   transformerType: "getFromParameters",
                   referencePath: ["deployApplication", "applicationBundle", "applicationUuid"],
                 } as any,
-                configuration: sqltestDeploymentStorageConfigurationTemplate as any,
+                // configuration: sqltestDeploymentStorageConfigurationTemplate as any,
+                configuration: {
+                  transformerType: "getFromParameters",
+                  referencePath: ["sqltestDeploymentStorageConfigurationTemplate"],
+                } as any,
               } as Deployment,
             ],
           },
@@ -674,6 +761,31 @@ export function getInstallApplicationActionTemplate(
     actionLabel: "deployApplication",
     endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
     payload: {
+      templates: {
+        prefix: {
+          transformerType: "ifThenElse",
+          if: {
+            transformerType: "boolExpr",
+            operator: "==",
+            left: {
+              transformerType: "returnValue",
+              value: process.env.NODE_ENV,
+            },
+            right: "development",
+          },
+          then: devRelativePathPrefix,
+          else: prodRelativePathPrefix,
+        },
+        testApplicationModelBranchUuid: {
+          transformerType: "generateUuid",
+        },
+        testApplicationVersionUuid: {
+          transformerType: "generateUuid",
+        },
+        testDeploymentUuid,
+        defaultDirectory: "tmp/miroir_data_storage",
+        sqltestDeploymentStorageConfigurationTemplate
+      },
       actionSequence: [
         ...(localCreateApplicationCompositeActionTemplate.payload.actionSequence as any),
         ...localCreateDeploymentCompositeActionTemplate.payload.actionSequence,
@@ -701,7 +813,6 @@ export function getRunner_InstallApplication(
       runnerType: "customRunner",
       formMLSchema: Runner_InstallApplication_formMLSchema,
       actionTemplate: getInstallApplicationActionTemplate(
-        // testSelfApplicationUuid,
         testDeploymentUuid,
       ),
     },

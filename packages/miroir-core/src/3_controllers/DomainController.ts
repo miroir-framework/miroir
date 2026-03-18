@@ -2232,7 +2232,7 @@ export class DomainController implements DomainControllerInterface {
       }
       return new Action2Error(
         "FailedToHandleAction",
-        "DomainController handleAction caught error: " + JSON.stringify(error, null, 2),
+        "DomainController handleAction caught error" + JSON.stringify(error, null, 2),
       );
     } finally {
       LoggerGlobalContext.setAction(undefined);
@@ -2423,7 +2423,7 @@ export class DomainController implements DomainControllerInterface {
           );
           return new Action2Error(
             "FailedTestAction",
-            "handleCompositeAction error: " + JSON.stringify(actionResult.errorMessage, null, 2),
+            "handleCompositeAction error",
             [
               currentAction.actionLabel ?? currentAction.actionType,
               ...(actionResult.errorStack ?? ([] as any)),
@@ -2553,9 +2553,10 @@ export class DomainController implements DomainControllerInterface {
               );
               return new Action2Error(
                 "FailedToResolveTemplate",
-                "handleRuntimeCompositeAction error resolving action " +
-                  JSON.stringify(resolvedAction, null, 2),
+                "handleRuntimeCompositeAction error resolving action",
                 [currentAction.actionLabel ?? currentAction.actionType],
+                undefined, // innerError,
+                resolvedAction,
               );
             }
             actionResult = await this.handleAction(
@@ -2627,9 +2628,10 @@ export class DomainController implements DomainControllerInterface {
               );
               return new Action2Error(
                 "FailedToResolveTemplate",
-                "handleRuntimeCompositeAction error resolving action " +
-                  JSON.stringify(resolvedAction, null, 2),
+                "handleRuntimeCompositeAction error resolving action ",
                 [currentAction.actionLabel ?? currentAction.actionType],
+                undefined, // innerError,
+                resolvedAction,
               );
             }
 
@@ -2655,8 +2657,7 @@ export class DomainController implements DomainControllerInterface {
           );
           return new Action2Error(
             "FailedTestAction",
-            "handleRuntimeCompositeAction error: " +
-              JSON.stringify(actionResult.errorMessage, null, 2),
+            "handleRuntimeCompositeAction error",
             [
               currentAction.actionLabel ?? currentAction.actionType,
               ...(actionResult.errorStack ?? ([] as any)),
@@ -2743,12 +2744,13 @@ export class DomainController implements DomainControllerInterface {
           );
           return new Action2Error(
             "FailedToResolveTemplate",
-            "handleBuildPlusRuntimeCompositeAction error resolving template " +
-              JSON.stringify(resolvedTemplate, null, 2),
+            "handleBuildPlusRuntimeCompositeAction error resolving template ",
             [
               buildPlusRuntimeCompositeAction.actionLabel ??
                 buildPlusRuntimeCompositeAction.actionType,
             ],
+            undefined, // innerError,
+            resolvedTemplate,
           );
           // throw new Error(
           //   "handleBuildPlusRuntimeCompositeAction error resolving template " +
@@ -2816,8 +2818,7 @@ export class DomainController implements DomainControllerInterface {
       // );
       return new Action2Error(
         "FailedToResolveAction",
-        "handleBuildPlusRuntimeCompositeAction error: " +
-          JSON.stringify(resolvedActionDefinition, null, 2),
+        "handleBuildPlusRuntimeCompositeAction error",
         [
           buildPlusRuntimeCompositeAction.actionLabel ?? buildPlusRuntimeCompositeAction.actionType,
           ...(resolvedActionDefinition.errorStack ?? ([] as any)),
@@ -3445,8 +3446,7 @@ export class DomainController implements DomainControllerInterface {
             // );
             return new Action2Error(
               "FailedToHandleAction",
-              "handleCompositeActionTemplate compositeInstanceAction error: " +
-                JSON.stringify(actionResult, null, 2),
+              "handleCompositeActionTemplate compositeInstanceAction error",
               [
                 currentAction.actionLabel ?? currentAction.actionType,
                 ...(actionResult.errorStack ?? ([] as any)),
@@ -3748,8 +3748,7 @@ export class DomainController implements DomainControllerInterface {
             this.miroirContext.miroirActivityTracker.setTest(undefined);
             return new Action2Error(
               "FailedToSetupTest",
-              "handleTestCompositeActionSuite beforeTest error: " +
-                JSON.stringify(beforeTestResult.errorMessage, null, 2),
+              "handleTestCompositeActionSuite beforeTest error",
               beforeTestResult.errorStack,
               beforeTestResult,
             );
@@ -3866,8 +3865,7 @@ export class DomainController implements DomainControllerInterface {
           this.miroirContext.miroirActivityTracker.setTest(undefined);
           return new Action2Error(
             "FailedTestAction",
-            "handleTestCompositeActionSuite error: " +
-              JSON.stringify(testResult.errorMessage, null, 2),
+            "handleTestCompositeActionSuite error: ",
             [
               testCompositeAction[1].testLabel ?? testCompositeAction[1].testType,
               ...(testResult.errorStack ?? []),
@@ -3912,8 +3910,7 @@ export class DomainController implements DomainControllerInterface {
             this.miroirContext.miroirActivityTracker.setTest(undefined);
             return new Action2Error(
               "FailedToTeardownTest",
-              "handleTestCompositeActionSuite afterTestCleanup error: " +
-                JSON.stringify(afterTestResult.errorMessage, null, 2),
+              "handleTestCompositeActionSuite afterTestCleanup error:",
               ["afterTestCleanupAction", ...(afterTestResult.errorStack ?? [])],
               afterTestResult,
             );
@@ -3957,8 +3954,7 @@ export class DomainController implements DomainControllerInterface {
             this.miroirContext.miroirActivityTracker.setTest(undefined);
             return new Action2Error(
               "FailedToTeardownTest",
-              "handleTestCompositeActionSuite afterEach error: " +
-                JSON.stringify(beforeAllResult.errorMessage, null, 2),
+              "handleTestCompositeActionSuite afterEach error:",
               beforeAllResult.errorStack,
               beforeAllResult,
             );
@@ -3991,8 +3987,7 @@ export class DomainController implements DomainControllerInterface {
           this.miroirContext.miroirActivityTracker.setTest(undefined);
           return new Action2Error(
             "FailedToTeardownTest",
-            "handleTestCompositeActionSuite afterAll error: " +
-              JSON.stringify(afterAllResult.errorMessage, null, 2),
+            "handleTestCompositeActionSuite afterAll error:",
             afterAllResult.errorStack,
             afterAllResult,
           );
@@ -4047,14 +4042,11 @@ export class DomainController implements DomainControllerInterface {
       log.error("handleTestCompositeActionTemplateSuite errors", resolveErrors);
       return new Action2Error(
         "FailedToResolveTemplate",
-        "handleTestCompositeActionTemplateSuite resolveTestCompositeActionTemplateSuite errors for entries: " +
-          JSON.stringify(
-            resolveErrors.map((e) => e[0]),
-            null,
-            2,
-          ),
+        "handleTestCompositeActionTemplateSuite resolveTestCompositeActionTemplateSuite errors for entries: ",
         [],
-        resolveErrors[0] as any,
+        undefined, // innerError,
+        resolveErrors.map((e) => e[0]),
+        // resolveErrors[0] as any,
       );
     }
     log.info(

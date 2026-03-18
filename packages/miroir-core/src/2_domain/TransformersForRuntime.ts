@@ -1387,7 +1387,7 @@ function handleTransformer_createObjectFromPairs(
   //   // // "innerEntry",
   //   // // JSON.stringify(innerEntry, null, 2)
   // );
-  const resolvedApplyTo = resolveApplyTo(
+  const resolvedApplyTo = transformer.applyTo?resolveApplyTo(
     step,
     transformerPath,
     objectName,
@@ -1396,7 +1396,7 @@ function handleTransformer_createObjectFromPairs(
     modelEnvironment,
     queryParams,
     contextResults
-  );
+  ):{};
 
   if (resolvedApplyTo instanceof TransformerFailure) {
     log.error(
@@ -3085,6 +3085,10 @@ export function handleTransformer_plus(
         transformerPath,
         failureOrigin: ["handleTransformer_plus"],
         failureMessage: `Type mismatch at index ${i}: cannot apply + to ${resultType} and ${nextType}. All operands must be of the same type (number, string, or bigint).`,
+        queryContext: {
+          result,
+          nextValue,
+        } as any
       });
     }
 
