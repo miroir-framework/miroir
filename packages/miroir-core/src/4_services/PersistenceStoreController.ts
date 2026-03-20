@@ -369,7 +369,7 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
         params.selfApplication,
         params.applicationModelBranch,
         params.applicationVersion,
-        params.metaModel,
+        // params.metaModel,
       );
       log.info(
         "ActionRunner.ts initApplicationDeploymentStore miroir model/initModel contents",
@@ -383,7 +383,7 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
         params.selfApplication,
         params.applicationModelBranch,
         params.applicationVersion,
-        params.metaModel,
+        // params.metaModel,
       );
       log.info(
         "ActionRunner.ts initApplicationDeploymentStore app model/initModel contents",
@@ -398,7 +398,7 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
     selfApplication: SelfApplication,
     selfApplicationModelBranch: EntityInstance,
     selfApplicationVersion: EntityInstance,
-    metaModel?: MetaModel,
+    // metaModel?: MetaModel,
   ): Promise<Action2ReturnType> {
     await modelInitialize(
       this,
@@ -406,7 +406,7 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
       selfApplication,
       selfApplicationModelBranch,
       selfApplicationVersion,
-      metaModel,
+      // metaModel,
     );
     return Promise.resolve(ACTION_OK);
   }

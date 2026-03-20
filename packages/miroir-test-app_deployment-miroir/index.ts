@@ -214,6 +214,7 @@ export { default as transformer_menu_addItem_json } from "./assets/miroir_data/a
 // ################################################################################################
 // Miroir Data - Runners (parentUuid = entityRunner = e54d7dc1)
 // ################################################################################################
+export { default as runnerCreateApplication } from "./assets/miroir_data/e54d7dc1-4fbc-495e-9ed9-b5cf081b9fbd/4f3cd0b1-08a1-421c-84f7-e0589be88d18.json" assert { type: "json" };
 export { default as runnerDropApplication } from "./assets/miroir_data/e54d7dc1-4fbc-495e-9ed9-b5cf081b9fbd/1cd065d8-dfb0-466f-974c-e81e993f2c66.json" assert { type: "json" };
 export { default as runnerDropEntity } from "./assets/miroir_data/e54d7dc1-4fbc-495e-9ed9-b5cf081b9fbd/44313751-b0e5-4132-bb12-a544806e759b.json" assert { type: "json" };
 export { default as runnerCreateEntity } from "./assets/miroir_data/e54d7dc1-4fbc-495e-9ed9-b5cf081b9fbd/82f81a25-2366-4abf-8a97-83ca5e9a9c46.json" assert { type: "json" };

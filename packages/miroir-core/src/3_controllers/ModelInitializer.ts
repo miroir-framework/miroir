@@ -82,7 +82,7 @@ export async function modelInitialize(
   selfApplicationModelBranch: EntityInstance,
   selfApplicationVersion: EntityInstance,
   // selfApplicationStoreBasedConfiguration: EntityInstance,
-  metaModel?:MetaModel,
+  // metaModel?:MetaModel,
 ): Promise<void> {
   log.info("modelInitialize selfApplication",selfApplication,'dataStoreType',dataStoreType);
   const logHeader = 'modelInitialize '+ selfApplication?.name;
