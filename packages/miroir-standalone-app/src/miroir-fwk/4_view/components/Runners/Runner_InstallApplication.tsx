@@ -806,31 +806,36 @@ export function getInstallApplicationActionTemplate(
         initParametersForTest: {
           dataStoreType: "app",
           selfApplication: {
-            uuid: {
-              transformerType: "getFromParameters",
-              referencePath: ["deployApplication", "applicationBundle", "applicationUuid"],
-            } as any,
-            parentName: entitySelfApplication.name,
-            parentUuid: entitySelfApplication.uuid,
-            name: {
-              transformerType: "getFromParameters",
-              referencePath: ["deployApplication", "applicationBundle", "applicationName"],
-            } as any,
-            defaultLabel: {
-              transformerType: "mustacheStringTemplate",
-              interpolation: "build",
-              definition:
-                "The {{deployApplication.applicationBundle.applicationName}} selfApplication",
-            } as any,
-            description: {
-              transformerType: "mustacheStringTemplate",
-              interpolation: "build",
-              definition:
-                "The model and data of the {{deployApplication.applicationBundle.applicationName}} selfApplication",
-            } as any,
-            homePageUrl:
-              "/report/5af03c98-fe5e-490b-b08f-e1230971c57f/f714bb2f-a12d-4e71-a03b-74dcedea6eb4/data/9c0cdb97-9537-4ee2-8053-a6ece3e0afe8/xxxxx",
+            transformerType: "getFromParameters",
+            safe: true,
+              referencePath: ["deployApplication", "applicationBundle", "applications", 0],
           },
+          // selfApplication: {
+          //   uuid: {
+          //     transformerType: "getFromParameters",
+          //     referencePath: ["deployApplication", "applicationBundle", "applicationUuid"],
+          //   } as any,
+          //   parentName: entitySelfApplication.name,
+          //   parentUuid: entitySelfApplication.uuid,
+          //   name: {
+          //     transformerType: "getFromParameters",
+          //     referencePath: ["deployApplication", "applicationBundle", "applicationName"],
+          //   } as any,
+          //   defaultLabel: {
+          //     transformerType: "mustacheStringTemplate",
+          //     interpolation: "build",
+          //     definition:
+          //       "The {{deployApplication.applicationBundle.applicationName}} selfApplication",
+          //   } as any,
+          //   description: {
+          //     transformerType: "mustacheStringTemplate",
+          //     interpolation: "build",
+          //     definition:
+          //       "The model and data of the {{deployApplication.applicationBundle.applicationName}} selfApplication",
+          //   } as any,
+          //   homePageUrl:
+          //     "/report/5af03c98-fe5e-490b-b08f-e1230971c57f/f714bb2f-a12d-4e71-a03b-74dcedea6eb4/data/9c0cdb97-9537-4ee2-8053-a6ece3e0afe8/xxxxx",
+          // },
           applicationModelBranch: {
             parentName: "ApplicationModelBranch",
             parentUuid: "cdb0aec6-b848-43ac-a058-fe2dbe5811f1",

@@ -247,6 +247,7 @@ export type ApplicationEntitiesAndInstances = ApplicationEntitiesDefinitionAndIn
 export const emptyMetaModel: MetaModel = {
   applicationUuid: noValue.uuid!,
   applicationName: "",
+  applications: [],
   entities: [],
   entityDefinitions: [],
   applicationVersionCrossEntityDefinition: {} as any,

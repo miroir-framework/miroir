@@ -1049,6 +1049,16 @@ export function getMiroirFundamentalJzodSchema(
             //     },
             //   },
             // },
+            applications: {
+              type: "array",
+              definition: {
+                type: "schemaReference",
+                definition: {
+                  absolutePath: miroirFundamentalJzodSchemaUuid,
+                  relativePath: "selfApplication",
+                },
+              },
+            },
             entities: {
               type: "array",
               definition: {
