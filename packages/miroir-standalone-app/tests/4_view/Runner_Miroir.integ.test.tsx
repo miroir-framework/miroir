@@ -181,7 +181,7 @@ const localRunnerCreateApplication = getRunner_CreateApplication(
 
 const localRunnerInstallApplication = getRunner_InstallApplication(
   installTestApplicationUuid,
-  installTestApplicationDeploymentUuid,
+  // installTestApplicationDeploymentUuid,
   "installApplication",
 )
 const runnerTestParams: Record<string, RunnerTestParams> = {
@@ -295,11 +295,22 @@ const runnerTestParams: Record<string, RunnerTestParams> = {
       deployApplication: {
         applicationBundle: {
           ...simplifiedLibraryModel,
+          applications: [
+            {
+              // uuid: "5af03c98-fe5e-490b-b08f-e1230971c57f",
+              uuid: installTestApplicationUuid,
+              parentName: "SelfApplication",
+              parentUuid: "a659d350-dd97-4da9-91de-524fa01745dc",
+              name: installTestApplicationName,
+              defaultLabel: `The ${installTestApplicationName} selfApplication.`,
+              description: `The model and data of the ${installTestApplicationName} selfApplication.`
+            },
+          ],
           applicationName: installTestApplicationName,
           applicationUuid: installTestApplicationUuid,
         },
         deploymentData: simplifiedLibraryData,
-        // deploymentUuid: installTestApplicationDeploymentUuid, // to enable getFromParameters on deploymentUuid in the runner
+        deploymentUuid: installTestApplicationDeploymentUuid, // to enable getFromParameters on deploymentUuid in the runner
         applicationStorage: {
           emulatedServerType: "sql",
           connectionString: "postgres://postgres:postgres@localhost:5432/postgres",
@@ -461,9 +472,9 @@ const runnerTestParams: Record<string, RunnerTestParams> = {
     testApplicationName,
     testParams: {
       [runnerCreateEntity.name]: {
-          application: testApplicationUuid,
-          entity: entityAuthor,
-          entityDefinition: entityDefinitionAuthor,
+        application: testApplicationUuid,
+        entity: entityAuthor,
+        entityDefinition: entityDefinitionAuthor,
       },
     }, // testParams
     preTestCompositeActions: [
@@ -555,10 +566,11 @@ const runnerTestParams: Record<string, RunnerTestParams> = {
     testApplicationDeploymentUuid,
     testApplicationName,
     testParams: {
-      ["createEntity"]: { // used by the preRunnerCompositeAction to create the entity before dropping it
-          application: testApplicationUuid,
-          entity: entityAuthor,
-          entityDefinition: entityDefinitionAuthor,
+      ["createEntity"]: {
+        // used by the preRunnerCompositeAction to create the entity before dropping it
+        application: testApplicationUuid,
+        entity: entityAuthor,
+        entityDefinition: entityDefinitionAuthor,
       },
       [runnerDropEntity.name]: {
         application: testApplicationUuid,

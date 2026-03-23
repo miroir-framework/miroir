@@ -380,14 +380,15 @@ export const RunnerView = <T extends Record<string, any>>(props: RunnerProps<T>)
   const {
     runnerName,
     application,
-    formMLSchema,
+    // formMLSchema,
     applicationDeploymentMap,
+    runnerApplicationDeploymentMap,
     initialFormValue,
     action,
-    formikValuePathAsString,
-    formLabel,
-    displaySubmitButton,
-    useActionButton = false,
+    // formikValuePathAsString,
+    // formLabel,
+    // displaySubmitButton,
+    // useActionButton = false,
     validateOnChange = false,
     validateOnBlur = false,
     // enableReinitialize = true,
@@ -419,8 +420,8 @@ export const RunnerView = <T extends Record<string, any>>(props: RunnerProps<T>)
   const handleSubmit = async (values: T, formikHelpers: FormikHelpers<T>) => {
     log.info("RunnerView handleSubmit", action.actionType, "action", action, "values", values);
 
-    const applicationDeploymentMapForAction = props.runnerApplicationDeploymentMap
-      ? props.runnerApplicationDeploymentMap(values)
+    const applicationDeploymentMapForAction = runnerApplicationDeploymentMap
+      ? runnerApplicationDeploymentMap(values)
       : applicationDeploymentMap;
 
     switch (action.actionType) {
@@ -482,15 +483,6 @@ export const RunnerView = <T extends Record<string, any>>(props: RunnerProps<T>)
 
   return (
     <>
-      {/* <ThemedOnScreenHelper label={`${formLabel} OuterRunner targetSchema`} data={targetSchema} /> */}
-      {/* <ThemedOnScreenHelper label={`OuterRunner ${runnerName} initialValues`} data={initialValues} /> */}
-      {/* <ThemedOnScreenDebug
-        label={`RunnerView ${runnerName} currentModelEnvironment`}
-        data={currentModelEnvironment}
-        copyButton={true}
-        initiallyUnfolded={false}
-        useCodeBlock={true}
-      /> */}
       <JsonDisplayHelper debug={true}
         componentName="RunnerView"
         elements={[{

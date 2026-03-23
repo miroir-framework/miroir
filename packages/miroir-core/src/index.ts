@@ -868,6 +868,8 @@ export {
   undoRedoHistorization
 } from "./3_controllers/ConfigurationService";
 export {
+  devRelativePathPrefix,
+  prodRelativePathPrefix,
   DeploymentConfiguration,
   DomainController,
   resetAndInitApplicationDeployment

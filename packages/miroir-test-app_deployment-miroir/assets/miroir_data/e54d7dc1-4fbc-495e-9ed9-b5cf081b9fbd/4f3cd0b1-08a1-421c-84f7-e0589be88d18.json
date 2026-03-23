@@ -17,6 +17,32 @@
       "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
       "payload": {
         "templates": {
+          "prefix": {
+            "transformerType": "ifThenElse",
+            "if": {
+              "transformerType": "boolExpr",
+              "operator": "==",
+              "left": {
+                "transformerType": "getFromParameters",
+                "referencePath": ["env", "NODE_ENV"]
+              },
+              "right": "development"
+            },
+            "then": {
+              "transformerType": "getFromParameters",
+              "referencePath": ["devRelativePathPrefix"]
+            },
+            "else": {
+              "transformerType": "getFromParameters",
+              "referencePath": ["prodRelativePathPrefix"]
+            }
+          },
+          "testApplicationModelBranchUuid": {
+            "transformerType": "generateUuid"
+          },
+          "testApplicationVersionUuid": {
+            "transformerType": "generateUuid"
+          },
           "sqltestDeploymentStorageConfigurationTemplate": {
             "transformerType": "case",
             "discriminator": {
@@ -31,7 +57,11 @@
                     "emulatedServerType": "mongodb",
                     "connectionString": {
                       "transformerType": "getFromParameters",
-                      "referencePath": ["deployApplication", "applicationStorage", "connectionString"]
+                      "referencePath": [
+                        "deployApplication",
+                        "applicationStorage",
+                        "connectionString"
+                      ]
                     },
                     "database": "miroirAdmin"
                   },
@@ -39,7 +69,11 @@
                     "emulatedServerType": "mongodb",
                     "connectionString": {
                       "transformerType": "getFromParameters",
-                      "referencePath": ["deployApplication", "applicationStorage", "connectionString"]
+                      "referencePath": [
+                        "deployApplication",
+                        "applicationStorage",
+                        "connectionString"
+                      ]
                     },
                     "database": {
                       "transformerType": "+",
@@ -51,8 +85,7 @@
                             "applicationBundle",
                             "applicationName"
                           ]
-                        },
-                        "_model"
+                        }
                       ]
                     }
                   },
@@ -60,7 +93,11 @@
                     "emulatedServerType": "mongodb",
                     "connectionString": {
                       "transformerType": "getFromParameters",
-                      "referencePath": ["deployApplication", "applicationStorage", "connectionString"]
+                      "referencePath": [
+                        "deployApplication",
+                        "applicationStorage",
+                        "connectionString"
+                      ]
                     },
                     "database": {
                       "transformerType": "+",
@@ -72,8 +109,7 @@
                             "applicationBundle",
                             "applicationName"
                           ]
-                        },
-                        "_data"
+                        }
                       ]
                     }
                   }
@@ -86,7 +122,11 @@
                     "emulatedServerType": "sql",
                     "connectionString": {
                       "transformerType": "getFromParameters",
-                      "referencePath": ["deployApplication", "applicationStorage", "connectionString"]
+                      "referencePath": [
+                        "deployApplication",
+                        "applicationStorage",
+                        "connectionString"
+                      ]
                     },
                     "schema": "miroirAdmin"
                   },
@@ -94,7 +134,11 @@
                     "emulatedServerType": "sql",
                     "connectionString": {
                       "transformerType": "getFromParameters",
-                      "referencePath": ["deployApplication", "applicationStorage", "connectionString"]
+                      "referencePath": [
+                        "deployApplication",
+                        "applicationStorage",
+                        "connectionString"
+                      ]
                     },
                     "schema": {
                       "transformerType": "+",
@@ -106,8 +150,7 @@
                             "applicationBundle",
                             "applicationName"
                           ]
-                        },
-                        "_model"
+                        }
                       ]
                     }
                   },
@@ -115,7 +158,11 @@
                     "emulatedServerType": "sql",
                     "connectionString": {
                       "transformerType": "getFromParameters",
-                      "referencePath": ["deployApplication", "applicationStorage", "connectionString"]
+                      "referencePath": [
+                        "deployApplication",
+                        "applicationStorage",
+                        "connectionString"
+                      ]
                     },
                     "schema": {
                       "transformerType": "+",
@@ -127,8 +174,7 @@
                             "applicationBundle",
                             "applicationName"
                           ]
-                        },
-                        "_data"
+                        }
                       ]
                     }
                   }
@@ -168,8 +214,7 @@
                             "applicationBundle",
                             "applicationName"
                           ]
-                        },
-                        "_model"
+                        }
                       ]
                     }
                   },
@@ -190,8 +235,7 @@
                             "applicationBundle",
                             "applicationName"
                           ]
-                        },
-                        "_data"
+                        }
                       ]
                     }
                   }
@@ -231,8 +275,7 @@
                             "applicationBundle",
                             "applicationName"
                           ]
-                        },
-                        "_model"
+                        }
                       ]
                     }
                   },
@@ -253,8 +296,7 @@
                             "applicationBundle",
                             "applicationName"
                           ]
-                        },
-                        "_data"
+                        }
                       ]
                     }
                   }
@@ -265,28 +307,347 @@
               "admin": {
                 "emulatedServerType": "filesystem",
                 "directory": {
-                  "transformerType": "getFromParameters",
-                  "referencePath": ["defaultDirectory"]
+                  "transformerType": "getFromContext",
+                  "interpolation": "runtime",
+                  "referencePath": ["prefix"]
                 }
               },
               "model": {
                 "emulatedServerType": "filesystem",
                 "directory": {
-                  "transformerType": "getFromParameters",
-                  "referencePath": ["defaultDirectory"]
+                  "transformerType": "getFromContext",
+                  "interpolation": "runtime",
+                  "referencePath": ["prefix"]
                 }
               },
               "data": {
                 "emulatedServerType": "filesystem",
                 "directory": {
-                  "transformerType": "getFromParameters",
-                  "referencePath": ["defaultDirectory"]
+                  "transformerType": "getFromContext",
+                  "interpolation": "runtime",
+                  "referencePath": ["prefix"]
+                }
+              }
+            }
+          },
+          "initParametersForTest": {
+            "dataStoreType": "app",
+            "selfApplication": {
+              "transformerType": "getFromParameters",
+              "safe": true,
+              "referencePath": ["deployApplication", "applicationBundle", "applications", 0]
+            },
+            "applicationModelBranch": {
+              "parentName": "ApplicationModelBranch",
+              "parentUuid": "cdb0aec6-b848-43ac-a058-fe2dbe5811f1",
+              "uuid": {
+                "transformerType": "getFromContext",
+                "interpolation": "runtime",
+                "referencePath": ["testApplicationModelBranchUuid"]
+              },
+              "name": "master",
+              "selfApplication": {
+                "transformerType": "getFromParameters",
+                "referencePath": ["deployApplication", "applicationBundle", "applicationUuid"]
+              },
+              "headVersion": {
+                "transformerType": "getFromContext",
+                "interpolation": "runtime",
+                "referencePath": ["testApplicationVersionUuid"]
+              },
+              "description": {
+                "transformerType": "mustacheStringTemplate",
+                "interpolation": "build",
+                "definition": "The master branch of the {{deployApplication.applicationBundle.applicationName}} SelfApplication"
+              }
+            },
+            "applicationVersion": {
+              "parentName": "ApplicationVersion",
+              "parentUuid": "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24",
+              "name": "Initial",
+              "uuid": {
+                "transformerType": "getFromContext",
+                "interpolation": "runtime",
+                "referencePath": ["testApplicationVersionUuid"]
+              },
+              "selfApplication": {
+                "transformerType": "getFromParameters",
+                "referencePath": ["deployApplication", "applicationBundle", "applicationUuid"]
+              },
+              "branch": {
+                "transformerType": "getFromContext",
+                "interpolation": "runtime",
+                "referencePath": ["testApplicationModelBranchUuid"]
+              },
+              "description": {
+                "transformerType": "mustacheStringTemplate",
+                "interpolation": "build",
+                "definition":
+                  "Initial {{deployApplication.applicationBundle.applicationName}} selfApplication version"
+              },
+              "modelStructureMigration": [],
+              "modelCUDMigration": []
+            }
+          }
+        },
+        "actionSequence": [
+          {
+            "actionType": "createInstance",
+            "actionLabel": "createApplicationForAdminAction_instances",
+            "endpoint": "ed520de4-55a9-4550-ac50-b1b713b72a89",
+            "payload": {
+              "application": "55af124e-8c05-4bae-a3ef-0933d41daa92",
+              "applicationSection": "data",
+              "objects": [
+                {
+                  "uuid": {
+                    "transformerType": "getFromParameters",
+                    "referencePath": ["deployApplication", "applicationBundle", "applicationUuid"]
+                  },
+                  "parentName": "AdminApplication",
+                  "parentUuid": "25d935e7-9e93-42c2-aade-0472b883492b",
+                  "name": {
+                    "transformerType": "getFromParameters",
+                    "referencePath": ["deployApplication", "applicationBundle", "applicationName"]
+                  },
+                  "defaultLabel": {
+                    "transformerType": "mustacheStringTemplate",
+                    "interpolation": "build",
+                    "definition": "The {{deployApplication.applicationBundle.applicationName}} Application."
+                  },
+                  "description": {
+                    "transformerType": "mustacheStringTemplate",
+                    "interpolation": "build",
+                    "definition": "This Application contains the {{deployApplication.applicationBundle.applicationName}} model and data."
+                  },
+                  "selfApplication": {
+                    "transformerType": "getFromParameters",
+                    "referencePath": ["deployApplication", "applicationBundle", "applicationUuid"]
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "actionType": "storeManagementAction_openStore",
+            "actionLabel": "storeManagementAction_openStore",
+            "endpoint": "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
+            "payload": {
+              "application": {
+                "transformerType": "getFromParameters",
+                "referencePath": ["deployApplication", "applicationBundle", "applicationUuid"]
+              },
+              "deploymentUuid": {
+                "transformerType": "getFromParameters",
+                "referencePath": ["deployApplication","deploymentUuid"]
+              },
+              "configuration": {
+                "transformerType": "createObjectFromPairs",
+                "definition": [
+                  {
+                    "attributeKey": {
+                      "transformerType": "getFromParameters",
+                      "referencePath": ["deployApplication","deploymentUuid"]
+                    },
+                    "attributeValue": {
+                      "transformerType": "getFromParameters",
+                      "referencePath": ["sqltestDeploymentStorageConfigurationTemplate"]
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "actionType": "storeManagementAction_createStore",
+            "actionLabel": "storeManagementAction_createStore",
+            "endpoint": "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
+            "payload": {
+              "application": {
+                "transformerType": "getFromParameters",
+                "referencePath": ["deployApplication", "applicationBundle", "applicationUuid"]
+              },
+              "deploymentUuid": {
+                "transformerType": "getFromParameters",
+                "referencePath": ["deployApplication", "deploymentUuid"]
+              },
+              "configuration": {
+                "transformerType": "getFromParameters",
+                "referencePath": ["sqltestDeploymentStorageConfigurationTemplate"]
+              }
+            }
+          },
+          {
+            "actionType": "createInstance",
+            "actionLabel": "CreateDeploymentInstances",
+            "endpoint": "ed520de4-55a9-4550-ac50-b1b713b72a89",
+            "payload": {
+              "application": "55af124e-8c05-4bae-a3ef-0933d41daa92",
+              "applicationSection": "data",
+              "objects": [
+                {
+                  "uuid": {
+                    "transformerType": "getFromParameters",
+                    "referencePath": ["deployApplication","deploymentUuid"]
+                  },
+                  "parentName": "Deployment",
+                  "parentUuid": "7959d814-400c-4e80-988f-a00fe582ab98",
+                  "name": {
+                    "transformerType": "mustacheStringTemplate",
+                    "interpolation": "build",
+                    "definition": "Deployment of application {{deployApplication.applicationBundle.applicationName}}"
+                  },
+                  "defaultLabel": {
+                    "transformerType": "mustacheStringTemplate",
+                    "interpolation": "build",
+                    "definition": "The deployment of application {{deployApplication.applicationBundle.applicationName}}"
+                  },
+                  "description": {
+                    "transformerType": "mustacheStringTemplate",
+                    "interpolation": "build",
+                    "definition": "The description of deployment of application {{deployApplication.applicationBundle.applicationName}}"
+                  },
+                  "selfApplication": {
+                    "transformerType": "getFromParameters",
+                    "referencePath": ["deployApplication", "applicationBundle", "applicationUuid"]
+                  },
+                  "configuration": {
+                    "transformerType": "getFromParameters",
+                    "referencePath": ["sqltestDeploymentStorageConfigurationTemplate"]
+                  }
+                }
+              ]
+            }
+          },
+        {
+          "actionType": "resetModel",
+          "actionLabel": "resetApplicationStore",
+          "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+          "payload": {
+            "transformerType": "mergeIntoObject",
+            "interpolation": "runtime",
+            "applyTo": {
+              "transformerType": "getFromContext",
+              "interpolation": "runtime",
+              "referencePath": ["deployApplication", "applicationBundle"]
+            },
+            "definition": {
+              "transformerType": "createObject",
+              "definition": {
+                "application": {
+                  "transformerType" : "getFromParameters",
+                  "referencePath": ["deployApplication", "applicationBundle", "applicationUuid"]
                 }
               }
             }
           }
         },
-        "actionSequence": []
+        {
+          "actionType": "initModel",
+          "actionLabel": {
+            "transformerType": "mustacheStringTemplate",
+            "interpolation": "build",
+            "definition": "resetAndinitializeDeployment_initModel for {{deployApplication.applicationBundle.applicationName}}"
+          },
+          "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+          "payload": {
+            "application": {
+              "transformerType": "getFromParameters",
+              "referencePath": ["deployApplication", "applicationBundle", "applicationUuid"]
+            },
+            "model": {
+              "transformerType": "returnValue",
+              "interpolation": "build",
+              "value": {
+                "transformerType": "getFromContext",
+                "interpolation": "runtime",
+                "referencePath": ["deployApplication", "applicationBundle"]
+              }
+            },
+            "params": {
+              "transformerType": "getFromParameters",
+              "referenceName": "initParametersForTest"
+            }
+          }
+        },
+        {
+          "actionType": "commit",
+          "actionLabel": "commitApplicationModelToPersistentStore",
+          "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+          "payload": {
+            "application": {
+              "transformerType": "getFromParameters",
+              "referencePath": ["deployApplication", "applicationBundle", "applicationUuid"]
+            }
+          }
+        },
+        {
+          "actionType": "rollback",
+          "actionLabel": "refreshLocalCacheForApplication",
+          "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+          "payload": {
+            "application": {
+              "transformerType": "getFromParameters",
+              "referencePath": ["deployApplication", "applicationBundle", "applicationUuid"]
+            }
+          }
+        },
+        {
+          "actionType": "createEntity",
+          "actionLabel": "CreateApplicationStoreEntities",
+          "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+          "payload": {
+            "application": {
+              "transformerType": "getFromParameters",
+              "referencePath": ["deployApplication", "applicationBundle", "applicationUuid"]
+            },
+            "entities": []
+          }
+        },
+        {
+          "actionType": "commit",
+          "actionLabel": "CommitApplicationStoreEntities",
+          "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+          "payload": {
+            "application": {
+              "transformerType": "getFromParameters",
+              "referencePath": ["deployApplication", "applicationBundle", "applicationUuid"]
+            }
+          }
+        },
+        {
+          "actionType": "createInstance",
+          "actionLabel": "CreateApplicationStoreInstances",
+          "endpoint": "ed520de4-55a9-4550-ac50-b1b713b72a89",
+          "payload": {
+            "application": {
+              "transformerType": "getFromParameters",
+              "referencePath": ["deployApplication", "applicationBundle", "applicationUuid"]
+            },
+            "applicationSection": "data",
+            "objects": {
+              "transformerType": "ifThenElse",
+              "if": {
+                "transformerType": "boolExpr",
+                "operator": "isNotNull",
+                "left": {
+                  "transformerType": "getFromParameters",
+                  "safe": true,
+                  "referencePath": ["deployApplication", "deploymentData", "instances"]
+                }
+              },
+              "then": {
+                "transformerType": "getFromParameters",
+                "referencePath": ["deployApplication", "deploymentData", "instances"]
+              },
+              "else": {
+                "transformerType": "returnValue",
+                "value": []
+              }
+            }
+          }
+        }
+        ]
       }
     }
   },

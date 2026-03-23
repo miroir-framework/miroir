@@ -76,7 +76,8 @@ export const InnerRunnerView = <T extends Record<string, any>>({
           "formMlSchemaAsTransformer", // transformerLabel
           formMLSchema.transformer as any as TransformerForBuildPlusRuntime, // TODO: correct type
           currentMiroirModelEnvironment, // TODO: the DeploymentUuid can change, need to handle that?
-          { [runnerName]: formikContext.values[runnerName] }, // transformerParams
+          { 
+            [runnerName]: formikContext.values[runnerName] }, // transformerParams
           // { [runnerName]: { deploymentUuidQuery: deploymentUuidFromApplicationUuid } }, // transformerParams
           {}, // contextResults
           "value"

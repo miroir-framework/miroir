@@ -5,6 +5,7 @@ import { Box, Button, Typography, Alert } from '@mui/material';
 import { CloudUploadIcon, CheckCircle as CheckCircleIcon, Clear as ClearIcon } from './MaterialSymbolWrappers';
 import { useMiroirTheme } from '../../contexts/MiroirThemeContext';
 import { ThemedComponentProps } from 'miroir-react';
+import { devRelativePathPrefix, prodRelativePathPrefix } from 'miroir-core';
 // removed Node 'path' import; use browser-safe string operations instead
 
 // ################################################################################################
@@ -41,9 +42,6 @@ export interface FileSelectorProps extends Omit<ThemedComponentProps, 'children'
 
 
 // export const devRelativePathPrefix = "../tests/tmp/";
-export const devRelativePathPrefix = "tests/tmp/";
-export const prodRelativePathPrefix = "./deployments/";
-
 const getDirectoryFromWebkitPath = (webkitPath: string) => {
   if (!webkitPath) return "";
   // Normalize backslashes to forward slashes then remove trailing slash if any

@@ -106,6 +106,14 @@ import {
 import { defaultApplicationSection, entityQueryVersion, entityRunner } from '../index.js';
 import { ConfigurationService } from './ConfigurationService.js';
 
+export const devRelativePathPrefix = "tests/tmp/";
+export const prodRelativePathPrefix = "./deployments/";
+
+const templateEvaluationParams = {
+  env: process.env,
+  devRelativePathPrefix,
+  prodRelativePathPrefix,
+};
 
 const autocommit = true;
 // const autocommit = false;
@@ -2693,7 +2701,7 @@ export class DomainController implements DomainControllerInterface {
     modelEnvironment: MiroirModelEnvironment,
     actionParamValues: Record<string, any>,
   ): Promise<Action2VoidReturnType> {
-    const localActionParams = { ...actionParamValues };
+    const localActionParams = { ...templateEvaluationParams, ...actionParamValues };
     let localContext: Record<string, any> = { ...actionParamValues };
 
     log.info(
@@ -2770,7 +2778,11 @@ export class DomainController implements DomainControllerInterface {
       }
     }
 
-    const queryParamsForActionResolution = { ...actionParamValues, ...resolvedCompositeActionTemplates };
+    const queryParamsForActionResolution = {
+      ...templateEvaluationParams,
+      ...actionParamValues,
+      ...resolvedCompositeActionTemplates,
+    };
 
     log.info(
       "handleBuildPlusRuntimeCompositeAction",
@@ -3237,7 +3249,7 @@ export class DomainController implements DomainControllerInterface {
     modelEnvironment: MiroirModelEnvironment,
     actionParamValues: Record<string, any>,
   ): Promise<Action2VoidReturnType> {
-    const localActionParams = { ...actionParamValues };
+    const localActionParams = { ...templateEvaluationParams, ...actionParamValues };
     let localContext: Record<string, any> = { ...actionParamValues };
     const actionLabel = (compositeActionSequence as any).actionLabel ?? "no action label";
     log.info(
