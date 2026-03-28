@@ -55,52 +55,48 @@ if (shouldSkip) {
     vitest,
     [],
     transformerTestSuite_miroirTransformers,
-    // undefined, // filter
-    { // filter
-      testList: {
-        miroirCoreTransformers: {
-          // buildTransformerTests: {
-          //   // "constants": {
-          //   //   "constantArray": [
-          //   //     "resolve basic build transformer return value for empty Array"
-          //   //   ],
-          //   // }
-          //   "simpleCompositions": [
-          //     // "resolve basic build transformer count on parameter array",
-          //     "resolve ifThenElse returning empty array",
-          //   ]
-          // },
-          runtimeTransformerTests: {
-            "aggregate": [
-              "count returns number of elements in an object list at runtime",
-              "count returns number of elements in a returnValue transformer object list at runtime",
-              "count returns number of elements in a getFromContext object list at runtime",
-              "count returns number of elements in a string list from an extractor at runtime",
-              "count returns number of elements in an object list from an extractor",
-              "count returns number of elements in an object list with a group at runtime",
-              "count returns number of elements in an object list with a multiple groupBy at runtime",
-              "sum returns total of numeric attribute values at runtime",
-              "sum with groupBy returns totals per group at runtime",
-              "avg returns average of numeric attribute values at runtime",
-              "min returns minimum of numeric attribute values at runtime",
-              "max returns maximum of numeric attribute values at runtime",
-              "json_agg collects attribute values into an array at runtime",
-              "json_agg_strict omits null values at runtime",
-              "count with default function still uses aggregate result key (backward compat)",
-              "count with explicit function uses count result key (AGG-3)",
-              "count with explicit function and groupBy uses count result key (AGG-3)",
-              "count with distinct flag counts unique attribute values (AGG-4)",
-              "count with distinct and groupBy counts unique attribute values per group (AGG-4)",
-              "sum with having filters groups by aggregate result (AGG-2)",
-              "count with having filters groups by count result (AGG-2)",
-              "json_agg with attributeObject collects objects at runtime",
-              "json_agg with attributeObject and groupBy collects objects per group at runtime",
-              "json_agg_strict with attributeObject omits null-valued objects at runtime",
-            ],
-          },
-        },
-      },
-    },
+    undefined, // filter
+    // { // filter: uncomment to run only concatLists and aggregate tests
+    //   testList: {
+    //     miroirCoreTransformers: {
+    //       runtimeTransformerTests: {
+    //         "concatLists": [
+    //           "concatLists concatenates two string arrays from returnValue",
+    //           "concatLists concatenates two arrays from context",
+    //           "concatLists concatenates three arrays of objects",
+    //           "concatLists with empty list returns combined result",
+    //           "concatLists fails when an element is not an array",
+    //         ],
+    //         "aggregate": [
+    //           "count returns number of elements in an object list at runtime",
+    //           "count returns number of elements in a returnValue transformer object list at runtime",
+    //           "count returns number of elements in a getFromContext object list at runtime",
+    //           "count returns number of elements in a string list from an extractor at runtime",
+    //           "count returns number of elements in an object list from an extractor",
+    //           "count returns number of elements in an object list with a group at runtime",
+    //           "count returns number of elements in an object list with a multiple groupBy at runtime",
+    //           "sum returns total of numeric attribute values at runtime",
+    //           "sum with groupBy returns totals per group at runtime",
+    //           "avg returns average of numeric attribute values at runtime",
+    //           "min returns minimum of numeric attribute values at runtime",
+    //           "max returns maximum of numeric attribute values at runtime",
+    //           "json_agg collects attribute values into an array at runtime",
+    //           "json_agg_strict omits null values at runtime",
+    //           "count with default function still uses aggregate result key (backward compat)",
+    //           "count with explicit function uses count result key (AGG-3)",
+    //           "count with explicit function and groupBy uses count result key (AGG-3)",
+    //           "count with distinct flag counts unique attribute values (AGG-4)",
+    //           "count with distinct and groupBy counts unique attribute values per group (AGG-4)",
+    //           "sum with having filters groups by aggregate result (AGG-2)",
+    //           "count with having filters groups by count result (AGG-2)",
+    //           "json_agg with attributeObject collects objects at runtime",
+    //           "json_agg with attributeObject and groupBy collects objects per group at runtime",
+    //           "json_agg_strict with attributeObject omits null-valued objects at runtime",
+    //         ],
+    //       },
+    //     },
+    //   },
+    // },
     defaultMetaModelEnvironment,
     miroirActivityTracker,
     undefined, // parentTrackingId,

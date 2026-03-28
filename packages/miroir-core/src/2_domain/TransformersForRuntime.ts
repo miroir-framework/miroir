@@ -145,6 +145,7 @@ import {
   transformer_getObjectValues,
   transformer_getFromParameters,
   transformer_getUniqueValues,
+  transformer_concatLists,
   type ResolveBuildTransformersTo,
   type Step,
   transformer_getActiveDeployment,
@@ -741,6 +742,7 @@ const inMemoryTransformerImplementations: Record<string, ITransformerHandler<any
   transformer_unfoldSchemaOnce: unfoldSchemaOnceTransformer,
   transformer_jzodTypeCheck: jzodTypeCheckTransformer,
   handleTransformer_ansiColumnsToJzodSchema,
+  handleTransformer_concatLists,
 };
 
 // transformer_defaultValueForMLSchema
@@ -775,6 +777,7 @@ export const applicationTransformerDefinitions: Record<string, TransformerDefini
   getFromParameters: transformer_getFromParameters,
   getUniqueValues: transformer_getUniqueValues,
   ansiColumnsToJzodSchema: transformer_ansiColumnsToJzodSchema,
+  concatLists: transformer_concatLists,
   // MLS
   ...Object.fromEntries(
     Object.entries(mlsTransformers).map(([key, value]) => [
@@ -4265,4 +4268,64 @@ export function handleTransformer_ansiColumnsToJzodSchema(
       failureMessage: e?.message ?? String(e),
     });
   }
+}
+
+// ################################################################################################
+export function handleTransformer_concatLists(
+  step: Step,
+  transformerPath: string[],
+  label: string | undefined,
+  transformer: {
+    label?: string;
+    interpolation?: "build" | "runtime";
+    transformerType: "concatLists";
+    lists: TransformerForBuildPlusRuntime[];
+  },
+  resolveBuildTransformersTo: ResolveBuildTransformersTo,
+  modelEnvironment: MiroirModelEnvironment,
+  transformerParams: Record<string, any>,
+  contextResults?: Record<string, any>,
+  reduxDeploymentsState?: ReduxDeploymentsState | undefined
+): TransformerReturnType<any> {
+  if (!transformer.lists || transformer.lists.length === 0) {
+    return [];
+  }
+
+  const result: any[] = [];
+  for (let i = 0; i < transformer.lists.length; i++) {
+    const resolvedList = defaultTransformers.transformer_extended_apply(
+      step,
+      [...transformerPath, "lists", i.toString()],
+      transformer.label ? `${transformer.label}_list${i}` : `list${i}`,
+      transformer.lists[i],
+      resolveBuildTransformersTo,
+      modelEnvironment,
+      transformerParams,
+      contextResults,
+      reduxDeploymentsState
+    );
+
+    if (resolvedList instanceof TransformerFailure) {
+      return new TransformerFailure({
+        queryFailure: "FailedTransformer",
+        transformerPath,
+        failureOrigin: ["handleTransformer_concatLists"],
+        failureMessage: `Failed to resolve list at index ${i}`,
+        innerError: resolvedList,
+      });
+    }
+
+    if (!Array.isArray(resolvedList)) {
+      return new TransformerFailure({
+        queryFailure: "FailedTransformer",
+        transformerPath,
+        failureOrigin: ["handleTransformer_concatLists"],
+        failureMessage: `concatLists: element at index ${i} is not an array, got: ${typeof resolvedList}`,
+      });
+    }
+
+    result.push(...resolvedList);
+  }
+
+  return result;
 }

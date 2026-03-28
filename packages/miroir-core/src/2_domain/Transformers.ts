@@ -35,6 +35,7 @@ import {
   transformer_jzodTypeCheck_json,
   transformer_getActiveDeployment_json,
   transformer_ansiColumnsToJzodSchema_json,
+  transformer_concatLists_json,
 } from "miroir-test-app_deployment-miroir";
 
 // ################################################################################################
@@ -78,6 +79,7 @@ export const transformer_jzodTypeCheck: TransformerDefinition = transformer_jzod
 // admin
 export const transformer_getActiveDeployment: TransformerDefinition = transformer_getActiveDeployment_json as TransformerDefinition;
 export const transformer_ansiColumnsToJzodSchema: TransformerDefinition = transformer_ansiColumnsToJzodSchema_json as TransformerDefinition;
+export const transformer_concatLists: TransformerDefinition = transformer_concatLists_json as TransformerDefinition;
 
 export const adminTransformers: Record<string,TransformerDefinition> = {
   transformer_getActiveDeployment,
@@ -120,6 +122,7 @@ export const miroirCoreTransformers: Record<string,TransformerDefinition> = {
   transformer_generateUuid,
   transformer_mergeIntoObject,
   transformer_ansiColumnsToJzodSchema,
+  transformer_concatLists,
   // transformer_constantBigint,
   // MLS
   ...mlsTransformers,
