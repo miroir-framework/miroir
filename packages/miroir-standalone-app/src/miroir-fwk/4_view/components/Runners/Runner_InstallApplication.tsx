@@ -4,7 +4,6 @@ import { v4 as uuidv4 } from 'uuid';
 import type {
   ApplicationDeploymentMap,
   CompositeActionTemplate,
-  Deployment,
   Domain2QueryReturnType,
   DomainElementSuccess,
   EntityInstancesUuidIndex,
@@ -20,25 +19,20 @@ import type {
   ViewParams
 } from "miroir-core";
 import {
+  defaultMiroirModelEnvironment,
   defaultSelfApplicationDeploymentMap,
   defaultViewParamsFromAdminStorageFetchQueryParams,
   getDefaultValueForJzodSchemaWithResolutionNonHook,
   MiroirLoggerFactory,
   noValue,
-  selfApplicationMiroir
+  selfApplicationMiroir,
+  transformer_extended_apply_wrapper
 } from "miroir-core";
-import {
-  type AdminApplication
-} from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
-import { getMemoizedReduxDeploymentsStateSelectorMap, JsonDisplayHelper, useSelector } from "miroir-react";
-import {
-  adminSelfApplication,
-  entityApplicationForAdmin
-} from "miroir-test-app_deployment-admin";
+import { getMemoizedReduxDeploymentsStateSelectorMap, JsonDisplayHelper, useMiroirContextService, useSelector } from "miroir-react";
 import {
   selfApplicationLibrary
 } from "miroir-test-app_deployment-library";
-import { runnerCreateApplication } from "miroir-test-app_deployment-miroir";
+import { runnerDeployApplication } from "miroir-test-app_deployment-miroir";
 import { packageName } from "../../../../constants.js";
 import { cleanLevel } from "../../constants.js";
 import { useCurrentModelEnvironment, useReduxDeploymentsStateQuerySelectorForCleanedResult } from "../../ReduxHooks.js";
@@ -59,8 +53,10 @@ export interface DeployApplicationRunnerProps {
 // ################################################################################################
 // Static form schema for tests (no viewParams dependency)
 export const Runner_InstallApplication_formMLSchema: FormMLSchema = {
-  formMLSchemaType: "mlSchema",
-  mlSchema: {
+  // formMLSchemaType: "mlSchema",
+  formMLSchemaType: "transformer",
+  // mlSchema: {
+  transformer: {
     type: "object",
     definition: {
       deployApplication: {
@@ -146,17 +142,10 @@ export const Runner_InstallApplication_formMLSchema: FormMLSchema = {
 };
 
 // ################################################################################################
-export function getInstallApplicationActionTemplate(
+export function getDeployApplicationActionTemplate(
   // testDeploymentUuid: Uuid,
 ): CompositeActionTemplate {
-  // const prefix =
-  //   process.env.NODE_ENV === "development" ? devRelativePathPrefix : prodRelativePathPrefix;
-  // const testApplicationModelBranchUuid = uuidv4();
-  // const testApplicationVersionUuid = uuidv4();
-  // const defaultDirectory = "tmp/miroir_data_storage";
-
-  // const sqltestDeploymentStorageConfigurationTemplate: TransformerForBuildPlusRuntime = runnerCreateApplication.definition.actionTemplate.payload.templates.sqltestDeploymentStorageConfigurationTemplate as TransformerForBuildPlusRuntime;
-  const testApplicationModelBranchUuid = runnerCreateApplication.definition.actionTemplate.payload.templates.testApplicationModelBranchUuid;
+  const testApplicationModelBranchUuid = runnerDeployApplication.definition.actionTemplate.payload.templates.testApplicationModelBranchUuid;
 
   if (testApplicationModelBranchUuid.transformerType !== "generateUuid") {
     log.error("Expected testApplicationModelBranchUuid to be a generateUuid transformer, got:", testApplicationModelBranchUuid);
@@ -167,273 +156,7 @@ export function getInstallApplicationActionTemplate(
     actionType: "compositeActionSequence",
     actionLabel: "deployApplication",
     endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
-    payload: {
-      templates: runnerCreateApplication.definition.actionTemplate.payload.templates,
-      actionSequence: [
-        // ...(localCreateApplicationCompositeActionTemplate.payload.actionSequence as any),
-        // {
-        //   actionType: "createInstance",
-        //   actionLabel: "createApplicationForAdminAction_instances",
-        //   endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-        //   payload: {
-        //     application: "55af124e-8c05-4bae-a3ef-0933d41daa92",
-        //     applicationSection: "data",
-        //     objects: [
-        //       {
-        //         uuid: {
-        //           transformerType: "getFromParameters",
-        //           referencePath: ["deployApplication", "applicationBundle", "applicationUuid"],
-        //         } as any,
-        //         parentName: "AdminApplication",
-        //         parentUuid: "25d935e7-9e93-42c2-aade-0472b883492b",
-        //         name: {
-        //           transformerType: "getFromParameters",
-        //           referencePath: ["deployApplication", "applicationBundle", "applicationName"],
-        //         } as any,
-        //         defaultLabel: {
-        //           transformerType: "mustacheStringTemplate",
-        //           interpolation: "build",
-        //           definition: `The {{deployApplication.applicationBundle.applicationName}} Application.`,
-        //         } as any,
-        //         description: {
-        //           transformerType: "mustacheStringTemplate",
-        //           interpolation: "build",
-        //           definition: `This Application contains the {{deployApplication.applicationBundle.applicationName}} model and data.`,
-        //         } as any,
-        //         selfApplication: {
-        //           transformerType: "getFromParameters",
-        //           referencePath: ["deployApplication", "applicationBundle", "applicationUuid"],
-        //         } as any,
-        //       } as AdminApplication,
-        //     ],
-        //   },
-        // },
-        ...runnerCreateApplication.definition.actionTemplate.payload.actionSequence as any,
-        //
-        // ...localCreateDeploymentCompositeActionTemplate.payload.actionSequence,
-        // {
-        //   actionType: "storeManagementAction_openStore",
-        //   actionLabel: "storeManagementAction_openStore",
-        //   endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
-        //   payload: {
-        //     application: {
-        //       transformerType: "getFromParameters",
-        //       referencePath: ["deployApplication", "applicationBundle", "applicationUuid"],
-        //     } as any,
-        //     deploymentUuid: {
-        //       transformerType: "getFromParameters",
-        //       referencePath: ["deployApplication","deploymentUuid"],
-        //     } as any,
-        //     configuration: {
-        //       transformerType: "createObjectFromPairs",
-        //       definition: [
-        //         {
-        //           attributeKey: {
-        //             transformerType: "getFromParameters",
-        //             referencePath: ["deployApplication","deploymentUuid"],
-        //           },
-        //           attributeValue: {
-        //             transformerType: "getFromParameters",
-        //             referencePath: ["sqltestDeploymentStorageConfigurationTemplate"],
-        //           },
-        //         },
-        //       ],
-        //     } as any,
-        //   },
-        // },
-        // {
-        //   actionType: "storeManagementAction_createStore",
-        //   actionLabel: "storeManagementAction_createStore",
-        //   endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
-        //   payload: {
-        //     application: {
-        //       transformerType: "getFromParameters",
-        //       referencePath: ["deployApplication", "applicationBundle", "applicationUuid"],
-        //     } as any,
-        //     deploymentUuid: {
-        //       transformerType: "getFromParameters",
-        //       referencePath: ["deployApplication","deploymentUuid"],
-        //     } as any,
-        //     configuration: {
-        //       transformerType: "getFromParameters",
-        //       referencePath: ["sqltestDeploymentStorageConfigurationTemplate"],
-        //     } as any,
-        //   },
-        // },
-        // {
-        //   actionType: "createInstance",
-        //   actionLabel: "CreateDeploymentInstances",
-        //   endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-        //   payload: {
-        //     application: "55af124e-8c05-4bae-a3ef-0933d41daa92",
-        //     applicationSection: "data",
-        //     objects: [
-        //       {
-        //         uuid: {
-        //           transformerType: "getFromParameters",
-        //           referencePath: ["deployApplication","deploymentUuid"],
-        //         } as any,
-        //         parentName: "Deployment",
-        //         parentUuid: "7959d814-400c-4e80-988f-a00fe582ab98",
-        //         name: {
-        //           transformerType: "mustacheStringTemplate",
-        //           interpolation: "build",
-        //           definition: `Deployment of application {{deployApplication.applicationBundle.applicationName}}`,
-        //         } as any,
-        //         defaultLabel: {
-        //           transformerType: "mustacheStringTemplate",
-        //           interpolation: "build",
-        //           definition: `The deployment of application {{deployApplication.applicationBundle.applicationName}}`,
-        //         } as any,
-        //         description: {
-        //           transformerType: "mustacheStringTemplate",
-        //           interpolation: "build",
-        //           definition: `The description of deployment of application {{deployApplication.applicationBundle.applicationName}}`,
-        //         } as any,
-        //         selfApplication: {
-        //           transformerType: "getFromParameters",
-        //           referencePath: ["deployApplication", "applicationBundle", "applicationUuid"],
-        //         } as any,
-        //         configuration: {
-        //           transformerType: "getFromParameters",
-        //           referencePath: ["sqltestDeploymentStorageConfigurationTemplate"],
-        //         } as any,
-        //       } as Deployment,
-        //     ],
-        //   },
-        // },
-        // ...localResetAndinitializeDeploymentCompositeActionTemplate.payload.actionSequence,
-        // {
-        //   actionType: "resetModel",
-        //   actionLabel: "resetApplicationStore",
-        //   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-        //   payload: {
-        //     transformerType: "mergeIntoObject",
-        //     interpolation: "runtime",
-        //     applyTo: {
-        //       transformerType: "getFromContext",
-        //       interpolation: "runtime",
-        //       referencePath: ["deployApplication", "applicationBundle"],
-        //     },
-        //     definition: {
-        //       transformerType: "createObject",
-        //       definition: {
-        //         application: {
-        //           transformerType: "getFromParameters",
-        //           referencePath: ["deployApplication", "applicationBundle", "applicationUuid"],
-        //         } as any,
-        //       },
-        //     },
-        //   } as any,
-        // },
-        // {
-        //   actionType: "initModel",
-        //   actionLabel: {
-        //     transformerType: "mustacheStringTemplate",
-        //     interpolation: "build",
-        //     definition: `resetAndinitializeDeployment_initModel for {{deployApplication.applicationBundle.applicationName}}`,
-        //   } as any,
-        //   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-        //   payload: {
-        //     application: {
-        //       transformerType: "getFromParameters",
-        //       referencePath: ["deployApplication", "applicationBundle", "applicationUuid"],
-        //     } as any,
-        //     model: {
-        //       transformerType: "returnValue",
-        //       interpolation: "build",
-        //       value: {
-        //         transformerType: "getFromContext",
-        //         interpolation: "runtime",
-        //         referencePath: ["deployApplication", "applicationBundle"],
-        //       },
-        //     } as any,
-        //     params: {
-        //       transformerType: "getFromParameters",
-        //       referenceName: "initParametersForTest",
-        //     },
-        //   } as any,
-        // },
-        // {
-        //   actionType: "commit",
-        //   actionLabel: "commitApplicationModelToPersistentStore",
-        //   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-        //   payload: {
-        //     application: {
-        //       transformerType: "getFromParameters",
-        //       referencePath: ["deployApplication", "applicationBundle", "applicationUuid"],
-        //     } as any,
-        //   },
-        // },
-        // {
-        //   actionType: "rollback",
-        //   actionLabel: "refreshLocalCacheForApplication",
-        //   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-        //   payload: {
-        //     application: {
-        //       transformerType: "getFromParameters",
-        //       referencePath: ["deployApplication", "applicationBundle", "applicationUuid"],
-        //     } as any,
-        //   },
-        // },
-        // {
-        //   actionType: "createEntity",
-        //   actionLabel: "CreateApplicationStoreEntities",
-        //   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-        //   payload: {
-        //     application: {
-        //       transformerType: "getFromParameters",
-        //       referencePath: ["deployApplication", "applicationBundle", "applicationUuid"],
-        //     } as any,
-        //     // entities: appEntitesAndInstances,
-        //     entities: [],
-        //   },
-        // },
-        // {
-        //   actionType: "commit",
-        //   actionLabel: "CommitApplicationStoreEntities",
-        //   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-        //   payload: {
-        //     application: {
-        //       transformerType: "getFromParameters",
-        //       referencePath: ["deployApplication", "applicationBundle", "applicationUuid"],
-        //     } as any,
-        //   },
-        // },
-        // {
-        //   actionType: "createInstance",
-        //   actionLabel: "CreateApplicationStoreInstances",
-        //   endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-        //   payload: {
-        //     application: {
-        //       transformerType: "getFromParameters",
-        //       referencePath: ["deployApplication", "applicationBundle", "applicationUuid"],
-        //     } as any,
-        //     applicationSection: "data",
-        //     objects: {
-        //       transformerType: "ifThenElse",
-        //       if: {
-        //         transformerType: "boolExpr",
-        //         operator: "isNotNull",
-        //         left: {
-        //           transformerType: "getFromParameters",
-        //           safe: true,
-        //           referencePath: ["deployApplication", "deploymentData", "instances"],
-        //         },
-        //       },
-        //       then: {
-        //         transformerType: "getFromParameters",
-        //         referencePath: ["deployApplication", "deploymentData", "instances"],
-        //       },
-        //       else: {
-        //         transformerType: "returnValue",
-        //         value: [],
-        //       },
-        //     } as any,
-        //   },
-        // },
-      ],
-    },
+    payload: runnerDeployApplication.definition.actionTemplate.payload as any,
   };
 
   return createApplicationActionTemplate;
@@ -453,16 +176,33 @@ export function getRunner_InstallApplication(
     definition: {
       runnerType: "customRunner",
       formMLSchema: Runner_InstallApplication_formMLSchema,
-      actionTemplate: getInstallApplicationActionTemplate()
+      actionTemplate: {
+        actionType: "compositeActionSequence",
+        actionLabel: "deployApplication",
+        endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+        payload: runnerDeployApplication.definition.actionTemplate.payload as any,
+      },
     },
   };
 }
 
 // ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
 export const Runner_InstallApplication: React.FC<DeployApplicationRunnerProps> = ({
   applicationDeploymentMap,
 }) => {
   const runnerName: string = "deployApplication";
+
+  const context = useMiroirContextService();
+  // const currentMiroirModelEnvironment: MiroirModelEnvironment = useCurrentModelEnvironment(
+  //   application,
+  //   applicationDeploymentMap
+  // );
 
   // ##############################################################################################
   const runnerDeploymentUuid = useMemo(() => {
@@ -508,8 +248,8 @@ export const Runner_InstallApplication: React.FC<DeployApplicationRunnerProps> =
 
   const formMLSchema: FormMLSchema = useMemo(
     () => ({
-      formMLSchemaType: "mlSchema",
-      mlSchema: {
+      formMLSchemaType: "transformer",
+      transformer: {
         type: "object",
         definition: {
           deployApplication: {
@@ -534,44 +274,55 @@ export const Runner_InstallApplication: React.FC<DeployApplicationRunnerProps> =
                       transformer: {
                         // Application bundle required: must be present with applicationName, entities, and entityDefinitions.
                         transformerType: "ifThenElse",
+                        interpolation: "runtime",
                         label: "applicationBundleValidation",
                         if: {
                           transformerType: "boolExpr",
+                          interpolation: "runtime",
                           operator: "&&",
                           left: {
                             transformerType: "boolExpr",
+                            interpolation: "runtime",
                             operator: "&&",
                             left: {
                               transformerType: "boolExpr",
+                              interpolation: "runtime",
                               operator: "&&",
                               left: {
                                 transformerType: "boolExpr",
+                                interpolation: "runtime",
                                 operator: "isNotNull",
                                 left: {
                                   transformerType: "getFromParameters",
+                                  interpolation: "runtime",
                                   safe: true,
                                   referencePath: ["deployApplication", "applicationBundle"],
                                 },
                               },
                               right: {
                                 transformerType: "boolExpr",
+                                interpolation: "runtime",
                                 operator: "!=",
                                 left: {
                                   transformerType: "getFromParameters",
+                                  interpolation: "runtime",
                                   safe: true,
                                   referencePath: ["deployApplication", "applicationBundle", "applicationName"],
                                 },
                                 right: {
                                   transformerType: "returnValue",
+                                  interpolation: "runtime",
                                   value: "",
                                 },
                               },
                             },
                             right: {
                               transformerType: "boolExpr",
+                              interpolation: "runtime",
                               operator: "isNotNull",
                               left: {
                                 transformerType: "getFromParameters",
+                                interpolation: "runtime",
                                 safe: true,
                                 referencePath: ["deployApplication", "applicationBundle", "entities"],
                               },
@@ -579,9 +330,11 @@ export const Runner_InstallApplication: React.FC<DeployApplicationRunnerProps> =
                           },
                           right: {
                             transformerType: "boolExpr",
+                            interpolation: "runtime",
                             operator: "isNotNull",
                             left: {
                               transformerType: "getFromParameters",
+                              interpolation: "runtime",
                               safe: true,
                               referencePath: ["deployApplication", "applicationBundle", "entityDefinitions"],
                             },
@@ -776,15 +529,34 @@ export const Runner_InstallApplication: React.FC<DeployApplicationRunnerProps> =
         },
       },
     }),
-    [],
+    [viewParams],
   );
+
+  const resolvedSchema = useMemo(
+    () => transformer_extended_apply_wrapper(
+        context.miroirContext?.miroirActivityTracker,
+        "build",
+        [],
+        "resolving formMLSchema transformer",
+        formMLSchema.transformer as TransformerForBuildPlusRuntime,
+        defaultMiroirModelEnvironment,
+        {},
+        {},
+        "value",
+        // reduxDeploymentsState,
+        // deploymentUuid,
+      ),
+    [formMLSchema],
+  );
+  log.info("Resolved formMLSchema for Runner_InstallApplication:", resolvedSchema);
 
   const initialFormValue = useMemo(
     () => ({
       deployApplication: {
         ...getDefaultValueForJzodSchemaWithResolutionNonHook(
           "build",
-          (formMLSchema as any).mlSchema,
+          resolvedSchema,
+          // (formMLSchema as any).mlSchema,
           undefined, // rootObject
           "", // rootLessListKey,
           undefined, // No need to pass currentDefaultValue here
@@ -809,13 +581,8 @@ export const Runner_InstallApplication: React.FC<DeployApplicationRunnerProps> =
 
   const testSelfApplicationUuid = selfApplicationLibrary.uuid; // ############################################
 
-  // const testDeploymentUuid = uuidv4();
   const testApplicationModelBranchUuid = uuidv4();
   const testApplicationVersionUuid = uuidv4();
-  // applicationDeploymentMapWithNewApplication = {
-  //   ...applicationDeploymentMap,
-  //   // [testSelfApplicationUuid]: testDeploymentUuid,
-  // };
 
   const runnerApplicationDeploymentMap = useCallback((values: any) => ({
     ...applicationDeploymentMap,
@@ -824,128 +591,125 @@ export const Runner_InstallApplication: React.FC<DeployApplicationRunnerProps> =
 
   const createApplicationActionTemplate = useMemo((): CompositeActionTemplate => {
     const createApplicationActionTemplate: CompositeActionTemplate =
-      getInstallApplicationActionTemplate(
-        // testDeploymentUuid,
-      );
+      getDeployApplicationActionTemplate();
 
     return createApplicationActionTemplate;
   }, [
     testApplicationModelBranchUuid,
-    // testDeploymentUuid,
     testSelfApplicationUuid,
     testApplicationVersionUuid,
   ]);
 
   // ##############################################################################################
-  // Validation transformer: lightweight shape checks for uploaded files
-  const validationTransformer: TransformerForBuildPlusRuntime = useMemo(
-    () => ({
-      // Model file required: bundle must be present with applicationName, entities, and entityDefinitions.
-      // Data file optional: pass when null; if provided, must have valid instances with parentUuid.
-      transformerType: "ifThenElse",
-      label: "deployApplicationAndDeploymentDataValidation",
-      // left: false,
-      if: {
-        // All bundle fields must be valid (inner &&/!= return boolean directly, no then/else needed)
-        transformerType: "boolExpr",
-        operator: "&&",
-        label: "applicationBundleValidation",
-        left: {
-          transformerType: "boolExpr",
-          operator: "&&",
-          left: {
-            transformerType: "boolExpr",
-            operator: "&&",
-            left: {
-              transformerType: "boolExpr",
-              operator: "isNotNull",
-              left: {
-                transformerType: "getFromParameters",
-                safe: true,
-                referencePath: ["deployApplication", "applicationBundle"],
-              },
-            },
-            right: {
-              transformerType: "boolExpr",
-              operator: "!=",
-              left: {
-                transformerType: "getFromParameters",
-                safe: true,
-                referencePath: ["deployApplication", "applicationBundle", "applicationName"],
-              },
-              right: {
-                transformerType: "returnValue",
-                value: "",
-              },
-            },
-          },
-          right: {
-            transformerType: "boolExpr",
-            operator: "isNotNull",
-            left: {
-              transformerType: "getFromParameters",
-              safe: true,
-              referencePath: ["deployApplication", "applicationBundle", "entities"],
-            },
-          },
-        },
-        right: {
-          transformerType: "boolExpr",
-          operator: "isNotNull",
-          left: {
-            transformerType: "getFromParameters",
-            safe: true,
-            referencePath: ["deployApplication", "applicationBundle", "entityDefinitions"],
-          },
-        },
-      },
-      then: {
-        transformerType: "ifThenElse",
-        if: {
-          // Data file is optional: null deploymentData passes; if present, instances and parentUuid required.
-          transformerType: "boolExpr",
-          operator: "||",
-          label: "deploymentDataValidation",
-          left: {
-            transformerType: "boolExpr",
-            operator: "isNull",
-            left: {
-              transformerType: "getFromParameters",
-              safe: true,
-              referencePath: ["deployApplication", "deploymentData"],
-            },
-          },
-          right: {
-            transformerType: "boolExpr",
-            operator: "&&",
-            left: {
-              transformerType: "boolExpr",
-              operator: "isNotNull",
-              left: {
-                transformerType: "getFromParameters",
-                safe: true,
-                referencePath: ["deployApplication", "deploymentData", "instances"],
-              },
-            },
-            right: {
-              transformerType: "boolExpr",
-              operator: "isNotNull",
-              left: {
-                transformerType: "getFromParameters",
-                safe: true,
-                referencePath: ["deployApplication", "deploymentData", "instances", "0", "parentUuid"],
-              },
-            },
-          },
-        },
-        then: true,
-        else: "Validation failed: if deployment data is provided, it must contain instances with parentUuid.",
-      },
-      // else: "Validation failed: provide a valid application bundle (applicationName, entities, entityDefinitions required); deployment data is optional but must contain instances with parentUuid if provided.",
-      else: "Validation failed: provide a valid application bundle (applicationName, entities, entityDefinitions required)",
-    }),
-    [],
-  );
+  // // Validation transformer: lightweight shape checks for uploaded files
+  // const validationTransformer: TransformerForBuildPlusRuntime = useMemo(
+  //   () => ({
+  //     // Model file required: bundle must be present with applicationName, entities, and entityDefinitions.
+  //     // Data file optional: pass when null; if provided, must have valid instances with parentUuid.
+  //     transformerType: "ifThenElse",
+  //     label: "deployApplicationAndDeploymentDataValidation",
+  //     // left: false,
+  //     if: {
+  //       // All bundle fields must be valid (inner &&/!= return boolean directly, no then/else needed)
+  //       transformerType: "boolExpr",
+  //       operator: "&&",
+  //       label: "applicationBundleValidation",
+  //       left: {
+  //         transformerType: "boolExpr",
+  //         operator: "&&",
+  //         left: {
+  //           transformerType: "boolExpr",
+  //           operator: "&&",
+  //           left: {
+  //             transformerType: "boolExpr",
+  //             operator: "isNotNull",
+  //             left: {
+  //               transformerType: "getFromParameters",
+  //               safe: true,
+  //               referencePath: ["deployApplication", "applicationBundle"],
+  //             },
+  //           },
+  //           right: {
+  //             transformerType: "boolExpr",
+  //             operator: "!=",
+  //             left: {
+  //               transformerType: "getFromParameters",
+  //               safe: true,
+  //               referencePath: ["deployApplication", "applicationBundle", "applicationName"],
+  //             },
+  //             right: {
+  //               transformerType: "returnValue",
+  //               value: "",
+  //             },
+  //           },
+  //         },
+  //         right: {
+  //           transformerType: "boolExpr",
+  //           operator: "isNotNull",
+  //           left: {
+  //             transformerType: "getFromParameters",
+  //             safe: true,
+  //             referencePath: ["deployApplication", "applicationBundle", "entities"],
+  //           },
+  //         },
+  //       },
+  //       right: {
+  //         transformerType: "boolExpr",
+  //         operator: "isNotNull",
+  //         left: {
+  //           transformerType: "getFromParameters",
+  //           safe: true,
+  //           referencePath: ["deployApplication", "applicationBundle", "entityDefinitions"],
+  //         },
+  //       },
+  //     },
+  //     then: {
+  //       transformerType: "ifThenElse",
+  //       if: {
+  //         // Data file is optional: null deploymentData passes; if present, instances and parentUuid required.
+  //         transformerType: "boolExpr",
+  //         operator: "||",
+  //         label: "deploymentDataValidation",
+  //         left: {
+  //           transformerType: "boolExpr",
+  //           operator: "isNull",
+  //           left: {
+  //             transformerType: "getFromParameters",
+  //             safe: true,
+  //             referencePath: ["deployApplication", "deploymentData"],
+  //           },
+  //         },
+  //         right: {
+  //           transformerType: "boolExpr",
+  //           operator: "&&",
+  //           left: {
+  //             transformerType: "boolExpr",
+  //             operator: "isNotNull",
+  //             left: {
+  //               transformerType: "getFromParameters",
+  //               safe: true,
+  //               referencePath: ["deployApplication", "deploymentData", "instances"],
+  //             },
+  //           },
+  //           right: {
+  //             transformerType: "boolExpr",
+  //             operator: "isNotNull",
+  //             left: {
+  //               transformerType: "getFromParameters",
+  //               safe: true,
+  //               referencePath: ["deployApplication", "deploymentData", "instances", "0", "parentUuid"],
+  //             },
+  //           },
+  //         },
+  //       },
+  //       then: true,
+  //       else: "Validation failed: if deployment data is provided, it must contain instances with parentUuid.",
+  //     },
+  //     // else: "Validation failed: provide a valid application bundle (applicationName, entities, entityDefinitions required); deployment data is optional but must contain instances with parentUuid if provided.",
+  //     else: "Validation failed: provide a valid application bundle (applicationName, entities, entityDefinitions required)",
+  //   }),
+  //   [],
+  // );
 
   return (
     <>
@@ -953,23 +717,33 @@ export const Runner_InstallApplication: React.FC<DeployApplicationRunnerProps> =
         componentName="Create Application and Deployment"
         elements={[
           {
-            label: "Form Values",
-            data: {
-              formMLSchema,
-              initialFormValue,
-              // applicationDeploymentMapWithNewApplication,
-              createApplicationActionTemplate,
-              validationTransformer,
-            },
+            label: "FormMLSchema",
+            data: formMLSchema,
           },
+          {
+            label: "Resolved FormMLSchema",
+            data: resolvedSchema,
+          },
+          {
+            label: "Initial Form Value",
+            data: initialFormValue,
+          },
+          {
+            label: "Create Application Action Template",
+            data: createApplicationActionTemplate,
+          },
+          // {
+          //   label: "Validation Transformer",
+          //   data: validationTransformer,
+          // },
         ]}
       />
       <RunnerView
         runnerName={runnerName}
-        // applicationDeploymentMap={applicationDeploymentMapWithNewApplication}
         applicationDeploymentMap={applicationDeploymentMap}
         runnerApplicationDeploymentMap={runnerApplicationDeploymentMap}
         formMLSchema={formMLSchema}
+        // formMLSchema={resolvedSchema}
         initialFormValue={initialFormValue}
         action={{
           actionType: "compositeActionTemplate",
@@ -979,7 +753,7 @@ export const Runner_InstallApplication: React.FC<DeployApplicationRunnerProps> =
         formLabel="Install Existing Application"
         displaySubmitButton="onFirstLine"
         useActionButton={false}
-        validationTransformer={validationTransformer}
+        // validationTransformer={validationTransformer}
       />
     </>
   );

@@ -37,7 +37,6 @@ export const InnerRunnerView = <T extends Record<string, any>>({
   runnerName,
   application,
   applicationDeploymentMap,
-  // deploymentUuid,
   formMLSchema,
   initialFormValue,
   action,
@@ -71,7 +70,7 @@ export const InnerRunnerView = <T extends Record<string, any>>({
       } else {
         return transformer_extended_apply_wrapper(
           context.miroirContext.miroirActivityTracker, // activityTracker
-          "runtime", // step
+          "build", // step
           [], // transformerPath
           "formMlSchemaAsTransformer", // transformerLabel
           formMLSchema.transformer as any as TransformerForBuildPlusRuntime, // TODO: correct type

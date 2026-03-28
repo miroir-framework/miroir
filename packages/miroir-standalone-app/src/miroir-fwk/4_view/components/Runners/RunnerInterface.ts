@@ -48,8 +48,6 @@ export interface RunnerProps<T extends Record<string, any>> {
   application?: Uuid;
   applicationDeploymentMap: ApplicationDeploymentMap;
   runnerApplicationDeploymentMap?: ((value: any) => ApplicationDeploymentMap);
-  // deploymentUuid: Uuid;
-  // formMLSchema: JzodObject;
   formMLSchema: FormMLSchema;
   initialFormValue: T | InitialFormValue<T>;
   action: RunnerAction<T>;
