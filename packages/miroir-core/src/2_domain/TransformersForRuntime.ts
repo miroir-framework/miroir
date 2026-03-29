@@ -239,7 +239,11 @@ export function getDefaultValueForJzodSchemaWithResolution(
     "forceOptional",
     forceOptional,
     "effectiveSchemaOrError",
-    effectiveSchemaOrError
+    effectiveSchemaOrError,
+    "transformerParams",
+    transformerParams,
+    "contextResults",
+    contextResults,
   );
 
   // if (Object.hasOwn(effectiveSchemaOrError, 'error')) {
@@ -288,13 +292,13 @@ export function getDefaultValueForJzodSchemaWithResolution(
     const result = transformer_extended_apply_wrapper(
       // TODO: transformer_extended_apply instead
       undefined, // activityTracker
-      "build",
+      "runtime",
       [...currentValuePath, "initializeTo"],
       undefined, // label
       effectiveSchema.tag.value.initializeTo.transformer,
       miroirEnvironment,
       transformerParams, // parameters
-      {}, // runtimeContext
+      contextResults, // runtimeContext
       "value",
       reduxDeploymentsState,
     );
@@ -395,13 +399,13 @@ export function getDefaultValueForJzodSchemaWithResolution(
         const result = transformer_extended_apply_wrapper(
           //TODO: transformer_extended_apply instead
           undefined, // activityTracker
-          "build",
+          "runtime",
           [...currentValuePath, "initializeTo"],
           undefined,
           effectiveSchema.tag.value.initializeTo.transformer,
           miroirEnvironment,
           transformerParams, // parameters
-          {}, // runtimeContext
+          contextResults, // runtimeContext
           "value",
           reduxDeploymentsState,
         );
@@ -521,7 +525,7 @@ export function getDefaultValueForJzodSchemaWithResolution(
         return mlSchema.tag?.value?.initializeTo.value;
       } else {
         return getDefaultValueForJzodSchemaWithResolution(
-          step,
+          "runtime",
           effectiveSchema.definition[0],
           rootObject,
           rootLessListKey,
@@ -603,6 +607,8 @@ export function getDefaultValueForJzodSchemaWithResolutionNonHook<T extends Miro
     forceOptional,
     "transformerParams",
     transformerParams,
+    "contextResults",
+    contextResults,
     "currentDefaultValue",
     currentDefaultValue,
     "currentValuePath",
@@ -677,7 +683,7 @@ export function defaultValueForMLSchemaTransformer(
     applicationDeploymentMap,
     deploymentUuid, // deploymentUuid
     modelEnvironment, // miroirEnvironment
-    {}, // transformerParams (empty for this use case)
+    transformerParams, 
     contextResults,
     reduxDeploymentsState,
     undefined // relativeReferenceJzodContext

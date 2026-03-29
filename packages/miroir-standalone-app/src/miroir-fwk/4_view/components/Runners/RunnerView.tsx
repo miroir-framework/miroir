@@ -5,19 +5,24 @@ import type {
   ApplicationDeploymentMap,
   Domain2QueryReturnType,
   DomainControllerInterface,
+  DomainElementSuccess,
   EndpointDefinition,
+  EntityInstancesUuidIndex,
   JzodObject,
   LoggerInterface,
   MiroirModelEnvironment,
   ReduxDeploymentsState,
   Runner,
   SyncBoxedExtractorOrQueryRunnerMap,
+  SyncQueryRunner,
   TransformerForBuildPlusRuntime,
-  Uuid
+  Uuid,
+  ViewParams
 } from "miroir-core";
 import {
   Action2Error,
   defaultSelfApplicationDeploymentMap,
+  defaultViewParamsFromAdminStorageFetchQueryParams,
   Domain2ElementFailed,
   getDefaultValueForJzodSchemaWithResolutionNonHook,
   MiroirLoggerFactory,
@@ -35,7 +40,7 @@ import {
 import { useMemo } from "react";
 import { packageName } from "../../../../constants.js";
 import { cleanLevel } from "../../constants.js";
-import { useCurrentModelEnvironment } from "../../ReduxHooks.js";
+import { useCurrentModelEnvironment, useReduxDeploymentsStateQuerySelectorForCleanedResult } from "../../ReduxHooks.js";
 import { useRunner } from "../Reports/ReportHooks.js";
 import { InnerRunnerView } from "./InnerRunnerView.js";
 import type { FormMLSchema, RunnerAction, RunnerProps } from "./RunnerInterface.js";
@@ -117,6 +122,20 @@ export function StoredRunnerView(props: {
         )
       : undefined;
 
+  const defaultViewParamsFromAdminStorageFetchQueryResults: Record<string, EntityInstancesUuidIndex> =
+    useReduxDeploymentsStateQuerySelectorForCleanedResult(
+      deploymentEntityStateSelectorMap.runQuery as SyncQueryRunner<
+        ReduxDeploymentsState,
+        Domain2QueryReturnType<DomainElementSuccess>
+      >,
+      defaultViewParamsFromAdminStorageFetchQueryParams(deploymentEntityStateSelectorMap),
+      applicationDeploymentMap,
+    );
+  
+  const viewParams: ViewParams | undefined = defaultViewParamsFromAdminStorageFetchQueryResults?.[
+    "viewParams"
+  ] as any;
+
   const formMLSchema: FormMLSchema = useMemo(
     () =>
       !storedRunner
@@ -160,6 +179,14 @@ export function StoredRunnerView(props: {
   );
 
   const initialFormValue = useMemo(() => {
+    log.info("Calculating initialFormValue for StoredRunnerView", {
+      storedRunner,
+      formMLSchema,
+      runnerDeploymentUuid,
+      libraryAppModelEnvironment,
+      deploymentEntityState,
+      viewParams,
+    });
     return !storedRunner
       ? undefined
       : storedRunner?.definition.runnerType === "actionRunner"
@@ -175,8 +202,12 @@ export function StoredRunnerView(props: {
             defaultSelfApplicationDeploymentMap,
             runnerDeploymentUuid,
             libraryAppModelEnvironment,
-            {}, // transformerParams
-            {}, // contextResults
+            {
+              viewParams: viewParams || {},
+            }, // transformerParams
+            {
+              viewParams: viewParams || {},
+            }, // contextResults
             deploymentEntityState, // TODO: keep this? improve so that it does not depend on entire deployment state
           )
         : storedRunner?.definition.runnerType === "customRunner"
@@ -207,46 +238,15 @@ export function StoredRunnerView(props: {
                 defaultSelfApplicationDeploymentMap,
                 runnerDeploymentUuid,
                 libraryAppModelEnvironment,
-                {}, // transformerParams
-                {}, // contextResults
+                {
+                  viewParams: viewParams || {},
+                }, // transformerParams
+                {
+                  viewParams: viewParams || {},
+                }, // contextResults
                 deploymentEntityState, // TODO: keep this? improve so that it does not depend on entire deployment state
               )
           : undefined; // impossible case, choices are "actionRunner" || "customRunner"
-          // storedRunner?.definition.formMLSchema.formMLSchemaType === "mlSchema"
-          //   ? getDefaultValueForJzodSchemaWithResolutionNonHook(
-          //       "build",
-          //       (formMLSchema as any).mlSchema,
-          //       undefined, // rootObject
-          //       "", // rootLessListKey,
-          //       undefined, // No need to pass currentDefaultValue here
-          //       [], // currentPath on value is root
-          //       false, // forceOptional
-          //       storedRunner.application,
-          //       defaultSelfApplicationDeploymentMap,
-          //       runnerDeploymentUuid,
-          //       libraryAppModelEnvironment,
-          //       {}, // transformerParams
-          //       {}, // contextResults
-          //       deploymentEntityState, // TODO: keep this? improve so that it does not depend on entire deployment state
-          //     )
-          //   : // : { [storedRunner.name]: storedRunner.definition.formMLSchema.initialFormValues ?? {} }
-          //     {
-          //       [storedRunner.name]: storedRunner.definition.formMLSchema.initialFormValues
-          //         ? transformer_extended_apply_wrapper(
-          //             context.miroirContext.miroirActivityTracker, // activityTracker
-          //             "runtime", // step
-          //             [], // transformerPath
-          //             "initialFormValueAsTransformer", // transformerLabel
-          //             storedRunner.definition.formMLSchema
-          //               .initialFormValues as any as TransformerForBuildPlusRuntime, // TODO: correct type
-          //             currentModelEnvironment, // TODO: the DeploymentUuid can change, need to handle that?
-          //             {}, // transformerParams
-          //             {}, // contextResults
-          //             "value",
-          //           )
-          //         : {},
-          //     }
-          // : undefined; // impossible case, choices are "actionRunner" || "customRunner"
   }, [
     storedRunner,
     formMLSchema,

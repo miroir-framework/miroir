@@ -3,6 +3,7 @@ import React, { FC, useCallback, useMemo } from "react";
 
 
 import {
+  defaultViewParamsFromAdminStorageFetchQueryParams,
   getDefaultValueForJzodSchemaWithResolutionNonHook,
   JzodElement,
   JzodEnum,
@@ -12,12 +13,17 @@ import {
   MiroirLoggerFactory,
   resolvePathOnObject,
   type ApplicationDeploymentMap,
+  type Domain2QueryReturnType,
+  type DomainElementSuccess,
+  type EntityInstancesUuidIndex,
   type JzodObject,
   type KeyMapEntry,
   type MiroirModelEnvironment,
   type ReduxDeploymentsState,
   type SyncBoxedExtractorOrQueryRunnerMap,
-  type Uuid
+  type SyncQueryRunner,
+  type Uuid,
+  type ViewParams
 } from "miroir-core";
 
 import {
@@ -28,7 +34,7 @@ import {
 } from "miroir-react";
 import { packageName } from "../../../../constants";
 import { cleanLevel } from "../../constants";
-import { useCurrentModelEnvironment, useDefaultValueParams } from "../../ReduxHooks";
+import { useCurrentModelEnvironment, useDefaultValueParams, useReduxDeploymentsStateQuerySelectorForCleanedResult } from "../../ReduxHooks";
 import {
   ThemedDisplayValue,
   ThemedLabeledEditor,
@@ -43,6 +49,7 @@ MiroirLoggerFactory.registerLoggerToStart(
   log = logger;
 });
 
+// ################################################################################################
 // Common function to handle discriminator changes
 const handleDiscriminatorChange = (
   selectedValue: string,
@@ -318,15 +325,24 @@ export const JzodLiteralEditor: FC<JzodLiteralEditorProps> =  (
     currentApplication,
     applicationDeploymentMap
   );
-  const defaultValueParams = useDefaultValueParams(currentApplication, currentDeploymentUuid);
-  // const currentMiroirModelEnvironment: MiroirModelEnvironment = useMemo(() => {
-  //   return {
-  //     miroirFundamentalJzodSchema:
-  //       context.miroirFundamentalJzodSchema ?? (miroirFundamentalJzodSchema as MlSchema),
-  //     currentModel,
-  //     miroirMetaModel: miroirMetaModel,
-  //   };
-  // }, [context.miroirFundamentalJzodSchema, currentModel, miroirMetaModel]);
+  const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState> =
+        getMemoizedReduxDeploymentsStateSelectorMap();
+
+  const defaultViewParamsFromAdminStorageFetchQueryResults: Record<string, EntityInstancesUuidIndex> =
+    useReduxDeploymentsStateQuerySelectorForCleanedResult(
+      deploymentEntityStateSelectorMap.runQuery as SyncQueryRunner<
+        ReduxDeploymentsState,
+        Domain2QueryReturnType<DomainElementSuccess>
+      >,
+      defaultViewParamsFromAdminStorageFetchQueryParams(deploymentEntityStateSelectorMap),
+      applicationDeploymentMap,
+    );
+  
+  const viewParams: ViewParams | undefined = defaultViewParamsFromAdminStorageFetchQueryResults?.[
+    "viewParams"
+  ] as any;
+
+  const defaultValueParams = useDefaultValueParams(currentApplication, currentDeploymentUuid, viewParams);
 
   const formik = useFormikContext<Record<string, any>>();
 
@@ -340,15 +356,6 @@ export const JzodLiteralEditor: FC<JzodLiteralEditorProps> =  (
   const parentKeyMap:KeyMapEntry | undefined = typeCheckKeyMap ? typeCheckKeyMap[parentKey] : undefined;
   const currentKeyMap: KeyMapEntry | undefined = typeCheckKeyMap ? typeCheckKeyMap[rootLessListKey] : undefined;
 
-  // const currentMiroirModelEnvironment: MiroirModelEnvironment = useCurrentModelEnvironment(
-  //   currentApplication,
-  //   applicationDeploymentMap
-  // );
-
-  const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState> =
-      getMemoizedReduxDeploymentsStateSelectorMap();
-
-  
   const deploymentEntityState: ReduxDeploymentsState = useSelector(
     (state: ReduxStateWithUndoRedo) =>
       deploymentEntityStateSelectorMap.extractState(
