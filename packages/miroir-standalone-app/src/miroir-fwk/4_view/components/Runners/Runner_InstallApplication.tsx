@@ -1,45 +1,18 @@
-import { useCallback, useMemo } from "react";
-import { v4 as uuidv4 } from 'uuid';
+import { useCallback } from "react";
 
 import type {
   ApplicationDeploymentMap,
-  CompositeActionTemplate,
-  Domain2QueryReturnType,
-  DomainElementSuccess,
-  EntityInstancesUuidIndex,
-  JzodObject,
-  LoggerInterface,
-  MiroirModelEnvironment,
-  ReduxDeploymentsState,
-  ReduxStateWithUndoRedo,
-  Runner,
-  SyncBoxedExtractorOrQueryRunnerMap,
-  SyncQueryRunner,
-  TransformerForBuildPlusRuntime,
-  Uuid,
-  ViewParams
+  LoggerInterface
 } from "miroir-core";
 import {
-  defaultMiroirModelEnvironment,
   defaultSelfApplicationDeploymentMap,
-  defaultViewParamsFromAdminStorageFetchQueryParams,
-  getDefaultValueForJzodSchemaWithResolutionNonHook,
   MiroirLoggerFactory,
-  noValue,
-  selfApplicationMiroir,
-  transformer_extended_apply_wrapper
+  selfApplicationMiroir
 } from "miroir-core";
-import { getMemoizedReduxDeploymentsStateSelectorMap, JsonDisplayHelper, useMiroirContextService, useSelector } from "miroir-react";
-import {
-  selfApplicationLibrary
-} from "miroir-test-app_deployment-library";
 import { runnerDeployApplication } from "miroir-test-app_deployment-miroir";
 import { packageName } from "../../../../constants.js";
 import { cleanLevel } from "../../constants.js";
-import { useCurrentModelEnvironment, useReduxDeploymentsStateQuerySelectorForCleanedResult } from "../../ReduxHooks.js";
-// import { devRelativePathPrefix, prodRelativePathPrefix } from '../Themes/FileSelector.js';
-import type { FormMLSchema } from "./RunnerInterface.js";
-import { RunnerView, StoredRunnerView } from "./RunnerView.js";
+import { StoredRunnerView } from "./RunnerView.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -61,119 +34,6 @@ export interface DeployApplicationRunnerProps {
 export const Runner_InstallApplication: React.FC<DeployApplicationRunnerProps> = ({
   applicationDeploymentMap,
 }) => {
-  // const runnerName: string = "deployApplication";
-  const runnerName: string = runnerDeployApplication.name;
-
-  const context = useMiroirContextService();
-
-  // ##############################################################################################
-  const runnerDeploymentUuid = useMemo(() => {
-    const deploymentUuid =
-      applicationDeploymentMap[
-        applicationDeploymentMap ? Object.keys(applicationDeploymentMap)[0] : ""
-      ];
-    return deploymentUuid || "";
-  }, [applicationDeploymentMap]);
-
-  // ##############################################################################################
-  const miroirModelEnvironment: MiroirModelEnvironment = useCurrentModelEnvironment(
-    selfApplicationMiroir.uuid,
-    defaultSelfApplicationDeploymentMap
-  );
-  const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState> =
-        getMemoizedReduxDeploymentsStateSelectorMap();
-
-  const deploymentEntityState: ReduxDeploymentsState = useSelector(
-    (state: ReduxStateWithUndoRedo) =>
-      deploymentEntityStateSelectorMap.extractState(
-        state.presentModelSnapshot.current,
-        defaultSelfApplicationDeploymentMap,
-        () => ({}),
-        miroirModelEnvironment,
-      )
-  );
-
-  const defaultViewParamsFromAdminStorageFetchQueryResults: Record<string, EntityInstancesUuidIndex> =
-    useReduxDeploymentsStateQuerySelectorForCleanedResult(
-      deploymentEntityStateSelectorMap.runQuery as SyncQueryRunner<
-        ReduxDeploymentsState,
-        Domain2QueryReturnType<DomainElementSuccess>
-      >,
-      defaultViewParamsFromAdminStorageFetchQueryParams(deploymentEntityStateSelectorMap),
-      applicationDeploymentMap,
-    );
-  
-  const viewParams: ViewParams | undefined = defaultViewParamsFromAdminStorageFetchQueryResults?.[
-    "viewParams"
-  ] as any;
-
-  const formMLSchema: FormMLSchema = {
-    ...runnerDeployApplication?.definition.formMLSchema,
-    transformer: {
-      type: "object",
-      definition: {
-        [runnerName]: runnerDeployApplication?.definition.formMLSchema.transformer,
-      },
-    },
-  } as FormMLSchema;
-            
-  // runnerDeployApplication.definition.formMLSchema as FormMLSchema;
-  
-  const resolvedSchema: JzodObject = useMemo(
-    () => formMLSchema.formMLSchemaType == "transformer"
-      ? transformer_extended_apply_wrapper(
-          context.miroirContext?.miroirActivityTracker,
-          "build",
-          [],
-          "resolving formMLSchema transformer",
-          formMLSchema.transformer as TransformerForBuildPlusRuntime,
-        defaultMiroirModelEnvironment,
-        {
-          viewParams: viewParams || {},
-        },
-        {
-          // viewParams: viewParams || {},
-        },
-        "value",
-      )
-      : formMLSchema,
-    [formMLSchema],
-  );
-  log.info("Resolved formMLSchema for Runner_InstallApplication:", resolvedSchema);
-
-  const initialFormValue = useMemo(
-    () => getDefaultValueForJzodSchemaWithResolutionNonHook(
-          "build", // step
-          resolvedSchema, // mlSchema,
-          // (formMLSchema as any).mlSchema,
-          undefined, // rootObject
-          "", // rootLessListKey,
-          undefined, // currentDefaultValue
-          [], // currentValuePath
-          true, // forceOptional
-          noValue.uuid, // storedRunner.application,
-          defaultSelfApplicationDeploymentMap,
-          runnerDeploymentUuid,
-          miroirModelEnvironment,
-          {
-            viewParams: viewParams || {},
-          }, // transformerParams
-          {
-            // viewParams: viewParams || {},
-          }, // contextResults
-          deploymentEntityState, // TODO: keep this? improve so that it does not depend on entire deployment state
-        ),
-        // ).deployApplication,
-        // applicationBundle: undefined,
-        // deploymentData: undefined,
-      // },
-    [viewParams, resolvedSchema, deploymentEntityState, runnerDeploymentUuid, miroirModelEnvironment],
-  );
-
-  const testSelfApplicationUuid = selfApplicationLibrary.uuid; // ############################################
-
-  const testApplicationModelBranchUuid = uuidv4();
-  const testApplicationVersionUuid = uuidv4();
 
   const runnerApplicationDeploymentMap = useCallback(
     (values: any) => ({
@@ -183,19 +43,6 @@ export const Runner_InstallApplication: React.FC<DeployApplicationRunnerProps> =
     }),
     [applicationDeploymentMap],
   );
-
-  const createApplicationActionTemplate = useMemo((): CompositeActionTemplate => {
-    return {
-      actionType: "compositeActionSequence",
-      actionLabel: "deployApplication",
-      endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
-      payload: runnerDeployApplication.definition.actionTemplate.payload as any,
-    };
-  }, [
-    testApplicationModelBranchUuid,
-    testSelfApplicationUuid,
-    testApplicationVersionUuid,
-  ]);
 
   // ##############################################################################################
   // // Validation transformer: lightweight shape checks for uploaded files
@@ -310,7 +157,7 @@ export const Runner_InstallApplication: React.FC<DeployApplicationRunnerProps> =
 
   return (
     <>
-      <JsonDisplayHelper debug={true}
+      {/* <JsonDisplayHelper debug={true}
         componentName="Create Application and Deployment"
         elements={[
           {
@@ -334,31 +181,13 @@ export const Runner_InstallApplication: React.FC<DeployApplicationRunnerProps> =
           //   data: validationTransformer,
           // },
         ]}
-      />
+      /> */}
       <StoredRunnerView
         applicationUuid={selfApplicationMiroir.uuid}
         applicationDeploymentMap={applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap}
         runnerApplicationDeploymentMap={runnerApplicationDeploymentMap}
         runnerUuid={runnerDeployApplication.uuid}
       />
-  
-      {/* <RunnerView
-        runnerName={runnerName}
-        applicationDeploymentMap={applicationDeploymentMap}
-        runnerApplicationDeploymentMap={runnerApplicationDeploymentMap}
-        formMLSchema={formMLSchema}
-        // formMLSchema={resolvedSchema}
-        initialFormValue={initialFormValue}
-        action={{
-          actionType: "compositeActionTemplate",
-          compositeActionTemplate: createApplicationActionTemplate,
-        }}
-        formikValuePathAsString="deployApplication"
-        formLabel="Install Existing Application"
-        displaySubmitButton="onFirstLine"
-        useActionButton={false}
-        // validationTransformer={validationTransformer}
-      /> */}
     </>
   );
 };
