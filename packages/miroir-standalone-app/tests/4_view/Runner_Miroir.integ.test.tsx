@@ -26,17 +26,24 @@ import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
 import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
 import { miroirMongoDbStoreSectionStartup } from "miroir-store-mongodb";
 import { miroirPostgresStoreSectionStartup } from "miroir-store-postgres";
-import { entityEntity, runnerCreateEntity, runnerDropEntity, runnerDropApplication } from "miroir-test-app_deployment-miroir";
+import {
+  entityEntity,
+  runnerCreateEntity,
+  runnerDeployApplication,
+  runnerDropApplication,
+  runnerDropEntity,
+} from "miroir-test-app_deployment-miroir";
 import { env } from "process";
 import { loglevelnext } from "../../src/loglevelnextImporter";
 import { runTestOrTestSuite } from "../../src/miroir-fwk/4-tests/tests-utils";
 import { getRunner_CreateApplication } from "../../src/miroir-fwk/4_view/components/Runners/Runner_CreateApplication";
-import { getRunner_InstallApplication } from "../../src/miroir-fwk/4_view/components/Runners/Runner_InstallApplication";
 import { miroirAppStartup } from "../../src/startup";
 import { loadTestConfigFiles } from "../utils/fileTools";
 
-import simplifiedLibraryModel from "../assets/library_extract/simplified-library-model.json";
+import { adminSelfApplication, entityApplicationForAdmin, entityDeployment } from "miroir-test-app_deployment-admin";
+import { entityAuthor, entityDefinitionAuthor } from "miroir-test-app_deployment-library";
 import simplifiedLibraryData from "../assets/library_extract/simplified-library-data.json";
+import simplifiedLibraryModel from "../assets/library_extract/simplified-library-model.json";
 import {
   afterAllTests,
   beforeAllTests,
@@ -45,9 +52,6 @@ import {
   testApplicationStorageConfiguration,
   type RunnerTestParams,
 } from "./RunnerIntegTestTools";
-import { entityAuthor, entityDefinitionAuthor } from "miroir-test-app_deployment-library";
-import { adminSelfApplication, entityApplicationForAdmin, entityDeployment } from "miroir-test-app_deployment-admin";
-import { ad } from "vitest/dist/chunks/reporters.d.BFLkQcL6.js";
 
 // ################################################################################################
 const pageLabel = "Runner_Miroir.integ.test";
@@ -179,11 +183,8 @@ const localRunnerCreateApplication = getRunner_CreateApplication(
   emptyApplicationModel,
 )
 
-const localRunnerInstallApplication = getRunner_InstallApplication(
-  installTestApplicationUuid,
-  // installTestApplicationDeploymentUuid,
-  "installApplication",
-)
+const localRunnerInstallApplication = runnerDeployApplication as Runner;
+  
 const runnerTestParams: Record<string, RunnerTestParams> = {
   [localRunnerCreateApplication.name]: {
     pageLabel,

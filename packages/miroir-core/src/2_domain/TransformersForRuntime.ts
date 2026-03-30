@@ -274,7 +274,7 @@ export function getDefaultValueForJzodSchemaWithResolution(
   ) {
     const result = effectiveSchema.tag.value.initializeTo.value;
     log.info(
-      "getDefaultValueForJzodSchemaWithResolutionWithResolution returning UUID from tag.value.initializeTo.value",
+      "getDefaultValueForJzodSchemaWithResolutionWithResolution returning value from tag.value.initializeTo.value",
       "currentValuePath",
       currentValuePath,
       "result",
@@ -317,7 +317,7 @@ export function getDefaultValueForJzodSchemaWithResolution(
 
       // TODO: do not call this when the object has a initializeTo tag!
       Object.entries(resolvedObjectType.definition)
-        .filter((a) => !a[1].optional)
+        .filter((a) => forceOptional || !a[1].optional || a[1].tag?.value?.initializeTo)
         .forEach((a) => {
           const attributeName = a[0];
           const attributeValue = getDefaultValueForJzodSchemaWithResolution(
@@ -339,18 +339,18 @@ export function getDefaultValueForJzodSchemaWithResolution(
           );
           result[attributeName] = attributeValue;
         });
-      log.info(
-        "getDefaultValueForJzodSchemaWithResolution for object type",
-        "effectiveSchema",
-        effectiveSchema,
-        "mlSchema",
-        mlSchema,
-        "resolvedObjectType",
-        resolvedObjectType,
-        "result",
-        Object.keys(result),
-        result
-      );
+      // log.info(
+      //   "getDefaultValueForJzodSchemaWithResolution for object type",
+      //   "effectiveSchema",
+      //   effectiveSchema,
+      //   "mlSchema",
+      //   mlSchema,
+      //   "resolvedObjectType",
+      //   resolvedObjectType,
+      //   "result",
+      //   Object.keys(result),
+      //   result
+      // );
       return result;
     }
     case "string": {

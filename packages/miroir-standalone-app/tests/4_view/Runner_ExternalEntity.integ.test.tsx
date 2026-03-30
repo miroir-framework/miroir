@@ -29,16 +29,15 @@ import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
 import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
 import { miroirMongoDbStoreSectionStartup } from "miroir-store-mongodb";
 import { miroirPostgresStoreSectionStartup } from "miroir-store-postgres";
-import { entityEntity } from "miroir-test-app_deployment-miroir";
+import { entityEntity, runnerDeployApplication } from "miroir-test-app_deployment-miroir";
 import { env } from "process";
 import { loglevelnext } from "../../src/loglevelnextImporter";
 import { runTestOrTestSuite } from "../../src/miroir-fwk/4-tests/tests-utils";
-import { getRunner_InstallApplication } from "../../src/miroir-fwk/4_view/components/Runners/Runner_InstallApplication";
 import { miroirAppStartup } from "../../src/startup";
 import { loadTestConfigFiles } from "../utils/fileTools";
 
-import simplifiedLibraryModelWithExternalEntity from "../assets/library_extract/simplified-library-model-with-external-entity.json";
 import simplifiedLibraryData from "../assets/library_extract/simplified-library-data.json";
+import simplifiedLibraryModelWithExternalEntity from "../assets/library_extract/simplified-library-model-with-external-entity.json";
 import {
   afterAllTests,
   beforeAllTests,
@@ -47,7 +46,6 @@ import {
   testApplicationStorageConfiguration,
   type RunnerTestParams,
 } from "./RunnerIntegTestTools";
-import { adminSelfApplication } from "miroir-test-app_deployment-admin";
 
 // ################################################################################################
 const pageLabel = "Runner_ExternalEntity.integ.test";
@@ -125,11 +123,7 @@ const testApplicationDeploymentMap = {
   [testApplicationUuid]: testApplicationDeploymentUuid,
 };
 
-const localRunnerInstallApplication = getRunner_InstallApplication(
-  testApplicationUuid,
-  testApplicationDeploymentUuid,
-  "installApplicationWithExternalEntity",
-);
+const localRunnerInstallApplication = runnerDeployApplication as Runner;
 
 let domainController: DomainControllerInterface;
 

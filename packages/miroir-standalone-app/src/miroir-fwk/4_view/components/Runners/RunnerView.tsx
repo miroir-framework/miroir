@@ -21,6 +21,7 @@ import type {
 } from "miroir-core";
 import {
   Action2Error,
+  defaultMiroirModelEnvironment,
   defaultSelfApplicationDeploymentMap,
   defaultViewParamsFromAdminStorageFetchQueryParams,
   Domain2ElementFailed,
@@ -57,6 +58,7 @@ MiroirLoggerFactory.registerLoggerToStart(
 export function StoredRunnerView(props: {
   applicationUuid: Uuid,
   applicationDeploymentMap?: ApplicationDeploymentMap,
+  runnerApplicationDeploymentMap?: (values: Record<string, any>) => ApplicationDeploymentMap,
   runnerUuid: Uuid,
 }) {
   // const context = useMiroirContextService();
@@ -178,6 +180,33 @@ export function StoredRunnerView(props: {
     [storedRunner, currentActionDefinition, runnerName]
   );
 
+  const resolvedMLSchema: JzodObject = useMemo(() => {
+    log.info("Resolving ML Schema for StoredRunnerView", {
+      formMLSchema,
+      runnerDeploymentUuid,
+      libraryAppModelEnvironment,
+      deploymentEntityState,
+      viewParams,
+    });
+    return formMLSchema.formMLSchemaType === "transformer"
+      ? transformer_extended_apply_wrapper(
+          context.miroirContext?.miroirActivityTracker,
+          "build",
+          [],
+          "resolving formMLSchema transformer",
+          formMLSchema.transformer as TransformerForBuildPlusRuntime,
+        defaultMiroirModelEnvironment,
+        {
+          viewParams: viewParams || {},
+        },
+        {
+          // viewParams: viewParams || {},
+        },
+        "value",
+      ) as JzodObject
+      : formMLSchema.mlSchema as JzodObject;
+  }, [formMLSchema, viewParams]);
+
   const initialFormValue = useMemo(() => {
     log.info("Calculating initialFormValue for StoredRunnerView", {
       storedRunner,
@@ -192,7 +221,8 @@ export function StoredRunnerView(props: {
       : storedRunner?.definition.runnerType === "actionRunner"
         ? getDefaultValueForJzodSchemaWithResolutionNonHook(
             "build",
-            (formMLSchema as any).mlSchema,
+            // (formMLSchema as any).mlSchema,
+            resolvedMLSchema,
             undefined, // rootObject
             "", // rootLessListKey,
             undefined, // No need to pass currentDefaultValue here
@@ -206,7 +236,7 @@ export function StoredRunnerView(props: {
               viewParams: viewParams || {},
             }, // transformerParams
             {
-              viewParams: viewParams || {},
+              // viewParams: viewParams || {},
             }, // contextResults
             deploymentEntityState, // TODO: keep this? improve so that it does not depend on entire deployment state
           )
@@ -228,7 +258,8 @@ export function StoredRunnerView(props: {
               }
             : getDefaultValueForJzodSchemaWithResolutionNonHook(
                 "build",
-                (formMLSchema as any).mlSchema,
+                // (formMLSchema as any).mlSchema,
+                resolvedMLSchema,
                 undefined, // rootObject
                 "", // rootLessListKey,
                 undefined, // No need to pass currentDefaultValue here
@@ -250,6 +281,7 @@ export function StoredRunnerView(props: {
   }, [
     storedRunner,
     formMLSchema,
+    resolvedMLSchema,
     runnerDeploymentUuid,
     libraryAppModelEnvironment,
     deploymentEntityState,
@@ -287,16 +319,16 @@ export function StoredRunnerView(props: {
         componentName="StoredRunnerView"
         elements={[
           {
-            label: `StoredRunnerView for ${runnerName} props`,
+            label: `${runnerName} props`,
             data: props,
           },
           {
-            label: `StoredRunnerView for ${runnerName} runnerDefinitionFromLocalCache`,
+            label: `${runnerName} runnerDefinitionFromLocalCache`,
             data: runnerDefinitionFromLocalCache,
             useCodeBlock: true,
           },
           {
-            label: `StoredRunnerView for ${runnerName} applicationUuid`,
+            label: `${runnerName} applicationUuid`,
             data: {
               applicationUuid: props.applicationUuid,
               applicationDeploymentMap:
@@ -306,19 +338,27 @@ export function StoredRunnerView(props: {
             },
           },
           {
-            label: `StoredRunnerView for ${runnerName} currentEndpointDefinition`,
+            label: `${runnerName} currentEndpointDefinition`,
             data: currentEndpointDefinition,
           },
           {
-            label: `StoredRunnerView for ${runnerName} currentActionDefinition`,
+            label: `${runnerName} currentActionDefinition`,
             data: currentActionDefinition,
           },
           {
-            label: `StoredRunnerView for ${runnerName} formMLSchema`,
+            label: `${runnerName} formMLSchema`,
             data: formMLSchema,
           },
           {
-            label: `StoredRunnerView for ${runnerName} storedRunnerAction`,
+            label: `${runnerName} resolvedMLSchema`,
+            data: resolvedMLSchema,
+          },
+          {
+            label: `${runnerName} initialFormValue`,
+            data: initialFormValue,
+          },
+          {
+            label: `${runnerName} storedRunnerAction`,
             data: storedRunnerAction,
             useCodeBlock: true,
           },
@@ -334,6 +374,7 @@ export function StoredRunnerView(props: {
               applicationDeploymentMap={
                 props.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap
               }
+              runnerApplicationDeploymentMap={props.runnerApplicationDeploymentMap}
               formMLSchema={formMLSchema}
               initialFormValue={initialFormValue}
               action={{
@@ -353,7 +394,7 @@ export function StoredRunnerView(props: {
                 applicationDeploymentMap={
                   props.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap
                 }
-                // deploymentUuid={runnerDeploymentUuid}
+                runnerApplicationDeploymentMap={props.runnerApplicationDeploymentMap}
                 formMLSchema={formMLSchema}
                 initialFormValue={initialFormValue}
                 action={storedRunnerAction as any}
