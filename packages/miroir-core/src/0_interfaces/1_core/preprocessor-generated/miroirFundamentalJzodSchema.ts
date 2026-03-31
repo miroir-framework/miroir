@@ -14318,6 +14318,10 @@ export const miroirFundamentalJzodSchema = {
           },
           "schema": {
             "type": "string"
+          },
+          "forceOptionalToUndefined": {
+            "type": "boolean",
+            "optional": true
           }
         }
       },

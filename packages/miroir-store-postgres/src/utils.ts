@@ -20,7 +20,14 @@ MiroirLoggerFactory.registerLoggerToStart(
 
 // export type SqlEntityDefinition = { [parentName in string]: ModelStatic<Model<any, any>> };
 export type EntityUuidIndexedSequelizeModel = {
-  [parentUuid in string]: { parentName?: string; idAttribute?: string | string[]; isExternal?: boolean; effectiveSchema?: string; optionalNonNullableAttributes?: string[]; sequelizeModel: ModelStatic<Model<any, any>> };
+  [parentUuid in string]: {
+    parentName?: string;
+    idAttribute?: string | string[];
+    isExternal?: boolean;
+    effectiveSchema?: string;
+    optionalNonNullableAttributes?: string[];
+    sequelizeModel: ModelStatic<Model<any, any>>;
+  };
 };
 
 // const dataTypesMapping: { [type in EntityAttributeType]: DataTypes.AbstractDataTypeConstructor } = {
@@ -140,9 +147,19 @@ export function stripNullOptionalAttributes(instance: Record<string, any>, optio
   if (!optionalNonNullableAttributes || optionalNonNullableAttributes.length === 0) {
     return instance;
   }
-  return Object.fromEntries(
-    Object.entries(instance).filter(([key, value]) => !(optionalNonNullableAttributes.includes(key) && value === null))
+  const result = Object.fromEntries(
+    Object.entries(instance).filter(([key, value]) => !optionalNonNullableAttributes.includes(key) || value !== null)
   );
+  log.info(
+    "miroir-store-postgres stripNullOptionalAttributes",
+    // "instance before",
+    // instance,
+    "optionalNonNullableAttributes",
+    optionalNonNullableAttributes,
+    "result",
+    result,
+  );
+  return result;
 }
 // // ##############################################################################################
 // export function fromMiroirAttributeDefinitionToSequelizeModelAttributeColumnOptions(

@@ -84,14 +84,18 @@ export class SqlDbStoreSection
       // .filter(e=>['Entity','EntityDefinition'].indexOf(e.name)==-1)
       .reduce((prev, curr: Entity) => {
         const entityDefinition = entityDefinitions.find((e) => e.entityUuid == curr.uuid);
-        log.info(
-          this.logHeader,
-          "bootFromPersistedState start sqlSchemaTableAccess init initializing entity",
-          curr.name,
-          curr.uuid
-        );
         if (entityDefinition) {
-          return Object.assign(prev, this.getAccessToDataSectionEntity(curr, entityDefinition));
+          const part = this.getAccessToDataSectionEntity(curr, entityDefinition)
+          const result = Object.assign(prev, part);
+          log.info(
+            this.logHeader,
+            "bootFromPersistedState start sqlSchemaTableAccess init initializing entity",
+            curr.name,
+            curr.uuid,
+            "entity configuration",
+            JSON.stringify(part[curr.uuid], null, 2)
+          );
+          return result;
         } else {
           return prev;
         }
@@ -127,7 +131,7 @@ export class SqlDbStoreSection
     const optionalNonNullableAttributes = this.forceOptionalToUndefined
       ? getOptionalNonNullableAttributes(entityDefinition)
       : undefined;
-    return {
+    const result = {
       [entity.uuid]: {
         parentName: entity.parentName,
         idAttribute,
@@ -144,6 +148,23 @@ export class SqlDbStoreSection
         ),
       },
     };
+    log.info(
+      this.logHeader,
+      "getAccessToDataSectionEntity for entity",
+      entity.name,  
+      entity.uuid,
+      "isExternal",
+      isExternal,
+      "effectiveSchema",
+      effectiveSchema,
+      "effectiveTableName",
+      effectiveTableName,
+      "this.forceOptionalToUndefined",
+      this.forceOptionalToUndefined,
+      "optionalNonNullableAttributes",
+      optionalNonNullableAttributes,
+    );
+    return result;
   }
 
   // ##############################################################################################
