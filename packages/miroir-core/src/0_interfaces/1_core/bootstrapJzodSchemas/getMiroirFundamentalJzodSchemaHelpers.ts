@@ -400,7 +400,7 @@ export function createLocalizedInnerResolutionStoreForExtendedSchemas(
   carryOnSchemaReference: JzodReference,
   carryOnSchemaDiscriminator: undefined | string | string[] | (string | string[])[] = undefined,
   resolveReferencesWithCarryOn: JzodReferenceResolutionFunction,
-  prefix: string = "mlElementTemplate_",
+  prefix: string,
   alwaysPropagate: boolean = false,
 ): Record<string, any> {
 
@@ -469,7 +469,7 @@ export function createLocalizedInnerResolutionStoreWithCarryOn(
   carryOnSchemaReference: JzodReference,
   carryOnSchemaDiscriminator: undefined | string | string[] = undefined,
   resolveReferencesWithCarryOn: JzodReferenceResolutionFunction,
-  prefix: string = "mlElementTemplate_",
+  prefix: string,
   alwaysPropagate: boolean = true,
   skipContextEntry?: (name:string, defn: JzodElement) => boolean,
 ): Record<string, any> {

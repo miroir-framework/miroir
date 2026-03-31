@@ -1,29 +1,28 @@
 {
-  "uuid": "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
+  "uuid": "8e1108f0-4e9b-4c01-b222-76f97a1380f7",
   "parentName": "Deployment",
   "parentUuid": "7959d814-400c-4e80-988f-a00fe582ab98",
-  "name": "Deployment of application miroir",
-  "defaultLabel": "The deployment of application miroir",
-  "description": "The description of deployment of application miroir",
-  "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+  "name": "Deployment of application Library",
+  "defaultLabel": "The deployment of application Library",
+  "description": "The description of deployment of application Library",
+  "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
   "configuration": {
     "admin": {
       "emulatedServerType": "sql",
       "connectionString": "postgres://postgres:postgres@localhost:5432/postgres",
-      "schema": "miroirAdmin",
-      "forceNullOptionalAttributeToUndefined": true
+      "schema": "miroirAdmin"
     },
     "model": {
       "emulatedServerType": "sql",
+      "forceNullOptionalAttributeToUndefined": true,
       "connectionString": "postgres://postgres:postgres@localhost:5432/postgres",
-      "schema": "miroir",
-      "forceNullOptionalAttributeToUndefined": true
+      "schema": "Library"
     },
     "data": {
       "emulatedServerType": "sql",
+      "forceNullOptionalAttributeToUndefined": true,
       "connectionString": "postgres://postgres:postgres@localhost:5432/postgres",
-      "schema": "miroir",
-      "forceNullOptionalAttributeToUndefined": true
+      "schema": "Library"
     }
   }
 }

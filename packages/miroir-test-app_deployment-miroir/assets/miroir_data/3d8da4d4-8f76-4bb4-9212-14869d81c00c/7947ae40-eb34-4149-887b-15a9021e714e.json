@@ -21,7 +21,14 @@
           },
           "actionLabel": {
             "type": "string",
-            "optional": true
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "Action Label",
+                "description": "The label of the action. This label can be used in the UI to display the action.",
+                "canBeTemplate": true
+              }
+            }
           },
           "endpoint": {
             "type": "literal",
@@ -53,7 +60,8 @@
                 "tag": {
                   "value": {
                     "defaultLabel": "Model",
-                    "description": "The model of the application"
+                    "description": "The model of the application",
+                    "canBeTemplate": true
                   }
                 },
                 "definition": {
@@ -63,6 +71,13 @@
               },
               "params": {
                 "type": "object",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Initialization Parameters",
+                    "description": "The parameters for the model initialization. The parameters can be used to specify additional parameters used during the model initialization, like the meta-model, for example.",
+                    "canBeTemplate": true
+                  }
+                },
                 "definition": {
                   "metaModel": {
                     "type": "schemaReference",
@@ -256,6 +271,13 @@
           },
           "payload": {
             "type": "object",
+            "tag": {
+              "value": {
+                "defaultLabel": "Reset Model Payload",
+                "description": "The payload for the resetModel action. This action will reset the model to the specified state. The payload can be used to specify the state to reset the model to. If no state is specified, the model will be reset to an empty state.",
+                "canBeTemplate": true
+              }
+            },
             "definition": {
               "application": {
                 "type": "uuid",

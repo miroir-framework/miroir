@@ -543,6 +543,7 @@ export function selectUnionBranchFromDiscriminator<T extends MiroirModelEnvironm
 // ################################################################################################
 export function jzodUnionResolvedTypeForArray<T extends MiroirModelEnvironment>(
   concreteUnrolledJzodSchemas: JzodElement[],
+  effectiveRawSchema: JzodElement,
   discriminator: string | (string | string[])[] | undefined,
   valueArray: any[],
   currentValuePath: (string | number)[],
@@ -572,6 +573,7 @@ export function jzodUnionResolvedTypeForArray<T extends MiroirModelEnvironment>(
     return {
       status: "error",
       error: "jzodUnionResolvedTypeForArray could not find object type for given array value in resolved union",
+      rawSchema: effectiveRawSchema,
       discriminator,
       valuePath: currentValuePath,
       typePath: currentTypePath,
@@ -1179,6 +1181,7 @@ export function jzodTypeCheck(
             // );
             const resolveUnionResult = jzodUnionResolvedTypeForArray(
               recursivelyUnfoldedUnionSchema.result,
+              effectiveRawSchema,
               effectiveRawSchema.discriminator,
               valueObject,
               currentValuePath,

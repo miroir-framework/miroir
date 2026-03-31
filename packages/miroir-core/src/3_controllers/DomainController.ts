@@ -2473,10 +2473,24 @@ export class DomainController implements DomainControllerInterface {
 
     for (const currentAction of buildPlusRuntimeCompositeAction.payload.actionSequence) {
       let actionResult: Action2ReturnType | undefined = undefined;
+      const currentActionlabel: string | undefined = currentAction.actionLabel
+        ? currentAction.actionLabel instanceof String
+          ? (currentAction.actionLabel as string)
+          : transformer_extended_apply(
+              "runtime",
+              [],
+              JSON.stringify(currentAction.actionLabel),
+              currentAction.actionLabel as any as TransformerForBuildPlusRuntime,
+              "value",
+              modelEnvironment,
+              actionParamValues, // queryParams
+              localContext, // contextResults
+            )
+        : currentAction.actionType;
       try {
-        LoggerGlobalContext.setAction(currentAction.actionLabel);
+        LoggerGlobalContext.setAction(currentActionlabel);
         // Also set in MiroirActivityTracker for MiroirEventService
-        this.miroirContext.miroirActivityTracker.setAction(currentAction.actionLabel);
+        this.miroirContext.miroirActivityTracker.setAction(currentActionlabel);
 
         switch (currentAction.actionType) {
           case "compositeActionSequence": {
@@ -2541,7 +2555,7 @@ export class DomainController implements DomainControllerInterface {
             const resolvedAction = transformer_extended_apply(
               "runtime",
               [],
-              currentAction.actionLabel,
+              currentActionlabel,
               currentAction as any as TransformerForBuildPlusRuntime,
               "value",
               modelEnvironment,
@@ -2562,7 +2576,7 @@ export class DomainController implements DomainControllerInterface {
               return new Action2Error(
                 "FailedToResolveTemplate",
                 "handleRuntimeCompositeAction error resolving action",
-                [currentAction.actionLabel ?? currentAction.actionType],
+                [currentActionlabel],
                 undefined, // innerError,
                 resolvedAction,
               );
@@ -2683,7 +2697,7 @@ export class DomainController implements DomainControllerInterface {
         return new Action2Error(
           "FailedTestAction",
           "handleRuntimeCompositeAction error: " + JSON.stringify(error, null, 2),
-          [currentAction.actionLabel ?? currentAction.actionType],
+          [currentActionlabel],
         );
       } finally {
         LoggerGlobalContext.setCompositeAction(undefined);

@@ -57,6 +57,7 @@ export interface JzodUnionResolvedTypeReturnTypeError {
   valuePath: (string | number)[];
   typePath: (string | number)[];
   value?: any;
+  rawSchema?: JzodElement;
   concreteUnrolledJzodSchemas?: JzodElement[];
   unionChoices?: JzodObject[] | (JzodArray | JzodTuple)[];
   innerError?: SelectUnionBranchFromDiscriminatorReturnTypeError;

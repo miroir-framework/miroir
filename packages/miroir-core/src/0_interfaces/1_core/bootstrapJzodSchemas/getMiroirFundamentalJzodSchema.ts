@@ -467,6 +467,13 @@ export function getMiroirFundamentalJzodSchema(
           optInDiscriminator: true,
           discriminator: ["transformerType", "interpolation"],
           definition: [
+            {
+              type: "string"
+            },
+            {
+              type: "number"
+            },
+            { type: "boolean" },
             // {
             //   type: "schemaReference",
             //   definition: {
@@ -3563,7 +3570,7 @@ export function getMiroirFundamentalJzodSchema(
     createLocalizedInnerResolutionStoreForExtendedSchemas(
       jzodElementDependenciesJzodReference,
       jzodElement_extendedSchemas, // extendedSchemas,
-      transformerForBuildCarryOnSchemaReference,
+      transformerForBuildPlusRuntimeCarryOnSchemaReference,// transformerForBuildCarryOnSchemaReference,
       "transformerType", // mlElementTemplateSchemaDiscriminator
       resolveReferencesWithCarryOn.bind(undefined, {
         [miroirFundamentalJzodSchemaUuid]: jzodElementDependenciesJzodReference,
@@ -3581,7 +3588,7 @@ export function getMiroirFundamentalJzodSchema(
     createLocalizedInnerResolutionStoreWithCarryOn(
       jzodElementDependenciesJzodReference,
       jzodElement_extendedSchemas, // extendedSchemas,
-      transformerForBuildCarryOnSchemaReference,
+      transformerForBuildPlusRuntimeCarryOnSchemaReference, // transformerForBuildCarryOnSchemaReference,
       "transformerType", // mlElementTemplateSchemaDiscriminator
       resolveReferencesWithCarryOn.bind(undefined, {
         [miroirFundamentalJzodSchemaUuid]: jzodElementDependenciesJzodReference
@@ -3678,7 +3685,7 @@ export function getMiroirFundamentalJzodSchema(
     transformerForBuildCarryOnSchemaReference,
     ["transformerType", "interpolation"],
     domainActionDependencySet,
-    "buildDomainAction_",
+    "buildDomainAction_", // prefix
     false, // alwaysPropagate
     absoluteMiroirFundamentalJzodSchema,
     extendedSchemas,
@@ -3704,7 +3711,7 @@ export function getMiroirFundamentalJzodSchema(
     },
     ["transformerType", "interpolation"],
     domainActionDependencySet,
-    "buildPlusRuntimeDomainAction_",
+    "buildPlusRuntimeDomainAction_", // prefix
     false, // alwaysPropagate
     absoluteMiroirFundamentalJzodSchema,
     extendedSchemas

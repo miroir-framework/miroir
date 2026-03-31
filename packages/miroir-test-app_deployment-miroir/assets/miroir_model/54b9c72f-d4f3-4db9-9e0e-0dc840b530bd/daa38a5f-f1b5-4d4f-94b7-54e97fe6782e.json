@@ -101,6 +101,13 @@
       "definition": {
         "type": "union",
         "discriminator": "runnerType",
+        "tag": {
+          "value": {
+            "defaultLabel": "Definition",
+            "description": "The definition of the runner, which can be either a custom runner or an action runner",
+            "display": { "displayedAttributeValueWhenFolded": "definition.runnerType.definition" }
+          }
+        },
         "definition": [
           {
             "type": "object",

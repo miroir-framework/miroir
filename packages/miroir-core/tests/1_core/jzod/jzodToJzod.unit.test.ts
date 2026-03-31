@@ -54,7 +54,6 @@ function runTest(
 describe(
   'JzodToJzod',
   () => {
-
     // ###########################################################################################
     it('jzod mlElementTemplate conversion',
       () => {

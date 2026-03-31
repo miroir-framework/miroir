@@ -34,7 +34,7 @@
                 "type": "uuid",
                 "tag": {
                   "value": {
-                    "canBeTemplate": false,
+                    "canBeTemplate": true,
                     "defaultLabel": "Application",
                     "description": "Application UUID where instances will be created",
                     "foreignKeyParams": {
@@ -84,7 +84,7 @@
                 "type": "array",
                 "tag": {
                   "value": {
-                    "id": 2,
+                    "canBeTemplate": true,
                     "defaultLabel": "Entity Instances (objects) to create",
                     "description": "Array of entity instances to create. Each must have uuid and parentUuid."
                   }
@@ -142,7 +142,7 @@
                 "type": "uuid",
                 "tag": {
                   "value": {
-                    "canBeTemplate": false,
+                    "canBeTemplate": true,
                     "defaultLabel": "Application",
                     "foreignKeyParams": {
                       "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
@@ -160,6 +160,7 @@
                 "optional": true,
                 "tag": {
                   "value": {
+                    "canBeTemplate": true,
                     "defaultLabel": "Parent Uuid",
                     "description": "UUID of parent entity under which instances will be deleted"
                   }
@@ -227,7 +228,7 @@
                 "type": "uuid",
                 "tag": {
                   "value": {
-                    "canBeTemplate": false,
+                    "canBeTemplate": true,
                     "defaultLabel": "Application",
                     "foreignKeyParams": {
                       "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
@@ -312,7 +313,7 @@
                 "type": "uuid",
                 "tag": {
                   "value": {
-                    "canBeTemplate": false,
+                    "canBeTemplate": true,
                     "defaultLabel": "Application",
                     "description": "Application UUID",
                     "foreignKeyParams": {
@@ -414,7 +415,7 @@
                 "type": "uuid",
                 "tag": {
                   "value": {
-                    "canBeTemplate": false,
+                    "canBeTemplate": true,
                     "defaultLabel": "Application",
                     "foreignKeyParams": {
                       "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
@@ -488,7 +489,7 @@
                 "type": "uuid",
                 "tag": {
                   "value": {
-                    "canBeTemplate": false,
+                    "canBeTemplate": true,
                     "defaultLabel": "Application",
                     "description": "UUID of Application to query",
                     "foreignKeyParams": {
@@ -570,7 +571,7 @@
                 "type": "uuid",
                 "tag": {
                   "value": {
-                    "canBeTemplate": false,
+                    "canBeTemplate": true,
                     "defaultLabel": "Application",
                     "description": "Application UUID to query",
                     "foreignKeyParams": {

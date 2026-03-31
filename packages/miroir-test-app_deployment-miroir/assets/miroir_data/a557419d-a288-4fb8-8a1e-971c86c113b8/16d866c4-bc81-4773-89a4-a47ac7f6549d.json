@@ -44,6 +44,13 @@
             "type": "array",
             "definition": {
               "type": "object",
+              "tag": {
+                "value": {
+                  "defaultLabel": "Attribute Key-Value Pair",
+                  "description": "The definition of the attribute key and value. The key and value can be set as static values or can be generated dynamically using transformers. When using transformers, the transformer result will be used as the attribute key or value, so the transformer result must be a string for the key and can be any value for the attribute value.",
+                  "canBeTemplate": false
+                }
+              },
               "definition": {
                 "attributeKey": {
                   "type": "union",
