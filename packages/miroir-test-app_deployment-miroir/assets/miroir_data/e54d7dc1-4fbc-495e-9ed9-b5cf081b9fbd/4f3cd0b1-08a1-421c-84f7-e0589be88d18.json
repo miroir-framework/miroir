@@ -440,7 +440,7 @@
                   },
                   "model": {
                     "emulatedServerType": "sql",
-                    "forceOptionalToUndefined": true,
+                    "forceNullOptionalAttributeToUndefined": true,
                     "connectionString": {
                       "transformerType": "getFromParameters",
                       "referencePath": [
@@ -465,7 +465,7 @@
                   },
                   "data": {
                     "emulatedServerType": "sql",
-                    "forceOptionalToUndefined": true,
+                    "forceNullOptionalAttributeToUndefined": true,
                     "connectionString": {
                       "transformerType": "getFromParameters",
                       "referencePath": [

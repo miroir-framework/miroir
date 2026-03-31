@@ -128,7 +128,7 @@ export class SqlDbStoreSection
     const effectiveTableName = isExternal && entityDefinition.externalDataSource?.tableName
       ? entityDefinition.externalDataSource.tableName
       : entity.name;
-    const optionalNonNullableAttributes = this.forceOptionalToUndefined
+    const optionalNonNullableAttributes = this.forceNullOptionalAttributeToUndefined
       ? getOptionalNonNullableAttributes(entityDefinition)
       : undefined;
     const result = {
@@ -159,8 +159,8 @@ export class SqlDbStoreSection
       effectiveSchema,
       "effectiveTableName",
       effectiveTableName,
-      "this.forceOptionalToUndefined",
-      this.forceOptionalToUndefined,
+      "this.forceNullOptionalAttributeToUndefined",
+      this.forceNullOptionalAttributeToUndefined,
       "optionalNonNullableAttributes",
       optionalNonNullableAttributes,
     );

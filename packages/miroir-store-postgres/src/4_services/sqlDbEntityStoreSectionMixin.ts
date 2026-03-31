@@ -51,7 +51,7 @@ export function SqlDbEntityStoreSectionMixin<TBase extends typeof MixedSqlDbInst
       // dataConnectionString:string,
       // dataSchema:string,
       // logHeader:string,
-      // forceOptionalToUndefined: boolean,
+      // forceNullOptionalAttributeToUndefined: boolean,
       // dataStore: PersistenceStoreDataSectionInterface,
       ...args: any[]
     ) {

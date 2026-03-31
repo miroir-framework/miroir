@@ -356,8 +356,7 @@ export function getMiroirFundamentalJzodSchema(
         transformerForBuild_getUniqueValues: miroirTransformersForBuild.transformer_getUniqueValues,
         transformerForBuild_ansiColumnsToJzodSchema:
           miroirTransformersForBuild.transformer_ansiColumnsToJzodSchema,
-        transformerForBuild_concatLists:
-          miroirTransformersForBuild.transformer_concatLists,
+        transformerForBuild_concatLists: miroirTransformersForBuild.transformer_concatLists,
         // MLS
         ...Object.fromEntries(
           Object.entries(mlsTransformers).map(([key, value]) => [
@@ -1193,7 +1192,12 @@ export function getMiroirFundamentalJzodSchema(
             emulatedServerType: { type: "literal", definition: "sql" },
             connectionString: { type: "string" },
             schema: { type: "string" },
-            forceOptionalToUndefined: { type: "boolean", optional: true },
+            forceNullOptionalAttributeToUndefined: {
+              type: "boolean",
+              optional: true,
+              tag: { value: { defaultLabel: "Force Null Optional Attribute To Undefined" }, 
+              initializeTo: { initializeToType: "value", value: true } },
+            },
           },
         },
         mongoDbStoreSectionConfiguration: {

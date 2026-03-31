@@ -26,7 +26,7 @@ export class SqlDbDataStoreSection extends MixedSqlDbInstanceStoreSection implem
     sqlDbStoreName: string, // used only for debugging purposes
     dataConnectionString:string,
     dataSchema:string,
-    forceOptionalToUndefined: boolean = false,
+    forceNullOptionalAttributeToUndefined: boolean = false,
   ) {
     super(
       applicationSection,
@@ -34,7 +34,7 @@ export class SqlDbDataStoreSection extends MixedSqlDbInstanceStoreSection implem
       dataConnectionString,
       dataSchema,
       'SqlDbDataStoreSection ' + sqlDbStoreName + ' section data',
-      forceOptionalToUndefined,
+      forceNullOptionalAttributeToUndefined,
     )
   }
 

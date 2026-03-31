@@ -8,7 +8,7 @@
           "emulatedServerType": "sql",
           "connectionString": "postgres://postgres:postgres@localhost:5432/postgres",
           "schema": "miroir",
-          "forceOptionalToUndefined": true
+          "forceNullOptionalAttributeToUndefined": true
         },
         "data": {
           "emulatedServerType": "indexedDb",
@@ -20,7 +20,7 @@
           "emulatedServerType": "sql",
           "connectionString": "postgres://postgres:postgres@localhost:5432/postgres",
           "schema": "library",
-          "forceOptionalToUndefined": true
+          "forceNullOptionalAttributeToUndefined": true
         },
         "data": {
           "emulatedServerType": "indexedDb",

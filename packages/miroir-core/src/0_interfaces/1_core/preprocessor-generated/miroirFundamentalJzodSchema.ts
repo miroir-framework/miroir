@@ -14319,9 +14319,18 @@ export const miroirFundamentalJzodSchema = {
           "schema": {
             "type": "string"
           },
-          "forceOptionalToUndefined": {
+          "forceNullOptionalAttributeToUndefined": {
             "type": "boolean",
-            "optional": true
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "Force Null Optional Attribute To Undefined"
+              },
+              "initializeTo": {
+                "initializeToType": "value",
+                "value": true
+              }
+            }
           }
         }
       },

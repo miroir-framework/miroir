@@ -19,19 +19,19 @@
             "emulatedServerType": "sql",
             "connectionString": "postgres://postgres:postgres@host.docker.internal:5432/postgres",
             "schema": "miroirAdmin",
-            "forceOptionalToUndefined": true
+            "forceNullOptionalAttributeToUndefined": true
           },
           "model": {
             "emulatedServerType": "sql",
             "connectionString": "postgres://postgres:postgres@host.docker.internal:5432/postgres",
             "schema": "miroir",
-            "forceOptionalToUndefined": true
+            "forceNullOptionalAttributeToUndefined": true
           },
           "data": {
             "emulatedServerType": "sql",
             "connectionString": "postgres://postgres:postgres@host.docker.internal:5432/postgres",
             "schema": "miroir",
-            "forceOptionalToUndefined": true
+            "forceNullOptionalAttributeToUndefined": true
           }
         },
         "f714bb2f-a12d-4e71-a03b-74dcedea6eb4": {
@@ -39,19 +39,19 @@
             "emulatedServerType": "sql",
             "connectionString": "postgres://postgres:postgres@host.docker.internal:5432/postgres",
             "schema": "miroirAdmin",
-            "forceOptionalToUndefined": true
+            "forceNullOptionalAttributeToUndefined": true
           },
           "model": {
             "emulatedServerType": "sql",
             "connectionString": "postgres://postgres:postgres@host.docker.internal:5432/postgres",
             "schema": "library",
-            "forceOptionalToUndefined": true
+            "forceNullOptionalAttributeToUndefined": true
           },
           "data": {
             "emulatedServerType": "sql",
             "connectionString": "postgres://postgres:postgres@host.docker.internal:5432/postgres",
             "schema": "library",
-            "forceOptionalToUndefined": true
+            "forceNullOptionalAttributeToUndefined": true
           }
         }
       }

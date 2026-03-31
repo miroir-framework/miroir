@@ -53,7 +53,7 @@ export function miroirPostgresStoreSectionStartup(configurationService: Configur
         const sqlDbStoreName: string = config.connectionString + ":" + config.schema
         return Promise.resolve(
           config.emulatedServerType == "sql" && dataStore
-            ? new SqlDbModelStoreSection("model", sqlDbStoreName, config.connectionString, config.schema, dataStore, config.forceOptionalToUndefined ?? false)
+            ? new SqlDbModelStoreSection("model", sqlDbStoreName, config.connectionString, config.schema, dataStore, config.forceNullOptionalAttributeToUndefined ?? false)
             : new ErrorModelStore()
         )
       } else {
@@ -75,7 +75,7 @@ export function miroirPostgresStoreSectionStartup(configurationService: Configur
         const sqlDbStoreName: string = config.connectionString + ":" + config.schema
         return Promise.resolve(
           config.emulatedServerType == "sql"
-            ? new SqlDbDataStoreSection("data", sqlDbStoreName, config.connectionString, config.schema, config.forceOptionalToUndefined ?? false)
+            ? new SqlDbDataStoreSection("data", sqlDbStoreName, config.connectionString, config.schema, config.forceNullOptionalAttributeToUndefined ?? false)
             : new ErrorDataStore()
         );
       } else {
