@@ -91,6 +91,7 @@ import {
   type StoredMiroirTheme,
   type Query,
   type DataSet,
+  type SelfApplication,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import type { MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
 import type { EntityInstanceWithName } from "../0_interfaces/1_core/Instance";
@@ -143,6 +144,9 @@ export const defaultMiroirMetaModel: MetaModel = {
   applicationName: selfApplicationMiroir.name,
   // configuration: [instanceConfigurationReference],
   storedQueries: [],
+  applications: [
+    selfApplicationMiroir
+  ],
   entities: [
     // this is used in tests, the bootstrap entities have to come first
     entityEntity as Entity,
@@ -318,6 +322,7 @@ export function getReportsAndEntitiesDefinitionsForDeploymentUuid(
 export const emptyApplicationModel: MetaModel = {
   applicationUuid: "",
   applicationName: "",
+  applications: [],
   applicationVersions: [],
   applicationVersionCrossEntityDefinition: [],
   endpoints: [],
@@ -418,15 +423,18 @@ export async function extractApplicationModel(
     const reports = await extractEntityInstances(storeController, "model", entityReport.uuid, "reports");
     const jzodSchemas = await extractEntityInstances(storeController, "model", entityJzodSchema.uuid, "jzod schemas");
     const queries = await extractEntityInstances(storeController, "model", entityQueryVersion.uuid, "queries");
-    const applicationVersions = await extractEntityInstances(storeController, "model", entitySelfApplicationVersion.uuid, "application versions");
     const runners = await extractEntityInstances(storeController, "model", entityRunner.uuid, "runners");
     const themes = await extractEntityInstances(storeController, "model", entityTheme.uuid, "themes");
+    // 
+    const applications = await extractEntityInstances(storeController, "model", entitySelfApplication.uuid, "applications");
+    const applicationVersions = await extractEntityInstances(storeController, "model", entitySelfApplicationVersion.uuid, "application versions");
 
     // Assemble the MetaModel
     console.log("\n8. Assembling MetaModel structure...");
     const libraryMetaModel: MetaModel = {
       applicationUuid: applicationUuid,
       applicationName: applicationName,
+      applications: applications as SelfApplication[],
       entities: entities as Entity[],
       entityDefinitions: entityDefinitions as EntityDefinition[],
       endpoints: endpoints as EndpointDefinition[],

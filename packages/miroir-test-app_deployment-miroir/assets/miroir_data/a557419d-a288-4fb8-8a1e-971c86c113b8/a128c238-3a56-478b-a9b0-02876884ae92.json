@@ -1,0 +1,48 @@
+{
+  "uuid": "a128c238-3a56-478b-a9b0-02876884ae92",
+  "name": "concatLists",
+  "defaultLabel": "concatLists",
+  "description": "Concatenates multiple lists into a single list. Takes an array of transformers, each of which must resolve to an array, and returns their concatenation in order.",
+  "parentUuid": "a557419d-a288-4fb8-8a1e-971c86c113b8",
+  "parentDefinitionVersionUuid": "54a16d69-c1f0-4dd7-aba4-a2cda883586c",
+  "parentName": "TransformerDefinition",
+  "classification": "basic",
+  "transformerInterface": {
+    "inputOutput": {
+      "input": "array",
+      "output": "array"
+    },
+    "transformerParameterSchema": {
+      "transformerType": {
+        "type": "literal",
+        "definition": "concatLists"
+      },
+      "transformerDefinition": {
+        "type": "object",
+        "definition": {
+          "lists": {
+            "type": "array",
+            "definition": {
+              "type": "any"
+            },
+            "description": "The lists to concatenate. Each element must resolve to an array."
+          }
+        }
+      }
+    },
+    "transformerResultSchema": {
+      "returns": "mlSchema",
+      "definition": {
+        "type": "array",
+        "definition": {
+          "type": "any"
+        }
+      }
+    }
+  },
+  "transformerImplementation": {
+    "transformerImplementationType": "libraryImplementation",
+    "inMemoryImplementationFunctionName": "handleTransformer_concatLists",
+    "sqlImplementationFunctionName": "sqlStringForConcatListsTransformer"
+  }
+}

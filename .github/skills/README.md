@@ -48,6 +48,24 @@ Create and update **Miroir Queries** (with Extractors, Combiners, and Transforme
 
 ---
 
+### Process & Quality Skills
+
+#### 📊 [assess-evolution-quality](assess-evolution-quality/)
+Assess the quality of a software project **evolution** from its git history and GitHub issue history.
+
+**Use when:**
+- Wanting a structured evaluation of how well a project evolves (lean/agile lens)
+- Reviewing a team's practices around commits, tests, refactoring, and issue management
+- Identifying mistakes — changes that were later reversed — and their root causes
+- Getting prioritized recommendations to improve evolution throughput and quality
+
+**Output**: A comprehensive MD report with topic ratings (lacking / good / excellent), examples,
+counter-examples, and a "Mistakes" catalogue of reversed decisions.
+
+**Arguments**: `[repo-path] [output-report.md]`
+
+---
+
 ### Other Skills
 
 #### [create-skill](create-skill/)

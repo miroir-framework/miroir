@@ -37,7 +37,6 @@ export const InnerRunnerView = <T extends Record<string, any>>({
   runnerName,
   application,
   applicationDeploymentMap,
-  // deploymentUuid,
   formMLSchema,
   initialFormValue,
   action,
@@ -71,12 +70,13 @@ export const InnerRunnerView = <T extends Record<string, any>>({
       } else {
         return transformer_extended_apply_wrapper(
           context.miroirContext.miroirActivityTracker, // activityTracker
-          "runtime", // step
+          "build", // step
           [], // transformerPath
           "formMlSchemaAsTransformer", // transformerLabel
           formMLSchema.transformer as any as TransformerForBuildPlusRuntime, // TODO: correct type
           currentMiroirModelEnvironment, // TODO: the DeploymentUuid can change, need to handle that?
-          { [runnerName]: formikContext.values[runnerName] }, // transformerParams
+          { 
+            [runnerName]: formikContext.values[runnerName] }, // transformerParams
           // { [runnerName]: { deploymentUuidQuery: deploymentUuidFromApplicationUuid } }, // transformerParams
           {}, // contextResults
           "value"

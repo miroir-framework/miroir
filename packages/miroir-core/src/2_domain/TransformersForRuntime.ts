@@ -145,6 +145,7 @@ import {
   transformer_getObjectValues,
   transformer_getFromParameters,
   transformer_getUniqueValues,
+  transformer_concatLists,
   type ResolveBuildTransformersTo,
   type Step,
   transformer_getActiveDeployment,
@@ -238,7 +239,11 @@ export function getDefaultValueForJzodSchemaWithResolution(
     "forceOptional",
     forceOptional,
     "effectiveSchemaOrError",
-    effectiveSchemaOrError
+    effectiveSchemaOrError,
+    "transformerParams",
+    transformerParams,
+    "contextResults",
+    contextResults,
   );
 
   // if (Object.hasOwn(effectiveSchemaOrError, 'error')) {
@@ -269,7 +274,7 @@ export function getDefaultValueForJzodSchemaWithResolution(
   ) {
     const result = effectiveSchema.tag.value.initializeTo.value;
     log.info(
-      "getDefaultValueForJzodSchemaWithResolutionWithResolution returning UUID from tag.value.initializeTo.value",
+      "getDefaultValueForJzodSchemaWithResolutionWithResolution returning value from tag.value.initializeTo.value",
       "currentValuePath",
       currentValuePath,
       "result",
@@ -287,13 +292,13 @@ export function getDefaultValueForJzodSchemaWithResolution(
     const result = transformer_extended_apply_wrapper(
       // TODO: transformer_extended_apply instead
       undefined, // activityTracker
-      "build",
+      "runtime",
       [...currentValuePath, "initializeTo"],
       undefined, // label
       effectiveSchema.tag.value.initializeTo.transformer,
       miroirEnvironment,
       transformerParams, // parameters
-      {}, // runtimeContext
+      contextResults, // runtimeContext
       "value",
       reduxDeploymentsState,
     );
@@ -312,7 +317,7 @@ export function getDefaultValueForJzodSchemaWithResolution(
 
       // TODO: do not call this when the object has a initializeTo tag!
       Object.entries(resolvedObjectType.definition)
-        .filter((a) => !a[1].optional)
+        .filter((a) => forceOptional || !a[1].optional || a[1].tag?.value?.initializeTo)
         .forEach((a) => {
           const attributeName = a[0];
           const attributeValue = getDefaultValueForJzodSchemaWithResolution(
@@ -334,18 +339,18 @@ export function getDefaultValueForJzodSchemaWithResolution(
           );
           result[attributeName] = attributeValue;
         });
-      log.info(
-        "getDefaultValueForJzodSchemaWithResolution for object type",
-        "effectiveSchema",
-        effectiveSchema,
-        "mlSchema",
-        mlSchema,
-        "resolvedObjectType",
-        resolvedObjectType,
-        "result",
-        Object.keys(result),
-        result
-      );
+      // log.info(
+      //   "getDefaultValueForJzodSchemaWithResolution for object type",
+      //   "effectiveSchema",
+      //   effectiveSchema,
+      //   "mlSchema",
+      //   mlSchema,
+      //   "resolvedObjectType",
+      //   resolvedObjectType,
+      //   "result",
+      //   Object.keys(result),
+      //   result
+      // );
       return result;
     }
     case "string": {
@@ -394,13 +399,13 @@ export function getDefaultValueForJzodSchemaWithResolution(
         const result = transformer_extended_apply_wrapper(
           //TODO: transformer_extended_apply instead
           undefined, // activityTracker
-          "build",
+          "runtime",
           [...currentValuePath, "initializeTo"],
           undefined,
           effectiveSchema.tag.value.initializeTo.transformer,
           miroirEnvironment,
           transformerParams, // parameters
-          {}, // runtimeContext
+          contextResults, // runtimeContext
           "value",
           reduxDeploymentsState,
         );
@@ -520,7 +525,7 @@ export function getDefaultValueForJzodSchemaWithResolution(
         return mlSchema.tag?.value?.initializeTo.value;
       } else {
         return getDefaultValueForJzodSchemaWithResolution(
-          step,
+          "runtime",
           effectiveSchema.definition[0],
           rootObject,
           rootLessListKey,
@@ -602,6 +607,8 @@ export function getDefaultValueForJzodSchemaWithResolutionNonHook<T extends Miro
     forceOptional,
     "transformerParams",
     transformerParams,
+    "contextResults",
+    contextResults,
     "currentDefaultValue",
     currentDefaultValue,
     "currentValuePath",
@@ -676,7 +683,7 @@ export function defaultValueForMLSchemaTransformer(
     applicationDeploymentMap,
     deploymentUuid, // deploymentUuid
     modelEnvironment, // miroirEnvironment
-    {}, // transformerParams (empty for this use case)
+    transformerParams, 
     contextResults,
     reduxDeploymentsState,
     undefined // relativeReferenceJzodContext
@@ -741,6 +748,7 @@ const inMemoryTransformerImplementations: Record<string, ITransformerHandler<any
   transformer_unfoldSchemaOnce: unfoldSchemaOnceTransformer,
   transformer_jzodTypeCheck: jzodTypeCheckTransformer,
   handleTransformer_ansiColumnsToJzodSchema,
+  handleTransformer_concatLists,
 };
 
 // transformer_defaultValueForMLSchema
@@ -775,6 +783,7 @@ export const applicationTransformerDefinitions: Record<string, TransformerDefini
   getFromParameters: transformer_getFromParameters,
   getUniqueValues: transformer_getUniqueValues,
   ansiColumnsToJzodSchema: transformer_ansiColumnsToJzodSchema,
+  concatLists: transformer_concatLists,
   // MLS
   ...Object.fromEntries(
     Object.entries(mlsTransformers).map(([key, value]) => [
@@ -1387,7 +1396,7 @@ function handleTransformer_createObjectFromPairs(
   //   // // "innerEntry",
   //   // // JSON.stringify(innerEntry, null, 2)
   // );
-  const resolvedApplyTo = resolveApplyTo(
+  const resolvedApplyTo = transformer.applyTo?resolveApplyTo(
     step,
     transformerPath,
     objectName,
@@ -1396,7 +1405,7 @@ function handleTransformer_createObjectFromPairs(
     modelEnvironment,
     queryParams,
     contextResults
-  );
+  ):{};
 
   if (resolvedApplyTo instanceof TransformerFailure) {
     log.error(
@@ -3085,6 +3094,10 @@ export function handleTransformer_plus(
         transformerPath,
         failureOrigin: ["handleTransformer_plus"],
         failureMessage: `Type mismatch at index ${i}: cannot apply + to ${resultType} and ${nextType}. All operands must be of the same type (number, string, or bigint).`,
+        queryContext: {
+          result,
+          nextValue,
+        } as any
       });
     }
 
@@ -4261,4 +4274,64 @@ export function handleTransformer_ansiColumnsToJzodSchema(
       failureMessage: e?.message ?? String(e),
     });
   }
+}
+
+// ################################################################################################
+export function handleTransformer_concatLists(
+  step: Step,
+  transformerPath: string[],
+  label: string | undefined,
+  transformer: {
+    label?: string;
+    interpolation?: "build" | "runtime";
+    transformerType: "concatLists";
+    lists: TransformerForBuildPlusRuntime[];
+  },
+  resolveBuildTransformersTo: ResolveBuildTransformersTo,
+  modelEnvironment: MiroirModelEnvironment,
+  transformerParams: Record<string, any>,
+  contextResults?: Record<string, any>,
+  reduxDeploymentsState?: ReduxDeploymentsState | undefined
+): TransformerReturnType<any> {
+  if (!transformer.lists || transformer.lists.length === 0) {
+    return [];
+  }
+
+  const result: any[] = [];
+  for (let i = 0; i < transformer.lists.length; i++) {
+    const resolvedList = defaultTransformers.transformer_extended_apply(
+      step,
+      [...transformerPath, "lists", i.toString()],
+      transformer.label ? `${transformer.label}_list${i}` : `list${i}`,
+      transformer.lists[i],
+      resolveBuildTransformersTo,
+      modelEnvironment,
+      transformerParams,
+      contextResults,
+      reduxDeploymentsState
+    );
+
+    if (resolvedList instanceof TransformerFailure) {
+      return new TransformerFailure({
+        queryFailure: "FailedTransformer",
+        transformerPath,
+        failureOrigin: ["handleTransformer_concatLists"],
+        failureMessage: `Failed to resolve list at index ${i}`,
+        innerError: resolvedList,
+      });
+    }
+
+    if (!Array.isArray(resolvedList)) {
+      return new TransformerFailure({
+        queryFailure: "FailedTransformer",
+        transformerPath,
+        failureOrigin: ["handleTransformer_concatLists"],
+        failureMessage: `concatLists: element at index ${i} is not an array, got: ${typeof resolvedList}`,
+      });
+    }
+
+    result.push(...resolvedList);
+  }
+
+  return result;
 }

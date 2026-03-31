@@ -29,6 +29,7 @@ import {
   TransformerForBuildPlusRuntime_getObjectEntries,
   TransformerForBuildPlusRuntime_getObjectValues,
   TransformerForBuildPlusRuntime_getUniqueValues,
+  TransformerForBuildPlusRuntime_concatLists,
   defaultMetaModelEnvironment,
   defaultTransformerInput,
   type TransformerForBuildPlusRuntime_ifThenElse,
@@ -206,6 +207,7 @@ const sqlTransformerImplementations: Record<string, ITransformerHandler<any>> = 
   sqlStringForObjectValuesTransformer,
   sqlStringForParameterReferenceTransformer,
   sqlStringForPlusTransformer,
+  sqlStringForConcatListsTransformer,
   sqlStringForUniqueTransformer,
 }
 
@@ -1476,6 +1478,108 @@ function sqlStringForPlusTransformer(
     columnNameContainingJsonValue: topLevelTransformer ? withClauseColumnName??"plus" : undefined,
     usedContextEntries: allUsedContextEntries,
   };
+}
+
+// ################################################################################################
+// SQL implementation of the "concatLists" transformer
+// Concatenates multiple JSON arrays using the JSONB || operator
+function sqlStringForConcatListsTransformer(
+  actionRuntimeTransformer: TransformerForBuildPlusRuntime_concatLists,
+  preparedStatementParametersCount: number,
+  indentLevel: number,
+  queryParams: Record<string, any>,
+  definedContextEntries: Record<string, SqlContextEntry>,
+  useAccessPathForContextReference: boolean,
+  topLevelTransformer: boolean,
+  withClauseColumnName?: string,
+  iterateOn?: string,
+): Domain2QueryReturnType<SqlStringForTransformerElementValue> {
+  const lists = actionRuntimeTransformer.lists;
+  const outputColName = withClauseColumnName ?? "concatLists";
+
+  if (!lists || lists.length === 0) {
+    const emptyArraySql = "'[]'::jsonb";
+    return {
+      type: "json_array",
+      sqlStringOrObject: topLevelTransformer
+        ? sqlQuery(indentLevel, {
+            queryPart: "query",
+            select: [{ queryPart: "defineColumn", value: emptyArraySql, as: outputColName }],
+          })
+        : emptyArraySql,
+      preparedStatementParameters: [],
+      resultAccessPath: topLevelTransformer ? [0, outputColName] : undefined,
+      columnNameContainingJsonValue: topLevelTransformer ? outputColName : undefined,
+      usedContextEntries: [],
+    };
+  }
+
+  let preparedStatementParameters: any[] = [];
+  const evaluatedLists: SqlStringForTransformerElementValue[] = [];
+
+  for (let i = 0; i < lists.length; i++) {
+    const evaluated = sqlStringForRuntimeTransformer(
+      lists[i] as TransformerForBuildPlusRuntime,
+      preparedStatementParameters.length + preparedStatementParametersCount,
+      indentLevel + 1,
+      queryParams,
+      definedContextEntries,
+      useAccessPathForContextReference,
+      true, // always top-level to get proper SELECT subqueries for scalar extraction
+    );
+    if (evaluated instanceof Domain2ElementFailed) {
+      return evaluated;
+    }
+    evaluatedLists.push(evaluated);
+    if (evaluated.preparedStatementParameters) {
+      preparedStatementParameters.push(...evaluated.preparedStatementParameters);
+    }
+  }
+
+  // Build JSONB expressions for each resolved list using scalar subqueries
+  const jsonbExpressions: string[] = evaluatedLists.map((evaluated, i) => {
+    const aliasName = `concatLists_item${i}`;
+    switch (evaluated.type) {
+      case "json_array":
+      case "json": {
+        const colName = evaluated.columnNameContainingJsonValue ?? (evaluated.resultAccessPath as any[])?.[1];
+        if (colName) {
+          return `(SELECT "${colName}" FROM (${evaluated.sqlStringOrObject}) AS ${aliasName} LIMIT 1)::jsonb`;
+        }
+        return `(${evaluated.sqlStringOrObject})::jsonb`;
+      }
+      case "table": {
+        return `(SELECT jsonb_agg(t) FROM (${evaluated.sqlStringOrObject}) AS t)`;
+      }
+      default: {
+        return `(${evaluated.sqlStringOrObject})::jsonb`;
+      }
+    }
+  });
+
+  const chainedExpression = jsonbExpressions.join(" || ");
+  const allUsedContextEntries: string[] = evaluatedLists.flatMap(e => e.usedContextEntries ?? []);
+
+  if (topLevelTransformer) {
+    return {
+      type: "json_array",
+      sqlStringOrObject: sqlQuery(indentLevel, {
+        queryPart: "query",
+        select: [{ queryPart: "defineColumn", value: chainedExpression, as: outputColName }],
+      }),
+      preparedStatementParameters,
+      resultAccessPath: [0, outputColName],
+      columnNameContainingJsonValue: outputColName,
+      usedContextEntries: allUsedContextEntries,
+    };
+  } else {
+    return {
+      type: "json_array",
+      sqlStringOrObject: chainedExpression,
+      preparedStatementParameters,
+      usedContextEntries: allUsedContextEntries,
+    };
+  }
 }
 
 // ################################################################################################

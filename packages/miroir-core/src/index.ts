@@ -384,6 +384,7 @@ export {
   // TransformerForRuntime_innerFullObjectTemplate,
   // transformerForRuntime_innerFullObjectTemplate,
   // TransformerForRuntime_constants,
+  TransformerForBuildPlusRuntime_concatLists,
   TransformerForBuildPlusRuntime_InnerReference, TransformerForBuildPlusRuntime_listReducerToSpreadObject, TransformerForBuildPlusRuntime_mapList, TransformerForBuildPlusRuntime_menu_addItem,
   transformerForBuildPlusRuntime_menu_addItem, TransformerForBuildPlusRuntime_mergeIntoObject, TransformerForBuildPlusRuntime_mustacheStringTemplate,
   transformerForBuildPlusRuntime_mustacheStringTemplate, TransformerForBuildPlusRuntime_pickFromList,
@@ -868,6 +869,8 @@ export {
   undoRedoHistorization
 } from "./3_controllers/ConfigurationService";
 export {
+  devRelativePathPrefix,
+  prodRelativePathPrefix,
   DeploymentConfiguration,
   DomainController,
   resetAndInitApplicationDeployment

@@ -49,6 +49,12 @@ export function testBuildPlusRuntimeCompositeActionSuiteForRunner(
       "Runner_CreateEntity.integ.test: testRunnerActions only supports customRunner type",
     );
   }
+  const actionTemplateWithoutTemplates = {
+    ...runner.definition.actionTemplate,
+    payload: { ...runner.definition.actionTemplate.payload },
+  };
+  delete (actionTemplateWithoutTemplates as any).payload.templates;
+
   // const testActions: Record<string, TestCompositeActionParams> = {
   const testActions: TestCompositeActionParams = {
     testActionType: "testBuildPlusRuntimeCompositeActionSuite",
@@ -135,7 +141,8 @@ export function testBuildPlusRuntimeCompositeActionSuiteForRunner(
                   },
                 }]),
                 ...((preRunnerCompositeActions ?? []) as any[]),
-                runner.definition.actionTemplate as any,
+                // runner.definition.actionTemplate as any,
+                actionTemplateWithoutTemplates as any,
                 {
                   actionType: "commit",
                   actionLabel: "commitLibraryLocalCache",

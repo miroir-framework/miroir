@@ -162,7 +162,7 @@ export type AdminStoreFactoryRegister = Map<string,PersistenceStoreAdminSectionF
 
 export interface InitApplicationParameters {
   // TODO: gice actual types to parameters, not just EntityInstance
-  metaModel:MetaModel,
+  metaModel?:MetaModel,
   dataStoreType: DataStoreType,
   selfApplication: SelfApplication,
   applicationModelBranch: EntityInstance,
@@ -185,7 +185,7 @@ export interface PersistenceStoreControllerInterface
     applicationModelBranch: EntityInstance,
     applicationVersion: EntityInstance,
     // applicationStoreBasedConfiguration: EntityInstance
-    metaModel: MetaModel,
+    metaModel?: MetaModel,
   ): Promise<Action2ReturnType>;
 
   createModelStorageSpaceForInstancesOfEntity(

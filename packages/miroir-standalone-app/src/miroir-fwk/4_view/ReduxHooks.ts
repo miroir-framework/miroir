@@ -40,7 +40,8 @@ import {
   selfApplicationMiroir,
   type ApplicationDeploymentMap,
   type Deployment,
-  type Menu
+  type Menu,
+  type ViewParams
 } from "miroir-core";
 import {
   ReduxStateWithUndoRedo,
@@ -288,14 +289,16 @@ export function useReduxDeploymentsStateJzodSchemaSelector<QueryType extends Que
 export function useDefaultValueParams(
   applicationUuid: Uuid | undefined,
   deploymentUuid: Uuid | undefined,
+  viewParams?: ViewParams | undefined,
 ): Record<string, any> {
   const result = useMemo(
     () =>
       ({
         applicationUuid,
         deploymentUuid,
+        viewParams,
       }),
-    [applicationUuid, deploymentUuid]
+    [applicationUuid, deploymentUuid, viewParams]
   );
 
   return result;

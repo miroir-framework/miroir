@@ -2288,7 +2288,7 @@ export function getJzodEndpointEditorTests(
             listKey: "ROOT.testField",
             rootLessListKey: "testField",
             rootLessListKeyArray: ["testField"],
-            rawJzodSchema: entityDefinitionTest.mlSchema,
+            rawJzodSchema: entityDefinitionTest.mlSchema as JzodElement,
             initialFormState: test_createEntityAndReportFromSpreadsheetAndUpdateMenu,
           },
           tests: async (expect: ExpectStatic, container: Container) => {

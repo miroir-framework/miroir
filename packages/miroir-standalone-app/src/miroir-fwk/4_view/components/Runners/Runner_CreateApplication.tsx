@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { v4 as uuidv4 } from 'uuid';
 
 import type {
@@ -6,7 +6,6 @@ import type {
   CompositeActionSequence,
   CompositeActionTemplate,
   Deployment,
-  InitApplicationParameters,
   LoggerInterface,
   MetaModel,
   MiroirModelEnvironment,
@@ -14,20 +13,19 @@ import type {
   ReduxStateWithUndoRedo,
   Runner,
   SyncBoxedExtractorOrQueryRunnerMap,
-  TransformerForBuildPlusRuntime,
   Uuid
 } from "miroir-core";
 import {
-  defaultMiroirMetaModel,
   defaultSelfApplicationDeploymentMap,
+  devRelativePathPrefix,
   formatYYYYMMDD_HHMMSS,
   getDefaultValueForJzodSchemaWithResolutionNonHook,
   MiroirLoggerFactory,
   noValue,
+  prodRelativePathPrefix,
   selfApplicationMiroir
 } from "miroir-core";
 import {
-  transformer,
   type AdminApplication
 } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { getMemoizedReduxDeploymentsStateSelectorMap, useSelector } from "miroir-react";
@@ -42,7 +40,6 @@ import {
 import { packageName } from "../../../../constants.js";
 import { cleanLevel } from "../../constants.js";
 import { useCurrentModelEnvironment } from "../../ReduxHooks.js";
-import { devRelativePathPrefix, prodRelativePathPrefix } from '../Themes/FileSelector.js';
 import type { FormMLSchema } from "./RunnerInterface.js";
 import { RunnerView } from "./RunnerView.js";
 
@@ -925,7 +922,6 @@ function getCreateApplicationActionTemplate(
                         definition:
                           "{{createApplicationAndDeployment.applicationStorage.applicationName}}",
                       },
-                      "_model",
                     ],
                   },
                 },
@@ -947,7 +943,6 @@ function getCreateApplicationActionTemplate(
                         definition:
                           "{{createApplicationAndDeployment.applicationStorage.applicationName}}",
                       },
-                      "_data",
                     ],
                   },
                 },
@@ -1027,7 +1022,6 @@ function getCreateApplicationActionTemplate(
                           "applicationName",
                         ],
                       },
-                      "_model",
                     ],
                   },
                 },
@@ -1044,7 +1038,6 @@ function getCreateApplicationActionTemplate(
                           "applicationName",
                         ],
                       },
-                      "_data",
                     ],
                   },
                 },
@@ -1074,8 +1067,7 @@ function getCreateApplicationActionTemplate(
                           "applicationStorage",
                           "applicationName",
                         ],
-                      },
-                      "_model",
+                      }
                     ],
                   },
                 },
@@ -1093,7 +1085,6 @@ function getCreateApplicationActionTemplate(
                           "applicationName",
                         ],
                       },
-                      "_data",
                     ],
                   },
                 },

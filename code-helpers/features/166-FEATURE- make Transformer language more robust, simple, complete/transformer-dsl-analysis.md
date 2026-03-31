@@ -368,20 +368,20 @@ All three accept **primitive values** (string, number, boolean), **arrays**, and
 
 ### Recommendations
 
-| ID | Recommendation | Priority | Rationale |
-|---|---|---|---|
-| LIST-1 | **Add `filterList`**: `{ applyTo, predicate: Transformer (→ boolean) }` | **Critical** | Most important missing operation. Maps to SQL `WHERE`. Without it, business logic requiring filtering is extremely verbose |
-| LIST-2 | Add `find` / `findFirst`: `{ applyTo, predicate }` → first matching element or `null` | High | Common operation; maps to SQL `... WHERE ... LIMIT 1` |
-| LIST-3 | Add `sortList`: `{ applyTo, by: string \| Transformer, direction: "asc" \| "desc" }` | High | Standalone sort; maps to SQL `ORDER BY` |
-| LIST-4 | Add `listLength` / `count`: `{ applyTo }` → number | High | Simpler than `aggregate`; maps to SQL `array_length` or `COUNT(*)` |
-| LIST-5 | Add `flatMap`: `{ applyTo, elementTransformer }` | Medium | Maps to SQL `LATERAL`; essential for one-to-many transformations |
-| LIST-6 | Add `concatLists`: `{ lists: Transformer[] }` → merged list | Medium | Maps to SQL `ARRAY_CAT` or `UNION ALL` |
-| LIST-7 | Add `some` / `every`: `{ applyTo, predicate }` → boolean | Medium | Maps to SQL `EXISTS (SELECT ... WHERE ...)` / `NOT EXISTS (SELECT ... WHERE NOT ...)` |
-| LIST-8 | Add `slice`: `{ applyTo, start?, end? }` → sub-list | Medium | Maps to SQL `OFFSET ... LIMIT ...` or `array[start:end]` |
-| LIST-9 | Add `reduce` / `fold`: `{ applyTo, initialValue, reducer: Transformer }` | Low | General purpose but hard to map to SQL. May be limited to in-memory-only |
-| LIST-10 | Add `reverse`: `{ applyTo }` | Low | Convenience; SQL can use `ORDER BY ... DESC` |
-| LIST-11 | Add `flatten`: `{ applyTo, depth? }` | Low | Maps to SQL `unnest` |
-| LIST-12 | Add `groupBy` as standalone: `{ applyTo, by: string, collect: Transformer }` → `Record<key, element[]>` | Medium | More general than `aggregate`; maps to SQL `GROUP BY` |
+| ID | Recommendation | Priority | Status | Rationale |
+|---|---|---|---|---|
+| LIST-1 | **Add `filterList`**: `{ applyTo, predicate: Transformer (→ boolean) }` | **Critical** | | Most important missing operation. Maps to SQL `WHERE`. Without it, business logic requiring filtering is extremely verbose |
+| LIST-2 | Add `find` / `findFirst`: `{ applyTo, predicate }` → first matching element or `null` | High | | Common operation; maps to SQL `... WHERE ... LIMIT 1` |
+| LIST-3 | Add `sortList`: `{ applyTo, by: string \| Transformer, direction: "asc" \| "desc" }` | High | | Standalone sort; maps to SQL `ORDER BY` |
+| LIST-4 | Add `listLength` / `count`: `{ applyTo }` → number | High | | Simpler than `aggregate`; maps to SQL `array_length` or `COUNT(*)` |
+| LIST-5 | Add `flatMap`: `{ applyTo, elementTransformer }` | Medium | | Maps to SQL `LATERAL`; essential for one-to-many transformations |
+| LIST-6 | Add `concatLists`: `{ lists: Transformer[] }` → merged list | Medium | DONE | Maps to SQL `ARRAY_CAT` or `UNION ALL` |
+| LIST-7 | Add `some` / `every`: `{ applyTo, predicate }` → boolean | Medium | | Maps to SQL `EXISTS (SELECT ... WHERE ...)` / `NOT EXISTS (SELECT ... WHERE NOT ...)` |
+| LIST-8 | Add `slice`: `{ applyTo, start?, end? }` → sub-list | Medium | | Maps to SQL `OFFSET ... LIMIT ...` or `array[start:end]` |
+| LIST-9 | Add `reduce` / `fold`: `{ applyTo, initialValue, reducer: Transformer }` | Low | | General purpose but hard to map to SQL. May be limited to in-memory-only |
+| LIST-10 | Add `reverse`: `{ applyTo }` | Low | | Convenience; SQL can use `ORDER BY ... DESC` |
+| LIST-11 | Add `flatten`: `{ applyTo, depth? }` | Low | | Maps to SQL `unnest` |
+| LIST-12 | Add `groupBy` as standalone: `{ applyTo, by: string, collect: Transformer }` → `Record<key, element[]>` | Medium | | More general than `aggregate`; maps to SQL `GROUP BY` |
 
 ---
 

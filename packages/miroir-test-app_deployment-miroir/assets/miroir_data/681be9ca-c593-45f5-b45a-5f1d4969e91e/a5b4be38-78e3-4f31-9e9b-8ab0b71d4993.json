@@ -6917,6 +6917,142 @@
                 }
               }
             ]
+          },
+          {
+            "transformerTestType": "transformerTestSuite",
+            "transformerTestLabel": "concatLists",
+            "transformerTests": [
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "concatLists concatenates two string arrays from returnValue",
+                "transformerName": "concatLists_twoStringArrays",
+                "transformer": {
+                  "transformerType": "concatLists",
+                  "interpolation": "runtime",
+                  "lists": [
+                    {
+                      "transformerType": "returnValue",
+                      "interpolation": "runtime",
+                      "value": ["a", "b", "c"]
+                    },
+                    {
+                      "transformerType": "returnValue",
+                      "interpolation": "runtime",
+                      "value": ["d", "e"]
+                    }
+                  ]
+                },
+                "transformerParams": {},
+                "expectedValue": ["a", "b", "c", "d", "e"]
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "concatLists concatenates two arrays from context",
+                "transformerName": "concatLists_twoContextArrays",
+                "transformer": {
+                  "transformerType": "concatLists",
+                  "interpolation": "runtime",
+                  "lists": [
+                    {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referenceName": "list1"
+                    },
+                    {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referenceName": "list2"
+                    }
+                  ]
+                },
+                "transformerParams": {},
+                "transformerRuntimeContext": {
+                  "list1": [1, 2, 3],
+                  "list2": [4, 5]
+                },
+                "expectedValue": [1, 2, 3, 4, 5]
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "concatLists concatenates three arrays of objects",
+                "transformerName": "concatLists_threeObjectArrays",
+                "transformer": {
+                  "transformerType": "concatLists",
+                  "interpolation": "runtime",
+                  "lists": [
+                    {
+                      "transformerType": "returnValue",
+                      "interpolation": "runtime",
+                      "value": [{"id": 1}]
+                    },
+                    {
+                      "transformerType": "returnValue",
+                      "interpolation": "runtime",
+                      "value": [{"id": 2}, {"id": 3}]
+                    },
+                    {
+                      "transformerType": "returnValue",
+                      "interpolation": "runtime",
+                      "value": [{"id": 4}]
+                    }
+                  ]
+                },
+                "transformerParams": {},
+                "expectedValue": [{"id": 1}, {"id": 2}, {"id": 3}, {"id": 4}]
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "concatLists with empty list returns combined result",
+                "transformerName": "concatLists_withEmptyList",
+                "transformer": {
+                  "transformerType": "concatLists",
+                  "interpolation": "runtime",
+                  "lists": [
+                    {
+                      "transformerType": "returnValue",
+                      "interpolation": "runtime",
+                      "value": ["x", "y"]
+                    },
+                    {
+                      "transformerType": "returnValue",
+                      "interpolation": "runtime",
+                      "value": []
+                    }
+                  ]
+                },
+                "transformerParams": {},
+                "expectedValue": ["x", "y"]
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "concatLists fails when an element is not an array",
+                "transformerName": "concatListsFailed",
+                "transformer": {
+                  "transformerType": "concatLists",
+                  "interpolation": "runtime",
+                  "lists": [
+                    {
+                      "transformerType": "returnValue",
+                      "interpolation": "runtime",
+                      "value": ["a"]
+                    },
+                    {
+                      "transformerType": "returnValue",
+                      "interpolation": "runtime",
+                      "value": "notAnArray"
+                    }
+                  ]
+                },
+                "transformerParams": {},
+                "retainAttributes": ["queryFailure"],
+                "unitTestExpectedValue": {
+                  "queryFailure": "FailedTransformer"
+                },
+                "integrationTestExpectedValue": {
+                  "queryFailure": "QueryNotExecutable"
+                }
+              }
+            ]
           }
         ]
       }

@@ -26,17 +26,24 @@ import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
 import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
 import { miroirMongoDbStoreSectionStartup } from "miroir-store-mongodb";
 import { miroirPostgresStoreSectionStartup } from "miroir-store-postgres";
-import { entityEntity, runnerCreateEntity, runnerDropEntity, runnerDropApplication } from "miroir-test-app_deployment-miroir";
+import {
+  entityEntity,
+  runnerCreateEntity,
+  runnerDeployApplication,
+  runnerDropApplication,
+  runnerDropEntity,
+} from "miroir-test-app_deployment-miroir";
 import { env } from "process";
 import { loglevelnext } from "../../src/loglevelnextImporter";
 import { runTestOrTestSuite } from "../../src/miroir-fwk/4-tests/tests-utils";
 import { getRunner_CreateApplication } from "../../src/miroir-fwk/4_view/components/Runners/Runner_CreateApplication";
-import { getRunner_InstallApplication } from "../../src/miroir-fwk/4_view/components/Runners/Runner_InstallApplication";
 import { miroirAppStartup } from "../../src/startup";
 import { loadTestConfigFiles } from "../utils/fileTools";
 
-import simplifiedLibraryModel from "../assets/library_extract/simplified-library-model.json";
+import { adminSelfApplication, entityApplicationForAdmin, entityDeployment } from "miroir-test-app_deployment-admin";
+import { entityAuthor, entityDefinitionAuthor } from "miroir-test-app_deployment-library";
 import simplifiedLibraryData from "../assets/library_extract/simplified-library-data.json";
+import simplifiedLibraryModel from "../assets/library_extract/simplified-library-model.json";
 import {
   afterAllTests,
   beforeAllTests,
@@ -45,9 +52,6 @@ import {
   testApplicationStorageConfiguration,
   type RunnerTestParams,
 } from "./RunnerIntegTestTools";
-import { entityAuthor, entityDefinitionAuthor } from "miroir-test-app_deployment-library";
-import { adminSelfApplication, entityApplicationForAdmin, entityDeployment } from "miroir-test-app_deployment-admin";
-import { ad } from "vitest/dist/chunks/reporters.d.BFLkQcL6.js";
 
 // ################################################################################################
 const pageLabel = "Runner_Miroir.integ.test";
@@ -167,7 +171,8 @@ beforeEach(async () => {
 afterAll(async () => {
   await afterAllTests(
     miroirActivityTracker,
-    Object.keys(runnerTestParams)
+    // Object.keys(runnerTestParams)
+    Object.keys(filteredRunnerTestParams)
   );
 });
 
@@ -178,11 +183,8 @@ const localRunnerCreateApplication = getRunner_CreateApplication(
   emptyApplicationModel,
 )
 
-const localRunnerInstallApplication = getRunner_InstallApplication(
-  installTestApplicationUuid,
-  installTestApplicationDeploymentUuid,
-  "installApplication",
-)
+const localRunnerInstallApplication = runnerDeployApplication as Runner;
+  
 const runnerTestParams: Record<string, RunnerTestParams> = {
   [localRunnerCreateApplication.name]: {
     pageLabel,
@@ -294,10 +296,22 @@ const runnerTestParams: Record<string, RunnerTestParams> = {
       deployApplication: {
         applicationBundle: {
           ...simplifiedLibraryModel,
+          applications: [
+            {
+              // uuid: "5af03c98-fe5e-490b-b08f-e1230971c57f",
+              uuid: installTestApplicationUuid,
+              parentName: "SelfApplication",
+              parentUuid: "a659d350-dd97-4da9-91de-524fa01745dc",
+              name: installTestApplicationName,
+              defaultLabel: `The ${installTestApplicationName} selfApplication.`,
+              description: `The model and data of the ${installTestApplicationName} selfApplication.`
+            },
+          ],
           applicationName: installTestApplicationName,
           applicationUuid: installTestApplicationUuid,
         },
         deploymentData: simplifiedLibraryData,
+        deploymentUuid: installTestApplicationDeploymentUuid, // to enable getFromParameters on deploymentUuid in the runner
         applicationStorage: {
           emulatedServerType: "sql",
           connectionString: "postgres://postgres:postgres@localhost:5432/postgres",
@@ -323,8 +337,6 @@ const runnerTestParams: Record<string, RunnerTestParams> = {
               pageParams: {
                 currentDeploymentUuid: installTestApplicationDeploymentUuid,
               },
-              queryParams: {},
-              contextResults: {},
               extractors: {
                 entities: {
                   extractorOrCombinerType: "extractorInstancesByEntity",
@@ -356,8 +368,6 @@ const runnerTestParams: Record<string, RunnerTestParams> = {
             query: {
               queryType: "boxedQueryWithExtractorCombinerTransformer",
               application: adminSelfApplication.uuid,
-              queryParams: {},
-              contextResults: {},
               extractors: {
                 deployments: {
                   extractorOrCombinerType: "extractorInstancesByEntity",
@@ -463,9 +473,9 @@ const runnerTestParams: Record<string, RunnerTestParams> = {
     testApplicationName,
     testParams: {
       [runnerCreateEntity.name]: {
-          application: testApplicationUuid,
-          entity: entityAuthor,
-          entityDefinition: entityDefinitionAuthor,
+        application: testApplicationUuid,
+        entity: entityAuthor,
+        entityDefinition: entityDefinitionAuthor,
       },
     }, // testParams
     preTestCompositeActions: [
@@ -557,10 +567,11 @@ const runnerTestParams: Record<string, RunnerTestParams> = {
     testApplicationDeploymentUuid,
     testApplicationName,
     testParams: {
-      ["createEntity"]: { // used by the preRunnerCompositeAction to create the entity before dropping it
-          application: testApplicationUuid,
-          entity: entityAuthor,
-          entityDefinition: entityDefinitionAuthor,
+      ["createEntity"]: {
+        // used by the preRunnerCompositeAction to create the entity before dropping it
+        application: testApplicationUuid,
+        entity: entityAuthor,
+        entityDefinition: entityDefinitionAuthor,
       },
       [runnerDropEntity.name]: {
         application: testApplicationUuid,
@@ -752,11 +763,11 @@ const runnerTestParams: Record<string, RunnerTestParams> = {
 const filteredRunnerTestParams: Record<string, RunnerTestParams> = Object.fromEntries(
   Object.entries(runnerTestParams).filter(([testName]) =>
     [
-      localRunnerCreateApplication.name,
+      // localRunnerCreateApplication.name,
       localRunnerInstallApplication.name,
-      runnerCreateEntity.name,
-      runnerDropEntity.name,
-      runnerDropApplication.name,
+      // runnerCreateEntity.name,
+      // runnerDropEntity.name,
+      // runnerDropApplication.name,
     ].includes(testName)
   )
 );

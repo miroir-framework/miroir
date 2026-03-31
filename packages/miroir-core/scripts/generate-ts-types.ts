@@ -166,6 +166,7 @@ export type TransformerForBuild =
   | TransformerForBuild_getFromParameters
   | TransformerForBuild_getUniqueValues
   | TransformerForBuild_ansiColumnsToJzodSchema
+  | TransformerForBuild_concatLists
   // | TransformerForBuild_constantBigint
   | TransformerForBuild_InnerReference
   | TransformerForBuild_dataflowSequence
@@ -222,6 +223,7 @@ export const transformerForBuild: z.ZodType<TransformerForBuild> = z.lazy(() => 
     transformerForBuild_getFromParameters,
     transformerForBuild_getUniqueValues,
     transformerForBuild_ansiColumnsToJzodSchema,
+    transformerForBuild_concatLists,
     // transformerForBuild_constantBigint,
     transformerForBuild_InnerReference,
     transformerForBuild_dataflowSequence,
@@ -271,6 +273,7 @@ export type TransformerForBuildPlusRuntime =
   | TransformerForBuildPlusRuntime_getFromContext
   | TransformerForBuildPlusRuntime_getUniqueValues
   | TransformerForBuildPlusRuntime_ansiColumnsToJzodSchema
+  | TransformerForBuildPlusRuntime_concatLists
   // | TransformerForBuildPlusRuntime_constantBigint
   | TransformerForBuildPlusRuntime_InnerReference
   | TransformerForBuildPlusRuntime_dataflowSequence
@@ -329,6 +332,7 @@ export const transformerForBuildPlusRuntime: z.ZodType<TransformerForBuildPlusRu
     transformerForBuildPlusRuntime_getFromContext,
     transformerForBuildPlusRuntime_getUniqueValues,
     transformerForBuildPlusRuntime_ansiColumnsToJzodSchema,
+    transformerForBuildPlusRuntime_concatLists,
     // transformerForBuildPlusRuntime_constantBigint,
     transformerForBuildPlusRuntime_InnerReference,
     transformerForBuildPlusRuntime_dataflowSequence,
