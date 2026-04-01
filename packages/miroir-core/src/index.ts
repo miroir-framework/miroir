@@ -1051,7 +1051,3 @@ import type { EntityInstancesUuidIndex as _EntityInstancesUuidIndex } from "./0_
 import { entityInstancesUuidIndex as _entityInstancesUuidIndex } from "./0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 export type EntityInstancesIndex = _EntityInstancesUuidIndex;
 export const entityInstancesIndex = _entityInstancesUuidIndex;
-
-// export { default as miroirThemeSchema } from "./assets/miroir_data/5e81e1b9-38be-487c-b3e5-53796c57fccf/2aa173df-285d-4ed2-8b70-736902ded03a.json" assert { type: "json" };
-// export { default as TableThemeSchema } from "./assets/miroir_data/5e81e1b9-38be-487c-b3e5-53796c57fccf/8e380a46-189d-40ff-a880-7d04f04da673.json";
-

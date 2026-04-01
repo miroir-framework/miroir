@@ -213,10 +213,8 @@ const modelTestsToRun: Array<{
     "jzodSchema": (entityDefinitionJzodSchema as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
     "instances": jzodSchemaInstances,
     //  × jzodMiroirBootstrapSchema (1e8dab4b-65a3-4686-922e-ce89a2d62aa9) 150ms
-    //  × StoredMiroirTheme (2aa173df-285d-4ed2-8b70-736902ded03a) 7ms
-    //  × TableThemeSchema (8e380a46-189d-40ff-a880-7d04f04da673) 6ms
     //  × transformerJzodSchema (a97756cf-dd93-42b9-a021-91a629b187b9) 35ms
-    "filterByName": ["jzodMiroirBootstrapSchema"],
+    "filterByName": ["transformerJzodSchema"],
   },
   // {
   //   "groupName": "QueryVersion",

@@ -182,44 +182,44 @@ export function applyLimitedCarryOnSchemaOnLevel(
   //   }
   // }
   // let convertedTag:JzodElement = castTag;
-  let convertedTag:JzodElement = castTag?.value?{
+  let convertedTag:any = castTag?.value?{
     ...castTag,
     value: {...castTag.value, isTemplate: true}
   }: castTag;
-  if (castTag && castTag.schema && castTag.schema.valueSchema) {
-    // Check if this tag references a transformer schema - if so, skip carryOn application
-    // to prevent infinite recursion since transformers are already complete types
-    const isTransformerReference = castTag.value && 
-      castTag.value.ifThenElseMMLS && 
-      castTag.value.ifThenElseMMLS.mmlsReference && 
-      castTag.value.ifThenElseMMLS.mmlsReference.relativePath &&
-      castTag.value.ifThenElseMMLS.mmlsReference.relativePath.startsWith("transformerForBuild");
+  // if (castTag && castTag.schema && castTag.schema.valueSchema) {
+  //   // Check if this tag references a transformer schema - if so, skip carryOn application
+  //   // to prevent infinite recursion since transformers are already complete types
+  //   const isTransformerReference = castTag.value && 
+  //     castTag.value.ifThenElseMMLS && 
+  //     castTag.value.ifThenElseMMLS.mmlsReference && 
+  //     castTag.value.ifThenElseMMLS.mmlsReference.relativePath &&
+  //     castTag.value.ifThenElseMMLS.mmlsReference.relativePath.startsWith("transformerForBuild");
     
-    if (isTransformerReference) {
-      // Don't apply carryOn to transformer references to prevent infinite recursion
-      convertedTag = castTag;
-    } else {
-      convertedTag = {
-        ...castTag,
-        schema: {
-          ...castTag.schema,
-          // isTemplate: true,
-          valueSchema: applyLimitedCarryOnSchemaOnLevel(
-            castTag.schema.valueSchema, // hard-coded type for jzodBaseSchema.extra is "any", it is replaced in any "concrete" mlSchema definition
-            carryOnSchema,
-            carryOnSchemaDiscriminator,
-            alwaysPropagate,
-            false, // applyOnFirstLevel
-            carryOnPrefix,
-            localReferencePrefix,
-            suffixForReferences,
-            resolveJzodReference,
-            convertedReferences
-          ).resultSchema,
-        },
-      }; // TODO: what about resolvedReferences for extra? They are ignored, is it about right?
-    }
-  }
+  //   if (isTransformerReference) {
+  //     // Don't apply carryOn to transformer references to prevent infinite recursion
+  //     convertedTag = castTag;
+  //   } else {
+  //     convertedTag = {
+  //       ...castTag,
+  //       schema: {
+  //         ...castTag.schema,
+  //         // isTemplate: true,
+  //         valueSchema: applyLimitedCarryOnSchemaOnLevel(
+  //           castTag.schema.valueSchema, // hard-coded type for jzodBaseSchema.extra is "any", it is replaced in any "concrete" mlSchema definition
+  //           carryOnSchema,
+  //           carryOnSchemaDiscriminator,
+  //           alwaysPropagate,
+  //           false, // applyOnFirstLevel
+  //           carryOnPrefix,
+  //           localReferencePrefix,
+  //           suffixForReferences,
+  //           resolveJzodReference,
+  //           convertedReferences
+  //         ).resultSchema,
+  //       },
+  //     }; // TODO: what about resolvedReferences for extra? They are ignored, is it about right?
+  //   }
+  // }
 
   // if (baseSchema.tag && baseSchema.tag.schema && baseSchema.tag.schema.valueSchema) {
   //   log.info("############# applyCarryOnSchema", "convertedTag", convertedTag)
