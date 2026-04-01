@@ -645,6 +645,7 @@ const createEntityCompositeActionPrepActions: any[] = [
   // test preparation: newApplicationEntityDefinitionList
   {
     actionType: "compositeRunBoxedQueryAction",
+    endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
     actionLabel: "getListOfEntityDefinitions",
     nameGivenToResult: "newApplicationEntityDefinitionList",
     queryTemplate: {
@@ -943,6 +944,7 @@ const createReportsCompositeActionPrepActions: any[] = [
   // test preparation: newApplicationReportList
   {
     actionType: "compositeRunBoxedQueryAction",
+    endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
     actionLabel: "getListOfReports",
     nameGivenToResult: "newApplicationReportList",
     queryTemplate: {

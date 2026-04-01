@@ -519,7 +519,6 @@ export const miroirFundamentalJzodSchema = {
         "tag": {
           "value": {
             "description": "A plain attribute (not object, not array) with no validation.",
-            "editable": true,
             "initializeTo": {
               "initializeToType": "value",
               "value": null
@@ -532,7 +531,9 @@ export const miroirFundamentalJzodSchema = {
             "tag": {
               "value": {
                 "description": "The type of a plain attribute (not object, not array) with no validation.",
-                "editable": false,
+                "display": {
+                  "editable": false
+                },
                 "canBeTemplate": false,
                 "initializeTo": {
                   "initializeToType": "value",
@@ -1271,8 +1272,7 @@ export const miroirFundamentalJzodSchema = {
             "type": "record",
             "tag": {
               "value": {
-                "description": "The attributes of the object schema.",
-                "editable": true
+                "description": "The attributes of the object schema."
               }
             },
             "definition": {
@@ -1488,6 +1488,10 @@ export const miroirFundamentalJzodSchema = {
               }
             },
             "definition": "union"
+          },
+          "optInDiscriminator": {
+            "type": "boolean",
+            "optional": true
           },
           "discriminator": {
             "type": "union",
@@ -1760,9 +1764,7 @@ export const miroirFundamentalJzodSchema = {
             "type": "enum",
             "tag": {
               "value": {
-                "id": 1,
                 "defaultLabel": "Interpolation",
-                "editable": true,
                 "initializeTo": {
                   "initializeToType": "value",
                   "value": "build"
@@ -1831,9 +1833,7 @@ export const miroirFundamentalJzodSchema = {
             "optional": true,
             "tag": {
               "value": {
-                "id": 1,
                 "defaultLabel": "Interpolation",
-                "editable": true,
                 "initializeTo": {
                   "initializeToType": "value",
                   "value": "build"
@@ -14421,7 +14421,6 @@ export const miroirFundamentalJzodSchema = {
             "type": "uuid",
             "tag": {
               "value": {
-                "id": 4,
                 "canBeTemplate": true,
                 "defaultLabel": "Parent Uuid",
                 "foreignKeyParams": {
@@ -14935,7 +14934,7 @@ export const miroirFundamentalJzodSchema = {
             "definition": {
               "type": "schemaReference",
               "definition": {
-                "relativePath": "transformer_contextOrParameterReferenceTO_REMOVE",
+                "relativePath": "extractorOrCombinerTemplate",
                 "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
               },
               "context": {}
@@ -16211,7 +16210,6 @@ export const miroirFundamentalJzodSchema = {
             "type": "uuid",
             "tag": {
               "value": {
-                "id": 1,
                 "canBeTemplate": true,
                 "defaultLabel": "Application",
                 "foreignKeyParams": {
@@ -16858,7 +16856,7 @@ export const miroirFundamentalJzodSchema = {
                             "definition": "mlSchema"
                           },
                           "initialFormValues": {
-                            "type": "record",
+                            "type": "schemaReference",
                             "optional": true,
                             "tag": {
                               "value": {
@@ -16867,11 +16865,8 @@ export const miroirFundamentalJzodSchema = {
                               }
                             },
                             "definition": {
-                              "type": "schemaReference",
-                              "definition": {
-                                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                "relativePath": "transformerForBuildPlusRuntime"
-                              }
+                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              "relativePath": "transformerForBuildPlusRuntime"
                             }
                           },
                           "mlSchema": {
@@ -18900,9 +18895,6 @@ export const miroirFundamentalJzodSchema = {
                           "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
-                        },
-                        "display": {
-                          "editable": false
                         }
                       }
                     }
@@ -19214,9 +19206,6 @@ export const miroirFundamentalJzodSchema = {
                           "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
-                        },
-                        "display": {
-                          "editable": false
                         }
                       }
                     }
@@ -29946,7 +29935,6 @@ export const miroirFundamentalJzodSchema = {
             "type": "union",
             "tag": {
               "value": {
-                "id": 4,
                 "canBeTemplate": true,
                 "defaultLabel": "Parent Uuid",
                 "foreignKeyParams": {
@@ -29963,7 +29951,6 @@ export const miroirFundamentalJzodSchema = {
                 "type": "uuid",
                 "tag": {
                   "value": {
-                    "id": 4,
                     "canBeTemplate": true,
                     "defaultLabel": "Parent Uuid",
                     "foreignKeyParams": {
@@ -30097,9 +30084,7 @@ export const miroirFundamentalJzodSchema = {
             "type": "union",
             "tag": {
               "value": {
-                "id": 1,
                 "defaultLabel": "Interpolation",
-                "editable": true,
                 "initializeTo": {
                   "initializeToType": "value",
                   "value": "build"
@@ -30112,9 +30097,7 @@ export const miroirFundamentalJzodSchema = {
                 "type": "enum",
                 "tag": {
                   "value": {
-                    "id": 1,
                     "defaultLabel": "Interpolation",
-                    "editable": true,
                     "initializeTo": {
                       "initializeToType": "value",
                       "value": "build"
@@ -30156,9 +30139,7 @@ export const miroirFundamentalJzodSchema = {
             "optional": true,
             "tag": {
               "value": {
-                "id": 1,
                 "defaultLabel": "Interpolation",
-                "editable": true,
                 "initializeTo": {
                   "initializeToType": "value",
                   "value": "build"
@@ -30172,9 +30153,7 @@ export const miroirFundamentalJzodSchema = {
                 "optional": true,
                 "tag": {
                   "value": {
-                    "id": 1,
                     "defaultLabel": "Interpolation",
-                    "editable": true,
                     "initializeTo": {
                       "initializeToType": "value",
                       "value": "build"
@@ -30410,7 +30389,6 @@ export const miroirFundamentalJzodSchema = {
         "tag": {
           "value": {
             "description": "A plain attribute (not object, not array) with no validation.",
-            "editable": true,
             "initializeTo": {
               "initializeToType": "value",
               "value": null
@@ -30443,7 +30421,6 @@ export const miroirFundamentalJzodSchema = {
             "tag": {
               "value": {
                 "description": "A plain attribute (not object, not array) with no validation.",
-                "editable": true,
                 "initializeTo": {
                   "initializeToType": "value",
                   "value": null
@@ -30457,7 +30434,9 @@ export const miroirFundamentalJzodSchema = {
                 "tag": {
                   "value": {
                     "description": "The type of a plain attribute (not object, not array) with no validation.",
-                    "editable": false,
+                    "display": {
+                      "editable": false
+                    },
                     "canBeTemplate": false,
                     "initializeTo": {
                       "initializeToType": "value",
@@ -31479,7 +31458,6 @@ export const miroirFundamentalJzodSchema = {
                 "tag": {
                   "value": {
                     "description": "The attributes of the object schema.",
-                    "editable": true,
                     "isTemplate": true
                   }
                 },
@@ -31489,7 +31467,6 @@ export const miroirFundamentalJzodSchema = {
                     "tag": {
                       "value": {
                         "description": "The attributes of the object schema.",
-                        "editable": true,
                         "isTemplate": true
                       }
                     },
@@ -32009,6 +31986,24 @@ export const miroirFundamentalJzodSchema = {
                   }
                 },
                 "definition": "union"
+              },
+              "optInDiscriminator": {
+                "type": "union",
+                "optional": true,
+                "discriminator": "transformerType",
+                "definition": [
+                  {
+                    "type": "boolean",
+                    "optional": true
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "transformerForBuildPlusRuntimeCarryOnObject"
+                    }
+                  }
+                ]
               },
               "discriminator": {
                 "type": "union",
@@ -53614,7 +53609,6 @@ export const miroirFundamentalJzodSchema = {
                 "type": "union",
                 "tag": {
                   "value": {
-                    "id": 4,
                     "canBeTemplate": true,
                     "defaultLabel": "Parent Uuid",
                     "foreignKeyParams": {
@@ -53631,7 +53625,6 @@ export const miroirFundamentalJzodSchema = {
                     "type": "uuid",
                     "tag": {
                       "value": {
-                        "id": 4,
                         "canBeTemplate": true,
                         "defaultLabel": "Parent Uuid",
                         "foreignKeyParams": {
@@ -54223,12 +54216,31 @@ export const miroirFundamentalJzodSchema = {
                   {
                     "type": "record",
                     "definition": {
-                      "type": "schemaReference",
-                      "definition": {
-                        "relativePath": "transformer_contextOrParameterReferenceTO_REMOVE",
-                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
-                      },
-                      "context": {}
+                      "type": "union",
+                      "discriminator": [
+                        [
+                          "transformerType",
+                          "extractorOrCombinerType",
+                          "transformerType"
+                        ]
+                      ],
+                      "definition": [
+                        {
+                          "type": "schemaReference",
+                          "definition": {
+                            "relativePath": "mlElementTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorOrCombinerTemplate",
+                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+                          },
+                          "context": {}
+                        },
+                        {
+                          "type": "schemaReference",
+                          "definition": {
+                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            "relativePath": "transformerForBuildPlusRuntimeCarryOnObject"
+                          }
+                        }
+                      ]
                     }
                   },
                   {
@@ -55917,7 +55929,6 @@ export const miroirFundamentalJzodSchema = {
         "tag": {
           "value": {
             "description": "A plain attribute (not object, not array) with no validation.",
-            "editable": true,
             "initializeTo": {
               "initializeToType": "value",
               "value": null
@@ -55931,7 +55942,9 @@ export const miroirFundamentalJzodSchema = {
             "tag": {
               "value": {
                 "description": "The type of a plain attribute (not object, not array) with no validation.",
-                "editable": false,
+                "display": {
+                  "editable": false
+                },
                 "canBeTemplate": false,
                 "initializeTo": {
                   "initializeToType": "value",
@@ -56650,7 +56663,6 @@ export const miroirFundamentalJzodSchema = {
             "tag": {
               "value": {
                 "description": "The attributes of the object schema.",
-                "editable": true,
                 "isTemplate": true
               }
             },
@@ -56868,6 +56880,10 @@ export const miroirFundamentalJzodSchema = {
             },
             "definition": "union"
           },
+          "optInDiscriminator": {
+            "type": "boolean",
+            "optional": true
+          },
           "discriminator": {
             "type": "union",
             "optional": true,
@@ -56963,7 +56979,6 @@ export const miroirFundamentalJzodSchema = {
             "type": "union",
             "tag": {
               "value": {
-                "id": 1,
                 "canBeTemplate": true,
                 "defaultLabel": "Application",
                 "foreignKeyParams": {
@@ -56995,7 +57010,6 @@ export const miroirFundamentalJzodSchema = {
                 "type": "uuid",
                 "tag": {
                   "value": {
-                    "id": 1,
                     "canBeTemplate": true,
                     "defaultLabel": "Application",
                     "foreignKeyParams": {
@@ -57118,7 +57132,6 @@ export const miroirFundamentalJzodSchema = {
             "type": "union",
             "tag": {
               "value": {
-                "id": 4,
                 "canBeTemplate": true,
                 "defaultLabel": "Parent Uuid",
                 "foreignKeyParams": {
@@ -57138,7 +57151,6 @@ export const miroirFundamentalJzodSchema = {
                 "type": "uuid",
                 "tag": {
                   "value": {
-                    "id": 4,
                     "canBeTemplate": true,
                     "defaultLabel": "Parent Uuid",
                     "foreignKeyParams": {
@@ -57244,9 +57256,7 @@ export const miroirFundamentalJzodSchema = {
             "type": "enum",
             "tag": {
               "value": {
-                "id": 1,
                 "defaultLabel": "Interpolation",
-                "editable": true,
                 "initializeTo": {
                   "initializeToType": "value",
                   "value": "build"
@@ -57278,9 +57288,7 @@ export const miroirFundamentalJzodSchema = {
             "optional": true,
             "tag": {
               "value": {
-                "id": 1,
                 "defaultLabel": "Interpolation",
-                "editable": true,
                 "initializeTo": {
                   "initializeToType": "value",
                   "value": "build"
@@ -57944,9 +57952,6 @@ export const miroirFundamentalJzodSchema = {
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
-                        "display": {
-                          "editable": false
-                        },
                         "isTemplate": true
                       }
                     },
@@ -57965,9 +57970,6 @@ export const miroirFundamentalJzodSchema = {
                               "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                               "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                               "targetEntityOrderInstancesBy": "name"
-                            },
-                            "display": {
-                              "editable": false
                             }
                           }
                         }
@@ -60370,9 +60372,6 @@ export const miroirFundamentalJzodSchema = {
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
-                        "display": {
-                          "editable": false
-                        },
                         "isTemplate": true
                       }
                     },
@@ -60391,9 +60390,6 @@ export const miroirFundamentalJzodSchema = {
                               "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                               "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                               "targetEntityOrderInstancesBy": "name"
-                            },
-                            "display": {
-                              "editable": false
                             }
                           }
                         }
@@ -65359,7 +65355,6 @@ export const miroirFundamentalJzodSchema = {
         "tag": {
           "value": {
             "description": "A plain attribute (not object, not array) with no validation.",
-            "editable": true,
             "initializeTo": {
               "initializeToType": "value",
               "value": null
@@ -65373,7 +65368,9 @@ export const miroirFundamentalJzodSchema = {
             "tag": {
               "value": {
                 "description": "The type of a plain attribute (not object, not array) with no validation.",
-                "editable": false,
+                "display": {
+                  "editable": false
+                },
                 "canBeTemplate": false,
                 "initializeTo": {
                   "initializeToType": "value",
@@ -65831,7 +65828,6 @@ export const miroirFundamentalJzodSchema = {
             "tag": {
               "value": {
                 "description": "The attributes of the object schema.",
-                "editable": true,
                 "isTemplate": true
               }
             },
@@ -66048,6 +66044,10 @@ export const miroirFundamentalJzodSchema = {
               }
             },
             "definition": "union"
+          },
+          "optInDiscriminator": {
+            "type": "boolean",
+            "optional": true
           },
           "discriminator": {
             "type": "union",
@@ -66594,7 +66594,6 @@ export const miroirFundamentalJzodSchema = {
             "type": "union",
             "tag": {
               "value": {
-                "id": 1,
                 "canBeTemplate": true,
                 "defaultLabel": "Application",
                 "foreignKeyParams": {
@@ -66626,7 +66625,6 @@ export const miroirFundamentalJzodSchema = {
                 "type": "uuid",
                 "tag": {
                   "value": {
-                    "id": 1,
                     "canBeTemplate": true,
                     "defaultLabel": "Application",
                     "foreignKeyParams": {
@@ -68805,11 +68803,24 @@ export const miroirFundamentalJzodSchema = {
         }
       },
       "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorTemplateByExtractorWrapper": {
-        "type": "schemaReference",
-        "definition": {
-          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-          "relativePath": "extractorTemplateByExtractorWrapper"
-        }
+        "type": "union",
+        "discriminator": "extractorOrCombinerType",
+        "definition": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorTemplateByExtractorWrapperReturningObject",
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorTemplateByExtractorWrapperReturningList",
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+            }
+          }
+        ]
       },
       "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_menuItemArray": {
         "type": "schemaReference",
@@ -69759,7 +69770,6 @@ export const miroirFundamentalJzodSchema = {
             "type": "union",
             "tag": {
               "value": {
-                "id": 4,
                 "canBeTemplate": true,
                 "defaultLabel": "Parent Uuid",
                 "foreignKeyParams": {
@@ -69779,7 +69789,6 @@ export const miroirFundamentalJzodSchema = {
                 "type": "uuid",
                 "tag": {
                   "value": {
-                    "id": 4,
                     "canBeTemplate": true,
                     "defaultLabel": "Parent Uuid",
                     "foreignKeyParams": {
@@ -70007,10 +70016,22 @@ export const miroirFundamentalJzodSchema = {
         }
       },
       "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorTemplateByExtractorWrapperReturningObject": {
-        "type": "schemaReference",
+        "type": "object",
         "definition": {
-          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-          "relativePath": "extractorTemplateByExtractorWrapperReturningObject"
+          "extractorOrCombinerType": {
+            "type": "literal",
+            "definition": "extractorByExtractorWrapperReturningObject"
+          },
+          "definition": {
+            "type": "record",
+            "definition": {
+              "type": "schemaReference",
+              "definition": {
+                "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorOrCombinerTemplate",
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+              }
+            }
+          }
         }
       },
       "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorTemplateByExtractorWrapperReturningList": {
@@ -70669,7 +70690,6 @@ export const miroirFundamentalJzodSchema = {
         "tag": {
           "value": {
             "description": "A plain attribute (not object, not array) with no validation.",
-            "editable": true,
             "initializeTo": {
               "initializeToType": "value",
               "value": null
@@ -70683,7 +70703,9 @@ export const miroirFundamentalJzodSchema = {
             "tag": {
               "value": {
                 "description": "The type of a plain attribute (not object, not array) with no validation.",
-                "editable": false,
+                "display": {
+                  "editable": false
+                },
                 "canBeTemplate": false,
                 "initializeTo": {
                   "initializeToType": "value",
@@ -71402,7 +71424,6 @@ export const miroirFundamentalJzodSchema = {
             "tag": {
               "value": {
                 "description": "The attributes of the object schema.",
-                "editable": true,
                 "isTemplate": true
               }
             },
@@ -71620,6 +71641,10 @@ export const miroirFundamentalJzodSchema = {
             },
             "definition": "union"
           },
+          "optInDiscriminator": {
+            "type": "boolean",
+            "optional": true
+          },
           "discriminator": {
             "type": "union",
             "optional": true,
@@ -71715,7 +71740,6 @@ export const miroirFundamentalJzodSchema = {
             "type": "union",
             "tag": {
               "value": {
-                "id": 1,
                 "canBeTemplate": true,
                 "defaultLabel": "Application",
                 "foreignKeyParams": {
@@ -71747,7 +71771,6 @@ export const miroirFundamentalJzodSchema = {
                 "type": "uuid",
                 "tag": {
                   "value": {
-                    "id": 1,
                     "canBeTemplate": true,
                     "defaultLabel": "Application",
                     "foreignKeyParams": {
@@ -71870,7 +71893,6 @@ export const miroirFundamentalJzodSchema = {
             "type": "union",
             "tag": {
               "value": {
-                "id": 4,
                 "canBeTemplate": true,
                 "defaultLabel": "Parent Uuid",
                 "foreignKeyParams": {
@@ -71890,7 +71912,6 @@ export const miroirFundamentalJzodSchema = {
                 "type": "uuid",
                 "tag": {
                   "value": {
-                    "id": 4,
                     "canBeTemplate": true,
                     "defaultLabel": "Parent Uuid",
                     "foreignKeyParams": {
@@ -71996,9 +72017,7 @@ export const miroirFundamentalJzodSchema = {
             "type": "enum",
             "tag": {
               "value": {
-                "id": 1,
                 "defaultLabel": "Interpolation",
-                "editable": true,
                 "initializeTo": {
                   "initializeToType": "value",
                   "value": "build"
@@ -72030,9 +72049,7 @@ export const miroirFundamentalJzodSchema = {
             "optional": true,
             "tag": {
               "value": {
-                "id": 1,
                 "defaultLabel": "Interpolation",
-                "editable": true,
                 "initializeTo": {
                   "initializeToType": "value",
                   "value": "build"
@@ -72696,9 +72713,6 @@ export const miroirFundamentalJzodSchema = {
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
-                        "display": {
-                          "editable": false
-                        },
                         "isTemplate": true
                       }
                     },
@@ -72717,9 +72731,6 @@ export const miroirFundamentalJzodSchema = {
                               "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                               "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                               "targetEntityOrderInstancesBy": "name"
-                            },
-                            "display": {
-                              "editable": false
                             }
                           }
                         }
@@ -75122,9 +75133,6 @@ export const miroirFundamentalJzodSchema = {
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
-                        "display": {
-                          "editable": false
-                        },
                         "isTemplate": true
                       }
                     },
@@ -75143,9 +75151,6 @@ export const miroirFundamentalJzodSchema = {
                               "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                               "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                               "targetEntityOrderInstancesBy": "name"
-                            },
-                            "display": {
-                              "editable": false
                             }
                           }
                         }
@@ -80111,7 +80116,6 @@ export const miroirFundamentalJzodSchema = {
         "tag": {
           "value": {
             "description": "A plain attribute (not object, not array) with no validation.",
-            "editable": true,
             "initializeTo": {
               "initializeToType": "value",
               "value": null
@@ -80125,7 +80129,9 @@ export const miroirFundamentalJzodSchema = {
             "tag": {
               "value": {
                 "description": "The type of a plain attribute (not object, not array) with no validation.",
-                "editable": false,
+                "display": {
+                  "editable": false
+                },
                 "canBeTemplate": false,
                 "initializeTo": {
                   "initializeToType": "value",
@@ -80583,7 +80589,6 @@ export const miroirFundamentalJzodSchema = {
             "tag": {
               "value": {
                 "description": "The attributes of the object schema.",
-                "editable": true,
                 "isTemplate": true
               }
             },
@@ -80800,6 +80805,10 @@ export const miroirFundamentalJzodSchema = {
               }
             },
             "definition": "union"
+          },
+          "optInDiscriminator": {
+            "type": "boolean",
+            "optional": true
           },
           "discriminator": {
             "type": "union",
@@ -81346,7 +81355,6 @@ export const miroirFundamentalJzodSchema = {
             "type": "union",
             "tag": {
               "value": {
-                "id": 1,
                 "canBeTemplate": true,
                 "defaultLabel": "Application",
                 "foreignKeyParams": {
@@ -81378,7 +81386,6 @@ export const miroirFundamentalJzodSchema = {
                 "type": "uuid",
                 "tag": {
                   "value": {
-                    "id": 1,
                     "canBeTemplate": true,
                     "defaultLabel": "Application",
                     "foreignKeyParams": {
@@ -83557,11 +83564,24 @@ export const miroirFundamentalJzodSchema = {
         }
       },
       "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorTemplateByExtractorWrapper": {
-        "type": "schemaReference",
-        "definition": {
-          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-          "relativePath": "extractorTemplateByExtractorWrapper"
-        }
+        "type": "union",
+        "discriminator": "extractorOrCombinerType",
+        "definition": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorTemplateByExtractorWrapperReturningObject",
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorTemplateByExtractorWrapperReturningList",
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+            }
+          }
+        ]
       },
       "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_menuItemArray": {
         "type": "schemaReference",
@@ -84511,7 +84531,6 @@ export const miroirFundamentalJzodSchema = {
             "type": "union",
             "tag": {
               "value": {
-                "id": 4,
                 "canBeTemplate": true,
                 "defaultLabel": "Parent Uuid",
                 "foreignKeyParams": {
@@ -84531,7 +84550,6 @@ export const miroirFundamentalJzodSchema = {
                 "type": "uuid",
                 "tag": {
                   "value": {
-                    "id": 4,
                     "canBeTemplate": true,
                     "defaultLabel": "Parent Uuid",
                     "foreignKeyParams": {
@@ -84759,10 +84777,22 @@ export const miroirFundamentalJzodSchema = {
         }
       },
       "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorTemplateByExtractorWrapperReturningObject": {
-        "type": "schemaReference",
+        "type": "object",
         "definition": {
-          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-          "relativePath": "extractorTemplateByExtractorWrapperReturningObject"
+          "extractorOrCombinerType": {
+            "type": "literal",
+            "definition": "extractorByExtractorWrapperReturningObject"
+          },
+          "definition": {
+            "type": "record",
+            "definition": {
+              "type": "schemaReference",
+              "definition": {
+                "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorOrCombinerTemplate",
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+              }
+            }
+          }
         }
       },
       "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorTemplateByExtractorWrapperReturningList": {

@@ -233,6 +233,7 @@ export function unionArrayChoices<T extends MiroirModelEnvironment> (
 // #####################################################################################################
 export function selectUnionBranchFromDiscriminator<T extends MiroirModelEnvironment>(
   objectUnionChoices: JzodObject[],
+  effectiveRawSchema: JzodUnion,
   discriminator: string | (string | string[])[] | undefined,
   valueObject: Record<string,any>,
   valueObjectPath: (string | number)[],
@@ -399,6 +400,7 @@ export function selectUnionBranchFromDiscriminator<T extends MiroirModelEnvironm
           status: "error",
           error: "selectUnionBranchFromDiscriminator: no discriminator values found in valueObject and multiple choices exist",
           discriminator,
+          effectiveRawSchema,
           valuePath: valueObjectPath,
           typePath,
           value: valueObject,
@@ -598,6 +600,7 @@ export function jzodUnionResolvedTypeForArray<T extends MiroirModelEnvironment>(
 // ################################################################################################
 export function jzodUnionResolvedTypeForObject<T extends MiroirModelEnvironment>(
   concreteUnrolledJzodSchemas: JzodElement[],
+  effectiveRawSchema: JzodUnion,
   discriminator: string | (string | string[])[] | undefined,
   valueObject: Record<string, any>,
   currentValuePath: (string | number)[],
@@ -632,7 +635,8 @@ export function jzodUnionResolvedTypeForObject<T extends MiroirModelEnvironment>
       objectUnionChoices: objectUnionChoices,
     };
   }
-  if (!objectUnionChoices || objectUnionChoices.length == 0) {
+  // if (!objectUnionChoices || (objectUnionChoices.length == 0)) {
+  if (!objectUnionChoices || (objectUnionChoices.length == 0 && !effectiveRawSchema.optInDiscriminator)) {
     return {
       status: "error",
       error: "jzodUnionResolvedTypeForObject could not find object type for given object value in resolved union",
@@ -644,8 +648,10 @@ export function jzodUnionResolvedTypeForObject<T extends MiroirModelEnvironment>
       unionChoices: objectUnionChoices,
     };
   }
+
   const selectUnionResult = selectUnionBranchFromDiscriminator(
     objectUnionChoices,
+    effectiveRawSchema,
     discriminator,
     valueObject,
     currentValuePath,
@@ -655,6 +661,18 @@ export function jzodUnionResolvedTypeForObject<T extends MiroirModelEnvironment>
   );
   
   if (selectUnionResult.status === "error") {
+    if (effectiveRawSchema.optInDiscriminator) {
+      return {
+        status: "ok",
+        resolvedJzodObjectSchema: {
+          type: "record",
+          definition: effectiveRawSchema, // if no match is found with the discriminator and optInDiscriminator is true, we consider the current object to be a record of the current union.
+        },
+        objectUnionChoices: objectUnionChoices,
+        chosenDiscriminator: [{ discriminator: "optInDiscriminator", value: "optInDiscriminator" }],
+      };
+    }
+
     return {
       status: "error",
       error: "jzodUnionResolvedTypeForObject failed to select union branch",
@@ -1290,6 +1308,7 @@ export function jzodTypeCheck(
 
           const resolveUnionResult = jzodUnionResolvedTypeForObject(
             recursivelyUnfoldedUnionSchema.result,
+            effectiveRawSchema,
             effectiveRawSchema.discriminator,
             valueObject,
             currentValuePath,

@@ -133,7 +133,7 @@
                         "definition": "mlSchema"
                       },
                       "initialFormValues": {
-                        "type": "record",
+                        "type": "schemaReference",
                         "optional": true,
                         "tag": {
                           "value": {
@@ -142,11 +142,8 @@
                           }
                         },
                         "definition": {
-                          "type": "schemaReference",
-                          "definition": {
-                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                            "relativePath": "transformerForBuildPlusRuntime"
-                          }
+                          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                          "relativePath": "transformerForBuildPlusRuntime"
                         }
                       },
                       "mlSchema": {

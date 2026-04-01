@@ -213,19 +213,18 @@
                 }
               },
               "parentUuid": {
-                "type": "uuid",
-                "tag": {
-                  "value": {
-                    "id": 4,
-                    "canBeTemplate": true,
-                    "defaultLabel": "Parent Uuid",
-                    "foreignKeyParams": {
-                      "targetEntityApplicationSection": "model",
-                      "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                      "targetEntityOrderInstancesBy": "name"
+                  "type": "uuid",
+                  "tag": {
+                    "value": {
+                      "canBeTemplate": true,
+                      "defaultLabel": "Parent Uuid",
+                      "foreignKeyParams": {
+                        "targetEntityApplicationSection": "model",
+                        "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                        "targetEntityOrderInstancesBy": "name"
+                      }
                     }
                   }
-                }
               }
             }
           },
@@ -655,7 +654,7 @@
                 "definition": {
                   "type": "schemaReference",
                   "definition": {
-                    "relativePath": "transformer_contextOrParameterReferenceTO_REMOVE"
+                    "relativePath": "extractorOrCombinerTemplate"
                   }
                 }
               }

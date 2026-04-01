@@ -85,14 +85,13 @@
               "configuration": {
                 "transformerType": "getFromContext",
                 "interpolation": "runtime",
-                "referencePath": ["deploymentInfo", "deployments", 0, "configuration"]
+                "referencePath": ["deploymentInfo", "deployments", "0", "configuration"]
               }
             }
           },
           {
             "actionType": "deleteInstance",
             "actionLabel": "deleteDeployment",
-            "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
             "endpoint": "ed520de4-55a9-4550-ac50-b1b713b72a89",
             "payload": {
               "application": "55af124e-8c05-4bae-a3ef-0933d41daa92",
@@ -112,7 +111,6 @@
           {
             "actionType": "deleteInstance",
             "actionLabel": "deleteAdminApplication",
-            "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
             "endpoint": "ed520de4-55a9-4550-ac50-b1b713b72a89",
             "payload": {
               "application": "55af124e-8c05-4bae-a3ef-0933d41daa92",

@@ -140,12 +140,18 @@ export function resolveExtractorTemplate(
         ...cleanQueryTemplate,
         definition: Object.fromEntries(
           Object.entries(extractorOrCombinerTemplate.definition).map(
-            (e: [string, Transformer_contextOrParameterReferenceTO_REMOVE]) => [
+            (e: [string, ExtractorOrCombinerTemplate]) => [
               e[0],
-              {
-                extractorOrCombinerType: "extractorOrCombinerContextReference",
-                extractorOrCombinerContextReference: e[1].referenceName,
-              } as ExtractorOrCombiner,
+              resolveExtractorTemplate(
+                e[1],
+                modelEnvironment,
+                queryParams,
+                contextResults
+              )
+              // {
+              //   extractorOrCombinerType: "extractorOrCombinerContextReference",
+              //   extractorOrCombinerContextReference: e[1].referenceName,
+              // } as ExtractorOrCombiner,
             ]
           )
         ),

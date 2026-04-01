@@ -3,7 +3,9 @@ import {
   JzodArray,
   JzodElement,
   JzodObject,
-  JzodTuple
+  JzodTuple,
+  type JzodRecord,
+  type JzodUnion
 } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import {
   JzodUnion_RecursivelyUnfold_ReturnTypeError,
@@ -21,6 +23,7 @@ export interface SelectUnionBranchFromDiscriminatorReturnTypeOK {
 export interface SelectUnionBranchFromDiscriminatorReturnTypeError {
   status: "error";
   error: string;
+  effectiveRawSchema?: JzodUnion,
   discriminator?: string | (string | string[])[] | undefined;
   discriminatorValues?: any;
   possibleDiscriminators?: (string | undefined)[][];
@@ -38,7 +41,7 @@ export type SelectUnionBranchFromDiscriminatorReturnType =
 // ################################################################################################
 export interface JzodUnionResolvedTypeForObjectReturnTypeOK {
   status: "ok";
-  resolvedJzodObjectSchema: JzodObject;
+  resolvedJzodObjectSchema: JzodObject | JzodRecord;
   objectUnionChoices: JzodObject[];
   chosenDiscriminator?: {discriminator: string, value: any}[];
 }

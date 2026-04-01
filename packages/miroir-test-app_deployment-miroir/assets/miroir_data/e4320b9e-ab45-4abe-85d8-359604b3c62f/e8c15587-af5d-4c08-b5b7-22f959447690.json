@@ -6,74 +6,72 @@
   "defaultLabel": "Query producing a bundle.",
   "description": "This query produces a bundle for a given selfApplication.",
   "definition": {
-    "select": {
-      "extractorOrCombinerType": "extractorWrapperReturningObject",
-      "definition": {
-        "type": {
-          "extractorOrCombinerType": "literal",
-          "definition": "runtime"
-        },
-        "applicationVersion": {
-          "extractorOrCombinerType": "extractorByPrimaryKey",
-          "parentName": "ApplicationVersion",
-          "parentUuid": "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24",
-          "instanceUuid": {
-            "transformerType": "getFromParameters",
-            "interpolation": "build",
-            "referenceName": "applicationVersion"
-          }
-        },
-        "entities": {
-          "extractorOrCombinerType": "extractorTemplateInstancesByEntity",
-          "applicationSection": "model",
-          "parentName": "Entity",
-          "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad"
-        },
-        "entityDefinitions": {
-          "extractorOrCombinerType": "extractorTemplateInstancesByEntity",
-          "applicationSection": "model",
-          "parentName": "Entity",
-          "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd"
-        },
-        "reports": {
-          "extractorOrCombinerType": "extractorTemplateInstancesByEntity",
-          "parentName": "Report",
-          "parentUuid": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916"
-        },
-        "queries": {
-          "extractorOrCombinerType": "extractorTemplateInstancesByEntity",
-          "parentName": "Query",
-          "parentUuid": "e4320b9e-ab45-4abe-85d8-359604b3c62f"
-        },
-        "endpoints": {
-          "extractorOrCombinerType": "extractorTemplateInstancesByEntity",
-          "parentName": "Query",
-          "parentUuid": "3d8da4d4-8f76-4bb4-9212-14869d81c00c"
-        },
-        "instancesOfEntities": {
-          "extractorOrCombinerType": "combinerByHeteronomousManyToMany",
-          "rootExtractorOrReference": {
+    "extractorTemplates": {
+      "select": {
+        "extractorOrCombinerType": "extractorByExtractorWrapperReturningObject",
+        "definition": {
+          "applicationVersion": {
+            "extractorOrCombinerType": "extractorByPrimaryKey",
+            "parentName": "ApplicationVersion",
+            "parentUuid": "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24",
+            "instanceUuid": {
+              "transformerType": "getFromParameters",
+              "interpolation": "build",
+              "referenceName": "applicationVersion"
+            }
+          },
+          "entities": {
             "extractorOrCombinerType": "extractorInstancesByEntity",
             "applicationSection": "model",
             "parentName": "Entity",
             "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad"
           },
-          "subQueryTemplate": {
-            "query": {
-              "extractorOrCombinerType": "extractorTemplateInstancesByEntity",
-              "parentUuid": {
-                "transformerType": "getFromParameters",
-                "interpolation": "build",
-                "referenceName": "uuid"
-              }
+          "entityDefinitions": {
+            "extractorOrCombinerType": "extractorInstancesByEntity",
+            "applicationSection": "model",
+            "parentName": "Entity",
+            "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd"
+          },
+          "reports": {
+            "extractorOrCombinerType": "extractorInstancesByEntity",
+            "parentName": "Report",
+            "parentUuid": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916"
+          },
+          "queries": {
+            "extractorOrCombinerType": "extractorInstancesByEntity",
+            "parentName": "Query",
+            "parentUuid": "e4320b9e-ab45-4abe-85d8-359604b3c62f"
+          },
+          "endpoints": {
+            "extractorOrCombinerType": "extractorInstancesByEntity",
+            "parentName": "Query",
+            "parentUuid": "3d8da4d4-8f76-4bb4-9212-14869d81c00c"
+          },
+          "instancesOfEntities": {
+            "extractorOrCombinerType": "combinerByHeteronomousManyToMany",
+            "rootExtractorOrReference": {
+              "extractorOrCombinerType": "extractorInstancesByEntity",
+              "applicationSection": "model",
+              "parentName": "Entity",
+              "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad"
             },
-            "rootQueryObjectTransformer": {
-              "transformerType": "recordOfTransformers",
-              "definition": {
-                "uuid": {
-                  "transformerType": "objectTransformer",
+            "subQueryTemplate": {
+              "query": {
+                "extractorOrCombinerType": "extractorInstancesByEntity",
+                "parentUuid": {
+                  "transformerType": "getFromParameters",
                   "interpolation": "build",
-                  "attributeName": "uuid"
+                  "referenceName": "uuid"
+                }
+              },
+              "rootQueryObjectTransformer": {
+                "transformerType": "recordOfTransformers",
+                "definition": {
+                  "uuid": {
+                    "transformerType": "objectTransformer",
+                    "interpolation": "build",
+                    "attributeName": "uuid"
+                  }
                 }
               }
             }

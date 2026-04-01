@@ -1917,7 +1917,6 @@ export function getMiroirFundamentalJzodSchema(
               type: "uuid",
               tag: {
                 value: {
-                  id: 1,
                   canBeTemplate: true,
                   defaultLabel: "Application",
                   foreignKeyParams: {

@@ -17,82 +17,112 @@
             "transformerType": "generateUuid"
           },
           "result": {
-            "application": "31f3a03a-f150-416d-9315-d3a752cb4eb4",
-            "entity": {
-              "uuid": {
-                "transformerType": "getFromContext",
-                "interpolation": "runtime",
-                "referencePath": ["entityUuid"]
-              },
-              "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-              "parentName": "Entity",
-              "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
-              "name": ""
-            },
-            "entityDefinition": {
-              "uuid": {
-                "transformerType": "generateUuid"
-              },
-              "parentName": "EntityDefinition",
-              "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
-              "parentDefinitionVersionUuid": "c50240e7-c451-46c2-b60a-07b3172a5ef9",
-              "name": "",
-              "entityUuid": {
-                "transformerType": "getFromContext",
-                "interpolation": "runtime",
-                "referencePath": ["entityUuid"]
-              },
-              "mlSchema": {
-                "type": "object",
+            "transformerType": "createObject",
+            "definition": {
+              "application": "31f3a03a-f150-416d-9315-d3a752cb4eb4",
+              "entity": {
+                "transformerType": "createObject",
                 "definition": {
                   "uuid": {
-                    "type": "uuid",
-                    "tag": {
-                      "value": {
-                        "id": 1,
-                        "defaultLabel": "Uuid",
-                        "display": { "editable": false }
-                      }
-                    }
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referencePath": ["entityUuid"]
                   },
-                  "parentName": {
-                    "type": "string",
-                    "optional": true,
-                    "tag": {
-                      "value": {
-                        "id": 2,
-                        "defaultLabel": "Entity Name",
-                        "display": { "editable": false }
-                      }
-                    }
+                  "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                  "parentName": "Entity",
+                  "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
+                  "name": ""
+                }
+              },
+              "entityDefinition": {
+                "transformerType": "createObject",
+                "definition": {
+                  "uuid": {
+                    "transformerType": "generateUuid"
                   },
-                  "parentUuid": {
-                    "type": "uuid",
-                    "tag": {
-                      "value": {
-                        "id": 3,
-                        "defaultLabel": "Entity Uuid",
-                        "display": { "editable": false }
-                      }
-                    }
+                  "parentName": "EntityDefinition",
+                  "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+                  "parentDefinitionVersionUuid": "c50240e7-c451-46c2-b60a-07b3172a5ef9",
+                  "name": "",
+                  "entityUuid": {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referencePath": ["entityUuid"]
                   },
-                  "parentDefinitionVersionUuid": {
-                    "type": "uuid",
-                    "optional": true,
-                    "tag": {
-                      "value": {
-                        "id": 4,
-                        "defaultLabel": "Entity Definition Version Uuid",
-                        "display": { "editable": false }
-                      }
-                    }
-                  },
-                  "name": {
-                    "type": "string",
-                    "tag": {
-                      "value": {
-                        "defaultLabel": "Name",
-                        "display": { "editable": true }
+                  "mlSchema": {
+                    "transformerType": "createObject",
+                    "definition": {
+                      "type": "object",
+                      "definition": {
+                        "uuid": {
+                          "transformerType": "createObject",
+                          "definition": {
+                            "type": "uuid",
+                            "tag": {
+                              "transformerType": "createObject",
+                              "definition": {
+                                "value": {
+                                  "id": 1,
+                                  "defaultLabel": "Uuid",
+                                  "display": { "editable": false }
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "parentName": {
+                          "transformerType": "createObject",
+                          "definition": {
+                            "type": "string",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "id": 2,
+                                "defaultLabel": "Entity Name",
+                                "display": { "editable": false }
+                              }
+                            }
+                          }
+                        },
+                        "parentUuid": {
+                          "transformerType": "createObject",
+                          "definition": {
+                            "type": "uuid",
+                            "tag": {
+                              "value": {
+                                "id": 3,
+                                "defaultLabel": "Entity Uuid",
+                                "display": { "editable": false }
+                              }
+                            }
+                          }
+                        },
+                        "parentDefinitionVersionUuid": {
+                          "transformerType": "createObject",
+                          "definition": {
+                            "type": "uuid",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "id": 4,
+                                "defaultLabel": "Entity Definition Version Uuid",
+                                "display": { "editable": false }
+                              }
+                            }
+                          }
+                        },
+                        "name": {
+                          "transformerType": "createObject",
+                          "definition": {
+                            "type": "string",
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Name",
+                                "display": { "editable": true }
+                              }
+                            }
+                          }
+                        }
                       }
                     }
                   }
@@ -111,7 +141,6 @@
             "tag": {
               "value": {
                 "defaultLabel": "Application",
-                "editable": true,
                 "foreignKeyParams": {
                   "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                   "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",

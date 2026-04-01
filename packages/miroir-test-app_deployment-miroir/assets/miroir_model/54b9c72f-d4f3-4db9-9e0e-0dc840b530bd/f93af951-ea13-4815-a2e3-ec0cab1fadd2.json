@@ -75,6 +75,15 @@
           }
         }
       },
+      "selfApplication": {
+        "type": "uuid",
+        "optional": true,
+        "tag": {
+          "value": {
+            "defaultLabel": "Application Uuid"
+          }
+        }
+      },
       "definition": {
         "type": "object",
         "optional": true,
