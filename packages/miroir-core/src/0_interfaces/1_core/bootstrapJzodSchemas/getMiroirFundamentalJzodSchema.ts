@@ -370,6 +370,23 @@ export function getMiroirFundamentalJzodSchema(
           discriminator: ["transformerType", "interpolation"],
           optInDiscriminator: true,
           definition: [
+            {
+              type: "string",
+            },
+            {
+              type: "number",
+            },
+            { type: "boolean" },
+            {
+              type: "array",
+              definition: {
+                type: "schemaReference",
+                definition: {
+                  absolutePath: miroirFundamentalJzodSchemaUuid,
+                  relativePath: "transformerForBuild",
+                },
+              },
+            },
             ...transformerForBuildNames.map((e: any) => ({
               type: "schemaReference",
               definition: {
@@ -468,12 +485,22 @@ export function getMiroirFundamentalJzodSchema(
           discriminator: ["transformerType", "interpolation"],
           definition: [
             {
-              type: "string"
+              type: "string",
             },
             {
-              type: "number"
+              type: "number",
             },
             { type: "boolean" },
+            {
+              type: "array",
+              definition: {
+                type: "schemaReference",
+                definition: {
+                  absolutePath: miroirFundamentalJzodSchemaUuid,
+                  relativePath: "transformerForBuildPlusRuntime",
+                },
+              },
+            },
             // {
             //   type: "schemaReference",
             //   definition: {
@@ -1202,8 +1229,10 @@ export function getMiroirFundamentalJzodSchema(
             forceNullOptionalAttributeToUndefined: {
               type: "boolean",
               optional: true,
-              tag: { value: { defaultLabel: "Force Null Optional Attribute To Undefined" }, 
-              initializeTo: { initializeToType: "value", value: true } },
+              tag: {
+                value: { defaultLabel: "Force Null Optional Attribute To Undefined" },
+                initializeTo: { initializeToType: "value", value: true },
+              },
             },
           },
         },

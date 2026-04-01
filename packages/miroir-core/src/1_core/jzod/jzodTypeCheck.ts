@@ -545,7 +545,7 @@ export function selectUnionBranchFromDiscriminator<T extends MiroirModelEnvironm
 // ################################################################################################
 export function jzodUnionResolvedTypeForArray<T extends MiroirModelEnvironment>(
   concreteUnrolledJzodSchemas: JzodElement[],
-  effectiveRawSchema: JzodElement,
+  effectiveRawSchema: JzodUnion,
   discriminator: string | (string | string[])[] | undefined,
   valueArray: any[],
   currentValuePath: (string | number)[],
@@ -571,6 +571,7 @@ export function jzodUnionResolvedTypeForArray<T extends MiroirModelEnvironment>(
       arrayUnionChoices: arrayUnionChoices,
     };
   }
+  // if (!arrayUnionChoices || (arrayUnionChoices.length == 0 && !effectiveRawSchema.optInDiscriminator)) {
   if (!arrayUnionChoices || arrayUnionChoices.length == 0) {
     return {
       status: "error",
@@ -635,7 +636,6 @@ export function jzodUnionResolvedTypeForObject<T extends MiroirModelEnvironment>
       objectUnionChoices: objectUnionChoices,
     };
   }
-  // if (!objectUnionChoices || (objectUnionChoices.length == 0)) {
   if (!objectUnionChoices || (objectUnionChoices.length == 0 && !effectiveRawSchema.optInDiscriminator)) {
     return {
       status: "error",

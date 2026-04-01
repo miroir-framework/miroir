@@ -25,8 +25,7 @@
             "description": "The UUID of the application for which to get the active deployment.",
             "tag": {
               "value": {
-                "defaultLabel": "Application",
-                "editable": true
+                "defaultLabel": "Application"
               }
             }
           }

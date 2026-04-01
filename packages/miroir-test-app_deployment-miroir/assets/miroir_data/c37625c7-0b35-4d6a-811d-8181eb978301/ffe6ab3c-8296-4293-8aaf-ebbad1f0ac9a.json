@@ -14,7 +14,6 @@
         "compositeActionSequence": {
           "actionType": "compositeActionSequence",
           "actionLabel": "createEntityAndReportFromSpreadsheetAndUpdateMenu",
-          "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
           "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
           "payload": {
             "templates": {
@@ -230,7 +229,6 @@
               {
                 "actionType": "createEntity",
                 "actionLabel": "createEntity",
-                "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                 "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
                 "payload": {
                   "application": {
@@ -253,6 +251,7 @@
               },
               {
                 "actionType": "transactionalInstanceAction",
+                "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
                 "actionLabel": "createReports",
                 "payload": {
                   "application": {
@@ -261,7 +260,6 @@
                   },
                   "instanceAction": {
                     "actionType": "createInstance",
-                    "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                     "endpoint": "ed520de4-55a9-4550-ac50-b1b713b72a89",
                     "payload": {
                       "application": {
@@ -302,11 +300,11 @@
                 "payload": {
                   "actionType": "runBoxedQueryAction",
                   "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-                  "application": {
-                    "transformerType": "getFromParameters",
-                    "referenceName": "testApplicationUuid"
-                  },
                   "payload": {
+                    "application": {
+                      "transformerType": "getFromParameters",
+                      "referenceName": "testApplicationUuid"
+                    },
                     "applicationSection": "model",
                     "query": {
                       "queryType": "boxedQueryWithExtractorCombinerTransformer",
@@ -352,11 +350,11 @@
                 "payload": {
                   "actionType": "runBoxedQueryAction",
                   "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-                  "application": {
-                    "transformerType": "getFromParameters",
-                    "referenceName": "testApplicationUuid"
-                  },
                   "payload": {
+                    "application": {
+                      "transformerType": "getFromParameters",
+                      "referenceName": "testApplicationUuid"
+                    },
                     "applicationSection": "model",
                     "query": {
                       "queryType": "boxedQueryWithExtractorCombinerTransformer",
@@ -402,11 +400,11 @@
                 "payload": {
                   "actionType": "runBoxedQueryAction",
                   "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-                  "application": {
-                    "transformerType": "getFromParameters",
-                    "referenceName": "testApplicationUuid"
-                  },
                   "payload": {
+                    "application": {
+                      "transformerType": "getFromParameters",
+                      "referenceName": "testApplicationUuid"
+                    },
                     "applicationSection": "model",
                     "query": {
                       "queryType": "boxedQueryWithExtractorCombinerTransformer",
@@ -535,6 +533,7 @@
               },
               {
                 "actionType": "transactionalInstanceAction",
+                "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
                 "actionLabel": "updateMenu",
                 "payload": {
                   "application": {
@@ -543,7 +542,6 @@
                   },
                   "instanceAction": {
                     "actionType": "updateInstance",
-                    "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                     "endpoint": "ed520de4-55a9-4550-ac50-b1b713b72a89",
                     "payload": {
                       "application": {
