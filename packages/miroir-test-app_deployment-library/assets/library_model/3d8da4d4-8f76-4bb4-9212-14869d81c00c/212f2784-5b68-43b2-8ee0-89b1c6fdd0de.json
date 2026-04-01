@@ -21,23 +21,6 @@
             "type": "literal",
             "definition": "212f2784-5b68-43b2-8ee0-89b1c6fdd0de"
           },
-          "application": {
-            "type": "literal",
-            "definition": "5af03c98-fe5e-490b-b08f-e1230971c57f"
-          },
-          "deploymentUuid": {
-            "type": "uuid",
-            "optional": true,
-            "tag": {
-              "value": {
-                "id": 1,
-                "defaultLabel": "deployment Uuid",
-                "display": {
-                  "editable": false
-                }
-              }
-            }
-          },
           "payload": {
             "type": "object",
             "definition": {

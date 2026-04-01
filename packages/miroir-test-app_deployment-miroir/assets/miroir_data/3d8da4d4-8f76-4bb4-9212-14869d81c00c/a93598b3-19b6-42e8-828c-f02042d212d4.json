@@ -12,11 +12,6 @@
         "actionParameters": {
           "actionType": {
             "type": "literal",
-            "tag": {
-              "value": {
-                "canBeTemplate": false
-              }
-            },
             "definition": "LocalPersistenceAction_create"
           },
           "actionLabel": {
@@ -34,14 +29,13 @@
                 "type": "uuid",
                 "tag": {
                   "value": {
-                    "canBeTemplate": false,
+                    "canBeTemplate": true,
                     "defaultLabel": "Application",
                     "foreignKeyParams": {
                       "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                       "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                       "targetEntityOrderInstancesBy": "name"
-                    },
-                    "editable": false
+                    }
                   }
                 }
               },
@@ -58,7 +52,9 @@
                 "tag": {
                   "value": {
                     "defaultLabel": "Parent Name",
-                    "editable": false
+                    "display": {
+                      "editable": false
+                    } 
                   }
                 }
               },
@@ -73,7 +69,9 @@
                 "tag": {
                   "value": {
                     "defaultLabel": "Parent Uuid",
-                    "editable": false
+                    "display": {
+                      "editable": false
+                    } 
                   }
                 }
               },
@@ -88,7 +86,9 @@
                 "tag": {
                   "value": {
                     "defaultLabel": "Uuid",
-                    "editable": false
+                    "display": {
+                      "editable": false
+                    } 
                   }
                 }
               },
@@ -116,11 +116,6 @@
         "actionParameters": {
           "actionType": {
             "type": "literal",
-            "tag": {
-              "value": {
-                "canBeTemplate": false
-              }
-            },
             "definition": "LocalPersistenceAction_read"
           },
           "actionLabel": {
@@ -138,14 +133,13 @@
                 "type": "uuid",
                 "tag": {
                   "value": {
-                    "canBeTemplate": false,
+                    "canBeTemplate": true,
                     "defaultLabel": "Application",
                     "foreignKeyParams": {
                       "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                       "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                       "targetEntityOrderInstancesBy": "name"
-                    },
-                    "editable": false
+                    }
                   }
                 }
               },
@@ -161,8 +155,7 @@
                 "optional": true,
                 "tag": {
                   "value": {
-                    "defaultLabel": "Parent Name",
-                    "editable": false
+                    "defaultLabel": "Parent Name"
                   }
                 }
               },
@@ -176,8 +169,7 @@
                 ],
                 "tag": {
                   "value": {
-                    "defaultLabel": "Parent Uuid",
-                    "editable": false
+                    "defaultLabel": "Parent Uuid"
                   }
                 }
               },
@@ -191,8 +183,7 @@
                 ],
                 "tag": {
                   "value": {
-                    "defaultLabel": "Uuid",
-                    "editable": false
+                    "defaultLabel": "Uuid"
                   }
                 }
               },
@@ -242,14 +233,13 @@
                 "type": "uuid",
                 "tag": {
                   "value": {
-                    "canBeTemplate": false,
+                    "canBeTemplate": true,
                     "defaultLabel": "Application",
                     "foreignKeyParams": {
                       "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                       "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                       "targetEntityOrderInstancesBy": "name"
-                    },
-                    "editable": false
+                    }
                   }
                 }
               },
@@ -265,8 +255,7 @@
                 "optional": true,
                 "tag": {
                   "value": {
-                    "defaultLabel": "Parent Name",
-                    "editable": false
+                    "defaultLabel": "Parent Name"
                   }
                 }
               },
@@ -280,8 +269,7 @@
                 ],
                 "tag": {
                   "value": {
-                    "defaultLabel": "Parent Uuid",
-                    "editable": false
+                    "defaultLabel": "Parent Uuid"
                   }
                 }
               },
@@ -295,8 +283,7 @@
                 ],
                 "tag": {
                   "value": {
-                    "defaultLabel": "Uuid",
-                    "editable": false
+                    "defaultLabel": "Uuid"
                   }
                 }
               },
@@ -324,11 +311,6 @@
         "actionParameters": {
           "actionType": {
             "type": "literal",
-            "tag": {
-              "value": {
-                "canBeTemplate": false
-              }
-            },
             "definition": "LocalPersistenceAction_delete"
           },
           "actionLabel": {
@@ -346,14 +328,13 @@
                 "type": "uuid",
                 "tag": {
                   "value": {
-                    "canBeTemplate": false,
+                    "canBeTemplate": true,
                     "defaultLabel": "Application",
                     "foreignKeyParams": {
                       "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                       "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                       "targetEntityOrderInstancesBy": "name"
-                    },
-                    "editable": false
+                    }
                   }
                 }
               },
@@ -369,8 +350,7 @@
                 "optional": true,
                 "tag": {
                   "value": {
-                    "defaultLabel": "Parent Name",
-                    "editable": false
+                    "defaultLabel": "Parent Name"
                   }
                 }
               },
@@ -384,8 +364,7 @@
                 ],
                 "tag": {
                   "value": {
-                    "defaultLabel": "Parent Uuid",
-                    "editable": false
+                    "defaultLabel": "Parent Uuid"
                   }
                 }
               },
@@ -399,8 +378,7 @@
                 ],
                 "tag": {
                   "value": {
-                    "defaultLabel": "Uuid",
-                    "editable": false
+                    "defaultLabel": "Uuid"
                   }
                 }
               },
@@ -428,11 +406,6 @@
         "actionParameters": {
           "actionType": {
             "type": "literal",
-            "tag": {
-              "value": {
-                "canBeTemplate": false
-              }
-            },
             "definition": "RestPersistenceAction_create"
           },
           "actionLabel": {
@@ -450,14 +423,13 @@
                 "type": "uuid",
                 "tag": {
                   "value": {
-                    "canBeTemplate": false,
+                    "canBeTemplate": true,
                     "defaultLabel": "Application",
                     "foreignKeyParams": {
                       "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                       "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                       "targetEntityOrderInstancesBy": "name"
-                    },
-                    "editable": false
+                    }
                   }
                 }
               },
@@ -473,8 +445,7 @@
                 "optional": true,
                 "tag": {
                   "value": {
-                    "defaultLabel": "Parent Name",
-                    "editable": false
+                    "defaultLabel": "Parent Name"
                   }
                 }
               },
@@ -488,8 +459,7 @@
                 ],
                 "tag": {
                   "value": {
-                    "defaultLabel": "Parent Uuid",
-                    "editable": false
+                    "defaultLabel": "Parent Uuid"
                   }
                 }
               },
@@ -503,8 +473,7 @@
                 ],
                 "tag": {
                   "value": {
-                    "defaultLabel": "Uuid",
-                    "editable": false
+                    "defaultLabel": "Uuid"
                   }
                 }
               },
@@ -532,11 +501,6 @@
         "actionParameters": {
           "actionType": {
             "type": "literal",
-            "tag": {
-              "value": {
-                "canBeTemplate": false
-              }
-            },
             "definition": "RestPersistenceAction_read"
           },
           "actionLabel": {
@@ -554,14 +518,13 @@
                 "type": "uuid",
                 "tag": {
                   "value": {
-                    "canBeTemplate": false,
+                    "canBeTemplate": true,
                     "defaultLabel": "Application",
                     "foreignKeyParams": {
                       "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                       "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                       "targetEntityOrderInstancesBy": "name"
-                    },
-                    "editable": false
+                    }
                   }
                 }
               },
@@ -577,8 +540,7 @@
                 "optional": true,
                 "tag": {
                   "value": {
-                    "defaultLabel": "Parent Name",
-                    "editable": false
+                    "defaultLabel": "Parent Name"
                   }
                 }
               },
@@ -592,8 +554,7 @@
                 ],
                 "tag": {
                   "value": {
-                    "defaultLabel": "Parent Uuid",
-                    "editable": false
+                    "defaultLabel": "Parent Uuid"
                   }
                 }
               },
@@ -607,8 +568,7 @@
                 ],
                 "tag": {
                   "value": {
-                    "defaultLabel": "Uuid",
-                    "editable": false
+                    "defaultLabel": "Uuid"
                   }
                 }
               },
@@ -636,11 +596,6 @@
         "actionParameters": {
           "actionType": {
             "type": "literal",
-            "tag": {
-              "value": {
-                "canBeTemplate": false
-              }
-            },
             "definition": "RestPersistenceAction_update"
           },
           "actionLabel": {
@@ -658,14 +613,13 @@
                 "type": "uuid",
                 "tag": {
                   "value": {
-                    "canBeTemplate": false,
+                    "canBeTemplate": true,
                     "defaultLabel": "Application",
                     "foreignKeyParams": {
                       "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                       "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                       "targetEntityOrderInstancesBy": "name"
-                    },
-                    "editable": false
+                    }
                   }
                 }
               },
@@ -681,8 +635,7 @@
                 "optional": true,
                 "tag": {
                   "value": {
-                    "defaultLabel": "Parent Name",
-                    "editable": false
+                    "defaultLabel": "Parent Name"
                   }
                 }
               },
@@ -696,8 +649,7 @@
                 ],
                 "tag": {
                   "value": {
-                    "defaultLabel": "Parent Uuid",
-                    "editable": false
+                    "defaultLabel": "Parent Uuid"
                   }
                 }
               },
@@ -711,8 +663,7 @@
                 ],
                 "tag": {
                   "value": {
-                    "defaultLabel": "Uuid",
-                    "editable": false
+                    "defaultLabel": "Uuid"
                   }
                 }
               },
@@ -740,11 +691,6 @@
         "actionParameters": {
           "actionType": {
             "type": "literal",
-            "tag": {
-              "value": {
-                "canBeTemplate": false
-              }
-            },
             "definition": "RestPersistenceAction_delete"
           },
           "actionLabel": {
@@ -762,14 +708,13 @@
                 "type": "uuid",
                 "tag": {
                   "value": {
-                    "canBeTemplate": false,
+                    "canBeTemplate": true,
                     "defaultLabel": "Application",
                     "foreignKeyParams": {
                       "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                       "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                       "targetEntityOrderInstancesBy": "name"
-                    },
-                    "editable": false
+                    }
                   }
                 }
               },
@@ -785,8 +730,7 @@
                 "optional": true,
                 "tag": {
                   "value": {
-                    "defaultLabel": "Parent Name",
-                    "editable": false
+                    "defaultLabel": "Parent Name"
                   }
                 }
               },
@@ -800,8 +744,7 @@
                 ],
                 "tag": {
                   "value": {
-                    "defaultLabel": "Parent Uuid",
-                    "editable": false
+                    "defaultLabel": "Parent Uuid"
                   }
                 }
               },
@@ -815,8 +758,7 @@
                 ],
                 "tag": {
                   "value": {
-                    "defaultLabel": "Uuid",
-                    "editable": false
+                    "defaultLabel": "Uuid"
                   }
                 }
               },

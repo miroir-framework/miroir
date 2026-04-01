@@ -17,6 +17,14 @@
           "type": "runnerReportSection",
           "definition": {
             "runnerReportSectionType": "storedRunner",
+            "label": "deployApplication",
+            "runner": "4f3cd0b1-08a1-421c-84f7-e0589be88d18"
+          }
+        },
+        {
+          "type": "runnerReportSection",
+          "definition": {
+            "runnerReportSectionType": "storedRunner",
             "label": "dropApplication",
             "runner": "1cd065d8-dfb0-466f-974c-e81e993f2c66"
           }

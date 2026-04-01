@@ -13,10 +13,6 @@
             "type": "literal",
             "definition": "updateISBN"
           },
-          "application": {
-            "type": "literal",
-            "definition": "5af03c98-fe5e-490b-b08f-e1230971c57f"
-          },
           "endpoint": {
             "type": "literal",
             "definition": "9884c1a4-5122-488a-85db-a99fbc02e678"

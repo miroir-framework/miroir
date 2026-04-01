@@ -12,11 +12,6 @@
         "actionParameters": {
           "actionType": {
             "type": "literal",
-            "tag": {
-              "value": {
-                "canBeTemplate": false
-              }
-            },
             "definition": "menuAddItem"
           },
           "actionLabel": {
@@ -34,14 +29,13 @@
                 "type": "uuid",
                 "tag": {
                   "value": {
-                    "canBeTemplate": false,
+                    "canBeTemplate": true,
                     "defaultLabel": "Application",
                     "foreignKeyParams": {
                       "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                       "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                       "targetEntityOrderInstancesBy": "name"
-                    },
-                    "editable": false
+                    }
                   }
                 }
               },
@@ -56,8 +50,7 @@
                 "type": "array",
                 "tag": {
                   "value": {
-                    "defaultLabel": "SelfApplication Instance to create",
-                    "editable": true
+                    "defaultLabel": "SelfApplication Instance to create"
                   }
                 },
                 "definition": {

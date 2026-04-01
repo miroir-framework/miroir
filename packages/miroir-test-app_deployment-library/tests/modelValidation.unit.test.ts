@@ -213,7 +213,8 @@ function describeEntityGroup(
         );
         expect(
           result.status,
-          `jzodTypeCheck failed for instance ${label}: ${JSON.stringify(result)}`,
+          // `jzodTypeCheck failed for instance ${label}: ${JSON.stringify(result)}`,
+          `jzodTypeCheck failed for instance ${label}`,
         ).toBe("ok");
       });
     }

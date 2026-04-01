@@ -10,7 +10,6 @@
       "jzodBaseObject": {
         "type": "object",
         "tag": {
-          "optional": true,
           "schema": {
             "optional": true,
             "metaSchema": {
