@@ -398,6 +398,7 @@ export function createLocalizedInnerResolutionStoreForExtendedSchemas(
   localizedResolutionStore: JzodReference,
   extendedSchemas: string[],
   carryOnSchemaReference: JzodReference,
+  carryOnSchemaReferenceForArray: JzodReference,
   carryOnSchemaDiscriminator: undefined | string | string[] | (string | string[])[] = undefined,
   resolveReferencesWithCarryOn: JzodReferenceResolutionFunction,
   prefix: string,
@@ -425,6 +426,7 @@ export function createLocalizedInnerResolutionStoreForExtendedSchemas(
       const appliedLimitedCarryOnResult = applyLimitedCarryOnSchemaOnLevel(
         localizedResolutionStore.context[e],
         carryOnSchemaReference,
+        carryOnSchemaReferenceForArray,
         carryOnSchemaDiscriminator,
         alwaysPropagate,
         false, // applyOnFirstLevel is false, since the result will be an object that is used in an "extend" clause
@@ -467,6 +469,7 @@ export function createLocalizedInnerResolutionStoreWithCarryOn(
   localizedResolutionStore: JzodReference,
   extendedSchemas: string[],
   carryOnSchemaReference: JzodReference,
+  carryOnSchemaReferenceForArray: JzodReference,
   carryOnSchemaDiscriminator: undefined | string | string[] = undefined,
   resolveReferencesWithCarryOn: JzodReferenceResolutionFunction,
   prefix: string,
@@ -495,8 +498,9 @@ export function createLocalizedInnerResolutionStoreWithCarryOn(
                 resolvedReferences: undefined,
               }
             : applyLimitedCarryOnSchemaOnLevel(
-                f[1] as any,
-                carryOnSchemaReference as any,
+                f[1],
+                carryOnSchemaReference,
+                carryOnSchemaReferenceForArray,
                 carryOnSchemaDiscriminator,
                 alwaysPropagate, // alwaysPropagate
                 true, // applyOnFirstLevel
@@ -526,6 +530,11 @@ export function createLocalizedInnerResolutionStoreWithCarryOn(
 }
 
 // ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
 /**
  * checks that entries in the domainActionDependencySet are present in the context of the carryOnSchemaReference
  * @param domainAction 
@@ -539,6 +548,7 @@ export function createLocalizedInnerResolutionStoreWithCarryOn(
 export function createDomainActionCarryOnSchemaResolver(
   domainAction: JzodElement,
   carryOnSchemaReference: JzodReference,
+  carryOnSchemaReferenceForArray: JzodReference,
   carryOnSchemaDiscriminator: undefined | string | string[] = undefined,
   domainActionDependencySet: Set<string>,
   prefix: string,
@@ -580,6 +590,7 @@ export function createDomainActionCarryOnSchemaResolver(
     carryOnDomainActionDependenciesJzodReference,
     extendedSchemas,
     carryOnSchemaReference,
+    carryOnSchemaReferenceForArray,
     carryOnSchemaDiscriminator,
     resolveReferencesWithCarryOn.bind(
       undefined,
@@ -603,6 +614,7 @@ export function createDomainActionCarryOnSchemaResolver(
     carryOnDomainActionDependenciesJzodReference,
     extendedSchemas,
     carryOnSchemaReference,
+    carryOnSchemaReferenceForArray,
     carryOnSchemaDiscriminator,
     resolveReferencesWithCarryOn.bind(undefined, {
       [miroirFundamentalJzodSchemaUuid]: carryOnDomainActionDependenciesJzodReference,
@@ -619,16 +631,18 @@ export function createDomainActionCarryOnSchemaResolver(
 
   const carryOnDomainActionSchemaBuilder = applyLimitedCarryOnSchemaOnLevel(
     domainAction,
-    {
-      type: "schemaReference",
-      definition: {
-        relativePath: forgeCarryOnReferenceName(
-          miroirFundamentalJzodSchemaUuid,
-          "transformerForBuildPlusRuntime"
-        ),
-      },
-    },
+    // {
+    //   type: "schemaReference",
+    //   definition: {
+    //     relativePath: forgeCarryOnReferenceName(
+    //       miroirFundamentalJzodSchemaUuid,
+    //       "transformerForBuildPlusRuntime"
+    //     ),
+    //   },
+    // },
     // ["transformerType", "interpolation"], // carryOnSchemaDiscriminator
+    carryOnSchemaReference,
+    carryOnSchemaReferenceForArray,
     carryOnSchemaDiscriminator,
     alwaysPropagate,// false, // alwaysPropagate
     false, // applyOnFirstLevel

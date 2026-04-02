@@ -81,6 +81,7 @@
                 "type": "array",
                 "tag": {
                   "value": {
+                    "canBeTemplate": true,
                     "defaultLabel": "Entity Instances (objects) to create",
                     "description": "Array of entity instances to create. Each must have uuid and parentUuid."
                   }

@@ -39,6 +39,7 @@ export function forgeCarryOnReferenceName(
 export function applyLimitedCarryOnSchema(
   baseSchema: JzodElement,
   carryOnSchema: JzodElement,
+  carryOnSchemaForArray: JzodElement,
   carryOnSchemaDiscriminator: undefined | string | string[] = undefined,
   alwaysPropagate: boolean = true,
   carryOnPrefix?: string | undefined,
@@ -50,6 +51,7 @@ export function applyLimitedCarryOnSchema(
   return applyLimitedCarryOnSchemaOnLevel(
     baseSchema,
     carryOnSchema,
+    carryOnSchemaForArray,
     carryOnSchemaDiscriminator,
     alwaysPropagate,
     true, // applyOnFirstLevel,
@@ -130,6 +132,7 @@ export function mergePositionBased(
 export function applyLimitedCarryOnSchemaOnLevel(
   baseSchema: JzodElement,
   carryOnSchema: JzodElement,
+  carryOnSchemaForArray: JzodElement,
   carryOnSchemaDiscriminator: undefined | string | string[] | (string | string[])[] = undefined,
   alwaysPropagate: boolean = true,
   applyOnFirstLevel: boolean,
@@ -286,6 +289,7 @@ export function applyLimitedCarryOnSchemaOnLevel(
       const convertedSubSchema = applyLimitedCarryOnSchemaOnLevel(
         baseSchema.definition,
         carryOnSchema,
+        carryOnSchemaForArray,
         carryOnSchemaDiscriminator,
         alwaysPropagate,
         true, // applyOnFirstLevel
@@ -363,6 +367,7 @@ export function applyLimitedCarryOnSchemaOnLevel(
       const convertedSubSchema = applyLimitedCarryOnSchemaOnLevel(
         baseSchema.definition,
         carryOnSchema,
+        carryOnSchemaForArray,
         carryOnSchemaDiscriminator,
         alwaysPropagate,
         true, // applyOnFirstLevel
@@ -425,6 +430,7 @@ export function applyLimitedCarryOnSchemaOnLevel(
       const convertedSubSchema = applyLimitedCarryOnSchemaOnLevel(
         baseSchema.definition,
         carryOnSchema,
+        carryOnSchemaForArray,
         carryOnSchemaDiscriminator,
         alwaysPropagate,
         true, // applyOnFirstLevel
@@ -456,7 +462,7 @@ export function applyLimitedCarryOnSchemaOnLevel(
                 type: "array",
                 definition: convertedSubSchema.resultSchema,
               } as any,
-              carryOnSchema,
+              carryOnSchemaForArray,
             ],
           } as any,
           hasBeenApplied: true,
@@ -484,6 +490,7 @@ export function applyLimitedCarryOnSchemaOnLevel(
         const convertedSubSchema = applyLimitedCarryOnSchemaOnLevel(
           subSchema,
           carryOnSchema,
+          carryOnSchemaForArray,
           carryOnSchemaDiscriminator,
           alwaysPropagate,
           true, //applyOnFirstLevel
@@ -520,7 +527,7 @@ export function applyLimitedCarryOnSchemaOnLevel(
                 tag: convertedTag,
                 definition: convertedSubSchemas,
               } as any,
-              carryOnSchema,
+              carryOnSchemaForArray,
             ],
           } as any,
           hasBeenApplied: true,
@@ -551,6 +558,7 @@ export function applyLimitedCarryOnSchemaOnLevel(
           applyLimitedCarryOnSchemaOnLevel(
             e,
             carryOnSchema,
+            carryOnSchemaForArray,
             carryOnSchemaDiscriminator,
             alwaysPropagate,
             false, // applyOnFirstLevel, no need to apply since result is a union, and carryOnSchema is added to union (array) definition
@@ -624,6 +632,7 @@ export function applyLimitedCarryOnSchemaOnLevel(
         const convertedSubSchema = applyLimitedCarryOnSchemaOnLevel(
           subSchema[1],
           carryOnSchema,
+          carryOnSchemaForArray,
           carryOnSchemaDiscriminator,
           alwaysPropagate,
           true, // applyOnFirstLevel
@@ -651,6 +660,7 @@ export function applyLimitedCarryOnSchemaOnLevel(
                 applyLimitedCarryOnSchemaOnLevel(
                   baseSchema.extend,
                   carryOnSchema,
+                  carryOnSchemaForArray,
                   carryOnSchemaDiscriminator,
                   alwaysPropagate,
                   false, // applyOnFirstLevel
@@ -668,6 +678,7 @@ export function applyLimitedCarryOnSchemaOnLevel(
                   applyLimitedCarryOnSchemaOnLevel(
                     e,
                     carryOnSchema,
+                    carryOnSchemaForArray,
                     carryOnSchemaDiscriminator,
                     alwaysPropagate,
                     false, // applyOnFirstLevel
@@ -823,6 +834,7 @@ export function applyLimitedCarryOnSchemaOnLevel(
           const convertedReference = applyLimitedCarryOnSchemaOnLevel(
             resolvedReference,
             carryOnSchema,
+            carryOnSchemaForArray,
             carryOnSchemaDiscriminator,
             alwaysPropagate,
             true, // applyOnFirstLevel
@@ -877,6 +889,7 @@ export function applyLimitedCarryOnSchemaOnLevel(
         const convertedSubSchema = applyLimitedCarryOnSchemaOnLevel(
           contextSubSchema[1],
           carryOnSchema,
+          carryOnSchemaForArray,
           carryOnSchemaDiscriminator,
           alwaysPropagate,
           true, // applyOnFirstLevel
