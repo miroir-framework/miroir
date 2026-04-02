@@ -180,92 +180,95 @@ const modelTestsToRun: Array<{
   instances: Record<string, { default: any }>;
   filterByName?: string[];
 }> = [
-  // {
-  //   "groupName": "Entity",
-  //   "jzodSchema": (entityDefinitionEntity as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
-  //   "instances": entityInstances,
-  // },
-  // {
-  //   "groupName": "EntityDefinition",
-  //   "jzodSchema": (entityDefinitionEntityDefinition as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
-  //   "instances": entityDefinitionInstances,
-  // },
-  // {
-  //   "groupName": "Report",
-  //   "jzodSchema": (entityDefinitionReport as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
-  //   "instances": reportInstances,
-  //   // "filterByName": ["SelfApplicationDetails"],
-  // },
-  // {
-  //   "groupName": "EndpointVersion",
-  //   "jzodSchema": (entityDefinitionEndpoint as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
-  //   "instances": endpointInstances,
-  //   // "filterByName": ["TestEndpoint", "PersistenceEndpoint", "MenuEndpoint", "ApplicationEndpoint"],
-  //   // "filterByName": ["ApplicationEndpoint"],
-  // },
-  // {
-  //   "groupName": "Menu",
-  //   "jzodSchema": (entityDefinitionMenu as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
-  //   "instances": menuInstances,
-  // },
+  {
+    "groupName": "Entity",
+    "jzodSchema": (entityDefinitionEntity as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
+    "instances": entityInstances,
+  },
+  {
+    "groupName": "EntityDefinition",
+    "jzodSchema": (entityDefinitionEntityDefinition as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
+    "instances": entityDefinitionInstances,
+  },
+  {
+    "groupName": "Report",
+    "jzodSchema": (entityDefinitionReport as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
+    "instances": reportInstances,
+    // "filterByName": ["SelfApplicationDetails"],
+  },
+  {
+    "groupName": "EndpointVersion",
+    "jzodSchema": (entityDefinitionEndpoint as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
+    "instances": endpointInstances,
+    // "filterByName": ["TestEndpoint", "PersistenceEndpoint", "MenuEndpoint", "ApplicationEndpoint"],
+    // "filterByName": ["InstanceEndpoint"],
+  },
+  {
+    "groupName": "Menu",
+    "jzodSchema": (entityDefinitionMenu as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
+    "instances": menuInstances,
+  },
   {
     "groupName": "JzodSchema",
     "jzodSchema": (entityDefinitionJzodSchema as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
     "instances": jzodSchemaInstances,
-    //  × jzodMiroirBootstrapSchema (1e8dab4b-65a3-4686-922e-ce89a2d62aa9) 150ms
-    //  × transformerJzodSchema (a97756cf-dd93-42b9-a021-91a629b187b9) 35ms
-    "filterByName": ["transformerJzodSchema"],
+    // "filterByName": ["transformerJzodSchema"],
   },
   // {
   //   "groupName": "QueryVersion",
   //   "jzodSchema": (entityDefinitionQueryVersionV1 as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
   //   "instances": queryInstances,
+  //   "filterByName": ["BundleProducer"],
   // },
-  // {
-  //   "groupName": "StoreBasedConfiguration",
-  //   "jzodSchema": (entityDefinitionStoreBasedConfiguration as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
-  //   "instances": storeBasedConfigurationInstances,
-  // },
-  // {
-  //   "groupName": "SelfApplication",
-  //   "jzodSchema": (entityDefinitionSelfApplication as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
-  //   "instances": selfApplicationInstances,
-  // },
-  // {
-  //   "groupName": "SelfApplicationDeploymentConfiguration",
-  //   "jzodSchema": (entityDefinitionSelfApplicationDeploymentConfiguration as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
-  //   "instances": selfApplicationDeploymentInstances,
-  // },
-  // {
-  //   "groupName": "SelfApplicationModelBranch",
-  //   "jzodSchema": (entityDefinitionSelfApplicationModelBranch as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
-  //   "instances": selfApplicationModelBranchInstances,
-  // },
-  // {
-  //   "groupName": "SelfApplicationVersion",
-  //   "jzodSchema": (entityDefinitionSelfApplicationVersion as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
-  //   "instances": applicationVersionInstances,
-  // },
-  // {
-  //   "groupName": "Runner",
-  //   "jzodSchema": (entityDefinitionRunner as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
-  //   "instances": runnerInstances,
-  // },
-  // {
-  //   "groupName": "TransformerDefinition",
-  //   "jzodSchema": (entityDefinitionTransformerDefinition as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
-  //   "instances": transformerDefinitionInstances,
-  // },
-  // {
-  //   "groupName": "Test",
-  //   "jzodSchema": (entityDefinitionTest as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
-  //   "instances": testInstances,
-  // },
-  // {
-  //   "groupName": "TransformerTest",
-  //   "jzodSchema": (entityDefinitionTransformerTest as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
-  //   "instances": transformerTestInstances,
-  // }
+  {
+    "groupName": "StoreBasedConfiguration",
+    "jzodSchema": (entityDefinitionStoreBasedConfiguration as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
+    "instances": storeBasedConfigurationInstances,
+  },
+  {
+    "groupName": "SelfApplication",
+    "jzodSchema": (entityDefinitionSelfApplication as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
+    "instances": selfApplicationInstances,
+  },
+  {
+    "groupName": "SelfApplicationDeploymentConfiguration",
+    "jzodSchema": (entityDefinitionSelfApplicationDeploymentConfiguration as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
+    "instances": selfApplicationDeploymentInstances,
+  },
+  {
+    "groupName": "SelfApplicationModelBranch",
+    "jzodSchema": (entityDefinitionSelfApplicationModelBranch as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
+    "instances": selfApplicationModelBranchInstances,
+  },
+  {
+    "groupName": "SelfApplicationVersion",
+    "jzodSchema": (entityDefinitionSelfApplicationVersion as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
+    "instances": applicationVersionInstances,
+  },
+  {
+    "groupName": "Runner",
+    "jzodSchema": (entityDefinitionRunner as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
+    "instances": runnerInstances,
+    // filterByName: ["dropApplication", "dropEntity", "deployApplication", "createEntity"],
+    // filterByName: ["deployApplication"],
+  },
+  {
+    "groupName": "TransformerDefinition",
+    "jzodSchema": (entityDefinitionTransformerDefinition as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
+    "instances": transformerDefinitionInstances,
+    // filterByName: ["getActiveDeployment"],
+  },
+  {
+    "groupName": "Test",
+    "jzodSchema": (entityDefinitionTest as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
+    "instances": testInstances,
+  },
+  {
+    "groupName": "TransformerTest",
+    "jzodSchema": (entityDefinitionTransformerTest as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
+    "instances": transformerTestInstances,
+    // filterByName: ["unfoldSchemaOnce"],
+  }
 ]
 
 modelTestsToRun.forEach(({ groupName, jzodSchema, instances, filterByName }) => {
