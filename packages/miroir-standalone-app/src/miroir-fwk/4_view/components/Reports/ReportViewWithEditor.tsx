@@ -19,21 +19,16 @@ import {
   type Domain2QueryReturnType,
   type DomainControllerInterface,
   type EntityDefinition,
-  // type ExtractorRunnerParamsForJzodSchema,
   type InstanceAction,
   type JzodObject,
   type MetaModel,
-  // type QueryByQuery2GetParamJzodSchema,
-  // type QueryRunnerMapForJzodSchema,
-  // type RecordOfJzodObject,
-  // type ReduxDeploymentsState
 } from "miroir-core";
 import { JsonDisplayHelper } from 'miroir-react';
 import { useDomainControllerService, useMiroirContextService, useSnackbar } from "miroir-react";
 import { deployment_Miroir } from 'miroir-test-app_deployment-admin';
 import { packageName } from '../../../../constants.js';
 import { cleanLevel, lastSubmitButtonClicked } from '../../constants.js';
-import { useCurrentModel, useReduxDeploymentsStateJzodSchemaSelector } from '../../ReduxHooks.js';
+import { useCurrentModel } from '../../ReduxHooks.js';
 import { ThemedSpan } from '../Themes/index.js';
 import { useDocumentOutlineContext } from '../ValueObjectEditor/InstanceEditorOutlineContext.js';
 import { InlineReportEditor } from './InlineReportEditor.js';
@@ -242,88 +237,6 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
     props.pageParams.applicationSection,
   ]);
 
-  // ##############################################################################################
-  // ##############################################################################################
-  // ##############################################################################################
-  // ##############################################################################################
-  // ##############################################################################################
-  // const jzodSchemaSelectorMap: QueryRunnerMapForJzodSchema<ReduxDeploymentsState> = useMemo(
-  //   () => getMemoizedReduxDeploymentsStateJzodSchemaSelectorMap(),
-  //   []
-  // );
-  // const fetchedDataJzodSchemaParams: ExtractorRunnerParamsForJzodSchema<
-  //   QueryByQuery2GetParamJzodSchema,
-  //   ReduxDeploymentsState
-  // > = useMemo(
-  //   () => ({
-  //     extractorRunnerMap: jzodSchemaSelectorMap,
-  //     applicationDeploymentMap: props.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap,
-  //     query:
-  //       props.pageParams.application &&
-  //       props.pageParams.applicationSection &&
-  //       props.pageParams.reportUuid &&
-  //       props.reportDefinition.definition.extractors &&
-  //       reportDataQueryBase
-  //         ? {
-  //             queryType: "queryByTemplateGetParamJzodSchema",
-  //             label: props.reportDefinition.name + "_fetchedDataJzodSchema",
-  //             application: props.pageParams.application??"NO_APPLICATION",
-  //             // applicationDeploymentMap: props.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap,
-  //             deploymentUuid: props.pageParams.deploymentUuid,
-  //             pageParams: {
-  //               applicationSection: props.pageParams.applicationSection,
-  //               deploymentUuid: props.pageParams.deploymentUuid,
-  //               instanceUuid: props.pageParams.instanceUuid ?? "",
-  //             },
-  //             queryParams: {},
-  //             contextResults: {},
-  //             // fetchParams: deploymentEntityStateFetchQueryParams.extractor,
-  //             fetchParams: resolvedQuery,
-  //           }
-  //         : // dummy query
-  //           {
-  //             queryType: "queryByTemplateGetParamJzodSchema",
-  //             label: props.reportDefinition.name + "_DUMMY",
-  //             application: "",
-  //             // applicationDeploymentMap: {},
-  //             deploymentUuid: "DUMMY",
-  //             pageParams: {
-  //               applicationSection: "data",
-  //               deploymentUuid: "",
-  //               instanceUuid: "",
-  //             },
-  //             queryParams: {},
-  //             contextResults: {},
-  //             fetchParams: {
-  //               queryType: "boxedQueryWithExtractorCombinerTransformer",
-  //               application: "",
-  //               // applicationDeploymentMap: {},
-  //               deploymentUuid: "DUMMY",
-  //               pageParams: props.pageParams,
-  //               queryParams: {},
-  //               contextResults: {},
-  //               // extractorTemplates: {},
-  //               extractors: {},
-  //             } as BoxedQueryWithExtractorCombinerTransformer,
-  //           },
-  //   }),
-  //   [jzodSchemaSelectorMap, props.pageParams, props.reportDefinition]
-  // );
-  // // log.info("fetchedDataJzodSchemaParams", fetchedDataJzodSchemaParams, props.applicationDeploymentMap);
-  // const fetchedDataJzodSchema: RecordOfJzodObject | undefined = useReduxDeploymentsStateJzodSchemaSelector(
-  //   jzodSchemaSelectorMap.extractFetchQueryJzodSchema,
-  //   props.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap,
-  //   fetchedDataJzodSchemaParams
-  // ) as RecordOfJzodObject | undefined; // TODO: use correct return type
-  // ##############################################################################################
-  // ##############################################################################################
-  // ##############################################################################################
-  // ##############################################################################################
-  // ##############################################################################################
-  // ##############################################################################################
-
-  // const [localEditedReportDefinitionDEFUNCT, setLocalEditedReportDefinitionDEFUNCT] = useState<any | undefined>(reportEntityDefinition);
-  
   // ###############################################################################################
   // ###############################################################################################
   // ###############################################################################################

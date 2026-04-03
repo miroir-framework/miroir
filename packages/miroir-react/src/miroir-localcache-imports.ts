@@ -46,11 +46,8 @@ selectCurrentReduxDeploymentsStateFromReduxState,
   selectModelForDeploymentFromReduxState,
   
   // Selectors - Query/Template apply functions
-  applyDomainStateJzodSchemaSelector,
   applyDomainStateQuerySelectorForCleanedResult,
   applyDomainStateQueryTemplateSelector,
-  applyReduxDeploymentsStateJzodSchemaSelector,
-  applyReduxDeploymentsStateJzodSchemaSelectorTemplate,
   applyReduxDeploymentsStateQuerySelector,
   applyReduxDeploymentsStateQuerySelectorForCleanedResult,
   applyReduxDeploymentsStateQueryTemplateSelector,
@@ -98,11 +95,8 @@ selectCurrentReduxDeploymentsStateFromReduxState,
 //   selectModelForDeploymentFromReduxState,
   
 //   // Selectors - Query/Template apply functions
-//   applyDomainStateJzodSchemaSelector,
 //   applyDomainStateQuerySelectorForCleanedResult,
 //   applyDomainStateQueryTemplateSelector,
-//   applyReduxDeploymentsStateJzodSchemaSelector,
-//   applyReduxDeploymentsStateJzodSchemaSelectorTemplate,
 //   applyReduxDeploymentsStateQuerySelector,
 //   applyReduxDeploymentsStateQuerySelectorForCleanedResult,
 //   applyReduxDeploymentsStateQueryTemplateSelector,

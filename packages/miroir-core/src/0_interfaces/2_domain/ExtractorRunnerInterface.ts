@@ -6,17 +6,10 @@ import {
   BoxedQueryTemplateWithExtractorCombinerTransformer,
   BoxedQueryWithExtractorCombinerTransformer,
   DomainElementSuccess,
-  DomainModelQueryTemplateJzodSchemaParams,
   EntityInstance,
   EntityInstancesUuidIndex,
   JzodElement,
   JzodObject,
-  // QueryByEntityUuidGetEntityDefinition,
-  QueryByQuery2GetParamJzodSchema,
-  QueryByQueryGetParamJzodSchema,
-  QueryByQueryTemplateGetParamJzodSchema,
-  QueryByTemplateGetParamJzodSchema,
-  QueryJzodSchemaParams,
   RunBoxedQueryAction,
   RunBoxedQueryTemplateAction,
   TransformerForBuildPlusRuntime
@@ -255,66 +248,4 @@ export type SyncBoxedExtractorOrQueryRunnerMap<StateType> = {
   >;
 };
 
-
-// ################################################################################################
-// ################################################################################################
-// ################################################################################################
-// JZOD SCHEMAS  ##################################################################################
-export type QueryTemplateRunnerMapForJzodSchemaDEFUNCT<StateType> = {
-  extractJzodSchemaForDomainModelQuery: JzodSchemaQueryTemplateSelector<
-    DomainModelQueryTemplateJzodSchemaParams,
-    StateType
-  >;
-  // extractEntityJzodSchema: JzodSchemaQueryTemplateSelector<QueryByEntityUuidGetEntityDefinition, StateType>;
-  extractEntityJzodSchema: JzodSchemaQueryTemplateSelector<any, StateType>;
-  extractFetchQueryJzodSchema: JzodSchemaQueryTemplateSelector<
-    QueryByTemplateGetParamJzodSchema,
-    StateType
-  >;
-  extractzodSchemaForSingleSelectQuery: JzodSchemaQueryTemplateSelector<
-    QueryByQueryTemplateGetParamJzodSchema,
-    StateType
-  >;
-};
-
-// ################################################################################################
-export type QueryRunnerMapForJzodSchemaDEFUNCT<StateType> = {
-  extractJzodSchemaForDomainModelQuery: JzodSchemaQuerySelector<QueryJzodSchemaParams, StateType>;
-  // extractEntityJzodSchema: JzodSchemaQuerySelector<QueryByEntityUuidGetEntityDefinition, StateType>;
-  extractEntityJzodSchema: JzodSchemaQuerySelector<any, StateType>;
-  extractFetchQueryJzodSchema: JzodSchemaQuerySelector<QueryByQuery2GetParamJzodSchema, StateType>;
-  // extractzodSchemaForSingleSelectQuery: JzodSchemaQuerySelector<
-  //   QueryByQueryGetParamJzodSchema,
-  //   StateType
-  // >;
-};
-
-// ################################################################################################
-export interface ExtractorTemplateRunnerParamsForJzodSchema<QueryTemplateType extends DomainModelQueryTemplateJzodSchemaParams, StateType> {
-  extractorRunnerMap: QueryTemplateRunnerMapForJzodSchemaDEFUNCT<StateType>
-  query: QueryTemplateType
-}
-
-// ################################################################################################
-export interface ExtractorRunnerParamsForJzodSchema<QueryType extends QueryJzodSchemaParams, StateType> {
-  extractorRunnerMap: QueryRunnerMapForJzodSchemaDEFUNCT<StateType>
-  // applicationDeploymentMap: ApplicationDeploymentMap,
-  query: QueryType
-}
-
-// ################################################################################################
-export type JzodSchemaQueryTemplateSelector<QueryTemplateType extends DomainModelQueryTemplateJzodSchemaParams, StateType> = (
-  domainState: StateType,
-  applicationDeploymentMap: ApplicationDeploymentMap,
-  params: ExtractorTemplateRunnerParamsForJzodSchema<QueryTemplateType, StateType>,
-  modelEnvironment: MiroirModelEnvironment,
-) => RecordOfJzodElement | JzodElement | undefined;
-
-// ################################################################################################
-export type JzodSchemaQuerySelector<QueryType extends QueryJzodSchemaParams, StateType> = (
-  domainState: StateType,
-  applicationDeploymentMap: ApplicationDeploymentMap,
-  params: ExtractorRunnerParamsForJzodSchema<QueryType, StateType>,
-  modelEnvironment: MiroirModelEnvironment,
-) => RecordOfJzodElement | JzodElement | undefined;
 

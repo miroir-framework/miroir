@@ -7,7 +7,6 @@ import { Action2ReturnType } from "../0_interfaces/2_domain/DomainElement";
 import {
   AsyncBoxedExtractorOrQueryRunnerMap,
   ExtractorTemplatePersistenceStoreRunner,
-  // QueryTemplateRunnerMapForJzodSchemaDEFUNCT
 } from "../0_interfaces/2_domain/ExtractorRunnerInterface";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import { PersistenceStoreInstanceSectionAbstractInterface } from "../0_interfaces/4-services/PersistenceStoreControllerInterface";
@@ -85,14 +84,3 @@ export class ExtractorTemplateRunnerInMemory implements ExtractorTemplatePersist
   }
 } // end of class ExtractorTemplateRunnerInMemory
 
-// // ##############################################################################################
-// // ##############################################################################################
-// // ##############################################################################################
-// export function getDomainStateJzodSchemaExtractorRunnerMapDEFUNCT(): QueryTemplateRunnerMapForJzodSchemaDEFUNCT<DomainState> {
-//   return {
-//     extractJzodSchemaForDomainModelQuery: selectJzodSchemaByDomainModelQueryFromDomainStateNewForTemplate,
-//     extractEntityJzodSchema: selectEntityJzodSchemaFromDomainStateNewForTemplate,
-//     extractFetchQueryJzodSchema: selectFetchQueryJzodSchemaFromDomainStateNewForTemplate,
-//     extractzodSchemaForSingleSelectQuery: selectJzodSchemaBySingleSelectQueryFromDomainStateNewForTemplate,
-//   };
-// }

@@ -43,14 +43,9 @@ export {
   selectReduxDeploymentsStateSelectorForQueryTemplateParams,
   selectDomainStateFromReduxState,
   selectMiroirSelectorQueryParams,
-  selectJzodSchemaSelectorParamsForTemplate,
-  applyDomainStateJzodSchemaSelector,
-  applyReduxDeploymentsStateJzodSchemaSelectorTemplate,
-  applyReduxDeploymentsStateJzodSchemaSelector,
   applyReduxDeploymentsStateQuerySelectorForCleanedResult,
   applyDomainStateQueryTemplateSelector,
   applyDomainStateQuerySelectorForCleanedResult,
-  selectDomainStateJzodSchemaSelectorParams,
   selectDomainStateSelectorParams,
   selectEntityInstanceUuidIndexFromLocalCache,
   selectEntityInstanceUuidIndexFromLocalCacheQueryAndReduxDeploymentsState,
@@ -99,6 +94,5 @@ export {
 // Setup helper
 export { setupMiroirDomainController } from "./setupTools.js";
 
-// RestPersistenceClientAndRestClient - handles network persistence actions
 export { RestPersistenceClientAndRestClient } from "./4_services/persistence/RestPersistenceClientAndRestClient.js";
 

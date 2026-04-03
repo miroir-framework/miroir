@@ -511,15 +511,3 @@ export class ExtractorRunnerInMemory implements ExtractorOrQueryPersistenceStore
     return this.selectorMap;
   }
 } // end of class ExtractorRunnerInMemory
-
-// // ##############################################################################################
-// // ##############################################################################################
-// // ##############################################################################################
-// export function getDomainStateJzodSchemaExtractorRunnerMapDEFUNCT(): QueryRunnerMapForJzodSchemaDEFUNCT<DomainState> {
-//   return {
-//     extractJzodSchemaForDomainModelQuery: selectJzodSchemaByDomainModelQueryFromDomainStateNew,
-//     extractEntityJzodSchema: selectEntityJzodSchemaFromDomainStateNew,
-//     extractFetchQueryJzodSchema: selectFetchQueryJzodSchemaFromDomainStateNew,
-//     extractzodSchemaForSingleSelectQuery: selectJzodSchemaBySingleSelectQueryFromDomainStateNew,
-//   };
-// }

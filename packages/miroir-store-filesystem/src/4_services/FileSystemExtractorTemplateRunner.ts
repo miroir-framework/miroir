@@ -7,18 +7,12 @@ import {
   asyncExtractWithExtractor,
   asyncRunQuery,
   defaultMiroirModelEnvironment,
-  DomainState,
   ExtractorTemplatePersistenceStoreRunner,
   handleQueryTemplateAction,
   LoggerInterface,
   MiroirLoggerFactory,
   PersistenceStoreInstanceSectionAbstractInterface,
-  QueryTemplateRunnerMapForJzodSchemaDEFUNCT,
   RunBoxedQueryTemplateAction,
-  // selectEntityJzodSchemaFromDomainStateNewForTemplate,
-  // selectFetchQueryJzodSchemaFromDomainStateNewForTemplate,
-  // selectJzodSchemaByDomainModelQueryFromDomainStateNewForTemplate,
-  // selectJzodSchemaBySingleSelectQueryFromDomainStateNewForTemplate,
   type ApplicationDeploymentMap
 } from "miroir-core";
 import { packageName } from "../constants.js";
@@ -76,12 +70,3 @@ export class FileSystemExtractorTemplateRunner implements ExtractorTemplatePersi
   }
 
 }
-
-// export function getDomainStateJzodSchemaExtractorRunnerMapDEFUNCT(): QueryTemplateRunnerMapForJzodSchemaDEFUNCT<DomainState> {
-//   return {
-//     extractJzodSchemaForDomainModelQuery: selectJzodSchemaByDomainModelQueryFromDomainStateNewForTemplate,
-//     extractEntityJzodSchema: selectEntityJzodSchemaFromDomainStateNewForTemplate,
-//     extractFetchQueryJzodSchema: selectFetchQueryJzodSchemaFromDomainStateNewForTemplate,
-//     extractzodSchemaForSingleSelectQuery: selectJzodSchemaBySingleSelectQueryFromDomainStateNewForTemplate,
-//   };
-// }

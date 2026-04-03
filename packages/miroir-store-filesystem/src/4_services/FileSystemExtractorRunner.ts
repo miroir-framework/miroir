@@ -17,23 +17,16 @@ import {
   Domain2ElementFailed,
   Domain2QueryReturnType,
   DomainElementSuccess,
-  DomainState,
   EntityInstance,
   EntityInstancesUuidIndex,
   ExtractorOrCombinerReturningObject,
   ExtractorOrQueryPersistenceStoreRunner,
+  getForeignKeyValue,
   LoggerInterface,
   MiroirLoggerFactory,
   PersistenceStoreInstanceSectionAbstractInterface,
-  QueryRunnerMapForJzodSchemaDEFUNCT,
-  // RunBoxedExtractorAction,
   RunBoxedQueryAction,
-  // selectEntityJzodSchemaFromDomainStateNew,
-  // selectFetchQueryJzodSchemaFromDomainStateNew,
-  // selectJzodSchemaByDomainModelQueryFromDomainStateNew,
-  // selectJzodSchemaBySingleSelectQueryFromDomainStateNew,
   serializeCompositeKeyValue,
-  getForeignKeyValue,
   transformer_InnerReference_resolve,
   type ApplicationDeploymentMap
 } from "miroir-core";
@@ -364,14 +357,3 @@ export class FileSystemExtractorRunner implements ExtractorOrQueryPersistenceSto
     return this.selectorMap;
   }
 }
-
-
-
-// export function getDomainStateJzodSchemaExtractorRunnerMapDEFUNCT(): QueryRunnerMapForJzodSchemaDEFUNCT<DomainState> {
-//   return {
-//     extractJzodSchemaForDomainModelQuery: selectJzodSchemaByDomainModelQueryFromDomainStateNew,
-//     extractEntityJzodSchema: selectEntityJzodSchemaFromDomainStateNew,
-//     extractFetchQueryJzodSchema: selectFetchQueryJzodSchemaFromDomainStateNew,
-//     extractzodSchemaForSingleSelectQuery: selectJzodSchemaBySingleSelectQueryFromDomainStateNew,
-//   };
-// }

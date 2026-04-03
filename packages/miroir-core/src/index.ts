@@ -533,13 +533,7 @@ export {
   AsyncQueryTemplateRunnerParams,
   ExtractorOrQueryPersistenceStoreRunner,
   ExtractorOrQueryRunnerMap,
-  ExtractorRunnerParamsForJzodSchema,
   ExtractorTemplatePersistenceStoreRunner,
-  ExtractorTemplateRunnerParamsForJzodSchema,
-  JzodSchemaQuerySelector,
-  JzodSchemaQueryTemplateSelector,
-  QueryRunnerMapForJzodSchemaDEFUNCT,
-  QueryTemplateRunnerMapForJzodSchemaDEFUNCT,
   SyncBoxedExtractorOrQueryRunnerMap,
   SyncBoxedExtractorRunner,
   SyncBoxedExtractorRunnerParams,
@@ -799,16 +793,11 @@ export {
   domainElementToPlainObjectDEFUNCT,
   extractEntityInstanceListWithObjectListExtractorInMemory,
   extractEntityInstanceUuidIndexWithObjectListExtractorInMemory,
-  // extractFetchQueryJzodSchema,
-  // extractJzodSchemaForDomainModelQuery,
   extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList,
-  // extractzodSchemaForSingleSelectQuery,
   plainObjectToDomainElementDEFUNCT,
   runQuery
 } from "./2_domain/QuerySelectors.js";
 export {
-  // extractFetchQueryTemplateJzodSchema,
-  // extractJzodSchemaForDomainModelQueryTemplate,
   handleQueryTemplateAction,
   runQueryTemplateWithExtractorCombinerTransformer
 } from "./2_domain/QueryTemplateSelectors.js";

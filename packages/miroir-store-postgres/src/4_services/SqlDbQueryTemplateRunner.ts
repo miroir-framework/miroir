@@ -7,16 +7,10 @@ import {
   asyncExtractWithExtractor,
   asyncRunQuery,
   defaultMetaModelEnvironment,
-  // DomainState,
   handleQueryTemplateAction,
   LoggerInterface,
   MiroirLoggerFactory,
-  // QueryTemplateRunnerMapForJzodSchemaDEFUNCT,
   RunBoxedQueryTemplateAction,
-  // selectEntityJzodSchemaFromDomainStateNewForTemplate,
-  // selectFetchQueryJzodSchemaFromDomainStateNewForTemplate,
-  // selectJzodSchemaByDomainModelQueryFromDomainStateNewForTemplate,
-  // selectJzodSchemaBySingleSelectQueryFromDomainStateNewForTemplate,
   type ApplicationDeploymentMap
 } from "miroir-core";
 import { packageName } from "../constants";
@@ -115,12 +109,3 @@ export class SqlDbExtractTemplateRunner {
   }
 
 }
-
-// export function getDomainStateJzodSchemaExtractorRunnerMapDEFUNCT(): QueryTemplateRunnerMapForJzodSchemaDEFUNCT<DomainState> {
-//   return {
-//     extractJzodSchemaForDomainModelQuery: selectJzodSchemaByDomainModelQueryFromDomainStateNewForTemplate,
-//     extractEntityJzodSchema: selectEntityJzodSchemaFromDomainStateNewForTemplate,
-//     extractFetchQueryJzodSchema: selectFetchQueryJzodSchemaFromDomainStateNewForTemplate,
-//     extractzodSchemaForSingleSelectQuery: selectJzodSchemaBySingleSelectQueryFromDomainStateNewForTemplate,
-//   };
-// }

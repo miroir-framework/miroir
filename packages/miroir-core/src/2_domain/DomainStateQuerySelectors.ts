@@ -23,8 +23,6 @@ import {
   Domain2QueryReturnType,
 } from "../0_interfaces/2_domain/DomainElement";
 import {
-  ExtractorRunnerParamsForJzodSchema,
-  // QueryRunnerMapForJzodSchemaDEFUNCT,
   SyncBoxedExtractorOrQueryRunnerMap,
   SyncBoxedExtractorRunner,
   SyncBoxedExtractorRunnerParams,
@@ -40,10 +38,7 @@ import { runQueryTemplateFromDomainState } from "./DomainStateQueryTemplateSelec
 import {
   extractEntityInstanceListWithObjectListExtractorInMemory,
   extractEntityInstanceUuidIndexWithObjectListExtractorInMemory,
-  // extractFetchQueryJzodSchema,
-  // extractJzodSchemaForDomainModelQuery,
   extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList,
-  // extractzodSchemaForSingleSelectQuery,
   innerSelectDomainElementFromExtractorOrCombiner,
   runQuery,
 } from "./QuerySelectors";
@@ -596,57 +591,6 @@ export const extractWithExtractorOrCombinerReturningObjectOrObjectListFromDomain
 > = extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList<DomainState>;
 
 // ################################################################################################
-// JZOD SCHEMAs selectors
-// ################################################################################################
-// ################################################################################################
-// export const selectJzodSchemaBySingleSelectQueryFromDomainStateNew = extractzodSchemaForSingleSelectQuery<DomainState>;
-
-// ################################################################################################
-// ACCESSES DOMAIN STATE
-// export const selectEntityJzodSchemaFromDomainStateNew = (
-//   domainState: DomainState,
-//   applicationDeploymentMap: ApplicationDeploymentMap,
-//   // foreignKeyParams: ExtractorRunnerParamsForJzodSchema<QueryByEntityUuidGetEntityDefinition, DomainState>
-//   foreignKeyParams: ExtractorRunnerParamsForJzodSchema<any, DomainState>
-// ): JzodObject | undefined => {
-//   // const localQuery: QueryByEntityUuidGetEntityDefinition = foreignKeyParams.query;
-//   const localQuery: any = foreignKeyParams.query;
-//   const deploymentUuid = applicationDeploymentMap[localQuery.application]??"DEPLOYMENT_UUID_NOT_FOUND";
-//   if (
-//     domainState &&
-//     domainState[deploymentUuid] &&
-//     domainState[deploymentUuid]["model"] &&
-//     domainState[deploymentUuid]["model"][entityEntityDefinition.uuid]
-//   ) {
-//     const values: EntityDefinition[] = Object.values(
-//       domainState[deploymentUuid]["model"][entityEntityDefinition.uuid] ?? {}
-//     ) as EntityDefinition[];
-//     const index = values.findIndex((e: EntityDefinition) => e.entityUuid == localQuery.entityUuid);
-
-//     const result: JzodObject | undefined = index > -1 ? values[index].mlSchema : undefined;
-
-//     // log.info("DomainSelector selectEntityJzodSchemaFromDomainState result", result);
-
-//     return result;
-//   } else {
-//     return undefined;
-//   }
-// };
-
-// ################################################################################################
-/**
- * the runtimeTransformers and FetchQueryJzodSchema should depend only on the instance of Report at hand
- * then on the instance of the required entities (which can change over time, on refresh!! Problem: their number can vary!!)
- * @param domainState
- * @param query
- * @returns
- */
-// export const selectFetchQueryJzodSchemaFromDomainStateNew = extractFetchQueryJzodSchema<DomainState>;
-
-// ################################################################################################
-// export const selectJzodSchemaByDomainModelQueryFromDomainStateNew = extractJzodSchemaForDomainModelQuery<DomainState>;
-
-// ################################################################################################
 // ################################################################################################
 // ################################################################################################
 // ################################################################################################
@@ -672,15 +616,6 @@ export function getDomainStateExtractorRunnerMap(): SyncBoxedExtractorOrQueryRun
     runQueryTemplateWithExtractorCombinerTransformer: runQueryTemplateFromDomainState,
   };
 }
-
-// export function getDomainStateJzodSchemaExtractorRunnerMapDEFUNCT(): QueryRunnerMapForJzodSchemaDEFUNCT<DomainState> {
-//   return {
-//     extractJzodSchemaForDomainModelQuery: selectJzodSchemaByDomainModelQueryFromDomainStateNew,
-//     extractEntityJzodSchema: selectEntityJzodSchemaFromDomainStateNew,
-//     extractFetchQueryJzodSchema: selectFetchQueryJzodSchemaFromDomainStateNew,
-//     extractzodSchemaForSingleSelectQuery: selectJzodSchemaBySingleSelectQueryFromDomainStateNew,
-//   };
-// }
 
 // ################################################################################################
 // export type GetExtractorRunnerParamsForDomainState = <ExtractorType extends MiroirQuery>(

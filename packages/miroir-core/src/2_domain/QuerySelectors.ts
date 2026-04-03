@@ -4,7 +4,6 @@ import { Uuid } from "../0_interfaces/1_core/EntityDefinition";
 import {
   BoxedExtractorOrCombinerReturningObjectList,
   BoxedExtractorOrCombinerReturningObjectOrObjectList,
-  BoxedQueryWithExtractorCombinerTransformer,
   CombinerManyToMany,
   CombinerOneToMany,
   DomainElement,
@@ -14,13 +13,7 @@ import {
   EntityInstancesUuidIndex,
   ExtractorOrCombiner,
   ExtractorOrCombinerContextReference,
-  JzodElement,
-  JzodObject,
-  // QueryByEntityUuidGetEntityDefinition,
-  QueryByQuery2GetParamJzodSchema,
-  QueryByQueryGetParamJzodSchema,
   QueryFailed,
-  QueryJzodSchemaParams,
   RunBoxedQueryAction,
   TransformerForBuildPlusRuntime
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
@@ -33,9 +26,6 @@ import {
 } from "../0_interfaces/2_domain/DomainElement";
 import {
   AsyncBoxedExtractorOrQueryRunnerMap,
-  ExtractorRunnerParamsForJzodSchema,
-  RecordOfJzodElement,
-  RecordOfJzodObject,
   SyncBoxedExtractorOrQueryRunnerMap,
   SyncBoxedExtractorRunner,
   SyncBoxedExtractorRunnerParams,
@@ -1147,170 +1137,3 @@ export const runQuery = <StateType>(
   // return { elementType: "object", elementValue: context};
   return context;
 };
-
-// ################################################################################################
-// ################################################################################################
-// JZOD SCHEMAs selectors
-// ################################################################################################
-// ################################################################################################
-export const extractzodSchemaForSingleSelectQuery = <StateType>(
-  deploymentEntityState: StateType,
-  applicationDeploymentMap: ApplicationDeploymentMap,
-  extractorParams: ExtractorRunnerParamsForJzodSchema<QueryByQueryGetParamJzodSchema, StateType>,
-  modelEnvironment: MiroirModelEnvironment,
-): JzodObject | undefined => {
-  if (
-    extractorParams.query.select.extractorOrCombinerType=="literal" ||
-    extractorParams.query.select.extractorOrCombinerType=="extractorOrCombinerContextReference" ||
-    extractorParams.query.select.extractorOrCombinerType=="extractorWrapperReturningObject" ||
-    extractorParams.query.select.extractorOrCombinerType=="extractorWrapperReturningList" ||
-    extractorParams.query.select.extractorOrCombinerType=="combinerByHeteronomousManyToMany" 
-  ) {
-    throw new Error(
-      "extractzodSchemaForSingleSelectQuery can not deal with context reference: query=" +
-        JSON.stringify(extractorParams.query, undefined, 2)
-    );
-  }
-
-  const entityUuid = extractorParams.query.select.parentUuid
-  log.info(
-    "extractzodSchemaForSingleSelectQuery called",
-    extractorParams.query,
-    "found entityUuid",
-    entityUuid
-  );
-
-  // if (typeof entityUuidDomainElement != "object" || entityUuidDomainElement.elementType != "instanceUuid") {
-  //   return undefined
-  // }
-
-  const result = extractorParams.extractorRunnerMap.extractEntityJzodSchema(
-    deploymentEntityState,
-    applicationDeploymentMap,
-    {
-      extractorRunnerMap: extractorParams.extractorRunnerMap,
-      query: {
-        queryType: "getEntityDefinitionDEFUNCT",
-        contextResults: {},
-        pageParams: extractorParams.query.pageParams,
-        queryParams: extractorParams.query.queryParams,
-        // deploymentUuid: extractorParams.query.deploymentUuid ?? "",
-        entityUuid: entityUuid,
-      },
-    // } as ExtractorRunnerParamsForJzodSchema<QueryByEntityUuidGetEntityDefinition, StateType>,
-    } as ExtractorRunnerParamsForJzodSchema<any, StateType>,
-    modelEnvironment
-  ) as JzodObject | undefined;
-
-  return result;
-}
-
-// ################################################################################################
-export const extractJzodSchemaForDomainModelQuery = <StateType>(
-  deploymentEntityState: StateType,
-  applicationDeploymentMap: ApplicationDeploymentMap,
-  foreignKeyParams: ExtractorRunnerParamsForJzodSchema<QueryJzodSchemaParams, StateType>,
-  modelEnvironment: MiroirModelEnvironment,
-): RecordOfJzodElement | JzodElement | undefined => {
-  switch (foreignKeyParams.query.queryType) {
-    // case "getEntityDefinitionDEFUNCT":{ 
-    //   return foreignKeyParams.extractorRunnerMap.extractEntityJzodSchema(
-    //     deploymentEntityState,
-    //     applicationDeploymentMap,
-    //     foreignKeyParams as ExtractorRunnerParamsForJzodSchema<QueryByEntityUuidGetEntityDefinition, StateType>,
-    //     modelEnvironment
-    //   );
-    //   break;
-    // }
-    case "queryByTemplateGetParamJzodSchema": {
-      throw new Error("extractJzodSchemaForDomainModelQuery can not deal with queryByTemplateGetParamJzodSchema")
-      // return foreignKeyParams.extractorRunnerMap.extractFetchQueryJzodSchema(
-      //   deploymentEntityState,
-      //   applicationDeploymentMap,
-      //   foreignKeyParams as ExtractorRunnerParamsForJzodSchema<QueryByQuery2GetParamJzodSchema, StateType>,
-      //   modelEnvironment
-      // );
-      break;
-    }
-    case "getQueryJzodSchema": {
-      throw new Error("extractJzodSchemaForDomainModelQuery can not deal with getQueryJzodSchema")
-      // return foreignKeyParams.extractorRunnerMap.extractzodSchemaForSingleSelectQuery(
-      //   deploymentEntityState,
-      //   applicationDeploymentMap,
-      //   foreignKeyParams as ExtractorRunnerParamsForJzodSchema<QueryByQueryGetParamJzodSchema, StateType>,
-      //   modelEnvironment
-      // );
-      break;
-    }
-    default:
-      return undefined;
-      break;
-  }
-};
-
-// // ################################################################################################
-// /**
-//  * the runtimeTransformers and FetchQueryJzodSchema should depend only on the instance of Report at hand
-//  * then on the instance of the required entities (which can change over time, on refresh!! Problem: their number can vary!!)
-//  * @param deploymentEntityState 
-//  * @param query 
-//  * @returns 
-//  */
-// export const extractFetchQueryJzodSchema = <StateType>(
-//   deploymentEntityState: StateType,
-//   applicationDeploymentMap: ApplicationDeploymentMap,
-//   foreignKeyParams: ExtractorRunnerParamsForJzodSchema<QueryByQuery2GetParamJzodSchema, StateType>,
-//   modelEnvironment: MiroirModelEnvironment,
-// ):  RecordOfJzodObject | undefined => {
-//   // log.info(
-//   //   "extractFetchQueryJzodSchema called",
-//   //   applicationDeploymentMap,
-//   //   foreignKeyParams,
-//   //   new Error().stack,
-//   // );
-  
-//   const localFetchParams: BoxedQueryWithExtractorCombinerTransformer = foreignKeyParams.query.fetchParams
-  
-//   const fetchQueryJzodSchema = Object.fromEntries(
-//     Object.entries(localFetchParams?.combiners ?? {}).map(
-//       (entry: [string, ExtractorOrCombiner]) => [
-//         entry[0],
-//         foreignKeyParams.extractorRunnerMap.extractzodSchemaForSingleSelectQuery(
-//           deploymentEntityState,
-//           applicationDeploymentMap,
-//           {
-//             extractorRunnerMap: foreignKeyParams.extractorRunnerMap,
-//             query: {
-//               queryType: "getQueryJzodSchema",
-//               // deploymentUuid: localFetchParams.deploymentUuid,
-//               contextResults: {},
-//               pageParams: foreignKeyParams.query.pageParams,
-//               queryParams: foreignKeyParams.query.queryParams,
-//               select: entry[1],
-//             },
-//           } as ExtractorRunnerParamsForJzodSchema<QueryByQueryGetParamJzodSchema, StateType>,
-//           modelEnvironment
-//         ),
-//       ]
-//     )
-//   ) as RecordOfJzodObject;
-
-//   // if (localFetchParams.runtimeTransformers?.crossJoin) {
-//   //   fetchQueryJzodSchema["crossJoin"] = {
-//   //     type: "object",
-//   //     definition: Object.fromEntries(
-//   //     Object.entries(fetchQueryJzodSchema[localFetchParams.runtimeTransformers?.crossJoin?.a ?? ""]?.definition ?? {}).map((a) => [
-//   //       "a-" + a[0],
-//   //       a[1]
-//   //     ]
-//   //     ).concat(
-//   //       Object.entries(fetchQueryJzodSchema[localFetchParams.runtimeTransformers?.crossJoin?.b ?? ""]?.definition ?? {}).map((b) => [
-//   //         "b-" + b[0], b[1]
-//   //       ])
-//   //     )
-//   //   )};
-//   // }
-
-//   // log.info("selectFetchQueryJzodSchemaFromDomainState query", JSON.stringify(foreignKeyParams.query, undefined, 2), "fetchQueryJzodSchema", fetchQueryJzodSchema)
-//   return fetchQueryJzodSchema;
-// };

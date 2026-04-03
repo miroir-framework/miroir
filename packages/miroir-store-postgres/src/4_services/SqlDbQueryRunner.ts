@@ -19,18 +19,12 @@ import {
   Domain2ElementFailed,
   Domain2QueryReturnType,
   DomainElementSuccess,
-  DomainState,
   EntityInstance,
   EntityInstancesUuidIndex,
   LoggerInterface,
   MiroirLoggerFactory,
-  QueryRunnerMapForJzodSchemaDEFUNCT,
   RunBoxedQueryAction,
   safeResolvePathOnObject,
-  // selectEntityJzodSchemaFromDomainStateNew,
-  // selectFetchQueryJzodSchemaFromDomainStateNew,
-  // selectJzodSchemaByDomainModelQueryFromDomainStateNew,
-  // selectJzodSchemaBySingleSelectQueryFromDomainStateNew,
   serializeCompositeKeyValue,
   type ApplicationDeploymentMap,
   type ExtractorRunnerInMemory,
@@ -52,17 +46,7 @@ MiroirLoggerFactory.registerLoggerToStart(
 
 
 
-export type RecursiveStringRecords = string | { [x: string]: RecursiveStringRecords };
 
-// // ################################################################################################
-// export function getDomainStateJzodSchemaExtractorRunnerMapDEFUNCT(): QueryRunnerMapForJzodSchemaDEFUNCT<DomainState> {
-//   return {
-//     extractJzodSchemaForDomainModelQuery: selectJzodSchemaByDomainModelQueryFromDomainStateNew,
-//     extractEntityJzodSchema: selectEntityJzodSchemaFromDomainStateNew,
-//     extractFetchQueryJzodSchema: selectFetchQueryJzodSchemaFromDomainStateNew,
-//     extractzodSchemaForSingleSelectQuery: selectJzodSchemaBySingleSelectQueryFromDomainStateNew,
-//   };
-// }
 
 // ################################################################################################
 // ################################################################################################

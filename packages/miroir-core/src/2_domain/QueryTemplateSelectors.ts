@@ -2,25 +2,13 @@
 
 import { defaultApplicationSection } from "../0_interfaces/1_core/Model";
 import {
-  BoxedQueryTemplateWithExtractorCombinerTransformer,
   BoxedQueryWithExtractorCombinerTransformer,
-  DomainModelQueryTemplateJzodSchemaParams,
-  ExtractorOrCombinerTemplate,
-  JzodElement,
-  JzodObject,
-  // QueryByEntityUuidGetEntityDefinition,
-  QueryByQueryTemplateGetParamJzodSchema,
-  QueryByTemplateGetParamJzodSchema,
   RunBoxedQueryTemplateAction
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { type MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
-import { Action2ReturnType, Domain2ElementFailed, Domain2QueryReturnType } from "../0_interfaces/2_domain/DomainElement";
+import { Action2ReturnType, Domain2QueryReturnType } from "../0_interfaces/2_domain/DomainElement";
 import {
   AsyncBoxedExtractorOrQueryRunnerMap,
-  ExtractorTemplateRunnerParamsForJzodSchema,
-  RecordOfJzodElement,
-  RecordOfJzodObject,
-  // SyncBoxedExtractorTemplateRunnerParams,
   SyncQueryTemplateRunnerParams
 } from "../0_interfaces/2_domain/ExtractorRunnerInterface";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
@@ -33,10 +21,8 @@ import {
   runQuery
 } from "./QuerySelectors";
 import {
-  // resolveBoxedExtractorOrCombinerTemplateReturningObjectOrObjectList,
   resolveQueryTemplateWithExtractorCombinerTransformer
 } from "./Templates";
-import { transformer_extended_apply } from "./TransformersForRuntime";
 // import { transformer_InnerReference_resolve} from "./TransformersForRuntime";
 
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -128,170 +114,4 @@ export const runQueryTemplateWithExtractorCombinerTransformer = <StateType>(
     },
     modelEnvironment
   )
-};
-
-// ################################################################################################
-// ################################################################################################
-// JZOD SCHEMAs selectors
-// ################################################################################################
-// ################################################################################################
-// export const extractzodSchemaForSingleSelectQueryTemplate = <StateType>(
-//   deploymentEntityState: StateType,
-//   applicationDeploymentMap: ApplicationDeploymentMap,
-//   foreignKeyParams: ExtractorTemplateRunnerParamsForJzodSchema<QueryByQueryTemplateGetParamJzodSchema, StateType>,
-//   modelEnvironment: MiroirModelEnvironment
-// ): JzodObject | undefined => {
-//   if (
-//     foreignKeyParams.query.select.extractorOrCombinerType=="literal" ||
-//     foreignKeyParams.query.select.extractorOrCombinerType=="extractorByExtractorWrapperReturningObject" ||
-//     foreignKeyParams.query.select.extractorOrCombinerType=="extractorByExtractorWrapperReturningList" ||
-//     foreignKeyParams.query.select.extractorOrCombinerType=="combinerByHeteronomousManyToMany"
-//   ) {
-//     throw new Error(
-//       "extractzodSchemaForSingleSelectQuery can not deal with context reference: query=" +
-//         JSON.stringify(foreignKeyParams.query, undefined, 2)
-//     );
-//   }
-
-//   const entityUuidDomainElement =
-//     typeof foreignKeyParams.query.select.parentUuid == "string"
-//       ? foreignKeyParams.query.select.parentUuid
-//       // : transformer_InnerReference_resolve(
-//       : transformer_extended_apply(
-//           "build",
-//           [], // transformerPath
-//           foreignKeyParams.query.select.label??foreignKeyParams.query.select.extractorOrCombinerType,
-//           foreignKeyParams.query.select.parentUuid,
-//           "value",
-//           // {...modelEnvironment, ...foreignKeyParams.query.queryParams},
-//           modelEnvironment,
-//           foreignKeyParams.query.queryParams ?? {},
-//           foreignKeyParams.query.contextResults ?? {}
-//         );
-
-//   log.info(
-//     "extractzodSchemaForSingleSelectQuery called",
-//     foreignKeyParams.query,
-//     "found",
-//     entityUuidDomainElement
-//   );
-
-//   if (entityUuidDomainElement instanceof Domain2ElementFailed) {
-//     log.error(
-//       "extractzodSchemaForSingleSelectQuery called",
-//       foreignKeyParams.query,
-//       "error on resolving entityUuid",
-//       entityUuidDomainElement
-//     );
-//     return undefined
-//   }
-
-//   const result = foreignKeyParams.extractorRunnerMap.extractEntityJzodSchema(
-//     deploymentEntityState,
-//     applicationDeploymentMap,
-//     {
-//       extractorRunnerMap: foreignKeyParams.extractorRunnerMap,
-//       query: {
-//         queryType: "getEntityDefinitionDEFUNCT",
-//         // contextResults: {},
-//         pageParams: foreignKeyParams.query.pageParams,
-//         queryParams: foreignKeyParams.query.queryParams,
-//         entityUuid: entityUuidDomainElement,
-//       },
-//     } as ExtractorTemplateRunnerParamsForJzodSchema<
-//       QueryByEntityUuidGetEntityDefinition,
-//       StateType
-//     >,
-//     modelEnvironment
-//   ) as JzodObject | undefined;
-
-//   return result;
-// }
-
-
-// ################################################################################################
-export const extractJzodSchemaForDomainModelQueryTemplate = <StateType>(
-  deploymentEntityState: StateType,
-  applicationDeploymentMap: ApplicationDeploymentMap,
-  foreignKeyParams: ExtractorTemplateRunnerParamsForJzodSchema<DomainModelQueryTemplateJzodSchemaParams, StateType>,
-  modelEnvironment: MiroirModelEnvironment
-): RecordOfJzodElement | JzodElement | undefined => {
-  switch (foreignKeyParams.query.queryType) {
-    // case "getEntityDefinitionDEFUNCT":{ 
-    //   return foreignKeyParams.extractorRunnerMap.extractEntityJzodSchema(
-    //     deploymentEntityState,
-    //     applicationDeploymentMap,
-    //     foreignKeyParams as ExtractorTemplateRunnerParamsForJzodSchema<QueryByEntityUuidGetEntityDefinition, StateType>,
-    //     modelEnvironment
-    //   );
-    //   break;
-    // }
-    case "queryByTemplateGetParamJzodSchema": {
-      throw new Error("extractJzodSchemaForDomainModelQuery can not deal with queryByTemplateGetParamJzodSchema")
-      // return foreignKeyParams.extractorRunnerMap.extractFetchQueryJzodSchema(
-      //   deploymentEntityState,
-      //   applicationDeploymentMap,
-      //   foreignKeyParams as ExtractorTemplateRunnerParamsForJzodSchema<QueryByTemplateGetParamJzodSchema, StateType>,
-      //   modelEnvironment
-      // );
-      break;
-    }
-    case "getQueryJzodSchema": {
-      return foreignKeyParams.extractorRunnerMap.extractzodSchemaForSingleSelectQuery(
-        deploymentEntityState,
-        applicationDeploymentMap,
-        foreignKeyParams as ExtractorTemplateRunnerParamsForJzodSchema<QueryByQueryTemplateGetParamJzodSchema, StateType>,
-        modelEnvironment
-      );
-      break;
-    }
-    default:
-      return undefined;
-      break;
-  }
-};
-
-// // ################################################################################################
-// /**
-//  * the runtimeTransformers and FetchQueryJzodSchema should depend only on the instance of Report at hand
-//  * then on the instance of the required entities (which can change over time, on refresh!! Problem: their number can vary!!)
-//  * @param deploymentEntityState 
-//  * @param query 
-//  * @returns 
-//  */
-export const extractFetchQueryTemplateJzodSchema = <StateType>(
-  deploymentEntityState: StateType,
-  applicationDeploymentMap: ApplicationDeploymentMap,
-  foreignKeyParams: ExtractorTemplateRunnerParamsForJzodSchema<QueryByTemplateGetParamJzodSchema, StateType>,
-  modelEnvironment: MiroirModelEnvironment
-):  RecordOfJzodObject | undefined => {
-  const localFetchParams: BoxedQueryTemplateWithExtractorCombinerTransformer = foreignKeyParams.query.fetchParams
-  
-  const fetchQueryJzodSchema = Object.fromEntries(
-    Object.entries(localFetchParams?.combinerTemplates ?? {}).map(
-      (entry: [string, ExtractorOrCombinerTemplate]) => [
-        entry[0],
-        foreignKeyParams.extractorRunnerMap.extractzodSchemaForSingleSelectQuery(
-          deploymentEntityState,
-          applicationDeploymentMap,
-          {
-            extractorRunnerMap: foreignKeyParams.extractorRunnerMap,
-            query: {
-              queryType: "getQueryJzodSchema",
-              contextResults: {},
-              pageParams: foreignKeyParams.query.pageParams,
-              queryParams: foreignKeyParams.query.queryParams,
-              select: entry[1],
-            },
-          } as ExtractorTemplateRunnerParamsForJzodSchema<
-            QueryByQueryTemplateGetParamJzodSchema,
-            StateType
-          >,
-          modelEnvironment
-        ),
-      ]
-    )
-  ) as RecordOfJzodObject;
-
-  return fetchQueryJzodSchema;
 };

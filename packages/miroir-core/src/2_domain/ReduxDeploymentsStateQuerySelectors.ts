@@ -4,19 +4,14 @@ import {
   BoxedExtractorOrCombinerReturningObjectList,
   BoxedExtractorOrCombinerReturningObjectOrObjectList,
   BoxedQueryWithExtractorCombinerTransformer,
-  EntityDefinition,
   EntityInstance,
   EntityInstancesUuidIndex,
   ExtractorOrCombinerReturningObject,
-  JzodObject,
-  // QueryByEntityUuidGetEntityDefinition,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { applyExtractorFilterAndOrderBy } from "./ExtractorByEntityReturningObjectListTools";
 import { ReduxDeploymentsState } from "../0_interfaces/2_domain/ReduxDeploymentsStateInterface";
 import { Domain2ElementFailed, Domain2QueryReturnType, TransformerFailure } from "../0_interfaces/2_domain/DomainElement";
 import {
-  ExtractorRunnerParamsForJzodSchema,
-  // QueryRunnerMapForJzodSchemaDEFUNCT,
   SyncBoxedExtractorOrQueryRunnerMap,
   SyncBoxedExtractorRunner,
   SyncBoxedExtractorRunnerParams,
@@ -32,10 +27,7 @@ import { getReduxDeploymentsStateIndex } from "./ReduxDeploymentsState";
 import {
   extractEntityInstanceListWithObjectListExtractorInMemory,
   extractEntityInstanceUuidIndexWithObjectListExtractorInMemory,
-  // extractFetchQueryJzodSchema,
-  // extractJzodSchemaForDomainModelQuery,
   extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList,
-  // extractzodSchemaForSingleSelectQuery,
   runQuery
 } from "./QuerySelectors";
 import {
@@ -504,16 +496,6 @@ export function getReduxDeploymentsStateSelectorMap(): SyncBoxedExtractorOrQuery
     runQueryTemplateWithExtractorCombinerTransformer: runQueryTemplateWithExtractorCombinerTransformer,
   };
 }
-
-// // ################################################################################################
-// export function getReduxDeploymentsStateJzodSchemaSelectorMap(): QueryRunnerMapForJzodSchemaDEFUNCT<ReduxDeploymentsState> {
-//   return {
-//     extractJzodSchemaForDomainModelQuery: extractJzodSchemaForDomainModelQuery,
-//     extractEntityJzodSchema: extractEntityJzodSchemaFromReduxDeploymentsState,
-//     extractFetchQueryJzodSchema: extractFetchQueryJzodSchema,
-//     extractzodSchemaForSingleSelectQuery: extractzodSchemaForSingleSelectQuery,
-//   };
-// }
 
 // ################################################################################################
 export type GetExtractorRunnerParamsForReduxDeploymentsState = <QueryType extends BoxedExtractorOrCombinerReturningObjectOrObjectList>(

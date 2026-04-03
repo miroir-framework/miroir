@@ -11,7 +11,6 @@ import { entityEntityDefinition } from "miroir-test-app_deployment-miroir";
 import { DomainState } from "../0_interfaces/2_domain/DomainControllerInterface";
 import { Domain2QueryReturnType } from "../0_interfaces/2_domain/DomainElement";
 import {
-  ExtractorTemplateRunnerParamsForJzodSchema,
   SyncBoxedExtractorOrQueryRunnerMap,
   SyncQueryTemplateRunner,
   SyncQueryTemplateRunnerParams
@@ -31,9 +30,6 @@ import {
 } from "./DomainStateQuerySelectors";
 import { extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList } from "./QuerySelectors";
 import {
-  extractFetchQueryTemplateJzodSchema,
-  extractJzodSchemaForDomainModelQueryTemplate,
-  // extractzodSchemaForSingleSelectQueryTemplate,
   runQueryTemplateWithExtractorCombinerTransformer
 } from "./QueryTemplateSelectors";
 
@@ -99,42 +95,3 @@ export const getQueryTemplateRunnerParamsForDomainState: GetSelectorParamsForQue
     extractorRunnerMap: extractorRunnerMap ?? getSelectorMapForTemplate(),
   };
 }
-
-// ################################################################################################
-// #### JZOD SCHEMAs selectors
-// ################################################################################################
-// export const selectJzodSchemaByDomainModelQueryFromDomainStateNewForTemplate = extractJzodSchemaForDomainModelQueryTemplate<DomainState>;
-
-// export const selectFetchQueryJzodSchemaFromDomainStateNewForTemplate = extractFetchQueryTemplateJzodSchema<DomainState>;
-
-// export const selectJzodSchemaBySingleSelectQueryFromDomainStateNewForTemplate = extractzodSchemaForSingleSelectQueryTemplate<DomainState>;
-
-// ACCESSES DOMAIN STATE
-// export const selectEntityJzodSchemaFromDomainStateNewForTemplate = (
-//   domainState: DomainState,
-//   applicationDeploymentMap: ApplicationDeploymentMap,
-//   foreignKeyParams: ExtractorTemplateRunnerParamsForJzodSchema<QueryByEntityUuidGetEntityDefinition, DomainState>
-// ): JzodObject | undefined => {
-//   const localQuery: QueryByEntityUuidGetEntityDefinition = foreignKeyParams.query;
-//   const deploymentUuid = applicationDeploymentMap[localQuery.application];
-//   if (
-//     domainState &&
-//     domainState[deploymentUuid] &&
-//     domainState[deploymentUuid]["model"] &&
-//     domainState[deploymentUuid]["model"][entityEntityDefinition.uuid]
-//   ) {
-//     const values: EntityDefinition[] = Object.values(
-//       domainState[deploymentUuid]["model"][entityEntityDefinition.uuid] ?? {}
-//     ) as EntityDefinition[];
-//     const index = values.findIndex((e: EntityDefinition) => e.entityUuid == localQuery.entityUuid);
-
-//     const result: JzodObject | undefined = index > -1 ? values[index].mlSchema : undefined;
-
-//     // log.info("DomainSelector selectEntityJzodSchemaFromDomainState result", result);
-
-//     return result;
-//   } else {
-//     return undefined;
-//   }
-// };
-

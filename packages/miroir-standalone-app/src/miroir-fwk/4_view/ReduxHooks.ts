@@ -4,16 +4,11 @@ import {
   ApplicationSection,
   Domain2QueryReturnType,
   DomainElementSuccess,
-  DomainModelQueryTemplateJzodSchemaParams,
   DomainState,
   EntityInstance,
   EntityInstancesUuidIndex,
-  ExtractorRunnerParamsForJzodSchema,
-  ExtractorTemplateRunnerParamsForJzodSchema,
   JzodElement,
   JzodPlainAttribute,
-  JzodSchemaQuerySelector,
-  JzodSchemaQueryTemplateSelector,
   LocalCacheExtractor,
   LoggerInterface,
   MetaModel,
@@ -45,11 +40,8 @@ import {
 } from "miroir-core";
 import {
   ReduxStateWithUndoRedo,
-  applyDomainStateJzodSchemaSelector,
   applyDomainStateQuerySelectorForCleanedResult,
   applyDomainStateQueryTemplateSelector,
-  applyReduxDeploymentsStateJzodSchemaSelector,
-  applyReduxDeploymentsStateJzodSchemaSelectorTemplate,
   applyReduxDeploymentsStateQuerySelector,
   applyReduxDeploymentsStateQuerySelectorForCleanedResult,
   applyReduxDeploymentsStateQueryTemplateSelector,
@@ -198,81 +190,6 @@ export function useDomainStateQueryTemplateSelectorForCleanedResult<ResultType>(
   }, [domainStateSelector]);
   const result: ResultType = useSelector((state: ReduxStateWithUndoRedo) =>
     innerSelector(state, applicationDeploymentMap, foreignKeyParams, defaultMetaModelEnvironment)
-  );
-  return result;
-}
-
-// ################################################################################################
-export function useDomainStateJzodSchemaSelector<
-  QueryType extends DomainModelQueryTemplateJzodSchemaParams
->(
-  domainStateSelector: JzodSchemaQueryTemplateSelector<QueryType, DomainState>,
-  applicationDeploymentMap: ApplicationDeploymentMap,
-  foreignKeyParams: ExtractorTemplateRunnerParamsForJzodSchema<QueryType, DomainState>,
-  customQueryInterpreter?: {
-    [k: string]: (
-      query: DomainModelQueryTemplateJzodSchemaParams
-    ) => RecordOfJzodElement | JzodElement | undefined;
-  }
-): RecordOfJzodElement | JzodElement | undefined {
-  const innerSelector = useMemo(() => {
-    return applyDomainStateJzodSchemaSelector(domainStateSelector);
-  }, [domainStateSelector]);
-  const result: RecordOfJzodElement | JzodElement | undefined = useSelector(
-    (state: ReduxStateWithUndoRedo) =>
-      innerSelector(state, applicationDeploymentMap, foreignKeyParams, defaultMetaModelEnvironment)
-  );
-  return result;
-}
-
-// ################################################################################################
-export function useReduxDeploymentsStateJzodSchemaSelectorForTemplate<
-  QueryTemplateType extends DomainModelQueryTemplateJzodSchemaParams
->(
-  domainStateSelector: JzodSchemaQueryTemplateSelector<QueryTemplateType, ReduxDeploymentsState>,
-  applicationDeploymentMap: ApplicationDeploymentMap,
-  foreignKeyParams: ExtractorTemplateRunnerParamsForJzodSchema<
-    QueryTemplateType,
-    ReduxDeploymentsState
-  >,
-  customQueryInterpreter?: {
-    [k: string]: (
-      query: DomainModelQueryTemplateJzodSchemaParams
-    ) => RecordOfJzodElement | JzodElement | undefined;
-  }
-): RecordOfJzodElement | JzodElement | undefined {
-  const innerSelector = useMemo(() => {
-    return applyReduxDeploymentsStateJzodSchemaSelectorTemplate(domainStateSelector);
-  }, [domainStateSelector]);
-  const result: RecordOfJzodElement | JzodElement | undefined = useSelector(
-    (state: ReduxStateWithUndoRedo) =>
-      innerSelector(state, applicationDeploymentMap, foreignKeyParams, defaultMetaModelEnvironment)
-  );
-  return result;
-}
-
-// ################################################################################################
-export function useReduxDeploymentsStateJzodSchemaSelector<QueryType extends QueryJzodSchemaParams>(
-  domainStateSelector: JzodSchemaQuerySelector<QueryType, ReduxDeploymentsState>,
-  applicationDeploymentMap: ApplicationDeploymentMap,
-  foreignKeyParams: ExtractorRunnerParamsForJzodSchema<QueryType, ReduxDeploymentsState>,
-  customQueryInterpreter?: {
-    [k: string]: (query: QueryJzodSchemaParams) => RecordOfJzodElement | JzodElement | undefined;
-  }
-): RecordOfJzodElement | JzodElement | undefined {
-  const innerSelector = useMemo(() => {
-    return applyReduxDeploymentsStateJzodSchemaSelector(domainStateSelector);
-  }, [domainStateSelector]);
-  // log.info(
-  //   "useReduxDeploymentsStateJzodSchemaSelector called",
-  //   applicationDeploymentMap,
-  //   foreignKeyParams,
-  //   "innerSelector",
-  //   innerSelector
-  // );
-  const result: RecordOfJzodElement | JzodElement | undefined = useSelector(
-    (state: ReduxStateWithUndoRedo) =>
-      innerSelector(state, applicationDeploymentMap, foreignKeyParams, defaultMetaModelEnvironment)
   );
   return result;
 }
