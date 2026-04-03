@@ -2254,60 +2254,6 @@ export function getMiroirFundamentalJzodSchema(
             },
           },
         },
-        // MlSchema queries  ##############################################################
-        queryByQueryTemplateGetParamJzodSchema: {
-          type: "object",
-          extend: {
-            type: "schemaReference",
-            definition: {
-              eager: true,
-              absolutePath: miroirFundamentalJzodSchemaUuid,
-              relativePath: "shippingBox",
-            },
-          },
-          definition: {
-            queryType: {
-              type: "literal",
-              definition: "getQueryJzodSchema",
-            },
-            select: {
-              type: "schemaReference",
-              definition: {
-                absolutePath: miroirFundamentalJzodSchemaUuid,
-                relativePath: "extractorOrCombinerTemplate",
-              },
-            },
-          },
-        },
-        queryByQueryGetParamJzodSchema: {
-          type: "object",
-          extend: {
-            type: "schemaReference",
-            definition: {
-              eager: true,
-              absolutePath: miroirFundamentalJzodSchemaUuid,
-              relativePath: "shippingBox",
-            },
-          },
-          definition: {
-            queryType: {
-              type: "literal",
-              tag: {
-                value: {
-                  canBeTemplate: false,
-                },
-              },
-              definition: "getQueryJzodSchema", // TODO: CORRECT!!!
-            },
-            select: {
-              type: "schemaReference",
-              definition: {
-                absolutePath: miroirFundamentalJzodSchemaUuid,
-                relativePath: "extractorOrCombiner",
-              },
-            },
-          },
-        },
         miroirQueryTemplate: {
           type: "union",
           discriminator: "queryType",
