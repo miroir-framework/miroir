@@ -19,16 +19,16 @@ import {
   type Domain2QueryReturnType,
   type DomainControllerInterface,
   type EntityDefinition,
-  type ExtractorRunnerParamsForJzodSchema,
+  // type ExtractorRunnerParamsForJzodSchema,
   type InstanceAction,
   type JzodObject,
   type MetaModel,
-  type QueryByQuery2GetParamJzodSchema,
-  type QueryRunnerMapForJzodSchema,
-  type RecordOfJzodObject,
-  type ReduxDeploymentsState
+  // type QueryByQuery2GetParamJzodSchema,
+  // type QueryRunnerMapForJzodSchema,
+  // type RecordOfJzodObject,
+  // type ReduxDeploymentsState
 } from "miroir-core";
-import { JsonDisplayHelper, getMemoizedReduxDeploymentsStateJzodSchemaSelectorMap } from 'miroir-react';
+import { JsonDisplayHelper } from 'miroir-react';
 import { useDomainControllerService, useMiroirContextService, useSnackbar } from "miroir-react";
 import { deployment_Miroir } from 'miroir-test-app_deployment-admin';
 import { packageName } from '../../../../constants.js';
@@ -52,6 +52,7 @@ export interface ReportViewWithEditorProps extends ReportViewProps {
   // No additional props needed initially
 }
 
+const fetchedDataJzodSchema = {};
 let count = 0;
 // ###############################################################################################
 export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
@@ -246,74 +247,74 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
   // ##############################################################################################
   // ##############################################################################################
   // ##############################################################################################
-  const jzodSchemaSelectorMap: QueryRunnerMapForJzodSchema<ReduxDeploymentsState> = useMemo(
-    () => getMemoizedReduxDeploymentsStateJzodSchemaSelectorMap(),
-    []
-  );
-  const fetchedDataJzodSchemaParams: ExtractorRunnerParamsForJzodSchema<
-    QueryByQuery2GetParamJzodSchema,
-    ReduxDeploymentsState
-  > = useMemo(
-    () => ({
-      extractorRunnerMap: jzodSchemaSelectorMap,
-      applicationDeploymentMap: props.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap,
-      query:
-        props.pageParams.application &&
-        props.pageParams.applicationSection &&
-        props.pageParams.reportUuid &&
-        props.reportDefinition.definition.extractors &&
-        reportDataQueryBase
-          ? {
-              queryType: "queryByTemplateGetParamJzodSchema",
-              label: props.reportDefinition.name + "_fetchedDataJzodSchema",
-              application: props.pageParams.application??"NO_APPLICATION",
-              // applicationDeploymentMap: props.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap,
-              deploymentUuid: props.pageParams.deploymentUuid,
-              pageParams: {
-                applicationSection: props.pageParams.applicationSection,
-                deploymentUuid: props.pageParams.deploymentUuid,
-                instanceUuid: props.pageParams.instanceUuid ?? "",
-              },
-              queryParams: {},
-              contextResults: {},
-              // fetchParams: deploymentEntityStateFetchQueryParams.extractor,
-              fetchParams: resolvedQuery,
-            }
-          : // dummy query
-            {
-              queryType: "queryByTemplateGetParamJzodSchema",
-              label: props.reportDefinition.name + "_DUMMY",
-              application: "",
-              // applicationDeploymentMap: {},
-              deploymentUuid: "DUMMY",
-              pageParams: {
-                applicationSection: "data",
-                deploymentUuid: "",
-                instanceUuid: "",
-              },
-              queryParams: {},
-              contextResults: {},
-              fetchParams: {
-                queryType: "boxedQueryWithExtractorCombinerTransformer",
-                application: "",
-                // applicationDeploymentMap: {},
-                deploymentUuid: "DUMMY",
-                pageParams: props.pageParams,
-                queryParams: {},
-                contextResults: {},
-                // extractorTemplates: {},
-                extractors: {},
-              } as BoxedQueryWithExtractorCombinerTransformer,
-            },
-    }),
-    [jzodSchemaSelectorMap, props.pageParams, props.reportDefinition]
-  );
-  // log.info("fetchedDataJzodSchemaParams", fetchedDataJzodSchemaParams, props.applicationDeploymentMap);
-  const fetchedDataJzodSchema: RecordOfJzodObject | undefined = useReduxDeploymentsStateJzodSchemaSelector(
-    jzodSchemaSelectorMap.extractFetchQueryJzodSchema,
-    props.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap,
-    fetchedDataJzodSchemaParams
-  ) as RecordOfJzodObject | undefined; // TODO: use correct return type
+  // const jzodSchemaSelectorMap: QueryRunnerMapForJzodSchema<ReduxDeploymentsState> = useMemo(
+  //   () => getMemoizedReduxDeploymentsStateJzodSchemaSelectorMap(),
+  //   []
+  // );
+  // const fetchedDataJzodSchemaParams: ExtractorRunnerParamsForJzodSchema<
+  //   QueryByQuery2GetParamJzodSchema,
+  //   ReduxDeploymentsState
+  // > = useMemo(
+  //   () => ({
+  //     extractorRunnerMap: jzodSchemaSelectorMap,
+  //     applicationDeploymentMap: props.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap,
+  //     query:
+  //       props.pageParams.application &&
+  //       props.pageParams.applicationSection &&
+  //       props.pageParams.reportUuid &&
+  //       props.reportDefinition.definition.extractors &&
+  //       reportDataQueryBase
+  //         ? {
+  //             queryType: "queryByTemplateGetParamJzodSchema",
+  //             label: props.reportDefinition.name + "_fetchedDataJzodSchema",
+  //             application: props.pageParams.application??"NO_APPLICATION",
+  //             // applicationDeploymentMap: props.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap,
+  //             deploymentUuid: props.pageParams.deploymentUuid,
+  //             pageParams: {
+  //               applicationSection: props.pageParams.applicationSection,
+  //               deploymentUuid: props.pageParams.deploymentUuid,
+  //               instanceUuid: props.pageParams.instanceUuid ?? "",
+  //             },
+  //             queryParams: {},
+  //             contextResults: {},
+  //             // fetchParams: deploymentEntityStateFetchQueryParams.extractor,
+  //             fetchParams: resolvedQuery,
+  //           }
+  //         : // dummy query
+  //           {
+  //             queryType: "queryByTemplateGetParamJzodSchema",
+  //             label: props.reportDefinition.name + "_DUMMY",
+  //             application: "",
+  //             // applicationDeploymentMap: {},
+  //             deploymentUuid: "DUMMY",
+  //             pageParams: {
+  //               applicationSection: "data",
+  //               deploymentUuid: "",
+  //               instanceUuid: "",
+  //             },
+  //             queryParams: {},
+  //             contextResults: {},
+  //             fetchParams: {
+  //               queryType: "boxedQueryWithExtractorCombinerTransformer",
+  //               application: "",
+  //               // applicationDeploymentMap: {},
+  //               deploymentUuid: "DUMMY",
+  //               pageParams: props.pageParams,
+  //               queryParams: {},
+  //               contextResults: {},
+  //               // extractorTemplates: {},
+  //               extractors: {},
+  //             } as BoxedQueryWithExtractorCombinerTransformer,
+  //           },
+  //   }),
+  //   [jzodSchemaSelectorMap, props.pageParams, props.reportDefinition]
+  // );
+  // // log.info("fetchedDataJzodSchemaParams", fetchedDataJzodSchemaParams, props.applicationDeploymentMap);
+  // const fetchedDataJzodSchema: RecordOfJzodObject | undefined = useReduxDeploymentsStateJzodSchemaSelector(
+  //   jzodSchemaSelectorMap.extractFetchQueryJzodSchema,
+  //   props.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap,
+  //   fetchedDataJzodSchemaParams
+  // ) as RecordOfJzodObject | undefined; // TODO: use correct return type
   // ##############################################################################################
   // ##############################################################################################
   // ##############################################################################################
@@ -459,6 +460,11 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
           elements={[
             { label: "deploymentUuid", data: { deploymentUuid: props.deploymentUuid } },
             { label: "reportDataQueryBase / reportDataQueryResults", data: { reportDataQueryBase, reportDataQueryResults }, useCodeBlock: true },
+            // { label: "reportViewData", data: { reportViewData }, useCodeBlock: true },
+            // { label: "initialReportSectionsFormValue", data: { initialReportSectionsFormValue }, useCodeBlock: true },
+            // { label: "formValueMLSchema", data: { formValueMLSchema }, useCodeBlock: true },
+            // { label: "fetchedDataJzodSchemaParams", data: { fetchedDataJzodSchemaParams }, useCodeBlock: true },
+            // { label: "fetchedDataJzodSchema", data: { fetchedDataJzodSchema }, useCodeBlock: true },
           ]}
         />
         {props.applicationSection ? (

@@ -8,17 +8,29 @@ export {
   defaultMiroirTheme,
   materialMiroirTheme,
 } from "./components/Themes/MiroirTheme.js";
-export type { DeepPartial, MiroirTheme, ResolvedMiroirTheme } from "./components/Themes/MiroirTheme.js";
+export type {
+  DeepPartial,
+  MiroirTheme,
+  ResolvedMiroirTheme,
+} from "./components/Themes/MiroirTheme.js";
 
-export { resolveTableThemeColors, resolveThemeColors } from "./components/Themes/ThemeColorDefaults.js";
+export {
+  resolveTableThemeColors,
+  resolveThemeColors,
+} from "./components/Themes/ThemeColorDefaults.js";
 
-export { JsonDisplayHelper, DebugHelper, type DebugElements, type JsonElementToDisplay } from "./components/helpers/DebugHelper.js";
+export {
+  JsonDisplayHelper,
+  DebugHelper,
+  type DebugElements,
+  type JsonElementToDisplay,
+} from "./components/helpers/DebugHelper.js";
 export { ThemedOnScreenDebug, ThemedOnScreenHelper } from "./components/helpers/ThemedHelper.js";
 export {
   errorLogService,
   logServerError,
   logStartupError,
-  type ErrorLogEntry
+  type ErrorLogEntry,
 } from "./components/logs/ErrorLogService.js";
 
 export { CodeBlock_ReadOnly } from "./components/CodeBlock_ReadOnly.js";
@@ -58,7 +70,9 @@ export {
 } from "./contexts/MiroirThemeContext.js";
 
 export type {
-  MiroirThemeContextType, MiroirThemeOption, MiroirThemeProviderProps
+  MiroirThemeContextType,
+  MiroirThemeOption,
+  MiroirThemeProviderProps,
 } from "./contexts/MiroirThemeContext.js";
 
 export {
@@ -86,14 +100,10 @@ export {
   selectEntityInstanceUuidIndexFromLocalCache,
   selectInstanceArrayForDeploymentSectionEntity,
   selectModelForDeploymentFromReduxState,
-  getMemoizedReduxDeploymentsStateJzodSchemaSelectorMap,
-  getMemoizedReduxDeploymentsStateJzodSchemaSelectorTemplateMap,
   getMemoizedReduxDeploymentsStateSelectorForTemplateMap,
   getMemoizedReduxDeploymentsStateSelectorMap,
   setupMiroirDomainController,
   useSelector,
-} from "./miroir-localcache-imports.js"
+} from "./miroir-localcache-imports.js";
 
-export {
-  ThemedComponentProps
-} from "./components/helpers/BaseTypes.js";
+export { ThemedComponentProps } from "./components/helpers/BaseTypes.js";

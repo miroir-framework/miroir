@@ -1,17 +1,17 @@
 import { createSelector } from "@reduxjs/toolkit";
 import {
   ReduxDeploymentsState,
-  QueryTemplateRunnerMapForJzodSchema,
+  QueryTemplateRunnerMapForJzodSchemaDEFUNCT,
   SyncBoxedExtractorOrQueryRunnerMap,
   extractEntityInstanceListWithObjectListExtractorInMemory,
   extractEntityInstanceUuidIndexWithObjectListExtractorInMemory,
-  extractEntityJzodSchemaFromReduxDeploymentsState,
-  extractFetchQueryJzodSchema,
-  extractJzodSchemaForDomainModelQuery,
+  // extractEntityJzodSchemaFromReduxDeploymentsState,
+  // extractFetchQueryJzodSchema,
+  // extractJzodSchemaForDomainModelQuery,
   extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList,
   runQueryTemplateWithExtractorCombinerTransformer,
   runQuery,
-  extractzodSchemaForSingleSelectQuery,
+  // extractzodSchemaForSingleSelectQuery,
   selectEntityInstanceFromReduxDeploymentsState,
   selectEntityInstanceListFromReduxDeploymentsState,
   selectEntityInstanceUuidIndexFromReduxDeploymentsState,
@@ -139,68 +139,68 @@ export function getMemoizedReduxDeploymentsStateSelectorForTemplateMap(): SyncBo
 // ################################################################################################
 // ################################################################################################
 // ################################################################################################
-const deploymentEntityStateSelectorForMLS = (
-  domainState: ReduxDeploymentsState,
-  applicationDeploymentMap: ApplicationDeploymentMap,
-  params: any,
-  modelEnvironment: MiroirModelEnvironment
-) => domainState;
-const applicationDeploymentMapSelectorForMLS = (
-  domainState: ReduxDeploymentsState,
-  applicationDeploymentMap: ApplicationDeploymentMap,
-  params: any,
-  modelEnvironment: MiroirModelEnvironment
-) => applicationDeploymentMap;
-const deploymentEntityStateSelectorParamsForMLS = (
-  domainState: ReduxDeploymentsState,
-  applicationDeploymentMap: ApplicationDeploymentMap,
-  params: any,
-  modelEnvironment: MiroirModelEnvironment
-) => params;
-const miroirModelEnvironmentSelectorParamsForMLS = (
-  deploymentEntityState: ReduxDeploymentsState,
-  applicationDeploymentMap: ApplicationDeploymentMap,
-  params: any,
-  modelEnvironment: MiroirModelEnvironment
-) => modelEnvironment;
+// const deploymentEntityStateSelectorForMLS = (
+//   domainState: ReduxDeploymentsState,
+//   applicationDeploymentMap: ApplicationDeploymentMap,
+//   params: any,
+//   modelEnvironment: MiroirModelEnvironment
+// ) => domainState;
+// const applicationDeploymentMapSelectorForMLS = (
+//   domainState: ReduxDeploymentsState,
+//   applicationDeploymentMap: ApplicationDeploymentMap,
+//   params: any,
+//   modelEnvironment: MiroirModelEnvironment
+// ) => applicationDeploymentMap;
+// const deploymentEntityStateSelectorParamsForMLS = (
+//   domainState: ReduxDeploymentsState,
+//   applicationDeploymentMap: ApplicationDeploymentMap,
+//   params: any,
+//   modelEnvironment: MiroirModelEnvironment
+// ) => params;
+// const miroirModelEnvironmentSelectorParamsForMLS = (
+//   deploymentEntityState: ReduxDeploymentsState,
+//   applicationDeploymentMap: ApplicationDeploymentMap,
+//   params: any,
+//   modelEnvironment: MiroirModelEnvironment
+// ) => modelEnvironment;
 
-export function getMemoizedReduxDeploymentsStateJzodSchemaSelectorTemplateMap(): QueryTemplateRunnerMapForJzodSchema<ReduxDeploymentsState> {
-  return {
-    extractJzodSchemaForDomainModelQuery: createSelector(
-      [
-        deploymentEntityStateSelectorForMLS,
-        applicationDeploymentMapSelectorForMLS,
-        deploymentEntityStateSelectorParamsForMLS,
-        miroirModelEnvironmentSelectorParamsForMLS,
-      ],
-      extractJzodSchemaForDomainModelQuery,
-    ),
-    extractEntityJzodSchema: createSelector(
-      [
-        deploymentEntityStateSelectorForMLS,
-        applicationDeploymentMapSelectorForMLS,
-        deploymentEntityStateSelectorParamsForMLS,
-        miroirModelEnvironmentSelectorParamsForMLS,
-      ],
-      extractEntityJzodSchemaFromReduxDeploymentsState,
-    ),
-    extractFetchQueryJzodSchema: createSelector(
-      [
-        deploymentEntityStateSelectorForMLS,
-        applicationDeploymentMapSelectorForMLS,
-        deploymentEntityStateSelectorParamsForMLS,
-        miroirModelEnvironmentSelectorParamsForMLS,
-      ],
-      extractFetchQueryJzodSchema,
-    ),
-    extractzodSchemaForSingleSelectQuery: createSelector(
-      [
-        deploymentEntityStateSelectorForMLS,
-        applicationDeploymentMapSelectorForMLS,
-        deploymentEntityStateSelectorParamsForMLS,
-        miroirModelEnvironmentSelectorParamsForMLS,
-      ],
-      extractzodSchemaForSingleSelectQuery,
-    ),
-  };
-}
+// export function getMemoizedReduxDeploymentsStateJzodSchemaSelectorTemplateMap(): QueryTemplateRunnerMapForJzodSchemaDEFUNCT<ReduxDeploymentsState> {
+//   return {
+//     extractJzodSchemaForDomainModelQuery: createSelector(
+//       [
+//         deploymentEntityStateSelectorForMLS,
+//         applicationDeploymentMapSelectorForMLS,
+//         deploymentEntityStateSelectorParamsForMLS,
+//         miroirModelEnvironmentSelectorParamsForMLS,
+//       ],
+//       extractJzodSchemaForDomainModelQuery,
+//     ),
+//     extractEntityJzodSchema: createSelector(
+//       [
+//         deploymentEntityStateSelectorForMLS,
+//         applicationDeploymentMapSelectorForMLS,
+//         deploymentEntityStateSelectorParamsForMLS,
+//         miroirModelEnvironmentSelectorParamsForMLS,
+//       ],
+//       extractEntityJzodSchemaFromReduxDeploymentsState,
+//     ),
+//     extractFetchQueryJzodSchema: createSelector(
+//       [
+//         deploymentEntityStateSelectorForMLS,
+//         applicationDeploymentMapSelectorForMLS,
+//         deploymentEntityStateSelectorParamsForMLS,
+//         miroirModelEnvironmentSelectorParamsForMLS,
+//       ],
+//       extractFetchQueryJzodSchema,
+//     ),
+//     extractzodSchemaForSingleSelectQuery: createSelector(
+//       [
+//         deploymentEntityStateSelectorForMLS,
+//         applicationDeploymentMapSelectorForMLS,
+//         deploymentEntityStateSelectorParamsForMLS,
+//         miroirModelEnvironmentSelectorParamsForMLS,
+//       ],
+//       extractzodSchemaForSingleSelectQuery,
+//     ),
+//   };
+// }

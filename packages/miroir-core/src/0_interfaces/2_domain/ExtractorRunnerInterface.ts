@@ -11,7 +11,7 @@ import {
   EntityInstancesUuidIndex,
   JzodElement,
   JzodObject,
-  QueryByEntityUuidGetEntityDefinition,
+  // QueryByEntityUuidGetEntityDefinition,
   QueryByQuery2GetParamJzodSchema,
   QueryByQueryGetParamJzodSchema,
   QueryByQueryTemplateGetParamJzodSchema,
@@ -260,12 +260,13 @@ export type SyncBoxedExtractorOrQueryRunnerMap<StateType> = {
 // ################################################################################################
 // ################################################################################################
 // JZOD SCHEMAS  ##################################################################################
-export type QueryTemplateRunnerMapForJzodSchema<StateType> = {
+export type QueryTemplateRunnerMapForJzodSchemaDEFUNCT<StateType> = {
   extractJzodSchemaForDomainModelQuery: JzodSchemaQueryTemplateSelector<
     DomainModelQueryTemplateJzodSchemaParams,
     StateType
   >;
-  extractEntityJzodSchema: JzodSchemaQueryTemplateSelector<QueryByEntityUuidGetEntityDefinition, StateType>;
+  // extractEntityJzodSchema: JzodSchemaQueryTemplateSelector<QueryByEntityUuidGetEntityDefinition, StateType>;
+  extractEntityJzodSchema: JzodSchemaQueryTemplateSelector<any, StateType>;
   extractFetchQueryJzodSchema: JzodSchemaQueryTemplateSelector<
     QueryByTemplateGetParamJzodSchema,
     StateType
@@ -277,25 +278,26 @@ export type QueryTemplateRunnerMapForJzodSchema<StateType> = {
 };
 
 // ################################################################################################
-export type QueryRunnerMapForJzodSchema<StateType> = {
+export type QueryRunnerMapForJzodSchemaDEFUNCT<StateType> = {
   extractJzodSchemaForDomainModelQuery: JzodSchemaQuerySelector<QueryJzodSchemaParams, StateType>;
-  extractEntityJzodSchema: JzodSchemaQuerySelector<QueryByEntityUuidGetEntityDefinition, StateType>;
+  // extractEntityJzodSchema: JzodSchemaQuerySelector<QueryByEntityUuidGetEntityDefinition, StateType>;
+  extractEntityJzodSchema: JzodSchemaQuerySelector<any, StateType>;
   extractFetchQueryJzodSchema: JzodSchemaQuerySelector<QueryByQuery2GetParamJzodSchema, StateType>;
-  extractzodSchemaForSingleSelectQuery: JzodSchemaQuerySelector<
-    QueryByQueryGetParamJzodSchema,
-    StateType
-  >;
+  // extractzodSchemaForSingleSelectQuery: JzodSchemaQuerySelector<
+  //   QueryByQueryGetParamJzodSchema,
+  //   StateType
+  // >;
 };
 
 // ################################################################################################
 export interface ExtractorTemplateRunnerParamsForJzodSchema<QueryTemplateType extends DomainModelQueryTemplateJzodSchemaParams, StateType> {
-  extractorRunnerMap: QueryTemplateRunnerMapForJzodSchema<StateType>
+  extractorRunnerMap: QueryTemplateRunnerMapForJzodSchemaDEFUNCT<StateType>
   query: QueryTemplateType
 }
 
 // ################################################################################################
 export interface ExtractorRunnerParamsForJzodSchema<QueryType extends QueryJzodSchemaParams, StateType> {
-  extractorRunnerMap: QueryRunnerMapForJzodSchema<StateType>
+  extractorRunnerMap: QueryRunnerMapForJzodSchemaDEFUNCT<StateType>
   // applicationDeploymentMap: ApplicationDeploymentMap,
   query: QueryType
 }

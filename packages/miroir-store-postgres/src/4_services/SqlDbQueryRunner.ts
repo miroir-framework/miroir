@@ -24,13 +24,13 @@ import {
   EntityInstancesUuidIndex,
   LoggerInterface,
   MiroirLoggerFactory,
-  QueryRunnerMapForJzodSchema,
+  QueryRunnerMapForJzodSchemaDEFUNCT,
   RunBoxedQueryAction,
   safeResolvePathOnObject,
-  selectEntityJzodSchemaFromDomainStateNew,
-  selectFetchQueryJzodSchemaFromDomainStateNew,
-  selectJzodSchemaByDomainModelQueryFromDomainStateNew,
-  selectJzodSchemaBySingleSelectQueryFromDomainStateNew,
+  // selectEntityJzodSchemaFromDomainStateNew,
+  // selectFetchQueryJzodSchemaFromDomainStateNew,
+  // selectJzodSchemaByDomainModelQueryFromDomainStateNew,
+  // selectJzodSchemaBySingleSelectQueryFromDomainStateNew,
   serializeCompositeKeyValue,
   type ApplicationDeploymentMap,
   type ExtractorRunnerInMemory,
@@ -54,15 +54,15 @@ MiroirLoggerFactory.registerLoggerToStart(
 
 export type RecursiveStringRecords = string | { [x: string]: RecursiveStringRecords };
 
-// ################################################################################################
-export function getDomainStateJzodSchemaExtractorRunnerMap(): QueryRunnerMapForJzodSchema<DomainState> {
-  return {
-    extractJzodSchemaForDomainModelQuery: selectJzodSchemaByDomainModelQueryFromDomainStateNew,
-    extractEntityJzodSchema: selectEntityJzodSchemaFromDomainStateNew,
-    extractFetchQueryJzodSchema: selectFetchQueryJzodSchemaFromDomainStateNew,
-    extractzodSchemaForSingleSelectQuery: selectJzodSchemaBySingleSelectQueryFromDomainStateNew,
-  };
-}
+// // ################################################################################################
+// export function getDomainStateJzodSchemaExtractorRunnerMapDEFUNCT(): QueryRunnerMapForJzodSchemaDEFUNCT<DomainState> {
+//   return {
+//     extractJzodSchemaForDomainModelQuery: selectJzodSchemaByDomainModelQueryFromDomainStateNew,
+//     extractEntityJzodSchema: selectEntityJzodSchemaFromDomainStateNew,
+//     extractFetchQueryJzodSchema: selectFetchQueryJzodSchemaFromDomainStateNew,
+//     extractzodSchemaForSingleSelectQuery: selectJzodSchemaBySingleSelectQueryFromDomainStateNew,
+//   };
+// }
 
 // ################################################################################################
 // ################################################################################################

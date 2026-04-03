@@ -52,7 +52,8 @@ export type ToolHandler = (
  * @param jzodPayload - The Jzod schema definition from actionParameters.payload
  * @returns The Zod schema for validation
  */
-function jzodPayloadToZodSchema(jzodPayload: JzodObject): ZodTypeAny {
+// function jzodPayloadToZodSchema(jzodPayload: JzodObject): ZodTypeAny {
+function jzodPayloadToZodSchema(jzodPayload: JzodElement): ZodTypeAny {
   // Recursively resolve all schema references in the Jzod schema
   // schemaReferences in jzodToZodTextAndZodSchema are not closures, they depend on the resolved schema names
   // that are found in miroirFundamentalType.ts.

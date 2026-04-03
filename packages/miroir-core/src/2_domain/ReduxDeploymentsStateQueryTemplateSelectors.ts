@@ -2,12 +2,12 @@ import {
   BoxedQueryTemplateWithExtractorCombinerTransformer,
   EntityDefinition,
   JzodObject,
-  QueryByEntityUuidGetEntityDefinition
+  // QueryByEntityUuidGetEntityDefinition
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { Domain2QueryReturnType } from "../0_interfaces/2_domain/DomainElement";
 import {
   ExtractorTemplateRunnerParamsForJzodSchema,
-  QueryTemplateRunnerMapForJzodSchema,
+  // QueryTemplateRunnerMapForJzodSchemaDEFUNCT,
   SyncBoxedExtractorOrQueryRunnerMap,
   SyncQueryTemplateRunner,
   SyncQueryTemplateRunnerParams
@@ -25,9 +25,9 @@ import {
   runQuery,
 } from "./QuerySelectors";
 import {
-  extractFetchQueryTemplateJzodSchema,
-  extractJzodSchemaForDomainModelQueryTemplate,
-  extractzodSchemaForSingleSelectQueryTemplate,
+  // extractFetchQueryTemplateJzodSchema,
+  // extractJzodSchemaForDomainModelQueryTemplate,
+  // extractzodSchemaForSingleSelectQueryTemplate,
   runQueryTemplateWithExtractorCombinerTransformer
 } from "./QueryTemplateSelectors";
 import { getReduxDeploymentsStateIndex } from "./ReduxDeploymentsState";
@@ -70,15 +70,15 @@ export function getReduxDeploymentsStateSelectorTemplateMap(): SyncBoxedExtracto
   };
 }
 
-// ################################################################################################
-export function getReduxDeploymentsStateJzodSchemaSelectorTemplateMap(): QueryTemplateRunnerMapForJzodSchema<ReduxDeploymentsState> {
-  return {
-    extractJzodSchemaForDomainModelQuery: extractJzodSchemaForDomainModelQueryTemplate,
-    extractEntityJzodSchema: extractEntityJzodSchemaFromReduxDeploymentsStateForTemplate,
-    extractFetchQueryJzodSchema: extractFetchQueryTemplateJzodSchema,
-    extractzodSchemaForSingleSelectQuery: extractzodSchemaForSingleSelectQueryTemplate,
-  };
-}
+// // ################################################################################################
+// export function getReduxDeploymentsStateJzodSchemaSelectorTemplateMap(): QueryTemplateRunnerMapForJzodSchemaDEFUNCT<ReduxDeploymentsState> {
+//   return {
+//     extractJzodSchemaForDomainModelQuery: extractJzodSchemaForDomainModelQueryTemplate,
+//     extractEntityJzodSchema: extractEntityJzodSchemaFromReduxDeploymentsStateForTemplate,
+//     extractFetchQueryJzodSchema: extractFetchQueryTemplateJzodSchema,
+//     extractzodSchemaForSingleSelectQuery: extractzodSchemaForSingleSelectQueryTemplate,
+//   };
+// }
 
 
 // ################################################################################################
@@ -104,69 +104,69 @@ export function getQueryTemplateRunnerParamsForReduxDeploymentsState(
 // JZOD SCHEMAs selectors
 // ################################################################################################
 // ACCESSES deploymentEntityState
-export const extractEntityJzodSchemaFromReduxDeploymentsStateForTemplate = (
-  deploymentEntityState: ReduxDeploymentsState,
-  applicationDeploymentMap: ApplicationDeploymentMap,
-  foreignKeyParams: ExtractorTemplateRunnerParamsForJzodSchema<QueryByEntityUuidGetEntityDefinition, ReduxDeploymentsState>
-): JzodObject | undefined => {
-  const localQuery: QueryByEntityUuidGetEntityDefinition = foreignKeyParams.query;
-  const deploymentUuid = applicationDeploymentMap[localQuery.application]??"DEPLOYMENT_UUID_NOT_FOUND";
-  const deploymentEntityStateIndex = getReduxDeploymentsStateIndex(
-    deploymentUuid,
-    "model",
-    entityEntityDefinition.uuid
-  );
+// export const extractEntityJzodSchemaFromReduxDeploymentsStateForTemplate = (
+//   deploymentEntityState: ReduxDeploymentsState,
+//   applicationDeploymentMap: ApplicationDeploymentMap,
+//   foreignKeyParams: ExtractorTemplateRunnerParamsForJzodSchema<QueryByEntityUuidGetEntityDefinition, ReduxDeploymentsState>
+// ): JzodObject | undefined => {
+//   const localQuery: QueryByEntityUuidGetEntityDefinition = foreignKeyParams.query;
+//   const deploymentUuid = applicationDeploymentMap[localQuery.application]??"DEPLOYMENT_UUID_NOT_FOUND";
+//   const deploymentEntityStateIndex = getReduxDeploymentsStateIndex(
+//     deploymentUuid,
+//     "model",
+//     entityEntityDefinition.uuid
+//   );
 
-  log.info("extractEntityJzodSchemaFromReduxDeploymentsState called with foreignKeyParams", foreignKeyParams);
+//   log.info("extractEntityJzodSchemaFromReduxDeploymentsState called with foreignKeyParams", foreignKeyParams);
 
-  if (
-    deploymentEntityState &&
-    deploymentEntityState[deploymentEntityStateIndex] &&
-    deploymentEntityState[deploymentEntityStateIndex].entities
-  ) {
-    const entityDefinition: EntityDefinition | undefined = Object.values(
-      deploymentEntityState[deploymentEntityStateIndex].entities as Record<string, EntityDefinition>
-    ).find((e: EntityDefinition) => e.entityUuid == foreignKeyParams.query.entityUuid);
-    if (!entityDefinition) {
-      log.warn(
-        "extractEntityJzodSchemaFromReduxDeploymentsState foreignKeyParams",
-        foreignKeyParams,
-        "could not find entity definition for index",
-        deploymentEntityStateIndex,
-        "in state",
-        deploymentEntityState,
-        "for entity",
-        foreignKeyParams.query.entityUuid,
-        "in deployment",
-        deploymentUuid
-      );
-      return undefined;
-    }
-    const result: JzodObject = entityDefinition.mlSchema;
+//   if (
+//     deploymentEntityState &&
+//     deploymentEntityState[deploymentEntityStateIndex] &&
+//     deploymentEntityState[deploymentEntityStateIndex].entities
+//   ) {
+//     const entityDefinition: EntityDefinition | undefined = Object.values(
+//       deploymentEntityState[deploymentEntityStateIndex].entities as Record<string, EntityDefinition>
+//     ).find((e: EntityDefinition) => e.entityUuid == foreignKeyParams.query.entityUuid);
+//     if (!entityDefinition) {
+//       log.warn(
+//         "extractEntityJzodSchemaFromReduxDeploymentsState foreignKeyParams",
+//         foreignKeyParams,
+//         "could not find entity definition for index",
+//         deploymentEntityStateIndex,
+//         "in state",
+//         deploymentEntityState,
+//         "for entity",
+//         foreignKeyParams.query.entityUuid,
+//         "in deployment",
+//         deploymentUuid
+//       );
+//       return undefined;
+//     }
+//     const result: JzodObject = entityDefinition.mlSchema;
 
-    // log.info("extractEntityJzodSchemaFromReduxDeploymentsState foreignKeyParams", foreignKeyParams, "result", result);
+//     // log.info("extractEntityJzodSchemaFromReduxDeploymentsState foreignKeyParams", foreignKeyParams, "result", result);
 
-    return result;
-  } else {
-    log.warn(
-      "extractEntityJzodSchemaFromReduxDeploymentsState foreignKeyParams",
-      foreignKeyParams,
-      "could not find index",
-      deploymentEntityStateIndex,
-      "in state",
-      deploymentEntityState,
-      "for entity",
-      foreignKeyParams.query.entityUuid,
-      "in deployment",
-      deploymentUuid
-    );
-    // throw new Error(
-    //   "DomainSelector extractEntityJzodSchemaFromReduxDeploymentsState could not find entity " +
-    //     entityEntityDefinition.uuid +
-    //     " in deployment " +
-    //     localQuery.deploymentUuid +
-    //     ""
-    // );
-    return undefined;
-  }
-};
+//     return result;
+//   } else {
+//     log.warn(
+//       "extractEntityJzodSchemaFromReduxDeploymentsState foreignKeyParams",
+//       foreignKeyParams,
+//       "could not find index",
+//       deploymentEntityStateIndex,
+//       "in state",
+//       deploymentEntityState,
+//       "for entity",
+//       foreignKeyParams.query.entityUuid,
+//       "in deployment",
+//       deploymentUuid
+//     );
+//     // throw new Error(
+//     //   "DomainSelector extractEntityJzodSchemaFromReduxDeploymentsState could not find entity " +
+//     //     entityEntityDefinition.uuid +
+//     //     " in deployment " +
+//     //     localQuery.deploymentUuid +
+//     //     ""
+//     // );
+//     return undefined;
+//   }
+// };

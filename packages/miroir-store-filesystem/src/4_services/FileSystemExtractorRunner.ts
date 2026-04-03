@@ -25,13 +25,13 @@ import {
   LoggerInterface,
   MiroirLoggerFactory,
   PersistenceStoreInstanceSectionAbstractInterface,
-  QueryRunnerMapForJzodSchema,
+  QueryRunnerMapForJzodSchemaDEFUNCT,
   // RunBoxedExtractorAction,
   RunBoxedQueryAction,
-  selectEntityJzodSchemaFromDomainStateNew,
-  selectFetchQueryJzodSchemaFromDomainStateNew,
-  selectJzodSchemaByDomainModelQueryFromDomainStateNew,
-  selectJzodSchemaBySingleSelectQueryFromDomainStateNew,
+  // selectEntityJzodSchemaFromDomainStateNew,
+  // selectFetchQueryJzodSchemaFromDomainStateNew,
+  // selectJzodSchemaByDomainModelQueryFromDomainStateNew,
+  // selectJzodSchemaBySingleSelectQueryFromDomainStateNew,
   serializeCompositeKeyValue,
   getForeignKeyValue,
   transformer_InnerReference_resolve,
@@ -367,11 +367,11 @@ export class FileSystemExtractorRunner implements ExtractorOrQueryPersistenceSto
 
 
 
-export function getDomainStateJzodSchemaExtractorRunnerMap(): QueryRunnerMapForJzodSchema<DomainState> {
-  return {
-    extractJzodSchemaForDomainModelQuery: selectJzodSchemaByDomainModelQueryFromDomainStateNew,
-    extractEntityJzodSchema: selectEntityJzodSchemaFromDomainStateNew,
-    extractFetchQueryJzodSchema: selectFetchQueryJzodSchemaFromDomainStateNew,
-    extractzodSchemaForSingleSelectQuery: selectJzodSchemaBySingleSelectQueryFromDomainStateNew,
-  };
-}
+// export function getDomainStateJzodSchemaExtractorRunnerMapDEFUNCT(): QueryRunnerMapForJzodSchemaDEFUNCT<DomainState> {
+//   return {
+//     extractJzodSchemaForDomainModelQuery: selectJzodSchemaByDomainModelQueryFromDomainStateNew,
+//     extractEntityJzodSchema: selectEntityJzodSchemaFromDomainStateNew,
+//     extractFetchQueryJzodSchema: selectFetchQueryJzodSchemaFromDomainStateNew,
+//     extractzodSchemaForSingleSelectQuery: selectJzodSchemaBySingleSelectQueryFromDomainStateNew,
+//   };
+// }

@@ -16987,42 +16987,6 @@ export const miroirFundamentalJzodSchema = {
           }
         }
       },
-      "queryByEntityUuidGetEntityDefinition": {
-        "type": "object",
-        "extend": {
-          "type": "schemaReference",
-          "definition": {
-            "eager": true,
-            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-            "relativePath": "shippingBox"
-          }
-        },
-        "definition": {
-          "queryType": {
-            "type": "literal",
-            "definition": "getEntityDefinition"
-          },
-          "application": {
-            "type": "uuid",
-            "tag": {
-              "value": {
-                "defaultLabel": "Application",
-                "editable": false
-              }
-            }
-          },
-          "entityUuid": {
-            "type": "uuid",
-            "tag": {
-              "value": {
-                "id": 1,
-                "defaultLabel": "Uuid",
-                "editable": false
-              }
-            }
-          }
-        }
-      },
       "queryByTemplateGetParamJzodSchema": {
         "type": "object",
         "extend": {
@@ -17137,13 +17101,6 @@ export const miroirFundamentalJzodSchema = {
             "type": "schemaReference",
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "queryByEntityUuidGetEntityDefinition"
-            }
-          },
-          {
-            "type": "schemaReference",
-            "definition": {
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
               "relativePath": "queryByTemplateGetParamJzodSchema"
             }
           },
@@ -17160,13 +17117,6 @@ export const miroirFundamentalJzodSchema = {
         "type": "union",
         "discriminator": "queryType",
         "definition": [
-          {
-            "type": "schemaReference",
-            "definition": {
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "queryByEntityUuidGetEntityDefinition"
-            }
-          },
           {
             "type": "schemaReference",
             "definition": {
@@ -17199,13 +17149,6 @@ export const miroirFundamentalJzodSchema = {
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
               "relativePath": "localCacheExtractor"
-            }
-          },
-          {
-            "type": "schemaReference",
-            "definition": {
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "queryByEntityUuidGetEntityDefinition"
             }
           },
           {
@@ -17247,13 +17190,6 @@ export const miroirFundamentalJzodSchema = {
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
               "relativePath": "localCacheExtractor"
-            }
-          },
-          {
-            "type": "schemaReference",
-            "definition": {
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "queryByEntityUuidGetEntityDefinition"
             }
           },
           {

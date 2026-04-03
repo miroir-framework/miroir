@@ -7,8 +7,8 @@ import { AgGridReact } from 'ag-grid-react';
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from 'react-router-dom';
 
-import 'ag-grid-community/styles/ag-grid.css';
-import 'ag-grid-community/styles/ag-theme-alpine.css';
+// import 'ag-grid-community/styles/ag-grid.css';
+// import 'ag-grid-community/styles/ag-theme-alpine.css';
 
 
 import {
@@ -838,6 +838,12 @@ export const EntityInstanceGrid = (props: TableComponentProps) => {
             useCodeBlock: true,
           },
           {
+            label: "instancesToDisplay",
+            data: props.instancesToDisplay,
+            copyButton: true,
+            useCodeBlock: true,
+          },
+          {
             label: "contextTheme",
             data: { contextTheme },
             copyButton: true,
@@ -849,6 +855,12 @@ export const EntityInstanceGrid = (props: TableComponentProps) => {
             copyButton: true,
             useCodeBlock: true,
           },
+          {
+            label: "tableComponentRows",
+            data: tableComponentRows,
+            copyButton: true,
+            useCodeBlock: true,
+          }
         ]}
       />
       {props.type == "EntityInstance" ? (

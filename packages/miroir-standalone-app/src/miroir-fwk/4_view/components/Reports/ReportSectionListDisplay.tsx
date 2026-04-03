@@ -752,6 +752,12 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
             useCodeBlock: true,
           },
           {
+            label: "instancesToDisplay",
+            data: instancesToDisplay,
+            useCodeBlock: true,
+            copyButton: true,
+          },
+          {
             label: "reportSectionDefinitionFromFormik",
             data: reportSectionDefinitionFromFormik,
             useCodeBlock: true,

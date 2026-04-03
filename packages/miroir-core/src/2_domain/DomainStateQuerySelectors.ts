@@ -13,7 +13,7 @@ import {
   EntityInstancesUuidIndex,
   ExtractorOrCombinerReturningObject,
   JzodObject,
-  QueryByEntityUuidGetEntityDefinition,
+  // QueryByEntityUuidGetEntityDefinition,
   QueryByTemplateGetParamJzodSchema,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { applyExtractorFilterAndOrderBy } from "./ExtractorByEntityReturningObjectListTools";
@@ -24,7 +24,7 @@ import {
 } from "../0_interfaces/2_domain/DomainElement";
 import {
   ExtractorRunnerParamsForJzodSchema,
-  QueryRunnerMapForJzodSchema,
+  // QueryRunnerMapForJzodSchemaDEFUNCT,
   SyncBoxedExtractorOrQueryRunnerMap,
   SyncBoxedExtractorRunner,
   SyncBoxedExtractorRunnerParams,
@@ -40,10 +40,10 @@ import { runQueryTemplateFromDomainState } from "./DomainStateQueryTemplateSelec
 import {
   extractEntityInstanceListWithObjectListExtractorInMemory,
   extractEntityInstanceUuidIndexWithObjectListExtractorInMemory,
-  extractFetchQueryJzodSchema,
-  extractJzodSchemaForDomainModelQuery,
+  // extractFetchQueryJzodSchema,
+  // extractJzodSchemaForDomainModelQuery,
   extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList,
-  extractzodSchemaForSingleSelectQuery,
+  // extractzodSchemaForSingleSelectQuery,
   innerSelectDomainElementFromExtractorOrCombiner,
   runQuery,
 } from "./QuerySelectors";
@@ -599,37 +599,39 @@ export const extractWithExtractorOrCombinerReturningObjectOrObjectListFromDomain
 // JZOD SCHEMAs selectors
 // ################################################################################################
 // ################################################################################################
-export const selectJzodSchemaBySingleSelectQueryFromDomainStateNew = extractzodSchemaForSingleSelectQuery<DomainState>;
+// export const selectJzodSchemaBySingleSelectQueryFromDomainStateNew = extractzodSchemaForSingleSelectQuery<DomainState>;
 
 // ################################################################################################
 // ACCESSES DOMAIN STATE
-export const selectEntityJzodSchemaFromDomainStateNew = (
-  domainState: DomainState,
-  applicationDeploymentMap: ApplicationDeploymentMap,
-  foreignKeyParams: ExtractorRunnerParamsForJzodSchema<QueryByEntityUuidGetEntityDefinition, DomainState>
-): JzodObject | undefined => {
-  const localQuery: QueryByEntityUuidGetEntityDefinition = foreignKeyParams.query;
-  const deploymentUuid = applicationDeploymentMap[localQuery.application]??"DEPLOYMENT_UUID_NOT_FOUND";
-  if (
-    domainState &&
-    domainState[deploymentUuid] &&
-    domainState[deploymentUuid]["model"] &&
-    domainState[deploymentUuid]["model"][entityEntityDefinition.uuid]
-  ) {
-    const values: EntityDefinition[] = Object.values(
-      domainState[deploymentUuid]["model"][entityEntityDefinition.uuid] ?? {}
-    ) as EntityDefinition[];
-    const index = values.findIndex((e: EntityDefinition) => e.entityUuid == localQuery.entityUuid);
+// export const selectEntityJzodSchemaFromDomainStateNew = (
+//   domainState: DomainState,
+//   applicationDeploymentMap: ApplicationDeploymentMap,
+//   // foreignKeyParams: ExtractorRunnerParamsForJzodSchema<QueryByEntityUuidGetEntityDefinition, DomainState>
+//   foreignKeyParams: ExtractorRunnerParamsForJzodSchema<any, DomainState>
+// ): JzodObject | undefined => {
+//   // const localQuery: QueryByEntityUuidGetEntityDefinition = foreignKeyParams.query;
+//   const localQuery: any = foreignKeyParams.query;
+//   const deploymentUuid = applicationDeploymentMap[localQuery.application]??"DEPLOYMENT_UUID_NOT_FOUND";
+//   if (
+//     domainState &&
+//     domainState[deploymentUuid] &&
+//     domainState[deploymentUuid]["model"] &&
+//     domainState[deploymentUuid]["model"][entityEntityDefinition.uuid]
+//   ) {
+//     const values: EntityDefinition[] = Object.values(
+//       domainState[deploymentUuid]["model"][entityEntityDefinition.uuid] ?? {}
+//     ) as EntityDefinition[];
+//     const index = values.findIndex((e: EntityDefinition) => e.entityUuid == localQuery.entityUuid);
 
-    const result: JzodObject | undefined = index > -1 ? values[index].mlSchema : undefined;
+//     const result: JzodObject | undefined = index > -1 ? values[index].mlSchema : undefined;
 
-    // log.info("DomainSelector selectEntityJzodSchemaFromDomainState result", result);
+//     // log.info("DomainSelector selectEntityJzodSchemaFromDomainState result", result);
 
-    return result;
-  } else {
-    return undefined;
-  }
-};
+//     return result;
+//   } else {
+//     return undefined;
+//   }
+// };
 
 // ################################################################################################
 /**
@@ -639,10 +641,10 @@ export const selectEntityJzodSchemaFromDomainStateNew = (
  * @param query
  * @returns
  */
-export const selectFetchQueryJzodSchemaFromDomainStateNew = extractFetchQueryJzodSchema<DomainState>;
+// export const selectFetchQueryJzodSchemaFromDomainStateNew = extractFetchQueryJzodSchema<DomainState>;
 
 // ################################################################################################
-export const selectJzodSchemaByDomainModelQueryFromDomainStateNew = extractJzodSchemaForDomainModelQuery<DomainState>;
+// export const selectJzodSchemaByDomainModelQueryFromDomainStateNew = extractJzodSchemaForDomainModelQuery<DomainState>;
 
 // ################################################################################################
 // ################################################################################################
@@ -671,14 +673,14 @@ export function getDomainStateExtractorRunnerMap(): SyncBoxedExtractorOrQueryRun
   };
 }
 
-export function getDomainStateJzodSchemaExtractorRunnerMap(): QueryRunnerMapForJzodSchema<DomainState> {
-  return {
-    extractJzodSchemaForDomainModelQuery: selectJzodSchemaByDomainModelQueryFromDomainStateNew,
-    extractEntityJzodSchema: selectEntityJzodSchemaFromDomainStateNew,
-    extractFetchQueryJzodSchema: selectFetchQueryJzodSchemaFromDomainStateNew,
-    extractzodSchemaForSingleSelectQuery: selectJzodSchemaBySingleSelectQueryFromDomainStateNew,
-  };
-}
+// export function getDomainStateJzodSchemaExtractorRunnerMapDEFUNCT(): QueryRunnerMapForJzodSchemaDEFUNCT<DomainState> {
+//   return {
+//     extractJzodSchemaForDomainModelQuery: selectJzodSchemaByDomainModelQueryFromDomainStateNew,
+//     extractEntityJzodSchema: selectEntityJzodSchemaFromDomainStateNew,
+//     extractFetchQueryJzodSchema: selectFetchQueryJzodSchemaFromDomainStateNew,
+//     extractzodSchemaForSingleSelectQuery: selectJzodSchemaBySingleSelectQueryFromDomainStateNew,
+//   };
+// }
 
 // ################################################################################################
 // export type GetExtractorRunnerParamsForDomainState = <ExtractorType extends MiroirQuery>(

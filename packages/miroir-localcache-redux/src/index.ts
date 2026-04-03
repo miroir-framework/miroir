@@ -57,10 +57,10 @@ export {
 } from "./4_services/localCache/localCacheReduxSliceInterface.js";
 export {
   getMemoizedReduxDeploymentsStateSelectorForTemplateMap,
-  getMemoizedReduxDeploymentsStateJzodSchemaSelectorTemplateMap,
+  // getMemoizedReduxDeploymentsStateJzodSchemaSelectorTemplateMap,
 } from "./4_services/localCache/DomainStateMemoizedSelectorsForTemplate.js";
 export {
-  getMemoizedReduxDeploymentsStateJzodSchemaSelectorMap,
+  // getMemoizedReduxDeploymentsStateJzodSchemaSelectorMapDEFUNCT,
   getMemoizedReduxDeploymentsStateSelectorMap
 } from "./4_services/localCache/DomainStateMemoizedSelectors.js";
 export {

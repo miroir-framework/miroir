@@ -19,7 +19,7 @@
       }
     },
     "combinerTemplates": {
-      "booksOfAuthor": {
+      "1_booksOfAuthor": {
         "extractorOrCombinerType": "combinerOneToMany",
         "parentName": "Book",
         "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
@@ -30,25 +30,25 @@
         },
         "AttributeOfListObjectToCompareToReferenceUuid": "author"
       },
-      "publishersOfBooks": {
+      "2_publishersOfBooks": {
         "extractorOrCombinerType": "combinerManyToMany",
         "parentName": "Publisher",
         "parentUuid": "a027c379-8468-43a5-ba4d-bf618be25cab",
         "objectListReference": {
           "transformerType": "getFromContext",
           "interpolation": "runtime",
-          "referenceName": "booksOfAuthor"
+          "referenceName": "1_booksOfAuthor"
         },
         "objectListReferenceAttribute": "publisher"
       },
-      "BooksOfPublishers": {
+      "3_BooksOfPublishers": {
         "extractorOrCombinerType": "combinerManyToMany",
         "parentName": "Book",
         "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
         "objectListReference": {
           "transformerType": "getFromContext",
           "interpolation": "runtime",
-          "referenceName": "publishersOfBooks"
+          "referenceName": "2_publishersOfBooks"
         },
         "AttributeOfRootListObjectToCompareToListReferenceUuid": "publisher"
       }
@@ -70,7 +70,7 @@
             "label": "Author's (${author.name}) Books",
             "parentName": "Book",
             "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
-            "fetchedDataReference": "booksOfAuthor",
+            "fetchedDataReference": "1_booksOfAuthor",
             "sortByAttribute": "name"
           }
         },
@@ -80,7 +80,7 @@
             "label": "Author's (${author.name}) Publishers",
             "parentName": "Publisher",
             "parentUuid": "a027c379-8468-43a5-ba4d-bf618be25cab",
-            "fetchedDataReference": "publishersOfBooks",
+            "fetchedDataReference": "2_publishersOfBooks",
             "sortByAttribute": "name"
           }
         },
@@ -90,7 +90,7 @@
             "label": "Author's (${author.name}) Publisher's Books",
             "parentName": "Book",
             "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
-            "fetchedDataReference": "BooksOfPublishers",
+            "fetchedDataReference": "3_BooksOfPublishers",
             "sortByAttribute": "name"
           }
         }

@@ -13,12 +13,12 @@ import {
   LoggerInterface,
   MiroirLoggerFactory,
   PersistenceStoreInstanceSectionAbstractInterface,
-  QueryTemplateRunnerMapForJzodSchema,
+  QueryTemplateRunnerMapForJzodSchemaDEFUNCT,
   RunBoxedQueryTemplateAction,
-  selectEntityJzodSchemaFromDomainStateNewForTemplate,
-  selectFetchQueryJzodSchemaFromDomainStateNewForTemplate,
-  selectJzodSchemaByDomainModelQueryFromDomainStateNewForTemplate,
-  selectJzodSchemaBySingleSelectQueryFromDomainStateNewForTemplate,
+  // selectEntityJzodSchemaFromDomainStateNewForTemplate,
+  // selectFetchQueryJzodSchemaFromDomainStateNewForTemplate,
+  // selectJzodSchemaByDomainModelQueryFromDomainStateNewForTemplate,
+  // selectJzodSchemaBySingleSelectQueryFromDomainStateNewForTemplate,
   type ApplicationDeploymentMap
 } from "miroir-core";
 import { packageName } from "../constants.js";
@@ -77,11 +77,11 @@ export class FileSystemExtractorTemplateRunner implements ExtractorTemplatePersi
 
 }
 
-export function getDomainStateJzodSchemaExtractorRunnerMap(): QueryTemplateRunnerMapForJzodSchema<DomainState> {
-  return {
-    extractJzodSchemaForDomainModelQuery: selectJzodSchemaByDomainModelQueryFromDomainStateNewForTemplate,
-    extractEntityJzodSchema: selectEntityJzodSchemaFromDomainStateNewForTemplate,
-    extractFetchQueryJzodSchema: selectFetchQueryJzodSchemaFromDomainStateNewForTemplate,
-    extractzodSchemaForSingleSelectQuery: selectJzodSchemaBySingleSelectQueryFromDomainStateNewForTemplate,
-  };
-}
+// export function getDomainStateJzodSchemaExtractorRunnerMapDEFUNCT(): QueryTemplateRunnerMapForJzodSchemaDEFUNCT<DomainState> {
+//   return {
+//     extractJzodSchemaForDomainModelQuery: selectJzodSchemaByDomainModelQueryFromDomainStateNewForTemplate,
+//     extractEntityJzodSchema: selectEntityJzodSchemaFromDomainStateNewForTemplate,
+//     extractFetchQueryJzodSchema: selectFetchQueryJzodSchemaFromDomainStateNewForTemplate,
+//     extractzodSchemaForSingleSelectQuery: selectJzodSchemaBySingleSelectQueryFromDomainStateNewForTemplate,
+//   };
+// }

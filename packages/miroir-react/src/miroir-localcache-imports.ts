@@ -58,9 +58,9 @@ selectCurrentReduxDeploymentsStateFromReduxState,
   
   // Memoized selector factories
   getMemoizedReduxDeploymentsStateSelectorMap,
-  getMemoizedReduxDeploymentsStateJzodSchemaSelectorMap,
+  // getMemoizedReduxDeploymentsStateJzodSchemaSelectorMapDEFUNCT,
   getMemoizedReduxDeploymentsStateSelectorForTemplateMap,
-  getMemoizedReduxDeploymentsStateJzodSchemaSelectorTemplateMap,
+  // getMemoizedReduxDeploymentsStateJzodSchemaSelectorTemplateMap,
 } from "miroir-localcache-redux";
 
 // // --- Zustand Implementation (alternative) ---
@@ -110,7 +110,5 @@ selectCurrentReduxDeploymentsStateFromReduxState,
   
 //   // Memoized selector factories
 //   getMemoizedReduxDeploymentsStateSelectorMap,
-//   getMemoizedReduxDeploymentsStateJzodSchemaSelectorMap,
 //   getMemoizedReduxDeploymentsStateSelectorForTemplateMap,
-//   getMemoizedReduxDeploymentsStateJzodSchemaSelectorTemplateMap,
 // } from "miroir-localcache-zustand";

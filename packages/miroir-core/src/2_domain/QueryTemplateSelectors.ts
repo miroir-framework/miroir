@@ -8,7 +8,7 @@ import {
   ExtractorOrCombinerTemplate,
   JzodElement,
   JzodObject,
-  QueryByEntityUuidGetEntityDefinition,
+  // QueryByEntityUuidGetEntityDefinition,
   QueryByQueryTemplateGetParamJzodSchema,
   QueryByTemplateGetParamJzodSchema,
   RunBoxedQueryTemplateAction
@@ -135,78 +135,78 @@ export const runQueryTemplateWithExtractorCombinerTransformer = <StateType>(
 // JZOD SCHEMAs selectors
 // ################################################################################################
 // ################################################################################################
-export const extractzodSchemaForSingleSelectQueryTemplate = <StateType>(
-  deploymentEntityState: StateType,
-  applicationDeploymentMap: ApplicationDeploymentMap,
-  foreignKeyParams: ExtractorTemplateRunnerParamsForJzodSchema<QueryByQueryTemplateGetParamJzodSchema, StateType>,
-  modelEnvironment: MiroirModelEnvironment
-): JzodObject | undefined => {
-  if (
-    foreignKeyParams.query.select.extractorOrCombinerType=="literal" ||
-    foreignKeyParams.query.select.extractorOrCombinerType=="extractorByExtractorWrapperReturningObject" ||
-    foreignKeyParams.query.select.extractorOrCombinerType=="extractorByExtractorWrapperReturningList" ||
-    foreignKeyParams.query.select.extractorOrCombinerType=="combinerByHeteronomousManyToMany"
-  ) {
-    throw new Error(
-      "extractzodSchemaForSingleSelectQuery can not deal with context reference: query=" +
-        JSON.stringify(foreignKeyParams.query, undefined, 2)
-    );
-  }
+// export const extractzodSchemaForSingleSelectQueryTemplate = <StateType>(
+//   deploymentEntityState: StateType,
+//   applicationDeploymentMap: ApplicationDeploymentMap,
+//   foreignKeyParams: ExtractorTemplateRunnerParamsForJzodSchema<QueryByQueryTemplateGetParamJzodSchema, StateType>,
+//   modelEnvironment: MiroirModelEnvironment
+// ): JzodObject | undefined => {
+//   if (
+//     foreignKeyParams.query.select.extractorOrCombinerType=="literal" ||
+//     foreignKeyParams.query.select.extractorOrCombinerType=="extractorByExtractorWrapperReturningObject" ||
+//     foreignKeyParams.query.select.extractorOrCombinerType=="extractorByExtractorWrapperReturningList" ||
+//     foreignKeyParams.query.select.extractorOrCombinerType=="combinerByHeteronomousManyToMany"
+//   ) {
+//     throw new Error(
+//       "extractzodSchemaForSingleSelectQuery can not deal with context reference: query=" +
+//         JSON.stringify(foreignKeyParams.query, undefined, 2)
+//     );
+//   }
 
-  const entityUuidDomainElement =
-    typeof foreignKeyParams.query.select.parentUuid == "string"
-      ? foreignKeyParams.query.select.parentUuid
-      // : transformer_InnerReference_resolve(
-      : transformer_extended_apply(
-          "build",
-          [], // transformerPath
-          foreignKeyParams.query.select.label??foreignKeyParams.query.select.extractorOrCombinerType,
-          foreignKeyParams.query.select.parentUuid,
-          "value",
-          // {...modelEnvironment, ...foreignKeyParams.query.queryParams},
-          modelEnvironment,
-          foreignKeyParams.query.queryParams ?? {},
-          foreignKeyParams.query.contextResults ?? {}
-        );
+//   const entityUuidDomainElement =
+//     typeof foreignKeyParams.query.select.parentUuid == "string"
+//       ? foreignKeyParams.query.select.parentUuid
+//       // : transformer_InnerReference_resolve(
+//       : transformer_extended_apply(
+//           "build",
+//           [], // transformerPath
+//           foreignKeyParams.query.select.label??foreignKeyParams.query.select.extractorOrCombinerType,
+//           foreignKeyParams.query.select.parentUuid,
+//           "value",
+//           // {...modelEnvironment, ...foreignKeyParams.query.queryParams},
+//           modelEnvironment,
+//           foreignKeyParams.query.queryParams ?? {},
+//           foreignKeyParams.query.contextResults ?? {}
+//         );
 
-  log.info(
-    "extractzodSchemaForSingleSelectQuery called",
-    foreignKeyParams.query,
-    "found",
-    entityUuidDomainElement
-  );
+//   log.info(
+//     "extractzodSchemaForSingleSelectQuery called",
+//     foreignKeyParams.query,
+//     "found",
+//     entityUuidDomainElement
+//   );
 
-  if (entityUuidDomainElement instanceof Domain2ElementFailed) {
-    log.error(
-      "extractzodSchemaForSingleSelectQuery called",
-      foreignKeyParams.query,
-      "error on resolving entityUuid",
-      entityUuidDomainElement
-    );
-    return undefined
-  }
+//   if (entityUuidDomainElement instanceof Domain2ElementFailed) {
+//     log.error(
+//       "extractzodSchemaForSingleSelectQuery called",
+//       foreignKeyParams.query,
+//       "error on resolving entityUuid",
+//       entityUuidDomainElement
+//     );
+//     return undefined
+//   }
 
-  const result = foreignKeyParams.extractorRunnerMap.extractEntityJzodSchema(
-    deploymentEntityState,
-    applicationDeploymentMap,
-    {
-      extractorRunnerMap: foreignKeyParams.extractorRunnerMap,
-      query: {
-        queryType: "getEntityDefinition",
-        // contextResults: {},
-        pageParams: foreignKeyParams.query.pageParams,
-        queryParams: foreignKeyParams.query.queryParams,
-        entityUuid: entityUuidDomainElement,
-      },
-    } as ExtractorTemplateRunnerParamsForJzodSchema<
-      QueryByEntityUuidGetEntityDefinition,
-      StateType
-    >,
-    modelEnvironment
-  ) as JzodObject | undefined;
+//   const result = foreignKeyParams.extractorRunnerMap.extractEntityJzodSchema(
+//     deploymentEntityState,
+//     applicationDeploymentMap,
+//     {
+//       extractorRunnerMap: foreignKeyParams.extractorRunnerMap,
+//       query: {
+//         queryType: "getEntityDefinitionDEFUNCT",
+//         // contextResults: {},
+//         pageParams: foreignKeyParams.query.pageParams,
+//         queryParams: foreignKeyParams.query.queryParams,
+//         entityUuid: entityUuidDomainElement,
+//       },
+//     } as ExtractorTemplateRunnerParamsForJzodSchema<
+//       QueryByEntityUuidGetEntityDefinition,
+//       StateType
+//     >,
+//     modelEnvironment
+//   ) as JzodObject | undefined;
 
-  return result;
-}
+//   return result;
+// }
 
 
 // ################################################################################################
@@ -217,22 +217,23 @@ export const extractJzodSchemaForDomainModelQueryTemplate = <StateType>(
   modelEnvironment: MiroirModelEnvironment
 ): RecordOfJzodElement | JzodElement | undefined => {
   switch (foreignKeyParams.query.queryType) {
-    case "getEntityDefinition":{ 
-      return foreignKeyParams.extractorRunnerMap.extractEntityJzodSchema(
-        deploymentEntityState,
-        applicationDeploymentMap,
-        foreignKeyParams as ExtractorTemplateRunnerParamsForJzodSchema<QueryByEntityUuidGetEntityDefinition, StateType>,
-        modelEnvironment
-      );
-      break;
-    }
+    // case "getEntityDefinitionDEFUNCT":{ 
+    //   return foreignKeyParams.extractorRunnerMap.extractEntityJzodSchema(
+    //     deploymentEntityState,
+    //     applicationDeploymentMap,
+    //     foreignKeyParams as ExtractorTemplateRunnerParamsForJzodSchema<QueryByEntityUuidGetEntityDefinition, StateType>,
+    //     modelEnvironment
+    //   );
+    //   break;
+    // }
     case "queryByTemplateGetParamJzodSchema": {
-      return foreignKeyParams.extractorRunnerMap.extractFetchQueryJzodSchema(
-        deploymentEntityState,
-        applicationDeploymentMap,
-        foreignKeyParams as ExtractorTemplateRunnerParamsForJzodSchema<QueryByTemplateGetParamJzodSchema, StateType>,
-        modelEnvironment
-      );
+      throw new Error("extractJzodSchemaForDomainModelQuery can not deal with queryByTemplateGetParamJzodSchema")
+      // return foreignKeyParams.extractorRunnerMap.extractFetchQueryJzodSchema(
+      //   deploymentEntityState,
+      //   applicationDeploymentMap,
+      //   foreignKeyParams as ExtractorTemplateRunnerParamsForJzodSchema<QueryByTemplateGetParamJzodSchema, StateType>,
+      //   modelEnvironment
+      // );
       break;
     }
     case "getQueryJzodSchema": {

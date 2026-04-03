@@ -7,16 +7,16 @@ import {
   asyncExtractWithExtractor,
   asyncRunQuery,
   defaultMetaModelEnvironment,
-  DomainState,
+  // DomainState,
   handleQueryTemplateAction,
   LoggerInterface,
   MiroirLoggerFactory,
-  QueryTemplateRunnerMapForJzodSchema,
+  // QueryTemplateRunnerMapForJzodSchemaDEFUNCT,
   RunBoxedQueryTemplateAction,
-  selectEntityJzodSchemaFromDomainStateNewForTemplate,
-  selectFetchQueryJzodSchemaFromDomainStateNewForTemplate,
-  selectJzodSchemaByDomainModelQueryFromDomainStateNewForTemplate,
-  selectJzodSchemaBySingleSelectQueryFromDomainStateNewForTemplate,
+  // selectEntityJzodSchemaFromDomainStateNewForTemplate,
+  // selectFetchQueryJzodSchemaFromDomainStateNewForTemplate,
+  // selectJzodSchemaByDomainModelQueryFromDomainStateNewForTemplate,
+  // selectJzodSchemaBySingleSelectQueryFromDomainStateNewForTemplate,
   type ApplicationDeploymentMap
 } from "miroir-core";
 import { packageName } from "../constants";
@@ -116,11 +116,11 @@ export class SqlDbExtractTemplateRunner {
 
 }
 
-export function getDomainStateJzodSchemaExtractorRunnerMap(): QueryTemplateRunnerMapForJzodSchema<DomainState> {
-  return {
-    extractJzodSchemaForDomainModelQuery: selectJzodSchemaByDomainModelQueryFromDomainStateNewForTemplate,
-    extractEntityJzodSchema: selectEntityJzodSchemaFromDomainStateNewForTemplate,
-    extractFetchQueryJzodSchema: selectFetchQueryJzodSchemaFromDomainStateNewForTemplate,
-    extractzodSchemaForSingleSelectQuery: selectJzodSchemaBySingleSelectQueryFromDomainStateNewForTemplate,
-  };
-}
+// export function getDomainStateJzodSchemaExtractorRunnerMapDEFUNCT(): QueryTemplateRunnerMapForJzodSchemaDEFUNCT<DomainState> {
+//   return {
+//     extractJzodSchemaForDomainModelQuery: selectJzodSchemaByDomainModelQueryFromDomainStateNewForTemplate,
+//     extractEntityJzodSchema: selectEntityJzodSchemaFromDomainStateNewForTemplate,
+//     extractFetchQueryJzodSchema: selectFetchQueryJzodSchemaFromDomainStateNewForTemplate,
+//     extractzodSchemaForSingleSelectQuery: selectJzodSchemaBySingleSelectQueryFromDomainStateNewForTemplate,
+//   };
+// }

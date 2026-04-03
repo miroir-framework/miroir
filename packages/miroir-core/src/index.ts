@@ -262,8 +262,9 @@ export {
   RunnerReportSection,
   runnerReportSection,
   PersistenceAction, Query,
-  query, QueryByEntityUuidGetEntityDefinition,
-  queryByEntityUuidGetEntityDefinition,
+  query,
+  // QueryByEntityUuidGetEntityDefinition,
+  // queryByEntityUuidGetEntityDefinition,
   QueryByQuery2GetParamJzodSchema,
   queryByQuery2GetParamJzodSchema,
   QueryByQueryGetParamJzodSchema,
@@ -537,8 +538,8 @@ export {
   ExtractorTemplateRunnerParamsForJzodSchema,
   JzodSchemaQuerySelector,
   JzodSchemaQueryTemplateSelector,
-  QueryRunnerMapForJzodSchema,
-  QueryTemplateRunnerMapForJzodSchema,
+  QueryRunnerMapForJzodSchemaDEFUNCT,
+  QueryTemplateRunnerMapForJzodSchemaDEFUNCT,
   SyncBoxedExtractorOrQueryRunnerMap,
   SyncBoxedExtractorRunner,
   SyncBoxedExtractorRunnerParams,
@@ -764,7 +765,7 @@ export {
   extractEntityInstanceUuidIndexFromListQueryAndDomainState,
   extractWithExtractorOrCombinerReturningObjectOrObjectListFromDomainState,
   getDomainStateExtractorRunnerMap,
-  getDomainStateJzodSchemaExtractorRunnerMap,
+  // getDomainStateJzodSchemaExtractorRunnerMapDEFUNCT,
   getExtractorRunnerParamsForDomainState,
   GetExtractorRunnerParamsForDomainState,
   GetQueryRunnerParamsForDomainState,
@@ -774,10 +775,10 @@ export {
   selectEntityInstanceFromObjectQueryAndDomainState,
   selectEntityInstanceListFromDomainState,
   selectEntityInstanceUuidIndexFromDomainState,
-  selectEntityJzodSchemaFromDomainStateNew,
-  selectFetchQueryJzodSchemaFromDomainStateNew,
-  selectJzodSchemaByDomainModelQueryFromDomainStateNew,
-  selectJzodSchemaBySingleSelectQueryFromDomainStateNew
+  // selectEntityJzodSchemaFromDomainStateNew,
+  // selectFetchQueryJzodSchemaFromDomainStateNew,
+  // selectJzodSchemaByDomainModelQueryFromDomainStateNew,
+  // selectJzodSchemaBySingleSelectQueryFromDomainStateNew
 } from "./2_domain/DomainStateQuerySelectors.js";
 export {
   getQueryTemplateRunnerParamsForDomainState,
@@ -786,10 +787,10 @@ export {
   QueryTemplateRunnerForDomainState,
   queryTemplateRunnerForDomainState,
   runQueryTemplateFromDomainState,
-  selectEntityJzodSchemaFromDomainStateNewForTemplate,
-  selectFetchQueryJzodSchemaFromDomainStateNewForTemplate,
-  selectJzodSchemaByDomainModelQueryFromDomainStateNewForTemplate,
-  selectJzodSchemaBySingleSelectQueryFromDomainStateNewForTemplate
+  // selectEntityJzodSchemaFromDomainStateNewForTemplate,
+  // selectFetchQueryJzodSchemaFromDomainStateNewForTemplate,
+  // selectJzodSchemaByDomainModelQueryFromDomainStateNewForTemplate,
+  // selectJzodSchemaBySingleSelectQueryFromDomainStateNewForTemplate
 } from "./2_domain/DomainStateQueryTemplateSelector.js";
 export { ExtractorRunnerInMemory } from "./2_domain/ExtractorRunnerInMemory.js";
 export { ExtractorTemplateRunnerInMemory } from "./2_domain/ExtractorTemplateRunnerInMemory.js";
@@ -798,16 +799,16 @@ export {
   domainElementToPlainObjectDEFUNCT,
   extractEntityInstanceListWithObjectListExtractorInMemory,
   extractEntityInstanceUuidIndexWithObjectListExtractorInMemory,
-  extractFetchQueryJzodSchema,
-  extractJzodSchemaForDomainModelQuery,
+  // extractFetchQueryJzodSchema,
+  // extractJzodSchemaForDomainModelQuery,
   extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList,
-  extractzodSchemaForSingleSelectQuery,
+  // extractzodSchemaForSingleSelectQuery,
   plainObjectToDomainElementDEFUNCT,
   runQuery
 } from "./2_domain/QuerySelectors.js";
 export {
-  extractFetchQueryTemplateJzodSchema,
-  extractJzodSchemaForDomainModelQueryTemplate,
+  // extractFetchQueryTemplateJzodSchema,
+  // extractJzodSchemaForDomainModelQueryTemplate,
   handleQueryTemplateAction,
   runQueryTemplateWithExtractorCombinerTransformer
 } from "./2_domain/QueryTemplateSelectors.js";
@@ -825,19 +826,24 @@ export {
   getMultipleEntityInstancesIndexNonHook as getMultipleEntityInstancesUuidIndexNonHook, // backward compat
 } from "./2_domain/ReduxDeploymentsStateQueryExecutor.js";
 export {
-  extractEntityJzodSchemaFromReduxDeploymentsState, GetExtractorRunnerParamsForReduxDeploymentsState,
+  // extractEntityJzodSchemaFromReduxDeploymentsState,
+  GetExtractorRunnerParamsForReduxDeploymentsState,
   getExtractorRunnerParamsForReduxDeploymentsState,
   GetQueryRunnerParamsForReduxDeploymentsState,
-  getQueryRunnerParamsForReduxDeploymentsState, getReduxDeploymentsStateJzodSchemaSelectorMap,
-  getReduxDeploymentsStateSelectorMap, runQueryFromReduxDeploymentsState,
+  getQueryRunnerParamsForReduxDeploymentsState,
+  // getReduxDeploymentsStateJzodSchemaSelectorMap,
+  getReduxDeploymentsStateSelectorMap,
+  runQueryFromReduxDeploymentsState,
   selectEntityInstanceFromReduxDeploymentsState,
   selectEntityInstanceListFromReduxDeploymentsState,
   selectEntityInstanceUuidIndexFromReduxDeploymentsState
 } from "./2_domain/ReduxDeploymentsStateQuerySelectors.js";
 export {
   getQueryTemplateRunnerParamsForReduxDeploymentsState,
-  GetQueryTemplateRunnerParamsForReduxDeploymentsState, getReduxDeploymentsStateJzodSchemaSelectorTemplateMap,
-  getReduxDeploymentsStateSelectorTemplateMap, runQueryTemplateFromReduxDeploymentsState
+  GetQueryTemplateRunnerParamsForReduxDeploymentsState,
+  // getReduxDeploymentsStateJzodSchemaSelectorTemplateMap,
+  getReduxDeploymentsStateSelectorTemplateMap,
+  runQueryTemplateFromReduxDeploymentsState,
 } from "./2_domain/ReduxDeploymentsStateQueryTemplateSelectors.js";
 export {
   resolveExtractorOrQueryTemplate,

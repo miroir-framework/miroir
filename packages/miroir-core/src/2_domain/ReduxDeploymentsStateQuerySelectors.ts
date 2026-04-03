@@ -9,14 +9,14 @@ import {
   EntityInstancesUuidIndex,
   ExtractorOrCombinerReturningObject,
   JzodObject,
-  QueryByEntityUuidGetEntityDefinition,
+  // QueryByEntityUuidGetEntityDefinition,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { applyExtractorFilterAndOrderBy } from "./ExtractorByEntityReturningObjectListTools";
 import { ReduxDeploymentsState } from "../0_interfaces/2_domain/ReduxDeploymentsStateInterface";
 import { Domain2ElementFailed, Domain2QueryReturnType, TransformerFailure } from "../0_interfaces/2_domain/DomainElement";
 import {
   ExtractorRunnerParamsForJzodSchema,
-  QueryRunnerMapForJzodSchema,
+  // QueryRunnerMapForJzodSchemaDEFUNCT,
   SyncBoxedExtractorOrQueryRunnerMap,
   SyncBoxedExtractorRunner,
   SyncBoxedExtractorRunnerParams,
@@ -32,10 +32,10 @@ import { getReduxDeploymentsStateIndex } from "./ReduxDeploymentsState";
 import {
   extractEntityInstanceListWithObjectListExtractorInMemory,
   extractEntityInstanceUuidIndexWithObjectListExtractorInMemory,
-  extractFetchQueryJzodSchema,
-  extractJzodSchemaForDomainModelQuery,
+  // extractFetchQueryJzodSchema,
+  // extractJzodSchemaForDomainModelQuery,
   extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList,
-  extractzodSchemaForSingleSelectQuery,
+  // extractzodSchemaForSingleSelectQuery,
   runQuery
 } from "./QuerySelectors";
 import {
@@ -414,69 +414,69 @@ export const selectEntityInstanceListFromReduxDeploymentsState: SyncBoxedExtract
 // ################################################################################################
 // ################################################################################################
 // ACCESSES deploymentEntityState
-export const extractEntityJzodSchemaFromReduxDeploymentsState = (
-  deploymentEntityState: ReduxDeploymentsState,
-  applicationDeploymentMap: ApplicationDeploymentMap,
-  foreignKeyParams: ExtractorRunnerParamsForJzodSchema<QueryByEntityUuidGetEntityDefinition, ReduxDeploymentsState>
-): JzodObject | undefined => {
-  const localQuery: QueryByEntityUuidGetEntityDefinition = foreignKeyParams.query;
-  const deploymentUuid =
-    applicationDeploymentMap[localQuery.application] ?? "DEPLOYMENT_UUID_NOT_FOUND";
+// export const extractEntityJzodSchemaFromReduxDeploymentsState = (
+//   deploymentEntityState: ReduxDeploymentsState,
+//   applicationDeploymentMap: ApplicationDeploymentMap,
+//   foreignKeyParams: ExtractorRunnerParamsForJzodSchema<QueryByEntityUuidGetEntityDefinition, ReduxDeploymentsState>
+// ): JzodObject | undefined => {
+//   const localQuery: QueryByEntityUuidGetEntityDefinition = foreignKeyParams.query;
+//   const deploymentUuid =
+//     applicationDeploymentMap[localQuery.application] ?? "DEPLOYMENT_UUID_NOT_FOUND";
 
-  const deploymentEntityStateIndex = getReduxDeploymentsStateIndex(
-    deploymentUuid,
-    "model",
-    entityEntityDefinition.uuid
-  );
+//   const deploymentEntityStateIndex = getReduxDeploymentsStateIndex(
+//     deploymentUuid,
+//     "model",
+//     entityEntityDefinition.uuid
+//   );
 
-  // log.info("extractEntityJzodSchemaFromReduxDeploymentsState called with foreignKeyParams", foreignKeyParams);
+//   // log.info("extractEntityJzodSchemaFromReduxDeploymentsState called with foreignKeyParams", foreignKeyParams);
 
-  if (
-    deploymentEntityState &&
-    deploymentEntityState[deploymentEntityStateIndex] &&
-    deploymentEntityState[deploymentEntityStateIndex].entities
-    // deploymentEntityState[deploymentEntityStateIndex].entities[entityEntityDefinition.uuid]
-    // deploymentEntityState[deploymentEntityStateIndex].entities[foreignKeyParams.query.entityUuid]
-  ) {
-    const entityDefinition: EntityDefinition | undefined = Object.values(
-      deploymentEntityState[deploymentEntityStateIndex].entities as Record<string, EntityDefinition>
-    ).find((e: EntityDefinition) => e.entityUuid == foreignKeyParams.query.entityUuid);
-    if (!entityDefinition) {
-      log.warn(
-        "extractEntityJzodSchemaFromReduxDeploymentsState foreignKeyParams",
-        foreignKeyParams,
-        "could not find entity definition for index",
-        deploymentEntityStateIndex,
-        "in state",
-        deploymentEntityState,
-        "for entity",
-        foreignKeyParams.query.entityUuid,
-        "in deployment",
-        deploymentUuid
-      );
-      return undefined;
-    }
-    const result: JzodObject = entityDefinition.mlSchema;
+//   if (
+//     deploymentEntityState &&
+//     deploymentEntityState[deploymentEntityStateIndex] &&
+//     deploymentEntityState[deploymentEntityStateIndex].entities
+//     // deploymentEntityState[deploymentEntityStateIndex].entities[entityEntityDefinition.uuid]
+//     // deploymentEntityState[deploymentEntityStateIndex].entities[foreignKeyParams.query.entityUuid]
+//   ) {
+//     const entityDefinition: EntityDefinition | undefined = Object.values(
+//       deploymentEntityState[deploymentEntityStateIndex].entities as Record<string, EntityDefinition>
+//     ).find((e: EntityDefinition) => e.entityUuid == foreignKeyParams.query.entityUuid);
+//     if (!entityDefinition) {
+//       log.warn(
+//         "extractEntityJzodSchemaFromReduxDeploymentsState foreignKeyParams",
+//         foreignKeyParams,
+//         "could not find entity definition for index",
+//         deploymentEntityStateIndex,
+//         "in state",
+//         deploymentEntityState,
+//         "for entity",
+//         foreignKeyParams.query.entityUuid,
+//         "in deployment",
+//         deploymentUuid
+//       );
+//       return undefined;
+//     }
+//     const result: JzodObject = entityDefinition.mlSchema;
 
-    // log.info("extractEntityJzodSchemaFromReduxDeploymentsState foreignKeyParams", foreignKeyParams, "result", result);
+//     // log.info("extractEntityJzodSchemaFromReduxDeploymentsState foreignKeyParams", foreignKeyParams, "result", result);
 
-    return result;
-  } else {
-    log.warn(
-      "extractEntityJzodSchemaFromReduxDeploymentsState foreignKeyParams",
-      foreignKeyParams,
-      "could not find index",
-      deploymentEntityStateIndex,
-      "in state",
-      deploymentEntityState,
-      "for entity",
-      foreignKeyParams.query.entityUuid,
-      "in deployment",
-      deploymentUuid
-    );
-    return undefined;
-  }
-};
+//     return result;
+//   } else {
+//     log.warn(
+//       "extractEntityJzodSchemaFromReduxDeploymentsState foreignKeyParams",
+//       foreignKeyParams,
+//       "could not find index",
+//       deploymentEntityStateIndex,
+//       "in state",
+//       deploymentEntityState,
+//       "for entity",
+//       foreignKeyParams.query.entityUuid,
+//       "in deployment",
+//       deploymentUuid
+//     );
+//     return undefined;
+//   }
+// };
 
 // ################################################################################################
 // ################################################################################################
@@ -505,15 +505,15 @@ export function getReduxDeploymentsStateSelectorMap(): SyncBoxedExtractorOrQuery
   };
 }
 
-// ################################################################################################
-export function getReduxDeploymentsStateJzodSchemaSelectorMap(): QueryRunnerMapForJzodSchema<ReduxDeploymentsState> {
-  return {
-    extractJzodSchemaForDomainModelQuery: extractJzodSchemaForDomainModelQuery,
-    extractEntityJzodSchema: extractEntityJzodSchemaFromReduxDeploymentsState,
-    extractFetchQueryJzodSchema: extractFetchQueryJzodSchema,
-    extractzodSchemaForSingleSelectQuery: extractzodSchemaForSingleSelectQuery,
-  };
-}
+// // ################################################################################################
+// export function getReduxDeploymentsStateJzodSchemaSelectorMap(): QueryRunnerMapForJzodSchemaDEFUNCT<ReduxDeploymentsState> {
+//   return {
+//     extractJzodSchemaForDomainModelQuery: extractJzodSchemaForDomainModelQuery,
+//     extractEntityJzodSchema: extractEntityJzodSchemaFromReduxDeploymentsState,
+//     extractFetchQueryJzodSchema: extractFetchQueryJzodSchema,
+//     extractzodSchemaForSingleSelectQuery: extractzodSchemaForSingleSelectQuery,
+//   };
+// }
 
 // ################################################################################################
 export type GetExtractorRunnerParamsForReduxDeploymentsState = <QueryType extends BoxedExtractorOrCombinerReturningObjectOrObjectList>(
