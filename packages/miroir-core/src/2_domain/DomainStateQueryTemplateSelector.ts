@@ -1,12 +1,8 @@
 // ################################################################################################
 
 import {
-  BoxedQueryTemplateWithExtractorCombinerTransformer,
-  EntityDefinition,
-  JzodObject,
-  // QueryByEntityUuidGetEntityDefinition
+  BoxedQueryTemplateWithExtractorCombinerTransformer
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
-import { entityEntityDefinition } from "miroir-test-app_deployment-miroir";
 
 import { DomainState } from "../0_interfaces/2_domain/DomainControllerInterface";
 import { Domain2QueryReturnType } from "../0_interfaces/2_domain/DomainElement";
@@ -16,7 +12,6 @@ import {
   SyncQueryTemplateRunnerParams
 } from "../0_interfaces/2_domain/ExtractorRunnerInterface";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
-import type { ApplicationDeploymentMap } from "../1_core/Deployment";
 import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory";
 import { packageName } from "../constants";
 import { cleanLevel } from "./constants";

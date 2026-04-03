@@ -263,8 +263,6 @@ export {
   runnerReportSection,
   PersistenceAction, Query,
   query,
-  // QueryByEntityUuidGetEntityDefinition,
-  // queryByEntityUuidGetEntityDefinition,
   QueryByQuery2GetParamJzodSchema,
   queryByQuery2GetParamJzodSchema,
   QueryByQueryGetParamJzodSchema,
