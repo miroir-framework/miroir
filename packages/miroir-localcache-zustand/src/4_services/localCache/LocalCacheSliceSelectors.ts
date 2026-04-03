@@ -4,10 +4,8 @@
 //#########################################################################################
 import { createSelector } from "@reduxjs/toolkit";
 import {
-  ReduxDeploymentsState,
-  DomainElementSuccess,
-  DomainModelQueryTemplateJzodSchemaParams,
   Domain2QueryReturnType,
+  DomainElementSuccess,
   DomainState,
   EntityInstance,
   EntityInstancesUuidIndex,
@@ -15,16 +13,16 @@ import {
   LoggerInterface,
   MiroirLoggerFactory,
   MiroirQueryTemplate,
-  QueryJzodSchemaParams,
+  ReduxDeploymentsState,
   SyncQueryRunner,
   SyncQueryRunnerExtractorAndParams,
   SyncQueryTemplateRunner,
   SyncQueryTemplateRunnerParams,
   type ApplicationDeploymentMap,
-  type MiroirModelEnvironment,
+  type MiroirModelEnvironment
 } from "miroir-core";
 import { localCacheStateToDomainState } from "./LocalCacheSlice.js";
-import { ZustandStateWithUndoRedo, LocalCacheSliceState } from "./localCacheZustandInterface.js";
+import { LocalCacheSliceState, ZustandStateWithUndoRedo } from "./localCacheZustandInterface.js";
 
 const packageName = "miroir-localcache-zustand";
 const cleanLevel = "4_services";

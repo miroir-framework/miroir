@@ -2,46 +2,43 @@ import { createSelector } from "@reduxjs/toolkit";
 import {
   ApplicationSection,
   ApplicationVersion,
-  ReduxDeploymentsState,
   EntityDefinition,
   EntityInstancesUuidIndex,
-  MlSchema,
   LoggerInterface,
   Menu,
-  MetaEntity,
   MetaModel,
   MiroirLoggerFactory,
   MiroirQueryTemplate,
+  MlSchema,
+  ReduxDeploymentsState,
   Report,
   Uuid,
+  entityEndpointVersion,
   entityEntity,
   entityEntityDefinition,
   entityJzodSchema,
   entityMenu,
+  entityQueryVersion,
   entityReport,
+  entityRunner,
   entitySelfApplicationVersion,
   entityStoreBasedConfiguration,
-  entityQueryVersion,
-  type Query,
-  entityEndpointVersion,
-  type EndpointDefinition,
-  type ApplicationDeploymentMap,
-  selfApplicationMiroir,
   getReduxDeploymentsStateIndex,
-  type Deployment,
-  entityRunner,
-  type Runner,
-  type StoredMiroirTheme,
+  selfApplicationMiroir,
+  type ApplicationDeploymentMap,
+  type EndpointDefinition,
   type Entity,
+  type Query,
+  type Runner,
   type SelfApplication,
+  type StoredMiroirTheme
 } from "miroir-core";
+import { entitySelfApplication, entityTheme } from "miroir-test-app_deployment-miroir";
 import {
   selectCurrentReduxDeploymentsStateFromReduxState,
   selectMiroirSelectorQueryParams,
 } from "./LocalCacheSliceSelectors.js";
 import { ZustandStateWithUndoRedo } from "./localCacheZustandInterface.js";
-import { adminSelfApplication, entityDeployment } from "miroir-test-app_deployment-admin";
-import { entitySelfApplication, entityTheme } from "miroir-test-app_deployment-miroir";
 
 const packageName = "miroir-localcache-zustand";
 const cleanLevel = "4_services";

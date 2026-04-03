@@ -2255,59 +2255,6 @@ export function getMiroirFundamentalJzodSchema(
           },
         },
         // MlSchema queries  ##############################################################
-        queryByTemplateGetParamJzodSchema: {
-          type: "object",
-          extend: {
-            type: "schemaReference",
-            definition: {
-              eager: true,
-              absolutePath: miroirFundamentalJzodSchemaUuid,
-              relativePath: "shippingBox",
-            },
-          },
-          definition: {
-            queryType: {
-              type: "literal",
-              tag: {
-                value: {
-                  canBeTemplate: false,
-                },
-              },
-              definition: "queryByTemplateGetParamJzodSchema",
-            },
-            fetchParams: {
-              type: "schemaReference",
-              definition: {
-                absolutePath: miroirFundamentalJzodSchemaUuid,
-                relativePath: "boxedQueryTemplateWithExtractorCombinerTransformer",
-              },
-            },
-          },
-        },
-        queryByQuery2GetParamJzodSchema: {
-          type: "object",
-          extend: {
-            type: "schemaReference",
-            definition: {
-              eager: true,
-              absolutePath: miroirFundamentalJzodSchemaUuid,
-              relativePath: "shippingBox",
-            },
-          },
-          definition: {
-            queryType: {
-              type: "literal",
-              definition: "queryByTemplateGetParamJzodSchema", // TODO: CORRECT!!!
-            },
-            fetchParams: {
-              type: "schemaReference",
-              definition: {
-                absolutePath: miroirFundamentalJzodSchemaUuid,
-                relativePath: "boxedQueryWithExtractorCombinerTransformer",
-              },
-            },
-          },
-        },
         queryByQueryTemplateGetParamJzodSchema: {
           type: "object",
           extend: {
@@ -2361,47 +2308,6 @@ export function getMiroirFundamentalJzodSchema(
             },
           },
         },
-        // TODO: THIS IS DUPLICATED BELOW!!!!
-        domainModelQueryTemplateJzodSchemaParams: {
-          type: "union",
-          discriminator: "queryType",
-          definition: [
-            {
-              type: "schemaReference",
-              definition: {
-                absolutePath: miroirFundamentalJzodSchemaUuid,
-                relativePath: "queryByTemplateGetParamJzodSchema",
-              },
-            },
-            {
-              type: "schemaReference",
-              definition: {
-                absolutePath: miroirFundamentalJzodSchemaUuid,
-                relativePath: "queryByQueryTemplateGetParamJzodSchema",
-              },
-            },
-          ],
-        },
-        queryJzodSchemaParams: {
-          type: "union",
-          discriminator: "queryType",
-          definition: [
-            {
-              type: "schemaReference",
-              definition: {
-                absolutePath: miroirFundamentalJzodSchemaUuid,
-                relativePath: "queryByQuery2GetParamJzodSchema",
-              },
-            },
-            {
-              type: "schemaReference",
-              definition: {
-                absolutePath: miroirFundamentalJzodSchemaUuid,
-                relativePath: "queryByQueryGetParamJzodSchema",
-              },
-            },
-          ],
-        },
         miroirQueryTemplate: {
           type: "union",
           discriminator: "queryType",
@@ -2418,33 +2324,6 @@ export function getMiroirFundamentalJzodSchema(
               definition: {
                 absolutePath: miroirFundamentalJzodSchemaUuid,
                 relativePath: "localCacheExtractor",
-              },
-            },
-            // ##############################
-            // domainModelQueryTemplateJzodSchemaParams reference yields to issue when producing TS types
-            // {
-            //   "type": "schemaReference",
-            //   "definition": {
-            //     "absolutePath": miroirFundamentalJzodSchemaUuid,
-            //     "relativePath": "domainModelQueryTemplateJzodSchemaParams"
-            //   }
-            // }
-            // DUPLICATED BELOW
-            //   |
-            //   |
-            //   v
-            {
-              type: "schemaReference",
-              definition: {
-                absolutePath: miroirFundamentalJzodSchemaUuid,
-                relativePath: "queryByTemplateGetParamJzodSchema",
-              },
-            },
-            {
-              type: "schemaReference",
-              definition: {
-                absolutePath: miroirFundamentalJzodSchemaUuid,
-                relativePath: "queryByQueryTemplateGetParamJzodSchema",
               },
             },
           ],
@@ -2472,33 +2351,6 @@ export function getMiroirFundamentalJzodSchema(
               definition: {
                 absolutePath: miroirFundamentalJzodSchemaUuid,
                 relativePath: "localCacheExtractor",
-              },
-            },
-            // ##############################
-            // domainModelQueryTemplateJzodSchemaParams reference yields to issue when producing TS types
-            // {
-            //   "type": "schemaReference",
-            //   "definition": {
-            //     "absolutePath": miroirFundamentalJzodSchemaUuid,
-            //     "relativePath": "domainModelQueryTemplateJzodSchemaParams"
-            //   }
-            // }
-            // DUPLICATED BELOW
-            //   |
-            //   |
-            //   v
-            {
-              type: "schemaReference",
-              definition: {
-                absolutePath: miroirFundamentalJzodSchemaUuid,
-                relativePath: "queryByQuery2GetParamJzodSchema",
-              },
-            },
-            {
-              type: "schemaReference",
-              definition: {
-                absolutePath: miroirFundamentalJzodSchemaUuid,
-                relativePath: "queryByQueryGetParamJzodSchema",
               },
             },
           ],

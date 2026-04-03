@@ -13,8 +13,7 @@ import {
   EntityDefinition,
   EntityInstance,
   EntityInstancesUuidIndex,
-  ExtractorOrCombinerReturningObject,
-  QueryByTemplateGetParamJzodSchema
+  ExtractorOrCombinerReturningObject
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { type MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
 import {
@@ -75,26 +74,6 @@ export const dummyDomainManyQueryTemplateWithDeploymentUuid: BoxedQueryTemplateW
   runtimeTransformers: {},
 };
 
-export const dummyDomainModelGetFetchParamJzodSchemaQueryParams: QueryByTemplateGetParamJzodSchema = {
-  queryType: "queryByTemplateGetParamJzodSchema",
-  application: "",
-  pageParams: {
-    applicationSection: defaultApplicationSection,
-    deploymentUuid: "" ,
-    instanceUuid: "" ,
-  },
-  // queryParams: {},
-  // contextResults: {},
-  fetchParams: {
-    queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
-    application: "",
-    // pageParams: {},
-    // queryParams: {},
-    // contextResults: {},
-    extractorTemplates: {},
-    runtimeTransformers: {},
-  },
-};
 
 // ################################################################################################
 // ACCESSES DOMAIN STATE

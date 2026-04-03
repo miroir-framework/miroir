@@ -16987,59 +16987,6 @@ export const miroirFundamentalJzodSchema = {
           }
         }
       },
-      "queryByTemplateGetParamJzodSchema": {
-        "type": "object",
-        "extend": {
-          "type": "schemaReference",
-          "definition": {
-            "eager": true,
-            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-            "relativePath": "shippingBox"
-          }
-        },
-        "definition": {
-          "queryType": {
-            "type": "literal",
-            "tag": {
-              "value": {
-                "canBeTemplate": false
-              }
-            },
-            "definition": "queryByTemplateGetParamJzodSchema"
-          },
-          "fetchParams": {
-            "type": "schemaReference",
-            "definition": {
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "boxedQueryTemplateWithExtractorCombinerTransformer"
-            }
-          }
-        }
-      },
-      "queryByQuery2GetParamJzodSchema": {
-        "type": "object",
-        "extend": {
-          "type": "schemaReference",
-          "definition": {
-            "eager": true,
-            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-            "relativePath": "shippingBox"
-          }
-        },
-        "definition": {
-          "queryType": {
-            "type": "literal",
-            "definition": "queryByTemplateGetParamJzodSchema"
-          },
-          "fetchParams": {
-            "type": "schemaReference",
-            "definition": {
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "boxedQueryWithExtractorCombinerTransformer"
-            }
-          }
-        }
-      },
       "queryByQueryTemplateGetParamJzodSchema": {
         "type": "object",
         "extend": {
@@ -17093,46 +17040,6 @@ export const miroirFundamentalJzodSchema = {
           }
         }
       },
-      "domainModelQueryTemplateJzodSchemaParams": {
-        "type": "union",
-        "discriminator": "queryType",
-        "definition": [
-          {
-            "type": "schemaReference",
-            "definition": {
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "queryByTemplateGetParamJzodSchema"
-            }
-          },
-          {
-            "type": "schemaReference",
-            "definition": {
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "queryByQueryTemplateGetParamJzodSchema"
-            }
-          }
-        ]
-      },
-      "queryJzodSchemaParams": {
-        "type": "union",
-        "discriminator": "queryType",
-        "definition": [
-          {
-            "type": "schemaReference",
-            "definition": {
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "queryByQuery2GetParamJzodSchema"
-            }
-          },
-          {
-            "type": "schemaReference",
-            "definition": {
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "queryByQueryGetParamJzodSchema"
-            }
-          }
-        ]
-      },
       "miroirQueryTemplate": {
         "type": "union",
         "discriminator": "queryType",
@@ -17149,20 +17056,6 @@ export const miroirFundamentalJzodSchema = {
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
               "relativePath": "localCacheExtractor"
-            }
-          },
-          {
-            "type": "schemaReference",
-            "definition": {
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "queryByTemplateGetParamJzodSchema"
-            }
-          },
-          {
-            "type": "schemaReference",
-            "definition": {
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "queryByQueryTemplateGetParamJzodSchema"
             }
           }
         ]
@@ -17190,20 +17083,6 @@ export const miroirFundamentalJzodSchema = {
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
               "relativePath": "localCacheExtractor"
-            }
-          },
-          {
-            "type": "schemaReference",
-            "definition": {
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "queryByQuery2GetParamJzodSchema"
-            }
-          },
-          {
-            "type": "schemaReference",
-            "definition": {
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "queryByQueryGetParamJzodSchema"
             }
           }
         ]

@@ -1,5 +1,5 @@
 export {
-  getMiroirFundamentalJzodSchema,
+  getMiroirFundamentalJzodSchema
 } from "../src/0_interfaces/1_core/bootstrapJzodSchemas/getMiroirFundamentalJzodSchema";
 export {
   miroirFundamentalJzodSchemaUuid
@@ -41,19 +41,19 @@ export {
   boxedQueryTemplateWithExtractorCombinerTransformer,
   BoxedQueryWithExtractorCombinerTransformer,
   boxedQueryWithExtractorCombinerTransformer,
-  Commit,
-  CompositeRunBoxedQueryAction,
-  compositeRunBoxedQueryAction,
-  CompositeRunBoxedQueryTemplateAction,
-  compositeRunBoxedQueryTemplateAction,
-  CompositeActionSequence,
+  Commit, CompositeAction,
+  compositeAction, CompositeActionSequence,
   compositeActionSequence,
   CompositeActionTemplate,
-  compositeActionTemplate, CompositeRunTestAssertion,
+  compositeActionTemplate, CompositeRunBoxedQueryAction,
+  compositeRunBoxedQueryAction,
+  CompositeRunBoxedQueryTemplateAction,
+  compositeRunBoxedQueryTemplateAction, CompositeRunTestAssertion,
   compositeRunTestAssertion,
   // ===
   ConceptLevel,
-  conceptLevel,
+  conceptLevel, DataSet,
+  dataSet,
   // 
   Deployment,
   deployment,
@@ -83,8 +83,7 @@ export {
   domainElementType,
   DomainElementVoid,
   domainElementVoid,
-  DomainModelQueryTemplateJzodSchemaParams,
-  domainModelQueryTemplateJzodSchemaParams, EndpointDefinition,
+  EndpointDefinition,
   endpointDefinition, Entity,
   entity,
   EntityArrayAttribute,
@@ -205,12 +204,7 @@ export {
   JzodRecord,
   jzodRecord,
   JzodReference,
-  jzodReference,
-  DataSet,
-  dataSet,
-  MlSchema,
-  mlSchema,
-  JzodSet,
+  jzodReference, JzodSet,
   jzodSet,
   JzodTuple,
   jzodTuple,
@@ -241,7 +235,9 @@ export {
   MiroirQuery,
   miroirQuery,
   MiroirQueryTemplate,
-  miroirQueryTemplate, ModelAction,
+  miroirQueryTemplate, MiroirThemeFull,
+  miroirThemeFull, MlSchema,
+  mlSchema, ModelAction,
   modelAction,
   ModelActionAlterEntityAttribute,
   modelActionAlterEntityAttribute,
@@ -252,30 +248,21 @@ export {
   ModelActionRenameEntity,
   modelActionRenameEntity,
   ModelActionReplayableAction,
-  modelActionReplayableAction,
-  ObjectInstanceReportSection,
+  modelActionReplayableAction, ModelDiagramReportSection,
+  modelDiagramReportSection, ObjectInstanceReportSection,
   objectInstanceReportSection,
   ObjectListReportSection,
-  objectListReportSection,
-  ModelDiagramReportSection,
-  modelDiagramReportSection,
-  RunnerReportSection,
-  runnerReportSection,
-  PersistenceAction, Query,
+  objectListReportSection, PersistenceAction,
+  Query,
   query,
-  QueryByQuery2GetParamJzodSchema,
-  queryByQuery2GetParamJzodSchema,
   QueryByQueryGetParamJzodSchema,
   queryByQueryGetParamJzodSchema,
   QueryByQueryTemplateGetParamJzodSchema,
   queryByQueryTemplateGetParamJzodSchema,
-  QueryByTemplateGetParamJzodSchema,
-  queryByTemplateGetParamJzodSchema,
   QueryFailed,
-  QueryJzodSchemaParams,
-  queryJzodSchemaParams,
   QueryTemplateWithExtractorCombinerTransformer,
-  queryTemplateWithExtractorCombinerTransformer, Report,
+  queryTemplateWithExtractorCombinerTransformer,
+  Report,
   report,
   ReportSection,
   reportSection,
@@ -292,8 +279,8 @@ export {
   RunBoxedQueryTemplateAction,
   runBoxedQueryTemplateAction,
   Runner,
-  runner,
-  SelfApplication,
+  runner, RunnerReportSection,
+  runnerReportSection, SelfApplication,
   selfApplication,
   ServerConfigForClientConfig,
   serverConfigForClientConfig,
@@ -301,8 +288,7 @@ export {
   shippingBox,
   SqlDbStoreSectionConfiguration, StorageAccess,
   storageAccess, StoreBasedConfiguration,
-  storeBasedConfiguration,
-  StoreManagementAction,
+  storeBasedConfiguration, StoredMiroirTheme, StoreManagementAction,
   storeManagementAction,
   // ===
   StoreOrBundleAction,
@@ -310,11 +296,7 @@ export {
   storeSectionConfiguration,
   StoreUnitConfiguration,
   storeUnitConfiguration,
-  TableThemeSchema,
-  StoredMiroirTheme,
-  MiroirThemeFull,
-  miroirThemeFull,
-  Test,
+  TableThemeSchema, Test,
   test,
   TestAction_runTestCompositeAction,
   testAction_runTestCompositeAction,
@@ -364,7 +346,12 @@ export {
   // 
   TransformerForBuildPlusRuntime,
   transformerForBuildPlusRuntime, TransformerForBuildPlusRuntime_accessDynamicPath,
-  transformerForBuildPlusRuntime_accessDynamicPath, TransformerForBuildPlusRuntime_aggregate, TransformerForBuildPlusRuntime_constantAsExtractor,
+  transformerForBuildPlusRuntime_accessDynamicPath, TransformerForBuildPlusRuntime_aggregate, TransformerForBuildPlusRuntime_boolExpr,
+  transformerForBuildPlusRuntime_boolExpr,
+  // TransformerForRuntime_innerFullObjectTemplate,
+  // transformerForRuntime_innerFullObjectTemplate,
+  // TransformerForRuntime_constants,
+  TransformerForBuildPlusRuntime_concatLists, TransformerForBuildPlusRuntime_constantAsExtractor,
   transformerForBuildPlusRuntime_constantAsExtractor, TransformerForBuildPlusRuntime_createObject, TransformerForBuildPlusRuntime_createObjectFromPairs,
   transformerForBuildPlusRuntime_createObjectFromPairs, TransformerForBuildPlusRuntime_dataflowObject,
   // TransformerForRuntime_mapper_listToObject,
@@ -378,13 +365,7 @@ export {
   // TransformerForRuntime_orderedTransformer,
   // transformerForRuntime_orderedTransformer,
   TransformerForBuildPlusRuntime_getUniqueValues, TransformerForBuildPlusRuntime_ifThenElse,
-  transformerForBuildPlusRuntime_ifThenElse, TransformerForBuildPlusRuntime_boolExpr,
-  transformerForBuildPlusRuntime_boolExpr, TransformerForBuildPlusRuntime_indexListBy,
-  // TransformerForRuntime_innerFullObjectTemplate,
-  // transformerForRuntime_innerFullObjectTemplate,
-  // TransformerForRuntime_constants,
-  TransformerForBuildPlusRuntime_concatLists,
-  TransformerForBuildPlusRuntime_InnerReference, TransformerForBuildPlusRuntime_listReducerToSpreadObject, TransformerForBuildPlusRuntime_mapList, TransformerForBuildPlusRuntime_menu_addItem,
+  transformerForBuildPlusRuntime_ifThenElse, TransformerForBuildPlusRuntime_indexListBy, TransformerForBuildPlusRuntime_InnerReference, TransformerForBuildPlusRuntime_listReducerToSpreadObject, TransformerForBuildPlusRuntime_mapList, TransformerForBuildPlusRuntime_menu_addItem,
   transformerForBuildPlusRuntime_menu_addItem, TransformerForBuildPlusRuntime_mergeIntoObject, TransformerForBuildPlusRuntime_mustacheStringTemplate,
   transformerForBuildPlusRuntime_mustacheStringTemplate, TransformerForBuildPlusRuntime_pickFromList,
   // 
@@ -399,9 +380,7 @@ export {
   ZodParseError,
   zodParseError,
   ZodParseErrorIssue,
-  zodParseErrorIssue,
-  CompositeAction,
-  compositeAction,
+  zodParseErrorIssue
 } from "./0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
 export {
@@ -448,7 +427,7 @@ export {
   defaultApplicationSection,
   DeploymentUuidToReportsEntitiesDefinitions,
   DeploymentUuidToReportsEntitiesDefinitionsMapping,
-  foldableElementTypes,
+  foldableElementTypes
 } from "./0_interfaces/1_core/Model.js";
 export {
   // SelfApplicationDeploymentConfigurationSchema,
@@ -541,11 +520,6 @@ export {
   SyncQueryTemplateRunner,
   SyncQueryTemplateRunnerParams
 } from "./0_interfaces/2_domain/ExtractorRunnerInterface.js";
-export {
-  ReduxDeploymentsState,
-  ZEntityState,
-  zEntityStateSchema as ZEntityStateSchema
-} from "./0_interfaces/2_domain/ReduxDeploymentsStateInterface.js";
 export type {
   LocalCacheSliceState,
   LocalCacheSliceStateZone,
@@ -557,8 +531,13 @@ export type {
   StateWithUndoRedo,
   StoreWithUndoRedo,
   ZustandStateWithUndoRedo,
-  ZustandStoreWithUndoRedo,
+  ZustandStoreWithUndoRedo
 } from "./0_interfaces/2_domain/LocalCacheInterface.js";
+export {
+  ReduxDeploymentsState,
+  ZEntityState,
+  zEntityStateSchema as ZEntityStateSchema
+} from "./0_interfaces/2_domain/ReduxDeploymentsStateInterface.js";
 export {
   DataStoreApplicationType,
   DataStoreApplicationTypeSchema
@@ -629,20 +608,10 @@ export {
   ApplicationDeploymentMap,
   ApplicationEntitiesAndInstances,
   // createApplicationCompositeAction,
-  createDeploymentCompositeAction,
-  defaultDeployments,
-  defaultDeploymentUuids,
-  defaultAdminApplicationDeploymentMapNOTGOOD,
-  defaultEndpointApplicationMap,
-  defaultSelfApplicationDeploymentMap,
-  emptyMetaModel,
-  dropApplicationAndDeploymentCompositeAction,
-  EndpointApplicationMap,
-  resetAndinitializeDeploymentCompositeAction,
-  getMiroirConfig,
-  testUtils_deleteApplicationDeployment,
-  testUtils_resetApplicationDeployment,
-  metaModelFilterEntities,
+  createDeploymentCompositeAction, defaultAdminApplicationDeploymentMapNOTGOOD, defaultDeployments,
+  defaultDeploymentUuids, defaultEndpointApplicationMap,
+  defaultSelfApplicationDeploymentMap, dropApplicationAndDeploymentCompositeAction, emptyMetaModel, EndpointApplicationMap, getMiroirConfig, metaModelFilterEntities, resetAndinitializeDeploymentCompositeAction, testUtils_deleteApplicationDeployment,
+  testUtils_resetApplicationDeployment
 } from "./1_core/Deployment";
 export { DomainInstanceUuidIndexToArray } from "./1_core/DomainState.js";
 export {
@@ -650,6 +619,21 @@ export {
   TransformerEvent
 } from "./3_controllers/MiroirEventService.js";
 // export { rootLessListKeyMapDEFUNCT } from "./1_core/jzod/rootLessListKeyMap";
+export {
+  entityHasCompositePrimaryKey,
+  entityHasUuidPrimaryKey,
+  getEntityPrimaryKeyAttribute,
+  getEntityPrimaryKeyAttributes,
+  getForeignKeyValue,
+  getInstancePrimaryKeyValue,
+  instanceMatchesForeignKey,
+  parseCompositeKeyValue,
+  resolveInstanceParentUuid,
+  serializeCompositeKeyValue
+} from "./1_core/EntityPrimaryKey";
+export {
+  actionsWithDeploymentInPayload, noValue
+} from "./1_core/Instance";
 export {
   // getDefaultValueForJzodSchemaDEFUNCT,
   getDefaultValueForJzodSchemaWithResolution,
@@ -679,38 +663,16 @@ export {
   getInnermostTypeCheckError
 } from "./1_core/jzod/mlsTypeCheckError";
 export {
-  noValue,
-  actionsWithDeploymentInPayload,
-} from "./1_core/Instance";
-export {
-  entityHasCompositePrimaryKey,
-  entityHasUuidPrimaryKey,
-  getEntityPrimaryKeyAttribute,
-  getEntityPrimaryKeyAttributes,
-  getForeignKeyValue,
-  getInstancePrimaryKeyValue,
-  instanceMatchesForeignKey,
-  parseCompositeKeyValue,
-  resolveInstanceParentUuid,
-  serializeCompositeKeyValue,
-} from "./1_core/EntityPrimaryKey";
-export {
   applicationModelEntities,
   defaultMetaModelEnvironment,
   defaultMiroirMetaModel,
   defaultMiroirModelEnvironment,
   // getCurrentEntityDefinition,
-  emptyApplicationModel,
-  getApplicationSection,
-  getReportsAndEntitiesDefinitionsForDeploymentUuid,
-  metaModelEntities,
-  miroirModelEntities,
-  extractApplicationData,
+  emptyApplicationModel, extractApplicationData,
   extractApplicationModel,
-  extractEntityInstances,
-  metaMetaModelEntities,
-  metaMetaModelEntityUuids,
-  metaModelEntityUuids,
+  extractEntityInstances, getApplicationSection,
+  getReportsAndEntitiesDefinitionsForDeploymentUuid, metaMetaModelEntities,
+  metaMetaModelEntityUuids, metaModelEntities, metaModelEntityUuids, miroirModelEntities
 } from "./1_core/Model.js";
 export { defaultReport } from "./1_core/Report.js";
 export { testBuildPlusRuntimeCompositeActionSuiteForRunner } from "./1_core/Runner.js";
@@ -722,12 +684,10 @@ export {
 export {
   base64ToBlob,
   fileToBase64,
-  formatFileSize,
-  getBlobFileIcon,
+  formatFileSize, formatYYYYMMDD_HHMMSS, getBlobFileIcon,
   mergeIfUnique,
   pushIfUnique,
-  validateMimeType,
-  formatYYYYMMDD_HHMMSS,
+  validateMimeType
 } from "./1_core/tools.js";
 export { zodErrorDeepestIssueLeaves, zodErrorFirstIssueLeaf } from "./1_core/zodParseErrorHandler";
 export {
@@ -752,7 +712,6 @@ export {
 export {
   dummyDomainManyQueryTemplateWithDeploymentUuid,
   dummyDomainManyQueryWithDeploymentUuid,
-  dummyDomainModelGetFetchParamJzodSchemaQueryParams,
   extractEntityInstanceListFromListQueryAndDomainState,
   extractEntityInstanceUuidIndexFromListQueryAndDomainState,
   extractWithExtractorOrCombinerReturningObjectOrObjectListFromDomainState,
@@ -766,11 +725,7 @@ export {
   runQueryFromDomainState,
   selectEntityInstanceFromObjectQueryAndDomainState,
   selectEntityInstanceListFromDomainState,
-  selectEntityInstanceUuidIndexFromDomainState,
-  // selectEntityJzodSchemaFromDomainStateNew,
-  // selectFetchQueryJzodSchemaFromDomainStateNew,
-  // selectJzodSchemaByDomainModelQueryFromDomainStateNew,
-  // selectJzodSchemaBySingleSelectQueryFromDomainStateNew
+  selectEntityInstanceUuidIndexFromDomainState
 } from "./2_domain/DomainStateQuerySelectors.js";
 export {
   getQueryTemplateRunnerParamsForDomainState,
@@ -778,11 +733,7 @@ export {
   GetSelectorParamsForQueryTemplateOnDomainStateType,
   QueryTemplateRunnerForDomainState,
   queryTemplateRunnerForDomainState,
-  runQueryTemplateFromDomainState,
-  // selectEntityJzodSchemaFromDomainStateNewForTemplate,
-  // selectFetchQueryJzodSchemaFromDomainStateNewForTemplate,
-  // selectJzodSchemaByDomainModelQueryFromDomainStateNewForTemplate,
-  // selectJzodSchemaBySingleSelectQueryFromDomainStateNewForTemplate
+  runQueryTemplateFromDomainState
 } from "./2_domain/DomainStateQueryTemplateSelector.js";
 export { ExtractorRunnerInMemory } from "./2_domain/ExtractorRunnerInMemory.js";
 export { ExtractorTemplateRunnerInMemory } from "./2_domain/ExtractorTemplateRunnerInMemory.js";
@@ -810,7 +761,7 @@ export {
   getEntityInstancesIndexNonHook,
   getEntityInstancesIndexNonHook as getEntityInstancesUuidIndexNonHook, // backward compat
   getMultipleEntityInstancesIndexNonHook,
-  getMultipleEntityInstancesIndexNonHook as getMultipleEntityInstancesUuidIndexNonHook, // backward compat
+  getMultipleEntityInstancesIndexNonHook as getMultipleEntityInstancesUuidIndexNonHook
 } from "./2_domain/ReduxDeploymentsStateQueryExecutor.js";
 export {
   // extractEntityJzodSchemaFromReduxDeploymentsState,
@@ -830,7 +781,7 @@ export {
   GetQueryTemplateRunnerParamsForReduxDeploymentsState,
   // getReduxDeploymentsStateJzodSchemaSelectorTemplateMap,
   getReduxDeploymentsStateSelectorTemplateMap,
-  runQueryTemplateFromReduxDeploymentsState,
+  runQueryTemplateFromReduxDeploymentsState
 } from "./2_domain/ReduxDeploymentsStateQueryTemplateSelectors.js";
 export {
   resolveExtractorOrQueryTemplate,
@@ -855,18 +806,11 @@ export {
 } from "./3_controllers/ActionRunner.js";
 export {
   cacheFetchPolicy,
-  cacheInvalidationPolicy,
-  ConfigurationServiceInner,
-  ConfigurationService,
-  PackageConfiguration,
+  cacheInvalidationPolicy, ConfigurationService, ConfigurationServiceInner, PackageConfiguration,
   undoRedoHistorization
 } from "./3_controllers/ConfigurationService";
 export {
-  devRelativePathPrefix,
-  prodRelativePathPrefix,
-  DeploymentConfiguration,
-  DomainController,
-  resetAndInitApplicationDeployment
+  DeploymentConfiguration, devRelativePathPrefix, DomainController, prodRelativePathPrefix, resetAndInitApplicationDeployment
 } from "./3_controllers/DomainController";
 // export { Endpoint } from "./3_controllers/Endpoint.js";
 export { CallUtils } from "./3_controllers/ErrorHandling/CallUtils.js";
@@ -885,8 +829,7 @@ export {
 } from "./4_services/PersistenceStoreController.js";
 export { PersistenceStoreControllerManager } from "./4_services/PersistenceStoreControllerManager.js";
 export {
-  startLocalPersistenceStoreControllers,
-  mountApplicationDeployment,
+  mountApplicationDeployment, startLocalPersistenceStoreControllers
 } from "./4_services/PersistenceStoreControllerTools.js";
 export { RestClient } from "./4_services/RestClient.js";
 export { RestClientStub } from "./4_services/RestClientStub";
@@ -935,8 +878,7 @@ export {
 
 // miroir model + data: re-exported from miroir-test-app_deployment-miroir
 export {
-  applicationEndpointV1,
-  domainEndpointVersionV1,
+  applicationEndpointV1, storeManagementEndpoint as deploymentEndpointV1, domainEndpointVersionV1,
   entityDefinitionCommit,
   entityDefinitionEndpoint,
   entityDefinitionEntity,
@@ -1013,20 +955,19 @@ export {
   selfApplicationStoreBasedConfigurationMiroir,
   selfApplicationVersionInitialMiroirVersion,
   storeManagementEndpoint,
-  storeManagementEndpoint as deploymentEndpointV1,
   // tableThemeSchemaJson,
   test_createEntityAndReportFromSpreadsheetAndUpdateMenu,
   testEndpointVersionV1,
   transformerJzodSchema,
   transformerMenuV1,
   transformerTest_resolveConditionalSchema,
-  undoRedoEndpointVersionV1,
+  undoRedoEndpointVersionV1
 } from "miroir-test-app_deployment-miroir";
 
 const entityDefinitionBundleV1 = require("../src/assets/miroirAdmin/model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/01a051d8-d43c-430d-a98e-739048f54942.json"); //assert { type: "json" };
 
 export {
-  entityDefinitionBundleV1,
+  entityDefinitionBundleV1
 };
 
 // ################################################################################################
@@ -1040,7 +981,7 @@ export { menuDefaultTest1, test1SelfApplication };
 // ################################################################################################
 // TYPE ALIASES for backward compatibility during EntityInstancesUuidIndex → EntityInstancesIndex rename
 // ################################################################################################
-import type { EntityInstancesUuidIndex as _EntityInstancesUuidIndex } from "./0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
-import { entityInstancesUuidIndex as _entityInstancesUuidIndex } from "./0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+  import type { EntityInstancesUuidIndex as _EntityInstancesUuidIndex } from "./0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+  import { entityInstancesUuidIndex as _entityInstancesUuidIndex } from "./0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 export type EntityInstancesIndex = _EntityInstancesUuidIndex;
 export const entityInstancesIndex = _entityInstancesUuidIndex;
