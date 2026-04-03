@@ -10,7 +10,9 @@ import {
 import { MiroirLoggerFactory } from "../../../4_services/MiroirLoggerFactory";
 import { packageName } from "../../../constants";
 import { LoggerInterface } from "../../4-services/LoggerInterface";
-import { JzodElement, JzodReference } from "../preprocessor-generated/miroirFundamentalType";
+import type { JzodReference, JzodElement } from "@miroir-framework/jzod-ts";
+import { jzodTransitiveDependencySet } from "../../../1_core/jzod/JzodSchemaReferences";
+// import { JzodElement, JzodReference } from "../preprocessor-generated/miroirFundamentalType";
 
 const customChalk = new Chalk({level: 1})
 
@@ -424,10 +426,10 @@ export function createLocalizedInnerResolutionStoreForExtendedSchemas(
       }
 
       const appliedLimitedCarryOnResult = applyLimitedCarryOnSchemaOnLevel(
-        localizedResolutionStore.context[e],
-        carryOnSchemaReference,
-        carryOnSchemaReferenceForArray,
-        carryOnSchemaDiscriminator,
+        localizedResolutionStore.context[e] as any, // applyLimitedCarryOnSchemaOnLevel uses the generated JzodElement, not the one from jzod-ts
+        carryOnSchemaReference as any,
+        carryOnSchemaReferenceForArray as any, // applyLimitedCarryOnSchemaOnLevel uses the generated JzodElement, not the one from jzod-ts
+        carryOnSchemaDiscriminator as any, // applyLimitedCarryOnSchemaOnLevel uses the generated JzodElement, not the one from jzod-ts
         alwaysPropagate,
         false, // applyOnFirstLevel is false, since the result will be an object that is used in an "extend" clause
         prefix, // carryOnPrefix
@@ -498,9 +500,9 @@ export function createLocalizedInnerResolutionStoreWithCarryOn(
                 resolvedReferences: undefined,
               }
             : applyLimitedCarryOnSchemaOnLevel(
-                f[1],
-                carryOnSchemaReference,
-                carryOnSchemaReferenceForArray,
+                f[1] as any, // applyLimitedCarryOnSchemaOnLevel uses the generated JzodElement, not the one from jzod-ts
+                carryOnSchemaReference as any,
+                carryOnSchemaReferenceForArray as any,
                 carryOnSchemaDiscriminator,
                 alwaysPropagate, // alwaysPropagate
                 true, // applyOnFirstLevel
@@ -510,7 +512,7 @@ export function createLocalizedInnerResolutionStoreWithCarryOn(
                 resolveReferencesWithCarryOn,
                 {}, // convertedReferences
                 [], // skipObjectAttributesOnFirstLevel
-                skipContextEntry,
+                skipContextEntry as any,
               );
         return [
           forgeCarryOnReferenceName(miroirFundamentalJzodSchemaUuid, f[0], undefined, prefix),
@@ -630,7 +632,7 @@ export function createDomainActionCarryOnSchemaResolver(
   // );
 
   const carryOnDomainActionSchemaBuilder = applyLimitedCarryOnSchemaOnLevel(
-    domainAction,
+    domainAction as any,
     // {
     //   type: "schemaReference",
     //   definition: {
@@ -641,9 +643,9 @@ export function createDomainActionCarryOnSchemaResolver(
     //   },
     // },
     // ["transformerType", "interpolation"], // carryOnSchemaDiscriminator
-    carryOnSchemaReference,
-    carryOnSchemaReferenceForArray,
-    carryOnSchemaDiscriminator,
+    carryOnSchemaReference as any,
+    carryOnSchemaReferenceForArray as any,
+    carryOnSchemaDiscriminator as any,
     alwaysPropagate,// false, // alwaysPropagate
     false, // applyOnFirstLevel
     prefix, // carryOnPrefix,
@@ -660,3 +662,76 @@ export function createDomainActionCarryOnSchemaResolver(
   };
   // return runtimeDomainActionSchemaBuilder;
 }
+
+
+// ################################################################################################
+  export const getDependencySet = (
+    jzodSchemajzodMiroirBootstrapSchema: any,
+    context: JzodReference,
+    absoluteMiroirFundamentalJzodSchema: any, /** miroirFundamentalJzodSchema with absolute references */
+    elementName: string,
+  ) => {
+    log.info("########################################## Calculating jzodElementDependencySet...");
+    const jzodElementDependencySet = jzodTransitiveDependencySet(
+      // miroirFundamentalJzodSchema.definition,
+      context,
+      elementName,
+      true, // includeExtend
+    );
+    log.info("getDependencySet before hack:", Array.from(jzodElementDependencySet.keys()).length);
+    log.info("Forcing jzod schema definition into jzodElementDependencySet...");
+    Object.keys((jzodSchemajzodMiroirBootstrapSchema as any).definition.context).forEach((key) => {
+      jzodElementDependencySet.add(key);
+    });
+  
+    // TODO: HACK!! reportDisplayParams should appear in jzodElementDependencySet from jzodTransitiveDependencySet, or?
+    // addExtraItems.forEach(item => jzodElementDependencySet.add(item));
+
+    log.info(
+      "jzodElementDependencySet",
+      Array.from(jzodElementDependencySet.keys()).length,
+      JSON.stringify(Array.from(jzodElementDependencySet.keys()), null, 2),
+    );
+    const jzodElementDependenciesJzodReference: JzodReference = {
+      type: "schemaReference",
+      context: Object.fromEntries(
+        Array.from(jzodElementDependencySet.keys()).map((key) => {
+          if (!absoluteMiroirFundamentalJzodSchema.definition.context[key]) {
+            throw new Error(
+              `jzodElementDependenciesJzodReference failed, Key ${key} not found in miroirFundamentalJzodSchema.context, existing keys are: ${Object.keys(
+                absoluteMiroirFundamentalJzodSchema.definition.context
+              )}`
+            );
+          }
+  
+          return [key, (absoluteMiroirFundamentalJzodSchema.definition as any).context[key]];
+        })
+      ),
+      definition: {
+        relativePath: "jzodElement",
+      },
+    };
+    const jzodElement_extendedSchemas = [
+          "jzodBaseObject",
+          "extractorOrCombinerRoot",
+          "extractorOrCombinerRoot",
+          "transformer_inner_label",
+          "transformer_orderBy",
+          "transformerForBuild_Abstract",
+          "transformerForBuild_optional_Abstract",
+          "transformerForBuildPlusRuntime_Abstract",
+          "transformerForBuildPlusRuntime_optional_Abstract",
+    ];
+    log.info(
+      "getMiroirFundamentalJzodSchema jzodElement_extendedSchemas",
+      jzodElement_extendedSchemas.length,
+      JSON.stringify(jzodElement_extendedSchemas, null, 2)
+    );
+
+    log.info("########################################## Calculating jzodElementDependencySet DONE.");
+    return {
+      // jzodElementDependencySet,
+      jzodElement_extendedSchemas,
+      jzodElementDependenciesJzodReference,
+    };
+  }

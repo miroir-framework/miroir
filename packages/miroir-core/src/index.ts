@@ -872,7 +872,7 @@ export {
   // 
   getSchemaAtPath,
   getValueAtPath, interpolateExpression, mStringify, RelativePath, resolvePathOnObject, resolveRelativePath, ResolveRelativePathError,
-  ResolveRelativePathResult, AbsolutePath as ResultAccessPath,
+  ResolveRelativePathResult, type AbsolutePath as ResultAccessPath,
   safeResolvePathOnObject, setValueAtPath, stringTuple
 } from "./tools";
 
