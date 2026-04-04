@@ -7,13 +7,15 @@
 //   JzodReferenceResolutionFunction,
 // } from "@miroir-framework/jzod";
 // import { JzodElement, JzodReference } from "@miroir-fr>amework/jzod-ts";
-import { table } from "console";
 import { miroirThemeSchemaJson, tableThemeSchemaJson } from "miroir-test-app_deployment-miroir";
 import { JzodElement, JzodObject, JzodReference } from "@miroir-framework/jzod-ts";
 
 import { cleanLevel } from "../../../1_core/constants";
 import { jzodTransitiveDependencySet } from "../../../1_core/jzod/JzodSchemaReferences";
 import {
+  coreTransformerForBuildPlusRuntimeNames,
+  miroirCoreTransformers,
+  miroirCoreTransformersForBuildPlusRuntime,
   miroirTransformersForBuild,
   miroirTransformersForBuildPlusRuntime,
   // miroirTransformersForRuntime,
@@ -40,13 +42,11 @@ import {
 import { zodParseErrorJzodSchema } from "../zodParseError";
 import {
   createDomainActionCarryOnSchemaResolver,
-  createLocalizedInnerResolutionStoreForExtendedSchemas,
-  createLocalizedInnerResolutionStoreWithCarryOn,
   getDependencySet,
   getExtendedSchemas,
+  getJzodElementWithCarryOnContext,
   makeReferencesAbsolute,
   miroirFundamentalJzodSchemaUuid,
-  resolveReferencesWithCarryOn,
   testCompositeActionParams,
 } from "./getMiroirFundamentalJzodSchemaHelpers";
 
@@ -318,6 +318,93 @@ export function getMiroirFundamentalJzodSchema(
         // zodParseErrorIssue: zodParseError.context.zodParseErrorIssue as any,
         // zodParseError: zodParseError.context.zodParseError as any,
         // ########################################################################################
+        ...Object.fromEntries(
+          Object.entries(miroirCoreTransformers).map(([key, value]) => [
+            key.replace("transformer_", "coreTransformerForBuildPlusRuntime_"),
+            miroirCoreTransformersForBuildPlusRuntime[key as keyof typeof miroirCoreTransformersForBuildPlusRuntime],
+          ]),
+        ),
+        coreTransformerForBuildPlusRuntimeWithoutArray: {
+          type: "union",
+          optInDiscriminator: true,
+          discriminator: ["transformerType", "interpolation"],
+          definition: [
+            {
+              type: "string",
+            },
+            {
+              type: "number",
+            },
+            { type: "boolean" },
+            ...coreTransformerForBuildPlusRuntimeNames.map((e: any) => ({
+              type: "schemaReference",
+              definition: {
+                absolutePath: miroirFundamentalJzodSchemaUuid,
+                relativePath: e,
+              },
+            })),
+            {
+              type: "schemaReference",
+              definition: {
+                absolutePath: miroirFundamentalJzodSchemaUuid,
+                relativePath: "coreTransformerForBuildPlusRuntime_InnerReference",
+              },
+            },
+            {
+              type: "schemaReference",
+              definition: {
+                absolutePath: miroirFundamentalJzodSchemaUuid,
+                relativePath: "coreTransformerForBuildPlusRuntime_dataflowSequence",
+              },
+            },
+          ],
+        },
+        coreTransformerForBuildPlusRuntime:{
+          type: "union",
+          optInDiscriminator: true,
+          discriminator: ["transformerType", "interpolation"],
+          definition: [
+            {
+              type: "string",
+            },
+            {
+              type: "number",
+            },
+            { type: "boolean" },
+            {
+              type: "array",
+              definition: {
+                type: "schemaReference",
+                definition: {
+                  absolutePath: miroirFundamentalJzodSchemaUuid,
+                  relativePath: "coreTransformerForBuildPlusRuntime",
+                },
+              },
+            },
+            ...coreTransformerForBuildPlusRuntimeNames.map((e: any) => ({
+              type: "schemaReference",
+              definition: {
+                absolutePath: miroirFundamentalJzodSchemaUuid,
+                relativePath: e,
+              },
+            })),
+            {
+              type: "schemaReference",
+              definition: {
+                absolutePath: miroirFundamentalJzodSchemaUuid,
+                relativePath: "coreTransformerForBuildPlusRuntime_InnerReference",
+              },
+            },
+            {
+              type: "schemaReference",
+              definition: {
+                absolutePath: miroirFundamentalJzodSchemaUuid,
+                relativePath: "coreTransformerForBuildPlusRuntime_dataflowSequence",
+              },
+            },
+          ],
+        },
+        // ########################################################################################
         transformerForBuild_spreadSheetToJzodSchema:
           miroirTransformersForBuild.transformer_spreadSheetToJzodSchema,
         //
@@ -326,39 +413,15 @@ export function getMiroirFundamentalJzodSchema(
         //
         transformerForBuild_menu_addItem: miroirTransformersForBuild.transformer_menu_addItem,
         //
-        transformerForBuild_ifThenElse: miroirTransformersForBuild.transformer_ifThenElse,
-        transformerForBuild_boolExpr: miroirTransformersForBuild.transformer_boolExpr,
-        transformerForBuild_plus: miroirTransformersForBuild.transformer_plus,
-        transformerForBuild_case: miroirTransformersForBuild.transformer_case,
-        transformerForBuild_returnValue: miroirTransformersForBuild.transformer_returnValue,
-        transformerForBuild_constantAsExtractor:
-          miroirTransformersForBuild.transformer_constantAsExtractor,
-        transformerForBuild_getFromContext: miroirTransformersForBuild.transformer_getFromContext,
-        transformerForBuild_aggregate: miroirTransformersForBuild.transformer_aggregate,
-        transformerForBuild_dataflowObject: miroirTransformersForBuild.transformer_dataflowObject,
-        transformerForBuild_mapList: miroirTransformersForBuild.transformer_mapList,
-        transformerForBuild_createObject: miroirTransformersForBuild.transformer_createObject,
-        transformerForBuild_generateUuid: miroirTransformersForBuild.transformer_generateUuid,
-        transformerForBuild_mustacheStringTemplate:
-          miroirTransformersForBuild.transformer_mustacheStringTemplate,
-        transformerForBuild_mergeIntoObject: miroirTransformersForBuild.transformer_mergeIntoObject,
-        transformerForBuild_accessDynamicPath:
-          miroirTransformersForBuild.transformer_accessDynamicPath,
-        transformerForBuild_getObjectEntries:
-          miroirTransformersForBuild.transformer_getObjectEntries,
-        transformerForBuild_getObjectValues: miroirTransformersForBuild.transformer_getObjectValues,
-        transformerForBuild_pickFromList: miroirTransformersForBuild.transformer_pickFromList,
-        transformerForBuild_indexListBy: miroirTransformersForBuild.transformer_indexListBy,
-        transformerForBuild_listReducerToSpreadObject:
-          miroirTransformersForBuild.transformer_listReducerToSpreadObject,
-        transformerForBuild_createObjectFromPairs:
-          miroirTransformersForBuild.transformer_createObjectFromPairs,
-        transformerForBuild_getFromParameters:
-          miroirTransformersForBuild.transformer_getFromParameters,
-        transformerForBuild_getUniqueValues: miroirTransformersForBuild.transformer_getUniqueValues,
+        ...Object.fromEntries(
+          Object.entries(miroirCoreTransformers).map(([key, value]) => [
+            key.replace("transformer_", "transformerForBuild_"),
+            miroirTransformersForBuild[key as keyof typeof miroirTransformersForBuild],
+          ]),
+        ),
+        // 
         transformerForBuild_ansiColumnsToJzodSchema:
           miroirTransformersForBuild.transformer_ansiColumnsToJzodSchema,
-        transformerForBuild_concatLists: miroirTransformersForBuild.transformer_concatLists,
         // MLS
         ...Object.fromEntries(
           Object.entries(mlsTransformers).map(([key, value]) => [
@@ -469,54 +532,17 @@ export function getMiroirFundamentalJzodSchema(
         transformerForBuildPlusRuntime_menu_addItem:
           miroirTransformersForBuildPlusRuntime.transformer_menu_addItem,
         //
-        transformerForBuildPlusRuntime_ifThenElse:
-          miroirTransformersForBuildPlusRuntime.transformer_ifThenElse,
-        transformerForBuildPlusRuntime_boolExpr:
-          miroirTransformersForBuildPlusRuntime.transformer_boolExpr,
-        transformerForBuildPlusRuntime_plus: miroirTransformersForBuildPlusRuntime.transformer_plus,
-        transformerForBuildPlusRuntime_case: miroirTransformersForBuildPlusRuntime.transformer_case,
-        transformerForBuildPlusRuntime_returnValue:
-          miroirTransformersForBuildPlusRuntime.transformer_returnValue,
-        transformerForBuildPlusRuntime_constantAsExtractor:
-          miroirTransformersForBuildPlusRuntime.transformer_constantAsExtractor,
-        transformerForBuildPlusRuntime_getFromContext:
-          miroirTransformersForBuildPlusRuntime.transformer_getFromContext,
-        transformerForBuildPlusRuntime_aggregate:
-          miroirTransformersForBuildPlusRuntime.transformer_aggregate,
-        transformerForBuildPlusRuntime_dataflowObject:
-          miroirTransformersForBuildPlusRuntime.transformer_dataflowObject,
-        transformerForBuildPlusRuntime_createObject:
-          miroirTransformersForBuildPlusRuntime.transformer_createObject,
-        transformerForBuildPlusRuntime_mapList:
-          miroirTransformersForBuildPlusRuntime.transformer_mapList,
-        transformerForBuildPlusRuntime_getFromParameters:
-          miroirTransformersForBuildPlusRuntime.transformer_getFromParameters,
-        transformerForBuildPlusRuntime_pickFromList:
-          miroirTransformersForBuildPlusRuntime.transformer_pickFromList,
-        transformerForBuildPlusRuntime_generateUuid:
-          miroirTransformersForBuildPlusRuntime.transformer_generateUuid,
-        transformerForBuildPlusRuntime_mustacheStringTemplate:
-          miroirTransformersForBuildPlusRuntime.transformer_mustacheStringTemplate,
-        transformerForBuildPlusRuntime_indexListBy:
-          miroirTransformersForBuildPlusRuntime.transformer_indexListBy,
-        transformerForBuildPlusRuntime_listReducerToSpreadObject:
-          miroirTransformersForBuildPlusRuntime.transformer_listReducerToSpreadObject,
-        transformerForBuildPlusRuntime_mergeIntoObject:
-          miroirTransformersForBuildPlusRuntime.transformer_mergeIntoObject,
-        transformerForBuildPlusRuntime_accessDynamicPath:
-          miroirTransformersForBuildPlusRuntime.transformer_accessDynamicPath,
-        transformerForBuildPlusRuntime_getObjectEntries:
-          miroirTransformersForBuildPlusRuntime.transformer_getObjectEntries,
-        transformerForBuildPlusRuntime_getObjectValues:
-          miroirTransformersForBuildPlusRuntime.transformer_getObjectValues,
-        transformerForBuildPlusRuntime_createObjectFromPairs:
-          miroirTransformersForBuildPlusRuntime.transformer_createObjectFromPairs,
-        transformerForBuildPlusRuntime_getUniqueValues:
-          miroirTransformersForBuildPlusRuntime.transformer_getUniqueValues,
-        transformerForBuildPlusRuntime_ansiColumnsToJzodSchema:
-          miroirTransformersForBuildPlusRuntime.transformer_ansiColumnsToJzodSchema,
-        transformerForBuildPlusRuntime_concatLists:
-          miroirTransformersForBuildPlusRuntime.transformer_concatLists,
+          transformerForBuildPlusRuntime_ansiColumnsToJzodSchema:
+            miroirTransformersForBuildPlusRuntime.transformer_ansiColumnsToJzodSchema,
+        // 
+        ...Object.fromEntries(
+          Object.entries(miroirCoreTransformers).map(([key, value]) => [
+            key.replace("transformer_", "transformerForBuildPlusRuntime_"),
+            miroirTransformersForBuildPlusRuntime[
+              key as keyof typeof miroirTransformersForBuildPlusRuntime
+            ],
+          ]),
+        ),
         // MLS
         ...Object.fromEntries(
           Object.entries(mlsTransformers).map(([key, value]) => [
@@ -538,16 +564,6 @@ export function getMiroirFundamentalJzodSchema(
               type: "number",
             },
             { type: "boolean" },
-            // {
-            //   type: "array",
-            //   definition: {
-            //     type: "schemaReference",
-            //     definition: {
-            //       absolutePath: miroirFundamentalJzodSchemaUuid,
-            //       relativePath: "transformerForBuildPlusRuntime",
-            //     },
-            //   },
-            // },
             ...transformerForBuildPlusRuntimeNames.map((e: any) => ({
               type: "schemaReference",
               definition: {
@@ -3254,55 +3270,6 @@ export function getMiroirFundamentalJzodSchema(
   // ##############################################################################################
   // ##############################################################################################
   // ##############################################################################################
-
-  // log.info(
-  //   "################## miroirFundamentalJzodSchema",
-  //   JSON.stringify(Object.keys(miroirFundamentalJzodSchema.definition.context), null, 2)
-  // );
-
-  // log.info(
-  //   "getMiroirFundamentalJzodSchema miroirFundamentalJzodSchema actionError:",
-  //   JSON.stringify((miroirFundamentalJzodSchema as any).definition.context["actionError"], null, 2)
-  // );
-  // log.info(
-  //   "getMiroirFundamentalJzodSchema miroirFundamentalJzodSchema storeManagementAction:",
-  //   JSON.stringify((miroirFundamentalJzodSchema as any).definition.context.storeManagementAction, null, 2)
-  // );
-  // log.info(
-  //   "getMiroirFundamentalJzodSchema miroirFundamentalJzodSchema compositeRunTestAssertion:",
-  //   JSON.stringify((miroirFundamentalJzodSchema as any).definition.context["compositeRunTestAssertion"], null, 2)
-  // );
-  // log.info(
-  //   "getMiroirFundamentalJzodSchema miroirFundamentalJzodSchema transactionalInstanceAction:",
-  //   JSON.stringify((miroirFundamentalJzodSchema as any).definition.context.transactionalInstanceAction, null, 2)
-  // );
-  // log.info(
-  //   "getMiroirFundamentalJzodSchema miroirFundamentalJzodSchema domainAction:",
-  //   JSON.stringify((miroirFundamentalJzodSchema as any).definition.context["domainAction"], null, 2)
-  // );
-
-  // log.info(
-  //   "getMiroirFundamentalJzodSchema miroirFundamentalJzodSchema domainAction:",
-  //   JSON.stringify((miroirFundamentalJzodSchema as any).definition.context["domainAction"], null, 2)
-  // );
-
-  // log.info(
-  //   "getMiroirFundamentalJzodSchema miroirFundamentalJzodSchema compositeActionSequence:",
-  //   JSON.stringify((miroirFundamentalJzodSchema as any).definition.context.compositeActionSequence, null, 2)
-  // );
-
-  // log.info(
-  //   "getMiroirFundamentalJzodSchema miroirFundamentalJzodSchema compositeActionDefinition:",
-  //   JSON.stringify((miroirFundamentalJzodSchema as any).definition.context.compositeActionDefinition, null, 2)
-  // );
-
-  // ##############################################################################################
-  // ##############################################################################################
-  // ##############################################################################################
-  // ##############################################################################################
-  // ##############################################################################################
-  // ##############################################################################################
-  // ##############################################################################################
   const absoluteMiroirFundamentalJzodSchema = {
     ...miroirFundamentalJzodSchema,
     definition: {
@@ -3337,25 +3304,59 @@ export function getMiroirFundamentalJzodSchema(
   // ##############################################################################
   // ##############################################################################
 
-  const {
-    // jzodElementDependencySet,
-    jzodElement_extendedSchemas,
-    jzodElementDependenciesJzodReference,
-  } = getDependencySet(
+  const coreTransformerDependenciesJzodReference = getDependencySet(
+    jzodSchemajzodMiroirBootstrapSchema,
+    miroirFundamentalJzodSchema.definition,
+    absoluteMiroirFundamentalJzodSchema,
+    "coreTransformerForBuildPlusRuntime",
+    false
+  );
+
+  const coreTransformerForBuildPlusRuntimeCarryOnSchemaReference: JzodReference = {
+    type: "schemaReference",
+    definition: {
+      absolutePath: miroirFundamentalJzodSchemaUuid,
+      relativePath: "coreTransformerForBuildPlusRuntime",
+    },
+  };
+  const coreTransformerForBuildPlusRuntimeForArrayCarryOnSchemaReference: JzodReference = {
+    type: "schemaReference",
+    definition: {
+      absolutePath: miroirFundamentalJzodSchemaUuid,
+      relativePath: "coreTransformerForBuildPlusRuntimeWithoutArray",
+    },
+  };
+
+  const coreTransformerWithCarryOnContext = getJzodElementWithCarryOnContext(
+    "miroirTemplate_",
+    coreTransformerForBuildPlusRuntimeCarryOnSchemaReference,
+    coreTransformerForBuildPlusRuntimeForArrayCarryOnSchemaReference,
+    [
+      // "jzodBaseObject",
+      // "extractorOrCombinerRoot",
+      "transformer_inner_label",
+      "transformer_orderBy",
+      // "transformerForBuild_Abstract",
+      // "transformerForBuild_optional_Abstract",
+      "transformerForBuildPlusRuntime_Abstract",
+      "transformerForBuildPlusRuntime_optional_Abstract",
+    ],
+    coreTransformerDependenciesJzodReference,
+  );
+  // ##############################################################################
+  // ##############################################################################
+  // ##############################################################################
+  // ##############################################################################
+  // ##############################################################################
+  // ##############################################################################
+  // JZOD ELEMENTS
+  const jzodElementDependenciesJzodReference = getDependencySet(
     jzodSchemajzodMiroirBootstrapSchema,
     miroirFundamentalJzodSchema.definition,
     absoluteMiroirFundamentalJzodSchema,
     "jzodElement",
   );
 
-
-
-
-
-  // ###############################################################################################
-  // ###############################################################################################
-  // ###############################################################################################
-  // ###############################################################################################
   const transformerForBuildPlusRuntimeCarryOnSchemaReference: JzodReference = {
     type: "schemaReference",
     definition: {
@@ -3370,64 +3371,24 @@ export function getMiroirFundamentalJzodSchema(
       relativePath: "transformerForBuildPlusRuntimeForArrayCarryOnObject",
     },
   };
-  const getJzodElementWithCarryOnContext = (
-    transformerForBuildPlusRuntimeCarryOnSchemaReference: JzodReference,
-    transformerForBuildPlusRuntimeForArrayCarryOnSchemaReference: JzodReference,
-  ) => {
-    log.info("########################################## Creating jzodElementWithCarryOnContext...");
-    const jzodElementLocalizedInnerResolutionStoreForExtendedSchemas =
-      createLocalizedInnerResolutionStoreForExtendedSchemas(
-        jzodElementDependenciesJzodReference,
-        jzodElement_extendedSchemas, // extendedSchemas,
-        transformerForBuildPlusRuntimeCarryOnSchemaReference,
-        transformerForBuildPlusRuntimeForArrayCarryOnSchemaReference,
-        "transformerType", // mlElementTemplateSchemaDiscriminator
-        resolveReferencesWithCarryOn.bind(undefined, {
-          [miroirFundamentalJzodSchemaUuid]: jzodElementDependenciesJzodReference,
-        }),
-        "mlElementTemplate_", // prefix
-        true // alwaysPropagate
-      );
-  
-    log.info(
-      "jzodElementLocalizedInnerResolutionStoreForExtendedSchemas",
-      JSON.stringify(Object.keys(jzodElementLocalizedInnerResolutionStoreForExtendedSchemas), null, 2)
-    );
-    const jzodElementLocalizedInnerResolutionStorePlainReferences =
-      createLocalizedInnerResolutionStoreWithCarryOn(
-        jzodElementDependenciesJzodReference,
-        jzodElement_extendedSchemas, // extendedSchemas,
-        transformerForBuildPlusRuntimeCarryOnSchemaReference,
-        transformerForBuildPlusRuntimeForArrayCarryOnSchemaReference,
-        "transformerType", // mlElementTemplateSchemaDiscriminator
-        resolveReferencesWithCarryOn.bind(undefined, {
-          [miroirFundamentalJzodSchemaUuid]: jzodElementDependenciesJzodReference
-        }),
-        "mlElementTemplate_", // prefix
-        true, // alwaysPropagate
-        (key: string, defn: JzodElement) => key.startsWith("transformer")
-      );
-    log.info(
-      "getMiroirFundamentalJzodSchema jzodElementLocalizedInnerResolutionStorePlainReferences",
-      Object.keys(jzodElementLocalizedInnerResolutionStorePlainReferences).length,
-      JSON.stringify(Object.keys(jzodElementLocalizedInnerResolutionStorePlainReferences), null, 2)
-    );
-    const jzodElementWithCarryOnContext = 
-      {
-        ...jzodElementLocalizedInnerResolutionStoreForExtendedSchemas,
-        ...jzodElementLocalizedInnerResolutionStorePlainReferences
-      };
-      log.info("########################################## Creating jzodElementWithCarryOnContext DONE:", Object.keys(jzodElementWithCarryOnContext).length);
-    return jzodElementWithCarryOnContext;
-  }
 
   const jzodElementWithCarryOnContext = getJzodElementWithCarryOnContext(
+    "mlElementTemplate_",
     transformerForBuildPlusRuntimeCarryOnSchemaReference,
     transformerForBuildPlusRuntimeForArrayCarryOnSchemaReference,
+    [
+      "jzodBaseObject",
+      "extractorOrCombinerRoot",
+      "extractorOrCombinerRoot",
+      "transformer_inner_label",
+      "transformer_orderBy",
+      "transformerForBuild_Abstract",
+      "transformerForBuild_optional_Abstract",
+      "transformerForBuildPlusRuntime_Abstract",
+      "transformerForBuildPlusRuntime_optional_Abstract",
+    ],
+    jzodElementDependenciesJzodReference,
   );
-
-
-
 
   // ##############################################################################################
   // ##############################################################################################
@@ -3440,7 +3401,6 @@ export function getMiroirFundamentalJzodSchema(
 
   const domainActionDependencySet = jzodTransitiveDependencySet(
     miroirFundamentalJzodSchema.definition,
-    // "instanceCUDAction",
     "domainAction",
     true, // includeExtend
   );
@@ -3556,6 +3516,9 @@ export function getMiroirFundamentalJzodSchema(
       ...miroirFundamentalJzodSchema.definition,
       context: {
         ...((miroirFundamentalJzodSchema.definition as any)?.context ?? {}),
+        ______________________________________________coreTransformerWithCarryOnContext________________________________________________:
+          { type: "any" },
+        ...coreTransformerWithCarryOnContext,
         ______________________________________________jzodElementWithCarryOnContext________________________________________________:
           { type: "any" },
         ...jzodElementWithCarryOnContext,

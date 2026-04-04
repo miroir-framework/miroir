@@ -95,6 +95,7 @@ export const mlsTransformers: Record<string,TransformerDefinition> = {
   transformer_resolveSchemaReferenceInContext,
   transformer_unfoldSchemaOnce,
   transformer_jzodTypeCheck,
+  transformer_ansiColumnsToJzodSchema,
 };
 
 export const miroirCoreTransformers: Record<string,TransformerDefinition> = {
@@ -121,11 +122,10 @@ export const miroirCoreTransformers: Record<string,TransformerDefinition> = {
   transformer_mustacheStringTemplate,
   transformer_generateUuid,
   transformer_mergeIntoObject,
-  transformer_ansiColumnsToJzodSchema,
   transformer_concatLists,
   // transformer_constantBigint,
   // MLS
-  ...mlsTransformers,
+  // ...mlsTransformers,
 };
 export const miroirTransformers: Record<string,TransformerDefinition> = {
   transformer_menu_addItem,
@@ -134,15 +134,19 @@ export const miroirTransformers: Record<string,TransformerDefinition> = {
   ...miroirCoreTransformers,
   ...mlsTransformers,
 };
+// export const coreTransformerForBuildNames = Object.keys(miroirCoreTransformers)
+//   .filter((e) => e != "transformer_getFromContext")
+//   .map((e) => e.replace("transformer_", "coreTransformerForBuild_"));
+
 export const transformerForBuildNames = Object.keys(miroirTransformers)
   .filter((e) => e != "transformer_getFromContext")
   .map((e) => e.replace("transformer_", "transformerForBuild_"));
 
-// export const transformerForRuntimeNames = Object.keys(miroirTransformers)
-// .filter((e) => e != "transformer_getFromParameters")
-// .map((e) =>
-//   e.replace("transformer_", "transformerForRuntime_")
-// );
+
+export const coreTransformerForBuildPlusRuntimeNames = Object.keys(miroirCoreTransformers)
+.map((e) =>
+  e.replace("transformer_", "coreTransformerForBuildPlusRuntime_")
+);
 
 export const transformerForBuildPlusRuntimeNames = Object.keys(miroirTransformers)
 .map((e) =>
@@ -150,33 +154,17 @@ export const transformerForBuildPlusRuntimeNames = Object.keys(miroirTransformer
 );
 
 
-// const runtimeReferenceMap: Record<string, string> = {
-//   // transformer: "transformerForRuntime",
-//   // transformer_InnerReference: "transformerForRuntime_InnerReference",
-//   transformer_returnValue: "transformerForRuntime_returnValue",
-//   transformer_createObject: "transformerForRuntime_createObject",
-//   transformer_getFromContext: "transformerForRuntime_getFromContext",
-//   transformer_accessDynamicPath: "transformerForRuntime_accessDynamicPath",
-//   transformer_mustacheStringTemplate: "transformerForRuntime_mustacheStringTemplate",
-// };
-
 const buildReferenceMap: Record<string, string> = {
   transformer: "transformerForBuild",
-  // transformer_InnerReference: "transformerForBuild_InnerReference",
   transformer_returnValue: "transformerForBuild_returnValue",
   transformer_createObject: "transformerForBuild_createObject",
   transformer_getFromContext: "transformerForBuild_getFromParameters",
   transformer_accessDynamicPath: "transformerForBuild_accessDynamicPath",
   transformer_mustacheStringTemplate: "transformerForBuild_mustacheStringTemplate", // TODO: rename to transformer_mustacheStringTemplate
-  // transformer_createObject: "transformerForBuildPlusRuntime_createObject",
-  // transformer_getFromContext: "transformerForBuildPlusRuntime_getFromContext",
-  // transformer_accessDynamicPath: "transformerForBuildPlusRuntime_accessDynamicPath",
-  // transformer_mustacheStringTemplate: "transformerForBuild_mustacheStringTemplate", // TODO: rename to transformer_mustacheStringTemplate
 };
 
 const buildPlusRuntimeReferenceMap: Record<string, string> = {
   transformer: "transformerForBuildPlusRuntime",
-  // transformer_InnerReference: "transformerForBuildPlusRuntime_InnerReference", // TODO: ensure that all transfrormer definitions use a reference for inner references: mapList, transformer_mergeIntoObject
   transformer_returnValue: "transformerForBuildPlusRuntime_returnValue",
   transformer_createObject: "transformerForBuildPlusRuntime_createObject",
   transformer_getFromContext: "transformerForBuildPlusRuntime_getFromContext",
@@ -184,17 +172,26 @@ const buildPlusRuntimeReferenceMap: Record<string, string> = {
   transformer_mustacheStringTemplate: "transformerForBuildPlusRuntime_mustacheStringTemplate", // TODO: rename to transformer_mustacheStringTemplate
 };
 
-// export const miroirTransformersForRuntime: Record<string, JzodElement> = Object.fromEntries(
-//   Object.entries(miroirTransformers).map(([key, transformer]) => [
-//     key,
-//     transformerInterfaceFromDefinition(
-//       transformer,
-//       "runtime",
-//       runtimeReferenceMap,
-//       ["transformer_getFromContext", "transformer_getFromParameters"].includes(key)
-//     ),
-//   ])
-// );
+const coreBuildPlusRuntimeReferenceMap: Record<string, string> = {
+  transformer: "coreTransformerForBuildPlusRuntime",
+  transformer_returnValue: "coreTransformerForBuildPlusRuntime_returnValue",
+  transformer_createObject: "coreTransformerForBuildPlusRuntime_createObject",
+  transformer_getFromContext: "coreTransformerForBuildPlusRuntime_getFromContext",
+  transformer_accessDynamicPath: "coreTransformerForBuildPlusRuntime_accessDynamicPath",
+  transformer_mustacheStringTemplate: "coreTransformerForBuildPlusRuntime_mustacheStringTemplate", // TODO: rename to transformer_mustacheStringTemplate
+};
+
+export const miroirCoreTransformersForBuildPlusRuntime: Record<string, JzodElement> = Object.fromEntries(
+  Object.entries(miroirTransformers).map(([key, transformer]) => [
+    key,
+    transformerInterfaceFromDefinition(
+      transformer,
+      "coreBuildPlusRuntime",
+      coreBuildPlusRuntimeReferenceMap,
+      true, // ["transformer_getFromContext", "transformer_getFromParameters"].includes(key)
+    ),
+  ])
+);
 
 export const miroirTransformersForBuildPlusRuntime: Record<string, JzodElement> = Object.fromEntries(
   Object.entries(miroirTransformers).map(([key, transformer]) => [

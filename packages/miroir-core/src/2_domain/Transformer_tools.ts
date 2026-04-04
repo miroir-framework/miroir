@@ -46,7 +46,7 @@ export function substituteTransformerReferencesInJzodElement<T>(
 // ################################################################################################
 export function transformerInterfaceFromDefinition(
   transformerDefinition: TransformerDefinition,
-  target: "build" | "buildPlusRuntime",
+  target: "build" | "buildPlusRuntime" | "coreBuildPlusRuntime",
   referenceMap: Record<string, string> = {},
   optionalInterpolation: boolean = false
 ): JzodElement {
@@ -54,6 +54,7 @@ export function transformerInterfaceFromDefinition(
   let innerReferenceRelativePath:
     | "transformerForBuild"
     | "transformerForBuildPlusRuntime"
+    | "coreTransformerForBuildPlusRuntime"
     | undefined = undefined;
   switch (target) {
     case "build": {
@@ -65,6 +66,10 @@ export function transformerInterfaceFromDefinition(
     }
     case "buildPlusRuntime":
       innerReferenceRelativePath = "transformerForBuildPlusRuntime";
+      relativePath = "transformerForBuildPlusRuntime_optional_Abstract";
+      break;
+    case "coreBuildPlusRuntime":
+      innerReferenceRelativePath = "coreTransformerForBuildPlusRuntime";
       relativePath = "transformerForBuildPlusRuntime_optional_Abstract";
       break;
     default:

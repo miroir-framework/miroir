@@ -336,36 +336,6 @@
           }
         ]
       },
-      "transformerForRuntime_InnerReference": {
-        "type": "union",
-        "discriminator": "transformerType",
-        "definition": [
-          {
-            "type": "schemaReference",
-            "definition": {
-              "relativePath": "transformerForBuildPlusRuntime_returnValue"
-            }
-          },
-          {
-            "type": "schemaReference",
-            "definition": {
-              "relativePath": "transformerForBuildPlusRuntime_generateUuid"
-            }
-          },
-          {
-            "type": "schemaReference",
-            "definition": {
-              "relativePath": "transformerForBuildPlusRuntime_getFromContext"
-            }
-          },
-          {
-            "type": "schemaReference",
-            "definition": {
-              "relativePath": "transformerForBuildPlusRuntime_accessDynamicPath"
-            }
-          }
-        ]
-      },
       "transformerForBuildPlusRuntime_InnerReference": {
         "type": "union",
         "discriminator": ["transformerType", "interpolation"],
@@ -446,6 +416,63 @@
               "type": "schemaReference",
               "definition": {
                 "relativePath": "transformerForBuildPlusRuntime"
+              }
+            }
+          }
+        }
+      },
+      "coreTransformerForBuildPlusRuntime_InnerReference": {
+        "type": "union",
+        "discriminator": ["transformerType", "interpolation"],
+        "definition": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "coreTransformerForBuildPlusRuntime_returnValue"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "coreTransformerForBuildPlusRuntime_generateUuid"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "coreTransformerForBuildPlusRuntime_getFromContext"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "coreTransformerForBuildPlusRuntime_accessDynamicPath"
+            }
+          }
+        ]
+      },
+      "coreTransformerForBuildPlusRuntime_dataflowSequence": {
+        "type": "object",
+        "extend": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "relativePath": "transformerForBuildPlusRuntime_Abstract"
+            }
+          }
+        ],
+        "definition": {
+          "transformerType": {
+            "type": "literal",
+            "definition": "dataflowSequence"
+          },
+          "definition": {
+            "type": "array",
+            "definition": {
+              "type": "schemaReference",
+              "definition": {
+                "relativePath": "coreTransformerForBuildPlusRuntime"
               }
             }
           }
