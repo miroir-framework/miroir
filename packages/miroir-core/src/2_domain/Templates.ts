@@ -10,7 +10,8 @@ import {
   ExtractorTemplateReturningObjectOrObjectList,
   ExtractorWrapper,
   QueryFailed,
-  Transformer_contextOrParameterReferenceTO_REMOVE
+  Transformer_contextOrParameterReferenceTO_REMOVE,
+  type CoreTransformerForBuildPlusRuntime
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { type MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
@@ -163,11 +164,16 @@ export function resolveExtractorTemplate(
         extractorOrCombinerType: "extractorWrapperReturningList",
         ...cleanQueryTemplate,
         definition: extractorOrCombinerTemplate.definition.map(
-          (e: Transformer_contextOrParameterReferenceTO_REMOVE) =>
-            ({
-              extractorOrCombinerType: "extractorOrCombinerContextReference",
-              extractorOrCombinerContextReference: e.referenceName,
-            } as ExtractorOrCombiner)
+          (e: CoreTransformerForBuildPlusRuntime) => transformer_extended_apply(
+                "build",
+                [], // transformerPath
+                (e as any).label?? "extractorWrapperReturningList label missing",
+                e,
+                "value",
+                modelEnvironment,
+                queryParams,
+                contextResults
+              )
         ),
       };
       break;

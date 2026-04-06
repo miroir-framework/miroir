@@ -2,7 +2,6 @@ import {
   ComplexMenu,
   Menu,
   MiroirMenuItem,
-  TransformerForBuild_menu_addItem,
   type TransformerForBuildPlusRuntime_menu_addItem
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { type MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
@@ -32,7 +31,7 @@ export function handleTransformer_menu_AddItem(
   transformerPath: string[],
   objectName: string | undefined,
   // transformers: any,
-  transformer: TransformerForBuild_menu_addItem | TransformerForBuildPlusRuntime_menu_addItem,
+  transformer: TransformerForBuildPlusRuntime_menu_addItem,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
   modelEnvironment: MiroirModelEnvironment,
   queryParams: Record<string, any>,

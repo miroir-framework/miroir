@@ -1,5 +1,4 @@
 import { JzodElement, JzodObject, JzodReference } from "@miroir-framework/jzod-ts";
-import { log } from "console";
 
 /**
  * Recursively collects all JzodReference elements found

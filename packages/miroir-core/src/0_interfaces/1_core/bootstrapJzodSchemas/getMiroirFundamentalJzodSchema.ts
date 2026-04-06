@@ -16,11 +16,11 @@ import {
   coreTransformerForBuildPlusRuntimeNames,
   miroirCoreTransformers,
   miroirCoreTransformersForBuildPlusRuntime,
-  miroirTransformersForBuild,
+  // miroirTransformersForBuild,
   miroirTransformersForBuildPlusRuntime,
   // miroirTransformersForRuntime,
   mlsTransformers,
-  transformerForBuildNames,
+  // transformerForBuildNames,
   transformerForBuildPlusRuntimeNames,
 } from "../../../2_domain/Transformers";
 import { MiroirLoggerFactory } from "../../../4_services/MiroirLoggerFactory";
@@ -405,121 +405,6 @@ export function getMiroirFundamentalJzodSchema(
           ],
         },
         // ########################################################################################
-        transformerForBuild_spreadSheetToJzodSchema:
-          miroirTransformersForBuild.transformer_spreadSheetToJzodSchema,
-        //
-        transformerForBuild_getActiveDeployment:
-          miroirTransformersForBuild.transformer_getActiveDeployment,
-        //
-        transformerForBuild_menu_addItem: miroirTransformersForBuild.transformer_menu_addItem,
-        //
-        ...Object.fromEntries(
-          Object.entries(miroirCoreTransformers).map(([key, value]) => [
-            key.replace("transformer_", "transformerForBuild_"),
-            miroirTransformersForBuild[key as keyof typeof miroirTransformersForBuild],
-          ]),
-        ),
-        // 
-        transformerForBuild_ansiColumnsToJzodSchema:
-          miroirTransformersForBuild.transformer_ansiColumnsToJzodSchema,
-        // MLS
-        ...Object.fromEntries(
-          Object.entries(mlsTransformers).map(([key, value]) => [
-            key.replace("transformer_", "transformerForBuild_"),
-            miroirTransformersForBuild[key as keyof typeof miroirTransformersForBuild],
-          ]),
-        ),
-        //
-        transformerForBuildWithoutArray: {
-          type: "union",
-          discriminator: ["transformerType", "interpolation"],
-          optInDiscriminator: true,
-          definition: [
-            {
-              type: "string",
-            },
-            {
-              type: "number",
-            },
-            { type: "boolean" },
-            // {
-            //   type: "array",
-            //   definition: {
-            //     type: "schemaReference",
-            //     definition: {
-            //       absolutePath: miroirFundamentalJzodSchemaUuid,
-            //       relativePath: "transformerForBuild",
-            //     },
-            //   },
-            // },
-            ...transformerForBuildNames.map((e: any) => ({
-              type: "schemaReference",
-              definition: {
-                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                relativePath: e,
-              },
-            })),
-            {
-              type: "schemaReference",
-              definition: {
-                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                relativePath: "transformerForBuild_InnerReference",
-              },
-            },
-            {
-              type: "schemaReference",
-              definition: {
-                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                relativePath: "transformerForBuild_dataflowSequence",
-              },
-            },
-          ],
-        },
-        transformerForBuild: {
-          type: "union",
-          discriminator: ["transformerType", "interpolation"],
-          optInDiscriminator: true,
-          definition: [
-            {
-              type: "string",
-            },
-            {
-              type: "number",
-            },
-            { type: "boolean" },
-            {
-              type: "array",
-              definition: {
-                type: "schemaReference",
-                definition: {
-                  absolutePath: miroirFundamentalJzodSchemaUuid,
-                  relativePath: "transformerForBuild",
-                },
-              },
-            },
-            ...transformerForBuildNames.map((e: any) => ({
-              type: "schemaReference",
-              definition: {
-                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                relativePath: e,
-              },
-            })),
-            {
-              type: "schemaReference",
-              definition: {
-                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                relativePath: "transformerForBuild_InnerReference",
-              },
-            },
-            {
-              type: "schemaReference",
-              definition: {
-                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                relativePath: "transformerForBuild_dataflowSequence",
-              },
-            },
-          ],
-        },
         // ########################################################################################
         // WRONG!!!! (???)
         //
@@ -535,14 +420,14 @@ export function getMiroirFundamentalJzodSchema(
           transformerForBuildPlusRuntime_ansiColumnsToJzodSchema:
             miroirTransformersForBuildPlusRuntime.transformer_ansiColumnsToJzodSchema,
         // 
-        ...Object.fromEntries(
-          Object.entries(miroirCoreTransformers).map(([key, value]) => [
-            key.replace("transformer_", "transformerForBuildPlusRuntime_"),
-            miroirTransformersForBuildPlusRuntime[
-              key as keyof typeof miroirTransformersForBuildPlusRuntime
-            ],
-          ]),
-        ),
+        // ...Object.fromEntries(
+        //   Object.entries(miroirCoreTransformers).map(([key, value]) => [
+        //     key.replace("transformer_", "transformerForBuildPlusRuntime_"),
+        //     miroirTransformersForBuildPlusRuntime[
+        //       key as keyof typeof miroirTransformersForBuildPlusRuntime
+        //     ],
+        //   ]),
+        // ),
         // MLS
         ...Object.fromEntries(
           Object.entries(mlsTransformers).map(([key, value]) => [
@@ -552,86 +437,86 @@ export function getMiroirFundamentalJzodSchema(
             ],
           ]),
         ),
-        transformerForBuildPlusRuntimeWithoutArray: {
-          type: "union",
-          optInDiscriminator: true,
-          discriminator: ["transformerType", "interpolation"],
-          definition: [
-            {
-              type: "string",
-            },
-            {
-              type: "number",
-            },
-            { type: "boolean" },
-            ...transformerForBuildPlusRuntimeNames.map((e: any) => ({
-              type: "schemaReference",
-              definition: {
-                absolutePath: miroirFundamentalJzodSchemaUuid,
-                relativePath: e,
-              },
-            })),
-            {
-              type: "schemaReference",
-              definition: {
-                absolutePath: miroirFundamentalJzodSchemaUuid,
-                relativePath: "transformerForBuildPlusRuntime_InnerReference",
-              },
-            },
-            {
-              type: "schemaReference",
-              definition: {
-                absolutePath: miroirFundamentalJzodSchemaUuid,
-                relativePath: "transformerForBuildPlusRuntime_dataflowSequence",
-              },
-            },
-          ],
-        },
-        transformerForBuildPlusRuntime:{
-          type: "union",
-          optInDiscriminator: true,
-          discriminator: ["transformerType", "interpolation"],
-          definition: [
-            {
-              type: "string",
-            },
-            {
-              type: "number",
-            },
-            { type: "boolean" },
-            {
-              type: "array",
-              definition: {
-                type: "schemaReference",
-                definition: {
-                  absolutePath: miroirFundamentalJzodSchemaUuid,
-                  relativePath: "transformerForBuildPlusRuntime",
-                },
-              },
-            },
-            ...transformerForBuildPlusRuntimeNames.map((e: any) => ({
-              type: "schemaReference",
-              definition: {
-                absolutePath: miroirFundamentalJzodSchemaUuid,
-                relativePath: e,
-              },
-            })),
-            {
-              type: "schemaReference",
-              definition: {
-                absolutePath: miroirFundamentalJzodSchemaUuid,
-                relativePath: "transformerForBuildPlusRuntime_InnerReference",
-              },
-            },
-            {
-              type: "schemaReference",
-              definition: {
-                absolutePath: miroirFundamentalJzodSchemaUuid,
-                relativePath: "transformerForBuildPlusRuntime_dataflowSequence",
-              },
-            },
-          ],
-        },
+        // transformerForBuildPlusRuntimeWithoutArray: {
+        //   type: "union",
+        //   optInDiscriminator: true,
+        //   discriminator: ["transformerType", "interpolation"],
+        //   definition: [
+        //     {
+        //       type: "string",
+        //     },
+        //     {
+        //       type: "number",
+        //     },
+        //     { type: "boolean" },
+        //     ...transformerForBuildPlusRuntimeNames.map((e: any) => ({
+        //       type: "schemaReference",
+        //       definition: {
+        //         absolutePath: miroirFundamentalJzodSchemaUuid,
+        //         relativePath: e,
+        //       },
+        //     })),
+        //     {
+        //       type: "schemaReference",
+        //       definition: {
+        //         absolutePath: miroirFundamentalJzodSchemaUuid,
+        //         relativePath: "coreTransformerForBuildPlusRuntime_InnerReference",
+        //       },
+        //     },
+        //     {
+        //       type: "schemaReference",
+        //       definition: {
+        //         absolutePath: miroirFundamentalJzodSchemaUuid,
+        //         relativePath: "coreTransformerForBuildPlusRuntime_dataflowSequence",
+        //       },
+        //     },
+        //   ],
+        // },
+        // transformerForBuildPlusRuntime:{
+        //   type: "union",
+        //   optInDiscriminator: true,
+        //   discriminator: ["transformerType", "interpolation"],
+        //   definition: [
+        //     {
+        //       type: "string",
+        //     },
+        //     {
+        //       type: "number",
+        //     },
+        //     { type: "boolean" },
+        //     {
+        //       type: "array",
+        //       definition: {
+        //         type: "schemaReference",
+        //         definition: {
+        //           absolutePath: miroirFundamentalJzodSchemaUuid,
+        //           relativePath: "coreTransformerForBuildPlusRuntime",
+        //         },
+        //       },
+        //     },
+        //     ...transformerForBuildPlusRuntimeNames.map((e: any) => ({
+        //       type: "schemaReference",
+        //       definition: {
+        //         absolutePath: miroirFundamentalJzodSchemaUuid,
+        //         relativePath: e,
+        //       },
+        //     })),
+        //     {
+        //       type: "schemaReference",
+        //       definition: {
+        //         absolutePath: miroirFundamentalJzodSchemaUuid,
+        //         relativePath: "coreTransformerForBuildPlusRuntime_InnerReference",
+        //       },
+        //     },
+        //     {
+        //       type: "schemaReference",
+        //       definition: {
+        //         absolutePath: miroirFundamentalJzodSchemaUuid,
+        //         relativePath: "coreTransformerForBuildPlusRuntime_dataflowSequence",
+        //       },
+        //     },
+        //   ],
+        // },
         ...entityDefinitionTransformerDefinition.mlSchema.definition.transformerInterface.definition
           .inputOutput.context,
         // inputOutputObject: entityDefinitionTransformerDefinition.mlSchema.definition.transformerInterface.definition.inputOutput as any,
@@ -2206,7 +2091,7 @@ export function getMiroirFundamentalJzodSchema(
                 type: "schemaReference",
                 definition: {
                   absolutePath: miroirFundamentalJzodSchemaUuid,
-                  relativePath: "transformerForBuildPlusRuntime",
+                  relativePath: "coreTransformerForBuildPlusRuntime",
                 },
               },
             },
@@ -2266,7 +2151,7 @@ export function getMiroirFundamentalJzodSchema(
                 type: "schemaReference",
                 definition: {
                   absolutePath: miroirFundamentalJzodSchemaUuid,
-                  relativePath: "transformerForBuildPlusRuntime",
+                  relativePath: "coreTransformerForBuildPlusRuntime",
                 },
               },
             },
@@ -2881,80 +2766,81 @@ export function getMiroirFundamentalJzodSchema(
         // ################################################################################
         // ################################################################################
         // ################################################################################
-        buildCompositeAction: {
-          type: "object",
-          definition: {
-            actionType: { type: "literal", definition: "compositeActionSequence" },
-            actionName: { type: "literal", definition: "sequence" },
-            actionLabel: { type: "string", optional: true },
-            templates: {
-              type: "record",
-              optional: true,
-              definition: {
-                type: "any",
-              },
-            },
-            definition: {
-              type: "array",
-              definition: {
-                type: "union",
-                discriminator: "actionType",
-                definition: [
-                  {
-                    type: "schemaReference",
-                    definition: {
-                      absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                      relativePath: "buildDomainAction",
-                    },
-                  },
-                  {
-                    type: "schemaReference",
-                    definition: {
-                      absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                      relativePath: "buildCompositeAction",
-                    },
-                  },
-                  {
-                    type: "object",
-                    definition: {
-                      actionType: { type: "literal", definition: "compositeRunBoxedQueryAction" },
-                      actionLabel: { type: "string", optional: true },
-                      nameGivenToResult: { type: "string" },
-                      queryTemplate: {
-                        type: "schemaReference",
-                        definition: {
-                          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                          relativePath: "runBoxedQueryAction",
-                        },
-                      },
-                    },
-                  },
-                  {
-                    type: "object",
-                    definition: {
-                      actionType: { type: "literal", definition: "compositeRunTestAssertion" },
-                      actionLabel: { type: "string", optional: true },
-                      nameGivenToResult: { type: "string" },
-                      testAssertion: {
-                        type: "schemaReference",
-                        definition: {
-                          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                          relativePath: "testAssertion",
-                        },
-                      },
-                    },
-                  },
-                ],
-              },
-            },
-          },
-        },
+        // buildCompositeAction: {
+        //   type: "object",
+        //   definition: {
+        //     actionType: { type: "literal", definition: "compositeActionSequence" },
+        //     actionName: { type: "literal", definition: "sequence" },
+        //     actionLabel: { type: "string", optional: true },
+        //     templates: {
+        //       type: "record",
+        //       optional: true,
+        //       definition: {
+        //         type: "any",
+        //       },
+        //     },
+        //     definition: {
+        //       type: "array",
+        //       definition: {
+        //         type: "union",
+        //         discriminator: "actionType",
+        //         definition: [
+        //           {
+        //             type: "schemaReference",
+        //             definition: {
+        //               absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+        //               relativePath: "buildDomainAction",
+        //             },
+        //           },
+        //           {
+        //             type: "schemaReference",
+        //             definition: {
+        //               absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+        //               relativePath: "buildCompositeAction",
+        //             },
+        //           },
+        //           {
+        //             type: "object",
+        //             definition: {
+        //               actionType: { type: "literal", definition: "compositeRunBoxedQueryAction" },
+        //               actionLabel: { type: "string", optional: true },
+        //               nameGivenToResult: { type: "string" },
+        //               queryTemplate: {
+        //                 type: "schemaReference",
+        //                 definition: {
+        //                   absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+        //                   relativePath: "runBoxedQueryAction",
+        //                 },
+        //               },
+        //             },
+        //           },
+        //           {
+        //             type: "object",
+        //             definition: {
+        //               actionType: { type: "literal", definition: "compositeRunTestAssertion" },
+        //               actionLabel: { type: "string", optional: true },
+        //               nameGivenToResult: { type: "string" },
+        //               testAssertion: {
+        //                 type: "schemaReference",
+        //                 definition: {
+        //                   absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+        //                   relativePath: "testAssertion",
+        //                 },
+        //               },
+        //             },
+        //           },
+        //         ],
+        //       },
+        //     },
+        //   },
+        // },
         buildPlusRuntimeCompositeAction: {
           type: "schemaReference",
           definition: {
             absolutePath: miroirFundamentalJzodSchemaUuid,
             relativePath:
-              "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeActionSequence",
+              // "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeActionSequence",
+              "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeActionSequence",
           },
         },
         // ################################################################################
@@ -2966,11 +2852,6 @@ export function getMiroirFundamentalJzodSchema(
         // ################################################################################
         // ################################################################################
         // ################################################################################
-        // compositeRunTestAssertion: domainEndpointVersionV1.definition.actions
-        //   .find((a: any) => a.actionParameters?.actionType?.definition == "compositeActionSequence")
-        //   ?.actionParameters.payload.definition.actionSequence.definition.definition.find(
-        //     (a: any) => a.definition?.actionType?.definition == "compositeRunTestAssertion",
-        //   ),
         domainAction: {
           type: "union",
           discriminator: "actionType",
@@ -3263,6 +3144,24 @@ export function getMiroirFundamentalJzodSchema(
       },
     },
   };
+
+  const nullEntries = Object.entries(miroirFundamentalJzodSchema.definition.context).filter((e) => !e[1]);
+  log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+  log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+  log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+  log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+  log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+  log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+  log.info("getMiroirFundamentalJzodSchema nullEntries in miroirFundamentalJzodSchema.definition.context", nullEntries.length, JSON.stringify(nullEntries, null, 2));
+  log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+  log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+  log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+  log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+  log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+  log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+  log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+  log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+
   // ##############################################################################################
   // ##############################################################################################
   // ##############################################################################################
@@ -3304,12 +3203,57 @@ export function getMiroirFundamentalJzodSchema(
   // ##############################################################################
   // ##############################################################################
 
-  const coreTransformerDependenciesJzodReference = getDependencySet(
+  // const coreTransformerDependenciesJzodReference = getDependencySet(
+  //   jzodSchemajzodMiroirBootstrapSchema,
+  //   miroirFundamentalJzodSchema.definition,
+  //   absoluteMiroirFundamentalJzodSchema,
+  //   "coreTransformerForBuildPlusRuntime",
+  //   false
+  // );
+
+  // const coreTransformerForBuildPlusRuntimeCarryOnSchemaReference: JzodReference = {
+  //   type: "schemaReference",
+  //   definition: {
+  //     absolutePath: miroirFundamentalJzodSchemaUuid,
+  //     relativePath: "coreTransformerForBuildPlusRuntime",
+  //   },
+  // };
+  // const coreTransformerForBuildPlusRuntimeForArrayCarryOnSchemaReference: JzodReference = {
+  //   type: "schemaReference",
+  //   definition: {
+  //     absolutePath: miroirFundamentalJzodSchemaUuid,
+  //     relativePath: "coreTransformerForBuildPlusRuntimeWithoutArray",
+  //   },
+  // };
+
+  // const coreTransformerWithCarryOnContext = getJzodElementWithCarryOnContext(
+  //   "miroirTemplate_",
+  //   coreTransformerForBuildPlusRuntimeCarryOnSchemaReference,
+  //   coreTransformerForBuildPlusRuntimeForArrayCarryOnSchemaReference,
+  //   [
+  //     // "jzodBaseObject",
+  //     // "extractorOrCombinerRoot",
+  //     "transformer_inner_label",
+  //     "transformer_orderBy",
+  //     // "transformerForBuild_Abstract",
+  //     // "transformerForBuild_optional_Abstract",
+  //     "transformerForBuildPlusRuntime_Abstract",
+  //     "transformerForBuildPlusRuntime_optional_Abstract",
+  //   ],
+  //   coreTransformerDependenciesJzodReference,
+  // );
+  // ##############################################################################
+  // ##############################################################################
+  // ##############################################################################
+  // ##############################################################################
+  // ##############################################################################
+  // ##############################################################################
+  // JZOD ELEMENTS
+  const jzodElementDependenciesJzodReference = getDependencySet(
     jzodSchemajzodMiroirBootstrapSchema,
     miroirFundamentalJzodSchema.definition,
     absoluteMiroirFundamentalJzodSchema,
-    "coreTransformerForBuildPlusRuntime",
-    false
+    "jzodElement",
   );
 
   const coreTransformerForBuildPlusRuntimeCarryOnSchemaReference: JzodReference = {
@@ -3327,63 +3271,14 @@ export function getMiroirFundamentalJzodSchema(
     },
   };
 
-  const coreTransformerWithCarryOnContext = getJzodElementWithCarryOnContext(
+  const jzodElementWithCarryOnContext = getJzodElementWithCarryOnContext(
     "miroirTemplate_",
     coreTransformerForBuildPlusRuntimeCarryOnSchemaReference,
     coreTransformerForBuildPlusRuntimeForArrayCarryOnSchemaReference,
     [
-      // "jzodBaseObject",
-      // "extractorOrCombinerRoot",
-      "transformer_inner_label",
-      "transformer_orderBy",
-      // "transformerForBuild_Abstract",
-      // "transformerForBuild_optional_Abstract",
-      "transformerForBuildPlusRuntime_Abstract",
-      "transformerForBuildPlusRuntime_optional_Abstract",
-    ],
-    coreTransformerDependenciesJzodReference,
-  );
-  // ##############################################################################
-  // ##############################################################################
-  // ##############################################################################
-  // ##############################################################################
-  // ##############################################################################
-  // ##############################################################################
-  // JZOD ELEMENTS
-  const jzodElementDependenciesJzodReference = getDependencySet(
-    jzodSchemajzodMiroirBootstrapSchema,
-    miroirFundamentalJzodSchema.definition,
-    absoluteMiroirFundamentalJzodSchema,
-    "jzodElement",
-  );
-
-  const transformerForBuildPlusRuntimeCarryOnSchemaReference: JzodReference = {
-    type: "schemaReference",
-    definition: {
-      absolutePath: miroirFundamentalJzodSchemaUuid,
-      relativePath: "transformerForBuildPlusRuntimeCarryOnObject",
-    },
-  };
-  const transformerForBuildPlusRuntimeForArrayCarryOnSchemaReference: JzodReference = {
-    type: "schemaReference",
-    definition: {
-      absolutePath: miroirFundamentalJzodSchemaUuid,
-      relativePath: "transformerForBuildPlusRuntimeForArrayCarryOnObject",
-    },
-  };
-
-  const jzodElementWithCarryOnContext = getJzodElementWithCarryOnContext(
-    "mlElementTemplate_",
-    transformerForBuildPlusRuntimeCarryOnSchemaReference,
-    transformerForBuildPlusRuntimeForArrayCarryOnSchemaReference,
-    [
       "jzodBaseObject",
-      "extractorOrCombinerRoot",
-      "extractorOrCombinerRoot",
       "transformer_inner_label",
       "transformer_orderBy",
-      "transformerForBuild_Abstract",
-      "transformerForBuild_optional_Abstract",
       "transformerForBuildPlusRuntime_Abstract",
       "transformerForBuildPlusRuntime_optional_Abstract",
     ],
@@ -3395,9 +3290,10 @@ export function getMiroirFundamentalJzodSchema(
   // ##############################################################################################
   // ##############################################################################################
   // ##############################################################################################
-  log.info("getMiroirFundamentalJzodSchema domainAction ##############################################################################################");
+  // //  DomainAction TransformerForBuild & transformerForBuildPlusRuntime
+  // log.info("getMiroirFundamentalJzodSchema domainAction ##############################################################################################");
   const domainAction = (miroirFundamentalJzodSchema as any).definition.context["domainAction"]
-  // const runtimeDomainActionReferencePrefix = "runtimeDomainAction_";
+  // // const runtimeDomainActionReferencePrefix = "runtimeDomainAction_";
 
   const domainActionDependencySet = jzodTransitiveDependencySet(
     miroirFundamentalJzodSchema.definition,
@@ -3405,89 +3301,10 @@ export function getMiroirFundamentalJzodSchema(
     true, // includeExtend
   );
 
-  // TODO: HACK!! forcing jzod schema definition into compositeActionDependencySet
+  // // TODO: HACK!! forcing jzod schema definition into compositeActionDependencySet
   Object.keys((jzodSchemajzodMiroirBootstrapSchema as any).definition.context).forEach((key) => {
     domainActionDependencySet.add(key);
   });
-
-  // addExtraItems.forEach(item => domainActionDependencySet.add(item));
-
-    [
-    "transformerForBuild_Abstract", 
-    "transformerForBuild_optional_Abstract",
-    "transformerForBuild_accessDynamicPath",
-    "transformerForBuild_getFromParameters",
-    "transformerForBuild_mustacheStringTemplate",
-    "transformerForBuild_ifThenElse",
-    "transformerForBuild_boolExpr",
-    "transformerForBuild_plus",
-    "transformerForBuild_case",
-    "transformerForBuild_returnValue",
-    "transformerForBuild_constantAsExtractor",
-    "transformerForBuild_getFromContext",
-    "transformerForBuild_aggregate",
-    "transformerForBuild_dataflowObject",
-    "transformerForBuild_mapList",
-    "transformerForBuild_createObject",
-    "transformerForBuild_generateUuid",
-    "transformerForBuild_mustacheStringTemplate",
-    "transformerForBuild_mergeIntoObject",
-    "transformerForBuild_accessDynamicPath",
-    "transformerForBuild_getObjectEntries",
-    "transformerForBuild_getObjectValues",
-    "transformerForBuild_pickFromList",
-    "transformerForBuild_indexListBy",
-    "transformerForBuild_listReducerToSpreadObject",
-    "transformerForBuild_createObjectFromPairs",
-    "transformerForBuild_getFromParameters",
-    "transformerForBuild_getUniqueValues",
-    "transformerForBuild_ansiColumnsToJzodSchema",
-    "transformerForBuild_concatLists",
-    // "transformerForBuild_InnerReference"
-  ].forEach((key) => {
-    domainActionDependencySet.add(key);
-  });
-
-  log.info(
-    "domainActionDependencySet",
-    Array.from(domainActionDependencySet.keys()).length,
-    JSON.stringify(Array.from(domainActionDependencySet.keys()), null, 2),
-  );
-
-
-  log.info("########################################## Create buildDomainAction templates...");
-
-  const {
-    carryOnDomainActionLocalizedInnerResolutionStoreForExtendedSchemas:
-      buildDomainActionLocalizedInnerResolutionStoreForExtendedSchemas,
-    domainActionLocalizedInnerResolutionStorePlainReferences:
-      buildDomainActionLocalizedInnerResolutionStorePlainReferences,
-    carryOnDomainActionSchemaBuilder: buildDomainActionSchemaBuilder,
-  } = createDomainActionCarryOnSchemaResolver(
-    domainAction,
-    {
-      type: "schemaReference",
-      definition: {
-        absolutePath: miroirFundamentalJzodSchemaUuid,
-        relativePath: "transformerForBuildCarryOnObject",
-      },
-    },
-    {
-      type: "schemaReference",
-      definition: {
-        absolutePath: miroirFundamentalJzodSchemaUuid,
-        relativePath: "transformerForBuildForArrayCarryOnObject",
-      },
-    },
-    ["transformerType", "interpolation"],
-    domainActionDependencySet,
-    "buildDomainAction_", // prefix
-    false, // alwaysPropagate
-    absoluteMiroirFundamentalJzodSchema,
-    extendedSchemas,
-  );
-
-  log.info("########################################## Create buildDomainAction templates DONE.");
 
   log.info("########################################## Create buildPlusRuntimeDomainAction templates...");
   const {
@@ -3498,11 +3315,11 @@ export function getMiroirFundamentalJzodSchema(
     carryOnDomainActionSchemaBuilder: buildPlusRuntimeDomainActionSchemaBuilder,
   } = createDomainActionCarryOnSchemaResolver(
     domainAction,
-    transformerForBuildPlusRuntimeCarryOnSchemaReference,
-    transformerForBuildPlusRuntimeForArrayCarryOnSchemaReference,
+    coreTransformerForBuildPlusRuntimeCarryOnSchemaReference,
+    coreTransformerForBuildPlusRuntimeForArrayCarryOnSchemaReference,
     ["transformerType", "interpolation"],
     domainActionDependencySet,
-    "buildPlusRuntimeDomainAction_", // prefix
+    "miroirTemplate_", // prefix
     false, // alwaysPropagate
     absoluteMiroirFundamentalJzodSchema,
     extendedSchemas
@@ -3516,35 +3333,17 @@ export function getMiroirFundamentalJzodSchema(
       ...miroirFundamentalJzodSchema.definition,
       context: {
         ...((miroirFundamentalJzodSchema.definition as any)?.context ?? {}),
-        ______________________________________________coreTransformerWithCarryOnContext________________________________________________:
-          { type: "any" },
-        ...coreTransformerWithCarryOnContext,
         ______________________________________________jzodElementWithCarryOnContext________________________________________________:
           { type: "any" },
         ...jzodElementWithCarryOnContext,
-        ______________________________________________buildDomainActionLocalizedInnerResolutionStoreForExtendedSchemas_______________________:
-          { type: "any" },
-        ...buildDomainActionLocalizedInnerResolutionStoreForExtendedSchemas,
-        ______________________________________________buildDomainActionLocalizedInnerResolutionStorePlainReferences_______________________:
-          { type: "any" },
-        ...buildDomainActionLocalizedInnerResolutionStorePlainReferences,
         ______________________________________________buildPlusRuntimeDomainActionLocalizedInnerResolutionStoreForExtendedSchemas_______________________:
           { type: "any" },
         ...buildPlusRuntimeDomainActionLocalizedInnerResolutionStoreForExtendedSchemas,
         ______________________________________________buildPlusRuntimeDomainActionLocalizedInnerResolutionStorePlainReferences_______________________:
           { type: "any" },
         ...buildPlusRuntimeDomainActionLocalizedInnerResolutionStorePlainReferences,
-        ______________________________________________transformerForBuildCarryOnObject_______________________:
+        ______________________________________________buildPlusRuntimeDomainAction_______________________:
           { type: "any" },
-        transformerForBuildCarryOnObject:
-          miroirFundamentalJzodSchema.definition.context.transformerForBuild,
-        transformerForBuildForArrayCarryOnObject:
-          miroirFundamentalJzodSchema.definition.context.transformerForBuildWithoutArray,
-        transformerForBuildPlusRuntimeCarryOnObject: miroirFundamentalJzodSchema.definition.context
-          .transformerForBuildPlusRuntime,
-        transformerForBuildPlusRuntimeForArrayCarryOnObject: miroirFundamentalJzodSchema.definition.context
-          .transformerForBuildPlusRuntimeWithoutArray,
-        buildDomainAction: buildDomainActionSchemaBuilder.resultSchema,
         buildPlusRuntimeDomainAction: buildPlusRuntimeDomainActionSchemaBuilder.resultSchema,
         compositeActionTemplate: {
           type: "schemaReference",
@@ -3557,7 +3356,7 @@ export function getMiroirFundamentalJzodSchema(
           type: "schemaReference",
           definition: {
             absolutePath: miroirFundamentalJzodSchemaUuid,
-            relativePath: "mlElementTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement",
+            relativePath: "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement",
           },
         },
       } as Record<string, any /**JzodElement */>,

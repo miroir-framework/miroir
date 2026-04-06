@@ -82,7 +82,7 @@ export const transformer_ansiColumnsToJzodSchema: TransformerDefinition = transf
 export const transformer_concatLists: TransformerDefinition = transformer_concatLists_json as TransformerDefinition;
 
 export const adminTransformers: Record<string,TransformerDefinition> = {
-  transformer_getActiveDeployment,
+  // transformer_getActiveDeployment,
 };
 
 export const spreadsheetTransformers: Record<string,TransformerDefinition> = {
@@ -90,7 +90,7 @@ export const spreadsheetTransformers: Record<string,TransformerDefinition> = {
 };
 
 export const mlsTransformers: Record<string,TransformerDefinition> = {
-  transformer_defaultValueForMLSchema,
+  // transformer_defaultValueForMLSchema,
   transformer_resolveConditionalSchema,
   transformer_resolveSchemaReferenceInContext,
   transformer_unfoldSchemaOnce,
@@ -99,6 +99,10 @@ export const mlsTransformers: Record<string,TransformerDefinition> = {
 };
 
 export const miroirCoreTransformers: Record<string,TransformerDefinition> = {
+  transformer_defaultValueForMLSchema,
+  // 
+  transformer_getActiveDeployment,
+  //
   transformer_accessDynamicPath,
   transformer_aggregate,
   transformer_constantAsExtractor,
@@ -138,9 +142,9 @@ export const miroirTransformers: Record<string,TransformerDefinition> = {
 //   .filter((e) => e != "transformer_getFromContext")
 //   .map((e) => e.replace("transformer_", "coreTransformerForBuild_"));
 
-export const transformerForBuildNames = Object.keys(miroirTransformers)
-  .filter((e) => e != "transformer_getFromContext")
-  .map((e) => e.replace("transformer_", "transformerForBuild_"));
+// export const transformerForBuildNames = Object.keys(miroirTransformers)
+//   .filter((e) => e != "transformer_getFromContext")
+//   .map((e) => e.replace("transformer_", "transformerForBuild_"));
 
 
 export const coreTransformerForBuildPlusRuntimeNames = Object.keys(miroirCoreTransformers)
@@ -154,14 +158,14 @@ export const transformerForBuildPlusRuntimeNames = Object.keys(miroirTransformer
 );
 
 
-const buildReferenceMap: Record<string, string> = {
-  transformer: "transformerForBuild",
-  transformer_returnValue: "transformerForBuild_returnValue",
-  transformer_createObject: "transformerForBuild_createObject",
-  transformer_getFromContext: "transformerForBuild_getFromParameters",
-  transformer_accessDynamicPath: "transformerForBuild_accessDynamicPath",
-  transformer_mustacheStringTemplate: "transformerForBuild_mustacheStringTemplate", // TODO: rename to transformer_mustacheStringTemplate
-};
+// const buildReferenceMap: Record<string, string> = {
+//   transformer: "transformerForBuild",
+//   transformer_returnValue: "transformerForBuild_returnValue",
+//   transformer_createObject: "transformerForBuild_createObject",
+//   transformer_getFromContext: "transformerForBuild_getFromParameters",
+//   transformer_accessDynamicPath: "transformerForBuild_accessDynamicPath",
+//   transformer_mustacheStringTemplate: "transformerForBuild_mustacheStringTemplate", // TODO: rename to transformer_mustacheStringTemplate
+// };
 
 const buildPlusRuntimeReferenceMap: Record<string, string> = {
   transformer: "transformerForBuildPlusRuntime",
@@ -198,24 +202,24 @@ export const miroirTransformersForBuildPlusRuntime: Record<string, JzodElement> 
     key,
     transformerInterfaceFromDefinition(
       transformer,
-      "buildPlusRuntime",
+      "coreBuildPlusRuntime",
       buildPlusRuntimeReferenceMap,
       true, // ["transformer_getFromContext", "transformer_getFromParameters"].includes(key)
     ),
   ])
 );
 
-export const miroirTransformersForBuild: Record<string, JzodElement> = Object.fromEntries(
-  Object.entries(miroirTransformers).map(([key, transformer]) => [
-    key,
-    transformerInterfaceFromDefinition(
-      transformer,
-      "build",
-      buildReferenceMap,
-      key == "transformer_getFromParameters"
-    ),
-  ])
-);
+// export const miroirTransformersForBuild: Record<string, JzodElement> = Object.fromEntries(
+//   Object.entries(miroirTransformers).map(([key, transformer]) => [
+//     key,
+//     transformerInterfaceFromDefinition(
+//       transformer,
+//       "build",
+//       buildReferenceMap,
+//       key == "transformer_getFromParameters"
+//     ),
+//   ])
+// );
 
 
 

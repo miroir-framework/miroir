@@ -61,7 +61,7 @@ import {
   type EndpointDefinition,
   type ModelActionInitModel,
   type Report,
-  type TransformerForBuildPlusRuntime
+  type CoreTransformerForBuildPlusRuntime
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { type MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
@@ -2315,7 +2315,7 @@ export class DomainController implements DomainControllerInterface {
             //   JSON.stringify(currentAction, null, 2),
             // );
             actionResult = await this.handleCompositeActionTemplate(
-              currentAction,
+              currentAction as any,
               applicationDeploymentMap,
               modelEnvironment,
               localActionParams,
@@ -2480,7 +2480,7 @@ export class DomainController implements DomainControllerInterface {
               "runtime",
               [],
               JSON.stringify(currentAction.actionLabel),
-              currentAction.actionLabel as any as TransformerForBuildPlusRuntime,
+              currentAction.actionLabel as any as CoreTransformerForBuildPlusRuntime,
               "value",
               modelEnvironment,
               actionParamValues, // queryParams
@@ -2556,7 +2556,7 @@ export class DomainController implements DomainControllerInterface {
               "runtime",
               [],
               currentActionlabel,
-              currentAction as any as TransformerForBuildPlusRuntime,
+              currentAction as any as CoreTransformerForBuildPlusRuntime,
               "value",
               modelEnvironment,
               actionParamValues, // queryParams
@@ -2609,7 +2609,7 @@ export class DomainController implements DomainControllerInterface {
                 "build",
                 [],
                 currentAction.actionLabel,
-                currentAction as any as TransformerForBuildPlusRuntime,
+                currentAction as any as CoreTransformerForBuildPlusRuntime,
                 "value",
                 modelEnvironment,
                 actionParamValues, // queryParams
@@ -2631,7 +2631,7 @@ export class DomainController implements DomainControllerInterface {
               "runtime",
               [],
               currentAction.actionLabel,
-              currentAction as any as TransformerForBuildPlusRuntime,
+              currentAction as any as CoreTransformerForBuildPlusRuntime,
               "value",
               modelEnvironment,
               actionParamValues, // queryParams
@@ -2817,7 +2817,7 @@ export class DomainController implements DomainControllerInterface {
       "build",
       [],
       buildPlusRuntimeCompositeAction.actionLabel,
-      buildPlusRuntimeCompositeAction.payload.actionSequence as any as TransformerForBuildPlusRuntime,
+      buildPlusRuntimeCompositeAction.payload.actionSequence as any as CoreTransformerForBuildPlusRuntime,
       modelEnvironment,
       queryParamsForActionResolution, // queryParams
       localContext, // contextResults
@@ -3324,7 +3324,7 @@ export class DomainController implements DomainControllerInterface {
         "runtime",
         [],
         currentAction.actionLabel ?? "NO NAME",
-        currentAction as any as TransformerForBuildPlusRuntime, // TODO: correct type
+        currentAction as any as CoreTransformerForBuildPlusRuntime, // TODO: correct type
         "value",
         modelEnvironment,
         localActionParams,
@@ -3602,7 +3602,7 @@ export class DomainController implements DomainControllerInterface {
             actionSequence: [
               ...testAction.compositeActionSequence.payload.actionSequence,
               ...testAction.testCompositeActionAssertions,
-            ],
+            ] as any, // TODO: correct type
           },
         };
         const result = await this.handleRuntimeCompositeActionDO_NOT_USE(
@@ -3808,7 +3808,7 @@ export class DomainController implements DomainControllerInterface {
                 actionSequence: [
                   ...testCompositeAction[1].compositeActionSequence.payload.actionSequence,
                   ...testCompositeAction[1].testCompositeActionAssertions,
-                ],
+                ] as any, // TODO: correct type
               },
             };
             // TestSuiteContext.setTest(testCompositeAction[1].testLabel);

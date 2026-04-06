@@ -28,7 +28,7 @@ import {
   type KeyMapEntry,
   type MiroirEvent,
   type ReduxStateChanges,
-  type TransformerForBuildPlusRuntime
+  type CoreTransformerForBuildPlusRuntime
 } from "miroir-core";
 
 import { packageName } from "../constants.js";

@@ -30,23 +30,6 @@
           }
         }
       },
-      "transformerForBuild_Abstract": {
-        "type": "object",
-        "extend": {
-          "type": "schemaReference",
-          "definition": {
-            "eager": true,
-            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-            "relativePath": "transformer_inner_label"
-          }
-        },
-        "definition": {
-          "interpolation": {
-            "type": "literal",
-            "definition": "build"
-          }
-        }
-      },
       "transformerForRuntime_Abstract": {
         "type": "object",
         "extend": {
@@ -87,42 +70,6 @@
               }
             },
             "definition": ["build", "runtime"]
-          }
-        }
-      },
-      "transformerForBuild_optional_Abstract": {
-        "type": "object",
-        "extend": {
-          "type": "schemaReference",
-          "definition": {
-            "eager": true,
-            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-            "relativePath": "transformer_inner_label"
-          }
-        },
-        "definition": {
-          "interpolation": {
-            "type": "literal",
-            "optional": true,
-            "definition": "build"
-          }
-        }
-      },
-      "transformerForRuntime_optional_Abstract": {
-        "type": "object",
-        "extend": {
-          "type": "schemaReference",
-          "definition": {
-            "eager": true,
-            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-            "relativePath": "transformer_inner_label"
-          }
-        },
-        "definition": {
-          "interpolation": {
-            "type": "literal",
-            "optional": true,
-            "definition": "runtime"
           }
         }
       },
@@ -196,31 +143,6 @@
           }
         }
       },
-      "transformer_inner_referenced_transformerForBuild": {
-        "type": "object",
-        "definition": {
-          "referenceType": {
-            "type": "literal",
-            "definition": "referencedTransformer"
-          },
-          "reference": {
-            "type": "union",
-            "discriminator": "transformerType",
-            "definition": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "schemaReference",
-                "definition": {
-                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "transformerForBuild"
-                }
-              }
-            ]
-          }
-        }
-      },
       "transformer_inner_referenced_transformerForBuildPlusRuntime": {
         "type": "object",
         "definition": {
@@ -239,23 +161,17 @@
                 "type": "schemaReference",
                 "definition": {
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "transformerForBuildPlusRuntime"
+                  "relativePath": "coreTransformerForBuildPlusRuntime"
                 }
               }
             ]
           }
         }
       },
-      "transformer_inner_elementTransformer_transformerForBuild": {
-        "type": "schemaReference",
-        "definition": {
-          "relativePath": "transformerForBuildPlusRuntime"
-        }
-      },
       "transformer_inner_elementTransformer_transformerForBuildPlusRuntime": {
         "type": "schemaReference",
         "definition": {
-          "relativePath": "transformerForBuildPlusRuntime"
+          "relativePath": "coreTransformerForBuildPlusRuntime"
         }
       },
       "transformer_contextOrParameterReferenceTO_REMOVE": {
@@ -265,13 +181,13 @@
           {
             "type": "schemaReference",
             "definition": {
-              "relativePath": "transformerForBuildPlusRuntime_getFromContext"
+              "relativePath": "coreTransformerForBuildPlusRuntime_getFromContext"
             }
           },
           {
             "type": "schemaReference",
             "definition": {
-              "relativePath": "transformerForBuild_getFromParameters"
+              "relativePath": "coreTransformerForBuildPlusRuntime_getFromParameters"
             }
           }
         ]
@@ -283,116 +199,22 @@
           {
             "type": "schemaReference",
             "definition": {
-              "relativePath": "transformerForBuildPlusRuntime_returnValue"
+              "relativePath": "coreTransformerForBuildPlusRuntime_returnValue"
             }
           },
           {
             "type": "schemaReference",
             "definition": {
-              "relativePath": "transformerForBuildPlusRuntime_constantAsExtractor"
+              "relativePath": "coreTransformerForBuildPlusRuntime_constantAsExtractor"
             }
           },
           {
             "type": "schemaReference",
             "definition": {
-              "relativePath": "transformerForBuildPlusRuntime_generateUuid"
+              "relativePath": "coreTransformerForBuildPlusRuntime_generateUuid"
             }
           }
         ]
-      },
-      "transformerForBuild_InnerReference": {
-        "type": "union",
-        "discriminator": "transformerType",
-        "definition": [
-          {
-            "type": "schemaReference",
-            "definition": {
-              "relativePath": "transformerForBuild_mustacheStringTemplate"
-            }
-          },
-          {
-            "type": "schemaReference",
-            "definition": {
-              "relativePath": "transformerForBuild_returnValue"
-            }
-          },
-          {
-            "type": "schemaReference",
-            "definition": {
-              "relativePath": "transformerForBuild_getFromParameters"
-            }
-          },
-          {
-            "type": "schemaReference",
-            "definition": {
-              "relativePath": "transformerForBuild_generateUuid"
-            }
-          },
-          {
-            "type": "schemaReference",
-            "definition": {
-              "relativePath": "transformerForBuild_accessDynamicPath"
-            }
-          }
-        ]
-      },
-      "transformerForBuildPlusRuntime_InnerReference": {
-        "type": "union",
-        "discriminator": ["transformerType", "interpolation"],
-        "definition": [
-          {
-            "type": "schemaReference",
-            "definition": {
-              "relativePath": "transformerForBuildPlusRuntime_returnValue"
-            }
-          },
-          {
-            "type": "schemaReference",
-            "definition": {
-              "relativePath": "transformerForBuildPlusRuntime_generateUuid"
-            }
-          },
-          {
-            "type": "schemaReference",
-            "definition": {
-              "relativePath": "transformerForBuildPlusRuntime_getFromContext"
-            }
-          },
-          {
-            "type": "schemaReference",
-            "definition": {
-              "relativePath": "transformerForBuildPlusRuntime_accessDynamicPath"
-            }
-          }
-        ]
-      },
-      "transformerForBuild_dataflowSequence": {
-        "type": "object",
-        "extend": [
-          {
-            "type": "schemaReference",
-            "definition": {
-              "eager": true,
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "transformerForBuild_Abstract"
-            }
-          }
-        ],
-        "definition": {
-          "transformerType": {
-            "type": "literal",
-            "definition": "dataflowSequence"
-          },
-          "definition": {
-            "type": "array",
-            "definition": {
-              "type": "schemaReference",
-              "definition": {
-                "relativePath": "transformerForBuild"
-              }
-            }
-          }
-        }
       },
       "transformerForBuildPlusRuntime_dataflowSequence": {
         "type": "object",
@@ -415,7 +237,7 @@
             "definition": {
               "type": "schemaReference",
               "definition": {
-                "relativePath": "transformerForBuildPlusRuntime"
+                "relativePath": "coreTransformerForBuildPlusRuntime"
               }
             }
           }
@@ -435,6 +257,18 @@
             "type": "schemaReference",
             "definition": {
               "relativePath": "coreTransformerForBuildPlusRuntime_generateUuid"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "coreTransformerForBuildPlusRuntime_getFromParameters"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "coreTransformerForBuildPlusRuntime_mustacheStringTemplate"
             }
           },
           {

@@ -6,8 +6,8 @@ import type { Uuid } from "./EntityDefinition";
 import type {
   MlSchema,
   MetaModel,
-  TransformerForBuild,
-  TransformerForBuildPlusRuntime,
+  // TransformerForBuild,
+  CoreTransformerForBuildPlusRuntime,
 } from "./preprocessor-generated/miroirFundamentalType";
 
 export interface MiroirModelEnvironment {
@@ -21,9 +21,9 @@ export interface MiroirModelEnvironment {
 // ################################################################################################
 export type ITransformerHandler<
   T extends
-    | TransformerForBuild
+    // | TransformerForBuild
     // | TransformerForRuntime,
-    | TransformerForBuildPlusRuntime,
+    | CoreTransformerForBuildPlusRuntime,
   // U extends MiroirModelEnvironment
     // | TransformerForRuntime_innerFullObjectTemplate
 > = (

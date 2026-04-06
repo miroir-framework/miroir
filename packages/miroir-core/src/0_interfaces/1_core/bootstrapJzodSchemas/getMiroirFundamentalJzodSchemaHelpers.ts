@@ -336,18 +336,18 @@ export function getExtendedSchemas(jzodSchemajzodMiroirBootstrapSchemaDefinition
     "extractorOrCombinerRoot",
     "transformer_inner_label",
     "transformer_orderBy",
-    "transformerForBuild_Abstract",
-    "transformerForBuild_optional_Abstract",
+    // "transformerForBuild_Abstract",
+    // "transformerForBuild_optional_Abstract",
     // "transformerForRuntime_Abstract",
     // "transformerForRuntime_optional_Abstract",
     "transformerForBuildPlusRuntime_Abstract",
     "transformerForBuildPlusRuntime_optional_Abstract",
-    "transformerForBuild_accessDynamicPath",
+    // "transformerForBuild_accessDynamicPath",
     // "transformerForRuntime_getFromContext",
-    "transformerForBuildPlusRuntime_getFromContext",
-    "transformerForBuild_getFromParameters",
-    "transformerForBuildPlusRuntime_getFromParameters",
-    "transformer_contextOrParameterReferenceTO_REMOVE",
+    // "transformerForBuildPlusRuntime_getFromContext",
+    // "transformerForBuild_getFromParameters",
+    // "transformerForBuildPlusRuntime_getFromParameters",
+    // "transformer_contextOrParameterReferenceTO_REMOVE",
   ];
   // log.info("getExtendedSchemas result", JSON.stringify(result, null, 2));
   return result;
@@ -730,7 +730,7 @@ export const getJzodElementWithCarryOnContext = (
   jzodElement_extendedSchemas: string[],
   jzodElementDependenciesJzodReference: JzodReference,
 ) => {
-  log.info("########################################## Creating jzodElementWithCarryOnContext...");
+  log.info("########################################## getJzodElementWithCarryOnContext start:", prefix);
   const jzodElementLocalizedInnerResolutionStoreForExtendedSchemas =
     createLocalizedInnerResolutionStoreForExtendedSchemas(
       jzodElementDependenciesJzodReference,
@@ -746,7 +746,7 @@ export const getJzodElementWithCarryOnContext = (
     );
 
   log.info(
-    "jzodElementLocalizedInnerResolutionStoreForExtendedSchemas",
+    "getJzodElementWithCarryOnContext found jzodElementLocalizedInnerResolutionStoreForExtendedSchemas",
     JSON.stringify(
       Object.keys(jzodElementLocalizedInnerResolutionStoreForExtendedSchemas),
       null,
@@ -777,7 +777,7 @@ export const getJzodElementWithCarryOnContext = (
     ...jzodElementLocalizedInnerResolutionStorePlainReferences,
   };
   log.info(
-    "########################################## Creating jzodElementWithCarryOnContext DONE:",
+    "########################################## getJzodElementWithCarryOnContext",prefix, "DONE:",
     Object.keys(jzodElementWithCarryOnContext).length,
   );
   return jzodElementWithCarryOnContext;

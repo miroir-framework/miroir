@@ -15,7 +15,7 @@ import {
   ExtractorOrCombinerContextReference,
   QueryFailed,
   RunBoxedQueryAction,
-  TransformerForBuildPlusRuntime
+  CoreTransformerForBuildPlusRuntime
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { type MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
 import {
@@ -593,7 +593,7 @@ export const extractEntityInstanceListWithObjectListExtractorInMemory
 
 // ################################################################################################
 export const applyExtractorTransformerInMemory = (
-  actionRuntimeTransformer: TransformerForBuildPlusRuntime,
+  actionRuntimeTransformer: CoreTransformerForBuildPlusRuntime,
   // queryParams: Record<string, any>,
   modelEnvironment: MiroirModelEnvironment,
   queryParams: Record<string, any>,

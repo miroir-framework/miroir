@@ -12,7 +12,7 @@ import {
   JzodObject,
   RunBoxedQueryAction,
   RunBoxedQueryTemplateAction,
-  TransformerForBuildPlusRuntime
+  CoreTransformerForBuildPlusRuntime
 } from "../1_core/preprocessor-generated/miroirFundamentalType";
 import type { MiroirModelEnvironment } from "../1_core/Transformer";
 import { Action2ReturnType, Domain2QueryReturnType } from "./DomainElement";
@@ -186,7 +186,7 @@ export type AsyncBoxedExtractorOrQueryRunnerMap = {
   //
   // TODO: called in AsyncQuerySelector
   applyExtractorTransformer(
-    query: TransformerForBuildPlusRuntime,
+    query: CoreTransformerForBuildPlusRuntime,
     modelEnvironment: MiroirModelEnvironment,
     queryParams: Record<string, any>,
     newFetchedData: Record<string, any>,

@@ -7,7 +7,7 @@ chalk.level = 3;
 import {
   type TestAssertionResult,
   type TestSuiteResult,
-  type TransformerForBuildPlusRuntime,
+  type CoreTransformerForBuildPlusRuntime,
   type TransformerTest,
   type TransformerTestSuite
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
@@ -278,8 +278,8 @@ export async function runTransformerTestInMemory(
     return Promise.resolve();
   }
 
-  const transformer: TransformerForBuildPlusRuntime = transformerTest.transformer;
-  const runtimeTransformer: TransformerForBuildPlusRuntime = transformer as any;
+  const transformer: CoreTransformerForBuildPlusRuntime = transformerTest.transformer;
+  const runtimeTransformer: CoreTransformerForBuildPlusRuntime = transformer as any;
   // log.info(
   //   "################################ runTransformerTestInMemory transformerTestParams",
   //   JSON.stringify(transformerTest, null, 2)
@@ -677,7 +677,7 @@ export function runTransformerIntegrationTest(sqlDbDataStore: any) {
   }
 
     // resolve the transformer to be used in the test
-    const resolvedTransformer: TransformerReturnType<TransformerForBuildPlusRuntime> =
+    const resolvedTransformer: TransformerReturnType<CoreTransformerForBuildPlusRuntime> =
       transformer_extended_apply_wrapper(
         undefined, // activityTracker
         "build",
