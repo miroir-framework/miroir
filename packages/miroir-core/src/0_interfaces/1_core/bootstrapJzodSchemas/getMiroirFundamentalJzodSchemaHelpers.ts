@@ -485,53 +485,54 @@ export function createLocalizedInnerResolutionStoreWithCarryOn(
   //   JSON.stringify(Object.keys(localizedResolutionStore.context ?? {}), null, 2)
   // );
   const _t0 = Date.now();
-  const result = Object.fromEntries(
-      Object.entries(localizedResolutionStore.context ?? {}).map((f) => {
-        // log.info(
-        //   customChalk.blue("createLocalizedInnerResolutionStoreWithCarryOn: localizedResolutionStore.context"),
-        //   customChalk.green(f[0]),
-        //   customChalk.yellow(f[1] && f[1].type),
-        //   // customChalk.magenta(f[1] && f[1].definition && f[1].definition.relativePath)
-        //   customChalk.magenta(f[1] && (f[1] as any).definition && (f[1] as any).definition?.relativePath)
-        // );
-        const schemaWithCarryOn =
-          skipContextEntry && skipContextEntry(f[0], f[1])
-            ? {
-                resultSchema: f[1],
-                hasBeenApplied: false,
-                resolvedReferences: undefined,
-              }
-            : applyLimitedCarryOnSchemaOnLevel(
-                f[1] as any, // applyLimitedCarryOnSchemaOnLevel uses the generated JzodElement, not the one from jzod-ts
-                carryOnSchemaReference as any,
-                carryOnSchemaReferenceForArray as any,
-                carryOnSchemaDiscriminator,
-                alwaysPropagate, // alwaysPropagate
-                true, // applyOnFirstLevel
-                prefix, // carryOnPrefix
-                undefined, //localReferencePrefix
-                undefined, // suffixForReferences
-                resolveReferencesWithCarryOn,
-                {}, // convertedReferences
-                [], // skipObjectAttributesOnFirstLevel
-                skipContextEntry as any,
-              );
-        return [
-          forgeCarryOnReferenceName(miroirFundamentalJzodSchemaUuid, f[0], undefined, prefix),
-          // TODO: add inner references to environment!!!!
-          schemaWithCarryOn.hasBeenApplied? schemaWithCarryOn.resultSchema : {
-            type: "schemaReference",
-            definition: {
-              absolutePath: miroirFundamentalJzodSchemaUuid,
-              relativePath: f[0],
-            },
+  const sharedConvertedReferences: Record<string, any> = {}; // uses 'any' to avoid JzodElement version conflict between jzod-ts and generated miroirFundamentalType
+  const resultEntries: [string, any][] = [];
+  for (const [entryName, entrySchema] of Object.entries(localizedResolutionStore.context ?? {})) {
+    // log.info(
+    //   customChalk.blue("createLocalizedInnerResolutionStoreWithCarryOn: localizedResolutionStore.context"),
+    //   customChalk.green(entryName),
+    //   customChalk.yellow(entrySchema && entrySchema.type),
+    //   customChalk.magenta(entrySchema && (entrySchema as any).definition && (entrySchema as any).definition?.relativePath)
+    // );
+    const schemaWithCarryOn =
+      skipContextEntry && skipContextEntry(entryName, entrySchema)
+        ? {
+            resultSchema: entrySchema,
+            hasBeenApplied: false,
+            resolvedReferences: undefined,
           }
-        ]
+        : applyLimitedCarryOnSchemaOnLevel(
+            entrySchema as any, // applyLimitedCarryOnSchemaOnLevel uses the generated JzodElement, not the one from jzod-ts
+            carryOnSchemaReference as any,
+            carryOnSchemaReferenceForArray as any,
+            carryOnSchemaDiscriminator,
+            alwaysPropagate, // alwaysPropagate
+            true, // applyOnFirstLevel
+            prefix, // carryOnPrefix
+            undefined, //localReferencePrefix
+            undefined, // suffixForReferences
+            resolveReferencesWithCarryOn,
+            sharedConvertedReferences, // convertedReferences: shared across entries to avoid re-converting same absolute references
+            [], // skipObjectAttributesOnFirstLevel
+            skipContextEntry as any,
+          );
+    if (schemaWithCarryOn.resolvedReferences) {
+      Object.assign(sharedConvertedReferences, schemaWithCarryOn.resolvedReferences);
+    }
+    resultEntries.push([
+      forgeCarryOnReferenceName(miroirFundamentalJzodSchemaUuid, entryName, undefined, prefix),
+      // TODO: add inner references to environment!!!!
+      schemaWithCarryOn.hasBeenApplied ? schemaWithCarryOn.resultSchema : {
+        type: "schemaReference",
+        definition: {
+          absolutePath: miroirFundamentalJzodSchemaUuid,
+          relativePath: entryName,
+        },
       }
-    )
-    // )
-  );
-  log.info(`  createLocalizedInnerResolutionStoreWithCarryOn(${prefix}) took ${Date.now() - _t0}ms, context entries: ${Object.keys(localizedResolutionStore.context ?? {}).length}`);
+    ]);
+  }
+  const result = Object.fromEntries(resultEntries);
+  log.info(`  createLocalizedInnerResolutionStoreWithCarryOn(${prefix}) took ${Date.now() - _t0}ms, context entries: ${Object.keys(localizedResolutionStore.context ?? {}).length}, shared refs accumulated: ${Object.keys(sharedConvertedReferences).length}`);
   return result;
 }
 
@@ -746,7 +747,7 @@ export const getJzodElementWithCarryOnContext = (
   const jzodElementLocalizedInnerResolutionStoreForExtendedSchemas =
     createLocalizedInnerResolutionStoreForExtendedSchemas(
       jzodElementDependenciesJzodReference,
-      effectiveExtendedSchemas, // filtered extendedSchemas
+      jzodElement_extendedSchemas,// effectiveExtendedSchemas, // filtered extendedSchemas
       transformerForBuildPlusRuntimeCarryOnSchemaReference,
       transformerForBuildPlusRuntimeForArrayCarryOnSchemaReference,
       "transformerType", // mlElementTemplateSchemaDiscriminator
@@ -763,7 +764,7 @@ export const getJzodElementWithCarryOnContext = (
   const jzodElementLocalizedInnerResolutionStorePlainReferences =
     createLocalizedInnerResolutionStoreWithCarryOn(
       jzodElementDependenciesJzodReference,
-      effectiveExtendedSchemas, // filtered extendedSchemas
+      jzodElement_extendedSchemas, //effectiveExtendedSchemas, // filtered extendedSchemas
       transformerForBuildPlusRuntimeCarryOnSchemaReference,
       transformerForBuildPlusRuntimeForArrayCarryOnSchemaReference,
       "transformerType", // mlElementTemplateSchemaDiscriminator

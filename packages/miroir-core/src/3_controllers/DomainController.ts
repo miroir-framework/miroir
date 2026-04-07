@@ -2474,7 +2474,7 @@ export class DomainController implements DomainControllerInterface {
     for (const currentAction of buildPlusRuntimeCompositeAction.payload.actionSequence) {
       let actionResult: Action2ReturnType | undefined = undefined;
       const currentActionlabel: string | undefined = currentAction.actionLabel
-        ? currentAction.actionLabel instanceof String
+        ? (currentAction as any).actionLabel instanceof String
           ? (currentAction.actionLabel as string)
           : transformer_extended_apply(
               "runtime",

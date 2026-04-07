@@ -476,6 +476,9 @@ export const coreTransformerForBuildPlusRuntime: z.ZodType<CoreTransformerForBui
 // ################################################################################################
 async function generateSchemas(generateFundamentalJzodSchema = true) {
     const generateSchemasStartTime = Date.now();
+    let _t_getMiroirFundamental = 0;
+    let _t_writeJzodSchema = 0;
+    let _t_generateTsFile = 0;
     console.log("miroir-core generateSchemas start!");
     const targetDirectory = "./src/0_interfaces/1_core/preprocessor-generated";
     // const targetFileName = "./src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType2.ts";
@@ -520,9 +523,10 @@ async function generateSchemas(generateFundamentalJzodSchema = true) {
         entityDefinitionEndpoint,
       );
       // console.log("miroir-core generateSchemas miroirFundamentalJzodSchema:", miroirFundamentalJzodSchema);
+      _t_getMiroirFundamental = Date.now() - generateSchemasStartTime;
       console.log(
         "miroir-core generateSchemas getMiroirFundamentalJzodSchema took",
-        Date.now() - generateSchemasStartTime,
+        _t_getMiroirFundamental,
         "ms"
       );
       const filteredMiroirFundamentalJzodSchemaContext = Object.fromEntries(
@@ -569,9 +573,10 @@ async function generateSchemas(generateFundamentalJzodSchema = true) {
         fs.writeFile(miroirFundamentalJzodSchemaFilePath, miroirFundamentalJzodSchemaJson);
       }
       // }
+      _t_writeJzodSchema = Date.now() - writeFundamentalJzodSchemaStartTime;
       console.log(
         "miroir-core generateSchemas writeFundamentalJzodSchema took",
-        Date.now() - writeFundamentalJzodSchemaStartTime,
+        _t_writeJzodSchema,
         "ms"
       );
 
@@ -691,11 +696,12 @@ async function generateSchemas(generateFundamentalJzodSchema = true) {
         // Object.fromEntries(extendedJzodSchemaContext),
         extendedJzodSchemasTsTypes
       );
+      _t_generateTsFile = Date.now() - startGenerateZodSchemaFileFromZodSchema;
       console.log(
         "miroir-core GENERATED Zod schema file: ",
         targetFileName,
         "took",
-        Date.now() - startGenerateZodSchemaFileFromZodSchema,
+        _t_generateTsFile,
         "ms"
       );
       // const oldTransformer = (miroirFundamentalJzodSchema as any).definition.context.transformerForBuild_getUniqueValues;
@@ -720,5 +726,14 @@ async function generateSchemas(generateFundamentalJzodSchema = true) {
     } catch (error) {
       console.error("miroir-core could not generate TS files from Jzod schemas", error);
     }
-    console.log("miroir-core generateSchemas took", Date.now() - generateSchemasStartTime, "ms");
+    const _t_total = Date.now() - generateSchemasStartTime;
+    const _t_other = _t_total - _t_getMiroirFundamental - _t_writeJzodSchema - _t_generateTsFile;
+    const pct = (ms: number) => _t_total > 0 ? `${Math.round(ms * 100 / _t_total)}%` : '-%';
+    console.log(
+      `miroir-core generateSchemas SUMMARY (total ${_t_total}ms):\n` +
+      `  getMiroirFundamentalJzodSchema: ${_t_getMiroirFundamental}ms (${pct(_t_getMiroirFundamental)})\n` +
+      `  writeFundamentalJzodSchema:     ${_t_writeJzodSchema}ms (${pct(_t_writeJzodSchema)})\n` +
+      `  generateTsTypeFile:             ${_t_generateTsFile}ms (${pct(_t_generateTsFile)})\n` +
+      `  other:                          ${_t_other}ms (${pct(_t_other)})`
+    );
 }
