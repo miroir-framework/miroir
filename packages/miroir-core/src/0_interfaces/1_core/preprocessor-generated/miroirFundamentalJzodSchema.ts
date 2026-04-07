@@ -26345,614 +26345,6 @@ export const miroirFundamentalJzodSchema = {
       "______________________________________________jzodElementWithCarryOnContext________________________________________________": {
         "type": "any"
       },
-      "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodBaseObject_extend": {
-        "type": "object",
-        "definition": {
-          "optional": {
-            "type": "boolean",
-            "optional": true
-          },
-          "nullable": {
-            "type": "boolean",
-            "optional": true
-          },
-          "description": {
-            "type": "string",
-            "optional": true
-          },
-          "tag": {
-            "type": "object",
-            "optional": true,
-            "definition": {
-              "value": {
-                "type": "object",
-                "optional": true,
-                "definition": {
-                  "id": {
-                    "type": "number",
-                    "optional": true
-                  },
-                  "defaultLabel": {
-                    "type": "string",
-                    "optional": true
-                  },
-                  "description": {
-                    "type": "string",
-                    "optional": true
-                  },
-                  "editorButton": {
-                    "type": "object",
-                    "optional": true,
-                    "definition": {
-                      "icon": {
-                        "type": "string",
-                        "optional": true
-                      },
-                      "label": {
-                        "type": "string",
-                        "optional": true
-                      },
-                      "tooltip": {
-                        "type": "string",
-                        "optional": true
-                      },
-                      "transformer": {
-                        "type": "any",
-                        "tag": {
-                          "value": {
-                            "ifThenElseMMLS": {
-                              "mmlsReference": {
-                                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                "relativePath": "coreTransformerForBuildPlusRuntime"
-                              }
-                            }
-                          }
-                        },
-                        "optional": true
-                      }
-                    }
-                  },
-                  "initializeTo": {
-                    "type": "union",
-                    "discriminator": "initializeToType",
-                    "optional": true,
-                    "definition": [
-                      {
-                        "type": "object",
-                        "optional": true,
-                        "definition": {
-                          "initializeToType": {
-                            "type": "literal",
-                            "definition": "value"
-                          },
-                          "value": {
-                            "type": "any",
-                            "optional": true
-                          }
-                        }
-                      },
-                      {
-                        "type": "object",
-                        "optional": true,
-                        "definition": {
-                          "initializeToType": {
-                            "type": "literal",
-                            "definition": "transformer"
-                          },
-                          "transformer": {
-                            "type": "any",
-                            "tag": {
-                              "value": {
-                                "ifThenElseMMLS": {
-                                  "mmlsReference": {
-                                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                    "relativePath": "coreTransformerForBuildPlusRuntime"
-                                  }
-                                }
-                              }
-                            },
-                            "optional": true
-                          }
-                        }
-                      }
-                    ]
-                  },
-                  "isBlob": {
-                    "type": "boolean",
-                    "optional": true
-                  },
-                  "foreignKeyParams": {
-                    "type": "object",
-                    "optional": true,
-                    "definition": {
-                      "targetApplicationUuid": {
-                        "type": "union",
-                        "optional": true,
-                        "discriminator": "transformerType",
-                        "definition": [
-                          {
-                            "type": "uuid",
-                            "optional": true,
-                            "tag": {
-                              "value": {
-                                "defaultLabel": "Foreign Key Application",
-                                "description": "The application where the Foreign Key entity is located."
-                              }
-                            }
-                          },
-                          {
-                            "type": "schemaReference",
-                            "tag": {
-                              "value": {
-                                "description": "A transformer that resolves to a uuid indicating the application of the foreign key entity.",
-                                "canBeTemplate": false,
-                                "isTemplate": true
-                              }
-                            },
-                            "definition": {
-                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                              "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_coreTransformerForBuildPlusRuntime"
-                            }
-                          }
-                        ]
-                      },
-                      "targetEntityApplicationSection": {
-                        "type": "enum",
-                        "optional": true,
-                        "tag": {
-                          "value": {
-                            "defaultLabel": "Foreign Key Entity Application Section",
-                            "description": "The application section where the Foreign Key entity is located."
-                          }
-                        },
-                        "definition": [
-                          "model",
-                          "data",
-                          "metaModel"
-                        ]
-                      },
-                      "targetEntity": {
-                        "type": "uuid",
-                        "tag": {
-                          "value": {
-                            "defaultLabel": "Foreign Key Entity",
-                            "description": "The entity of the Foreign Key.",
-                            "foreignKeyParams": {
-                              "targetEntityApplicationSection": "model",
-                              "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                              "targetEntityOrderInstancesBy": "name"
-                            }
-                          }
-                        }
-                      },
-                      "targetEntityFilterInstancesBy": {
-                        "type": "object",
-                        "optional": true,
-                        "tag": {
-                          "value": {
-                            "defaultLabel": "Filter Foreign Key Instances by attribute",
-                            "description": "The attribute name to filter instances by.",
-                            "isTemplate": true
-                          }
-                        },
-                        "definition": {
-                          "attributeName": {
-                            "type": "string"
-                          },
-                          "not": {
-                            "type": "boolean",
-                            "optional": true
-                          },
-                          "undefined": {
-                            "type": "boolean",
-                            "optional": true
-                          },
-                          "value": {
-                            "type": "union",
-                            "optional": true,
-                            "tag": {
-                              "value": {
-                                "canBeTemplate": true,
-                                "defaultLabel": "Value",
-                                "isTemplate": true
-                              }
-                            },
-                            "discriminator": [
-                              "transformerType",
-                              "interpolation"
-                            ],
-                            "definition": [
-                              {
-                                "type": "any",
-                                "optional": true,
-                                "tag": {
-                                  "value": {
-                                    "canBeTemplate": true,
-                                    "defaultLabel": "Value"
-                                  }
-                                }
-                              },
-                              {
-                                "type": "schemaReference",
-                                "definition": {
-                                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                  "relativePath": "coreTransformerForBuildPlusRuntime"
-                                }
-                              }
-                            ]
-                          },
-                          "values": {
-                            "type": "union",
-                            "optional": true,
-                            "definition": [
-                              {
-                                "type": "array",
-                                "optional": true,
-                                "definition": {
-                                  "type": "any"
-                                },
-                                "tag": {
-                                  "value": {
-                                    "canBeTemplate": true,
-                                    "defaultLabel": "Values",
-                                    "isTemplate": true
-                                  }
-                                }
-                              },
-                              {
-                                "type": "schemaReference",
-                                "definition": {
-                                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                  "relativePath": "coreTransformerForBuildPlusRuntimeWithoutArray"
-                                }
-                              }
-                            ],
-                            "tag": {
-                              "value": {
-                                "canBeTemplate": true,
-                                "defaultLabel": "Values",
-                                "isTemplate": true
-                              }
-                            },
-                            "discriminator": [
-                              "transformerType",
-                              "interpolation"
-                            ]
-                          }
-                        }
-                      },
-                      "targetEntityOrderInstancesBy": {
-                        "type": "string",
-                        "optional": true,
-                        "tag": {
-                          "value": {
-                            "defaultLabel": "Order Foreign Key Instances by attribute (ascending)",
-                            "description": "The attribute name to order instances by."
-                          }
-                        }
-                      }
-                    }
-                  },
-                  "canBeTemplate": {
-                    "type": "boolean",
-                    "optional": true
-                  },
-                  "isTemplate": {
-                    "type": "boolean",
-                    "optional": true
-                  },
-                  "formValidation": {
-                    "type": "object",
-                    "optional": true,
-                    "definition": {
-                      "transformer": {
-                        "type": "any",
-                        "tag": {
-                          "value": {
-                            "ifThenElseMMLS": {
-                              "mmlsReference": {
-                                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                "relativePath": "coreTransformerForBuildPlusRuntime"
-                              }
-                            }
-                          }
-                        },
-                        "optional": true
-                      }
-                    }
-                  },
-                  "ifThenElseMMLS": {
-                    "type": "object",
-                    "optional": true,
-                    "definition": {
-                      "parentUuid": {
-                        "type": "union",
-                        "optional": true,
-                        "definition": [
-                          {
-                            "type": "string"
-                          },
-                          {
-                            "type": "object",
-                            "definition": {
-                              "path": {
-                                "type": "union",
-                                "definition": [
-                                  {
-                                    "type": "string"
-                                  },
-                                  {
-                                    "type": "object",
-                                    "definition": {
-                                      "defaultValuePath": {
-                                        "type": "string"
-                                      },
-                                      "typeCheckPath": {
-                                        "type": "string"
-                                      }
-                                    }
-                                  }
-                                ]
-                              }
-                            }
-                          }
-                        ]
-                      },
-                      "mmlsReference": {
-                        "type": "object",
-                        "optional": true,
-                        "definition": {
-                          "absolutePath": {
-                            "type": "string",
-                            "optional": true
-                          },
-                          "relativePath": {
-                            "type": "string"
-                          }
-                        }
-                      }
-                    }
-                  },
-                  "display": {
-                    "type": "object",
-                    "optional": true,
-                    "definition": {
-                      "displayedAttributeValueWhenFolded": {
-                        "type": "string",
-                        "optional": true
-                      },
-                      "hidden": {
-                        "type": "union",
-                        "optional": true,
-                        "discriminator": "transformerType",
-                        "definition": [
-                          {
-                            "type": "boolean"
-                          },
-                          {
-                            "type": "schemaReference",
-                            "tag": {
-                              "value": {
-                                "description": "A transformer that resolves to a boolean indicating whether the attribute is hidden.",
-                                "canBeTemplate": false,
-                                "isTemplate": true
-                              }
-                            },
-                            "definition": {
-                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                              "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_coreTransformerForBuildPlusRuntime"
-                            }
-                          }
-                        ]
-                      },
-                      "editable": {
-                        "type": "boolean",
-                        "tag": {
-                          "value": {
-                            "description": "Whether the attribute is editable in UIs upon instance creation.",
-                            "canBeTemplate": false
-                          }
-                        },
-                        "optional": true
-                      },
-                      "modifiable": {
-                        "type": "boolean",
-                        "tag": {
-                          "value": {
-                            "description": "Whether the attribute is modifiable in UIs after instance creation.",
-                            "canBeTemplate": false
-                          }
-                        },
-                        "optional": true
-                      },
-                      "uuid": {
-                        "type": "object",
-                        "optional": true,
-                        "definition": {
-                          "selector": {
-                            "type": "enum",
-                            "optional": true,
-                            "definition": [
-                              "portalSelector",
-                              "muiSelector"
-                            ]
-                          }
-                        }
-                      },
-                      "any": {
-                        "type": "object",
-                        "optional": true,
-                        "definition": {
-                          "format": {
-                            "type": "enum",
-                            "optional": true,
-                            "definition": [
-                              "file"
-                            ]
-                          }
-                        }
-                      },
-                      "string": {
-                        "type": "object",
-                        "optional": true,
-                        "definition": {
-                          "format": {
-                            "type": "enum",
-                            "optional": true,
-                            "definition": [
-                              "email",
-                              "url",
-                              "uuid",
-                              "uri",
-                              "date-time",
-                              "date",
-                              "time",
-                              "file",
-                              "folder"
-                            ]
-                          },
-                          "multiline": {
-                            "type": "boolean",
-                            "optional": true
-                          },
-                          "rows": {
-                            "type": "number",
-                            "optional": true
-                          }
-                        }
-                      },
-                      "objectUuidAttributeLabelPosition": {
-                        "type": "enum",
-                        "optional": true,
-                        "definition": [
-                          "left",
-                          "stacked",
-                          "hidden"
-                        ]
-                      },
-                      "objectHideDeleteButton": {
-                        "type": "boolean",
-                        "optional": true
-                      },
-                      "objectHideOptionalButton": {
-                        "type": "boolean",
-                        "optional": true
-                      },
-                      "objectWithoutHeader": {
-                        "type": "boolean",
-                        "optional": true
-                      },
-                      "objectAttributesNoIndent": {
-                        "type": "boolean",
-                        "optional": true
-                      },
-                      "objectOrArrayWithoutFrame": {
-                        "type": "boolean",
-                        "optional": true
-                      },
-                      "unfoldSubLevels": {
-                        "type": "number",
-                        "optional": true
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      },
-      "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_inner_label_extend": {
-        "type": "object",
-        "definition": {
-          "label": {
-            "type": "string",
-            "optional": true
-          }
-        }
-      },
-      "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_orderBy_extend": {
-        "type": "object",
-        "extend": [
-          {
-            "type": "schemaReference",
-            "definition": {
-              "eager": true,
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_inner_label_extend"
-            }
-          }
-        ],
-        "definition": {
-          "orderBy": {
-            "type": "string",
-            "optional": true
-          }
-        }
-      },
-      "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_Abstract_extend": {
-        "type": "object",
-        "extend": [
-          {
-            "type": "schemaReference",
-            "definition": {
-              "eager": true,
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_inner_label_extend"
-            }
-          }
-        ],
-        "definition": {
-          "interpolation": {
-            "type": "enum",
-            "tag": {
-              "value": {
-                "defaultLabel": "Interpolation",
-                "initializeTo": {
-                  "initializeToType": "value",
-                  "value": "build"
-                }
-              }
-            },
-            "definition": [
-              "build",
-              "runtime"
-            ]
-          }
-        }
-      },
-      "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_optional_Abstract_extend": {
-        "type": "object",
-        "extend": [
-          {
-            "type": "schemaReference",
-            "definition": {
-              "eager": true,
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_inner_label_extend"
-            }
-          }
-        ],
-        "definition": {
-          "interpolation": {
-            "type": "enum",
-            "optional": true,
-            "tag": {
-              "value": {
-                "defaultLabel": "Interpolation",
-                "initializeTo": {
-                  "initializeToType": "value",
-                  "value": "build"
-                }
-              }
-            },
-            "definition": [
-              "build",
-              "runtime"
-            ]
-          }
-        }
-      },
       "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement": {
         "type": "union",
         "discriminator": "type",
@@ -29587,6 +28979,523 @@ export const miroirFundamentalJzodSchema = {
       "______________________________________________buildPlusRuntimeDomainActionLocalizedInnerResolutionStoreForExtendedSchemas_______________________": {
         "type": "any"
       },
+      "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodBaseObject_extend": {
+        "type": "object",
+        "definition": {
+          "optional": {
+            "type": "boolean",
+            "optional": true
+          },
+          "nullable": {
+            "type": "boolean",
+            "optional": true
+          },
+          "description": {
+            "type": "string",
+            "optional": true
+          },
+          "tag": {
+            "type": "object",
+            "optional": true,
+            "definition": {
+              "value": {
+                "type": "object",
+                "optional": true,
+                "definition": {
+                  "id": {
+                    "type": "number",
+                    "optional": true
+                  },
+                  "defaultLabel": {
+                    "type": "string",
+                    "optional": true
+                  },
+                  "description": {
+                    "type": "string",
+                    "optional": true
+                  },
+                  "editorButton": {
+                    "type": "object",
+                    "optional": true,
+                    "definition": {
+                      "icon": {
+                        "type": "string",
+                        "optional": true
+                      },
+                      "label": {
+                        "type": "string",
+                        "optional": true
+                      },
+                      "tooltip": {
+                        "type": "string",
+                        "optional": true
+                      },
+                      "transformer": {
+                        "type": "any",
+                        "tag": {
+                          "value": {
+                            "ifThenElseMMLS": {
+                              "mmlsReference": {
+                                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                "relativePath": "coreTransformerForBuildPlusRuntime"
+                              }
+                            }
+                          }
+                        },
+                        "optional": true
+                      }
+                    }
+                  },
+                  "initializeTo": {
+                    "type": "union",
+                    "discriminator": "initializeToType",
+                    "optional": true,
+                    "definition": [
+                      {
+                        "type": "object",
+                        "optional": true,
+                        "definition": {
+                          "initializeToType": {
+                            "type": "literal",
+                            "definition": "value"
+                          },
+                          "value": {
+                            "type": "any",
+                            "optional": true
+                          }
+                        }
+                      },
+                      {
+                        "type": "object",
+                        "optional": true,
+                        "definition": {
+                          "initializeToType": {
+                            "type": "literal",
+                            "definition": "transformer"
+                          },
+                          "transformer": {
+                            "type": "any",
+                            "tag": {
+                              "value": {
+                                "ifThenElseMMLS": {
+                                  "mmlsReference": {
+                                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                    "relativePath": "coreTransformerForBuildPlusRuntime"
+                                  }
+                                }
+                              }
+                            },
+                            "optional": true
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  "isBlob": {
+                    "type": "boolean",
+                    "optional": true
+                  },
+                  "foreignKeyParams": {
+                    "type": "object",
+                    "optional": true,
+                    "definition": {
+                      "targetApplicationUuid": {
+                        "type": "union",
+                        "optional": true,
+                        "discriminator": "transformerType",
+                        "definition": [
+                          {
+                            "type": "uuid",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Foreign Key Application",
+                                "description": "The application where the Foreign Key entity is located."
+                              }
+                            }
+                          },
+                          {
+                            "type": "schemaReference",
+                            "tag": {
+                              "value": {
+                                "description": "A transformer that resolves to a uuid indicating the application of the foreign key entity.",
+                                "canBeTemplate": false,
+                                "isTemplate": true
+                              }
+                            },
+                            "definition": {
+                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_coreTransformerForBuildPlusRuntime"
+                            }
+                          }
+                        ]
+                      },
+                      "targetEntityApplicationSection": {
+                        "type": "enum",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Foreign Key Entity Application Section",
+                            "description": "The application section where the Foreign Key entity is located."
+                          }
+                        },
+                        "definition": [
+                          "model",
+                          "data",
+                          "metaModel"
+                        ]
+                      },
+                      "targetEntity": {
+                        "type": "uuid",
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Foreign Key Entity",
+                            "description": "The entity of the Foreign Key.",
+                            "foreignKeyParams": {
+                              "targetEntityApplicationSection": "model",
+                              "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                              "targetEntityOrderInstancesBy": "name"
+                            }
+                          }
+                        }
+                      },
+                      "targetEntityFilterInstancesBy": {
+                        "type": "object",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Filter Foreign Key Instances by attribute",
+                            "description": "The attribute name to filter instances by.",
+                            "isTemplate": true
+                          }
+                        },
+                        "definition": {
+                          "attributeName": {
+                            "type": "string"
+                          },
+                          "not": {
+                            "type": "boolean",
+                            "optional": true
+                          },
+                          "undefined": {
+                            "type": "boolean",
+                            "optional": true
+                          },
+                          "value": {
+                            "type": "union",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "canBeTemplate": true,
+                                "defaultLabel": "Value",
+                                "isTemplate": true
+                              }
+                            },
+                            "discriminator": [
+                              "transformerType",
+                              "interpolation"
+                            ],
+                            "definition": [
+                              {
+                                "type": "any",
+                                "optional": true,
+                                "tag": {
+                                  "value": {
+                                    "canBeTemplate": true,
+                                    "defaultLabel": "Value"
+                                  }
+                                }
+                              },
+                              {
+                                "type": "schemaReference",
+                                "definition": {
+                                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                  "relativePath": "coreTransformerForBuildPlusRuntime"
+                                }
+                              }
+                            ]
+                          },
+                          "values": {
+                            "type": "union",
+                            "optional": true,
+                            "definition": [
+                              {
+                                "type": "array",
+                                "optional": true,
+                                "definition": {
+                                  "type": "any"
+                                },
+                                "tag": {
+                                  "value": {
+                                    "canBeTemplate": true,
+                                    "defaultLabel": "Values",
+                                    "isTemplate": true
+                                  }
+                                }
+                              },
+                              {
+                                "type": "schemaReference",
+                                "definition": {
+                                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                  "relativePath": "coreTransformerForBuildPlusRuntimeWithoutArray"
+                                }
+                              }
+                            ],
+                            "tag": {
+                              "value": {
+                                "canBeTemplate": true,
+                                "defaultLabel": "Values",
+                                "isTemplate": true
+                              }
+                            },
+                            "discriminator": [
+                              "transformerType",
+                              "interpolation"
+                            ]
+                          }
+                        }
+                      },
+                      "targetEntityOrderInstancesBy": {
+                        "type": "string",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Order Foreign Key Instances by attribute (ascending)",
+                            "description": "The attribute name to order instances by."
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "canBeTemplate": {
+                    "type": "boolean",
+                    "optional": true
+                  },
+                  "isTemplate": {
+                    "type": "boolean",
+                    "optional": true
+                  },
+                  "formValidation": {
+                    "type": "object",
+                    "optional": true,
+                    "definition": {
+                      "transformer": {
+                        "type": "any",
+                        "tag": {
+                          "value": {
+                            "ifThenElseMMLS": {
+                              "mmlsReference": {
+                                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                "relativePath": "coreTransformerForBuildPlusRuntime"
+                              }
+                            }
+                          }
+                        },
+                        "optional": true
+                      }
+                    }
+                  },
+                  "ifThenElseMMLS": {
+                    "type": "object",
+                    "optional": true,
+                    "definition": {
+                      "parentUuid": {
+                        "type": "union",
+                        "optional": true,
+                        "definition": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "object",
+                            "definition": {
+                              "path": {
+                                "type": "union",
+                                "definition": [
+                                  {
+                                    "type": "string"
+                                  },
+                                  {
+                                    "type": "object",
+                                    "definition": {
+                                      "defaultValuePath": {
+                                        "type": "string"
+                                      },
+                                      "typeCheckPath": {
+                                        "type": "string"
+                                      }
+                                    }
+                                  }
+                                ]
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "mmlsReference": {
+                        "type": "object",
+                        "optional": true,
+                        "definition": {
+                          "absolutePath": {
+                            "type": "string",
+                            "optional": true
+                          },
+                          "relativePath": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "display": {
+                    "type": "object",
+                    "optional": true,
+                    "definition": {
+                      "displayedAttributeValueWhenFolded": {
+                        "type": "string",
+                        "optional": true
+                      },
+                      "hidden": {
+                        "type": "union",
+                        "optional": true,
+                        "discriminator": "transformerType",
+                        "definition": [
+                          {
+                            "type": "boolean"
+                          },
+                          {
+                            "type": "schemaReference",
+                            "tag": {
+                              "value": {
+                                "description": "A transformer that resolves to a boolean indicating whether the attribute is hidden.",
+                                "canBeTemplate": false,
+                                "isTemplate": true
+                              }
+                            },
+                            "definition": {
+                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_coreTransformerForBuildPlusRuntime"
+                            }
+                          }
+                        ]
+                      },
+                      "editable": {
+                        "type": "boolean",
+                        "tag": {
+                          "value": {
+                            "description": "Whether the attribute is editable in UIs upon instance creation.",
+                            "canBeTemplate": false
+                          }
+                        },
+                        "optional": true
+                      },
+                      "modifiable": {
+                        "type": "boolean",
+                        "tag": {
+                          "value": {
+                            "description": "Whether the attribute is modifiable in UIs after instance creation.",
+                            "canBeTemplate": false
+                          }
+                        },
+                        "optional": true
+                      },
+                      "uuid": {
+                        "type": "object",
+                        "optional": true,
+                        "definition": {
+                          "selector": {
+                            "type": "enum",
+                            "optional": true,
+                            "definition": [
+                              "portalSelector",
+                              "muiSelector"
+                            ]
+                          }
+                        }
+                      },
+                      "any": {
+                        "type": "object",
+                        "optional": true,
+                        "definition": {
+                          "format": {
+                            "type": "enum",
+                            "optional": true,
+                            "definition": [
+                              "file"
+                            ]
+                          }
+                        }
+                      },
+                      "string": {
+                        "type": "object",
+                        "optional": true,
+                        "definition": {
+                          "format": {
+                            "type": "enum",
+                            "optional": true,
+                            "definition": [
+                              "email",
+                              "url",
+                              "uuid",
+                              "uri",
+                              "date-time",
+                              "date",
+                              "time",
+                              "file",
+                              "folder"
+                            ]
+                          },
+                          "multiline": {
+                            "type": "boolean",
+                            "optional": true
+                          },
+                          "rows": {
+                            "type": "number",
+                            "optional": true
+                          }
+                        }
+                      },
+                      "objectUuidAttributeLabelPosition": {
+                        "type": "enum",
+                        "optional": true,
+                        "definition": [
+                          "left",
+                          "stacked",
+                          "hidden"
+                        ]
+                      },
+                      "objectHideDeleteButton": {
+                        "type": "boolean",
+                        "optional": true
+                      },
+                      "objectHideOptionalButton": {
+                        "type": "boolean",
+                        "optional": true
+                      },
+                      "objectWithoutHeader": {
+                        "type": "boolean",
+                        "optional": true
+                      },
+                      "objectAttributesNoIndent": {
+                        "type": "boolean",
+                        "optional": true
+                      },
+                      "objectOrArrayWithoutFrame": {
+                        "type": "boolean",
+                        "optional": true
+                      },
+                      "unfoldSubLevels": {
+                        "type": "number",
+                        "optional": true
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
       "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodArray_extend": {
         "type": "object",
         "extend": [
@@ -30900,6 +30809,97 @@ export const miroirFundamentalJzodSchema = {
                   "relativePath": "coreTransformerForBuildPlusRuntime"
                 }
               }
+            ]
+          }
+        }
+      },
+      "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_inner_label_extend": {
+        "type": "object",
+        "definition": {
+          "label": {
+            "type": "string",
+            "optional": true
+          }
+        }
+      },
+      "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_orderBy_extend": {
+        "type": "object",
+        "extend": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_inner_label_extend"
+            }
+          }
+        ],
+        "definition": {
+          "orderBy": {
+            "type": "string",
+            "optional": true
+          }
+        }
+      },
+      "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_Abstract_extend": {
+        "type": "object",
+        "extend": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_inner_label_extend"
+            }
+          }
+        ],
+        "definition": {
+          "interpolation": {
+            "type": "enum",
+            "tag": {
+              "value": {
+                "defaultLabel": "Interpolation",
+                "initializeTo": {
+                  "initializeToType": "value",
+                  "value": "build"
+                }
+              }
+            },
+            "definition": [
+              "build",
+              "runtime"
+            ]
+          }
+        }
+      },
+      "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_optional_Abstract_extend": {
+        "type": "object",
+        "extend": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_inner_label_extend"
+            }
+          }
+        ],
+        "definition": {
+          "interpolation": {
+            "type": "enum",
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "Interpolation",
+                "initializeTo": {
+                  "initializeToType": "value",
+                  "value": "build"
+                }
+              }
+            },
+            "definition": [
+              "build",
+              "runtime"
             ]
           }
         }

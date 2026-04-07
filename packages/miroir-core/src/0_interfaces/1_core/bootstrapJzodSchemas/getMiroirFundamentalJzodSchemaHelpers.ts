@@ -406,9 +406,8 @@ export function createLocalizedInnerResolutionStoreForExtendedSchemas(
   prefix: string,
   alwaysPropagate: boolean = false,
 ): Record<string, any> {
-
-
-  return Object.fromEntries(
+  const _t0 = Date.now();
+  const result = Object.fromEntries(
     extendedSchemas.map((e) => {
       if (localizedResolutionStore.context === undefined) {
         throw new Error(
@@ -462,6 +461,8 @@ export function createLocalizedInnerResolutionStoreForExtendedSchemas(
         //     },
       ];})
   );
+  log.info(`  createLocalizedInnerResolutionStoreForExtendedSchemas(${prefix}) took ${Date.now() - _t0}ms, ${extendedSchemas.length} schemas`);
+  return result;
 }
 
 
@@ -483,7 +484,8 @@ export function createLocalizedInnerResolutionStoreWithCarryOn(
   //   Object.keys(localizedResolutionStore.context ?? {}).length,
   //   JSON.stringify(Object.keys(localizedResolutionStore.context ?? {}), null, 2)
   // );
-  return Object.fromEntries(
+  const _t0 = Date.now();
+  const result = Object.fromEntries(
       Object.entries(localizedResolutionStore.context ?? {}).map((f) => {
         // log.info(
         //   customChalk.blue("createLocalizedInnerResolutionStoreWithCarryOn: localizedResolutionStore.context"),
@@ -529,6 +531,8 @@ export function createLocalizedInnerResolutionStoreWithCarryOn(
     )
     // )
   );
+  log.info(`  createLocalizedInnerResolutionStoreWithCarryOn(${prefix}) took ${Date.now() - _t0}ms, context entries: ${Object.keys(localizedResolutionStore.context ?? {}).length}`);
+  return result;
 }
 
 // ################################################################################################
@@ -558,6 +562,7 @@ export function createDomainActionCarryOnSchemaResolver(
   absoluteMiroirFundamentalJzodSchema: any, /** miroirFundamentalJzodSchema with absolute references */
   extendedSchemas: string[],
 ) {
+  const _tStart = Date.now();
   if (absoluteMiroirFundamentalJzodSchema.definition.context == undefined) {
     throw new Error(
       `Key context not found in miroirFundamentalJzodSchema.context, existing keys are: ${Object.keys(
@@ -588,6 +593,7 @@ export function createDomainActionCarryOnSchemaResolver(
   };
 
   // convert extendedSchemas to carryOn-bearing schemas
+  const _t0 = Date.now();
   const carryOnDomainActionLocalizedInnerResolutionStoreForExtendedSchemas = createLocalizedInnerResolutionStoreForExtendedSchemas(
     carryOnDomainActionDependenciesJzodReference,
     extendedSchemas,
@@ -611,7 +617,9 @@ export function createDomainActionCarryOnSchemaResolver(
   //   JSON.stringify(Object.keys(carryOnDomainActionLocalizedInnerResolutionStoreForExtendedSchemas), null, 2)
   // );
 
+  log.info(`  createDomainActionCarryOnSchemaResolver extendedSchemas(${prefix}) took ${Date.now() - _t0}ms`);
   // convert plain references found in domainAction to carryOn-bearing schemas
+  const _t1 = Date.now();
   const domainActionLocalizedInnerResolutionStorePlainReferences = createLocalizedInnerResolutionStoreWithCarryOn(
     carryOnDomainActionDependenciesJzodReference,
     extendedSchemas,
@@ -631,18 +639,10 @@ export function createDomainActionCarryOnSchemaResolver(
   //   JSON.stringify(Object.keys(domainActionLocalizedInnerResolutionStorePlainReferences), null, 2)
   // );
 
+  log.info(`  createDomainActionCarryOnSchemaResolver plainRefs(${prefix}) took ${Date.now() - _t1}ms`);
+  const _t2 = Date.now();
   const carryOnDomainActionSchemaBuilder = applyLimitedCarryOnSchemaOnLevel(
     domainAction as any,
-    // {
-    //   type: "schemaReference",
-    //   definition: {
-    //     relativePath: forgeCarryOnReferenceName(
-    //       miroirFundamentalJzodSchemaUuid,
-    //       "transformerForBuildPlusRuntime"
-    //     ),
-    //   },
-    // },
-    // ["transformerType", "interpolation"], // carryOnSchemaDiscriminator
     carryOnSchemaReference as any,
     carryOnSchemaReferenceForArray as any,
     carryOnSchemaDiscriminator as any,
@@ -655,6 +655,8 @@ export function createDomainActionCarryOnSchemaResolver(
       [miroirFundamentalJzodSchemaUuid]: carryOnDomainActionDependenciesJzodReference,
     })
   );
+  log.info(`  createDomainActionCarryOnSchemaResolver domainAction schema(${prefix}) took ${Date.now() - _t2}ms`);
+  log.info(`########################################## createDomainActionCarryOnSchemaResolver(${prefix}) DONE, total took ${Date.now() - _tStart}ms`);
   return {
     carryOnDomainActionLocalizedInnerResolutionStoreForExtendedSchemas,
     domainActionLocalizedInnerResolutionStorePlainReferences,
@@ -672,6 +674,7 @@ export const getDependencySet = (
   elementName: string,
   addJzodElementsToDependencySet: boolean = true,
 ) : JzodReference => {
+  const _t0 = Date.now();
   log.info("########################################## Calculating", elementName, "DependencySet...");
 
   const jzodElementDependencySet = jzodTransitiveDependencySet(
@@ -718,7 +721,7 @@ export const getDependencySet = (
   //   JSON.stringify(jzodElement_extendedSchemas, null, 2),
   // );
 
-  log.info("########################################## Calculating jzodElementDependencySet DONE.");
+  log.info(`########################################## Calculating ${elementName} DependencySet DONE, took ${Date.now() - _t0}ms.`);
   return jzodElementDependenciesJzodReference;
 };
 
@@ -729,12 +732,21 @@ export const getJzodElementWithCarryOnContext = (
   transformerForBuildPlusRuntimeForArrayCarryOnSchemaReference: JzodReference,
   jzodElement_extendedSchemas: string[],
   jzodElementDependenciesJzodReference: JzodReference,
+  skipAlreadyProducedKeys?: Set<string>,
 ) => {
+  const _tStart = Date.now();
   log.info("########################################## getJzodElementWithCarryOnContext start:", prefix);
+  // Filter extended schemas: skip those whose output key is already covered by domainAction stores
+  const effectiveExtendedSchemas = skipAlreadyProducedKeys
+    ? jzodElement_extendedSchemas.filter(
+        (e) => !skipAlreadyProducedKeys.has(forgeCarryOnReferenceName(miroirFundamentalJzodSchemaUuid, e, "extend", prefix))
+      )
+    : jzodElement_extendedSchemas;
+  const _t0 = Date.now();
   const jzodElementLocalizedInnerResolutionStoreForExtendedSchemas =
     createLocalizedInnerResolutionStoreForExtendedSchemas(
       jzodElementDependenciesJzodReference,
-      jzodElement_extendedSchemas, // extendedSchemas,
+      effectiveExtendedSchemas, // filtered extendedSchemas
       transformerForBuildPlusRuntimeCarryOnSchemaReference,
       transformerForBuildPlusRuntimeForArrayCarryOnSchemaReference,
       "transformerType", // mlElementTemplateSchemaDiscriminator
@@ -744,19 +756,14 @@ export const getJzodElementWithCarryOnContext = (
       prefix, // prefix
       true, // alwaysPropagate
     );
-
   log.info(
-    "getJzodElementWithCarryOnContext found jzodElementLocalizedInnerResolutionStoreForExtendedSchemas",
-    JSON.stringify(
-      Object.keys(jzodElementLocalizedInnerResolutionStoreForExtendedSchemas),
-      null,
-      2,
-    ),
+    `  getJzodElementWithCarryOnContext extendedSchemas(${prefix}): ${jzodElement_extendedSchemas.length} total, ${effectiveExtendedSchemas.length} computed (${jzodElement_extendedSchemas.length - effectiveExtendedSchemas.length} skipped), took ${Date.now() - _t0}ms`,
   );
+  const _t1 = Date.now();
   const jzodElementLocalizedInnerResolutionStorePlainReferences =
     createLocalizedInnerResolutionStoreWithCarryOn(
       jzodElementDependenciesJzodReference,
-      jzodElement_extendedSchemas, // extendedSchemas,
+      effectiveExtendedSchemas, // filtered extendedSchemas
       transformerForBuildPlusRuntimeCarryOnSchemaReference,
       transformerForBuildPlusRuntimeForArrayCarryOnSchemaReference,
       "transformerType", // mlElementTemplateSchemaDiscriminator
@@ -765,21 +772,20 @@ export const getJzodElementWithCarryOnContext = (
       }),
       prefix, // prefix
       true, // alwaysPropagate
-      // (key: string, defn: JzodElement) => key.startsWith("transformer"),
-      (key: string, defn: JzodElement) => key.startsWith("coreTransformer"),
+      // Skip coreTransformer* entries AND entries already covered by domainAction stores
+      (key: string, _defn: JzodElement) =>
+        key.startsWith("coreTransformer") ||
+        (skipAlreadyProducedKeys?.has(forgeCarryOnReferenceName(miroirFundamentalJzodSchemaUuid, key, undefined, prefix)) ?? false),
     );
   log.info(
-    "getMiroirFundamentalJzodSchema jzodElementLocalizedInnerResolutionStorePlainReferences",
-    Object.keys(jzodElementLocalizedInnerResolutionStorePlainReferences).length,
-    JSON.stringify(Object.keys(jzodElementLocalizedInnerResolutionStorePlainReferences), null, 2),
+    `  getJzodElementWithCarryOnContext plainRefs(${prefix}): ${Object.keys(jzodElementLocalizedInnerResolutionStorePlainReferences).length} computed, took ${Date.now() - _t1}ms`,
   );
   const jzodElementWithCarryOnContext = {
     ...jzodElementLocalizedInnerResolutionStoreForExtendedSchemas,
     ...jzodElementLocalizedInnerResolutionStorePlainReferences,
   };
   log.info(
-    "########################################## getJzodElementWithCarryOnContext",prefix, "DONE:",
-    Object.keys(jzodElementWithCarryOnContext).length,
+    `########################################## getJzodElementWithCarryOnContext ${prefix} DONE: ${Object.keys(jzodElementWithCarryOnContext).length} entries, total took ${Date.now() - _tStart}ms`,
   );
   return jzodElementWithCarryOnContext;
 };

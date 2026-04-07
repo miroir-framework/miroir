@@ -97,6 +97,8 @@ export function getMiroirFundamentalJzodSchema(
   ): any /** MlSchema, avoiding reference to ensure proper compilation */ {
   // TODO: not really a JzodReference!!
   log.info("getMiroirFundamentalJzodSchema called!");
+  const _t_start = Date.now();
+  const _phaseTimings: Array<{phase: string; ms: number}> = [];
   // log.info(
   //   "graphConfig: (entityDefinitionReportV1 as any).mlSchema.definition.definition.context.graphReportSection.definition.definition.definition.config",
   //   JSON.stringify((entityDefinitionReportV1 as any).mlSchema.definition.definition.context.graphReportSection.definition.definition.definition.config??{},null,2)
@@ -329,13 +331,6 @@ export function getMiroirFundamentalJzodSchema(
                 relativePath: e,
               },
             })),
-            // {
-            //   type: "schemaReference",
-            //   definition: {
-            //     absolutePath: miroirFundamentalJzodSchemaUuid,
-            //     relativePath: "coreTransformerForBuildPlusRuntime_InnerReference",
-            //   },
-            // },
             {
               type: "schemaReference",
               definition: {
@@ -374,13 +369,6 @@ export function getMiroirFundamentalJzodSchema(
                 relativePath: e,
               },
             })),
-            // {
-            //   type: "schemaReference",
-            //   definition: {
-            //     absolutePath: miroirFundamentalJzodSchemaUuid,
-            //     relativePath: "coreTransformerForBuildPlusRuntime_InnerReference",
-            //   },
-            // },
             {
               type: "schemaReference",
               definition: {
@@ -3131,6 +3119,8 @@ export function getMiroirFundamentalJzodSchema(
     },
   };
 
+  _phaseTimings.push({phase: "miroirFundamentalJzodSchema construction", ms: Date.now() - _t_start});
+  let _t_phase = Date.now();
   const nullEntries = Object.entries(miroirFundamentalJzodSchema.definition.context).filter((e) => !e[1]);
   log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
   log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
@@ -3167,6 +3157,8 @@ export function getMiroirFundamentalJzodSchema(
       ),
     }
   }
+  _phaseTimings.push({phase: "absoluteMiroirFundamentalJzodSchema", ms: Date.now() - _t_phase});
+  _t_phase = Date.now();
 
   // const addExtraItems: string[] = [
   //   // "reportDisplayParams",
@@ -3195,6 +3187,8 @@ export function getMiroirFundamentalJzodSchema(
     absoluteMiroirFundamentalJzodSchema,
     "jzodElement",
   );
+  _phaseTimings.push({phase: "jzodElementDependencySet", ms: Date.now() - _t_phase});
+  _t_phase = Date.now();
 
   const coreTransformerForBuildPlusRuntimeCarryOnSchemaReference: JzodReference = {
     type: "schemaReference",
@@ -3211,26 +3205,12 @@ export function getMiroirFundamentalJzodSchema(
     },
   };
 
-  const jzodElementWithCarryOnContext = getJzodElementWithCarryOnContext(
-    "miroirTemplate_",
-    coreTransformerForBuildPlusRuntimeCarryOnSchemaReference,
-    coreTransformerForBuildPlusRuntimeForArrayCarryOnSchemaReference,
-    [
-      "jzodBaseObject",
-      "transformer_inner_label",
-      "transformer_orderBy",
-      "transformerForBuildPlusRuntime_Abstract",
-      "transformerForBuildPlusRuntime_optional_Abstract",
-    ],
-    jzodElementDependenciesJzodReference,
-  );
-
   // ##############################################################################################
   // ##############################################################################################
   // ##############################################################################################
   // ##############################################################################################
   // ##############################################################################################
-  // //  DomainAction & transformerForBuildPlusRuntime
+  // //  DomainAction & transformerForBuildPlusRuntime -- computed FIRST so jzodElement can skip duplicates
   const domainAction = (miroirFundamentalJzodSchema as any).definition.context["domainAction"]
 
   const domainActionDependencySet = jzodTransitiveDependencySet(
@@ -3243,6 +3223,9 @@ export function getMiroirFundamentalJzodSchema(
   Object.keys((jzodSchemajzodMiroirBootstrapSchema as any).definition.context).forEach((key) => {
     domainActionDependencySet.add(key);
   });
+
+  _phaseTimings.push({phase: "domainActionDependencySet", ms: Date.now() - _t_phase});
+  _t_phase = Date.now();
 
   log.info("########################################## Create buildPlusRuntimeDomainAction templates...");
   const {
@@ -3263,6 +3246,32 @@ export function getMiroirFundamentalJzodSchema(
     extendedSchemas
   );
   log.info("########################################## Create buildPlusRuntimeDomainAction templates DONE.");
+  _phaseTimings.push({phase: "createDomainActionCarryOnSchemaResolver", ms: Date.now() - _t_phase});
+  _t_phase = Date.now();
+
+  // Collect all keys produced by domainAction stores — jzodElement computation will skip them
+  // since they are overwritten in the final context spread anyway.
+  const domainActionProducedKeys = new Set([
+    ...Object.keys(buildPlusRuntimeDomainActionLocalizedInnerResolutionStoreForExtendedSchemas),
+    ...Object.keys(buildPlusRuntimeDomainActionLocalizedInnerResolutionStorePlainReferences),
+  ]);
+
+  const jzodElementWithCarryOnContext = getJzodElementWithCarryOnContext(
+    "miroirTemplate_",
+    coreTransformerForBuildPlusRuntimeCarryOnSchemaReference,
+    coreTransformerForBuildPlusRuntimeForArrayCarryOnSchemaReference,
+    [
+      "jzodBaseObject",
+      "transformer_inner_label",
+      "transformer_orderBy",
+      "transformerForBuildPlusRuntime_Abstract",
+      "transformerForBuildPlusRuntime_optional_Abstract",
+    ],
+    jzodElementDependenciesJzodReference,
+    domainActionProducedKeys, // skip entries already produced by domainAction stores
+  );
+  _phaseTimings.push({phase: "getJzodElementWithCarryOnContext", ms: Date.now() - _t_phase});
+  _t_phase = Date.now();
 
   // ##############################################################################################
   const miroirFundamentalJzodSchemaWithActionTemplate: any = {
@@ -3301,6 +3310,14 @@ export function getMiroirFundamentalJzodSchema(
     } as any /** JzodObjectOrReference */,
   };
   // log.info("entityDefinitionQueryVersionV1WithAbsoluteReferences=",JSON.stringify(entityDefinitionQueryVersionV1WithAbsoluteReferences))
+  _phaseTimings.push({phase: "final context assembly", ms: Date.now() - _t_phase});
+  const _t_total = Date.now() - _t_start;
+  const _phaseSummary = _phaseTimings
+    .map((p) => `  ${p.phase}: ${p.ms}ms (${_t_total > 0 ? Math.round(100 * p.ms / _t_total) : 0}%)`)
+    .join("\n");
+  log.info(
+    `getMiroirFundamentalJzodSchema phase timings (total ${_t_total}ms):\n${_phaseSummary}`
+  );
 
   return miroirFundamentalJzodSchemaWithActionTemplate;
 
