@@ -138,13 +138,6 @@ export const miroirTransformers: Record<string,TransformerDefinition> = {
   ...miroirCoreTransformers,
   ...mlsTransformers,
 };
-// export const coreTransformerForBuildNames = Object.keys(miroirCoreTransformers)
-//   .filter((e) => e != "transformer_getFromContext")
-//   .map((e) => e.replace("transformer_", "coreTransformerForBuild_"));
-
-// export const transformerForBuildNames = Object.keys(miroirTransformers)
-//   .filter((e) => e != "transformer_getFromContext")
-//   .map((e) => e.replace("transformer_", "transformerForBuild_"));
 
 
 export const coreTransformerForBuildPlusRuntimeNames = Object.keys(miroirCoreTransformers)
@@ -157,15 +150,6 @@ export const transformerForBuildPlusRuntimeNames = Object.keys(miroirTransformer
   e.replace("transformer_", "transformerForBuildPlusRuntime_")
 );
 
-
-// const buildReferenceMap: Record<string, string> = {
-//   transformer: "transformerForBuild",
-//   transformer_returnValue: "transformerForBuild_returnValue",
-//   transformer_createObject: "transformerForBuild_createObject",
-//   transformer_getFromContext: "transformerForBuild_getFromParameters",
-//   transformer_accessDynamicPath: "transformerForBuild_accessDynamicPath",
-//   transformer_mustacheStringTemplate: "transformerForBuild_mustacheStringTemplate", // TODO: rename to transformer_mustacheStringTemplate
-// };
 
 const buildPlusRuntimeReferenceMap: Record<string, string> = {
   transformer: "transformerForBuildPlusRuntime",
@@ -208,18 +192,6 @@ export const miroirTransformersForBuildPlusRuntime: Record<string, JzodElement> 
     ),
   ])
 );
-
-// export const miroirTransformersForBuild: Record<string, JzodElement> = Object.fromEntries(
-//   Object.entries(miroirTransformers).map(([key, transformer]) => [
-//     key,
-//     transformerInterfaceFromDefinition(
-//       transformer,
-//       "build",
-//       buildReferenceMap,
-//       key == "transformer_getFromParameters"
-//     ),
-//   ])
-// );
 
 
 

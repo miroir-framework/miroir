@@ -1477,6 +1477,11 @@
           },
           "definition": {
             "type": "array",
+            "tag": {
+              "value": {
+                "canBeTemplate": true
+              }
+            },
             "definition": {
               "type": "schemaReference",
               "definition": {

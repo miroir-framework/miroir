@@ -128,6 +128,18 @@ export function resolveJzodSchemaReferenceInContext<T extends MiroirModelEnviron
   return targetJzodSchema;
 }
 
+// ################################################################################################
+export function recursiveResolveJzodSchemaReferenceInContext<T extends MiroirModelEnvironment>(
+  jzodReference: JzodReference | JzodObject | (JzodReference | JzodObject | undefined)[],
+  relativeReferenceJzodContext: { [k: string]: JzodElement } = {},
+  miroirEnvironment: T,
+): JzodElement {
+  const resolved = resolveJzodSchemaReferenceInContext(jzodReference, relativeReferenceJzodContext, miroirEnvironment);
+  if (resolved.type === "schemaReference") {
+    return recursiveResolveJzodSchemaReferenceInContext(resolved, relativeReferenceJzodContext, miroirEnvironment);
+  }
+  return resolved;
+}
 
 // ################################################################################################
 // TODO: redundant to resolveJzodSchemaReferenceInContext, resolveJzodSchemaReference is used only in JzodTools,

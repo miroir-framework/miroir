@@ -6,7 +6,7 @@ import type {
   JzodUnion_RecursivelyUnfold_ReturnType
 } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import type { MiroirModelEnvironment } from "../../0_interfaces/1_core/Transformer";
-import { resolveJzodSchemaReferenceInContext } from "./jzodResolveSchemaReferenceInContext";
+import { recursiveResolveJzodSchemaReferenceInContext, resolveJzodSchemaReferenceInContext } from "./jzodResolveSchemaReferenceInContext";
 
 // ################################################################################################
 export const jzodUnion_recursivelyUnfold = <T extends MiroirModelEnvironment>(
@@ -28,7 +28,7 @@ export const jzodUnion_recursivelyUnfold = <T extends MiroirModelEnvironment>(
       .filter((a: JzodElement) => a.type == "schemaReference")
       .filter((a: any) => !expandedReferences.has(a.definition.relativePath as any)) as any[];
     const resolvedReferences: JzodElement[] = referencesToBeExplored.map((a: JzodReference) =>
-      resolveJzodSchemaReferenceInContext(
+      recursiveResolveJzodSchemaReferenceInContext(
         a,
         { ...relativeReferenceJzodContext, ...a.context },
         modelEnvironment

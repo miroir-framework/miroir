@@ -765,7 +765,8 @@ export const getJzodElementWithCarryOnContext = (
       }),
       prefix, // prefix
       true, // alwaysPropagate
-      (key: string, defn: JzodElement) => key.startsWith("transformer"),
+      // (key: string, defn: JzodElement) => key.startsWith("transformer"),
+      (key: string, defn: JzodElement) => key.startsWith("coreTransformer"),
     );
   log.info(
     "getMiroirFundamentalJzodSchema jzodElementLocalizedInnerResolutionStorePlainReferences",
