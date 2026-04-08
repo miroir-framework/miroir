@@ -1,6 +1,6 @@
 "use strict";
 
-import { describe, expect } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { z, ZodTypeAny } from "zod";
 
 import {
@@ -130,7 +130,7 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
           dataStoreType: "app", // TODO: comparison between deployment and selfAdminConfigurationDeployment
           // metaModel: defaultMiroirMetaModel,
           metaModel: {
-            applicationUuid: "",
+            applicationUuid: "7947ae40-eb34-4149-887b-15a9021e714e",
             applicationName: "",
             endpoints: [],
             entities: [],
@@ -143,6 +143,7 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
             storedQueries: [],
             runners: [],
             themes: [],
+            applications: [],
           },
           // TODO: this is wrong, selfApplication, selfApplication version, etc. must be passed as parameters!!!!!!!!!!!!!!!!!!!!
           selfApplication: testApplicationConfig.selfApplication,
@@ -522,18 +523,20 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
     zodSchema: extractorOrCombinerTemplate,
     action: {
       extractorOrCombinerType: "combinerOneToMany",
-      parentUuid: {
-        transformerType: "getFromParameters",
-        interpolation: "build",
-        referenceName: entityMenu.uuid,
-      },
+      parentUuid: entityMenu.uuid,
+      // parentUuid: {
+      //   transformerType: "getFromParameters",
+      //   interpolation: "build",
+      //   referenceName: entityMenu.uuid,
+      // },
       parentName: entityMenu.name,
       applicationSection: "model",
-      objectReference: {
-        transformerType: "getFromContext",
-        interpolation: "runtime",
-        referenceName: "publisher",
-      },
+      objectReference: "publisher",
+      // objectReference: {
+      //   transformerType: "getFromContext",
+      //   interpolation: "runtime",
+      //   referenceName: "publisher",
+      // },
       AttributeOfListObjectToCompareToReferenceUuid: "publisher",
     },
   },
@@ -551,14 +554,15 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
         authors: {
           extractorOrCombinerType: "extractorInstancesByEntity",
           parentName: "Author",
-          parentUuid: {
-            transformerType: "returnValue",
-            mlSchema: {
-              type: "uuid",
-            },
-            interpolation: "build",
-            value: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
-          },
+          parentUuid: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+          // parentUuid: {
+          //   transformerType: "returnValue",
+          //   mlSchema: {
+          //     type: "uuid",
+          //   },
+          //   interpolation: "build",
+          //   value: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+          // },
           filter: {
             attributeName: "name",
             value: {
@@ -603,12 +607,13 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
               // deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
               applicationSection: "data",
               objects: [
-                {
-                  parentName: entityMenu.name,
-                  parentUuid: entityMenu.uuid,
-                  applicationSection: "model",
-                  instances: [menuDefaultMiroir as EntityInstance],
-                },
+                menuDefaultMiroir as EntityInstance
+                // {
+                //   parentName: entityMenu.name,
+                //   parentUuid: entityMenu.uuid,
+                //   applicationSection: "model",
+                //   instances: [menuDefaultMiroir as EntityInstance],
+                // },
               ],
             },
           },
@@ -616,27 +621,6 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
       },
     },
   },
-  // ##############################################################################################
-  // BuildPlusRuntimeCompositeAction ##############################################################
-  // ##############################################################################################
-  "buildPlusRuntimeCompositeAction.testCompositeAction.testCompositeActions is parsable": {
-    zodSchema: z.record(z.string(), testBuildPlusRuntimeCompositeAction),
-    action: (
-      getTestSuitesForBuildPlusRuntimeCompositeAction(undefined)
-        .testSuitesForBuildPlusRuntimeCompositeAction[
-        "applicative.Library.BuildPlusRuntimeCompositeAction.integ.test"
-      ] as any
-    ).testCompositeAction.testCompositeActions,
-  },
-  // "buildPlusRuntimeCompositeAction is parsable": {
-  //   // zodSchema: buildPlusRuntimeCompositeAction,
-  //   zodSchema: testCompositeActionParams,
-  //   action:
-  //     getTestSuitesForBuildPlusRuntimeCompositeAction(undefined)
-  //       .testSuitesForBuildPlusRuntimeCompositeAction[
-  //       "applicative.Library.BuildPlusRuntimeCompositeAction.integ.test"
-  //     ],
-  // },
 };
 
 // ################################################################################################

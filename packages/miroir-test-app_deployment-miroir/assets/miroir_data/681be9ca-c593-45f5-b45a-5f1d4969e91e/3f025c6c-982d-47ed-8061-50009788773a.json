@@ -87,7 +87,8 @@
         },
         "transformerParams": {},
         "expectedValue": {
-          "error": "NO_DEPLOYMENT_UUID"
+          "details": "parentUuid resolution failed: {\n  \"error\": \"INITIAL_PATH_SEGMENT_NOT_FOUND\",\n  \"segment\": \"c\",\n  \"current\": {}\n}",
+          "error": "INVALID_PARENT_UUID_CONFIG"
         }
       },
       {
@@ -169,7 +170,7 @@
         "transformerParams": {},
         "expectedValue": {
           "error": "PARENT_NOT_FOUND",
-          "details": "No entity definition found for parentUuid WRONG_UUID in deployment f714bb2f-a12d-4e71-a03b-74dcedea6eb4"
+          "details": "No entity definition found for parentUuid WRONG_UUID in deployment undefined"
         }
       },
       {

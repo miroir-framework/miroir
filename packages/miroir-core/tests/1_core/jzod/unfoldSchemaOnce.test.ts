@@ -1,5 +1,5 @@
 import * as vitest from 'vitest';
-// import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "vitest";
 // import {
 //   describe,
 //   expect,
@@ -10,8 +10,6 @@ import {
 } from "../../../src//0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
 import {
-  runTransformerTestInMemory,
-  runTransformerTestSuite,
   runUnitTransformerTests,
   transformerTestsDisplayResults,
 } from "../../../src/4_services/TestTools";
@@ -26,7 +24,7 @@ const vitestArgs = process.argv.slice(2);
 const filePattern = vitestArgs.find(arg => !arg.startsWith('-')) || '';
 console.log("@@@@@@@@@@@@@@@@@@ File Pattern:", filePattern);
 
-const selectedTestName: string[] = [];
+const selectedTestNameDEFUNCT: string[] = [];
 
 // ################################################################################################
 const testSuiteName = transformerTestSuite_unfoldSchemaOnce.definition.transformerTestLabel;
@@ -45,8 +43,8 @@ if (shouldSkip) {
   if (!Object.hasOwn(testSuite, "transformerTestType") || testSuite.transformerTestType !== "transformerTestSuite" ) {
     throw new Error("No transformerTests found in the test suite definition" +  JSON.stringify(testSuite));
   }
-  const selectedTests = selectedTestName.length > 0? Object.fromEntries(Object.entries((testSuite as any).transformerTests).filter(
-    ([key, test]) => selectedTestName.includes((test as any).transformerTestLabel)
+  const selectedTests = selectedTestNameDEFUNCT.length > 0? Object.fromEntries(Object.entries((testSuite as any).transformerTests).filter(
+    ([key, test]) => selectedTestNameDEFUNCT.includes((test as any).transformerTestLabel)
   )): (testSuite as any).transformerTests;
   const effectiveTests: TransformerTestSuite = {
     ...testSuite,
@@ -62,9 +60,6 @@ if (shouldSkip) {
     undefined, // parentTrackingId,
     true, // trackActionsBelow
     runUnitTransformerTests,
-    // runTransformerTestInMemory,
-    // defaultMetaModelEnvironment,
-    // miroirActivityTracker
   );
   transformerTestsDisplayResults(
     effectiveTests,

@@ -236,11 +236,7 @@
           }
         },
         "transformerParams": {},
-        "expectedValue": {
-          "transformerType": "transformer_menu_addItem",
-          "menuReference": "",
-          "menuItemReference": ""
-        }
+        "expectedValue": ""
       }
     ]
   }

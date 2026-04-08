@@ -228,166 +228,6 @@
               }
             }
           },
-          "extractorTemplateCombinerOneToOne": {
-            "type": "object",
-            "extend": {
-              "type": "schemaReference",
-              "definition": {
-                "eager": true,
-                "relativePath": "extractorOrCombinerRoot"
-              }
-            },
-            "definition": {
-              "extractorOrCombinerType": {
-                "type": "literal",
-                "definition": "combinerOneToOne"
-              },
-              "objectReference": {
-                "type": "schemaReference",
-                "definition": {
-                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "coreTransformerForBuildPlusRuntime_InnerReference"
-                }
-              },
-              "AttributeOfObjectToCompareToReferenceUuid": {
-                "type": "union",
-                "definition": [
-                  { "type": "string" },
-                  { "type": "array", "definition": { "type": "string" } }
-                ]
-              },
-              "applyTransformer": {
-                "type": "schemaReference",
-                "optional": true,
-                "definition": {
-                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "coreTransformerForBuildPlusRuntime"
-                }
-              }
-            }
-          },
-          "extractorTemplateExtractorByPrimaryKey": {
-            "type": "object",
-            "extend": {
-              "type": "schemaReference",
-              "definition": {
-                "eager": true,
-                "relativePath": "extractorOrCombinerRoot"
-              }
-            },
-            "definition": {
-              "extractorOrCombinerType": {
-                "type": "literal",
-                "definition": "extractorByPrimaryKey"
-              },
-              "instanceUuid": {
-                "type": "schemaReference",
-                "definition": {
-                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "coreTransformerForBuildPlusRuntime"
-                }
-              },
-              "foreignKeysForTransformer": {
-                "type": "array",
-                "optional": true,
-                "definition": {
-                  "type": "string"
-                }
-              },
-              "applyTransformer": {
-                "type": "schemaReference",
-                "optional": true,
-                "definition": {
-                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "coreTransformerForBuildPlusRuntime"
-                }
-              }
-            }
-          },
-          "extractorTemplateReturningObject": {
-            "type": "union",
-            "discriminator": "extractorOrCombinerType",
-            "definition": [
-              {
-                "type": "schemaReference",
-                "definition": {
-                  "relativePath": "extractorTemplateCombinerOneToOne"
-                }
-              },
-              {
-                "type": "schemaReference",
-                "definition": {
-                  "relativePath": "extractorTemplateExtractorByPrimaryKey"
-                }
-              }
-            ]
-          },
-          "extractorTemplateInstancesByEntity": {
-            "type": "object",
-            "extend": {
-              "type": "schemaReference",
-              "definition": {
-                "eager": true,
-                "relativePath": "extractorOrCombinerRoot"
-              }
-            },
-            "definition": {
-              "extractorOrCombinerType": {
-                "type": "literal",
-                "definition": "extractorInstancesByEntity"
-              },
-              "orderBy": {
-                "type": "object",
-                "optional": true,
-                "definition": {
-                  "attributeName": {
-                    "type": "string"
-                  },
-                  "direction": {
-                    "type": "enum",
-                    "optional": true,
-                    "definition": ["ASC", "DESC"]
-                  }
-                }
-              },
-              "filter": {
-                "type": "object",
-                "optional": true,
-                "definition": {
-                  "attributeName": {
-                    "type": "string"
-                  },
-                  "not": {
-                    "type": "boolean",
-                    "optional": true
-                  },
-                  "undefined": {
-                    "type": "boolean",
-                    "optional": true
-                  },
-                  "value": {
-                    "type": "schemaReference",
-                    "optional": true,
-                    "definition": {
-                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                      "relativePath": "coreTransformerForBuildPlusRuntime"
-                    }
-                  },
-                  "values": {
-                    "type": "array",
-                    "optional": true,
-                    "definition": {
-                      "type": "schemaReference",
-                      "definition": {
-                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                        "relativePath": "coreTransformerForBuildPlusRuntime"
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
           "combinerOneToMany": {
             "type": "object",
             "extend": {
@@ -444,312 +284,6 @@
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                   "relativePath": "coreTransformerForBuildPlusRuntime"
                 }
-              }
-            }
-          },
-          "combinerTemplateOneToMany": {
-            "type": "object",
-            "extend": {
-              "type": "schemaReference",
-              "definition": {
-                "eager": true,
-                "relativePath": "extractorOrCombinerRoot"
-              }
-            },
-            "definition": {
-              "extractorOrCombinerType": {
-                "type": "literal",
-                "definition": "combinerOneToMany"
-              },
-              "orderBy": {
-                "type": "object",
-                "optional": true,
-                "definition": {
-                  "attributeName": {
-                    "type": "string"
-                  },
-                  "direction": {
-                    "type": "enum",
-                    "optional": true,
-                    "definition": ["ASC", "DESC"]
-                  }
-                }
-              },
-              "objectReference": {
-                "type": "schemaReference",
-                "definition": {
-                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "coreTransformerForBuildPlusRuntime"
-                }
-              },
-              "objectReferenceAttribute": {
-                "type": "string",
-                "optional": true
-              },
-              "AttributeOfListObjectToCompareToReferenceUuid": {
-                "type": "union",
-                "definition": [
-                  { "type": "string" },
-                  { "type": "array", "definition": { "type": "string" } }
-                ]
-              },
-              "applyTransformer": {
-                "type": "schemaReference",
-                "optional": true,
-                "definition": {
-                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "coreTransformerForBuildPlusRuntime"
-                }
-              }
-            }
-          },
-          "combinerTemplateManyToMany": {
-            "type": "object",
-            "extend": {
-              "type": "schemaReference",
-              "definition": {
-                "eager": true,
-                "relativePath": "extractorOrCombinerRoot"
-              }
-            },
-            "definition": {
-              "extractorOrCombinerType": {
-                "type": "literal",
-                "definition": "combinerManyToMany"
-              },
-              "orderBy": {
-                "type": "object",
-                "optional": true,
-                "definition": {
-                  "attributeName": {
-                    "type": "string"
-                  },
-                  "direction": {
-                    "type": "enum",
-                    "optional": true,
-                    "definition": ["ASC", "DESC"]
-                  }
-                }
-              },
-              "objectListReference": {
-                "type": "schemaReference",
-                "definition": {
-                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "coreTransformerForBuildPlusRuntime_getFromContext"
-                }
-              },
-              "objectListReferenceAttribute": {
-                "type": "string",
-                "optional": true
-              },
-              "AttributeOfRootListObjectToCompareToListReferenceUuid": {
-                "type": "string",
-                "optional": true
-              },
-              "applyTransformer": {
-                "type": "schemaReference",
-                "optional": true,
-                "definition": {
-                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "coreTransformerForBuildPlusRuntime"
-                }
-              }
-            }
-          },
-          "extractorTemplateReturningObjectList": {
-            "type": "union",
-            "discriminator": "extractorOrCombinerType",
-            "definition": [
-              {
-                "type": "schemaReference",
-                "definition": {
-                  "relativePath": "extractorTemplateInstancesByEntity"
-                }
-              },
-              {
-                "type": "schemaReference",
-                "definition": {
-                  "relativePath": "combinerTemplateOneToMany"
-                }
-              },
-              {
-                "type": "schemaReference",
-                "definition": {
-                  "relativePath": "combinerTemplateManyToMany"
-                }
-              }
-            ]
-          },
-          "extractorTemplateReturningObjectOrObjectList": {
-            "type": "union",
-            "discriminator": "extractorOrCombinerType",
-            "definition": [
-              {
-                "type": "schemaReference",
-                "definition": {
-                  "relativePath": "extractorTemplateReturningObject"
-                }
-              },
-              {
-                "type": "schemaReference",
-                "definition": {
-                  "relativePath": "extractorTemplateReturningObjectList"
-                }
-              }
-            ]
-          },
-          "combinerTemplateByHeteronomousManyToMany": {
-            "type": "object",
-            "definition": {
-              "extractorOrCombinerType": {
-                "type": "literal",
-                "definition": "combinerByHeteronomousManyToMany"
-              },
-              "rootExtractorOrReference": {
-                "type": "union",
-                "discriminator": "extractorOrCombinerType",
-                "definition": [
-                  {
-                    "type": "schemaReference",
-                    "definition": {
-                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                      "relativePath": "extractorOrCombinerTemplate"
-                    }
-                  },
-                  {
-                    "type": "string"
-                  }
-                ]
-              },
-              "subQueryTemplate": {
-                "type": "object",
-                "definition": {
-                  "query": {
-                    "type": "schemaReference",
-                    "definition": {
-                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                      "relativePath": "extractorOrCombinerTemplate"
-                    }
-                  },
-                  "rootQueryObjectTransformer": {
-                    "type": "schemaReference",
-                    "definition": {
-                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                      "relativePath": "recordOfTransformers"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "extractorTemplateByExtractorWrapperReturningObject": {
-            "type": "object",
-            "definition": {
-              "extractorOrCombinerType": {
-                "type": "literal",
-                "definition": "extractorByExtractorWrapperReturningObject"
-              },
-              "definition": {
-                "type": "record",
-                "definition": {
-                  "type": "schemaReference",
-                  "definition": {
-                    "relativePath": "extractorOrCombinerTemplate"
-                  }
-                }
-              }
-            }
-          },
-          "extractorTemplateByExtractorWrapperReturningList": {
-            "type": "object",
-            "definition": {
-              "extractorOrCombinerType": {
-                "type": "literal",
-                "definition": "extractorByExtractorWrapperReturningList"
-              },
-              "definition": {
-                "type": "array",
-                "definition": {
-                  "type": "schemaReference",
-                  "definition": {
-                    "relativePath": "coreTransformerForBuildPlusRuntime"
-                  }
-                }
-              }
-            }
-          },
-          "extractorTemplateByExtractorWrapper": {
-            "type": "union",
-            "discriminator": "extractorOrCombinerType",
-            "definition": [
-              {
-                "type": "schemaReference",
-                "definition": {
-                  "relativePath": "extractorTemplateByExtractorWrapperReturningObject"
-                }
-              },
-              {
-                "type": "schemaReference",
-                "definition": {
-                  "relativePath": "extractorTemplateByExtractorWrapperReturningList"
-                }
-              }
-            ]
-          },
-          "extractorOrCombinerTemplate": {
-            "type": "union",
-            "discriminator": "extractorOrCombinerType",
-            "definition": [
-              {
-                "type": "schemaReference",
-                "definition": {
-                  "relativePath": "extractorTemplateExtractorByPrimaryKey"
-                }
-              },
-              {
-                "type": "schemaReference",
-                "definition": {
-                  "relativePath": "extractorTemplateReturningObjectList"
-                }
-              },
-              {
-                "type": "schemaReference",
-                "definition": {
-                  "relativePath": "extractorTemplateCombinerOneToOne"
-                }
-              },
-              {
-                "type": "schemaReference",
-                "definition": {
-                  "relativePath": "combinerTemplateByHeteronomousManyToMany"
-                }
-              },
-              {
-                "type": "schemaReference",
-                "definition": {
-                  "relativePath": "extractorTemplateByExtractorWrapper"
-                }
-              },
-              {
-                "type": "object",
-                "definition": {
-                  "extractorOrCombinerType": {
-                    "type": "literal",
-                    "definition": "literal"
-                  },
-                  "definition": {
-                    "type": "string"
-                  }
-                }
-              }
-            ]
-          },
-          "extractorOrCombinerTemplateRecord": {
-            "type": "record",
-            "definition": {
-              "type": "schemaReference",
-              "definition": {
-                "relativePath": "extractorOrCombinerTemplate"
               }
             }
           },
@@ -955,6 +489,24 @@
               }
             }
           },
+          "extractorReturningObject": {
+            "type": "union",
+            "discriminator": "extractorOrCombinerType",
+            "definition": [
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "extractorByPrimaryKey"
+                }
+              },
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "combinerOneToOne"
+                }
+              }
+            ]
+          },
           "extractor": {
             "type": "union",
             "discriminator": "extractorOrCombinerType",
@@ -1146,7 +698,7 @@
                     "type": "schemaReference",
                     "definition": {
                       "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                      "relativePath": "extractorOrCombinerTemplate"
+                      "relativePath": "extractorOrCombiner"
                     }
                   },
                   "rootQueryObjectTransformer": {
@@ -1316,7 +868,7 @@
               }
             }
           },
-          "queryTemplateWithExtractorCombinerTransformer": {
+          "queryWithExtractorCombinerTransformer": {
             "type": "object",
             "definition": {
               "extractorTemplates": {
@@ -1324,7 +876,7 @@
                 "optional": true,
                 "definition": {
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "extractorOrCombinerTemplateRecord"
+                  "relativePath": "extractorOrCombinerRecord"
                 }
               },
               "combinerTemplates": {
@@ -1332,7 +884,7 @@
                 "optional": true,
                 "definition": {
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "extractorOrCombinerTemplateRecord"
+                  "relativePath": "extractorOrCombinerRecord"
                 }
               },
               "runtimeTransformers": {
@@ -1351,7 +903,7 @@
           "query": {
             "type": "schemaReference",
             "definition": {
-              "relativePath": "queryTemplateWithExtractorCombinerTransformer"
+              "relativePath": "queryWithExtractorCombinerTransformer"
             }
           }
         },

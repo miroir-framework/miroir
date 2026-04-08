@@ -1,8 +1,8 @@
-// import { describe, expect } from 'vitest';
+import { describe, expect, it } from 'vitest';
 
 import { DomainState } from "../../src/0_interfaces/2_domain/DomainControllerInterface";
 
-import domainStateImport from "./domainState.json" assert { type: "json" };
+import domainStateImport from "./domainState.json";
 
 const domainState: DomainState = domainStateImport as DomainState;
 
@@ -136,7 +136,6 @@ describe("domainStateToReduxDeploymentsState.unit.test", () => {
                         id: 5,
                         editable: true,
                         defaultLabel: "Author",
-                        targetEntity: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
                         foreignKeyParams: {
                           targetEntity: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
                           targetEntityOrderInstancesBy: "name",
@@ -152,7 +151,6 @@ describe("domainStateToReduxDeploymentsState.unit.test", () => {
                         id: 5,
                         editable: true,
                         defaultLabel: "Publisher",
-                        targetEntity: "a027c379-8468-43a5-ba4d-bf618be25cab",
                         foreignKeyParams: {
                           targetEntity: "a027c379-8468-43a5-ba4d-bf618be25cab",
                           targetEntityOrderInstancesBy: "name",

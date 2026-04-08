@@ -154,6 +154,7 @@ import {
   type Step,
   transformer_getActiveDeployment,
   transformer_ansiColumnsToJzodSchema,
+  transformer_defaultValueForMLSchema,
 } from "./Transformers";
 import type { MiroirActivityTrackerInterface } from "../0_interfaces/3_controllers/MiroirActivityTrackerInterface";
 import { defaultAdminApplicationDeploymentMapNOTGOOD, type ApplicationDeploymentMap } from "../1_core/Deployment";
@@ -788,6 +789,7 @@ export const applicationTransformerDefinitions: Record<string, TransformerDefini
   getUniqueValues: transformer_getUniqueValues,
   ansiColumnsToJzodSchema: transformer_ansiColumnsToJzodSchema,
   concatLists: transformer_concatLists,
+  defaultValueForMLSchema: transformer_defaultValueForMLSchema,
   // MLS
   ...Object.fromEntries(
     Object.entries(mlsTransformers).map(([key, value]) => [
@@ -3634,14 +3636,14 @@ export function transformer_extended_apply(
           let preResult;
           const foundApplicationTransformer =
             applicationTransformerDefinitions[(transformer as any).transformerType];
-          // log.info(
-          //   "transformer_extended_apply foundApplicationTransformer",
-          //   foundApplicationTransformer,
-          //   "for transformer",
-          //   JSON.stringify(transformer, null, 2),
-          //   "applicationTransformerDefinitions",
-          //   Object.keys(applicationTransformerDefinitions)
-          // );
+          log.info(
+            "transformer_extended_apply foundApplicationTransformer",
+            foundApplicationTransformer,
+            "for transformer",
+            JSON.stringify(transformer, null, 2),
+            "applicationTransformerDefinitions",
+            Object.keys(applicationTransformerDefinitions)
+          );
           if (!foundApplicationTransformer) {
             log.error(
               "transformer_extended_apply failed for",
@@ -3725,10 +3727,6 @@ export function transformer_extended_apply(
                   queryParameters: transformer as any,
                 });
               }
-              // return inMemoryTransformerImplementations[
-              //   foundApplicationTransformer.transformerImplementation
-              //     .inMemoryImplementationFunctionName
-              // ](
               // log.info("transformer_extended_apply calling transformerFunction");
               const result = transformerFunction(
                 step,
@@ -4061,6 +4059,8 @@ export function transformer_extended_apply_wrapper(
     "'" + label + "'",
     "step",
     step,
+    "transformer",
+    JSON.stringify(transformer, null, 2),
     "reduxDeploymentsState",
     reduxDeploymentsState,
     activityTracker ? "with activityTracker" : "without activityTracker",

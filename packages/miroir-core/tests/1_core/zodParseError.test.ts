@@ -1,11 +1,11 @@
 import { z } from "zod";
-import { describe } from "vitest";
+import { describe, it, expect } from "vitest";
 
 import { jzodToZod } from "@miroir-framework/jzod";
 // import { zodSchemaToTsTypeText } from "@miroir-framework/jzod-ts";
 
 import {
-  transformerForBuild,
+  coreTransformerForBuildPlusRuntime,
   ZodParseError,
   zodParseError,
   ZodParseErrorIssue,
@@ -373,7 +373,7 @@ describe("zodParseError", () => {
 
     describe("real world zodParseErrorExample", () => {
       it("should clenan-up error on parsing TransformerForBuild", () => {
-        const zodSchema = transformerForBuild;
+        const zodSchema = coreTransformerForBuildPlusRuntime;
         const transformer = {
           transformerType: "not_existing"
         }; //conceptLevel as a string, not a full-blown object
@@ -399,7 +399,7 @@ describe("zodParseError", () => {
           issues: [
             {
               code: "custom",
-              message: "Object must not contain 'transformerType' key",
+              message: "Object must not contain 'transformerType'",
               path: ["transformerType"],
             },
           ],

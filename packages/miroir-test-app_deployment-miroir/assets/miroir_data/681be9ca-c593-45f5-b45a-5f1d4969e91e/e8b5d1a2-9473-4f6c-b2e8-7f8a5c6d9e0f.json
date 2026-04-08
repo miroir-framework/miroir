@@ -431,7 +431,6 @@
                       "tag": {
                         "value": {
                           "canBeTemplate": false,
-                          "editable": false,
                           "defaultLabel": "Extractor Or Combiner Type"
                         }
                       },

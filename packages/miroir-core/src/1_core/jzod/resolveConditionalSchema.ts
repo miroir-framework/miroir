@@ -84,9 +84,6 @@ export function resolveConditionalSchema(
   queryParams: Record<string, any>, // includes queryParams
   contextResults?: Record<string, any>,
   reduxDeploymentsState: ReduxDeploymentsState | undefined = undefined,
-  // application: Uuid | undefined = undefined,
-  // applicationDeploymentMap: ApplicationDeploymentMap | undefined = undefined,
-  // deploymentUuid: Uuid | undefined = undefined,
   context: 'defaultValue' | 'typeCheck' = 'typeCheck' // New parameter for context
 ): ResolveConditionalSchemaResult {
   let effectiveSchema: JzodElement = mlSchema;

@@ -476,7 +476,6 @@ describe("jzodUnion_RecursiveUnfold", () => {
           tag: {
             value: {
               description: "A plain attribute (not object, not array) with no validation.",
-              editable: true,
               initializeTo: {
                 initializeToType: "value",
                 value: null,
@@ -490,7 +489,9 @@ describe("jzodUnion_RecursiveUnfold", () => {
                 value: {
                   description:
                     "The type of a plain attribute (not object, not array) with no validation.",
-                  editable: false,
+                  display: {
+                    editable: false,
+                  },
                   canBeTemplate: false,
                   initializeTo: {
                     initializeToType: "value",
@@ -951,7 +952,6 @@ describe("jzodUnion_RecursiveUnfold", () => {
               tag: {
                 value: {
                   description: "The attributes of the object schema.",
-                  editable: true,
                 },
               },
               definition: {
@@ -1168,6 +1168,10 @@ describe("jzodUnion_RecursiveUnfold", () => {
               },
               definition: "union",
             },
+            optInDiscriminator: {
+              type: "boolean",
+              optional: true,
+            },
             discriminator: {
               type: "union",
               optional: true,
@@ -1229,6 +1233,11 @@ describe("jzodUnion_RecursiveUnfold", () => {
             },
             definition: {
               type: "array",
+              tag: {
+                value: {
+                  canBeTemplate: true,
+                },
+              },
               definition: {
                 type: "schemaReference",
                 definition: {

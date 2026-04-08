@@ -14,87 +14,12 @@ export function JzodSchemaReferencesList(
 ): JzodReference[] {
   const refs: JzodReference[] = [];
 
-  // function traverse(node: JzodElement): void {
-  //   switch (node.type) {
-  //     case "string":
-  //     case "number":
-  //     case "bigint":
-  //     case "boolean":
-  //     case "any":
-  //     case "date":
-  //     case "never":
-  //     case "null":
-  //     case "uuid":
-  //     case "unknown":
-  //     case "void":
-  //     case "enum":
-  //     case "literal":
-  //     case "undefined": {
-  //       break;
-  //     }
-  //     case "object": {
-  //       if (node.extend && includeExtend) {
-  //         // refs.push(node.extend);
-  //         if (Array.isArray(node.extend)) {
-  //           node.extend.forEach((ref: JzodReference | JzodObject | undefined) => {
-  //             if (ref) {
-  //               traverse(ref);
-  //             }
-  //           });
-  //         } else {
-  //           traverse(node.extend);
-  //         }
-  //       }
-  //       Object.values(node.definition).forEach((value) => traverse(value));
-  //       break;
-  //     }
-  //     case "function": {
-  //       node.definition.args.forEach((arg) => traverse(arg));
-  //       if (node.definition.returns) {
-  //         traverse(node.definition.returns);
-  //       }
-  //       break;
-  //     }
-  //     case "array":
-  //     case "lazy":
-  //     case "promise":
-  //     case "record":
-  //     case "set": {
-  //       traverse(node.definition);
-  //       break;
-  //     }
-  //     case "intersection": {
-  //       traverse(node.definition.left);
-  //       traverse(node.definition.right);
-  //       break;
-  //     }
-  //     case "map":
-  //     case "tuple":
-  //     case "union": {
-  //       node.definition.forEach((value) => traverse(value));
-  //       break;
-  //     }
-  //     case "schemaReference": {
-  //       refs.push(node);
-  //       break;
-  //     }
-  //     // case "tuple": {
-  //     //   node.definition.forEach((value) => traverse(value));
-  //     // }
-  //     // case "union": {
-  //     //   node.definition.forEach((value) => traverse(value));
-  //     //   break;
-  //     // }
-  //     default:
-  //       break;
-  //   }
-  // }
-
-  traverseJzodSchema(element, refs, includeExtend);
+  traverseJzodSchemaForRefs(element, refs, includeExtend);
   return refs;
 }
 
-function traverseJzodSchema(
+// ################################################################################################
+function traverseJzodSchemaForRefs(
   node: JzodElement,
   refs: JzodReference[] | Set<JzodReference>,
   includeExtend: boolean = true
@@ -122,20 +47,20 @@ function traverseJzodSchema(
         if (Array.isArray(node.extend)) {
           node.extend.forEach((ref: JzodReference | JzodObject | undefined) => {
             if (ref) {
-              traverseJzodSchema(ref, refs, includeExtend);
+              traverseJzodSchemaForRefs(ref, refs, includeExtend);
             }
           });
         } else {
-          traverseJzodSchema(node.extend, refs, includeExtend);
+          traverseJzodSchemaForRefs(node.extend, refs, includeExtend);
         }
       }
-      Object.values(node.definition).forEach((value) => traverseJzodSchema(value, refs, includeExtend));
+      Object.values(node.definition).forEach((value) => traverseJzodSchemaForRefs(value, refs, includeExtend));
       break;
     }
     case "function": {
-      node.definition.args.forEach((arg) => traverseJzodSchema(arg, refs, includeExtend));
+      node.definition.args.forEach((arg) => traverseJzodSchemaForRefs(arg, refs, includeExtend));
       if (node.definition.returns) {
-        traverseJzodSchema(node.definition.returns, refs, includeExtend);
+        traverseJzodSchemaForRefs(node.definition.returns, refs, includeExtend);
       }
       break;
     }
@@ -144,18 +69,18 @@ function traverseJzodSchema(
     case "promise":
     case "record":
     case "set": {
-      traverseJzodSchema(node.definition, refs, includeExtend);
+      traverseJzodSchemaForRefs(node.definition, refs, includeExtend);
       break;
     }
     case "intersection": {
-      traverseJzodSchema(node.definition.left, refs, includeExtend);
-      traverseJzodSchema(node.definition.right, refs, includeExtend);
+      traverseJzodSchemaForRefs(node.definition.left, refs, includeExtend);
+      traverseJzodSchemaForRefs(node.definition.right, refs, includeExtend);
       break;
     }
     case "map":
     case "tuple":
     case "union": {
-      node.definition.forEach((value) => traverseJzodSchema(value, refs, includeExtend));
+      node.definition.forEach((value) => traverseJzodSchemaForRefs(value, refs, includeExtend));
       break;
     }
     case "schemaReference": {
@@ -180,15 +105,17 @@ function traverseJzodSchema(
   }
 }
 
+// ## ################################################################################
 export function JzodSchemaReferencesSet(
   element: JzodElement,
   includeExtend: boolean = true
 ): Set<JzodReference> {
   const refs: Set<JzodReference> = new Set<JzodReference>();
-  traverseJzodSchema(element, refs, includeExtend);
+  traverseJzodSchemaForRefs(element, refs, includeExtend);
   return refs;
 }
 
+// ################################################################################################
 export function jzodTransitiveDependencySet(
   miroirFundamentalJzodSchema: JzodReference,
   contextElementName: string,
@@ -204,7 +131,7 @@ export function jzodTransitiveDependencySet(
 
   function visit(element: string, path: string[], miroirFundamentalJzodSchema: JzodReference) {
     console.log(
-      "##############",
+      "############## visting",
       element,
       element.includes("report") ? "path: " + path.join(".") : "",
       "visitedSet size",

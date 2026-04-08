@@ -1,10 +1,5 @@
 import * as vitest from 'vitest';
 // import { describe, expect, it } from "vitest";
-import {
-  describe,
-  expect,
-  TestFramework,
-} from "../../src/1_core/test-expect";
 
 import {
   type TransformerTestSuite
@@ -12,10 +7,8 @@ import {
 
 
 import {
-  runTransformerTestInMemory,
-  runTransformerTestSuite,
   runUnitTransformerTests,
-  transformerTestsDisplayResults,
+  transformerTestsDisplayResults
 } from "../../src/4_services/TestTools";
 
 import { transformerTestSuite_defaultValueForMLSchema } from "miroir-test-app_deployment-miroir";
@@ -33,14 +26,17 @@ const miroirEventService = new MiroirEventService(miroirActivityTracker);
 
 // ################################################################################################
 const testSuiteName = transformerTestSuite_defaultValueForMLSchema.definition.transformerTestLabel;
-const currentFileName = import.meta.url.split('/').pop()?.replace('.ts', '') || '';
+const currentFileName = __filename.split(/[\\/]/).pop()?.replace(/\.(ts|js)$/, '') || '';
 
 // Only run defaultValueForMLSchema test when running resolveConditionalSchema pattern
 // This is the opposite logic - we want this test to run ONLY when the pattern matches resolveConditionalSchema
 const shouldRun = filePattern.includes('resolveConditionalSchema') || !filePattern;
 
 if (!shouldRun) {
-  console.log("################################ skipping test suite:", transformerTestSuite_defaultValueForMLSchema.definition.transformerTestLabel);
+  console.log(
+    "################################ skipping test suite:",
+    transformerTestSuite_defaultValueForMLSchema.definition.transformerTestLabel,
+  );
   console.log("################################ File pattern:", filePattern, "Current file:", currentFileName);
   vitest.test.skip(testSuiteName, () => {});
 } else {
@@ -49,6 +45,9 @@ if (!shouldRun) {
     [],
     transformerTestSuite_defaultValueForMLSchema.definition as TransformerTestSuite,
     undefined, // filter
+    // {
+    //   testList: [ 'returns undefined for an optional string MLS' ] 
+    // }, // filter
     defaultMetaModelEnvironment,
     miroirActivityTracker,
     undefined, // parentTrackingId,

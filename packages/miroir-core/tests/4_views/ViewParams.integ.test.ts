@@ -14,7 +14,17 @@ describe('ViewParams generalEditMode integration tests', () => {
     });
 
     it('should initialize generalEditMode with provided value', () => {
-      const viewParamsWithEditMode = new ViewParams(true, 250, 'ag-grid', 'default', {}, true);
+      const viewParamsWithEditMode = new ViewParams(
+        true,
+        250,
+        "ag-grid",
+        "default",
+        "",
+        "",
+        "",
+        {},
+        true,
+      );
       expect(viewParamsWithEditMode.generalEditMode).toBe(true);
     });
   });
@@ -87,6 +97,9 @@ describe('ViewParams generalEditMode integration tests', () => {
         300,                // sidebarWidth
         'glide-data-grid',  // gridType
         'dark',             // appTheme
+        "defaultFolder",   // defaultFilesystemFolder
+        "postgres://user:pass@localhost:5432/db", // postgresConnectionString
+        "mongodb://user:pass@localhost:27017/db", // mongoConnectionString
         {},                 // toolsPage
         true                // generalEditMode
       );

@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
-// import { describe, expect } from 'vitest';
+import { describe, expect, it } from 'vitest';
 
 import {
   BoxedQueryTemplateWithExtractorCombinerTransformer

@@ -1,4 +1,4 @@
-// import { describe, it, expect } from 'vitest';
+import { describe, it, expect } from 'vitest';
 
 import type { EntityDefinition } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { getModelUpdate } from "../../src/1_core/ModelUpdate.js";
@@ -128,17 +128,20 @@ const tests: getModelUpdateTest[] = [
     testLabel: "should return null when entityDefinitionBefore equals entityDefinitionAfter",
     entityDefinitionBefore: entityDefinitionBook,
     entityDefinitionAfter: entityDefinitionBook,
-    expectedModelUpdate: null
+    expectedModelUpdate: null,
   },
   // "should throw error when entityDefinitionBefore and entityDefinitionAfter have different UUIDs"
   {
-    testLabel: "should throw error when entityDefinitionBefore and entityDefinitionAfter have different UUIDs",
+    testLabel:
+      "should throw error when entityDefinitionBefore and entityDefinitionAfter have different UUIDs",
     entityDefinitionBefore: entityDefinitionBook,
     entityDefinitionAfter: {
       ...entityDefinitionBook,
-      uuid: "different-uuid-1234"
+      uuid: "different-uuid-1234",
     },
-    expectedModelUpdate: new Error("EntityDefinitions must have the same UUID to compute a ModelUpdate.")
+    expectedModelUpdate: new Error(
+      "EntityDefinitions must have the same UUID to compute a ModelUpdate.",
+    ),
   },
   // "should return ModelAction for adding a single string attribute to mlSchema"
   {
@@ -156,7 +159,7 @@ const tests: getModelUpdateTest[] = [
             tag: {
               value: {
                 id: 8,
-                defaultLabel: "ISBN"
+                defaultLabel: "ISBN",
               },
             },
           },
@@ -166,8 +169,9 @@ const tests: getModelUpdateTest[] = [
     expectedModelUpdate: {
       actionType: "alterEntityAttribute",
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-      deploymentUuid: entityDefinitionBook.parentUuid,
+      // deploymentUuid: entityDefinitionBook.parentUuid,
       payload: {
+        application: "5af03c98-fe5e-490b-b08f-e1230971c57f",
         entityName: entityDefinitionBook.name,
         entityUuid: entityDefinitionBook.entityUuid,
         entityDefinitionUuid: entityDefinitionBook.uuid,
@@ -181,14 +185,15 @@ const tests: getModelUpdateTest[] = [
                 value: {
                   id: 8,
                   defaultLabel: "ISBN",
-                  editable: true,
+                  // editable: true,
                 },
               },
             },
           },
         ],
+        "removeColumns": undefined,
       },
-    }
+    },
   },
   // "should return null when only the tag of an attribute is changed"
   {
@@ -205,14 +210,14 @@ const tests: getModelUpdateTest[] = [
             tag: {
               value: {
                 id: 4,
-                defaultLabel: "Book Title" // Changed from "Name"
+                defaultLabel: "Book Title", // Changed from "Name"
               },
             },
           },
         },
       },
     },
-    expectedModelUpdate: null
+    expectedModelUpdate: null,
   },
   // "should return ModelAction for removing a single attribute from mlSchema"
   {
@@ -231,14 +236,16 @@ const tests: getModelUpdateTest[] = [
     expectedModelUpdate: {
       actionType: "alterEntityAttribute",
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-      deploymentUuid: entityDefinitionBook.parentUuid,
+      // deploymentUuid: entityDefinitionBook.parentUuid,
       payload: {
+        application: "5af03c98-fe5e-490b-b08f-e1230971c57f",
         entityName: entityDefinitionBook.name,
         entityUuid: entityDefinitionBook.entityUuid,
         entityDefinitionUuid: entityDefinitionBook.uuid,
         removeColumns: ["publisher"],
+        addColumns: undefined,
       },
-    }
+    },
   },
   // "should return ModelAction for adding and removing attributes in the same change"
   {
@@ -270,8 +277,9 @@ const tests: getModelUpdateTest[] = [
     expectedModelUpdate: {
       actionType: "alterEntityAttribute",
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-      deploymentUuid: entityDefinitionBook.parentUuid,
+      // deploymentUuid: entityDefinitionBook.parentUuid,
       payload: {
+        application: "5af03c98-fe5e-490b-b08f-e1230971c57f",
         entityName: entityDefinitionBook.name,
         entityUuid: entityDefinitionBook.entityUuid,
         entityDefinitionUuid: entityDefinitionBook.uuid,
@@ -293,8 +301,8 @@ const tests: getModelUpdateTest[] = [
         ],
         removeColumns: ["publisher"],
       },
-    }
-  }
+    },
+  },
 ];
 describe('modelUpdates.unit', () => {
   it.each(tests)('$testLabel', ({ entityDefinitionBefore, entityDefinitionAfter, expectedModelUpdate }) => {

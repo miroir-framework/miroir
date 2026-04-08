@@ -1,4 +1,4 @@
-import { Chalk } from "chalk";
+// import { Chalk } from "chalk";
 
 
 import { cleanLevel } from "../../../1_core/constants";
@@ -14,7 +14,7 @@ import type { JzodReference, JzodElement } from "@miroir-framework/jzod-ts";
 import { jzodTransitiveDependencySet } from "../../../1_core/jzod/JzodSchemaReferences";
 // import { JzodElement, JzodReference } from "../preprocessor-generated/miroirFundamentalType";
 
-const customChalk = new Chalk({level: 1})
+// const customChalk = new Chalk({level: 1})
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -331,23 +331,12 @@ export function getExtendedSchemas(jzodSchemajzodMiroirBootstrapSchemaDefinition
     ...Object.keys(jzodSchemajzodMiroirBootstrapSchemaDefinitionContext),
     "applicationSection",
     "shippingBox",
-    // "entityAttributeUntypedCore",
     "extractorOrCombinerRoot",
     "extractorOrCombinerRoot",
     "transformer_inner_label",
     "transformer_orderBy",
-    // "transformerForBuild_Abstract",
-    // "transformerForBuild_optional_Abstract",
-    // "transformerForRuntime_Abstract",
-    // "transformerForRuntime_optional_Abstract",
     "transformerForBuildPlusRuntime_Abstract",
     "transformerForBuildPlusRuntime_optional_Abstract",
-    // "transformerForBuild_accessDynamicPath",
-    // "transformerForRuntime_getFromContext",
-    // "transformerForBuildPlusRuntime_getFromContext",
-    // "transformerForBuild_getFromParameters",
-    // "transformerForBuildPlusRuntime_getFromParameters",
-    // "transformer_contextOrParameterReferenceTO_REMOVE",
   ];
   // log.info("getExtendedSchemas result", JSON.stringify(result, null, 2));
   return result;
@@ -393,10 +382,89 @@ export function resolveReferencesWithCarryOn(
 };
 
 // ################################################################################################
-  // pre-converts extended schemas to carryOnSchema, since extended schemas have "eager" references to the carryOnSchema
-  // const localizedInnerResolutionStoreExtendedReferences: Record<string, JzodElement> =
+export const getDependencySet = (
+  jzodSchemajzodMiroirBootstrapSchema: any,
+  context: JzodReference,
+  absoluteMiroirFundamentalJzodSchema: any /** miroirFundamentalJzodSchema with absolute references */,
+  elementName: string,
+  addJzodElementsToDependencySet: boolean = true,
+) : JzodReference => {
+  const _t0 = Date.now();
+  log.info("########################################## Calculating", elementName, "DependencySet...");
+
+  const jzodElementDependencySet = jzodTransitiveDependencySet(
+    context,
+    elementName,
+    true, // includeExtend
+  );
+  // log.info("getDependencySet before hack:", Array.from(jzodElementDependencySet.keys()).length);
+  // log.info("Forcing jzod schema definition into jzodElementDependencySet...");
+  if (addJzodElementsToDependencySet) {
+    log.info("Adding jzod schema definition into jzodElementDependencySet...");
+    Object.keys((jzodSchemajzodMiroirBootstrapSchema as any).definition.context).forEach((key) => {
+      jzodElementDependencySet.add(key);
+    });
+  }
+
+  // log.info(
+  //   "jzodElementDependencySet",
+  //   Array.from(jzodElementDependencySet.keys()).length,
+  //   JSON.stringify(Array.from(jzodElementDependencySet.keys()), null, 2),
+  // );
+  const jzodElementDependenciesJzodReference: JzodReference = {
+    type: "schemaReference",
+    context: Object.fromEntries(
+      Array.from(jzodElementDependencySet.keys()).map((key) => {
+        if (!absoluteMiroirFundamentalJzodSchema.definition.context[key]) {
+          throw new Error(
+            `jzodElementDependenciesJzodReference failed, Key ${key} not found in miroirFundamentalJzodSchema.context, existing keys are: ${Object.keys(
+              absoluteMiroirFundamentalJzodSchema.definition.context,
+            )}`,
+          );
+        }
+
+        return [key, (absoluteMiroirFundamentalJzodSchema.definition as any).context[key]];
+      }),
+    ),
+    definition: {
+      relativePath: elementName,
+    },
+  };
+  // log.info(
+  //   "getMiroirFundamentalJzodSchema jzodElement_extendedSchemas",
+  //   jzodElement_extendedSchemas.length,
+  //   JSON.stringify(jzodElement_extendedSchemas, null, 2),
+  // );
+
+  log.info(`########################################## Calculating ${elementName} DependencySet DONE, took ${Date.now() - _t0}ms.`);
+  return jzodElementDependenciesJzodReference;
+};
+
+
+
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// applies applyLimitedCarryOnSchemaOnLevel
+// ################################################################################################
+// pre-converts extended schemas to carryOnSchema, since extended schemas have "eager" references to the carryOnSchema
 export function createLocalizedInnerResolutionStoreForExtendedSchemas(
-  // localizedResolutionStore: Record<string, JzodReference>,
   localizedResolutionStore: JzodReference,
   extendedSchemas: string[],
   carryOnSchemaReference: JzodReference,
@@ -434,41 +502,21 @@ export function createLocalizedInnerResolutionStoreForExtendedSchemas(
         prefix, // carryOnPrefix
         undefined, // localReferencePrefix
         "extend", // suffixForReferences
-        resolveReferencesWithCarryOn
+        resolveReferencesWithCarryOn,
       );
-      // const convertedString = stringify(appliedLimitedCarryOnResult.resultSchema);
-      // const baseString = stringify(localizedResolutionStore.context[e]);
-      // const diffResult = Diff.diffLines(baseString, convertedString, { ignoreWhitespace: true });
-      // // if (diffResult.length === 1 && diffResult[0].added === false && diffResult[0].removed === false) {
-      // if (appliedLimitedCarryOnResult.hasBeenApplied) {
-      //   log.info(
-      //     "createLocalizedInnerResolutionStoreForExtendedSchemas: convertedSchema is different from localizedResolutionStore for",
-      //     e,
-      //   );
-      // }
       return [
         forgeCarryOnReferenceName(miroirFundamentalJzodSchemaUuid, e, "extend", prefix),
         appliedLimitedCarryOnResult.resultSchema
-        // TODO: there's a bug in the squash of inheritence, it does not recursively follow the schema references
-        // appliedLimitedCarryOnResult.hasBeenApplied
-        //   ? appliedLimitedCarryOnResult.resultSchema
-        //   : {
-        //       type: "schemaReference",
-        //       definition: {
-        //         absolutePath: miroirFundamentalJzodSchemaUuid,
-        //         relativePath: e,
-        //       },
-        //     },
-      ];})
+      ];
+    })
   );
   log.info(`  createLocalizedInnerResolutionStoreForExtendedSchemas(${prefix}) took ${Date.now() - _t0}ms, ${extendedSchemas.length} schemas`);
   return result;
 }
 
-
+// ################################################################################################
 // ################################################################################################
 export function createLocalizedInnerResolutionStoreWithCarryOn(
-  // localizedResolutionStore: Record<string, any>,
   localizedResolutionStore: JzodReference,
   extendedSchemas: string[],
   carryOnSchemaReference: JzodReference,
@@ -536,6 +584,18 @@ export function createLocalizedInnerResolutionStoreWithCarryOn(
   return result;
 }
 
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
 // ################################################################################################
 // ################################################################################################
 // ################################################################################################
@@ -666,65 +726,6 @@ export function createDomainActionCarryOnSchemaResolver(
   // return runtimeDomainActionSchemaBuilder;
 }
 
-
-// ################################################################################################
-export const getDependencySet = (
-  jzodSchemajzodMiroirBootstrapSchema: any,
-  context: JzodReference,
-  absoluteMiroirFundamentalJzodSchema: any /** miroirFundamentalJzodSchema with absolute references */,
-  elementName: string,
-  addJzodElementsToDependencySet: boolean = true,
-) : JzodReference => {
-  const _t0 = Date.now();
-  log.info("########################################## Calculating", elementName, "DependencySet...");
-
-  const jzodElementDependencySet = jzodTransitiveDependencySet(
-    context,
-    elementName,
-    true, // includeExtend
-  );
-  // log.info("getDependencySet before hack:", Array.from(jzodElementDependencySet.keys()).length);
-  // log.info("Forcing jzod schema definition into jzodElementDependencySet...");
-  if (addJzodElementsToDependencySet) {
-    log.info("Adding jzod schema definition into jzodElementDependencySet...");
-    Object.keys((jzodSchemajzodMiroirBootstrapSchema as any).definition.context).forEach((key) => {
-      jzodElementDependencySet.add(key);
-    });
-  }
-
-  // log.info(
-  //   "jzodElementDependencySet",
-  //   Array.from(jzodElementDependencySet.keys()).length,
-  //   JSON.stringify(Array.from(jzodElementDependencySet.keys()), null, 2),
-  // );
-  const jzodElementDependenciesJzodReference: JzodReference = {
-    type: "schemaReference",
-    context: Object.fromEntries(
-      Array.from(jzodElementDependencySet.keys()).map((key) => {
-        if (!absoluteMiroirFundamentalJzodSchema.definition.context[key]) {
-          throw new Error(
-            `jzodElementDependenciesJzodReference failed, Key ${key} not found in miroirFundamentalJzodSchema.context, existing keys are: ${Object.keys(
-              absoluteMiroirFundamentalJzodSchema.definition.context,
-            )}`,
-          );
-        }
-
-        return [key, (absoluteMiroirFundamentalJzodSchema.definition as any).context[key]];
-      }),
-    ),
-    definition: {
-      relativePath: elementName,
-    },
-  };
-  // log.info(
-  //   "getMiroirFundamentalJzodSchema jzodElement_extendedSchemas",
-  //   jzodElement_extendedSchemas.length,
-  //   JSON.stringify(jzodElement_extendedSchemas, null, 2),
-  // );
-
-  log.info(`########################################## Calculating ${elementName} DependencySet DONE, took ${Date.now() - _t0}ms.`);
-  return jzodElementDependenciesJzodReference;
-};
 
 // ##############################################################################################
 export const getJzodElementWithCarryOnContext = (

@@ -48,6 +48,10 @@ describe("selectUnionBranchFromDiscriminator", () => {
 
     const result = selectUnionBranchFromDiscriminator(
       [objA, objB],
+      {
+        type: "union",
+        definition: [ objA, objB ],
+      },
       discriminator,
       valueObject,
       [], // valueObjectPath
@@ -70,6 +74,10 @@ describe("selectUnionBranchFromDiscriminator", () => {
 
     const result = selectUnionBranchFromDiscriminator(
       [objA, objB],
+      {
+        type: "union",
+        definition: [ objA, objB ],
+      },
       discriminator,
       valueObject,
       [], // valueObjectPath
@@ -91,6 +99,10 @@ describe("selectUnionBranchFromDiscriminator", () => {
 
     const result = selectUnionBranchFromDiscriminator(
       [objA1, objA2],
+      {
+        type: "union",
+        definition: [ objA1, objA2 ],
+      },
       discriminator,
       valueObject,
       [], // valueObjectPath
@@ -112,6 +124,10 @@ describe("selectUnionBranchFromDiscriminator", () => {
 
     const result = selectUnionBranchFromDiscriminator(
       [objA, objB],
+      {
+        type: "union",
+        definition: [ objA, objB ],
+      },
       discriminator,
       valueObject,
       [], // valueObjectPath
@@ -133,6 +149,10 @@ describe("selectUnionBranchFromDiscriminator", () => {
 
     const result = selectUnionBranchFromDiscriminator(
       [objA, objB],
+      {
+        type: "union",
+        definition: [ objA, objB ],
+      },
       discriminator,
       valueObject,
       [], // valueObjectPath
@@ -159,6 +179,10 @@ describe("selectUnionBranchFromDiscriminator", () => {
     const valueObject = { type: "A", foo: "bar" };
     const result = selectUnionBranchFromDiscriminator(
       [objA],
+      {
+        type: "union",
+        definition: [ objA ],
+      },
       discriminator,
       valueObject,
       [], // valueObjectPath
@@ -183,6 +207,10 @@ describe("selectUnionBranchFromDiscriminator", () => {
 
     const result = selectUnionBranchFromDiscriminator(
       [objA, objB],
+      {
+        type: "union",
+        definition: [ objA, objB ],
+      },
       discriminator,
       valueObject,
       [], // valueObjectPath
@@ -207,6 +235,10 @@ describe("selectUnionBranchFromDiscriminator", () => {
 
     const result = selectUnionBranchFromDiscriminator(
       [objEnum, objOther],
+      {
+        type: "union",
+        definition: [ objEnum, objOther ],
+      },
       discriminator,
       valueObject,
       [], // valueObjectPath
@@ -230,6 +262,10 @@ describe("selectUnionBranchFromDiscriminator", () => {
 
     const result = selectUnionBranchFromDiscriminator(
       [objEnum],
+      {
+        type: "union",
+        definition: [ objEnum ],
+      },
       discriminator,
       valueObject,
       [], // valueObjectPath
@@ -254,6 +290,10 @@ describe("selectUnionBranchFromDiscriminator", () => {
 
     const result = selectUnionBranchFromDiscriminator(
       [objA, objB],
+      {
+        type: "union",
+        definition: [ objA, objB ],
+      },
       discriminator,
       valueObject,
       [], // valueObjectPath
@@ -278,6 +318,10 @@ describe("selectUnionBranchFromDiscriminator", () => {
     
     const result = selectUnionBranchFromDiscriminator(
       [objA, objB],
+      {
+        type: "union",
+        definition: [ objA, objB ],
+      },
       discriminator,
       valueObject,
       [], // valueObjectPath
@@ -318,6 +362,10 @@ describe("selectUnionBranchFromDiscriminator", () => {
     
     const result = selectUnionBranchFromDiscriminator(
       [objA, objB],
+      {
+        type: "union",
+        definition: [ objA, objB ],
+      },
       discriminator,
       valueObject,
       [], // valueObjectPath
@@ -719,6 +767,10 @@ describe("selectUnionBranchFromDiscriminator", () => {
 
     const result = selectUnionBranchFromDiscriminator(
       unionObjectChoices,
+      {
+        type: "union",
+        definition: unionObjectChoices,
+      },
       ["extractorOrCombinerType"],
       valueObject,
       [], // valueObjectPath
@@ -742,7 +794,6 @@ describe("selectUnionBranchFromDiscriminator", () => {
               value: {
                 id: 1,
                 defaultLabel: "Label",
-                display: { editable: false },
               },
             },
           },
@@ -753,7 +804,6 @@ describe("selectUnionBranchFromDiscriminator", () => {
               value: {
                 id: 2,
                 defaultLabel: "SelfApplication Section",
-                display: { editable: false },
               },
             },
             definition: {
@@ -769,7 +819,6 @@ describe("selectUnionBranchFromDiscriminator", () => {
               value: {
                 id: 3,
                 defaultLabel: "Parent Name",
-                display: { editable: false },
               },
             },
           },
@@ -780,7 +829,7 @@ describe("selectUnionBranchFromDiscriminator", () => {
               value: {
                 id: 4,
                 defaultLabel: "Parent Uuid",
-                display: { editable: false },
+                canBeTemplate: true,
               },
             },
             definition: [
@@ -1229,6 +1278,10 @@ describe("selectUnionBranchFromDiscriminator", () => {
 
     const result = selectUnionBranchFromDiscriminator(
       unionObjectChoices,
+      {
+        type: "union",
+        definition: unionObjectChoices,
+      },
       [], // no discriminator keys
       valueObject,
       [], // valueObjectPath
