@@ -27,14 +27,17 @@ import {
 } from "../jzodUnion_RecursivelyUnfoldInterface";
 import { zodParseErrorJzodSchema } from "../zodParseError";
 import {
-  createDomainActionCarryOnSchemaResolver,
+  createLocalizedInnerResolutionStoreForExtendedSchemas,
+  getCarryOnSchemaBuilder,
   getDependencySet,
   getExtendedSchemas,
-  getJzodElementWithCarryOnContext,
+  getJzodElementWithCarryOnContextDEFUNCT,
   makeReferencesAbsolute,
   miroirFundamentalJzodSchemaUuid,
+  resolveReferencesWithCarryOn,
   testCompositeActionParams,
 } from "./getMiroirFundamentalJzodSchemaHelpers";
+import { extractor } from "../preprocessor-generated/miroirFundamentalType";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -3127,15 +3130,6 @@ export function getMiroirFundamentalJzodSchema(
   // ##############################################################################
   // ##############################################################################
   // coreTransformerForBuildPlusRuntime + JZOD ELEMENTS
-  const jzodElementDependenciesJzodReference = getDependencySet(
-    jzodSchemajzodMiroirBootstrapSchema,
-    miroirFundamentalJzodSchema.definition,
-    absoluteMiroirFundamentalJzodSchema,
-    "jzodElement",
-  );
-  _phaseTimings.push({phase: "jzodElementDependencySet", ms: Date.now() - _t_phase});
-  _t_phase = Date.now();
-
   const coreTransformerForBuildPlusRuntimeCarryOnSchemaReference: JzodReference = {
     type: "schemaReference",
     definition: {
@@ -3151,87 +3145,211 @@ export function getMiroirFundamentalJzodSchema(
     },
   };
 
-  // ##############################################################################################
-  // ##############################################################################################
-  // ##############################################################################################
-  // ##############################################################################################
-  // ##############################################################################################
-  // //  DomainAction & transformerForBuildPlusRuntime -- computed FIRST so jzodElement can skip duplicates
-  const domainAction = (miroirFundamentalJzodSchema as any).definition.context["domainAction"]
+  
 
-  const domainActionDependencySet = jzodTransitiveDependencySet(
-    miroirFundamentalJzodSchema.definition,
-    "domainAction",
-    true, // includeExtend
-  );
-
-  // // TODO: HACK!! forcing jzod schema definition into compositeActionDependencySet
-  Object.keys((jzodSchemajzodMiroirBootstrapSchema as any).definition.context).forEach((key) => {
-    domainActionDependencySet.add(key);
-  });
-
-  _phaseTimings.push({phase: "domainActionDependencySet", ms: Date.now() - _t_phase});
-  _t_phase = Date.now();
-
-  log.info("########################################## Create buildPlusRuntimeDomainAction templates...");
-  const {
-    carryOnDomainActionLocalizedInnerResolutionStoreForExtendedSchemas:
-      buildPlusRuntimeDomainActionLocalizedInnerResolutionStoreForExtendedSchemas,
-    domainActionLocalizedInnerResolutionStorePlainReferences:
-      buildPlusRuntimeDomainActionLocalizedInnerResolutionStorePlainReferences,
-    carryOnDomainActionSchemaBuilder: buildPlusRuntimeDomainActionSchemaBuilder,
-  } = createDomainActionCarryOnSchemaResolver(
-    domainAction,
+  // ##############################################################################################
+  // ##############################################################################################
+  // ##############################################################################################
+  // ##############################################################################################
+  // ##############################################################################################
+  // EXTENDED SCHEMAS RESOLUTION STORE
+  const localizedInnerResolutionStoreForExtendedSchemas = createLocalizedInnerResolutionStoreForExtendedSchemas(
+    absoluteMiroirFundamentalJzodSchema.definition, //domainActiondependenciesJzodReference,
+    extendedSchemas,
     coreTransformerForBuildPlusRuntimeCarryOnSchemaReference,
     coreTransformerForBuildPlusRuntimeForArrayCarryOnSchemaReference,
     ["transformerType", "interpolation"],
-    domainActionDependencySet,
+    resolveReferencesWithCarryOn.bind(
+      undefined,
+      {
+        // [miroirFundamentalJzodSchemaUuid]: domainActiondependenciesJzodReference
+        [miroirFundamentalJzodSchemaUuid]: absoluteMiroirFundamentalJzodSchema.definition
+      }
+    ),
     "miroirTemplate_", // prefix
     false, // alwaysPropagate
-    absoluteMiroirFundamentalJzodSchema,
-    extendedSchemas
   );
-  log.info("########################################## Create buildPlusRuntimeDomainAction templates DONE.");
-  _phaseTimings.push({phase: "createDomainActionCarryOnSchemaResolver", ms: Date.now() - _t_phase});
-  _t_phase = Date.now();
 
-  // Collect all keys produced by domainAction stores — jzodElement computation will skip them
-  // since they are overwritten in the final context spread anyway.
-  const domainActionProducedKeys = new Set([
-    ...Object.keys(buildPlusRuntimeDomainActionLocalizedInnerResolutionStoreForExtendedSchemas),
-    ...Object.keys(buildPlusRuntimeDomainActionLocalizedInnerResolutionStorePlainReferences),
-  ]);
-
-  const jzodElementWithCarryOnContext = getJzodElementWithCarryOnContext(
-    "miroirTemplate_",
-    coreTransformerForBuildPlusRuntimeCarryOnSchemaReference,
-    coreTransformerForBuildPlusRuntimeForArrayCarryOnSchemaReference,
-    [
-      "jzodBaseObject",
-      "transformer_inner_label",
-      "transformer_orderBy",
-      "transformerForBuildPlusRuntime_Abstract",
-      "transformerForBuildPlusRuntime_optional_Abstract",
-    ],
-    jzodElementDependenciesJzodReference,
-    domainActionProducedKeys, // skip entries already produced by domainAction stores
+  console.log(
+    "getMiroirFundamentalJzodSchema - extendedSchemasResolutionStore - localizedInnerResolutionStoreForExtendedSchemas",
+    JSON.stringify(Object.keys(localizedInnerResolutionStoreForExtendedSchemas), null, 2),
   );
-  _phaseTimings.push({phase: "getJzodElementWithCarryOnContext", ms: Date.now() - _t_phase});
-  _t_phase = Date.now();
+  const absoluteMiroirFundamentalJzodSchemaWithExtendedSchemas = {
+    ...absoluteMiroirFundamentalJzodSchema,
+    definition: {
+      ...absoluteMiroirFundamentalJzodSchema.definition,
+      context: {
+        ...absoluteMiroirFundamentalJzodSchema.definition.context,
+        ...localizedInnerResolutionStoreForExtendedSchemas,
+      },
+    },
+  }
+
+  // console.log(
+  //   "getMiroirFundamentalJzodSchema - extendedSchemasResolutionStore - absoluteMiroirFundamentalJzodSchemaWithExtendedSchemas",
+  //   JSON.stringify(Object.keys(absoluteMiroirFundamentalJzodSchemaWithExtendedSchemas.definition.context), null, 2),
+  // );
+  _phaseTimings.push({phase: "extendedSchemasResolutionStore", ms: Date.now() - _t_phase});
+
+    // // ##############################################################################################
+  // _t_phase = Date.now();
+  // const jzodElementDependenciesJzodReference = getDependencySet(
+  //   jzodSchemajzodMiroirBootstrapSchema,
+  //   miroirFundamentalJzodSchema.definition,
+  //   absoluteMiroirFundamentalJzodSchema,
+  //   "jzodElement",
+  // );
+  // // _phaseTimings.push({phase: "jzodElementDependencySet", ms: Date.now() - _t_phase});
+
+  // // _t_phase = Date.now();
+
+  // // Collect all keys produced by domainAction stores — jzodElement computation will skip them
+  // // since they are overwritten in the final context spread anyway.
+  // const domainActionProducedKeys = new Set([
+  //   ...Object.keys(localizedInnerResolutionStoreForExtendedSchemas),
+  //   ...Object.keys(buildPlusRuntimeDomainActionLocalizedInnerResolutionStorePlainReferences),
+  // ]);
+
+  // const jzodElementWithCarryOnContext = getJzodElementWithCarryOnContextDEFUNCT(
+  //   "miroirTemplate_",
+  //   coreTransformerForBuildPlusRuntimeCarryOnSchemaReference,
+  //   coreTransformerForBuildPlusRuntimeForArrayCarryOnSchemaReference,
+  //   [
+  //     "jzodBaseObject",
+  //     "transformer_inner_label",
+  //     "transformer_orderBy",
+  //     "transformerForBuildPlusRuntime_Abstract",
+  //     "transformerForBuildPlusRuntime_optional_Abstract",
+  //   ],
+  //   jzodElementDependenciesJzodReference,
+  //   domainActionProducedKeys, // skip entries already produced by domainAction stores
+  // );
+  // _phaseTimings.push({phase: "getJzodElementWithCarryOnContext", ms: Date.now() - _t_phase});
 
   // ##############################################################################################
+  _t_phase = Date.now();
+
+
+  console.log("getMiroirFundamentalJzodSchema - extractorOrCombiner templates START");
+  const extractorOrCombiner = (miroirFundamentalJzodSchema as any).definition.context["extractorOrCombiner"]
+
+  const queriesDependencySet = jzodTransitiveDependencySet(
+    miroirFundamentalJzodSchema.definition,
+    "extractorOrCombinerRecord",
+    true, // includeExtend
+  );
+  console.log(
+    "getMiroirFundamentalJzodSchema - extractorOrCombiner templates - queriesDependencySet",
+    JSON.stringify(Array.from(queriesDependencySet), null, 2),
+  );
+  const {
+    localizedInnerResolutionStorePlainReferences:
+      queriesLocalizedInnerResolutionStorePlainReferences,
+    carryOnDomainActionSchemaBuilder: queriesSchemaBuilder,
+  } = getCarryOnSchemaBuilder(
+    extractorOrCombiner,
+    queriesDependencySet,
+    absoluteMiroirFundamentalJzodSchemaWithExtendedSchemas, // absoluteMiroirFundamentalJzodSchema,
+    coreTransformerForBuildPlusRuntimeCarryOnSchemaReference,
+    coreTransformerForBuildPlusRuntimeForArrayCarryOnSchemaReference,
+    ["transformerType", "interpolation"],
+    "miroirTemplate_", // prefix
+    false, // alwaysPropagate,
+    localizedInnerResolutionStoreForExtendedSchemas, // skip already converted extended schemas
+  );
+
+  console.log(
+    "getMiroirFundamentalJzodSchema - extractorOrCombiner templates - queriesLocalizedInnerResolutionStorePlainReferences",
+    JSON.stringify(Object.keys(queriesLocalizedInnerResolutionStorePlainReferences), null, 2),
+  );
+  const absoluteMiroirFundamentalJzodSchemaWithQueriesTemplates = {
+    ...absoluteMiroirFundamentalJzodSchema,
+    definition: {
+      ...absoluteMiroirFundamentalJzodSchema.definition,
+      context: {
+        ...absoluteMiroirFundamentalJzodSchema.definition.context,
+        ...localizedInnerResolutionStoreForExtendedSchemas,
+        ...queriesLocalizedInnerResolutionStorePlainReferences,
+      },
+    },
+  }
+  const convertedJzodSchemaWithQueriesTemplates = {
+    ...localizedInnerResolutionStoreForExtendedSchemas,
+    ...queriesLocalizedInnerResolutionStorePlainReferences,
+  };
+  console.log(
+    "getMiroirFundamentalJzodSchema - extractorOrCombiner templates - absoluteMiroirFundamentalJzodSchemaWithQueriesTemplates",
+    JSON.stringify(Object.keys(absoluteMiroirFundamentalJzodSchemaWithQueriesTemplates.definition.context), null, 2),
+  );
+  console.log("getMiroirFundamentalJzodSchema - extractorOrCombiner templates END");
+  _phaseTimings.push({phase: "queriesWithCarryOnContext", ms: Date.now() - _t_phase});
+
+  // ##############################################################################################
+  _t_phase = Date.now();
+
+  log.info("########################################## Create buildPlusRuntimeDomainAction templates...");
+    const domainAction = (absoluteMiroirFundamentalJzodSchemaWithQueriesTemplates as any).definition.context["domainAction"]
+
+  const domainActionDependencySet = jzodTransitiveDependencySet(
+    // miroirFundamentalJzodSchema.definition,
+    absoluteMiroirFundamentalJzodSchemaWithQueriesTemplates.definition,
+    "domainAction",
+    true, // includeExtend
+  );
+  console.log(
+    "getMiroirFundamentalJzodSchema - domainAction templates - domainActionDependencySet",
+    JSON.stringify(Array.from(domainActionDependencySet), null, 2),
+  );
+
+  // // // TODO: HACK!! forcing jzod schema definition into compositeActionDependencySet
+  // Object.keys((jzodSchemajzodMiroirBootstrapSchema as any).definition.context).forEach((key) => {
+  //   domainActionDependencySet.add(key);
+  // });
+
+  const {
+    localizedInnerResolutionStorePlainReferences:
+      buildPlusRuntimeDomainActionLocalizedInnerResolutionStorePlainReferences,
+    carryOnDomainActionSchemaBuilder: buildPlusRuntimeDomainActionSchemaBuilder,
+  } = getCarryOnSchemaBuilder(
+    domainAction,
+    domainActionDependencySet,
+    absoluteMiroirFundamentalJzodSchemaWithQueriesTemplates, //absoluteMiroirFundamentalJzodSchema,
+    coreTransformerForBuildPlusRuntimeCarryOnSchemaReference,
+    coreTransformerForBuildPlusRuntimeForArrayCarryOnSchemaReference,
+    ["transformerType", "interpolation"],
+    "miroirTemplate_", // prefix
+    false, // alwaysPropagate
+    // queriesConvertedReferences, // already converted references to avoid converting them twice since they are shared between extractorOrCombiner and domainAction
+    // absoluteMiroirFundamentalJzodSchemaWithQueriesTemplates.definition.context
+    convertedJzodSchemaWithQueriesTemplates,
+  );
+  log.info("getMiroirFundamentalJzodSchema - domainAction templates - buildPlusRuntimeDomainActionLocalizedInnerResolutionStorePlainReferences",
+    JSON.stringify(Object.keys(buildPlusRuntimeDomainActionLocalizedInnerResolutionStorePlainReferences), null, 2),
+  );
+  log.info("########################################## Create buildPlusRuntimeDomainAction templates DONE.");
+  _phaseTimings.push({phase: "getCarryOnScemaBuilder", ms: Date.now() - _t_phase});
+
+
+  // ##############################################################################################
+  _t_phase = Date.now();
   const miroirFundamentalJzodSchemaWithActionTemplate: any = {
     ...miroirFundamentalJzodSchema,
     definition: {
       ...miroirFundamentalJzodSchema.definition,
       context: {
         ...((miroirFundamentalJzodSchema.definition as any)?.context ?? {}),
-        ______________________________________________jzodElementWithCarryOnContext________________________________________________:
+        // ______________________________________________jzodElementWithCarryOnContext________________________________________________:
+        //   { type: "any" },
+        // ...jzodElementWithCarryOnContext,
+        ______________________________________________localizedInnerResolutionStoreForExtendedSchemas_______________________:
           { type: "any" },
-        ...jzodElementWithCarryOnContext,
-        ______________________________________________buildPlusRuntimeDomainActionLocalizedInnerResolutionStoreForExtendedSchemas_______________________:
+        ...localizedInnerResolutionStoreForExtendedSchemas,
+        ______________________________________________queriesLocalizedInnerResolutionStorePlainReferences_______________________:
           { type: "any" },
-        ...buildPlusRuntimeDomainActionLocalizedInnerResolutionStoreForExtendedSchemas,
+        ...queriesLocalizedInnerResolutionStorePlainReferences,
+        ______________________________________________queries_______________________:
+          { type: "any" },
+        buildPlusRuntimeQuery: queriesSchemaBuilder.resultSchema,
         ______________________________________________buildPlusRuntimeDomainActionLocalizedInnerResolutionStorePlainReferences_______________________:
           { type: "any" },
         ...buildPlusRuntimeDomainActionLocalizedInnerResolutionStorePlainReferences,
@@ -3651,14 +3769,20 @@ export function getMiroirFundamentalJzodSchema(
           definition: {
             absolutePath: miroirFundamentalJzodSchemaUuid,
             relativePath:
-              // "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeActionSequence",
               "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeActionSequence",
           },
         },
       } as Record<string, any /**JzodElement */>,
     } as any /** JzodObjectOrReference */,
   };
-  // log.info("entityDefinitionQueryVersionV1WithAbsoluteReferences=",JSON.stringify(entityDefinitionQueryVersionV1WithAbsoluteReferences))
+  log.info(
+    "entityDefinitionQueryVersionV1WithAbsoluteReferences=",
+    JSON.stringify(
+      Object.keys(miroirFundamentalJzodSchemaWithActionTemplate.definition.context),
+      null,
+      2,
+    ),
+  );
   _phaseTimings.push({phase: "final context assembly", ms: Date.now() - _t_phase});
   const _t_total = Date.now() - _t_start;
   const _phaseSummary = _phaseTimings
@@ -3667,6 +3791,17 @@ export function getMiroirFundamentalJzodSchema(
   log.info(
     `getMiroirFundamentalJzodSchema phase timings (total ${_t_total}ms):\n${_phaseSummary}`
   );
+  log.info("####################################################################################");
+  log.info("####################################################################################");
+  log.info("####################################################################################");
+  log.info("####################################################################################");
+  log.info("####################################################################################");
+  log.info("####################################################################################");
+  log.info("####################################################################################");
+  log.info("####################################################################################");
+  log.info("####################################################################################");
+  log.info("####################################################################################");
+  log.info("####################################################################################");
 
   return miroirFundamentalJzodSchemaWithActionTemplate;
 

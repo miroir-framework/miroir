@@ -1,3 +1,5 @@
+import * as vitest from 'vitest';
+import { describe, expect, it } from "vitest";
 
 import {
   JzodElement,
@@ -11,10 +13,18 @@ import { cleanupObject } from "../../../src/tools";
 
 type JzodReferenceResolutionFunction = (schema: JzodReference) => JzodElement | undefined;
 
+function fullResolveJzodReference (store: Record<string, JzodReference>, ref: JzodReference): JzodElement | undefined {
+  const resolvedAbsolutePath = store[ref.definition?.absolutePath ?? ""];
+  return resolvedAbsolutePath && resolvedAbsolutePath.context
+    ? resolvedAbsolutePath.context[ref.definition?.relativePath ?? ""]
+    : undefined;
+}
+
 interface TestCase {
   name: string,
+  label?: string,
   testJzodSchema: JzodElement,
-  mlElementTemplateJzodSchema: JzodObject | JzodReference,
+  mlElementTemplateJzodSchema: JzodElement,
   mlElementTemplateSchemaDiscriminator?:undefined | string | string[],
   alwaysPropagate?: boolean,
   expectedReferences: Record<string,JzodElement>,
@@ -28,9 +38,10 @@ function runTest(
   const testResult = cleanupObject(applyLimitedCarryOnSchema(
     t.testJzodSchema,
     t.mlElementTemplateJzodSchema,
+    t.mlElementTemplateJzodSchema, // for array
     t.mlElementTemplateSchemaDiscriminator,
     t.alwaysPropagate??false, // alwaysPropagate
-    undefined, // mlElementTemplatePrefix
+    "mlElementTemplate_", // mlElementTemplatePrefix
     undefined, // prefixForReference
     undefined, // suffixForReference
     t.resolveJzodReference,
@@ -467,35 +478,29 @@ describe(
                 d: { type: "string" },
               },
             },
-            resolveJzodReference: (ref: JzodReference): JzodElement | undefined => {
-              const store: Record<string, JzodReference> = {
-                "1e8dab4b-65a3-4686-922e-ce89a2d62aa9": {
-                  type: "schemaReference",
-                  context: {
-                    myObject: {
-                      type: "object",
-                      definition: {
-                        a: { type: "string" },
-                        b: { type: "schemaReference", definition: { relativePath: "myObject" } },
-                        c: {
-                          type: "array",
-                          definition: {
-                            type: "schemaReference",
-                            definition: { relativePath: "myObject" },
-                          },
+            resolveJzodReference: fullResolveJzodReference.bind(null, {
+              "1e8dab4b-65a3-4686-922e-ce89a2d62aa9": {
+                type: "schemaReference",
+                context: {
+                  myObject: {
+                    type: "object",
+                    definition: {
+                      a: { type: "string" },
+                      b: { type: "schemaReference", definition: { relativePath: "myObject" } },
+                      c: {
+                        type: "array",
+                        definition: {
+                          type: "schemaReference",
+                          definition: { relativePath: "myObject" },
                         },
                       },
                     },
-                    myString: { type: "string" },
                   },
-                  definition: { relativePath: "myObject" },
+                  myString: { type: "string" },
                 },
-              };
-              const resolvedAbsolutePath = store[ref.definition?.absolutePath ?? ""];
-              return resolvedAbsolutePath && resolvedAbsolutePath.context
-                ? resolvedAbsolutePath.context[ref.definition?.relativePath ?? ""]
-                : undefined;
-            },
+                definition: { relativePath: "myObject" },
+              },
+            }),
             expectedResult: {
               schema: {
                 type: "schemaReference",
@@ -516,7 +521,8 @@ describe(
                   b: {
                     type: "schemaReference",
                     definition: {
-                      relativePath: "mlElementTemplate_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_myObject",
+                      relativePath:
+                        "mlElementTemplate_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_myObject",
                     },
                   },
                   c: {
@@ -524,7 +530,8 @@ describe(
                     definition: {
                       type: "schemaReference",
                       definition: {
-                        relativePath: "mlElementTemplate_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_myObject",
+                        relativePath:
+                          "mlElementTemplate_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_myObject",
                       },
                     },
                   },
@@ -662,7 +669,8 @@ describe(
                         type: "schemaReference",
                         definition: {
                           absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-                          relativePath: "mlElementTemplate_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_myString",
+                          relativePath:
+                            "mlElementTemplate_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_myString",
                         },
                       },
                     },
@@ -705,7 +713,6 @@ describe(
                   definition: [
                     {
                       type: "schemaReference",
-                      // tag: { value: { canBeTemplate: true } },
                       definition: {
                         absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
                         relativePath: "myString",
@@ -724,21 +731,15 @@ describe(
                 c: { type: "number" },
               },
             },
-            resolveJzodReference: (ref: JzodReference): JzodElement | undefined => {
-              const store: Record<string, JzodReference> = {
-                "1e8dab4b-65a3-4686-922e-ce89a2d62aa9": {
-                  type: "schemaReference",
-                  context: {
-                    myString: { type: "string", tag: { value: { canBeTemplate: true } } },
-                  },
-                  definition: { relativePath: "myString" },
+            resolveJzodReference: fullResolveJzodReference.bind(null, {
+              "1e8dab4b-65a3-4686-922e-ce89a2d62aa9": {
+                type: "schemaReference",
+                context: {
+                  myString: { type: "string", tag: { value: { canBeTemplate: true } } },
                 },
-              };
-              const resolvedAbsolutePath = store[ref.definition?.absolutePath ?? ""];
-              return resolvedAbsolutePath && resolvedAbsolutePath.context
-                ? resolvedAbsolutePath.context[ref.definition?.relativePath ?? ""]
-                : undefined;
-            },
+                definition: { relativePath: "myString" },
+              },
+            }),
             expectedResult: {
               schema: {
                 tag: {
@@ -779,7 +780,8 @@ describe(
                             type: "schemaReference",
                             definition: {
                               absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-                              relativePath: "mlElementTemplate_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_myString",
+                              relativePath:
+                                "mlElementTemplate_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_myString",
                             },
                           },
                           {
@@ -939,14 +941,16 @@ describe(
                         type: "schemaReference",
                         definition: {
                           absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-                          relativePath: "mlElementTemplate_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_myString",
+                          relativePath:
+                            "mlElementTemplate_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_myString",
                         },
                       },
                       d: {
                         type: "schemaReference",
                         definition: {
                           absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-                          relativePath: "mlElementTemplate_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_myString",
+                          relativePath:
+                            "mlElementTemplate_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_myString",
                         },
                       },
                     },
@@ -1693,7 +1697,6 @@ describe(
             name: "test130",
             testJzodSchema: {
               type: "array",
-              // tag: { value: { canBeTemplate: true } },
               definition: {
                 type: "schemaReference",
                 tag: { value: { canBeTemplate: true } },
@@ -1771,7 +1774,8 @@ describe(
                       },
                       definition: {
                         absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-                        relativePath: "mlElementTemplate_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_stringItem",
+                        relativePath:
+                          "mlElementTemplate_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_stringItem",
                       },
                     },
                     {
@@ -1790,6 +1794,264 @@ describe(
             expectedReferences: {
               mlElementTemplate_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_stringItem: {
                 type: "string",
+              },
+            },
+          },
+          // test140, references: 2 attributes of an object are schemaReferences with canBeTemplate to the same absolutePath, conversion should only be applied once and both should point to the same converted reference
+          {
+            name: "test140",
+            label:
+              "test140, references: 2 attributes of an object are schemaReferences with canBeTemplate to the same absolutePath, conversion should only be applied once and both should point to the same converted reference",
+            testJzodSchema: {
+              type: "object",
+              definition: {
+                a: {
+                  type: "schemaReference",
+                  tag: { value: { canBeTemplate: true } },
+                  definition: {
+                    absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+                    relativePath: "myString",
+                  },
+                },
+                b: {
+                  type: "schemaReference",
+                  tag: { value: { canBeTemplate: true } },
+                  definition: {
+                    absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+                    relativePath: "myString",
+                  },
+                },
+              },
+            },
+            mlElementTemplateJzodSchema: {
+              type: "number",
+            },
+            resolveJzodReference: fullResolveJzodReference.bind(null, {
+              "1e8dab4b-65a3-4686-922e-ce89a2d62aa9": {
+                type: "schemaReference",
+                context: {
+                  myString: { type: "string", tag: { value: { canBeTemplate: true } } },
+                },
+                definition: { relativePath: "myString" },
+              },
+            }),
+            expectedResult: {
+              schema: {
+                type: "object",
+                definition: {
+                  a: {
+                    type: "union",
+                    tag: {
+                      value: {
+                        canBeTemplate: true,
+                        isTemplate: true,
+                      },
+                    },
+                    definition: [
+                      {
+                        type: "schemaReference",
+                        tag: {
+                          value: {
+                            canBeTemplate: true,
+                            isTemplate: true,
+                          },
+                        },
+                        definition: {
+                          absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+                          relativePath:
+                            "mlElementTemplate_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_myString",
+                        },
+                      },
+                      {
+                        type: "number",
+                      },
+                    ],
+                  },
+                  b: {
+                    type: "union",
+                    tag: {
+                      value: {
+                        canBeTemplate: true,
+                        isTemplate: true,
+                      },
+                    },
+                    definition: [
+                      {
+                        type: "schemaReference",
+                        tag: {
+                          value: {
+                            canBeTemplate: true,
+                            isTemplate: true,
+                          },
+                        },
+                        definition: {
+                          absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+                          relativePath:
+                            "mlElementTemplate_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_myString",
+                        },
+                      },
+                      {
+                        type: "number",
+                      },
+                    ],
+                  },
+                },
+              },
+              hasBeenApplied: true,
+            },
+            expectedReferences: {
+              mlElementTemplate_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_myString: {
+                type: "union",
+                tag: {
+                  value: {
+                    canBeTemplate: true,
+                    isTemplate: true,
+                  },
+                },
+                definition: [
+                  {
+                    type: "string",
+                    tag: {
+                      value: {
+                        canBeTemplate: true,
+                      },
+                    },
+                  },
+                  {
+                    type: "number",
+                  },
+                ],
+              },
+            },
+          },
+          // test150, references: 2 items of a reference context are schemaReferences with canBeTemplate to the same absolutePath, conversion should only be applied once and both should point to the same converted reference
+          {
+            name: "test150",
+            label:
+              "test150, references: 2 items of a reference context are schemaReferences with canBeTemplate to the same absolutePath, conversion should only be applied once and both should point to the same converted reference",
+            testJzodSchema: {
+              type: "schemaReference",
+              context: {
+                a: {
+                  type: "schemaReference",
+                  tag: { value: { canBeTemplate: true } },
+                  definition: {
+                    absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+                    relativePath: "myString",
+                  },
+                },
+                b: {
+                  type: "schemaReference",
+                  tag: { value: { canBeTemplate: true } },
+                  definition: {
+                    absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+                    relativePath: "myString",
+                  },
+                },
+              },
+              definition: { relativePath: "a" },
+            },
+            mlElementTemplateJzodSchema: {
+              type: "number",
+            },
+            resolveJzodReference: fullResolveJzodReference.bind(null, {
+              "1e8dab4b-65a3-4686-922e-ce89a2d62aa9": {
+                type: "schemaReference",
+                context: {
+                  myString: { type: "string", tag: { value: { canBeTemplate: true } } },
+                },
+                definition: { relativePath: "myString" },
+              },
+            }),
+            expectedResult: {
+              schema: {
+                type: "schemaReference",
+                context: {
+                  a: {
+                    type: "union",
+                    tag: {
+                      value: {
+                        canBeTemplate: true,
+                        isTemplate: true,
+                      },
+                    },
+                    definition: [
+                      {
+                        type: "schemaReference",
+                        tag: {
+                          value: {
+                            canBeTemplate: true,
+                            isTemplate: true,
+                          },
+                        },
+                        definition: {
+                          absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+                          relativePath:
+                            "mlElementTemplate_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_myString",
+                        },
+                      },
+                      {
+                        type: "number",
+                      },
+                    ],
+                  },
+                  b: {
+                    type: "union",
+                    tag: {
+                      value: {
+                        canBeTemplate: true,
+                        isTemplate: true,
+                      },
+                    },
+                    definition: [
+                      {
+                        type: "schemaReference",
+                        tag: {
+                          value: {
+                            canBeTemplate: true,
+                            isTemplate: true,
+                          },
+                        },
+                        definition: {
+                          absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+                          relativePath:
+                            "mlElementTemplate_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_myString",
+                        },
+                      },
+                      {
+                        type: "number",
+                      },
+                    ],
+                  },
+                },
+                definition: {
+                  relativePath: "a",
+                },
+              },
+              hasBeenApplied: true,
+            },
+            expectedReferences: {
+              mlElementTemplate_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_myString: {
+                type: "union",
+                tag: {
+                  value: {
+                    canBeTemplate: true,
+                    isTemplate: true,
+                  },
+                },
+                definition: [
+                  {
+                    type: "string",
+                    tag: {
+                      value: {
+                        canBeTemplate: true,
+                      },
+                    },
+                  },
+                  {
+                    type: "number",
+                  },
+                ],
               },
             },
           },

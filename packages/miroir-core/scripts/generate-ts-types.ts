@@ -540,10 +540,10 @@ async function generateSchemas(generateFundamentalJzodSchema = true) {
             ].includes(key)
         )
       ) as JzodElement;
-      console.log(
-        "miroir-core generateSchemas filteredMiroirFundamentalJzodSchemaContext:",
-        JSON.stringify(Object.keys(filteredMiroirFundamentalJzodSchemaContext), null, 2)
-      );
+      // console.log(
+      //   "miroir-core generateSchemas filteredMiroirFundamentalJzodSchemaContext:",
+      //   JSON.stringify(Object.keys(filteredMiroirFundamentalJzodSchemaContext), null, 2)
+      // );
       const writeFundamentalJzodSchemaStartTime = Date.now();
       const miroirFundamentalJzodSchemaJson =
         "export const miroirFundamentalJzodSchema = " +

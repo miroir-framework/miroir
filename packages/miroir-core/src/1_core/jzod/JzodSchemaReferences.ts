@@ -130,13 +130,13 @@ export function jzodTransitiveDependencySet(
   }
 
   function visit(element: string, path: string[], miroirFundamentalJzodSchema: JzodReference) {
-    console.log(
-      "############## visting",
-      element,
-      element.includes("report") ? "path: " + path.join(".") : "",
-      "visitedSet size",
-      visitedSet.size,
-    );
+    // console.log(
+    //   "############## visting",
+    //   element,
+    //   element.includes("report") ? "path: " + path.join(".") : "",
+    //   "visitedSet size",
+    //   visitedSet.size,
+    // );
     if (!miroirFundamentalJzodSchema.context) {
       throw new Error("miroirFundamentalJzodSchema.context is not defined");
     }
@@ -163,7 +163,7 @@ export function jzodTransitiveDependencySet(
       if (visitedSet.has(ref)) {
         continue;
       } else {
-        console.log(`Adding ${ref} (${[...path, ref].join(".")})`);
+        // console.log(`Adding ${ref} (${[...path, ref].join(".")})`);
         toVisitMap.set(ref, [...path, ref]);
       }
     }

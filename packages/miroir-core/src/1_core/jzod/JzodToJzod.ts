@@ -42,7 +42,7 @@ export function applyLimitedCarryOnSchema(
   carryOnSchemaForArray: JzodElement,
   carryOnSchemaDiscriminator: undefined | string | string[] = undefined,
   alwaysPropagate: boolean = true,
-  carryOnPrefix?: string | undefined,
+  carryOnPrefix: string,
   localReferencePrefix?: string | undefined,
   suffixForReferences?: string | undefined,
   resolveJzodReference?: JzodReferenceResolutionFunction, // non-converted reference lookup
@@ -136,19 +136,13 @@ export function applyLimitedCarryOnSchemaOnLevel(
   carryOnSchemaDiscriminator: undefined | string | string[] | (string | string[])[] = undefined,
   alwaysPropagate: boolean = true,
   applyOnFirstLevel: boolean,
-  carryOnPrefix?: string | undefined,
+  carryOnPrefix: string,
   localReferencePrefix?: string | undefined,
   suffixForReferences?: string | undefined,
   resolveJzodReference?: JzodReferenceResolutionFunction, // non-converted reference lookup
   convertedReferences?: Record<string, JzodElement>, // converted reference lookup
   skipObjectAttributesOnFirstLevel?: string[],
-  skipReference?: (name:string, defn: JzodReference) => boolean,
 ): ApplyCarryOnSchemaOnLevelReturnType
-// {
-//   resultSchema: JzodElement;
-//   hasBeenApplied: boolean;
-//   resolvedReferences?: Record<string, JzodElement>;
-// }
 {
   /**
    * jzodBaseObject.tag is {type: "any"} by default but can be subtyped to any concrete type
@@ -177,52 +171,10 @@ export function applyLimitedCarryOnSchemaOnLevel(
   // const convertedTag = baseSchema.tag;
   const castTag = (baseSchema as any).tag as any;
 
-  // if (!castTag || !Object.hasOwn(castTag, "canBeTemplate") || !castTag.canBeTemplate) {
-  //   log.info("############# applyCarryOnSchema nothing to do for", "baseSchema.tag", castTag)
-  //   return {
-  //     resultSchema: baseSchema,
-  //     resolvedReferences: convertedReferences,
-  //   }
-  // }
-  // let convertedTag:JzodElement = castTag;
   let convertedTag:any = castTag?.value?{
     ...castTag,
     value: {...castTag.value, isTemplate: true}
   }: castTag;
-  // if (castTag && castTag.schema && castTag.schema.valueSchema) {
-  //   // Check if this tag references a transformer schema - if so, skip carryOn application
-  //   // to prevent infinite recursion since transformers are already complete types
-  //   const isTransformerReference = castTag.value && 
-  //     castTag.value.ifThenElseMMLS && 
-  //     castTag.value.ifThenElseMMLS.mmlsReference && 
-  //     castTag.value.ifThenElseMMLS.mmlsReference.relativePath &&
-  //     castTag.value.ifThenElseMMLS.mmlsReference.relativePath.startsWith("transformerForBuild");
-    
-  //   if (isTransformerReference) {
-  //     // Don't apply carryOn to transformer references to prevent infinite recursion
-  //     convertedTag = castTag;
-  //   } else {
-  //     convertedTag = {
-  //       ...castTag,
-  //       schema: {
-  //         ...castTag.schema,
-  //         // isTemplate: true,
-  //         valueSchema: applyLimitedCarryOnSchemaOnLevel(
-  //           castTag.schema.valueSchema, // hard-coded type for jzodBaseSchema.extra is "any", it is replaced in any "concrete" mlSchema definition
-  //           carryOnSchema,
-  //           carryOnSchemaDiscriminator,
-  //           alwaysPropagate,
-  //           false, // applyOnFirstLevel
-  //           carryOnPrefix,
-  //           localReferencePrefix,
-  //           suffixForReferences,
-  //           resolveJzodReference,
-  //           convertedReferences
-  //         ).resultSchema,
-  //       },
-  //     }; // TODO: what about resolvedReferences for extra? They are ignored, is it about right?
-  //   }
-  // }
 
   // if (baseSchema.tag && baseSchema.tag.schema && baseSchema.tag.schema.valueSchema) {
   //   log.info("############# applyCarryOnSchema", "convertedTag", convertedTag)
@@ -299,7 +251,7 @@ export function applyLimitedCarryOnSchemaOnLevel(
         resolveJzodReference,
         convertedReferences,
         undefined, // skipObjectAttributesOnFirstLevel,
-        skipReference,
+        // skipReference,
       );
       // log.info("applyLimitedCarryOnSchemaOnLevel record convertedSubSchema", JSON.stringify(convertedSubSchema, null, 2));
 
@@ -377,7 +329,7 @@ export function applyLimitedCarryOnSchemaOnLevel(
         resolveJzodReference,
         convertedReferences,
         undefined, // skipObjectAttributesOnFirstLevel,
-        skipReference,
+        // skipReference,
       );
       for (const c of Object.entries(convertedSubSchema.resolvedReferences ?? {})) {
         convertedSubSchemasReferences[c[0]] = c[1];
@@ -440,7 +392,7 @@ export function applyLimitedCarryOnSchemaOnLevel(
         resolveJzodReference,
         convertedReferences,
         undefined, // skipObjectAttributesOnFirstLevel,
-        skipReference,
+        // skipReference,
       );
       for (const c of Object.entries(convertedSubSchema.resolvedReferences ?? {})) {
         convertedSubSchemasReferences[c[0]] = c[1];
@@ -503,7 +455,7 @@ export function applyLimitedCarryOnSchemaOnLevel(
             ...convertedSubSchemasReferences,
           }, // resolved references
           undefined, // skipObjectAttributesOnFirstLevel,
-          skipReference,
+          // skipReference,
         );
         convertedSubSchemas.push(convertedSubSchema.resultSchema);
         convertedSubSchemasHasBeenApplied.push(convertedSubSchema.hasBeenApplied);
@@ -568,7 +520,7 @@ export function applyLimitedCarryOnSchemaOnLevel(
             resolveJzodReference,
             convertedReferences,
             flatDiscriminators, // skipObjectAttributesOnFirstLevel,
-            skipReference,
+            // skipReference,
           )
         );
       const newResolvedReferences = subConvertedSchemas.filter((e) => e.resolvedReferences);
@@ -642,7 +594,7 @@ export function applyLimitedCarryOnSchemaOnLevel(
           resolveJzodReference,
           { ...convertedReferences, ...convertedSubSchemasReferences }, // resolved references
           undefined, // skipObjectAttributesOnFirstLevel,
-          skipReference,
+          // skipReference,
         );
         convertedSubSchemas[subSchema[0]] = convertedSubSchema.resultSchema;
         convertedSubSchemasHasBeenApplied.push(convertedSubSchema.hasBeenApplied);
@@ -670,7 +622,7 @@ export function applyLimitedCarryOnSchemaOnLevel(
                   resolveJzodReference,
                   convertedReferences,
                   undefined, // skipObjectAttributesOnFirstLevel,
-                  skipReference,
+                  // skipReference,
                 ),
               ]
             : (baseSchema.extend as (JzodObject | JzodReference)[]).map(
@@ -688,7 +640,7 @@ export function applyLimitedCarryOnSchemaOnLevel(
                     resolveJzodReference,
                     convertedReferences,
                     undefined, // skipObjectAttributesOnFirstLevel,
-                    skipReference,
+                    // skipReference,
                   )
               )
           : undefined; // TODO: apply carryOn object
@@ -768,121 +720,29 @@ export function applyLimitedCarryOnSchemaOnLevel(
       break;
     }
     case "schemaReference": {
-      // if absolute reference, resolve (eager) and add to local context after running carryOnType on it
-      // reference resolution is necessarily lazy, because only the name of the reference is used for now
-      let convertedContextSubSchemas: Record<string, JzodElement> = undefined as any;
-      let convertedContextSubSchemasHasBeenApplied: boolean[] = [];
-      const convertedContextSubSchemasReferences: Record<string, JzodElement> = {};
-      const convertedAbosulteReferences: Record<string, JzodElement> = {};
-      let resultReferenceDefinition = undefined;
 
-      /**
-       * the transformer references must not be converted, since it is implied the carryOnSchema is a tranformer reference
-       * 
-       */
-      if (
-        // ["transformerForBuild", "transformerForRuntime", "transformerForBuildPlusRuntime"].includes(
-        ["transformerForBuild", "transformerForBuildPlusRuntime"].includes(
-          baseSchema?.definition?.relativePath ?? ""
-        ) ||
-        (skipReference && skipReference(baseSchema?.definition?.relativePath ?? "", baseSchema)) // redundant with above test?
-      ) {
-        // log.info(
-        //   "applyCarryOnSchemaOnLevel: skipping carryOn application for transformer reference",
-        //   baseSchema?.definition?.relativePath ?? ""
-        // );
+      if (baseSchema.definition.relativePath.startsWith(carryOnPrefix)) {
+        console.log(
+          "applyLimitedCarryOnSchemaOnLevel: start with carryOnPrefix",
+          "relativePath",
+          baseSchema.definition.relativePath,
+          "carryOnPrefix",
+          carryOnPrefix,
+        );
         return {
           resultSchema: baseSchema,
           hasBeenApplied: false,
         };
       }
 
-      /**
-       * absolute references have to be converted for carryOn, then enclosed and pushed-up as a local context reference/definition.
-       * this creates a new local reference/context, and the absolute reference has to be replaced by a local reference.
-       * Absolute references shall be first sought in relative reference set, to be replaced by their local counterpart.
-       * What about name clashes? concatenate absolute-relative parts of name as a new name?
-       * relative references of converted absolute references must be referred to by their CONVERTED reference name!
-       *
-       */
-      let subDiscriminator: undefined | string |(string | string[])[] = undefined;
-      if (baseSchema.definition.absolutePath) {
-        // lookup a locally-defined converted version of the reference
-        const localReferenceName = forgeCarryOnReferenceName(
-          baseSchema.definition.absolutePath,
-          baseSchema.definition.relativePath,
-          suffixForReferences,
-          carryOnPrefix
-        );
-
-        if (!convertedReferences || !convertedReferences[localReferenceName]) {
-          // absolute reference must be converted
-          // we must lookup for the reference definition
-          if (!resolveJzodReference) {
-            throw new Error(
-              "applyCarryOnSchema was not provided a resolveJzodReference function, but a reference with absolutePath was found " +
-                JSON.stringify(baseSchema.definition)
-            );
-          }
-          const resolvedReference = resolveJzodReference(baseSchema);
-          if (!resolvedReference) {
-            throw new Error(
-              "applyCarryOnSchema no value corresponding to absolute reference for resolveJzodReference: " +
-                JSON.stringify(baseSchema.definition)
-            );
-          }
-          const convertedReference = applyLimitedCarryOnSchemaOnLevel(
-            resolvedReference,
-            carryOnSchema,
-            carryOnSchemaForArray,
-            carryOnSchemaDiscriminator,
-            alwaysPropagate,
-            true, // applyOnFirstLevel
-            carryOnPrefix,
-            baseSchema.definition.absolutePath,
-            suffixForReferences,
-            resolveJzodReference,
-            {
-              ...convertedReferences,
-              [localReferenceName]: { type: "never" },
-            },
-            skipObjectAttributesOnFirstLevel,
-            skipReference,
-          );
-          convertedContextSubSchemasHasBeenApplied.push(convertedReference.hasBeenApplied);
-          convertedAbosulteReferences[localReferenceName] = convertedReference.resultSchema; // what about local references of absolute references?
-          if (convertedReference.resultSchema.type === "union") {
-            subDiscriminator = convertedReference.resultSchema.discriminator;
-          }
-          resultReferenceDefinition = {
-            ...baseSchema.definition,
-            relativePath: localReferenceName,
-          };
-        } else {
-          // localReferenceName already exists in convertedReferences, it can be referencesd without further conversion
-          resultReferenceDefinition = {
-            ...baseSchema.definition,
-            relativePath: localReferenceName,
-          };
-        }
-      } else {
-        // we only need to replace it with a renamed local reference in case we have a prefix
-        resultReferenceDefinition = {
-          ...baseSchema.definition,
-          relativePath: localReferencePrefix
-            ? forgeCarryOnReferenceName(
-                localReferencePrefix,
-                baseSchema.definition.relativePath,
-                suffixForReferences,
-                carryOnPrefix
-              )
-            : baseSchema.definition.relativePath,
-        };
-      }
-      // throw error if reference definition is not found
-      // do we check for integrity of relative references? We do not need to resolve it now!!
-      // relative reference names are already defined, with a known definition, in baseSchema! they can be found in convertedReferences... but is it useful?
-      // if the type is consistent, relative references are converted as part of the conversion process (they are in the context of one of the englobing references)
+      // if absolute reference, resolve (eager) and add to local context after running carryOnType on it
+      // reference resolution is necessarily lazy, because only the name of the reference is used for now
+      let convertedContextSubSchemas: Record<string, JzodElement> = undefined as any;
+      // let convertedContextSubSchemas: Record<string, JzodElement> = {};
+      let convertedContextSubSchemasHasBeenApplied: boolean[] = [];
+      const convertedContextSubSchemasReferences: Record<string, JzodElement> = {};
+      const convertedAbosulteReferences: Record<string, JzodElement> = {};
+      let resultReferenceDefinition = undefined;
 
       // treating context
       for (const contextSubSchema of Object.entries(baseSchema.context ?? {})) {
@@ -900,10 +760,8 @@ export function applyLimitedCarryOnSchemaOnLevel(
           {
             ...convertedReferences,
             ...convertedContextSubSchemasReferences,
-            [contextSubSchema[0]]: { type: "never" },
           }, // resolved references
           undefined, // skipObjectAttributesOnFirstLevel,
-          skipReference,
         );
         if (!convertedContextSubSchemas) {
           convertedContextSubSchemas = {};
@@ -915,6 +773,119 @@ export function applyLimitedCarryOnSchemaOnLevel(
         }
       }
 
+      /**
+       * absolute references have to be converted for carryOn, then enclosed and pushed-up as a local context reference/definition.
+       * this creates a new local reference/context, and the absolute reference has to be replaced by a local reference.
+       * Absolute references shall be first sought in relative reference set, to be replaced by their local counterpart.
+       * What about name clashes? concatenate absolute-relative parts of name as a new name?
+       * relative references of converted absolute references must be referred to by their CONVERTED reference name!
+       *
+       */
+      let subDiscriminator: undefined | string |(string | string[])[] = undefined;
+      if (baseSchema.definition.absolutePath) {
+        // lookup a locally-defined converted version of the reference
+        const localReferenceName = !baseSchema.definition.relativePath.startsWith(carryOnPrefix)?forgeCarryOnReferenceName(
+          baseSchema.definition.absolutePath,
+          baseSchema.definition.relativePath,
+          suffixForReferences,
+          carryOnPrefix
+        ):baseSchema.definition.relativePath;
+        if (baseSchema.definition.relativePath.startsWith(carryOnPrefix)){
+          console.log(
+            "applyLimitedCarryOnSchemaOnLevel:",
+            "carryOnPrefix",
+            carryOnPrefix,
+            // "baseSchema.definition.absolutePath",
+            // baseSchema.definition.absolutePath,
+            "baseSchema.definition.relativePath",
+            baseSchema.definition.relativePath,
+            "localReferenceName",
+            localReferenceName,
+            // "convertedReferences",
+            // JSON.stringify(Object.keys(convertedReferences ?? {}), null, 2),
+            // "convertedContextSubSchemasReferences",
+            // JSON.stringify(Object.keys(convertedContextSubSchemasReferences ?? {}), null, 2),
+          );
+        }
+        if (!convertedReferences || !convertedReferences[localReferenceName]) {
+          // absolute reference must be converted
+          // we must lookup for the reference definition
+          if (!resolveJzodReference) {
+            throw new Error(
+              "applyCarryOnSchema was not provided a resolveJzodReference function, but a reference with absolutePath was found " +
+                JSON.stringify(baseSchema.definition)
+            );
+          }
+          const resolvedReference = resolveJzodReference(baseSchema);
+          if (!resolvedReference) {
+            throw new Error(
+              "applyCarryOnSchema no value corresponding to absolute reference for resolveJzodReference: " +
+                JSON.stringify(baseSchema.definition)
+            );
+          }
+          const newConvertedReferences: Record<string, JzodElement> = {
+            ...convertedReferences,
+            ...convertedContextSubSchemasReferences,
+            [localReferenceName]: { type: "never" },
+          };
+
+          // log.info(
+          //   "applyLimitedCarryOnSchemaOnLevel: converting localReferenceName",
+          //   localReferenceName, "convertedReferences", JSON.stringify(Object.keys(newConvertedReferences??{}), null, 2)
+          // );
+          const convertedReference = applyLimitedCarryOnSchemaOnLevel(
+            resolvedReference,
+            carryOnSchema,
+            carryOnSchemaForArray,
+            carryOnSchemaDiscriminator,
+            alwaysPropagate,
+            true, // applyOnFirstLevel
+            carryOnPrefix,
+            baseSchema.definition.absolutePath,
+            suffixForReferences,
+            resolveJzodReference,
+            newConvertedReferences,
+            skipObjectAttributesOnFirstLevel,
+            // skipReference,
+          );
+          convertedContextSubSchemasHasBeenApplied.push(convertedReference.hasBeenApplied);
+          convertedAbosulteReferences[localReferenceName] = convertedReference.resultSchema; // what about local references of absolute references?
+          if (convertedReference.resultSchema.type === "union") {
+            subDiscriminator = convertedReference.resultSchema.discriminator;
+          }
+          resultReferenceDefinition = {
+            ...baseSchema.definition,
+            relativePath: localReferenceName,
+          };
+        } else {
+          // log.info(
+          //   "applyCarryOnSchemaOnLevel: skipping localReferenceName",
+          //   localReferenceName
+          // );
+          // localReferenceName already exists in convertedReferences, it can be referenced without further conversion
+          resultReferenceDefinition = {
+            ...baseSchema.definition,
+            relativePath: localReferenceName,
+          };
+        }
+      } else {
+        // we only need to replace it with a renamed local reference in case we have a prefix
+        resultReferenceDefinition = {
+          ...baseSchema.definition,
+          relativePath: localReferencePrefix && !baseSchema.definition.relativePath.startsWith(carryOnPrefix)
+            ? forgeCarryOnReferenceName(
+                localReferencePrefix,
+                baseSchema.definition.relativePath,
+                suffixForReferences,
+                carryOnPrefix
+              )
+            : baseSchema.definition.relativePath,
+        };
+      }
+      // throw error if reference definition is not found
+      // do we check for integrity of relative references? We do not need to resolve it now!!
+      // relative reference names are already defined, with a known definition, in baseSchema! they can be found in convertedReferences... but is it useful?
+      // if the type is consistent, relative references are converted as part of the conversion process (they are in the context of one of the englobing references)
 
       if (
         applyOnFirstLevel &&
