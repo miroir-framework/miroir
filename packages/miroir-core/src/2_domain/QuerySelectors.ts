@@ -187,7 +187,8 @@ export const applyExtractorForSingleObjectListToSelectedInstancesListInMemory = 
       const relationQuery: CombinerOneToMany = query.select;
       log.info(
         "applyExtractorForSingleObjectListToSelectedInstancesListInMemory combinerOneToMany",
-        "query", JSON.stringify(query, undefined, 2),
+        "query", JSON.stringify(query.select, undefined, 2),
+        "contextResults", query.contextResults,
         "selectedInstancesList",
         selectedInstancesList
       );
@@ -251,11 +252,27 @@ export const applyExtractorForSingleObjectListToSelectedInstancesListInMemory = 
       const relationQuery: CombinerManyToMany = query.select;
 
       // relationQuery.objectListReference is a queryContextReference
-      // log.info("applyExtractorForSingleObjectListToSelectedInstancesListInMemory combinerManyToMany selectedInstancesList", selectedInstancesList)
+      log.info(
+        "applyExtractorForSingleObjectListToSelectedInstancesListInMemory combinerManyToMany selectedInstancesList",
+        selectedInstancesList,
+      );
       let otherList: Record<string, any> | undefined = undefined
-      otherList = (((query.contextResults ?? {})[
-        relationQuery.objectListReference
-      ]) ?? {});
+      otherList = typeof relationQuery.objectListReference === "string"
+        ? (query.contextResults ?? {})[relationQuery.objectListReference]
+        : transformer_extended_apply(
+            "runtime",
+            [], // transformerPath
+            (relationQuery.label ?? relationQuery.extractorOrCombinerType) + "_objectListReference",
+            relationQuery.objectListReference,
+            "value",
+            defaultMiroirModelEnvironment, // queryParams. TODO: this is wrong, should be the actual modelEnvironment
+            query.queryParams ?? {},
+            query.contextResults ?? {}
+          );
+      log.info(
+          "applyExtractorForSingleObjectListToSelectedInstancesListInMemory combinerManyToMany otherList",
+          otherList,
+      );
       if (otherList) {
         const finalInstanceList = selectedInstancesList.filter(
           (selectedInstance: EntityInstance) => {
@@ -291,7 +308,10 @@ export const applyExtractorForSingleObjectListToSelectedInstancesListInMemory = 
             }
           }
         ) as EntityInstance[];
-
+        log.info(
+          "applyExtractorForSingleObjectListToSelectedInstancesListInMemory combinerManyToMany finalInstanceList",
+          finalInstanceList
+        );
         const transformedInstanceList = relationQuery.applyTransformer
           ? finalInstanceList.map((selectedInstance) => {
               let referenceObject: any = undefined;
@@ -578,11 +598,11 @@ export const extractEntityInstanceListWithObjectListExtractorInMemory
     modelEnvironment
   );
 
-  // log.trace(
-  //   "extractEntityInstanceUuidIndexWithObjectListExtractorInMemory for",
-  //   foreignKeyParams,
-  //   "found selectedInstances", selectedInstancesUuidIndex,
-  // );
+  log.info(
+    "extractEntityInstanceUuidIndexWithObjectListExtractorInMemory for",
+    foreignKeyParams,
+    "found selectedInstances", selectedInstancesUuidIndex,
+  );
 
   return applyExtractorForSingleObjectListToSelectedInstancesListInMemory(
     selectedInstancesUuidIndex,
@@ -673,7 +693,7 @@ export function innerSelectDomainElementFromExtractorOrCombiner/*BoxedExtractorT
   application: Uuid,
   applicationDeploymentMap: ApplicationDeploymentMap,
   deploymentUuid: Uuid | undefined,
-  extractorOrCombiner: ExtractorOrCombiner
+  extractorOrCombiner: ExtractorOrCombiner // TODO: should be ExtractorOrCombinerTemplate
   // ): Domain2QueryReturnType<DomainElementSuccess> {
 ): Domain2QueryReturnType<any> {
   switch (extractorOrCombiner.extractorOrCombinerType) {
@@ -693,7 +713,7 @@ export function innerSelectDomainElementFromExtractorOrCombiner/*BoxedExtractorT
         "innerSelectDomainElementFromExtractorOrCombiner for",
         "application", application,
         "applicationSection", applicationSection,
-        "extractorOrCombiner", JSON.stringify(extractorOrCombiner, null, 2)
+        "extractorOrCombiner", extractorOrCombiner
       );
       return extractorRunnerMap.extractEntityInstanceListWithObjectListExtractor(
         state,
@@ -703,7 +723,6 @@ export function innerSelectDomainElementFromExtractorOrCombiner/*BoxedExtractorT
           extractor: {
             queryType: "boxedExtractorOrCombinerReturningObjectList",
             application,
-            // deploymentUuid: deploymentUuid,
             contextResults: context,
             pageParams: pageParams,
             queryParams,
@@ -852,7 +871,12 @@ export function innerSelectDomainElementFromExtractorOrCombiner/*BoxedExtractorT
 
             // TODO: faking context results here! Should we send empty contextResults instead?
             const resolvedQuery: ExtractorOrCombiner | QueryFailed = resolveExtractorTemplate(
-              extractorOrCombiner.subQueryTemplate.query,
+            /**
+             * TODO: type CombinerByHeteronomousManyToMany is wrong: it has subQueryTemplate.query of type ExtractorOrCombiner 
+             * instead of ExtractorOrCombinerTemplate (using the latter would induce a circular dependency that can not be resolved
+             * by the present template generation process).
+             */
+              extractorOrCombiner.subQueryTemplate.query as any,
               modelEnvironment,
               innerQueryParams,
               innerQueryParams
@@ -1026,7 +1050,7 @@ export const runQuery = <StateType>(
       extractorParams.extractor.application,
       applicationDeploymentMap,
       deploymentUuid,
-      extractor[1]
+      extractor[1] as any // TODO: fix innerSelectDomainElementFromExtractorOrCombiner type to allow ExtractorOrCombinerTemplate
     );
     // TODO: test for error!
     if (result instanceof Domain2ElementFailed) {
@@ -1080,7 +1104,7 @@ export const runQuery = <StateType>(
       extractorParams.extractor.application,
       applicationDeploymentMap,
       deploymentUuid,
-      combiner[1]
+      combiner[1] as any // TODO: fix innerSelectDomainElementFromExtractorOrCombiner type to allow ExtractorOrCombinerTemplate
     );
     context[combiner[0]] = result; // does side effect!
     // log.info("runQuery done for entry", combiner[0], "query", combiner[1], "result=", result);

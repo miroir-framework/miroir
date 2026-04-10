@@ -2055,6 +2055,422 @@ describe(
               },
             },
           },
+          // test160: template for union of schemaReferences uses templates of those schemaReferences
+          {
+            name: "test160",
+            label:
+              "test160: template for union of schemaReferences uses (identical) templates of those schemaReferences",
+            testJzodSchema: {
+              type: "union",
+              definition: [
+                {
+                  type: "schemaReference",
+                  tag: { value: { canBeTemplate: true } },
+                  definition: {
+                    absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+                    relativePath: "stringItem",
+                  },
+                },
+                {
+                  type: "schemaReference",
+                  tag: { value: { canBeTemplate: true } },
+                  definition: {
+                    absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+                    relativePath: "numberItem",
+                  },
+                },
+              ],
+            },
+            mlElementTemplateJzodSchema: {
+              type: "boolean",
+            },
+            mlElementTemplateSchemaDiscriminator: "type",
+            resolveJzodReference: fullResolveJzodReference.bind(null, {
+              "1e8dab4b-65a3-4686-922e-ce89a2d62aa9": {
+                type: "schemaReference",
+                context: {
+                  stringItem: { type: "string" },
+                  numberItem: { type: "number" },
+                },
+                definition: { relativePath: "numberItem" },
+              },
+            }),
+            expectedResult: {
+              schema: {
+                type: "union",
+                definition: [
+                  {
+                    type: "schemaReference",
+                    tag: {
+                      value: {
+                        canBeTemplate: true,
+                        isTemplate: true,
+                      },
+                    },
+                    definition: {
+                      absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+                      relativePath:
+                        "mlElementTemplate_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_stringItem",
+                    },
+                  },
+                  {
+                    type: "schemaReference",
+                    tag: {
+                      value: {
+                        canBeTemplate: true,
+                        isTemplate: true,
+                      },
+                    },
+                    definition: {
+                      absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+                      relativePath:
+                        "mlElementTemplate_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_numberItem",
+                    },
+                  },
+                ],
+              },
+              hasBeenApplied: false, //!! should be true!!
+            },
+            expectedReferences: {
+              mlElementTemplate_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_stringItem: {
+                type: "string",
+              },
+              mlElementTemplate_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_numberItem: {
+                type: "number",
+              },
+            },
+          },
+          // test170: template for union of schemaReferences uses (non-identical) templates of those schemaReferences
+          {
+            name: "test170",
+            label:
+              "test170: template for union of schemaReferences uses (non-identical) templates of those schemaReferences",
+            testJzodSchema: {
+              type: "union",
+              definition: [
+                {
+                  type: "schemaReference",
+                  tag: { value: { canBeTemplate: true } },
+                  definition: {
+                    absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+                    relativePath: "stringItem",
+                  },
+                },
+                {
+                  type: "schemaReference",
+                  tag: { value: { canBeTemplate: true } },
+                  definition: {
+                    absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+                    relativePath: "numberItem",
+                  },
+                },
+              ],
+            },
+            mlElementTemplateJzodSchema: {
+              type: "boolean",
+            },
+            mlElementTemplateSchemaDiscriminator: "type",
+            resolveJzodReference: fullResolveJzodReference.bind(null, {
+              "1e8dab4b-65a3-4686-922e-ce89a2d62aa9": {
+                type: "schemaReference",
+                context: {
+                  stringItem: { type: "string", tag: { value: { canBeTemplate: true } } },
+                  numberItem: { type: "number", tag: { value: { canBeTemplate: true } } },
+                },
+                definition: { relativePath: "numberItem" },
+              },
+            }),
+            expectedResult: {
+              schema: {
+                type: "union",
+                definition: [
+                  {
+                    type: "schemaReference",
+                    tag: {
+                      value: {
+                        canBeTemplate: true,
+                        isTemplate: true,
+                      },
+                    },
+                    definition: {
+                      absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+                      relativePath:
+                        "mlElementTemplate_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_stringItem",
+                    },
+                  },
+                  {
+                    type: "schemaReference",
+                    tag: {
+                      value: {
+                        canBeTemplate: true,
+                        isTemplate: true,
+                      },
+                    },
+                    definition: {
+                      absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+                      relativePath:
+                        "mlElementTemplate_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_numberItem",
+                    },
+                  },
+                ],
+              },
+              hasBeenApplied: true,
+            },
+            expectedReferences: {
+              mlElementTemplate_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_stringItem: {
+                type: "union",
+                tag: {
+                  value: {
+                    canBeTemplate: true,
+                    isTemplate: true,
+                  },
+                },
+                discriminator: "type",
+                definition: [
+                  {
+                    type: "string",
+                    tag: {
+                      value: {
+                        canBeTemplate: true,
+                      },
+                    },
+                  },
+                  {
+                    type: "boolean",
+                  },
+                ],
+              },
+              mlElementTemplate_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_numberItem: {
+                type: "union",
+                tag: {
+                  value: {
+                    canBeTemplate: true,
+                    isTemplate: true,
+                  },
+                },
+                discriminator: "type",
+                definition: [
+                  {
+                    type: "number",
+                    tag: {
+                      value: {
+                        canBeTemplate: true,
+                      },
+                    },
+                  },
+                  {
+                    type: "boolean",
+                  },
+                ],
+              },
+            },
+          },
+          // test180: template for union of schemaReferences uses original of schemaReferences when canBeTemplate is false
+          {
+            name: "test180",
+            label:
+              "test180: template for union of schemaReferences uses original of schemaReferences when canBeTemplate is false",
+            testJzodSchema: {
+              type: "union",
+              definition: [
+                {
+                  type: "schemaReference",
+                  definition: {
+                    absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+                    relativePath: "stringItem",
+                  },
+                },
+                {
+                  type: "schemaReference",
+                  definition: {
+                    absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+                    relativePath: "numberItem",
+                  },
+                },
+              ],
+            },
+            mlElementTemplateJzodSchema: {
+              type: "boolean",
+            },
+            mlElementTemplateSchemaDiscriminator: "type",
+            resolveJzodReference: fullResolveJzodReference.bind(null, {
+              "1e8dab4b-65a3-4686-922e-ce89a2d62aa9": {
+                type: "schemaReference",
+                context: {
+                  stringItem: { type: "string", tag: { value: { canBeTemplate: true } } },
+                  numberItem: { type: "number", tag: { value: { canBeTemplate: true } } },
+                },
+                definition: { relativePath: "numberItem" },
+              },
+            }),
+            expectedResult: {
+              schema: {
+                type: "union",
+                definition: [
+                  {
+                    type: "schemaReference",
+                    definition: {
+                      absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+                      relativePath:
+                        "mlElementTemplate_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_stringItem",
+                    },
+                  },
+                  {
+                    type: "schemaReference",
+                    definition: {
+                      absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+                      relativePath:
+                        "mlElementTemplate_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_numberItem",
+                    },
+                  },
+                ],
+              },
+              hasBeenApplied: true,
+            },
+            expectedReferences: {
+              mlElementTemplate_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_stringItem: {
+                type: "union",
+                tag: {
+                  value: {
+                    canBeTemplate: true,
+                    isTemplate: true,
+                  },
+                },
+                discriminator: "type",
+                definition: [
+                  {
+                    type: "string",
+                    tag: {
+                      value: {
+                        canBeTemplate: true,
+                      },
+                    },
+                  },
+                  {
+                    type: "boolean",
+                  },
+                ],
+              },
+              mlElementTemplate_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_numberItem: {
+                type: "union",
+                tag: {
+                  value: {
+                    canBeTemplate: true,
+                    isTemplate: true,
+                  },
+                },
+                discriminator: "type",
+                definition: [
+                  {
+                    type: "number",
+                    tag: {
+                      value: {
+                        canBeTemplate: true,
+                      },
+                    },
+                  },
+                  {
+                    type: "boolean",
+                  },
+                ],
+              },
+            },
+          },
+          // test190: template for discriminated union of schemaReferences uses original of those schemaReferences when canBeTemplate is false
+          {
+            name: "test190",
+            label:
+              "test190: template for discriminated union of schemaReferences uses original of schemaReferences when canBeTemplate is false",
+            testJzodSchema: {
+              type: "union",
+              discriminator: "type",
+              definition: [
+                {
+                  type: "schemaReference",
+                  definition: {
+                    absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+                    relativePath: "stringItem",
+                  },
+                },
+                {
+                  type: "schemaReference",
+                  definition: {
+                    absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+                    relativePath: "numberItem",
+                  },
+                },
+              ],
+            },
+            mlElementTemplateJzodSchema: {
+              type: "boolean",
+            },
+            mlElementTemplateSchemaDiscriminator: "type",
+            resolveJzodReference: fullResolveJzodReference.bind(null, {
+              "1e8dab4b-65a3-4686-922e-ce89a2d62aa9": {
+                type: "schemaReference",
+                context: {
+                  stringItem: {
+                    type: "object",
+                    definition: {
+                      type: { type: "literal", definition: "A" },
+                      a: { type: "string" },
+                    },
+                  },
+                  numberItem: {
+                    type: "object",
+                    definition: {
+                      type: { type: "literal", definition: "B" },
+                      b: { type: "number" },
+                    },
+                  },
+                },
+                definition: { relativePath: "numberItem" },
+              },
+            }),
+            expectedResult: {
+              schema: {
+                type: "union",
+                discriminator: "type",
+                definition: [
+                  {
+                    type: "schemaReference",
+                    definition: {
+                      absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+                      relativePath:
+                        "mlElementTemplate_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_stringItem",
+                    },
+                  },
+                  {
+                    type: "schemaReference",
+                    definition: {
+                      absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+                      relativePath:
+                        "mlElementTemplate_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_numberItem",
+                    },
+                  },
+                ],
+              },
+              hasBeenApplied: false,
+            },
+            expectedReferences: {
+              mlElementTemplate_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_stringItem: {
+                type: "object",
+                definition: {
+                  a: {
+                    type: "string",
+                  },
+                },
+              },
+              mlElementTemplate_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_numberItem: {
+                type: "object",
+                definition: {
+                  b: {
+                    type: "number",
+                  },
+                },
+              },
+            },
+          },
         ];
         for (const t of tests) {
           runTest(t)

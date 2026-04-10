@@ -8,7 +8,7 @@
   "defaultLabel": "Detailed information about a Publisher",
   "definition": {
     "extractorTemplates": {
-      "publisher": {
+      "00_publisher": {
         "extractorOrCombinerType": "extractorByPrimaryKey",
         "parentName": "Author",
         "parentUuid": "a027c379-8468-43a5-ba4d-bf618be25cab",
@@ -17,7 +17,7 @@
           "referenceName": "instanceUuid"
         }
       },
-      "authors": {
+      "01_authors": {
         "extractorOrCombinerType": "extractorInstancesByEntity",
         "applicationSection": "data",
         "parentName": "Author",
@@ -25,18 +25,18 @@
       }
     },
     "combinerTemplates": {
-      "booksOfPublisher": {
+      "02_booksOfPublisher": {
         "extractorOrCombinerType": "combinerOneToMany",
         "parentName": "Book",
         "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
         "objectReference": {
           "transformerType": "getFromContext",
           "interpolation": "runtime",
-          "referenceName": "publisher"
+          "referenceName": "00_publisher"
         },
         "AttributeOfListObjectToCompareToReferenceUuid": "publisher"
       },
-      "BooksWithAuthor": {
+      "03_BooksWithAuthor": {
         "extractorOrCombinerType": "combinerManyToMany",
         "applicationSection": "data",
         "parentName": "Book",
@@ -44,7 +44,7 @@
         "objectListReference": {
           "transformerType": "getFromContext",
           "interpolation": "runtime",
-          "referenceName": "authors"
+          "referenceName": "01_authors"
         },
         "AttributeOfRootListObjectToCompareToListReferenceUuid": "author",
         "applyTransformer": {
@@ -86,16 +86,16 @@
           "type": "objectInstanceReportSection",
           "definition": {
             "parentUuid": "a027c379-8468-43a5-ba4d-bf618be25cab",
-            "fetchedDataReference": "publisher"
+            "fetchedDataReference": "00_publisher"
           }
         },
         {
           "type": "objectListReportSection",
           "definition": {
-            "label": "Publisher's (${publisher.name})  Books",
+            "label": "Publisher's (${00_publisher.name})  Books",
             "parentName": "Book",
             "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
-            "fetchedDataReference": "booksOfPublisher",
+            "fetchedDataReference": "02_booksOfPublisher",
             "sortByAttribute": "name"
           }
         },
@@ -103,7 +103,7 @@
           "type": "graphReportSection",
           "definition": {
             "label": "Book Count by Author",
-            "fetchedDataReference": "00_booksByAuthorCount",
+            "fetchedDataReference": "04_booksByAuthorCount",
             "graphType": "bar",
             "dataMapping": {
               "labelField": "authorName",
@@ -120,25 +120,25 @@
       ]
     },
     "runtimeTransformers": {
-      "00_booksByAuthorCount": {
+      "04_booksByAuthorCount": {
         "interpolation": "runtime",
         "transformerType": "aggregate",
         "applyTo": {
           "transformerType": "getFromContext",
           "interpolation": "runtime",
-          "referenceName": "BooksWithAuthor"
+          "referenceName": "03_BooksWithAuthor"
         },
         "groupBy": [
           "authorName",
           "authorUuid"
         ]
       },
-      "booksOfPublisherCount": {
+      "05_booksOfPublisherCount": {
         "interpolation": "runtime",
         "transformerType": "aggregate",
         "applyTo": {
           "transformerType": "getFromContext",
-          "referenceName": "booksOfPublisher"
+          "referenceName": "02_booksOfPublisher"
         }
       }
     }

@@ -11,7 +11,8 @@ import {
   EntityInstancesUuidIndex,
   ExtractorOrCombiner,
   QueryFailed,
-  CoreTransformerForBuildPlusRuntime
+  CoreTransformerForBuildPlusRuntime,
+  type ExtractorOrCombinerTemplate
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { Domain2ElementFailed, Domain2QueryReturnType } from "../0_interfaces/2_domain/DomainElement";
 import {
@@ -157,9 +158,10 @@ export async function asyncInnerSelectElementFromQuery /*BoxedExtractorTemplateR
     | BoxedExtractorOrCombinerReturningObject
     | BoxedQueryWithExtractorCombinerTransformer
   >,
-  extractorOrCombiner: ExtractorOrCombiner
+  extractorOrCombiner: ExtractorOrCombiner // should be ExtractorOrCombinerTemplate
+  // extractorOrCombiner: ExtractorOrCombinerTemplate
 ): Promise<Domain2QueryReturnType<any>> {
-  const deploymentUuid = applicationDeploymentMap[application];
+  // const deploymentUuid = applicationDeploymentMap[application];
   switch (extractorOrCombiner.extractorOrCombinerType) {
     case "literal": {
       return Promise.resolve(extractorOrCombiner.definition);
@@ -340,7 +342,12 @@ export async function asyncInnerSelectElementFromQuery /*BoxedExtractorTemplateR
           };
 
           const resolvedQuery: ExtractorOrCombiner | QueryFailed = resolveExtractorTemplate(
-            extractorOrCombiner.subQueryTemplate.query,
+            /**
+             * TODO: type CombinerByHeteronomousManyToMany is wrong: it has subQueryTemplate.query of type ExtractorOrCombiner 
+             * instead of ExtractorOrCombinerTemplate (using the latter would induce a circular dependency that can not be resolved
+             * by the present template generation process).
+             */
+            extractorOrCombiner.subQueryTemplate.query as any, 
             modelEnvironment,
             innerQueryParams,
             innerQueryParams
@@ -412,7 +419,6 @@ export async function asyncInnerSelectElementFromQuery /*BoxedExtractorTemplateR
 
 // ################################################################################################
 export const asyncExtractWithExtractor: AsyncExtractWithBoxedExtractorOrCombinerReturningObjectOrObjectList /**: SyncBoxedExtractorTemplateRunner */= (
-  // foreignKeyParams: SyncExtractorOrQueryTemplateRunnerParams<BoxedQueryTemplateWithExtractorCombinerTransformer, ReduxDeploymentsState>,
   foreignKeyParams: AsyncBoxedExtractorRunnerParams<
     BoxedExtractorOrCombinerReturningObjectOrObjectList
   >,
@@ -523,7 +529,7 @@ export const asyncRunQuery = async (
       query.extractor.application,
       applicationDeploymentMap,
       query.extractor.extractors ?? {} as any,
-      extractor
+      extractor as any // TODO: fix asyncInnerSelectElementFromQuery type to allow ExtractorOrCombinerTemplate
     );
     // log.info("asyncRunQuery for extractor", key, "result", JSON.stringify(result, null, 2));
     context[key] = result; // sequential side-effect update
@@ -553,7 +559,7 @@ export const asyncRunQuery = async (
       applicationDeploymentMap,
       // deploymentUuid,
       query.extractor.extractors ?? ({} as any),
-      combiner
+      combiner as any // TODO: fix asyncInnerSelectElementFromQuery type to allow ExtractorOrCombinerTemplate
     );
     // log.info("asyncRunQuery for combiner", key, "result", JSON.stringify(result, null, 2));
     context[key] = result;

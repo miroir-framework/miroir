@@ -60,12 +60,12 @@ import { packageName } from "./constants.js";
 import { cleanLevel } from "./miroir-fwk/4_view/constants.js";
 
 import { adminSelfApplication, deployment_Admin, deployment_Miroir, entityDeployment } from "miroir-test-app_deployment-admin";
-import miroirConfigEmulatedServerIndexedDb from "./assets/miroirConfig-emulatedServer-IndexedDb.json" assert { type: "json" };
-import miroirConfigRealServerFilesystemGit from "./assets/miroirConfig-realServer-filesystem-git.json" assert { type: "json" };
-import miroirConfigRealServerFilesystemTmp from "./assets/miroirConfig-realServer-filesystem-tmp.json" assert { type: "json" };
-import miroirConfigRealServerIndexedDb from "./assets/miroirConfig-realServer-indexedDb.json" assert { type: "json" };
-import miroirConfigRealServerSql from "./assets/miroirConfig-realServer-sql.json" assert { type: "json" };
-import miroirConfig from "./assets/miroirConfig.json" assert { type: "json" };
+import miroirConfigEmulatedServerIndexedDb from "./assets/miroirConfig-emulatedServer-IndexedDb.json";
+import miroirConfigRealServerFilesystemGit from "./assets/miroirConfig-realServer-filesystem-git.json";
+import miroirConfigRealServerFilesystemTmp from "./assets/miroirConfig-realServer-filesystem-tmp.json";
+import miroirConfigRealServerIndexedDb from "./assets/miroirConfig-realServer-indexedDb.json";
+import miroirConfigRealServerSql from "./assets/miroirConfig-realServer-sql.json";
+import miroirConfig from "./assets/miroirConfig.json";
 import { CheckPage } from "./miroir-fwk/4_view/routes/Check.js";
 import { ModelDiagramPage } from "./miroir-fwk/4_view/routes/ModelDiagramPage.js";
 import { RunnersPage } from "./miroir-fwk/4_view/routes/Runners.js";

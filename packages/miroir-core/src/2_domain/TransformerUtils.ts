@@ -7,8 +7,7 @@ import {
   type TransformerReturnType,
 } from "../0_interfaces/2_domain/DomainElement";
 import {
-  TransformerForBuild,
-  TransformerForBuildPlusRuntime,
+  CoreTransformerForBuildPlusRuntime,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory";
@@ -40,7 +39,7 @@ export async function transformer_extended_apply_wrapper(
   step: Step,
   transformerPath: string[],
   label: string | undefined,
-  transformer: TransformerForBuild | TransformerForBuildPlusRuntime,
+  transformer: CoreTransformerForBuildPlusRuntime,
   queryParams: Record<string, any>,
   contextResults?: Record<string, any>,
   resolveBuildTransformersTo: ResolveBuildTransformersTo = "constantTransformer",

@@ -11,7 +11,10 @@ import {
   ExtractorWrapper,
   QueryFailed,
   Transformer_contextOrParameterReferenceTO_REMOVE,
-  type CoreTransformerForBuildPlusRuntime
+  type CoreTransformerForBuildPlusRuntime,
+  type ExtractorOrCombinerTemplateRecord,
+  type ExtractorTemplateByExtractorWrapperReturningList,
+  type ExtractorTemplateByExtractorWrapperReturningObject
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { type MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
@@ -33,11 +36,11 @@ export function resolveExtractorTemplate(
   queryParams: Record<string, any>,
   contextResults: Record<string, any>
 ): ExtractorOrCombiner | QueryFailed {
-  const cleanQueryTemplate: any = { ...extractorOrCombinerTemplate }
+  const cleanQueryTemplate: any = { ...(extractorOrCombinerTemplate??{}) }
   delete cleanQueryTemplate.extractorOrCombinerType;
 
   
-  switch (extractorOrCombinerTemplate.extractorOrCombinerType) {
+  switch (extractorOrCombinerTemplate?.extractorOrCombinerType) {
     case "literal": {
       return {
         extractorOrCombinerType: "literal",
@@ -135,12 +138,14 @@ export function resolveExtractorTemplate(
       };
       break;
     }
-    case "extractorByExtractorWrapperReturningObject": {
+    // case "extractorWrapperReturningObject": {
+    case "extractorWrapperReturningObject": {
+      const castExtractorOrCombinerTemplate = extractorOrCombinerTemplate as ExtractorTemplateByExtractorWrapperReturningObject;
       return {
         extractorOrCombinerType: "extractorWrapperReturningObject",
         ...cleanQueryTemplate,
         definition: Object.fromEntries(
-          Object.entries(extractorOrCombinerTemplate.definition).map(
+          Object.entries(castExtractorOrCombinerTemplate.definition).map(
             (e: [string, ExtractorOrCombinerTemplate]) => [
               e[0],
               resolveExtractorTemplate(
@@ -159,26 +164,42 @@ export function resolveExtractorTemplate(
       };
       break;
     }
-    case "extractorByExtractorWrapperReturningList": {
+    // case "extractorWrapperReturningList": {
+    case "extractorWrapperReturningList": {
+      const castExtractorOrCombinerTemplate = extractorOrCombinerTemplate as ExtractorTemplateByExtractorWrapperReturningList;
       return {
         extractorOrCombinerType: "extractorWrapperReturningList",
         ...cleanQueryTemplate,
-        definition: extractorOrCombinerTemplate.definition.map(
-          (e: CoreTransformerForBuildPlusRuntime) => transformer_extended_apply(
-                "build",
-                [], // transformerPath
-                (e as any).label?? "extractorWrapperReturningList label missing",
-                e,
-                "value",
-                modelEnvironment,
-                queryParams,
-                contextResults
-              )
+        definition: castExtractorOrCombinerTemplate.definition.map(
+          (
+            e: any /* CoreTransformerForBuildPlusRuntime | MiroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorOrCombiner */,
+          ) => {
+            return transformer_extended_apply(
+              "build",
+              [], // transformerPath
+              (e as any).label ?? "extractorWrapperReturningList label missing",
+              e,
+              "value",
+              modelEnvironment,
+              queryParams,
+              contextResults,
+            );
+          },
         ),
       };
       break;
     }
     case "combinerOneToMany": {
+      const objectReference = transformer_extended_apply(
+        "build",
+        [], // transformerPath
+        extractorOrCombinerTemplate.label??extractorOrCombinerTemplate.extractorOrCombinerType,
+        extractorOrCombinerTemplate.objectReference,
+        "value",
+        modelEnvironment,
+        queryParams,
+        contextResults
+      );
       return {
         extractorOrCombinerType: extractorOrCombinerTemplate.extractorOrCombinerType,
         ...cleanQueryTemplate,
@@ -196,17 +217,28 @@ export function resolveExtractorTemplate(
                 queryParams,
                 contextResults
               ), // TODO: check for failure!
-        objectReference:
-          typeof extractorOrCombinerTemplate.objectReference === "object" &&
-          (extractorOrCombinerTemplate.objectReference as any)["transformerType"] ===
-            "getFromContext"
-            ? (extractorOrCombinerTemplate.objectReference as any)?.referenceName ??
-              "ERROR CONVERTING OBJECT REFERENCE FOR combinerOneToMany extractor template: no referenceName"
-            : "ERROR CONVERTING OBJECT REFERENCE FOR combinerOneToMany extractor template: objectReference is not a getFromContext",
+        objectReference: objectReference, // TODO: check for failure!
+        // objectReference:
+        //   typeof extractorOrCombinerTemplate.objectReference === "object" &&
+        //   (extractorOrCombinerTemplate.objectReference as any)["transformerType"] ===
+        //     "getFromContext"
+        //     ? (extractorOrCombinerTemplate.objectReference as any)?.referenceName ??
+        //       "ERROR CONVERTING OBJECT REFERENCE FOR combinerOneToMany extractor template: no referenceName"
+        //     : "ERROR CONVERTING OBJECT REFERENCE FOR combinerOneToMany extractor template: objectReference is not a getFromContext",
       };
       break;
     }
     case "combinerManyToMany": {
+      const objectListReference = transformer_extended_apply(
+        "build",
+        [], // transformerPath
+        extractorOrCombinerTemplate.label??extractorOrCombinerTemplate.extractorOrCombinerType,
+        extractorOrCombinerTemplate.objectListReference,
+        "value",
+        modelEnvironment,
+        queryParams,
+        contextResults
+      );
       return {
         extractorOrCombinerType: extractorOrCombinerTemplate.extractorOrCombinerType,
         ...cleanQueryTemplate,
@@ -224,15 +256,21 @@ export function resolveExtractorTemplate(
                 queryParams,
                 contextResults
               ), // TODO: check for failure!
-        objectListReference:
-          extractorOrCombinerTemplate.objectListReference.transformerType == "getFromContext"
-            ? extractorOrCombinerTemplate.objectListReference.referenceName ??
-              "ERROR CONVERTING OBJECT REFERENCE FOR combinerManyToMany extractor template: no referenceName"
-            : "ERROR CONVERTING OBJECT REFERENCE FOR combinerManyToMany extractor template: objectReference is not a getFromContext",
+        objectListReference
       };
       break;
     }
     case "combinerOneToOne": {
+      const objectReference = transformer_extended_apply(
+        "build",
+        [], // transformerPath
+        extractorOrCombinerTemplate.label??extractorOrCombinerTemplate.extractorOrCombinerType,
+        extractorOrCombinerTemplate.objectReference,
+        "value",
+        modelEnvironment,
+        queryParams,
+        contextResults
+      );
       return {
         extractorOrCombinerType: extractorOrCombinerTemplate.extractorOrCombinerType,
         ...cleanQueryTemplate,
@@ -250,11 +288,12 @@ export function resolveExtractorTemplate(
                 queryParams,
                 contextResults
               ), // TODO: check for failure!
-        objectReference:
-          extractorOrCombinerTemplate.objectReference.transformerType == "getFromContext"
-            ? extractorOrCombinerTemplate.objectReference.referenceName ??
-              "ERROR CONVERTING OBJECT REFERENCE FOR combinerOneToOne extractor template: no referenceName"
-            : "ERROR CONVERTING OBJECT REFERENCE FOR combinerOneToOne extractor template: objectReference is not a getFromContext",
+        objectReference, // TODO: check for failure!
+        // objectReference:
+        //   extractorOrCombinerTemplate.objectReference.transformerType == "getFromContext"
+        //     ? extractorOrCombinerTemplate.objectReference.referenceName ??
+        //       "ERROR CONVERTING OBJECT REFERENCE FOR combinerOneToOne extractor template: no referenceName"
+        //     : "ERROR CONVERTING OBJECT REFERENCE FOR combinerOneToOne extractor template: objectReference is not a getFromContext",
       };
       break;
     }
@@ -375,8 +414,8 @@ export function resolveQueryTemplateWithExtractorCombinerTransformer(
     queryParams: queryTemplate.queryParams,
     contextResults: queryTemplate.contextResults,
     application: queryTemplate.application,
-    extractors: queries as ExtractorOrCombinerRecord,
-    combiners: combiners as Record<string, ExtractorOrCombiner>,
+    extractors: queries as ExtractorOrCombinerTemplateRecord,
+    combiners: combiners as ExtractorOrCombinerTemplateRecord,
     runtimeTransformers: queryTemplate.runtimeTransformers,
   };
   // log.info("resolveQueryTemplateWithExtractorCombinerTransformer converted query, result:", combiners);

@@ -37,7 +37,6 @@ import {
   resolveReferencesWithCarryOn,
   testCompositeActionParams,
 } from "./getMiroirFundamentalJzodSchemaHelpers";
-import { extractor } from "../preprocessor-generated/miroirFundamentalType";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -125,6 +124,358 @@ export function getMiroirFundamentalJzodSchema(
   // log.info("getMiroirFundamentalJzodSchema miroirTransformersJzodSchemas", JSON.stringify(miroirTransformersJzodSchemas.map(e=>e.name)), null, 2);
   // log.info("getMiroirFundamentalJzodSchema miroirTransformersForBuild", JSON.stringify(Object.keys(miroirTransformersForBuild), null, 2));
   // log.info("getMiroirFundamentalJzodSchema transformerForBuildNames", JSON.stringify(transformerForBuildNames, null, 2));
+  // ##############################################################################################
+  // ##############################################################################################
+  // ##############################################################################################
+  // ##############################################################################################
+  // ##############################################################################################
+  // ##############################################################################################
+  const extraQueryElements: Record<string, any /*JzodElement*/> = {
+    extractorOrCombinerTemplate: {
+      "type": "schemaReference",
+      "definition": {
+        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+        "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorOrCombiner"
+      }
+    },
+    extractorOrCombinerTemplateRecord: {
+      type: "record",
+      definition: {
+        type: "schemaReference",
+        definition: {
+          relativePath: "extractorOrCombinerTemplate",
+        },
+      },
+    },
+    localCacheExtractor: {
+      type: "object",
+      definition: {
+        queryType: {
+          type: "literal",
+          tag: {
+            value: {
+              canBeTemplate: false,
+            },
+          },
+          definition: "localCacheEntityInstancesExtractor",
+        },
+        definition: {
+          type: "object",
+          definition: {
+            application: {
+              type: "uuid",
+              tag: { value: { defaultLabel: "Uuid", editable: false } },
+            },
+            applicationSection: {
+              type: "schemaReference",
+              optional: true,
+              definition: {
+                absolutePath: miroirFundamentalJzodSchemaUuid,
+                relativePath: "applicationSection",
+              },
+            },
+            entityUuid: {
+              type: "uuid",
+              optional: true,
+              tag: { value: { id: 1, defaultLabel: "Entity", editable: false } },
+            },
+            instanceUuid: {
+              type: "uuid",
+              optional: true,
+              tag: { value: { id: 1, defaultLabel: "Instance", editable: false } },
+            },
+          },
+        },
+      },
+    },
+    shippingBox: {
+      type: "object",
+      definition: {
+        application: {
+          // TODO: REPLACE WITH APPLICATION UUID OR LEAVE IT OPTIONAL
+          type: "uuid",
+          tag: {
+            value: {
+              canBeTemplate: true,
+              defaultLabel: "Application",
+              foreignKeyParams: {
+                targetApplicationUuid: "55af124e-8c05-4bae-a3ef-0933d41daa92",
+                targetEntity: "25d935e7-9e93-42c2-aade-0472b883492b",
+                targetEntityOrderInstancesBy: "name",
+              },
+              initializeTo: {
+                initializeToType: "transformer",
+                transformer: {
+                  transformerType: "getFromParameters",
+                  referencePath: ["applicationUuid"],
+                },
+              },
+              display: { editable: false },
+            },
+          },
+        },
+        pageParams: {
+          type: "record",
+          optional: true,
+          definition: {
+            type: "any",
+          },
+        },
+        queryParams: {
+          type: "record",
+          optional: true,
+          definition: {
+            type: "any",
+          },
+        },
+        contextResults: {
+          type: "record",
+          optional: true,
+          definition: {
+            type: "any",
+          },
+        },
+      },
+    },
+    boxedExtractorOrCombinerReturningObject: {
+      type: "object",
+      extend: {
+        type: "schemaReference",
+        definition: {
+          eager: true,
+          absolutePath: miroirFundamentalJzodSchemaUuid,
+          relativePath: "shippingBox",
+        },
+      },
+      definition: {
+        queryType: {
+          type: "literal",
+          tag: {
+            value: {
+              canBeTemplate: false,
+            },
+          },
+          definition: "boxedExtractorOrCombinerReturningObject",
+        },
+        select: {
+          type: "schemaReference",
+          definition: {
+            absolutePath: miroirFundamentalJzodSchemaUuid,
+            relativePath: "extractorOrCombinerReturningObject", // TODO: is this still an extractor, while it includes extractorTemplateCombinerOneToOne?
+          },
+        },
+      },
+    },
+    boxedExtractorOrCombinerReturningObjectList: {
+      type: "object",
+      extend: {
+        type: "schemaReference",
+        definition: {
+          eager: true,
+          absolutePath: miroirFundamentalJzodSchemaUuid,
+          relativePath: "shippingBox",
+        },
+      },
+      definition: {
+        queryType: {
+          type: "literal",
+          tag: {
+            value: {
+              canBeTemplate: false,
+            },
+          },
+          definition: "boxedExtractorOrCombinerReturningObjectList",
+        },
+        select: {
+          type: "schemaReference",
+          definition: {
+            absolutePath: miroirFundamentalJzodSchemaUuid,
+            relativePath: "extractorOrCombinerReturningObjectList",
+          },
+        },
+      },
+    },
+    boxedExtractorOrCombinerReturningObjectOrObjectList: {
+      type: "union",
+      discriminator: "queryType",
+      definition: [
+        {
+          type: "schemaReference",
+          definition: {
+            absolutePath: miroirFundamentalJzodSchemaUuid,
+            relativePath: "boxedExtractorOrCombinerReturningObject",
+          },
+        },
+        {
+          type: "schemaReference",
+          definition: {
+            absolutePath: miroirFundamentalJzodSchemaUuid,
+            relativePath: "boxedExtractorOrCombinerReturningObjectList",
+          },
+        },
+      ],
+    },
+    boxedQueryWithExtractorCombinerTransformer: {
+      type: "object",
+      extend: {
+        type: "schemaReference",
+        definition: {
+          eager: true,
+          absolutePath: miroirFundamentalJzodSchemaUuid,
+          relativePath: "shippingBox",
+        },
+      },
+      definition: {
+        queryType: {
+          type: "literal",
+          tag: {
+            value: {
+              canBeTemplate: false,
+            },
+          },
+          definition: "boxedQueryWithExtractorCombinerTransformer",
+        },
+        runAsSql: {
+          type: "boolean",
+          optional: true,
+        },
+        extractors: {
+          type: "schemaReference",
+          optional: true,
+          definition: {
+            absolutePath: miroirFundamentalJzodSchemaUuid,
+            relativePath: "extractorOrCombinerTemplateRecord",
+          },
+        },
+        combiners: {
+          type: "schemaReference",
+          optional: true,
+          definition: {
+            absolutePath: miroirFundamentalJzodSchemaUuid,
+            relativePath: "extractorOrCombinerTemplateRecord",
+          },
+        },
+        runtimeTransformers: {
+          type: "record",
+          optional: true,
+          definition: {
+            type: "schemaReference",
+            definition: {
+              absolutePath: miroirFundamentalJzodSchemaUuid,
+              relativePath: "coreTransformerForBuildPlusRuntime",
+            },
+          },
+        },
+      },
+    },
+    boxedQueryTemplateWithExtractorCombinerTransformer: {
+      /**
+       *  TODO:REMOVE?
+       * seems a duplicate of boxedQueryWithExtractorCombinerTransformer, but with extractorTemplates and combinerTemplates instead of extractors and combiners
+       * see "extractorOrCombinerTemplate" in `359f1f9b-7260-4d76-a864-72c839b9711b.json`
+       * is this used at all?
+       * */
+
+      type: "object",
+      extend: {
+        type: "schemaReference",
+        definition: {
+          eager: true,
+          absolutePath: miroirFundamentalJzodSchemaUuid,
+          relativePath: "shippingBox",
+        },
+      },
+      definition: {
+        queryType: {
+          type: "literal",
+          tag: {
+            value: {
+              canBeTemplate: false,
+            },
+          },
+          definition: "boxedQueryTemplateWithExtractorCombinerTransformer",
+        },
+        runAsSql: {
+          type: "boolean",
+          optional: true,
+        },
+        extractorTemplates: {
+          type: "schemaReference",
+          optional: true,
+          definition: {
+            absolutePath: miroirFundamentalJzodSchemaUuid,
+            relativePath: "extractorOrCombinerTemplateRecord",
+          },
+        },
+        combinerTemplates: {
+          type: "schemaReference",
+          optional: true,
+          definition: {
+            absolutePath: miroirFundamentalJzodSchemaUuid,
+            relativePath: "extractorOrCombinerTemplateRecord",
+          },
+        },
+        runtimeTransformers: {
+          type: "record",
+          optional: true,
+          definition: {
+            type: "schemaReference",
+            definition: {
+              absolutePath: miroirFundamentalJzodSchemaUuid,
+              relativePath: "coreTransformerForBuildPlusRuntime",
+            },
+          },
+        },
+      },
+    },
+    miroirQueryTemplate: {
+      type: "union",
+      discriminator: "queryType",
+      definition: [
+        {
+          type: "schemaReference",
+          definition: {
+            absolutePath: miroirFundamentalJzodSchemaUuid,
+            relativePath: "boxedQueryTemplateWithExtractorCombinerTransformer",
+          },
+        },
+        {
+          type: "schemaReference",
+          definition: {
+            absolutePath: miroirFundamentalJzodSchemaUuid,
+            relativePath: "localCacheExtractor",
+          },
+        },
+      ],
+    },
+    miroirQuery: {
+      type: "union",
+      discriminator: "queryType",
+      definition: [
+        {
+          type: "schemaReference",
+          definition: {
+            absolutePath: miroirFundamentalJzodSchemaUuid,
+            relativePath: "boxedExtractorOrCombinerReturningObjectOrObjectList",
+          },
+        },
+        {
+          type: "schemaReference",
+          definition: {
+            absolutePath: miroirFundamentalJzodSchemaUuid,
+            relativePath: "boxedQueryWithExtractorCombinerTransformer",
+          },
+        },
+        {
+          type: "schemaReference",
+          definition: {
+            absolutePath: miroirFundamentalJzodSchemaUuid,
+            relativePath: "localCacheExtractor",
+          },
+        },
+      ],
+    },
+  };
   // ##############################################################################################
   // ##############################################################################################
   // ##############################################################################################
@@ -396,15 +747,6 @@ export function getMiroirFundamentalJzodSchema(
         //
           transformerForBuildPlusRuntime_ansiColumnsToJzodSchema:
             miroirTransformersForBuildPlusRuntime.transformer_ansiColumnsToJzodSchema,
-        // 
-        // ...Object.fromEntries(
-        //   Object.entries(miroirCoreTransformers).map(([key, value]) => [
-        //     key.replace("transformer_", "transformerForBuildPlusRuntime_"),
-        //     miroirTransformersForBuildPlusRuntime[
-        //       key as keyof typeof miroirTransformersForBuildPlusRuntime
-        //     ],
-        //   ]),
-        // ),
         // MLS
         ...Object.fromEntries(
           Object.entries(mlsTransformers).map(([key, value]) => [
@@ -414,86 +756,6 @@ export function getMiroirFundamentalJzodSchema(
             ],
           ]),
         ),
-        // transformerForBuildPlusRuntimeWithoutArray: {
-        //   type: "union",
-        //   optInDiscriminator: true,
-        //   discriminator: ["transformerType", "interpolation"],
-        //   definition: [
-        //     {
-        //       type: "string",
-        //     },
-        //     {
-        //       type: "number",
-        //     },
-        //     { type: "boolean" },
-        //     ...transformerForBuildPlusRuntimeNames.map((e: any) => ({
-        //       type: "schemaReference",
-        //       definition: {
-        //         absolutePath: miroirFundamentalJzodSchemaUuid,
-        //         relativePath: e,
-        //       },
-        //     })),
-        //     {
-        //       type: "schemaReference",
-        //       definition: {
-        //         absolutePath: miroirFundamentalJzodSchemaUuid,
-        //         relativePath: "coreTransformerForBuildPlusRuntime_InnerReference",
-        //       },
-        //     },
-        //     {
-        //       type: "schemaReference",
-        //       definition: {
-        //         absolutePath: miroirFundamentalJzodSchemaUuid,
-        //         relativePath: "coreTransformerForBuildPlusRuntime_dataflowSequence",
-        //       },
-        //     },
-        //   ],
-        // },
-        // transformerForBuildPlusRuntime:{
-        //   type: "union",
-        //   optInDiscriminator: true,
-        //   discriminator: ["transformerType", "interpolation"],
-        //   definition: [
-        //     {
-        //       type: "string",
-        //     },
-        //     {
-        //       type: "number",
-        //     },
-        //     { type: "boolean" },
-        //     {
-        //       type: "array",
-        //       definition: {
-        //         type: "schemaReference",
-        //         definition: {
-        //           absolutePath: miroirFundamentalJzodSchemaUuid,
-        //           relativePath: "coreTransformerForBuildPlusRuntime",
-        //         },
-        //       },
-        //     },
-        //     ...transformerForBuildPlusRuntimeNames.map((e: any) => ({
-        //       type: "schemaReference",
-        //       definition: {
-        //         absolutePath: miroirFundamentalJzodSchemaUuid,
-        //         relativePath: e,
-        //       },
-        //     })),
-        //     {
-        //       type: "schemaReference",
-        //       definition: {
-        //         absolutePath: miroirFundamentalJzodSchemaUuid,
-        //         relativePath: "coreTransformerForBuildPlusRuntime_InnerReference",
-        //       },
-        //     },
-        //     {
-        //       type: "schemaReference",
-        //       definition: {
-        //         absolutePath: miroirFundamentalJzodSchemaUuid,
-        //         relativePath: "coreTransformerForBuildPlusRuntime_dataflowSequence",
-        //       },
-        //     },
-        //   ],
-        // },
         ...entityDefinitionTransformerDefinition.mlSchema.definition.transformerInterface.definition
           .inputOutput.context,
         // inputOutputObject: entityDefinitionTransformerDefinition.mlSchema.definition.transformerInterface.definition.inputOutput as any,
@@ -1454,6 +1716,9 @@ export function getMiroirFundamentalJzodSchema(
         // ########################################################################################
         // ########################################################################################
         // ########################################################################################
+        // ########################################################################################
+        // QUERIES    #############################################################################
+        // ########################################################################################
         ______________________________________________queries_____________________________________________:
           {
             type: "never",
@@ -1850,351 +2115,7 @@ export function getMiroirFundamentalJzodSchema(
             },
           ],
         },
-        // ########################################################################################
-        // QUERIES    #############################################################################
-        // ########################################################################################
-        // extractorTemplateInstancesByEntity: {
-        //   type: "schemaReference",
-        //   definition: {
-        //     absolutePath: miroirFundamentalJzodSchemaUuid,
-        //     relativePath: "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorInstancesByEntity",
-        //   },
-        // },
-        extractorTemplateInstancesByEntity: {
-          type: "schemaReference",
-          definition: {
-            absolutePath: miroirFundamentalJzodSchemaUuid,
-            relativePath: "extractorInstancesByEntity",
-          },
-        },
-        localCacheExtractor: {
-          type: "object",
-          definition: {
-            queryType: {
-              type: "literal",
-              tag: {
-                value: {
-                  canBeTemplate: false,
-                },
-              },
-              definition: "localCacheEntityInstancesExtractor",
-            },
-            definition: {
-              type: "object",
-              definition: {
-                application: {
-                  type: "uuid",
-                  tag: { value: { defaultLabel: "Uuid", editable: false } },
-                },
-                applicationSection: {
-                  type: "schemaReference",
-                  optional: true,
-                  definition: {
-                    absolutePath: miroirFundamentalJzodSchemaUuid,
-                    relativePath: "applicationSection",
-                  },
-                },
-                entityUuid: {
-                  type: "uuid",
-                  optional: true,
-                  tag: { value: { id: 1, defaultLabel: "Entity", editable: false } },
-                },
-                instanceUuid: {
-                  type: "uuid",
-                  optional: true,
-                  tag: { value: { id: 1, defaultLabel: "Instance", editable: false } },
-                },
-              },
-            },
-          },
-        },
-        shippingBox: {
-          type: "object",
-          definition: {
-            application: {
-              // TODO: REPLACE WITH APPLICATION UUID OR LEAVE IT OPTIONAL
-              type: "uuid",
-              tag: {
-                value: {
-                  canBeTemplate: true,
-                  defaultLabel: "Application",
-                  foreignKeyParams: {
-                    targetApplicationUuid: "55af124e-8c05-4bae-a3ef-0933d41daa92",
-                    targetEntity: "25d935e7-9e93-42c2-aade-0472b883492b",
-                    targetEntityOrderInstancesBy: "name",
-                  },
-                  initializeTo: {
-                    initializeToType: "transformer",
-                    transformer: {
-                      transformerType: "getFromParameters",
-                      referencePath: ["applicationUuid"],
-                    },
-                  },
-                  display: { editable: false },
-                },
-              },
-            },
-            pageParams: {
-              type: "record",
-              optional: true,
-              definition: {
-                type: "any",
-              },
-            },
-            queryParams: {
-              type: "record",
-              optional: true,
-              definition: {
-                type: "any",
-              },
-            },
-            contextResults: {
-              type: "record",
-              optional: true,
-              definition: {
-                type: "any",
-              },
-            },
-          },
-        },
-        boxedExtractorOrCombinerReturningObject: {
-          type: "object",
-          extend: {
-            type: "schemaReference",
-            definition: {
-              eager: true,
-              absolutePath: miroirFundamentalJzodSchemaUuid,
-              relativePath: "shippingBox",
-            },
-          },
-          definition: {
-            queryType: {
-              type: "literal",
-              tag: {
-                value: {
-                  canBeTemplate: false,
-                },
-              },
-              definition: "boxedExtractorOrCombinerReturningObject",
-            },
-            select: {
-              type: "schemaReference",
-              definition: {
-                absolutePath: miroirFundamentalJzodSchemaUuid,
-                relativePath: "extractorOrCombinerReturningObject", // TODO: is this still an extractor, while it includes extractorTemplateCombinerOneToOne?
-              },
-            },
-          },
-        },
-        boxedExtractorOrCombinerReturningObjectList: {
-          type: "object",
-          extend: {
-            type: "schemaReference",
-            definition: {
-              eager: true,
-              absolutePath: miroirFundamentalJzodSchemaUuid,
-              relativePath: "shippingBox",
-            },
-          },
-          definition: {
-            queryType: {
-              type: "literal",
-              tag: {
-                value: {
-                  canBeTemplate: false,
-                },
-              },
-              definition: "boxedExtractorOrCombinerReturningObjectList",
-            },
-            select: {
-              type: "schemaReference",
-              definition: {
-                absolutePath: miroirFundamentalJzodSchemaUuid,
-                relativePath: "extractorOrCombinerReturningObjectList",
-              },
-            },
-          },
-        },
-        boxedExtractorOrCombinerReturningObjectOrObjectList: {
-          type: "union",
-          discriminator: "queryType",
-          definition: [
-            {
-              type: "schemaReference",
-              definition: {
-                absolutePath: miroirFundamentalJzodSchemaUuid,
-                relativePath: "boxedExtractorOrCombinerReturningObject",
-              },
-            },
-            {
-              type: "schemaReference",
-              definition: {
-                absolutePath: miroirFundamentalJzodSchemaUuid,
-                relativePath: "boxedExtractorOrCombinerReturningObjectList",
-              },
-            },
-          ],
-        },
-        boxedQueryWithExtractorCombinerTransformer: {
-          type: "object",
-          extend: {
-            type: "schemaReference",
-            definition: {
-              eager: true,
-              absolutePath: miroirFundamentalJzodSchemaUuid,
-              relativePath: "shippingBox",
-            },
-          },
-          definition: {
-            queryType: {
-              type: "literal",
-              tag: {
-                value: {
-                  canBeTemplate: false,
-                },
-              },
-              definition: "boxedQueryWithExtractorCombinerTransformer",
-            },
-            runAsSql: {
-              type: "boolean",
-              optional: true,
-            },
-            extractors: {
-              type: "schemaReference",
-              optional: true,
-              definition: {
-                absolutePath: miroirFundamentalJzodSchemaUuid,
-                relativePath: "extractorOrCombinerRecord",
-              },
-            },
-            combiners: {
-              type: "schemaReference",
-              optional: true,
-              definition: {
-                absolutePath: miroirFundamentalJzodSchemaUuid,
-                relativePath: "extractorOrCombinerRecord",
-              },
-            },
-            runtimeTransformers: {
-              type: "record",
-              optional: true,
-              definition: {
-                type: "schemaReference",
-                definition: {
-                  absolutePath: miroirFundamentalJzodSchemaUuid,
-                  relativePath: "coreTransformerForBuildPlusRuntime",
-                },
-              },
-            },
-          },
-        },
-        boxedQueryTemplateWithExtractorCombinerTransformer: {
-          /**
-           *  TODO:REMOVE?
-           * seems a duplicate of boxedQueryWithExtractorCombinerTransformer, but with extractorTemplates and combinerTemplates instead of extractors and combiners
-           * see "extractorOrCombinerTemplate" in `359f1f9b-7260-4d76-a864-72c839b9711b.json`
-           * is this used at all?
-           * */
-
-          type: "object",
-          extend: {
-            type: "schemaReference",
-            definition: {
-              eager: true,
-              absolutePath: miroirFundamentalJzodSchemaUuid,
-              relativePath: "shippingBox",
-            },
-          },
-          definition: {
-            queryType: {
-              type: "literal",
-              tag: {
-                value: {
-                  canBeTemplate: false,
-                },
-              },
-              definition: "boxedQueryTemplateWithExtractorCombinerTransformer",
-            },
-            runAsSql: {
-              type: "boolean",
-              optional: true,
-            },
-            extractorTemplates: {
-              type: "schemaReference",
-              optional: true,
-              definition: {
-                absolutePath: miroirFundamentalJzodSchemaUuid,
-                relativePath: "extractorOrCombinerRecord",
-              },
-            },
-            combinerTemplates: {
-              type: "schemaReference",
-              optional: true,
-              definition: {
-                absolutePath: miroirFundamentalJzodSchemaUuid,
-                relativePath: "extractorOrCombinerRecord",
-              },
-            },
-            runtimeTransformers: {
-              type: "record",
-              optional: true,
-              definition: {
-                type: "schemaReference",
-                definition: {
-                  absolutePath: miroirFundamentalJzodSchemaUuid,
-                  relativePath: "coreTransformerForBuildPlusRuntime",
-                },
-              },
-            },
-          },
-        },
-        miroirQueryTemplate: {
-          type: "union",
-          discriminator: "queryType",
-          definition: [
-            {
-              type: "schemaReference",
-              definition: {
-                absolutePath: miroirFundamentalJzodSchemaUuid,
-                relativePath: "boxedQueryTemplateWithExtractorCombinerTransformer",
-              },
-            },
-            {
-              type: "schemaReference",
-              definition: {
-                absolutePath: miroirFundamentalJzodSchemaUuid,
-                relativePath: "localCacheExtractor",
-              },
-            },
-          ],
-        },
-        miroirQuery: {
-          type: "union",
-          discriminator: "queryType",
-          definition: [
-            {
-              type: "schemaReference",
-              definition: {
-                absolutePath: miroirFundamentalJzodSchemaUuid,
-                relativePath: "boxedExtractorOrCombinerReturningObjectOrObjectList",
-              },
-            },
-            {
-              type: "schemaReference",
-              definition: {
-                absolutePath: miroirFundamentalJzodSchemaUuid,
-                relativePath: "boxedQueryWithExtractorCombinerTransformer",
-              },
-            },
-            {
-              type: "schemaReference",
-              definition: {
-                absolutePath: miroirFundamentalJzodSchemaUuid,
-                relativePath: "localCacheExtractor",
-              },
-            },
-          ],
-        },
+        ...extraQueryElements,
         // ########################################################################################
         // ########################################################################################
         // ########################################################################################
@@ -3191,41 +3112,6 @@ export function getMiroirFundamentalJzodSchema(
   // );
   _phaseTimings.push({phase: "extendedSchemasResolutionStore", ms: Date.now() - _t_phase});
 
-    // // ##############################################################################################
-  // _t_phase = Date.now();
-  // const jzodElementDependenciesJzodReference = getDependencySet(
-  //   jzodSchemajzodMiroirBootstrapSchema,
-  //   miroirFundamentalJzodSchema.definition,
-  //   absoluteMiroirFundamentalJzodSchema,
-  //   "jzodElement",
-  // );
-  // // _phaseTimings.push({phase: "jzodElementDependencySet", ms: Date.now() - _t_phase});
-
-  // // _t_phase = Date.now();
-
-  // // Collect all keys produced by domainAction stores — jzodElement computation will skip them
-  // // since they are overwritten in the final context spread anyway.
-  // const domainActionProducedKeys = new Set([
-  //   ...Object.keys(localizedInnerResolutionStoreForExtendedSchemas),
-  //   ...Object.keys(buildPlusRuntimeDomainActionLocalizedInnerResolutionStorePlainReferences),
-  // ]);
-
-  // const jzodElementWithCarryOnContext = getJzodElementWithCarryOnContextDEFUNCT(
-  //   "miroirTemplate_",
-  //   coreTransformerForBuildPlusRuntimeCarryOnSchemaReference,
-  //   coreTransformerForBuildPlusRuntimeForArrayCarryOnSchemaReference,
-  //   [
-  //     "jzodBaseObject",
-  //     "transformer_inner_label",
-  //     "transformer_orderBy",
-  //     "transformerForBuildPlusRuntime_Abstract",
-  //     "transformerForBuildPlusRuntime_optional_Abstract",
-  //   ],
-  //   jzodElementDependenciesJzodReference,
-  //   domainActionProducedKeys, // skip entries already produced by domainAction stores
-  // );
-  // _phaseTimings.push({phase: "getJzodElementWithCarryOnContext", ms: Date.now() - _t_phase});
-
   // ##############################################################################################
   _t_phase = Date.now();
 
@@ -3371,77 +3257,87 @@ export function getMiroirFundamentalJzodSchema(
           },
         },
         extractorTemplateCombinerOneToOne: {
-          type: "object",
-          extend: {
-            type: "schemaReference",
-            definition: {
-              eager: true,
-              relativePath: "extractorOrCombinerRoot",
-            },
-          },
-          definition: {
-            extractorOrCombinerType: {
-              type: "literal",
-              definition: "combinerOneToOne",
-            },
-            objectReference: {
-              type: "schemaReference",
-              definition: {
-                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                relativePath: "coreTransformerForBuildPlusRuntime_InnerReference",
-              },
-            },
-            AttributeOfObjectToCompareToReferenceUuid: {
-              type: "union",
-              definition: [{ type: "string" }, { type: "array", definition: { type: "string" } }],
-            },
-            applyTransformer: {
-              type: "schemaReference",
-              optional: true,
-              definition: {
-                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                relativePath: "coreTransformerForBuildPlusRuntime",
-              },
-            },
-          },
+          "type": "schemaReference",
+          "definition": {
+            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_combinerOneToOne",
+          }
+          // type: "object",
+          // extend: {
+          //   type: "schemaReference",
+          //   definition: {
+          //     eager: true,
+          //     relativePath: "extractorOrCombinerRoot",
+          //   },
+          // },
+          // definition: {
+          //   extractorOrCombinerType: {
+          //     type: "literal",
+          //     definition: "combinerOneToOne",
+          //   },
+          //   objectReference: {
+          //     type: "schemaReference",
+          //     definition: {
+          //       absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          //       relativePath: "coreTransformerForBuildPlusRuntime_InnerReference",
+          //     },
+          //   },
+          //   AttributeOfObjectToCompareToReferenceUuid: {
+          //     type: "union",
+          //     definition: [{ type: "string" }, { type: "array", definition: { type: "string" } }],
+          //   },
+          //   applyTransformer: {
+          //     type: "schemaReference",
+          //     optional: true,
+          //     definition: {
+          //       absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          //       relativePath: "coreTransformerForBuildPlusRuntime",
+          //     },
+          //   },
+          // },
         },
         extractorTemplateExtractorByPrimaryKey: {
-          type: "object",
-          extend: {
-            type: "schemaReference",
-            definition: {
-              eager: true,
-              relativePath: "extractorOrCombinerRoot",
-            },
-          },
-          definition: {
-            extractorOrCombinerType: {
-              type: "literal",
-              definition: "extractorByPrimaryKey",
-            },
-            instanceUuid: {
-              type: "schemaReference",
-              definition: {
-                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                relativePath: "coreTransformerForBuildPlusRuntime",
-              },
-            },
-            foreignKeysForTransformer: {
-              type: "array",
-              optional: true,
-              definition: {
-                type: "string",
-              },
-            },
-            applyTransformer: {
-              type: "schemaReference",
-              optional: true,
-              definition: {
-                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                relativePath: "coreTransformerForBuildPlusRuntime",
-              },
-            },
-          },
+          "type": "schemaReference",
+          "definition": {
+            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorByPrimaryKey",
+          }
+          // type: "object",
+          // extend: {
+          //   type: "schemaReference",
+          //   definition: {
+          //     eager: true,
+          //     relativePath: "extractorOrCombinerRoot",
+          //   },
+          // },
+          // definition: {
+          //   extractorOrCombinerType: {
+          //     type: "literal",
+          //     definition: "extractorByPrimaryKey",
+          //   },
+          //   instanceUuid: {
+          //     type: "schemaReference",
+          //     definition: {
+          //       absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          //       relativePath: "coreTransformerForBuildPlusRuntime",
+          //     },
+          //   },
+          //   foreignKeysForTransformer: {
+          //     type: "array",
+          //     optional: true,
+          //     definition: {
+          //       type: "string",
+          //     },
+          //   },
+          //   applyTransformer: {
+          //     type: "schemaReference",
+          //     optional: true,
+          //     definition: {
+          //       absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          //       relativePath: "coreTransformerForBuildPlusRuntime",
+          //     },
+          //   },
+          // },
         },
         extractorTemplateReturningObject: {
           type: "union",
@@ -3461,6 +3357,13 @@ export function getMiroirFundamentalJzodSchema(
             },
           ],
         },
+        extractorTemplateInstancesByEntity: {
+          type: "schemaReference",
+          definition: {
+            absolutePath: miroirFundamentalJzodSchemaUuid,
+            relativePath: "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorInstancesByEntity",
+          },
+        },
         extractorTemplateReturningObjectList: {
           type: "union",
           discriminator: "extractorOrCombinerType",
@@ -3474,13 +3377,13 @@ export function getMiroirFundamentalJzodSchema(
             {
               type: "schemaReference",
               definition: {
-                relativePath: "combinerOneToMany",
+                relativePath: "combinerTemplateOneToMany",
               },
             },
             {
               type: "schemaReference",
               definition: {
-                relativePath: "combinerManyToMany",
+                relativePath: "combinerTemplateManyToMany",
               },
             },
           ],
@@ -3504,190 +3407,183 @@ export function getMiroirFundamentalJzodSchema(
           ],
         },
         combinerTemplateOneToMany: {
-          type: "object",
-          extend: {
-            type: "schemaReference",
-            definition: {
-              eager: true,
-              relativePath: "extractorOrCombinerRoot",
-            },
-          },
-          definition: {
-            extractorOrCombinerType: {
-              type: "literal",
-              definition: "combinerOneToMany",
-            },
-            orderBy: {
-              type: "object",
-              optional: true,
-              definition: {
-                attributeName: {
-                  type: "string",
-                },
-                direction: {
-                  type: "enum",
-                  optional: true,
-                  definition: ["ASC", "DESC"],
-                },
-              },
-            },
-            objectReference: {
-              type: "schemaReference",
-              definition: {
-                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                relativePath: "coreTransformerForBuildPlusRuntime",
-              },
-            },
-            objectReferenceAttribute: {
-              type: "string",
-              optional: true,
-            },
-            AttributeOfListObjectToCompareToReferenceUuid: {
-              type: "union",
-              definition: [{ type: "string" }, { type: "array", definition: { type: "string" } }],
-            },
-            applyTransformer: {
-              type: "schemaReference",
-              optional: true,
-              definition: {
-                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                relativePath: "coreTransformerForBuildPlusRuntime",
-              },
-            },
-          },
+          "type": "schemaReference",
+          "definition": {
+            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_combinerOneToMany",
+          }
+          // type: "object",
+          // extend: {
+          //   type: "schemaReference",
+          //   definition: {
+          //     eager: true,
+          //     relativePath: "extractorOrCombinerRoot",
+          //   },
+          // },
+          // definition: {
+          //   extractorOrCombinerType: {
+          //     type: "literal",
+          //     definition: "combinerOneToMany",
+          //   },
+          //   orderBy: {
+          //     type: "object",
+          //     optional: true,
+          //     definition: {
+          //       attributeName: {
+          //         type: "string",
+          //       },
+          //       direction: {
+          //         type: "enum",
+          //         optional: true,
+          //         definition: ["ASC", "DESC"],
+          //       },
+          //     },
+          //   },
+          //   objectReference: {
+          //     type: "schemaReference",
+          //     definition: {
+          //       absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          //       relativePath: "coreTransformerForBuildPlusRuntime",
+          //     },
+          //   },
+          //   objectReferenceAttribute: {
+          //     type: "string",
+          //     optional: true,
+          //   },
+          //   AttributeOfListObjectToCompareToReferenceUuid: {
+          //     type: "union",
+          //     definition: [{ type: "string" }, { type: "array", definition: { type: "string" } }],
+          //   },
+          //   applyTransformer: {
+          //     type: "schemaReference",
+          //     optional: true,
+          //     definition: {
+          //       absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          //       relativePath: "coreTransformerForBuildPlusRuntime",
+          //     },
+          //   },
+          // },
         },
         combinerTemplateManyToMany: {
-          type: "object",
-          extend: {
-            type: "schemaReference",
-            definition: {
-              eager: true,
-              relativePath: "extractorOrCombinerRoot",
-            },
-          },
-          definition: {
-            extractorOrCombinerType: {
-              type: "literal",
-              definition: "combinerManyToMany",
-            },
-            orderBy: {
-              type: "object",
-              optional: true,
-              definition: {
-                attributeName: {
-                  type: "string",
-                },
-                direction: {
-                  type: "enum",
-                  optional: true,
-                  definition: ["ASC", "DESC"],
-                },
-              },
-            },
-            objectListReference: {
-              type: "schemaReference",
-              definition: {
-                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                relativePath: "coreTransformerForBuildPlusRuntime_getFromContext",
-              },
-            },
-            objectListReferenceAttribute: {
-              type: "string",
-              optional: true,
-            },
-            AttributeOfRootListObjectToCompareToListReferenceUuid: {
-              type: "string",
-              optional: true,
-            },
-            applyTransformer: {
-              type: "schemaReference",
-              optional: true,
-              definition: {
-                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                relativePath: "coreTransformerForBuildPlusRuntime",
-              },
-            },
-          },
+          "type": "schemaReference",
+          "definition": {
+            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_combinerManyToMany",
+          }
+          // type: "object",
+          // extend: {
+          //   type: "schemaReference",
+          //   definition: {
+          //     eager: true,
+          //     relativePath: "extractorOrCombinerRoot",
+          //   },
+          // },
+          // definition: {
+          //   extractorOrCombinerType: {
+          //     type: "literal",
+          //     definition: "combinerManyToMany",
+          //   },
+          //   orderBy: {
+          //     type: "object",
+          //     optional: true,
+          //     definition: {
+          //       attributeName: {
+          //         type: "string",
+          //       },
+          //       direction: {
+          //         type: "enum",
+          //         optional: true,
+          //         definition: ["ASC", "DESC"],
+          //       },
+          //     },
+          //   },
+          //   objectListReference: {
+          //     type: "schemaReference",
+          //     definition: {
+          //       absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          //       relativePath: "coreTransformerForBuildPlusRuntime_getFromContext",
+          //     },
+          //   },
+          //   objectListReferenceAttribute: {
+          //     type: "string",
+          //     optional: true,
+          //   },
+          //   AttributeOfRootListObjectToCompareToListReferenceUuid: {
+          //     type: "string",
+          //     optional: true,
+          //   },
+          //   applyTransformer: {
+          //     type: "schemaReference",
+          //     optional: true,
+          //     definition: {
+          //       absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          //       relativePath: "coreTransformerForBuildPlusRuntime",
+          //     },
+          //   },
+          // },
         },
         combinerTemplateByHeteronomousManyToMany: {
-          type: "object",
-          definition: {
-            extractorOrCombinerType: {
-              type: "literal",
-              definition: "combinerByHeteronomousManyToMany",
-            },
-            rootExtractorOrReference: {
-              type: "union",
-              discriminator: "extractorOrCombinerType",
-              definition: [
-                {
-                  type: "schemaReference",
-                  definition: {
-                    absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                    relativePath: "extractorOrCombiner",
-                  },
-                },
-                {
-                  type: "string",
-                },
-              ],
-            },
-            subQueryTemplate: {
-              type: "object",
-              definition: {
-                query: {
-                  type: "schemaReference",
-                  definition: {
-                    absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                    relativePath: "extractorOrCombiner",
-                  },
-                },
-                rootQueryObjectTransformer: {
-                  type: "schemaReference",
-                  definition: {
-                    absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                    relativePath: "recordOfTransformers",
-                  },
-                },
-              },
-            },
-          },
+          "type": "schemaReference",
+          "definition": {
+            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_combinerByHeteronomousManyToMany",
+          }
+          // type: "object",
+          // definition: {
+          //   extractorOrCombinerType: {
+          //     type: "literal",
+          //     definition: "combinerByHeteronomousManyToMany",
+          //   },
+          //   rootExtractorOrReference: {
+          //     type: "union",
+          //     discriminator: "extractorOrCombinerType",
+          //     definition: [
+          //       {
+          //         type: "schemaReference",
+          //         definition: {
+          //           absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          //           relativePath: "extractorOrCombiner",
+          //         },
+          //       },
+          //       {
+          //         type: "string",
+          //       },
+          //     ],
+          //   },
+          //   subQueryTemplate: {
+          //     type: "object",
+          //     definition: {
+          //       query: {
+          //         type: "schemaReference",
+          //         definition: {
+          //           absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          //           relativePath: "extractorOrCombiner",
+          //         },
+          //       },
+          //       rootQueryObjectTransformer: {
+          //         type: "schemaReference",
+          //         definition: {
+          //           absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          //           relativePath: "recordOfTransformers",
+          //         },
+          //       },
+          //     },
+          //   },
+          // },
         },
         extractorTemplateByExtractorWrapperReturningObject: {
-          type: "object",
-          definition: {
-            extractorOrCombinerType: {
-              type: "literal",
-              definition: "extractorByExtractorWrapperReturningObject",
-            },
-            definition: {
-              type: "record",
-              definition: {
-                type: "schemaReference",
-                definition: {
-                  relativePath: "extractorOrCombiner",
-                },
-              },
-            },
-          },
+          "type": "schemaReference",
+          "definition": {
+            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorWrapperReturningObject"
+          }
         },
         extractorTemplateByExtractorWrapperReturningList: {
-          type: "object",
-          definition: {
-            extractorOrCombinerType: {
-              type: "literal",
-              definition: "extractorByExtractorWrapperReturningList",
-            },
-            definition: {
-              type: "array",
-              definition: {
-                type: "schemaReference",
-                definition: {
-                  relativePath: "coreTransformerForBuildPlusRuntime",
-                },
-              },
-            },
-          },
+          "type": "schemaReference",
+          "definition": {
+            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorWrapperReturningList"
+          }
         },
         extractorTemplateByExtractorWrapper: {
           type: "union",
@@ -3707,63 +3603,22 @@ export function getMiroirFundamentalJzodSchema(
             },
           ],
         },
-        extractorOrCombinerTemplate: {
-          type: "union",
-          discriminator: "extractorOrCombinerType",
-          definition: [
-            {
-              type: "schemaReference",
-              definition: {
-                relativePath: "extractorTemplateExtractorByPrimaryKey",
-              },
-            },
-            {
-              type: "schemaReference",
-              definition: {
-                relativePath: "extractorTemplateReturningObjectList",
-              },
-            },
-            {
-              type: "schemaReference",
-              definition: {
-                relativePath: "extractorTemplateCombinerOneToOne",
-              },
-            },
-            {
-              type: "schemaReference",
-              definition: {
-                relativePath: "combinerTemplateByHeteronomousManyToMany",
-              },
-            },
-            {
-              type: "schemaReference",
-              definition: {
-                relativePath: "extractorTemplateByExtractorWrapper",
-              },
-            },
-            {
-              type: "object",
-              definition: {
-                extractorOrCombinerType: {
-                  type: "literal",
-                  definition: "literal",
-                },
-                definition: {
-                  type: "string",
-                },
-              },
-            },
-          ],
-        },
-        extractorOrCombinerTemplateRecord: {
-          type: "record",
-          definition: {
-            type: "schemaReference",
-            definition: {
-              relativePath: "extractorOrCombinerTemplate",
-            },
-          },
-        },
+        // extractorOrCombinerTemplate: {
+        //   "type": "schemaReference",
+        //   "definition": {
+        //     "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+        //     "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorOrCombiner"
+        //   }
+        // },
+        // extractorOrCombinerTemplateRecord: {
+        //   type: "record",
+        //   definition: {
+        //     type: "schemaReference",
+        //     definition: {
+        //       relativePath: "extractorOrCombinerTemplate",
+        //     },
+        //   },
+        // },
         buildPlusRuntimeCompositeAction: {
           type: "schemaReference",
           definition: {

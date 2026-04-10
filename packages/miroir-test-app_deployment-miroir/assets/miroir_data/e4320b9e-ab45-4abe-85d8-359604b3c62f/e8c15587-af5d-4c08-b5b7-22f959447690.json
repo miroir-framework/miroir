@@ -8,7 +8,7 @@
   "definition": {
     "extractorTemplates": {
       "select": {
-        "extractorOrCombinerType": "extractorByExtractorWrapperReturningObject",
+        "extractorOrCombinerType": "extractorWrapperReturningObject",
         "definition": {
           "applicationVersion": {
             "extractorOrCombinerType": "extractorByPrimaryKey",

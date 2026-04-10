@@ -541,13 +541,11 @@ export function applyLimitedCarryOnSchemaOnLevel(
           baseSchema.discriminator,
           carryOnSchemaDiscriminator
         );
-        // if (!Array.isArray(carryOnSchemaDiscriminator)) {
         return {
           resultSchema: {
             ...baseSchema,
             tag: convertedTag,
             type: "union",
-            // discriminator: baseSchema.discriminator??carryOnSchemaDiscriminator,
             discriminator: mergedDiscriminators,
             definition: [...subConvertedSchemas.map((e) => e.resultSchema), carryOnSchema],
           } as any,
@@ -731,7 +729,7 @@ export function applyLimitedCarryOnSchemaOnLevel(
         );
         return {
           resultSchema: baseSchema,
-          hasBeenApplied: false,
+          hasBeenApplied: true,
         };
       }
 
@@ -790,23 +788,23 @@ export function applyLimitedCarryOnSchemaOnLevel(
           suffixForReferences,
           carryOnPrefix
         ):baseSchema.definition.relativePath;
-        if (baseSchema.definition.relativePath.startsWith(carryOnPrefix)){
-          console.log(
-            "applyLimitedCarryOnSchemaOnLevel:",
-            "carryOnPrefix",
-            carryOnPrefix,
-            // "baseSchema.definition.absolutePath",
-            // baseSchema.definition.absolutePath,
-            "baseSchema.definition.relativePath",
-            baseSchema.definition.relativePath,
-            "localReferenceName",
-            localReferenceName,
-            // "convertedReferences",
-            // JSON.stringify(Object.keys(convertedReferences ?? {}), null, 2),
-            // "convertedContextSubSchemasReferences",
-            // JSON.stringify(Object.keys(convertedContextSubSchemasReferences ?? {}), null, 2),
-          );
-        }
+        // if (baseSchema.definition.relativePath.startsWith(carryOnPrefix)){
+        //   console.log(
+        //     "applyLimitedCarryOnSchemaOnLevel:",
+        //     "carryOnPrefix",
+        //     carryOnPrefix,
+        //     // "baseSchema.definition.absolutePath",
+        //     // baseSchema.definition.absolutePath,
+        //     "baseSchema.definition.relativePath",
+        //     baseSchema.definition.relativePath,
+        //     "localReferenceName",
+        //     localReferenceName,
+        //     // "convertedReferences",
+        //     // JSON.stringify(Object.keys(convertedReferences ?? {}), null, 2),
+        //     // "convertedContextSubSchemasReferences",
+        //     // JSON.stringify(Object.keys(convertedContextSubSchemasReferences ?? {}), null, 2),
+        //   );
+        // }
         if (!convertedReferences || !convertedReferences[localReferenceName]) {
           // absolute reference must be converted
           // we must lookup for the reference definition
@@ -936,7 +934,8 @@ export function applyLimitedCarryOnSchemaOnLevel(
                 }
               : baseSchema.definition,
           } as any,
-          hasBeenApplied: convertedContextSubSchemasHasBeenApplied.some((e) => e),
+          hasBeenApplied: true, // returning the correct answer would imply to know wether the reference has indeed been converted
+          // hasBeenApplied: convertedContextSubSchemasHasBeenApplied.some((e) => e),
           resolvedReferences: {
             ...convertedReferences,
             ...convertedAbosulteReferences,

@@ -358,7 +358,7 @@
       }
     },
     "definition": {
-      "relativePath": "transformerForBuild"
+      "relativePath": "transformer"
     }
   }
 }
