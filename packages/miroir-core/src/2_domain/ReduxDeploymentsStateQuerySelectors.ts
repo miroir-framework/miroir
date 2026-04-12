@@ -25,6 +25,7 @@ import { packageName } from "../constants";
 import { cleanLevel } from "./constants";
 import { getReduxDeploymentsStateIndex } from "./ReduxDeploymentsState";
 import {
+  applyExtractorTransformerInMemory,
   extractEntityInstanceListWithObjectListExtractorInMemory,
   extractEntityInstanceUuidIndexWithObjectListExtractorInMemory,
   extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList,
@@ -423,6 +424,7 @@ export function getReduxDeploymentsStateSelectorMap(): SyncBoxedExtractorOrQuery
     extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList: extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList,
     // ############################################################################################
     runQueryTemplateWithExtractorCombinerTransformer: runQueryTemplateWithExtractorCombinerTransformer,
+    applyExtractorTransformer: applyExtractorTransformerInMemory,
   };
 }
 

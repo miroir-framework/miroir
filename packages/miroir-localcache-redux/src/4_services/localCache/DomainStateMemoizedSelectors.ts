@@ -11,7 +11,9 @@ import {
   selectEntityInstanceListFromReduxDeploymentsState,
   selectEntityInstanceUuidIndexFromReduxDeploymentsState,
   type MiroirModelEnvironment,
-  type ApplicationDeploymentMap
+  type ApplicationDeploymentMap,
+  asyncApplyExtractorTransformerInMemory,
+  applyExtractorTransformerInMemory
 } from "miroir-core";
 
 // TODO: isn't this duplicating ReduxDeploymentsStateQueryTemplateSelectors.ts ?
@@ -125,5 +127,15 @@ export function getMemoizedReduxDeploymentsStateSelectorMap(): SyncBoxedExtracto
       ],
       runQueryTemplateWithExtractorCombinerTransformer
     ),
+    applyExtractorTransformer: applyExtractorTransformerInMemory
+    // applyExtractorTransformer: createSelector(
+    //   [
+    //     deploymentEntityStateSelector,
+    //     applicationDeploymentMapSelector,
+    //     deploymentEntityStateSelectorParams,
+    //     miroirModelEnvironmentSelectorParams,
+    //   ],
+    //   () => applyExtractorTransformerInMemory
+    // ),
   };
 }

@@ -67,7 +67,6 @@ export function resolveExtractorTemplate(
           parentUuid:
             typeof extractorOrCombinerTemplate.parentUuid == "string"
               ? extractorOrCombinerTemplate.parentUuid
-              // : transformer_InnerReference_resolve(
               : transformer_extended_apply(
                   "build", // TODO: should this be "build" or "runtime"? "value" is not consistent with "build"
                   [], // transformerPath

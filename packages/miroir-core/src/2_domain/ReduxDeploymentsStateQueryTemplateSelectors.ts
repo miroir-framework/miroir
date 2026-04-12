@@ -14,6 +14,7 @@ import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory";
 import { packageName } from "../constants";
 import { cleanLevel } from "./constants";
 import {
+  applyExtractorTransformerInMemory,
   extractEntityInstanceListWithObjectListExtractorInMemory,
   extractEntityInstanceUuidIndexWithObjectListExtractorInMemory,
   extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList,
@@ -57,6 +58,7 @@ export function getReduxDeploymentsStateSelectorTemplateMap(): SyncBoxedExtracto
     extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList: extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList,
     // 
     runQueryTemplateWithExtractorCombinerTransformer: runQueryTemplateWithExtractorCombinerTransformer,
+    applyExtractorTransformer: applyExtractorTransformerInMemory,
   };
 }
 

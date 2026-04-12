@@ -44,7 +44,7 @@
           },
           "endpoints": {
             "extractorOrCombinerType": "extractorInstancesByEntity",
-            "parentName": "Query",
+            "parentName": "Endpoint",
             "parentUuid": "3d8da4d4-8f76-4bb4-9212-14869d81c00c"
           },
           "instancesOfEntities": {
@@ -64,16 +64,7 @@
                   "referenceName": "uuid"
                 }
               },
-              "rootQueryObjectTransformer": {
-                "transformerType": "recordOfTransformers",
-                "definition": {
-                  "uuid": {
-                    "transformerType": "objectTransformer",
-                    "interpolation": "build",
-                    "attributeName": "uuid"
-                  }
-                }
-              }
+              "indexValueFromRootObject": "uuid"
             }
           }
         }

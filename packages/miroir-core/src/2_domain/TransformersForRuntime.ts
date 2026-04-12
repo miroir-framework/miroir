@@ -3636,14 +3636,14 @@ export function transformer_extended_apply(
           let preResult;
           const foundApplicationTransformer =
             applicationTransformerDefinitions[(transformer as any).transformerType];
-          log.info(
-            "transformer_extended_apply foundApplicationTransformer",
-            foundApplicationTransformer,
-            "for transformer",
-            JSON.stringify(transformer, null, 2),
-            "applicationTransformerDefinitions",
-            Object.keys(applicationTransformerDefinitions)
-          );
+          // log.info(
+          //   "transformer_extended_apply foundApplicationTransformer",
+          //   foundApplicationTransformer,
+          //   "for transformer",
+          //   JSON.stringify(transformer, null, 2),
+          //   "applicationTransformerDefinitions",
+          //   Object.keys(applicationTransformerDefinitions)
+          // );
           if (!foundApplicationTransformer) {
             log.error(
               "transformer_extended_apply failed for",
@@ -4175,12 +4175,12 @@ export function transformer_extended_apply_wrapper(
   }
 }
 // ################################################################################################
-export function applyTransformer(t: Transformer, o: any): any {
+export function applyTransformerDEFUNCT(t: Transformer, o: any): any {
   switch (t.transformerType) {
     case "recordOfTransformers": {
       // build object from record of transformers
       const result = Object.fromEntries(
-        Object.entries(t.definition).map((e) => [e[0], applyTransformer(e[1], o)])
+        Object.entries(t.definition).map((e) => [e[0], applyTransformerDEFUNCT(e[1], o)])
       );
       // log.info("applyTransformer",t, "parameter", o, "return", result)
       return result;

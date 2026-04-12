@@ -26,30 +26,26 @@
         "applicationSection": "data",
         "parentName": "Book",
         "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
-        "objectListReference": {
-          "transformerType": "getFromContext",
+        "objectListReference": "authors",
+        "AttributeOfRootListObjectToCompareToListReferenceUuid": "author",
+        "applyTransformer": {
+          "transformerType": "createObject",
           "interpolation": "runtime",
-          "referenceName": "authors"
-        },
-      "AttributeOfRootListObjectToCompareToListReferenceUuid": "author",
-      "applyTransformer": {
-        "transformerType": "createObject",
-        "interpolation": "runtime",
-        "definition": {
-          "authorName": {
-            "transformerType": "getFromContext",
-            "interpolation": "runtime",
-            "referencePath": ["referenceObject", "name"]
-          },
-          "authorUuid": {
-            "transformerType": "getFromContext",
-            "interpolation": "runtime",
-            "referencePath": ["referenceObject", "uuid"]
-          },
-          "bookTitle": {
-            "transformerType": "getFromContext",
-            "interpolation": "runtime",
-            "referencePath": ["foreignKeyObject", "name"]
+          "definition": {
+            "authorName": {
+              "transformerType": "getFromContext",
+              "interpolation": "runtime",
+              "referencePath": ["referenceObject", "name"]
+            },
+            "authorUuid": {
+              "transformerType": "getFromContext",
+              "interpolation": "runtime",
+              "referencePath": ["referenceObject", "uuid"]
+            },
+            "bookTitle": {
+              "transformerType": "getFromContext",
+              "interpolation": "runtime",
+              "referencePath": ["foreignKeyObject", "name"]
             }
           }
         }

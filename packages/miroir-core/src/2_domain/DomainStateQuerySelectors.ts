@@ -37,6 +37,7 @@ import { cleanLevel } from "./constants";
 import { runQueryTemplateFromDomainState } from "./DomainStateQueryTemplateSelector";
 import { applyExtractorFilterAndOrderBy } from "./ExtractorByEntityReturningObjectListTools";
 import {
+  applyExtractorTransformerInMemory,
   extractEntityInstanceListWithObjectListExtractorInMemory,
   extractEntityInstanceUuidIndexWithObjectListExtractorInMemory,
   extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList,
@@ -591,6 +592,7 @@ export function getDomainStateExtractorRunnerMap(): SyncBoxedExtractorOrQueryRun
     extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList: extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList,
     // 
     runQueryTemplateWithExtractorCombinerTransformer: runQueryTemplateFromDomainState,
+    applyExtractorTransformer: applyExtractorTransformerInMemory,
   };
 }
 

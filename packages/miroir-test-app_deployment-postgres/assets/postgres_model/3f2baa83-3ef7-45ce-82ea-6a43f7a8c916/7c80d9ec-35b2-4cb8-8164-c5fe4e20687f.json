@@ -25,11 +25,7 @@
         "extractorOrCombinerType": "combinerOneToMany",
         "parentName": "columns",
         "parentUuid": "39e5c7a1-3f82-4bda-b8c4-2d576f9f10ae",
-        "objectReference": {
-          "interpolation": "runtime",
-          "referenceName": "table",
-          "transformerType": "getFromContext"
-        },
+        "objectReference": "getFromContext",
         "objectReferenceAttribute": "table_name",
         "AttributeOfListObjectToCompareToReferenceUuid": "table_name"
       }

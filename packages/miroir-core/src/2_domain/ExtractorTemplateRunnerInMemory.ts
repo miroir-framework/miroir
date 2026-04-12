@@ -56,9 +56,9 @@ export class ExtractorTemplateRunnerInMemory implements ExtractorTemplatePersist
       extractEntityInstanceListWithObjectListExtractor: asyncExtractEntityInstanceListWithObjectListExtractor,
       runQuery: asyncRunQuery,
       extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList: asyncExtractWithExtractor,
-      applyExtractorTransformer: asyncApplyExtractorTransformerInMemory,
       //
       runQueryTemplateWithExtractorCombinerTransformer: undefined as any,
+      applyExtractorTransformer: asyncApplyExtractorTransformerInMemory,
     };
   }
 

@@ -32,7 +32,7 @@ import {
 } from "./QuerySelectors";
 import { resolveExtractorTemplate } from "./Templates";
 import { type MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
-import { applyTransformer } from "./TransformersForRuntime";
+import { applyTransformerDEFUNCT } from "./TransformersForRuntime";
 import { ApplicationDeploymentMap } from "../1_core/Deployment";
 import { getApplicationSection } from "../1_core/Model";
 
@@ -320,44 +320,62 @@ export async function asyncInnerSelectElementFromQuery /*BoxedExtractorTemplateR
               extractorRunnerMap,
               application,
               applicationDeploymentMap,
-              // deploymentUuid,
               extractors,
               extractorOrCombiner.rootExtractorOrReference
             );
 
-      if (typeof rootQueryResults === "object") {
-        const entries = Object.entries(rootQueryResults as Record<string, EntityInstance>);
-        const results: [string, any][] = [];
-        for (const [key, instance] of entries) {
+      if (Array.isArray(rootQueryResults)) {
+        // const entries = Object.entries(rootQueryResults as Record<string, EntityInstance>);
+        // const results: [string, any][] = [];
+        const result: Domain2QueryReturnType<Record<string, any>> = {};
+        for (const entry of rootQueryResults) {
+          // const indexValue = typeof extractorOrCombiner.subQueryTemplate.indexValueFromRootObject == "string"?
+          //   instance[extractorOrCombiner.subQueryTemplate.indexValueFromRootObject]
+          //   : 
+          const indexValue = typeof extractorOrCombiner.subQueryTemplate.indexValueFromRootObject == "string"?
+            entry[extractorOrCombiner.subQueryTemplate.indexValueFromRootObject]
+            : extractorRunnerMap.applyExtractorTransformer(
+              extractorOrCombiner.subQueryTemplate.indexValueFromRootObject,
+              modelEnvironment,
+              queryParams,
+              {entry},
+              {}
+            );
+
+          const transformedRootQueryObject = extractorOrCombiner.subQueryTemplate
+            .rootQueryObjectTransformer
+            ? await extractorRunnerMap.applyExtractorTransformer(
+                extractorOrCombiner.subQueryTemplate.rootQueryObjectTransformer,
+                modelEnvironment,
+                queryParams,
+                {},
+                {},
+              )
+            : entry;
           const innerQueryParams = {
             ...queryParams,
-            ...Object.fromEntries(
-              Object.entries(
-                applyTransformer(
-                  extractorOrCombiner.subQueryTemplate.rootQueryObjectTransformer,
-                  instance
-                )
-              )
-            ),
+            ...transformedRootQueryObject
           };
 
           const resolvedQuery: ExtractorOrCombiner | QueryFailed = resolveExtractorTemplate(
-            /**
-             * TODO: type CombinerByHeteronomousManyToMany is wrong: it has subQueryTemplate.query of type ExtractorOrCombiner 
-             * instead of ExtractorOrCombinerTemplate (using the latter would induce a circular dependency that can not be resolved
-             * by the present template generation process).
-             */
             extractorOrCombiner.subQueryTemplate.query as any, 
             modelEnvironment,
             innerQueryParams,
             innerQueryParams
           );
-          if ("QueryFailure" in resolvedQuery) {
-            results.push([
-              (instance as any).uuid ?? "no uuid found for entry " + key,
-              resolvedQuery,
-            ]);
+          if (resolvedQuery instanceof Domain2ElementFailed) {
+            result[indexValue] = resolvedQuery;
+            // results.push([
+            //   (instance as any).uuid ?? "no uuid found for entry " + key,
+            //   resolvedQuery,
+            // ]);
           } else {
+            log.info(
+              "innerSelectDomainElementFromExtractorOrCombiner for combinerByHeteronomousManyToMany will execute inner query with innerQueryParams",
+              JSON.stringify(innerQueryParams, null, 2),
+              "and resolvedQuery",
+              JSON.stringify(resolvedQuery, null, 2)
+            );
             const result = await asyncInnerSelectElementFromQuery(
               newFetchedData,
               pageParams,
@@ -369,10 +387,11 @@ export async function asyncInnerSelectElementFromQuery /*BoxedExtractorTemplateR
               extractors,
               resolvedQuery as ExtractorOrCombiner
             );
-            results.push([instance.uuid ?? key, result]);
+            // results.push([instance.uuid ?? key, result]);
+            result[indexValue] = result;
           }
         }
-        return Object.fromEntries(results);
+        return result;
       } else {
         return new Domain2ElementFailed({
           queryFailure: "IncorrectParameters",

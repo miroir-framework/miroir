@@ -799,7 +799,8 @@ export {
   extractEntityInstanceUuidIndexWithObjectListExtractorInMemory,
   extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList,
   plainObjectToDomainElementDEFUNCT,
-  runQuery
+  runQuery,
+  applyExtractorTransformerInMemory
 } from "./2_domain/QuerySelectors.js";
 export {
   handleQueryTemplateAction,

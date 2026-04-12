@@ -11,7 +11,8 @@ import {
   selectEntityInstanceListFromReduxDeploymentsState,
   selectEntityInstanceUuidIndexFromReduxDeploymentsState,
   type MiroirModelEnvironment,
-  type ApplicationDeploymentMap
+  type ApplicationDeploymentMap,
+  applyExtractorTransformerInMemory
 } from "miroir-core";
 
 // ################################################################################################
@@ -134,5 +135,6 @@ export function getMemoizedReduxDeploymentsStateSelectorMap(): SyncBoxedExtracto
       ],
       runQueryTemplateWithExtractorCombinerTransformer
     ),
+    applyExtractorTransformer: applyExtractorTransformerInMemory
   };
 }

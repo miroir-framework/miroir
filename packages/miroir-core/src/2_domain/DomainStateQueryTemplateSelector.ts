@@ -23,7 +23,7 @@ import {
   selectEntityInstanceListFromDomainState,
   selectEntityInstanceUuidIndexFromDomainState,
 } from "./DomainStateQuerySelectors";
-import { extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList } from "./QuerySelectors";
+import { applyExtractorTransformerInMemory, extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList } from "./QuerySelectors";
 import {
   runQueryTemplateWithExtractorCombinerTransformer
 } from "./QueryTemplateSelectors";
@@ -69,6 +69,7 @@ export function getSelectorMapForTemplate(): SyncBoxedExtractorOrQueryRunnerMap<
     extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList: extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList,
     // 
     runQueryTemplateWithExtractorCombinerTransformer: runQueryTemplateFromDomainState,
+    applyExtractorTransformer: applyExtractorTransformerInMemory,
   };
 }
 

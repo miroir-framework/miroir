@@ -22,6 +22,7 @@ import {
 } from "../0_interfaces/2_domain/DomainElement";
 
 import {
+  applyExtractorTransformerInMemory,
   extractEntityInstanceListWithObjectListExtractorInMemory,
   extractEntityInstanceUuidIndexWithObjectListExtractorInMemory,
   extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList,
@@ -71,6 +72,7 @@ export function createReduxDeploymentsStateSelectorMap(): SyncBoxedExtractorOrQu
     runQuery: runQuery,
     extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList: extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList,
     runQueryTemplateWithExtractorCombinerTransformer: runQueryTemplateWithExtractorCombinerTransformerFromTemplateSelectors,
+    applyExtractorTransformer: applyExtractorTransformerInMemory,
   };
 }
 

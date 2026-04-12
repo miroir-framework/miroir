@@ -240,6 +240,18 @@ export type SyncBoxedExtractorOrQueryRunnerMap<StateType> = {
     StateType,
     Domain2QueryReturnType<EntityInstance[]>
   >;
+  applyExtractorTransformer(
+    query: CoreTransformerForBuildPlusRuntime,
+    modelEnvironment: MiroirModelEnvironment,
+    queryParams: Record<string, any>,
+    newFetchedData: Record<string, any>,
+    extractors: Record<
+      string,
+      | BoxedExtractorOrCombinerReturningObjectList
+      | BoxedExtractorOrCombinerReturningObject
+      | BoxedQueryWithExtractorCombinerTransformer
+    >
+  ): Domain2QueryReturnType<DomainElementSuccess>;
   // ################################################################################################
   // TODO: has direct call in ReportView, ReportSectionListDisplay, JzodElementEditor
   runQueryTemplateWithExtractorCombinerTransformer: SyncQueryTemplateRunner<

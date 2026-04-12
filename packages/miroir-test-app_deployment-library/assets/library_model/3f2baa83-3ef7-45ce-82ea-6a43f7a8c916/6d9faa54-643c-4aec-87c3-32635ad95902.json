@@ -23,33 +23,21 @@
         "extractorOrCombinerType": "combinerOneToMany",
         "parentName": "Book",
         "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
-        "objectReference": {
-          "transformerType": "getFromContext",
-          "interpolation": "runtime",
-          "referenceName": "author"
-        },
+        "objectReference": "author",
         "AttributeOfListObjectToCompareToReferenceUuid": "author"
       },
       "2_publishersOfBooks": {
         "extractorOrCombinerType": "combinerManyToMany",
         "parentName": "Publisher",
         "parentUuid": "a027c379-8468-43a5-ba4d-bf618be25cab",
-        "objectListReference": {
-          "transformerType": "getFromContext",
-          "interpolation": "runtime",
-          "referenceName": "1_booksOfAuthor"
-        },
+        "objectListReference": "1_booksOfAuthor",
         "objectListReferenceAttribute": "publisher"
       },
       "3_BooksOfPublishers": {
         "extractorOrCombinerType": "combinerManyToMany",
         "parentName": "Book",
         "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
-        "objectListReference": {
-          "transformerType": "getFromContext",
-          "interpolation": "runtime",
-          "referenceName": "2_publishersOfBooks"
-        },
+        "objectListReference": "2_publishersOfBooks",
         "AttributeOfRootListObjectToCompareToListReferenceUuid": "publisher"
       }
     },

@@ -6,6 +6,7 @@ import {
   BoxedExtractorOrCombinerReturningObjectOrObjectList,
   CombinerManyToMany,
   CombinerOneToMany,
+  CoreTransformerForBuildPlusRuntime,
   DomainElement,
   DomainElementFailed,
   DomainElementSuccess,
@@ -14,8 +15,7 @@ import {
   ExtractorOrCombiner,
   ExtractorOrCombinerContextReference,
   QueryFailed,
-  RunBoxedQueryAction,
-  CoreTransformerForBuildPlusRuntime
+  RunBoxedQueryAction
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { type MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
 import {
@@ -40,7 +40,7 @@ import { packageName } from "../constants";
 import { cleanLevel } from "./constants";
 import { applyExtractorFilterAndOrderBy, instanceMatchesFilter } from "./ExtractorByEntityReturningObjectListTools";
 import { resolveExtractorTemplate } from "./Templates";
-import { applyTransformer, transformer_extended_apply, transformer_extended_apply_wrapper } from "./TransformersForRuntime";
+import { transformer_extended_apply, transformer_extended_apply_wrapper } from "./TransformersForRuntime";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -59,6 +59,7 @@ const emptySelectorMap:SyncBoxedExtractorOrQueryRunnerMap<any> = {
   extractEntityInstanceListWithObjectListExtractor: undefined as any,
   extractEntityInstanceList: undefined as any,
   // ##############################################################################################
+  applyExtractorTransformer: undefined as any,
   runQueryTemplateWithExtractorCombinerTransformer: undefined as any,
 }
 
@@ -71,8 +72,8 @@ const emptyAsyncSelectorMap:AsyncBoxedExtractorOrQueryRunnerMap = {
   extractEntityInstanceUuidIndex: undefined as any,
   extractEntityInstanceListWithObjectListExtractor: undefined as any,
   extractEntityInstanceList: undefined as any,
-  applyExtractorTransformer: undefined as any,
   // ##############################################################################################
+  applyExtractorTransformer: undefined as any,
   runQueryTemplateWithExtractorCombinerTransformer: undefined as any,
 }
 
@@ -748,8 +749,6 @@ export function innerSelectDomainElementFromExtractorOrCombiner/*BoxedExtractorT
           extractor: {
             queryType: "boxedExtractorOrCombinerReturningObject",
             application,
-            // applicationDeploymentMap,
-            // deploymentUuid,
             contextResults: context,
             pageParams,
             queryParams,
@@ -757,7 +756,6 @@ export function innerSelectDomainElementFromExtractorOrCombiner/*BoxedExtractorT
               ? extractorOrCombiner
               : {
                   ...extractorOrCombiner,
-                  // applicationSection: pageParams?.applicationSection ?? defaultApplicationSection as ApplicationSection,
                   applicationSection: getApplicationSection(application, extractorOrCombiner.parentUuid),
                 },
           },
@@ -853,40 +851,86 @@ export function innerSelectDomainElementFromExtractorOrCombiner/*BoxedExtractorT
               JSON.stringify(rootQueryResults, null, 2),
           },
         };
+      } else {
+        log.info(
+          "innerSelectDomainElementFromExtractorOrCombiner for combinerByHeteronomousManyToMany rootQueryResults",
+          JSON.stringify(rootQueryResults, null, 2)
+        );
       }
-      if (typeof rootQueryResults == "object") {
-        const result: Domain2QueryReturnType<Record<string, any>> = Object.fromEntries(
-          Object.entries(rootQueryResults).map((entry) => {
-            const innerQueryParams = {
-              ...queryParams,
-              ...Object.fromEntries(
-                Object.entries(
-                  applyTransformer(
-                    extractorOrCombiner.subQueryTemplate.rootQueryObjectTransformer,
-                    entry[1]
-                  )
-                )
-              ),
-            };
 
-            // TODO: faking context results here! Should we send empty contextResults instead?
-            const resolvedQuery: ExtractorOrCombiner | QueryFailed = resolveExtractorTemplate(
-            /**
-             * TODO: type CombinerByHeteronomousManyToMany is wrong: it has subQueryTemplate.query of type ExtractorOrCombiner 
-             * instead of ExtractorOrCombinerTemplate (using the latter would induce a circular dependency that can not be resolved
-             * by the present template generation process).
-             */
-              extractorOrCombiner.subQueryTemplate.query as any,
+      // if (typeof rootQueryResults == "object") {
+      if (Array.isArray(rootQueryResults)) {
+        const result: Domain2QueryReturnType<Record<string, any>> = {};
+        
+        // const entries = Object.entries(rootQueryResults as Record<string, EntityInstance>);
+
+          for (const entry of rootQueryResults) {
+            const indexValue = typeof extractorOrCombiner.subQueryTemplate.indexValueFromRootObject == "string"?
+            entry[extractorOrCombiner.subQueryTemplate.indexValueFromRootObject]
+            : extractorRunnerMap.applyExtractorTransformer(
+              extractorOrCombiner.subQueryTemplate.indexValueFromRootObject,
               modelEnvironment,
-              innerQueryParams,
-              innerQueryParams
+              queryParams,
+              {entry},
+              {}
+            );
+            log.info(
+              "innerSelectDomainElementFromExtractorOrCombiner for combinerByHeteronomousManyToMany indexValue",
+              indexValue
             );
 
-            if ("QueryFailure" in resolvedQuery) {
-              return [
-                (entry[1] as any).uuid ?? "no uuid found for entry " + entry[0],
-                resolvedQuery,
-              ];
+            const transformedRootQueryObject = extractorOrCombiner.subQueryTemplate
+              .rootQueryObjectTransformer
+              ? extractorRunnerMap.applyExtractorTransformer(
+                  extractorOrCombiner.subQueryTemplate.rootQueryObjectTransformer,
+                  modelEnvironment,
+                  queryParams,
+                  { entry },
+                  {},
+                )
+              : entry;
+            log.info(
+              "innerSelectDomainElementFromExtractorOrCombiner for combinerByHeteronomousManyToMany rootQueryObject",
+              JSON.stringify(transformedRootQueryObject, null, 2)
+            );
+            // if (rootQueryObject.elementType == "failure") {
+            if (transformedRootQueryObject instanceof Domain2ElementFailed) {
+              // result[(entry[1] as any).uuid ?? "no uuid found for entry " + entry[0]] = transformedRootQueryObject;
+              result[indexValue] = transformedRootQueryObject;
+              continue;
+            }
+            const innerQueryParams = {
+              ...queryParams,
+              rootQueryObject: transformedRootQueryObject,
+            };
+            log.info(
+              "innerSelectDomainElementFromExtractorOrCombiner for combinerByHeteronomousManyToMany innerQueryParams",
+              JSON.stringify(innerQueryParams, null, 2)
+            );
+            // TODO: faking context results here! Should we send empty contextResults instead?
+            const resolvedQuery: ExtractorOrCombiner | QueryFailed = extractorRunnerMap.applyExtractorTransformer(
+              extractorOrCombiner.subQueryTemplate.query,
+              modelEnvironment,
+              innerQueryParams,
+              innerQueryParams,
+              {}
+            ) as any;
+            // const resolvedQuery: ExtractorOrCombiner | QueryFailed = resolveExtractorTemplate(
+            //   extractorOrCombiner.subQueryTemplate.query as any,
+            //   modelEnvironment,
+            //   innerQueryParams,
+            //   innerQueryParams
+            // );
+
+            log.info(
+              "innerSelectDomainElementFromExtractorOrCombiner for combinerByHeteronomousManyToMany resolvedQuery",
+              JSON.stringify(resolvedQuery, null, 2)
+            );
+            // if ("QueryFailure" in resolvedQuery) {
+            if (resolvedQuery instanceof Domain2ElementFailed) {
+              // result[(entry[1] as any).uuid ?? "no uuid found for entry " + entry[0]] = resolvedQuery;
+              result[indexValue] = resolvedQuery;
+              continue;
             } else {
               // log.info(
               //   "innerSelectDomainElementFromExtractorOrCombiner for combinerByHeteronomousManyToMany resolvedQuery",
@@ -906,9 +950,10 @@ export function innerSelectDomainElementFromExtractorOrCombiner/*BoxedExtractorT
               deploymentUuid,
               resolvedQuery as ExtractorOrCombiner
             ); // TODO: check for error!
-            return [(entry[1] as any).uuid ?? "no uuid found for entry " + entry[0], innerResult];
-          })
-        );
+            // result[(entry[1] as any).uuid ?? "no uuid found for entry " + entry[0]] = innerResult;
+            // result[transformedRootQueryObject as any] = innerResult;
+            result[indexValue] = innerResult;
+          };
         return result;
       } else {
         return {

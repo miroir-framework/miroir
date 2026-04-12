@@ -264,12 +264,7 @@
                 }
               },
               "objectReference": {
-                "type": "string",
-                "tag": {
-                  "value": {
-                    "canBeTemplate": true
-                  }
-                }
+                "type": "string"
               },
               "objectReferenceAttribute": {
                 "type": "string",
@@ -571,12 +566,7 @@
                 }
               },
               "objectListReference": {
-                "type": "string",
-                "tag": {
-                  "value": {
-                    "canBeTemplate": true
-                  }
-                }
+                "type": "string"
               },
               "objectListReferenceAttribute": {
                 "type": "string",
@@ -731,11 +721,20 @@
                       "relativePath": "extractorOrCombiner"
                     }
                   },
+                  "indexValueFromRootObject": {
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "canBeTemplate": true
+                      }
+                    }
+                  },
                   "rootQueryObjectTransformer": {
                     "type": "schemaReference",
+                    "optional": true,
                     "definition": {
                       "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                      "relativePath": "recordOfTransformers"
+                      "relativePath": "coreTransformerForBuildPlusRuntime"
                     }
                   }
                 }
@@ -899,7 +898,7 @@
                 "optional": true,
                 "definition": {
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "extractorOrCombinerRecord"
+                  "relativePath": "extractorOrCombinerTemplateRecord"
                 }
               },
               "combinerTemplates": {
@@ -907,7 +906,7 @@
                 "optional": true,
                 "definition": {
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "extractorOrCombinerRecord"
+                  "relativePath": "extractorOrCombinerTemplateRecord"
                 }
               },
               "runtimeTransformers": {

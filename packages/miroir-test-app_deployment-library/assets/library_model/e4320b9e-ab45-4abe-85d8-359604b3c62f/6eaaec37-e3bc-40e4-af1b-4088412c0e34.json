@@ -20,11 +20,7 @@
         "applicationSection": "data",
         "parentName": "Author",
         "parentUuid": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
-        "objectListReference": {
-          "transformerType": "getFromContext",
-          "interpolation": "runtime",
-          "referenceName": "countries"
-        },
+        "objectListReference": "countries",
         "AttributeOfRootListObjectToCompareToListReferenceUuid": "country",
         "applyTransformer": {
           "transformerType": "createObject",

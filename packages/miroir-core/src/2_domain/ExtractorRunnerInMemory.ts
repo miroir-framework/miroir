@@ -81,9 +81,9 @@ export class ExtractorRunnerInMemory implements ExtractorOrQueryPersistenceStore
         asyncExtractEntityInstanceListWithObjectListExtractor,
       runQuery: asyncRunQuery,
       extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList: asyncExtractWithExtractor,
-      applyExtractorTransformer: asyncApplyExtractorTransformerInMemory,
       // ##########################################################################################
       runQueryTemplateWithExtractorCombinerTransformer: undefined as any,
+      applyExtractorTransformer: asyncApplyExtractorTransformerInMemory,
     };
   }
 

@@ -71,7 +71,6 @@ describe("resolveQueryTemplates.unit.test", () => {
       console.log("convert queryTemplate to query with resolveQueryTemplateWithExtractorCombinerTransformer START")
       const getUniqueValuesRuntimeTemplate: BoxedQueryTemplateWithExtractorCombinerTransformer = {
         queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
-        deploymentUuid: "xxxxx",
         pageParams: {
           instanceUuid: "xxxxx",
         },
@@ -125,11 +124,7 @@ describe("resolveQueryTemplates.unit.test", () => {
               interpolation: "build",
               value: "a027c379-8468-43a5-ba4d-bf618be25cab",
             },
-            objectReference: {
-              transformerType: "getFromContext",
-              interpolation: "runtime",
-              referenceName: "book",
-            },
+            objectReference: "book",
             AttributeOfObjectToCompareToReferenceUuid: "publisher",
           },
           booksOfPublisher: {
@@ -141,11 +136,7 @@ describe("resolveQueryTemplates.unit.test", () => {
               interpolation: "build",
               value: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
             },
-            objectReference: {
-              transformerType: "getFromContext",
-              interpolation: "runtime",
-              referenceName: "publisher",
-            },
+            objectReference: "publisher",
             AttributeOfListObjectToCompareToReferenceUuid: "publisher",
           },
           booksOfAuthor: {
@@ -157,11 +148,7 @@ describe("resolveQueryTemplates.unit.test", () => {
               interpolation: "build",
               value: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
             },
-            objectReference: {
-              transformerType: "getFromContext",
-              interpolation: "runtime",
-              referenceName: "author",
-            },
+            objectReference: "author",
             AttributeOfListObjectToCompareToReferenceUuid: "author",
           },
           publishersOfBooks: {
@@ -173,11 +160,7 @@ describe("resolveQueryTemplates.unit.test", () => {
               interpolation: "build",
               value: "a027c379-8468-43a5-ba4d-bf618be25cab",
             },
-            objectListReference: {
-              transformerType: "getFromContext",
-              interpolation: "runtime",
-              referenceName: "booksOfAuthor",
-            },
+            objectListReference: "booksOfAuthor",
             objectListReferenceAttribute: "publisher",
           },
         },

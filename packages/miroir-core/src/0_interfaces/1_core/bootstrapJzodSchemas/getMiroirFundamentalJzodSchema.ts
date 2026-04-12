@@ -131,22 +131,22 @@ export function getMiroirFundamentalJzodSchema(
   // ##############################################################################################
   // ##############################################################################################
   const extraQueryElements: Record<string, any /*JzodElement*/> = {
-    extractorOrCombinerTemplate: {
-      "type": "schemaReference",
-      "definition": {
-        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-        "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorOrCombiner"
-      }
-    },
-    extractorOrCombinerTemplateRecord: {
-      type: "record",
-      definition: {
-        type: "schemaReference",
-        definition: {
-          relativePath: "extractorOrCombinerTemplate",
-        },
-      },
-    },
+    // extractorOrCombinerTemplate: {
+    //   type: "schemaReference",
+    //   definition: {
+    //     absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+    //     relativePath: "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorOrCombiner",
+    //   },
+    // },
+    // extractorOrCombinerTemplateRecord: {
+    //   type: "record",
+    //   definition: {
+    //     type: "schemaReference",
+    //     definition: {
+    //       relativePath: "extractorOrCombinerTemplate",
+    //     },
+    //   },
+    // },
     localCacheExtractor: {
       type: "object",
       definition: {
@@ -1724,6 +1724,23 @@ export function getMiroirFundamentalJzodSchema(
             type: "never",
           },
         // ...(makeReferencesAbsolute(entityDefinitionQueryVersionV1.mlSchema.definition.definition,miroirFundamentalJzodSchemaUuid) as any).context,
+        extractorOrCombinerTemplate: {
+          type: "schemaReference",
+          definition: { // reference starting by "miroirTemplate_" will be reproduced as is by template generation
+            absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            relativePath: "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorOrCombiner",
+          },
+        },
+        extractorOrCombinerTemplateRecord: {
+          type: "record",
+          definition: {
+            type: "schemaReference",
+            definition: {
+              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              relativePath: "extractorOrCombinerTemplate",
+            },
+          },
+        },
         ...entityDefinitionQueryVersionV1WithAbsoluteReferences.context,
         domainElementVoid: {
           type: "object",

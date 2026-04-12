@@ -26,11 +26,7 @@
         "applicationSection": "data",
         "parentName": "Book",
         "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
-        "objectListReference": {
-          "transformerType": "getFromContext",
-          "interpolation": "runtime",
-          "referenceName": "authors"
-        },
+        "objectListReference": "authors",
         "AttributeOfRootListObjectToCompareToListReferenceUuid": "author",
         "applyTransformer": {
           "transformerType": "createObject",
