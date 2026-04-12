@@ -85,7 +85,7 @@ export interface ToolsPageState {
       transformerUuid: Uuid;
     } | {
       mode: "here";
-      transformer: TransformerForBuildPlusRuntime
+      transformer: CoreTransformerForBuildPlusRuntime
     } | {
       mode: "none";
     };

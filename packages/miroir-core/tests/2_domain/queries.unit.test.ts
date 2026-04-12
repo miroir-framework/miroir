@@ -125,1478 +125,1474 @@ console.log("domainState data authors:", Object.keys(domainState[deployment_Libr
 
 
 const testExtractorParams: Record<string, TestExtractorParams> = {
-  // // ###########################################################################################
-  // "error on non-existing Entity: EntityNotFound": {
-  //   queryTemplate: {
-  //     queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
-  //     application: selfApplicationLibrary.uuid,
-  //     // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
-  //     contextResults: {},
-  //     pageParams: {},
-  //     queryParams: {},
-  //     extractorTemplates: {
-  //       book: {
-  //         extractorOrCombinerType: "extractorByPrimaryKey",
-  //         parentName: "Book",
-  //         parentUuid: {
-  //           transformerType: "returnValue",
-  //           mlSchema: { type: "uuid" },
-  //           interpolation: "build",
-  //           value: "XXXXXX",
-  //         } as any, // TODO: fix type
-  //         instanceUuid: {
-  //           transformerType: "returnValue",
-  //           mlSchema: { type: "uuid" },
-  //           interpolation: "build",
-  //           value: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
-  //         },
-  //       },
-  //     },
-  //   },
-  //   query: {
-  //     queryType: "boxedQueryWithExtractorCombinerTransformer",
-  //     application: selfApplicationLibrary.uuid,
-  //     extractors: {
-  //       book: {
-  //         extractorOrCombinerType: "extractorByPrimaryKey",
-  //         parentName: "Book",
-  //         parentUuid: "XXXXXX",
-  //         instanceUuid: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
-  //       },
-  //     },
-  //   },
-  //   ...testExtractorTools,
-  //   testAssertions: {
-  //     test1: {
-  //       // ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
-  //       expectedResult: {
-  //         queryFailure: "ReferenceNotFound",
-  //         queryContext: "runQuery could not run extractor: book",
-  //       },
-  //     },
-  //   },
-  // },
-  // "error on non-existing object uuid: InstanceNotFound (extractorByPrimaryKey)": {
-  //   queryTemplate: {
-  //     queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
-  //     application: selfApplicationLibrary.uuid,
-  //     extractorTemplates: {
-  //       book: {
-  //         extractorOrCombinerType: "extractorByPrimaryKey",
-  //         parentName: "Book",
-  //         parentUuid: {
-  //           transformerType: "returnValue",
-  //           mlSchema: { type: "uuid" },
-  //           interpolation: "build",
-  //           value: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
-  //         } as any, // TODO: fix type
-  //         instanceUuid: {
-  //           transformerType: "returnValue",
-  //           mlSchema: { type: "uuid" },
-  //           interpolation: "build",
-  //           value: "XXXXXXXXX",
-  //         },
-  //       },
-  //     },
-  //   },
-  //   query: {
-  //     queryType: "boxedQueryWithExtractorCombinerTransformer",
-  //     application: selfApplicationLibrary.uuid,
-  //     extractors: {
-  //       book: {
-  //         extractorOrCombinerType: "extractorByPrimaryKey",
-  //         parentName: "Book",
-  //         parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
-  //         instanceUuid: "XXXXXXXXX",
-  //       },
-  //     },
-  //   },
-  //   ...testExtractorTools,
-  //   testAssertions: {
-  //     test1: {
-  //       expectedResult: {
-  //         queryFailure: "ReferenceNotFound",
-  //         queryContext: "runQuery could not run extractor: book",
-  //       },
-  //     },
-  //   },
-  // },
-  // "select 1 object from Domain State (extractorByPrimaryKey)": {
-  //   queryTemplate: {
-  //     queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
-  //     application: selfApplicationLibrary.uuid,
-  //     contextResults: {},
-  //     pageParams: {},
-  //     queryParams: {},
-  //     extractorTemplates: {
-  //       book: {
-  //         extractorOrCombinerType: "extractorByPrimaryKey",
-  //         parentName: "Book",
-  //         parentUuid: {
-  //           transformerType: "returnValue",
-  //           mlSchema: { type: "uuid" },
-  //           interpolation: "build",
-  //           value: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
-  //         } as any, // TODO: fix type
-  //         instanceUuid: {
-  //           transformerType: "returnValue",
-  //           mlSchema: { type: "uuid" },
-  //           interpolation: "build",
-  //           value: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
-  //         },
-  //       },
-  //     },
-  //   },
-  //   query: {
-  //     queryType: "boxedQueryWithExtractorCombinerTransformer",
-  //     application: selfApplicationLibrary.uuid,
-  //     contextResults: {},
-  //     pageParams: {},
-  //     queryParams: {},
-  //     extractors: {
-  //       book: {
-  //         extractorOrCombinerType: "extractorByPrimaryKey",
-  //         parentName: "Book",
-  //         parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
-  //         instanceUuid: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
-  //       },
-  //     },
-  //   },
-  //   ...testExtractorTools,
-  //   testAssertions: {
-  //     test1: {
-  //       expectedResult: {
-  //         book: domainState[deployment_Library_DO_NO_USE.uuid]["data"][
-  //           "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
-  //         ]["caef8a59-39eb-48b5-ad59-a7642d3a1e8f"],
-  //       } as any, // TODO: correct type of the expected result
-  //     },
-  //   },
-  // },
-  // "select 1 object from Domain State and apply transformer on foreign key (extractorByPrimaryKey with applyTransformer)": {
-  //   // queryTemplate: {
-  //   //   queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
-  //   //   deploymentUuid: deployment_Library_DO_NO_USE.uuid,
-  //   //   contextResults: {},
-  //   //   pageParams: {},
-  //   //   queryParams: {},
-  //   //   extractorTemplates: {
-  //   //     book: {
-  //   //       extractorOrCombinerType: "extractorByPrimaryKey",
-  //   //       parentName: "Book",
-  //   //       parentUuid: {
-  //   //         transformerType: "constantUuid",
-  //   //         interpolation: "build",
-  //   //         value: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
-  //   //       },
-  //   //       instanceUuid: {
-  //   //         transformerType: "constantUuid",
-  //   //         interpolation: "build",
-  //   //         value: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
-  //   //       },
-  //   //     },
-  //   //   },
-  //   // },
-  //   query: {
-  //     queryType: "boxedQueryWithExtractorCombinerTransformer",
-  //     application: selfApplicationLibrary.uuid,
-  //     extractors: {
-  //       book: {
-  //         extractorOrCombinerType: "extractorByPrimaryKey",
-  //         parentName: "Book",
-  //         parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
-  //         instanceUuid: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
-  //         foreignKeysForTransformer: ["author"],
-  //         applyTransformer: {
-  //           transformerType: "createObject",
-  //           interpolation: "runtime",
-  //           definition: {
-  //             bookTitle: {
-  //               transformerType: "getFromContext",
-  //               interpolation: "runtime",
-  //               referencePath: ["referenceObject", "name"],
-  //             },
-  //             authorName: {
-  //               transformerType: "getFromContext",
-  //               interpolation: "runtime",
-  //               referencePath: ["foreignKeyObjects", "author", "name"],
-  //             },
-  //           },
-  //         },
-  //       },
-  //     },
-  //   },
-  //   ...testExtractorTools,
-  //   testAssertions: {
-  //     test1: {
-  //       expectedResult: {
-  //         book: {
-  //           authorName: "Paul Veyne",
-  //           bookTitle: "Et dans l'éternité je ne m'ennuierai pas",
-  //         },
-  //         // book: domainState[deployment_Library_DO_NO_USE.uuid]["data"][
-  //         //   "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
-  //         // ]["caef8a59-39eb-48b5-ad59-a7642d3a1e8f"],
-  //       } as any, // TODO: correct type of the expected result
-  //       // expectedResult: {
-  //       //   book: domainState[deployment_Library_DO_NO_USE.uuid]["data"][
-  //       //     "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
-  //       //   ]["caef8a59-39eb-48b5-ad59-a7642d3a1e8f"],
-  //       // } as any, // TODO: correct type of the expected result
-  //     },
-  //   },
-  // },
-  // "select 1 object from Domain State using direct query parameter reference": {
-  //   queryTemplate: {
-  //     queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
-  //     application: selfApplicationLibrary.uuid,
-  //     // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
-  //     contextResults: {},
-  //     pageParams: {},
-  //     queryParams: { wantedBookUuid: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f" },
-  //     extractorTemplates: {
-  //       book: {
-  //         extractorOrCombinerType: "extractorByPrimaryKey",
-  //         parentName: "Book",
-  //         parentUuid: {
-  //           transformerType: "returnValue",
-  //           mlSchema: { type: "uuid" },
-  //           interpolation: "build",
-  //           value: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
-  //         } as any, // TODO: fix type
-  //         instanceUuid: {
-  //           transformerType: "getFromParameters",
-  //           interpolation: "build",
-  //           referenceName: "wantedBookUuid",
-  //         },
-  //       },
-  //     },
-  //   },
-  //   query: {
-  //     queryType: "boxedQueryWithExtractorCombinerTransformer",
-  //     application: selfApplicationLibrary.uuid,
-  //     // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
-  //     contextResults: {},
-  //     pageParams: {},
-  //     queryParams: { wantedBookUuid: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f" },
-  //     extractors: {
-  //       book: {
-  //         extractorOrCombinerType: "extractorByPrimaryKey",
-  //         parentName: "Book",
-  //         parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
-  //         instanceUuid: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
-  //       },
-  //     },
-  //     runtimeTransformers: {},
-  //   },
-  //   ...testExtractorTools,
-  //   testAssertions: {
-  //     test1: {
-  //       expectedResult:
-  //         domainState[deployment_Library_DO_NO_USE.uuid]["data"][
-  //           "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
-  //         ]["caef8a59-39eb-48b5-ad59-a7642d3a1e8f"],
-  //       resultAccessPath: ["book"],
-  //     },
-  //   },
-  // },
-  // "select 1 object from the uuid found in an attribute of another object from Domain State": {
-  //   queryTemplate: {
-  //     queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
-  //     application: selfApplicationLibrary.uuid,
-  //     // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
-  //     contextResults: {},
-  //     pageParams: {},
-  //     queryParams: {},
-  //     extractorTemplates: {
-  //       book: {
-  //         extractorOrCombinerType: "extractorByPrimaryKey",
-  //         parentName: "Book",
-  //         parentUuid: {
-  //           transformerType: "returnValue",
-  //           mlSchema: { type: "uuid" },
-  //           interpolation: "build",
-  //           value: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
-  //         } as any, // TODO: fix type
-  //         instanceUuid: {
-  //           transformerType: "returnValue",
-  //           mlSchema: { type: "uuid" },
-  //           interpolation: "build",
-  //           value: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
-  //         },
-  //       },
-  //     },
-  //     combinerTemplates: {
-  //       publisher: {
-  //         extractorOrCombinerType: "combinerOneToOne",
-  //         parentName: "Publisher",
-  //         parentUuid: {
-  //           transformerType: "returnValue",
-  //           mlSchema: { type: "uuid" },
-  //           interpolation: "build",
-  //           value: "a027c379-8468-43a5-ba4d-bf618be25cab",
-  //         } as any, // TODO: fix type
-  //         objectReference: {
-  //           transformerType: "getFromContext",
-  //           interpolation: "runtime",
-  //           referenceName: "book",
-  //         } as any, // TODO: fix type
-  //         AttributeOfObjectToCompareToReferenceUuid: "publisher",
-  //       },
-  //     },
-  //   },
-  //   query: {
-  //     queryType: "boxedQueryWithExtractorCombinerTransformer",
-  //     application: selfApplicationLibrary.uuid,
-  //     // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
-  //     contextResults: {},
-  //     pageParams: {},
-  //     queryParams: {},
-  //     extractors: {
-  //       book: {
-  //         extractorOrCombinerType: "extractorByPrimaryKey",
-  //         parentName: "Book",
-  //         parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
-  //         instanceUuid: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
-  //       },
-  //     },
-  //     combiners: {
-  //       publisher: {
-  //         extractorOrCombinerType: "combinerOneToOne",
-  //         parentName: "Publisher",
-  //         parentUuid: "a027c379-8468-43a5-ba4d-bf618be25cab",
-  //         objectReference: "book",
-  //         AttributeOfObjectToCompareToReferenceUuid: "publisher",
-  //       },
-  //     },
-  //     runtimeTransformers: {},
-  //   },
-  //   ...testExtractorTools,
-  //   testAssertions: {
-  //     test1: {
-  //       expectedResult:
-  //         domainState[deployment_Library_DO_NO_USE.uuid]["data"][
-  //           "a027c379-8468-43a5-ba4d-bf618be25cab"
-  //         ]["516a7366-39e7-4998-82cb-80199a7fa667"],
-  //       resultAccessPath: ["publisher"],
-  //     },
-  //   },
-  // },
-  // "select 1 object from the uuid found in an attribute of another object then use applyTransformer on it":
-  //   {
-  //     queryTemplate: {
-  //       queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
-  //       application: selfApplicationLibrary.uuid,
-  //       // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
-  //       contextResults: {},
-  //       pageParams: {},
-  //       queryParams: {},
-  //       extractorTemplates: {
-  //         book: {
-  //           extractorOrCombinerType: "extractorByPrimaryKey",
-  //           parentName: "Book",
-  //           parentUuid: {
-  //             transformerType: "returnValue",
-  //             mlSchema: { type: "uuid" },
-  //             interpolation: "build",
-  //             value: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
-  //           } as  any, // TODO: fix type
-  //           instanceUuid: {
-  //             transformerType: "returnValue",
-  //             mlSchema: { type: "uuid" },
-  //             interpolation: "build",
-  //             value: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
-  //           } as any, // TODO: fix type
-  //         },
-  //       },
-  //       combinerTemplates: {
-  //         publisher: {
-  //           extractorOrCombinerType: "combinerOneToOne",
-  //           parentName: "Publisher",
-  //           parentUuid: {
-  //             transformerType: "returnValue",
-  //             mlSchema: { type: "uuid" },
-  //             interpolation: "build",
-  //             value: "a027c379-8468-43a5-ba4d-bf618be25cab",
-  //           } as any, // TODO: fix type
-  //           objectReference: {
-  //             transformerType: "getFromContext",
-  //             interpolation: "runtime",
-  //             referenceName: "book",
-  //           } as any, // TODO: fix type
-  //           AttributeOfObjectToCompareToReferenceUuid: "publisher",
-  //           applyTransformer: {
-  //             transformerType: "createObject",
-  //             interpolation: "runtime",
-  //             definition: {
-  //               bookTitle: {
-  //                 transformerType: "getFromContext",
-  //                 interpolation: "runtime",
-  //                 referencePath: ["referenceObject", "name"],
-  //               },
-  //               publisherName: {
-  //                 transformerType: "getFromContext",
-  //                 interpolation: "runtime",
-  //                 referencePath: ["foreignKeyObject", "name"],
-  //               },
-  //               publisherUuid: {
-  //                 transformerType: "getFromContext",
-  //                 interpolation: "runtime",
-  //                 referencePath: ["foreignKeyObject", "uuid"],
-  //               },
-  //             },
-  //           },
-  //         },
-  //       },
-  //     },
-  //     query: {
-  //       queryType: "boxedQueryWithExtractorCombinerTransformer",
-  //       application: selfApplicationLibrary.uuid,
-  //       // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
-  //       contextResults: {},
-  //       pageParams: {},
-  //       queryParams: {},
-  //       extractors: {
-  //         book: {
-  //           extractorOrCombinerType: "extractorByPrimaryKey",
-  //           parentName: "Book",
-  //           parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
-  //           instanceUuid: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
-  //         },
-  //       },
-  //       combiners: {
-  //         publisher: {
-  //           extractorOrCombinerType: "combinerOneToOne",
-  //           parentName: "Publisher",
-  //           parentUuid: "a027c379-8468-43a5-ba4d-bf618be25cab",
-  //           objectReference: "book",
-  //           AttributeOfObjectToCompareToReferenceUuid: "publisher",
-  //           applyTransformer: {
-  //             transformerType: "createObject",
-  //             interpolation: "runtime",
-  //             definition: {
-  //               bookTitle: {
-  //                 transformerType: "getFromContext",
-  //                 interpolation: "runtime",
-  //                 referencePath: ["referenceObject", "name"],
-  //               },
-  //               publisherName: {
-  //                 transformerType: "getFromContext",
-  //                 interpolation: "runtime",
-  //                 referencePath: ["foreignKeyObject", "name"],
-  //               },
-  //               publisherUuid: {
-  //                 transformerType: "getFromContext",
-  //                 interpolation: "runtime",
-  //                 referencePath: ["foreignKeyObject", "uuid"],
-  //               },
-  //             },
-  //           },
-  //         },
-  //       },
-  //       runtimeTransformers: {},
-  //     },
-  //     ...testExtractorTools,
-  //     testAssertions: {
-  //       test1: {
-  //         expectedResult: {
-  //           bookTitle: "Et dans l'éternité je ne m'ennuierai pas",
-  //           publisherName: "Folio",
-  //           publisherUuid: "516a7366-39e7-4998-82cb-80199a7fa667",
-  //         },
-  //         resultAccessPath: ["publisher"],
-  //       },
-  //     },
-  //   },
-  // "select publishers of books by author using combinerManyToMany with applyTransformer (extractorByPrimaryKey, combinerOneToMany, combinerManyToMany with applyTransformer)":
-  //   {
-  //     queryTemplate: {
-  //       queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
-  //       application: selfApplicationLibrary.uuid,
-  //       extractorTemplates: {
-  //         author: {
-  //           extractorOrCombinerType: "extractorByPrimaryKey",
-  //           parentName: "Author",
-  //           parentUuid: {
-  //             transformerType: "returnValue",
-  //             mlSchema: { type: "uuid" },
-  //             value: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
-  //           } as any, // TODO: fix type
-  //           instanceUuid: {
-  //             transformerType: "returnValue",
-  //             mlSchema: { type: "uuid" },
-  //             value: "ce7b601d-be5f-4bc6-a5af-14091594046a", // Paul Veyne
-  //           },
-  //         },
-  //       },
-  //       combinerTemplates: {
-  //         booksOfAuthor: {
-  //           extractorOrCombinerType: "combinerOneToMany",
-  //           parentName: "Book",
-  //           parentUuid: {
-  //             transformerType: "returnValue",
-  //             mlSchema: { type: "uuid" },
-  //             value: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
-  //           },
-  //           objectReference: "author",
-  //           AttributeOfListObjectToCompareToReferenceUuid: "author",
-  //         },
-  //         publishersOfBooks: {
-  //           extractorOrCombinerType: "combinerManyToMany",
-  //           parentName: "Publisher",
-  //           parentUuid: {
-  //             transformerType: "returnValue",
-  //             mlSchema: { type: "uuid" },
-  //             value: "a027c379-8468-43a5-ba4d-bf618be25cab",
-  //           },
-  //           objectListReference: "booksOfAuthor",
-  //           objectListReferenceAttribute: "publisher",
-  //           applyTransformer: {
-  //             transformerType: "createObject",
-  //             interpolation: "runtime",
-  //             definition: {
-  //               authorUuid: {
-  //                 transformerType: "getFromContext",
-  //                 interpolation: "runtime",
-  //                 referencePath: ["referenceObject", "author"],
-  //               },
-  //               publisherName: {
-  //                 transformerType: "getFromContext",
-  //                 interpolation: "runtime",
-  //                 referencePath: ["foreignKeyObject", "name"],
-  //               },
-  //               publisherUuid: {
-  //                 transformerType: "getFromContext",
-  //                 interpolation: "runtime",
-  //                 referencePath: ["foreignKeyObject", "uuid"],
-  //               },
-  //             },
-  //           },
-  //         },
-  //       },
-  //     },
-  //     // query: {
-  //     //   queryType: "boxedQueryWithExtractorCombinerTransformer",
-  //     //   application: selfApplicationLibrary.uuid,
-  //     //   // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
-  //     //   contextResults: {},
-  //     //   pageParams: {},
-  //     //   queryParams: {},
-  //     //   extractors: {
-  //     //     author: {
-  //     //       extractorOrCombinerType: "extractorByPrimaryKey",
-  //     //       parentName: "Author",
-  //     //       parentUuid: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
-  //     //       instanceUuid: "ce7b601d-be5f-4bc6-a5af-14091594046a", // Paul Veyne
-  //     //     },
-  //     //   },
-  //     //   combiners: {
-  //     //     booksOfAuthor: {
-  //     //       extractorOrCombinerType: "combinerOneToMany",
-  //     //       parentName: "Book",
-  //     //       parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
-  //     //       objectReference: "author",
-  //     //       AttributeOfListObjectToCompareToReferenceUuid: "author",
-  //     //     },
-  //     //     publishersOfBooks: {
-  //     //       extractorOrCombinerType: "combinerManyToMany",
-  //     //       parentName: "Publisher",
-  //     //       parentUuid: "a027c379-8468-43a5-ba4d-bf618be25cab",
-  //     //       objectListReference: "booksOfAuthor",
-  //     //       objectListReferenceAttribute: "publisher",
-  //     //       applyTransformer: {
-  //     //         transformerType: "createObject",
-  //     //         interpolation: "runtime",
-  //     //         definition: {
-  //     //           authorUuid: {
-  //     //             transformerType: "getFromContext",
-  //     //             interpolation: "runtime",
-  //     //             referencePath: ["referenceObject", "author"],
-  //     //           },
-  //     //           publisherName: {
-  //     //             transformerType: "getFromContext",
-  //     //             interpolation: "runtime",
-  //     //             referencePath: ["foreignKeyObject", "name"],
-  //     //           },
-  //     //           publisherUuid: {
-  //     //             transformerType: "getFromContext",
-  //     //             interpolation: "runtime",
-  //     //             referencePath: ["foreignKeyObject", "uuid"],
-  //     //           },
-  //     //         },
-  //     //       },
-  //     //     },
-  //     //   },
-  //     //   runtimeTransformers: {},
-  //     // },
-  //     ...testExtractorTools,
-  //     testAssertions: {
-  //       test1: {
-  //         expectedResult: [
-  //           {
-  //             // authorName: "Paul Veyne",
-  //             authorUuid: "ce7b601d-be5f-4bc6-a5af-14091594046a",
-  //             publisherName: "Folio",
-  //             publisherUuid: "516a7366-39e7-4998-82cb-80199a7fa667",
-  //           },
-  //         ],
-  //         resultAccessPath: ["publishersOfBooks"],
-  //       },
-  //     },
-  //   },
-  // "select Authors (extractorInstancesByEntity)": {
-  //   queryTemplate: {
-  //     queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
-  //     application: selfApplicationLibrary.uuid,
-  //     contextResults: {},
-  //     pageParams: {
-  //       applicationSection: "data",
-  //     },
-  //     queryParams: {},
-  //     extractorTemplates: {
-  //       authors: {
-  //         extractorOrCombinerType: "extractorInstancesByEntity",
-  //         parentName: "Author",
-  //         parentUuid: {
-  //           transformerType: "returnValue",
-  //           mlSchema: { type: "uuid" },
-  //           interpolation: "build",
-  //           value: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
-  //         } as any, // TODO: fix type
-  //       },
-  //     },
-  //     runtimeTransformers: {},
-  //   },
-  //   query: {
-  //     queryType: "boxedQueryWithExtractorCombinerTransformer",
-  //     application: selfApplicationLibrary.uuid,
-  //     contextResults: {},
-  //     pageParams: {
-  //       applicationSection: "data",
-  //     },
-  //     queryParams: {},
-  //     extractors: {
-  //       authors: {
-  //         extractorOrCombinerType: "extractorInstancesByEntity",
-  //         parentName: "Author",
-  //         parentUuid: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
-  //       },
-  //     },
-  //     runtimeTransformers: {},
-  //   },
-  //   ...testExtractorTools,
-  //   testAssertions: {
-  //     test1: {
-  //       expectedResult: Object.values({
-  //         "4441169e-0c22-4fbc-81b2-28c87cf48ab2": {
-  //           uuid: "4441169e-0c22-4fbc-81b2-28c87cf48ab2",
-  //           parentName: "Author",
-  //           parentUuid: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
-  //           name: "Don Norman",
-  //         },
-  //         "ce7b601d-be5f-4bc6-a5af-14091594046a": {
-  //           uuid: "ce7b601d-be5f-4bc6-a5af-14091594046a",
-  //           parentName: "Author",
-  //           parentUuid: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
-  //           name: "Paul Veyne",
-  //         },
-  //         "d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17": {
-  //           uuid: "d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17",
-  //           parentName: "Author",
-  //           parentUuid: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
-  //           conceptLevel: "Data",
-  //           name: "Cornell Woolrich",
-  //         },
-  //         "e4376314-d197-457c-aa5e-d2da5f8d5977": {
-  //           uuid: "e4376314-d197-457c-aa5e-d2da5f8d5977",
-  //           parentName: "Author",
-  //           parentUuid: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
-  //           conceptLevel: "Data",
-  //           name: "Catherine Guérard",
-  //         },
-  //       }),
-  //       resultAccessPath: ["authors"],
-  //     },
-  //   },
-  // },
-  // "select Authors with filter (extractorInstancesByEntity)": {
-  //   queryTemplate: {
-  //     queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
-  //     application: selfApplicationLibrary.uuid,
-  //     contextResults: {},
-  //     pageParams: {
-  //       applicationSection: "data",
-  //     },
-  //     queryParams: {},
-  //     extractorTemplates: {
-  //       authors: {
-  //         extractorOrCombinerType: "extractorInstancesByEntity",
-  //         parentName: "Author",
-  //         parentUuid: {
-  //           transformerType: "returnValue",
-  //           mlSchema: { type: "uuid" },
-  //           interpolation: "build",
-  //           value: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
-  //         } as any, // TODO: fix type
-  //         filter: {
-  //           attributeName: "name",
-  //           value: {
-  //             transformerType: "returnValue",
-  //             mlSchema: { type: "string" },
-  //             value: "or",
-  //           },
-  //         },
-  //       },
-  //     },
-  //   },
-  //   query: {
-  //     queryType: "boxedQueryWithExtractorCombinerTransformer",
-  //     application: selfApplicationLibrary.uuid,
-  //     pageParams: {
-  //       applicationSection: "data",
-  //     },
-  //     extractors: {
-  //       authors: {
-  //         extractorOrCombinerType: "extractorInstancesByEntity",
-  //         parentName: "Author",
-  //         parentUuid: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
-  //         filter: {
-  //           attributeName: "name",
-  //           value: "or",
-  //         },
-  //       },
-  //     },
-  //   },
-  //   ...testExtractorTools,
-  //   testAssertions: {
-  //     test1: {
-  //       expectedResult: Object.values({
-  //         "4441169e-0c22-4fbc-81b2-28c87cf48ab2": {
-  //           uuid: "4441169e-0c22-4fbc-81b2-28c87cf48ab2",
-  //           parentName: "Author",
-  //           parentUuid: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
-  //           name: "Don Norman",
-  //         },
-  //         "d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17": {
-  //           uuid: "d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17",
-  //           parentName: "Author",
-  //           parentUuid: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
-  //           conceptLevel: "Data",
-  //           name: "Cornell Woolrich",
-  //         },
-  //       }),
-  //       resultAccessPath: ["authors"],
-  //     },
-  //   },
-  // },
-  // "select Authors with values filter (multiple values) (extractorInstancesByEntity)": {
-  //   query: {
-  //     queryType: "boxedQueryWithExtractorCombinerTransformer",
-  //     application: selfApplicationLibrary.uuid,
-  //     contextResults: {},
-  //     pageParams: {
-  //       applicationSection: "data",
-  //     },
-  //     queryParams: {},
-  //     extractors: {
-  //       authors: {
-  //         extractorOrCombinerType: "extractorInstancesByEntity",
-  //         parentName: "Author",
-  //         parentUuid: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
-  //         filter: {
-  //           attributeName: "name",
-  //           values: ["Norman", "Veyne"],
-  //         },
-  //       },
-  //     },
-  //   },
-  //   ...testExtractorTools,
-  //   testAssertions: {
-  //     test1: {
-  //       expectedResult: Object.values({
-  //         "4441169e-0c22-4fbc-81b2-28c87cf48ab2": {
-  //           uuid: "4441169e-0c22-4fbc-81b2-28c87cf48ab2",
-  //           parentName: "Author",
-  //           parentUuid: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
-  //           name: "Don Norman",
-  //         },
-  //         "ce7b601d-be5f-4bc6-a5af-14091594046a": {
-  //           uuid: "ce7b601d-be5f-4bc6-a5af-14091594046a",
-  //           parentName: "Author",
-  //           parentUuid: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
-  //           name: "Paul Veyne",
-  //         },
-  //       }),
-  //       resultAccessPath: ["authors"],
-  //     },
-  //   },
-  // },
-  // "select Authors with values filter and not flag (extractorInstancesByEntity)": {
-  //   query: {
-  //     queryType: "boxedQueryWithExtractorCombinerTransformer",
-  //     application: selfApplicationLibrary.uuid,
-  //     contextResults: {},
-  //     pageParams: {
-  //       applicationSection: "data",
-  //     },
-  //     queryParams: {},
-  //     extractors: {
-  //       authors: {
-  //         extractorOrCombinerType: "extractorInstancesByEntity",
-  //         parentName: "Author",
-  //         parentUuid: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
-  //         filter: {
-  //           attributeName: "name",
-  //           not: true,
-  //           values: ["Norman", "Veyne"],
-  //         },
-  //       },
-  //     },
-  //   },
-  //   ...testExtractorTools,
-  //   testAssertions: {
-  //     test1: {
-  //       expectedResult: Object.values({
-  //         "d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17": {
-  //           uuid: "d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17",
-  //           parentName: "Author",
-  //           parentUuid: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
-  //           conceptLevel: "Data",
-  //           name: "Cornell Woolrich",
-  //         },
-  //         "e4376314-d197-457c-aa5e-d2da5f8d5977": {
-  //           uuid: "e4376314-d197-457c-aa5e-d2da5f8d5977",
-  //           parentName: "Author",
-  //           parentUuid: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
-  //           conceptLevel: "Data",
-  //           name: "Catherine Guérard",
-  //         },
-  //       }),
-  //       resultAccessPath: ["authors"],
-  //     },
-  //   },
-  // },
-  // "select Books of Publisher of given Book from Domain State (extractorByPrimaryKey, combinerOneToOne, combinerOneToMany)": {
-  //   queryTemplate: {
-  //     queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
-  //     application: selfApplicationLibrary.uuid,
-  //     contextResults: {},
-  //     pageParams: {
-  //       applicationSection: "data",
-  //     },
-  //     queryParams: {},
-  //     extractorTemplates: {
-  //       book: {
-  //         extractorOrCombinerType: "extractorByPrimaryKey",
-  //         parentName: "Book",
-  //         parentUuid: {
-  //           transformerType: "returnValue",
-  //           mlSchema: { type: "uuid" },
-  //           interpolation: "build",
-  //           value: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
-  //         } as any, // TODO: fix type
-  //         instanceUuid: {
-  //           transformerType: "returnValue",
-  //           mlSchema: { type: "uuid" },
-  //           interpolation: "build",
-  //           value: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
-  //         },
-  //       },
-  //     },
-  //     combinerTemplates: {
-  //       publisher: {
-  //         extractorOrCombinerType: "combinerOneToOne",
-  //         parentName: "Publisher",
-  //         parentUuid: {
-  //           transformerType: "returnValue",
-  //           mlSchema: { type: "uuid" },
-  //           interpolation: "build",
-  //           value: "a027c379-8468-43a5-ba4d-bf618be25cab",
-  //         } as any, // TODO: fix type
-  //         objectReference: {
-  //           transformerType: "getFromContext",
-  //           interpolation: "runtime",
-  //           referenceName: "book",
-  //         } as any, // TODO: fix type
-  //         AttributeOfObjectToCompareToReferenceUuid: "publisher",
-  //       },
-  //       booksOfPublisher: {
-  //         //join with only returnValue references
-  //         extractorOrCombinerType: "combinerOneToMany",
-  //         parentName: "Book",
-  //         parentUuid: {
-  //           transformerType: "returnValue",
-  //           mlSchema: { type: "uuid" },
-  //           interpolation: "build",
-  //           value: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
-  //         } as any, // TODO: fix type
-  //         objectReference: {
-  //           transformerType: "getFromContext",
-  //           interpolation: "runtime",
-  //           referenceName: "publisher",
-  //         } as any, // TODO: fix type
-  //         AttributeOfListObjectToCompareToReferenceUuid: "publisher",
-  //       },
-  //     },
-  //     runtimeTransformers: {},
-  //   },
-  //   query: {
-  //     queryType: "boxedQueryWithExtractorCombinerTransformer",
-  //     application: selfApplicationLibrary.uuid,
-  //     // contextResults: {},
-  //     pageParams: {
-  //       applicationSection: "data",
-  //     },
-  //     // queryParams: {},
-  //     extractors: {
-  //       book: {
-  //         extractorOrCombinerType: "extractorByPrimaryKey",
-  //         parentName: "Book",
-  //         parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
-  //         instanceUuid: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
-  //       },
-  //     },
-  //     combiners: {
-  //       publisher: {
-  //         extractorOrCombinerType: "combinerOneToOne",
-  //         parentName: "Publisher",
-  //         parentUuid: "a027c379-8468-43a5-ba4d-bf618be25cab",
-  //         objectReference: "book",
-  //         AttributeOfObjectToCompareToReferenceUuid: "publisher",
-  //       },
-  //       booksOfPublisher: {
-  //         //join with only returnValue references
-  //         extractorOrCombinerType: "combinerOneToMany",
-  //         parentName: "Book",
-  //         parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
-  //         objectReference: "publisher",
-  //         AttributeOfListObjectToCompareToReferenceUuid: "publisher",
-  //       },
-  //     },
-  //     runtimeTransformers: {},
-  //   },
-  //   ...testExtractorTools,
-  //   testAssertions: {
-  //     test1: {
-  //       expectedResult: Object.values({
-  //         "4cb917b3-3c53-4f9b-b000-b0e4c07a81f7":
-  //           domainState[deployment_Library_DO_NO_USE.uuid]["data"][
-  //             "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
-  //           ]["4cb917b3-3c53-4f9b-b000-b0e4c07a81f7"],
-  //         "c6852e89-3c3c-447f-b827-4b5b9d830975":
-  //           domainState[deployment_Library_DO_NO_USE.uuid]["data"][
-  //             "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
-  //           ]["c6852e89-3c3c-447f-b827-4b5b9d830975"],
-  //         "caef8a59-39eb-48b5-ad59-a7642d3a1e8f":
-  //           domainState[deployment_Library_DO_NO_USE.uuid]["data"][
-  //             "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
-  //           ]["caef8a59-39eb-48b5-ad59-a7642d3a1e8f"],
-  //       }),
-  //       resultAccessPath: ["booksOfPublisher"],
-  //     },
-  //   },
-  // },
-  // "select custom-built result: Books of Publisher of given Book from Domain State (extractorByPrimaryKey, combinerOneToOne, combinerOneToMany)": {
-  //   queryTemplate: {
-  //     queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
-  //     application: selfApplicationLibrary.uuid,
-  //     contextResults: {},
-  //     pageParams: {
-  //       applicationSection: "data",
-  //     },
-  //     queryParams: {},
-  //     extractorTemplates: {
-  //       book: {
-  //         extractorOrCombinerType: "extractorByPrimaryKey",
-  //         parentName: "Book",
-  //         parentUuid: {
-  //           transformerType: "returnValue",
-  //           mlSchema: { type: "uuid" },
-  //           interpolation: "build",
-  //           value: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
-  //         } as any, // TODO: fix type
-  //         instanceUuid: {
-  //           transformerType: "returnValue",
-  //           mlSchema: { type: "uuid" },
-  //           interpolation: "build",
-  //           value: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
-  //         },
-  //       },
-  //     },
-  //     combinerTemplates: {
-  //       publisher: {
-  //         extractorOrCombinerType: "combinerOneToOne",
-  //         parentName: "Publisher",
-  //         parentUuid: {
-  //           transformerType: "returnValue",
-  //           mlSchema: { type: "uuid" },
-  //           interpolation: "build",
-  //           value: "a027c379-8468-43a5-ba4d-bf618be25cab",
-  //         } as any, // TODO: fix type
-  //         objectReference: {
-  //           transformerType: "getFromContext",
-  //           interpolation: "runtime",
-  //           referenceName: "book",
-  //         } as any, // TODO: fix type
-  //         AttributeOfObjectToCompareToReferenceUuid: "publisher",
-  //       },
-  //       booksOfPublisher: {
-  //         extractorOrCombinerType: "combinerOneToMany",
-  //         parentName: "Book",
-  //         parentUuid: {
-  //           transformerType: "returnValue",
-  //           mlSchema: { type: "uuid" },
-  //           interpolation: "build",
-  //           value: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
-  //         } as any, // TODO: fix type
-  //         objectReference: {
-  //           transformerType: "getFromContext",
-  //           interpolation: "runtime",
-  //           referenceName: "publisher",
-  //         } as any, // TODO: fix type
-  //         AttributeOfListObjectToCompareToReferenceUuid: "publisher",
-  //       },
-  //       result1: {
-  //         extractorOrCombinerType: "extractorWrapperReturningObject",
-  //         definition: {
-  //           "caef8a59-39eb-48b5-ad59-a7642d3a1e8f": {
-  //             transformerType: "getFromContext",
-  //             interpolation: "runtime",
-  //             referenceName: "booksOfPublisher",
-  //           } as any, // TODO: fix type
-  //         } as any, // TODO: fix type
-  //       },
-  //       result2: {
-  //         extractorOrCombinerType: "extractorWrapperReturningList",
-  //         definition: [
-  //           {
-  //             transformerType: "getFromContext",
-  //             interpolation: "runtime",
-  //             referenceName: "booksOfPublisher",
-  //           },
-  //           {
-  //             transformerType: "getFromContext",
-  //             interpolation: "runtime",
-  //             referenceName: "booksOfPublisher",
-  //           },
-  //         ],
-  //       },
-  //     },
-  //   },
-  //   query: {
-  //     queryType: "boxedQueryWithExtractorCombinerTransformer",
-  //     application: selfApplicationLibrary.uuid,
-  //     // contextResults: {},
-  //     pageParams: {
-  //       applicationSection: "data",
-  //     },
-  //     // queryParams: {},
-  //     extractors: {
-  //       book: {
-  //         extractorOrCombinerType: "extractorByPrimaryKey",
-  //         parentName: "Book",
-  //         parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
-  //         instanceUuid: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
-  //       },
-  //     },
-  //     combiners: {
-  //       publisher: {
-  //         extractorOrCombinerType: "combinerOneToOne",
-  //         parentName: "Publisher",
-  //         parentUuid: "a027c379-8468-43a5-ba4d-bf618be25cab",
-  //         objectReference: "book",
-  //         AttributeOfObjectToCompareToReferenceUuid: "publisher",
-  //       },
-  //       booksOfPublisher: {
-  //         extractorOrCombinerType: "combinerOneToMany",
-  //         parentName: "Book",
-  //         parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
-  //         objectReference: "publisher",
-  //         AttributeOfListObjectToCompareToReferenceUuid: "publisher",
-  //       },
-  //       result1: {
-  //         extractorOrCombinerType: "extractorWrapperReturningObject",
-  //         definition: {
-  //           "caef8a59-39eb-48b5-ad59-a7642d3a1e8f": {
-  //             extractorOrCombinerType: "extractorOrCombinerContextReference",
-  //             extractorOrCombinerContextReference: "booksOfPublisher",
-  //           },
-  //         },
-  //       },
-  //       result2: {
-  //         extractorOrCombinerType: "extractorWrapperReturningList",
-  //         definition: [
-  //           {
-  //             extractorOrCombinerType: "extractorOrCombinerContextReference",
-  //             extractorOrCombinerContextReference: "booksOfPublisher",
-  //           },
-  //           {
-  //             extractorOrCombinerType: "extractorOrCombinerContextReference",
-  //             extractorOrCombinerContextReference: "booksOfPublisher",
-  //           },
-  //         ],
-  //       },
-  //     },
-  //   },
-  //   ...testExtractorTools,
-  //   testAssertions: {
-  //     test1: {
-  //       expectedResult: Object.values({
-  //         "4cb917b3-3c53-4f9b-b000-b0e4c07a81f7":
-  //           domainState[deployment_Library_DO_NO_USE.uuid]["data"][
-  //             "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
-  //           ]["4cb917b3-3c53-4f9b-b000-b0e4c07a81f7"],
-  //         "c6852e89-3c3c-447f-b827-4b5b9d830975":
-  //           domainState[deployment_Library_DO_NO_USE.uuid]["data"][
-  //             "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
-  //           ]["c6852e89-3c3c-447f-b827-4b5b9d830975"],
-  //         "caef8a59-39eb-48b5-ad59-a7642d3a1e8f":
-  //           domainState[deployment_Library_DO_NO_USE.uuid]["data"][
-  //             "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
-  //           ]["caef8a59-39eb-48b5-ad59-a7642d3a1e8f"],
-  //       }),
-  //       resultAccessPath: ["result1", "caef8a59-39eb-48b5-ad59-a7642d3a1e8f"],
-  //     },
-  //     test2: {
-  //       expectedResult: Object.values({
-  //         "4cb917b3-3c53-4f9b-b000-b0e4c07a81f7":
-  //           domainState[deployment_Library_DO_NO_USE.uuid]["data"][
-  //             "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
-  //           ]["4cb917b3-3c53-4f9b-b000-b0e4c07a81f7"],
-  //         "c6852e89-3c3c-447f-b827-4b5b9d830975":
-  //           domainState[deployment_Library_DO_NO_USE.uuid]["data"][
-  //             "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
-  //           ]["c6852e89-3c3c-447f-b827-4b5b9d830975"],
-  //         "caef8a59-39eb-48b5-ad59-a7642d3a1e8f":
-  //           domainState[deployment_Library_DO_NO_USE.uuid]["data"][
-  //             "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
-  //           ]["caef8a59-39eb-48b5-ad59-a7642d3a1e8f"],
-  //       }),
-  //       resultAccessPath: ["result2", "0"],
-  //     },
-  //     test3: {
-  //       expectedResult: Object.values({
-  //         "4cb917b3-3c53-4f9b-b000-b0e4c07a81f7":
-  //           domainState[deployment_Library_DO_NO_USE.uuid]["data"][
-  //             "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
-  //           ]["4cb917b3-3c53-4f9b-b000-b0e4c07a81f7"],
-  //         "c6852e89-3c3c-447f-b827-4b5b9d830975":
-  //           domainState[deployment_Library_DO_NO_USE.uuid]["data"][
-  //             "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
-  //           ]["c6852e89-3c3c-447f-b827-4b5b9d830975"],
-  //         "caef8a59-39eb-48b5-ad59-a7642d3a1e8f":
-  //           domainState[deployment_Library_DO_NO_USE.uuid]["data"][
-  //             "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
-  //           ]["caef8a59-39eb-48b5-ad59-a7642d3a1e8f"],
-  //       }),
-  //       resultAccessPath: ["result2", "1"],
-  //     },
-  //   },
-  // },
-  // "select custom-built result: return Books of Author from Domain State (extractorByPrimaryKey, combinerOneToMany)": {
-  //   queryTemplate: {
-  //     queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
-  //     application: selfApplicationLibrary.uuid,
-  //     // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
-  //     contextResults: {},
-  //     pageParams: {
-  //       applicationSection: "data",
-  //     },
-  //     queryParams: {},
-  //     extractorTemplates: {
-  //       author: {
-  //         extractorOrCombinerType: "extractorByPrimaryKey",
-  //         parentName: "Book",
-  //         parentUuid: {
-  //           transformerType: "returnValue",
-  //           value: "d7a144ff-d1b9-4135-800c-a7cfc1f38733", // Author
-  //         } as any, // TODO: fix type
-  //         instanceUuid: {
-  //           transformerType: "returnValue",
-  //           value: "ce7b601d-be5f-4bc6-a5af-14091594046a", // Paul Veyne
-  //         },
-  //       },
-  //     },
-  //     combinerTemplates: {
-  //       books: {
-  //         extractorOrCombinerType: "combinerOneToMany",
-  //         parentName: "Book",
-  //         parentUuid: {
-  //           transformerType: "returnValue",
-  //           value: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
-  //         } as any, // TODO: fix type
-  //         objectReference: {
-  //           transformerType: "getFromContext",
-  //           interpolation: "runtime",
-  //           referenceName: "author",
-  //         } as any, // TODO: fix type
-  //         AttributeOfListObjectToCompareToReferenceUuid: "author",
-  //       },
-  //     },
-  //   },
-  //   query: {
-  //     queryType: "boxedQueryWithExtractorCombinerTransformer",
-  //     application: selfApplicationLibrary.uuid,
-  //     // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
-  //     // contextResults: {},
-  //     pageParams: {
-  //       applicationSection: "data",
-  //     },
-  //     // queryParams: {},
-  //     extractors: {
-  //       author: {
-  //         extractorOrCombinerType: "extractorByPrimaryKey",
-  //         parentName: "Author",
-  //         parentUuid: "d7a144ff-d1b9-4135-800c-a7cfc1f38733", // Author
-  //         instanceUuid: "ce7b601d-be5f-4bc6-a5af-14091594046a", // Paul Veyne
-  //       },
-  //     },
-  //     combiners: {
-  //       books: {
-  //         extractorOrCombinerType: "combinerOneToMany",
-  //         parentName: "Book",
-  //         parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
-  //         objectReference: "author",
-  //         AttributeOfListObjectToCompareToReferenceUuid: "author",
-  //       },
-  //     },
-  //   },
-  //   ...testExtractorTools,
-  //   testAssertions: {
-  //     test1: {
-  //       expectedResult:
-  //         domainState[deployment_Library_DO_NO_USE.uuid]["data"][
-  //           "d7a144ff-d1b9-4135-800c-a7cfc1f38733"
-  //         ]["ce7b601d-be5f-4bc6-a5af-14091594046a"],
-  //       resultAccessPath: ["author"],
-  //     },
-  //     test2: {
-  //       expectedResult: [
-  //         {
-  //           author: "ce7b601d-be5f-4bc6-a5af-14091594046a",
-  //           conceptLevel: "Data",
-  //           name: "Le Pain et le Cirque",
-  //           parentName: "Book",
-  //           parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
-  //           publisher: "516a7366-39e7-4998-82cb-80199a7fa667",
-  //           uuid: "c6852e89-3c3c-447f-b827-4b5b9d830975",
-  //         },
-  //         {
-  //           author: "ce7b601d-be5f-4bc6-a5af-14091594046a",
-  //           conceptLevel: "Data",
-  //           name: "Et dans l'éternité je ne m'ennuierai pas",
-  //           parentName: "Book",
-  //           parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
-  //           publisher: "516a7366-39e7-4998-82cb-80199a7fa667",
-  //           uuid: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
-  //         },
-  //       ],
-  //       resultAccessPath: ["books"],
-  //     },
-  //   },
-  // },
-  // "select custom-built result: return couple Author name - Book title for Books of Author from Domain State (extractorByPrimaryKey, combinerOneToMany with applyTransformer)":
-  //   {
-  //     queryTemplate: {
-  //       queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
-  //       application: selfApplicationLibrary.uuid,
-  //       // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
-  //       contextResults: {},
-  //       pageParams: {
-  //         applicationSection: "data",
-  //       },
-  //       queryParams: {},
-  //       extractorTemplates: {
-  //         author: {
-  //           extractorOrCombinerType: "extractorByPrimaryKey",
-  //           parentName: "Book",
-  //           parentUuid: {
-  //             transformerType: "returnValue",
-  //             value: "d7a144ff-d1b9-4135-800c-a7cfc1f38733", // Author
-  //           } as any, // TODO: fix type
-  //           instanceUuid: {
-  //             transformerType: "returnValue",
-  //             value: "ce7b601d-be5f-4bc6-a5af-14091594046a", // Paul Veyne
-  //           },
-  //         },
-  //       },
-  //       combinerTemplates: {
-  //         books: {
-  //           extractorOrCombinerType: "combinerOneToMany",
-  //           parentName: "Book",
-  //           parentUuid: {
-  //             transformerType: "returnValue",
-  //             value: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
-  //           } as any, // TODO: fix type
-  //           objectReference: {
-  //             transformerType: "getFromContext",
-  //             interpolation: "runtime",
-  //             referenceName: "author",
-  //           } as any, // TODO: fix type
-  //           AttributeOfListObjectToCompareToReferenceUuid: "author",
-  //           applyTransformer: {
-  //             transformerType: "createObject",
-  //             interpolation: "runtime",
-  //             definition: {
-  //               authorName: {
-  //                 transformerType: "getFromContext",
-  //                 interpolation: "runtime",
-  //                 referencePath: ["referenceObject", "name"],
-  //               },
-  //               bookTitle: {
-  //                 transformerType: "getFromContext",
-  //                 interpolation: "runtime",
-  //                 referencePath: ["foreignKeyObject", "name"],
-  //               },
-  //             },
-  //           },
-  //         },
-  //       },
-  //     },
-  //     query: {
-  //       queryType: "boxedQueryWithExtractorCombinerTransformer",
-  //       application: selfApplicationLibrary.uuid,
-  //       // contextResults: {},
-  //       pageParams: {
-  //         applicationSection: "data",
-  //       },
-  //       // queryParams: {},
-  //       extractors: {
-  //         author: {
-  //           extractorOrCombinerType: "extractorByPrimaryKey",
-  //           parentName: "Author",
-  //           parentUuid: "d7a144ff-d1b9-4135-800c-a7cfc1f38733", // Author
-  //           instanceUuid: "ce7b601d-be5f-4bc6-a5af-14091594046a", // Paul Veyne
-  //         },
-  //       },
-  //       combiners: {
-  //         books: {
-  //           extractorOrCombinerType: "combinerOneToMany",
-  //           parentName: "Book",
-  //           parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
-  //           objectReference: "author",
-  //           AttributeOfListObjectToCompareToReferenceUuid: "author",
-  //           applyTransformer: {
-  //             transformerType: "createObject",
-  //             interpolation: "runtime",
-  //             definition: {
-  //               authorName: {
-  //                 transformerType: "getFromContext",
-  //                 interpolation: "runtime",
-  //                 referencePath: ["referenceObject", "name"],
-  //               },
-  //               bookTitle: {
-  //                 transformerType: "getFromContext",
-  //                 interpolation: "runtime",
-  //                 referencePath: ["foreignKeyObject", "name"],
-  //               },
-  //             },
-  //           },
-  //         },
-  //       },
-  //     },
-  //     ...testExtractorTools,
-  //     testAssertions: {
-  //       test1: {
-  //         expectedResult:
-  //           domainState[deployment_Library_DO_NO_USE.uuid]["data"][
-  //             "d7a144ff-d1b9-4135-800c-a7cfc1f38733"
-  //           ]["ce7b601d-be5f-4bc6-a5af-14091594046a"],
-  //         resultAccessPath: ["author"],
-  //       },
-  //       test2: {
-  //         expectedResult: [
-  //           {
-  //             authorName: "Paul Veyne",
-  //             bookTitle: "Le Pain et le Cirque",
-  //           },
-  //           {
-  //             authorName: "Paul Veyne",
-  //             bookTitle: "Et dans l'éternité je ne m'ennuierai pas",
-  //           },
-  //         ],
-  //         resultAccessPath: ["books"],
-  //       },
-  //       // test2: {
-  //       //   expectedResult: Object.values({
-  //       //     "4cb917b3-3c53-4f9b-b000-b0e4c07a81f7":
-  //       //       domainState[deployment_Library_DO_NO_USE.uuid]["data"][
-  //       //         "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
-  //       //       ]["4cb917b3-3c53-4f9b-b000-b0e4c07a81f7"],
-  //       //     "c6852e89-3c3c-447f-b827-4b5b9d830975":
-  //       //       domainState[deployment_Library_DO_NO_USE.uuid]["data"][
-  //       //         "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
-  //       //       ]["c6852e89-3c3c-447f-b827-4b5b9d830975"],
-  //       //     "caef8a59-39eb-48b5-ad59-a7642d3a1e8f":
-  //       //       domainState[deployment_Library_DO_NO_USE.uuid]["data"][
-  //       //         "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
-  //       //       ]["caef8a59-39eb-48b5-ad59-a7642d3a1e8f"],
-  //       //   }),
-  //       //   resultAccessPath: ["result2", "0"],
-  //       // },
-  //       // test3: {
-  //       //   expectedResult: Object.values({
-  //       //     "4cb917b3-3c53-4f9b-b000-b0e4c07a81f7":
-  //       //       domainState[deployment_Library_DO_NO_USE.uuid]["data"][
-  //       //         "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
-  //       //       ]["4cb917b3-3c53-4f9b-b000-b0e4c07a81f7"],
-  //       //     "c6852e89-3c3c-447f-b827-4b5b9d830975":
-  //       //       domainState[deployment_Library_DO_NO_USE.uuid]["data"][
-  //       //         "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
-  //       //       ]["c6852e89-3c3c-447f-b827-4b5b9d830975"],
-  //       //     "caef8a59-39eb-48b5-ad59-a7642d3a1e8f":
-  //       //       domainState[deployment_Library_DO_NO_USE.uuid]["data"][
-  //       //         "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
-  //       //       ]["caef8a59-39eb-48b5-ad59-a7642d3a1e8f"],
-  //       //   }),
-  //       //   resultAccessPath: ["result2", "1"],
-  //       // },
-  //     },
-  //   },
-  "select custom-built result with combinerByHeteronomousManyToMany: instances of all Entites from Domain State, indexed by Entity Uuid (extractorInstancesByEntity, combinerByHeteronomousManyToMany)":
+  // ###########################################################################################
+  "error on non-existing Entity: EntityNotFound": {
+    queryTemplate: {
+      queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
+      application: selfApplicationLibrary.uuid,
+      // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
+      contextResults: {},
+      pageParams: {},
+      queryParams: {},
+      extractorTemplates: {
+        book: {
+          extractorOrCombinerType: "extractorByPrimaryKey",
+          parentName: "Book",
+          parentUuid: {
+            transformerType: "returnValue",
+            mlSchema: { type: "uuid" },
+            interpolation: "build",
+            value: "XXXXXX",
+          } as any, // TODO: fix type
+          instanceUuid: {
+            transformerType: "returnValue",
+            mlSchema: { type: "uuid" },
+            interpolation: "build",
+            value: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
+          },
+        },
+      },
+    },
+    query: {
+      queryType: "boxedQueryWithExtractorCombinerTransformer",
+      application: selfApplicationLibrary.uuid,
+      extractors: {
+        book: {
+          extractorOrCombinerType: "extractorByPrimaryKey",
+          parentName: "Book",
+          parentUuid: "XXXXXX",
+          instanceUuid: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
+        },
+      },
+    },
+    ...testExtractorTools,
+    testAssertions: {
+      test1: {
+        // ignoreAttributes: [...ignoreFailureAttributes, "failureMessage"],
+        expectedResult: {
+          queryFailure: "ReferenceNotFound",
+          queryContext: "runQuery could not run extractor: book",
+        },
+      },
+    },
+  },
+  "error on non-existing object uuid: InstanceNotFound (extractorByPrimaryKey)": {
+    queryTemplate: {
+      queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
+      application: selfApplicationLibrary.uuid,
+      extractorTemplates: {
+        book: {
+          extractorOrCombinerType: "extractorByPrimaryKey",
+          parentName: "Book",
+          parentUuid: {
+            transformerType: "returnValue",
+            mlSchema: { type: "uuid" },
+            interpolation: "build",
+            value: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+          } as any, // TODO: fix type
+          instanceUuid: {
+            transformerType: "returnValue",
+            mlSchema: { type: "uuid" },
+            interpolation: "build",
+            value: "XXXXXXXXX",
+          },
+        },
+      },
+    },
+    query: {
+      queryType: "boxedQueryWithExtractorCombinerTransformer",
+      application: selfApplicationLibrary.uuid,
+      extractors: {
+        book: {
+          extractorOrCombinerType: "extractorByPrimaryKey",
+          parentName: "Book",
+          parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+          instanceUuid: "XXXXXXXXX",
+        },
+      },
+    },
+    ...testExtractorTools,
+    testAssertions: {
+      test1: {
+        expectedResult: {
+          queryFailure: "ReferenceNotFound",
+          queryContext: "runQuery could not run extractor: book",
+        },
+      },
+    },
+  },
+  "select 1 object from Domain State (extractorByPrimaryKey)": {
+    queryTemplate: {
+      queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
+      application: selfApplicationLibrary.uuid,
+      contextResults: {},
+      pageParams: {},
+      queryParams: {},
+      extractorTemplates: {
+        book: {
+          extractorOrCombinerType: "extractorByPrimaryKey",
+          parentName: "Book",
+          parentUuid: {
+            transformerType: "returnValue",
+            mlSchema: { type: "uuid" },
+            interpolation: "build",
+            value: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+          } as any, // TODO: fix type
+          instanceUuid: {
+            transformerType: "returnValue",
+            mlSchema: { type: "uuid" },
+            interpolation: "build",
+            value: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
+          },
+        },
+      },
+    },
+    query: {
+      queryType: "boxedQueryWithExtractorCombinerTransformer",
+      application: selfApplicationLibrary.uuid,
+      contextResults: {},
+      pageParams: {},
+      queryParams: {},
+      extractors: {
+        book: {
+          extractorOrCombinerType: "extractorByPrimaryKey",
+          parentName: "Book",
+          parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+          instanceUuid: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
+        },
+      },
+    },
+    ...testExtractorTools,
+    testAssertions: {
+      test1: {
+        expectedResult: {
+          book: domainState[deployment_Library_DO_NO_USE.uuid]["data"][
+            "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+          ]["caef8a59-39eb-48b5-ad59-a7642d3a1e8f"],
+        } as any, // TODO: correct type of the expected result
+      },
+    },
+  },
+  "select 1 object from Domain State and apply transformer on foreign key (extractorByPrimaryKey with applyTransformer)": {
+    // queryTemplate: {
+    //   queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
+    //   deploymentUuid: deployment_Library_DO_NO_USE.uuid,
+    //   contextResults: {},
+    //   pageParams: {},
+    //   queryParams: {},
+    //   extractorTemplates: {
+    //     book: {
+    //       extractorOrCombinerType: "extractorByPrimaryKey",
+    //       parentName: "Book",
+    //       parentUuid: {
+    //         transformerType: "constantUuid",
+    //         interpolation: "build",
+    //         value: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+    //       },
+    //       instanceUuid: {
+    //         transformerType: "constantUuid",
+    //         interpolation: "build",
+    //         value: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
+    //       },
+    //     },
+    //   },
+    // },
+    query: {
+      queryType: "boxedQueryWithExtractorCombinerTransformer",
+      application: selfApplicationLibrary.uuid,
+      extractors: {
+        book: {
+          extractorOrCombinerType: "extractorByPrimaryKey",
+          parentName: "Book",
+          parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+          instanceUuid: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
+          foreignKeysForTransformer: ["author"],
+          applyTransformer: {
+            transformerType: "createObject",
+            interpolation: "runtime",
+            definition: {
+              bookTitle: {
+                transformerType: "getFromContext",
+                interpolation: "runtime",
+                referencePath: ["referenceObject", "name"],
+              },
+              authorName: {
+                transformerType: "getFromContext",
+                interpolation: "runtime",
+                referencePath: ["foreignKeyObjects", "author", "name"],
+              },
+            },
+          },
+        },
+      },
+    },
+    ...testExtractorTools,
+    testAssertions: {
+      test1: {
+        expectedResult: {
+          book: {
+            authorName: "Paul Veyne",
+            bookTitle: "Et dans l'éternité je ne m'ennuierai pas",
+          },
+          // book: domainState[deployment_Library_DO_NO_USE.uuid]["data"][
+          //   "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+          // ]["caef8a59-39eb-48b5-ad59-a7642d3a1e8f"],
+        } as any, // TODO: correct type of the expected result
+        // expectedResult: {
+        //   book: domainState[deployment_Library_DO_NO_USE.uuid]["data"][
+        //     "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+        //   ]["caef8a59-39eb-48b5-ad59-a7642d3a1e8f"],
+        // } as any, // TODO: correct type of the expected result
+      },
+    },
+  },
+  "select 1 object from Domain State using direct query parameter reference": {
+    queryTemplate: {
+      queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
+      application: selfApplicationLibrary.uuid,
+      contextResults: {},
+      pageParams: {},
+      queryParams: { wantedBookUuid: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f" },
+      extractorTemplates: {
+        book: {
+          extractorOrCombinerType: "extractorByPrimaryKey",
+          parentName: "Book",
+          parentUuid: {
+            transformerType: "returnValue",
+            mlSchema: { type: "uuid" },
+            interpolation: "build",
+            value: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+          } as any, // TODO: fix type
+          instanceUuid: {
+            transformerType: "getFromParameters",
+            interpolation: "build",
+            referenceName: "wantedBookUuid",
+          },
+        },
+      },
+    },
+    query: {
+      queryType: "boxedQueryWithExtractorCombinerTransformer",
+      application: selfApplicationLibrary.uuid,
+      contextResults: {},
+      pageParams: {},
+      queryParams: { wantedBookUuid: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f" },
+      extractors: {
+        book: {
+          extractorOrCombinerType: "extractorByPrimaryKey",
+          parentName: "Book",
+          parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+          instanceUuid: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
+        },
+      },
+      runtimeTransformers: {},
+    },
+    ...testExtractorTools,
+    testAssertions: {
+      test1: {
+        expectedResult:
+          domainState[deployment_Library_DO_NO_USE.uuid]["data"][
+            "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+          ]["caef8a59-39eb-48b5-ad59-a7642d3a1e8f"],
+        resultAccessPath: ["book"],
+      },
+    },
+  },
+  "select 1 object from the uuid found in an attribute of another object from Domain State": {
+    queryTemplate: {
+      queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
+      application: selfApplicationLibrary.uuid,
+      // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
+      contextResults: {},
+      pageParams: {},
+      queryParams: {},
+      extractorTemplates: {
+        book: {
+          extractorOrCombinerType: "extractorByPrimaryKey",
+          parentName: "Book",
+          parentUuid: {
+            transformerType: "returnValue",
+            mlSchema: { type: "uuid" },
+            interpolation: "build",
+            value: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+          } as any, // TODO: fix type
+          instanceUuid: {
+            transformerType: "returnValue",
+            mlSchema: { type: "uuid" },
+            interpolation: "build",
+            value: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
+          },
+        },
+      },
+      combinerTemplates: {
+        publisher: {
+          extractorOrCombinerType: "combinerOneToOne",
+          parentName: "Publisher",
+          parentUuid: {
+            transformerType: "returnValue",
+            mlSchema: { type: "uuid" },
+            interpolation: "build",
+            value: "a027c379-8468-43a5-ba4d-bf618be25cab",
+          } as any, // TODO: fix type
+          objectReference: {
+            transformerType: "getFromContext",
+            interpolation: "runtime",
+            referenceName: "book",
+          } as any, // TODO: fix type
+          AttributeOfObjectToCompareToReferenceUuid: "publisher",
+        },
+      },
+    },
+    query: {
+      queryType: "boxedQueryWithExtractorCombinerTransformer",
+      application: selfApplicationLibrary.uuid,
+      // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
+      contextResults: {},
+      pageParams: {},
+      queryParams: {},
+      extractors: {
+        book: {
+          extractorOrCombinerType: "extractorByPrimaryKey",
+          parentName: "Book",
+          parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+          instanceUuid: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
+        },
+      },
+      combiners: {
+        publisher: {
+          extractorOrCombinerType: "combinerOneToOne",
+          parentName: "Publisher",
+          parentUuid: "a027c379-8468-43a5-ba4d-bf618be25cab",
+          objectReference: "book",
+          AttributeOfObjectToCompareToReferenceUuid: "publisher",
+        },
+      },
+      runtimeTransformers: {},
+    },
+    ...testExtractorTools,
+    testAssertions: {
+      test1: {
+        expectedResult:
+          domainState[deployment_Library_DO_NO_USE.uuid]["data"][
+            "a027c379-8468-43a5-ba4d-bf618be25cab"
+          ]["516a7366-39e7-4998-82cb-80199a7fa667"],
+        resultAccessPath: ["publisher"],
+      },
+    },
+  },
+  "select 1 object from the uuid found in an attribute of another object then use applyTransformer on it":
     {
-      // queryTemplate: {
-      //   queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
+      queryTemplate: {
+        queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
+        application: selfApplicationLibrary.uuid,
+        contextResults: {},
+        pageParams: {},
+        queryParams: {},
+        extractorTemplates: {
+          book: {
+            extractorOrCombinerType: "extractorByPrimaryKey",
+            parentName: "Book",
+            parentUuid: {
+              transformerType: "returnValue",
+              mlSchema: { type: "uuid" },
+              interpolation: "build",
+              value: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+            } as  any, // TODO: fix type
+            instanceUuid: {
+              transformerType: "returnValue",
+              mlSchema: { type: "uuid" },
+              interpolation: "build",
+              value: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
+            } as any, // TODO: fix type
+          },
+        },
+        combinerTemplates: {
+          publisher: {
+            extractorOrCombinerType: "combinerOneToOne",
+            parentName: "Publisher",
+            parentUuid: {
+              transformerType: "returnValue",
+              mlSchema: { type: "uuid" },
+              interpolation: "build",
+              value: "a027c379-8468-43a5-ba4d-bf618be25cab",
+            } as any, // TODO: fix type
+            objectReference: {
+              transformerType: "getFromContext",
+              interpolation: "runtime",
+              referenceName: "book",
+            } as any, // TODO: fix type
+            AttributeOfObjectToCompareToReferenceUuid: "publisher",
+            applyTransformer: {
+              transformerType: "createObject",
+              interpolation: "runtime",
+              definition: {
+                bookTitle: {
+                  transformerType: "getFromContext",
+                  interpolation: "runtime",
+                  referencePath: ["referenceObject", "name"],
+                },
+                publisherName: {
+                  transformerType: "getFromContext",
+                  interpolation: "runtime",
+                  referencePath: ["foreignKeyObject", "name"],
+                },
+                publisherUuid: {
+                  transformerType: "getFromContext",
+                  interpolation: "runtime",
+                  referencePath: ["foreignKeyObject", "uuid"],
+                },
+              },
+            },
+          },
+        },
+      },
+      query: {
+        queryType: "boxedQueryWithExtractorCombinerTransformer",
+        application: selfApplicationLibrary.uuid,
+        // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
+        contextResults: {},
+        pageParams: {},
+        queryParams: {},
+        extractors: {
+          book: {
+            extractorOrCombinerType: "extractorByPrimaryKey",
+            parentName: "Book",
+            parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+            instanceUuid: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
+          },
+        },
+        combiners: {
+          publisher: {
+            extractorOrCombinerType: "combinerOneToOne",
+            parentName: "Publisher",
+            parentUuid: "a027c379-8468-43a5-ba4d-bf618be25cab",
+            objectReference: "book",
+            AttributeOfObjectToCompareToReferenceUuid: "publisher",
+            applyTransformer: {
+              transformerType: "createObject",
+              interpolation: "runtime",
+              definition: {
+                bookTitle: {
+                  transformerType: "getFromContext",
+                  interpolation: "runtime",
+                  referencePath: ["referenceObject", "name"],
+                },
+                publisherName: {
+                  transformerType: "getFromContext",
+                  interpolation: "runtime",
+                  referencePath: ["foreignKeyObject", "name"],
+                },
+                publisherUuid: {
+                  transformerType: "getFromContext",
+                  interpolation: "runtime",
+                  referencePath: ["foreignKeyObject", "uuid"],
+                },
+              },
+            },
+          },
+        },
+        runtimeTransformers: {},
+      },
+      ...testExtractorTools,
+      testAssertions: {
+        test1: {
+          expectedResult: {
+            bookTitle: "Et dans l'éternité je ne m'ennuierai pas",
+            publisherName: "Folio",
+            publisherUuid: "516a7366-39e7-4998-82cb-80199a7fa667",
+          },
+          resultAccessPath: ["publisher"],
+        },
+      },
+    },
+  "select publishers of books by author using combinerManyToMany with applyTransformer (extractorByPrimaryKey, combinerOneToMany, combinerManyToMany with applyTransformer)":
+    {
+      queryTemplate: {
+        queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
+        application: selfApplicationLibrary.uuid,
+        extractorTemplates: {
+          author: {
+            extractorOrCombinerType: "extractorByPrimaryKey",
+            parentName: "Author",
+            parentUuid: {
+              transformerType: "returnValue",
+              mlSchema: { type: "uuid" },
+              value: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+            } as any, // TODO: fix type
+            instanceUuid: {
+              transformerType: "returnValue",
+              mlSchema: { type: "uuid" },
+              value: "ce7b601d-be5f-4bc6-a5af-14091594046a", // Paul Veyne
+            },
+          },
+        },
+        combinerTemplates: {
+          booksOfAuthor: {
+            extractorOrCombinerType: "combinerOneToMany",
+            parentName: "Book",
+            parentUuid: {
+              transformerType: "returnValue",
+              mlSchema: { type: "uuid" },
+              value: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+            },
+            objectReference: "author",
+            AttributeOfListObjectToCompareToReferenceUuid: "author",
+          },
+          publishersOfBooks: {
+            extractorOrCombinerType: "combinerManyToMany",
+            parentName: "Publisher",
+            parentUuid: {
+              transformerType: "returnValue",
+              mlSchema: { type: "uuid" },
+              value: "a027c379-8468-43a5-ba4d-bf618be25cab",
+            },
+            objectListReference: "booksOfAuthor",
+            objectListReferenceAttribute: "publisher",
+            applyTransformer: {
+              transformerType: "createObject",
+              interpolation: "runtime",
+              definition: {
+                authorUuid: {
+                  transformerType: "getFromContext",
+                  interpolation: "runtime",
+                  referencePath: ["referenceObject", "author"],
+                },
+                publisherName: {
+                  transformerType: "getFromContext",
+                  interpolation: "runtime",
+                  referencePath: ["foreignKeyObject", "name"],
+                },
+                publisherUuid: {
+                  transformerType: "getFromContext",
+                  interpolation: "runtime",
+                  referencePath: ["foreignKeyObject", "uuid"],
+                },
+              },
+            },
+          },
+        },
+      },
+      // query: {
+      //   queryType: "boxedQueryWithExtractorCombinerTransformer",
       //   application: selfApplicationLibrary.uuid,
       //   // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
       //   contextResults: {},
-      //   pageParams: {
-      //     applicationSection: "data",
-      //   },
+      //   pageParams: {},
       //   queryParams: {},
-      //   extractorTemplates: {
-      //     entities: {
-      //       extractorOrCombinerType: "extractorInstancesByEntity",
-      //       applicationSection: "model",
-      //       parentName: "Entity",
-      //       parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad"
+      //   extractors: {
+      //     author: {
+      //       extractorOrCombinerType: "extractorByPrimaryKey",
+      //       parentName: "Author",
+      //       parentUuid: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+      //       instanceUuid: "ce7b601d-be5f-4bc6-a5af-14091594046a", // Paul Veyne
       //     },
       //   },
-      //   combinerTemplates: {
-      //     instancesOfEntities: {
-      //       extractorOrCombinerType:
-      //         "combinerByHeteronomousManyToMany", // heteronomous many-to-many join, not possible with SQL
-      //       rootExtractorOrReference: "entities",
-      //       subQueryTemplate: {
-      //         query: {
-      //           extractorOrCombinerType: "extractorInstancesByEntity",
-      //           parentUuid: {
-      //             transformerType: "getFromParameters",
-      //             interpolation: "build",
-      //             referenceName: "uuid",
-      //           } as any, // TODO: fix type
-      //         },
-      //         rootQueryObjectTransformer: {
-      //           uuid: {
+      //   combiners: {
+      //     booksOfAuthor: {
+      //       extractorOrCombinerType: "combinerOneToMany",
+      //       parentName: "Book",
+      //       parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+      //       objectReference: "author",
+      //       AttributeOfListObjectToCompareToReferenceUuid: "author",
+      //     },
+      //     publishersOfBooks: {
+      //       extractorOrCombinerType: "combinerManyToMany",
+      //       parentName: "Publisher",
+      //       parentUuid: "a027c379-8468-43a5-ba4d-bf618be25cab",
+      //       objectListReference: "booksOfAuthor",
+      //       objectListReferenceAttribute: "publisher",
+      //       applyTransformer: {
+      //         transformerType: "createObject",
+      //         interpolation: "runtime",
+      //         definition: {
+      //           authorUuid: {
       //             transformerType: "getFromContext",
       //             interpolation: "runtime",
-      //             referencePath: ["entry", "uuid"],
+      //             referencePath: ["referenceObject", "author"],
+      //           },
+      //           publisherName: {
+      //             transformerType: "getFromContext",
+      //             interpolation: "runtime",
+      //             referencePath: ["foreignKeyObject", "name"],
+      //           },
+      //           publisherUuid: {
+      //             transformerType: "getFromContext",
+      //             interpolation: "runtime",
+      //             referencePath: ["foreignKeyObject", "uuid"],
       //           },
       //         },
       //       },
       //     },
       //   },
+      //   runtimeTransformers: {},
       // },
+      ...testExtractorTools,
+      testAssertions: {
+        test1: {
+          expectedResult: [
+            {
+              // authorName: "Paul Veyne",
+              authorUuid: "ce7b601d-be5f-4bc6-a5af-14091594046a",
+              publisherName: "Folio",
+              publisherUuid: "516a7366-39e7-4998-82cb-80199a7fa667",
+            },
+          ],
+          resultAccessPath: ["publishersOfBooks"],
+        },
+      },
+    },
+  "select Authors (extractorInstancesByEntity)": {
+    queryTemplate: {
+      queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
+      application: selfApplicationLibrary.uuid,
+      contextResults: {},
+      pageParams: {
+        applicationSection: "data",
+      },
+      queryParams: {},
+      extractorTemplates: {
+        authors: {
+          extractorOrCombinerType: "extractorInstancesByEntity",
+          parentName: "Author",
+          parentUuid: {
+            transformerType: "returnValue",
+            mlSchema: { type: "uuid" },
+            interpolation: "build",
+            value: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+          } as any, // TODO: fix type
+        },
+      },
+      runtimeTransformers: {},
+    },
+    query: {
+      queryType: "boxedQueryWithExtractorCombinerTransformer",
+      application: selfApplicationLibrary.uuid,
+      contextResults: {},
+      pageParams: {
+        applicationSection: "data",
+      },
+      queryParams: {},
+      extractors: {
+        authors: {
+          extractorOrCombinerType: "extractorInstancesByEntity",
+          parentName: "Author",
+          parentUuid: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+        },
+      },
+      runtimeTransformers: {},
+    },
+    ...testExtractorTools,
+    testAssertions: {
+      test1: {
+        expectedResult: Object.values({
+          "4441169e-0c22-4fbc-81b2-28c87cf48ab2": {
+            uuid: "4441169e-0c22-4fbc-81b2-28c87cf48ab2",
+            parentName: "Author",
+            parentUuid: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+            name: "Don Norman",
+          },
+          "ce7b601d-be5f-4bc6-a5af-14091594046a": {
+            uuid: "ce7b601d-be5f-4bc6-a5af-14091594046a",
+            parentName: "Author",
+            parentUuid: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+            name: "Paul Veyne",
+          },
+          "d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17": {
+            uuid: "d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17",
+            parentName: "Author",
+            parentUuid: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+            conceptLevel: "Data",
+            name: "Cornell Woolrich",
+          },
+          "e4376314-d197-457c-aa5e-d2da5f8d5977": {
+            uuid: "e4376314-d197-457c-aa5e-d2da5f8d5977",
+            parentName: "Author",
+            parentUuid: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+            conceptLevel: "Data",
+            name: "Catherine Guérard",
+          },
+        }),
+        resultAccessPath: ["authors"],
+      },
+    },
+  },
+  "select Authors with filter (extractorInstancesByEntity)": {
+    queryTemplate: {
+      queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
+      application: selfApplicationLibrary.uuid,
+      contextResults: {},
+      pageParams: {
+        applicationSection: "data",
+      },
+      queryParams: {},
+      extractorTemplates: {
+        authors: {
+          extractorOrCombinerType: "extractorInstancesByEntity",
+          parentName: "Author",
+          parentUuid: {
+            transformerType: "returnValue",
+            mlSchema: { type: "uuid" },
+            interpolation: "build",
+            value: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+          } as any, // TODO: fix type
+          filter: {
+            attributeName: "name",
+            value: {
+              transformerType: "returnValue",
+              mlSchema: { type: "string" },
+              value: "or",
+            },
+          },
+        },
+      },
+    },
+    query: {
+      queryType: "boxedQueryWithExtractorCombinerTransformer",
+      application: selfApplicationLibrary.uuid,
+      pageParams: {
+        applicationSection: "data",
+      },
+      extractors: {
+        authors: {
+          extractorOrCombinerType: "extractorInstancesByEntity",
+          parentName: "Author",
+          parentUuid: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+          filter: {
+            attributeName: "name",
+            value: "or",
+          },
+        },
+      },
+    },
+    ...testExtractorTools,
+    testAssertions: {
+      test1: {
+        expectedResult: Object.values({
+          "4441169e-0c22-4fbc-81b2-28c87cf48ab2": {
+            uuid: "4441169e-0c22-4fbc-81b2-28c87cf48ab2",
+            parentName: "Author",
+            parentUuid: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+            name: "Don Norman",
+          },
+          "d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17": {
+            uuid: "d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17",
+            parentName: "Author",
+            parentUuid: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+            conceptLevel: "Data",
+            name: "Cornell Woolrich",
+          },
+        }),
+        resultAccessPath: ["authors"],
+      },
+    },
+  },
+  "select Authors with values filter (multiple values) (extractorInstancesByEntity)": {
+    query: {
+      queryType: "boxedQueryWithExtractorCombinerTransformer",
+      application: selfApplicationLibrary.uuid,
+      contextResults: {},
+      pageParams: {
+        applicationSection: "data",
+      },
+      queryParams: {},
+      extractors: {
+        authors: {
+          extractorOrCombinerType: "extractorInstancesByEntity",
+          parentName: "Author",
+          parentUuid: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+          filter: {
+            attributeName: "name",
+            values: ["Norman", "Veyne"],
+          },
+        },
+      },
+    },
+    ...testExtractorTools,
+    testAssertions: {
+      test1: {
+        expectedResult: Object.values({
+          "4441169e-0c22-4fbc-81b2-28c87cf48ab2": {
+            uuid: "4441169e-0c22-4fbc-81b2-28c87cf48ab2",
+            parentName: "Author",
+            parentUuid: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+            name: "Don Norman",
+          },
+          "ce7b601d-be5f-4bc6-a5af-14091594046a": {
+            uuid: "ce7b601d-be5f-4bc6-a5af-14091594046a",
+            parentName: "Author",
+            parentUuid: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+            name: "Paul Veyne",
+          },
+        }),
+        resultAccessPath: ["authors"],
+      },
+    },
+  },
+  "select Authors with values filter and not flag (extractorInstancesByEntity)": {
+    query: {
+      queryType: "boxedQueryWithExtractorCombinerTransformer",
+      application: selfApplicationLibrary.uuid,
+      contextResults: {},
+      pageParams: {
+        applicationSection: "data",
+      },
+      queryParams: {},
+      extractors: {
+        authors: {
+          extractorOrCombinerType: "extractorInstancesByEntity",
+          parentName: "Author",
+          parentUuid: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+          filter: {
+            attributeName: "name",
+            not: true,
+            values: ["Norman", "Veyne"],
+          },
+        },
+      },
+    },
+    ...testExtractorTools,
+    testAssertions: {
+      test1: {
+        expectedResult: Object.values({
+          "d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17": {
+            uuid: "d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17",
+            parentName: "Author",
+            parentUuid: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+            conceptLevel: "Data",
+            name: "Cornell Woolrich",
+          },
+          "e4376314-d197-457c-aa5e-d2da5f8d5977": {
+            uuid: "e4376314-d197-457c-aa5e-d2da5f8d5977",
+            parentName: "Author",
+            parentUuid: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+            conceptLevel: "Data",
+            name: "Catherine Guérard",
+          },
+        }),
+        resultAccessPath: ["authors"],
+      },
+    },
+  },
+  "select Books of Publisher of given Book from Domain State (extractorByPrimaryKey, combinerOneToOne, combinerOneToMany)": {
+    queryTemplate: {
+      queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
+      application: selfApplicationLibrary.uuid,
+      contextResults: {},
+      pageParams: {
+        applicationSection: "data",
+      },
+      queryParams: {},
+      extractorTemplates: {
+        book: {
+          extractorOrCombinerType: "extractorByPrimaryKey",
+          parentName: "Book",
+          parentUuid: {
+            transformerType: "returnValue",
+            mlSchema: { type: "uuid" },
+            interpolation: "build",
+            value: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+          } as any, // TODO: fix type
+          instanceUuid: {
+            transformerType: "returnValue",
+            mlSchema: { type: "uuid" },
+            interpolation: "build",
+            value: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
+          },
+        },
+      },
+      combinerTemplates: {
+        publisher: {
+          extractorOrCombinerType: "combinerOneToOne",
+          parentName: "Publisher",
+          parentUuid: {
+            transformerType: "returnValue",
+            mlSchema: { type: "uuid" },
+            interpolation: "build",
+            value: "a027c379-8468-43a5-ba4d-bf618be25cab",
+          } as any, // TODO: fix type
+          objectReference: {
+            transformerType: "getFromContext",
+            interpolation: "runtime",
+            referenceName: "book",
+          } as any, // TODO: fix type
+          AttributeOfObjectToCompareToReferenceUuid: "publisher",
+        },
+        booksOfPublisher: {
+          //join with only returnValue references
+          extractorOrCombinerType: "combinerOneToMany",
+          parentName: "Book",
+          parentUuid: {
+            transformerType: "returnValue",
+            mlSchema: { type: "uuid" },
+            interpolation: "build",
+            value: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+          } as any, // TODO: fix type
+          objectReference: {
+            transformerType: "getFromContext",
+            interpolation: "runtime",
+            referenceName: "publisher",
+          } as any, // TODO: fix type
+          AttributeOfListObjectToCompareToReferenceUuid: "publisher",
+        },
+      },
+      runtimeTransformers: {},
+    },
+    query: {
+      queryType: "boxedQueryWithExtractorCombinerTransformer",
+      application: selfApplicationLibrary.uuid,
+      // contextResults: {},
+      pageParams: {
+        applicationSection: "data",
+      },
+      // queryParams: {},
+      extractors: {
+        book: {
+          extractorOrCombinerType: "extractorByPrimaryKey",
+          parentName: "Book",
+          parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+          instanceUuid: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
+        },
+      },
+      combiners: {
+        publisher: {
+          extractorOrCombinerType: "combinerOneToOne",
+          parentName: "Publisher",
+          parentUuid: "a027c379-8468-43a5-ba4d-bf618be25cab",
+          objectReference: "book",
+          AttributeOfObjectToCompareToReferenceUuid: "publisher",
+        },
+        booksOfPublisher: {
+          //join with only returnValue references
+          extractorOrCombinerType: "combinerOneToMany",
+          parentName: "Book",
+          parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+          objectReference: "publisher",
+          AttributeOfListObjectToCompareToReferenceUuid: "publisher",
+        },
+      },
+      runtimeTransformers: {},
+    },
+    ...testExtractorTools,
+    testAssertions: {
+      test1: {
+        expectedResult: Object.values({
+          "4cb917b3-3c53-4f9b-b000-b0e4c07a81f7":
+            domainState[deployment_Library_DO_NO_USE.uuid]["data"][
+              "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+            ]["4cb917b3-3c53-4f9b-b000-b0e4c07a81f7"],
+          "c6852e89-3c3c-447f-b827-4b5b9d830975":
+            domainState[deployment_Library_DO_NO_USE.uuid]["data"][
+              "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+            ]["c6852e89-3c3c-447f-b827-4b5b9d830975"],
+          "caef8a59-39eb-48b5-ad59-a7642d3a1e8f":
+            domainState[deployment_Library_DO_NO_USE.uuid]["data"][
+              "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+            ]["caef8a59-39eb-48b5-ad59-a7642d3a1e8f"],
+        }),
+        resultAccessPath: ["booksOfPublisher"],
+      },
+    },
+  },
+  "select custom-built result: Books of Publisher of given Book from Domain State (extractorByPrimaryKey, combinerOneToOne, combinerOneToMany)": {
+    queryTemplate: {
+      queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
+      application: selfApplicationLibrary.uuid,
+      contextResults: {},
+      pageParams: {
+        applicationSection: "data",
+      },
+      queryParams: {},
+      extractorTemplates: {
+        book: {
+          extractorOrCombinerType: "extractorByPrimaryKey",
+          parentName: "Book",
+          parentUuid: {
+            transformerType: "returnValue",
+            mlSchema: { type: "uuid" },
+            interpolation: "build",
+            value: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+          } as any, // TODO: fix type
+          instanceUuid: {
+            transformerType: "returnValue",
+            mlSchema: { type: "uuid" },
+            interpolation: "build",
+            value: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
+          },
+        },
+      },
+      combinerTemplates: {
+        publisher: {
+          extractorOrCombinerType: "combinerOneToOne",
+          parentName: "Publisher",
+          parentUuid: {
+            transformerType: "returnValue",
+            mlSchema: { type: "uuid" },
+            interpolation: "build",
+            value: "a027c379-8468-43a5-ba4d-bf618be25cab",
+          } as any, // TODO: fix type
+          objectReference: {
+            transformerType: "getFromContext",
+            interpolation: "runtime",
+            referenceName: "book",
+          } as any, // TODO: fix type
+          AttributeOfObjectToCompareToReferenceUuid: "publisher",
+        },
+        booksOfPublisher: {
+          extractorOrCombinerType: "combinerOneToMany",
+          parentName: "Book",
+          parentUuid: {
+            transformerType: "returnValue",
+            mlSchema: { type: "uuid" },
+            interpolation: "build",
+            value: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+          } as any, // TODO: fix type
+          objectReference: {
+            transformerType: "getFromContext",
+            interpolation: "runtime",
+            referenceName: "publisher",
+          } as any, // TODO: fix type
+          AttributeOfListObjectToCompareToReferenceUuid: "publisher",
+        },
+        result1: {
+          extractorOrCombinerType: "extractorWrapperReturningObject",
+          definition: {
+            "caef8a59-39eb-48b5-ad59-a7642d3a1e8f": {
+              transformerType: "getFromContext",
+              interpolation: "runtime",
+              referenceName: "booksOfPublisher",
+            } as any, // TODO: fix type
+          } as any, // TODO: fix type
+        },
+        result2: {
+          extractorOrCombinerType: "extractorWrapperReturningList",
+          definition: [
+            {
+              transformerType: "getFromContext",
+              interpolation: "runtime",
+              referenceName: "booksOfPublisher",
+            },
+            {
+              transformerType: "getFromContext",
+              interpolation: "runtime",
+              referenceName: "booksOfPublisher",
+            },
+          ],
+        },
+      },
+    },
+    query: {
+      queryType: "boxedQueryWithExtractorCombinerTransformer",
+      application: selfApplicationLibrary.uuid,
+      // contextResults: {},
+      pageParams: {
+        applicationSection: "data",
+      },
+      // queryParams: {},
+      extractors: {
+        book: {
+          extractorOrCombinerType: "extractorByPrimaryKey",
+          parentName: "Book",
+          parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+          instanceUuid: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
+        },
+      },
+      combiners: {
+        publisher: {
+          extractorOrCombinerType: "combinerOneToOne",
+          parentName: "Publisher",
+          parentUuid: "a027c379-8468-43a5-ba4d-bf618be25cab",
+          objectReference: "book",
+          AttributeOfObjectToCompareToReferenceUuid: "publisher",
+        },
+        booksOfPublisher: {
+          extractorOrCombinerType: "combinerOneToMany",
+          parentName: "Book",
+          parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+          objectReference: "publisher",
+          AttributeOfListObjectToCompareToReferenceUuid: "publisher",
+        },
+        result1: {
+          extractorOrCombinerType: "extractorWrapperReturningObject",
+          definition: {
+            "caef8a59-39eb-48b5-ad59-a7642d3a1e8f": {
+              extractorOrCombinerType: "extractorOrCombinerContextReference",
+              extractorOrCombinerContextReference: "booksOfPublisher",
+            },
+          },
+        },
+        result2: {
+          extractorOrCombinerType: "extractorWrapperReturningList",
+          definition: [
+            {
+              extractorOrCombinerType: "extractorOrCombinerContextReference",
+              extractorOrCombinerContextReference: "booksOfPublisher",
+            },
+            {
+              extractorOrCombinerType: "extractorOrCombinerContextReference",
+              extractorOrCombinerContextReference: "booksOfPublisher",
+            },
+          ],
+        },
+      },
+    },
+    ...testExtractorTools,
+    testAssertions: {
+      test1: {
+        expectedResult: Object.values({
+          "4cb917b3-3c53-4f9b-b000-b0e4c07a81f7":
+            domainState[deployment_Library_DO_NO_USE.uuid]["data"][
+              "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+            ]["4cb917b3-3c53-4f9b-b000-b0e4c07a81f7"],
+          "c6852e89-3c3c-447f-b827-4b5b9d830975":
+            domainState[deployment_Library_DO_NO_USE.uuid]["data"][
+              "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+            ]["c6852e89-3c3c-447f-b827-4b5b9d830975"],
+          "caef8a59-39eb-48b5-ad59-a7642d3a1e8f":
+            domainState[deployment_Library_DO_NO_USE.uuid]["data"][
+              "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+            ]["caef8a59-39eb-48b5-ad59-a7642d3a1e8f"],
+        }),
+        resultAccessPath: ["result1", "caef8a59-39eb-48b5-ad59-a7642d3a1e8f"],
+      },
+      test2: {
+        expectedResult: Object.values({
+          "4cb917b3-3c53-4f9b-b000-b0e4c07a81f7":
+            domainState[deployment_Library_DO_NO_USE.uuid]["data"][
+              "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+            ]["4cb917b3-3c53-4f9b-b000-b0e4c07a81f7"],
+          "c6852e89-3c3c-447f-b827-4b5b9d830975":
+            domainState[deployment_Library_DO_NO_USE.uuid]["data"][
+              "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+            ]["c6852e89-3c3c-447f-b827-4b5b9d830975"],
+          "caef8a59-39eb-48b5-ad59-a7642d3a1e8f":
+            domainState[deployment_Library_DO_NO_USE.uuid]["data"][
+              "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+            ]["caef8a59-39eb-48b5-ad59-a7642d3a1e8f"],
+        }),
+        resultAccessPath: ["result2", "0"],
+      },
+      test3: {
+        expectedResult: Object.values({
+          "4cb917b3-3c53-4f9b-b000-b0e4c07a81f7":
+            domainState[deployment_Library_DO_NO_USE.uuid]["data"][
+              "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+            ]["4cb917b3-3c53-4f9b-b000-b0e4c07a81f7"],
+          "c6852e89-3c3c-447f-b827-4b5b9d830975":
+            domainState[deployment_Library_DO_NO_USE.uuid]["data"][
+              "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+            ]["c6852e89-3c3c-447f-b827-4b5b9d830975"],
+          "caef8a59-39eb-48b5-ad59-a7642d3a1e8f":
+            domainState[deployment_Library_DO_NO_USE.uuid]["data"][
+              "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+            ]["caef8a59-39eb-48b5-ad59-a7642d3a1e8f"],
+        }),
+        resultAccessPath: ["result2", "1"],
+      },
+    },
+  },
+  "select custom-built result: return Books of Author from Domain State (extractorByPrimaryKey, combinerOneToMany)": {
+    queryTemplate: {
+      queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
+      application: selfApplicationLibrary.uuid,
+      // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
+      contextResults: {},
+      pageParams: {
+        applicationSection: "data",
+      },
+      queryParams: {},
+      extractorTemplates: {
+        author: {
+          extractorOrCombinerType: "extractorByPrimaryKey",
+          parentName: "Book",
+          parentUuid: {
+            transformerType: "returnValue",
+            value: "d7a144ff-d1b9-4135-800c-a7cfc1f38733", // Author
+          } as any, // TODO: fix type
+          instanceUuid: {
+            transformerType: "returnValue",
+            value: "ce7b601d-be5f-4bc6-a5af-14091594046a", // Paul Veyne
+          },
+        },
+      },
+      combinerTemplates: {
+        books: {
+          extractorOrCombinerType: "combinerOneToMany",
+          parentName: "Book",
+          parentUuid: {
+            transformerType: "returnValue",
+            value: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+          } as any, // TODO: fix type
+          objectReference: {
+            transformerType: "getFromContext",
+            interpolation: "runtime",
+            referenceName: "author",
+          } as any, // TODO: fix type
+          AttributeOfListObjectToCompareToReferenceUuid: "author",
+        },
+      },
+    },
+    query: {
+      queryType: "boxedQueryWithExtractorCombinerTransformer",
+      application: selfApplicationLibrary.uuid,
+      // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
+      // contextResults: {},
+      pageParams: {
+        applicationSection: "data",
+      },
+      // queryParams: {},
+      extractors: {
+        author: {
+          extractorOrCombinerType: "extractorByPrimaryKey",
+          parentName: "Author",
+          parentUuid: "d7a144ff-d1b9-4135-800c-a7cfc1f38733", // Author
+          instanceUuid: "ce7b601d-be5f-4bc6-a5af-14091594046a", // Paul Veyne
+        },
+      },
+      combiners: {
+        books: {
+          extractorOrCombinerType: "combinerOneToMany",
+          parentName: "Book",
+          parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+          objectReference: "author",
+          AttributeOfListObjectToCompareToReferenceUuid: "author",
+        },
+      },
+    },
+    ...testExtractorTools,
+    testAssertions: {
+      test1: {
+        expectedResult:
+          domainState[deployment_Library_DO_NO_USE.uuid]["data"][
+            "d7a144ff-d1b9-4135-800c-a7cfc1f38733"
+          ]["ce7b601d-be5f-4bc6-a5af-14091594046a"],
+        resultAccessPath: ["author"],
+      },
+      test2: {
+        expectedResult: [
+          {
+            author: "ce7b601d-be5f-4bc6-a5af-14091594046a",
+            conceptLevel: "Data",
+            name: "Le Pain et le Cirque",
+            parentName: "Book",
+            parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+            publisher: "516a7366-39e7-4998-82cb-80199a7fa667",
+            uuid: "c6852e89-3c3c-447f-b827-4b5b9d830975",
+          },
+          {
+            author: "ce7b601d-be5f-4bc6-a5af-14091594046a",
+            conceptLevel: "Data",
+            name: "Et dans l'éternité je ne m'ennuierai pas",
+            parentName: "Book",
+            parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+            publisher: "516a7366-39e7-4998-82cb-80199a7fa667",
+            uuid: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
+          },
+        ],
+        resultAccessPath: ["books"],
+      },
+    },
+  },
+  "select custom-built result: return couple Author name - Book title for Books of Author from Domain State (extractorByPrimaryKey, combinerOneToMany with applyTransformer)":
+    {
+      queryTemplate: {
+        queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
+        application: selfApplicationLibrary.uuid,
+        // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
+        contextResults: {},
+        pageParams: {
+          applicationSection: "data",
+        },
+        queryParams: {},
+        extractorTemplates: {
+          author: {
+            extractorOrCombinerType: "extractorByPrimaryKey",
+            parentName: "Book",
+            parentUuid: {
+              transformerType: "returnValue",
+              value: "d7a144ff-d1b9-4135-800c-a7cfc1f38733", // Author
+            } as any, // TODO: fix type
+            instanceUuid: {
+              transformerType: "returnValue",
+              value: "ce7b601d-be5f-4bc6-a5af-14091594046a", // Paul Veyne
+            },
+          },
+        },
+        combinerTemplates: {
+          books: {
+            extractorOrCombinerType: "combinerOneToMany",
+            parentName: "Book",
+            parentUuid: {
+              transformerType: "returnValue",
+              value: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+            } as any, // TODO: fix type
+            objectReference: {
+              transformerType: "getFromContext",
+              interpolation: "runtime",
+              referenceName: "author",
+            } as any, // TODO: fix type
+            AttributeOfListObjectToCompareToReferenceUuid: "author",
+            applyTransformer: {
+              transformerType: "createObject",
+              interpolation: "runtime",
+              definition: {
+                authorName: {
+                  transformerType: "getFromContext",
+                  interpolation: "runtime",
+                  referencePath: ["referenceObject", "name"],
+                },
+                bookTitle: {
+                  transformerType: "getFromContext",
+                  interpolation: "runtime",
+                  referencePath: ["foreignKeyObject", "name"],
+                },
+              },
+            },
+          },
+        },
+      },
+      query: {
+        queryType: "boxedQueryWithExtractorCombinerTransformer",
+        application: selfApplicationLibrary.uuid,
+        // contextResults: {},
+        pageParams: {
+          applicationSection: "data",
+        },
+        // queryParams: {},
+        extractors: {
+          author: {
+            extractorOrCombinerType: "extractorByPrimaryKey",
+            parentName: "Author",
+            parentUuid: "d7a144ff-d1b9-4135-800c-a7cfc1f38733", // Author
+            instanceUuid: "ce7b601d-be5f-4bc6-a5af-14091594046a", // Paul Veyne
+          },
+        },
+        combiners: {
+          books: {
+            extractorOrCombinerType: "combinerOneToMany",
+            parentName: "Book",
+            parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+            objectReference: "author",
+            AttributeOfListObjectToCompareToReferenceUuid: "author",
+            applyTransformer: {
+              transformerType: "createObject",
+              interpolation: "runtime",
+              definition: {
+                authorName: {
+                  transformerType: "getFromContext",
+                  interpolation: "runtime",
+                  referencePath: ["referenceObject", "name"],
+                },
+                bookTitle: {
+                  transformerType: "getFromContext",
+                  interpolation: "runtime",
+                  referencePath: ["foreignKeyObject", "name"],
+                },
+              },
+            },
+          },
+        },
+      },
+      ...testExtractorTools,
+      testAssertions: {
+        test1: {
+          expectedResult:
+            domainState[deployment_Library_DO_NO_USE.uuid]["data"][
+              "d7a144ff-d1b9-4135-800c-a7cfc1f38733"
+            ]["ce7b601d-be5f-4bc6-a5af-14091594046a"],
+          resultAccessPath: ["author"],
+        },
+        test2: {
+          expectedResult: [
+            {
+              authorName: "Paul Veyne",
+              bookTitle: "Le Pain et le Cirque",
+            },
+            {
+              authorName: "Paul Veyne",
+              bookTitle: "Et dans l'éternité je ne m'ennuierai pas",
+            },
+          ],
+          resultAccessPath: ["books"],
+        },
+        // test2: {
+        //   expectedResult: Object.values({
+        //     "4cb917b3-3c53-4f9b-b000-b0e4c07a81f7":
+        //       domainState[deployment_Library_DO_NO_USE.uuid]["data"][
+        //         "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+        //       ]["4cb917b3-3c53-4f9b-b000-b0e4c07a81f7"],
+        //     "c6852e89-3c3c-447f-b827-4b5b9d830975":
+        //       domainState[deployment_Library_DO_NO_USE.uuid]["data"][
+        //         "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+        //       ]["c6852e89-3c3c-447f-b827-4b5b9d830975"],
+        //     "caef8a59-39eb-48b5-ad59-a7642d3a1e8f":
+        //       domainState[deployment_Library_DO_NO_USE.uuid]["data"][
+        //         "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+        //       ]["caef8a59-39eb-48b5-ad59-a7642d3a1e8f"],
+        //   }),
+        //   resultAccessPath: ["result2", "0"],
+        // },
+        // test3: {
+        //   expectedResult: Object.values({
+        //     "4cb917b3-3c53-4f9b-b000-b0e4c07a81f7":
+        //       domainState[deployment_Library_DO_NO_USE.uuid]["data"][
+        //         "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+        //       ]["4cb917b3-3c53-4f9b-b000-b0e4c07a81f7"],
+        //     "c6852e89-3c3c-447f-b827-4b5b9d830975":
+        //       domainState[deployment_Library_DO_NO_USE.uuid]["data"][
+        //         "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+        //       ]["c6852e89-3c3c-447f-b827-4b5b9d830975"],
+        //     "caef8a59-39eb-48b5-ad59-a7642d3a1e8f":
+        //       domainState[deployment_Library_DO_NO_USE.uuid]["data"][
+        //         "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+        //       ]["caef8a59-39eb-48b5-ad59-a7642d3a1e8f"],
+        //   }),
+        //   resultAccessPath: ["result2", "1"],
+        // },
+      },
+    },
+  "select custom-built result with combinerByHeteronomousManyToMany: instances of all Entites from Domain State, indexed by Entity Uuid (extractorInstancesByEntity, combinerByHeteronomousManyToMany)":
+    {
+      queryTemplate: {
+        queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
+        application: selfApplicationLibrary.uuid,
+        // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
+        contextResults: {},
+        pageParams: {
+          applicationSection: "data",
+        },
+        queryParams: {},
+        extractorTemplates: {
+          entities: {
+            extractorOrCombinerType: "extractorInstancesByEntity",
+            applicationSection: "model",
+            parentName: "Entity",
+            parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad"
+          },
+        },
+        combinerTemplates: {
+          instancesOfEntities: {
+            extractorOrCombinerType:
+              "combinerByHeteronomousManyToMany", // heteronomous many-to-many join, not possible with SQL
+            rootExtractorOrReference: "entities",
+            subQueryTemplate: {
+              query: {
+                extractorOrCombinerType: "extractorInstancesByEntity",
+                parentUuid: {
+                  transformerType: "getFromParameters",
+                  interpolation: "build",
+                  referenceName: "uuid",
+                } as any, // TODO: fix type
+              },
+              indexValueFromRootObject: "uuid",
+              rootQueryObjectTransformer: {
+                transformerType: "getFromContext",
+                interpolation: "runtime",
+                referencePath: ["entry", "uuid"],
+              },
+            },
+          },
+        },
+      },
       query: {
         queryType: "boxedQueryWithExtractorCombinerTransformer",
         application: selfApplicationLibrary.uuid,
@@ -1647,77 +1643,77 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
         },
       },
     },
-  // "select Unique Publisher Uuids of Books (extractorInstancesByEntity, runtimeTransformer)": {
-  //   queryTemplate: {
-  //     queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
-  //     application: selfApplicationLibrary.uuid,
-  //     // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
-  //     contextResults: {},
-  //     pageParams: {
-  //       applicationSection: "data",
-  //     },
-  //     queryParams: {},
-  //     extractorTemplates: {
-  //       books: {
-  //         extractorOrCombinerType: "extractorInstancesByEntity",
-  //         parentName: "Book",
-  //         parentUuid: {
-  //           transformerType: "returnValue",
-  //           mlSchema: { type: "uuid" },
-  //           interpolation: "build",
-  //           value: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
-  //         } as any, // TODO: fix type
-  //       },
-  //     },
-  //     runtimeTransformers: {
-  //       publishers: {
-  //         transformerType: "getUniqueValues",
-  //         interpolation: "runtime",
-  //         applyTo: {
-  //           transformerType: "getFromContext",
-  //           referenceName: "books",
-  //         },
-  //         attribute: "publisher",
-  //       },
-  //     },
-  //   },
-  //   query: {
-  //     queryType: "boxedQueryWithExtractorCombinerTransformer",
-  //     application: selfApplicationLibrary.uuid,
-  //     pageParams: {
-  //       applicationSection: "data",
-  //     },
-  //     extractors: {
-  //       books: {
-  //         extractorOrCombinerType: "extractorInstancesByEntity",
-  //         parentName: "Book",
-  //         parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
-  //       },
-  //     },
-  //     runtimeTransformers: {
-  //       publishers: {
-  //         transformerType: "getUniqueValues",
-  //         interpolation: "runtime",
-  //         applyTo: {
-  //           transformerType: "getFromContext",
-  //           referenceName: "books",
-  //         },
-  //         attribute: "publisher",
-  //       },
-  //     },
-  //   },
-  //   ...testExtractorTools,
-  //   testAssertions: {
-  //     test1: {
-  //       expectedResult: [
-  //         { publisher: "516a7366-39e7-4998-82cb-80199a7fa667" },
-  //         { publisher: "c1c97d54-aba8-4599-883a-7fe8f3874095" },
-  //         { publisher: "1f550a2a-33f5-4a56-83ee-302701039494" },
-  //       ],
-  //       resultAccessPath: ["publishers"],
-  //     },
-  //   },
-  // },
+  "select Unique Publisher Uuids of Books (extractorInstancesByEntity, runtimeTransformer)": {
+    queryTemplate: {
+      queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
+      application: selfApplicationLibrary.uuid,
+      // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
+      contextResults: {},
+      pageParams: {
+        applicationSection: "data",
+      },
+      queryParams: {},
+      extractorTemplates: {
+        books: {
+          extractorOrCombinerType: "extractorInstancesByEntity",
+          parentName: "Book",
+          parentUuid: {
+            transformerType: "returnValue",
+            mlSchema: { type: "uuid" },
+            interpolation: "build",
+            value: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+          } as any, // TODO: fix type
+        },
+      },
+      runtimeTransformers: {
+        publishers: {
+          transformerType: "getUniqueValues",
+          interpolation: "runtime",
+          applyTo: {
+            transformerType: "getFromContext",
+            referenceName: "books",
+          },
+          attribute: "publisher",
+        },
+      },
+    },
+    query: {
+      queryType: "boxedQueryWithExtractorCombinerTransformer",
+      application: selfApplicationLibrary.uuid,
+      pageParams: {
+        applicationSection: "data",
+      },
+      extractors: {
+        books: {
+          extractorOrCombinerType: "extractorInstancesByEntity",
+          parentName: "Book",
+          parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+        },
+      },
+      runtimeTransformers: {
+        publishers: {
+          transformerType: "getUniqueValues",
+          interpolation: "runtime",
+          applyTo: {
+            transformerType: "getFromContext",
+            referenceName: "books",
+          },
+          attribute: "publisher",
+        },
+      },
+    },
+    ...testExtractorTools,
+    testAssertions: {
+      test1: {
+        expectedResult: [
+          { publisher: "516a7366-39e7-4998-82cb-80199a7fa667" },
+          { publisher: "c1c97d54-aba8-4599-883a-7fe8f3874095" },
+          { publisher: "1f550a2a-33f5-4a56-83ee-302701039494" },
+        ],
+        resultAccessPath: ["publishers"],
+      },
+    },
+  },
 };
 
 
@@ -1758,29 +1754,29 @@ const applicationDeploymentMap: ApplicationDeploymentMap = {
 const testQueries: boolean = true; // set to false to skip all tests in this file
 const testQueryTemplates: boolean = false; // set to false to skip tests related to query templates in this file
 
-const filteredTestExtractorParams = Object.fromEntries(
-  Object.entries(testExtractorParams).filter(([name, testParams]) => {
-    if (name in [
-      // "error on non-existing Entity: EntityNotFound",
-      // "error on non-existing object uuid: InstanceNotFound (extractorByPrimaryKey)",
-      // "select 1 object from Domain State (extractorByPrimaryKey)",
-      // "select 1 object from Domain State and apply transformer on foreign key (extractorByPrimaryKey with applyTransformer)",
-      // "select 1 object from Domain State using direct query parameter reference",
-      // "select 1 object from the uuid found in an attribute of another object from Domain State",
-      // "select 1 object from the uuid found in an attribute of another object then use applyTransformer on it",
-      // "select publishers of books by author using combinerManyToMany with applyTransformer (extractorByPrimaryKey, combinerOneToMany, combinerManyToMany with applyTransformer)",
-      // "select Authors (extractorInstancesByEntity)",
-      // "select Authors with values filter (multiple values) (extractorInstancesByEntity)",
-      // "select Authors with values filter and not flag (extractorInstancesByEntity)",
-      // "select custom-built result: Books of Publisher of given Book from Domain State (extractorByPrimaryKey, combinerOneToOne, combinerOneToMany)",
-      // "select custom-built result: return Books of Author from Domain State (extractorByPrimaryKey, combinerOneToMany)",
-      // "select custom-built result: return couple Author name - Book title for Books of Author from Domain State (extractorByPrimaryKey, combinerOneToMany with applyTransformer)",
-      "select custom-built result with combinerByHeteronomousManyToMany: instances of all Entites from Domain State, indexed by Entity Uuid (extractorInstancesByEntity, combinerByHeteronomousManyToMany)",
-      // "select Unique Publisher Uuids of Books (extractorInstancesByEntity, runtimeTransformer)"
-    ]) return true;
-    return false;
-  })
-);
+// const filteredTestExtractorParams = Object.fromEntries(
+//   Object.entries(testExtractorParams).filter(([name, testParams]) => {
+//     if (name in [
+//       "error on non-existing Entity: EntityNotFound",
+//       "error on non-existing object uuid: InstanceNotFound (extractorByPrimaryKey)",
+//       "select 1 object from Domain State (extractorByPrimaryKey)",
+//       "select 1 object from Domain State and apply transformer on foreign key (extractorByPrimaryKey with applyTransformer)",
+//       "select 1 object from Domain State using direct query parameter reference",
+//       "select 1 object from the uuid found in an attribute of another object from Domain State",
+//       "select 1 object from the uuid found in an attribute of another object then use applyTransformer on it",
+//       "select publishers of books by author using combinerManyToMany with applyTransformer (extractorByPrimaryKey, combinerOneToMany, combinerManyToMany with applyTransformer)",
+//       "select Authors (extractorInstancesByEntity)",
+//       "select Authors with values filter (multiple values) (extractorInstancesByEntity)",
+//       "select Authors with values filter and not flag (extractorInstancesByEntity)",
+//       "select custom-built result: Books of Publisher of given Book from Domain State (extractorByPrimaryKey, combinerOneToOne, combinerOneToMany)",
+//       "select custom-built result: return Books of Author from Domain State (extractorByPrimaryKey, combinerOneToMany)",
+//       "select custom-built result: return couple Author name - Book title for Books of Author from Domain State (extractorByPrimaryKey, combinerOneToMany with applyTransformer)",
+//       "select custom-built result with combinerByHeteronomousManyToMany: instances of all Entites from Domain State, indexed by Entity Uuid (extractorInstancesByEntity, combinerByHeteronomousManyToMany)",
+//       "select Unique Publisher Uuids of Books (extractorInstancesByEntity, runtimeTransformer)"
+//     ]) return true;
+//     return false;
+//   })
+// );
 
 describe("queries.unit", () => {
   // ###########################################################################################

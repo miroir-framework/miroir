@@ -1723,7 +1723,18 @@ export function getMiroirFundamentalJzodSchema(
           {
             type: "never",
           },
-        // ...(makeReferencesAbsolute(entityDefinitionQueryVersionV1.mlSchema.definition.definition,miroirFundamentalJzodSchemaUuid) as any).context,
+        /**
+         * HACK:
+         * extractorOrCombinerTemplate / extractorOrCombinerTemplateRecord are used in entityDefinitionQueryVersionV1WithAbsoluteReferences
+         * although they require to have passed the template generation phase
+         * this works only because the template generation phase ignores references starting by "miroirTemplate_" and 
+         * reproduces them as is in the generated schema, allowing to break the circular dependency
+         * 
+         * TODO: we need a CLEAN solution to enable template-producing Entity definition, 
+         * or should this remain absolutely local, because it does not make sense in the general case
+         * TODO: this seema to induce a display problem in the Jzod element editor, with the "extractorWrapperReturningObject" case
+         *  (it should display an error if incorrect, in this case `itemsOrder= []`).
+         */
         extractorOrCombinerTemplate: {
           type: "schemaReference",
           definition: { // reference starting by "miroirTemplate_" will be reproduced as is by template generation

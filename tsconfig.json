@@ -11,6 +11,7 @@
 		"target": "esnext",
 		"module": "esnext",
 		"moduleResolution": "node",
+    "ignoreDeprecations": "6.0",
     "strict": true,
     "noImplicitAny": true,
     "noImplicitThis": true,
@@ -23,7 +24,6 @@
     "lib": ["es2022", "dom"],
     "removeComments": true,
     "jsx": "react-jsx",
-    "allowJs": true,
-    "outDir": "./dist"
+    "allowJs": true
   }
 }

@@ -226,11 +226,11 @@ export function FileSystemDbEntityStoreSectionMixin<TBase extends typeof MixedFi
           `renameEntityClean failed for section: data, entityUuid ${update.payload.entityDefinitionUuid}, error: ${currentEntityDefinition.returnedDomainElement.queryFailure}, ${currentEntityDefinition.returnedDomainElement.failureMessage}`
         ));
       }
-      const modifiedEntity: EntityInstanceWithName = Object.assign(
+      const modifiedEntity: Entity = Object.assign(
         {},
         currentEntity.returnedDomainElement,
         { name: update.payload.targetValue }
-      );
+      ) as Entity;
       const modifiedEntityDefinition: EntityDefinition = Object.assign(
         {},
         currentEntityDefinition.returnedDomainElement as EntityDefinition,
