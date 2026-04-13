@@ -1,7 +1,6 @@
 import {
   CompositeActionSequence,
   CompositeActionTemplate,
-  TransformerForBuild
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import type { MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
 import { TransformerFailure, type ITransformerFailure, type TransformerReturnType } from "../0_interfaces/2_domain/DomainElement";

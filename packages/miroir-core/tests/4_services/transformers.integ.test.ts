@@ -170,7 +170,7 @@ const beforeAll = async () => {
       testApplicationConfig.selfApplication,
       testApplicationConfig.applicationModelBranch,
       testApplicationConfig.applicationVersion,
-      defaultMiroirMetaModel,
+      // defaultMiroirMetaModel,
     );
 
     await persistenceStoreController.handleAction({
@@ -310,7 +310,7 @@ if (shouldSkip) {
     //         //   "ifThenElse greater than or equal false - number comparison",
     //         //   "ifThenElse with parameter reference comparison",
     //         // ]
-    //         // "object_alter": [
+    //         // "mergeIntoObject": [
     //         //   "mergeIntoObject should fail when definition fails to resolve correctly",
     //         // ]
     //       },

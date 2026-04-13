@@ -12,56 +12,8 @@ import {
   Transformer,
   Transformer_contextOrParameterReferenceTO_REMOVE,
   TransformerDefinition,
-  // TransformerForBuild,
-  // TransformerForBuild_returnValue,
-  // // TransformerForBuild_constantArray,
-  // TransformerForBuild_constantAsExtractor,
-  // TransformerForBuild_aggregate,
-  // TransformerForBuild_dataflowObject,
-  // TransformerForBuild_createObject,
-  // // TransformerForBuild_InnerReference,
-  // TransformerForBuild_pickFromList,
-  // TransformerForBuild_indexListBy,
-  // TransformerForBuild_listReducerToSpreadObject,
-  // TransformerForBuild_mapList,
-  // TransformerForBuild_mustacheStringTemplate,
-  // TransformerForBuild_generateUuid,
-  // TransformerForBuild_createObjectFromPairs,
-  // TransformerForBuild_mergeIntoObject,
-  // TransformerForBuild_accessDynamicPath,
-  // TransformerForBuild_getObjectEntries,
-  // TransformerForBuild_getObjectValues,
-  // TransformerForBuild_getFromParameters,
-  // TransformerForBuild_getUniqueValues,
   CoreTransformerForBuildPlusRuntime,
-  // TransformerForRuntime,
-  // TransformerForRuntime_returnValue,
-  // // TransformerForRuntime_constantArray,
-  // TransformerForRuntime_constants,
-  // TransformerForRuntime_getFromContext,
-  // TransformerForRuntime_aggregate,
-  // TransformerForRuntime_dataflowObject,
-  // TransformerForRuntime_defaultValueForMLSchema,
-  // TransformerForRuntime_createObject,
-  // TransformerForRuntime_pickFromList,
-  // TransformerForRuntime_indexListBy,
-  // TransformerForRuntime_listReducerToSpreadObject,
-  // TransformerForRuntime_mapList,
-  // TransformerForRuntime_mustacheStringTemplate,
-  // TransformerForRuntime_generateUuid,
-  // TransformerForRuntime_createObjectFromPairs,
-  // TransformerForRuntime_mergeIntoObject,
-  // TransformerForRuntime_accessDynamicPath,
-  // TransformerForRuntime_getObjectEntries,
-  // TransformerForRuntime_getObjectValues,
-  // TransformerForRuntime_getUniqueValues,
-  // type TransformerForBuild_InnerReference,
-  // type TransformerForRuntime_ifThenElse,
-  // type TransformerForRuntime_InnerReference,
-  // type TransformerForBuild_getActiveDeployment,
-  // type CoreTransformerForBuildPlusRuntime_getActiveDeployment,
   type CoreTransformerForBuildPlusRuntime_aggregate,
-  // type CoreTransformerForBuildPlusRuntime_defaultValueForMLSchema,
   type CoreTransformerForBuildPlusRuntime_createObjectFromPairs,
   type CoreTransformerForBuildPlusRuntime_mergeIntoObject,
   type CoreTransformerForBuildPlusRuntime_mapList,
@@ -84,7 +36,10 @@ import {
   type CoreTransformerForBuildPlusRuntime_constantAsExtractor,
   type CoreTransformerForBuildPlusRuntime_getFromParameters,
   type CoreTransformerForBuildPlusRuntime_defaultValueForMLSchema,
-  type CoreTransformerForBuildPlusRuntime_getActiveDeployment,
+  type TransformerForBuildPlusRuntime_getActiveDeployment,
+  type TransformerForBuildPlusRuntime_duplicateApplicationModel,
+  type MetaModel,
+  type Menu,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import {
   defaultTransformerInput,
@@ -155,6 +110,7 @@ import {
   transformer_getActiveDeployment,
   transformer_ansiColumnsToJzodSchema,
   transformer_defaultValueForMLSchema,
+  transformer_duplicateApplicationModel,
 } from "./Transformers";
 import type { MiroirActivityTrackerInterface } from "../0_interfaces/3_controllers/MiroirActivityTrackerInterface";
 import { defaultAdminApplicationDeploymentMapNOTGOOD, type ApplicationDeploymentMap } from "../1_core/Deployment";
@@ -190,6 +146,7 @@ export const defaultTransformers = { // TODO: should it be exported? Should'nt i
   handleTransformer_menu_AddItem,
   // ##############################
   handleTransformer_getActiveDeployment,
+  handleTransformer_duplicateApplicationModel,
 };
 
 // ################################################################################################
@@ -713,10 +670,16 @@ export function defaultValueForMLSchemaTransformer(
   return result;
 }
 
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
 const inMemoryTransformerImplementations: Record<string, ITransformerHandler<any>> = {
   handleTransformer_menu_AddItem: defaultTransformers.handleTransformer_menu_AddItem,
   // 
-    handleTransformer_getActiveDeployment,
+  handleTransformer_getActiveDeployment,
+  handleTransformer_duplicateApplicationModel,
   //
   handleCountTransformer,
   handleListPickElementTransformer,
@@ -756,12 +719,14 @@ const inMemoryTransformerImplementations: Record<string, ITransformerHandler<any
   handleTransformer_concatLists,
 };
 
-// transformer_defaultValueForMLSchema
-// transformer_defaultValueForMLSchema
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
 export const applicationTransformerDefinitions: Record<string, TransformerDefinition> = {
   transformer_menu_addItem: transformer_menu_addItem,
   // admin
   getActiveDeployment: transformer_getActiveDeployment,
+  duplicateApplicationModel: transformer_duplicateApplicationModel,
   //
   spreadSheetToJzodSchema: transformer_spreadSheetToJzodSchema,
   aggregate: transformer_aggregate,
@@ -804,14 +769,7 @@ function handleTransformer_getActiveDeployment(
   step: Step,
   transformerPath: string[],
   label: string | undefined,
-  transformer:
-    // | TransformerForBuild_getActiveDeployment
-    | CoreTransformerForBuildPlusRuntime_getActiveDeployment,
-  // resolveBuildTransformersTo: ResolveBuildTransformersTo,
-    // | TransformerForBuild_createObjectFromPairs
-    // | TransformerForRuntime_createObjectFromPairs
-    // | TransformerForBuild_mergeIntoObject
-    // | TransformerForRuntime_mergeIntoObject,
+  transformer: TransformerForBuildPlusRuntime_getActiveDeployment,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
   modelEnvironment: MiroirModelEnvironment,
   queryParams: Record<string, any>,
@@ -865,6 +823,105 @@ function handleTransformer_getActiveDeployment(
     // );
     return defaultAdminApplicationDeploymentMapNOTGOOD[transformer.application];
   }
+}
+
+// ################################################################################################
+function handleTransformer_duplicateApplicationModel(
+  step: Step,
+  transformerPath: string[],
+  label: string | undefined,
+  transformer: TransformerForBuildPlusRuntime_duplicateApplicationModel,
+  resolveBuildTransformersTo: ResolveBuildTransformersTo,
+  modelEnvironment: MiroirModelEnvironment,
+  queryParams: Record<string, any>,
+  contextResults?: Record<string, any>,
+  reduxDeploymentsState?: ReduxDeploymentsState | undefined // used by getDefaultValueForJzodSchemaWithResolution only, somewhat redundant with modelEnvironment
+) {
+
+  let newApplicationUuid: Uuid | undefined = undefined;
+  if (typeof transformer.application == "object") {
+    const resolvedApplication = defaultTransformers.transformer_extended_apply(
+      step,
+      [...transformerPath, "application"],
+      label,
+      transformer.application,
+      resolveBuildTransformersTo,
+      modelEnvironment,
+      queryParams,
+      contextResults
+    );
+    if (resolvedApplication instanceof TransformerFailure) {
+      return new TransformerFailure({
+        queryFailure: "FailedTransformer",
+        transformerPath: [...transformerPath, "application"],
+        failureOrigin: ["handleTransformer_getActiveDeployment"],
+        failureMessage:
+          "handleTransformer_getActiveDeployment failed to resolve application transformer",
+        queryContext: JSON.stringify(transformer),
+        queryParameters: queryParams as any,
+      });
+    }
+    newApplicationUuid = resolvedApplication;
+  } else {
+    newApplicationUuid = transformer.application;
+  }
+
+  if (!newApplicationUuid) {
+    return new TransformerFailure({
+      queryFailure: "FailedTransformer",
+      transformerPath: [...transformerPath, "application"],
+      failureOrigin: ["handleTransformer_duplicateApplicationModel"],
+      failureMessage:
+        "handleTransformer_duplicateApplicationModel failed to resolve application UUID",
+      queryContext: JSON.stringify(transformer),
+      queryParameters: queryParams as any,
+    });
+  }
+
+  const result: MetaModel = {
+    ...transformer.applicationBundle,
+    applicationUuid: newApplicationUuid,
+    applications: transformer.applicationBundle.applications.map(app => ({
+      ...app,
+      applicationUuid: newApplicationUuid,
+    })),
+    entities: transformer.applicationBundle.entities.map(entity => ({
+      ...entity,
+      selfApplication: newApplicationUuid,
+    })),
+    endpoints: transformer.applicationBundle.endpoints.map(endpoint => ({
+      ...endpoint,
+      application: newApplicationUuid,
+    })),
+    menus: transformer.applicationBundle.menus.map(menu => ({
+      ...menu,
+      definition: menu.definition.menuType == "simpleMenu"?
+        menu.definition.definition.map(item => ({
+          ...item,
+          selfApplication: newApplicationUuid,
+        })) :
+        {
+          ...menu.definition.definition,
+          items: (menu.definition.definition as any).items.map((item: any) => ({
+            ...item,
+            selfApplication: newApplicationUuid,
+          }))
+        }
+    })) as any,
+    reports: transformer.applicationBundle.reports.map(report => ({
+      ...report,
+      selfApplication: newApplicationUuid,
+    })),
+    applicationVersions: transformer.applicationBundle.applicationVersions.map(av => ({
+      ...av,
+      selfApplication: newApplicationUuid,
+    })),
+    runners: transformer.applicationBundle.runners.map(runner => ({
+      ...runner,
+      selfApplication: newApplicationUuid,
+    })),
+  }
+  return result;
 }
 
 // ################################################################################################
@@ -999,19 +1056,10 @@ function resolveApplyTo(
 // TODO: identical to resolveApplyTo, should be merged?
 export function resolveApplyTo_legacy(
   transformer:
-    // | TransformerForBuild_aggregate
-    // | TransformerForBuild_mapList
-    // | TransformerForBuild_pickFromList
-    // | TransformerForBuild_listReducerToSpreadObject
-    // | TransformerForBuild_indexListBy
-    // | TransformerForBuild_getObjectEntries
-    // | TransformerForBuild_getObjectValues
-    // | TransformerForBuild_getUniqueValues
     | CoreTransformerForBuildPlusRuntime_aggregate
     | CoreTransformerForBuildPlusRuntime_mapList
     | CoreTransformerForBuildPlusRuntime_pickFromList
     | CoreTransformerForBuildPlusRuntime_indexListBy
-    // | TransformerForRuntime_mapper_listToObject
     | CoreTransformerForBuildPlusRuntime_listReducerToSpreadObject
     | CoreTransformerForBuildPlusRuntime_getObjectEntries
     | CoreTransformerForBuildPlusRuntime_getObjectValues

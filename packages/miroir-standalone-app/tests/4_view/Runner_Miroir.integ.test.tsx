@@ -311,6 +311,7 @@ const runnerTestParams: Record<string, RunnerTestParams> = {
           applicationUuid: installTestApplicationUuid,
         },
         deploymentData: simplifiedLibraryData,
+        newApplicationUuid: testApplicationUuid,
         deploymentUuid: installTestApplicationDeploymentUuid, // to enable getFromParameters on deploymentUuid in the runner
         applicationStorage: {
           emulatedServerType: "sql",

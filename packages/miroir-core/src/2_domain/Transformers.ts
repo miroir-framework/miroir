@@ -34,6 +34,7 @@ import {
   transformer_unfoldSchemaOnce_json,
   transformer_jzodTypeCheck_json,
   transformer_getActiveDeployment_json,
+  transformer_duplicateApplicationModel_json,
   transformer_ansiColumnsToJzodSchema_json,
   transformer_concatLists_json,
 } from "miroir-test-app_deployment-miroir";
@@ -78,10 +79,13 @@ export const transformer_unfoldSchemaOnce: TransformerDefinition = transformer_u
 export const transformer_jzodTypeCheck: TransformerDefinition = transformer_jzodTypeCheck_json as TransformerDefinition;
 // admin
 export const transformer_getActiveDeployment: TransformerDefinition = transformer_getActiveDeployment_json as TransformerDefinition;
+export const transformer_duplicateApplicationModel: TransformerDefinition = transformer_duplicateApplicationModel_json as TransformerDefinition;
 export const transformer_ansiColumnsToJzodSchema: TransformerDefinition = transformer_ansiColumnsToJzodSchema_json as TransformerDefinition;
 export const transformer_concatLists: TransformerDefinition = transformer_concatLists_json as TransformerDefinition;
 
 export const adminTransformers: Record<string,TransformerDefinition> = {
+  transformer_getActiveDeployment,
+  transformer_duplicateApplicationModel,
   // transformer_getActiveDeployment,
 };
 
@@ -98,10 +102,13 @@ export const mlsTransformers: Record<string,TransformerDefinition> = {
   transformer_ansiColumnsToJzodSchema,
 };
 
+// export const miroirAdminTransformers: Record<string,TransformerDefinition> = {
+//   transformer_getActiveDeployment,
+//   transformer_duplicateApplicationModel,
+// };
+
 export const miroirCoreTransformers: Record<string,TransformerDefinition> = {
   transformer_defaultValueForMLSchema,
-  // 
-  transformer_getActiveDeployment,
   //
   transformer_accessDynamicPath,
   transformer_aggregate,
@@ -145,10 +152,10 @@ export const coreTransformerForBuildPlusRuntimeNames = Object.keys(miroirCoreTra
   e.replace("transformer_", "coreTransformerForBuildPlusRuntime_")
 );
 
-export const transformerForBuildPlusRuntimeNames = Object.keys(miroirTransformers)
-.map((e) =>
-  e.replace("transformer_", "transformerForBuildPlusRuntime_")
-);
+// export const transformerForBuildPlusRuntimeNames = Object.keys(miroirTransformers)
+// .map((e) =>
+//   e.replace("transformer_", "transformerForBuildPlusRuntime_")
+// );
 
 
 const buildPlusRuntimeReferenceMap: Record<string, string> = {
@@ -187,7 +194,7 @@ export const miroirTransformersForBuildPlusRuntime: Record<string, JzodElement> 
     transformerInterfaceFromDefinition(
       transformer,
       "coreBuildPlusRuntime",
-      buildPlusRuntimeReferenceMap,
+      coreBuildPlusRuntimeReferenceMap,
       true, // ["transformer_getFromContext", "transformer_getFromParameters"].includes(key)
     ),
   ])

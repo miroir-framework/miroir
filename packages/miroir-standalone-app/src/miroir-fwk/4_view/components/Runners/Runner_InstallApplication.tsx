@@ -38,7 +38,9 @@ export const Runner_InstallApplication: React.FC<DeployApplicationRunnerProps> =
   const runnerApplicationDeploymentMap = useCallback(
     (values: any) => ({
       ...applicationDeploymentMap,
-      [values.deployApplication?.applicationBundle?.applicationUuid ?? "NO_APPLICATION_UUID"]:
+      [(values.deployApplication?.duplicateApplication
+        ? values.deployApplication?.newApplicationUuid
+        : values.deployApplication?.applicationBundle?.applicationUuid) ?? "NO_APPLICATION_UUID"]:
         values.deployApplication?.deploymentUuid ?? "NO_DEPLOYMENT_UUID",
     }),
     [applicationDeploymentMap],

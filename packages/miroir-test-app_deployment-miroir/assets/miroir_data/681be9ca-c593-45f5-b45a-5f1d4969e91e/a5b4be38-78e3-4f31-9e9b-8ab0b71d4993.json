@@ -5555,7 +5555,7 @@
           },
           {
             "transformerTestType": "transformerTestSuite",
-            "transformerTestLabel": "object_alter",
+            "transformerTestLabel": "mergeIntoObject",
             "skip": true,
             "transformerTests": [
               {

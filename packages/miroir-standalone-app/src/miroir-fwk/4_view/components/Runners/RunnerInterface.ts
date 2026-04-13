@@ -1,7 +1,13 @@
 import type { FormikHelpers } from "formik";
-import type { CompositeActionSequence, CompositeActionTemplate, TransformerForBuildPlusRuntime, JzodObject, BoxedQueryTemplateWithExtractorCombinerTransformer, BoxedQueryWithExtractorCombinerTransformer, MiroirModelEnvironment, Uuid, ApplicationDeploymentMap } from "miroir-core";
+import type {
+  ApplicationDeploymentMap,
+  CompositeActionSequence,
+  CompositeActionTemplate,
+  JzodObject,
+  CoreTransformerForBuildPlusRuntime,
+  Uuid
+} from "miroir-core";
 import type { MlSchemaTemplate } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
-import type { ReactElement } from "react";
 
 // ################################################################################################
 export type RunnerAction<T extends Record<string, any>> =
@@ -24,7 +30,7 @@ export type InitialFormValue<T extends Record<string, any>> = {
   value: T,
 } | {
   initFormValueType: "transformer",
-  transformer: TransformerForBuildPlusRuntime,
+  transformer: CoreTransformerForBuildPlusRuntime,
 }
 
 // ##################################################################################################
@@ -60,7 +66,7 @@ export interface RunnerProps<T extends Record<string, any>> {
   validateOnChange?: boolean;
   validateOnBlur?: boolean;
   enableReinitialize?: boolean;
-  validationTransformer?: TransformerForBuildPlusRuntime;
+  validationTransformer?: CoreTransformerForBuildPlusRuntime;
 }
 
 // ################################################################################################

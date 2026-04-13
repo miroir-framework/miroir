@@ -1,4 +1,4 @@
-// import { describe, it, expect } from "vitest";
+import { describe, it, expect } from "vitest";
 import {
   sql_jsonb_array_elements,
   sql_jsonb_each,

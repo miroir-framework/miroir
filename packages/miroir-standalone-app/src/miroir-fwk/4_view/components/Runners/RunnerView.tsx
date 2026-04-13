@@ -15,7 +15,7 @@ import type {
   Runner,
   SyncBoxedExtractorOrQueryRunnerMap,
   SyncQueryRunner,
-  TransformerForBuildPlusRuntime,
+  CoreTransformerForBuildPlusRuntime,
   Uuid,
   ViewParams
 } from "miroir-core";
@@ -194,7 +194,7 @@ export function StoredRunnerView(props: {
           "build",
           [],
           "resolving formMLSchema transformer",
-          formMLSchema.transformer as TransformerForBuildPlusRuntime,
+          formMLSchema.transformer as CoreTransformerForBuildPlusRuntime,
         defaultMiroirModelEnvironment,
         {
           viewParams: viewParams || {},
@@ -249,7 +249,7 @@ export function StoredRunnerView(props: {
                   [], // transformerPath
                   "initialFormValueAsTransformer", // transformerLabel
                   storedRunner.definition.formMLSchema
-                    .initialFormValues as any as TransformerForBuildPlusRuntime, // TODO: correct type
+                    .initialFormValues as any as CoreTransformerForBuildPlusRuntime, // TODO: correct type
                   currentModelEnvironment, // TODO: the DeploymentUuid can change, need to handle that?
                   {}, // transformerParams
                   {}, // contextResults
@@ -328,13 +328,12 @@ export function StoredRunnerView(props: {
             useCodeBlock: true,
           },
           {
-            label: `${runnerName} applicationUuid`,
+            label: `${runnerName} application & deployment`,
             data: {
               applicationUuid: props.applicationUuid,
               applicationDeploymentMap:
                 props.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap,
               runnerDeploymentUuid,
-              props,
             },
           },
           {
@@ -449,7 +448,7 @@ export const RunnerView = <T extends Record<string, any>>(props: RunnerProps<T>)
             "runtime", // step
             [], // transformerPath
             "initialFormValueAsTransformer", // transformerLabel
-            (initialFormValue as any).transformer as any as TransformerForBuildPlusRuntime, // TODO: correct type
+            (initialFormValue as any).transformer as any as CoreTransformerForBuildPlusRuntime, // TODO: correct type
             currentModelEnvironment, // TODO: the DeploymentUuid can change, need to handle that?
             {}, // transformerParams
             {}, // contextResults
@@ -459,11 +458,21 @@ export const RunnerView = <T extends Record<string, any>>(props: RunnerProps<T>)
 
   // ##############################################################################################
   const handleSubmit = async (values: T, formikHelpers: FormikHelpers<T>) => {
-    log.info("RunnerView handleSubmit", action.actionType, "action", action, "values", values);
-
+    
     const applicationDeploymentMapForAction = runnerApplicationDeploymentMap
-      ? runnerApplicationDeploymentMap(values)
-      : applicationDeploymentMap;
+    ? runnerApplicationDeploymentMap(values)
+    : applicationDeploymentMap;
+    
+    log.info(
+      "RunnerView handleSubmit",
+      action.actionType,
+      "action",
+      action,
+      "values",
+      values,
+      "applicationDeploymentMapForAction",
+      applicationDeploymentMapForAction,
+    );
 
     switch (action.actionType) {
       case "onSubmit": {
@@ -490,7 +499,6 @@ export const RunnerView = <T extends Record<string, any>>(props: RunnerProps<T>)
       }
       case "compositeActionTemplate": {
         return handleAsyncAction(async () => {
-        // return async () => {
           const result = await domainController.handleCompositeActionTemplate(
             action.compositeActionTemplate,
             applicationDeploymentMapForAction,

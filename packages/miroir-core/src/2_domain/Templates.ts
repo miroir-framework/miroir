@@ -362,17 +362,17 @@ export function resolveQueryTemplateWithExtractorCombinerTransformer(
   //   // JSON.stringify(params, null, 2)
   // );
   
-  const queries = Object.fromEntries(
+  const resolvedQueries: ExtractorOrCombinerRecord = Object.fromEntries(
     Object.entries(queryTemplate.extractorTemplates ?? {}).map(
       (e: [string, ExtractorOrCombinerTemplate]) => [
         e[0],
         resolveExtractorTemplate(e[1], modelEnvironment, params, queryTemplate.contextResults ?? {}), // TODO: generalize to ExtractorOrCombiner & check for failure!
       ]
     )
-  );
+  ) as ExtractorOrCombinerRecord;
   // log.info("resolveQueryTemplateWithExtractorCombinerTransformer converted extractorTemplates, result:", queries);
   
-  const failedQueries = Object.values(queries).filter((e) => (e as any).queryFailure);
+  const failedQueries = Object.values(resolvedQueries).filter((e) => (e as any).queryFailure);
   if (failedQueries.length > 0) {
     throw new Error(
       "resolveQueryTemplateWithExtractorCombinerTransformer QueryNotExecutable failedQueries: " +
@@ -391,7 +391,7 @@ export function resolveQueryTemplateWithExtractorCombinerTransformer(
         resolveExtractorTemplate(e[1], modelEnvironment, params, queryTemplate.contextResults ?? {}), // TODO: generalize to ExtractorOrCombiner & check for failure!
       ]
     )
-  );
+  ) as ExtractorOrCombinerRecord;
 
   // log.info("resolveQueryTemplateWithExtractorCombinerTransformer converted combinerTemplates, result:", combiners);
   const failures = Object.values(combiners??{}).find((e) => (e as any).queryFailure);
@@ -413,8 +413,8 @@ export function resolveQueryTemplateWithExtractorCombinerTransformer(
     queryParams: queryTemplate.queryParams,
     contextResults: queryTemplate.contextResults,
     application: queryTemplate.application,
-    extractors: queries as ExtractorOrCombinerTemplateRecord,
-    combiners: combiners as ExtractorOrCombinerTemplateRecord,
+    extractors: resolvedQueries,
+    combiners: combiners,
     runtimeTransformers: queryTemplate.runtimeTransformers,
   };
   // log.info("resolveQueryTemplateWithExtractorCombinerTransformer converted query, result:", combiners);

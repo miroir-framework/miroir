@@ -1,0 +1,54 @@
+{
+  "uuid": "e709496c-7deb-4759-bec3-b31caf3a909d",
+  "name": "duplicateApplicationModel",
+  "defaultLabel": "duplicateApplicationModel",
+  "description": "Returns a duplicate model for the provided Application model, replacing the original Application uuid throughout.",
+  "parentUuid": "a557419d-a288-4fb8-8a1e-971c86c113b8",
+  "parentDefinitionVersionUuid": "54a16d69-c1f0-4dd7-aba4-a2cda883586c",
+  "parentName": "TransformerDefinition",
+  "classification": "admin",
+  "transformerInterface": {
+    "inputOutput": {
+      "input": "metaModel",
+      "output": "metaModel"
+    },
+    "transformerParameterSchema": {
+      "transformerType": {
+        "type": "literal",
+        "definition": "duplicateApplicationModel"
+      },
+      "transformerDefinition": {
+        "type": "object",
+        "definition": {
+          "application": {
+            "type": "uuid",
+            "description": "The UUID of the application for which to get the active deployment.",
+            "tag": {
+              "value": {
+                "defaultLabel": "Application"
+              }
+            }
+          },
+          "applicationBundle": {
+            "type": "schemaReference",
+            "definition": {
+            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            "relativePath": "metaModel"
+            }
+          }
+        }
+      }
+    },
+    "transformerResultSchema": {
+      "returns": "mlSchema",
+      "definition": {
+        "type": "string"
+      }
+    }
+  },
+  "transformerImplementation": {
+    "transformerImplementationType": "libraryImplementation",
+    "inMemoryImplementationFunctionName": "handleTransformer_duplicateApplicationModel",
+    "sqlImplementationFunctionName": "TODO"
+  }
+}

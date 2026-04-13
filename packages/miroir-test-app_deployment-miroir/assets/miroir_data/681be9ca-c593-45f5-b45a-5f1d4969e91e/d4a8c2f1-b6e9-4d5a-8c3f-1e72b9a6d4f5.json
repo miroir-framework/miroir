@@ -1,0 +1,168 @@
+{
+  "uuid": "d4a8c2f1-b6e9-4d5a-8c3f-1e72b9a6d4f5",
+  "parentName": "TransformerTest",
+  "parentUuid": "681be9ca-c593-45f5-b45a-5f1d4969e91e",
+  "name": "adminTransformers",
+  "selfApplication": "21840247-b5b1-4344-baec-f818f4797d92",
+  "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
+  "description": "Tests for admin transformers (duplicateApplicationModel, etc.)",
+  "definition": {
+    "transformerTestType": "transformerTestSuite",
+    "transformerTestLabel": "adminTransformers",
+    "transformerTests": [
+      {
+        "transformerTestType": "transformerTestSuite",
+        "transformerTestLabel": "duplicateApplicationModel",
+        "transformerTests": [
+          {
+            "transformerTestType": "transformerTest",
+            "transformerTestLabel": "duplicateApplicationModel replaces application UUID in a simplified library model",
+            "transformerName": "duplicateApplicationModel_simplifiedLibrary",
+            "transformer": {
+              "transformerType": "duplicateApplicationModel",
+              "interpolation": "runtime",
+              "application": "55555555-5555-5555-5555-555555555555",
+              "applicationBundle": {
+                "applicationUuid": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                "applicationName": "Library",
+                "applications": [
+                  {
+                    "uuid": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                    "parentName": "SelfApplication",
+                    "parentUuid": "a659d350-dd97-4da9-91de-524fa01745dc",
+                    "name": "Library"
+                  }
+                ],
+                "entities": [
+                  {
+                    "uuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                    "parentName": "Entity",
+                    "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                    "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                    "name": "Book",
+                    "conceptLevel": "Model"
+                  }
+                ],
+                "entityDefinitions": [
+                  {
+                    "uuid": "797dd185-0155-43fd-b23f-f6d0af8cae06",
+                    "parentName": "EntityDefinition",
+                    "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+                    "entityUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                    "name": "Book",
+                    "conceptLevel": "Model",
+                    "mlSchema": {
+                      "type": "object",
+                      "definition": {
+                        "uuid": { "type": "uuid" },
+                        "name": { "type": "string" }
+                      }
+                    }
+                  }
+                ],
+                "endpoints": [],
+                "jzodSchemas": [],
+                "menus": [],
+                "storedQueries": [],
+                "reports": [
+                  {
+                    "uuid": "c3503412-3d8a-43ef-a168-aa36e975e606",
+                    "parentName": "Report",
+                    "parentUuid": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+                    "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                    "name": "BookList",
+                    "defaultLabel": "List of Books",
+                    "conceptLevel": "Model"
+                  }
+                ],
+                "applicationVersions": [
+                  {
+                    "uuid": "a1b2c3d4-e5f6-7890-a1b2-c3d4e5f67890",
+                    "parentName": "ApplicationVersion",
+                    "parentUuid": "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24",
+                    "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                    "name": "version0",
+                    "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7"
+                  }
+                ],
+                "runners": [],
+                "themes": [],
+                "applicationVersionCrossEntityDefinition": []
+              }
+            },
+            "transformerParams": {},
+            "transformerRuntimeContext": {},
+            "expectedValue": {
+              "applicationUuid": "55555555-5555-5555-5555-555555555555",
+              "applicationName": "Library",
+              "applications": [
+                {
+                  "uuid": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                  "parentName": "SelfApplication",
+                  "parentUuid": "a659d350-dd97-4da9-91de-524fa01745dc",
+                  "name": "Library",
+                  "applicationUuid": "55555555-5555-5555-5555-555555555555"
+                }
+              ],
+              "entities": [
+                {
+                  "uuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                  "parentName": "Entity",
+                  "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                  "selfApplication": "55555555-5555-5555-5555-555555555555",
+                  "name": "Book",
+                  "conceptLevel": "Model"
+                }
+              ],
+              "entityDefinitions": [
+                {
+                  "uuid": "797dd185-0155-43fd-b23f-f6d0af8cae06",
+                  "parentName": "EntityDefinition",
+                  "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+                  "entityUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                  "name": "Book",
+                  "conceptLevel": "Model",
+                  "mlSchema": {
+                    "type": "object",
+                    "definition": {
+                      "uuid": { "type": "uuid" },
+                      "name": { "type": "string" }
+                    }
+                  }
+                }
+              ],
+              "endpoints": [],
+              "jzodSchemas": [],
+              "menus": [],
+              "storedQueries": [],
+              "reports": [
+                {
+                  "uuid": "c3503412-3d8a-43ef-a168-aa36e975e606",
+                  "parentName": "Report",
+                  "parentUuid": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+                  "selfApplication": "55555555-5555-5555-5555-555555555555",
+                  "name": "BookList",
+                  "defaultLabel": "List of Books",
+                  "conceptLevel": "Model"
+                }
+              ],
+              "applicationVersions": [
+                {
+                  "uuid": "a1b2c3d4-e5f6-7890-a1b2-c3d4e5f67890",
+                  "parentName": "ApplicationVersion",
+                  "parentUuid": "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24",
+                  "selfApplication": "55555555-5555-5555-5555-555555555555",
+                  "name": "version0",
+                  "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7"
+                }
+              ],
+              "runners": [],
+              "themes": [],
+              "applicationVersionCrossEntityDefinition": []
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

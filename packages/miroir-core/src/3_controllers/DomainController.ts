@@ -2276,6 +2276,7 @@ export class DomainController implements DomainControllerInterface {
     modelEnvironment: MiroirModelEnvironment,
     applicationDeploymentMap: ApplicationDeploymentMap,
     actionParamValues: Record<string, any>,
+    actionContext: Record<string, any> = {},
     // currentModel: MiroirModelEnvironment // TODO: redundant with actionParamValues, remove it?
   ): Promise<Action2VoidReturnType> {
     const localActionParams = { ...actionParamValues };
@@ -2319,6 +2320,7 @@ export class DomainController implements DomainControllerInterface {
               applicationDeploymentMap,
               modelEnvironment,
               localActionParams,
+              actionContext,
             );
             break;
           }
@@ -2716,7 +2718,6 @@ export class DomainController implements DomainControllerInterface {
     actionParamValues: Record<string, any>,
   ): Promise<Action2VoidReturnType> {
     const localActionParams = { ...templateEvaluationParams, ...actionParamValues };
-    let localContext: Record<string, any> = { ...actionParamValues };
 
     log.info(
       "handleBuildPlusRuntimeCompositeAction compositeActionSequence",
@@ -2794,6 +2795,11 @@ export class DomainController implements DomainControllerInterface {
 
     const queryParamsForActionResolution = {
       ...templateEvaluationParams,
+      ...actionParamValues,
+      ...resolvedCompositeActionTemplates, // TODO: remove, evaluated templates are available only at runtime!
+    };
+
+    let localContext: Record<string, any> = {
       ...actionParamValues,
       ...resolvedCompositeActionTemplates,
     };
@@ -2880,6 +2886,7 @@ export class DomainController implements DomainControllerInterface {
       modelEnvironment,
       applicationDeploymentMap,
       actionParamValues,
+      localContext,
     );
     // return Promise.resolve(ACTION_OK);
   }
@@ -3262,9 +3269,9 @@ export class DomainController implements DomainControllerInterface {
     applicationDeploymentMap: ApplicationDeploymentMap,
     modelEnvironment: MiroirModelEnvironment,
     actionParamValues: Record<string, any>,
+    actionContext: Record<string, any> = {},
   ): Promise<Action2VoidReturnType> {
     const localActionParams = { ...templateEvaluationParams, ...actionParamValues };
-    let localContext: Record<string, any> = { ...actionParamValues };
     const actionLabel = (compositeActionSequence as any).actionLabel ?? "no action label";
     log.info(
       "handleCompositeActionTemplate called with compositeActionSequence",
@@ -3273,6 +3280,8 @@ export class DomainController implements DomainControllerInterface {
       compositeActionSequence,
       "localActionParams",
       localActionParams,
+      "actionContext",
+      actionContext,
     );
     const resolved: TransformerReturnType<{
       resolvedCompositeActionDefinition: CompositeActionSequence;
@@ -3306,6 +3315,12 @@ export class DomainController implements DomainControllerInterface {
       resolved.resolvedCompositeActionDefinition
       // JSON.stringify(resolved.resolvedCompositeActionDefinition, null, 2)
     );
+
+    let localContext: Record<string, any> = {
+      ...actionParamValues,
+      ...actionContext,
+      ...resolved.resolvedCompositeActionTemplates,
+    };
 
     // TODO: replace with handleCompositeAction
     for (const currentAction of resolved.resolvedCompositeActionDefinition.payload.actionSequence) {

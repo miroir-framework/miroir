@@ -150,15 +150,15 @@ export function stripNullOptionalAttributes(instance: Record<string, any>, optio
   const result = Object.fromEntries(
     Object.entries(instance).filter(([key, value]) => !optionalNonNullableAttributes.includes(key) || value !== null)
   );
-  log.info(
-    "miroir-store-postgres stripNullOptionalAttributes",
-    // "instance before",
-    // instance,
-    "optionalNonNullableAttributes",
-    optionalNonNullableAttributes,
-    "result",
-    result,
-  );
+  // log.info(
+  //   "miroir-store-postgres stripNullOptionalAttributes",
+  //   // "instance before",
+  //   // instance,
+  //   "optionalNonNullableAttributes",
+  //   optionalNonNullableAttributes,
+  //   "result",
+  //   result,
+  // );
   return result;
 }
 // // ##############################################################################################

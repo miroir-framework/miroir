@@ -169,6 +169,7 @@ export { default as test_createEntityAndReportFromSpreadsheetAndUpdateMenu } fro
 export { default as transformerTest_resolveConditionalSchema } from "./assets/miroir_data/681be9ca-c593-45f5-b45a-5f1d4969e91e/3f025c6c-982d-47ed-8061-50009788773a.json" assert { type: "json" };
 export { default as transformerTestSuite_defaultValueForMLSchema } from "./assets/miroir_data/681be9ca-c593-45f5-b45a-5f1d4969e91e/753afec9-f786-4f51-8c46-bd022551a8dd.json" assert { type: "json" };
 export { default as transformerTest_miroirCoreTransformers } from "./assets/miroir_data/681be9ca-c593-45f5-b45a-5f1d4969e91e/a5b4be38-78e3-4f31-9e9b-8ab0b71d4993.json" assert { type: "json" };
+export { default as transformerTest_adminTransformers } from "./assets/miroir_data/681be9ca-c593-45f5-b45a-5f1d4969e91e/d4a8c2f1-b6e9-4d5a-8c3f-1e72b9a6d4f5.json" assert { type: "json" };
 export { default as transformerTestSuite_resolveSchemaReferenceInContext } from "./assets/miroir_data/681be9ca-c593-45f5-b45a-5f1d4969e91e/b9e7f4d5-6543-4a1b-9c8d-987654321fed.json" assert { type: "json" };
 export { default as transformerTestSuite_unfoldSchemaOnce } from "./assets/miroir_data/681be9ca-c593-45f5-b45a-5f1d4969e91e/e8b5d1a2-9473-4f6c-b2e8-7f8a5c6d9e0f.json" assert { type: "json" };
 export { default as transformerTestSuite_jzodTypeCheck } from "./assets/miroir_data/681be9ca-c593-45f5-b45a-5f1d4969e91e/f8e3c7a1-2b9d-4e6f-8c2a-5d7b9e4f1a8c.json" assert { type: "json" };
@@ -207,6 +208,7 @@ export { default as transformer_resolveSchemaReferenceInContext_json } from "./a
 export { default as transformer_unfoldSchemaOnce_json } from "./assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/d5c9f2e3-8741-4b9a-a1d2-4e5f6789abcd.json" assert { type: "json" };
 export { default as transformer_jzodTypeCheck_json } from "./assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/a3f7b5c2-1e8d-4a9b-9c7e-6f2d3e8a1b5c.json" assert { type: "json" };
 export { default as transformer_getActiveDeployment_json } from "./assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/d554c31b-638b-4774-95e3-b2e307035a82.json" assert { type: "json" };
+export { default as transformer_duplicateApplicationModel_json } from "./assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/e709496c-7deb-4759-bec3-b31caf3a909d.json" assert { type: "json" };
 export { default as transformer_ansiColumnsToJzodSchema_json } from "./assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/53b8073b-72d5-4c3f-8b5a-79c90744b5b7.json" assert { type: "json" };
 export { default as transformer_concatLists_json } from "./assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/a128c238-3a56-478b-a9b0-02876884ae92.json" assert { type: "json" };
 // Alias for menu transformer (exported from Transformers.ts as transformer_menu_addItem)

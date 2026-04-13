@@ -271,8 +271,8 @@ function initializeLocalCacheSliceStateWithEntityAdapter(
     entityUuid,
     "zone",
     zone,
-    "state",
-    state
+    // "state",
+    // state
   );
   const entityInstancesLocationIndex = getReduxDeploymentsStateIndex(deploymentUuid, section, entityUuid);
   log.info(
