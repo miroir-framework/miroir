@@ -54,8 +54,6 @@ MiroirLoggerFactory.registerLoggerToStart(
 // ################################################################################################
 export const ReportDisplay: React.FC<{
   pageParams: Params<ReportUrlParamKeys>;
-  // context: ReturnType<typeof useMiroirContextService>;
-  // theme: ReturnType<typeof useMiroirTheme>;
 }> = ({ pageParams }) => {
   const context = useMiroirContextService();
   const theme = useMiroirTheme();
@@ -67,7 +65,6 @@ export const ReportDisplay: React.FC<{
   const currentModel: MetaModel = useCurrentModel(application, currentApplicationDeploymentMap);
 
 
-  // const reportSection = application == selfApplicationMiroir.uuid ? "data" : "model"
   const { availableReports, entities, entityDefinitions } = useMemo(() => {
     return pageParams.applicationSection &&
       context.deploymentUuidToReportsEntitiesDefinitionsMapping &&
@@ -181,7 +178,6 @@ export const ReportDisplay: React.FC<{
         !pageParams.deploymentUuid ||
         !pageParams.applicationSection ||
         !pageParams.reportUuid ||
-        // !pageParams.instanceUuid ||
         !currentMiroirReport ||
         !currentStoredQueryData ? (
           <>
@@ -206,13 +202,7 @@ export const ReportDisplay: React.FC<{
                     objectType: "root_editor",
                     rootLessListKey: "ROOT",
                     currentValue: pageParams,
-                    // currentValue: JSON.stringify(pageParams, null, 2),
                     formikValues: undefined,
-                    // rawJzodSchema: zoomedInDisplaySchema,
-                    // localResolvedElementJzodSchemaBasedOnValue:
-                    //   jzodTypeCheckResult?.status == "ok"
-                    //     ? jzodTypeCheckResult.resolvedSchema
-                    //     : undefined,
                   }}
                 />
               )}

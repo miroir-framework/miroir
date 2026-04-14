@@ -1,4 +1,5 @@
 import {
+  entityDefinitionMLSchema,
   getApplicationSection,
   LoggerInterface,
   MiroirLoggerFactory,
@@ -85,8 +86,9 @@ export const reportSectionsFormSchema = (
             applicationSection
         );
       }
+      const resolvedEntityDefinitionMLSchema = entityDefinitionMLSchema(targetEntityDefinition);
       return {
-        [reportSectionPath.join("_")]:targetEntityDefinition.mlSchema
+        [reportSectionPath.join("_")]: resolvedEntityDefinitionMLSchema
       };
     }
     case "objectListReportSection":

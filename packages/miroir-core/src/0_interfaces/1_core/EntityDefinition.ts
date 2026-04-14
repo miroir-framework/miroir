@@ -1,6 +1,9 @@
 import { z } from "zod";
 
 import { EntityInstanceWithNameSchema } from "../../0_interfaces/1_core/Instance";
+import type { EntityDefinition } from "../../../dist";
+import type { JzodObject } from "./preprocessor-generated/miroirFundamentalType";
+import { miroirFundamentalJzodSchema } from "./preprocessor-generated/miroirFundamentalJzodSchema";
 
 // import { JzodElement } from "./preprocessor-generated/miroirFundamentalType";
 
@@ -40,4 +43,16 @@ export interface InstanceDictionary<T> extends InstanceDictionaryNum<T> {
   [id: string]: T | undefined;
 }
 
-export default {}
+export function entityDefinitionMLSchema(e: EntityDefinition): JzodObject {
+  if (e.mlSchema.extend && (Array.isArray(e.mlSchema.extend) || e.mlSchema.extend.type !== "schemaReference" || e.mlSchema.extend.definition.relativePath !== "entityDefinitionRoot")) {
+    throw new Error("Only extension of the entityDefinitionRoot schema is allowed for the mlSchema of an EntityDefinition");
+  }
+  const extendedMLSchema: JzodObject | undefined= e.mlSchema.extend ? miroirFundamentalJzodSchema.definition.context.entityDefinitionRoot as JzodObject : undefined;
+  return {
+    type: "object",
+    definition: {
+      ...(extendedMLSchema ? extendedMLSchema.definition : {}),
+      ...e.mlSchema.definition,
+    }
+  }
+}

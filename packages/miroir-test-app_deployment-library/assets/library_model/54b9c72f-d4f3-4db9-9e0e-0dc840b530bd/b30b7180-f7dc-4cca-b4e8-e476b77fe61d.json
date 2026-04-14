@@ -19,42 +19,15 @@
   ],
   "mlSchema": {
     "type": "object",
+    "extend": {
+      "type": "schemaReference",
+      "definition": {
+        "eager": true,
+        "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+        "relativePath": "entityDefinitionRoot"
+      }
+    },
     "definition": {
-      "uuid": {
-        "type": "uuid",
-        "tag": {
-          "value": {
-            "id": 1,
-            "defaultLabel": "Uuid",
-            "display": { "editable": false }
-          }
-        }
-      },
-      "parentName": {
-        "type": "string",
-        "optional": true,
-        "tag": {
-          "value": {
-            "id": 2,
-            "defaultLabel": "Entity Name",
-            "display": { "editable": false }
-          }
-        }
-      },
-      "parentUuid": {
-        "type": "uuid",
-        "tag": {
-          "value": {
-            "id": 3,
-            "defaultLabel": "Entity Uuid",
-            "display": { "editable": false },
-            "initializeTo": {
-              "initializeToType": "value",
-              "value": "d7a144ff-d1b9-4135-800c-a7cfc1f38733"
-            }
-          }
-        }
-      },
       "conceptLevel": {
         "type": "enum",
         "definition": [

@@ -109,11 +109,16 @@ export function getItemsOrder(
   //   resolvedMLSchema,
   // );
   if (
-    (resolvedMLSchema?.type == "object" || rawMLSchema?.type == "record" || typeCheckKeyMapEntry?.resolvedReferenceSchemaInContext?.type == "record") &&
+    (resolvedMLSchema?.type == "object" ||
+      rawMLSchema?.type == "record" ||
+      typeCheckKeyMapEntry?.resolvedReferenceSchemaInContext?.type == "record") &&
     typeof currentValue == "object" &&
     currentValue !== null
   ) {
-    if (rawMLSchema?.type == "record" || typeCheckKeyMapEntry?.resolvedReferenceSchemaInContext?.type == "record") {
+    if (
+      rawMLSchema?.type == "record" ||
+      typeCheckKeyMapEntry?.resolvedReferenceSchemaInContext?.type == "record"
+    ) {
       // For records: sort entries by value's tag.value.id if any entries have one, otherwise use memory order
       const keys = Object.keys(currentValue);
       const withId: { key: string; id: number }[] = [];

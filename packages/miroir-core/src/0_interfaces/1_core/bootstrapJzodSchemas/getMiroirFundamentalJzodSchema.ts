@@ -59,6 +59,67 @@ function makeObjectsMandatory (element: JzodElement): JzodElement {
   return element;
 }
 
+export const entityDefinitionRoot = {
+  type: "object",
+  definition: {
+    uuid: {
+      type: "uuid",
+      tag: {
+        value: {
+          id: 1,
+          defaultLabel: "Uuid",
+          display: { editable: false },
+        },
+      },
+    },
+    parentName: {
+      type: "string",
+      tag: {
+        value: {
+          id: 2,
+          defaultLabel: "Entity Name",
+          display: { editable: false },
+        },
+      },
+    },
+    parentUuid: {
+      type: "uuid",
+      tag: {
+        value: {
+          id: 3,
+          defaultLabel: "Entity Uuid",
+          display: { editable: false },
+          foreignKeyParams: {
+            targetEntityApplicationSection: "model",
+            targetEntity: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+            targetEntityOrderInstancesBy: "name",
+          },
+          initializeTo: {
+            initializeToType: "value",
+            value: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+          },
+        },
+      },
+    },
+    parentDefinitionVersionUuid: {
+      type: "uuid",
+      optional: true,
+      tag: {
+        value: {
+          id: 4,
+          defaultLabel: "Entity Definition Version Uuid",
+          display: { editable: false },
+          foreignKeyParams: {
+            targetEntityApplicationSection: "model",
+            targetEntity: "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+            targetEntityOrderInstancesBy: "name",
+          },
+        },
+      },
+    },
+  },
+};
+
 // ################################################################################################
 export function getMiroirFundamentalJzodSchema(
   entityDefinitionBundleV1: any,
@@ -99,15 +160,6 @@ export function getMiroirFundamentalJzodSchema(
   log.info("getMiroirFundamentalJzodSchema called!");
   const _t_start = Date.now();
   const _phaseTimings: Array<{phase: string; ms: number}> = [];
-  // log.info(
-  //   "graphConfig: (entityDefinitionReportV1 as any).mlSchema.definition.definition.context.graphReportSection.definition.definition.definition.config",
-  //   JSON.stringify((entityDefinitionReportV1 as any).mlSchema.definition.definition.context.graphReportSection.definition.definition.definition.config??{},null,2)
-  //   // JSON.stringify(entityDefinitionJzodSchemaV1.mlSchema.definition.definition.context.miroirTransformersForBuild ?? {}, null, 2)
-  // );
-  // log.info(
-  //   "getMiroirFundamentalJzodSchema entityDefinitionTransformerTest.mlSchema.definition.definition.context",
-  //   entityDefinitionTransformerTest.mlSchema.definition.definition.context
-  // );
   const entityDefinitionQueryVersionV1WithAbsoluteReferences = makeReferencesAbsolute(
     entityDefinitionQueryVersionV1.mlSchema.definition.definition,
     miroirFundamentalJzodSchemaUuid
@@ -668,7 +720,7 @@ export function getMiroirFundamentalJzodSchema(
               tag: {
                 value: {
                   id: 1,
-                  defaultLabel: "Report"
+                  defaultLabel: "Report",
                 },
               },
             },
@@ -683,7 +735,7 @@ export function getMiroirFundamentalJzodSchema(
               tag: {
                 value: {
                   id: 1,
-                  defaultLabel: "Instance"
+                  defaultLabel: "Instance",
                 },
               },
             },
@@ -697,6 +749,7 @@ export function getMiroirFundamentalJzodSchema(
             },
           },
         },
+        entityDefinitionRoot,
         // ########################################################################################
         // ########################################################################################
         // ########################################################################################
@@ -815,29 +868,6 @@ export function getMiroirFundamentalJzodSchema(
         // // ########################################################################################
         // // ########################################################################################
         // // WRONG!!!! (???)
-        // //
-        // transformerForBuildPlusRuntime_spreadSheetToJzodSchema:
-        //   miroirTransformersForBuildPlusRuntime.transformer_spreadSheetToJzodSchema,
-        // //
-        // transformerForBuildPlusRuntime_getActiveDeployment:
-        //   miroirTransformersForBuildPlusRuntime.transformer_getActiveDeployment,
-        // // transformerForBuildPlusRuntime_duplicateApplicationModel:
-        // //   miroirTransformersForBuildPlusRuntime.transformer_duplicateApplicationModel,
-
-        // transformerForBuildPlusRuntime_menu_addItem:
-        //   miroirTransformersForBuildPlusRuntime.transformer_menu_addItem,
-        // //
-        //   transformerForBuildPlusRuntime_ansiColumnsToJzodSchema:
-        //     miroirTransformersForBuildPlusRuntime.transformer_ansiColumnsToJzodSchema,
-        // // MLS
-        // ...Object.fromEntries(
-        //   Object.entries(mlsTransformers).map(([key, value]) => [
-        //     key.replace("transformer_", "transformerForBuildPlusRuntime_"),
-        //     miroirTransformersForBuildPlusRuntime[
-        //       key as keyof typeof miroirTransformersForBuildPlusRuntime
-        //     ],
-        //   ]),
-        // ),
         ...entityDefinitionTransformerDefinition.mlSchema.definition.transformerInterface.definition
           .inputOutput.context,
         // inputOutputObject: entityDefinitionTransformerDefinition.mlSchema.definition.transformerInterface.definition.inputOutput as any,
@@ -1242,17 +1272,8 @@ export function getMiroirFundamentalJzodSchema(
         ),
         test: entityDefinitionTest.mlSchema as any,
         testCompositeActionParams,
-        // deployment:
-        //   entityDefinitionSelfApplicationDeploymentConfiguration.mlSchema as any,
-        // selfApplication: entityDefinitionSelfApplicationV1.mlSchema as JzodObject,
-        // applicationVersion: entityDefinitionSelfApplicationVersionV1.mlSchema as JzodObject,
-        // bundle: entityDefinitionBundleV1.mlSchema as JzodObject,
-        // deployment: entityDefinitionDeployment.mlSchema as JzodObject,
-        // entity: entityDefinitionEntity.mlSchema as JzodObject,
-        // entityDefinition: entityDefinitionEntityDefinitionV1.mlSchema as JzodObject,
         ...(entityDefinitionMenu.mlSchema.definition.definition as any).context,
         menu: entityDefinitionMenu.mlSchema as any,
-        // menu: entityDefinitionMenu.mlSchema as JzodObject,
         reportDisplayParams: {
           type: "object",
           definition: {
@@ -1299,7 +1320,6 @@ export function getMiroirFundamentalJzodSchema(
         jzodObjectOrReference: (entityDefinitionJzodSchemaV1 as any).mlSchema.definition.definition
           .context.jzodObjectOrReference,
         mlSchema: entityDefinitionJzodSchemaV1.mlSchema as any,
-        // mlSchema: entityDefinitionJzodSchemaV1.mlSchema as JzodObject,
         report: (entityDefinitionReportV1 as any).mlSchema,
         dataSet: {
           type: "object",
@@ -1313,8 +1333,7 @@ export function getMiroirFundamentalJzodSchema(
                 type: "schemaReference",
                 definition: {
                   absolutePath: miroirFundamentalJzodSchemaUuid,
-                  relativePath: "entityInstance",
-                  // relativePath: "entityInstanceCollection",
+                  relativePath: "entityInstance"
                 },
               },
             },

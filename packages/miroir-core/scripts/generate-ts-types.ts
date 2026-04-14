@@ -47,6 +47,7 @@ import {
   undoRedoEndpointVersionV1,
 } from "miroir-test-app_deployment-miroir";
 import {
+  entityDefinitionRoot,
   getMiroirFundamentalJzodSchema,
 } from "../src/0_interfaces/1_core/bootstrapJzodSchemas/getMiroirFundamentalJzodSchema.js";
 import {
@@ -72,6 +73,20 @@ async function build() {
 
 build();
 
+// ################################################################################################
+function entityDefinitionMLSchema(e:any /*EntityDefinition*/): any /*JzodObject*/ {
+  if (e.mlSchema.extend && (Array.isArray(e.mlSchema.extend) || e.mlSchema.extend.type !== "schemaReference" || e.mlSchema.extend.definition.relativePath !== "entityDefinitionRoot")) {
+    throw new Error("Only extension of the entityDefinitionRoot schema is allowed for the mlSchema of an EntityDefinition");
+  }
+  const extendedMLSchema: any /*JzodObject*/ | undefined= e.mlSchema.extend ? entityDefinitionRoot as any /*JzodObject*/ : undefined;
+  return {
+    type: "object",
+    definition: {
+      ...(extendedMLSchema ? extendedMLSchema.definition : {}),
+      ...e.mlSchema.definition,
+    }
+  }
+}
 // ################################################################################################
 async function fileExists(filePath: string): Promise<boolean> {
   try {
@@ -137,219 +152,6 @@ async function generateTsTypeFileFromJzod(
 // ################################################################################################
 // ################################################################################################
 // ################################################################################################
-// export type TransformerForBuild =
-//     | string
-//     | number
-//     | boolean
-//     | TransformerForBuild[]
-//     | (
-//       {
-//         [P in string]: TransformerForBuild;
-//       }
-//        & {
-//         [P in "transformerType" | "interpolation"]?: never;
-//       }
-//     )
-//   | TransformerForBuild_menu_addItem
-//   | TransformerForBuild_ifThenElse
-//   | TransformerForBuild_boolExpr
-//   | TransformerForBuild_case
-//   | TransformerForBuild_returnValue
-//   | TransformerForBuild_constantAsExtractor
-//   | TransformerForBuild_aggregate
-//   | TransformerForBuild_dataflowObject
-//   | TransformerForBuild_createObject
-//   | TransformerForBuild_pickFromList
-//   | TransformerForBuild_indexListBy
-//   | TransformerForBuild_listReducerToSpreadObject
-//   | TransformerForBuild_mapList
-//   | TransformerForBuild_mustacheStringTemplate
-//   | TransformerForBuild_plus
-//   | TransformerForBuild_generateUuid
-//   | TransformerForBuild_mergeIntoObject
-//   | TransformerForBuild_accessDynamicPath
-//   | TransformerForBuild_getObjectEntries
-//   | TransformerForBuild_getObjectValues
-//   | TransformerForBuild_createObjectFromPairs
-//   | TransformerForBuild_getFromParameters
-//   | TransformerForBuild_getUniqueValues
-//   | TransformerForBuild_ansiColumnsToJzodSchema
-//   | TransformerForBuild_concatLists
-//   // | TransformerForBuild_constantBigint
-//   | TransformerForBuild_InnerReference
-//   | TransformerForBuild_dataflowSequence
-//   // MLS
-//   | ${Object.keys(mlsTransformers)
-//     .map((e) => `${e.replace("transformer_", "TransformerForBuild_")}`)
-//     .join("\n  | ")}
-// ;
-
-// export const transformerForBuild: z.ZodType<TransformerForBuild> = z.lazy(() => {
-//   // Define the record schema without transformerType
-//   const recordWithoutTransformerType = z.record(
-//     z.string(),
-//     transformerForBuild
-//   ).refine(
-//     // obj => !('transformerType' in obj || 'interpolation' in obj),
-//     obj => !('transformerType' in obj),
-//     {
-//       message: "Object must not contain 'transformerType' key",
-//       path: ['transformerType']
-//     }
-//   );
-  
-//   // Define the transformer types with specific transformerType values
-  
-//   // Combine all possible types
-//   return z.union([
-//     z.string(),
-//     z.number(),
-//     z.boolean(),
-//     z.array(transformerForBuild),
-//     recordWithoutTransformerType,
-//     transformerForBuild_menu_addItem,
-//     transformerForBuild_ifThenElse,
-//     transformerForBuild_boolExpr,
-//     transformerForBuild_case,
-//     transformerForBuild_returnValue,
-//     transformerForBuild_constantAsExtractor,
-//     transformerForBuild_aggregate,
-//     transformerForBuild_dataflowObject,
-//     transformerForBuild_createObject,
-//     transformerForBuild_pickFromList,
-//     transformerForBuild_indexListBy,
-//     transformerForBuild_listReducerToSpreadObject,
-//     transformerForBuild_mapList,
-//     transformerForBuild_mustacheStringTemplate,
-//     transformerForBuild_plus,
-//     transformerForBuild_generateUuid,
-//     transformerForBuild_mergeIntoObject,
-//     transformerForBuild_accessDynamicPath,
-//     transformerForBuild_getObjectEntries,
-//     transformerForBuild_getObjectValues,
-//     transformerForBuild_createObjectFromPairs,
-//     transformerForBuild_getFromParameters,
-//     transformerForBuild_getUniqueValues,
-//     transformerForBuild_ansiColumnsToJzodSchema,
-//     transformerForBuild_concatLists,
-//     // transformerForBuild_constantBigint,
-//     transformerForBuild_InnerReference,
-//     transformerForBuild_dataflowSequence,
-//     // MLS
-//     ${Object.keys(mlsTransformers)
-//       .map((e) => `${e.replace("transformer_", "transformerForBuild_")}`)
-//       .join(",\n   ")}
-//   ]);
-// });
-
-// export type TransformerForBuildPlusRuntime =
-//     | string
-//     | number
-//     | boolean
-//     | TransformerForBuildPlusRuntime[]
-//     | (
-//       {
-//         [P in string]: TransformerForBuildPlusRuntime;
-//       }
-//        & {
-//         [P in "transformerType" | "interpolation"]?: never;
-//       }
-//     )
-//   // | TransformerForBuild
-//   | TransformerForBuildPlusRuntime_menu_addItem
-//   | TransformerForBuildPlusRuntime_ifThenElse
-//   | TransformerForBuildPlusRuntime_boolExpr
-//   | TransformerForBuildPlusRuntime_case
-//   | TransformerForBuildPlusRuntime_returnValue
-//   | TransformerForBuildPlusRuntime_constantAsExtractor
-//   | TransformerForBuildPlusRuntime_aggregate
-//   | TransformerForBuildPlusRuntime_dataflowObject
-//   | TransformerForBuildPlusRuntime_createObject
-//   | TransformerForBuildPlusRuntime_pickFromList
-//   | TransformerForBuildPlusRuntime_indexListBy
-//   | TransformerForBuildPlusRuntime_listReducerToSpreadObject
-//   | TransformerForBuildPlusRuntime_mapList
-//   | TransformerForBuildPlusRuntime_mustacheStringTemplate
-//   | TransformerForBuildPlusRuntime_plus
-//   | TransformerForBuildPlusRuntime_generateUuid
-//   | TransformerForBuildPlusRuntime_mergeIntoObject
-//   | TransformerForBuildPlusRuntime_accessDynamicPath
-//   | TransformerForBuildPlusRuntime_getObjectEntries
-//   | TransformerForBuildPlusRuntime_getObjectValues
-//   | TransformerForBuildPlusRuntime_createObjectFromPairs
-//   | TransformerForBuildPlusRuntime_getFromParameters
-//   | TransformerForBuildPlusRuntime_getFromContext
-//   | TransformerForBuildPlusRuntime_getUniqueValues
-//   | TransformerForBuildPlusRuntime_ansiColumnsToJzodSchema
-//   | TransformerForBuildPlusRuntime_concatLists
-//   // | TransformerForBuildPlusRuntime_constantBigint
-//   | TransformerForBuildPlusRuntime_InnerReference
-//   | TransformerForBuildPlusRuntime_dataflowSequence
-//   // MLS
-//   | ${Object.keys(mlsTransformers)
-//     .map((e) => `${e.replace("transformer_", "TransformerForBuildPlusRuntime_")}`)
-//     .join("\n  | ")}
-// ;
-
-// export const transformerForBuildPlusRuntime: z.ZodType<TransformerForBuildPlusRuntime> = z.lazy(() => {
-//   // Define the record schema without transformerType
-//   const recordWithoutTransformerType = z.record(
-//     z.string(),
-//     transformerForBuildPlusRuntime
-//   ).refine(
-//     // obj => !('transformerType' in obj || 'interpolation' in obj),
-//     obj => !('transformerType' in obj),
-//     {
-//       message: "Object must not contain 'transformerType'",
-//       path: ['transformerType']
-//     }
-//   );
-  
-//   // Define the transformer types with specific transformerType values
-  
-//   // Combine all possible types
-//   return z.union([
-//     z.string(),
-//     z.number(),
-//     z.boolean(),
-//     z.array(transformerForBuildPlusRuntime),
-//     recordWithoutTransformerType,
-//     // transformerForBuild,
-//     transformerForBuildPlusRuntime_menu_addItem,
-//     transformerForBuildPlusRuntime_case,
-//     transformerForBuildPlusRuntime_returnValue,
-//     transformerForBuildPlusRuntime_constantAsExtractor,
-//     transformerForBuildPlusRuntime_aggregate,
-//     transformerForBuildPlusRuntime_dataflowObject,
-//     transformerForBuildPlusRuntime_createObject,
-//     transformerForBuildPlusRuntime_pickFromList,
-//     transformerForBuildPlusRuntime_indexListBy,
-//     transformerForBuildPlusRuntime_ifThenElse,
-//     transformerForBuildPlusRuntime_boolExpr,
-//     transformerForBuildPlusRuntime_listReducerToSpreadObject,
-//     transformerForBuildPlusRuntime_mapList,
-//     transformerForBuildPlusRuntime_mustacheStringTemplate,
-//     transformerForBuildPlusRuntime_plus,
-//     transformerForBuildPlusRuntime_generateUuid,
-//     transformerForBuildPlusRuntime_mergeIntoObject,
-//     transformerForBuildPlusRuntime_accessDynamicPath,
-//     transformerForBuildPlusRuntime_getObjectEntries,
-//     transformerForBuildPlusRuntime_getObjectValues,
-//     transformerForBuildPlusRuntime_createObjectFromPairs,
-//     transformerForBuildPlusRuntime_getFromParameters,
-//     transformerForBuildPlusRuntime_getFromContext,
-//     transformerForBuildPlusRuntime_getUniqueValues,
-//     transformerForBuildPlusRuntime_ansiColumnsToJzodSchema,
-//     transformerForBuildPlusRuntime_concatLists,
-//     // transformerForBuildPlusRuntime_constantBigint,
-//     transformerForBuildPlusRuntime_InnerReference,
-//     transformerForBuildPlusRuntime_dataflowSequence,
-//     // MLS
-//     ${Object.keys(mlsTransformers)
-//       .map((e) => `${e.replace("transformer_", "transformerForBuildPlusRuntime_")}`)
-//       .join(",\n   ")}
-//   ]);
-// });
 
 const headerForZodImports = `// Auto-generated file, do not edit directly.
 // use \`npm run devBuild\` to regenerate.

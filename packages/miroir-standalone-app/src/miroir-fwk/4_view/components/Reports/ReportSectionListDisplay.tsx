@@ -39,7 +39,8 @@ import {
   SyncQueryRunnerExtractorAndParams,
   type MiroirModelEnvironment,
   type ReportSection,
-  type TransformerForBuildPlusRuntime
+  type CoreTransformerForBuildPlusRuntime,
+  entityDefinitionMLSchema
 } from "miroir-core";
 
 import { useFormikContext } from "formik";
@@ -349,13 +350,15 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
         ? props.fetchedDataJzodSchemaDEFUNCT[
             props.reportSectionDEFUNCT.definition.fetchedDataReference
           ]
-        : currentReportTargetEntityDefinition?.mlSchema,
+        : currentReportTargetEntityDefinition
+          ? entityDefinitionMLSchema(currentReportTargetEntityDefinition)
+          : undefined,
     [
       currentReportTargetEntityDefinition,
       currentReportTargetEntityDefinition?.mlSchema,
       props.fetchedDataJzodSchemaDEFUNCT,
       props.reportSectionDEFUNCT,
-    ]
+    ],
   );
 
   // log.info(
@@ -411,7 +414,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
         ])
       );
       const runtimeTransformers: {
-        [x: string]: TransformerForBuildPlusRuntime
+        [x: string]: CoreTransformerForBuildPlusRuntime
       } = {
         ...Object.fromEntries(
           foreignKeyObjectsAttributeDefinition.map((e) => [

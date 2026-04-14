@@ -1784,15 +1784,15 @@ export function transformer_resolveReference(
     ? "referencePath"
     : "no name";
 
-  log.info(
-    "transformer_resolveReference called for",
-    transformerInnerReference,
-    // JSON.stringify(transformerInnerReference, null, 2),
-    "bank",
-    bank,
-    // JSON.stringify(Object.keys(bank), null, 2)
-    // JSON.stringify(bank, null, 2)
-  );
+  // log.info(
+  //   "transformer_resolveReference called for",
+  //   transformerInnerReference,
+  //   // JSON.stringify(transformerInnerReference, null, 2),
+  //   "bank",
+  //   bank,
+  //   // JSON.stringify(Object.keys(bank), null, 2)
+  //   // JSON.stringify(bank, null, 2)
+  // );
   if (!bank) {
     log.error(
       "transformer_resolveReference failed, no contextResults for step",
@@ -1834,14 +1834,14 @@ export function transformer_resolveReference(
         queryContext: JSON.stringify(Object.keys(bank)),
       });
     }
-    log.info(
-      "transformer_resolveReference resolved for",
-      JSON.stringify(transformerInnerReference, null, 2),
-      "bank",
-      JSON.stringify(Object.keys(bank), null, 2),
-      "found result",
-      JSON.stringify(bank[transformerInnerReference.referenceName], null, 2)
-    );
+    // log.info(
+    //   "transformer_resolveReference resolved for",
+    //   JSON.stringify(transformerInnerReference, null, 2),
+    //   "bank",
+    //   JSON.stringify(Object.keys(bank), null, 2),
+    //   "found result",
+    //   JSON.stringify(bank[transformerInnerReference.referenceName], null, 2)
+    // );
     return bank[transformerInnerReference.referenceName];
   }
 
@@ -1851,12 +1851,12 @@ export function transformer_resolveReference(
       const pathResult = transformerInnerReference.safe
         ? safeResolvePathOnObject(bank, transformerInnerReference.referencePath)
         : resolvePathOnObject(bank, transformerInnerReference.referencePath);
-      log.info(
-        "transformer_resolveReference path resolved for",
-        JSON.stringify(transformerInnerReference, null, 2),
-        "found pathResult",
-        pathResult
-      );
+      // log.info(
+      //   "transformer_resolveReference path resolved for",
+      //   JSON.stringify(transformerInnerReference, null, 2),
+      //   "found pathResult",
+      //   pathResult
+      // );
       return pathResult;
     } catch (error) {
       log.error(

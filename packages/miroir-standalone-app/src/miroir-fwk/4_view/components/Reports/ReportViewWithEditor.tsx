@@ -9,6 +9,7 @@ import {
   defaultSelfApplicationDeploymentMap,
   Domain2ElementFailed,
   entityDefinitionEntityDefinition,
+  entityDefinitionMLSchema,
   getApplicationSection,
   LoggerInterface,
   MiroirLoggerFactory,
@@ -124,7 +125,6 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
               extractors: {},
             }
         : undefined,
-    // [props.reportDefinition, props.pageParams, resolvedTemplateQuery]
     [props.reportDefinition, props.pageParams]
   );
 
@@ -207,11 +207,13 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
       type: "object",
       definition: {
         ...r,
-        [reportReportDetailsKey]: entityDefinitionReport.mlSchema,
-        [entityDefinitionReportKey]: entityDefinitionEntityDefinition.mlSchema as any, // will contain reportEntityDefinition-itself
+        [reportReportDetailsKey]: entityDefinitionMLSchema(entityDefinitionReport),
+        [entityDefinitionReportKey]: entityDefinitionMLSchema(
+          entityDefinitionEntityDefinition as EntityDefinition,
+        ) as any, // will contain reportEntityDefinition-itself
         [reportName]: entityDefinitionReport.mlSchema,
-        [lastSubmitButtonClicked]: { type: "string", optional: true}
-      }
+        [lastSubmitButtonClicked]: { type: "string", optional: true },
+      },
     };
     // log.info("reportSectionsFormSchema formValueSchema", result);
     // log.info(
@@ -232,7 +234,6 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
     props.reportDefinition,
     reportData,
     entityDefinitionReport,
-    // reportEditorEntitySectionPath,
     currentDeploymentReportsEntitiesDefinitionsMapping,
     props.pageParams.applicationSection,
   ]);
@@ -375,7 +376,7 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
             { label: "reportDataQueryBase / reportDataQueryResults", data: { reportDataQueryBase, reportDataQueryResults }, useCodeBlock: true },
             // { label: "reportViewData", data: { reportViewData }, useCodeBlock: true },
             // { label: "initialReportSectionsFormValue", data: { initialReportSectionsFormValue }, useCodeBlock: true },
-            // { label: "formValueMLSchema", data: { formValueMLSchema }, useCodeBlock: true },
+            { label: "formValueMLSchema", data: { formValueMLSchema }, useCodeBlock: true },
             // { label: "fetchedDataJzodSchemaParams", data: { fetchedDataJzodSchemaParams }, useCodeBlock: true },
             // { label: "fetchedDataJzodSchema", data: { fetchedDataJzodSchema }, useCodeBlock: true },
           ]}

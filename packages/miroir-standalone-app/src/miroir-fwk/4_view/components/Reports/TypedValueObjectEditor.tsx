@@ -30,7 +30,7 @@ import {
   type ApplicationDeploymentMap,
   type JzodObject,
   type MiroirModelEnvironment,
-  type TransformerForBuildPlusRuntime
+  type CoreTransformerForBuildPlusRuntime
 } from "miroir-core";
 import {
   CodeBlock_ReadOnly,
@@ -108,7 +108,7 @@ export interface TypedValueObjectEditorProps {
   // external field change observation
   onChangeVector?: Record<string, (value: any, rootLessListKey: string) => void>; // callbacks indexed by rootLessListKey for selective field observation
   // optional validation transformer: receives form values as params, must return true (valid) or a string error message (invalid)
-  validationTransformer?: TransformerForBuildPlusRuntime;
+  validationTransformer?: CoreTransformerForBuildPlusRuntime;
   // when displayed in a JzodObjectEditFormDialog modal dialog form
   setAddObjectdialogFormIsOpen?: (a:boolean) => void,
 }

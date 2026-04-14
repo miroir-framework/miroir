@@ -39,26 +39,19 @@ export interface InlineReportEditorProps {
   formikAlreadyAvailable?: boolean;
   formikValuePath: ( string | number )[],
   formikReportDefinitionPathString: string;
-  // hasValidationErrors: boolean;
-  // onDefinitionChange: (extractedSection: any) => void;
-  // onValidationChange: (hasErrors: boolean) => void;
 }
 
 export const InlineReportEditor: React.FC<InlineReportEditorProps> = ({
-  // reportEntityDefinitionDEFUNCT,
   formValueMLSchema,
   application,
   applicationDeploymentMap,
   deploymentUuid,
-  // applicationSection,
   formikAlreadyAvailable,
   formikReportDefinitionPathString,
   formikValuePath,
 }) => {
   const formik = useFormikContext<any>();
-  // const formikReportDefinition: Report = formik.values[reportSectionPath.join("_")];
   const formikReportDefinition: Report = formik.values[formikReportDefinitionPathString];
-  // log.info("InlineReportEditor: formikReportDefinition =", formikReportDefinition);
   return (
     <div
       style={{
@@ -69,11 +62,6 @@ export const InlineReportEditor: React.FC<InlineReportEditorProps> = ({
         backgroundColor: "#f5f5f5",
       }}
     >
-      {/* <div style={{ marginBottom: 12, fontWeight: 600, fontSize: "16px", color: "#1976d2" }}>
-        Report Editor
-      </div> */}
-
-      {/* {reportDefinition.definition && ( */}
       {
         formikReportDefinition?.uuid !== defaultReport.uuid && (
           <ThemedProgressiveAccordion 
@@ -118,7 +106,6 @@ export const InlineReportEditor: React.FC<InlineReportEditorProps> = ({
                 formikValuePath={formikValuePath}
                 formikReportDefinitionPathString={formikReportDefinitionPathString}
                 reportSectionPath={["definition", "section", "definition", 0]}
-                // formikAlreadyAvailable={false}
                 formikAlreadyAvailable={formikAlreadyAvailable}
                 initialInstanceValueDEFUNCT={formikReportDefinition} // DEFUNCT when formikAlreadyAvailable=true
               />

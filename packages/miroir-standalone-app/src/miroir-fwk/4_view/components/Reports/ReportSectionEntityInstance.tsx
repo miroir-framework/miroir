@@ -640,7 +640,6 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
             </ThemedPreformattedText>
             <div> ######################################## </div>
             <ThemedPreformattedText>
-              {/* entity jzod schema: {safeStringify(instance?.mlSchema)} */}
               entity jzod schema: {JSON.stringify(instance?.mlSchema, null, 2)}
             </ThemedPreformattedText>
           </div>

@@ -1220,7 +1220,6 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
             resolvedSchema: currentTypeCheckKeyMap?.resolvedSchema,
             jzodObjectFlattenedSchema: currentTypeCheckKeyMap?.jzodObjectFlattenedSchema,
             currentValueObjectAtKey,
-            // mlSchema: rootLessListKey == "mlSchema" ? Object.entries(currentValueObjectAtKey.definition) : undefined,
           },
           copyButton: true,
           useCodeBlock: true,
