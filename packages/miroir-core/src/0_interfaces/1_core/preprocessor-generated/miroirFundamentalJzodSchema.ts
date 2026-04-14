@@ -4471,6 +4471,11 @@ export const miroirFundamentalJzodSchema = {
                 "defaultLabel": "Entity Uuid",
                 "display": {
                   "editable": false
+                },
+                "foreignKeyParams": {
+                  "targetEntityApplicationSection": "model",
+                  "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                  "targetEntityOrderInstancesBy": "name"
                 }
               }
             }
@@ -5495,6 +5500,11 @@ export const miroirFundamentalJzodSchema = {
                 "defaultLabel": "parentUuid",
                 "display": {
                   "editable": false
+                },
+                "foreignKeyParams": {
+                  "targetEntityApplicationSection": "model",
+                  "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                  "targetEntityOrderInstancesBy": "name"
                 }
               }
             }
@@ -5895,6 +5905,11 @@ export const miroirFundamentalJzodSchema = {
                 "defaultLabel": "Entity Uuid",
                 "display": {
                   "editable": false
+                },
+                "foreignKeyParams": {
+                  "targetEntityApplicationSection": "model",
+                  "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                  "targetEntityOrderInstancesBy": "name"
                 }
               }
             }
@@ -5994,6 +6009,11 @@ export const miroirFundamentalJzodSchema = {
                 "defaultLabel": "Entity Uuid",
                 "display": {
                   "editable": false
+                },
+                "foreignKeyParams": {
+                  "targetEntityApplicationSection": "model",
+                  "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                  "targetEntityOrderInstancesBy": "name"
                 }
               }
             }
@@ -6468,6 +6488,11 @@ export const miroirFundamentalJzodSchema = {
                 "defaultLabel": "Entity Uuid",
                 "display": {
                   "editable": false
+                },
+                "foreignKeyParams": {
+                  "targetEntityApplicationSection": "model",
+                  "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                  "targetEntityOrderInstancesBy": "name"
                 }
               }
             }
@@ -6602,6 +6627,11 @@ export const miroirFundamentalJzodSchema = {
                 "defaultLabel": "Entity Uuid",
                 "display": {
                   "editable": false
+                },
+                "foreignKeyParams": {
+                  "targetEntityApplicationSection": "model",
+                  "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                  "targetEntityOrderInstancesBy": "name"
                 }
               }
             }
@@ -6614,6 +6644,11 @@ export const miroirFundamentalJzodSchema = {
                 "defaultLabel": "Entity Definition Version Uuid",
                 "display": {
                   "editable": false
+                },
+                "foreignKeyParams": {
+                  "targetEntityApplicationSection": "model",
+                  "targetEntity": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+                  "targetEntityOrderInstancesBy": "name"
                 }
               }
             }
@@ -6631,10 +6666,14 @@ export const miroirFundamentalJzodSchema = {
             "type": "uuid",
             "tag": {
               "value": {
-                "id": 6,
                 "defaultLabel": "Entity Uuid of the Entity which this definition is the definition",
                 "display": {
                   "editable": false
+                },
+                "foreignKeyParams": {
+                  "targetEntityApplicationSection": "model",
+                  "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                  "targetEntityOrderInstancesBy": "name"
                 }
               }
             }
@@ -7320,6 +7359,11 @@ export const miroirFundamentalJzodSchema = {
                 "defaultLabel": "parentUuid",
                 "display": {
                   "editable": false
+                },
+                "foreignKeyParams": {
+                  "targetEntityApplicationSection": "model",
+                  "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                  "targetEntityOrderInstancesBy": "name"
                 }
               }
             }
@@ -8387,6 +8431,11 @@ export const miroirFundamentalJzodSchema = {
                 "defaultLabel": "Entity Uuid",
                 "display": {
                   "editable": false
+                },
+                "foreignKeyParams": {
+                  "targetEntityApplicationSection": "model",
+                  "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                  "targetEntityOrderInstancesBy": "name"
                 }
               }
             }
@@ -10069,6 +10118,11 @@ export const miroirFundamentalJzodSchema = {
                 "defaultLabel": "Entity Uuid",
                 "display": {
                   "editable": false
+                },
+                "foreignKeyParams": {
+                  "targetEntityApplicationSection": "model",
+                  "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                  "targetEntityOrderInstancesBy": "name"
                 }
               }
             }
@@ -10218,6 +10272,11 @@ export const miroirFundamentalJzodSchema = {
                 "defaultLabel": "Entity Uuid",
                 "display": {
                   "editable": false
+                },
+                "foreignKeyParams": {
+                  "targetEntityApplicationSection": "model",
+                  "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                  "targetEntityOrderInstancesBy": "name"
                 }
               }
             }
@@ -11890,6 +11949,11 @@ export const miroirFundamentalJzodSchema = {
                 "defaultLabel": "Entity Uuid",
                 "display": {
                   "editable": false
+                },
+                "foreignKeyParams": {
+                  "targetEntityApplicationSection": "model",
+                  "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                  "targetEntityOrderInstancesBy": "name"
                 }
               }
             }
@@ -13820,6 +13884,11 @@ export const miroirFundamentalJzodSchema = {
                 "defaultLabel": "Entity Uuid",
                 "display": {
                   "editable": false
+                },
+                "foreignKeyParams": {
+                  "targetEntityApplicationSection": "model",
+                  "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                  "targetEntityOrderInstancesBy": "name"
                 }
               }
             }
@@ -19647,6 +19716,11 @@ export const miroirFundamentalJzodSchema = {
                 "defaultLabel": "Entity Uuid",
                 "display": {
                   "editable": false
+                },
+                "foreignKeyParams": {
+                  "targetEntityApplicationSection": "model",
+                  "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                  "targetEntityOrderInstancesBy": "name"
                 }
               }
             }
@@ -20673,6 +20747,11 @@ export const miroirFundamentalJzodSchema = {
                 "defaultLabel": "Entity Uuid",
                 "display": {
                   "editable": false
+                },
+                "foreignKeyParams": {
+                  "targetEntityApplicationSection": "model",
+                  "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                  "targetEntityOrderInstancesBy": "name"
                 }
               }
             }
@@ -23074,6 +23153,11 @@ export const miroirFundamentalJzodSchema = {
                 "defaultLabel": "Entity Uuid",
                 "display": {
                   "editable": false
+                },
+                "foreignKeyParams": {
+                  "targetEntityApplicationSection": "model",
+                  "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                  "targetEntityOrderInstancesBy": "name"
                 }
               }
             }
@@ -35723,6 +35807,11 @@ export const miroirFundamentalJzodSchema = {
                 "defaultLabel": "Entity Uuid",
                 "display": {
                   "editable": false
+                },
+                "foreignKeyParams": {
+                  "targetEntityApplicationSection": "model",
+                  "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                  "targetEntityOrderInstancesBy": "name"
                 }
               }
             }
@@ -35825,6 +35914,11 @@ export const miroirFundamentalJzodSchema = {
                 "defaultLabel": "Entity Uuid",
                 "display": {
                   "editable": false
+                },
+                "foreignKeyParams": {
+                  "targetEntityApplicationSection": "model",
+                  "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                  "targetEntityOrderInstancesBy": "name"
                 }
               }
             }
@@ -35837,6 +35931,11 @@ export const miroirFundamentalJzodSchema = {
                 "defaultLabel": "Entity Definition Version Uuid",
                 "display": {
                   "editable": false
+                },
+                "foreignKeyParams": {
+                  "targetEntityApplicationSection": "model",
+                  "targetEntity": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+                  "targetEntityOrderInstancesBy": "name"
                 }
               }
             }
@@ -35854,10 +35953,14 @@ export const miroirFundamentalJzodSchema = {
             "type": "uuid",
             "tag": {
               "value": {
-                "id": 6,
                 "defaultLabel": "Entity Uuid of the Entity which this definition is the definition",
                 "display": {
                   "editable": false
+                },
+                "foreignKeyParams": {
+                  "targetEntityApplicationSection": "model",
+                  "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                  "targetEntityOrderInstancesBy": "name"
                 }
               }
             }
@@ -36927,6 +37030,11 @@ export const miroirFundamentalJzodSchema = {
                 "defaultLabel": "Entity Uuid",
                 "display": {
                   "editable": false
+                },
+                "foreignKeyParams": {
+                  "targetEntityApplicationSection": "model",
+                  "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                  "targetEntityOrderInstancesBy": "name"
                 }
               }
             }
@@ -37286,6 +37394,11 @@ export const miroirFundamentalJzodSchema = {
                 "defaultLabel": "Entity Uuid",
                 "display": {
                   "editable": false
+                },
+                "foreignKeyParams": {
+                  "targetEntityApplicationSection": "model",
+                  "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                  "targetEntityOrderInstancesBy": "name"
                 }
               }
             }
@@ -37437,6 +37550,11 @@ export const miroirFundamentalJzodSchema = {
                 "defaultLabel": "Entity Uuid",
                 "display": {
                   "editable": false
+                },
+                "foreignKeyParams": {
+                  "targetEntityApplicationSection": "model",
+                  "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                  "targetEntityOrderInstancesBy": "name"
                 }
               }
             }
@@ -37899,6 +38017,11 @@ export const miroirFundamentalJzodSchema = {
                 "defaultLabel": "Entity Uuid",
                 "display": {
                   "editable": false
+                },
+                "foreignKeyParams": {
+                  "targetEntityApplicationSection": "model",
+                  "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                  "targetEntityOrderInstancesBy": "name"
                 }
               }
             }

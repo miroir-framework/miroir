@@ -388,18 +388,18 @@ export function useJzodElementEditorHooks(
       applicationDeploymentMap,
   ) || {};
 
-  // log.info(
-  //   "useJzodElementEditorHooks",
-  //   "rootLessListKey:",
-  //   rootLessListKey,
-  //   "currentDeploymentUuid:",
-  //   currentDeploymentUuid,
-  //   "currentTypecheckKeyMap?.rawSchema.tag?.value?.foreignKeyParams:",
-  //   currentTypecheckKeyMap?.rawSchema.tag?.value?.foreignKeyParams,
-  //   "foreignKeyObjectsFetchQueryParams",
-  //   foreignKeyObjectsFetchQueryParams,
-  //   "foreignKeyObjects", foreignKeyObjects,
-  // );
+  log.info(
+    "useJzodElementEditorHooks",
+    "rootLessListKey:",
+    rootLessListKey,
+    "currentDeploymentUuid:",
+    currentDeploymentUuid,
+    "currentTypecheckKeyMap?.rawSchema.tag?.value?.foreignKeyParams:",
+    currentTypecheckKeyMap?.rawSchema.tag?.value?.foreignKeyParams,
+    "foreignKeyObjectsFetchQueryParams",
+    foreignKeyObjectsFetchQueryParams,
+    "foreignKeyObjects", foreignKeyObjects,
+  );
 
   // ######################### optional attributes #########################
   const typeCheckMapJzodObjectFlattenedSchema: JzodObject | undefined =

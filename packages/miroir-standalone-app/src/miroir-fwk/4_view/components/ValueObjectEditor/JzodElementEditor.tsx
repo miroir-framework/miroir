@@ -20,7 +20,7 @@ import {
   MiroirLoggerFactory,
   mStringify,
   transformer_extended_apply_wrapper,
-  type TransformerForBuildPlusRuntime,
+  type CoreTransformerForBuildPlusRuntime,
   type TransformerReturnType
 } from "miroir-core";
 
@@ -571,7 +571,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
   // ##############################################################################################
   // ##############################################################################################
   // ##############################################################################################
-  const mainElement: JSX.Element = useMemo(() => {
+  const  mainElement: JSX.Element = useMemo(() => {
     try {
       if (props.returnsEmptyElement || props.hidden) {
         return <></>;
@@ -614,7 +614,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
 
       // HIDDEN ELEMENT
       if (localResolvedElementJzodSchemaBasedOnValue.tag?.value?.display?.hidden) {
-        const hidden: TransformerForBuildPlusRuntime = localResolvedElementJzodSchemaBasedOnValue.tag?.value?.display?.hidden;
+        const hidden: CoreTransformerForBuildPlusRuntime = localResolvedElementJzodSchemaBasedOnValue.tag?.value?.display?.hidden;
         if (typeof hidden === "boolean" && hidden === true) {
           return <></>;
         }
@@ -926,16 +926,17 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
           if (localResolvedElementJzodSchemaBasedOnValue.tag?.value?.foreignKeyParams?.targetEntity) {
             // Convert stringSelectList to options for selectors
             const selectOptions = stringSelectList.map((e: [string, EntityInstance]) => ({
-              value: e[1].uuid,
+              value: e[1].uuid ?? "NO_UUID", // TODO: check e[1].uuid is always defined
               label:
                 (e[1] as any).defaultLabel ||
                 (e[1] as EntityInstanceWithName).name ||
                 (e[1] as any).description ||
                 e[1].uuid,
             }));
-
+            const currentOption = selectOptions.find((option: any) => option.value === currentValueObjectAtKey);
             const editor = localReadOnly ? (
-              <ThemedDisplayValue value={currentValueObjectAtKey} type="uuid" />
+              // <ThemedDisplayValue value={currentValueObjectAtKey} type="uuid" />
+              <ThemedDisplayValue value={currentOption?.label} type="string" />
             ) : !localResolvedElementJzodSchemaBasedOnValue.tag?.value?.display?.uuid?.selector ||
               localResolvedElementJzodSchemaBasedOnValue.tag?.value?.display?.uuid?.selector ==
                 "portalSelector" ? (
@@ -977,43 +978,66 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
               />
             ) : localResolvedElementJzodSchemaBasedOnValue.tag?.value?.display?.uuid?.selector ==
               "muiSelector" ? (
-              <ThemedMUISelect
-                labelId={`${props.rootLessListKey}-label`}
-                label={localResolvedElementJzodSchemaBasedOnValue.tag?.value?.defaultLabel || props.rootLessListKey}
-                id={props.rootLessListKey}
-                key={props.rootLessListKey}
-                data-testid="miroirInput"
-                aria-label={props.rootLessListKey}
-                variant="outlined"
-                value={currentValueObjectAtKey === undefined ? "" : currentValueObjectAtKey}
-                onChange={(e) => {
-                  const newValue = e.target.value === "" ? undefined : e.target.value;
-                  // log.info(
-                  //   "JzodElementEditor UUID selector onChange",
-                  //   formikRootLessListKey,
-                  //   "newValue",
-                  //   newValue,
-                  //   "callback",
-                  //   !!callback,
-                  //   "props.onChangeVector",
-                  //   JSON.stringify(Object.keys(props.onChangeVector || {}))
-                  // );
-                  // Invoke onChangeVector callback if registered for this field
-                  const callback = props.onChangeVector?.[props.rootLessListKey];
-                  if (callback) {
-                    callback(newValue, props.rootLessListKey);
-                  }
-                  formik.setFieldValue(formikRootLessListKey, newValue);
-                }}
-                name={formikRootLessListKey}
-                fullWidth
-              >
-                {selectOptions.map((option) => (
-                  <MenuItem key={option.value} value={option.value}>
-                    {option.label}
-                  </MenuItem>
-                ))}
-              </ThemedMUISelect>
+                <>
+                  <JsonDisplayHelper debug={true}
+                    componentName="JzodElement Editor for uuid"
+                    elements={[{
+                      label: `JzodElementEditor: ${props.rootLessListKey}`,
+                      data: {
+                        rootLessListKey: props.rootLessListKey,
+                        selectOptions,
+                        // itemsOrder,
+                        // formik: Object.keys(formik.values),
+                        // pageParams: formik.values.pageParams,
+                        // formikRootLessListKey,
+                        // rawSchema: currentTypeCheckKeyMap?.rawSchema,
+                        // resolvedSchema: currentTypeCheckKeyMap?.resolvedSchema,
+                        // jzodObjectFlattenedSchema: currentTypeCheckKeyMap?.jzodObjectFlattenedSchema,
+                        // currentValueObjectAtKey,
+                        // mlSchema: rootLessListKey == "mlSchema" ? Object.entries(currentValueObjectAtKey.definition) : undefined,
+                      },
+                      copyButton: true,
+                      useCodeBlock: true,
+                    }]}
+                  />
+                  <ThemedMUISelect
+                    labelId={`${props.rootLessListKey}-label`}
+                    label={localResolvedElementJzodSchemaBasedOnValue.tag?.value?.defaultLabel || props.rootLessListKey}
+                    id={props.rootLessListKey}
+                    key={props.rootLessListKey}
+                    data-testid="miroirInput"
+                    aria-label={props.rootLessListKey}
+                    variant="outlined"
+                    value={currentValueObjectAtKey === undefined ? "" : currentValueObjectAtKey}
+                    onChange={(e) => {
+                      const newValue = e.target.value === "" ? undefined : e.target.value;
+                      // log.info(
+                      //   "JzodElementEditor UUID selector onChange",
+                      //   formikRootLessListKey,
+                      //   "newValue",
+                      //   newValue,
+                      //   "callback",
+                      //   !!callback,
+                      //   "props.onChangeVector",
+                      //   JSON.stringify(Object.keys(props.onChangeVector || {}))
+                      // );
+                      // Invoke onChangeVector callback if registered for this field
+                      const callback = props.onChangeVector?.[props.rootLessListKey];
+                      if (callback) {
+                        callback(newValue, props.rootLessListKey);
+                      }
+                      formik.setFieldValue(formikRootLessListKey, newValue);
+                    }}
+                    name={formikRootLessListKey}
+                    fullWidth
+                  >
+                    {selectOptions.map((option) => (
+                      <MenuItem key={option.value} value={option.value}>
+                        {option.label}
+                      </MenuItem>
+                    ))}
+                  </ThemedMUISelect>
+                </>
             ) : (
               <div>
                 unknown value for
@@ -1022,20 +1046,50 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
               </div>
             );
             ;
+            const editorWithDebug = (
+              <div>
+                <JsonDisplayHelper
+                  debug={true}
+                  componentName="JzodElement Editor for uuid"
+                  elements={[
+                    {
+                      label: `JzodElementEditor: ${props.rootLessListKey}`,
+                      data: {
+                        rootLessListKey: props.rootLessListKey,
+                        selectOptions,
+                        // itemsOrder,
+                        // formik: Object.keys(formik.values),
+                        // pageParams: formik.values.pageParams,
+                        // formikRootLessListKey,
+                        // rawSchema: currentTypeCheckKeyMap?.rawSchema,
+                        // resolvedSchema: currentTypeCheckKeyMap?.resolvedSchema,
+                        // jzodObjectFlattenedSchema: currentTypeCheckKeyMap?.jzodObjectFlattenedSchema,
+                        // currentValueObjectAtKey,
+                        // mlSchema: rootLessListKey == "mlSchema" ? Object.entries(currentValueObjectAtKey.definition) : undefined,
+                      },
+                      copyButton: true,
+                      useCodeBlock: true,
+                    },
+                  ]}
+                />
+                {editor}
+              </div>
+            );
+
             switch (
               localResolvedElementJzodSchemaBasedOnValue.tag?.value?.display
                 ?.objectUuidAttributeLabelPosition
             ) {
               case "hidden":
-                return <ThemedLabeledEditor labelElement={<></>} editor={editor} />;
+                return <ThemedLabeledEditor labelElement={<></>} editor={editorWithDebug} />;
               case "stacked":
                 return (
-                  <ThemedStackedLabeledEditor labelElement={enhancedLabelElement} editor={editor} />
+                  <ThemedStackedLabeledEditor labelElement={enhancedLabelElement} editor={editorWithDebug} />
                 );
               case "left":
               case undefined:
               default: {
-                return <ThemedLabeledEditor labelElement={enhancedLabelElement} editor={editor} />;
+                return <ThemedLabeledEditor labelElement={enhancedLabelElement} editor={editorWithDebug} />;
               }
             }
           } else {
