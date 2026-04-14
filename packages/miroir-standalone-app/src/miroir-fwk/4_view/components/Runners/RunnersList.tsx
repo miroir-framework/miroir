@@ -7,7 +7,7 @@ import {
   MiroirLoggerFactory,
   type LoggerInterface
 } from "miroir-core";
-import { Runner_CreateApplication } from './Runner_CreateApplication';
+// import { Runner_CreateApplication } from './Runner_CreateApplication';
 import { Runner_CreateEntity } from './Runner_CreateEntity';
 import { Runner_DropEntity } from './Runner_DropEntity';
 import { Runner_DropApplication } from './Runner_DropApplication';
@@ -35,10 +35,10 @@ export const runnerConfigs: RunnerConfig[] = [
     title: "Install Existing Application",
     component: Runner_InstallApplication,
   },
-  {
-    title: "Create Application (and Deployment)",
-    component: Runner_CreateApplication,
-  },
+  // {
+  //   title: "Create Application (and Deployment)",
+  //   component: Runner_CreateApplication,
+  // },
   {
     title: "Drop Application (and Deployment)",
     component: Runner_DropApplication,
