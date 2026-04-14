@@ -98,6 +98,7 @@
       },
       "homePageUrl": {
         "type": "union",
+        "optional": true,
         "definition": [
           { "type": "string" },
           {

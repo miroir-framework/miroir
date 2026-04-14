@@ -3958,24 +3958,11 @@ export const miroirFundamentalJzodSchema = {
             "description": "If set, each attribute value transformer will have access to the outer object through this attribute name."
           },
           "definition": {
-            "type": "union",
-            "discriminator": "transformerType",
-            "definition": [
-              {
-                "type": "schemaReference",
-                "definition": {
-                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "coreTransformerForBuildPlusRuntime_createObject"
-                }
-              },
-              {
-                "type": "schemaReference",
-                "definition": {
-                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "coreTransformerForBuildPlusRuntime_returnValue"
-                }
-              }
-            ]
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "coreTransformerForBuildPlusRuntime"
+            }
           }
         }
       },
@@ -30064,24 +30051,11 @@ export const miroirFundamentalJzodSchema = {
             "description": "If set, each attribute value transformer will have access to the outer object through this attribute name."
           },
           "definition": {
-            "type": "union",
-            "discriminator": "transformerType",
-            "definition": [
-              {
-                "type": "schemaReference",
-                "definition": {
-                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_coreTransformerForBuildPlusRuntime_createObject"
-                }
-              },
-              {
-                "type": "schemaReference",
-                "definition": {
-                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_coreTransformerForBuildPlusRuntime_returnValue"
-                }
-              }
-            ]
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_coreTransformerForBuildPlusRuntime"
+            }
           }
         }
       },
