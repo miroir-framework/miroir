@@ -492,8 +492,11 @@ export function getMiroirFundamentalJzodSchema(
       type: "schemaReference",
       context: {
         // ...(jzodSchemajzodMiroirBootstrapSchema as any).definition.context,
-        ...// ) as JzodReference
-        (
+        ______________________________________________bootstrap_____________________________________________:
+          {
+            type: "never",
+          },
+        ...(
           makeReferencesAbsolute(
             // jzodSchemajzodMiroirBootstrapSchema.definition as JzodElement,
             jzodSchemajzodMiroirBootstrapSchema.definition as any,
@@ -501,6 +504,10 @@ export function getMiroirFundamentalJzodSchema(
             true,
           ) as any
         ).context,
+        ______________________________________________basic_____________________________________________:
+          {
+            type: "never",
+          },
         // miroirIcon: entityDefinitionEntityDefinitionV1.mlSchema.definition.icon,
         miroirIcon: {
           type: "union",
@@ -617,6 +624,79 @@ export function getMiroirFundamentalJzodSchema(
             },
           ],
         },
+        reportLink: {
+          type: "object",
+          tag: {
+            value: {
+              defaultLabel: "ReportLink",
+            },
+          },
+          definition: {
+            label: {
+              type: "string",
+            },
+            section: {
+              type: "schemaReference",
+              definition: {
+                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                relativePath: "applicationSection",
+              },
+            },
+            selfApplication: {
+              type: "string",
+              validations: [
+                {
+                  type: "uuid",
+                },
+              ],
+              tag: {
+                value: {
+                  id: 1,
+                  defaultLabel: "SelfApplication",
+                  display: { editable: false },
+                },
+              },
+            },
+            reportUuid: {
+              type: "string",
+              optional: true,
+              validations: [
+                {
+                  type: "uuid",
+                },
+              ],
+              tag: {
+                value: {
+                  id: 1,
+                  defaultLabel: "Report"
+                },
+              },
+            },
+            instanceUuid: {
+              type: "string",
+              optional: true,
+              validations: [
+                {
+                  type: "uuid",
+                },
+              ],
+              tag: {
+                value: {
+                  id: 1,
+                  defaultLabel: "Instance"
+                },
+              },
+            },
+            icon: {
+              type: "schemaReference",
+              optional: true,
+              definition: {
+                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                relativePath: "miroirIcon",
+              },
+            },
+          },
+        },
         // ########################################################################################
         // ########################################################################################
         // ########################################################################################
@@ -661,7 +741,9 @@ export function getMiroirFundamentalJzodSchema(
         ...Object.fromEntries(
           Object.entries(miroirCoreTransformers).map(([key, value]) => [
             key.replace("transformer_", "coreTransformerForBuildPlusRuntime_"),
-            miroirCoreTransformersForBuildPlusRuntime[key as keyof typeof miroirCoreTransformersForBuildPlusRuntime],
+            miroirCoreTransformersForBuildPlusRuntime[
+              key as keyof typeof miroirCoreTransformersForBuildPlusRuntime
+            ],
           ]),
         ),
         coreTransformerForBuildPlusRuntimeWithoutArray: {
@@ -692,7 +774,7 @@ export function getMiroirFundamentalJzodSchema(
             },
           ],
         },
-        coreTransformerForBuildPlusRuntime:{
+        coreTransformerForBuildPlusRuntime: {
           type: "union",
           optInDiscriminator: true,
           discriminator: ["transformerType", "interpolation"],
@@ -741,7 +823,7 @@ export function getMiroirFundamentalJzodSchema(
         //   miroirTransformersForBuildPlusRuntime.transformer_getActiveDeployment,
         // // transformerForBuildPlusRuntime_duplicateApplicationModel:
         // //   miroirTransformersForBuildPlusRuntime.transformer_duplicateApplicationModel,
-        
+
         // transformerForBuildPlusRuntime_menu_addItem:
         //   miroirTransformersForBuildPlusRuntime.transformer_menu_addItem,
         // //
@@ -1727,17 +1809,18 @@ export function getMiroirFundamentalJzodSchema(
          * HACK:
          * extractorOrCombinerTemplate / extractorOrCombinerTemplateRecord are used in entityDefinitionQueryVersionV1WithAbsoluteReferences
          * although they require to have passed the template generation phase
-         * this works only because the template generation phase ignores references starting by "miroirTemplate_" and 
+         * this works only because the template generation phase ignores references starting by "miroirTemplate_" and
          * reproduces them as is in the generated schema, allowing to break the circular dependency
-         * 
-         * TODO: we need a CLEAN solution to enable template-producing Entity definition, 
+         *
+         * TODO: we need a CLEAN solution to enable template-producing Entity definition,
          * or should this remain absolutely local, because it does not make sense in the general case
          * TODO: this seema to induce a display problem in the Jzod element editor, with the "extractorWrapperReturningObject" case
          *  (it should display an error if incorrect, in this case `itemsOrder= []`).
          */
         extractorOrCombinerTemplate: {
           type: "schemaReference",
-          definition: { // reference starting by "miroirTemplate_" will be reproduced as is by template generation
+          definition: {
+            // reference starting by "miroirTemplate_" will be reproduced as is by template generation
             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
             relativePath: "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorOrCombiner",
           },
@@ -3024,12 +3107,12 @@ export function getMiroirFundamentalJzodSchema(
           miroirTransformersForBuildPlusRuntime.transformer_getActiveDeployment,
         transformerForBuildPlusRuntime_duplicateApplicationModel:
           miroirTransformersForBuildPlusRuntime.transformer_duplicateApplicationModel,
-        
+
         transformerForBuildPlusRuntime_menu_addItem:
           miroirTransformersForBuildPlusRuntime.transformer_menu_addItem,
         //
-          transformerForBuildPlusRuntime_ansiColumnsToJzodSchema:
-            miroirTransformersForBuildPlusRuntime.transformer_ansiColumnsToJzodSchema,
+        transformerForBuildPlusRuntime_ansiColumnsToJzodSchema:
+          miroirTransformersForBuildPlusRuntime.transformer_ansiColumnsToJzodSchema,
         // MLS
         ...Object.fromEntries(
           Object.entries(mlsTransformers).map(([key, value]) => [
@@ -3044,7 +3127,6 @@ export function getMiroirFundamentalJzodSchema(
         absolutePath: miroirFundamentalJzodSchemaUuid,
         relativePath: "miroirAllFundamentalTypesUnion",
       },
-
     },
   };
 

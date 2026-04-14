@@ -350,6 +350,7 @@
               "operator": "==",
               "left": {
                 "transformerType": "getFromParameters",
+                "safe": true,
                 "referencePath": ["env", "NODE_ENV"]
               },
               "right": "development"
@@ -414,26 +415,35 @@
             }
           },
           "modifiedApplicationBundle": {
-            "transformerType": "mergeIntoObject",
-            "interpolation": "runtime",
-            "applyTo": {
+            "transformerType": "ifThenElse",
+            "if": {
+              "transformerType": "boolExpr",
+              "operator": "==",
+              "left": {
+                "transformerType": "getFromParameters",
+                "safe": true,
+                "referencePath": ["deployApplication", "duplicateApplication"]
+              },
+              "right": true
+            },
+            "then": {
+              "transformerType": "duplicateApplicationModel",
+              "interpolation": "runtime",
+              "application": {
+                "transformerType": "getFromContext",
+                "interpolation": "runtime",
+                "referencePath": ["testApplicationUuid"]
+              },
+              "applicationBundle": {
+                "transformerType": "getFromParameters",
+                "safe": true,
+                "referencePath": ["deployApplication", "applicationBundle"]
+              }
+            },
+            "else": {
               "transformerType": "getFromParameters",
               "safe": true,
               "referencePath": ["deployApplication", "applicationBundle"]
-            },
-            "definition": {
-              "applications": {
-                "transformerType": "concatLists",
-                "lists": [
-                  [
-                    {
-                      "transformerType": "getFromContext",
-                      "interpolation": "runtime",
-                      "referencePath": ["modifiedApplicationFromBundle"]
-                    }
-                  ]
-                ]
-              }
             }
           },
           "sqltestDeploymentStorageConfigurationTemplate": {
@@ -747,7 +757,7 @@
               "selfApplication": {
                 "transformerType": "getFromContext",
                 "interpolation": "runtime",
-                "referencePath": ["testApplicationUuid"]
+                "referencePath": ["modifiedApplicationBundle", "applications", "0"]
               },
               "applicationModelBranch": {
                 "transformerType": "createObject",
@@ -960,7 +970,7 @@
               "applyTo": {
                 "transformerType": "getFromContext",
                 "interpolation": "runtime",
-                "referencePath": ["deployApplication", "applicationBundle"]
+                "referencePath": ["modifiedApplicationBundle"]
               },
               "definition": {
                 "transformerType": "createObject",
@@ -994,7 +1004,7 @@
                 "value": {
                   "transformerType": "getFromContext",
                   "interpolation": "runtime",
-                  "referencePath": ["deployApplication", "applicationBundle"]
+                  "referencePath": ["modifiedApplicationBundle"]
                 }
               },
               "params": {

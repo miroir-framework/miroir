@@ -137,8 +137,18 @@ export const HomePage = (props: RootComponentProps) => {
   useEffect(() => {
     if (applicationDefinition) {
       log.info("HomePage fetched applicationDefinition", applicationDefinition);
-      if (applicationDefinition.homePageUrl) {
-        navigate(applicationDefinition.homePageUrl);
+      if (!applicationDefinition.homePageUrl) {
+        log.warn("HomePage applicationDefinition does not have homePageUrl defined, staying on HomePage", { applicationDefinition });
+      } else {
+        if (typeof applicationDefinition.homePageUrl === "string") {
+          navigate(applicationDefinition.homePageUrl);
+        } else {
+          const homepageUrl = `/report/${applicationDefinition.homePageUrl.selfApplication}/${
+              currentApplicationDeploymentMap[applicationDefinition.homePageUrl.selfApplication]
+            }/${applicationDefinition.homePageUrl.section}/${applicationDefinition.homePageUrl.reportUuid}/${applicationDefinition.homePageUrl.instanceUuid ?? "xxxxxx"}`
+          log.info("HomePage navigating to homePageUrl", { homepageUrl, applicationDefinition });
+          navigate(homepageUrl);
+        }
       }
     }
   }, [applicationDefinition]);
@@ -207,23 +217,6 @@ export const HomePage = (props: RootComponentProps) => {
         </button>
       </span> */}
       <RunnerList config={runnerConfigs} applicationDeploymentMap={currentApplicationDeploymentMap} />
-
-
-
-      {/* <p /> */}
-      {/* <span>cache size: {JSON.stringify(domainController.currentLocalCacheInfo())}</span> */}
-      {/* <Importer
-        filename=""
-        currentModel={currentModel}
-        // currentDeploymentUuid={adminConfigurationDeploymentTest1.uuid}
-        // currentDeploymentUuid="f97cce64-78e9-419f-a4bd-5cbf52833ede" // test4
-        // currentDeploymentUuid="3d15b8c8-a74c-48ce-81d5-c76853803b90" // Paris
-        currentDeploymentUuid={deployment_Library_DO_NO_USE.uuid}
-        // currentApplicationUuid={test1SelfApplication.uuid}
-        // currentApplicationUuid="478d3a5d-d866-41c8-944c-121aca3ab87f" // test4
-        // currentApplicationUuid="2c1d14d5-691f-42cf-9850-887122170a43" // Paris
-        currentApplicationUuid={selfApplicationLibrary.uuid} 
-      ></Importer> */}
     </PageContainer>
   );
 };

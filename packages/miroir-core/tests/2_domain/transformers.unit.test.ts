@@ -1,3 +1,4 @@
+import { afterAll } from 'vitest';
 import * as vitest from 'vitest';
 import { defaultMetaModelEnvironment } from '../../src/1_core/Model';
 import { MiroirActivityTracker } from '../../src/3_controllers/MiroirActivityTracker';

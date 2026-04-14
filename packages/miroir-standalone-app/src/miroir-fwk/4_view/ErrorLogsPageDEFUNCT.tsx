@@ -46,7 +46,7 @@ import {
   Warning as WarningIcon
 } from './components/Themes/MaterialSymbolWrappers';
 
-import { ErrorLogEntry, useErrorLogService } from 'miroir-react';
+import { ErrorLogEntry, ThemedOnScreenHelper, useErrorLogService } from 'miroir-react';
 
 // ##############################################################################################
 // Error Logs Page - Comprehensive error management and viewing interface
@@ -549,7 +549,8 @@ export const ErrorLogsPageDEFUNCT: React.FC = () => {
                     <Typography variant="h6">Context Information</Typography>
                   </AccordionSummary>
                   <AccordionDetails>
-                    <Typography
+                    <ThemedOnScreenHelper data={selectedError.context} copyButton={true} initiallyUnfolded={true} />
+                    {/* <Typography
                       variant="body2"
                       component="pre"
                       sx={{
@@ -562,7 +563,7 @@ export const ErrorLogsPageDEFUNCT: React.FC = () => {
                       }}
                     >
                       {JSON.stringify(selectedError.context, null, 2)}
-                    </Typography>
+                    </Typography> */}
                   </AccordionDetails>
                 </Accordion>
               )}

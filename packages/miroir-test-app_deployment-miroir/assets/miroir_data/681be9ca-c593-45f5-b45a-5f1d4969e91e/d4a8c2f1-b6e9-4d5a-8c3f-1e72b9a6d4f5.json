@@ -30,7 +30,10 @@
                     "uuid": "5af03c98-fe5e-490b-b08f-e1230971c57f",
                     "parentName": "SelfApplication",
                     "parentUuid": "a659d350-dd97-4da9-91de-524fa01745dc",
-                    "name": "Library"
+                    "name": "Library",
+                    "defaultLabel": "The Library selfApplication.",
+                    "description": "The model and data of the Library selfApplication.",
+                    "homePageUrl": "/report/5af03c98-fe5e-490b-b08f-e1230971c57f/f714bb2f-a12d-4e71-a03b-74dcedea6eb4/data/9c0cdb97-9537-4ee2-8053-a6ece3e0afe8/xxxxx"
                   }
                 ],
                 "entities": [
@@ -62,7 +65,54 @@
                 ],
                 "endpoints": [],
                 "jzodSchemas": [],
-                "menus": [],
+                "menus": [
+                  {
+                    "uuid": "dd168e5a-2a21-4d2d-a443-032c6d15eb22",
+                    "parentName": "Menu",
+                    "parentUuid": "dde4c883-ae6d-47c3-b6df-26bc6e3c1842",
+                    "name": "LibraryMenu",
+                    "defaultLabel": "Library Menu",
+                    "description": "This is the default menu allowing to explore the Library SelfApplication.",
+                    "definition": {
+                      "menuType": "complexMenu",
+                      "definition": [
+                        {
+                          "title": "Library",
+                          "label": "library",
+                          "items": [
+                            {
+                              "miroirMenuItemType": "miroirMenuReportLink",
+                              "label": "Library Application",
+                              "section": "model",
+                              "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                              "reportUuid": "cd24df86-204c-4a72-9ac0-87f2b92f25fe",
+                              "icon": "category",
+                              "menuItemScope": "model",
+                              "instanceUuid": "5af03c98-fe5e-490b-b08f-e1230971c57f"
+                            },
+                            {
+                              "miroirMenuItemType": "miroirMenuReportLink",
+                              "label": "Library Menus",
+                              "section": "model",
+                              "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                              "reportUuid": "ecfd8787-09cc-417d-8d2c-173633c9f998",
+                              "icon": "list",
+                              "menuItemScope": "model"
+                            },
+                            {
+                              "miroirMenuItemType": "miroirMenuReportLink",
+                              "label": "Library Authors",
+                              "section": "data",
+                              "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                              "reportUuid": "66a09068-52c3-48bc-b8dd-76575bbc8e72",
+                              "icon": "star"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  }
+                ],
                 "storedQueries": [],
                 "reports": [
                   {
@@ -97,11 +147,13 @@
               "applicationName": "Library",
               "applications": [
                 {
-                  "uuid": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                  "uuid": "55555555-5555-5555-5555-555555555555",
                   "parentName": "SelfApplication",
                   "parentUuid": "a659d350-dd97-4da9-91de-524fa01745dc",
                   "name": "Library",
-                  "applicationUuid": "55555555-5555-5555-5555-555555555555"
+                  "defaultLabel": "The Library selfApplication.",
+                  "description": "The model and data of the Library selfApplication.",
+                  "homePageUrl": "/report/55555555-5555-5555-5555-555555555555/f714bb2f-a12d-4e71-a03b-74dcedea6eb4/data/9c0cdb97-9537-4ee2-8053-a6ece3e0afe8/xxxxx"
                 }
               ],
               "entities": [
@@ -133,7 +185,54 @@
               ],
               "endpoints": [],
               "jzodSchemas": [],
-              "menus": [],
+              "menus": [
+                  {
+                    "uuid": "dd168e5a-2a21-4d2d-a443-032c6d15eb22",
+                    "parentName": "Menu",
+                    "parentUuid": "dde4c883-ae6d-47c3-b6df-26bc6e3c1842",
+                    "name": "LibraryMenu",
+                    "defaultLabel": "Library Menu",
+                    "description": "This is the default menu allowing to explore the Library SelfApplication.",
+                    "definition": {
+                      "menuType": "complexMenu",
+                      "definition": [
+                        {
+                          "title": "Library",
+                          "label": "library",
+                          "items": [
+                            {
+                              "miroirMenuItemType": "miroirMenuReportLink",
+                              "label": "Library Application",
+                              "section": "model",
+                              "selfApplication": "55555555-5555-5555-5555-555555555555",
+                              "reportUuid": "cd24df86-204c-4a72-9ac0-87f2b92f25fe",
+                              "icon": "category",
+                              "menuItemScope": "model",
+                              "instanceUuid": "55555555-5555-5555-5555-555555555555"
+                            },
+                            {
+                              "miroirMenuItemType": "miroirMenuReportLink",
+                              "label": "Library Menus",
+                              "section": "model",
+                              "selfApplication": "55555555-5555-5555-5555-555555555555",
+                              "reportUuid": "ecfd8787-09cc-417d-8d2c-173633c9f998",
+                              "icon": "list",
+                              "menuItemScope": "model"
+                            },
+                            {
+                              "miroirMenuItemType": "miroirMenuReportLink",
+                              "label": "Library Authors",
+                              "section": "data",
+                              "selfApplication": "55555555-5555-5555-5555-555555555555",
+                              "reportUuid": "66a09068-52c3-48bc-b8dd-76575bbc8e72",
+                              "icon": "star"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  }
+                ],
               "storedQueries": [],
               "reports": [
                 {

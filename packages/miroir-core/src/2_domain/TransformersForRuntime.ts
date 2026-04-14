@@ -40,6 +40,8 @@ import {
   type TransformerForBuildPlusRuntime_duplicateApplicationModel,
   type MetaModel,
   type Menu,
+  type SelfApplication,
+  type ReportLink,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import {
   defaultTransformerInput,
@@ -839,6 +841,16 @@ function handleTransformer_duplicateApplicationModel(
 ) {
 
   let newApplicationUuid: Uuid | undefined = undefined;
+    log.info(
+      "handleTransformer_duplicateApplicationModel called with",
+      "step", step,
+      "transformerPath", transformerPath,
+      "label", label,
+      // "resolvedApplication", resolvedApplication,
+      "transformer", transformer,
+      "queryParams", queryParams,
+      "contextResults", contextResults,
+    );
   if (typeof transformer.application == "object") {
     const resolvedApplication = defaultTransformers.transformer_extended_apply(
       step,
@@ -849,6 +861,16 @@ function handleTransformer_duplicateApplicationModel(
       modelEnvironment,
       queryParams,
       contextResults
+    );
+    log.info(
+      "handleTransformer_duplicateApplicationModel resolved application",
+      "step", step,
+      "transformerPath", transformerPath,
+      "label", label,
+      "resolvedApplication", resolvedApplication,
+      "transformer", transformer,
+      "queryParams", queryParams,
+      "contextResults", contextResults,
     );
     if (resolvedApplication instanceof TransformerFailure) {
       return new TransformerFailure({
@@ -873,54 +895,116 @@ function handleTransformer_duplicateApplicationModel(
       failureOrigin: ["handleTransformer_duplicateApplicationModel"],
       failureMessage:
         "handleTransformer_duplicateApplicationModel failed to resolve application UUID",
-      queryContext: JSON.stringify(transformer),
+      // queryContext: JSON.stringify(transformer),
+      innerError: newApplicationUuid as any,
       queryParameters: queryParams as any,
+      queryContext: contextResults as any,
     });
   }
 
+  const applicationBundle: MetaModel = "transformerType" in transformer.applicationBundle ?
+    defaultTransformers.transformer_extended_apply(
+      step,
+      [...transformerPath, "applicationBundle"],
+      label,
+      transformer.applicationBundle as any,
+      resolveBuildTransformersTo,
+      modelEnvironment,
+      queryParams,
+      contextResults
+    ) : transformer.applicationBundle;
+
   const result: MetaModel = {
-    ...transformer.applicationBundle,
+    ...applicationBundle,
     applicationUuid: newApplicationUuid,
-    applications: transformer.applicationBundle.applications.map(app => ({
+    applications: applicationBundle.applications.map((app: SelfApplication) => ({
       ...app,
-      applicationUuid: newApplicationUuid,
+      uuid: newApplicationUuid,
+      homePageUrl:
+        typeof app.homePageUrl === "string"
+          ? app.homePageUrl.replaceAll(
+              applicationBundle.applicationUuid,
+              newApplicationUuid as string,
+            )
+          : { ...app.homePageUrl, selfApplication: newApplicationUuid } as ReportLink,
     })),
-    entities: transformer.applicationBundle.entities.map(entity => ({
+    entities: applicationBundle.entities.map((entity) => ({
       ...entity,
       selfApplication: newApplicationUuid,
     })),
-    endpoints: transformer.applicationBundle.endpoints.map(endpoint => ({
+    endpoints: applicationBundle.endpoints.map((endpoint) => ({
       ...endpoint,
       application: newApplicationUuid,
     })),
-    menus: transformer.applicationBundle.menus.map(menu => ({
+    menus: applicationBundle.menus.map((menu) => ({
       ...menu,
-      definition: menu.definition.menuType == "simpleMenu"?
-        menu.definition.definition.map(item => ({
-          ...item,
-          selfApplication: newApplicationUuid,
-        })) :
-        {
-          ...menu.definition.definition,
-          items: (menu.definition.definition as any).items.map((item: any) => ({
-            ...item,
-            selfApplication: newApplicationUuid,
-          }))
-        }
+      definition:
+        menu.definition.menuType == "simpleMenu"
+          ? {
+              ...menu.definition,
+              definition: menu.definition.definition.map(
+                (item) =>
+                  Object.fromEntries(
+                    Object.entries(item).map(([key, value]) =>
+                      typeof value === "string"
+                        ? [
+                            key,
+                            value.replaceAll(
+                              applicationBundle.applicationUuid,
+                              newApplicationUuid as string,
+                            ),
+                          ]
+                        : [key, value],
+                    ),
+                  ),
+                // (
+                // {
+                // ...item,
+                // selfApplication: newApplicationUuid,
+                // }
+                // )
+              ),
+            }
+          : {
+              ...menu.definition,
+              definition: menu.definition.definition.map((e) => ({
+                ...e,
+                items: e.items.map(
+                  (item: any) =>
+                    Object.fromEntries(
+                      Object.entries(item).map(([key, value]) =>
+                        typeof value === "string"
+                          ? [
+                              key,
+                              value.replaceAll(
+                                applicationBundle.applicationUuid,
+                                newApplicationUuid as string,
+                              ),
+                            ]
+                          : [key, value],
+                      ),
+                    ),
+                  //   ({
+                  //   ...item,
+                  //   selfApplication: newApplicationUuid,
+                  // })
+                ),
+              })),
+            },
     })) as any,
-    reports: transformer.applicationBundle.reports.map(report => ({
+    reports: applicationBundle.reports.map((report) => ({
       ...report,
       selfApplication: newApplicationUuid,
     })),
-    applicationVersions: transformer.applicationBundle.applicationVersions.map(av => ({
+    applicationVersions: applicationBundle.applicationVersions.map((av) => ({
       ...av,
       selfApplication: newApplicationUuid,
     })),
-    runners: transformer.applicationBundle.runners.map(runner => ({
+    runners: applicationBundle.runners.map((runner) => ({
       ...runner,
       selfApplication: newApplicationUuid,
     })),
-  }
+  };
   return result;
 }
 
@@ -1685,10 +1769,7 @@ function handleTransformer_mergeIntoObject<T extends MiroirModelEnvironment>(
 export function transformer_resolveReference(
   step: Step,
   transformerPath: string[] = [],
-  transformerInnerReference:
-    | Transformer_contextOrParameterReferenceTO_REMOVE
-    // | TransformerForBuild_getFromParameters
-  ,
+  transformerInnerReference: Transformer_contextOrParameterReferenceTO_REMOVE,
   paramOrContext: "param" | "context",
   queryParams: Record<string, any>,
   contextResults?: Record<string, any>,
@@ -1703,13 +1784,15 @@ export function transformer_resolveReference(
     ? "referencePath"
     : "no name";
 
-  // log.info(
-  //   "transformer_resolveReference called for",
-  //   JSON.stringify(transformerInnerReference, null, 2),
-  //   "bank",
-  //   JSON.stringify(Object.keys(bank), null, 2)
-  //   // JSON.stringify(bank, null, 2)
-  // );
+  log.info(
+    "transformer_resolveReference called for",
+    transformerInnerReference,
+    // JSON.stringify(transformerInnerReference, null, 2),
+    "bank",
+    bank,
+    // JSON.stringify(Object.keys(bank), null, 2)
+    // JSON.stringify(bank, null, 2)
+  );
   if (!bank) {
     log.error(
       "transformer_resolveReference failed, no contextResults for step",
@@ -1751,14 +1834,14 @@ export function transformer_resolveReference(
         queryContext: JSON.stringify(Object.keys(bank)),
       });
     }
-    // log.info(
-    //   "transformer_resolveReference resolved for",
-    //   JSON.stringify(transformerInnerReference, null, 2),
-    //   "bank",
-    //   JSON.stringify(Object.keys(bank), null, 2),
-    //   "found result",
-    //   JSON.stringify(bank[transformerInnerReference.referenceName], null, 2)
-    // );
+    log.info(
+      "transformer_resolveReference resolved for",
+      JSON.stringify(transformerInnerReference, null, 2),
+      "bank",
+      JSON.stringify(Object.keys(bank), null, 2),
+      "found result",
+      JSON.stringify(bank[transformerInnerReference.referenceName], null, 2)
+    );
     return bank[transformerInnerReference.referenceName];
   }
 
@@ -1768,12 +1851,12 @@ export function transformer_resolveReference(
       const pathResult = transformerInnerReference.safe
         ? safeResolvePathOnObject(bank, transformerInnerReference.referencePath)
         : resolvePathOnObject(bank, transformerInnerReference.referencePath);
-      // log.info(
-      //   "transformer_resolveReference resolved for",
-      //   JSON.stringify(transformerInnerReference, null, 2),
-      //   "found pathResult",
-      //   pathResult
-      // );
+      log.info(
+        "transformer_resolveReference path resolved for",
+        JSON.stringify(transformerInnerReference, null, 2),
+        "found pathResult",
+        pathResult
+      );
       return pathResult;
     } catch (error) {
       log.error(
