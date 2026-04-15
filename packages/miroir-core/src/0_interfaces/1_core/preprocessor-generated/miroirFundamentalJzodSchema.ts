@@ -4524,49 +4524,15 @@ export const miroirFundamentalJzodSchema = {
       },
       "transformerDefinition": {
         "type": "object",
+        "extend": {
+          "type": "schemaReference",
+          "definition": {
+            "eager": true,
+            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            "relativePath": "entityDefinitionRoot"
+          }
+        },
         "definition": {
-          "uuid": {
-            "type": "uuid",
-            "tag": {
-              "value": {
-                "id": 1,
-                "defaultLabel": "Uuid",
-                "display": {
-                  "editable": false
-                }
-              }
-            }
-          },
-          "parentName": {
-            "type": "string",
-            "optional": true,
-            "tag": {
-              "value": {
-                "id": 2,
-                "defaultLabel": "Entity Name",
-                "display": {
-                  "editable": false
-                }
-              }
-            }
-          },
-          "parentUuid": {
-            "type": "uuid",
-            "tag": {
-              "value": {
-                "id": 3,
-                "defaultLabel": "Entity Uuid",
-                "display": {
-                  "editable": false
-                },
-                "foreignKeyParams": {
-                  "targetEntityApplicationSection": "model",
-                  "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                  "targetEntityOrderInstancesBy": "name"
-                }
-              }
-            }
-          },
           "classification": {
             "type": "string",
             "optional": true,
@@ -4589,19 +4555,6 @@ export const miroirFundamentalJzodSchema = {
                 "defaultLabel": "Runnable As Sql",
                 "display": {
                   "editable": true
-                }
-              }
-            }
-          },
-          "parentDefinitionVersionUuid": {
-            "type": "uuid",
-            "optional": true,
-            "tag": {
-              "value": {
-                "id": 4,
-                "defaultLabel": "Entity Definition Version Uuid",
-                "display": {
-                  "editable": false
                 }
               }
             }
@@ -5185,23 +5138,22 @@ export const miroirFundamentalJzodSchema = {
         }
       },
       "conceptLevel": {
+        "tag": {
+          "value": {
+            "display": {
+              "editable": false
+            },
+            "defaultLabel": "Concept Level",
+            "id": 5
+          }
+        },
         "type": "enum",
+        "optional": true,
         "definition": [
           "MetaModel",
           "Model",
-          "Data",
-          "External"
-        ],
-        "optional": true,
-        "tag": {
-          "value": {
-            "id": 5,
-            "defaultLabel": "Concept Level",
-            "display": {
-              "editable": false
-            }
-          }
-        }
+          "Data"
+        ]
       },
       "storageAccess": {
         "type": "enum",
@@ -5543,59 +5495,15 @@ export const miroirFundamentalJzodSchema = {
       },
       "transformerTestDefinition": {
         "type": "object",
+        "extend": {
+          "type": "schemaReference",
+          "definition": {
+            "eager": true,
+            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            "relativePath": "entityDefinitionRoot"
+          }
+        },
         "definition": {
-          "uuid": {
-            "type": "string",
-            "validations": [
-              {
-                "type": "uuid"
-              }
-            ],
-            "tag": {
-              "value": {
-                "id": 1,
-                "defaultLabel": "Uuid",
-                "display": {
-                  "editable": false
-                }
-              }
-            }
-          },
-          "parentName": {
-            "type": "string",
-            "optional": true,
-            "tag": {
-              "value": {
-                "id": 1,
-                "defaultLabel": "Uuid",
-                "display": {
-                  "editable": false
-                }
-              }
-            }
-          },
-          "parentUuid": {
-            "type": "string",
-            "validations": [
-              {
-                "type": "uuid"
-              }
-            ],
-            "tag": {
-              "value": {
-                "id": 1,
-                "defaultLabel": "parentUuid",
-                "display": {
-                  "editable": false
-                },
-                "foreignKeyParams": {
-                  "targetEntityApplicationSection": "model",
-                  "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                  "targetEntityOrderInstancesBy": "name"
-                }
-              }
-            }
-          },
           "selfApplication": {
             "type": "uuid",
             "tag": {
@@ -5958,62 +5866,15 @@ export const miroirFundamentalJzodSchema = {
       },
       "selfApplication": {
         "type": "object",
+        "extend": {
+          "type": "schemaReference",
+          "definition": {
+            "eager": true,
+            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            "relativePath": "entityDefinitionRoot"
+          }
+        },
         "definition": {
-          "uuid": {
-            "type": "uuid",
-            "tag": {
-              "value": {
-                "id": 1,
-                "defaultLabel": "Uuid",
-                "display": {
-                  "editable": false
-                }
-              }
-            }
-          },
-          "parentName": {
-            "type": "string",
-            "optional": true,
-            "tag": {
-              "value": {
-                "id": 2,
-                "defaultLabel": "Entity Name",
-                "display": {
-                  "editable": false
-                }
-              }
-            }
-          },
-          "parentUuid": {
-            "type": "uuid",
-            "tag": {
-              "value": {
-                "id": 3,
-                "defaultLabel": "Entity Uuid",
-                "display": {
-                  "editable": false
-                },
-                "foreignKeyParams": {
-                  "targetEntityApplicationSection": "model",
-                  "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                  "targetEntityOrderInstancesBy": "name"
-                }
-              }
-            }
-          },
-          "parentDefinitionVersionUuid": {
-            "type": "uuid",
-            "optional": true,
-            "tag": {
-              "value": {
-                "id": 4,
-                "defaultLabel": "Entity Definition Version Uuid",
-                "display": {
-                  "editable": false
-                }
-              }
-            }
-          },
           "name": {
             "type": "string",
             "tag": {
@@ -6062,62 +5923,15 @@ export const miroirFundamentalJzodSchema = {
       },
       "applicationVersion": {
         "type": "object",
+        "extend": {
+          "type": "schemaReference",
+          "definition": {
+            "eager": true,
+            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            "relativePath": "entityDefinitionRoot"
+          }
+        },
         "definition": {
-          "uuid": {
-            "type": "uuid",
-            "tag": {
-              "value": {
-                "id": 1,
-                "defaultLabel": "Uuid",
-                "display": {
-                  "editable": false
-                }
-              }
-            }
-          },
-          "parentName": {
-            "type": "string",
-            "optional": true,
-            "tag": {
-              "value": {
-                "id": 2,
-                "defaultLabel": "Entity Name",
-                "display": {
-                  "editable": false
-                }
-              }
-            }
-          },
-          "parentUuid": {
-            "type": "uuid",
-            "tag": {
-              "value": {
-                "id": 3,
-                "defaultLabel": "Entity Uuid",
-                "display": {
-                  "editable": false
-                },
-                "foreignKeyParams": {
-                  "targetEntityApplicationSection": "model",
-                  "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                  "targetEntityOrderInstancesBy": "name"
-                }
-              }
-            }
-          },
-          "parentDefinitionVersionUuid": {
-            "type": "uuid",
-            "optional": true,
-            "tag": {
-              "value": {
-                "id": 4,
-                "defaultLabel": "Entity Definition Version Uuid",
-                "display": {
-                  "editable": false
-                }
-              }
-            }
-          },
           "name": {
             "type": "string",
             "tag": {
@@ -6541,81 +6355,15 @@ export const miroirFundamentalJzodSchema = {
       },
       "entity": {
         "type": "object",
+        "extend": {
+          "type": "schemaReference",
+          "definition": {
+            "eager": true,
+            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            "relativePath": "entityDefinitionRoot"
+          }
+        },
         "definition": {
-          "uuid": {
-            "type": "uuid",
-            "tag": {
-              "value": {
-                "id": 1,
-                "defaultLabel": "Uuid",
-                "display": {
-                  "editable": false
-                }
-              }
-            }
-          },
-          "parentName": {
-            "type": "string",
-            "optional": true,
-            "tag": {
-              "value": {
-                "id": 2,
-                "defaultLabel": "Entity Name",
-                "display": {
-                  "editable": false
-                }
-              }
-            }
-          },
-          "parentUuid": {
-            "type": "uuid",
-            "tag": {
-              "value": {
-                "id": 3,
-                "defaultLabel": "Entity Uuid",
-                "display": {
-                  "editable": false
-                },
-                "foreignKeyParams": {
-                  "targetEntityApplicationSection": "model",
-                  "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                  "targetEntityOrderInstancesBy": "name"
-                }
-              }
-            }
-          },
-          "parentDefinitionVersionUuid": {
-            "type": "uuid",
-            "optional": true,
-            "tag": {
-              "value": {
-                "id": 4,
-                "defaultLabel": "Entity Definition Version Uuid",
-                "display": {
-                  "editable": false
-                }
-              }
-            }
-          },
-          "conceptLevel": {
-            "type": "enum",
-            "definition": [
-              "MetaModel",
-              "Model",
-              "Data",
-              "External"
-            ],
-            "optional": true,
-            "tag": {
-              "value": {
-                "id": 5,
-                "defaultLabel": "Concept Level",
-                "display": {
-                  "editable": false
-                }
-              }
-            }
-          },
           "storageAccess": {
             "type": "enum",
             "definition": [
@@ -6684,62 +6432,15 @@ export const miroirFundamentalJzodSchema = {
       },
       "entityDefinition": {
         "type": "object",
+        "extend": {
+          "type": "schemaReference",
+          "definition": {
+            "eager": true,
+            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            "relativePath": "entityDefinitionRoot"
+          }
+        },
         "definition": {
-          "uuid": {
-            "type": "uuid",
-            "tag": {
-              "value": {
-                "defaultLabel": "Uuid",
-                "display": {
-                  "editable": false
-                }
-              }
-            }
-          },
-          "parentName": {
-            "type": "string",
-            "tag": {
-              "value": {
-                "defaultLabel": "Entity Name",
-                "display": {
-                  "editable": false
-                }
-              }
-            }
-          },
-          "parentUuid": {
-            "type": "uuid",
-            "tag": {
-              "value": {
-                "defaultLabel": "Entity Uuid",
-                "display": {
-                  "editable": false
-                },
-                "foreignKeyParams": {
-                  "targetEntityApplicationSection": "model",
-                  "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                  "targetEntityOrderInstancesBy": "name"
-                }
-              }
-            }
-          },
-          "parentDefinitionVersionUuid": {
-            "type": "uuid",
-            "optional": true,
-            "tag": {
-              "value": {
-                "defaultLabel": "Entity Definition Version Uuid",
-                "display": {
-                  "editable": false
-                },
-                "foreignKeyParams": {
-                  "targetEntityApplicationSection": "model",
-                  "targetEntity": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
-                  "targetEntityOrderInstancesBy": "name"
-                }
-              }
-            }
-          },
           "name": {
             "type": "string",
             "tag": {
@@ -7402,59 +7103,15 @@ export const miroirFundamentalJzodSchema = {
       },
       "test": {
         "type": "object",
+        "extend": {
+          "type": "schemaReference",
+          "definition": {
+            "eager": true,
+            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            "relativePath": "entityDefinitionRoot"
+          }
+        },
         "definition": {
-          "uuid": {
-            "type": "string",
-            "validations": [
-              {
-                "type": "uuid"
-              }
-            ],
-            "tag": {
-              "value": {
-                "id": 1,
-                "defaultLabel": "Uuid",
-                "display": {
-                  "editable": false
-                }
-              }
-            }
-          },
-          "parentName": {
-            "type": "string",
-            "optional": true,
-            "tag": {
-              "value": {
-                "id": 1,
-                "defaultLabel": "Uuid",
-                "display": {
-                  "editable": false
-                }
-              }
-            }
-          },
-          "parentUuid": {
-            "type": "string",
-            "validations": [
-              {
-                "type": "uuid"
-              }
-            ],
-            "tag": {
-              "value": {
-                "id": 1,
-                "defaultLabel": "parentUuid",
-                "display": {
-                  "editable": false
-                },
-                "foreignKeyParams": {
-                  "targetEntityApplicationSection": "model",
-                  "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                  "targetEntityOrderInstancesBy": "name"
-                }
-              }
-            }
-          },
           "selfApplication": {
             "type": "uuid",
             "tag": {
@@ -10125,61 +9782,15 @@ export const miroirFundamentalJzodSchema = {
       },
       "mlSchema": {
         "type": "object",
+        "extend": {
+          "type": "schemaReference",
+          "definition": {
+            "eager": true,
+            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            "relativePath": "entityDefinitionRoot"
+          }
+        },
         "definition": {
-          "uuid": {
-            "type": "uuid",
-            "tag": {
-              "value": {
-                "id": 1,
-                "defaultLabel": "Uuid",
-                "display": {
-                  "editable": false
-                }
-              }
-            }
-          },
-          "parentName": {
-            "type": "string",
-            "tag": {
-              "value": {
-                "id": 2,
-                "defaultLabel": "Entity Name",
-                "display": {
-                  "editable": false
-                }
-              }
-            }
-          },
-          "parentUuid": {
-            "type": "uuid",
-            "tag": {
-              "value": {
-                "id": 3,
-                "defaultLabel": "Entity Uuid",
-                "display": {
-                  "editable": false
-                },
-                "foreignKeyParams": {
-                  "targetEntityApplicationSection": "model",
-                  "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                  "targetEntityOrderInstancesBy": "name"
-                }
-              }
-            }
-          },
-          "parentDefinitionVersionUuid": {
-            "type": "uuid",
-            "optional": true,
-            "tag": {
-              "value": {
-                "id": 4,
-                "defaultLabel": "Entity Definition Version Uuid",
-                "display": {
-                  "editable": false
-                }
-              }
-            }
-          },
           "name": {
             "type": "string",
             "tag": {
@@ -10278,80 +9889,15 @@ export const miroirFundamentalJzodSchema = {
       },
       "report": {
         "type": "object",
+        "extend": {
+          "type": "schemaReference",
+          "definition": {
+            "eager": true,
+            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            "relativePath": "entityDefinitionRoot"
+          }
+        },
         "definition": {
-          "uuid": {
-            "type": "uuid",
-            "tag": {
-              "value": {
-                "id": 1,
-                "defaultLabel": "Uuid",
-                "display": {
-                  "editable": false
-                }
-              }
-            }
-          },
-          "parentName": {
-            "type": "string",
-            "optional": true,
-            "tag": {
-              "value": {
-                "id": 2,
-                "defaultLabel": "Entity Name",
-                "display": {
-                  "editable": false
-                }
-              }
-            }
-          },
-          "parentUuid": {
-            "type": "uuid",
-            "tag": {
-              "value": {
-                "id": 3,
-                "defaultLabel": "Entity Uuid",
-                "display": {
-                  "editable": false
-                },
-                "foreignKeyParams": {
-                  "targetEntityApplicationSection": "model",
-                  "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                  "targetEntityOrderInstancesBy": "name"
-                }
-              }
-            }
-          },
-          "parentDefinitionVersionUuid": {
-            "type": "uuid",
-            "optional": true,
-            "tag": {
-              "value": {
-                "id": 4,
-                "defaultLabel": "Entity Definition Version Uuid",
-                "display": {
-                  "editable": false
-                }
-              }
-            }
-          },
-          "conceptLevel": {
-            "type": "enum",
-            "definition": [
-              "MetaModel",
-              "Model",
-              "Data"
-            ],
-            "optional": true,
-            "tag": {
-              "value": {
-                "id": 5,
-                "defaultLabel": "Concept Level",
-                "display": {
-                  "editable": false
-                }
-              }
-            }
-          },
           "name": {
             "type": "string",
             "tag": {
@@ -11956,61 +11502,6 @@ export const miroirFundamentalJzodSchema = {
       "commit": {
         "type": "object",
         "definition": {
-          "uuid": {
-            "type": "uuid",
-            "tag": {
-              "value": {
-                "id": 1,
-                "defaultLabel": "Uuid",
-                "display": {
-                  "editable": false
-                }
-              }
-            }
-          },
-          "parentName": {
-            "type": "string",
-            "optional": true,
-            "tag": {
-              "value": {
-                "id": 2,
-                "defaultLabel": "Entity Name",
-                "display": {
-                  "editable": false
-                }
-              }
-            }
-          },
-          "parentUuid": {
-            "type": "uuid",
-            "tag": {
-              "value": {
-                "id": 3,
-                "defaultLabel": "Entity Uuid",
-                "display": {
-                  "editable": false
-                },
-                "foreignKeyParams": {
-                  "targetEntityApplicationSection": "model",
-                  "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                  "targetEntityOrderInstancesBy": "name"
-                }
-              }
-            }
-          },
-          "parentDefinitionVersionUuid": {
-            "type": "uuid",
-            "optional": true,
-            "tag": {
-              "value": {
-                "id": 4,
-                "defaultLabel": "Entity Definition Version Uuid",
-                "display": {
-                  "editable": false
-                }
-              }
-            }
-          },
           "date": {
             "type": "date",
             "tag": {
@@ -13878,16 +13369,21 @@ export const miroirFundamentalJzodSchema = {
       },
       "runner": {
         "type": "object",
+        "extend": {
+          "type": "schemaReference",
+          "definition": {
+            "eager": true,
+            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            "relativePath": "entityDefinitionRoot"
+          }
+        },
         "definition": {
-          "uuid": {
-            "type": "uuid",
+          "name": {
+            "type": "string",
             "tag": {
               "value": {
-                "id": 1,
-                "defaultLabel": "Uuid",
-                "display": {
-                  "editable": false
-                }
+                "id": 5,
+                "defaultLabel": "Name"
               }
             }
           },
@@ -13900,58 +13396,6 @@ export const miroirFundamentalJzodSchema = {
                 "display": {
                   "modifiable": false
                 }
-              }
-            }
-          },
-          "parentName": {
-            "type": "string",
-            "optional": true,
-            "tag": {
-              "value": {
-                "id": 2,
-                "defaultLabel": "Entity Name",
-                "display": {
-                  "editable": false
-                }
-              }
-            }
-          },
-          "parentUuid": {
-            "type": "uuid",
-            "tag": {
-              "value": {
-                "id": 3,
-                "defaultLabel": "Entity Uuid",
-                "display": {
-                  "editable": false
-                },
-                "foreignKeyParams": {
-                  "targetEntityApplicationSection": "model",
-                  "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                  "targetEntityOrderInstancesBy": "name"
-                }
-              }
-            }
-          },
-          "parentDefinitionVersionUuid": {
-            "type": "uuid",
-            "optional": true,
-            "tag": {
-              "value": {
-                "id": 4,
-                "defaultLabel": "Entity Definition Version Uuid",
-                "display": {
-                  "editable": false
-                }
-              }
-            }
-          },
-          "name": {
-            "type": "string",
-            "tag": {
-              "value": {
-                "id": 5,
-                "defaultLabel": "Name"
               }
             }
           },
@@ -19717,6 +19161,14 @@ export const miroirFundamentalJzodSchema = {
       },
       "endpointDefinition": {
         "type": "object",
+        "extend": {
+          "type": "schemaReference",
+          "definition": {
+            "eager": true,
+            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            "relativePath": "entityDefinitionRoot"
+          }
+        },
         "tag": {
           "value": {
             "defaultLabel": "Endpoint",
@@ -19727,56 +19179,6 @@ export const miroirFundamentalJzodSchema = {
           }
         },
         "definition": {
-          "uuid": {
-            "type": "uuid",
-            "tag": {
-              "value": {
-                "defaultLabel": "Uuid",
-                "display": {
-                  "editable": false
-                }
-              }
-            }
-          },
-          "parentName": {
-            "type": "string",
-            "tag": {
-              "value": {
-                "defaultLabel": "Entity Name",
-                "display": {
-                  "editable": false
-                }
-              }
-            }
-          },
-          "parentUuid": {
-            "type": "uuid",
-            "tag": {
-              "value": {
-                "defaultLabel": "Entity Uuid",
-                "display": {
-                  "editable": false
-                },
-                "foreignKeyParams": {
-                  "targetEntityApplicationSection": "model",
-                  "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                  "targetEntityOrderInstancesBy": "name"
-                }
-              }
-            }
-          },
-          "parentDefinitionVersionUuid": {
-            "type": "uuid",
-            "optional": true,
-            "tag": {
-              "value": {
-                "defaultLabel": "Entity Definition Version Uuid",
-                "display": {
-                  "editable": false
-                }
-              }
-            }
-          },
           "name": {
             "type": "string",
             "tag": {
@@ -20756,75 +20158,15 @@ export const miroirFundamentalJzodSchema = {
       },
       "storedMiroirTheme": {
         "type": "object",
+        "extend": {
+          "type": "schemaReference",
+          "definition": {
+            "eager": true,
+            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            "relativePath": "entityDefinitionRoot"
+          }
+        },
         "definition": {
-          "uuid": {
-            "type": "uuid",
-            "tag": {
-              "value": {
-                "defaultLabel": "Uuid",
-                "display": {
-                  "editable": false
-                }
-              }
-            }
-          },
-          "parentName": {
-            "type": "string",
-            "optional": true,
-            "tag": {
-              "value": {
-                "defaultLabel": "Entity Name",
-                "display": {
-                  "editable": false
-                }
-              }
-            }
-          },
-          "parentUuid": {
-            "type": "uuid",
-            "tag": {
-              "value": {
-                "defaultLabel": "Entity Uuid",
-                "display": {
-                  "editable": false
-                },
-                "foreignKeyParams": {
-                  "targetEntityApplicationSection": "model",
-                  "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                  "targetEntityOrderInstancesBy": "name"
-                }
-              }
-            }
-          },
-          "parentDefinitionVersionUuid": {
-            "type": "uuid",
-            "optional": true,
-            "tag": {
-              "value": {
-                "defaultLabel": "Entity Definition Version Uuid",
-                "display": {
-                  "editable": false
-                }
-              }
-            }
-          },
-          "conceptLevel": {
-            "type": "enum",
-            "definition": [
-              "MetaModel",
-              "Model",
-              "Data"
-            ],
-            "optional": true,
-            "tag": {
-              "value": {
-                "defaultLabel": "Concept Level",
-                "display": {
-                  "editable": false
-                }
-              }
-            }
-          },
           "storageAccess": {
             "type": "enum",
             "definition": [
@@ -23162,75 +22504,15 @@ export const miroirFundamentalJzodSchema = {
       },
       "miroirThemeFull": {
         "type": "object",
+        "extend": {
+          "type": "schemaReference",
+          "definition": {
+            "eager": true,
+            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            "relativePath": "entityDefinitionRoot"
+          }
+        },
         "definition": {
-          "uuid": {
-            "type": "uuid",
-            "tag": {
-              "value": {
-                "defaultLabel": "Uuid",
-                "display": {
-                  "editable": false
-                }
-              }
-            }
-          },
-          "parentName": {
-            "type": "string",
-            "optional": true,
-            "tag": {
-              "value": {
-                "defaultLabel": "Entity Name",
-                "display": {
-                  "editable": false
-                }
-              }
-            }
-          },
-          "parentUuid": {
-            "type": "uuid",
-            "tag": {
-              "value": {
-                "defaultLabel": "Entity Uuid",
-                "display": {
-                  "editable": false
-                },
-                "foreignKeyParams": {
-                  "targetEntityApplicationSection": "model",
-                  "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                  "targetEntityOrderInstancesBy": "name"
-                }
-              }
-            }
-          },
-          "parentDefinitionVersionUuid": {
-            "type": "uuid",
-            "optional": true,
-            "tag": {
-              "value": {
-                "defaultLabel": "Entity Definition Version Uuid",
-                "display": {
-                  "editable": false
-                }
-              }
-            }
-          },
-          "conceptLevel": {
-            "type": "enum",
-            "definition": [
-              "MetaModel",
-              "Model",
-              "Data"
-            ],
-            "optional": true,
-            "tag": {
-              "value": {
-                "defaultLabel": "Concept Level",
-                "display": {
-                  "editable": false
-                }
-              }
-            }
-          },
           "storageAccess": {
             "type": "enum",
             "definition": [
@@ -35900,62 +35182,17 @@ export const miroirFundamentalJzodSchema = {
       },
       "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_selfApplication": {
         "type": "object",
+        "extend": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityDefinitionRoot_extend"
+            }
+          }
+        ],
         "definition": {
-          "uuid": {
-            "type": "uuid",
-            "tag": {
-              "value": {
-                "id": 1,
-                "defaultLabel": "Uuid",
-                "display": {
-                  "editable": false
-                }
-              }
-            }
-          },
-          "parentName": {
-            "type": "string",
-            "optional": true,
-            "tag": {
-              "value": {
-                "id": 2,
-                "defaultLabel": "Entity Name",
-                "display": {
-                  "editable": false
-                }
-              }
-            }
-          },
-          "parentUuid": {
-            "type": "uuid",
-            "tag": {
-              "value": {
-                "id": 3,
-                "defaultLabel": "Entity Uuid",
-                "display": {
-                  "editable": false
-                },
-                "foreignKeyParams": {
-                  "targetEntityApplicationSection": "model",
-                  "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                  "targetEntityOrderInstancesBy": "name"
-                }
-              }
-            }
-          },
-          "parentDefinitionVersionUuid": {
-            "type": "uuid",
-            "optional": true,
-            "tag": {
-              "value": {
-                "id": 4,
-                "defaultLabel": "Entity Definition Version Uuid",
-                "display": {
-                  "editable": false
-                }
-              }
-            }
-          },
           "name": {
             "type": "string",
             "tag": {
@@ -36003,70 +35240,97 @@ export const miroirFundamentalJzodSchema = {
         }
       },
       "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entity": {
-        "type": "schemaReference",
-        "definition": {
-          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-          "relativePath": "entity"
-        }
-      },
-      "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityDefinition": {
         "type": "object",
+        "extend": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityDefinitionRoot_extend"
+            }
+          }
+        ],
         "definition": {
-          "uuid": {
-            "type": "uuid",
+          "storageAccess": {
+            "type": "enum",
+            "definition": [
+              "none",
+              "localStorage",
+              "persistentStorage"
+            ],
+            "optional": true,
             "tag": {
               "value": {
-                "defaultLabel": "Uuid",
+                "id": 6,
+                "defaultLabel": "Storage Access",
                 "display": {
                   "editable": false
                 }
               }
             }
           },
-          "parentName": {
-            "type": "string",
-            "tag": {
-              "value": {
-                "defaultLabel": "Entity Name",
-                "display": {
-                  "editable": false
-                }
-              }
-            }
-          },
-          "parentUuid": {
-            "type": "uuid",
-            "tag": {
-              "value": {
-                "defaultLabel": "Entity Uuid",
-                "display": {
-                  "editable": false
-                },
-                "foreignKeyParams": {
-                  "targetEntityApplicationSection": "model",
-                  "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                  "targetEntityOrderInstancesBy": "name"
-                }
-              }
-            }
-          },
-          "parentDefinitionVersionUuid": {
+          "selfApplication": {
             "type": "uuid",
             "optional": true,
             "tag": {
               "value": {
-                "defaultLabel": "Entity Definition Version Uuid",
+                "id": 7,
                 "display": {
                   "editable": false
                 },
+                "defaultLabel": "SelfApplication",
                 "foreignKeyParams": {
-                  "targetEntityApplicationSection": "model",
-                  "targetEntity": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+                  "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
                   "targetEntityOrderInstancesBy": "name"
                 }
               }
             }
           },
+          "name": {
+            "type": "string",
+            "tag": {
+              "value": {
+                "id": 8,
+                "defaultLabel": "Name"
+              }
+            }
+          },
+          "author": {
+            "type": "uuid",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 9,
+                "defaultLabel": "SelfApplication"
+              }
+            }
+          },
+          "description": {
+            "type": "string",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 10,
+                "defaultLabel": "Description"
+              }
+            }
+          }
+        }
+      },
+      "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityDefinition": {
+        "type": "object",
+        "extend": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityDefinitionRoot_extend"
+            }
+          }
+        ],
+        "definition": {
           "name": {
             "type": "string",
             "tag": {
@@ -37109,14 +36373,173 @@ export const miroirFundamentalJzodSchema = {
         }
       },
       "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationVersion": {
-        "type": "schemaReference",
+        "type": "object",
+        "extend": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityDefinitionRoot_extend"
+            }
+          }
+        ],
         "definition": {
-          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-          "relativePath": "applicationVersion"
+          "name": {
+            "type": "string",
+            "tag": {
+              "value": {
+                "id": 5,
+                "defaultLabel": "Name",
+                "display": {
+                  "editable": true
+                }
+              }
+            }
+          },
+          "defaultLabel": {
+            "type": "string",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 6,
+                "defaultLabel": "Default Label",
+                "display": {
+                  "editable": true
+                }
+              }
+            }
+          },
+          "description": {
+            "type": "string",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 7,
+                "defaultLabel": "Description",
+                "display": {
+                  "editable": true
+                }
+              }
+            }
+          },
+          "type": {
+            "type": "string",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 8,
+                "defaultLabel": "Type of Report",
+                "display": {
+                  "editable": true
+                }
+              }
+            }
+          },
+          "selfApplication": {
+            "type": "uuid",
+            "tag": {
+              "value": {
+                "display": {
+                  "editable": false
+                },
+                "defaultLabel": "SelfApplication",
+                "foreignKeyParams": {
+                  "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
+                  "targetEntityOrderInstancesBy": "name"
+                }
+              }
+            }
+          },
+          "branch": {
+            "type": "uuid",
+            "tag": {
+              "value": {
+                "id": 10,
+                "display": {
+                  "editable": false
+                },
+                "defaultLabel": "Branch",
+                "description": "The Branch of this SelfApplication Version",
+                "foreignKeyParams": {
+                  "targetEntity": "cdb0aec6-b848-43ac-a058-fe2dbe5811f1",
+                  "targetEntityOrderInstancesBy": "name"
+                }
+              }
+            }
+          },
+          "previousVersion": {
+            "type": "uuid",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 11,
+                "display": {
+                  "editable": false
+                },
+                "defaultLabel": "Previous SelfApplication Version",
+                "description": "Previous version of the selfApplication on this Branch.",
+                "foreignKeyParams": {
+                  "targetEntity": "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24",
+                  "targetEntityOrderInstancesBy": "name"
+                }
+              }
+            }
+          },
+          "modelStructureMigration": {
+            "type": "array",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 12,
+                "defaultLabel": "Structure Migration from Previous Version",
+                "display": {
+                  "editable": true
+                },
+                "isTemplate": true
+              }
+            },
+            "definition": {
+              "type": "record",
+              "definition": {
+                "type": "any"
+              }
+            }
+          },
+          "modelCUDMigration": {
+            "type": "array",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 13,
+                "defaultLabel": "Create-Update-Delete Migration from Previous Version",
+                "display": {
+                  "editable": true
+                },
+                "isTemplate": true
+              }
+            },
+            "definition": {
+              "type": "record",
+              "definition": {
+                "type": "any"
+              }
+            }
+          }
         }
       },
       "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_endpointDefinition": {
         "type": "object",
+        "extend": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityDefinitionRoot_extend"
+            }
+          }
+        ],
         "tag": {
           "value": {
             "defaultLabel": "Endpoint",
@@ -37128,56 +36551,6 @@ export const miroirFundamentalJzodSchema = {
           }
         },
         "definition": {
-          "uuid": {
-            "type": "uuid",
-            "tag": {
-              "value": {
-                "defaultLabel": "Uuid",
-                "display": {
-                  "editable": false
-                }
-              }
-            }
-          },
-          "parentName": {
-            "type": "string",
-            "tag": {
-              "value": {
-                "defaultLabel": "Entity Name",
-                "display": {
-                  "editable": false
-                }
-              }
-            }
-          },
-          "parentUuid": {
-            "type": "uuid",
-            "tag": {
-              "value": {
-                "defaultLabel": "Entity Uuid",
-                "display": {
-                  "editable": false
-                },
-                "foreignKeyParams": {
-                  "targetEntityApplicationSection": "model",
-                  "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                  "targetEntityOrderInstancesBy": "name"
-                }
-              }
-            }
-          },
-          "parentDefinitionVersionUuid": {
-            "type": "uuid",
-            "optional": true,
-            "tag": {
-              "value": {
-                "defaultLabel": "Entity Definition Version Uuid",
-                "display": {
-                  "editable": false
-                }
-              }
-            }
-          },
           "name": {
             "type": "string",
             "tag": {
@@ -37488,61 +36861,17 @@ export const miroirFundamentalJzodSchema = {
       },
       "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_mlSchema": {
         "type": "object",
+        "extend": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityDefinitionRoot_extend"
+            }
+          }
+        ],
         "definition": {
-          "uuid": {
-            "type": "uuid",
-            "tag": {
-              "value": {
-                "id": 1,
-                "defaultLabel": "Uuid",
-                "display": {
-                  "editable": false
-                }
-              }
-            }
-          },
-          "parentName": {
-            "type": "string",
-            "tag": {
-              "value": {
-                "id": 2,
-                "defaultLabel": "Entity Name",
-                "display": {
-                  "editable": false
-                }
-              }
-            }
-          },
-          "parentUuid": {
-            "type": "uuid",
-            "tag": {
-              "value": {
-                "id": 3,
-                "defaultLabel": "Entity Uuid",
-                "display": {
-                  "editable": false
-                },
-                "foreignKeyParams": {
-                  "targetEntityApplicationSection": "model",
-                  "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                  "targetEntityOrderInstancesBy": "name"
-                }
-              }
-            }
-          },
-          "parentDefinitionVersionUuid": {
-            "type": "uuid",
-            "optional": true,
-            "tag": {
-              "value": {
-                "id": 4,
-                "defaultLabel": "Entity Definition Version Uuid",
-                "display": {
-                  "editable": false
-                }
-              }
-            }
-          },
           "name": {
             "type": "string",
             "tag": {
@@ -38065,80 +37394,17 @@ export const miroirFundamentalJzodSchema = {
       },
       "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_report": {
         "type": "object",
+        "extend": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityDefinitionRoot_extend"
+            }
+          }
+        ],
         "definition": {
-          "uuid": {
-            "type": "uuid",
-            "tag": {
-              "value": {
-                "id": 1,
-                "defaultLabel": "Uuid",
-                "display": {
-                  "editable": false
-                }
-              }
-            }
-          },
-          "parentName": {
-            "type": "string",
-            "optional": true,
-            "tag": {
-              "value": {
-                "id": 2,
-                "defaultLabel": "Entity Name",
-                "display": {
-                  "editable": false
-                }
-              }
-            }
-          },
-          "parentUuid": {
-            "type": "uuid",
-            "tag": {
-              "value": {
-                "id": 3,
-                "defaultLabel": "Entity Uuid",
-                "display": {
-                  "editable": false
-                },
-                "foreignKeyParams": {
-                  "targetEntityApplicationSection": "model",
-                  "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                  "targetEntityOrderInstancesBy": "name"
-                }
-              }
-            }
-          },
-          "parentDefinitionVersionUuid": {
-            "type": "uuid",
-            "optional": true,
-            "tag": {
-              "value": {
-                "id": 4,
-                "defaultLabel": "Entity Definition Version Uuid",
-                "display": {
-                  "editable": false
-                }
-              }
-            }
-          },
-          "conceptLevel": {
-            "type": "enum",
-            "definition": [
-              "MetaModel",
-              "Model",
-              "Data"
-            ],
-            "optional": true,
-            "tag": {
-              "value": {
-                "id": 5,
-                "defaultLabel": "Concept Level",
-                "display": {
-                  "editable": false
-                }
-              }
-            }
-          },
           "name": {
             "type": "string",
             "tag": {
@@ -39295,10 +38561,2358 @@ export const miroirFundamentalJzodSchema = {
         }
       },
       "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storedMiroirTheme": {
+        "type": "object",
+        "extend": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityDefinitionRoot_extend"
+            }
+          }
+        ],
+        "definition": {
+          "storageAccess": {
+            "type": "enum",
+            "definition": [
+              "none",
+              "localStorage",
+              "persistentStorage"
+            ],
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "Storage Access",
+                "display": {
+                  "editable": false
+                }
+              }
+            }
+          },
+          "selfApplication": {
+            "type": "uuid",
+            "optional": true,
+            "tag": {
+              "value": {
+                "display": {
+                  "editable": false
+                },
+                "defaultLabel": "SelfApplication",
+                "foreignKeyParams": {
+                  "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
+                  "targetEntityOrderInstancesBy": "name"
+                }
+              }
+            }
+          },
+          "name": {
+            "type": "string",
+            "tag": {
+              "value": {
+                "defaultLabel": "Name"
+              }
+            }
+          },
+          "defaultLabel": {
+            "type": "string",
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "Default Label"
+              }
+            }
+          },
+          "author": {
+            "type": "uuid",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 9,
+                "defaultLabel": "SelfApplication"
+              }
+            }
+          },
+          "description": {
+            "type": "string",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 10,
+                "defaultLabel": "Description"
+              }
+            }
+          },
+          "definition": {
+            "type": "object",
+            "definition": {
+              "id": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string",
+                "optional": true
+              },
+              "colors": {
+                "type": "object",
+                "optional": true,
+                "definition": {
+                  "primary": {
+                    "type": "string",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Primary Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "primaryLight": {
+                    "type": "string",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Primary Light Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "primaryDark": {
+                    "type": "string",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Primary Dark Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "secondary": {
+                    "type": "string",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Secondary Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "secondaryLight": {
+                    "type": "string",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Secondary Light Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "secondaryDark": {
+                    "type": "string",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Secondary Dark Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "background": {
+                    "type": "string",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Background Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "backgroundPaper": {
+                    "type": "string",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Background Paper Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "backgroundOverlay": {
+                    "type": "string",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Background Overlay Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "surface": {
+                    "type": "string",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Surface Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "surfaceVariant": {
+                    "type": "string",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Surface Variant Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "text": {
+                    "type": "string",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Text Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "textSecondary": {
+                    "type": "string",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Secondary Text Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "textLight": {
+                    "type": "string",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Light Text Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "textDisabled": {
+                    "type": "string",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Disabled Text Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "border": {
+                    "type": "string",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Border Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "borderLight": {
+                    "type": "string",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Light Border Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "divider": {
+                    "type": "string",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Divider Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "hover": {
+                    "type": "string",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Hover Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "selected": {
+                    "type": "string",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Selected Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "focused": {
+                    "type": "string",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Focused Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "active": {
+                    "type": "string",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Active Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "error": {
+                    "type": "string",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Error Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "errorLight": {
+                    "type": "string",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Light Error Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "errorSurface": {
+                    "type": "string",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Error Surface Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "warning": {
+                    "type": "string",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Warning Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "warningLight": {
+                    "type": "string",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Light Warning Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "success": {
+                    "type": "string",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Success Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "successLight": {
+                    "type": "string",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Light Success Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "successSurface": {
+                    "type": "string",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Success Surface Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "info": {
+                    "type": "string",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Info Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "infoLight": {
+                    "type": "string",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Light Info Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "accent": {
+                    "type": "string",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Accent Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "accentLight": {
+                    "type": "string",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Light Accent Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "shadow": {
+                    "type": "string",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Shadow Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "overlay": {
+                    "type": "string",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Overlay Color",
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "nesting": {
+                    "type": "object",
+                    "optional": true,
+                    "definition": {
+                      "level0": {
+                        "type": "string",
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Nesting Level 0 Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "level1": {
+                        "type": "string",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Nesting Level 1 Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "level2": {
+                        "type": "string",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Nesting Level 2 Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "spacing": {
+                "type": "object",
+                "optional": true,
+                "definition": {
+                  "xs": {
+                    "type": "string",
+                    "optional": true
+                  },
+                  "sm": {
+                    "type": "string",
+                    "optional": true
+                  },
+                  "md": {
+                    "type": "string",
+                    "optional": true
+                  },
+                  "lg": {
+                    "type": "string",
+                    "optional": true
+                  },
+                  "xl": {
+                    "type": "string",
+                    "optional": true
+                  },
+                  "xxl": {
+                    "type": "string",
+                    "optional": true
+                  }
+                }
+              },
+              "typography": {
+                "type": "object",
+                "optional": true,
+                "definition": {
+                  "fontFamily": {
+                    "type": "string",
+                    "optional": true
+                  },
+                  "fontSize": {
+                    "type": "object",
+                    "optional": true,
+                    "definition": {
+                      "xs": {
+                        "type": "string",
+                        "optional": true
+                      },
+                      "sm": {
+                        "type": "string",
+                        "optional": true
+                      },
+                      "md": {
+                        "type": "string",
+                        "optional": true
+                      },
+                      "lg": {
+                        "type": "string",
+                        "optional": true
+                      },
+                      "xl": {
+                        "type": "string",
+                        "optional": true
+                      },
+                      "xxl": {
+                        "type": "string",
+                        "optional": true
+                      }
+                    }
+                  },
+                  "fontWeight": {
+                    "type": "object",
+                    "optional": true,
+                    "definition": {
+                      "light": {
+                        "type": "number",
+                        "optional": true
+                      },
+                      "normal": {
+                        "type": "number",
+                        "optional": true
+                      },
+                      "medium": {
+                        "type": "number",
+                        "optional": true
+                      },
+                      "bold": {
+                        "type": "number",
+                        "optional": true
+                      },
+                      "extraBold": {
+                        "type": "number",
+                        "optional": true
+                      }
+                    }
+                  },
+                  "lineHeight": {
+                    "type": "object",
+                    "optional": true,
+                    "definition": {
+                      "tight": {
+                        "type": "number",
+                        "optional": true
+                      },
+                      "normal": {
+                        "type": "number",
+                        "optional": true
+                      },
+                      "relaxed": {
+                        "type": "number",
+                        "optional": true
+                      }
+                    }
+                  }
+                }
+              },
+              "elevation": {
+                "type": "object",
+                "optional": true,
+                "definition": {
+                  "none": {
+                    "type": "string",
+                    "optional": true
+                  },
+                  "low": {
+                    "type": "string",
+                    "optional": true
+                  },
+                  "medium": {
+                    "type": "string",
+                    "optional": true
+                  },
+                  "high": {
+                    "type": "string",
+                    "optional": true
+                  },
+                  "modal": {
+                    "type": "string",
+                    "optional": true
+                  }
+                }
+              },
+              "borderRadius": {
+                "type": "object",
+                "optional": true,
+                "definition": {
+                  "none": {
+                    "type": "string",
+                    "optional": true
+                  },
+                  "sm": {
+                    "type": "string",
+                    "optional": true
+                  },
+                  "md": {
+                    "type": "string",
+                    "optional": true
+                  },
+                  "lg": {
+                    "type": "string",
+                    "optional": true
+                  },
+                  "xl": {
+                    "type": "string",
+                    "optional": true
+                  },
+                  "full": {
+                    "type": "string",
+                    "optional": true
+                  }
+                }
+              },
+              "components": {
+                "type": "object",
+                "optional": true,
+                "definition": {
+                  "appBar": {
+                    "type": "object",
+                    "optional": true,
+                    "definition": {
+                      "background": {
+                        "type": "string",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "App Bar Background Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "textColor": {
+                        "type": "string",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "App Bar Text Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "borderBottom": {
+                        "type": "string",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "App Bar Border Bottom Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "height": {
+                        "type": "string",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "App Bar Height",
+                            "display": {
+                              "string": {
+                                "format": "size"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "elevation": {
+                        "type": "string",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "App Bar Elevation",
+                            "display": {
+                              "string": {
+                                "format": "elevation"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "sidebar": {
+                    "type": "object",
+                    "optional": true,
+                    "definition": {
+                      "background": {
+                        "type": "string",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Sidebar Background Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "backgroundHover": {
+                        "type": "string",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Sidebar Background Hover Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "textColor": {
+                        "type": "string",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Sidebar Text Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "textColorActive": {
+                        "type": "string",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Sidebar Text Color Active",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "borderRight": {
+                        "type": "string",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Sidebar Border Right Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "width": {
+                        "type": "string",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Sidebar Width",
+                            "display": {
+                              "string": {
+                                "format": "size"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "itemHeight": {
+                        "type": "string",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Sidebar Item Height",
+                            "display": {
+                              "string": {
+                                "format": "size"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "drawer": {
+                    "type": "object",
+                    "optional": true,
+                    "definition": {
+                      "background": {
+                        "type": "string",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Drawer Background Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "backdrop": {
+                        "type": "string",
+                        "optional": true
+                      },
+                      "elevation": {
+                        "type": "string",
+                        "optional": true
+                      }
+                    }
+                  },
+                  "input": {
+                    "type": "object",
+                    "optional": true,
+                    "definition": {
+                      "background": {
+                        "type": "string",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Input Background Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "backgroundHover": {
+                        "type": "string",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Input Background Hover Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "backgroundFocused": {
+                        "type": "string",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Input Background Focused Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "borderColor": {
+                        "type": "string",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Input Border Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "borderColorHover": {
+                        "type": "string",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Input Border Color Hover",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "borderColorFocused": {
+                        "type": "string",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Input Border Color Focused",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "textColor": {
+                        "type": "string",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Input Text Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "placeholderColor": {
+                        "type": "string",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Input Placeholder Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "borderRadius": {
+                        "type": "string",
+                        "optional": true
+                      },
+                      "height": {
+                        "type": "string",
+                        "optional": true
+                      }
+                    }
+                  },
+                  "button": {
+                    "type": "object",
+                    "optional": true,
+                    "definition": {
+                      "primary": {
+                        "type": "object",
+                        "optional": true,
+                        "definition": {
+                          "background": {
+                            "type": "string",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Primary Button Background Color",
+                                "display": {
+                                  "string": {
+                                    "format": "color"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "backgroundHover": {
+                            "type": "string",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Primary Button Background Hover Color",
+                                "display": {
+                                  "string": {
+                                    "format": "color"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "backgroundActive": {
+                            "type": "string",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Primary Button Background Active Color",
+                                "display": {
+                                  "string": {
+                                    "format": "color"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "textColor": {
+                            "type": "string",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Primary Button Text Color",
+                                "display": {
+                                  "string": {
+                                    "format": "color"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "borderColor": {
+                            "type": "string",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Primary Button Border Color",
+                                "display": {
+                                  "string": {
+                                    "format": "color"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "borderRadius": {
+                            "type": "string",
+                            "optional": true
+                          }
+                        }
+                      },
+                      "secondary": {
+                        "type": "object",
+                        "definition": {
+                          "background": {
+                            "type": "string",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Secondary Button Background Color",
+                                "display": {
+                                  "string": {
+                                    "format": "color"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "backgroundHover": {
+                            "type": "string",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Secondary Button Background Hover Color",
+                                "display": {
+                                  "string": {
+                                    "format": "color"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "backgroundActive": {
+                            "type": "string",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Secondary Button Background Active Color",
+                                "display": {
+                                  "string": {
+                                    "format": "color"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "textColor": {
+                            "type": "string",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Secondary Button Text Color",
+                                "display": {
+                                  "string": {
+                                    "format": "color"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "borderColor": {
+                            "type": "string",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Secondary Button Border Color",
+                                "display": {
+                                  "string": {
+                                    "format": "color"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "borderRadius": {
+                            "type": "string",
+                            "optional": true
+                          }
+                        }
+                      },
+                      "outlined": {
+                        "type": "object",
+                        "definition": {
+                          "background": {
+                            "type": "string",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Outlined Button Background Color",
+                                "display": {
+                                  "string": {
+                                    "format": "color"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "backgroundHover": {
+                            "type": "string",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Outlined Button Background Hover Color",
+                                "display": {
+                                  "string": {
+                                    "format": "color"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "backgroundActive": {
+                            "type": "string",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Outlined Button Background Active Color",
+                                "display": {
+                                  "string": {
+                                    "format": "color"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "textColor": {
+                            "type": "string",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Outlined Button Text Color",
+                                "display": {
+                                  "string": {
+                                    "format": "color"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "borderColor": {
+                            "type": "string",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Outlined Button Border Color",
+                                "display": {
+                                  "string": {
+                                    "format": "color"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "borderRadius": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "card": {
+                    "type": "object",
+                    "optional": true,
+                    "definition": {
+                      "background": {
+                        "type": "string",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Card Background Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "borderColor": {
+                        "type": "string",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Card Border Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "borderRadius": {
+                        "type": "string",
+                        "optional": true
+                      },
+                      "elevation": {
+                        "type": "string",
+                        "optional": true
+                      },
+                      "padding": {
+                        "type": "string",
+                        "optional": true
+                      }
+                    }
+                  },
+                  "dialog": {
+                    "type": "object",
+                    "optional": true,
+                    "definition": {
+                      "background": {
+                        "type": "string",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Dialog Background Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "backdrop": {
+                        "type": "string",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Dialog Backdrop Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "borderRadius": {
+                        "type": "string",
+                        "optional": true
+                      },
+                      "elevation": {
+                        "type": "string",
+                        "optional": true
+                      },
+                      "padding": {
+                        "type": "string",
+                        "optional": true
+                      }
+                    }
+                  },
+                  "tooltip": {
+                    "type": "object",
+                    "optional": true,
+                    "definition": {
+                      "background": {
+                        "type": "string",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Tooltip Background Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "textColor": {
+                        "type": "string",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Tooltip Text Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "borderRadius": {
+                        "type": "string"
+                      },
+                      "fontSize": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "icon": {
+                    "type": "object",
+                    "optional": true,
+                    "definition": {
+                      "colorPrimary": {
+                        "type": "string",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Icon Primary Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "colorSecondary": {
+                        "type": "string",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Icon Secondary Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "colorDisabled": {
+                        "type": "string",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Icon Disabled Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "size": {
+                        "type": "object",
+                        "optional": true,
+                        "definition": {
+                          "sm": {
+                            "type": "string",
+                            "optional": true
+                          },
+                          "md": {
+                            "type": "string",
+                            "optional": true
+                          },
+                          "lg": {
+                            "type": "string",
+                            "optional": true
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "table": {
+                "type": "object",
+                "optional": true,
+                "definition": {
+                  "colors": {
+                    "type": "object",
+                    "optional": true,
+                    "definition": {
+                      "primary": {
+                        "type": "string",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Primary Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "secondary": {
+                        "type": "string",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Secondary Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "background": {
+                        "type": "string",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Background Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "surface": {
+                        "type": "string",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Surface Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "border": {
+                        "type": "string",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Border Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "text": {
+                        "type": "string",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Text Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "textSecondary": {
+                        "type": "string",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Secondary Text Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "textLight": {
+                        "type": "string",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Light Text Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "hover": {
+                        "type": "string",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Hover Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "selected": {
+                        "type": "string",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Selected Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "filter": {
+                        "type": "string",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Filter Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "filterBackground": {
+                        "type": "string",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Filter Background Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "error": {
+                        "type": "string",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Error Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "warning": {
+                        "type": "string",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Warning Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "success": {
+                        "type": "string",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Success Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "accent": {
+                        "type": "string",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Accent Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "accentLight": {
+                        "type": "string",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Accent Light Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "spacing": {
+                    "type": "object",
+                    "optional": true,
+                    "definition": {
+                      "xs": {
+                        "type": "string",
+                        "optional": true
+                      },
+                      "sm": {
+                        "type": "string",
+                        "optional": true
+                      },
+                      "md": {
+                        "type": "string",
+                        "optional": true
+                      },
+                      "lg": {
+                        "type": "string",
+                        "optional": true
+                      },
+                      "xl": {
+                        "type": "string",
+                        "optional": true
+                      }
+                    }
+                  },
+                  "typography": {
+                    "type": "object",
+                    "optional": true,
+                    "definition": {
+                      "fontSize": {
+                        "type": "string",
+                        "optional": true
+                      },
+                      "fontFamily": {
+                        "type": "string",
+                        "optional": true
+                      },
+                      "fontWeight": {
+                        "type": "object",
+                        "optional": true,
+                        "definition": {
+                          "normal": {
+                            "type": "number",
+                            "optional": true
+                          },
+                          "medium": {
+                            "type": "number",
+                            "optional": true
+                          },
+                          "bold": {
+                            "type": "number",
+                            "optional": true
+                          }
+                        }
+                      },
+                      "headerFontSize": {
+                        "type": "string",
+                        "optional": true
+                      },
+                      "headerFontWeight": {
+                        "type": "number",
+                        "optional": true
+                      }
+                    }
+                  },
+                  "components": {
+                    "type": "object",
+                    "optional": true,
+                    "definition": {
+                      "table": {
+                        "type": "object",
+                        "optional": true,
+                        "definition": {
+                          "borderRadius": {
+                            "type": "string",
+                            "optional": true
+                          },
+                          "border": {
+                            "type": "string",
+                            "optional": true
+                          },
+                          "minHeight": {
+                            "type": "string",
+                            "optional": true
+                          },
+                          "maxHeight": {
+                            "type": "string",
+                            "optional": true
+                          },
+                          "backgroundColor": {
+                            "type": "string",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Table Background Color",
+                                "display": {
+                                  "string": {
+                                    "format": "color"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "width": {
+                            "type": "string",
+                            "optional": true
+                          },
+                          "maxWidth": {
+                            "type": "string",
+                            "optional": true
+                          },
+                          "adaptiveColumnWidths": {
+                            "type": "boolean",
+                            "optional": true
+                          }
+                        }
+                      },
+                      "header": {
+                        "type": "object",
+                        "optional": true,
+                        "definition": {
+                          "background": {
+                            "type": "string",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Header Background Color",
+                                "display": {
+                                  "string": {
+                                    "format": "color"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "height": {
+                            "type": "string",
+                            "optional": true
+                          },
+                          "fontSize": {
+                            "type": "string",
+                            "optional": true
+                          },
+                          "fontWeight": {
+                            "type": "number",
+                            "optional": true
+                          },
+                          "borderBottom": {
+                            "type": "string",
+                            "optional": true
+                          },
+                          "textColor": {
+                            "type": "string",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Header Text Color",
+                                "display": {
+                                  "string": {
+                                    "format": "color"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "hoverBackground": {
+                            "type": "string",
+                            "optional": true
+                          }
+                        }
+                      },
+                      "cell": {
+                        "type": "object",
+                        "optional": true,
+                        "definition": {
+                          "height": {
+                            "type": "string",
+                            "optional": true
+                          },
+                          "padding": {
+                            "type": "string",
+                            "optional": true
+                          },
+                          "borderRight": {
+                            "type": "string",
+                            "optional": true
+                          },
+                          "borderBottom": {
+                            "type": "string",
+                            "optional": true
+                          },
+                          "fontSize": {
+                            "type": "string",
+                            "optional": true
+                          },
+                          "backgroundColor": {
+                            "type": "string",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Cell Background Color",
+                                "display": {
+                                  "string": {
+                                    "format": "color"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "textColor": {
+                            "type": "string",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Cell Text Color",
+                                "display": {
+                                  "string": {
+                                    "format": "color"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "row": {
+                        "type": "object",
+                        "optional": true,
+                        "definition": {
+                          "hoverBackground": {
+                            "type": "string",
+                            "optional": true
+                          },
+                          "selectedBackground": {
+                            "type": "string",
+                            "optional": true
+                          },
+                          "borderBottom": {
+                            "type": "string",
+                            "optional": true
+                          },
+                          "evenBackground": {
+                            "type": "string",
+                            "optional": true
+                          },
+                          "oddBackground": {
+                            "type": "string",
+                            "optional": true
+                          }
+                        }
+                      },
+                      "toolbar": {
+                        "type": "object",
+                        "optional": true,
+                        "definition": {
+                          "background": {
+                            "type": "string",
+                            "optional": true
+                          },
+                          "padding": {
+                            "type": "string",
+                            "optional": true
+                          },
+                          "borderBottom": {
+                            "type": "string",
+                            "optional": true
+                          },
+                          "height": {
+                            "type": "string",
+                            "optional": true
+                          },
+                          "textColor": {
+                            "type": "string",
+                            "optional": true
+                          }
+                        }
+                      },
+                      "filter": {
+                        "type": "object",
+                        "optional": true,
+                        "definition": {
+                          "iconColor": {
+                            "type": "string",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Filter Icon Color",
+                                "display": {
+                                  "string": {
+                                    "format": "color"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "activeIconColor": {
+                            "type": "string",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Active Filter Icon Color",
+                                "display": {
+                                  "string": {
+                                    "format": "color"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "clearButtonColor": {
+                            "type": "string",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Clear Button Color",
+                                "display": {
+                                  "string": {
+                                    "format": "color"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "clearButtonBackground": {
+                            "type": "string",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Clear Button Background Color",
+                                "display": {
+                                  "string": {
+                                    "format": "color"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "clearButtonBorder": {
+                            "type": "string",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Clear Button Border Color",
+                                "display": {
+                                  "string": {
+                                    "format": "color"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "toolbarBackground": {
+                            "type": "string",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Toolbar Background Color",
+                                "display": {
+                                  "string": {
+                                    "format": "color"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "inputBackground": {
+                            "type": "string",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Input Background Color",
+                                "display": {
+                                  "string": {
+                                    "format": "color"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "inputBorder": {
+                            "type": "string",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Input Border Color",
+                                "display": {
+                                  "string": {
+                                    "format": "color"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "sort": {
+                        "type": "object",
+                        "optional": true,
+                        "definition": {
+                          "iconColor": {
+                            "type": "string",
+                            "optional": true
+                          },
+                          "activeIconColor": {
+                            "type": "string",
+                            "optional": true
+                          },
+                          "ascendingSymbol": {
+                            "type": "string",
+                            "optional": true
+                          },
+                          "descendingSymbol": {
+                            "type": "string",
+                            "optional": true
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "breakpoints": {
+                "type": "object",
+                "optional": true,
+                "definition": {
+                  "xs": {
+                    "type": "string",
+                    "optional": true
+                  },
+                  "sm": {
+                    "type": "string",
+                    "optional": true
+                  },
+                  "md": {
+                    "type": "string",
+                    "optional": true
+                  },
+                  "lg": {
+                    "type": "string",
+                    "optional": true
+                  },
+                  "xl": {
+                    "type": "string",
+                    "optional": true
+                  }
+                }
+              },
+              "transitions": {
+                "type": "object",
+                "optional": true,
+                "definition": {
+                  "duration": {
+                    "type": "object",
+                    "definition": {
+                      "short": {
+                        "type": "string",
+                        "optional": true
+                      },
+                      "medium": {
+                        "type": "string",
+                        "optional": true
+                      },
+                      "long": {
+                        "type": "string",
+                        "optional": true
+                      }
+                    }
+                  },
+                  "easing": {
+                    "type": "object",
+                    "definition": {
+                      "linear": {
+                        "type": "string",
+                        "optional": true
+                      },
+                      "easeIn": {
+                        "type": "string",
+                        "optional": true
+                      },
+                      "easeOut": {
+                        "type": "string",
+                        "optional": true
+                      },
+                      "easeInOut": {
+                        "type": "string",
+                        "optional": true
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityDefinitionRoot": {
         "type": "schemaReference",
         "definition": {
           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-          "relativePath": "storedMiroirTheme"
+          "relativePath": "entityDefinitionRoot"
         }
       },
       "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_reportLink": {
@@ -39760,13 +41374,6 @@ export const miroirFundamentalJzodSchema = {
             }
           }
         ]
-      },
-      "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityDefinitionRoot": {
-        "type": "schemaReference",
-        "definition": {
-          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-          "relativePath": "entityDefinitionRoot"
-        }
       },
       "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_menuDefinition": {
         "type": "union",

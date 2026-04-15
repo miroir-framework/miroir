@@ -13,38 +13,15 @@
   },
   "mlSchema": {
     "type": "object",
+    "extend": {
+      "type": "schemaReference",
+       "definition": {
+        "eager": true,
+        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+        "relativePath": "entityDefinitionRoot"
+       }
+    },
     "definition": {
-      "uuid": {
-        "type": "uuid",
-        "tag": { "value": { "id": 1, "defaultLabel": "Uuid", "display": { "editable": false } } }
-      },
-      "parentName": {
-        "type": "string",
-        "optional": true,
-        "tag": { "value": { "id": 2, "defaultLabel": "Entity Name", "display": { "editable": false } } }
-      },
-      "parentUuid": {
-        "type": "uuid",
-        "tag": {
-          "value": {
-            "id": 3,
-            "display": { "editable": false },
-            "defaultLabel": "Entity Uuid",
-            "description": "The Parent Entity of this Instance",
-            "foreignKeyParams": {
-              "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-              "targetEntityOrderInstancesBy": "name"
-            }
-          }
-        }
-      },
-      "parentDefinitionVersionUuid": {
-        "type": "uuid",
-        "optional": true,
-        "tag": {
-          "value": { "id": 4, "defaultLabel": "Entity Definition Version Uuid", "display": { "editable": false } }
-        }
-      },
       "name": {
         "type": "string",
         "tag": { "value": { "id": 5, "defaultLabel": "Name", "display": { "editable": true } } }

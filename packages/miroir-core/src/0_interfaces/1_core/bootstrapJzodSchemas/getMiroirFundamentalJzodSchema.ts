@@ -1180,7 +1180,7 @@ export function getMiroirFundamentalJzodSchema(
             },
           },
         },
-        conceptLevel: entityDefinitionEntity.mlSchema.definition.conceptLevel,
+        conceptLevel: entityDefinitionRoot.definition.conceptLevel,
         // {
         //   type: "enum",
         //   definition: ["MetaModel", "Model", "Data"],

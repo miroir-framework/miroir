@@ -16,53 +16,15 @@
   ],
   "mlSchema": {
     "type": "object",
+    "extend": {
+      "type": "schemaReference",
+       "definition": {
+        "eager": true,
+        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+        "relativePath": "entityDefinitionRoot"
+       }
+    },
     "definition": {
-      "uuid": {
-        "type": "string",
-        "validations": [
-          {
-            "type": "uuid"
-          }
-        ],
-        "tag": {
-          "value": {
-            "id": 1,
-            "defaultLabel": "Uuid",
-            "display": { "editable": false }
-          }
-        }
-      },
-      "parentName": {
-        "type": "string",
-        "optional": true,
-        "tag": {
-          "value": {
-            "id": 1,
-            "defaultLabel": "Uuid",
-            "display": { "editable": false }
-          }
-        }
-      },
-      "parentUuid": {
-        "type": "string",
-        "validations": [
-          {
-            "type": "uuid"
-          }
-        ],
-        "tag": {
-          "value": {
-            "id": 1,
-            "defaultLabel": "parentUuid",
-            "display": { "editable": false },
-            "foreignKeyParams": {
-              "targetEntityApplicationSection": "model",
-              "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-              "targetEntityOrderInstancesBy": "name"
-            }
-          }
-        }
-      },
       "selfApplication": {
         "type": "uuid",
         "tag": {
