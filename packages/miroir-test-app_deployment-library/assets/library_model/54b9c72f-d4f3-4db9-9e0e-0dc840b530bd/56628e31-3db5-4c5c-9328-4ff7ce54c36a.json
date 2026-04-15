@@ -19,26 +19,15 @@
   ],
   "mlSchema": {
     "type": "object",
+    "extend": {
+      "type": "schemaReference",
+      "definition": {
+        "eager": true,
+        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+        "relativePath": "entityDefinitionRoot"
+      }
+    },
     "definition": {
-      "uuid": {
-        "type": "uuid",
-        "tag": { "value": {  "id": 1, "defaultLabel": "Uuid", "display": { "editable": false } }}
-      },
-      "parentName": {
-        "type": "string",
-        "optional": true,
-        "tag": { "value": {  "id": 2, "defaultLabel": "Entity Name", "display": { "editable": false } }}
-      },
-      "parentUuid": {
-        "type": "uuid",
-        "tag": { "value": {  "id": 3, "defaultLabel": "Entity Uuid", "display": { "editable": false } }}
-      },
-      "conceptLevel": {
-        "type": "enum",
-        "definition": ["MetaModel", "Model", "Data"],
-        "optional": true,
-        "tag": { "value": {  "id": 5, "defaultLabel": "Concept Level", "display": { "editable": false } }}
-      },
       "name": {
         "type": "string",
         "tag": { "value": {  "id": 4, "defaultLabel": "Name" }}

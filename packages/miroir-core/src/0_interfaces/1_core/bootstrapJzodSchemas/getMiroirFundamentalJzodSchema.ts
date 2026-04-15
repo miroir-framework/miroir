@@ -74,6 +74,7 @@ export const entityDefinitionRoot = {
     },
     parentName: {
       type: "string",
+      "optional": true,
       tag: {
         value: {
           id: 2,
@@ -89,6 +90,37 @@ export const entityDefinitionRoot = {
           id: 3,
           defaultLabel: "Entity Uuid",
           display: { editable: false },
+          // targetApplicationUuid: {
+          //   transformerType: "ifThenElse",
+          //   interpolation: "build",
+          //   if: {
+          //     transformerType: "boolExpr",
+          //     interpolation: "build",
+          //     operator: "==",
+          //     left: {
+          //       transformerType: "getFromParameters",
+          //       interpolation: "build",
+          //       safe: true,
+          //       referencePath: ["dropEntity", "application"],
+          //     },
+          //     right: {
+          //       transformerType: "returnValue",
+          //       interpolation: "build",
+          //       value: true,
+          //     },
+          //   },
+          //   then: {
+          //     transformerType: "getFromParameters",
+          //     interpolation: "build",
+          //     safe: true,
+          //     referencePath: ["dropEntity", "application"],
+          //   },
+          //   else: {
+          //     transformerType: "returnValue",
+          //     interpolation: "build",
+          //     value: "31f3a03a-f150-416d-9315-d3a752cb4eb4",
+          //   },
+          // },
           foreignKeyParams: {
             targetEntityApplicationSection: "model",
             targetEntity: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
@@ -116,6 +148,20 @@ export const entityDefinitionRoot = {
           },
         },
       },
+    },
+    conceptLevel: {
+      tag: {
+        value: {
+          display: {
+            editable: false,
+          },
+          defaultLabel: "Concept Level",
+          id: 5,
+        },
+      },
+      type: "enum",
+      optional: true,
+      definition: ["MetaModel", "Model", "Data"],
     },
   },
 };
@@ -181,22 +227,6 @@ export function getMiroirFundamentalJzodSchema(
   // ##############################################################################################
   // ##############################################################################################
   const extraQueryElements: Record<string, any /*JzodElement*/> = {
-    // extractorOrCombinerTemplate: {
-    //   type: "schemaReference",
-    //   definition: {
-    //     absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-    //     relativePath: "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorOrCombiner",
-    //   },
-    // },
-    // extractorOrCombinerTemplateRecord: {
-    //   type: "record",
-    //   definition: {
-    //     type: "schemaReference",
-    //     definition: {
-    //       relativePath: "extractorOrCombinerTemplate",
-    //     },
-    //   },
-    // },
     localCacheExtractor: {
       type: "object",
       definition: {

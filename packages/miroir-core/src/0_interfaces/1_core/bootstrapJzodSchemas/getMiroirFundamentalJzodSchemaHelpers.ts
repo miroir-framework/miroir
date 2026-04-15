@@ -331,7 +331,7 @@ export function getExtendedSchemas(jzodSchemajzodMiroirBootstrapSchemaDefinition
     ...Object.keys(jzodSchemajzodMiroirBootstrapSchemaDefinitionContext),
     "applicationSection",
     "shippingBox",
-    "extractorOrCombinerRoot",
+    "entityDefinitionRoot",
     "extractorOrCombinerRoot",
     "transformer_inner_label",
     "transformer_orderBy",

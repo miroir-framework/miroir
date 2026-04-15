@@ -1785,6 +1785,7 @@ export const miroirFundamentalJzodSchema = {
           },
           "parentName": {
             "type": "string",
+            "optional": true,
             "tag": {
               "value": {
                 "id": 2,
@@ -1833,6 +1834,24 @@ export const miroirFundamentalJzodSchema = {
                 }
               }
             }
+          },
+          "conceptLevel": {
+            "tag": {
+              "value": {
+                "display": {
+                  "editable": false
+                },
+                "defaultLabel": "Concept Level",
+                "id": 5
+              }
+            },
+            "type": "enum",
+            "optional": true,
+            "definition": [
+              "MetaModel",
+              "Model",
+              "Data"
+            ]
           }
         }
       },
@@ -8465,62 +8484,15 @@ export const miroirFundamentalJzodSchema = {
       },
       "menu": {
         "type": "object",
+        "extend": {
+          "type": "schemaReference",
+          "definition": {
+            "eager": true,
+            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            "relativePath": "entityDefinitionRoot"
+          }
+        },
         "definition": {
-          "uuid": {
-            "type": "uuid",
-            "tag": {
-              "value": {
-                "id": 1,
-                "defaultLabel": "Uuid",
-                "display": {
-                  "editable": false
-                }
-              }
-            }
-          },
-          "parentName": {
-            "type": "string",
-            "optional": true,
-            "tag": {
-              "value": {
-                "id": 2,
-                "defaultLabel": "Entity Name",
-                "display": {
-                  "editable": false
-                }
-              }
-            }
-          },
-          "parentUuid": {
-            "type": "uuid",
-            "tag": {
-              "value": {
-                "id": 3,
-                "defaultLabel": "Entity Uuid",
-                "display": {
-                  "editable": false
-                },
-                "foreignKeyParams": {
-                  "targetEntityApplicationSection": "model",
-                  "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                  "targetEntityOrderInstancesBy": "name"
-                }
-              }
-            }
-          },
-          "parentDefinitionVersionUuid": {
-            "type": "uuid",
-            "optional": true,
-            "tag": {
-              "value": {
-                "id": 4,
-                "defaultLabel": "Entity Definition Version Uuid",
-                "display": {
-                  "editable": false
-                }
-              }
-            }
-          },
           "name": {
             "type": "string",
             "tag": {
@@ -27803,6 +27775,93 @@ export const miroirFundamentalJzodSchema = {
           }
         }
       },
+      "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityDefinitionRoot_extend": {
+        "type": "object",
+        "definition": {
+          "uuid": {
+            "type": "uuid",
+            "tag": {
+              "value": {
+                "id": 1,
+                "defaultLabel": "Uuid",
+                "display": {
+                  "editable": false
+                }
+              }
+            }
+          },
+          "parentName": {
+            "type": "string",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 2,
+                "defaultLabel": "Entity Name",
+                "display": {
+                  "editable": false
+                }
+              }
+            }
+          },
+          "parentUuid": {
+            "type": "uuid",
+            "tag": {
+              "value": {
+                "id": 3,
+                "defaultLabel": "Entity Uuid",
+                "display": {
+                  "editable": false
+                },
+                "foreignKeyParams": {
+                  "targetEntityApplicationSection": "model",
+                  "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                  "targetEntityOrderInstancesBy": "name"
+                },
+                "initializeTo": {
+                  "initializeToType": "value",
+                  "value": "d7a144ff-d1b9-4135-800c-a7cfc1f38733"
+                }
+              }
+            }
+          },
+          "parentDefinitionVersionUuid": {
+            "type": "uuid",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 4,
+                "defaultLabel": "Entity Definition Version Uuid",
+                "display": {
+                  "editable": false
+                },
+                "foreignKeyParams": {
+                  "targetEntityApplicationSection": "model",
+                  "targetEntity": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+                  "targetEntityOrderInstancesBy": "name"
+                }
+              }
+            }
+          },
+          "conceptLevel": {
+            "tag": {
+              "value": {
+                "display": {
+                  "editable": false
+                },
+                "defaultLabel": "Concept Level",
+                "id": 5
+              }
+            },
+            "type": "enum",
+            "optional": true,
+            "definition": [
+              "MetaModel",
+              "Model",
+              "Data"
+            ]
+          }
+        }
+      },
       "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorOrCombinerRoot_extend": {
         "type": "object",
         "definition": {
@@ -37584,62 +37643,17 @@ export const miroirFundamentalJzodSchema = {
       },
       "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_menu": {
         "type": "object",
+        "extend": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityDefinitionRoot_extend"
+            }
+          }
+        ],
         "definition": {
-          "uuid": {
-            "type": "uuid",
-            "tag": {
-              "value": {
-                "id": 1,
-                "defaultLabel": "Uuid",
-                "display": {
-                  "editable": false
-                }
-              }
-            }
-          },
-          "parentName": {
-            "type": "string",
-            "optional": true,
-            "tag": {
-              "value": {
-                "id": 2,
-                "defaultLabel": "Entity Name",
-                "display": {
-                  "editable": false
-                }
-              }
-            }
-          },
-          "parentUuid": {
-            "type": "uuid",
-            "tag": {
-              "value": {
-                "id": 3,
-                "defaultLabel": "Entity Uuid",
-                "display": {
-                  "editable": false
-                },
-                "foreignKeyParams": {
-                  "targetEntityApplicationSection": "model",
-                  "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                  "targetEntityOrderInstancesBy": "name"
-                }
-              }
-            }
-          },
-          "parentDefinitionVersionUuid": {
-            "type": "uuid",
-            "optional": true,
-            "tag": {
-              "value": {
-                "id": 4,
-                "defaultLabel": "Entity Definition Version Uuid",
-                "display": {
-                  "editable": false
-                }
-              }
-            }
-          },
           "name": {
             "type": "string",
             "tag": {
@@ -39746,6 +39760,13 @@ export const miroirFundamentalJzodSchema = {
             }
           }
         ]
+      },
+      "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityDefinitionRoot": {
+        "type": "schemaReference",
+        "definition": {
+          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          "relativePath": "entityDefinitionRoot"
+        }
       },
       "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_menuDefinition": {
         "type": "union",

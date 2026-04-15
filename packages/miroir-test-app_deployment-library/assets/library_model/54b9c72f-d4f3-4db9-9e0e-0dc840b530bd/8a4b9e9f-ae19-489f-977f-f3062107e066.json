@@ -26,62 +26,15 @@
   },
   "mlSchema": {
     "type": "object",
+    "extend": {
+      "type": "schemaReference",
+      "definition": {
+        "eager": true,
+        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+        "relativePath": "entityDefinitionRoot"
+      }
+    },
     "definition": {
-      "uuid": {
-        "tag": {
-          "value": {
-            "display": {
-              "editable": false
-            },
-            "defaultLabel": "Uuid",
-            "id": 1
-          }
-        },
-        "type": "uuid"
-      },
-      "parentName": {
-        "tag": {
-          "value": {
-            "display": {
-              "editable": false
-            },
-            "defaultLabel": "Entity Name",
-            "id": 2
-          }
-        },
-        "type": "string",
-        "optional": true
-      },
-      "parentUuid": {
-        "tag": {
-          "value": {
-            "display": {
-              "editable": false
-            },
-            "defaultLabel": "Entity Uuid",
-            "id": 3
-          }
-        },
-        "type": "uuid"
-      },
-      "conceptLevel": {
-        "tag": {
-          "value": {
-            "display": {
-              "editable": false
-            },
-            "defaultLabel": "Concept Level",
-            "id": 4
-          }
-        },
-        "type": "enum",
-        "optional": true,
-        "definition": [
-          "MetaModel",
-          "Model",
-          "Data"
-        ]
-      },
       "name": {
         "tag": {
           "value": {

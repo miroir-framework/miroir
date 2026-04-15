@@ -166,7 +166,6 @@ export function getItemsOrder(
 // ################################################################################################
 let count = 0;
 
-// export function useJzodElementEditorHooks<P extends JzodEditorPropsRoot>(
 export function useJzodElementEditorHooks(
   // props: P,
   rootLessListKey: string,
@@ -393,18 +392,18 @@ export function useJzodElementEditorHooks(
       applicationDeploymentMap,
   ) || {};
 
-  log.info(
-    "useJzodElementEditorHooks",
-    "rootLessListKey:",
-    rootLessListKey,
-    "currentDeploymentUuid:",
-    currentDeploymentUuid,
-    "currentTypecheckKeyMap?.rawSchema.tag?.value?.foreignKeyParams:",
-    currentTypecheckKeyMap?.rawSchema.tag?.value?.foreignKeyParams,
-    "foreignKeyObjectsFetchQueryParams",
-    foreignKeyObjectsFetchQueryParams,
-    "foreignKeyObjects", foreignKeyObjects,
-  );
+  // log.info(
+  //   "useJzodElementEditorHooks",
+  //   "rootLessListKey:",
+  //   rootLessListKey,
+  //   "currentDeploymentUuid:",
+  //   currentDeploymentUuid,
+  //   "currentTypecheckKeyMap?.rawSchema.tag?.value?.foreignKeyParams:",
+  //   currentTypecheckKeyMap?.rawSchema.tag?.value?.foreignKeyParams,
+  //   "foreignKeyObjectsFetchQueryParams",
+  //   foreignKeyObjectsFetchQueryParams,
+  //   "foreignKeyObjects", foreignKeyObjects,
+  // );
 
   // ######################### optional attributes #########################
   const typeCheckMapJzodObjectFlattenedSchema: JzodObject | undefined =

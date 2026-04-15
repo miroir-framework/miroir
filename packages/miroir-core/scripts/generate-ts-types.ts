@@ -75,8 +75,15 @@ build();
 
 // ################################################################################################
 function entityDefinitionMLSchema(e:any /*EntityDefinition*/): any /*JzodObject*/ {
-  if (e.mlSchema.extend && (Array.isArray(e.mlSchema.extend) || e.mlSchema.extend.type !== "schemaReference" || e.mlSchema.extend.definition.relativePath !== "entityDefinitionRoot")) {
-    throw new Error("Only extension of the entityDefinitionRoot schema is allowed for the mlSchema of an EntityDefinition");
+  if (
+    e.mlSchema.extend &&
+    (Array.isArray(e.mlSchema.extend) ||
+      e.mlSchema.extend.type !== "schemaReference" ||
+      e.mlSchema.extend.definition.relativePath !== "entityDefinitionRoot")
+  ) {
+    throw new Error(
+      "Only extension of the entityDefinitionRoot schema is allowed for the mlSchema of an EntityDefinition",
+    );
   }
   const extendedMLSchema: any /*JzodObject*/ | undefined= e.mlSchema.extend ? entityDefinitionRoot as any /*JzodObject*/ : undefined;
   return {

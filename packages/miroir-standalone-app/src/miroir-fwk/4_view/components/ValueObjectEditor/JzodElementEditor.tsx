@@ -935,7 +935,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
             const currentOption = selectOptions.find((option: any) => option.value === currentValueObjectAtKey);
             const editor = localReadOnly ? (
               // <ThemedDisplayValue value={currentValueObjectAtKey} type="uuid" />
-              <ThemedDisplayValue value={currentOption?.label} type="string" />
+              <ThemedDisplayValue value={currentOption?currentOption.label:currentValueObjectAtKey} type="string" />
             ) : !localResolvedElementJzodSchemaBasedOnValue.tag?.value?.display?.uuid?.selector ||
               localResolvedElementJzodSchemaBasedOnValue.tag?.value?.display?.uuid?.selector ==
                 "portalSelector" ? (
