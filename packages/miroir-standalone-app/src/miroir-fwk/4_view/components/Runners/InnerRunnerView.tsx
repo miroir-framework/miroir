@@ -5,7 +5,7 @@ import type {
   JzodObject,
   LoggerInterface,
   MiroirModelEnvironment,
-  TransformerForBuildPlusRuntime,
+  CoreTransformerForBuildPlusRuntime,
   Uuid
 } from "miroir-core";
 import {
@@ -73,7 +73,7 @@ export const InnerRunnerView = <T extends Record<string, any>>({
           "build", // step
           [], // transformerPath
           "formMlSchemaAsTransformer", // transformerLabel
-          formMLSchema.transformer as any as TransformerForBuildPlusRuntime, // TODO: correct type
+          formMLSchema.transformer as any as CoreTransformerForBuildPlusRuntime, // TODO: correct type
           currentMiroirModelEnvironment, // TODO: the DeploymentUuid can change, need to handle that?
           { 
             [runnerName]: formikContext.values[runnerName] }, // transformerParams
@@ -123,12 +123,12 @@ export const InnerRunnerView = <T extends Record<string, any>>({
       />
       <TypedValueObjectEditor
         labelElement={<h2>{formLabel}</h2>}
+        formValueMLSchema={targetSchema.definition[formikValuePathAsString] as JzodObject}
+        formikValuePathAsString={formikValuePathAsString}
         application={currentApplication}
         applicationDeploymentMap={applicationDeploymentMap}
         deploymentUuid={currentDeploymentUuid}
         applicationSection="model"
-        formValueMLSchema={targetSchema}
-        formikValuePathAsString={formikValuePathAsString}
         formLabel={formLabel}
         zoomInPath=""
         maxRenderDepth={Infinity}

@@ -29,13 +29,13 @@ import { useDomainControllerService, useMiroirContextService, useSnackbar } from
 import { deployment_Miroir } from 'miroir-test-app_deployment-admin';
 import { packageName } from '../../../../constants.js';
 import { cleanLevel, lastSubmitButtonClicked } from '../../constants.js';
-import { useCurrentModel } from '../../ReduxHooks.js';
 import { ThemedSpan } from '../Themes/index.js';
 import { useDocumentOutlineContext } from '../ValueObjectEditor/InstanceEditorOutlineContext.js';
 import { InlineReportEditor } from './InlineReportEditor.js';
 import { ReportViewProps, useQueryTemplateResults } from './ReportHooks.js';
 import ReportSectionViewWithEditor from './ReportSectionViewWithEditor.js';
-import { reportSectionsFormSchema, reportSectionsFormValue } from './ReportTools.js';
+import { reportSectionsFormValue } from './ReportTools.js';
+import { editedQueryParameterValueKey } from './ReportSectionEntityInstance.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -60,15 +60,6 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
   const outlineContext = useDocumentOutlineContext();
   const { showSnackbar, handleAsyncAction } = useSnackbar();
   
-  const currentDeploymentUuid = (props.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap)[props.application]; 
-  const currentModel: MetaModel = useCurrentModel(
-    props.application,
-    props.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap
-  );
-  const currentDeploymentReportsEntitiesDefinitionsMapping =
-    context.deploymentUuidToReportsEntitiesDefinitionsMapping[props.deploymentUuid] || {};
-
-  // Read generalEditMode from ViewParams context
   const generalEditMode = context.viewParams.generalEditMode;
   
   // ##############################################################################################
@@ -176,67 +167,18 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
     const result = {
       ...reportSectionsData,
       ...props.storedQueryData,
-      // storedQueryData: props.storedQueryData, // included in reportViewData
       ...reportViewData,
       reportViewData,
       [reportReportDetailsKey]: reportReportDetails,
       [entityDefinitionReportKey ]: entityDefinitionReport,
       [reportName]: props.reportDefinition,
+      // [editedQueryParameterValueKey]: { classification: "MLS" }, // TODO: make it dynamic based on user input
+      [editedQueryParameterValueKey]: { classification: "admin" }, // TODO: make it dynamic based on user input
     };
     // log.info("reportSectionsFormValue initialReportSectionsFormValue", result);
     return result;
 
   }, [props.reportDefinition, entityDefinitionReportKey, reportData, reportViewData]);
-
-
-  // ##############################################################################################
-  const formValueMLSchema: JzodObject = useMemo(() => {
-    if (!props.pageParams.deploymentUuid || !entityDefinitionReport?.entityUuid) {
-      return { type: "object", definition: {} };
-    }
-    const r = reportSectionsFormSchema(
-      props.reportDefinition?.definition.section,
-      props.application,
-      currentDeploymentUuid,
-      currentDeploymentReportsEntitiesDefinitionsMapping,
-      currentModel,
-      reportData,
-      ["definition", "section"]
-    );
-    const result: JzodObject = {
-      type: "object",
-      definition: {
-        ...r,
-        [reportReportDetailsKey]: entityDefinitionMLSchema(entityDefinitionReport),
-        [entityDefinitionReportKey]: entityDefinitionMLSchema(
-          entityDefinitionEntityDefinition as EntityDefinition,
-        ) as any, // will contain reportEntityDefinition-itself
-        [reportName]: entityDefinitionReport.mlSchema,
-        [lastSubmitButtonClicked]: { type: "string", optional: true },
-      },
-    };
-    // log.info("reportSectionsFormSchema formValueSchema", result);
-    // log.info(
-    //   "############################################## computing formValueMLSchema",
-    //   "props.reportDefinition",
-    //   props.reportDefinition,
-    //   "initialReportSectionsFormValue",
-    //   initialReportSectionsFormValue,
-    //   "reportData",
-    //   reportData,
-    //   "formValueMLSchema",
-    //   result,
-    //   []
-    // );
-    // log.info("reportSectionsFormSchema formValueSchema", JSON.stringify(result, null, 2));
-    return result;
-  }, [
-    props.reportDefinition,
-    reportData,
-    entityDefinitionReport,
-    currentDeploymentReportsEntitiesDefinitionsMapping,
-    props.pageParams.applicationSection,
-  ]);
 
   // ###############################################################################################
   // ###############################################################################################
@@ -369,18 +311,6 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
     <>
       {/* <span>ReportViewWithEditor generalEditMode: {generalEditMode ? "true" : "false"}</span> */}
       <Box sx={{ position: "relative" }}>
-        <JsonDisplayHelper debug={true}
-          componentName="ReportViewWithEditor"
-          elements={[
-            { label: "deploymentUuid", data: { deploymentUuid: props.deploymentUuid } },
-            { label: "reportDataQueryBase / reportDataQueryResults", data: { reportDataQueryBase, reportDataQueryResults }, useCodeBlock: true },
-            // { label: "reportViewData", data: { reportViewData }, useCodeBlock: true },
-            // { label: "initialReportSectionsFormValue", data: { initialReportSectionsFormValue }, useCodeBlock: true },
-            { label: "formValueMLSchema", data: { formValueMLSchema }, useCodeBlock: true },
-            // { label: "fetchedDataJzodSchemaParams", data: { fetchedDataJzodSchemaParams }, useCodeBlock: true },
-            // { label: "fetchedDataJzodSchema", data: { fetchedDataJzodSchema }, useCodeBlock: true },
-          ]}
-        />
         {props.applicationSection ? (
           reportData.elementType == "failure" ? (
             <div>found query failure! {JSON.stringify(reportData, null, 2)}</div>
@@ -402,7 +332,7 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
                     handleAsyncAction(
                       () => onEditValueObjectFormSubmit(values),
                       "Instance edited successfully",
-                      "submit instance edition"
+                      "submit instance edition",
                     ).finally(() => setSubmitting(false)); // TODO: make it return Promise, no await because handler should return immediately
                   } catch (e) {
                     log.error(e);
@@ -412,60 +342,94 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
                 validateOnChange={false}
                 validateOnBlur={false}
               >
-                <>
-                  {generalEditMode && entityDefinitionReport && (
-                    <>
-                      {/* <ThemedOnScreenHelper
+                {(formik) => (
+                  <>
+                    <JsonDisplayHelper
+                      debug={true}
+                      componentName="ReportViewWithEditor"
+                      elements={[
+                        { label: "deploymentUuid", data: { deploymentUuid: props.deploymentUuid } },
+                        {
+                          label: "reportDataQueryBase / reportDataQueryResults",
+                          data: { reportDataQueryBase, reportDataQueryResults },
+                          useCodeBlock: true,
+                        },
+                        // { label: "reportViewData", data: { reportViewData }, useCodeBlock: true },
+                        // { label: "initialReportSectionsFormValue", data: { initialReportSectionsFormValue }, useCodeBlock: true },
+                        // {
+                        //   label: "formValueMLSchema",
+                        //   data: { formValueMLSchema },
+                        //   useCodeBlock: true,
+                        // },
+                        {
+                          label: "entityDefinitionReport",
+                          data: { entityDefinitionReport },
+                          useCodeBlock: true,
+                        },
+                        {
+                          label: "formik values",
+                          data: formik.values,
+                          useCodeBlock: true,
+                        },
+
+                        // { label: "fetchedDataJzodSchemaParams", data: { fetchedDataJzodSchemaParams }, useCodeBlock: true },
+                        // { label: "fetchedDataJzodSchema", data: { fetchedDataJzodSchema }, useCodeBlock: true },
+                      ]}
+                    />
+                    {generalEditMode && entityDefinitionReport && (
+                      <>
+                        {/* <ThemedOnScreenHelper
                         label={"ReportViewWithEditor: reportEntityDefinition"}
                         data={entityDefinitionReport}
                         initiallyUnfolded={false}
                       /> */}
-                      {/* <ThemedOnScreenHelper
+                        {/* <ThemedOnScreenHelper
                         label={"ReportViewWithEditor: reportViewData"}
                         data={reportViewData}
                         initiallyUnfolded={false}
                       /> */}
-                      {/* <ThemedOnScreenHelper
+                        {/* <ThemedOnScreenHelper
                         label={"ReportViewWithEditor: reportNamePath"}
                         data={reportNamePath}
                       /> */}
-                      <InlineReportEditor
+                        <InlineReportEditor
+                          application={props.application}
+                          applicationDeploymentMap={props.applicationDeploymentMap}
+                          deploymentUuid={props.deploymentUuid}
+                          applicationSection={props.applicationSection}
+                          reportEntityDefinitionDEFUNCT={entityDefinitionReport}
+                          // formValueMLSchema={formValueMLSchema}
+                          formikValuePath={reportNamePath}
+                          formikReportDefinitionPathString={reportReportDetailsKey}
+                          formikAlreadyAvailable={true}
+                        />
+                      </>
+                    )}
+                    <>
+                      <ReportSectionViewWithEditor
+                        valueObjectEditMode="update"
+                        generalEditMode={generalEditMode}
+                        applicationSection={props.applicationSection}
                         application={props.application}
                         applicationDeploymentMap={props.applicationDeploymentMap}
                         deploymentUuid={props.deploymentUuid}
-                        applicationSection={props.applicationSection}
-                        reportEntityDefinitionDEFUNCT={entityDefinitionReport}
-                        formValueMLSchema={formValueMLSchema}
-                        formikValuePath={reportNamePath}
-                        formikReportDefinitionPathString={reportReportDetailsKey}
-                        formikAlreadyAvailable={true}
+                        paramsAsdomainElements={props.pageParams}
+                        isOutlineOpen={outlineContext.isOutlineOpen}
+                        onToggleOutline={outlineContext.onToggleOutline}
+                        // data
+                        reportDataDEFUNCT={reportViewData}
+                        fetchedDataJzodSchemaDEFUNCT={fetchedDataJzodSchema}
+                        //
+                        reportSectionDEFUNCT={props.reportDefinition?.definition.section} // TODO: defunct, must use formik[reportName]?.definition.section
+                        reportDefinitionDEFUNCT={props.reportDefinition}
+                        // formValueMLSchema={formValueMLSchema}
+                        formikReportDefinitionPathString={props.reportDefinition.name}
+                        reportSectionPath={["definition", "section"]}
+                        reportName={reportName}
                       />
                     </>
-                  )}
-                  <>
-                    <ReportSectionViewWithEditor
-                      valueObjectEditMode="update"
-                      generalEditMode={generalEditMode}
-                      applicationSection={props.applicationSection}
-                      application={props.application}
-                      applicationDeploymentMap={props.applicationDeploymentMap}
-                      deploymentUuid={props.deploymentUuid}
-                      paramsAsdomainElements={props.pageParams}
-                      isOutlineOpen={outlineContext.isOutlineOpen}
-                      onToggleOutline={outlineContext.onToggleOutline}
-                      // data
-                      reportDataDEFUNCT={reportViewData}
-                      fetchedDataJzodSchemaDEFUNCT={fetchedDataJzodSchema}
-                      //
-                      reportSectionDEFUNCT={props.reportDefinition?.definition.section} // TODO: defunct, must use formik[reportName]?.definition.section
-                      reportDefinitionDEFUNCT={props.reportDefinition}
-                      formValueMLSchema={formValueMLSchema}
-                      formikReportDefinitionPathString={props.reportDefinition.name}
-                      reportSectionPath={["definition", "section"]}
-                      reportName={reportName}
-                    />
                   </>
-                </>
+                )}
               </Formik>
             </>
           ) : (

@@ -16,6 +16,7 @@ import {
   type Entity,
   type EntityDefinition,
   type JzodElement,
+  type JzodObject,
   type MiroirModelEnvironment,
   type ReduxDeploymentsState,
   type SyncBoxedExtractorOrQueryRunnerMap
@@ -382,7 +383,7 @@ export function EntityInstanceSelectorPanel(props:{
           transformerType: "defaultValueForMLSchema",
           label: "EntityInstanceSelectorPanel initial value",
           mlSchema: entityInstanceSelectorPanelSchema,
-        },
+        } as any, // TODO: correct type to enable defaultValueForMLSchema and not only CoreTransformerForBuildPlusRuntime
         "value",
         defaultMiroirModelEnvironment, //modelEnvironment, // TODO: use real deployment environment!
         {},
@@ -464,7 +465,7 @@ export function EntityInstanceSelectorPanel(props:{
           {formikContext.values[formikPath_EntityInstanceSelectorPanel] && (
             <TypedValueObjectEditor
               labelElement={<span>select Application</span>}
-              formValueMLSchema={entityInstanceSelectorPanelSchema}
+              formValueMLSchema={entityInstanceSelectorPanelSchema.definition[formikPath_EntityInstanceSelectorPanel] as JzodObject}
               formikValuePathAsString={formikPath_EntityInstanceSelectorPanel}
               application={inputSelector_applicationUuid}
               applicationDeploymentMap={applicationDeploymentMap}
@@ -599,16 +600,11 @@ export function EntityInstanceSelectorPanel(props:{
                   initialValueObject={{ entityInstances }}
                   formValueMLSchema={
                     {
-                      type: "object",
-                      definition: {
-                        entityInstances: {
-                          type: "array",
-                          definition:
-                            currentReportTargetEntityDefinition?.mlSchema ??
-                            createGenericObjectSchema(),
-                        },
-                      },
-                    } as any
+                      type: "array",
+                      definition:
+                        currentReportTargetEntityDefinition?.mlSchema ??
+                        createGenericObjectSchema(),
+                    }
                   } // TODO: ILL-TYPED!!
                   formikValuePathAsString="entityInstances"
                   application={inputSelector_applicationUuid}
@@ -639,14 +635,15 @@ export function EntityInstanceSelectorPanel(props:{
               valueObjectEditMode="create"
               labelElement={<></>}
               initialValueObject={{ selectedEntityInstance }}
-              // valueObjectMMLSchema={createGenericObjectSchema()}
-              formValueMLSchema={{
-                type: "object",
-                definition: {
-                  selectedEntityInstance:
-                    currentReportTargetEntityDefinition?.mlSchema ?? createGenericObjectSchema(),
-                },
-              }}
+              formValueMLSchema={
+                // {
+                // type: "object",
+                // definition: {
+                //   selectedEntityInstance:
+                    currentReportTargetEntityDefinition?.mlSchema ?? createGenericObjectSchema()
+                // },
+              // }
+              }
               formikValuePathAsString="selectedEntityInstance"
               deploymentUuid={deploymentUuid}
               application={inputSelector_applicationUuid}

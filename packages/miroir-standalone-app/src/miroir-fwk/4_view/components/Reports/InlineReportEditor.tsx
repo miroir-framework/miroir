@@ -35,14 +35,14 @@ export interface InlineReportEditorProps {
   applicationDeploymentMap: ApplicationDeploymentMap;
   deploymentUuid: Uuid;
   applicationSection: ApplicationSection;
-  formValueMLSchema: JzodObject;
+  // formValueMLSchema: JzodObject;
   formikAlreadyAvailable?: boolean;
   formikValuePath: ( string | number )[],
   formikReportDefinitionPathString: string;
 }
 
 export const InlineReportEditor: React.FC<InlineReportEditorProps> = ({
-  formValueMLSchema,
+  // formValueMLSchema,
   application,
   applicationDeploymentMap,
   deploymentUuid,
@@ -102,7 +102,7 @@ export const InlineReportEditor: React.FC<InlineReportEditorProps> = ({
                 deploymentUuid={deploymentUuid}
                 applicationSection={getApplicationSection(application, formikReportDefinition?.parentUuid)}
                 entityUuidDEFUNCT={formikReportDefinition?.parentUuid} // entityUuid-based display, not formikReportPath-based; type comes for formValueMLSchema
-                formValueMLSchema={formValueMLSchema}
+                // formValueMLSchema={formValueMLSchema}
                 formikValuePath={formikValuePath}
                 formikReportDefinitionPathString={formikReportDefinitionPathString}
                 reportSectionPath={["definition", "section", "definition", 0]}

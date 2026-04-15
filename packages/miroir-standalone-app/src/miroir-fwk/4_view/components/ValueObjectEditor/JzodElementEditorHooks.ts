@@ -138,7 +138,10 @@ export function getItemsOrder(
       return keys;
     }
     // For typed objects: sort attributes by tag.value.id (ascending), id-less attributes come after
-    const definition = flattenedMLSchema?.definition ?? {};
+    const definition =
+      rawMLSchema?.type === "object"
+        ? (flattenedMLSchema?.definition)
+        : (resolvedMLSchema as any)?.definition;
     const presentKeys = Object.keys(definition).filter((k) => k in currentValue);
     const withId: { key: string; id: number }[] = [];
     const withoutId: string[] = [];

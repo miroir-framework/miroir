@@ -1,0 +1,39 @@
+{
+  "uuid": "b1a8b33b-ba28-4bf0-a173-5bdaaeac3d90",
+  "parentName": "Query",
+  "parentUuid": "e4320b9e-ab45-4abe-85d8-359604b3c62f",
+  "name": "TransformersForClassification",
+  "defaultLabel": "The list of Transformers for a given classification.",
+  "description": "This query produces a list of Transformers for a given classification.",
+  "parameters": {
+    "type": "object",
+    "definition": {
+      "classification": {
+        "type": "string",
+        "tag": {
+          "value": {
+            "defaultLabel": "Classification",
+            "description": "The classification to filter the Transformers by."
+          }
+        }
+      }
+    }
+  },
+  "definition": {
+    "extractorTemplates": {
+      "transformers": {
+        "extractorOrCombinerType": "extractorInstancesByEntity",
+        "applicationSection": "data",
+        "parentName": "Transformer",
+        "parentUuid": "a557419d-a288-4fb8-8a1e-971c86c113b8",
+        "filter": {
+          "attributeName": "classification",
+          "value": {
+            "transformerType": "getFromParameters",
+            "referenceName": "classification"
+          }
+        }
+      }
+    }
+  }
+}

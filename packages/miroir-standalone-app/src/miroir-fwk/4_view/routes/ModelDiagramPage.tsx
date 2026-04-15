@@ -164,7 +164,7 @@ export const ModelDiagramPage: React.FC<any> = () => {
             >
               <TypedValueObjectEditor
                 labelElement={<span>select Application</span>}
-                formValueMLSchema={applicationSelectorPanelSchema}
+                formValueMLSchema={applicationSelectorPanelSchema.definition["modelDiagramPage"] as JzodElement}
                 formikValuePathAsString={"modelDiagramPage"}
                 application={inputSelector_applicationUuid}
                 applicationDeploymentMap={currentApplicationDeploymentMap}

@@ -28,7 +28,7 @@ import {
 import { Formik, type FormikProps } from 'formik';
 import {
   type TransformerDefinition,
-  type TransformerForBuildPlusRuntime
+  type CoreTransformerForBuildPlusRuntime
 } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { JsonDisplayHelper } from 'miroir-react';
 import { useMiroirContextService } from 'miroir-react';
@@ -111,7 +111,7 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
   // Get persisted state from context
   const persistedState = context.toolsPageState.transformerEditor;
   // const currentMode: "here" | "defined" = persistedState?.mode || "here";
-  const currentHereTransformerDefinition: TransformerForBuildPlusRuntime =
+  const currentHereTransformerDefinition: CoreTransformerForBuildPlusRuntime =
     persistedState?.currentTransformerDefinition ?? { transformerType: "returnValue", value: null };
   // ##############################################################################################
 
@@ -501,7 +501,7 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
             );
 
             const transformationResult = useMemo(() => {
-              const currentFormikTransformerDefinition: TransformerForBuildPlusRuntime = formikContext.values
+              const currentFormikTransformerDefinition: CoreTransformerForBuildPlusRuntime = formikContext.values
                 .transformerEditor_transformer_selector.transformer ?? {
                 transformerType: "returnValue",
                 value: null,
@@ -759,7 +759,7 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
                   />
                   <TypedValueObjectEditor
                     labelElement={<>Transformer Definition</>}
-                    formValueMLSchema={formMLSchema}
+                    formValueMLSchema={formMLSchema.definition["transformerEditor_transformer_selector"]}
                     formikValuePathAsString="transformerEditor_transformer_selector"
                     application={(formikContext.values.transformerEditor_transformer_selector as any).application}
                     applicationDeploymentMap={applicationDeploymentMap}
@@ -788,7 +788,7 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
                     <TypedValueObjectEditor
                       valueObjectEditMode="create"
                       labelElement={<>Input Definition</>}
-                      formValueMLSchema={formMLSchema}
+                      formValueMLSchema={formMLSchema.definition[formikPath_TransformerEditorInputModeSelector]}
                       formikValuePathAsString={formikPath_TransformerEditorInputModeSelector}
                       application={(formikContext.values.transformerEditor_transformer_selector as any).application}
                       applicationDeploymentMap={applicationDeploymentMap}

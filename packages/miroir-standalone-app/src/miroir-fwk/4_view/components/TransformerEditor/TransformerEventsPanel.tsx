@@ -218,14 +218,11 @@ const DisplayTransformerEvent: React.FC<{
                 {JSON.stringify(Object.keys(activity.transformerParams), null, 2)}
               </ThemedCodeBlock> */}
               <TypedValueObjectEditorWithFormik
+                formValueMLSchema={(parametersSchema as any)?.definition["displayedParameters"]} // TODO: ILL-TYPED!!
+                formikValuePathAsString="displayedParameters"
                 valueObjectEditMode='create'
                 labelElement={<div>target:</div>}
                 initialValueObject={{ displayedParameters }}
-                formValueMLSchema={{
-                  type: "object",
-                  definition: { displayedParameters: parametersSchema },
-                }} // TODO: ILL-TYPED!!
-                formikValuePathAsString="displayedParameters"
                 application={application}
                 applicationDeploymentMap={defaultSelfApplicationDeploymentMap}
                 deploymentUuid={deploymentUuid}

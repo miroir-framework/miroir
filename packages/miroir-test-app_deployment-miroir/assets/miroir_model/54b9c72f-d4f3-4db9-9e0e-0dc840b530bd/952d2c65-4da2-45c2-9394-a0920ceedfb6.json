@@ -94,7 +94,7 @@
                 "optional": true,
                 "definition": {
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorOrCombinerRecord"
+                  "relativePath": "extractorOrCombinerTemplateRecord"
                 }
               },
               "runtimeTransformers": {
@@ -113,7 +113,7 @@
                 "optional": true,
                 "definition": {
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorOrCombinerRecord"
+                  "relativePath": "extractorOrCombinerTemplateRecord"
                 }
               },
               "definition": {
@@ -510,7 +510,7 @@
                 "optional": true,
                 "definition": {
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorOrCombinerRecord"
+                  "relativePath": "extractorOrCombinerTemplateRecord"
                 }
               },
               "runtimeTransformers": {
@@ -764,7 +764,11 @@
                 "type": "record",
                 "optional": true,
                 "definition": {
-                  "type": "any"
+                  "type": "schemaReference",
+                  "definition": {
+                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    "relativePath": "coreTransformerForBuildPlusRuntime"
+                  }
                 }
               }
             }
@@ -982,7 +986,7 @@
                 "optional": true,
                 "definition": {
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorOrCombinerRecord"
+                  "relativePath": "extractorOrCombinerTemplateRecord"
                 }
               },
               "runtimeTransformers": {
@@ -1001,7 +1005,7 @@
                 "optional": true,
                 "definition": {
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorOrCombinerRecord"
+                  "relativePath": "extractorOrCombinerTemplateRecord"
                 }
               },
               "definition": {
@@ -1052,7 +1056,7 @@
                 "optional": true,
                 "definition": {
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorOrCombinerRecord"
+                  "relativePath": "extractorOrCombinerTemplateRecord"
                 }
               },
               "extractors": {
@@ -1076,7 +1080,7 @@
                 "optional": true,
                 "definition": {
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorOrCombinerRecord"
+                  "relativePath": "extractorOrCombinerTemplateRecord"
                 }
               },
               "runtimeTransformers": {

@@ -61,7 +61,7 @@ export interface ReportSectionViewPropsBase {
   fetchedDataJzodSchemaDEFUNCT: RecordOfJzodObject | undefined,
   // 
   // formikValuePath: ( string | number )[],
-  formValueMLSchema: JzodObject;
+  // formValueMLSchema: JzodObject;
   formikReportDefinitionPathString: string;
   reportSectionPath: ( string | number )[],
   reportName: string,
@@ -410,7 +410,7 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
               formikValuePath={props.reportSectionPath}
               formikReportDefinitionPathString={props.formikReportDefinitionPathString}
               reportSectionPath={props.reportSectionPath}
-              formValueMLSchema={props.formValueMLSchema}
+              // formValueMLSchema={props.formValueMLSchema}
               formikAlreadyAvailable={true}
               //
               setAddObjectdialogFormIsOpen={props.setAddObjectdialogFormIsOpen}

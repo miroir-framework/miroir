@@ -113,7 +113,6 @@ export const ReportDisplay: React.FC<{
       currentStoredQueries.length > 0
         ? {
             queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
-            // label: currentStoredQueries[0].label,
             application: application,
             applicationDeploymentMap: currentApplicationDeploymentMap,
             deploymentUuid: pageParams.deploymentUuid,

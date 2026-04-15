@@ -22,7 +22,7 @@ import {
   transformer_extended_apply_wrapper,
   type Action,
   type MiroirModelEnvironment,
-  type TransformerForBuildPlusRuntime
+  type CoreTransformerForBuildPlusRuntime
 } from 'miroir-core';
 import {
   JsonDisplayHelper,
@@ -58,7 +58,8 @@ export interface EndpointActionCallerProps {}
 
 const formikPath_EndpointActionCaller = "EndpointActionCaller";
 
-const runnerDefinition = {  runnerName: "EndpointActionCaller",
+const runnerDefinition = {
+  runnerName: "EndpointActionCaller",
   runnerLabel: "Call Endpoint Action",
   // currentEndpointUuid : "212f2784-5b68-43b2-8ee0-89b1c6fdd0de",
   // domainActionType : "lendDocument",
@@ -85,7 +86,7 @@ const runnerDefinition = {  runnerName: "EndpointActionCaller",
         },
       },
     },
-  } as TransformerForBuildPlusRuntime
+  } as CoreTransformerForBuildPlusRuntime
 }
 
 // #################################################################################################
@@ -532,7 +533,7 @@ export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
                 {formikContext.values[formikPath_EndpointActionCaller] && (
                   <TypedValueObjectEditor
                     labelElement={<span>select Application</span>}
-                    formValueMLSchema={endpointActionCallerFormikSchema}
+                    formValueMLSchema={endpointActionCallerFormikSchema.definition[formikPath_EndpointActionCaller] as JzodObject}
                     formikValuePathAsString={formikPath_EndpointActionCaller}
                     deploymentUuid={deployment_Miroir.uuid} // dummy deployment for application selection
                     application={innerSelectedApplicationUuid}

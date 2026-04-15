@@ -210,133 +210,152 @@ function describeEntityGroup(
 // ================================================================================================
 // Test suites — Model instances (validated against the Miroir meta-model)
 // ================================================================================================
+const modelTestsToRun: Array<{
+  groupName: string;
+  jzodSchema: JzodElement;
+  instances: Record<string, { default: any }>;
+  filterByName?: string[];
+}> = [
+  {
+    "groupName": "Entity",
+    "jzodSchema": (entityDefinitionEntity as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
+    "instances": entityInstances,
+  },
+  {
+    "groupName": "EntityDefinition",
+    "jzodSchema": (entityDefinitionEntityDefinition as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
+    "instances": entityDefinitionInstances,
+  },
+  {
+    "groupName": "Report",
+    "jzodSchema": (entityDefinitionReport as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
+    "instances": reportInstances,
+    // "filterByName": ["SelfApplicationDetails"],
+  },
+  {
+    "groupName": "EndpointVersion",
+    "jzodSchema": (entityDefinitionEndpoint as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
+    "instances": endpointInstances,
+    // "filterByName": ["TestEndpoint", "PersistenceEndpoint", "MenuEndpoint", "ApplicationEndpoint"],
+    // "filterByName": ["InstanceEndpoint"],
+  },
+  {
+    "groupName": "Menu",
+    "jzodSchema": (entityDefinitionMenu as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
+    "instances": menuInstances,
+  },
+  // {
+  //   "groupName": "JzodSchema",
+  //   "jzodSchema": (entityDefinitionJzodSchema as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
+  //   "instances": jzodSchemaInstances,
+  //   // "filterByName": ["transformerJzodSchema"],
+  // },
+  {
+    "groupName": "QueryVersion",
+    "jzodSchema": (entityDefinitionQueryVersionV1 as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
+    "instances": queryInstances,
+    // "filterByName": ["BundleProducer"],
+  },
+  {
+    "groupName": "StoreBasedConfiguration",
+    "jzodSchema": (entityDefinitionStoreBasedConfiguration as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
+    "instances": storeBasedConfigurationInstances,
+  },
+  {
+    "groupName": "SelfApplication",
+    "jzodSchema": (entityDefinitionSelfApplication as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
+    "instances": selfApplicationInstances,
+  },
+  {
+    "groupName": "SelfApplicationDeploymentConfiguration",
+    "jzodSchema": (entityDefinitionSelfApplicationDeploymentConfiguration as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
+    "instances": selfApplicationDeploymentInstances,
+  },
+  {
+    "groupName": "SelfApplicationModelBranch",
+    "jzodSchema": (entityDefinitionSelfApplicationModelBranch as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
+    "instances": selfApplicationModelBranchInstances,
+  },
+  {
+    "groupName": "SelfApplicationVersion",
+    "jzodSchema": (entityDefinitionSelfApplicationVersion as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
+    "instances": applicationVersionInstances,
+  },
+  {
+    "groupName": "Runner",
+    "jzodSchema": (entityDefinitionRunner as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
+    "instances": runnerInstances,
+    // filterByName: ["dropApplication", "dropEntity", "deployApplication", "createEntity"],
+    // filterByName: ["dropEntity"],
+    // filterByName: ["deployApplication"],
+  },
+  // {
+  //   "groupName": "TransformerDefinition",
+  //   "jzodSchema": (entityDefinitionTransformerDefinition as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
+  //   "instances": transformerDefinitionInstances,
+  //   // filterByName: ["getActiveDeployment"],
+  // },
+  // {
+  //   "groupName": "Test",
+  //   "jzodSchema": (entityDefinitionTest as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
+  //   "instances": testInstances,
+  // },
+  // {
+  //   "groupName": "TransformerTest",
+  //   "jzodSchema": (entityDefinitionTransformerTest as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
+  //   "instances": transformerTestInstances,
+  //   // filterByName: ["unfoldSchemaOnce"],
+  // }
+  // ##############################################################################################
+  // ##############################################################################################
+  // ##############################################################################################
+  // ##############################################################################################
+  // ##############################################################################################
+  // ##############################################################################################
+  {
+    "groupName": "Author",
+    "jzodSchema": (entityDefinitionAuthor as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
+    "instances": authorInstances,
+  },
+  {
+    "groupName": "Book",
+    "jzodSchema": (entityDefinitionBook as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
+    "instances": bookInstances,
+  },
+  {
+    "groupName": "Country",
+    "jzodSchema": (entityDefinitionCountry as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
+    "instances": countryInstances,
+  },
+  {
+    "groupName": "Publisher",
+    "jzodSchema": (entityDefinitionPublisher as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
+    "instances": publisherInstances,
+  },
+  {
+    "groupName": "User",
+    "jzodSchema": (entityDefinitionUser as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
+    "instances": userInstances,
+  },
+  {
+    "groupName": "LendingHistoryItem",
+    "jzodSchema": (entityDefinitionLendingHistoryItem as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
+    "instances": lendingHistoryItemInstances,
+  },
+]
 
-describeEntityGroup(
-  "Entity",
-  (entityDefinitionEntity as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
-  entityInstances,
-  defaultMiroirModelEnvironment,
-);
+modelTestsToRun.forEach(({ groupName, jzodSchema, instances, filterByName }) => {
+  const filteredInstances = Object.fromEntries(Object.entries(instances).filter(e => {
+    const instance = e[1].default;
+    if (!instance.name) return true;
+    if (!filterByName) return true;
+    return filterByName.some(name => instance.name.includes(name));
+  }));
+  describeEntityGroup(
+    groupName,
+    jzodSchema,
+    filteredInstances,
+    defaultMiroirModelEnvironment,
+  );
+});
 
-describeEntityGroup(
-  "EntityDefinition",
-  (entityDefinitionEntityDefinition as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
-  entityDefinitionInstances,
-  defaultMiroirModelEnvironment,
-);
-
-describeEntityGroup(
-  "Report",
-  (entityDefinitionReport as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
-  reportInstances,
-  defaultMiroirModelEnvironment,
-);
-
-describeEntityGroup(
-  "EndpointVersion",
-  (entityDefinitionEndpoint as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
-  endpointInstances,
-  defaultMiroirModelEnvironment,
-);
-
-describeEntityGroup(
-  "Menu",
-  (entityDefinitionMenu as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
-  menuInstances,
-  defaultMiroirModelEnvironment,
-);
-
-describeEntityGroup(
-  "QueryVersion",
-  (entityDefinitionQueryVersionV1 as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
-  queryInstances,
-  defaultMiroirModelEnvironment,
-);
-
-describeEntityGroup(
-  "Runner",
-  (entityDefinitionRunner as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
-  runnerInstances,
-  defaultMiroirModelEnvironment,
-);
-
-describeEntityGroup(
-  "ApplicationVersion",
-  (entityDefinitionSelfApplicationVersion as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
-  applicationVersionInstances,
-  defaultMiroirModelEnvironment,
-);
-
-describeEntityGroup(
-  "SelfApplication",
-  (entityDefinitionSelfApplication as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
-  selfApplicationInstances,
-  defaultMiroirModelEnvironment,
-);
-
-describeEntityGroup(
-  "SelfApplicationDeploymentConfiguration",
-  (entityDefinitionSelfApplicationDeploymentConfiguration as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
-  selfApplicationDeploymentInstances,
-  defaultMiroirModelEnvironment,
-);
-
-describeEntityGroup(
-  "SelfApplicationModelBranch",
-  (entityDefinitionSelfApplicationModelBranch as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
-  selfApplicationModelBranchInstances,
-  defaultMiroirModelEnvironment,
-);
-
-describeEntityGroup(
-  "StoreBasedConfiguration",
-  (entityDefinitionStoreBasedConfiguration as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
-  storeBasedConfigurationInstances,
-  defaultMiroirModelEnvironment,
-);
-
-// ================================================================================================
-// Test suites — Data instances (validated against the library model)
-// ================================================================================================
-
-describeEntityGroup(
-  "Author",
-  (entityDefinitionAuthor as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
-  authorInstances,
-  libraryModelEnvironment,
-);
-
-describeEntityGroup(
-  "Book",
-  (entityDefinitionBook as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
-  bookInstances,
-  libraryModelEnvironment,
-);
-
-describeEntityGroup(
-  "Country",
-  (entityDefinitionCountry as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
-  countryInstances,
-  libraryModelEnvironment,
-);
-
-describeEntityGroup(
-  "Publisher",
-  (entityDefinitionPublisher as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
-  publisherInstances,
-  libraryModelEnvironment,
-);
-
-describeEntityGroup(
-  "User",
-  (entityDefinitionUser as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
-  userInstances,
-  libraryModelEnvironment,
-);
-
-describeEntityGroup(
-  "LendingHistoryItem",
-  (entityDefinitionLendingHistoryItem as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
-  lendingHistoryItemInstances,
-  libraryModelEnvironment,
-);

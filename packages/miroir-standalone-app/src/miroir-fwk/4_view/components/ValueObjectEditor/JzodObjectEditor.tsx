@@ -1218,7 +1218,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
             formikRootLessListKey,
             rawSchema: currentTypeCheckKeyMap?.rawSchema,
             resolvedSchema: currentTypeCheckKeyMap?.resolvedSchema,
-            jzodObjectFlattenedSchema: currentTypeCheckKeyMap?.jzodObjectFlattenedSchema,
+            jzodObjectFlattenedSchema: currentTypeCheckKeyMap?.jzodObjectFlattenedSchema ?? "NO FLATTENED SCHEMA",
             currentValueObjectAtKey,
           },
           copyButton: true,

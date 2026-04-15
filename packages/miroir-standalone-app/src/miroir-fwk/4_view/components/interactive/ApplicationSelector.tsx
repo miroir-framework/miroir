@@ -187,6 +187,9 @@ export const ApplicationSelector: FC<{
         }}
       /> */}
       <TypedValueObjectEditorWithFormik
+        formValueMLSchema={formMLSchema.definition[formikValuePathAsString] as JzodObject}
+        formikValuePathAsString={formikValuePathAsString}
+        formLabel={formLabel}
         valueObjectEditMode="update"
         labelElement={labelElement}
         application={application}
@@ -194,9 +197,6 @@ export const ApplicationSelector: FC<{
         deploymentUuid={deploymentUuid}
         applicationSection="model"
         initialValueObject={initialFormValue}
-        formValueMLSchema={formMLSchema}
-        formikValuePathAsString={formikValuePathAsString}
-        formLabel={formLabel}
         zoomInPath=""
         onChangeVector={onChangeVector}
         maxRenderDepth={Infinity}

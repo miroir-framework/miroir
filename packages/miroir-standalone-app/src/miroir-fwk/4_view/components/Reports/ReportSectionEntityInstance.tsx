@@ -13,6 +13,7 @@ import {
   SyncBoxedExtractorOrQueryRunnerMap,
   Uuid,
   defaultSelfApplicationDeploymentMap,
+  entityDefinitionMLSchema,
   entityQueryVersion,
   entityTransformerTest,
   getQueryTemplateRunnerParamsForReduxDeploymentsState,
@@ -66,6 +67,7 @@ MiroirLoggerFactory.registerLoggerToStart(
   MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ReportSectionEntityInstance"), "UI",
 ).then((logger: LoggerInterface) => {log = logger});
 
+export const editedQueryParameterValueKey = "editedQueryParameterValue";
 
 // // Performance metrics display component
 // const PerformanceMetricsDisplay = () => {
@@ -122,7 +124,7 @@ export interface ReportSectionEntityInstanceProps {
   reportSectionPath?: ( string | number )[],
   formikReportDefinitionPathString?: string;
   // formikReportDefinitionEntityDefinitionPathString?: string;
-  formValueMLSchema: JzodObject;
+  // formValueMLSchema: JzodObject;
   reportSectionDefinition?: ReportSection;
   // 
   // Note: Outline props removed since using context now
@@ -255,6 +257,12 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
     currentDeploymentReportsEntitiesDefinitionsMapping?.[props.applicationSection??"data"]?.entityDefinitions?.find(
         (e) => e?.entityUuid === targetEntityUuid
   );
+  const currentFlattenedReportSectionTargetEntityDefinition: EntityDefinition | undefined =
+    currentReportSectionTargetEntityDefinition?{
+      ...currentReportSectionTargetEntityDefinition,
+      mlSchema: entityDefinitionMLSchema(currentReportSectionTargetEntityDefinition)
+    }:undefined
+  ;
 
   // ##############################################################################################
   // ##############################################################################################
@@ -353,6 +361,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
     []
   );
 
+  const queryForTestParamSchema = currentQuery?.parameters;
   const queryForTestRun =
     useMemo((): BoxedQueryTemplateWithExtractorCombinerTransformer => {
       // Convert the instance query to the expected format
@@ -360,13 +369,14 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
         ? {
             queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
             application: props.application,
-            // deploymentUuid: props.deploymentUuid,
             pageParams: {
               deploymentUuid: props.deploymentUuid,
               applicationSection: "model",
               instanceUuid: instance.uuid,
             },
-            queryParams: {},
+            queryParams: {
+              ...formikContext.values[editedQueryParameterValueKey],
+            },
             contextResults: {},
             extractorTemplates: currentQuery?.definition.extractorTemplates || {},
             combinerTemplates: currentQuery?.definition.combinerTemplates || {},
@@ -375,7 +385,6 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
         : {
             queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
             application: props.application,
-            // deploymentUuid: props.deploymentUuid,
             pageParams: {},
             queryParams: {},
             contextResults: {},
@@ -393,8 +402,6 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   // log.info("ReportSectionEntityInstance: queryForExecution:", queryForTestRun);
   const queryTestRunParams: SyncQueryTemplateRunnerParams<ReduxDeploymentsState> = useMemo(
     () => {
-      // if (!queryForExecution) return undefined;
-      // return getQueryRunnerParamsForReduxDeploymentsState(
       return getQueryTemplateRunnerParamsForReduxDeploymentsState(
         queryForTestRun,
         props.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap,
@@ -424,13 +431,6 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
     }),
     [
       queryTestRunResults
-      // miroirConfig,
-      // currentModel,
-      // adminAppModel,
-      // applicationDeploymentMap,
-      // deploymentUuidToReportsEntitiesDefinitionsMapping,
-      // context.viewParams.generalEditMode,
-      // adminDeploymentsQueryResult,
     ]);
   // ##############################################################################################
   // ##############################################################################################
@@ -469,7 +469,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
                 ? interpolateExpression(
                     reportSectionDefinitionFromFormik?.definition?.label,
                     { instance },
-                    "report label"
+                    "report label",
                   )
                 : undefined) ??
               currentReportTargetEntity?.name + " details: " + instance.name}
@@ -497,65 +497,116 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
               backgroundColor: "#f8f9fa",
             }}
           >
-            {/* <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                padding: "12px 16px",
-                cursor: "pointer",
-                borderBottom: isResultsCollapsed ? "none" : "1px solid #dee2e6",
-              }}
-              onClick={() => setIsResultsCollapsed(!isResultsCollapsed)}
-            >
-              <ThemedTitle style={{ margin: 0, fontSize: "16px" }}>Query Results</ThemedTitle>
-              <span style={{ color: "#666", fontSize: "14px" }}>
-                {isResultsCollapsed ? "▶" : "▼"}
-              </span>
-            </div> */}
-
-            {/* query test run results */}
-            {/* {!isResultsCollapsed && ( */}
-              <div style={{ padding: "16px" }}>
-                {queryTestRunResults ? (
-                  queryTestRunResults.elementType === "failure" ? (
-                    <div style={{ color: "#dc3545", padding: "8px" }}>
-                      <strong>Query execution failed:</strong>
-                      <ThemedCodeBlock style={{ marginTop: "8px" }}>
-                        {JSON.stringify(queryTestRunResults, null, 2)}
-                      </ThemedCodeBlock>
-                    </div>
-                  ) : (
-                    <div>
-                      <div style={{ marginBottom: "8px", fontSize: "14px", color: "#666" }}>
-                        Query executed successfully. Results:
-                      </div>
-                      <>
-                      <JsonDisplayHelper componentName="ReportSectionEntityInstance" elements={debugElements.elements} />
-                      </>
-                    </div>
-                  )
-                ) : (
-                  <div
-                    style={{
-                      textAlign: "center",
-                      padding: "16px",
-                      color: "#666",
-                      fontStyle: "italic",
-                    }}
-                  >
-                    {queryForTestRun
-                      ? "Executing query..."
-                      : "No query definition found for this instance"}
+            <JsonDisplayHelper
+              debug={true}
+              componentName="ReportSectionEntityInstance - Query Test Run Debug"
+              elements={[
+                {
+                  label: "queryForTestParamSchema",
+                  data: queryForTestParamSchema,
+                  useCodeBlock: true,
+                },
+                // { label: "currentReportSectionTargetEntityDefinition", data: currentReportSectionTargetEntityDefinition },
+                { label: "currentFlattenedReportSectionTargetEntityDefinition", data: currentFlattenedReportSectionTargetEntityDefinition },
+                { label: "formikValuePathAsString", data: formikValuePathAsString },
+                { label: "queryForTestRun", data: queryForTestRun, useCodeBlock: true },
+                // {
+                //   label: `formValueMLSchema.definition[${formikValuePathAsString}]`,
+                //   data: props.formValueMLSchema.definition[formikValuePathAsString],
+                //   useCodeBlock: true,
+                // },
+                // {
+                //   label: "currentApplicationDeploymentMap",
+                //   data: { currentApplicationDeploymentMap, application, map: context.deploymentUuidToReportsEntitiesDefinitionsMapping },
+                //   useCodeBlock: true,
+                //   copyButton: true,
+                // },
+                // {
+                //   label: "availableReports",
+                //   data: availableReports.map((r) => ({ uuid: r.uuid, name: r.name })),
+                //   useCodeBlock: true,
+                // },
+                // { label: "currentMiroirReport", data: currentMiroirReport },
+                // { label: "currentStoredQueryResults", data: currentStoredQueryResults, useCodeBlock: true },
+              ]}
+            />
+            <div style={{ padding: "16px" }}>
+              {queryForTestParamSchema && (
+                <div style={{ marginBottom: "8px", fontSize: "14px", color: "#666" }}>
+                  Executing query with parameters:
+                  <TypedValueObjectEditor
+                    formValueMLSchema={queryForTestParamSchema}
+                    // formikValuePathAsString={formikValuePathAsString}
+                    formikValuePathAsString={editedQueryParameterValueKey}
+                    valueObjectEditMode="create"
+                    labelElement={labelElement}
+                    application={props.application}
+                    applicationDeploymentMap={props.applicationDeploymentMap}
+                    deploymentUuid={props.deploymentUuid}
+                    applicationSection={props.applicationSection}
+                    formLabel={formLabel}
+                    zoomInPath={props.zoomInPath}
+                    maxRenderDepth={Infinity} // Always render fully for editor
+                    // setAddObjectdialogFormIsOpen={props.setAddObjectdialogFormIsOpen}
+                  />
+                </div>
+              )}
+              {queryTestRunResults ? (
+                queryTestRunResults.elementType === "failure" ? (
+                  <div style={{ color: "#dc3545", padding: "8px" }}>
+                    <strong>Query execution failed:</strong>
+                    <ThemedCodeBlock style={{ marginTop: "8px" }}>
+                      {JSON.stringify(queryTestRunResults, null, 2)}
+                    </ThemedCodeBlock>
                   </div>
-                )}
-              </div>
-            {/* )} */}
+                ) : (
+                  <div>
+                    <div style={{ marginBottom: "8px", fontSize: "14px", color: "#666" }}>
+                      Query executed successfully. Results:
+                    </div>
+                    <>
+                      <JsonDisplayHelper
+                        componentName="ReportSectionEntityInstance"
+                        elements={debugElements.elements}
+                      />
+                    </>
+                  </div>
+                )
+              ) : (
+                <div
+                  style={{
+                    textAlign: "center",
+                    padding: "16px",
+                    color: "#666",
+                    fontStyle: "italic",
+                  }}
+                >
+                  {queryForTestRun
+                    ? "Executing query..."
+                    : "No query definition found for this instance"}
+                </div>
+              )}
+            </div>
           </div>
         )}
 
-        {currentReportSectionTargetEntityDefinition && props.applicationSection ? (
+        {currentFlattenedReportSectionTargetEntityDefinition && props.applicationSection ? (
+          <>
+          <JsonDisplayHelper
+            debug={true}
+            componentName="ReportSectionEntityInstance Debug"
+            elements={[
+              { label: "currentReportSectionTargetEntityDefinition", data: currentReportSectionTargetEntityDefinition },
+              // {
+              //   label: "formValueMLSchema",
+              //   data: props.formValueMLSchema,
+              //   useCodeBlock: true,
+              // },
+            ]}
+          />
           <TypedValueObjectEditor
+            formValueMLSchema={currentFlattenedReportSectionTargetEntityDefinition.mlSchema as JzodObject}
+            formikValuePathAsString={formikValuePathAsString}
             valueObjectEditMode={props.valueObjectEditMode}
             // displaySubmitButton={true}
             labelElement={labelElement}
@@ -563,15 +614,14 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
             applicationDeploymentMap={props.applicationDeploymentMap}
             deploymentUuid={props.deploymentUuid}
             applicationSection={props.applicationSection}
-            formValueMLSchema={props.formValueMLSchema}
-            formikValuePathAsString={formikValuePathAsString}
             //
             formLabel={formLabel}
             zoomInPath={props.zoomInPath}
             maxRenderDepth={Infinity} // Always render fully for editor
-            // 
+            //
             setAddObjectdialogFormIsOpen={props.setAddObjectdialogFormIsOpen}
           />
+          </>
         ) : (
           <div>
             Oops, ReportSectionEntityInstance could not be displayed.
@@ -589,7 +639,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
             {/* <div>resolved schema: {JSON.stringify(resolvedJzodSchema)}</div> */}
             <ThemedOnScreenHelper
               label={`currentDeploymentMetaModel.entities`}
-              data={currentDeploymentModel.entities.map(e => ({name: e.name, uuid: e.uuid}))}
+              data={currentDeploymentModel.entities.map((e) => ({ name: e.name, uuid: e.uuid }))}
               initiallyUnfolded={false}
             />
             <ThemedOnScreenHelper
@@ -597,28 +647,18 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
               data={reportDefinitionFromFormik}
               initiallyUnfolded={false}
             />
-            <ThemedOnScreenHelper
-              label={`entities`}
-              data={entities}
-              initiallyUnfolded={false}
-            />
+            <ThemedOnScreenHelper label={`entities`} data={entities} initiallyUnfolded={false} />
             <ThemedOnScreenHelper
               label={`entityDefinitions`}
               data={entityDefinitions}
               initiallyUnfolded={false}
             />
-            <ThemedOnScreenHelper
-              label={`targetEntityUuid`}
-              data={targetEntityUuid}
-            />
-            <ThemedOnScreenHelper
-              label={`instance`}
-              data={instance}
-            />
-            <ThemedOnScreenHelper
+            <ThemedOnScreenHelper label={`targetEntityUuid`} data={targetEntityUuid} />
+            <ThemedOnScreenHelper label={`instance`} data={instance} />
+            {/* <ThemedOnScreenHelper
               label={`props.formValueMLSchema`}
               data={props.formValueMLSchema}
-            />
+            /> */}
             <ThemedOnScreenHelper
               label={`reportSectionDefinitionFromFormik`}
               data={reportSectionDefinitionFromFormik}

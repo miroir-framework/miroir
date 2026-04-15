@@ -30,7 +30,8 @@ import {
   type ApplicationDeploymentMap,
   type JzodObject,
   type MiroirModelEnvironment,
-  type CoreTransformerForBuildPlusRuntime
+  type CoreTransformerForBuildPlusRuntime,
+  type JzodElement
 } from "miroir-core";
 import {
   CodeBlock_ReadOnly,
@@ -80,7 +81,7 @@ export interface TypedValueObjectEditorProps {
   // zoom functionality
   zoomInPath?: string; // Optional path like "x.y.z" to zoom into a subset of the instance
   // established on the basis of the report section target entity schema, does not take zoomInPath into account!
-  formValueMLSchema: JzodObject;
+  formValueMLSchema: JzodElement;
   formikValuePathAsString: string; 
   // 
   application: Uuid,
@@ -176,13 +177,13 @@ const TypedValueObjectEditorInner: React.FC<TypedValueObjectEditorProps> = ({
   const formik = useFormikContext<Record<string, any>>();
 
   const navigationKey = `${deploymentUuid}-${applicationSection}`;
-  const { navigationCount, totalCount } = useRenderTracker("FreeFormEditor", navigationKey);
+  // const { navigationCount, totalCount } = useRenderTracker("FreeFormEditor", navigationKey);
 
   // Handle zoom functionality
   const hasZoomPath = zoomInPath && zoomInPath.trim() !== '';
   const valueObject = formik.values[formikValuePathAsString];
   const zoomedInValueObject_DEFUNCT = hasZoomPath ? getValueAtPath(valueObject, zoomInPath) : valueObject;
-  const zoomedInDisplaySchema = formValueMLSchema.definition[formikValuePathAsString]; 
+  // const zoomedInDisplaySchema = formValueMLSchema.definition[formikValuePathAsString]; 
 
   // Log zoom functionality usage
   // if (hasZoomPath) {
@@ -212,16 +213,16 @@ const TypedValueObjectEditorInner: React.FC<TypedValueObjectEditorProps> = ({
   }
 
   // Handle error case where zoom path results in invalid schema
-  if (hasZoomPath && !zoomedInDisplaySchema) {
-    return (
-      <div style={{ padding: '16px', border: '1px solid #ff9800', borderRadius: '4px', backgroundColor: '#fff3e0' }}>
-        <div style={{ color: '#f57c00', fontWeight: 'bold', marginBottom: '8px' }}>
-          Schema Path Error
-        </div>
-        <div>The zoom path "{zoomInPath}" does not correspond to a valid schema path.</div>
-      </div>
-    );
-  }
+  // if (hasZoomPath && !zoomedInDisplaySchema) {
+  //   return (
+  //     <div style={{ padding: '16px', border: '1px solid #ff9800', borderRadius: '4px', backgroundColor: '#fff3e0' }}>
+  //       <div style={{ color: '#f57c00', fontWeight: 'bold', marginBottom: '8px' }}>
+  //         Schema Path Error
+  //       </div>
+  //       <div>The zoom path "{zoomInPath}" does not correspond to a valid schema path.</div>
+  //     </div>
+  //   );
+  // }
 
   // ##############################################################################################
   const currentApplication: Uuid = applicationSection == "data" ? application : selfApplicationMiroir.uuid;
@@ -344,9 +345,11 @@ const TypedValueObjectEditorInner: React.FC<TypedValueObjectEditorProps> = ({
     let result: ResolvedJzodSchemaReturnType | undefined = undefined;
     try {
       result =
-        context.miroirFundamentalJzodSchema && zoomedInDisplaySchema && formik.values && currentModel
+        // context.miroirFundamentalJzodSchema && zoomedInDisplaySchema && formik.values && currentModel
+        context.miroirFundamentalJzodSchema && formik.values && currentModel
           ? jzodTypeCheck( // TODO: typecheck only the value for the currently edited instance / object, not the whole formik.values
-              formValueMLSchema.definition[formikValuePathAsString], 
+              // formValueMLSchema.definition[formikValuePathAsString], 
+              formValueMLSchema, 
               valueObject, // this leads to an error for now if there are multiple instances in the formik values
               [],
               [],
@@ -373,7 +376,7 @@ const TypedValueObjectEditorInner: React.FC<TypedValueObjectEditorProps> = ({
     currentMiroirModelEnvironment,
     context.miroirFundamentalJzodSchema,
     deploymentUuid,
-    zoomedInDisplaySchema,
+    // zoomedInDisplaySchema,
     formik.values,
     formValueMLSchema,
     formikValuePathAsString,
@@ -573,7 +576,7 @@ const TypedValueObjectEditorInner: React.FC<TypedValueObjectEditorProps> = ({
                   rootLessListKey: "ROOT",
                   currentValue: zoomedInValueObject_DEFUNCT,
                   formikValues: undefined,
-                  rawJzodSchema: zoomedInDisplaySchema,
+                  // rawJzodSchema: zoomedInDisplaySchema,
                   localResolvedElementJzodSchemaBasedOnValue:
                     jzodTypeCheckResult?.status == "ok"
                       ? jzodTypeCheckResult.resolvedSchema
@@ -630,7 +633,7 @@ const TypedValueObjectEditorInner: React.FC<TypedValueObjectEditorProps> = ({
                   rootLessListKeyArray: [],
                   currentValue: zoomedInValueObject_DEFUNCT,
                   formikValues: undefined,
-                  rawJzodSchema: zoomedInDisplaySchema,
+                  // rawJzodSchema: zoomedInDisplaySchema,
                   localResolvedElementJzodSchemaBasedOnValue:
                     jzodTypeCheckResult?.status == "ok"
                       ? jzodTypeCheckResult.resolvedSchema
@@ -639,10 +642,6 @@ const TypedValueObjectEditorInner: React.FC<TypedValueObjectEditorProps> = ({
               />
             )}
           >
-            {/* <ThemedOnScreenHelper
-              label={`TypedValueObjectEditor: ${formikValuePathAsString}`}
-              data={formValueMLSchema}
-            /> */}
             <JzodElementEditor
               valueObjectEditMode={props.valueObjectEditMode}
               reportSectionPathAsString={formikValuePathAsString ?? ""}

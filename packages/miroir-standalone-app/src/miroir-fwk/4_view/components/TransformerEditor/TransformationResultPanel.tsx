@@ -87,13 +87,13 @@ export const TransformationResultPanel: React.FC<{
             labelElement={<div>target:</div>}
             initialValueObject={{ transformationResult }}
             formValueMLSchema={
-              {
-                type: "object",
-                definition: {
-                  transformationResult:
-                    transformationResultSchema ?? ({ type: "any" } as JzodElement),
-                },
-              } // TODO: ILL-TYPED!!
+              // {
+              //   type: "object",
+              //   definition: {
+              //     transformationResult:
+              transformationResultSchema ?? ({ type: "any" } as JzodElement)
+                // },
+              // } // TODO: ILL-TYPED!!
             }
             formikValuePathAsString="transformationResult"
             application={inputApplication}

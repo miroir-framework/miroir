@@ -132,7 +132,6 @@ const transformerTestInstances = import.meta.glob(
 // ================================================================================================
 // Helpers
 // ================================================================================================
-
 function buildInstanceLabel(instance: any, fallbackPath: string): string {
   const uuid: string = instance.uuid ?? fallbackPath;
   return instance.name ? `${instance.name} (${uuid})` : uuid;
@@ -173,7 +172,6 @@ function describeEntityGroup(
 // // ================================================================================================
 // // Test suites — Model instances (validated against the Miroir meta-model)
 // // ================================================================================================
-
 const modelTestsToRun: Array<{
   groupName: string;
   jzodSchema: JzodElement;

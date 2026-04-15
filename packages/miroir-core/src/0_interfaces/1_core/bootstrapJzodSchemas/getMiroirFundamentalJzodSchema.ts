@@ -227,47 +227,47 @@ export function getMiroirFundamentalJzodSchema(
   // ##############################################################################################
   // ##############################################################################################
   const extraQueryElements: Record<string, any /*JzodElement*/> = {
-    localCacheExtractor: {
-      type: "object",
-      definition: {
-        queryType: {
-          type: "literal",
-          tag: {
-            value: {
-              canBeTemplate: false,
-            },
-          },
-          definition: "localCacheEntityInstancesExtractor",
-        },
-        definition: {
-          type: "object",
-          definition: {
-            application: {
-              type: "uuid",
-              tag: { value: { defaultLabel: "Uuid", editable: false } },
-            },
-            applicationSection: {
-              type: "schemaReference",
-              optional: true,
-              definition: {
-                absolutePath: miroirFundamentalJzodSchemaUuid,
-                relativePath: "applicationSection",
-              },
-            },
-            entityUuid: {
-              type: "uuid",
-              optional: true,
-              tag: { value: { id: 1, defaultLabel: "Entity", editable: false } },
-            },
-            instanceUuid: {
-              type: "uuid",
-              optional: true,
-              tag: { value: { id: 1, defaultLabel: "Instance", editable: false } },
-            },
-          },
-        },
-      },
-    },
+    // localCacheExtractor: {
+    //   type: "object",
+    //   definition: {
+    //     queryType: {
+    //       type: "literal",
+    //       tag: {
+    //         value: {
+    //           canBeTemplate: false,
+    //         },
+    //       },
+    //       definition: "localCacheEntityInstancesExtractor",
+    //     },
+    //     definition: {
+    //       type: "object",
+    //       definition: {
+    //         application: {
+    //           type: "uuid",
+    //           tag: { value: { defaultLabel: "Uuid", editable: false } },
+    //         },
+    //         applicationSection: {
+    //           type: "schemaReference",
+    //           optional: true,
+    //           definition: {
+    //             absolutePath: miroirFundamentalJzodSchemaUuid,
+    //             relativePath: "applicationSection",
+    //           },
+    //         },
+    //         entityUuid: {
+    //           type: "uuid",
+    //           optional: true,
+    //           tag: { value: { id: 1, defaultLabel: "Entity", editable: false } },
+    //         },
+    //         instanceUuid: {
+    //           type: "uuid",
+    //           optional: true,
+    //           tag: { value: { id: 1, defaultLabel: "Instance", editable: false } },
+    //         },
+    //       },
+    //     },
+    //   },
+    // },
     shippingBox: {
       type: "object",
       definition: {
@@ -507,53 +507,6 @@ export function getMiroirFundamentalJzodSchema(
           },
         },
       },
-    },
-    miroirQueryTemplate: {
-      type: "union",
-      discriminator: "queryType",
-      definition: [
-        {
-          type: "schemaReference",
-          definition: {
-            absolutePath: miroirFundamentalJzodSchemaUuid,
-            relativePath: "boxedQueryTemplateWithExtractorCombinerTransformer",
-          },
-        },
-        {
-          type: "schemaReference",
-          definition: {
-            absolutePath: miroirFundamentalJzodSchemaUuid,
-            relativePath: "localCacheExtractor",
-          },
-        },
-      ],
-    },
-    miroirQuery: {
-      type: "union",
-      discriminator: "queryType",
-      definition: [
-        {
-          type: "schemaReference",
-          definition: {
-            absolutePath: miroirFundamentalJzodSchemaUuid,
-            relativePath: "boxedExtractorOrCombinerReturningObjectOrObjectList",
-          },
-        },
-        {
-          type: "schemaReference",
-          definition: {
-            absolutePath: miroirFundamentalJzodSchemaUuid,
-            relativePath: "boxedQueryWithExtractorCombinerTransformer",
-          },
-        },
-        {
-          type: "schemaReference",
-          definition: {
-            absolutePath: miroirFundamentalJzodSchemaUuid,
-            relativePath: "localCacheExtractor",
-          },
-        },
-      ],
     },
   };
   // ##############################################################################################
