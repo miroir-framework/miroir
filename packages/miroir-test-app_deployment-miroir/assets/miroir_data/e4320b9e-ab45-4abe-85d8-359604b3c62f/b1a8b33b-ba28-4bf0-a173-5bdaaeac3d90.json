@@ -7,6 +7,19 @@
   "description": "This query produces a list of Transformers for a given classification.",
   "parameters": {
     "type": "object",
+    "nullable": true,
+    "tag": {
+      "value": {
+        "defaultLabel": "TransformersForClassification Parameters",
+        "description": "The parameters for the TransformersForClassification query.",
+        "initializeTo": {
+          "initializeToType": "value",
+          "value": {
+            "classification": "admin"
+          }
+        }
+      }
+    },
     "definition": {
       "classification": {
         "type": "string",

@@ -312,7 +312,7 @@ const JsonElementEditorDialog: React.FC<JsonElementEditorDialogProps> = ({
       type: "object",
       definition: {
         ...r,
-        [formikReportDefinitionPath]: entityDefinitionReport.mlSchema,
+        [formikReportDefinitionPath]: entityDefinitionReport.mlSchema as JzodObject,
       },
     };
     return formValueMLSchema;
@@ -375,13 +375,7 @@ const JsonElementEditorDialog: React.FC<JsonElementEditorDialogProps> = ({
               paramsAsdomainElements={{}}
               isOutlineOpen={false} // no connection to outline context here
               onToggleOutline={() => {}}
-              // data
-              reportDataDEFUNCT={{} as any}
-              fetchedDataJzodSchemaDEFUNCT={{} as any}
               //
-              reportSectionDEFUNCT={{} as any} // TODO: defunct, must use formik[reportName]?.definition.section
-              reportDefinitionDEFUNCT={{} as any}
-              formValueMLSchema={formValueMLSchema}
               formikReportDefinitionPathString={formikReportDefinitionPath}
               reportSectionPath={reportSectionPath}
               reportName="reportName"

@@ -4,7 +4,7 @@ import { Container } from "react-dom";
 import * as RRDom from "react-router-dom";
 import { describe, vi, type ExpectStatic } from 'vitest';
 
-import { reportCountryList, selfApplicationDeploymentLibrary } from "miroir-core";
+// import { reportCountryList, selfApplicationDeploymentLibrary } from "miroir-core";
 import type { ReportViewProps } from "../../src/miroir-fwk/4_view/components/Reports/ReportHooks";
 import { ReportPage } from '../../src/miroir-fwk/4_view/routes/ReportPage';
 import {
@@ -15,7 +15,7 @@ import {
   type ReactComponentTestSuites,
 } from "./JzodElementEditorTestTools";
 import { defaultSelfApplicationDeploymentMap } from "miroir-core";
-import { selfApplicationLibrary } from "miroir-core";
+// import { selfApplicationLibrary } from "miroir-core";
 
 vi.mock('react-router-dom', async () => {
   const actual = await vi.importActual('react-router-dom');
@@ -116,10 +116,10 @@ const jzodElementEditorTests: Record<
                   reportUuid: reportCountryList.uuid,
                 },
                 reportDefinition: reportCountryList,
-                // storedQueryData?: any,
+                applicationDeploymentMap: defaultSelfApplicationDeploymentMap,
                 // reportDefinition: Query,
                 // showPerformanceDisplay?: boolean;
-              // 
+                // 
                 // label: "Test Label",
                 // name: "testField",
                 // listKey: "ROOT.testField",

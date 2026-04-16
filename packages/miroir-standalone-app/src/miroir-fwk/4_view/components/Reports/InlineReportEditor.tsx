@@ -29,24 +29,18 @@ MiroirLoggerFactory.registerLoggerToStart(
 // InlineReportEditor Component
 // ################################################################################################
 export interface InlineReportEditorProps {
-  // reportDefinitionDEFUNCT: Report;
-  reportEntityDefinitionDEFUNCT: EntityDefinition;
   application: Uuid;
   applicationDeploymentMap: ApplicationDeploymentMap;
   deploymentUuid: Uuid;
   applicationSection: ApplicationSection;
-  // formValueMLSchema: JzodObject;
-  formikAlreadyAvailable?: boolean;
   formikValuePath: ( string | number )[],
   formikReportDefinitionPathString: string;
 }
 
 export const InlineReportEditor: React.FC<InlineReportEditorProps> = ({
-  // formValueMLSchema,
   application,
   applicationDeploymentMap,
   deploymentUuid,
-  formikAlreadyAvailable,
   formikReportDefinitionPathString,
   formikValuePath,
 }) => {
@@ -73,20 +67,9 @@ export const InlineReportEditor: React.FC<InlineReportEditorProps> = ({
             </AccordionSummary>
             <AccordionDetails> */}
               {/* <ThemedOnScreenHelper
-                label={"InlineReportEditor: reportDefinitionDEFUNCT"}
-                data={reportDefinitionDEFUNCT}
-                initiallyUnfolded={false}
-              /> */}
-              {/* <ThemedOnScreenHelper
-                label={"InlineReportEditor: reportEntityDefinitionDEFUNCT"}
-                data={reportEntityDefinitionDEFUNCT}
-                initiallyUnfolded={false}
-              /> */}
-              {/* <ThemedOnScreenHelper
                 label={"InlineReportEditor: report edition parameters"}
                 initiallyUnfolded={false}
                 data={{
-                  reportEntityDefinitionDEFUNCT: reportEntityDefinitionDEFUNCT?.uuid,
                   deploymentUuid,
                   applicationSection,
                   applicationSectionComputed,
@@ -101,13 +84,9 @@ export const InlineReportEditor: React.FC<InlineReportEditorProps> = ({
                 applicationDeploymentMap={applicationDeploymentMap}
                 deploymentUuid={deploymentUuid}
                 applicationSection={getApplicationSection(application, formikReportDefinition?.parentUuid)}
-                entityUuidDEFUNCT={formikReportDefinition?.parentUuid} // entityUuid-based display, not formikReportPath-based; type comes for formValueMLSchema
-                // formValueMLSchema={formValueMLSchema}
                 formikValuePath={formikValuePath}
                 formikReportDefinitionPathString={formikReportDefinitionPathString}
                 reportSectionPath={["definition", "section", "definition", 0]}
-                formikAlreadyAvailable={formikAlreadyAvailable}
-                initialInstanceValueDEFUNCT={formikReportDefinition} // DEFUNCT when formikAlreadyAvailable=true
               />
             {/* </AccordionDetails> */}
           </ThemedProgressiveAccordion>

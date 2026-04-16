@@ -12,7 +12,6 @@ import {
   MetaModel,
   MiroirLoggerFactory,
   Report,
-  selfApplicationMiroir,
   type BoxedQueryTemplateWithExtractorCombinerTransformer,
   type BoxedQueryWithExtractorCombinerTransformer,
   type Domain2QueryReturnType,

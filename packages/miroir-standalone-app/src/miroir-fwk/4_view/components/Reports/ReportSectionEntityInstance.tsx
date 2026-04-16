@@ -116,15 +116,9 @@ export interface ReportSectionEntityInstanceProps {
   deploymentUuid: Uuid,
   defaultLabel?: string,
   // 
-  initialInstanceValueDEFUNCT: EntityInstance,
-  entityUuidDEFUNCT: Uuid,
-  // 
-  formikAlreadyAvailable?: boolean;
   formikValuePath: ( string | number )[],
   reportSectionPath?: ( string | number )[],
   formikReportDefinitionPathString?: string;
-  // formikReportDefinitionEntityDefinitionPathString?: string;
-  // formValueMLSchema: JzodObject;
   reportSectionDefinition?: ReportSection;
   // 
   // Note: Outline props removed since using context now
@@ -174,7 +168,6 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
       reportDefinitionFromFormik &&
       props.reportSectionPath
         ? resolvePathOnObject(
-            // props.reportDefinitionDEFUNCT, props.reportSectionPath ?? []
             reportDefinitionFromFormik,
             props.reportSectionPath
           )
@@ -198,7 +191,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   );
 
   // Track performance immediately for initial render
-  const componentKey = `ReportSectionEntityInstance-${props.initialInstanceValueDEFUNCT?.uuid || props.entityUuidDEFUNCT}`;
+  const componentKey = `ReportSectionEntityInstance-${formikValuePathAsString}`;
 
   const [isResultsCollapsed, setIsResultsCollapsed] = useState(false);
   // const [isResultsCollapsed, setIsResultsCollapsed] = useState(true);
@@ -208,14 +201,8 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   const reportContext = useReportPageContext();
 
   const instance: any = useMemo(() => {
-    if (props.formikAlreadyAvailable) {
       return formikContext?.values[formikValuePathAsString] as EntityInstance;
-    } else {
-      return props.initialInstanceValueDEFUNCT;
-    }
   }, [
-    props.initialInstanceValueDEFUNCT,
-    props.formikAlreadyAvailable,
     formikValuePathAsString,
     formikContext?.values,
   ]) as EntityInstance;

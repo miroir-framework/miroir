@@ -8,8 +8,6 @@ import {
   defaultMiroirModelEnvironment,
   defaultSelfApplicationDeploymentMap,
   Domain2ElementFailed,
-  entityDefinitionEntityDefinition,
-  entityDefinitionMLSchema,
   getApplicationSection,
   LoggerInterface,
   MiroirLoggerFactory,
@@ -20,12 +18,9 @@ import {
   type Domain2QueryReturnType,
   type DomainControllerInterface,
   type EntityDefinition,
-  type InstanceAction,
-  type JzodObject,
-  type MetaModel,
+  type InstanceAction
 } from "miroir-core";
-import { JsonDisplayHelper } from 'miroir-react';
-import { useDomainControllerService, useMiroirContextService, useSnackbar } from "miroir-react";
+import { JsonDisplayHelper, useDomainControllerService, useMiroirContextService, useSnackbar } from 'miroir-react';
 import { deployment_Miroir } from 'miroir-test-app_deployment-admin';
 import { packageName } from '../../../../constants.js';
 import { cleanLevel, lastSubmitButtonClicked } from '../../constants.js';
@@ -33,9 +28,9 @@ import { ThemedSpan } from '../Themes/index.js';
 import { useDocumentOutlineContext } from '../ValueObjectEditor/InstanceEditorOutlineContext.js';
 import { InlineReportEditor } from './InlineReportEditor.js';
 import { ReportViewProps, useQueryTemplateResults } from './ReportHooks.js';
+import { editedQueryParameterValueKey } from './ReportSectionEntityInstance.js';
 import ReportSectionViewWithEditor from './ReportSectionViewWithEditor.js';
 import { reportSectionsFormValue } from './ReportTools.js';
-import { editedQueryParameterValueKey } from './ReportSectionEntityInstance.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -129,18 +124,10 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
   const {reportData, resolvedQuery} = reportDataQueryResults;
   // log.info("reportData", reportData);
 
-  const reportViewData = useMemo(() => ({
-      ...reportData, // TODO: choose between spreading reportData or including as reportData attribute
-      pageParams: props.pageParams,
-      reportData,
-      storedQueryData: props.storedQueryData
-  }), [reportData, props.storedQueryData]);
-
-  // log.info("ReportView reportViewData", reportViewData);
 
   const reportName = props.reportDefinition?.name??"reportEntityDefinition_name";
   const reportNamePath = [reportName];
-  const entityDefinitionReportKey = "entityDefinitionReport";
+  // const entityDefinitionReportKey = "entityDefinitionReport";
   const reportReportDetailsKey = "reportReportDetails";
 
   // ##############################################################################################
@@ -167,18 +154,21 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
     const result = {
       ...reportSectionsData,
       ...props.storedQueryData,
-      ...reportViewData,
-      reportViewData,
+      ...reportData, // TODO: choose between spreading reportData or including as reportData attribute
+      pageParams: props.pageParams,
+      reportData,
       [reportReportDetailsKey]: reportReportDetails,
-      [entityDefinitionReportKey ]: entityDefinitionReport,
+      // [entityDefinitionReportKey ]: entityDefinitionReport,
       [reportName]: props.reportDefinition,
       // [editedQueryParameterValueKey]: { classification: "MLS" }, // TODO: make it dynamic based on user input
       [editedQueryParameterValueKey]: { classification: "admin" }, // TODO: make it dynamic based on user input
+      // [editedQueryParameterValueKey]: null, // TODO: make it dynamic based on user input
+      // [editedQueryParameterValueKey]: {},
     };
     // log.info("reportSectionsFormValue initialReportSectionsFormValue", result);
     return result;
 
-  }, [props.reportDefinition, entityDefinitionReportKey, reportData, reportViewData]);
+  }, [props.reportDefinition, props.pageParams, props.storedQueryData,reportData]);
 
   // ###############################################################################################
   // ###############################################################################################
@@ -188,7 +178,6 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
   // ##############################################################################################
   const domainController: DomainControllerInterface = useDomainControllerService();
   const currentModelEnvironment = defaultMiroirModelEnvironment;
-  // const reportSectionPathAsString = reportSectionPath?.join("_") || "";
   const onEditValueObjectFormSubmit = useCallback(
     async (data: any) => {
       log.info(
@@ -361,11 +350,11 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
                         //   data: { formValueMLSchema },
                         //   useCodeBlock: true,
                         // },
-                        {
-                          label: "entityDefinitionReport",
-                          data: { entityDefinitionReport },
-                          useCodeBlock: true,
-                        },
+                        // {
+                        //   label: "entityDefinitionReport",
+                        //   data: { entityDefinitionReport },
+                        //   useCodeBlock: true,
+                        // },
                         {
                           label: "formik values",
                           data: formik.values,
@@ -397,11 +386,8 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
                           applicationDeploymentMap={props.applicationDeploymentMap}
                           deploymentUuid={props.deploymentUuid}
                           applicationSection={props.applicationSection}
-                          reportEntityDefinitionDEFUNCT={entityDefinitionReport}
-                          // formValueMLSchema={formValueMLSchema}
                           formikValuePath={reportNamePath}
                           formikReportDefinitionPathString={reportReportDetailsKey}
-                          formikAlreadyAvailable={true}
                         />
                       </>
                     )}
@@ -416,14 +402,9 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
                         paramsAsdomainElements={props.pageParams}
                         isOutlineOpen={outlineContext.isOutlineOpen}
                         onToggleOutline={outlineContext.onToggleOutline}
-                        // data
-                        reportDataDEFUNCT={reportViewData}
-                        fetchedDataJzodSchemaDEFUNCT={fetchedDataJzodSchema}
                         //
-                        reportSectionDEFUNCT={props.reportDefinition?.definition.section} // TODO: defunct, must use formik[reportName]?.definition.section
-                        reportDefinitionDEFUNCT={props.reportDefinition}
-                        // formValueMLSchema={formValueMLSchema}
-                        formikReportDefinitionPathString={props.reportDefinition.name}
+                        // formikReportDefinitionPathString={props.reportDefinition.name}
+                        formikReportDefinitionPathString={reportName}
                         reportSectionPath={["definition", "section"]}
                         reportName={reportName}
                       />
