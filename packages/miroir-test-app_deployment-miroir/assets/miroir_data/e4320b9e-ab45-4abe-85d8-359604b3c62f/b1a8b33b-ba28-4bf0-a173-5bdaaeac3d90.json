@@ -15,7 +15,7 @@
         "initializeTo": {
           "initializeToType": "value",
           "value": {
-            "classification": "admin"
+            "classification": ""
           }
         }
       }

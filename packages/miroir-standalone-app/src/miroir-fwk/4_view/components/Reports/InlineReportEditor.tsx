@@ -37,6 +37,9 @@ export interface InlineReportEditorProps {
   formikReportDefinitionPathString: string;
 }
 
+export const reportReportDetailsKey = "reportReportDetails";
+
+
 export const InlineReportEditor: React.FC<InlineReportEditorProps> = ({
   application,
   applicationDeploymentMap,

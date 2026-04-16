@@ -12,6 +12,7 @@ import {
   resolvePathOnObject,
   type ApplicationDeploymentMap,
   type JzodObject,
+  type JzodUnion,
   type Uuid
 } from "miroir-core";
 import React, { FC, useCallback, useMemo } from "react";
@@ -112,6 +113,7 @@ const handleDiscriminatorChange = (
     );
     const resolveUnionResult = jzodUnionResolvedTypeForObject(
       parentKeyMap.recursivelyUnfoldedUnionSchema.result,
+      parentKeyMap.rawSchema as JzodUnion,
       parentKeyMap.discriminator,
       newParentValue,
       parentKeyMap.valuePath,

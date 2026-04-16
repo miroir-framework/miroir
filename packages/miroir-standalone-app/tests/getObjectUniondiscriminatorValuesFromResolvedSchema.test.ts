@@ -67,6 +67,7 @@ function local_test(schema: JzodUnion, instance: any): string[][] {
   }
   const resolveUnionResult = jzodUnionResolvedTypeForObject(
     recursivelyUnfoldedSchema.result,
+    parentKeyMap.rawSchema as JzodUnion,
     schema.discriminator,
     instance, //valueObject,
     [], // currentValuePath,

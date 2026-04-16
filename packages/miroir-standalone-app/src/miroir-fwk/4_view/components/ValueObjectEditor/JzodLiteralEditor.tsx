@@ -17,6 +17,7 @@ import {
   type DomainElementSuccess,
   type EntityInstancesUuidIndex,
   type JzodObject,
+  type JzodUnion,
   type KeyMapEntry,
   type MiroirModelEnvironment,
   type ReduxDeploymentsState,
@@ -162,8 +163,9 @@ const handleDiscriminatorChange = (
     );
     const resolveUnionResult = jzodUnionResolvedTypeForObject(
       parentKeyMap.recursivelyUnfoldedUnionSchema.result,
+      parentKeyMap.rawSchema as JzodUnion,
       parentKeyMap.discriminator,
-      newParentValue,
+      newParentValue, // valueObject,
       parentKeyMap.valuePath,
       parentKeyMap.typePath,
       modelEnvironment,

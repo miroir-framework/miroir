@@ -226,12 +226,6 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
   // );
 
   // ##############################################################################################
-  // FORMIK
-  // const domainController: DomainControllerInterface = useDomainControllerService();
-  // const currentModelEnvironment = defaultMiroirModelEnvironment;
-  // const reportSectionPathAsString = props.reportSectionPath?.join("_") || "";
-
-  // ##############################################################################################
   // ##############################################################################################
   // ##############################################################################################
   // For grid/list sections, recurse using this wrapper so editor props propagate
@@ -309,7 +303,7 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
           </ThemedText>
         )}
         <JsonDisplayHelper debug={true}
-          componentName="ReportSectionViewWithEditor"
+          componentName={`ReportSectionViewWithEditor ${reportSectionDefinitionFromFormik?.type} ${props.reportSectionPath?.join(".")}`}
           elements={[
             {
               label: "reportSectionDefinitionFromFormik",
@@ -344,6 +338,10 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
           <div>
             {currentListReportTargetEntity && currentListReportTargetEntityDefinition ? (
               <ReportSectionListDisplay
+                formikValuePath={props.reportSectionPath}
+                formikReportDefinitionPathString={props.formikReportDefinitionPathString}
+                reportSectionPath={props.reportSectionPath}
+                //
                 tableComponentReportType="EntityInstance"
                 label={"EntityInstance-" + currentListReportTargetEntity?.name}
                 application={props.application}
@@ -351,10 +349,6 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
                 deploymentUuid={props.deploymentUuid}
                 chosenApplicationSection={props.applicationSection as ApplicationSection}
                 paramsAsdomainElements={props.paramsAsdomainElements}
-                //
-                formikValuePath={props.reportSectionPath}
-                formikReportDefinitionPathString={props.formikReportDefinitionPathString}
-                reportSectionPath={props.reportSectionPath}
               />
             ) : (
               <></>
@@ -365,15 +359,15 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
         {reportSectionDefinitionFromFormik?.type == "objectInstanceReportSection" && (
           <>
             <ReportSectionEntityInstance
+              formikValuePath={props.reportSectionPath}
+              formikReportDefinitionPathString={props.formikReportDefinitionPathString}
+              reportSectionPath={props.reportSectionPath}
+              //
               valueObjectEditMode={valueObjectEditMode}
               application={props.application}
               applicationDeploymentMap={props.applicationDeploymentMap}
               applicationSection={props.applicationSection as ApplicationSection}
               deploymentUuid={props.deploymentUuid}
-              //
-              formikValuePath={props.reportSectionPath}
-              formikReportDefinitionPathString={props.formikReportDefinitionPathString}
-              reportSectionPath={props.reportSectionPath}
               //
               setAddObjectdialogFormIsOpen={props.setAddObjectdialogFormIsOpen}
             />
@@ -450,13 +444,13 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
         )}
         {reportSectionDefinitionFromFormik?.type == "markdownReportSection" && (
           <ReportSectionMarkdown
-            application={props.application}
-            applicationDeploymentMap={props.applicationDeploymentMap}
-            generalEditMode={props.generalEditMode}
-            reportName={props.reportName}
             formikValuePath={props.reportSectionPath}
             formikReportDefinitionPathString={props.formikReportDefinitionPathString}
             reportSectionPath={props.reportSectionPath}
+            generalEditMode={props.generalEditMode}
+            application={props.application}
+            applicationDeploymentMap={props.applicationDeploymentMap}
+            reportName={props.reportName}
             applicationSection={props.applicationSection}
             deploymentUuid={props.deploymentUuid}
             label={reportSectionCurrentValueFromFormik.definition.label}

@@ -165,13 +165,9 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   ;
   
   const reportSectionDefinitionFromFormik: ReportSection | undefined =
-      reportDefinitionFromFormik &&
-      props.reportSectionPath
-        ? resolvePathOnObject(
-            reportDefinitionFromFormik,
-            props.reportSectionPath
-          )
-        : undefined;
+    reportDefinitionFromFormik && props.reportSectionPath
+      ? resolvePathOnObject(reportDefinitionFromFormik, props.reportSectionPath)
+      : undefined;
   
   if (reportSectionDefinitionFromFormik?.type && reportSectionDefinitionFromFormik?.type !== "objectInstanceReportSection") {
     throw new Error(
@@ -194,7 +190,6 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   const componentKey = `ReportSectionEntityInstance-${formikValuePathAsString}`;
 
   const [isResultsCollapsed, setIsResultsCollapsed] = useState(false);
-  // const [isResultsCollapsed, setIsResultsCollapsed] = useState(true);
 
   // Use outline context for outline state management
   const outlineContext = useDocumentOutlineContext();
@@ -384,6 +379,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
       props.deploymentUuid,
       props.applicationSection,
       instance?.uuid,
+      formikContext.values[editedQueryParameterValueKey]
     ]);
 
   // log.info("ReportSectionEntityInstance: queryForExecution:", queryForTestRun);
@@ -414,7 +410,6 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
           data: value,
         }))
         : []
-      //   // { label: "RootComponent miroirConfig", data: miroirConfig },
     }),
     [
       queryTestRunResults
@@ -523,8 +518,8 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
                   Executing query with parameters:
                   <TypedValueObjectEditor
                     formValueMLSchema={queryForTestParamSchema}
-                    // formikValuePathAsString={formikValuePathAsString}
                     formikValuePathAsString={editedQueryParameterValueKey}
+                    // 
                     valueObjectEditMode="create"
                     labelElement={labelElement}
                     application={props.application}
@@ -534,7 +529,6 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
                     formLabel={formLabel}
                     zoomInPath={props.zoomInPath}
                     maxRenderDepth={Infinity} // Always render fully for editor
-                    // setAddObjectdialogFormIsOpen={props.setAddObjectdialogFormIsOpen}
                   />
                 </div>
               )}
@@ -594,8 +588,8 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
           <TypedValueObjectEditor
             formValueMLSchema={currentFlattenedReportSectionTargetEntityDefinition.mlSchema as JzodObject}
             formikValuePathAsString={formikValuePathAsString}
+            // 
             valueObjectEditMode={props.valueObjectEditMode}
-            // displaySubmitButton={true}
             labelElement={labelElement}
             application={props.application}
             applicationDeploymentMap={props.applicationDeploymentMap}

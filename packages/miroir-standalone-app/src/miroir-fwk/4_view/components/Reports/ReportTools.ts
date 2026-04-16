@@ -1,17 +1,24 @@
 import {
   entityDefinitionMLSchema,
+  entityQueryVersion,
   getApplicationSection,
+  getDefaultValueForJzodSchemaWithResolutionNonHook,
   LoggerInterface,
   MiroirLoggerFactory,
+  type ApplicationDeploymentMap,
   type DeploymentUuidToReportsEntitiesDefinitions,
   type EntityDefinition,
   type JzodElement,
+  type JzodObject,
   type MetaModel,
+  type MiroirModelEnvironment,
   type ReportSection,
   type Uuid
 } from "miroir-core";
 import { packageName } from '../../../../constants.js';
 import { cleanLevel } from '../../constants.js';
+import { editedQueryParameterValueKey } from "./ReportSectionEntityInstance.js";
+import { a } from "vitest/dist/chunks/suite.d.FvehnV49.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -105,9 +112,14 @@ export const reportSectionsFormSchema = (
 // ###############################################################################################
 // ###############################################################################################
 export const reportSectionsFormValue = (
-  reportSection: ReportSection,
   reportData: Record<string, any>,
-  reportSectionPath: (string | number)[]
+  reportSection: ReportSection,
+  reportSectionPath: (string | number)[],
+  application: Uuid | undefined = undefined,
+  applicationDeploymentMap: ApplicationDeploymentMap | undefined = undefined,
+  deploymentUuid: Uuid | undefined = undefined,
+  miroirEnvironment: MiroirModelEnvironment,
+  transformerParams: Record<string, any> = {},
 ): Record<string, any> => {
   // log.info("reportSectionsFormValue", reportSection, reportData, reportSectionPath);
   switch (reportSection.type) {
@@ -117,9 +129,14 @@ export const reportSectionsFormValue = (
           return {
             ...acc,
             ...reportSectionsFormValue(
-              curr,
               reportData,
-              reportSectionPath.concat("definition", index)
+              curr,
+              reportSectionPath.concat("definition", index),
+              application,
+              applicationDeploymentMap,
+              deploymentUuid,
+              miroirEnvironment,
+              transformerParams,
             ),
           };
         },
@@ -132,9 +149,14 @@ export const reportSectionsFormValue = (
             (rowAcc: Record<string, any>, subSection: ReportSection, colIndex: number) => ({
               ...rowAcc,
               ...reportSectionsFormValue(
-                subSection,
                 reportData,
-                reportSectionPath.concat("definition", rowIndex, colIndex)
+                subSection,
+                reportSectionPath.concat("definition", rowIndex, colIndex),
+                application,
+                applicationDeploymentMap,
+                deploymentUuid,
+                miroirEnvironment,
+                transformerParams,
               ),
             }),
             {}
@@ -145,9 +167,42 @@ export const reportSectionsFormValue = (
       );
     case "objectListReportSection":
     case "objectInstanceReportSection": {
+      const targetData = reportData[reportSection.definition.fetchedDataReference ?? ""];
+      const queryParametersSchema: JzodObject =
+        typeof targetData === "object" &&
+        targetData !== null &&
+        !Array.isArray(targetData) &&
+        targetData.parentUuid === entityQueryVersion.uuid &&
+        targetData.parameters
+          ? 
+          targetData.parameters
+          : undefined;
+      const queryParametersDefaultValue = queryParametersSchema
+        ? // {[editedQueryParameterValueKey]: { classification: "admin" }}
+          {
+            // [editedQueryParameterValueKey]: { classification: "MLS" }
+            [editedQueryParameterValueKey]: getDefaultValueForJzodSchemaWithResolutionNonHook(
+              "build",
+              queryParametersSchema,
+              undefined, // rootObject
+              "", // rootLessListKey
+              undefined, // currentDefaultvalue
+              [], // currentValuePath
+              // undefined,
+              true, // forceOptional
+              application,
+              applicationDeploymentMap,
+              deploymentUuid,
+              miroirEnvironment,
+              transformerParams, // transformerParams
+              // {}, // contextResult
+              // ReduxDeploymentsState,
+            ),
+          }
+        : {};
       return {
-        [reportSectionPath.join("_")]:
-          reportData[reportSection.definition.fetchedDataReference ?? ""],
+        [reportSectionPath.join("_")]: targetData,
+        ...queryParametersDefaultValue,
       };
     }
     case "markdownReportSection":

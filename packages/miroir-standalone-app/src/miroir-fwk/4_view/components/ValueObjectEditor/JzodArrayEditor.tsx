@@ -423,24 +423,11 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
     props.currentApplication,
     currentDeploymentUuid
   );
-  // const currentMiroirModelEnvironment: MiroirModelEnvironment = useMemo(() => {
-  //   return {
-  //     miroirFundamentalJzodSchema: context.miroirFundamentalJzodSchema ?? (miroirFundamentalJzodSchema as MlSchema),
-  //     currentModel: currentModel,
-  //     miroirMetaModel: miroirMetaModel,
-  //   };
-  // }, [context.miroirFundamentalJzodSchema, currentModel, miroirMetaModel]);
-  // ??
   const usedIndentLevel: number = indentLevel ?? 0;
 
-  // const arrayValueObject = resolvePathOnObject(formik.values, rootLessListKeyArray);
   const arrayValueObject = currentValue;
 
   const currentTypeCheckKeyMap = typeCheckKeyMap ? typeCheckKeyMap[rootLessListKey] : undefined;
-  // const parentKey = rootLessListKey.includes(".")
-  //   ? rootLessListKey.substring(0, rootLessListKey.lastIndexOf("."))
-  //   : "";
-  // const parentKeyMap = typeCheckKeyMap ? typeCheckKeyMap[parentKey] : undefined;
   const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState> =
       getMemoizedReduxDeploymentsStateSelectorMap();
 
@@ -451,12 +438,6 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
         props.applicationDeploymentMap,
         () => ({}),
         currentMiroirModelEnvironment
-        // {
-        //   miroirFundamentalJzodSchema:
-        //     context.miroirFundamentalJzodSchema ?? (miroirFundamentalJzodSchema as MlSchema),
-        //   currentModel: currentModel,
-        //   miroirMetaModel: miroirMetaModel,
-        // }
       )
   );
 
