@@ -225,6 +225,24 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
   //   </div>
   // );
 
+  if (storedReportDisplayParameters instanceof TransformerFailure) {
+    return (
+      <div style={{ color: "red" }}>
+        Error evaluating storedReportDisplay parameters:{" "}
+        {JSON.stringify(storedReportDisplayParameters, null, 2)}
+      </div>
+    );
+  }
+  const storedReportDisplayPageParams = useMemo(() => {
+    return {
+      application: storedReportDisplayParameters?.application,
+      applicationSection: "data",
+      deploymentUuid: storedReportDisplayParameters?.deploymentUuid,
+      reportUuid: storedReportDisplayParameters?.instanceUuid,
+      instanceUuid: "none",
+    };
+  }, [storedReportDisplayParameters]);
+  
   // ##############################################################################################
   // ##############################################################################################
   // ##############################################################################################
@@ -389,14 +407,7 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
               </div>
             ) : (
               <ReportDisplay
-                pageParams={{
-                  application: storedReportDisplayParameters.application,
-                  // applicationSection: storedReportDisplayParameters.applicationSection,
-                  applicationSection: "data",
-                  deploymentUuid: storedReportDisplayParameters.deploymentUuid,
-                  reportUuid: storedReportDisplayParameters.instanceUuid,
-                  instanceUuid: "none",
-                }}
+                pageParams={storedReportDisplayPageParams}
               />
             )}
           </div>

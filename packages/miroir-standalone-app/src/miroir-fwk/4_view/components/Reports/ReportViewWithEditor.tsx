@@ -1,5 +1,5 @@
 import { Box } from '@mui/material';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, useRef } from 'react';
 
 import { Formik } from 'formik';
 
@@ -28,7 +28,6 @@ import { ThemedSpan } from '../Themes/index.js';
 import { useDocumentOutlineContext } from '../ValueObjectEditor/InstanceEditorOutlineContext.js';
 import { InlineReportEditor, reportReportDetailsKey } from './InlineReportEditor.js';
 import { ReportViewProps, useQueryTemplateResults } from './ReportHooks.js';
-import { editedQueryParameterValueKey } from './ReportSectionEntityInstance.js';
 import ReportSectionViewWithEditor from './ReportSectionViewWithEditor.js';
 import { reportSectionsFormValue } from './ReportTools.js';
 
@@ -66,51 +65,46 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
     | BoxedQueryWithExtractorCombinerTransformer
     | BoxedQueryTemplateWithExtractorCombinerTransformer
     | undefined = useMemo(
-    () =>
-      props.pageParams.application &&
-      props.pageParams.deploymentUuid &&
-      props.pageParams.applicationSection &&
-      props.pageParams.reportUuid
-        ? props.reportDefinition.definition.extractorTemplates
-          ? {
-              queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
-              label: props.reportDefinition.name,
-              application: props.pageParams.application??"NO_APPLICATION",
-              applicationDeploymentMap: props.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap,
-              deploymentUuid: props.pageParams.deploymentUuid,
-              pageParams: props.pageParams,
-              queryParams: {},
-              contextResults: {},
-              extractorTemplates: props.reportDefinition.definition.extractorTemplates,
-              combinerTemplates: props.reportDefinition.definition.combinerTemplates,
-              runtimeTransformers: props.reportDefinition.definition.runtimeTransformers,
-            }
-          : props.reportDefinition.definition.extractors
-          ? {
-              queryType: "boxedQueryWithExtractorCombinerTransformer",
-              label: props.reportDefinition.name,
-              application: props.pageParams.application??"NO_APPLICATION",
-              applicationDeploymentMap: props.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap,
-              deploymentUuid: props.pageParams.deploymentUuid,
-              pageParams: props.pageParams,
-              queryParams: {},
-              contextResults: {},
-              extractors: props.reportDefinition.definition.extractors,
-              combiners: props.reportDefinition.definition.combiners,
-              runtimeTransformers: props.reportDefinition.definition.runtimeTransformers,
-            }
-          : {
-              queryType: "boxedQueryWithExtractorCombinerTransformer",
-              label: props.reportDefinition.name + "_DUMMY",
-              application: "",
-              applicationDeploymentMap: {},
-              deploymentUuid: "",
-              pageParams: props.pageParams,
-              queryParams: {},
-              contextResults: {},
-              extractors: {},
-            }
-        : undefined,
+    () => {
+      const result:
+        | BoxedQueryWithExtractorCombinerTransformer
+        | BoxedQueryTemplateWithExtractorCombinerTransformer
+        | undefined =
+        props.pageParams.application
+          ? props.reportDefinition.definition.extractorTemplates
+            ? {
+                queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
+                application: props.pageParams.application ?? "NO_APPLICATION",
+                pageParams: props.pageParams,
+                queryParams: {},
+                contextResults: {},
+                extractorTemplates: props.reportDefinition.definition.extractorTemplates,
+                combinerTemplates: props.reportDefinition.definition.combinerTemplates,
+                runtimeTransformers: props.reportDefinition.definition.runtimeTransformers,
+              }
+            : props.reportDefinition.definition.extractors
+              ? {
+                  queryType: "boxedQueryWithExtractorCombinerTransformer",
+                  application: props.pageParams.application ?? "NO_APPLICATION",
+                  pageParams: props.pageParams,
+                  queryParams: {},
+                  contextResults: {},
+                  extractors: props.reportDefinition.definition.extractors,
+                  combiners: props.reportDefinition.definition.combiners,
+                  runtimeTransformers: props.reportDefinition.definition.runtimeTransformers,
+                }
+              : {
+                  queryType: "boxedQueryWithExtractorCombinerTransformer",
+                  application: "",
+                  pageParams: props.pageParams,
+                  queryParams: {},
+                  contextResults: {},
+                  extractors: {},
+                }
+          : undefined;
+      log.info("ReportViewWithEditor reportDataQueryBase", result);
+      return result;
+    },
     [props.reportDefinition, props.pageParams]
   );
 
@@ -121,6 +115,7 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
   if (reportDataQueryResults instanceof Domain2ElementFailed) { // should never happen
     throw new Error("ReportView: failed to get report data: " + JSON.stringify(reportDataQueryResults, null, 2));
   }
+  
   const {reportData, resolvedQuery} = reportDataQueryResults;
   // log.info("reportData", reportData);
 
@@ -133,7 +128,9 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
   const entityDefinitionReport: EntityDefinition | undefined = useMemo(() => {
     const miroirMapping = context.deploymentUuidToReportsEntitiesDefinitionsMapping?.[selfApplicationDeploymentMiroir.uuid];
     if (!miroirMapping) return undefined;
-    return miroirMapping["model"]?.entityDefinitions?.find((ed: any) => ed.name === "Report");
+    const result =  miroirMapping["model"]?.entityDefinitions?.find((ed: any) => ed.name === "Report");
+    log.info("ReportViewWithEditor found report entity definition", { result });
+    return result;
   }, [context.deploymentUuidToReportsEntitiesDefinitionsMapping]);
 
   // ##############################################################################################
@@ -162,10 +159,10 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
       [reportReportDetailsKey]: reportReportDetails,
       [reportName]: props.reportDefinition,
     };
-    // log.info("reportSectionsFormValue initialReportSectionsFormValue", result);
+    log.info("reportSectionsFormValue initialReportSectionsFormValue", result);
     return result;
 
-  }, [props.reportDefinition, props.pageParams, props.storedQueryData,reportData]);
+  }, [props.reportDefinition, props.pageParams, props.storedQueryData, reportData]);
 
   // ###############################################################################################
   // ###############################################################################################

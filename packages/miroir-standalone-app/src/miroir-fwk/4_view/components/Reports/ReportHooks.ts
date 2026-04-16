@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useRef } from 'react';
 import { Params } from 'react-router-dom';
 
 import {
@@ -63,7 +63,7 @@ export interface ReportViewProps {
 
 // ###############################################################################################################
 export function useQueryTemplateResults(
-  props: Record<string, any>,
+  pageParams: Record<string, any>,
   applicationDeploymentMap: ApplicationDeploymentMap,
   queryOrQueryTemplate?:
     | BoxedQueryWithExtractorCombinerTransformer
@@ -78,8 +78,6 @@ export function useQueryTemplateResults(
   const isQueryTemplate = queryOrQueryTemplate
     ? !(queryOrQueryTemplate as BoxedQueryWithExtractorCombinerTransformer).extractors
     : true;
-  // const isQueryTemplate = queryOrQueryTemplate &&
-  //   !(queryOrQueryTemplate as BoxedQueryWithExtractorCombinerTransformer).extractors?true:false;
   const queryTemplate: BoxedQueryTemplateWithExtractorCombinerTransformer | undefined =
     queryOrQueryTemplate && isQueryTemplate
       ? (queryOrQueryTemplate as BoxedQueryTemplateWithExtractorCombinerTransformer)
@@ -93,22 +91,26 @@ export function useQueryTemplateResults(
   // log.info(
   //   "################################################################### useQueryTemplateResults isQueryTemplate",
   //   isQueryTemplate,
+  //   "queryOrQueryTemplate",
   //   queryOrQueryTemplate,
+  //   "queryTemplate",
   //   queryTemplate,
+  //   "query",
   //   query,
   // );
 
   // fetching report definition
   const resolvedTemplateQuery: BoxedQueryWithExtractorCombinerTransformer | undefined = useMemo(
-    () =>
-      queryTemplate
+    () => {
+      const result = queryTemplate
         ? resolveQueryTemplateWithExtractorCombinerTransformer(
             queryTemplate,
             defaultMiroirModelEnvironment // TODO: use correct model environment
           )
-        // : dummyDomainManyQueryWithDeploymentUuid,
-        : undefined,
-    // [deploymentEntityStateFetchQueryTemplate]
+        : undefined;
+      log.info("useQueryTemplateResults resolvedTemplateQuery", result);
+      return result;
+    },
     [queryTemplate]
   );
 
@@ -130,25 +132,21 @@ export function useQueryTemplateResults(
   //   "################################################################ useQueryTemplateResults resolved query Template DONE"
   // );
   // fetching report data
-  const reportDataQuery: BoxedQueryWithExtractorCombinerTransformer = useMemo(
-    () =>
-      // query || resolvedTemplateQuery
-      //   ? ((isQueryTemplate
-      //       ? resolvedTemplateQuery: query ) as BoxedQueryWithExtractorCombinerTransformer)
-      (query || resolvedTemplateQuery)
+  const reportDataQuery: BoxedQueryWithExtractorCombinerTransformer = useMemo(() => {
+    const result: BoxedQueryWithExtractorCombinerTransformer =
+      query || resolvedTemplateQuery
         ? ((query ?? resolvedTemplateQuery) as BoxedQueryWithExtractorCombinerTransformer)
         : {
             queryType: "boxedQueryWithExtractorCombinerTransformer",
-            label: "DUMMY_QUERY_FOR_NO_QUERY_PROVIDED",
             application: "",
-            deploymentUuid: "",
-            pageParams: props.pageParams,
+            pageParams,
             queryParams: {},
             contextResults: {},
             extractors: {},
-          },
-    [props?.pageParams, resolvedTemplateQuery]
-  );
+          };
+    log.info("useQueryTemplateResults reportDataQuery", { result });
+    return result;
+  }, [pageParams, query, resolvedTemplateQuery]);
 
   // log.info("useQueryTemplateResults reportDataQuery", reportDataQuery);
   const deploymentEntityStateFetchQueryParams: SyncQueryRunnerExtractorAndParams<ReduxDeploymentsState> =
@@ -161,12 +159,6 @@ export function useQueryTemplateResults(
       [deploymentEntityStateSelectorMap, reportDataQuery]
     );
 
-  // log.info(
-  //   "useQueryTemplateResults deploymentEntityStateFetchQueryParams",
-  //   deploymentEntityStateFetchQueryParams
-  // );
-
-  // log.info("reportDataQuery", reportDataQuery);
   const reportData: Domain2QueryReturnType<Domain2QueryReturnType<Record<string, any>>> =
     useReduxDeploymentsStateQuerySelector(
       deploymentEntityStateSelectorMap.runQuery,

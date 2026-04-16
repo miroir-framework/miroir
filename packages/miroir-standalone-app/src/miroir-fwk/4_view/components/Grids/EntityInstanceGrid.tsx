@@ -484,7 +484,7 @@ export const EntityInstanceGrid = (props: TableComponentProps) => {
   // ##############################################################################################
   // Define tools column configuration once to ensure consistency across grid types
   const toolsColumnDefinition: ToolsColumnDefinition = useMemo(() => ({
-    type: "tools",
+    // type: "tools",
     field: "tools",
     headerName: "Actions", 
     // width: 120

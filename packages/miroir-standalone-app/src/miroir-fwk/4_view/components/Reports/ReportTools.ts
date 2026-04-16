@@ -18,7 +18,6 @@ import {
 import { packageName } from '../../../../constants.js';
 import { cleanLevel } from '../../constants.js';
 import { editedQueryParameterValueKey } from "./ReportSectionEntityInstance.js";
-import { a } from "vitest/dist/chunks/suite.d.FvehnV49.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -85,7 +84,7 @@ export const reportSectionsFormSchema = (
         ]?.entityDefinitions?.find((e) => e?.entityUuid === entityUuid);
       if (!targetEntityDefinition) {
         throw new Error(
-          "ReportViewWithEditor reportSectionsFormSchema: cannot find target entity definition for " +
+          "reportSectionsFormSchema: cannot find target entity definition for " +
           " deploymentUuid " + JSON.stringify(deploymentUuid) +
            " entityUuid " +
             entityUuid +

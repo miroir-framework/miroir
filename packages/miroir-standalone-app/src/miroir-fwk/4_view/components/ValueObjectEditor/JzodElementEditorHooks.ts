@@ -1,5 +1,5 @@
 import { FormikProps, useFormikContext } from "formik";
-import { useContext, useEffect, useMemo, useState } from "react";
+import { useContext, useEffect, useMemo, useState, useRef } from "react";
 
 
 import {
@@ -234,7 +234,6 @@ export function useJzodElementEditorHooks(
   //   currentApplication,
   //   currentDeploymentUuid,
   // )
-
   const currentTypecheckKeyMap: KeyMapEntry | undefined =
     typeCheckKeyMap && typeCheckKeyMap[rootLessListKey]
       ? typeCheckKeyMap[rootLessListKey]
@@ -385,7 +384,7 @@ export function useJzodElementEditorHooks(
         );
       }
     },
-    [deploymentEntityStateSelectorMap, currentDeploymentUuid, currentTypecheckKeyMap?.rawSchema]
+    [deploymentEntityStateSelectorMap, currentTypecheckKeyMap?.rawSchema]
   );
 
   const foreignKeyObjects: Record<string, EntityInstancesUuidIndex> =
@@ -394,6 +393,7 @@ export function useJzodElementEditorHooks(
       foreignKeyObjectsFetchQueryParams,
       applicationDeploymentMap,
   ) || {};
+
 
   // log.info(
   //   "useJzodElementEditorHooks",

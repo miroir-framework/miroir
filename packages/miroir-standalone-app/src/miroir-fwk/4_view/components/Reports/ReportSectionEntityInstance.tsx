@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 import {
   ApplicationSection,
@@ -155,15 +155,19 @@ let count = 0;
  */
 export const ReportSectionEntityInstance = (props: ReportSectionEntityInstanceProps) => {
   const renderStartTime = performance.now();
+  // log.info("ReportSectionEntityInstance rendering",count++, "props:", props);
+
   const formikContext = useFormikContext<Record<string, any>>();
   const formikValuePathAsString = props.formikValuePath?.join("_") || "";
+  
+  log.info("ReportSectionEntityInstance formikValuePathAsString", formikValuePathAsString);
 
   const reportDefinitionFromFormik: Report  | undefined =
     formikContext.values &&
     props.formikReportDefinitionPathString?
     formikContext.values[props.formikReportDefinitionPathString]:undefined
   ;
-  
+
   const reportSectionDefinitionFromFormik: ReportSection | undefined =
     reportDefinitionFromFormik && props.reportSectionPath
       ? resolvePathOnObject(reportDefinitionFromFormik, props.reportSectionPath)
@@ -195,12 +199,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   const outlineContext = useDocumentOutlineContext();
   const reportContext = useReportPageContext();
 
-  const instance: any = useMemo(() => {
-      return formikContext?.values[formikValuePathAsString] as EntityInstance;
-  }, [
-    formikValuePathAsString,
-    formikContext?.values,
-  ]) as EntityInstance;
+  const instance: any = formikContext?.values[formikValuePathAsString] as EntityInstance;
 
   // // DO NOT USE dot notation for reportSectionPath as it is interpreted by Formik as nested object paths!
   // // const reportSectionPathAsString = props.reportSectionPath?.join("_") || "";
@@ -252,7 +251,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   // ##############################################################################################
   // CALLS reportContext.setFoldedObjectAttributeOrArrayItems
   useEffect(() => {
-    // log.info("ReportSectionEntityInstance: useEffect setting initial folded paths");
+    log.info("ReportSectionEntityInstance: USEEFFECT setting initial folded paths");
     const foldedStringPaths = currentReportSectionTargetEntityDefinition?.display?.foldSubLevels
       ? Object.entries(currentReportSectionTargetEntityDefinition?.display?.foldSubLevels).filter(
           ([key, value]) => value
@@ -287,7 +286,6 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
     reportContext.setFoldedObjectAttributeOrArrayItems,
   ]);
 
-
   const formLabel: string =
     props.applicationSection +
     "." +
@@ -297,19 +295,28 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
 
   // ##############################################################################################
   // CALLS setOutlineTitle and setReportInstance
+  // Guard: only call setReportInstance when the entity UUID actually changes to avoid
+  // the cycle: new instance reference → setReportInstance → outline context update
+  // → ReportViewWithEditor re-render → reportData new ref → Formik reinit → new instance ref
+  const prevInstanceUuidRef = useRef<string | undefined>(undefined);
   useEffect(() => {
-    // log.info("ReportSectionEntityInstance: useEffect setting outline title and report instance");
-    if (currentReportTargetEntity?.name) {
-      // log.info(
-      //   "ReportSectionEntityInstance: setting outline title and report instance for entity:",
-      //   currentReportTargetEntity.name,
-      //   "instance:",
-      //   instance
-      // );
-      outlineContext.setOutlineTitle(currentReportTargetEntity.name + " details");
-      outlineContext.setReportInstance(instance);
+    if (currentReportTargetEntity?.name && instance) {
+      const instanceUuid: string | undefined = (instance as any)?.uuid;
+      // Only call setReportInstance when the instance UUID changes (e.g. navigating to a
+      // different entity instance). Skipping same-UUID calls breaks the render cycle caused
+      // by Formik reinit producing new references for the same underlying instance.
+      if (instanceUuid !== prevInstanceUuidRef.current) {
+        prevInstanceUuidRef.current = instanceUuid;
+        log.info(
+          "ReportSectionEntityInstance: USEEFFECT setting outline reportInstance, uuid:", instanceUuid
+        );
+        outlineContext.setOutlineTitle(currentReportTargetEntity.name + " details");
+        outlineContext.setReportInstance(instance);
+      }
     }
-  }, [currentReportTargetEntity?.name, instance, outlineContext.setOutlineTitle]);
+  }, 
+  // Dependencies: to avoid circular refresh, only trigger when the instance UUID changes, not on every instance reference change
+  [currentReportTargetEntity?.name, instance?.uuid, outlineContext.setOutlineTitle]);
 
   const labelElement = useMemo(() => {
     return formLabel ? <ThemedLabel id={"label." + formLabel}>{formLabel}</ThemedLabel> : undefined;
@@ -328,7 +335,6 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   const isTransformerTest =
     isTransformerTestEntity && instance?.parentUuid === entityTransformerTest.uuid;
 
-  // ##############################################################################################
   // ##############################################################################################
   // ##############################################################################################
   // ##############################################################################################
@@ -382,7 +388,6 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
       formikContext.values[editedQueryParameterValueKey]
     ]);
 
-  // log.info("ReportSectionEntityInstance: queryForExecution:", queryForTestRun);
   const queryTestRunParams: SyncQueryTemplateRunnerParams<ReduxDeploymentsState> = useMemo(
     () => {
       return getQueryTemplateRunnerParamsForReduxDeploymentsState(
@@ -422,6 +427,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   // ##############################################################################################
   const testLabel = instance?.transformerTestLabel || instance?.name || "TransformerTest";
   
+  log.info("ReportSectionEntityInstance: rendering with instance:", instance, "testLabel:", testLabel);
   if (instance) {
     return (
       // <ThemedContainer style={{ width: '100%' }}>

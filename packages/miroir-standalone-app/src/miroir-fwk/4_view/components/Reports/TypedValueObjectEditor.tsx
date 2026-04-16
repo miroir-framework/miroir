@@ -394,25 +394,6 @@ const TypedValueObjectEditorInner: React.FC<TypedValueObjectEditorProps> = ({
   //   "jzodTypeCheckResult",
   //   jzodTypeCheckResult
   // );
-  // extruding typeCheckKeyMap to context for Outline usage
-  const previousKeyMapRef = useRef<Record<string, any> | undefined>(undefined);
-  useEffect(() => {
-    if (
-      jzodTypeCheckResult &&
-      jzodTypeCheckResult.status == "ok" &&
-      jzodTypeCheckResult.keyMap &&
-      jzodTypeCheckResult.keyMap !== previousKeyMapRef.current
-    ) {
-      previousKeyMapRef.current = jzodTypeCheckResult.keyMap;
-      if (context.setTypeCheckKeyMap) {
-        context.setTypeCheckKeyMap(jzodTypeCheckResult.keyMap);
-      } else {
-        log.warn(
-          "TypedValueObjectEditor context.setTypeCheckKeyMap is undefined, cannot set typeCheckKeyMap"
-        );
-      }
-    }
-  }, [jzodTypeCheckResult]);
 
   if (!jzodTypeCheckResult || jzodTypeCheckResult.status != "ok") {
     log.warn("TypedValueObjectEditor could not resolve jzod schema", jzodTypeCheckResult);

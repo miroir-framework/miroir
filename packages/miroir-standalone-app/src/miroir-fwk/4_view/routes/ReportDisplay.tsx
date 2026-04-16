@@ -65,13 +65,15 @@ export const ReportDisplay: React.FC<{
 
 
   const { availableReports, entities, entityDefinitions } = useMemo(() => {
-    return pageParams.applicationSection &&
+    const result = pageParams.applicationSection &&
       context.deploymentUuidToReportsEntitiesDefinitionsMapping &&
       context.deploymentUuidToReportsEntitiesDefinitionsMapping[currentApplicationDeploymentMap[application]]
       ? context.deploymentUuidToReportsEntitiesDefinitionsMapping[
           currentApplicationDeploymentMap[application]
         ][pageParams.applicationSection as ApplicationSection]
       : { availableReports: [], entities: [], entityDefinitions: [] };
+    log.info("ReportDisplay new availableReports", result);
+    return result;
   }, [
     currentApplicationDeploymentMap,
     application,
@@ -105,37 +107,36 @@ export const ReportDisplay: React.FC<{
     | BoxedQueryWithExtractorCombinerTransformer
     | BoxedQueryTemplateWithExtractorCombinerTransformer
     | undefined = useMemo(
-    () =>
-      pageParams.deploymentUuid &&
-      pageParams.applicationSection &&
-      pageParams.reportUuid &&
-      currentStoredQueries.length > 0
-        ? {
-            queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
-            application: application,
-            applicationDeploymentMap: currentApplicationDeploymentMap,
-            deploymentUuid: pageParams.deploymentUuid,
-            pageParams: pageParams,
-            queryParams: {},
-            contextResults: {},
-            extractorTemplates: currentStoredQueries[0].definition.extractorTemplates,
-            combinerTemplates: currentStoredQueries[0].definition.combinerTemplates,
-            runtimeTransformers: currentStoredQueries[0].definition.runtimeTransformers,
-          }
-        : undefined,
+    () => {
+      const result:
+        | BoxedQueryWithExtractorCombinerTransformer
+        | BoxedQueryTemplateWithExtractorCombinerTransformer
+        | undefined =
+        pageParams.deploymentUuid &&
+        pageParams.applicationSection &&
+        pageParams.reportUuid &&
+        currentStoredQueries.length > 0
+          ? {
+              queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
+              application: application,
+              pageParams: pageParams,
+              queryParams: {},
+              contextResults: {},
+              extractorTemplates: currentStoredQueries[0].definition.extractorTemplates,
+              combinerTemplates: currentStoredQueries[0].definition.combinerTemplates,
+              runtimeTransformers: currentStoredQueries[0].definition.runtimeTransformers,
+            }
+          : undefined;
+      log.info("ReportDisplay currentStoredQuery", result);
+      return result;
+    },
     [application, currentStoredQueries, pageParams]
   );
 
   const currentStoredQueryResults: Domain2QueryReturnType<
     Domain2QueryReturnType<Record<string, any>>
   > = useQueryTemplateResults(
-    {
-      applicationSection: pageParams.applicationSection as ApplicationSection,
-      deploymentUuid: pageParams.deploymentUuid!,
-      instanceUuid: pageParams.instanceUuid,
-      pageParams: pageParams,
-      reportDefinition: currentMiroirReport,
-    },
+    pageParams,
     currentApplicationDeploymentMap,
     currentStoredQuery
   );

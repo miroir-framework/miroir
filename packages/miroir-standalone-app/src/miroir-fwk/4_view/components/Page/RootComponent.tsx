@@ -276,7 +276,7 @@ export const RootComponent = (props: RootComponentProps) => {
   
   useEffect(() => {
     if (applicationDeploymentMap) {
-      // log.info("RootComponent calling setApplicationDeploymentMap in context",applicationDeploymentMap);
+      log.info("RootComponent calling setApplicationDeploymentMap in context",applicationDeploymentMap);
       context.setApplicationDeploymentMap(applicationDeploymentMap);
     }
   }, [applicationDeploymentMap]);
@@ -341,7 +341,7 @@ export const RootComponent = (props: RootComponentProps) => {
   // );
 
   // ###############################################################################################
-  useEffect(() => context.setMiroirFundamentalJzodSchema(miroirFundamentalJzodSchema as any));
+  useEffect(() => context.setMiroirFundamentalJzodSchema(miroirFundamentalJzodSchema as any), [miroirFundamentalJzodSchema]);
   // ###############################################################################################
 
   const openSidebarCloseOutline = useMemo( // TODO: simplify the sidebar open / close logic
