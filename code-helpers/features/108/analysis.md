@@ -35,11 +35,25 @@ All fixes verified with no compile errors. Here's the full analysis:
 | **`queryForTestRun` runs on every `isResultsCollapsed` change** (when the Results section is expanded/collapsed): consider lazy initialization of `queryTestRunParams` only when results are expanded. | Low | Low | 
 
 
-==============================
+-----------
+-----------
+-----------
+-----------
+-----------
+-----------
+-----------
+-----------
+-----------
+-----------
+-----------
+-----------
+-----------
+-----------
+-----------
 
 "refined" analysis
 
-All clean. Here's the full analysis and what was done:
+Here's the full analysis and what was done:
 
 ---
 
@@ -68,3 +82,47 @@ The query selector logs appearing between **every pair of renders** is the smoki
 | **Diagnostic: reportData ref change** | ReportHooks.ts | Logs when `reportData` reference changes between renders (confirms layer 2) |
 
 The UUID guard is the **protective fix** — it stops the loop regardless of whether layer 2 is resolved. The `LOOP DIAGNOSTIC` logs will tell us in the next round exactly which selector input is unstable, to apply the root-cause fix. 
+
+-----------
+-----------
+-----------
+-----------
+-----------
+-----------
+-----------
+-----------
+-----------
+-----------
+-----------
+-----------
+-----------
+-----------
+-----------
+
+## verdict
+
+third analysis pointed to the source of the issue, but only in-passing, in the chain-of-thought display, then moving to other considerations, and was thus interrupted. It is not known whether this iteration or any posterior iteration would have indeed established this cause as the root cause for the issue, and corrected it.
+
+There was a remainder from a previous, ill-fated attempt to share the typecheck results among the JzodEditor components. This lead to a refresh of the whole page tree, and thus lead to the problem. Removing that fixed the issue, in the `TypedValueObjectEditorInner`:
+
+```js
+ // extruding typeCheckKeyMap to context for Outline usage
+  const previousKeyMapRef = useRef<Record<string, any> | undefined>(undefined);
+  useEffect(() => {
+    if (
+      jzodTypeCheckResult &&
+      jzodTypeCheckResult.status == "ok" &&
+      jzodTypeCheckResult.keyMap &&
+      jzodTypeCheckResult.keyMap !== previousKeyMapRef.current
+    ) {
+      previousKeyMapRef.current = jzodTypeCheckResult.keyMap;
+      if (context.setTypeCheckKeyMap) {
+        context.setTypeCheckKeyMap(jzodTypeCheckResult.keyMap);
+      } else {
+        log.warn(
+          "TypedValueObjectEditor context.setTypeCheckKeyMap is undefined, cannot set typeCheckKeyMap"
+        );
+      }
+    }
+  }, [jzodTypeCheckResult]);
+```

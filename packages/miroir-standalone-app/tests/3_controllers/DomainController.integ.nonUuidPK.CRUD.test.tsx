@@ -317,8 +317,6 @@ const queryCodeNumberInstances = {
         queryType: "boxedQueryWithExtractorCombinerTransformer",
         application: testApplicationUuid,
         pageParams: { currentDeploymentUuid: testApplicationDeploymentUuid },
-        queryParams: {},
-        contextResults: {},
         extractors: {
           codeItems: {
             extractorOrCombinerType: "extractorInstancesByEntity",
@@ -503,8 +501,6 @@ const modelTestActions: Record<string, TestCompositeActionParams> = {
                         queryType: "boxedQueryWithExtractorCombinerTransformer",
                         application: testApplicationUuid,
                         pageParams: { currentDeploymentUuid: testApplicationDeploymentUuid },
-                        queryParams: {},
-                        contextResults: {},
                         extractors: {
                           entities: {
                             extractorOrCombinerType: "extractorInstancesByEntity",

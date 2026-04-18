@@ -346,9 +346,6 @@ export const ImportEntityFromSpreadsheetRunner: React.FC<CreateEntityToolProps> 
                 query: {
                   queryType: "boxedQueryWithExtractorCombinerTransformer",
                   application: adminSelfApplication.uuid,
-                  pageParams: {},
-                  queryParams: {},
-                  contextResults: {},
                   extractors: {
                     deployments: {
                       label: "deployments of the application",

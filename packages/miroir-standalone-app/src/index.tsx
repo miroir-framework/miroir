@@ -537,9 +537,6 @@ async function startWebApp(root:Root) {
             query: {
               application: adminSelfApplication.uuid,
               queryType: "boxedQueryWithExtractorCombinerTransformer",
-              pageParams: {},
-              queryParams: {},
-              contextResults: {},
               extractors: {
                 deployments: {
                   extractorOrCombinerType: "extractorInstancesByEntity",

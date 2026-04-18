@@ -430,8 +430,6 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
           queryType: "boxedQueryWithExtractorCombinerTransformer",
           application: props.application,
           pageParams: props.paramsAsdomainElements,
-          queryParams: {},
-          contextResults: {},
           extractors,
           runtimeTransformers
         },

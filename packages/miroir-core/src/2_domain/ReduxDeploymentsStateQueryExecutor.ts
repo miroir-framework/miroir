@@ -134,9 +134,6 @@ export function getEntityInstancesIndexNonHook(
     {
       queryType: "boxedQueryWithExtractorCombinerTransformer",
       application,
-      pageParams: {},
-      queryParams: {},
-      contextResults: {},
       extractors: {
         [targetEntity]: {
           extractorOrCombinerType: "extractorInstancesByEntity",
@@ -206,9 +203,6 @@ export function getMultipleEntityInstancesIndexNonHook(
     {
       queryType: "boxedQueryWithExtractorCombinerTransformer",
       application,
-      pageParams: {},
-      queryParams: {},
-      contextResults: {},
       extractors,
     },
     selectorMap

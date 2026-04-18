@@ -233,9 +233,6 @@ const deploymentsQueryResults = await domainController.handleBoxedExtractorOrQue
     query: {
       application: adminSelfApplication.uuid,
       queryType: "boxedQueryWithExtractorCombinerTransformer",
-      pageParams: {},
-      queryParams: {},
-      contextResults: {},
       extractors: {
         deployments: {
           extractorOrCombinerType: "extractorInstancesByEntity",

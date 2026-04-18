@@ -170,9 +170,6 @@ export const SidebarSection:FC<SidebarSectionProps> = (props: SidebarSectionProp
         {
               queryType: "boxedQueryWithExtractorCombinerTransformer",
               application: props.applicationUuid,
-              pageParams: {},
-              queryParams: {},
-              contextResults: {},
               extractors: {
                 menus: {
                   extractorOrCombinerType: "extractorByPrimaryKey",

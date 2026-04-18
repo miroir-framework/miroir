@@ -21,9 +21,6 @@ export const defaultViewParamsFromAdminStorageFetchQueryParams: (
     {
       queryType: "boxedQueryWithExtractorCombinerTransformer",
       application: adminSelfApplication.uuid,
-      pageParams: {},
-      queryParams: {},
-      contextResults: {},
       extractors: {
         viewParams: {
           extractorOrCombinerType: "extractorByPrimaryKey",

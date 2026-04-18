@@ -87,8 +87,6 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
                   queryType: "boxedQueryWithExtractorCombinerTransformer",
                   application: props.pageParams.application ?? "NO_APPLICATION",
                   pageParams: props.pageParams,
-                  queryParams: {},
-                  contextResults: {},
                   extractors: props.reportDefinition.definition.extractors,
                   combiners: props.reportDefinition.definition.combiners,
                   runtimeTransformers: props.reportDefinition.definition.runtimeTransformers,
@@ -97,8 +95,6 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
                   queryType: "boxedQueryWithExtractorCombinerTransformer",
                   application: "",
                   pageParams: props.pageParams,
-                  queryParams: {},
-                  contextResults: {},
                   extractors: {},
                 }
           : undefined;

@@ -320,8 +320,6 @@ const queryCompositePKInstances = {
         queryType: "boxedQueryWithExtractorCombinerTransformer",
         application: testApplicationUuid,
         pageParams: { currentDeploymentUuid: testApplicationDeploymentUuid },
-        queryParams: {},
-        contextResults: {},
         extractors: {
           compositeItems: {
             extractorOrCombinerType: "extractorInstancesByEntity",

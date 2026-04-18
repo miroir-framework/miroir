@@ -71,13 +71,13 @@ describe("resolveQueryTemplates.unit.test", () => {
       console.log("convert queryTemplate to query with resolveQueryTemplateWithExtractorCombinerTransformer START")
       const getUniqueValuesRuntimeTemplate: BoxedQueryTemplateWithExtractorCombinerTransformer = {
         queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
+        application: "test",
         pageParams: {
           instanceUuid: "xxxxx",
         },
         queryParams: {
           parentUuid: "yyyyy",
         },
-        contextResults: {},
         extractorTemplates: {
           book: {
             extractorOrCombinerType: "extractorByPrimaryKey",
@@ -178,9 +178,9 @@ describe("resolveQueryTemplates.unit.test", () => {
         queryParams: {
           parentUuid: "yyyyy",
         },
-        contextResults: {},
         deploymentUuid: "xxxxx",
         queryType: "boxedQueryWithExtractorCombinerTransformer",
+        application: "test",
         extractors: {
           book: {
             extractorOrCombinerType: "extractorByPrimaryKey",

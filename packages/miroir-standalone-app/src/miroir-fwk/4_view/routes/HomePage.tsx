@@ -99,9 +99,6 @@ export const HomePage = (props: RootComponentProps) => {
         ? {
             queryType: "boxedQueryWithExtractorCombinerTransformer",
             application: currentApplication,
-            pageParams: {},
-            queryParams: {},
-            contextResults: {},
             extractors: {
               selfApplication: {
                 extractorOrCombinerType: "extractorByPrimaryKey",

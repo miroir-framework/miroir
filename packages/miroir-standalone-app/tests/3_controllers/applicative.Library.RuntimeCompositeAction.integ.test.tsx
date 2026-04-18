@@ -659,8 +659,6 @@ const createEntityCompositeActionPrepActions: any[] = [
         pageParams: {
           currentDeploymentUuid: testAdminConfigurationDeploymentUuid,
         },
-        queryParams: {},
-        contextResults: {},
         extractors: {
           entityDefinitions: {
             extractorOrCombinerType: "extractorInstancesByEntity",
@@ -692,8 +690,6 @@ const createEntityCompositeActionPrepActions: any[] = [
         pageParams: {
           currentDeploymentUuid: testAdminConfigurationDeploymentUuid,
         },
-        queryParams: {},
-        contextResults: {},
         extractors: {
           entities: {
             extractorOrCombinerType: "extractorInstancesByEntity",
@@ -959,8 +955,6 @@ const createReportsCompositeActionPrepActions: any[] = [
           currentDeploymentUuid: testAdminConfigurationDeploymentUuid,
         },
         runAsSql: true,
-        queryParams: {},
-        contextResults: {},
         extractors: {
           reports: {
             extractorOrCombinerType: "extractorInstancesByEntity",
@@ -1149,9 +1143,6 @@ const testSuites: Record<string, TestCompositeActionParams> = {
                         queryType: "boxedQueryWithExtractorCombinerTransformer",
                         deploymentUuid: testAdminConfigurationDeploymentUuid,
                         // runAsSql: true,
-                        pageParams: {},
-                        queryParams: {},
-                        contextResults: {},
                         extractors: {
                           menuList: {
                             extractorOrCombinerType: "extractorInstancesByEntity",
@@ -1256,10 +1247,6 @@ const testSuites: Record<string, TestCompositeActionParams> = {
                       query: {
                         queryType: "boxedQueryWithExtractorCombinerTransformer",
                         deploymentUuid: testAdminConfigurationDeploymentUuid,
-                        // runAsSql: true,
-                        pageParams: {},
-                        queryParams: {},
-                        contextResults: {},
                         extractors: {
                           menuList: {
                             extractorOrCombinerType: "extractorInstancesByEntity",

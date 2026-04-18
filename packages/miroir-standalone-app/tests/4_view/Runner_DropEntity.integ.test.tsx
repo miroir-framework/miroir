@@ -189,8 +189,6 @@ const runnerTestParams: Record<string, RunnerTestParams> = {
               pageParams: {
                 currentDeploymentUuid: testApplicationDeploymentUuid,
               },
-              queryParams: {},
-              contextResults: {},
               extractors: {
                 entities: {
                   extractorOrCombinerType: "extractorInstancesByEntity",

@@ -212,9 +212,6 @@ export const RootComponent = (props: RootComponentProps) => {
             ? {
                 queryType: "boxedQueryWithExtractorCombinerTransformer",
                 application: adminSelfApplication.uuid,
-                pageParams: {},
-                queryParams: {},
-                contextResults: {},
                 extractors: {
                   deployments: {
                     extractorOrCombinerType: "extractorInstancesByEntity",

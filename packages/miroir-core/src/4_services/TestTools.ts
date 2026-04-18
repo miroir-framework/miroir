@@ -766,7 +766,6 @@ export function runTransformerIntegrationTest(sqlDbDataStore: any) {
           query: {
             queryType: "boxedQueryWithExtractorCombinerTransformer",
             runAsSql,
-            pageParams: {},
             queryParams: {
               ...transformerTest.transformerParams,
               ...transformerTest.transformerRuntimeContext,

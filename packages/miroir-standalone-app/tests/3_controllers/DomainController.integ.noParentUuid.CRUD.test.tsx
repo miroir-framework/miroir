@@ -9,6 +9,7 @@ import type {
   EntityDefinition,
   EntityInstance,
   MetaModel,
+  SelfApplication,
 } from "miroir-core";
 
 import {
@@ -136,6 +137,7 @@ const noParentItem3: EntityInstance = {
 const noParentUuidTestMetaModel: MetaModel = {
   applicationUuid: selfApplicationLibrary.uuid,
   applicationName: selfApplicationLibrary.name,
+  applications: [],
   entities: [entityPublisher as Entity, entityNoParentUuid],
   entityDefinitions: [
     entityDefinitionPublisher as EntityDefinition,
@@ -308,8 +310,6 @@ const queryNoParentUuidInstances = {
         queryType: "boxedQueryWithExtractorCombinerTransformer",
         application: testApplicationUuid,
         pageParams: { currentDeploymentUuid: testApplicationDeploymentUuid },
-        queryParams: {},
-        contextResults: {},
         extractors: {
           items: {
             extractorOrCombinerType: "extractorInstancesByEntity",
@@ -407,7 +407,7 @@ const modelTestActions: Record<string, TestCompositeActionParams> = {
         {
           dataStoreType: "app",
           metaModel: defaultMiroirMetaModel,
-          selfApplication: selfApplicationLibrary,
+          selfApplication: selfApplicationLibrary as SelfApplication,
           applicationModelBranch: selfApplicationModelBranchLibraryMasterBranch,
           applicationVersion: selfApplicationVersionLibraryInitialVersion,
         },
@@ -436,6 +436,7 @@ const modelTestActions: Record<string, TestCompositeActionParams> = {
           reports: [],
           storedQueries: [],
           applicationVersionCrossEntityDefinition: [],
+          applications: [],
         } as MetaModel,
         [entityPublisher.uuid],
       ),
@@ -491,8 +492,6 @@ const modelTestActions: Record<string, TestCompositeActionParams> = {
                         queryType: "boxedQueryWithExtractorCombinerTransformer",
                         application: testApplicationUuid,
                         pageParams: { currentDeploymentUuid: testApplicationDeploymentUuid },
-                        queryParams: {},
-                        contextResults: {},
                         extractors: {
                           entities: {
                             extractorOrCombinerType: "extractorInstancesByEntity",
@@ -586,7 +585,7 @@ const dataTestActions: Record<string, TestCompositeActionParams> = {
         {
           dataStoreType: "app",
           metaModel: defaultMiroirMetaModel,
-          selfApplication: selfApplicationLibrary,
+          selfApplication: selfApplicationLibrary as SelfApplication,
           applicationModelBranch: selfApplicationModelBranchLibraryMasterBranch,
           applicationVersion: selfApplicationVersionLibraryInitialVersion,
         },

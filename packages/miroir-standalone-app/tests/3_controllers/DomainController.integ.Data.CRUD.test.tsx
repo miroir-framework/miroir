@@ -390,8 +390,6 @@ const testActions: Record<string, TestCompositeActionParams> = {
                         pageParams: {
                           currentDeploymentUuid: testApplicationDeploymentUuid,
                         },
-                        queryParams: {},
-                        contextResults: {},
                         extractors: {
                           books: {
                             extractorOrCombinerType: "extractorInstancesByEntity",
@@ -515,8 +513,6 @@ const testActions: Record<string, TestCompositeActionParams> = {
                         pageParams: {
                           currentDeploymentUuid: testApplicationDeploymentUuid,
                         },
-                        queryParams: {},
-                        contextResults: {},
                         extractors: {
                           books: {
                             extractorOrCombinerType: "extractorInstancesByEntity",
@@ -623,20 +619,15 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   payload: {
                     actionType: "runBoxedQueryAction",
                     endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-                    // deploymentUuid: testApplicationDeploymentUuid,
                     payload: {
                       application: testApplicationUuid,
-                      // deploymentUuid: testApplicationDeploymentUuid,
                       applicationSection: "data", // TODO: give only selfApplication section in individual queries?
                       query: {
                         queryType: "boxedQueryWithExtractorCombinerTransformer",
                         application: testApplicationUuid,
-                        // deploymentUuid: testApplicationDeploymentUuid,
                         pageParams: {
                           currentDeploymentUuid: testApplicationDeploymentUuid,
                         },
-                        queryParams: {},
-                        contextResults: {},
                         extractors: {
                           books: {
                             extractorOrCombinerType: "extractorInstancesByEntity",
@@ -745,17 +736,13 @@ const testActions: Record<string, TestCompositeActionParams> = {
                     endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
                     payload: {
                       application: testApplicationUuid,
-                      // deploymentUuid: testApplicationDeploymentUuid,
                       applicationSection: "data", // TODO: give only selfApplication section in individual queries?
                       query: {
                         queryType: "boxedQueryWithExtractorCombinerTransformer",
                         application: testApplicationUuid,
-                        // deploymentUuid: testApplicationDeploymentUuid,
                         pageParams: {
                           currentDeploymentUuid: testApplicationDeploymentUuid,
                         },
-                        queryParams: {},
-                        contextResults: {},
                         extractors: {
                           books: {
                             extractorOrCombinerType: "extractorInstancesByEntity",
@@ -879,17 +866,13 @@ const testActions: Record<string, TestCompositeActionParams> = {
                     endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
                     payload: {
                       application: testApplicationUuid,
-                      // deploymentUuid: testApplicationDeploymentUuid,
                       applicationSection: "data", // TODO: give only selfApplication section in individual queries?
                       query: {
                         queryType: "boxedQueryWithExtractorCombinerTransformer",
                         application: testApplicationUuid,
-                        // deploymentUuid: testApplicationDeploymentUuid,
                         pageParams: {
                           currentDeploymentUuid: testApplicationDeploymentUuid,
                         },
-                        queryParams: {},
-                        contextResults: {},
                         extractors: {
                           books: {
                             extractorOrCombinerType: "extractorInstancesByEntity",
@@ -1010,17 +993,13 @@ const testActions: Record<string, TestCompositeActionParams> = {
                     endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
                     payload: {
                       application: testApplicationUuid,
-                      // deploymentUuid: testApplicationDeploymentUuid,
                       applicationSection: "data", // TODO: give only selfApplication section in individual queries?
                       query: {
                         queryType: "boxedQueryWithExtractorCombinerTransformer",
                         application: testApplicationUuid,
-                        // deploymentUuid: testApplicationDeploymentUuid,
                         pageParams: {
                           currentDeploymentUuid: testApplicationDeploymentUuid,
                         },
-                        queryParams: {},
-                        contextResults: {},
                         extractors: {
                           books: {
                             extractorOrCombinerType: "extractorInstancesByEntity",

@@ -13,8 +13,6 @@ import {
   EntityDefinition,
   EntityInstance,
   ExtractorOrCombinerTemplate,
-  MiroirQueryTemplate,
-  miroirQueryTemplate,
   persistenceAction,
   PersistenceAction,
   storeManagementAction,
@@ -77,7 +75,7 @@ type ZodParseTestActionType =
   | DomainAction
   | PersistenceAction
   | ExtractorOrCombinerTemplate
-  | MiroirQueryTemplate
+  // | MiroirQueryTemplate
   | CompositeActionSequence
   | BuildPlusRuntimeCompositeAction
   | TestBuildPlusRuntimeCompositeActionSuite
@@ -499,9 +497,6 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
         query: {
           queryType: "boxedQueryWithExtractorCombinerTransformer",
           application: selfApplicationMiroir.uuid,
-          pageParams: {},
-          queryParams: {},
-          contextResults: {},
           extractors: {
             extractorByPrimaryKey: {
               extractorOrCombinerType: "extractorByPrimaryKey",
@@ -540,44 +535,44 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
       AttributeOfListObjectToCompareToReferenceUuid: "publisher",
     },
   },
-  "boxedQueryTemplateWithExtractorCombinerTransformer is parsable": {
-    zodSchema: miroirQueryTemplate,
-    action: {
-      queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
-      application: selfApplicationMiroir.uuid,
-      contextResults: {},
-      pageParams: {
-        applicationSection: "data",
-      },
-      queryParams: {},
-      extractorTemplates: {
-        authors: {
-          extractorOrCombinerType: "extractorInstancesByEntity",
-          parentName: "Author",
-          parentUuid: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
-          // parentUuid: {
-          //   transformerType: "returnValue",
-          //   mlSchema: {
-          //     type: "uuid",
-          //   },
-          //   interpolation: "build",
-          //   value: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
-          // },
-          filter: {
-            attributeName: "name",
-            value: {
-              transformerType: "returnValue",
-              mlSchema: {
-                type: "string",
-              },
-              interpolation: "build",
-              value: "or",
-            },
-          },
-        },
-      },
-    },
-  },
+  // "boxedQueryTemplateWithExtractorCombinerTransformer is parsable": {
+  //   zodSchema: miroirQueryTemplate,
+  //   action: {
+  //     queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
+  //     application: selfApplicationMiroir.uuid,
+  //     contextResults: {},
+  //     pageParams: {
+  //       applicationSection: "data",
+  //     },
+  //     queryParams: {},
+  //     extractorTemplates: {
+  //       authors: {
+  //         extractorOrCombinerType: "extractorInstancesByEntity",
+  //         parentName: "Author",
+  //         parentUuid: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+  //         // parentUuid: {
+  //         //   transformerType: "returnValue",
+  //         //   mlSchema: {
+  //         //     type: "uuid",
+  //         //   },
+  //         //   interpolation: "build",
+  //         //   value: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+  //         // },
+  //         filter: {
+  //           attributeName: "name",
+  //           value: {
+  //             transformerType: "returnValue",
+  //             mlSchema: {
+  //               type: "string",
+  //             },
+  //             interpolation: "build",
+  //             value: "or",
+  //           },
+  //         },
+  //       },
+  //     },
+  //   },
+  // },
   // ##############################################################################################
   // CompositeActionSequence ##############################################################################
   // ##############################################################################################

@@ -712,8 +712,6 @@ const createEntityCompositeActionTemplatePrepActions: any[] = [
             referenceName: "testAdminConfigurationDeploymentUuid",
           },
         },
-        queryParams: {},
-        contextResults: {},
         extractors: {
           entityDefinitions: {
             extractorOrCombinerType: "extractorInstancesByEntity",
@@ -758,8 +756,6 @@ const createEntityCompositeActionTemplatePrepActions: any[] = [
             referenceName: "testAdminConfigurationDeploymentUuid",
           },
         },
-        queryParams: {},
-        contextResults: {},
         extractors: {
           entities: {
             extractorOrCombinerType: "extractorInstancesByEntity",
@@ -1069,8 +1065,6 @@ const createReportsCompositeActionPrepActions: any[] = [
           },
         },
         runAsSql: true,
-        queryParams: {},
-        contextResults: {},
         extractors: {
           reports: {
             extractorOrCombinerType: "extractorInstancesByEntity",
@@ -1117,8 +1111,6 @@ const createReportsCompositeActionPrepActions: any[] = [
             referenceName: "testAdminConfigurationDeploymentUuid",
           },
         },
-        queryParams: {},
-        contextResults: {},
         extractors: {
           entities: {
             extractorOrCombinerType: "extractorInstancesByEntity",

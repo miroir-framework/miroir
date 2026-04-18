@@ -250,9 +250,6 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
     query: {
       queryType: "boxedQueryWithExtractorCombinerTransformer",
       application: selfApplicationLibrary.uuid,
-      contextResults: {},
-      pageParams: {},
-      queryParams: {},
       extractors: {
         book: {
           extractorOrCombinerType: "extractorByPrimaryKey",
@@ -374,8 +371,6 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
     query: {
       queryType: "boxedQueryWithExtractorCombinerTransformer",
       application: selfApplicationLibrary.uuid,
-      contextResults: {},
-      pageParams: {},
       queryParams: { wantedBookUuid: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f" },
       extractors: {
         book: {
@@ -446,10 +441,6 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
     query: {
       queryType: "boxedQueryWithExtractorCombinerTransformer",
       application: selfApplicationLibrary.uuid,
-      // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
-      contextResults: {},
-      pageParams: {},
-      queryParams: {},
       extractors: {
         book: {
           extractorOrCombinerType: "extractorByPrimaryKey",
@@ -549,10 +540,6 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
       query: {
         queryType: "boxedQueryWithExtractorCombinerTransformer",
         application: selfApplicationLibrary.uuid,
-        // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
-        contextResults: {},
-        pageParams: {},
-        queryParams: {},
         extractors: {
           book: {
             extractorOrCombinerType: "extractorByPrimaryKey",
@@ -767,11 +754,9 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
     query: {
       queryType: "boxedQueryWithExtractorCombinerTransformer",
       application: selfApplicationLibrary.uuid,
-      contextResults: {},
       pageParams: {
         applicationSection: "data",
       },
-      queryParams: {},
       extractors: {
         authors: {
           extractorOrCombinerType: "extractorInstancesByEntity",
@@ -890,11 +875,9 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
     query: {
       queryType: "boxedQueryWithExtractorCombinerTransformer",
       application: selfApplicationLibrary.uuid,
-      contextResults: {},
       pageParams: {
         applicationSection: "data",
       },
-      queryParams: {},
       extractors: {
         authors: {
           extractorOrCombinerType: "extractorInstancesByEntity",
@@ -932,11 +915,9 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
     query: {
       queryType: "boxedQueryWithExtractorCombinerTransformer",
       application: selfApplicationLibrary.uuid,
-      contextResults: {},
       pageParams: {
         applicationSection: "data",
       },
-      queryParams: {},
       extractors: {
         authors: {
           extractorOrCombinerType: "extractorInstancesByEntity",
@@ -1040,11 +1021,9 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
     query: {
       queryType: "boxedQueryWithExtractorCombinerTransformer",
       application: selfApplicationLibrary.uuid,
-      // contextResults: {},
       pageParams: {
         applicationSection: "data",
       },
-      // queryParams: {},
       extractors: {
         book: {
           extractorOrCombinerType: "extractorByPrimaryKey",
@@ -1183,11 +1162,9 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
     query: {
       queryType: "boxedQueryWithExtractorCombinerTransformer",
       application: selfApplicationLibrary.uuid,
-      // contextResults: {},
       pageParams: {
         applicationSection: "data",
       },
-      // queryParams: {},
       extractors: {
         book: {
           extractorOrCombinerType: "extractorByPrimaryKey",
@@ -1334,12 +1311,9 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
     query: {
       queryType: "boxedQueryWithExtractorCombinerTransformer",
       application: selfApplicationLibrary.uuid,
-      // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
-      // contextResults: {},
       pageParams: {
         applicationSection: "data",
       },
-      // queryParams: {},
       extractors: {
         author: {
           extractorOrCombinerType: "extractorByPrimaryKey",
@@ -1453,11 +1427,9 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
       query: {
         queryType: "boxedQueryWithExtractorCombinerTransformer",
         application: selfApplicationLibrary.uuid,
-        // contextResults: {},
         pageParams: {
           applicationSection: "data",
         },
-        // queryParams: {},
         extractors: {
           author: {
             extractorOrCombinerType: "extractorByPrimaryKey",

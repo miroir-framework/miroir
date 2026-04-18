@@ -22,13 +22,18 @@
     },
     "definition": {
       "classification": {
-        "type": "string",
+        "type": "enum",
         "tag": {
           "value": {
             "defaultLabel": "Classification",
             "description": "The classification to filter the Transformers by."
           }
-        }
+        },
+        "definition": [
+          "MLS",
+          "admin",
+          "basic"
+        ]
       }
     }
   },

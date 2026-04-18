@@ -140,9 +140,6 @@ export function useQueryTemplateResults(
             queryType: "boxedQueryWithExtractorCombinerTransformer",
             application: "",
             pageParams,
-            queryParams: {},
-            contextResults: {},
-            extractors: {},
           };
     log.info("useQueryTemplateResults reportDataQuery", { result });
     return result;
@@ -205,9 +202,6 @@ export function useDeploymentUuidFromApplicationUuid2(
       : {
           queryType: "boxedQueryWithExtractorCombinerTransformer",
           application: "",
-          pageParams: {},
-          queryParams: {},
-          contextResults: {},
           extractors: {},
         };
 
@@ -269,9 +263,6 @@ export function useDeploymentUuidFromApplicationUuid(
             queryType: "boxedQueryWithExtractorCombinerTransformer",
             application: "",
             deploymentUuid: "",
-            pageParams: {},
-            queryParams: {},
-            contextResults: {},
             extractors: {},
           },
     [applicationUuid]
@@ -351,9 +342,6 @@ export function useTransformer(
             application: "",
             applicationDeploymentMap: {},
             deploymentUuid: "",
-            pageParams: {},
-            queryParams: {},
-            contextResults: {},
             extractors: {},
           },
     [deploymentUuid, transformerDefinitionApplicationSection]
@@ -397,9 +385,6 @@ export function useRunner(
         ? ({
             queryType: "boxedQueryWithExtractorCombinerTransformer",
             application,
-            pageParams: {},
-            queryParams: {},
-            contextResults: {},
             extractors: {
               runners: {
                 label: "runners of the given application",
@@ -414,9 +399,6 @@ export function useRunner(
         : {
             queryType: "boxedQueryWithExtractorCombinerTransformer",
             application: "",
-            pageParams: {},
-            queryParams: {},
-            contextResults: {},
             extractors: {},
           },
     [application, runnerApplicationSection, runnerUuid]

@@ -345,9 +345,6 @@ export function useJzodElementEditorHooks(
             {
               queryType: "boxedQueryWithExtractorCombinerTransformer",
               application: targetApplication,
-              pageParams: {},
-              queryParams: {},
-              contextResults: {},
               extractors: {
                 [currentTypecheckKeyMap.resolvedSchema.tag?.value?.foreignKeyParams?.targetEntity]: {
                   extractorOrCombinerType: "extractorInstancesByEntity",

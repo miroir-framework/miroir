@@ -446,9 +446,6 @@ const TypedValueObjectEditorInner: React.FC<TypedValueObjectEditorProps> = ({
           ? {
               queryType: "boxedQueryWithExtractorCombinerTransformer",
               application,
-              pageParams: {},
-              queryParams: {},
-              contextResults: {},
               extractors: {
                 [jzodTypeCheckResult.resolvedSchema.tag?.value?.foreignKeyParams?.targetEntity]: {
                   extractorOrCombinerType: "extractorInstancesByEntity",
