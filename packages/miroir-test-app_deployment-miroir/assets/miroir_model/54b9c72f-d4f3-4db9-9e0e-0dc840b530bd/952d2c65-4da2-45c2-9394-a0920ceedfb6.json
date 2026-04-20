@@ -491,6 +491,50 @@
               }
             }
           },
+          "inputReportSection": {
+            "type": "object",
+            "tag": {
+              "value": {
+                "display": {
+                  "displayedAttributeValueWhenFolded": "definition.label"
+                }
+              }
+            },
+            "definition": {
+              "type": {
+                "type": "literal",
+                "definition": "inputReportSection"
+              },
+              "definition": {
+                "type": "object",
+                "definition": {
+                  "label": {
+                    "type": "string",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "id": 1,
+                        "defaultLabel": "Label"
+                      }
+                    }
+                  },
+                  "inputMLSchema": {
+                    "type": "schemaReference",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Input ML Schema"
+                      }
+                    },
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "jzodElement"
+                    }
+                  }
+                }
+              }
+            }
+          },
           "objectInstanceReportSection": {
             "type": "object",
             "tag": {
@@ -921,6 +965,13 @@
                 "definition": {
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                   "relativePath": "jsonReportSection"
+                }
+              },
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "inputReportSection"
                 }
               },
               {

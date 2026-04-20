@@ -14,7 +14,8 @@ import {
   transformer_extended_apply_wrapper,
   TransformerFailure,
   Uuid,
-  type ApplicationDeploymentMap
+  type ApplicationDeploymentMap,
+  type JzodObject
 } from "miroir-core";
 
 import { useFormikContext } from 'formik';
@@ -32,6 +33,7 @@ import { ModelDiagramReportSectionView } from './ModelDiagramReportSectionView.j
 import { ReportSectionEntityInstance, type ValueObjectEditMode } from './ReportSectionEntityInstance.js';
 import { ReportSectionListDisplay } from './ReportSectionListDisplay.js';
 import { ReportSectionMarkdown } from './ReportSectionMarkdown.js';
+import { TypedValueObjectEditor } from './TypedValueObjectEditor.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -310,7 +312,8 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
             ReportSectionViewWithEditor renders: {navigationCount} (total: {totalCount})
           </ThemedText>
         )}
-        <JsonDisplayHelper debug={true}
+        <JsonDisplayHelper
+          debug={true}
           componentName={`ReportSectionViewWithEditor ${reportSectionDefinitionFromFormik?.type} ${props.reportSectionPath?.join(".")}`}
           elements={[
             {
@@ -330,15 +333,15 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
           // <></>
           <ThemedBox>
             <ThemedProgressiveAccordion
-             style={{ marginBottom: 12 }}
-             summary={reportSectionDefinitionFromFormik?.label}
-             >
-                {
-                  <ReportSectionViewWithEditor
-                    {...props}
-                    reportSectionPath={[...(props.reportSectionPath ?? []), "definition"]}
-                  />
-                }
+              style={{ marginBottom: 12 }}
+              summary={reportSectionDefinitionFromFormik?.label}
+            >
+              {
+                <ReportSectionViewWithEditor
+                  {...props}
+                  reportSectionPath={[...(props.reportSectionPath ?? []), "definition"]}
+                />
+              }
             </ThemedProgressiveAccordion>
           </ThemedBox>
         )}
@@ -396,9 +399,7 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
                 Report itself is not displayed on the reportDetails report to avoid infinite loop.
               </div>
             ) : (
-              <ReportDisplay
-                pageParams={storedReportDisplayPageParams}
-              />
+              <ReportDisplay pageParams={storedReportDisplayPageParams} />
             )}
           </div>
         )}
@@ -458,30 +459,96 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
             showPerformanceDisplay={props.showPerformanceDisplay}
           />
         )}
-        {
-          reportSectionDefinitionFromFormik?.type == "jsonReportSection" && (
-            <pre style={{ maxHeight: "400px", overflow: "auto", backgroundColor: "#f0f0f0", padding: "10px" }}>
+        {reportSectionDefinitionFromFormik?.type == "jsonReportSection" && (
+          <pre
+            style={{
+              maxHeight: "400px",
+              overflow: "auto",
+              backgroundColor: "#f0f0f0",
+              padding: "10px",
+            }}
+          >
+            {JSON.stringify(
+              formik.values[
+                reportSectionDefinitionFromFormik.definition.fetchedDataReference ?? ""
+              ],
+              null,
+              2,
+            )}
+          </pre>
+          // <JsonDisplayHelper
+          //   debug={true}
+          //   componentName="ReportSectionViewWithEditor - jsonReportSection"
+          //   elements={[
+          //     {
+          //       label: "reportSectionDefinitionFromFormik",
+          //       data: reportSectionDefinitionFromFormik,
+          //       useCodeBlock: true,
+          //       copyButton: true,
+          //     },
+          //   ]}
+          // />
+        )}
+        {reportSectionDefinitionFromFormik?.type == "inputReportSection" && (
+          <>
+            {props.reportSectionPath.join("_")} - inputMLSchema:
+            <pre
+              style={{
+                maxHeight: "400px",
+                overflow: "auto",
+                backgroundColor: "#f0f0f0",
+                padding: "10px",
+              }}
+            >
               {JSON.stringify(
-                // reportSectionDefinitionFromFormik,
-                // Object.keys(formik.values),
-                formik.values[reportSectionDefinitionFromFormik.definition.fetchedDataReference ?? ""],
-                null, 2
+                formik.values && props.reportSectionPath
+                  ? formik.values[props.reportSectionPath.join("_") + "_inputMLSchema"]
+                  : "unknown",
+                null,
+                2,
               )}
             </pre>
-            // <JsonDisplayHelper
-            //   debug={true}
-            //   componentName="ReportSectionViewWithEditor - jsonReportSection"
-            //   elements={[
-            //     {
-            //       label: "reportSectionDefinitionFromFormik",
-            //       data: reportSectionDefinitionFromFormik,
-            //       useCodeBlock: true,
-            //       copyButton: true,
-            //     },
-            //   ]}
-            // />
-          )
-        }
+            <pre
+              style={{
+                maxHeight: "400px",
+                overflow: "auto",
+                backgroundColor: "#f0f0f0",
+                padding: "10px",
+              }}
+            >
+              {JSON.stringify(reportSectionDefinitionFromFormik.definition.inputMLSchema, null, 2)}
+            </pre>
+            <TypedValueObjectEditor
+              labelElement={<h2>Report Input</h2>}
+              formValueMLSchema={reportSectionDefinitionFromFormik.definition.inputMLSchema as JzodObject}
+              // formikValuePathAsString={props.formikReportDefinitionPathString}
+              formikValuePathAsString={props.reportSectionPath.join("_") + "_inputMLSchema"}
+              application={props.application}
+              applicationDeploymentMap={props.applicationDeploymentMap}
+              deploymentUuid={props.deploymentUuid}
+              applicationSection="model"
+              formLabel={"Report Input WHAT"}
+              zoomInPath=""
+              maxRenderDepth={Infinity}
+              displaySubmitButton="noDisplay"
+              useActionButton={false}
+              valueObjectEditMode="create" // N/A
+              // validationTransformer={validationTransformer}
+            />
+          </>
+          // <JsonDisplayHelper
+          //   debug={true}
+          //   componentName="ReportSectionViewWithEditor - jsonReportSection"
+          //   elements={[
+          //     {
+          //       label: "reportSectionDefinitionFromFormik",
+          //       data: reportSectionDefinitionFromFormik,
+          //       useCodeBlock: true,
+          //       copyButton: true,
+          //     },
+          //   ]}
+          // />
+        )}
       </div>
     </>
   );

@@ -204,9 +204,37 @@ export const reportSectionsFormValue = (
         ...queryParametersDefaultValue,
       };
     }
+    case "inputReportSection":  {
+      const queryParametersDefaultValue = reportSection.definition.inputMLSchema
+        ? getDefaultValueForJzodSchemaWithResolutionNonHook(
+            "build",
+            reportSection.definition.inputMLSchema,
+            undefined, // rootObject
+            "", // rootLessListKey
+            undefined, // currentDefaultvalue
+            [], // currentValuePath
+            // undefined,
+            true, // forceOptional
+            application,
+            applicationDeploymentMap,
+            deploymentUuid,
+            miroirEnvironment,
+            transformerParams, // transformerParams
+            // {}, // contextResult
+            // ReduxDeploymentsState,
+          )
+        : {};
+      return {
+        [reportSectionPath.join("_") + "_inputMLSchema"]: queryParametersDefaultValue,
+      };
+    }
     case "markdownReportSection":
     case "modelDiagramReportSection":
     case "graphReportSection":
+    case "accordionReportSection":
+    case "jsonReportSection":
+    case "storedReportDisplay":
+    case "runnerReportSection":  
     default:
       return {};
   }
