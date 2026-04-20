@@ -63,7 +63,7 @@
         "extractorOrCombinerType": "combinerOneToMany",
         "parentName": "tables",
         "parentUuid": "35961086-f932-477a-aa77-ac8360ffbf61",
-        "objectReference": "getFromContext",
+        "objectReference": "schema",
         "objectReferenceAttribute": "schema_name",
         "AttributeOfListObjectToCompareToReferenceUuid": "table_schema"
       },
@@ -71,7 +71,7 @@
         "extractorOrCombinerType": "combinerOneToMany",
         "parentName": "columns",
         "parentUuid": "39e5c7a1-3f82-4bda-b8c4-2d576f9f10ae",
-        "objectReference": "getFromContext",
+        "objectReference": "schema",
         "objectReferenceAttribute": "schema_name",
         "AttributeOfListObjectToCompareToReferenceUuid": "table_schema"
       }

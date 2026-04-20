@@ -161,7 +161,7 @@ export const entityDefinitionRoot = {
       },
       type: "enum",
       optional: true,
-      definition: ["MetaModel", "Model", "Data"],
+      definition: ["MetaModel", "Model", "Data", "External"],
     },
   },
 };

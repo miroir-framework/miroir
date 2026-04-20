@@ -9,7 +9,11 @@ import {
   StorageSpaceHandlerInterface,
   Uuid
 } from "miroir-core";
-import { EntityUuidIndexedSequelizeModel, fromMiroirEntityDefinitionToSequelizeEntityDefinition, getOptionalNonNullableAttributes } from "../utils";
+import {
+  EntityUuidIndexedSequelizeModel,
+  fromMiroirEntityDefinitionToSequelizeEntityDefinition,
+  getOptionalNonNullableAttributes,
+} from "../utils";
 
 import { packageName } from "../constants";
 import { cleanLevel } from "./constants";

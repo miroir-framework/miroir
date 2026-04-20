@@ -16,6 +16,8 @@ import {
   PersistenceStoreDataSectionInterface,
   PersistenceStoreEntitySectionAbstractInterface,
   PersistenceStoreInstanceSectionAbstractInterface,
+  entityDefinitionMLSchema,
+  entityDefinitionWithResolvedMLSchema,
   entityEntity,
   entityEntityDefinition
 } from "miroir-core";
@@ -93,8 +95,7 @@ export function SqlDbEntityStoreSectionMixin<TBase extends typeof MixedSqlDbInst
     ): Promise<Action2VoidReturnType> {
       log.info(
         this.logHeader,
-        "createEntity",
-        "input: entity",
+        "createEntity input: entity",
         entity,
         "entityDefinition",
         entityDefinition,
@@ -108,33 +109,80 @@ export function SqlDbEntityStoreSectionMixin<TBase extends typeof MixedSqlDbInst
           "createEntity",
           "inconsistent input: given entityDefinition is not related to given entity."
         );
-      } else {
-        await this.dataStore.createStorageSpaceForInstancesOfEntity(entity, entityDefinition);
+        return Promise.resolve(
+          new Action2Error(
+            "FailedToCreateStore",
+            "createEntity failed: inconsistent input, given entityDefinition is not related to given entity.",
+            undefined, // errorStack
+            undefined, // innerError,
+            { entity, entityDefinition } // errorContext
+          ),
+        );
+      }
+      // if (entityDefinition.mlSchema.extend) {
+      //   log.error(
+      //     this.logHeader,
+      //     "createEntity",
+      //     "entityDefinition with mlSchema.extend is not supported.",
+      //     entityDefinition
+      //   );
+      //   return Promise.resolve(
+      //     new Action2Error(
+      //       "FailedToCreateStore",
+      //       "createEntity failed: entityDefinition with mlSchema.extend is not supported.",
+      //       undefined, // errorStack
+      //       undefined, // innerError,
+      //       { entity, entityDefinition } // errorContext
+      //     )
+      //   );
+      // }
 
-        if (!!this.sqlSchemaTableAccess && this.sqlSchemaTableAccess[entityEntity.uuid]) {
-          const sequelizeModel = this.sqlSchemaTableAccess[entityEntity.uuid].sequelizeModel;
-          await sequelizeModel.upsert(entity as any);
-        } else {
-          log.error(
-            this.logHeader,
-            "createEntity",
-            "could not insert in model schema for entity",
-            entity
-          );
-        }
-        if (!!this.sqlSchemaTableAccess && this.sqlSchemaTableAccess[entityEntityDefinition.uuid]) {
-          const sequelizeModel =
-            this.sqlSchemaTableAccess[entityEntityDefinition.uuid].sequelizeModel;
-          await sequelizeModel.upsert(entityDefinition as any);
-        } else {
-          log.error(
-            this.logHeader,
-            "createEntity",
-            "could not insert in model schema for entityDefinition",
-            entityDefinition
-          );
-        }
-        // }
+      const localEntityDefinition = entityDefinition.mlSchema?.extend
+        ? entityDefinitionWithResolvedMLSchema(entityDefinition as EntityDefinition)
+        : entityDefinition;
+      
+      await this.dataStore.createStorageSpaceForInstancesOfEntity(entity, localEntityDefinition as EntityDefinition);
+
+      if (!!this.sqlSchemaTableAccess && this.sqlSchemaTableAccess[entityEntity.uuid]) {
+        const sequelizeModel = this.sqlSchemaTableAccess[entityEntity.uuid].sequelizeModel;
+        await sequelizeModel.upsert(entity as any);
+      } else {
+        log.error(
+          this.logHeader,
+          "createEntity",
+          "could not insert in model schema for entity",
+          entity
+        );
+        return Promise.resolve(
+          new Action2Error(
+            "FailedToCreateStore",
+            "createEntity failed: could not insert in model schema for entity.",
+            undefined, // errorStack
+            undefined, // innerError,
+            { entity } // errorContext
+          )
+        );
+      }
+      if (!!this.sqlSchemaTableAccess && this.sqlSchemaTableAccess[entityEntityDefinition.uuid]) {
+        const sequelizeModel =
+          this.sqlSchemaTableAccess[entityEntityDefinition.uuid].sequelizeModel;
+        await sequelizeModel.upsert(entityDefinition as any);
+      } else {
+        log.error(
+          this.logHeader,
+          "createEntity",
+          "could not insert in model schema for entityDefinition",
+          entityDefinition
+        );
+        return Promise.resolve(
+          new Action2Error(
+            "FailedToCreateStore",
+            "createEntity failed: could not insert in model schema for entityDefinition.",
+            undefined, // errorStack
+            undefined, // innerError,
+            { entityDefinition } // errorContext
+          )
+        );
       }
       log.debug(this.logHeader, "createEntity", "done for", entity.name);
       return Promise.resolve(ACTION_OK);
@@ -316,14 +364,16 @@ export function SqlDbEntityStoreSectionMixin<TBase extends typeof MixedSqlDbInst
       }
       const localEntityDefinition: EntityDefinition =
         currentEntityDefinition.returnedDomainElement as EntityDefinition;
+      const resolvedSchema = entityDefinitionMLSchema(localEntityDefinition)
+
       const localEntityJzodSchemaDefinition =
         update.payload.removeColumns != undefined && Array.isArray(update.payload.removeColumns)
           ? Object.fromEntries(
-              Object.entries(localEntityDefinition.mlSchema.definition).filter(
+              Object.entries(resolvedSchema.definition).filter(
                 (i) => update.payload.removeColumns ?? ([] as string[]).includes(i[0])
               )
             )
-          : localEntityDefinition.mlSchema.definition;
+          : resolvedSchema.definition;
       const modifiedEntityDefinition: EntityDefinition = Object.assign({}, localEntityDefinition, {
         mlSchema: {
           type: "object",

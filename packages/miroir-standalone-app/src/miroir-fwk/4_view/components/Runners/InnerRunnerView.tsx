@@ -40,7 +40,6 @@ export const InnerRunnerView = <T extends Record<string, any>>({
   formMLSchema,
   initialFormValue,
   action,
-  // labelElement,
   formikValuePathAsString,
   formLabel,
   displaySubmitButton,
@@ -49,7 +48,6 @@ export const InnerRunnerView = <T extends Record<string, any>>({
   validateOnBlur = false,
   validationTransformer,
   ...props
-  // enableReinitialize = true,
 }: RunnerProps<T>) => {
   count += 1;
   const context = useMiroirContextService();

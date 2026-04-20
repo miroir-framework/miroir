@@ -55,3 +55,20 @@ export function entityDefinitionMLSchema(e: EntityDefinition): JzodObject {
     }
   }
 }
+
+export function entityDefinitionWithResolvedMLSchema(e: EntityDefinition): EntityDefinition {
+  if (e.mlSchema.extend && (Array.isArray(e.mlSchema.extend) || e.mlSchema.extend.type !== "schemaReference" || e.mlSchema.extend.definition.relativePath !== "entityDefinitionRoot")) {
+    throw new Error("Only extension of the entityDefinitionRoot schema is allowed for the mlSchema of an EntityDefinition");
+  }
+  const extendedMLSchema: JzodObject | undefined= e.mlSchema.extend ? miroirFundamentalJzodSchema.definition.context.entityDefinitionRoot as JzodObject : undefined;
+  return {
+    ...e,
+    mlSchema: {
+      type: "object",
+      definition: {
+        ...(extendedMLSchema ? extendedMLSchema.definition : {}),
+        ...e.mlSchema.definition,
+      },
+    },
+  };
+}

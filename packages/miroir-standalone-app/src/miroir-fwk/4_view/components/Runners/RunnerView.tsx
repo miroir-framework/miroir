@@ -289,7 +289,6 @@ export function StoredRunnerView(props: {
   ]);
 
   const storedRunnerAction: RunnerAction<Record<string, any>> | undefined
-  // CompositeActionTemplate | undefined 
   = useMemo(
     () =>
       storedRunner && storedRunner.definition.runnerType === "actionRunner"
@@ -420,18 +419,12 @@ export const RunnerView = <T extends Record<string, any>>(props: RunnerProps<T>)
   const {
     runnerName,
     application,
-    // formMLSchema, // prop drillinng, formMLSchema is no used directly, but it is used by InnerRunnerView 
     applicationDeploymentMap,
     runnerApplicationDeploymentMap,
     initialFormValue,
     action,
-    // formikValuePathAsString,
-    // formLabel,
-    // displaySubmitButton,
-    // useActionButton = false,
     validateOnChange = false,
     validateOnBlur = false,
-    // enableReinitialize = true,
   } = props;
   const domainController: DomainControllerInterface = useDomainControllerService();
   const currentModelEnvironment: MiroirModelEnvironment =

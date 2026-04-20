@@ -2,6 +2,7 @@
 
 import {
   EntityDefinition,
+  entityDefinitionMLSchema,
   JzodElement,
   JzodObject,
   LoggerInterface,
@@ -67,7 +68,11 @@ export const dataTypesMapping: { [type in string]: DataTypes.AbstractDataTypeCon
 export function fromMiroirEntityDefinitionToSequelizeEntityDefinition(
   entityDefinition: EntityDefinition
 ): ModelAttributes<Model, Attributes<Model>> {
-  const mlSchema: JzodObject = entityDefinition.mlSchema ? entityDefinition.mlSchema : { type: "object", definition: {}};
+  const mlSchema: JzodObject = entityDefinition.mlSchema
+    ? entityDefinition.mlSchema.extend
+      ? entityDefinitionMLSchema(entityDefinition as EntityDefinition)
+      : entityDefinition.mlSchema
+    : { type: "object", definition: {} };
   const idAttribute: string | string[] = (entityDefinition as any).idAttribute ?? "uuid";
   const pkAttributes: string[] = Array.isArray(idAttribute) ? idAttribute : [idAttribute];
   const jzodObjectAttributes = mlSchema.definition;
@@ -127,7 +132,11 @@ export function fromMiroirEntityDefinitionToSequelizeEntityDefinition(
  * null values replaced by undefined when reading from the database.
  */
 export function getOptionalNonNullableAttributes(entityDefinition: EntityDefinition): string[] {
-  const mlSchema: JzodObject = entityDefinition.mlSchema ? entityDefinition.mlSchema : { type: "object", definition: {} };
+  const mlSchema: JzodObject = entityDefinition.mlSchema
+    ? entityDefinition.mlSchema.extend
+      ? entityDefinitionMLSchema(entityDefinition as EntityDefinition)
+      : entityDefinition.mlSchema
+    : { type: "object", definition: {} };
   return Object.entries(mlSchema.definition)
     .filter(([, attrDef]) => {
       const attr = attrDef as JzodElement & { optional?: boolean; nullable?: boolean };

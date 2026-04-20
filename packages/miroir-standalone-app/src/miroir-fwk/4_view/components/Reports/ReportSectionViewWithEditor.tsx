@@ -4,23 +4,17 @@ import {
   ApplicationSection,
   defaultMiroirModelEnvironment,
   defaultSelfApplicationDeploymentMap,
-  Domain2ElementFailed,
   Domain2QueryReturnType,
   Entity,
-  EntityDefinition,
-  interpolateExpression,
   LoggerInterface,
   MiroirLoggerFactory,
-  RecordOfJzodObject,
-  Report,
   reportReportDetails,
   ReportSection,
   resolvePathOnObject,
   transformer_extended_apply_wrapper,
   TransformerFailure,
   Uuid,
-  type ApplicationDeploymentMap,
-  type JzodObject
+  type ApplicationDeploymentMap
 } from "miroir-core";
 
 import { useFormikContext } from 'formik';
@@ -34,10 +28,10 @@ import GraphReportSectionView from '../Graph/GraphReportSectionView.js';
 import { StoredRunnerView } from '../Runners/RunnerView';
 import { ThemedProgressiveAccordion } from '../Themes/BasicComponents';
 import { ThemedBox, ThemedText } from '../Themes/index.js';
+import { ModelDiagramReportSectionView } from './ModelDiagramReportSectionView.js';
 import { ReportSectionEntityInstance, type ValueObjectEditMode } from './ReportSectionEntityInstance.js';
 import { ReportSectionListDisplay } from './ReportSectionListDisplay.js';
 import { ReportSectionMarkdown } from './ReportSectionMarkdown.js';
-import { ModelDiagramReportSectionView } from './ModelDiagramReportSectionView.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -123,10 +117,6 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
     reportSectionDefinitionFromFormik?.type === "objectListReportSection"
       ? entities?.find((e:Entity) => e?.uuid === (reportSectionDefinitionFromFormik?.definition as any)["parentUuid"]) 
       : undefined;
-
-  const currentListReportTargetEntityDefinition: EntityDefinition | undefined =
-    entityDefinitions?.find((e: EntityDefinition) => e?.entityUuid === currentListReportTargetEntity?.uuid);
-
 
   const modelDiagramEntityDefinitions: any[] = useMemo(() => {
     if (reportSectionDefinitionFromFormik?.type !== "modelDiagramReportSection") return [];
@@ -354,7 +344,7 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
         )}
         {reportSectionDefinitionFromFormik?.type == "objectListReportSection" && (
           <div>
-            {currentListReportTargetEntity && currentListReportTargetEntityDefinition ? (
+            {currentListReportTargetEntity ? (
               <ReportSectionListDisplay
                 formikValuePath={props.reportSectionPath}
                 formikReportDefinitionPathString={props.formikReportDefinitionPathString}

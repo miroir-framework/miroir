@@ -1850,7 +1850,8 @@ export const miroirFundamentalJzodSchema = {
             "definition": [
               "MetaModel",
               "Model",
-              "Data"
+              "Data",
+              "External"
             ]
           }
         }
@@ -5152,7 +5153,8 @@ export const miroirFundamentalJzodSchema = {
         "definition": [
           "MetaModel",
           "Model",
-          "Data"
+          "Data",
+          "External"
         ]
       },
       "storageAccess": {
@@ -26958,7 +26960,8 @@ export const miroirFundamentalJzodSchema = {
             "definition": [
               "MetaModel",
               "Model",
-              "Data"
+              "Data",
+              "External"
             ]
           }
         }

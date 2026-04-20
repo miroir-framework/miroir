@@ -453,6 +453,7 @@ export {
   Uuid,
   UuidSchema,
   entityDefinitionMLSchema,
+  entityDefinitionWithResolvedMLSchema,
 } from "./0_interfaces/1_core/EntityDefinition.js";
 export { HttpMethod, HttpMethodsArray, HttpMethodsObject } from "./0_interfaces/1_core/Http.js";
 export {
