@@ -225,7 +225,7 @@ export const reportSectionsFormValue = (
           )
         : {};
       return {
-        [reportSectionPath.join("_") + "_inputMLSchema"]: queryParametersDefaultValue,
+        [reportSection.definition.inputPrefix ?? reportSectionPath.join("_") + "_inputMLSchema"]: queryParametersDefaultValue,
       };
     }
     case "markdownReportSection":

@@ -21,6 +21,8 @@ import {
   SyncQueryRunnerExtractorAndParams,
   Uuid,
   type ApplicationDeploymentMap,
+  type MetaModel,
+  type Query,
   type Report,
   type Runner
 } from "miroir-core";
@@ -33,7 +35,7 @@ import {
 
 import { useReduxDeploymentsStateQuerySelector } from '../../ReduxHooks.js';
 
-import type { TransformerDefinition } from 'miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js';
+import type { RunStoredQuery, TransformerDefinition } from 'miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js';
 import { packageName, ReportUrlParamKeys } from '../../../../constants.js';
 import {
   getMemoizedReduxDeploymentsStateSelectorMap
@@ -54,13 +56,71 @@ export interface ReportViewProps {
   deploymentUuid: Uuid,
   instanceUuid?: Uuid, // TODO: remove, this is specific to entity instance views
   pageParams: Params<ReportUrlParamKeys>,
-  // reportDefinition: RootReport,
   reportDefinition: Report,
   storedQueryData?: any,
-  // reportDefinition: Query,
   showPerformanceDisplay?: boolean;
 }
 
+// ###############################################################################################################
+export const useStoredQueriesResults = (
+    runStoredQueries: RunStoredQuery[] | undefined,
+    currentModel: MetaModel,
+    pageParams: Params<ReportUrlParamKeys>,
+    application: Uuid,
+    currentApplicationDeploymentMap: ApplicationDeploymentMap,
+  ): Domain2QueryReturnType<
+    Domain2QueryReturnType<Record<string, any>>
+  > => {
+    const availableStoredQueries = currentModel.storedQueries || [];
+    log.info("ReportDisplay useStoredQueriesResults", { availableStoredQueries });
+    const currentReportQueries: Uuid[] = (runStoredQueries ?? [])
+      ?.filter((sq) => !!sq.storedQuery)
+      .map((sq) => sq.storedQuery) as Uuid[];
+
+    // log.info(
+    //  "useStoredQueriesResults",
+    //   "currentReportQueries",
+    //   currentReportQueries,
+    //   "availableStoredQueries",
+    //   availableStoredQueries
+    // );
+    const currentStoredQueries: { definition: Query }[] = availableStoredQueries.filter(
+      (q: any /* StoredQuery*/) => currentReportQueries.includes(q.uuid),
+    ) as any;
+    // log.info("currentStoredQueries", currentStoredQueries);
+
+    const currentStoredQuery:
+      | BoxedQueryWithExtractorCombinerTransformer
+      | BoxedQueryTemplateWithExtractorCombinerTransformer
+      | undefined = useMemo(() => {
+      const result:
+        | BoxedQueryWithExtractorCombinerTransformer
+        | BoxedQueryTemplateWithExtractorCombinerTransformer
+        | undefined =
+        pageParams.deploymentUuid &&
+        pageParams.applicationSection &&
+        pageParams.reportUuid &&
+        currentStoredQueries.length > 0
+          ? {
+              queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
+              application: application,
+              pageParams: pageParams,
+              queryParams: {},
+              contextResults: {},
+              extractorTemplates: currentStoredQueries[0].definition.extractorTemplates,
+              combinerTemplates: currentStoredQueries[0].definition.combinerTemplates,
+              runtimeTransformers: currentStoredQueries[0].definition.runtimeTransformers,
+            }
+          : undefined;
+      log.info("ReportDisplay currentStoredQuery", result);
+      return result;
+    }, [application, currentStoredQueries, pageParams]);
+
+    const currentStoredQueryResults: Domain2QueryReturnType<
+      Domain2QueryReturnType<Record<string, any>>
+    > = useQueryTemplateResults(pageParams, currentApplicationDeploymentMap, currentStoredQuery);
+    return currentStoredQueryResults;
+  };
 // ###############################################################################################################
 export function useQueryTemplateResults(
   pageParams: Record<string, any>,

@@ -9086,11 +9086,22 @@ export const miroirFundamentalJzodSchema = {
                   }
                 }
               },
+              "inputPrefix": {
+                "type": "string",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "id": 2,
+                    "defaultLabel": "Input Prefix"
+                  }
+                }
+              },
               "inputMLSchema": {
                 "type": "schemaReference",
                 "optional": true,
                 "tag": {
                   "value": {
+                    "id": 3,
                     "defaultLabel": "Input ML Schema"
                   }
                 },
@@ -9356,6 +9367,91 @@ export const miroirFundamentalJzodSchema = {
           }
         }
       },
+      "transformerRunnerReportSection": {
+        "type": "object",
+        "tag": {
+          "value": {
+            "display": {
+              "displayedAttributeValueWhenFolded": "definition.label"
+            }
+          }
+        },
+        "definition": {
+          "type": {
+            "type": "literal",
+            "definition": "transformerRunnerReportSection"
+          },
+          "definition": {
+            "type": "union",
+            "discriminator": "transformerRunnerReportSectionType",
+            "definition": [
+              {
+                "type": "object",
+                "definition": {
+                  "transformerRunnerReportSectionType": {
+                    "type": "literal",
+                    "definition": "embeddedTransformer"
+                  },
+                  "label": {
+                    "type": "string",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "id": 1,
+                        "defaultLabel": "Label",
+                        "display": {
+                          "editable": true
+                        }
+                      }
+                    }
+                  },
+                  "definition": {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "coreTransformerForBuildPlusRuntime"
+                    }
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "definition": {
+                  "transformerRunnerReportSectionType": {
+                    "type": "literal",
+                    "definition": "storedTransformer"
+                  },
+                  "label": {
+                    "type": "string",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "id": 1,
+                        "defaultLabel": "Label",
+                        "display": {
+                          "editable": true
+                        }
+                      }
+                    }
+                  },
+                  "transformer": {
+                    "type": "uuid",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Transformer",
+                        "foreignKeyParams": {
+                          "targetEntity": "a557419d-a288-4fb8-8a1e-971c86c113b8",
+                          "targetEntityOrderInstancesBy": "name"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        }
+      },
       "runStoredQuery": {
         "type": "object",
         "definition": {
@@ -9600,6 +9696,13 @@ export const miroirFundamentalJzodSchema = {
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
               "relativePath": "runnerReportSection"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "transformerRunnerReportSection"
             }
           }
         ]
@@ -10397,11 +10500,22 @@ export const miroirFundamentalJzodSchema = {
                           }
                         }
                       },
+                      "inputPrefix": {
+                        "type": "string",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "id": 2,
+                            "defaultLabel": "Input Prefix"
+                          }
+                        }
+                      },
                       "inputMLSchema": {
                         "type": "schemaReference",
                         "optional": true,
                         "tag": {
                           "value": {
+                            "id": 3,
                             "defaultLabel": "Input ML Schema"
                           }
                         },
@@ -10670,6 +10784,91 @@ export const miroirFundamentalJzodSchema = {
                   }
                 }
               },
+              "transformerRunnerReportSection": {
+                "type": "object",
+                "tag": {
+                  "value": {
+                    "display": {
+                      "displayedAttributeValueWhenFolded": "definition.label"
+                    }
+                  }
+                },
+                "definition": {
+                  "type": {
+                    "type": "literal",
+                    "definition": "transformerRunnerReportSection"
+                  },
+                  "definition": {
+                    "type": "union",
+                    "discriminator": "transformerRunnerReportSectionType",
+                    "definition": [
+                      {
+                        "type": "object",
+                        "definition": {
+                          "transformerRunnerReportSectionType": {
+                            "type": "literal",
+                            "definition": "embeddedTransformer"
+                          },
+                          "label": {
+                            "type": "string",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "id": 1,
+                                "defaultLabel": "Label",
+                                "display": {
+                                  "editable": true
+                                }
+                              }
+                            }
+                          },
+                          "definition": {
+                            "type": "schemaReference",
+                            "definition": {
+                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              "relativePath": "coreTransformerForBuildPlusRuntime"
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "type": "object",
+                        "definition": {
+                          "transformerRunnerReportSectionType": {
+                            "type": "literal",
+                            "definition": "storedTransformer"
+                          },
+                          "label": {
+                            "type": "string",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "id": 1,
+                                "defaultLabel": "Label",
+                                "display": {
+                                  "editable": true
+                                }
+                              }
+                            }
+                          },
+                          "transformer": {
+                            "type": "uuid",
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Transformer",
+                                "foreignKeyParams": {
+                                  "targetEntity": "a557419d-a288-4fb8-8a1e-971c86c113b8",
+                                  "targetEntityOrderInstancesBy": "name"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              },
               "runStoredQuery": {
                 "type": "object",
                 "definition": {
@@ -10914,6 +11113,13 @@ export const miroirFundamentalJzodSchema = {
                     "definition": {
                       "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                       "relativePath": "runnerReportSection"
+                    }
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "transformerRunnerReportSection"
                     }
                   }
                 ]
@@ -37861,11 +38067,22 @@ export const miroirFundamentalJzodSchema = {
                           }
                         }
                       },
+                      "inputPrefix": {
+                        "type": "string",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "id": 2,
+                            "defaultLabel": "Input Prefix"
+                          }
+                        }
+                      },
                       "inputMLSchema": {
                         "type": "schemaReference",
                         "optional": true,
                         "tag": {
                           "value": {
+                            "id": 3,
                             "defaultLabel": "Input ML Schema",
                             "isTemplate": true
                           }
@@ -38138,6 +38355,92 @@ export const miroirFundamentalJzodSchema = {
                   }
                 }
               },
+              "transformerRunnerReportSection": {
+                "type": "object",
+                "tag": {
+                  "value": {
+                    "display": {
+                      "displayedAttributeValueWhenFolded": "definition.label"
+                    },
+                    "isTemplate": true
+                  }
+                },
+                "definition": {
+                  "type": {
+                    "type": "literal",
+                    "definition": "transformerRunnerReportSection"
+                  },
+                  "definition": {
+                    "type": "union",
+                    "discriminator": "transformerRunnerReportSectionType",
+                    "definition": [
+                      {
+                        "type": "object",
+                        "definition": {
+                          "transformerRunnerReportSectionType": {
+                            "type": "literal",
+                            "definition": "embeddedTransformer"
+                          },
+                          "label": {
+                            "type": "string",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "id": 1,
+                                "defaultLabel": "Label",
+                                "display": {
+                                  "editable": true
+                                }
+                              }
+                            }
+                          },
+                          "definition": {
+                            "type": "schemaReference",
+                            "definition": {
+                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_coreTransformerForBuildPlusRuntime"
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "type": "object",
+                        "definition": {
+                          "transformerRunnerReportSectionType": {
+                            "type": "literal",
+                            "definition": "storedTransformer"
+                          },
+                          "label": {
+                            "type": "string",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "id": 1,
+                                "defaultLabel": "Label",
+                                "display": {
+                                  "editable": true
+                                }
+                              }
+                            }
+                          },
+                          "transformer": {
+                            "type": "uuid",
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Transformer",
+                                "foreignKeyParams": {
+                                  "targetEntity": "a557419d-a288-4fb8-8a1e-971c86c113b8",
+                                  "targetEntityOrderInstancesBy": "name"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              },
               "runStoredQuery": {
                 "type": "object",
                 "definition": {
@@ -38383,6 +38686,13 @@ export const miroirFundamentalJzodSchema = {
                     "definition": {
                       "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                       "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runnerReportSection"
+                    }
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerRunnerReportSection"
                     }
                   }
                 ]
@@ -41792,6 +42102,13 @@ export const miroirFundamentalJzodSchema = {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
               "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runnerReportSection"
             }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerRunnerReportSection"
+            }
           }
         ]
       },
@@ -41978,11 +42295,22 @@ export const miroirFundamentalJzodSchema = {
                   }
                 }
               },
+              "inputPrefix": {
+                "type": "string",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "id": 2,
+                    "defaultLabel": "Input Prefix"
+                  }
+                }
+              },
               "inputMLSchema": {
                 "type": "schemaReference",
                 "optional": true,
                 "tag": {
                   "value": {
+                    "id": 3,
                     "defaultLabel": "Input ML Schema",
                     "isTemplate": true
                   }
@@ -42447,6 +42775,92 @@ export const miroirFundamentalJzodSchema = {
         "definition": {
           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
           "relativePath": "runnerReportSection"
+        }
+      },
+      "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerRunnerReportSection": {
+        "type": "object",
+        "tag": {
+          "value": {
+            "display": {
+              "displayedAttributeValueWhenFolded": "definition.label"
+            },
+            "isTemplate": true
+          }
+        },
+        "definition": {
+          "type": {
+            "type": "literal",
+            "definition": "transformerRunnerReportSection"
+          },
+          "definition": {
+            "type": "union",
+            "discriminator": "transformerRunnerReportSectionType",
+            "definition": [
+              {
+                "type": "object",
+                "definition": {
+                  "transformerRunnerReportSectionType": {
+                    "type": "literal",
+                    "definition": "embeddedTransformer"
+                  },
+                  "label": {
+                    "type": "string",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "id": 1,
+                        "defaultLabel": "Label",
+                        "display": {
+                          "editable": true
+                        }
+                      }
+                    }
+                  },
+                  "definition": {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_coreTransformerForBuildPlusRuntime"
+                    }
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "definition": {
+                  "transformerRunnerReportSectionType": {
+                    "type": "literal",
+                    "definition": "storedTransformer"
+                  },
+                  "label": {
+                    "type": "string",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "id": 1,
+                        "defaultLabel": "Label",
+                        "display": {
+                          "editable": true
+                        }
+                      }
+                    }
+                  },
+                  "transformer": {
+                    "type": "uuid",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Transformer",
+                        "foreignKeyParams": {
+                          "targetEntity": "a557419d-a288-4fb8-8a1e-971c86c113b8",
+                          "targetEntityOrderInstancesBy": "name"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          }
         }
       },
       "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_miroirMenuItem": {

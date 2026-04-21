@@ -34,6 +34,7 @@ import { ReportSectionEntityInstance, type ValueObjectEditMode } from './ReportS
 import { ReportSectionListDisplay } from './ReportSectionListDisplay.js';
 import { ReportSectionMarkdown } from './ReportSectionMarkdown.js';
 import { TypedValueObjectEditor } from './TypedValueObjectEditor.js';
+import { TransformerRunnerReportSectionView } from './TransformerRunner.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -425,6 +426,38 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
             showPerformanceDisplay={props.showPerformanceDisplay}
           />
         )}
+        {reportSectionDefinitionFromFormik?.type == "transformerRunnerReportSection" && (
+          <TransformerRunnerReportSectionView
+            reportSectionDefinition={reportSectionDefinitionFromFormik as any}
+            application={props.application}
+            applicationDeploymentMap={props.applicationDeploymentMap}
+            deploymentUuid={props.deploymentUuid}
+          />
+          // <>
+          //   {reportSectionDefinitionFromFormik.definition.transformerRunnerReportSectionType ===
+          //   "storedTransformer" ? (
+          //     <div>
+          //       Unsupported transformer runner report section type: storedTransformer.
+          //       This section type is reserved for future use to display the output of a stored
+          //       transformer in a report section. In the meantime, you can achieve similar functionality
+          //       by using a transformer to evaluate the stored transformer and then passing the result
+          //        to a supported report section type (e.g. markdownReportSection or jsonReportSection) for display.
+          //     </div>
+          //     // <StoredRunnerView
+          //     //   applicationUuid={props.application}
+          //     //   applicationDeploymentMap={
+          //     //     props.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap
+          //     //   }
+          //     //   runnerUuid={reportSectionDefinitionFromFormik.definition.runner}
+          //     // />
+          //   ) : (
+          //     <div>
+          //       Unsupported runner report section type:{" "}
+          //       {reportSectionDefinitionFromFormik.definition.transformerRunnerReportSectionType}
+          //     </div>
+          //   )}
+          // </>
+        )}
         {reportSectionDefinitionFromFormik?.type == "runnerReportSection" && (
           <>
             {reportSectionDefinitionFromFormik.definition.runnerReportSectionType ===
@@ -491,7 +524,9 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
         )}
         {reportSectionDefinitionFromFormik?.type == "inputReportSection" && (
           <>
-            {props.reportSectionPath.join("_")} - inputMLSchema:
+            {reportSectionDefinitionFromFormik.definition.inputPrefix ??
+              props.reportSectionPath.join("_")}{" "}
+            - inputMLSchema:
             <pre
               style={{
                 maxHeight: "400px",
@@ -502,7 +537,10 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
             >
               {JSON.stringify(
                 formik.values && props.reportSectionPath
-                  ? formik.values[props.reportSectionPath.join("_") + "_inputMLSchema"]
+                  ? formik.values[
+                      reportSectionDefinitionFromFormik.definition.inputPrefix ??
+                        (props.reportSectionPath.join("_") + "_inputMLSchema")
+                    ]
                   : "unknown",
                 null,
                 2,
@@ -520,9 +558,10 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
             </pre>
             <TypedValueObjectEditor
               labelElement={<h2>Report Input</h2>}
-              formValueMLSchema={reportSectionDefinitionFromFormik.definition.inputMLSchema as JzodObject}
-              // formikValuePathAsString={props.formikReportDefinitionPathString}
-              formikValuePathAsString={props.reportSectionPath.join("_") + "_inputMLSchema"}
+              formValueMLSchema={
+                reportSectionDefinitionFromFormik.definition.inputMLSchema as JzodObject
+              }
+              formikValuePathAsString={reportSectionDefinitionFromFormik.definition.inputPrefix ?? (props.reportSectionPath.join("_") + "_inputMLSchema")}
               application={props.application}
               applicationDeploymentMap={props.applicationDeploymentMap}
               deploymentUuid={props.deploymentUuid}

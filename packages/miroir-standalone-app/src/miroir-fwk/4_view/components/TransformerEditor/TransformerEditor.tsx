@@ -69,8 +69,8 @@ MiroirLoggerFactory.registerLoggerToStart(
 // ################################################################################################
 // ################################################################################################
 export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
-  const runnerName: string = "transformerEditor";
-  const runnerLabel: string = "Transformer Editor";
+  // const runnerName: string = "transformerEditor";
+  // const runnerLabel: string = "Transformer Editor";
 
   // const formikPath_inputDeploymentUuid: string = "transformerEditor_input.defaultInput";
   // const formikPath_entityInstances: string = "transformerEditor_input.defaultInput";
@@ -88,23 +88,6 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
   const miroirContextService = useMiroirContextService();
 
  
-  const currentMiroirModelEnvironment: MiroirModelEnvironment = useCurrentModelEnvironment(
-    application,
-    applicationDeploymentMap
-  );
-
-  // const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState> =
-  //     getMemoizedReduxDeploymentsStateSelectorMap();
-  // const deploymentEntityState: ReduxDeploymentsState = useSelector(
-  //   (state: ReduxStateWithUndoRedo) =>
-  //     deploymentEntityStateSelectorMap.extractState(
-  //       state.presentModelSnapshot.current,
-  //       applicationDeploymentMap,
-  //       () => ({}),
-  //       currentMiroirModelEnvironment
-  //     )
-  // );
-  
   // Ref for debouncing transformer definition updates when mode='here'
   const transformerUpdateTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
 

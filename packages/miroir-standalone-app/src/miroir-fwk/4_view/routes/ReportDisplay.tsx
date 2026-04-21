@@ -12,16 +12,13 @@ import {
   MetaModel,
   MiroirLoggerFactory,
   Report,
-  type BoxedQueryTemplateWithExtractorCombinerTransformer,
-  type BoxedQueryWithExtractorCombinerTransformer,
-  type Domain2QueryReturnType,
-  type Query,
-  type Uuid
+  type Domain2QueryReturnType
 } from "miroir-core";
 import {
   useMiroirContextService
 } from "miroir-react";
 
+import { JsonDisplayHelper } from "miroir-react";
 import { ErrorBoundary } from "react-error-boundary";
 import {
   packageName,
@@ -30,9 +27,8 @@ import {
 import { useCurrentModel } from "../ReduxHooks.js";
 import { ErrorFallbackComponent } from "../components/ErrorFallbackComponent.js";
 import { PerformanceDisplayContainer } from "../components/PerformanceDisplayContainer.js";
-import { useQueryTemplateResults } from "../components/Reports/ReportHooks.js";
+import { useStoredQueriesResults } from "../components/Reports/ReportHooks.js";
 import { ReportViewWithEditor } from "../components/Reports/ReportViewWithEditor.js";
-import { JsonDisplayHelper } from "miroir-react";
 import { ThemedBox, ThemedSpan } from "../components/Themes/index.js";
 import { cleanLevel } from "../constants.js";
 import { useMiroirTheme } from "../contexts/MiroirThemeContext.js";
@@ -85,60 +81,15 @@ export const ReportDisplay: React.FC<{
   const currentMiroirReport: Report =
     availableReports?.find((r: Report) => r.uuid == pageParams.reportUuid) ?? defaultReport;
 
-  const availableStoredQueries = currentModel.storedQueries || [];
-  const currentReportQueries: Uuid[] = (currentMiroirReport.definition.runStoredQueries ?? [])
-    ?.filter((sq) => !!sq.storedQuery)
-    .map((sq) => sq.storedQuery) as Uuid[];
-
-  // log.info(
-  //   "currentMiroirReport",
-  //   currentMiroirReport,
-  //   "currentReportQueries",
-  //   currentReportQueries,
-  //   "availableStoredQueries",
-  //   availableStoredQueries
-  // );
-  const currentStoredQueries: { definition: Query }[] = availableStoredQueries.filter(
-    (q: any /* StoredQuery*/) => currentReportQueries.includes(q.uuid)
-  ) as any;
-  // log.info("currentStoredQueries", currentStoredQueries);
-
-  const currentStoredQuery:
-    | BoxedQueryWithExtractorCombinerTransformer
-    | BoxedQueryTemplateWithExtractorCombinerTransformer
-    | undefined = useMemo(
-    () => {
-      const result:
-        | BoxedQueryWithExtractorCombinerTransformer
-        | BoxedQueryTemplateWithExtractorCombinerTransformer
-        | undefined =
-        pageParams.deploymentUuid &&
-        pageParams.applicationSection &&
-        pageParams.reportUuid &&
-        currentStoredQueries.length > 0
-          ? {
-              queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
-              application: application,
-              pageParams: pageParams,
-              queryParams: {},
-              contextResults: {},
-              extractorTemplates: currentStoredQueries[0].definition.extractorTemplates,
-              combinerTemplates: currentStoredQueries[0].definition.combinerTemplates,
-              runtimeTransformers: currentStoredQueries[0].definition.runtimeTransformers,
-            }
-          : undefined;
-      log.info("ReportDisplay currentStoredQuery", result);
-      return result;
-    },
-    [application, currentStoredQueries, pageParams]
-  );
-
+  
   const currentStoredQueryResults: Domain2QueryReturnType<
     Domain2QueryReturnType<Record<string, any>>
-  > = useQueryTemplateResults(
+  > = useStoredQueriesResults(
+    currentMiroirReport.definition.runStoredQueries,
+    currentModel,
     pageParams,
+    application,
     currentApplicationDeploymentMap,
-    currentStoredQuery
   );
 
   if (currentStoredQueryResults instanceof Domain2ElementFailed) {
