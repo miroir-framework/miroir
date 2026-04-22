@@ -25,7 +25,15 @@
             "optional": true
           },
           "value": {
-            "type": "any"
+            "type": "any",
+            "tag": {
+              "value": {
+                "initializeTo": {
+                  "initializeToType": "value",
+                  "value": "seize value..."
+                }
+              }
+            }
           }
         }
       }

@@ -8,7 +8,7 @@ import {
 } from "../../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
 // import { JzodReferenceResolutionFunction } from "@miroir-framework/jzod";
-import { applyLimitedCarryOnSchema } from "../../../src/1_core/jzod/JzodToJzod";
+import { applyLimitedCarryOnSchema } from "../../../src/1_core/jzod/JzodToJzod_CarryOn";
 import { cleanupObject } from "../../../src/tools";
 
 type JzodReferenceResolutionFunction = (schema: JzodReference) => JzodElement | undefined;

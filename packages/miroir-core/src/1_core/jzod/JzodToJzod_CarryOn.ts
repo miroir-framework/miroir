@@ -1,9 +1,7 @@
-import equal from "fast-deep-equal";
 import {
   JzodElement,
   JzodObject,
-  JzodReference,
-  JzodUnion,
+  JzodReference
 } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import type { LoggerInterface } from "../../0_interfaces/4-services/LoggerInterface";
 import { MiroirLoggerFactory } from "../../4_services/MiroirLoggerFactory";

@@ -714,6 +714,9 @@ export {
   UnfoldJzodSchemaOnceReturnTypeOK
 } from "./1_core/jzod/JzodUnfoldSchemaOnce.js";
 export {
+  jzodToJzod_Summary
+} from "./1_core/jzod/JzodToJzod_Summary";
+export {
   jzodUnion_recursivelyUnfold
 } from "./1_core/jzod/jzodUnion_RecursivelyUnfold";
 export {

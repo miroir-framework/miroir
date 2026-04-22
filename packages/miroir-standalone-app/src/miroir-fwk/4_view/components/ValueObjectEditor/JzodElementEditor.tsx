@@ -17,6 +17,7 @@ import {
   EntityInstance,
   EntityInstanceWithName,
   getDefaultValueForJzodSchemaWithResolutionNonHook,
+  jzodToJzod_Summary,
   LoggerInterface,
   MiroirLoggerFactory,
   mStringify,
@@ -343,6 +344,73 @@ function generateUnionBranchLabel(type: string, branches: JzodElement[]): string
   }
 }
 
+/**
+ * Converts a summarized JzodElement into a compact single-line tooltip string.
+ * Intended for use in the union type selector star button title attribute.
+ * depth=1 means: show the current element fully + show keys of immediate child objects.
+ */
+function jzodElementToTooltipText(el: any, depth: number = 1): string {
+  const e = el as any;
+  if (!e || typeof e !== "object") return "?";
+  const optional = e.optional ? "?" : "";
+  const nullable = e.nullable ? "|null" : "";
+  const label = e.tag?.value?.defaultLabel ? ` "${e.tag.value.defaultLabel}"` : "";
+  switch (e.type) {
+    case "literal":
+      return `'${e.definition}'${optional}${nullable}`;
+    case "enum": {
+      const vals: string[] = e.definition ?? [];
+      const shown = vals.slice(0, 5).join(" | ");
+      return `enum(${shown}${vals.length > 5 ? "…" : ""})${optional}${nullable}`;
+    }
+    case "object": {
+      if (!e.definition || depth <= 0) return `object${optional}${nullable}${label}`;
+      const keys = Object.keys(e.definition as Record<string, any>);
+      // jzodToJzod_Summary already sorts literal-valued keys first, so the most discriminating
+      // info appears within the 4-key preview window.
+      const keyDescriptions = keys.slice(0, 4).map((k: string) => {
+        const fieldEl = (e.definition as any)[k];
+        if (fieldEl?.type === "literal" && fieldEl.definition !== undefined) {
+          return `${k}:"${fieldEl.definition}"`;
+        }
+        return k;
+      });
+      const keyList = keyDescriptions.join(", ");
+      return `{${keyList}${keys.length > 4 ? ", …" : ""}}${optional}${nullable}${label}`;
+    }
+    case "array": {
+      const inner = e.definition ? jzodElementToTooltipText(e.definition, depth - 1) : "?";
+      return `${inner}[]${optional}${nullable}${label}`;
+    }
+    case "tuple": {
+      const items: any[] = e.definition ?? [];
+      const inner = items.slice(0, 4).map((i) => jzodElementToTooltipText(i, 0)).join(", ");
+      return `[${inner}${items.length > 4 ? ", …" : ""}]${optional}${nullable}${label}`;
+    }
+    case "record": {
+      const inner = e.definition ? jzodElementToTooltipText(e.definition, depth - 1) : "?";
+      return `Record<string,${inner}>${optional}${nullable}${label}`;
+    }
+    case "union": {
+      const branches: any[] = e.definition ?? [];
+      return branches.map((b) => jzodElementToTooltipText(b, 0)).join(" | ") + optional + nullable;
+    }
+    case "schemaReference": {
+      const path: string = e.definition?.relativePath ?? e.definition?.absolutePath ?? "?";
+      const parts = path.split("/");
+      return `ref:${parts[parts.length - 1]}${optional}${nullable}${label}`;
+    }
+    case "intersection":
+      return `(${jzodElementToTooltipText(e.definition?.left, 0)} & ${jzodElementToTooltipText(e.definition?.right, 0)})${optional}${nullable}`;
+    case "map": {
+      const [k, v] = e.definition ?? [];
+      return `Map<${jzodElementToTooltipText(k, 0)},${jzodElementToTooltipText(v, 0)}>${optional}${nullable}`;
+    }
+    default:
+      return `${e.type}${optional}${nullable}${label}`;
+  }
+}
+
 let count = 0;
 
 
@@ -415,6 +483,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
         (branch: JzodElement) => branch.type === selectedType
       );
 
+      log.info("handleUnionTypeChange selectedType", selectedType, "matchingBranch", matchingBranch);
       if (!matchingBranch) {
         log.error("handleUnionTypeChange: could not find matching branch for type", selectedType);
         return;
@@ -427,7 +496,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
         props.rootLessListKey,
         undefined,
         [],
-        true,
+        false, // forceOptional
         props.currentApplication,
         props.applicationDeploymentMap,
         props.currentDeploymentUuid,
@@ -437,6 +506,8 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
         undefined
       );
 
+      log.info("handleUnionTypeChange defaultValue for selected branch", defaultValue);
+      
       const onChangeCallback = props.onChangeVector?.[props.rootLessListKey];
       if (onChangeCallback) {
         onChangeCallback(defaultValue, props.rootLessListKey);
@@ -1523,10 +1594,28 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
 
     const isContainerType = ["object", "array"].includes(currentType);
 
+    // Build a tooltip summarising all union branches using jzodToJzod_Summary
+    const unionTooltip = (() => {
+      if (!context.miroirFundamentalJzodSchema) return `${unionOptions.length} types`;
+      const summaries = currentKeyMap.recursivelyUnfoldedUnionSchema.result.map(
+        (branch: JzodElement) => {
+          const s = jzodToJzod_Summary(branch, context.miroirFundamentalJzodSchema!, 1);
+          return jzodElementToTooltipText(s, 1);
+        }
+      );
+      // De-duplicate identical entries (e.g. multiple object branches that render identically)
+      const unique = summaries.filter((v: string, i: number, a: string[]) => a.indexOf(v) === i);
+      // Cap display and put each branch on its own line for readability
+      const MAX_SHOWN = 15;
+      const shown = unique.slice(0, MAX_SHOWN);
+      const suffix = unique.length > MAX_SHOWN ? `\n… (${unique.length - MAX_SHOWN} more)` : "";
+      return shown.join("\n") + suffix;
+    })();
+
     const starButton = (
       <div
         style={{ fontSize: "1.2em", color: "#FFA07A", cursor: "pointer", userSelect: "none" }}
-        title={`Switch union type (${unionOptions.length} options)`}
+        title={unionTooltip}
         onClick={() => setIsUnionTypeSelectorOpen(prev => !prev)}
         data-testid={"union-type-star-" + formikRootLessListKey}
       >

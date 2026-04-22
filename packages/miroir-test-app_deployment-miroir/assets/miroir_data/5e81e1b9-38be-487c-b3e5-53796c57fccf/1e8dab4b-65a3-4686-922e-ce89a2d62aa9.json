@@ -732,6 +732,18 @@
       "jzodElement": {
         "type": "union",
         "discriminator": "type",
+        "tag": {
+          "value": {
+            "description": "The type of a Jzod element.",
+            "initializeTo": {
+              "initializeToType": "value",
+              "value": {
+                "type": "string"
+               }
+             },
+             "canBeTemplate": false
+          }
+        },
         "definition": [
           {
             "type": "schemaReference",

@@ -108,8 +108,9 @@ export const mlsTransformers: Record<string,TransformerDefinition> = {
 // };
 
 export const miroirCoreTransformers: Record<string,TransformerDefinition> = {
-  transformer_defaultValueForMLSchema,
-  //
+  // returnValue is first so that it becomes the default selected branch, for defualt value and other purposes.
+  transformer_returnValue,
+  // 
   transformer_accessDynamicPath,
   transformer_aggregate,
   transformer_constantAsExtractor,
@@ -128,7 +129,6 @@ export const miroirCoreTransformers: Record<string,TransformerDefinition> = {
   transformer_plus,
   transformer_case,
   transformer_pickFromList,
-  transformer_returnValue,
   transformer_mapList,
   transformer_mustacheStringTemplate,
   transformer_generateUuid,
@@ -136,14 +136,14 @@ export const miroirCoreTransformers: Record<string,TransformerDefinition> = {
   transformer_concatLists,
   // transformer_constantBigint,
   // MLS
-  // ...mlsTransformers,
+  transformer_defaultValueForMLSchema,
 };
 export const miroirTransformers: Record<string,TransformerDefinition> = {
-  transformer_menu_addItem,
+  ...miroirCoreTransformers,
   ...adminTransformers,
   ...spreadsheetTransformers,
-  ...miroirCoreTransformers,
   ...mlsTransformers,
+  transformer_menu_addItem,
 };
 
 

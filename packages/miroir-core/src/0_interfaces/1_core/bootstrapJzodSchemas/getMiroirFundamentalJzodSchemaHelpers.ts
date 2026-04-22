@@ -6,7 +6,7 @@ import {
   applyLimitedCarryOnSchemaOnLevel,
   forgeCarryOnReferenceName,
   JzodReferenceResolutionFunction
-} from "../../../1_core/jzod/JzodToJzod";
+} from "../../../1_core/jzod/JzodToJzod_CarryOn";
 import { MiroirLoggerFactory } from "../../../4_services/MiroirLoggerFactory";
 import { packageName } from "../../../constants";
 import { LoggerInterface } from "../../4-services/LoggerInterface";

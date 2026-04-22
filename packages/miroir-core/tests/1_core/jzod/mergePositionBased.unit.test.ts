@@ -1,4 +1,4 @@
-import { mergePositionBased } from "../../../src/1_core/jzod/JzodToJzod";
+import { mergePositionBased } from "../../../src/1_core/jzod/JzodToJzod_CarryOn";
 
 describe(
   'mergePositionBased',
