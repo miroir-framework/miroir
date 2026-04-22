@@ -40,7 +40,6 @@ import { getObjectUnionDiscriminatorValuesFromResolvedSchema } from "./getObject
 import { jzodObjectFlatten } from "./jzodObjectFlatten";
 import { resolveConditionalSchema, type ResolveConditionalSchemaError } from "./resolveConditionalSchema";
 import { TransformerFailure } from "../../0_interfaces/2_domain/DomainElement";
-import type { ApplicationDeploymentMap } from "../Deployment";
 
 // export const miroirFundamentalJzodSchema2 = miroirFundamentalJzodSchema;
 // import { miroirFundamentalJzodSchema } from "../tmp/src/0_interfaces/1_core/bootstrapJzodSchemas/miroirFundamentalJzodSchema";
@@ -767,7 +766,8 @@ export function jzodTypeCheck(
   currentDefaultValue?: any,
   reduxDeploymentsState: ReduxDeploymentsState | undefined = undefined,
   deploymentUuid?: string,
-  rootObject?: any // Optional parameter for backward compatibility, NOT USED ANYMORE? TO BE REMOVED?
+  rootObject?: any, // Optional parameter for backward compatibility, NOT USED ANYMORE? TO BE REMOVED?
+  schemaReferenceName?: string, // only for logging purposes, to track the name of the schema reference being resolved, if applicable
 ): ResolvedJzodSchemaReturnType {
   // log.info(
   //   "jzodTypeCheck called for valuePath=." + 
@@ -802,6 +802,7 @@ export function jzodTypeCheck(
     // If schema is optional or nullable, we're good
     return {
       status: "ok",
+      schemaReferenceName,
       valuePath: currentValuePath,
       typePath: currentTypePath,
       rawSchema: mlSchema,
@@ -838,6 +839,7 @@ export function jzodTypeCheck(
   if ('error' in effectiveSchemaOrError) {
     return {
       status: "error",
+      schemaReferenceName,
       error: `jzodTypeCheck: resolveConditionalSchema returned error: ${effectiveSchemaOrError.error}`,
       rawJzodSchemaType: mlSchema.type,
       valuePath: currentValuePath,
@@ -876,12 +878,14 @@ export function jzodTypeCheck(
         currentDefaultValue,
         reduxDeploymentsState,
         deploymentUuid,
-        rootObject
+        rootObject,
+        effectiveRawSchema.definition.relativePath,
       );
       if (typeCheck.status == "error") {
         return {
           status: "error",
           error: "jzodTypeCheck failed to resolve schemaReference",
+          schemaReferenceName: effectiveRawSchema.definition.relativePath,
           rawJzodSchemaType: effectiveRawSchema.type,
           valuePath: currentValuePath,
           typePath: currentTypePath,
@@ -892,6 +896,7 @@ export function jzodTypeCheck(
       }
       return {
         status: "ok",
+        schemaReferenceName: effectiveRawSchema.definition.relativePath,
         valuePath: typeCheck.valuePath,
         typePath: typeCheck.typePath,
         rawSchema: effectiveRawSchema,
@@ -922,6 +927,7 @@ export function jzodTypeCheck(
         return {
           status: "error",
           error: "jzodTypeCheck failed for object schema to match non-object value",
+          schemaReferenceName,
           rawJzodSchemaType: effectiveRawSchema.type,
           valuePath: currentValuePath,
           typePath: currentTypePath,
@@ -952,7 +958,8 @@ export function jzodTypeCheck(
             currentDefaultValue,
             reduxDeploymentsState,
             deploymentUuid,
-            rootObject
+            rootObject,
+            undefined, // schemaReferenceName
           );
           return [e[0], resultSchemaTmp];
         } else {
@@ -995,6 +1002,7 @@ export function jzodTypeCheck(
           status: "error",
           error:
             "jzodTypeCheck failed to match some object value attribute(s) with the schema of that attribute(s)",
+          schemaReferenceName,
           rawJzodSchemaType: effectiveRawSchema.type,
           valuePath: currentValuePath,
           typePath: currentTypePath,
@@ -1023,6 +1031,7 @@ export function jzodTypeCheck(
           status: "error",
           error:
             "jzodTypeCheck failed to match some mandatory object value attribute(s) with the schema of that attribute(s)",
+          schemaReferenceName,
           rawJzodSchemaType: effectiveRawSchema.type,
           valuePath: currentValuePath,
           typePath: currentTypePath,
@@ -1061,6 +1070,7 @@ export function jzodTypeCheck(
 
       return {
         status: "ok",
+        schemaReferenceName,
         valuePath: currentValuePath,
         typePath: currentTypePath,
         rawSchema: effectiveRawSchema,
@@ -1096,6 +1106,7 @@ export function jzodTypeCheck(
         // );
         return {
           status: "error",
+          schemaReferenceName,
           error: "jzodTypeCheck failed to recursively unfold schema",
           rawJzodSchemaType: effectiveRawSchema.type,
           valuePath: currentValuePath,
@@ -1137,6 +1148,7 @@ export function jzodTypeCheck(
             // );
             return {
               status: "ok",
+              schemaReferenceName,
               valuePath: currentValuePath,
               typePath: currentTypePath,
               rawSchema: effectiveRawSchema,
@@ -1155,6 +1167,7 @@ export function jzodTypeCheck(
           } else {
             return {
               status: "error",
+              schemaReferenceName,
               error: "jzodTypeCheck could not find type for value in resolved union",
               rawJzodSchemaType: effectiveRawSchema.type,
               valuePath: currentValuePath,
@@ -1186,6 +1199,7 @@ export function jzodTypeCheck(
             // );
             return {
               status: "ok",
+              schemaReferenceName,
               valuePath: currentValuePath,
               typePath: currentTypePath,
               rawSchema: effectiveRawSchema,
@@ -1204,6 +1218,7 @@ export function jzodTypeCheck(
           } else {
             return {
               status: "error",
+              schemaReferenceName,
               error: "jzodTypeCheck could not find type for string value in resolved union",
               rawJzodSchemaType: effectiveRawSchema.type,
               valuePath: currentValuePath,
@@ -1237,6 +1252,7 @@ export function jzodTypeCheck(
             if (resolveUnionResult.status === "error") {
               return {
                 status: "error",
+                schemaReferenceName,
                 error: "jzodTypeCheck failed to resolve union for array",
                 rawJzodSchemaType: effectiveRawSchema.type,
                 valuePath: currentValuePath,
@@ -1249,6 +1265,7 @@ export function jzodTypeCheck(
             if (resolveUnionResult.resolvedJzodObjectSchema.type != "array") {
               return {
                 status: "error",
+                schemaReferenceName,
                 error: "jzodTypeCheck resolved union for array did not yield an array schema",
                 rawJzodSchemaType: effectiveRawSchema.type,
                 valuePath: currentValuePath,
@@ -1280,11 +1297,13 @@ export function jzodTypeCheck(
               currentDefaultValue,
               reduxDeploymentsState,
               deploymentUuid,
-              rootObject
+              rootObject,
+              undefined, // schemaReferenceName
             );
             if (concreteArraySchema.status === "error") {
               return {
                 status: "error",
+                schemaReferenceName,
                 error: "jzodTypeCheck failed to match array (resolved from union) with schema",
                 rawJzodSchemaType: effectiveRawSchema.type,
                 valuePath: currentValuePath,
@@ -1314,6 +1333,7 @@ export function jzodTypeCheck(
 
             return {
               status: "ok",
+              schemaReferenceName,
               valuePath: currentValuePath,
               typePath: currentTypePath,
               rawSchema: effectiveRawSchema,
@@ -1347,6 +1367,7 @@ export function jzodTypeCheck(
           if (resolveUnionResult.status === "error") {
             return {
               status: "error",
+              schemaReferenceName,
               error: "jzodTypeCheck failed to resolve union for object",
               rawJzodSchemaType: effectiveRawSchema.type,
               valuePath: currentValuePath,
@@ -1376,11 +1397,13 @@ export function jzodTypeCheck(
             currentDefaultValue,
             reduxDeploymentsState,
             deploymentUuid,
-            rootObject
+            rootObject,
+            undefined, // schemaReferenceName
           );
           if (subResolvedSchemas.status !== "ok") {
             return {
               status: "error",
+              schemaReferenceName,
               error:
                 "jzodTypeCheck union failed to match object attribute value with schema attribute",
               rawJzodSchemaType: effectiveRawSchema.type,
@@ -1404,6 +1427,7 @@ export function jzodTypeCheck(
           if (objectUniondiscriminatorValues instanceof TransformerFailure) {
             return {
               status: "error",
+              schemaReferenceName,
               error:
                 "jzodTypeCheck failed to get object union discriminator values: " +
                 objectUniondiscriminatorValues.failureMessage,
@@ -1436,6 +1460,7 @@ export function jzodTypeCheck(
 
           return {
             status: "ok",
+            schemaReferenceName,
             valuePath: subResolvedSchemas.valuePath,
             typePath: subResolvedSchemas.typePath,
             rawSchema: effectiveRawSchema,
@@ -1463,6 +1488,7 @@ export function jzodTypeCheck(
           // throw new Error("jzodTypeCheck could not resolve type for union with valueObject " + valueObject);
           return {
             status: "error",
+            schemaReferenceName,
             error: "jzodTypeCheck value type not supported for union schema: " + typeof valueObject,
             rawJzodSchemaType: effectiveRawSchema.type,
             valuePath: currentValuePath,
@@ -1486,6 +1512,7 @@ export function jzodTypeCheck(
         return {
           status: "error",
           error: "jzodTypeCheck record schema for value is not an object",
+          schemaReferenceName,
           rawJzodSchemaType: effectiveRawSchema.type,
           valuePath: currentValuePath,
           typePath: currentTypePath,
@@ -1506,7 +1533,8 @@ export function jzodTypeCheck(
               currentDefaultValue,
               reduxDeploymentsState,
               deploymentUuid,
-              rootObject
+              rootObject,
+              undefined, // schemaReferenceName
             );
             return [e[0], resultSchemaTmp];
           }) as [string, ResolvedJzodSchemaReturnType][]
@@ -1518,6 +1546,7 @@ export function jzodTypeCheck(
         return {
           status: "error",
           error: `jzodTypeCheck failed to match value with ${effectiveRawSchema.type} schema`,
+          schemaReferenceName,
           rawJzodSchemaType: effectiveRawSchema.type,
           valuePath: currentValuePath,
           typePath: currentTypePath,
@@ -1567,6 +1596,7 @@ export function jzodTypeCheck(
       //   "done"  );
       return {
         status: "ok",
+        schemaReferenceName,
         valuePath: currentValuePath,
         typePath: currentTypePath,
         rawSchema: effectiveRawSchema,
@@ -1596,6 +1626,7 @@ export function jzodTypeCheck(
 
         return {
           status: "ok",
+          schemaReferenceName,
           valuePath: currentValuePath,
           typePath: currentTypePath,
           rawSchema: effectiveRawSchema,
@@ -1613,6 +1644,7 @@ export function jzodTypeCheck(
         return {
           status: "error",
           error: `jzodTypeCheck failed to match value with ${effectiveRawSchema.type} schema`,
+          schemaReferenceName,
           rawJzodSchemaType: effectiveRawSchema.type,
           valuePath: currentValuePath,
           typePath: currentTypePath,
@@ -1633,6 +1665,7 @@ export function jzodTypeCheck(
       // );
       return {
         status: "ok",
+        schemaReferenceName,
         valuePath: currentValuePath,
         typePath: currentTypePath,
         rawSchema: effectiveRawSchema,
@@ -1652,6 +1685,7 @@ export function jzodTypeCheck(
         return {
           status: "error",
           error: `jzodTypeCheck failed to match value with ${effectiveRawSchema.type} schema`,
+          schemaReferenceName,
           rawJzodSchemaType: effectiveRawSchema.type,
           valuePath: currentValuePath,
           typePath: currentTypePath,
@@ -1680,7 +1714,8 @@ export function jzodTypeCheck(
             currentDefaultValue,
             reduxDeploymentsState,
             deploymentUuid,
-            rootObject
+            rootObject,
+            undefined, // schemaReferenceName
           );
           return resultSchemaTmp;
         }
@@ -1692,6 +1727,7 @@ export function jzodTypeCheck(
         return {
           status: "error",
           error: `jzodTypeCheck failed to match value with ${effectiveRawSchema.type} schema`,
+          schemaReferenceName,
           rawJzodSchemaType: effectiveRawSchema.type,
           valuePath: currentValuePath,
           typePath: currentTypePath,
@@ -1715,6 +1751,7 @@ export function jzodTypeCheck(
       };
       return {
         status: "ok",
+        schemaReferenceName,
         valuePath: currentValuePath,
         typePath: currentTypePath,
         rawSchema: effectiveRawSchema,
@@ -1751,6 +1788,7 @@ export function jzodTypeCheck(
         return {
           status: "error",
           error: `jzodTypeCheck failed to match value with ${effectiveRawSchema.type} schema`,
+          schemaReferenceName,
           rawJzodSchemaType: effectiveRawSchema.type,
           valuePath: currentValuePath,
           typePath: currentTypePath,
@@ -1776,7 +1814,8 @@ export function jzodTypeCheck(
             currentDefaultValue,
             reduxDeploymentsState,
             deploymentUuid,
-            rootObject
+            rootObject,
+            undefined, // schemaReferenceName
           );
           return subSchema;
         }
@@ -1789,6 +1828,7 @@ export function jzodTypeCheck(
         return {
           status: "error",
           error: `jzodTypeCheck failed to match value with ${effectiveRawSchema.type} schema`,
+          schemaReferenceName,
           rawJzodSchemaType: effectiveRawSchema.type,
           valuePath: currentValuePath,
           typePath: currentTypePath,
@@ -1813,6 +1853,7 @@ export function jzodTypeCheck(
       // );
       return {
         status: "ok",
+        schemaReferenceName,
         valuePath: currentValuePath,
         typePath: currentTypePath,
         rawSchema: effectiveRawSchema,
@@ -1846,6 +1887,7 @@ export function jzodTypeCheck(
     case "any": {
       return {
         status: "ok",
+        schemaReferenceName,
         valuePath: currentValuePath,
         typePath: currentTypePath,
         rawSchema: effectiveRawSchema,
@@ -1867,6 +1909,7 @@ export function jzodTypeCheck(
         return {
           status: "error",
           error: `jzodTypeCheck failed to match value with ${effectiveRawSchema.type} schema`,
+          schemaReferenceName,
           rawJzodSchemaType: effectiveRawSchema.type,
           valuePath: currentValuePath,
           typePath: currentTypePath,
@@ -1876,6 +1919,7 @@ export function jzodTypeCheck(
       }
       return {
         status: "ok",
+        schemaReferenceName,
         valuePath: currentValuePath,
         typePath: currentTypePath,
         rawSchema: effectiveRawSchema,
@@ -1897,6 +1941,7 @@ export function jzodTypeCheck(
         return {
           status: "error",
           error: `jzodTypeCheck failed to match value with ${effectiveRawSchema.type} schema`,
+          schemaReferenceName,
           rawJzodSchemaType: effectiveRawSchema.type,
           valuePath: currentValuePath,
           typePath: currentTypePath,
@@ -1906,6 +1951,7 @@ export function jzodTypeCheck(
       }
       return {
         status: "ok",
+        schemaReferenceName,
         valuePath: currentValuePath,
         typePath: currentTypePath,
         rawSchema: effectiveRawSchema,
@@ -1925,6 +1971,7 @@ export function jzodTypeCheck(
         return {
           status: "error",
           error: `jzodTypeCheck failed to match value with ${effectiveRawSchema.type} schema`,
+          schemaReferenceName,
           rawJzodSchemaType: effectiveRawSchema.type,
           valuePath: currentValuePath,
           typePath: currentTypePath,
@@ -1934,6 +1981,7 @@ export function jzodTypeCheck(
       }
       return {
         status: "ok",
+        schemaReferenceName,
         valuePath: currentValuePath,
         typePath: currentTypePath,
         rawSchema: effectiveRawSchema,
@@ -1953,6 +2001,7 @@ export function jzodTypeCheck(
         return {
           status: "error",
           error: `jzodTypeCheck failed to match value with ${effectiveRawSchema.type} schema`,
+          schemaReferenceName,
           rawJzodSchemaType: effectiveRawSchema.type,
           valuePath: currentValuePath,
           typePath: currentTypePath,
@@ -1962,6 +2011,7 @@ export function jzodTypeCheck(
       }
       return {
         status: "ok",
+        schemaReferenceName,
         valuePath: currentValuePath,
         typePath: currentTypePath,
         rawSchema: effectiveRawSchema,
@@ -1981,6 +2031,7 @@ export function jzodTypeCheck(
         return {
           status: "error",
           error: `jzodTypeCheck failed to match value with ${effectiveRawSchema.type} schema`,
+          schemaReferenceName,
           rawJzodSchemaType: effectiveRawSchema.type,
           valuePath: currentValuePath,
           typePath: currentTypePath,
@@ -1990,6 +2041,7 @@ export function jzodTypeCheck(
       }
       return {
         status: "ok",
+        schemaReferenceName,
         valuePath: currentValuePath,
         typePath: currentTypePath,
         rawSchema: effectiveRawSchema,
@@ -2024,6 +2076,7 @@ export function jzodTypeCheck(
         if (isValidDate) {
           return {
             status: "ok",
+            schemaReferenceName,
             valuePath: currentValuePath,
             typePath: currentTypePath,
             rawSchema: effectiveRawSchema,
@@ -2041,6 +2094,7 @@ export function jzodTypeCheck(
           return {
             status: "error",
             error: `jzodTypeCheck failed to match value with ${effectiveRawSchema.type} schema. ${typeof valueObject} could not be converted to Date. Value: ${JSON.stringify(valueObject)}`,
+            schemaReferenceName,
             rawJzodSchemaType: effectiveRawSchema.type,
             valuePath: currentValuePath,
             typePath: currentTypePath,
@@ -2052,6 +2106,7 @@ export function jzodTypeCheck(
         return {
           status: "error",
           error: `jzodTypeCheck failed to match value with ${effectiveRawSchema.type} schema: ` + e,
+          schemaReferenceName,
           rawJzodSchemaType: effectiveRawSchema.type,
           valuePath: currentValuePath,
           typePath: currentTypePath,
@@ -2075,6 +2130,7 @@ export function jzodTypeCheck(
     case "lazy": {
       return {
         status: "ok",
+        schemaReferenceName,
         valuePath: currentValuePath,
         typePath: [],
         rawSchema: effectiveRawSchema,
@@ -2100,6 +2156,7 @@ export function jzodTypeCheck(
       return {
         status: "error",
         error: `jzodTypeCheck failed to match value with undefined schema type`,
+        schemaReferenceName,
         rawJzodSchemaType: "not supported",
         valuePath: currentValuePath,
         typePath: currentTypePath,
@@ -2150,7 +2207,8 @@ export function jzodTypeCheckTransformer<T extends MiroirModelEnvironment>(
     currentDefaultValue,
     reduxDeploymentsState,
     deploymentUuid,
-    rootObject
+    rootObject,
+    undefined, // schemaReferenceName
   );
 }
 

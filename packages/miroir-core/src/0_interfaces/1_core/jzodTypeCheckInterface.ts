@@ -163,6 +163,7 @@ export const keyMapEntry: JzodElement = {
 
 export interface ResolvedJzodSchemaReturnTypeOK {
   status: "ok";
+  schemaReferenceName?: string;
   valuePath: (string | number)[];
   typePath: (string | number)[];
   rawSchema: JzodElement;
@@ -178,6 +179,7 @@ export const resolvedJzodSchemaReturnTypeOK: JzodElement = {
   type: "object",
   definition: {
     status: { type: "literal", definition: "ok" },
+    schemaReferenceName: { type: "string", optional: true },
     valuePath: {
       type: "array",
       definition: { type: "union", definition: [{ type: "string" }, { type: "number" }] },
@@ -279,6 +281,7 @@ export const resolvedJzodSchemaReturnTypeError: JzodElement = {
   definition: {
     status: { type: "literal", definition: "error" },
     error: { type: "string" },
+    schemaReferenceName: { type: "string", optional: true },
     rawJzodSchemaType: { type: "string", optional: true }, // the raw schema type that was checked
     valuePath: { type: "array", definition: { type: "union", definition: [{ type: "string" }, { type: "number" }] } },
     typePath: { type: "array", definition: { type: "union", definition: [{ type: "string" }, { type: "number" }] } },

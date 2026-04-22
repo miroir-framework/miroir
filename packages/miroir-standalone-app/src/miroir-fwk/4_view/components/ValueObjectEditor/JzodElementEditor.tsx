@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 
 import {
   ExpandLess,
@@ -294,6 +294,55 @@ FoldUnfoldAllObjectAttributesOrArrayItems.displayName = "FoldUnfoldAllObjectAttr
 // #####################################################################################################
 // #####################################################################################################
 // #####################################################################################################
+/**
+ * Generates a concise, human-readable label for a union branch type,
+ * used as the display text in the union type selector dropdown.
+ */
+function generateUnionBranchLabel(type: string, branches: JzodElement[]): string {
+  if (branches.length === 0) return type;
+  const branch = branches[0] as any;
+  const multi = branches.length > 1 ? ` (${branches.length})` : "";
+  switch (type) {
+    case "literal": {
+      const val = branch.definition;
+      return `literal: '${val}'${multi}`;
+    }
+    case "enum": {
+      const vals: string[] = branch.definition ?? [];
+      const shown = vals.slice(0, 4).join(" | ");
+      return `enum: ${shown}${vals.length > 4 ? " | …" : ""}${multi}`;
+    }
+    case "object": {
+      const keys = Object.keys(branch.definition ?? {});
+      if (keys.length === 0) return `object{}${multi}`;
+      const shown = keys.slice(0, 4).join(", ");
+      return `object {${shown}${keys.length > 4 ? ", …" : ""}}${multi}`;
+    }
+    case "array": {
+      const elemType = branch.definition?.type ?? "?";
+      return `array[${elemType}]${multi}`;
+    }
+    case "tuple": {
+      const items = branch.definition ?? [];
+      const count = Array.isArray(items) ? items.length : "?";
+      return `tuple[${count}]${multi}`;
+    }
+    case "schemaReference": {
+      const def = branch.definition ?? {};
+      const path: string = def.relativePath ?? def.absolutePath ?? "";
+      if (!path) return `ref${multi}`;
+      const parts = path.split("/");
+      return `ref: ${parts[parts.length - 1]}${multi}`;
+    }
+    case "record": {
+      const valType = branch.definition?.type ?? "?";
+      return `record<${valType}>${multi}`;
+    }
+    default:
+      return `${type}${multi}`;
+  }
+}
+
 let count = 0;
 
 
@@ -393,6 +442,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
         onChangeCallback(defaultValue, props.rootLessListKey);
       }
       formik.setFieldValue(formikRootLessListKey, defaultValue, false);
+      setIsUnionTypeSelectorOpen(false);
     },
     [
       currentKeyMap,
@@ -408,6 +458,10 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
       props.onChangeVector,
     ]
   );
+
+  // ##############################################################################################
+  // State for union type selector open/close
+  const [isUnionTypeSelectorOpen, setIsUnionTypeSelectorOpen] = useState(false);
 
   // Extract hiddenFormItems and setHiddenFormItems from props
   // const reportContext = useReportPageContext();
@@ -1034,6 +1088,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
                       data: {
                         rootLessListKey: props.rootLessListKey,
                         selectOptions,
+                        currentKeyMap
                       },
                       copyButton: true,
                       useCodeBlock: true,
@@ -1096,6 +1151,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
                       data: {
                         rootLessListKey: props.rootLessListKey,
                         selectOptions,
+                        currentKeyMap,
                       },
                       copyButton: true,
                       useCodeBlock: true,
@@ -1424,7 +1480,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
     itemsOrder,
     stringSelectList,
     enhancedLabelElement,
-  ]);
+  ]); // end mainElement definition
 
   const mainElementWithUnionTypeSelector : JSX.Element = useMemo(() => {
     if (currentKeyMap?.rawSchema?.type !== "union") {
@@ -1452,29 +1508,69 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
       return typeof currentValueObjectAtKey;
     })();
 
-    const selectOptions = unionOptions.map((type: string) => ({ value: type, label: type }));
+    // Build a per-type branch map so labels can reflect each branch's key attributes
+    const branchesByType = new Map<string, JzodElement[]>();
+    for (const branch of currentKeyMap.recursivelyUnfoldedUnionSchema.result) {
+      const t = (branch as any).type as string;
+      if (!branchesByType.has(t)) branchesByType.set(t, []);
+      branchesByType.get(t)!.push(branch as JzodElement);
+    }
 
-    return (
-      <div>
-        <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "nowrap", marginBottom: "4px" }}>
-          <span style={{ fontSize: "0.85em", color: "gray" }}>type:</span>
-          <ThemedSelectWithPortal
-            name={"union-type-" + formikRootLessListKey}
-            data-testid={"union-type-input-" + formikRootLessListKey}
-            filterable={true}
-            options={selectOptions}
-            value={currentType}
-            onChange={handleUnionTypeChange}
-            placeholder="Select type..."
-            filterPlaceholder="Type to filter..."
-            minWidth="120px"
-            navigateWithoutOpening={true}
-          />
-        </div>
-        {mainElement}
+    const selectOptions = unionOptions.map((type: string) => ({
+      value: type,
+      label: generateUnionBranchLabel(type, branchesByType.get(type) ?? []),
+    }));
+
+    const isContainerType = ["object", "array"].includes(currentType);
+
+    const starButton = (
+      <div
+        style={{ fontSize: "1.2em", color: "#FFA07A", cursor: "pointer", userSelect: "none" }}
+        title={`Switch union type (${unionOptions.length} options)`}
+        onClick={() => setIsUnionTypeSelectorOpen(prev => !prev)}
+        data-testid={"union-type-star-" + formikRootLessListKey}
+      >
+        ★
       </div>
     );
-  }, [ currentKeyMap, currentValueObjectAtKey, mainElement, formikRootLessListKey, handleUnionTypeChange,]);
+
+    const typeSelector = isUnionTypeSelectorOpen ? (
+      <ThemedSelectWithPortal
+        name={"union-type-" + formikRootLessListKey}
+        data-testid={"union-type-input-" + formikRootLessListKey}
+        filterable={true}
+        options={selectOptions}
+        value={currentType}
+        onChange={handleUnionTypeChange}
+        placeholder="Select type..."
+        filterPlaceholder="Type to filter..."
+        minWidth="120px"
+        navigateWithoutOpening={true}
+      />
+    ) : null;
+
+    if (isContainerType) {
+      // Vertical layout: star + (selector when open) above, value below
+      return (
+        <div>
+          <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "nowrap", marginBottom: isUnionTypeSelectorOpen ? "4px" : "2px" }}>
+            {starButton}
+            {typeSelector}
+          </div>
+          {mainElement}
+        </div>
+      );
+    } else {
+      // Horizontal layout: mainElement + star + (selector when open) on same line
+      return (
+        <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "nowrap" }}>
+          {mainElement}
+          {starButton}
+          {typeSelector}
+        </div>
+      );
+    }
+  }, [ currentKeyMap, currentValueObjectAtKey, mainElement, formikRootLessListKey, handleUnionTypeChange, isUnionTypeSelectorOpen]);
   // ##############################################################################################
   // ##############################################################################################
   // ##############################################################################################

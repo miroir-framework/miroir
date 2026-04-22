@@ -2485,6 +2485,10 @@ export const miroirFundamentalJzodSchema = {
             "type": "literal",
             "definition": "ok"
           },
+          "schemaReferenceName": {
+            "type": "string",
+            "optional": true
+          },
           "valuePath": {
             "type": "array",
             "definition": {
@@ -2585,6 +2589,10 @@ export const miroirFundamentalJzodSchema = {
           },
           "error": {
             "type": "string"
+          },
+          "schemaReferenceName": {
+            "type": "string",
+            "optional": true
           },
           "rawJzodSchemaType": {
             "type": "string",
@@ -2688,6 +2696,10 @@ export const miroirFundamentalJzodSchema = {
                 "type": "literal",
                 "definition": "ok"
               },
+              "schemaReferenceName": {
+                "type": "string",
+                "optional": true
+              },
               "valuePath": {
                 "type": "array",
                 "definition": {
@@ -2788,6 +2800,10 @@ export const miroirFundamentalJzodSchema = {
               },
               "error": {
                 "type": "string"
+              },
+              "schemaReferenceName": {
+                "type": "string",
+                "optional": true
               },
               "rawJzodSchemaType": {
                 "type": "string",

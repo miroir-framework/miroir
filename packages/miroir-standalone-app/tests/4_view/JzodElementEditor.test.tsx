@@ -1878,7 +1878,23 @@ export function getJzodUnionEditorTests(
             initialFormState: 42,
           },
           tests: async (expect: ExpectStatic, container: Container) => {
-            // Verify the union type selector is present and shows the current type "number"
+            // Verify the star button is present but selector is initially hidden
+            const starButton = screen.getByTestId(
+              "union-type-star-" + formikFieldName("testField"),
+            );
+            expect(starButton).toBeTruthy();
+            expect(
+              container.querySelector(
+                `[data-testid="union-type-input-${formikFieldName("testField")}"]`,
+              ),
+            ).toBeNull();
+
+            // Click the star to open the selector
+            await act(async () => {
+              fireEvent.click(starButton);
+            });
+
+            // Verify the union type selector is now present and shows the current type "number"
             const stateTracker = screen.getByTestId(
               "themed-select-state-union-type-" + formikFieldName("testField"),
             );
@@ -1928,6 +1944,18 @@ export function getJzodUnionEditorTests(
               );
             });
 
+            // Verify the selector is closed after selection and value reset to default string
+            await waitFor(
+              () => {
+                expect(
+                  container.querySelector(
+                    `[data-testid="union-type-input-${formikFieldName("testField")}"]`,
+                  ),
+                ).toBeNull();
+              },
+              { timeout: 3000 },
+            );
+
             // Verify value was reset to default string
             await waitFor(
               () => {
@@ -1935,7 +1963,7 @@ export function getJzodUnionEditorTests(
                   expect,
                   [],
                   container,
-                  testSectionName,
+                  testSectionName, //formikFieldName("testField"),
                   "after change to string",
                 );
                 const testResult = formValuesToJSON(valuesAfterChange);
@@ -1963,6 +1991,22 @@ export function getJzodUnionEditorTests(
             initialFormState: 42,
           },
           tests: async (expect: ExpectStatic, container: Container) => {
+            // Verify the star button is present but selector is initially hidden
+            const starButton = screen.getByTestId(
+              "union-type-star-" + formikFieldName("testField"),
+            );
+            expect(starButton).toBeTruthy();
+            expect(
+              container.querySelector(
+                `[data-testid="union-type-input-${formikFieldName("testField")}"]`,
+              ),
+            ).toBeNull();
+
+            // Click the star to open the selector
+            await act(async () => {
+              fireEvent.click(starButton);
+            });
+
             // Verify the union type selector shows the current type "number"
             const stateTracker = screen.getByTestId(
               "themed-select-state-union-type-" + formikFieldName("testField"),
@@ -2021,6 +2065,18 @@ export function getJzodUnionEditorTests(
               { timeout: 5000 },
             );
 
+            // Verify selector is closed after selection
+            await waitFor(
+              () => {
+                expect(
+                  container.querySelector(
+                    `[data-testid="union-type-input-${formikFieldName("testField")}"]`,
+                  ),
+                ).toBeNull();
+              },
+              { timeout: 3000 },
+            );
+
             const valuesAfterChange: Record<string, any> = extractValuesFromRenderedElements(
               expect,
               undefined,
@@ -2032,10 +2088,103 @@ export function getJzodUnionEditorTests(
             expect(testResultAfterChange).toEqual({
               a: "",
               b: 0,
-              "union-type-TESTSECTION": { // TODO: filter out "union-type-TESTSECTION" before this assertion, it's only used for the union type selector and should not be part of the form values 
-                testField: "object",
-              },
             });
+          },
+        },
+        "union type star button is visible but selector is initially hidden": {
+          props: {
+            label: "Test Label",
+            name: "testField",
+            listKey: "ROOT.testField",
+            rootLessListKey: "testField",
+            rootLessListKeyArray: ["testField"],
+            rawJzodSchema: {
+              type: "union",
+              definition: [{ type: "string" }, { type: "number" }],
+            },
+            initialFormState: 42,
+          },
+          tests: async (expect: ExpectStatic, container: Container) => {
+            // Star is visible
+            expect(screen.getByTestId("union-type-star-" + formikFieldName("testField"))).toBeTruthy();
+            // Selector is not rendered initially
+            expect(
+              container.querySelector(`[data-testid="union-type-input-${formikFieldName("testField")}"]`),
+            ).toBeNull();
+          },
+        },
+        "union type star button toggle shows then hides selector": {
+          props: {
+            label: "Test Label",
+            name: "testField",
+            listKey: "ROOT.testField",
+            rootLessListKey: "testField",
+            rootLessListKeyArray: ["testField"],
+            rawJzodSchema: {
+              type: "union",
+              definition: [{ type: "string" }, { type: "number" }],
+            },
+            initialFormState: 42,
+          },
+          tests: async (expect: ExpectStatic, container: Container) => {
+            const starButton = screen.getByTestId("union-type-star-" + formikFieldName("testField"));
+
+            // Click star: selector appears
+            await act(async () => {
+              fireEvent.click(starButton);
+            });
+            await waitFor(() => {
+              expect(
+                container.querySelector(`[data-testid="union-type-input-${formikFieldName("testField")}"]`),
+              ).not.toBeNull();
+            }, { timeout: 1000 });
+
+            // Click star again: selector disappears
+            await act(async () => {
+              fireEvent.click(starButton);
+            });
+            await waitFor(() => {
+              expect(
+                container.querySelector(`[data-testid="union-type-input-${formikFieldName("testField")}"]`),
+              ).toBeNull();
+            }, { timeout: 1000 });
+          },
+        },
+        "union type selector for object value places star and selector above the value": {
+          props: {
+            label: "Test Label",
+            name: "testField",
+            listKey: "ROOT.testField",
+            rootLessListKey: "testField",
+            rootLessListKeyArray: ["testField"],
+            rawJzodSchema: {
+              type: "union",
+              definition: [
+                { type: "string" },
+                { type: "number" },
+                { type: "object", definition: { a: { type: "string" }, b: { type: "number" } } },
+              ],
+            },
+            initialFormState: { a: "hello", b: 1 },
+          },
+          tests: async (expect: ExpectStatic, container: Container) => {
+            const starButton = screen.getByTestId("union-type-star-" + formikFieldName("testField"));
+
+            // Open selector
+            await act(async () => {
+              fireEvent.click(starButton);
+            });
+            const selectorInput = await waitFor(() => {
+              const el = container.querySelector(
+                `[data-testid="union-type-input-${formikFieldName("testField")}"]`,
+              );
+              expect(el).not.toBeNull();
+              return el!;
+            }, { timeout: 1000 });
+
+            // Star and selector are in the same flex row (star's parent contains the selector input)
+            const starParent = starButton.parentElement!;
+            expect(starParent.contains(selectorInput)).toBe(true);
           },
         },
       },
