@@ -21,8 +21,53 @@
             "inputMLSchema": {
               "type": "object",
               "definition": {
-                "inputText": {
-                  "type": "string"
+                "discriminated": {
+                  "type": "union",
+                  "discriminator": "inputType",
+                  "optInDiscriminator": true,
+                  "definition": [
+                    {
+                      "type": "object",
+                      "definition": {
+                        "inputType": {
+                          "type": "literal",
+                          "definition": "A"
+                        }
+                      }
+                    },
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "object",
+                      "definition": {
+                        "inputType": {
+                          "type": "literal",
+                          "definition": "B"
+                        }
+                      }
+                    }
+                  ]
+                },
+                "nonDiscriminated": {
+                  "type": "union",
+                  "definition": [
+                    {
+                      "type": "object",
+                      "definition": {
+                        "inputType": {
+                          "type": "literal",
+                          "definition": "A"
+                        }
+                      }
+                    },
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "number"
+                    }
+                  ]
                 }
               }
             }

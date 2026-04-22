@@ -519,42 +519,6 @@ export function getJzodEnumEditorTests(
                 },
                 { timeout: 1000 }
               );
-
-              // // Type "type2" to filter to the desired option
-              // await user.clear(select);
-              // await user.type(select, "type2");
-
-              // // Wait for filtering to complete
-              // await waitFor(
-              //   () => {
-              //     expect(
-              //       stateTracker.getAttribute("data-test-filter-text"),
-              //       "data-test-filter-text"
-              //     ).toBe("type2");
-              //     expect(
-              //       stateTracker.getAttribute("data-test-filtered-options-count"),
-              //       "data-test-filtered-options-count"
-              //     ).toBe("1");
-              //   },
-              //   { timeout: 1000 }
-              // );
-
-              // // Press Enter to select the option
-              // await user.keyboard("{Enter}");
-
-              // // Wait for selection to complete and dropdown to close
-              // await waitFor(
-              //   () => {
-              //     expect(stateTracker.getAttribute("data-test-is-open"), "data-test-is-open").toBe(
-              //       "false"
-              //     );
-              //     expect(
-              //       stateTracker.getAttribute("data-test-selected-value"),
-              //       "data-test-selected-value"
-              //     ).toBe("type2");
-              //   },
-              //   { timeout: 2000 }
-              // );
             });
 
 
@@ -1685,8 +1649,8 @@ export function getJzodUnionEditorTests(
               expect,
               [],
               container,
-              testSectionName,//formikFieldName("testField"),
-              "initial form state"
+              testSectionName, //formikFieldName("testField"),
+              "initial form state",
             );
             const testResult = formValuesToJSON(values);
             expect(testResult).toEqual({ testField: 42 });
@@ -1710,16 +1674,13 @@ export function getJzodUnionEditorTests(
               },
               initialFormState: 42,
             },
-
             tests: async (expect: ExpectStatic, container: Container) => {
-              // const input = screen.getByRole("textbox");
-              // expect(input).toBeInTheDocument();
               const values: Record<string, any> = extractValuesFromRenderedElements(
                 expect,
                 [],
                 container,
-                testSectionName,//formikFieldName("testField"),
-                "initial form state"
+                testSectionName,
+                "initial form state",
               );
               const testResult = formValuesToJSON(values);
               expect(testResult).toEqual({ testField: 42 });
@@ -1745,20 +1706,13 @@ export function getJzodUnionEditorTests(
               b: 42,
             },
           },
-
           tests: async (expect: ExpectStatic, container: Container) => {
-            // const inputs = screen.getAllByRole("textbox");
-            // const values: Record<string, any> = {};
-            // inputs.forEach((input: HTMLElement) => {
-            //   const name = (input as HTMLInputElement).name.replace(/^testField\./, "");
-            //   values[name] = (input as HTMLInputElement).value || Number((input as HTMLInputElement).value);
-            // });
             const values: Record<string, any> = extractValuesFromRenderedElements(
               expect,
               [],
               container,
               formikFieldName("testField"),
-              "initial form state"
+              "initial form state",
             );
             const testResult = formValuesToJSON(values);
             expect(testResult).toEqual({ a: "test string", b: 42 });
@@ -1802,9 +1756,8 @@ export function getJzodUnionEditorTests(
                 expect,
                 undefined,
                 container,
-                // formikFieldName("testField"),
                 formikFieldName("testField"),
-                "initial form state"
+                "initial form state",
               );
               // const initialFormState = formValuesToJSON(values, testSectionName);
               // screen.debug(undefined, Infinity); // Prints entire DOM with no size limit
@@ -1816,19 +1769,21 @@ export function getJzodUnionEditorTests(
               });
               expect(values).toEqual({ type1Attribute: "test string", testObjectType: "type1" });
 
-              screen.debug(undefined, Infinity); // Prints entire DOM with no size limit
+              // screen.debug(undefined, Infinity); // Prints entire DOM with no size limit
               // Find the discriminator select element and state tracker
               const user = userEvent.setup();
               const select = screen.getByDisplayValue("type1") as HTMLSelectElement;
-              const stateTracker = screen.getByTestId("themed-select-state-" + formikFieldName("testField.testObjectType"));
+              const stateTracker = screen.getByTestId(
+                "themed-select-state-" + formikFieldName("testField.testObjectType"),
+              );
 
               expect(select.value).toBe("type1"); // initial value
               expect(
                 stateTracker.getAttribute("data-test-selected-value"),
-                "data-test-selected-value"
+                "data-test-selected-value",
               ).toBe("type1");
               expect(stateTracker.getAttribute("data-test-is-open"), "data-test-is-open").toBe(
-                "false"
+                "false",
               );
 
               // Change the discriminator from "type1" to "type2"
@@ -1841,10 +1796,10 @@ export function getJzodUnionEditorTests(
                   () => {
                     expect(
                       stateTracker.getAttribute("data-test-is-open"),
-                      "data-test-is-open"
+                      "data-test-is-open",
                     ).toBe("true");
                   },
-                  { timeout: 1000 }
+                  { timeout: 1000 },
                 );
 
                 // Type "type2" to filter to the desired option
@@ -1856,14 +1811,14 @@ export function getJzodUnionEditorTests(
                   () => {
                     expect(
                       stateTracker.getAttribute("data-test-filter-text"),
-                      "data-test-filter-text"
+                      "data-test-filter-text",
                     ).toBe("type2");
                     expect(
                       stateTracker.getAttribute("data-test-filtered-options-count"),
-                      "data-test-filtered-options-count"
+                      "data-test-filtered-options-count",
                     ).toBe("1");
                   },
-                  { timeout: 1000 }
+                  { timeout: 1000 },
                 );
 
                 // Press Enter to select the option
@@ -1874,14 +1829,14 @@ export function getJzodUnionEditorTests(
                   () => {
                     expect(
                       stateTracker.getAttribute("data-test-is-open"),
-                      "data-test-is-open"
+                      "data-test-is-open",
                     ).toBe("false");
                     expect(
                       stateTracker.getAttribute("data-test-selected-value"),
-                      "data-test-selected-value"
+                      "data-test-selected-value",
                     ).toBe("type2");
                   },
-                  { timeout: 2000 }
+                  { timeout: 2000 },
                 );
               });
 
@@ -1891,7 +1846,7 @@ export function getJzodUnionEditorTests(
                 () => {
                   expect(screen.getAllByText("type2Attribute").length > 0).toBeTruthy();
                 },
-                { timeout: 5000 }
+                { timeout: 5000 },
               );
 
               // Get final values after union form re-rendering
@@ -1900,7 +1855,7 @@ export function getJzodUnionEditorTests(
                 undefined,
                 container,
                 formikFieldName("testField"),
-                "after change to type2"
+                "after change to type2",
               );
               const testResultAfterChange = formValuesToJSON(valuesAfterChange);
               expect(testResultAfterChange).toEqual({
@@ -1909,6 +1864,180 @@ export function getJzodUnionEditorTests(
               });
             },
           },
+        "non-discriminated union can switch type from number to string via union type selector": {
+          props: {
+            label: "Test Label",
+            name: "testField",
+            listKey: "ROOT.testField",
+            rootLessListKey: "testField",
+            rootLessListKeyArray: ["testField"],
+            rawJzodSchema: {
+              type: "union",
+              definition: [{ type: "string" }, { type: "number" }],
+            },
+            initialFormState: 42,
+          },
+          tests: async (expect: ExpectStatic, container: Container) => {
+            // Verify the union type selector is present and shows the current type "number"
+            const stateTracker = screen.getByTestId(
+              "themed-select-state-union-type-" + formikFieldName("testField"),
+            );
+            expect(stateTracker.getAttribute("data-test-selected-value")).toBe("number");
+
+            const unionTypeInput = screen.getByTestId(
+              "union-type-input-" + formikFieldName("testField"),
+            ) as HTMLInputElement;
+
+            const user = userEvent.setup();
+
+            await act(async () => {
+              // Click to open the dropdown
+              fireEvent.click(unionTypeInput);
+
+              // Wait for dropdown to open
+              await waitFor(
+                () => {
+                  expect(stateTracker.getAttribute("data-test-is-open")).toBe("true");
+                },
+                { timeout: 1000 },
+              );
+
+              // Type "string" to filter to the desired option
+              await user.clear(unionTypeInput);
+              await user.type(unionTypeInput, "string");
+
+              // Wait for filtering to complete
+              await waitFor(
+                () => {
+                  expect(stateTracker.getAttribute("data-test-filter-text")).toBe("string");
+                  expect(stateTracker.getAttribute("data-test-filtered-options-count")).toBe("1");
+                },
+                { timeout: 1000 },
+              );
+
+              // Press Enter to select the option
+              await user.keyboard("{Enter}");
+
+              // Wait for selection to complete and dropdown to close
+              await waitFor(
+                () => {
+                  expect(stateTracker.getAttribute("data-test-is-open")).toBe("false");
+                  expect(stateTracker.getAttribute("data-test-selected-value")).toBe("string");
+                },
+                { timeout: 2000 },
+              );
+            });
+
+            // Verify value was reset to default string
+            await waitFor(
+              () => {
+                const valuesAfterChange: Record<string, any> = extractValuesFromRenderedElements(
+                  expect,
+                  [],
+                  container,
+                  testSectionName,
+                  "after change to string",
+                );
+                const testResult = formValuesToJSON(valuesAfterChange);
+                expect(testResult).toEqual({ testField: "" });
+              },
+              { timeout: 3000 },
+            );
+          },
+        },
+        "non-discriminated union can switch type from number to object via union type selector": {
+          props: {
+            label: "Test Label",
+            name: "testField",
+            listKey: "ROOT.testField",
+            rootLessListKey: "testField",
+            rootLessListKeyArray: ["testField"],
+            rawJzodSchema: {
+              type: "union",
+              definition: [
+                { type: "string" },
+                { type: "number" },
+                { type: "object", definition: { a: { type: "string" }, b: { type: "number" } } },
+              ],
+            },
+            initialFormState: 42,
+          },
+          tests: async (expect: ExpectStatic, container: Container) => {
+            // Verify the union type selector shows the current type "number"
+            const stateTracker = screen.getByTestId(
+              "themed-select-state-union-type-" + formikFieldName("testField"),
+            );
+            expect(stateTracker.getAttribute("data-test-selected-value")).toBe("number");
+
+            const unionTypeInput = screen.getByTestId(
+              "union-type-input-" + formikFieldName("testField"),
+            ) as HTMLInputElement;
+
+            const user = userEvent.setup();
+
+            await act(async () => {
+              // Click to open the dropdown
+              fireEvent.click(unionTypeInput);
+
+              // Wait for dropdown to open
+              await waitFor(
+                () => {
+                  expect(stateTracker.getAttribute("data-test-is-open")).toBe("true");
+                },
+                { timeout: 1000 },
+              );
+
+              // Type "object" to filter to the desired option
+              await user.clear(unionTypeInput);
+              await user.type(unionTypeInput, "object");
+
+              // Wait for filtering to complete
+              await waitFor(
+                () => {
+                  expect(stateTracker.getAttribute("data-test-filter-text")).toBe("object");
+                  expect(stateTracker.getAttribute("data-test-filtered-options-count")).toBe("1");
+                },
+                { timeout: 1000 },
+              );
+
+              // Press Enter to select the option
+              await user.keyboard("{Enter}");
+
+              // Wait for selection to complete
+              await waitFor(
+                () => {
+                  expect(stateTracker.getAttribute("data-test-is-open")).toBe("false");
+                  expect(stateTracker.getAttribute("data-test-selected-value")).toBe("object");
+                },
+                { timeout: 2000 },
+              );
+            });
+
+            // Verify value was reset to default object
+            await waitFor(
+              () => {
+                expect(screen.getAllByText("a").length > 0).toBeTruthy();
+              },
+              { timeout: 5000 },
+            );
+
+            const valuesAfterChange: Record<string, any> = extractValuesFromRenderedElements(
+              expect,
+              undefined,
+              container,
+              formikFieldName("testField"),
+              "after change to object",
+            );
+            const testResultAfterChange = formValuesToJSON(valuesAfterChange);
+            expect(testResultAfterChange).toEqual({
+              a: "",
+              b: 0,
+              "union-type-TESTSECTION": { // TODO: filter out "union-type-TESTSECTION" before this assertion, it's only used for the union type selector and should not be part of the form values 
+                testField: "object",
+              },
+            });
+          },
+        },
       },
     },
   };

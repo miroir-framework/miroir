@@ -422,7 +422,7 @@ export const getJzodElementEditorForTest: (pageLabel: string) => React.FC<JzodEl
       applicationDeploymentMap
     );
 
-    const currentMiroirModel = useCurrentModel(selfApplicationMiroir.uuid, defaultSelfApplicationDeploymentMap);
+    // const currentMiroirModel = useCurrentModel(selfApplicationMiroir.uuid, defaultSelfApplicationDeploymentMap);
     const currentMiroirModelEnvironment = useCurrentModelEnvironment(
       selfApplicationMiroir.uuid,
       defaultSelfApplicationDeploymentMap
@@ -1229,9 +1229,11 @@ export function extractValuesFromRenderedElements(
   // Single DOM query to get all relevant elements at once
   const allInputs =
     !filter || filter.includes("input")
+      // ? Array.from(searchRoot.querySelectorAll("input[name]:not([role='combobox']), input[id]:not([role='combobox'])")).filter(
       ? Array.from(searchRoot.querySelectorAll("input[name], input[id]")).filter(
           (el) =>
             !(el.id && el.id.startsWith("displayAsStructuredElementSwitch")) &&
+            !(el.getAttribute("data-union-type-selector") === "true") &&
             !(
               (el as any).name &&
               // (el as any).name.startsWith("meta") &&

@@ -111,7 +111,7 @@ const handleDiscriminatorChange = (
       "selectedValue",
       selectedValue,
     );
-    const resolveUnionResult = jzodUnionResolvedTypeForObject(
+    const resolveUnionResult = jzodUnionResolvedTypeForObject( 
       parentKeyMap.recursivelyUnfoldedUnionSchema.result,
       parentKeyMap.rawSchema as JzodUnion,
       parentKeyMap.discriminator,
@@ -255,10 +255,8 @@ export const JzodEnumEditor: FC<JzodEnumEditorProps> = ({
   readOnly,
   onChangeVector,
 }: JzodEnumEditorProps) => {
-  // const currentValue = resolvePathOnObject(props.formik.values, props.rootLessListKeyArray);
-
   const formik = useFormikContext<Record<string, any>>();
-  const context = useMiroirContextService();
+  // const context = useMiroirContextService();
 
   const parentKey = rootLessListKey.includes(".")
     ? rootLessListKey.substring(0, rootLessListKey.lastIndexOf("."))
@@ -267,7 +265,6 @@ export const JzodEnumEditor: FC<JzodEnumEditorProps> = ({
   const currentKeyMap = typeCheckKeyMap ? typeCheckKeyMap[rootLessListKey] : undefined;
   const rawJzodSchema = currentKeyMap?.rawSchema;
   const currentEnumSchema: JzodElement | undefined = currentKeyMap?.resolvedSchema;
-  const currentReportSectionFormikValues = formik.values[reportSectionPathAsString] ?? formik.values;
   const formikRootLessListKeyArray = [reportSectionPathAsString, ...rootLessListKeyArray];
   const formikRootLessListKey = formikRootLessListKeyArray.join(".");
 
@@ -302,25 +299,12 @@ export const JzodEnumEditor: FC<JzodEnumEditorProps> = ({
     parentKeyMap?.discriminatorValues &&
     discriminatorIndex !== -1;
 
-  // if (isDiscriminator && discriminatorIndex === -1) {
-  //   throw new Error(
-  //     `JzodEnumEditor: isDiscriminator is true but could not find discriminator index for name "${name}" in parentKeyMap.discriminator ${parentKeyMap?.discriminator} with values ${parentKeyMap?.discriminatorValues}`
-  //   );
-  // }
 
   // Create the model environment needed for discriminator change handling
   const currentMiroirModelEnvironment: MiroirModelEnvironment = useCurrentModelEnvironment(
     currentApplication,
     appliationDeploymentMap
   );
-  // const currentMiroirModelEnvironment: MiroirModelEnvironment = useMemo(() => {
-  //   return {
-  //     miroirFundamentalJzodSchema:
-  //       currentMiroirFundamentalJzodSchema ?? (miroirFundamentalJzodSchema as MlSchema),
-  //     currentModel,
-  //     miroirMetaModel: miroirMetaModel,
-  //   };
-  // }, [currentMiroirFundamentalJzodSchema, currentModel, miroirMetaModel]);
 
   // Handler for discriminator select change (using common function)
   const handleSelectEnumChange = useCallback(
@@ -363,26 +347,22 @@ export const JzodEnumEditor: FC<JzodEnumEditorProps> = ({
       ? parentKeyMap.discriminatorValues[discriminatorIndex]
       : [];
 
-  // Memoize the menu items for better performance
   const menuItems = useMemo(() => {
     if (isDiscriminator && parentKeyMap?.discriminatorValues) {
       return currentDiscriminatorValues.sort().map((v, index) => (
-        // <option key={v} value={v} aria-label={rootLessListKey + "." + index}>
         <option key={v} value={v} aria-label={formikRootLessListKey + "." + index}>
           {v}
         </option>
       ));
     } else {
       return (currentEnumSchema?.type == "enum"?currentEnumSchema.definition:[]).map((v, index) => (
-        // <option key={v} value={v} aria-label={rootLessListKey + "." + index}>
         <option key={v} value={v} aria-label={formikRootLessListKey + "." + index}>
           {v}
         </option>
       ));
     }
-  }, [isDiscriminator, parentKeyMap, rawJzodSchema, formikRootLessListKey]);
+  }, [isDiscriminator, parentKeyMap, formikRootLessListKey]);
 
-  // Memoize the select options for the filterable select
   const selectOptions = useMemo(() => {
     if (isDiscriminator && parentKeyMap?.discriminatorValues) {
       return currentDiscriminatorValues.sort().map((v) => ({
@@ -397,7 +377,7 @@ export const JzodEnumEditor: FC<JzodEnumEditorProps> = ({
     }
   }, [isDiscriminator, parentKeyMap, currentEnumSchema, currentDiscriminatorValues]);
 
-  // Handler for the new filterable select component
+  // Handler for the filterable select component
   const handleFilterableSelectEnumChange = useCallback(
     (event: React.ChangeEvent<HTMLSelectElement>) => {
       const selectedValue = event.target.value;
@@ -447,13 +427,11 @@ export const JzodEnumEditor: FC<JzodEnumEditorProps> = ({
 
   const editor = useMemo(() => {
     if (readOnly) {
-      // const currentValue = formik.getFieldProps(rootLessListKey).value;
       const currentValue = formik.getFieldProps(formikRootLessListKey).value;
       return <ThemedDisplayValue value={currentValue} type="enum" />;
     }
 
     if (currentEnumSchema?.type === "enum") {
-      // const currentValue = formik.getFieldProps(rootLessListKey).value;
       const currentValue = formik.getFieldProps(formikRootLessListKey).value;
 
       return (

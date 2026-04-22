@@ -69,12 +69,6 @@ MiroirLoggerFactory.registerLoggerToStart(
 // ################################################################################################
 // ################################################################################################
 export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
-  // const runnerName: string = "transformerEditor";
-  // const runnerLabel: string = "Transformer Editor";
-
-  // const formikPath_inputDeploymentUuid: string = "transformerEditor_input.defaultInput";
-  // const formikPath_entityInstances: string = "transformerEditor_input.defaultInput";
-
   const {
     deploymentUuid: initialDeploymentUuid,
     entityUuid: initialEntityUuid,
@@ -93,7 +87,6 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
 
   // Get persisted state from context
   const persistedState = context.toolsPageState.transformerEditor;
-  // const currentMode: "here" | "defined" = persistedState?.mode || "here";
   const currentHereTransformerDefinition: CoreTransformerForBuildPlusRuntime =
     persistedState?.currentTransformerDefinition ?? { transformerType: "returnValue", value: null };
   // ##############################################################################################
@@ -567,7 +560,7 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
                             type: "schemaReference",
                             definition: {
                               absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                              relativePath: "transformerForBuildPlusRuntime",
+                              relativePath: "coreTransformerForBuildPlusRuntime",
                             },
                           },
                         },
@@ -623,7 +616,7 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
                             optional: true,
                             definition: {
                               absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                              relativePath: "transformerForBuildPlusRuntime",
+                              relativePath: "coreTransformerForBuildPlusRuntime",
                             },
                           },
                         },
@@ -685,7 +678,7 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
                         type: "schemaReference",
                         definition: {
                           absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                          relativePath: "transformerForBuildPlusRuntime",
+                          relativePath: "coreTransformerForBuildPlusRuntime",
                         },
                       },
                     },
