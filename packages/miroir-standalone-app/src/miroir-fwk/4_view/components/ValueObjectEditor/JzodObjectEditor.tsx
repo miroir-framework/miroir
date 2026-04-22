@@ -342,7 +342,6 @@ const ProgressiveAttribute: FC<{
             currentApplicationSection={currentApplicationSection}
             currentDeploymentUuid={currentDeploymentUuid}
             typeCheckKeyMap={typeCheckKeyMap}
-            resolvedElementJzodSchemaDEFUNCT={currentAttributeDefinition}
             foreignKeyObjects={foreignKeyObjects}
             insideAny={insideAny}
             optional={definedOptionalAttributes.has(attribute[0])}

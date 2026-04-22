@@ -5,28 +5,20 @@ import {
   LoggerInterface,
   MiroirLoggerFactory,
   mStringify,
-  ReduxDeploymentsState,
-  SyncBoxedExtractorOrQueryRunnerMap,
   transformer_extended_apply_wrapper,
   type MetaModel,
   type MiroirModelEnvironment
 } from "miroir-core";
 
-import {
-  getMemoizedReduxDeploymentsStateSelectorMap,
-  ReduxStateWithUndoRedo,
-  useSelector,
-} from "miroir-react";
-import { JsonDisplayHelper } from "miroir-react";
-import { useMiroirContextService } from "miroir-react";
+import { JsonDisplayHelper, useMiroirContextService } from "miroir-react";
 import { packageName } from "../../../../constants";
 import { cleanLevel } from "../../constants";
 import { useCurrentModelEnvironment } from "../../ReduxHooks";
 import { ThemedStatusText } from "../Themes/BasicComponents";
 import { FileSelector } from "../Themes/FileSelector.js";
-import { ThemedSwitch } from "../Themes/UIComponents.js";
 import { useJzodElementEditorHooks } from "./JzodElementEditorHooks";
 import { JzodAnyEditorProps } from "./JzodElementEditorInterface";
+import { JzodElementEditor } from "./JzodElementEditor";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -58,7 +50,7 @@ export const JzodAnyEditor: React.FC<JzodAnyEditorProps> = (
     // currentApplicationSection,
     // foreignKeyObjects,
     // resolvedElementJzodSchemaDEFUNCT, // handleSelectLiteralChange,
-    // labelElement,
+    labelElement,
     insideAny,
     // readOnly,
     // typeCheckKeyMap,
@@ -308,26 +300,52 @@ export const JzodAnyEditor: React.FC<JzodAnyEditorProps> = (
     );
   }
 
-  if (localResolvedElementJzodSchemaBasedOnValue?.type === "any") {
-    return (
-      <>
-        {props.submitButton ?? <></>}
-        JzodAnyEditor rendering as JzodElementEditorReactCodeMirror 1 format: {format}
-      </>
-    );
-  }
 
   return (
     <div key={rootLessListKey}>
       {/* <ThemedOnScreenHelper label="JzodAnyEditor" data={rootLessListKey} /> */}
-      <JsonDisplayHelper debug={true}
-        componentName="JzodAnyEditor"
-        elements={[{
-          label: `JzodAnyEditor Render ${JzodAnyEditorRenderCount} for ${rootLessListKey} general case`,
-          data: {currentValueObject, currentValueObjectAtKey, currentTypecheckKeyMap},
-          useCodeBlock: true,
-        }]}
+      <JsonDisplayHelper
+        debug={true}
+        componentName={`JzodAnyEditor ${localResolvedElementJzodSchemaBasedOnValue?.type}`}
+        elements={[
+          {
+            label: `JzodAnyEditor Render ${JzodAnyEditorRenderCount} for ${rootLessListKey} general case`,
+            data: { currentValueObject, currentValueObjectAtKey, localResolvedElementJzodSchemaBasedOnValue, currentTypecheckKeyMap },
+            useCodeBlock: true,
+          },
+        ]}
       />
+      {localResolvedElementJzodSchemaBasedOnValue &&
+        localResolvedElementJzodSchemaBasedOnValue.type !== "any" && (
+          // NOT USED IN PRACTICE: the JzodAnyEditor is used by JzodElementEditor only when rawSchema type is "nay" and currentTypecheckKeyMap?.rawSchema?.tag?.value?.display?.any?.format is true
+          <JzodElementEditor
+            valueObjectEditMode={props.valueObjectEditMode}
+            name={props.name}
+            labelElement={props.labelElement}
+            listKey={props.listKey}
+            rootLessListKey={props.rootLessListKey}
+            rootLessListKeyArray={props.rootLessListKeyArray}
+            reportSectionPathAsString={props.reportSectionPathAsString}
+            currentApplication={props.currentApplication}
+            applicationDeploymentMap={props.applicationDeploymentMap}
+            currentDeploymentUuid={props.currentDeploymentUuid}
+            currentApplicationSection={props.currentApplicationSection}
+            typeCheckKeyMap={props.typeCheckKeyMap}
+            foreignKeyObjects={props.foreignKeyObjects}
+            submitButton={props.submitButton}
+            readOnly={props.readOnly}
+            indentLevel={props.indentLevel}
+            insideAny={true} // important to avoid infinite recursion between JzodAnyEditor and JzodElementEditor when type is "any"
+            displayError={props.displayError}
+            onChangeVector={props.onChangeVector}
+          />
+        )}
+      {!localResolvedElementJzodSchemaBasedOnValue ||
+        (localResolvedElementJzodSchemaBasedOnValue.type === "any" && (
+          <div style={{ display: "flex", flexFlow: "row nowrap", justifyContent: "flex-start" }}>
+            {labelElement ?? <>{label}</>}:{JSON.stringify(currentValueObjectAtKey, null, 2)}
+          </div>
+        ))}
     </div>
   );
 };

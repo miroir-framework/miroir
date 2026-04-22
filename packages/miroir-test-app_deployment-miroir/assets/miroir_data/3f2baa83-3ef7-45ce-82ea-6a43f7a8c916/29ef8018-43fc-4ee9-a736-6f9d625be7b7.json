@@ -68,6 +68,17 @@
                       "type": "number"
                     }
                   ]
+                },
+                "any": {
+                  "type": "any",
+                  "tag": {
+                    "value": {
+                      "initializeTo": {
+                        "initializeToType": "value",
+                        "value": "seize value..."
+                      }
+                    }
+                  }
                 }
               }
             }

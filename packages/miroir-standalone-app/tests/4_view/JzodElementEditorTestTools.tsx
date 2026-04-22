@@ -568,9 +568,7 @@ export const getJzodElementEditorForTest: (pageLabel: string) => React.FC<JzodEl
                         reportSectionPathAsString="TESTSECTION"
                         labelElement={labelElement}
                         currentApplicationSection={"data"}
-                        resolvedElementJzodSchemaDEFUNCT={resolvedJzodSchema.resolvedSchema}
                         typeCheckKeyMap={resolvedJzodSchema.keyMap}
-                        // localRootLessListKeyMap={localRootLessListKeyMap}
                         foreignKeyObjects={emptyObject}
                         indentLevel={0}
                       />

@@ -535,6 +535,16 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
                 padding: "10px",
               }}
             >
+              {JSON.stringify(reportSectionDefinitionFromFormik.definition.inputMLSchema, null, 2)}
+            </pre>
+            <pre
+              style={{
+                maxHeight: "400px",
+                overflow: "auto",
+                backgroundColor: "#f0f0f0",
+                padding: "10px",
+              }}
+            >
               {JSON.stringify(
                 formik.values && props.reportSectionPath
                   ? formik.values[
@@ -545,16 +555,6 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
                 null,
                 2,
               )}
-            </pre>
-            <pre
-              style={{
-                maxHeight: "400px",
-                overflow: "auto",
-                backgroundColor: "#f0f0f0",
-                padding: "10px",
-              }}
-            >
-              {JSON.stringify(reportSectionDefinitionFromFormik.definition.inputMLSchema, null, 2)}
             </pre>
             <TypedValueObjectEditor
               labelElement={<h2>Report Input</h2>}

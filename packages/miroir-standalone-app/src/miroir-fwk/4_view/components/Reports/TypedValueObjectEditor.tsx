@@ -577,9 +577,6 @@ const TypedValueObjectEditorInner: React.FC<TypedValueObjectEditorProps> = ({
               applicationDeploymentMap={applicationDeploymentMap}
               currentDeploymentUuid={deploymentUuid}
               currentApplicationSection={applicationSection}
-              resolvedElementJzodSchemaDEFUNCT={
-                jzodTypeCheckResult?.status == "ok" ? jzodTypeCheckResult.resolvedSchema : undefined
-              }
               hasTypeError={typeError != undefined}
               typeCheckKeyMap={
                 jzodTypeCheckResult?.status == "ok" ? jzodTypeCheckResult.keyMap : {}
@@ -634,7 +631,6 @@ const TypedValueObjectEditorInner: React.FC<TypedValueObjectEditorProps> = ({
               applicationDeploymentMap={applicationDeploymentMap}
               currentDeploymentUuid={deploymentUuid}
               currentApplicationSection={applicationSection}
-              resolvedElementJzodSchemaDEFUNCT={resolvedElementJzodSchema}
               hasTypeError={typeError != undefined}
               typeCheckKeyMap={
                 jzodTypeCheckResult?.status == "ok" ? jzodTypeCheckResult.keyMap : {}

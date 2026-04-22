@@ -145,7 +145,6 @@ interface ProgressiveArrayItemProps {
   rootLessListKeyArray: (string | number)[];
   reportSectionPathAsString: string;
   currentArrayElementRawDefinitionDEFUNCT: JzodElement | undefined;
-  resolvedElementJzodSchemaDEFUNCT: JzodElement | undefined;
   typeCheckKeyMap?: Record<string, KeyMapEntry>;
   usedIndentLevel: number;
   currentApplication: Uuid;
@@ -180,7 +179,6 @@ const ProgressiveArrayItem: React.FC<ProgressiveArrayItemProps> = ({
   rootLessListKeyArray,
   reportSectionPathAsString,
   currentArrayElementRawDefinitionDEFUNCT,
-  resolvedElementJzodSchemaDEFUNCT,
   typeCheckKeyMap,
   usedIndentLevel,
   currentDeploymentUuid,
@@ -272,12 +270,6 @@ const ProgressiveArrayItem: React.FC<ProgressiveArrayItemProps> = ({
                     formikValues: formik.values,
                     // rawJzodSchema: currentArrayElementRawDefinition.element,
                     rawJzodSchema: currentArrayElementRawDefinitionDEFUNCT,
-                    localResolvedElementJzodSchemaBasedOnValue:
-                      resolvedElementJzodSchemaDEFUNCT?.type == "array"
-                        ? ((resolvedElementJzodSchemaDEFUNCT as JzodArray)?.definition as any)
-                        : ((resolvedElementJzodSchemaDEFUNCT as JzodTuple).definition[
-                            index
-                          ] as JzodElement),
                   }}
                 />
               )}
@@ -305,13 +297,6 @@ const ProgressiveArrayItem: React.FC<ProgressiveArrayItemProps> = ({
                 }
                 rootLessListKeyArray={[...rootLessListKeyArray, "" + index]}
                 reportSectionPathAsString={reportSectionPathAsString}
-                resolvedElementJzodSchemaDEFUNCT={
-                  resolvedElementJzodSchemaDEFUNCT?.type == "array"
-                    ? ((resolvedElementJzodSchemaDEFUNCT as JzodArray)?.definition as any)
-                    : ((resolvedElementJzodSchemaDEFUNCT as JzodTuple).definition[
-                        index
-                      ] as JzodElement)
-                }
                 typeCheckKeyMap={typeCheckKeyMap}
                 foreignKeyObjects={foreignKeyObjects}
                 insideAny={insideAny}
@@ -344,7 +329,6 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
     rootLessListKey,
     rootLessListKeyArray,
     reportSectionPathAsString,
-    resolvedElementJzodSchemaDEFUNCT: resolvedElementJzodSchema,
     typeCheckKeyMap,
     currentDeploymentUuid,
     currentApplicationSection,
@@ -708,7 +692,6 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
                   rootLessListKeyArray={rootLessListKeyArray}
                   reportSectionPathAsString={reportSectionPathAsString}
                   currentArrayElementRawDefinitionDEFUNCT={currentArrayElementRawDefinitionDEFUNCT}
-                  resolvedElementJzodSchemaDEFUNCT={resolvedElementJzodSchema}
                   typeCheckKeyMap={typeCheckKeyMap}
                   usedIndentLevel={usedIndentLevel}
                   currentApplication={props.currentApplication}
@@ -736,7 +719,6 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
       rootLessListKey,
       formik.values,
       formikRootLessListKey,
-      resolvedElementJzodSchema,
       typeCheckKeyMap,
       currentDeploymentUuid,
       currentApplicationSection,

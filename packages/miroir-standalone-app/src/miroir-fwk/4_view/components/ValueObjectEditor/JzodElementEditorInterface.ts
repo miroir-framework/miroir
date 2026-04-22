@@ -41,7 +41,6 @@ export interface JzodEditorPropsRoot {
   rootLessListKeyArray: (string | number)[];
   reportSectionPathAsString: string;
   initialFormState?: any;
-  resolvedElementJzodSchemaDEFUNCT: JzodElement | undefined; // TODO: remove (?) this is included in typeCheckKeyMap
   typeCheckKeyMap: Record<string, KeyMapEntry> | undefined;
   // objects
   foreignKeyObjects: Record<string, EntityInstancesUuidIndex>; // prop drilling: for uuid / objects only
@@ -75,8 +74,6 @@ export interface JzodElementEditorProps extends JzodEditorPropsRoot {
 export interface JzodArrayEditorProps extends JzodEditorPropsRoot {
   currentDeploymentUuid?: Uuid,
   currentApplicationSection?: ApplicationSection;
-  resolvedElementJzodSchemaDEFUNCT: JzodElement | undefined;
-  // unfoldedRawSchema: JzodArray;
   indentLevel?: number;
   itemsOrder: any[];
   displayAsStructuredElementSwitch?: JSX.Element; // used to display switches in the editor
@@ -96,7 +93,7 @@ export interface JzodLiteralEditorProps extends JzodEditorPropsRoot {
 }
 
 // #################################################################################################
-export interface JzodAnyEditorProps extends JzodEditorPropsRoot {
+export interface JzodAnyEditorProps extends JzodElementEditorProps {
   submitButton?: JSX.Element; // used to display a submit button in the editor
 
   // visible?: boolean;
@@ -128,6 +125,7 @@ export type JzodElementEditorReactCodeMirrorProps = {
   initialValue: any;
   // rawJzodSchema: JzodElement;
   // formik: any; // Formik instance
+  labelElement?: JSX.Element; // used to display a label in the editor
   formikRootLessListKey: string;
   codeMirrorValue: string;
   setCodeMirrorValue: React.Dispatch<React.SetStateAction<string>>;

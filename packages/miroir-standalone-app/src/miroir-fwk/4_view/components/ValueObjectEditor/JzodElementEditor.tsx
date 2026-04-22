@@ -692,7 +692,11 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
       // Handle RAW "any" type
       if (
         (
-          currentKeyMap?.rawSchema?.type === "any" ||
+          (
+            currentKeyMap?.rawSchema.type === "any"
+            && // TODO: passing through the JzodAnyEditor does not give the same result as going on in the current JzodElementEditor, although it should
+            currentKeyMap?.rawSchema.tag?.value?.display?.any?.format
+          ) ||
           localResolvedElementJzodSchemaBasedOnValue.type === "any"
         ) &&
         !props.insideAny
@@ -700,7 +704,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
         return (
           <>
             <JsonDisplayHelper debug={true}
-              componentName="JzodElementEditor"
+              componentName="JzodElementEditor for Any"
               elements={[
                 {
                   label: `rendering JzodAnyEditor for 'any' type at ${props.rootLessListKey || "ROOT"}`,
@@ -720,10 +724,10 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
               applicationDeploymentMap={props.applicationDeploymentMap}
               currentDeploymentUuid={props.currentDeploymentUuid}
               currentApplicationSection={props.currentApplicationSection}
-              resolvedElementJzodSchemaDEFUNCT={localResolvedElementJzodSchemaBasedOnValue}
               typeCheckKeyMap={props.typeCheckKeyMap}
               foreignKeyObjects={props.foreignKeyObjects}
               submitButton={props.submitButton}
+              indentLevel={props.indentLevel}
               readOnly={props.readOnly}
               insideAny={props.insideAny}
               displayError={props.displayError}
@@ -768,7 +772,6 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
               rootLessListKey={props.rootLessListKey}
               rootLessListKeyArray={props.rootLessListKeyArray}
               reportSectionPathAsString={props.reportSectionPathAsString}
-              resolvedElementJzodSchemaDEFUNCT={localResolvedElementJzodSchemaBasedOnValue}
               typeCheckKeyMap={ props.typeCheckKeyMap }
               currentApplication={props.currentApplication}
               applicationDeploymentMap={props.applicationDeploymentMap}
@@ -799,7 +802,6 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
               rootLessListKeyArray={props.rootLessListKeyArray}
               rootLessListKey={props.rootLessListKey}
               reportSectionPathAsString={props.reportSectionPathAsString}
-              resolvedElementJzodSchemaDEFUNCT={localResolvedElementJzodSchemaBasedOnValue}
               typeCheckKeyMap={ props.typeCheckKeyMap }
               indentLevel={props.indentLevel + 1}
               itemsOrder={itemsOrder}
@@ -1181,10 +1183,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
                 currentDeploymentUuid={props.currentDeploymentUuid}
                 reportSectionPathAsString={props.reportSectionPathAsString}
                 foreignKeyObjects={props.foreignKeyObjects}
-                // rawJzodSchema={props.rawJzodSchema as JzodLiteral}
-                resolvedElementJzodSchemaDEFUNCT={localResolvedElementJzodSchemaBasedOnValue}
                 typeCheckKeyMap={ props.typeCheckKeyMap }
-                // localRootLessListKeyMap={props.localRootLessListKeyMap}
                 insideAny={props.insideAny}
                 readOnly={props.readOnly}
                 displayError={props.displayError}
@@ -1210,10 +1209,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
                 rootLessListKey={props.rootLessListKey}
                 rootLessListKeyArray={props.rootLessListKeyArray}
                 reportSectionPathAsString={props.reportSectionPathAsString}
-                // rawJzodSchema={props.rawJzodSchema as any}
-                resolvedElementJzodSchemaDEFUNCT={localResolvedElementJzodSchemaBasedOnValue}
                 typeCheckKeyMap={ props.typeCheckKeyMap }
-                // localRootLessListKeyMap={props.localRootLessListKeyMap}
                 foreignKeyObjects={props.foreignKeyObjects}
                 currentApplication={props.currentApplication}
                 applicationDeploymentMap={props.applicationDeploymentMap}
@@ -1230,7 +1226,9 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
           );
         }
         case "undefined":
-        case "any": { // NOT REACHABLE ? JUST IN THE UNDEFINED CASE ?
+        // case "any": 
+        { // NOT REACHABLE ? JUST IN THE UNDEFINED CASE ?
+
           return (
             <>
             {/* <ThemedOnScreenHelper
@@ -1251,14 +1249,19 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
               applicationDeploymentMap={props.applicationDeploymentMap}
               currentApplicationSection={props.currentApplicationSection}
               currentDeploymentUuid={props.currentDeploymentUuid}
-              resolvedElementJzodSchemaDEFUNCT={localResolvedElementJzodSchemaBasedOnValue}
               typeCheckKeyMap={ props.typeCheckKeyMap }
+              indentLevel={props.indentLevel}
               insideAny={props.insideAny}
               readOnly={props.readOnly}
               displayError={props.displayError}
               onChangeVector={props.onChangeVector}
             />
             </>
+          );
+        }
+        case "any": {
+          throw new Error(
+            `JzodElementEditor: Encountered 'any' type for listKey ${props.listKey} with value ${currentValueObjectAtKey}. This should have been handled by the earlier 'any' case. This is a bug.`
           );
         }
         case "date": {
@@ -1526,6 +1529,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
               setCodeMirrorIsValidJson={setCodeMirrorIsValidJson}
               rootLessListKey={props.rootLessListKey}
               rootLessListKeyArray={props.rootLessListKeyArray}
+              labelElement={enhancedLabelElement}
               hidden={!displayAsCodeEditor}
               insideAny={props.insideAny}
               isUnderTest={isUnderTest}

@@ -146,9 +146,8 @@ export const JzodElementEditorReactCodeMirror: React.FC<JzodElementEditorReactCo
         insideAny: insideAny,
         readOnly: readOnly,
       }}/> */}
-      <span>
-        {jzodSchemaTooltip ?? <></>}
-      </span>
+      {props.labelElement && <span>{props.labelElement}</span>}
+      <span>{jzodSchemaTooltip ?? <></>}</span>
       <ThemedSpan
         style={{
           border: `2px solid ${codeMirrorIsValidJson ? "green" : "red"}`,
@@ -157,10 +156,18 @@ export const JzodElementEditorReactCodeMirror: React.FC<JzodElementEditorReactCo
           minWidth: "40ch",
           display: !hidden && !insideAny ? "inline-flex" : "none", // control visibility with flex
           flexDirection: "column",
-          background: "white"
+          background: "white",
         }}
       >
-        <ThemedSpan style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "8px", marginBottom: "4px" }}>
+        <ThemedSpan
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            gap: "8px",
+            marginBottom: "4px",
+          }}
+        >
           {props.displayAsStructuredElementSwitch && (
             <ThemedSpan>{displayAsStructuredElementSwitch}</ThemedSpan>
           )}
@@ -173,7 +180,7 @@ export const JzodElementEditorReactCodeMirror: React.FC<JzodElementEditorReactCo
                 borderRadius: "3px",
                 padding: "2px 6px",
                 cursor: "pointer",
-                fontWeight: "bold"
+                fontWeight: "bold",
               }}
               onClick={handleFormat}
               title="Format JSON"
@@ -189,7 +196,7 @@ export const JzodElementEditorReactCodeMirror: React.FC<JzodElementEditorReactCo
                 padding: "2px 6px",
                 cursor: codeMirrorIsValidJson ? "pointer" : "not-allowed",
                 fontWeight: "bold",
-                color: codeMirrorIsValidJson ? "green" : "gray"
+                color: codeMirrorIsValidJson ? "green" : "gray",
               }}
               onClick={handleCheck}
               title="Check and Apply JSON"
@@ -203,7 +210,7 @@ export const JzodElementEditorReactCodeMirror: React.FC<JzodElementEditorReactCo
           value={codeMirrorValue}
           extensions={extensions}
           onChange={handleChange}
-          style={{ overflowY: 'auto', width: editorWidth }}
+          style={{ overflowY: "auto", width: editorWidth }}
         />
       </ThemedSpan>
     </span>

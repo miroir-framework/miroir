@@ -814,6 +814,19 @@ export function getMiroirFundamentalJzodSchema(
           type: "union",
           optInDiscriminator: true,
           discriminator: ["transformerType", "interpolation"],
+          tag: {
+            value: {
+              defaultLabel: "Core Transformer for Build and Runtime",
+              description: "Core Transformers with both build and runtime evaluation steps",
+              initializeTo: {
+                initializeToType: "value",
+                value: {
+                  transformerType: "returnValue",
+                  value: 0,
+                },
+              }
+            },
+          },
           definition: [
             {
               type: "string",
