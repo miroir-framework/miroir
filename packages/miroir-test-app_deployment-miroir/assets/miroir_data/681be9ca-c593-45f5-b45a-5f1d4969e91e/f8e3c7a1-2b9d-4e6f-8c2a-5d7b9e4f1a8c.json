@@ -200,10 +200,9 @@
         },
         "expectedValue": {
           "status": "ok",
+          "schemaReferenceName": "a",
           "valuePath": [],
-          "typePath": [
-            "ref:a"
-          ],
+          "typePath": ["ref:a"],
           "rawSchema": {
             "type": "schemaReference",
             "context": {
@@ -235,7 +234,10 @@
                 "type": "string"
               },
               "valuePath": [],
-              "typePath": []
+              "typePath": [],
+              "resolvedReferenceSchemaInContext": {
+                "type": "string"
+              }
             }
           }
         }
@@ -294,6 +296,7 @@
         },
         "expectedValue": {
           "status": "ok",
+          "schemaReferenceName": "myObject",
           "valuePath": [],
           "typePath": ["ref:myObject"],
           "rawSchema": {
@@ -622,7 +625,35 @@
                 }
               },
               "valuePath": [],
-              "typePath": []
+              "typePath": [],
+              "resolvedReferenceSchemaInContext": {
+                "type": "object",
+                "definition": {
+                  "a": {
+                    "type": "union",
+                    "definition": [
+                      {
+                        "type": "string",
+                        "optional": true
+                      },
+                      {
+                        "type": "schemaReference",
+                        "definition": {
+                          "relativePath": "myObject"
+                        }
+                      }
+                    ]
+                  },
+                  "b": {
+                    "type": "string",
+                    "optional": true
+                  },
+                  "c": {
+                    "type": "number",
+                    "optional": true
+                  }
+                }
+              }
             }
           }
         }
@@ -682,8 +713,9 @@
           "currentTypePath": [],
           "relativeReferenceJzodContext": {}
         },
-        "expectedValue": {
+        "expectedValue":  {
           "status": "ok",
+          "schemaReferenceName": "myObject",
           "valuePath": [],
           "typePath": ["ref:myObject"],
           "rawSchema": {
@@ -1437,7 +1469,35 @@
                 }
               },
               "valuePath": [],
-              "typePath": []
+              "typePath": [],
+              "resolvedReferenceSchemaInContext": {
+                "type": "object",
+                "definition": {
+                  "a": {
+                    "type": "union",
+                    "definition": [
+                      {
+                        "type": "string",
+                        "optional": true
+                      },
+                      {
+                        "type": "schemaReference",
+                        "definition": {
+                          "relativePath": "myObject"
+                        }
+                      }
+                    ]
+                  },
+                  "b": {
+                    "type": "string",
+                    "optional": true
+                  },
+                  "c": {
+                    "type": "number",
+                    "optional": true
+                  }
+                }
+              }
             }
           }
         }
@@ -1488,8 +1548,9 @@
           "currentTypePath": [],
           "relativeReferenceJzodContext": {}
         },
-        "expectedValue": {
+        "expectedValue":  {
           "status": "ok",
+          "schemaReferenceName": "myObject",
           "valuePath": [],
           "typePath": ["ref:myObject"],
           "rawSchema": {
@@ -2439,7 +2500,26 @@
                 }
               },
               "valuePath": [],
-              "typePath": []
+              "typePath": [],
+              "resolvedReferenceSchemaInContext": {
+                "type": "object",
+                "definition": {
+                  "a": {
+                    "type": "union",
+                    "definition": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "schemaReference",
+                        "definition": {
+                          "relativePath": "myObject"
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
             }
           }
         }
@@ -2502,8 +2582,9 @@
           "currentTypePath": [],
           "relativeReferenceJzodContext": {}
         },
-        "expectedValue": {
+        "expectedValue":  {
           "status": "ok",
+          "schemaReferenceName": "myRecord",
           "valuePath": [],
           "typePath": ["ref:myRecord"],
           "rawSchema": {
@@ -2571,6 +2652,7 @@
           "subSchemas": {
             "r1": {
               "status": "ok",
+              "schemaReferenceName": "myObject",
               "valuePath": ["r1"],
               "typePath": ["ref:myRecord", "r1", "ref:myObject"],
               "rawSchema": {
@@ -3078,12 +3160,32 @@
                     }
                   },
                   "valuePath": ["r1"],
-                  "typePath": ["ref:myRecord", "r1"]
+                  "typePath": ["ref:myRecord", "r1"],
+                  "resolvedReferenceSchemaInContext": {
+                    "type": "object",
+                    "definition": {
+                      "a": {
+                        "type": "union",
+                        "definition": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "relativePath": "myObject"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  }
                 }
               }
             },
             "r2": {
               "status": "ok",
+              "schemaReferenceName": "myObject",
               "valuePath": ["r2"],
               "typePath": ["ref:myRecord", "r2", "ref:myObject"],
               "rawSchema": {
@@ -3266,7 +3368,26 @@
                     }
                   },
                   "valuePath": ["r2"],
-                  "typePath": ["ref:myRecord", "r2"]
+                  "typePath": ["ref:myRecord", "r2"],
+                  "resolvedReferenceSchemaInContext": {
+                    "type": "object",
+                    "definition": {
+                      "a": {
+                        "type": "union",
+                        "definition": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "relativePath": "myObject"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  }
                 }
               }
             }
@@ -3464,7 +3585,26 @@
                 }
               },
               "valuePath": ["r1"],
-              "typePath": ["ref:myRecord", "r1"]
+              "typePath": ["ref:myRecord", "r1"],
+              "resolvedReferenceSchemaInContext": {
+                "type": "object",
+                "definition": {
+                  "a": {
+                    "type": "union",
+                    "definition": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "schemaReference",
+                        "definition": {
+                          "relativePath": "myObject"
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
             },
             "r2.a": {
               "rawSchema": {
@@ -3553,7 +3693,26 @@
                 }
               },
               "valuePath": ["r2"],
-              "typePath": ["ref:myRecord", "r2"]
+              "typePath": ["ref:myRecord", "r2"],
+              "resolvedReferenceSchemaInContext": {
+                "type": "object",
+                "definition": {
+                  "a": {
+                    "type": "union",
+                    "definition": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "schemaReference",
+                        "definition": {
+                          "relativePath": "myObject"
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
             },
             "": {
               "rawSchema": {
@@ -3619,7 +3778,16 @@
                 }
               },
               "valuePath": [],
-              "typePath": []
+              "typePath": [],
+              "resolvedReferenceSchemaInContext": {
+                "type": "record",
+                "definition": {
+                  "type": "schemaReference",
+                  "definition": {
+                    "relativePath": "myObject"
+                  }
+                }
+              }
             }
           }
         }
@@ -3689,7 +3857,7 @@
                     "type": "number"
                   }
                 ],
-                "expandedReferences": "CAN NOT REPRESENT SETS IN JSON"
+                "expandedReferences": []
               },
               "resolvedSchema": {
                 "type": "number"

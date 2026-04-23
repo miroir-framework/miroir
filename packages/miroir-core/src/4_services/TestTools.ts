@@ -488,11 +488,11 @@ export async function runTransformerTestSuite(
     const allTests = transformerTestSuite.transformerTests
     const selectedTests = allTests.filter(
       (e) =>
-        !filter?.testList ||
-        (Array.isArray(filter?.testList) && filter?.testList.includes(e.transformerTestLabel)) ||
-        (!Array.isArray(filter?.testList) &&
-          typeof filter?.testList === "object" &&
-          Object.hasOwn(filter?.testList, e.transformerTestLabel))
+        !innerFilter?.testList ||
+        (Array.isArray(innerFilter?.testList) && innerFilter?.testList.includes(e.transformerTestLabel)) ||
+        (!Array.isArray(innerFilter?.testList) &&
+          typeof innerFilter?.testList === "object" &&
+          Object.hasOwn(innerFilter?.testList, e.transformerTestLabel))
     );
     log.info(
       "runTransformerTestSuite for suite",
@@ -520,9 +520,9 @@ export async function runTransformerTestSuite(
     for (const transformerTestParam of allTests) {
       if (transformerTestParam.transformerTestType === "transformerTest") {
         // Inherit skip flag from parent suite to child test
+        const isSkipped = !selectedTests.includes(transformerTestParam) || !!shouldSkipSuite;
         const effectiveTransformerTest: TransformerTest =
-          // { ...transformerTestParam, skip: !selectedTests.includes(transformerTestParam) };
-          { ...transformerTestParam, skip: !allTests.includes(transformerTestParam) };
+          { ...transformerTestParam, skip: isSkipped };
           
         log.info(
           "runTransformerTestSuite calling further test",
@@ -535,7 +535,8 @@ export async function runTransformerTestSuite(
           effectiveTransformerTest.skip,
           ")"
         );
-        await localVitest.test(
+        const vitestTestFn = isSkipped ? localVitest.test.skip : localVitest.test;
+        await vitestTestFn(
           transformerTestParam.transformerTestLabel,
           async () => {
             // Build the explicit TestAssertionPath and run the test

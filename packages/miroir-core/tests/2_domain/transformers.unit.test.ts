@@ -48,7 +48,8 @@ afterAll(() => {
 
 if (shouldSkip) {
   console.log("################################ skipping test suite:", testSuiteName);
-  // console.log("################################ File pattern:", filePattern);
+  // Placeholder to avoid "empty test file" error when this file is matched by broader patterns (e.g. '-- transformers.unit')
+  vitest.test.skip(testSuiteName + " skipped (set RUN_TEST=" + testSuiteName + " to run)", () => {});
 } else {
   // await runTransformerTestSuite(
   // await runTransformerTestsWithTracking._runTransformerTestSuite(

@@ -1,5 +1,6 @@
 import { FormikProps, useFormikContext } from "formik";
 import { useContext, useEffect, useMemo, useState, useRef } from "react";
+import { valueToJzod } from "@miroir-framework/jzod";
 
 
 import {
@@ -252,8 +253,16 @@ export function useJzodElementEditorHooks(
   // value schema
   // Memoize to prevent infinite re-renders when used in useMemo dependencies
   const localResolvedElementJzodSchemaBasedOnValue: JzodElement | undefined = useMemo(
-    () =>currentTypecheckKeyMap?.resolvedSchema,
-    [currentTypecheckKeyMap]
+    () => {
+      if (currentTypecheckKeyMap?.resolvedSchema) {
+        return currentTypecheckKeyMap.resolvedSchema;
+      }
+      if (currentValueObjectAtKey !== undefined && currentValueObjectAtKey !== null) {
+        return valueToJzod(currentValueObjectAtKey) as JzodElement;
+      }
+      return undefined;
+    },
+    [currentTypecheckKeyMap, currentValueObjectAtKey]
   );
   // for objects, records
   const itemsOrder: any[] = useMemo(

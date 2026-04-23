@@ -47,7 +47,8 @@ export interface JzodEditorPropsRoot {
   returnsEmptyElement?: boolean; // used to force the editor to return an empty element
   // any
   isTopLevel?: boolean; // used to control if the editor is an inner editor (used for any type)
-  insideAny?: boolean;
+  insideAny: boolean;
+  anyRootLessListKey: string | undefined; // gives the rootLessListKey of the root element with type `any`, which typeCheckKeyMap contains the resolved schema for the value
   optional?: boolean; // used to control if the displayed element can be removed or not
   deleteButtonElement?: JSX.Element; // used to display a delete button in the editor
   hasTypeError?: boolean; // used to control if the editor has a type error or not

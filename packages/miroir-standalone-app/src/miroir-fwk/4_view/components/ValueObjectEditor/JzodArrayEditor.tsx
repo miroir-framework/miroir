@@ -143,6 +143,7 @@ interface ProgressiveArrayItemProps {
   listKey: string;
   rootLessListKey: string;
   rootLessListKeyArray: (string | number)[];
+  anyRootLessListKey: string | undefined;
   reportSectionPathAsString: string;
   currentArrayElementRawDefinitionDEFUNCT: JzodElement | undefined;
   typeCheckKeyMap?: Record<string, KeyMapEntry>;
@@ -152,7 +153,7 @@ interface ProgressiveArrayItemProps {
   currentDeploymentUuid: string | undefined;
   currentApplicationSection: string | undefined;
   foreignKeyObjects: any;
-  insideAny: boolean | undefined;
+  insideAny: boolean;
   itemsOrder: number[];
   formik: FormikContextType<Record<string, any>>;
   currentValue: any;
@@ -185,6 +186,7 @@ const ProgressiveArrayItem: React.FC<ProgressiveArrayItemProps> = ({
   currentApplicationSection,
   foreignKeyObjects,
   insideAny,
+  anyRootLessListKey,
   itemsOrder,
   formik,
   currentValue,
@@ -300,6 +302,7 @@ const ProgressiveArrayItem: React.FC<ProgressiveArrayItemProps> = ({
                 typeCheckKeyMap={typeCheckKeyMap}
                 foreignKeyObjects={foreignKeyObjects}
                 insideAny={insideAny}
+                anyRootLessListKey={anyRootLessListKey}
                 maxRenderDepth={maxRenderDepth}
                 readOnly={readOnly}
                 existingObject={existingObject}
@@ -390,15 +393,15 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
   //   JSON.stringify(rawJzodSchema, null, 2),
   // );
 
-  const currentModel: MetaModel = useCurrentModel(
-    currentDeploymentUuid ?? selfApplicationMiroir.uuid,
-    props.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap
-  );
+  // const currentModel: MetaModel = useCurrentModel(
+  //   currentDeploymentUuid ?? selfApplicationMiroir.uuid,
+  //   props.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap
+  // );
   const reportContext = useReportPageContext();
-  const miroirMetaModel: MetaModel = useCurrentModel(
-    selfApplicationMiroir.uuid,
-    props.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap
-  );
+  // const miroirMetaModel: MetaModel = useCurrentModel(
+  //   selfApplicationMiroir.uuid,
+  //   props.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap
+  // );
   const currentMiroirModelEnvironment: MiroirModelEnvironment = useCurrentModelEnvironment(
     currentDeploymentUuid ?? selfApplicationMiroir.uuid,
     props.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap
@@ -700,6 +703,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
                   currentApplicationSection={currentApplicationSection}
                   foreignKeyObjects={foreignKeyObjects}
                   insideAny={insideAny}
+                  anyRootLessListKey={props.anyRootLessListKey}
                   itemsOrder={itemsOrder}
                   formik={formik}
                   currentValue={currentValue}

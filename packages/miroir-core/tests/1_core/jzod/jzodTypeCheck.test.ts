@@ -18,10 +18,25 @@ const vitestArgs = process.argv.slice(2);
 const filePattern = vitestArgs.find(arg => !arg.startsWith('-')) || '';
 console.log("@@@@@@@@@@@@@@@@@@ File Pattern:", filePattern);
 
-const selectedTestName: string[] = [];
+const selectedTestName: string[
+] = [
+  // "jzodTypeCheck",
+  // "test010_literal",
+];
 const testSuiteName = transformerTestSuite_jzodTypeCheck.definition.transformerTestLabel;
 
 const activityTracker = new MiroirActivityTracker();
+
+afterAll(() => {
+  if (!shouldSkip) {
+    transformerTestsDisplayResults(
+      transformerTestSuite_jzodTypeCheck.definition as any as TransformerTestSuite,
+      "jzodTypeCheck", // filePattern || "",
+      testSuiteName,
+      activityTracker
+    );
+  }
+});
 
 // ################################################################################################
 // Skip this test when running resolveConditionalSchema pattern
@@ -30,6 +45,7 @@ const shouldSkip = filePattern.includes('resolveConditionalSchema');
 if (shouldSkip) {
   console.log("################################ skipping test suite:", testSuiteName);
   console.log("################################ File pattern:", filePattern);
+  vitest.test.skip(testSuiteName + " skipped (set RUN_TEST=" + testSuiteName + " to run)", () => {});
 } else {
   // const testSuite: TransformerTestSuite = transformerTestSuite_jzodTypeCheck.definition as TransformerTestSuite;
   const testSuite: TransformerTestSuite = transformerTestSuite_jzodTypeCheck.definition as any as TransformerTestSuite;
@@ -46,9 +62,23 @@ if (shouldSkip) {
 
   await runUnitTransformerTests._runTransformerTestSuite(
     vitest,
-    [],
+    [
+      // "jzodTypeCheck", "test010_literal",
+    ],
     effectiveTests,
-    undefined, // filter
+    // undefined, // filter
+    {testList: {"jzodTypeCheck": [
+      // "test010_literal",
+      "test020_string",
+      // "test022_boolean_true",
+      // "test024_boolean_false",
+      // "test030_schemaReference",
+      // "test040",
+      // "test050",
+      // "test060",
+      // "test070",
+      "test120_union",
+    ]}}, // filter
     defaultMetaModelEnvironment,
     activityTracker,
     undefined, // parentTrackingId,

@@ -252,12 +252,12 @@ export const JzodAnyEditor: React.FC<JzodAnyEditorProps> = (
   //       currentMiroirModelEnvironment,
   //     ),
   // );
-  if (insideAny) {
-    log.info(`JzodAnyEditor Rendered insideAny for ${rootLessListKey} ${JzodAnyEditorRenderCount}`);
-    return (<ThemedStatusText style={{color: "red"}}>
-      JzodAnyEditor rendered inside an "any" type is not supported yet.
-    </ThemedStatusText>)
-  }
+  // if (insideAny) {
+  //   log.info(`JzodAnyEditor Rendered insideAny for ${rootLessListKey} ${JzodAnyEditorRenderCount}`);
+  //   return (<ThemedStatusText style={{color: "red"}}>
+  //     JzodAnyEditor rendered inside an "any" type is not supported yet.
+  //   </ThemedStatusText>)
+  // }
   if (format === "file") {
     return (
       <div key={rootLessListKey}>
@@ -336,6 +336,7 @@ export const JzodAnyEditor: React.FC<JzodAnyEditorProps> = (
             readOnly={props.readOnly}
             indentLevel={props.indentLevel}
             insideAny={true} // important to avoid infinite recursion between JzodAnyEditor and JzodElementEditor when type is "any"
+            anyRootLessListKey={props.anyRootLessListKey}
             displayError={props.displayError}
             onChangeVector={props.onChangeVector}
           />

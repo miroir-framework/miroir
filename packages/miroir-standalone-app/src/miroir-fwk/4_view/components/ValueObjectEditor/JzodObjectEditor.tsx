@@ -150,7 +150,6 @@ const ProgressiveAttribute: FC<{
   formikRootLessListKeyArray: (string | number)[];
   reportSectionPathAsString: string;
   localResolvedElementJzodSchemaBasedOnValue: JzodObject;
-  // unfoldedRawSchema: any;
   typeCheckKeyMap?: Record<string, KeyMapEntry>;
   currentValue: any;
   usedIndentLevel: number;
@@ -172,11 +171,11 @@ const ProgressiveAttribute: FC<{
   currentDeploymentUuid?: Uuid;
   currentApplicationSection?: ApplicationSection;
   foreignKeyObjects: Record<string, EntityInstancesUuidIndex>;
-  insideAny?: boolean;
+  insideAny: boolean;
+  anyRootLessListKey: string | undefined; // gives the rootLessListKey of the root element with type `any`, which typeCheckKeyMap contains the resolved schema for the value
   maxRenderDepth?: number;
   readOnly?: boolean;
   existingObject?: boolean;
-
   displayError?: {
     errorPath: string[];
     errorMessage: string;
@@ -218,6 +217,7 @@ const ProgressiveAttribute: FC<{
   currentApplicationSection,
   foreignKeyObjects,
   insideAny,
+  anyRootLessListKey,
   displayError,
 }) => {
   const isTestMode = process.env.VITE_TEST_MODE === 'true';
@@ -238,17 +238,26 @@ const ProgressiveAttribute: FC<{
     }, []); // Empty dependency array to run once on mount
   }
 
-  const currentAttributeDefinition = localResolvedElementJzodSchemaBasedOnValue.definition[attribute[0]];
+  const currentAttributeDefinition =
+    localResolvedElementJzodSchemaBasedOnValue.definition[attribute[0]];
   const attributeListKey = listKey + "." + attribute[0];
-  const formikAttributeRootLessListKey = formikRootLessListKey.length > 0 ? formikRootLessListKey + "." + attribute[0] : attribute[0];
-  const attributeRootLessListKey = rootLessListKey.length > 0 ? rootLessListKey + "." + attribute[0] : attribute[0];
+  const formikAttributeRootLessListKey =
+    formikRootLessListKey.length > 0 ? formikRootLessListKey + "." + attribute[0] : attribute[0];
+  const attributeRootLessListKey =
+    rootLessListKey.length > 0 ? rootLessListKey + "." + attribute[0] : attribute[0];
   const attributeRootLessListKeyArray: (string | number)[] =
     rootLessListKeyArray.length > 0 ? [...rootLessListKeyArray, attribute[0]] : [attribute[0]];
   const formikAttributeRootLessListKeyArray: (string | number)[] =
-    formikRootLessListKeyArray.length > 0 ? [...formikRootLessListKeyArray, attribute[0]] : [attribute[0]];
+    formikRootLessListKeyArray.length > 0
+      ? [...formikRootLessListKeyArray, attribute[0]]
+      : [attribute[0]];
 
   const currentKeyMap = typeCheckKeyMap ? typeCheckKeyMap[rootLessListKey] : undefined;
+  const atttributeKeyMap = typeCheckKeyMap ? typeCheckKeyMap[attributeRootLessListKey] : undefined;
 
+  const currentRawSchema = insideAny
+    ? { type: "record", definition: { type: "any" } }
+    : currentKeyMap?.rawSchema;
   // log.info(
   //   "ProgressiveAttribute",
   //   "attribute",
@@ -262,7 +271,7 @@ const ProgressiveAttribute: FC<{
   // )
 
 
-  if (!currentKeyMap?.rawSchema) {
+  if (!currentRawSchema) {
     throw new Error(
       "JzodElementEditor currentKeyMap?.rawSchema undefined for object " +
         listKey +
@@ -273,9 +282,22 @@ const ProgressiveAttribute: FC<{
     );
   }
 
+  if (!atttributeKeyMap) {
+    throw new Error(
+      "JzodElementEditor atttributeKeyMap undefined for object " +
+        listKey +
+        " attribute " +
+        attribute[0] +
+        " attributeListKey " +
+        attributeListKey
+    );
+  }
 
   // Determine if this is a record type where attribute names should be editable
-  const isRecordType = currentKeyMap?.rawSchema?.type === "record" || currentKeyMap?.resolvedReferenceSchemaInContext?.type === "record";
+  const isRecordType =
+    insideAny || // only records exist when inside an `any` element: the precise structure is unknown, one may freely adde / remove attributes
+    currentRawSchema?.type === "record" ||
+    currentKeyMap?.resolvedReferenceSchemaInContext?.type === "record";
 
   // Move up/down buttons: visible when the attribute value carries a tag.value.id
   const attributeTagValueId = currentValue?.[attribute[0]]?.tag?.value?.id;
@@ -326,6 +348,20 @@ const ProgressiveAttribute: FC<{
         >
           {/* <ThemedOnScreenHelper label="attribute" data={attributeRootLessListKey}/> */}
           {/* <ThemedOnScreenHelper label="attribute" data={attribute[0]}/> */}
+          <JsonDisplayHelper debug={true}
+            componentName={`ProgressiveAttribute rootLessListKey=${attributeRootLessListKey}`}
+            elements={[{
+              label: `ProgressiveAttribute: rootLessListKey=${attributeRootLessListKey} isRecordType=${isRecordType} insideAny=${insideAny}`,
+              data: {
+                rootLessListKey: attributeRootLessListKey,
+                isRecordType,
+                currentKeyMap,
+                atttributeKeyMap 
+              },
+              copyButton: true,
+              useCodeBlock: true,
+            }]}
+          />
           <JzodElementEditor
             valueObjectEditMode={valueObjectEditMode}
             name={attribute[0]}
@@ -344,6 +380,7 @@ const ProgressiveAttribute: FC<{
             typeCheckKeyMap={typeCheckKeyMap}
             foreignKeyObjects={foreignKeyObjects}
             insideAny={insideAny}
+            anyRootLessListKey={anyRootLessListKey}
             optional={definedOptionalAttributes.has(attribute[0])}
             onChangeVector={onChangeVector}
             maxRenderDepth={maxRenderDepth}
@@ -601,8 +638,6 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
 
     // Get parent object from Formik values
     const parentObject = parentKey ? 
-      // parentPath.reduce((obj, key) => obj?.[key], formik.values) : 
-      // formik.values;
       parentPath.reduce((obj, key) => obj?.[key], currentValueObjectAtKey) : 
       currentValueObjectAtKey;
 
@@ -762,8 +797,14 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
       );
     }
 
-    if (currentTypeCheckKeyMap?.rawSchema?.type != "record" && resolvedRawSchema?.type != "record") {
-      throw "addExtraRecordEntry called for non-record type: " + currentTypeCheckKeyMap?.rawSchema.type;
+    if (
+      !insideAny &&
+      currentTypeCheckKeyMap?.rawSchema?.type != "record" &&
+      resolvedRawSchema?.type != "record"
+    ) {
+      throw (
+        "addExtraRecordEntry called for non-record type: " + currentTypeCheckKeyMap?.rawSchema.type
+      );
     }
     const effectiveRawSchema: JzodRecord =
       currentTypeCheckKeyMap?.rawSchema?.type === "record"
@@ -780,7 +821,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
           rootLessListKey,
           undefined, // currentDefaultValue is not known yet, this is what this call will determine
           [], // currentPath on value is root
-          true, // force optional attributes to receive a default value
+          false, // force optional attributes to receive a default value
           currentApplication,
           applicationDeploymentMap,
           currentDeploymentUuid,
@@ -1149,6 +1190,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
                 currentApplicationSection={currentApplicationSection}
                 foreignKeyObjects={foreignKeyObjects || {}}
                 insideAny={insideAny}
+                anyRootLessListKey={props.anyRootLessListKey}
                 localResolvedElementJzodSchemaBasedOnValue={
                   localResolvedElementJzodSchemaBasedOnValue as JzodObject
                 }
@@ -1206,9 +1248,9 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
   return (
     <div id={rootLessListKey} key={rootLessListKey}>
       <JsonDisplayHelper debug={true}
-        componentName="JzodObjectEditor"
+        componentName={`JzodObjectEditor insideAny=${insideAny} rootLessListKey=${rootLessListKey}`}
         elements={[{
-          label: `JzodObjectEditor: ${rootLessListKey}`,
+          label: `JzodObjectEditor: rootLessListKey=${rootLessListKey}`,
           data: {
             rootLessListKey,
             itemsOrder,

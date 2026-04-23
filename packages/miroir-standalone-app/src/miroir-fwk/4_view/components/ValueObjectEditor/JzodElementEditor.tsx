@@ -24,6 +24,7 @@ import {
   transformer_extended_apply_wrapper,
   type CoreTransformerForBuildPlusRuntime,
   type JzodElement,
+  type JzodUnion,
   type TransformerReturnType
 } from "miroir-core";
 
@@ -62,6 +63,7 @@ import { JzodEnumEditor } from "./JzodEnumEditor.js";
 import { JzodLiteralEditor } from "./JzodLiteralEditor.js";
 import { JzodEditorButton } from "./JzodEditorButton.js";
 import { JzodObjectEditor } from "./JzodObjectEditor.js";
+import { a } from "vitest/dist/chunks/suite.d.FvehnV49";
 
 
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -443,6 +445,11 @@ const ANY_IMPLICIT_UNION_BRANCHES: JzodElement[] = [
   }, definition: { type: "any" } } as JzodElement,
 ];
 
+const ANY_IMPLICIT_UNION_TYPE: JzodUnion = {
+  type: "union",
+  definition: ANY_IMPLICIT_UNION_BRANCHES,
+};
+
 // #####################################################################################################
 // #####################################################################################################
 // #####################################################################################################
@@ -451,8 +458,6 @@ const ANY_IMPLICIT_UNION_BRANCHES: JzodElement[] = [
 // #####################################################################################################
 // #####################################################################################################
 export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
-  const renderStartTime = performance.now();
-  // const context = useMiroirContextService();
   count++;
 
   const existingObject = props.existingObject ?? true;
@@ -513,9 +518,10 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
   const handleUnionTypeChange = useCallback(
     (event: React.ChangeEvent<HTMLSelectElement>) => {
       const selectedType = event.target.value;
+      log.info("handleUnionTypeChange selectedType", selectedType, "formikRootLessListKey", formikRootLessListKey);
 
       let matchingBranch: JzodElement | undefined;
-      if (currentKeyMap?.rawSchema?.type === "any") {
+      if (currentKeyMap?.rawSchema?.type === "any" || innerInsideAny) {
         matchingBranch = ANY_IMPLICIT_UNION_BRANCHES.find(
           (branch: JzodElement) => branch.type === selectedType
         );
@@ -664,7 +670,6 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
   const displayAsCodeEditor =
     !displayAsStructuredElement ||
     !props.typeCheckKeyMap ||
-    !currentKeyMap ||
     !localResolvedElementJzodSchemaBasedOnValue || // same as props.hasTypeError?
     !displayAsStructuredElement
   ;
@@ -784,22 +789,20 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
 
   // ##############################################################################################
   // Union type controls – computed before mainElement so they can be passed into
+  const innerInsideAny = props.insideAny || currentKeyMap?.rawSchema.type === "any";
+  
   // JzodObjectEditor / JzodArrayEditor header (for container-type union values)
   const unionTypeDataForControls = useMemo(() => {
     let branches: JzodElement[];
     if (currentKeyMap?.rawSchema?.type === "union") {
       if (!currentKeyMap.recursivelyUnfoldedUnionSchema) return null;
       branches = currentKeyMap.recursivelyUnfoldedUnionSchema.result as JzodElement[];
-    } else if (currentKeyMap?.rawSchema?.type === "any") {
+    } else if (currentKeyMap?.rawSchema?.type === "any" || innerInsideAny) {
       branches = ANY_IMPLICIT_UNION_BRANCHES;
     } else {
       return null;
     }
-    const unionOptions = Array.from(
-      new Set(
-        branches.map((t: JzodElement) => t.type),
-      ) || [],
-    );
+    const unionOptions = Array.from(new Set(branches.map((t: JzodElement) => t.type)) || []);
     if (unionOptions.length <= 1) return null;
 
     const currentType = (() => {
@@ -825,12 +828,10 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
 
     const unionTooltip = (() => {
       if (!context.miroirFundamentalJzodSchema) return `${unionOptions.length} types`;
-      const summaries = branches.map(
-        (branch: JzodElement) => {
-          const s = jzodToJzod_Summary(branch, context.miroirFundamentalJzodSchema!, 1);
-          return jzodElementToTooltipText(s, 1);
-        },
-      );
+      const summaries = branches.map((branch: JzodElement) => {
+        const s = jzodToJzod_Summary(branch, context.miroirFundamentalJzodSchema!, 1);
+        return jzodElementToTooltipText(s, 1);
+      });
       const unique = summaries.filter((v: string, i: number, a: string[]) => a.indexOf(v) === i);
       const MAX_SHOWN = 15;
       const shown = unique.slice(0, MAX_SHOWN);
@@ -838,8 +839,15 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
       return shown.join("\n") + suffix;
     })();
 
-    return { unionOptions, currentType, branchesByType, selectOptions, isContainerType, unionTooltip };
-  }, [currentKeyMap, currentValueObjectAtKey, context.miroirFundamentalJzodSchema]);
+    return {
+      unionOptions,
+      currentType,
+      branchesByType,
+      selectOptions,
+      isContainerType,
+      unionTooltip,
+    };
+  }, [currentKeyMap, currentValueObjectAtKey, context.miroirFundamentalJzodSchema, innerInsideAny]);
 
   const unionStarButton = useMemo((): JSX.Element | null => {
     if (!unionTypeDataForControls) return null;
@@ -847,7 +855,10 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
       <div
         style={{ fontSize: "1.2em", color: "#FFA07A", cursor: "pointer", userSelect: "none" }}
         title={unionTypeDataForControls.unionTooltip}
-        onClick={() => setIsUnionTypeSelectorOpen((prev) => !prev)}
+        onClick={() => {
+          log.info("Union type selector star clicked for", props.rootLessListKey, "currentType", unionTypeDataForControls.currentType);
+          setIsUnionTypeSelectorOpen((prev) => !prev)}
+        }
         data-testid={"union-type-star-" + formikRootLessListKey}
       >
         ★
@@ -858,18 +869,21 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
   const unionTypeSelectorElement = useMemo((): JSX.Element | null => {
     if (!unionTypeDataForControls || !isUnionTypeSelectorOpen) return null;
     return (
-      <ThemedSelectWithPortal
-        name={"union-type-" + formikRootLessListKey}
-        data-testid={"union-type-input-" + formikRootLessListKey}
-        filterable={true}
-        options={unionTypeDataForControls.selectOptions}
-        value={unionTypeDataForControls.currentType}
-        onChange={handleUnionTypeChange}
-        placeholder="Select type..."
-        filterPlaceholder="Type to filter..."
-        minWidth="120px"
-        navigateWithoutOpening={true}
-      />
+      <span>
+        <ThemedSelectWithPortal
+          name={"union-type-" + formikRootLessListKey}
+          data-testid={"union-type-input-" + formikRootLessListKey}
+          filterable={true}
+          options={unionTypeDataForControls.selectOptions}
+          value={unionTypeDataForControls.currentType}
+          onChange={handleUnionTypeChange}
+          placeholder="Select type..."
+          filterPlaceholder="Type to filter..."
+          minWidth="120px"
+          navigateWithoutOpening={true}
+        />
+        {formikRootLessListKey}
+      </span>
     );
   }, [unionTypeDataForControls, isUnionTypeSelectorOpen, handleUnionTypeChange, formikRootLessListKey]);
 
@@ -896,6 +910,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
     );
   }, [containerUnionControls, mergedExtraToolsButtons]);
 
+
   // Create the main element based on the schema type
   // ##############################################################################################
   // ##############################################################################################
@@ -905,7 +920,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
   const  mainElement: JSX.Element = useMemo(() => {
     try {
       if (props.returnsEmptyElement || props.hidden) {
-        return <></>;
+        return <>hidden mainElement</>;
       }
 
       // DEBUG: Log for boolean fields specifically
@@ -946,7 +961,8 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
       if (localResolvedElementJzodSchemaBasedOnValue.tag?.value?.display?.hidden) {
         const hidden: CoreTransformerForBuildPlusRuntime = localResolvedElementJzodSchemaBasedOnValue.tag?.value?.display?.hidden;
         if (typeof hidden === "boolean" && hidden === true) {
-          return <></>;
+          // return <></>;
+          return <>hidden 2</>;
         }
         const newContext = {
           valueObject: currentValueObjectAtKey,
@@ -967,20 +983,21 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
           );
         if (hiddenTransformerResult === true) {
           log.info("JzodElementEditor Hiding element due to hidden transformer result:", props.rootLessListKey, hidden, newContext);
-          return <></>;
+          // return <></>;
+          return <>hidden 3</>;
         }
       }
       // Handle RAW "any" type
       if (
         (
-          (
+          // (
             currentKeyMap?.rawSchema.type === "any"
             && // TODO: passing through the JzodAnyEditor does not give the same result as going on in the current JzodElementEditor, although it should
             currentKeyMap?.rawSchema.tag?.value?.display?.any?.format
           ) ||
-          localResolvedElementJzodSchemaBasedOnValue.type === "any"
-        ) &&
-        !props.insideAny
+          localResolvedElementJzodSchemaBasedOnValue.type === "any" // can this be true??
+        // ) &&
+        // !props.insideAny
       ) {
         return (
           <>
@@ -1010,8 +1027,8 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
               submitButton={props.submitButton}
               indentLevel={props.indentLevel}
               readOnly={props.readOnly}
-              // insideAny={props.insideAny}
               insideAny={true}
+              anyRootLessListKey={props.rootLessListKey}
               displayError={props.displayError}
               onChangeVector={props.onChangeVector}
             />
@@ -1065,7 +1082,8 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
               deleteButtonElement={props.deleteButtonElement}
               maxRenderDepth={props.maxRenderDepth}
               readOnly={props.readOnly}
-              insideAny={props.insideAny}
+              insideAny={innerInsideAny}
+              anyRootLessListKey={props.anyRootLessListKey}
               extraToolsButtons={effectiveExtraToolsButtonsForContainer}
               displayError={props.displayError}
               onChangeVector={props.onChangeVector}
@@ -1092,13 +1110,14 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
               currentApplicationSection={props.currentApplicationSection}
               currentDeploymentUuid={props.currentDeploymentUuid}
               foreignKeyObjects={props.foreignKeyObjects}
-              insideAny={props.insideAny}
+              insideAny={innerInsideAny}
               hidden={hideSubJzodEditor}
               displayAsStructuredElementSwitch={displayAsStructuredElementSwitch}
               deleteButtonElement={props.deleteButtonElement}
               extraToolsButtons={effectiveExtraToolsButtonsForContainer}
               maxRenderDepth={props.maxRenderDepth}
               readOnly={props.readOnly}
+              anyRootLessListKey={props.anyRootLessListKey}
               displayError={props.displayError}
               onChangeVector={props.onChangeVector}
             />
@@ -1468,7 +1487,8 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
                 reportSectionPathAsString={props.reportSectionPathAsString}
                 foreignKeyObjects={props.foreignKeyObjects}
                 typeCheckKeyMap={ props.typeCheckKeyMap }
-                insideAny={props.insideAny}
+                insideAny={innerInsideAny}
+                anyRootLessListKey={props.anyRootLessListKey}
                 readOnly={props.readOnly}
                 displayError={props.displayError}
                 onChangeVector={props.onChangeVector}
@@ -1501,7 +1521,8 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
                 currentDeploymentUuid={props.currentDeploymentUuid}
                 enumValues={enumValues}
                 forceTestingMode={props.forceTestingMode}
-                insideAny={props.insideAny}
+                insideAny={innerInsideAny}
+                anyRootLessListKey={props.anyRootLessListKey}
                 readOnly={props.readOnly}
                 displayError={props.displayError}
                 onChangeVector={props.onChangeVector}
@@ -1536,6 +1557,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
               typeCheckKeyMap={ props.typeCheckKeyMap }
               indentLevel={props.indentLevel}
               insideAny={props.insideAny}
+              anyRootLessListKey={props.rootLessListKey}
               readOnly={props.readOnly}
               displayError={props.displayError}
               onChangeVector={props.onChangeVector}
@@ -1543,11 +1565,11 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
             </>
           );
         }
-        case "any": {
-          throw new Error(
-            `JzodElementEditor: Encountered 'any' type for listKey ${props.listKey} with value ${currentValueObjectAtKey}. This should have been handled by the earlier 'any' case. This is a bug.`
-          );
-        }
+        // case "any": {
+        //   throw new Error(
+        //     `JzodElementEditor: Encountered 'any' type for listKey ${props.listKey} with value ${currentValueObjectAtKey}. This should have been handled by the earlier 'any' case. This is a bug.`
+        //   );
+        // }
         case "date": {
           // log.info(
           //   "JzodElementEditor: Rendering date input for listKey",
@@ -1700,6 +1722,9 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
     props.deleteButtonElement,
     props.maxRenderDepth,
     props.extraToolsButtons,
+    innerInsideAny,
+    unionTypeDataForControls,
+    unionTypeSelectorElement,
     effectiveExtraToolsButtonsForContainer,
     // Computed values that affect rendering (all properly memoized)
     localResolvedElementJzodSchemaBasedOnValue, 
@@ -1714,35 +1739,46 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
   // ##############################################################################################
   // ##############################################################################################
   const mainElementWithUnionTypeSelector: JSX.Element = useMemo(() => {
-    if (currentKeyMap?.rawSchema?.type !== "union" && currentKeyMap?.rawSchema?.type !== "any") {
-      return mainElement;
-    }
-    if (currentKeyMap?.rawSchema?.type === "union" && !currentKeyMap.recursivelyUnfoldedUnionSchema) {
-      log.error(
-        "JzodElementEditor: currentKeyMap indicates a union type but recursivelyUnfoldedUnionSchema is missing",
-        {
-          currentKeyMap,
-          mainElement,
-        },
-      );
-      return mainElement;
+    if (!innerInsideAny || currentKeyMap?.rawSchema.tag?.value?.display?.any?.format) {
+      if (
+        currentKeyMap?.rawSchema?.type !== "any" &&
+        currentKeyMap?.rawSchema?.type !== "union"
+      ) {
+        return mainElement;
+      }
+      if (
+        (currentKeyMap?.rawSchema?.type === "any" &&
+          currentKeyMap?.rawSchema.tag?.value?.display?.any?.format)
+      ) {
+        return mainElement;
+      }
+      if (currentKeyMap?.rawSchema?.type === "union" && !currentKeyMap.recursivelyUnfoldedUnionSchema) {
+        log.error(
+          "JzodElementEditor: currentKeyMap indicates a union type but recursivelyUnfoldedUnionSchema is missing",
+          {
+            currentKeyMap,
+            mainElement,
+          },
+        );
+        return  mainElement;
+      }
     }
     // unionTypeDataForControls is null when there is only one distinct branch type
     if (!unionTypeDataForControls) {
       return mainElement;
     }
-
     if (unionTypeDataForControls.isContainerType) {
       // Star and selector are already embedded in the JzodObjectEditor / JzodArrayEditor header
       // via effectiveExtraToolsButtonsForContainer – no wrapping needed here.
       return mainElement;
     }
 
-    // Non-container: horizontal layout – mainElement + star + (selector when open) on same line
+    // Non-container: horizontal layout – mainElementWithDebug + star + (selector when open) on same line
     return (
       <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "nowrap" }}>
         {mainElement}
         {unionStarButton}
+        {formikRootLessListKey}
         {unionTypeSelectorElement}
       </div>
     );
@@ -1751,8 +1787,72 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
     unionTypeDataForControls,
     mainElement,
     unionStarButton,
+    formikRootLessListKey,
     unionTypeSelectorElement,
   ]);
+
+  const mainElementWithDebug = useMemo(() => {
+    return (
+      <div>
+        <JsonDisplayHelper
+          debug={true}
+          componentName="JzodElementEditor"
+          elements={[
+            {
+              label: `key "${formikRootLessListKey}" of type ${localResolvedElementJzodSchemaBasedOnValue?.type}`,
+              data: {
+                existingObject,
+                itemsOrder,
+                type: currentKeyMap?.rawSchema?.type,
+                innerInsideAny,
+                unionTypeDataForControlsIsNull: unionTypeDataForControls == null,
+                isContainerType: unionTypeDataForControls?.isContainerType,
+                unionStarButtonIsNull: unionStarButton == null,
+                containerUnionControlsIsNull: containerUnionControls == null,
+                unionTypeSelectorElementIsNull: unionTypeSelectorElement == null,
+                passThrough: mainElement === mainElementWithUnionTypeSelector,
+                localResolvedElementJzodSchemaBasedOnValue,
+                // currentKeyMap,
+              },
+              initiallyUnfolded: false,
+              copyButton: true,
+              useCodeBlock: true,
+            },
+            ...(currentKeyMap?.rawSchema?.type === "any"
+              ? [
+                  {
+                    label: `rendering JzodElementEditor for 'any' at ${props.rootLessListKey || "ROOT"}, objectOrArrayOrAny=${resolvedTypeIsObjectOrArrayOrAny}, displayAsCodeEditor=${displayAsCodeEditor}`,
+                    data: {
+                      localResolvedElementJzodSchemaBasedOnValue,
+                      currentValueObjectAtKey,
+                      currentKeyMap,
+                    },
+                    useCodeBlock: true as const,
+                  },
+                ]
+              : []),
+          ]}
+        />
+        {mainElementWithUnionTypeSelector}
+      </div>
+    );
+  }, [
+    mainElementWithUnionTypeSelector,
+    formikRootLessListKey,
+    localResolvedElementJzodSchemaBasedOnValue,
+    existingObject,
+    itemsOrder,
+    currentKeyMap,
+    props.rootLessListKey,
+    unionTypeDataForControls,
+    unionStarButton,
+    containerUnionControls,
+    unionTypeSelectorElement,
+    resolvedTypeIsObjectOrArrayOrAny,
+    displayAsCodeEditor,
+    currentValueObjectAtKey,
+  ]);
+
   // ##############################################################################################
   // ##############################################################################################
   // ##############################################################################################
@@ -1761,7 +1861,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
   // ##############################################################################################
 
   if (props.returnsEmptyElement || props.hidden) {
-    return <></>;
+    return <>hidden!</>;
   }
 
 //   // Track render performance at the end of render
@@ -1823,7 +1923,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
       </>
     ) : displayWithoutFrame ? (
       <>
-      {mainElement}
+      {mainElementWithDebug}
       </>
     ) : (
       <span
@@ -1834,9 +1934,10 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
           flexGrow: 1,
         }}
       >
-        {mainElementWithUnionTypeSelector}
+        {/* {mainElementWithUnionTypeSelector} */}
+        {mainElementWithDebug}
       </span>
-    ): (<></>);
+    ): (<>hidden4</>);
   return (
     <>
       {props.isTopLevel && (
@@ -1888,7 +1989,8 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
           >
             {!localResolvedElementJzodSchemaBasedOnValue?.tag?.value?.display
               ?.objectHideDeleteButton && props.deleteButtonElement}
-            {mainElementWithUnionTypeSelector}
+            {/* {mainElementWithUnionTypeSelector} */}
+            {mainElementWithDebug}
             {mergedExtraToolsButtons && (
               <span style={{ marginLeft: "8px", display: "inline-flex", alignItems: "center" }}>
                 {mergedExtraToolsButtons}
