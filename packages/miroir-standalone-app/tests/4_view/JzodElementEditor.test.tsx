@@ -2403,6 +2403,204 @@ export function getJzodEntityDefinitionEditorTests(
 }
 
 // ################################################################################################
+// ANY EDITOR
+// ################################################################################################
+export function getJzodAnyEditorTests(
+  componentUnderTest: React.FC<JzodElementEditorProps_Test>
+): ReactComponentTestSuites<JzodElementEditorProps_Test> {
+  return {
+    JzodAnyEditor: {
+      suiteRenderComponent: componentUnderTest,
+      tests: {
+        "any type star button is visible for a string value": {
+          props: {
+            label: "Test Label",
+            name: "testField",
+            listKey: "ROOT.testField",
+            rootLessListKey: "testField",
+            rootLessListKeyArray: ["testField"],
+            rawJzodSchema: { type: "any" },
+            initialFormState: "hello",
+          },
+          tests: async (expect: ExpectStatic, container: Container) => {
+            expect(
+              screen.getByTestId("union-type-star-" + formikFieldName("testField"))
+            ).toBeTruthy();
+            // Selector is not rendered initially
+            expect(
+              container.querySelector(
+                `[data-testid="union-type-input-${formikFieldName("testField")}"]`
+              )
+            ).toBeNull();
+          },
+        },
+        "any type star button toggle shows then hides selector": {
+          props: {
+            label: "Test Label",
+            name: "testField",
+            listKey: "ROOT.testField",
+            rootLessListKey: "testField",
+            rootLessListKeyArray: ["testField"],
+            rawJzodSchema: { type: "any" },
+            initialFormState: 42,
+          },
+          tests: async (expect: ExpectStatic, container: Container) => {
+            const starButton = screen.getByTestId(
+              "union-type-star-" + formikFieldName("testField")
+            );
+
+            // Click star: selector appears
+            await act(async () => {
+              fireEvent.click(starButton);
+            });
+            await waitFor(
+              () => {
+                expect(
+                  container.querySelector(
+                    `[data-testid="union-type-input-${formikFieldName("testField")}"]`
+                  )
+                ).not.toBeNull();
+              },
+              { timeout: 1000 }
+            );
+
+            // Click star again: selector disappears
+            await act(async () => {
+              fireEvent.click(starButton);
+            });
+            await waitFor(
+              () => {
+                expect(
+                  container.querySelector(
+                    `[data-testid="union-type-input-${formikFieldName("testField")}"]`
+                  )
+                ).toBeNull();
+              },
+              { timeout: 1000 }
+            );
+          },
+        },
+        "any type can switch from number to string via selector": {
+          props: {
+            label: "Test Label",
+            name: "testField",
+            listKey: "ROOT.testField",
+            rootLessListKey: "testField",
+            rootLessListKeyArray: ["testField"],
+            rawJzodSchema: { type: "any" },
+            initialFormState: 42,
+          },
+          tests: async (expect: ExpectStatic, container: Container) => {
+            const starButton = screen.getByTestId(
+              "union-type-star-" + formikFieldName("testField")
+            );
+            expect(starButton).toBeTruthy();
+
+            // Click the star to open the selector
+            await act(async () => {
+              fireEvent.click(starButton);
+            });
+
+            const stateTracker = screen.getByTestId(
+              "themed-select-state-union-type-" + formikFieldName("testField")
+            );
+            expect(stateTracker.getAttribute("data-test-selected-value")).toBe("number");
+
+            const unionTypeInput = screen.getByTestId(
+              "union-type-input-" + formikFieldName("testField")
+            ) as HTMLInputElement;
+
+            const user = userEvent.setup();
+
+            await act(async () => {
+              fireEvent.click(unionTypeInput);
+              await waitFor(
+                () => {
+                  expect(stateTracker.getAttribute("data-test-is-open")).toBe("true");
+                },
+                { timeout: 1000 }
+              );
+
+              await user.clear(unionTypeInput);
+              await user.type(unionTypeInput, "string");
+
+              await waitFor(
+                () => {
+                  expect(stateTracker.getAttribute("data-test-filter-text")).toBe("string");
+                  expect(stateTracker.getAttribute("data-test-filtered-options-count")).toBe("1");
+                },
+                { timeout: 1000 }
+              );
+
+              await user.keyboard("{Enter}");
+
+              await waitFor(
+                () => {
+                  expect(stateTracker.getAttribute("data-test-is-open")).toBe("false");
+                  expect(stateTracker.getAttribute("data-test-selected-value")).toBe("string");
+                },
+                { timeout: 2000 }
+              );
+            });
+
+            // Verify the field now holds a string value
+            await waitFor(
+              () => {
+                const valuesAfterChange: Record<string, any> = extractValuesFromRenderedElements(
+                  expect,
+                  [],
+                  container,
+                  testSectionName,
+                  "after change to string"
+                );
+                const testResult = formValuesToJSON(valuesAfterChange);
+                expect(testResult).toEqual({ testField: "" });
+              },
+              { timeout: 3000 }
+            );
+          },
+        },
+        "any type star button for object value places star and selector in header": {
+          props: {
+            label: "Test Label",
+            name: "testField",
+            listKey: "ROOT.testField",
+            rootLessListKey: "testField",
+            rootLessListKeyArray: ["testField"],
+            rawJzodSchema: { type: "any" },
+            initialFormState: { a: "hello", b: 1 },
+          },
+          tests: async (expect: ExpectStatic, container: Container) => {
+            const starButton = screen.getByTestId(
+              "union-type-star-" + formikFieldName("testField")
+            );
+
+            // Open selector
+            await act(async () => {
+              fireEvent.click(starButton);
+            });
+            const selectorInput = await waitFor(
+              () => {
+                const el = container.querySelector(
+                  `[data-testid="union-type-input-${formikFieldName("testField")}"]`
+                );
+                expect(el).not.toBeNull();
+                return el!;
+              },
+              { timeout: 1000 }
+            );
+
+            // Star and selector are in the same flex row (star's parent contains the selector input)
+            const starParent = starButton.parentElement!;
+            expect(starParent.contains(selectorInput)).toBe(true);
+          },
+        },
+      },
+    },
+  };
+}
+
+// ################################################################################################
 // PERFORMANCE TESTS
 // ################################################################################################
 // export interface LocalEntityDefinitionEditorProps extends LocalEditorPropsRoot{
@@ -2662,6 +2860,11 @@ const jzodElementEditorTests: Record<
     getJzodEditorTests: getJzodUnionEditorTests,
     // modes: '*',
     // modes: ['jzodElementEditor', 'component'],
+    modes: "jzodElementEditor",
+  },
+  JzodAnyEditor: {
+    editor: getJzodElementEditorForTest(pageLabel),
+    getJzodEditorTests: getJzodAnyEditorTests,
     modes: "jzodElementEditor",
   },
   // // ################# PERFORMANCE

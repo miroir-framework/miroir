@@ -414,6 +414,35 @@ function jzodElementToTooltipText(el: any, depth: number = 1): string {
 let count = 0;
 
 
+// Implicit union branches used when rawSchema.type === "any"
+// These represent the full set of types that an "any" field can hold.
+const ANY_IMPLICIT_UNION_BRANCHES: JzodElement[] = [
+  { type: "string" },
+  { type: "number" },
+  { type: "bigint" },
+  { type: "boolean" },
+  { type: "uuid" },
+  { type: "date" },
+  { type: "record", tag: {
+    value: {
+      defaultLabel: "Record<string, any>",
+      initializeTo: {
+        initializeToType: "value",
+        value: { "a": "enter attributes here..." }
+      }
+    }
+  }, definition: { type: "any" } } as JzodElement,
+  { type: "array", tag: {
+    value: {
+      defaultLabel: "Array<any>",
+      initializeTo: {
+        initializeToType: "value",
+        value: ["enter elements here..."]
+      }
+    }
+  }, definition: { type: "any" } } as JzodElement,
+];
+
 // #####################################################################################################
 // #####################################################################################################
 // #####################################################################################################
@@ -484,11 +513,18 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
   const handleUnionTypeChange = useCallback(
     (event: React.ChangeEvent<HTMLSelectElement>) => {
       const selectedType = event.target.value;
-      if (!currentKeyMap?.recursivelyUnfoldedUnionSchema) return;
 
-      const matchingBranch: JzodElement | undefined = currentKeyMap.recursivelyUnfoldedUnionSchema.result.find(
-        (branch: JzodElement) => branch.type === selectedType
-      );
+      let matchingBranch: JzodElement | undefined;
+      if (currentKeyMap?.rawSchema?.type === "any") {
+        matchingBranch = ANY_IMPLICIT_UNION_BRANCHES.find(
+          (branch: JzodElement) => branch.type === selectedType
+        );
+      } else {
+        if (!currentKeyMap?.recursivelyUnfoldedUnionSchema) return;
+        matchingBranch = currentKeyMap.recursivelyUnfoldedUnionSchema.result.find(
+          (branch: JzodElement) => branch.type === selectedType
+        );
+      }
 
       log.info("handleUnionTypeChange selectedType", selectedType, "matchingBranch", matchingBranch);
       if (!matchingBranch) {
@@ -750,12 +786,18 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
   // Union type controls – computed before mainElement so they can be passed into
   // JzodObjectEditor / JzodArrayEditor header (for container-type union values)
   const unionTypeDataForControls = useMemo(() => {
-    if (currentKeyMap?.rawSchema?.type !== "union" || !currentKeyMap.recursivelyUnfoldedUnionSchema) {
+    let branches: JzodElement[];
+    if (currentKeyMap?.rawSchema?.type === "union") {
+      if (!currentKeyMap.recursivelyUnfoldedUnionSchema) return null;
+      branches = currentKeyMap.recursivelyUnfoldedUnionSchema.result as JzodElement[];
+    } else if (currentKeyMap?.rawSchema?.type === "any") {
+      branches = ANY_IMPLICIT_UNION_BRANCHES;
+    } else {
       return null;
     }
     const unionOptions = Array.from(
       new Set(
-        currentKeyMap.recursivelyUnfoldedUnionSchema.result.map((t: JzodElement) => t.type),
+        branches.map((t: JzodElement) => t.type),
       ) || [],
     );
     if (unionOptions.length <= 1) return null;
@@ -768,7 +810,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
     })();
 
     const branchesByType = new Map<string, JzodElement[]>();
-    for (const branch of currentKeyMap.recursivelyUnfoldedUnionSchema.result) {
+    for (const branch of branches) {
       const t = (branch as any).type as string;
       if (!branchesByType.has(t)) branchesByType.set(t, []);
       branchesByType.get(t)!.push(branch as JzodElement);
@@ -783,7 +825,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
 
     const unionTooltip = (() => {
       if (!context.miroirFundamentalJzodSchema) return `${unionOptions.length} types`;
-      const summaries = currentKeyMap.recursivelyUnfoldedUnionSchema.result.map(
+      const summaries = branches.map(
         (branch: JzodElement) => {
           const s = jzodToJzod_Summary(branch, context.miroirFundamentalJzodSchema!, 1);
           return jzodElementToTooltipText(s, 1);
@@ -968,7 +1010,8 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
               submitButton={props.submitButton}
               indentLevel={props.indentLevel}
               readOnly={props.readOnly}
-              insideAny={props.insideAny}
+              // insideAny={props.insideAny}
+              insideAny={true}
               displayError={props.displayError}
               onChangeVector={props.onChangeVector}
             />
@@ -1671,10 +1714,10 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
   // ##############################################################################################
   // ##############################################################################################
   const mainElementWithUnionTypeSelector: JSX.Element = useMemo(() => {
-    if (currentKeyMap?.rawSchema?.type !== "union") {
+    if (currentKeyMap?.rawSchema?.type !== "union" && currentKeyMap?.rawSchema?.type !== "any") {
       return mainElement;
     }
-    if (!currentKeyMap.recursivelyUnfoldedUnionSchema) {
+    if (currentKeyMap?.rawSchema?.type === "union" && !currentKeyMap.recursivelyUnfoldedUnionSchema) {
       log.error(
         "JzodElementEditor: currentKeyMap indicates a union type but recursivelyUnfoldedUnionSchema is missing",
         {
