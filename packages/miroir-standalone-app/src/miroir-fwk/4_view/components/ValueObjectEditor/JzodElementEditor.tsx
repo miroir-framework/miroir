@@ -414,6 +414,13 @@ function jzodElementToTooltipText(el: any, depth: number = 1): string {
 let count = 0;
 
 
+// #####################################################################################################
+// #####################################################################################################
+// #####################################################################################################
+// #####################################################################################################
+// #####################################################################################################
+// #####################################################################################################
+// #####################################################################################################
 export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
   const renderStartTime = performance.now();
   // const context = useMiroirContextService();
@@ -739,6 +746,113 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
     );
   }, [props.extraToolsButtons, centralizedSchemaEditorButton]);
 
+  // ##############################################################################################
+  // Union type controls – computed before mainElement so they can be passed into
+  // JzodObjectEditor / JzodArrayEditor header (for container-type union values)
+  const unionTypeDataForControls = useMemo(() => {
+    if (currentKeyMap?.rawSchema?.type !== "union" || !currentKeyMap.recursivelyUnfoldedUnionSchema) {
+      return null;
+    }
+    const unionOptions = Array.from(
+      new Set(
+        currentKeyMap.recursivelyUnfoldedUnionSchema.result.map((t: JzodElement) => t.type),
+      ) || [],
+    );
+    if (unionOptions.length <= 1) return null;
+
+    const currentType = (() => {
+      if (currentValueObjectAtKey === null) return "null";
+      if (currentValueObjectAtKey === undefined) return "undefined";
+      if (Array.isArray(currentValueObjectAtKey)) return "array";
+      return typeof currentValueObjectAtKey;
+    })();
+
+    const branchesByType = new Map<string, JzodElement[]>();
+    for (const branch of currentKeyMap.recursivelyUnfoldedUnionSchema.result) {
+      const t = (branch as any).type as string;
+      if (!branchesByType.has(t)) branchesByType.set(t, []);
+      branchesByType.get(t)!.push(branch as JzodElement);
+    }
+
+    const selectOptions = unionOptions.map((type: string) => ({
+      value: type,
+      label: generateUnionBranchLabel(type, branchesByType.get(type) ?? []),
+    }));
+
+    const isContainerType = ["object", "array"].includes(currentType);
+
+    const unionTooltip = (() => {
+      if (!context.miroirFundamentalJzodSchema) return `${unionOptions.length} types`;
+      const summaries = currentKeyMap.recursivelyUnfoldedUnionSchema.result.map(
+        (branch: JzodElement) => {
+          const s = jzodToJzod_Summary(branch, context.miroirFundamentalJzodSchema!, 1);
+          return jzodElementToTooltipText(s, 1);
+        },
+      );
+      const unique = summaries.filter((v: string, i: number, a: string[]) => a.indexOf(v) === i);
+      const MAX_SHOWN = 15;
+      const shown = unique.slice(0, MAX_SHOWN);
+      const suffix = unique.length > MAX_SHOWN ? `\n… (${unique.length - MAX_SHOWN} more)` : "";
+      return shown.join("\n") + suffix;
+    })();
+
+    return { unionOptions, currentType, branchesByType, selectOptions, isContainerType, unionTooltip };
+  }, [currentKeyMap, currentValueObjectAtKey, context.miroirFundamentalJzodSchema]);
+
+  const unionStarButton = useMemo((): JSX.Element | null => {
+    if (!unionTypeDataForControls) return null;
+    return (
+      <div
+        style={{ fontSize: "1.2em", color: "#FFA07A", cursor: "pointer", userSelect: "none" }}
+        title={unionTypeDataForControls.unionTooltip}
+        onClick={() => setIsUnionTypeSelectorOpen((prev) => !prev)}
+        data-testid={"union-type-star-" + formikRootLessListKey}
+      >
+        ★
+      </div>
+    );
+  }, [unionTypeDataForControls, formikRootLessListKey]);
+
+  const unionTypeSelectorElement = useMemo((): JSX.Element | null => {
+    if (!unionTypeDataForControls || !isUnionTypeSelectorOpen) return null;
+    return (
+      <ThemedSelectWithPortal
+        name={"union-type-" + formikRootLessListKey}
+        data-testid={"union-type-input-" + formikRootLessListKey}
+        filterable={true}
+        options={unionTypeDataForControls.selectOptions}
+        value={unionTypeDataForControls.currentType}
+        onChange={handleUnionTypeChange}
+        placeholder="Select type..."
+        filterPlaceholder="Type to filter..."
+        minWidth="120px"
+        navigateWithoutOpening={true}
+      />
+    );
+  }, [unionTypeDataForControls, isUnionTypeSelectorOpen, handleUnionTypeChange, formikRootLessListKey]);
+
+  // Controls for container-type union values – star + selector placed in the object/array header
+  const containerUnionControls = useMemo((): JSX.Element | null => {
+    if (!unionTypeDataForControls?.isContainerType || !unionStarButton) return null;
+    return (
+      <>
+        {unionStarButton}
+        {unionTypeSelectorElement}
+      </>
+    );
+  }, [unionTypeDataForControls, unionStarButton, unionTypeSelectorElement]);
+
+  // Merged extra tools buttons that include union controls for container types
+  const effectiveExtraToolsButtonsForContainer = useMemo(() => {
+    if (!containerUnionControls) return mergedExtraToolsButtons;
+    if (!mergedExtraToolsButtons) return containerUnionControls;
+    return (
+      <>
+        {containerUnionControls}
+        {mergedExtraToolsButtons}
+      </>
+    );
+  }, [containerUnionControls, mergedExtraToolsButtons]);
 
   // Create the main element based on the schema type
   // ##############################################################################################
@@ -909,7 +1023,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
               maxRenderDepth={props.maxRenderDepth}
               readOnly={props.readOnly}
               insideAny={props.insideAny}
-              extraToolsButtons={mergedExtraToolsButtons}
+              extraToolsButtons={effectiveExtraToolsButtonsForContainer}
               displayError={props.displayError}
               onChangeVector={props.onChangeVector}
             />
@@ -939,7 +1053,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
               hidden={hideSubJzodEditor}
               displayAsStructuredElementSwitch={displayAsStructuredElementSwitch}
               deleteButtonElement={props.deleteButtonElement}
-              extraToolsButtons={mergedExtraToolsButtons}
+              extraToolsButtons={effectiveExtraToolsButtonsForContainer}
               maxRenderDepth={props.maxRenderDepth}
               readOnly={props.readOnly}
               displayError={props.displayError}
@@ -1543,7 +1657,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
     props.deleteButtonElement,
     props.maxRenderDepth,
     props.extraToolsButtons,
-    mergedExtraToolsButtons,
+    effectiveExtraToolsButtonsForContainer,
     // Computed values that affect rendering (all properly memoized)
     localResolvedElementJzodSchemaBasedOnValue, 
     currentValueObjectAtKey, 
@@ -1553,113 +1667,49 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
     enhancedLabelElement,
   ]); // end mainElement definition
 
-  const mainElementWithUnionTypeSelector : JSX.Element = useMemo(() => {
+  // ##############################################################################################
+  // ##############################################################################################
+  // ##############################################################################################
+  const mainElementWithUnionTypeSelector: JSX.Element = useMemo(() => {
     if (currentKeyMap?.rawSchema?.type !== "union") {
       return mainElement;
     }
     if (!currentKeyMap.recursivelyUnfoldedUnionSchema) {
-      log.error("JzodElementEditor: currentKeyMap indicates a union type but recursivelyUnfoldedUnionSchema is missing", {
-        currentKeyMap,
-        mainElement,
-      });
-      return mainElement;
-    }
-    const unionOptions = Array.from(new Set(currentKeyMap?.recursivelyUnfoldedUnionSchema.result.map((t: JzodElement) => t.type)) || []);
-
-    // Only show selector when there are multiple distinct branch types (non-discriminated / opt-in discriminated unions)
-    if (unionOptions.length <= 1) {
-      return mainElement;
-    }
-
-    // Determine current type from value
-    const currentType = (() => {
-      if (currentValueObjectAtKey === null) return "null";
-      if (currentValueObjectAtKey === undefined) return "undefined";
-      if (Array.isArray(currentValueObjectAtKey)) return "array";
-      return typeof currentValueObjectAtKey;
-    })();
-
-    // Build a per-type branch map so labels can reflect each branch's key attributes
-    const branchesByType = new Map<string, JzodElement[]>();
-    for (const branch of currentKeyMap.recursivelyUnfoldedUnionSchema.result) {
-      const t = (branch as any).type as string;
-      if (!branchesByType.has(t)) branchesByType.set(t, []);
-      branchesByType.get(t)!.push(branch as JzodElement);
-    }
-
-    const selectOptions = unionOptions.map((type: string) => ({
-      value: type,
-      label: generateUnionBranchLabel(type, branchesByType.get(type) ?? []),
-    }));
-
-    const isContainerType = ["object", "array"].includes(currentType);
-
-    // Build a tooltip summarising all union branches using jzodToJzod_Summary
-    const unionTooltip = (() => {
-      if (!context.miroirFundamentalJzodSchema) return `${unionOptions.length} types`;
-      const summaries = currentKeyMap.recursivelyUnfoldedUnionSchema.result.map(
-        (branch: JzodElement) => {
-          const s = jzodToJzod_Summary(branch, context.miroirFundamentalJzodSchema!, 1);
-          return jzodElementToTooltipText(s, 1);
-        }
+      log.error(
+        "JzodElementEditor: currentKeyMap indicates a union type but recursivelyUnfoldedUnionSchema is missing",
+        {
+          currentKeyMap,
+          mainElement,
+        },
       );
-      // De-duplicate identical entries (e.g. multiple object branches that render identically)
-      const unique = summaries.filter((v: string, i: number, a: string[]) => a.indexOf(v) === i);
-      // Cap display and put each branch on its own line for readability
-      const MAX_SHOWN = 15;
-      const shown = unique.slice(0, MAX_SHOWN);
-      const suffix = unique.length > MAX_SHOWN ? `\n… (${unique.length - MAX_SHOWN} more)` : "";
-      return shown.join("\n") + suffix;
-    })();
+      return mainElement;
+    }
+    // unionTypeDataForControls is null when there is only one distinct branch type
+    if (!unionTypeDataForControls) {
+      return mainElement;
+    }
 
-    const starButton = (
-      <div
-        style={{ fontSize: "1.2em", color: "#FFA07A", cursor: "pointer", userSelect: "none" }}
-        title={unionTooltip}
-        onClick={() => setIsUnionTypeSelectorOpen(prev => !prev)}
-        data-testid={"union-type-star-" + formikRootLessListKey}
-      >
-        ★
+    if (unionTypeDataForControls.isContainerType) {
+      // Star and selector are already embedded in the JzodObjectEditor / JzodArrayEditor header
+      // via effectiveExtraToolsButtonsForContainer – no wrapping needed here.
+      return mainElement;
+    }
+
+    // Non-container: horizontal layout – mainElement + star + (selector when open) on same line
+    return (
+      <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "nowrap" }}>
+        {mainElement}
+        {unionStarButton}
+        {unionTypeSelectorElement}
       </div>
     );
-
-    const typeSelector = isUnionTypeSelectorOpen ? (
-      <ThemedSelectWithPortal
-        name={"union-type-" + formikRootLessListKey}
-        data-testid={"union-type-input-" + formikRootLessListKey}
-        filterable={true}
-        options={selectOptions}
-        value={currentType}
-        onChange={handleUnionTypeChange}
-        placeholder="Select type..."
-        filterPlaceholder="Type to filter..."
-        minWidth="120px"
-        navigateWithoutOpening={true}
-      />
-    ) : null;
-
-    if (isContainerType) {
-      // Vertical layout: star + (selector when open) above, value below
-      return (
-        <div>
-          <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "nowrap", marginBottom: isUnionTypeSelectorOpen ? "4px" : "2px" }}>
-            {starButton}
-            {typeSelector}
-          </div>
-          {mainElement}
-        </div>
-      );
-    } else {
-      // Horizontal layout: mainElement + star + (selector when open) on same line
-      return (
-        <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "nowrap" }}>
-          {mainElement}
-          {starButton}
-          {typeSelector}
-        </div>
-      );
-    }
-  }, [ currentKeyMap, currentValueObjectAtKey, mainElement, formikRootLessListKey, handleUnionTypeChange, isUnionTypeSelectorOpen]);
+  }, [
+    currentKeyMap,
+    unionTypeDataForControls,
+    mainElement,
+    unionStarButton,
+    unionTypeSelectorElement,
+  ]);
   // ##############################################################################################
   // ##############################################################################################
   // ##############################################################################################
@@ -1741,7 +1791,6 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
           flexGrow: 1,
         }}
       >
-        {/* {mainElement} */}
         {mainElementWithUnionTypeSelector}
       </span>
     ): (<></>);
@@ -1796,7 +1845,6 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
           >
             {!localResolvedElementJzodSchemaBasedOnValue?.tag?.value?.display
               ?.objectHideDeleteButton && props.deleteButtonElement}
-            {/* {mainElement} */}
             {mainElementWithUnionTypeSelector}
             {mergedExtraToolsButtons && (
               <span style={{ marginLeft: "8px", display: "inline-flex", alignItems: "center" }}>
