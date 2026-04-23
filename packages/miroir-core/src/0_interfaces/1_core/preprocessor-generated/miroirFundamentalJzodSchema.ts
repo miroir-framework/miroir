@@ -5389,6 +5389,10 @@ export const miroirFundamentalJzodSchema = {
           "transformerTestLabel": {
             "type": "string"
           },
+          "transformerTestDescription": {
+            "type": "string",
+            "optional": true
+          },
           "transformerName": {
             "type": "string"
           },
@@ -5665,6 +5669,10 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "transformerTestLabel": {
                     "type": "string"
+                  },
+                  "transformerTestDescription": {
+                    "type": "string",
+                    "optional": true
                   },
                   "transformerName": {
                     "type": "string"

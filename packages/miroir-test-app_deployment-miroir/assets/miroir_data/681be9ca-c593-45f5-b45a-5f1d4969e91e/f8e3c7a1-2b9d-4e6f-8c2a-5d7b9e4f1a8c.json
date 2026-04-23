@@ -12,6 +12,7 @@
       {
         "transformerTestType": "transformerTest",
         "transformerTestLabel": "test010_literal",
+        "transformerTestDescription": "Checks that a literal value matches a literal schema",
         "transformerName": "jzodTypeCheck",
         "runTestStep": "build",
         "subExpectedValue": [
@@ -62,6 +63,7 @@
       {
         "transformerTestType": "transformerTest",
         "transformerTestLabel": "test020_string",
+        "transformerTestDescription": "Checks that a string value matches a string schema",
         "transformerName": "jzodTypeCheck",
         "runTestStep": "build",
         "subExpectedValue": [
@@ -107,6 +109,7 @@
       {
         "transformerTestType": "transformerTest",
         "transformerTestLabel": "test022_boolean_true",
+        "transformerTestDescription": "Checks that boolean value true matches a boolean schema",
         "transformerName": "jzodTypeCheck",
         "runTestStep": "build",
         "subExpectedValue": [
@@ -152,6 +155,7 @@
       {
         "transformerTestType": "transformerTest",
         "transformerTestLabel": "test024_boolean_false",
+        "transformerTestDescription": "Checks that boolean value false matches a boolean schema",
         "transformerName": "jzodTypeCheck",
         "runTestStep": "build",
         "subExpectedValue": [
@@ -197,6 +201,7 @@
       {
         "transformerTestType": "transformerTest",
         "transformerTestLabel": "test030_schemaReference",
+        "transformerTestDescription": "Checks that a string value matches a schema reference resolving to a string schema",
         "transformerName": "jzodTypeCheck",
         "runTestStep": "build",
         "subExpectedValue": [
@@ -269,7 +274,8 @@
       },
       {
         "transformerTestType": "transformerTest",
-        "transformerTestLabel": "test040",
+        "transformerTestLabel": "test040_simple_object",
+        "transformerTestDescription": "Checks type-checking a simple object with union and optional attributes against a schema reference",
         "transformerName": "jzodTypeCheck",
         "runTestStep": "build",
         "subExpectedValue": [
@@ -690,7 +696,8 @@
       },
       {
         "transformerTestType": "transformerTest",
-        "transformerTestLabel": "test050",
+        "transformerTestLabel": "test050_object_with_union",
+        "transformerTestDescription": "Checks type-checking a deeply nested object containing union-typed attributes",
         "transformerName": "jzodTypeCheck",
         "runTestStep": "build",
         "subExpectedValue": [
@@ -1539,7 +1546,8 @@
       },
       {
         "transformerTestType": "transformerTest",
-        "transformerTestLabel": "test060",
+        "transformerTestLabel": "test060_recursive_object",
+        "transformerTestDescription": "Checks type-checking a recursive object structure defined via schema reference",
         "transformerName": "jzodTypeCheck",
         "runTestStep": "build",
         "subExpectedValue": [
@@ -2567,6 +2575,7 @@
       {
         "transformerTestType": "transformerTest",
         "transformerTestLabel": "test070",
+        "transformerTestDescription": "Checks type-checking a record schema containing schema references to a recursive object type",
         "transformerName": "jzodTypeCheck",
         "runTestStep": "build",
         "subExpectedValue": [
@@ -3839,7 +3848,8 @@
       },
       {
         "transformerTestType": "transformerTest",
-        "transformerTestLabel": "test120_union",
+        "transformerTestLabel": "test120_simple_union",
+        "transformerTestDescription": "Checks that a number value matches a union(string, number) schema, resolving to the number branch",
         "transformerName": "jzodTypeCheck",
         "runTestStep": "build",
         "subExpectedValue": [
@@ -3914,6 +3924,238 @@
               },
               "chosenUnionBranchRawSchema": {
                 "type": "number"
+              },
+              "valuePath": [],
+              "typePath": []
+            }
+          }
+        }
+      },
+      {
+        "transformerTestType": "transformerTest",
+        "transformerTestLabel": "test130_any_string",
+        "transformerTestDescription": "Checks that a string value against an any schema resolves to a string schema",
+        "transformerName": "jzodTypeCheck",
+        "runTestStep": "build",
+        "subExpectedValue": [
+          ["status", "ok"],
+          ["rawSchema", {"type": "any"}],
+          ["resolvedSchema", {"type": "string"}]
+        ],
+        "transformer": {
+          "transformerType": "jzodTypeCheck",
+          "interpolation": "build",
+          "mlSchema": {
+            "type": "any"
+          },
+          "valueObject": "hello",
+          "currentValuePath": [],
+          "currentTypePath": [],
+          "relativeReferenceJzodContext": {}
+        },
+        "expectedValue": {
+          "status": "ok",
+          "valuePath": [],
+          "typePath": [],
+          "rawSchema": {"type": "any"},
+          "resolvedSchema": {"type": "string"},
+          "keyMap": {
+            "": {
+              "rawSchema": {"type": "any"},
+              "resolvedSchema": {"type": "string"},
+              "valuePath": [],
+              "typePath": []
+            }
+          }
+        }
+      },
+      {
+        "transformerTestType": "transformerTest",
+        "transformerTestLabel": "test140_any_number",
+        "transformerTestDescription": "Checks that a number value against an any schema resolves to a number schema",
+        "transformerName": "jzodTypeCheck",
+        "runTestStep": "build",
+        "subExpectedValue": [
+          ["status", "ok"],
+          ["rawSchema", {"type": "any"}],
+          ["resolvedSchema", {"type": "number"}]
+        ],
+        "transformer": {
+          "transformerType": "jzodTypeCheck",
+          "interpolation": "build",
+          "mlSchema": {
+            "type": "any"
+          },
+          "valueObject": 42,
+          "currentValuePath": [],
+          "currentTypePath": [],
+          "relativeReferenceJzodContext": {}
+        },
+        "expectedValue": {
+          "status": "ok",
+          "valuePath": [],
+          "typePath": [],
+          "rawSchema": {"type": "any"},
+          "resolvedSchema": {"type": "number"},
+          "keyMap": {
+            "": {
+              "rawSchema": {"type": "any"},
+              "resolvedSchema": {"type": "number"},
+              "valuePath": [],
+              "typePath": []
+            }
+          }
+        }
+      },
+      {
+        "transformerTestType": "transformerTest",
+        "transformerTestLabel": "test150_any_object",
+        "transformerTestDescription": "Checks that a flat object value against an any schema resolves to an object schema",
+        "transformerName": "jzodTypeCheck",
+        "runTestStep": "build",
+        "subExpectedValue": [
+          ["status", "ok"],
+          ["rawSchema", {"type": "any"}],
+          ["resolvedSchema", {"type": "object", "definition": {"a": {"type": "string"}}}]
+        ],
+        "transformer": {
+          "transformerType": "jzodTypeCheck",
+          "interpolation": "build",
+          "mlSchema": {
+            "type": "any"
+          },
+          "valueObject": {"a": "hello"},
+          "currentValuePath": [],
+          "currentTypePath": [],
+          "relativeReferenceJzodContext": {}
+        },
+        "expectedValue": {
+          "status": "ok",
+          "valuePath": [],
+          "typePath": [],
+          "rawSchema": {"type": "any"},
+          "resolvedSchema": {
+            "type": "object",
+            "definition": {
+              "a": {"type": "string"}
+            }
+          },
+          "keyMap": {
+            "": {
+              "rawSchema": {"type": "any"},
+              "resolvedSchema": {
+                "type": "object",
+                "definition": {
+                  "a": {"type": "string"}
+                }
+              },
+              "valuePath": [],
+              "typePath": []
+            }
+          }
+        }
+      },
+      {
+        "transformerTestType": "transformerTest",
+        "transformerTestLabel": "test160_any_object_of_object",
+        "transformerTestDescription": "Checks that a nested object value against an any schema resolves to a nested object schema",
+        "transformerName": "jzodTypeCheck",
+        "runTestStep": "build",
+        "subExpectedValue": [
+          ["status", "ok"],
+          ["rawSchema", {"type": "any"}],
+          ["resolvedSchema", {"type": "object", "definition": {"outer": {"type": "object", "definition": {"inner": {"type": "number"}}}}}]
+        ],
+        "transformer": {
+          "transformerType": "jzodTypeCheck",
+          "interpolation": "build",
+          "mlSchema": {
+            "type": "any"
+          },
+          "valueObject": {"outer": {"inner": 42}},
+          "currentValuePath": [],
+          "currentTypePath": [],
+          "relativeReferenceJzodContext": {}
+        },
+        "expectedValue": {
+          "status": "ok",
+          "valuePath": [],
+          "typePath": [],
+          "rawSchema": {"type": "any"},
+          "resolvedSchema": {
+            "type": "object",
+            "definition": {
+              "outer": {
+                "type": "object",
+                "definition": {
+                  "inner": {"type": "number"}
+                }
+              }
+            }
+          },
+          "keyMap": {
+            "": {
+              "rawSchema": {"type": "any"},
+              "resolvedSchema": {
+                "type": "object",
+                "definition": {
+                  "outer": {
+                    "type": "object",
+                    "definition": {
+                      "inner": {"type": "number"}
+                    }
+                  }
+                }
+              },
+              "valuePath": [],
+              "typePath": []
+            }
+          }
+        }
+      },
+      {
+        "transformerTestType": "transformerTest",
+        "transformerTestLabel": "test170_any_array",
+        "transformerTestDescription": "Checks that an array value against an any schema resolves to a tuple schema (default arrayAsTuple behavior)",
+        "transformerName": "jzodTypeCheck",
+        "runTestStep": "build",
+        "subExpectedValue": [
+          ["status", "ok"],
+          ["rawSchema", {"type": "any"}],
+          ["resolvedSchema", {"type": "tuple", "definition": [{"type": "string"}, {"type": "number"}]}]
+        ],
+        "transformer": {
+          "transformerType": "jzodTypeCheck",
+          "interpolation": "build",
+          "mlSchema": {
+            "type": "any"
+          },
+          "valueObject": ["hello", 42],
+          "currentValuePath": [],
+          "currentTypePath": [],
+          "relativeReferenceJzodContext": {}
+        },
+        "expectedValue": {
+          "status": "ok",
+          "valuePath": [],
+          "typePath": [],
+          "rawSchema": {"type": "any"},
+          "resolvedSchema": {
+            "type": "tuple",
+            "definition": [
+              {"type": "string"},
+              {"type": "number"}
+            ]
+          },
+          "keyMap": {
+            "": {
+              "rawSchema": {"type": "any"},
+              "resolvedSchema": {
+                "type": "tuple",
+                "definition": [
+                  {"type": "string"},
+                  {"type": "number"}
+                ]
               },
               "valuePath": [],
               "typePath": []
