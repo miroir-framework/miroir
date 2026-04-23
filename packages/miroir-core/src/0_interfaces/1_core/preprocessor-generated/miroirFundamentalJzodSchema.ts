@@ -5455,6 +5455,21 @@ export const miroirFundamentalJzodSchema = {
             "type": "any",
             "optional": true
           },
+          "subExpectedValue": {
+            "type": "array",
+            "optional": true,
+            "definition": {
+              "type": "tuple",
+              "definition": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "any"
+                }
+              ]
+            }
+          },
           "integrationTestExpectedValue": {
             "type": "any",
             "optional": true
@@ -5715,6 +5730,21 @@ export const miroirFundamentalJzodSchema = {
                   "expectedValue": {
                     "type": "any",
                     "optional": true
+                  },
+                  "subExpectedValue": {
+                    "type": "array",
+                    "optional": true,
+                    "definition": {
+                      "type": "tuple",
+                      "definition": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "any"
+                        }
+                      ]
+                    }
                   },
                   "integrationTestExpectedValue": {
                     "type": "any",

@@ -66,19 +66,19 @@ if (shouldSkip) {
       // "jzodTypeCheck", "test010_literal",
     ],
     effectiveTests,
-    // undefined, // filter
-    {testList: {"jzodTypeCheck": [
-      // "test010_literal",
-      "test020_string",
-      // "test022_boolean_true",
-      // "test024_boolean_false",
-      // "test030_schemaReference",
-      // "test040",
-      // "test050",
-      // "test060",
-      // "test070",
-      "test120_union",
-    ]}}, // filter
+    undefined, // filter
+    // {testList: {"jzodTypeCheck": [
+    //   // "test010_literal",
+    //   "test020_string",
+    //   // "test022_boolean_true",
+    //   // "test024_boolean_false",
+    //   // "test030_schemaReference",
+    //   // "test040",
+    //   // "test050",
+    //   // "test060",
+    //   // "test070",
+    //   "test120_union",
+    // ]}}, // filter
     defaultMetaModelEnvironment,
     activityTracker,
     undefined, // parentTrackingId,

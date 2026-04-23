@@ -14,6 +14,11 @@
         "transformerTestLabel": "test010_literal",
         "transformerName": "jzodTypeCheck",
         "runTestStep": "build",
+        "subExpectedValue": [
+          ["status", "ok"],
+          ["rawSchema", {"type": "literal", "definition": "myLiteral"}],
+          ["resolvedSchema", {"type": "literal", "definition": "myLiteral"}]
+        ],
         "transformer": {
           "transformerType": "jzodTypeCheck",
           "interpolation": "build",
@@ -59,6 +64,11 @@
         "transformerTestLabel": "test020_string",
         "transformerName": "jzodTypeCheck",
         "runTestStep": "build",
+        "subExpectedValue": [
+          ["status", "ok"],
+          ["rawSchema", {"type": "string"}],
+          ["resolvedSchema", {"type": "string"}]
+        ],
         "transformer": {
           "transformerType": "jzodTypeCheck",
           "interpolation": "build",
@@ -99,6 +109,11 @@
         "transformerTestLabel": "test022_boolean_true",
         "transformerName": "jzodTypeCheck",
         "runTestStep": "build",
+        "subExpectedValue": [
+          ["status", "ok"],
+          ["rawSchema", {"type": "boolean"}],
+          ["resolvedSchema", {"type": "boolean"}]
+        ],
         "transformer": {
           "transformerType": "jzodTypeCheck",
           "interpolation": "build",
@@ -139,6 +154,11 @@
         "transformerTestLabel": "test024_boolean_false",
         "transformerName": "jzodTypeCheck",
         "runTestStep": "build",
+        "subExpectedValue": [
+          ["status", "ok"],
+          ["rawSchema", {"type": "boolean"}],
+          ["resolvedSchema", {"type": "boolean"}]
+        ],
         "transformer": {
           "transformerType": "jzodTypeCheck",
           "interpolation": "build",
@@ -179,6 +199,11 @@
         "transformerTestLabel": "test030_schemaReference",
         "transformerName": "jzodTypeCheck",
         "runTestStep": "build",
+        "subExpectedValue": [
+          ["status", "ok"],
+          ["rawSchema", {"type": "schemaReference", "context": {"a": {"type": "string"}}, "definition": {"relativePath": "a"}}],
+          ["resolvedSchema", {"type": "string"}]
+        ],
         "transformer": {
           "transformerType": "jzodTypeCheck",
           "interpolation": "build",
@@ -247,6 +272,11 @@
         "transformerTestLabel": "test040",
         "transformerName": "jzodTypeCheck",
         "runTestStep": "build",
+        "subExpectedValue": [
+          ["status", "ok"],
+          ["rawSchema", {"type": "schemaReference", "context": {"myObject": {"type": "object", "definition": {"a": {"type": "union", "definition": [{"type": "string", "optional": true}, {"type": "schemaReference", "definition": {"relativePath": "myObject"}}]}, "b": {"type": "string", "optional": true}, "c": {"type": "number", "optional": true}}}}, "definition": {"relativePath": "myObject"}}],
+          ["resolvedSchema", {"type": "object", "definition": {"a": {"type": "string", "optional": true}, "c": {"type": "number", "optional": true}}}]
+        ],
         "transformer": {
           "transformerType": "jzodTypeCheck",
           "interpolation": "build",
@@ -663,6 +693,11 @@
         "transformerTestLabel": "test050",
         "transformerName": "jzodTypeCheck",
         "runTestStep": "build",
+        "subExpectedValue": [
+          ["status", "ok"],
+          ["rawSchema", {"type": "schemaReference", "context": {"myObject": {"type": "object", "definition": {"a": {"type": "union", "definition": [{"type": "string", "optional": true}, {"type": "schemaReference", "definition": {"relativePath": "myObject"}}]}, "b": {"type": "string", "optional": true}, "c": {"type": "number", "optional": true}}}}, "definition": {"relativePath": "myObject"}}],
+          ["resolvedSchema", {"type": "object", "definition": {"a": {"type": "object", "definition": {"a": {"type": "string", "optional": true}, "c": {"type": "number", "optional": true}}}, "c": {"type": "number", "optional": true}}}]
+        ],
         "transformer": {
           "transformerType": "jzodTypeCheck",
           "interpolation": "build",
@@ -1507,6 +1542,11 @@
         "transformerTestLabel": "test060",
         "transformerName": "jzodTypeCheck",
         "runTestStep": "build",
+        "subExpectedValue": [
+          ["status", "ok"],
+          ["rawSchema", {"type": "schemaReference", "context": {"myObject": {"type": "object", "definition": {"a": {"type": "union", "definition": [{"type": "string"}, {"type": "schemaReference", "definition": {"relativePath": "myObject"}}]}}}}, "definition": {"relativePath": "myObject"}}],
+          ["resolvedSchema", {"type": "object", "definition": {"a": {"type": "object", "definition": {"a": {"type": "object", "definition": {"a": {"type": "string"}}}}}}}]
+        ],
         "transformer": {
           "transformerType": "jzodTypeCheck",
           "interpolation": "build",
@@ -2529,6 +2569,11 @@
         "transformerTestLabel": "test070",
         "transformerName": "jzodTypeCheck",
         "runTestStep": "build",
+        "subExpectedValue": [
+          ["status", "ok"],
+          ["rawSchema", {"type": "schemaReference", "context": {"myObject": {"type": "object", "definition": {"a": {"type": "union", "definition": [{"type": "string"}, {"type": "schemaReference", "definition": {"relativePath": "myObject"}}]}}}, "myRecord": {"type": "record", "definition": {"type": "schemaReference", "definition": {"relativePath": "myObject"}}}}, "definition": {"relativePath": "myRecord"}}],
+          ["resolvedSchema", {"type": "object", "definition": {"r1": {"type": "object", "definition": {"a": {"type": "object", "definition": {"a": {"type": "string"}}}}}, "r2": {"type": "object", "definition": {"a": {"type": "string"}}}}}]
+        ],
         "transformer": {
           "transformerType": "jzodTypeCheck",
           "interpolation": "build",
@@ -3797,6 +3842,11 @@
         "transformerTestLabel": "test120_union",
         "transformerName": "jzodTypeCheck",
         "runTestStep": "build",
+        "subExpectedValue": [
+          ["status", "ok"],
+          ["rawSchema", {"type": "union", "definition": [{"type": "string"}, {"type": "number"}]}],
+          ["resolvedSchema", {"type": "number"}]
+        ],
         "transformer": {
           "transformerType": "jzodTypeCheck",
           "interpolation": "build",

@@ -220,6 +220,16 @@ export const runUnitTransformerTests: RunTransformerTests = {
 // ################################################################################################
 // ################################################################################################
 // ################################################################################################
+/**
+ * Traverse a nested object using a dotted-notation path string.
+ * An empty string returns the root object.
+ */
+export function getValueByDottedPath(obj: any, path: string): any {
+  if (path === "") return obj;
+  return path.split(".").reduce((current, key) => current?.[key], obj);
+}
+
+// ################################################################################################
 export async function runTransformerTestInMemory(
   localVitest: typeof vitest,
   testNamePath: string[],
@@ -356,62 +366,95 @@ export async function runTransformerTestInMemory(
       //   "################################ runTransformerTestInMemory calling localVitest.expect"
       // );
     
-    // Normalize both actual and expected values to handle undefined properties consistently
-    const expectedValue = ignorePostgresExtraAttributes(
-      transformerTest.unitTestExpectedValue ?? transformerTest.expectedValue,
-      transformerTest.ignoreAttributes
-    );
-
     const normalizedResult = removeUndefinedProperties(jsonifiedResult);
-    const normalizedExpected = removeUndefinedProperties(unNullify(expectedValue));
 
-    log.info(
-      "################################ runTransformerTestInMemory result",
-      // resultWithRetain
-      "(ignoreAttributes=" + JSON.stringify(transformerTest.ignoreAttributes) + ")",
-      JSON.stringify(normalizedResult, null, 2),
-      "expected",
-      JSON.stringify(normalizedExpected, null, 2)
-    );
-
-    const expectForm = localVitest
-      .expect(normalizedResult, `${testSuiteNamePathAsString} > ${assertionName}`)
-    // log.info(
-    //   "################################ runTransformerTestInMemory localVitest.expect called expectForm", expectForm
-    // );
-    // const testResult = expectForm.toEqual(transformerTest.expectedValue);
-    // vitest returns void, simulated vitest returns an object with a "result" boolean
-    const testResult: any = expectForm.toEqual(normalizedExpected);
-    log.info(
-      "################################ runTransformerTestInMemory testResult",
-      testResult
-      // JSON.stringify(testResult, circularReplacer, 2)
-    );
-
-    if (!testResult || !Object.hasOwn(testResult, "result")) {
-      // vitest case
-      testAssertionResult = {
-        assertionName,
-        assertionResult: "ok",
-      };
+    if (transformerTest.subExpectedValue && transformerTest.subExpectedValue.length > 0) {
+      // Compare each sub-path independently; first failure short-circuits
+      for (const [path, expectedSubValue] of transformerTest.subExpectedValue) {
+        const actualSubValue = getValueByDottedPath(normalizedResult, path);
+        const normalizedExpectedSub = removeUndefinedProperties(unNullify(expectedSubValue));
+        log.info(
+          "################################ runTransformerTestInMemory subExpectedValue path=",
+          path,
+          "actual=",
+          JSON.stringify(actualSubValue, null, 2),
+          "expected=",
+          JSON.stringify(normalizedExpectedSub, null, 2)
+        );
+        const subTestResult: any = localVitest
+          .expect(actualSubValue, `${testSuiteNamePathAsString} > ${assertionName} [${path}]`)
+          .toEqual(normalizedExpectedSub);
+        if (subTestResult && Object.hasOwn(subTestResult, "result") && !subTestResult.result) {
+          // simulated vitest failure
+          testAssertionResult = {
+            assertionName,
+            assertionResult: "error",
+            assertionExpectedValue: expectedSubValue,
+            assertionActualValue: actualSubValue,
+          };
+          miroirActivityTracker.setTestAssertionResult(currentTestAssertionPath, testAssertionResult);
+          log.info("############################ test", assertionName, "END (with error in subExpectedValue path=", path, ")");
+          return Promise.resolve();
+        }
+      }
+      testAssertionResult = { assertionName, assertionResult: "ok" };
     } else {
-      // simulated vitest case
-      // const testName = testNamePath[testNamePath.length - 1];
-      // as there can be only 1 assertion per test, we use the test name as the assertion name
-      if (testResult.result) {
+      // Normalize both actual and expected values to handle undefined properties consistently
+      const expectedValue = ignorePostgresExtraAttributes(
+        transformerTest.unitTestExpectedValue ?? transformerTest.expectedValue,
+        transformerTest.ignoreAttributes
+      );
+
+      const normalizedExpected = removeUndefinedProperties(unNullify(expectedValue));
+
+      log.info(
+        "################################ runTransformerTestInMemory result",
+        // resultWithRetain
+        "(ignoreAttributes=" + JSON.stringify(transformerTest.ignoreAttributes) + ")",
+        JSON.stringify(normalizedResult, null, 2),
+        "expected",
+        JSON.stringify(normalizedExpected, null, 2)
+      );
+
+      const expectForm = localVitest
+        .expect(normalizedResult, `${testSuiteNamePathAsString} > ${assertionName}`)
+      // log.info(
+      //   "################################ runTransformerTestInMemory localVitest.expect called expectForm", expectForm
+      // );
+      // const testResult = expectForm.toEqual(transformerTest.expectedValue);
+      // vitest returns void, simulated vitest returns an object with a "result" boolean
+      const testResult: any = expectForm.toEqual(normalizedExpected);
+      log.info(
+        "################################ runTransformerTestInMemory testResult",
+        testResult
+        // JSON.stringify(testResult, circularReplacer, 2)
+      );
+
+      if (!testResult || !Object.hasOwn(testResult, "result")) {
+        // vitest case
         testAssertionResult = {
           assertionName,
           assertionResult: "ok",
         };
       } else {
-        // TODO: use returned message from the testResult?
-        testAssertionResult = {
-          assertionName,
-          assertionResult: "error",
-          assertionExpectedValue: transformerTest.expectedValue,
-          assertionActualValue: jsonifiedResult,
+        // simulated vitest case
+        // const testName = testNamePath[testNamePath.length - 1];
+        // as there can be only 1 assertion per test, we use the test name as the assertion name
+        if (testResult.result) {
+          testAssertionResult = {
+            assertionName,
+            assertionResult: "ok",
+          };
+        } else {
+          // TODO: use returned message from the testResult?
+          testAssertionResult = {
+            assertionName,
+            assertionResult: "error",
+            assertionExpectedValue: transformerTest.expectedValue,
+            assertionActualValue: jsonifiedResult,
+          };
         };
-      };
+      }
     }
   } catch (error) {
     log.error(
