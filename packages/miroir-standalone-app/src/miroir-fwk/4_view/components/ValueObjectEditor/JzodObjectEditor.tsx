@@ -157,6 +157,7 @@ const ProgressiveAttribute: FC<{
   onChangeVector?: Record<string, (newValue: any, rootLessListKey: string) => void>;
   handleAttributeNameChange: (newValue: string, attributeRootLessListKeyArray: (string | number)[]) => void;
   deleteElement: (formikRootLessListKeyArray: (string | number)[]) => () => void;
+  duplicateRecordEntry: (attributeKey: string) => void;
   handleMoveAttribute: (direction: "up" | "down", attributeKey: string) => void;
   totalAttributes: number;
   hideOptionalButton?: boolean;
@@ -199,6 +200,7 @@ const ProgressiveAttribute: FC<{
   onChangeVector,
   handleAttributeNameChange,
   deleteElement,
+  duplicateRecordEntry,
   handleMoveAttribute,
   totalAttributes,
   hideOptionalButton,
@@ -439,6 +441,17 @@ const ProgressiveAttribute: FC<{
                   >
                     <Clear />
                   </ThemedSmallIconButton>
+                  {isRecordType && (
+                    <ThemedStyledButton
+                      variant="transparent"
+                      type="button"
+                      aria-label={reportSectionPathAsString + "." + attributeRootLessListKey + "-duplicateRecordEntry"}
+                      onClick={() => duplicateRecordEntry(attribute[0])}
+                      title="Duplicate record entry"
+                    >
+                      ⧉
+                    </ThemedStyledButton>
+                  )}
                 </>
               ) : (
                 <></>
@@ -897,6 +910,29 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
   ]);
 
   // ##############################################################################################
+  const duplicateRecordEntry = useCallback(
+    (attributeKey: string) => {
+      const valueToDuplicate = currentValueObjectAtKey[attributeKey];
+      const duplicate =
+        typeof valueToDuplicate === "object" && valueToDuplicate !== null
+          ? JSON.parse(JSON.stringify(valueToDuplicate))
+          : valueToDuplicate;
+      let newKey = attributeKey + "_copy";
+      let counter = 1;
+      while (Object.prototype.hasOwnProperty.call(currentValueObjectAtKey, newKey)) {
+        newKey = attributeKey + "_copy" + counter;
+        counter++;
+      }
+      const newObjectValue = { ...currentValueObjectAtKey, [newKey]: duplicate };
+      if (onChangeVector?.[rootLessListKey]) {
+        onChangeVector[rootLessListKey](newObjectValue, rootLessListKey);
+      }
+      formik.setFieldValue(formikRootLessListKey, newObjectValue, true);
+    },
+    [currentValueObjectAtKey, formik, formikRootLessListKey, onChangeVector, rootLessListKey]
+  );
+
+  // ##############################################################################################
   const addObjectOptionalAttribute = useCallback(
     async (attributeName: string) => {
       if (localResolvedElementJzodSchemaBasedOnValue?.type != "object") {
@@ -1215,6 +1251,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
                 onChangeVector={onChangeVector}
                 handleAttributeNameChange={handleAttributeNameChange}
                 deleteElement={deleteElement}
+                duplicateRecordEntry={duplicateRecordEntry}
                 handleMoveAttribute={handleMoveAttribute}
                 totalAttributes={itemsOrder.length}
                 hideOptionalButton={localResolvedElementJzodSchemaBasedOnValue?.tag?.value?.display?.objectHideOptionalButton}
@@ -1250,6 +1287,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
     onChangeVector,
     handleAttributeNameChange,
     deleteElement,
+    duplicateRecordEntry,
     handleMoveAttribute,
     formik,
     currentMiroirFundamentalJzodSchema,

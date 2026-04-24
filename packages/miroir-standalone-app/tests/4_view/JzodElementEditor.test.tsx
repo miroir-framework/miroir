@@ -1249,6 +1249,101 @@ export function getJzodObjectEditorTests(
               });
             },
           },
+        "record with 1 object entry can have the entry duplicated when clicking the duplicate button":
+          {
+            props: {
+              label: "Test Label",
+              name: "testField",
+              listKey: "ROOT.testField",
+              rootLessListKey: "testField",
+              rootLessListKeyArray: ["testField"],
+              rawJzodSchema: {
+                type: "record",
+                definition: {
+                  type: "object",
+                  definition: { a: { type: "string" }, b: { type: "number" } },
+                },
+              },
+              initialFormState: {
+                firstRecord: {
+                  a: "test string",
+                  b: 42,
+                },
+              },
+            },
+            tests: async (expect, container) => {
+              const duplicateButton = screen.getByRole("button", {
+                name: formikFieldName("testField.firstRecord-duplicateRecordEntry"),
+              });
+              expect(duplicateButton).toBeInTheDocument();
+              await act(() => {
+                fireEvent.click(duplicateButton);
+              });
+              await waitAfterUserInteraction();
+              const values = extractValuesFromRenderedElements(
+                expect,
+                undefined,
+                container,
+                formikFieldName("testField"),
+                "after duplicate button click",
+              );
+              const testResult = formValuesToJSON(values);
+              expect(testResult).toEqual({
+                firstRecord: { a: "test string", b: 42 },
+                firstRecord_copy: { a: "test string", b: 42 },
+              });
+            },
+          },
+        "record with 2 object entries can have the first entry duplicated without colliding with an existing _copy key":
+          {
+            props: {
+              label: "Test Label",
+              name: "testField",
+              listKey: "ROOT.testField",
+              rootLessListKey: "testField",
+              rootLessListKeyArray: ["testField"],
+              rawJzodSchema: {
+                type: "record",
+                definition: {
+                  type: "object",
+                  definition: { a: { type: "string" }, b: { type: "number" } },
+                },
+              },
+              initialFormState: {
+                firstRecord: {
+                  a: "test string",
+                  b: 42,
+                },
+                firstRecord_copy: {
+                  a: "already a copy",
+                  b: 99,
+                },
+              },
+            },
+            tests: async (expect, container) => {
+              const duplicateButton = screen.getByRole("button", {
+                name: formikFieldName("testField.firstRecord-duplicateRecordEntry"),
+              });
+              expect(duplicateButton).toBeInTheDocument();
+              await act(() => {
+                fireEvent.click(duplicateButton);
+              });
+              await waitAfterUserInteraction();
+              const values = extractValuesFromRenderedElements(
+                expect,
+                undefined,
+                container,
+                formikFieldName("testField"),
+                "after duplicate button click",
+              );
+              const testResult = formValuesToJSON(values);
+              expect(testResult).toEqual({
+                firstRecord: { a: "test string", b: 42 },
+                firstRecord_copy: { a: "already a copy", b: 99 },
+                firstRecord_copy1: { a: "test string", b: 42 },
+              });
+            },
+          },
       },
     },
   };
