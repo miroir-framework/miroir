@@ -78,6 +78,7 @@ export const JzodAnyEditor: React.FC<JzodAnyEditorProps> = (
     props.rootLessListKeyArray,
     reportSectionPathAsString,
     props.typeCheckKeyMap,
+    props.insideAny,
     props.currentApplication,
     props.applicationDeploymentMap,
     props.currentDeploymentUuid,

@@ -1,5 +1,5 @@
 import { useFormikContext } from "formik";
-import { useCallback, useEffect, useMemo, useRef } from 'react';
+import { useCallback, useMemo } from 'react';
 
 import {
   ACTION_OK,
@@ -28,10 +28,9 @@ import {
   TransformerFailure,
   Uuid,
   type ApplicationDeploymentMap,
-  type JzodObject,
-  type MiroirModelEnvironment,
   type CoreTransformerForBuildPlusRuntime,
-  type JzodElement
+  type JzodElement,
+  type MiroirModelEnvironment
 } from "miroir-core";
 import {
   CodeBlock_ReadOnly,
@@ -54,12 +53,11 @@ import {
   useCurrentModelEnvironment,
   useReduxDeploymentsStateQuerySelectorForCleanedResult
 } from "../../ReduxHooks.js";
-import { useRenderTracker } from '../../tools/renderCountTracker.js';
 import { ErrorFallbackComponent } from '../ErrorFallbackComponent.js';
 import { ActionButtonWithSnackbar } from '../Page/ActionButtonWithSnackbar.js';
 import { ThemedStyledButton } from '../Themes/index.js';
-import { JzodElementEditor } from '../ValueObjectEditor/JzodElementEditor.js';
 import { FieldValidationProvider, useFieldValidationContext } from '../ValueObjectEditor/FieldValidationContext.js';
+import { JzodElementEditor } from '../ValueObjectEditor/JzodElementEditor.js';
 import type { ValueObjectEditMode } from './ReportSectionEntityInstance.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -521,8 +519,8 @@ const TypedValueObjectEditorInner: React.FC<TypedValueObjectEditorProps> = ({
       {formLabel}
     </ThemedStyledButton>
   );
-  const resolvedElementJzodSchema =
-    jzodTypeCheckResult?.status == "ok" ? jzodTypeCheckResult.resolvedSchema : undefined;
+  // const resolvedElementJzodSchema =
+  //   jzodTypeCheckResult?.status == "ok" ? jzodTypeCheckResult.resolvedSchema : undefined;
 
   const result = (
     <>
@@ -581,6 +579,8 @@ const TypedValueObjectEditorInner: React.FC<TypedValueObjectEditorProps> = ({
               typeCheckKeyMap={
                 jzodTypeCheckResult?.status == "ok" ? jzodTypeCheckResult.keyMap : {}
               }
+              insideAny={false}
+              anyRootLessListKey={undefined}
               foreignKeyObjects={foreignKeyObjects}
               maxRenderDepth={maxRenderDepth} // always 1
               readOnly={true}
@@ -635,6 +635,8 @@ const TypedValueObjectEditorInner: React.FC<TypedValueObjectEditorProps> = ({
               typeCheckKeyMap={
                 jzodTypeCheckResult?.status == "ok" ? jzodTypeCheckResult.keyMap : {}
               }
+              insideAny={false}
+              anyRootLessListKey={undefined}
               foreignKeyObjects={foreignKeyObjects}
               maxRenderDepth={maxRenderDepth} // always 1
               displayError={displayError}

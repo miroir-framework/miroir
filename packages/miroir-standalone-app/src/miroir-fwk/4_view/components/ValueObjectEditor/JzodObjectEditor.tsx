@@ -282,16 +282,31 @@ const ProgressiveAttribute: FC<{
     );
   }
 
-  if (!atttributeKeyMap) {
-    throw new Error(
-      "JzodElementEditor atttributeKeyMap undefined for object " +
-        listKey +
-        " attribute " +
-        attribute[0] +
-        " attributeListKey " +
-        attributeListKey
-    );
-  }
+  // if (!atttributeKeyMap) {
+  //   return (
+  //     <div key={attributeListKey}>
+  //       <ThemedLoadingCard
+  //         message={`Loading ${attribute[0]}... (no key map)`}
+  //       />
+  //       <JsonDisplayHelper debug={true}
+  //         componentName={`ProgressiveAttribute rootLessListKey=${attributeRootLessListKey}`}
+  //         elements={[{
+  //           label: `ProgressiveAttribute: rootLessListKey=${attributeRootLessListKey} insideAny=${insideAny}`,
+  //           data: {
+  //             rootLessListKey: attributeRootLessListKey,
+  //             currentValue,
+  //             // isRecordType,
+  //             typeCheckKeyMap,
+  //             currentKeyMap,
+  //             atttributeKeyMap 
+  //           },
+  //           copyButton: true,
+  //           useCodeBlock: true,
+  //         }]}
+  //       />
+  //     </div>
+  //   );
+  // }
 
   // Determine if this is a record type where attribute names should be editable
   const isRecordType =
@@ -355,6 +370,8 @@ const ProgressiveAttribute: FC<{
               data: {
                 rootLessListKey: attributeRootLessListKey,
                 isRecordType,
+                currentValue,
+                typeCheckKeyMap,
                 currentKeyMap,
                 atttributeKeyMap 
               },
@@ -362,6 +379,7 @@ const ProgressiveAttribute: FC<{
               useCodeBlock: true,
             }]}
           />
+          {/* BBBBB {attributeRootLessListKey} */}
           <JzodElementEditor
             valueObjectEditMode={valueObjectEditMode}
             name={attribute[0]}
@@ -591,6 +609,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
     rootLessListKeyArray,
     reportSectionPathAsString,
     typeCheckKeyMap,
+    props.insideAny,
     currentApplication,
     applicationDeploymentMap,
     currentDeploymentUuid,
@@ -806,8 +825,9 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
         "addExtraRecordEntry called for non-record type: " + currentTypeCheckKeyMap?.rawSchema.type
       );
     }
-    const effectiveRawSchema: JzodRecord =
-      currentTypeCheckKeyMap?.rawSchema?.type === "record"
+    const effectiveRawSchema: JzodRecord = insideAny
+      ? { type: "record", definition: { type: "string" } }
+      : currentTypeCheckKeyMap?.rawSchema?.type === "record"
         ? (currentTypeCheckKeyMap?.rawSchema as JzodRecord)
         : (resolvedRawSchema as JzodRecord);
 
@@ -936,12 +956,6 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
         "newObjectValue",
         JSON.stringify(newObjectValue, null, 2),
       );
-      // const newItemsOrder = getItemsOrder(
-      //   newObjectValue,
-      //   currentTypeCheckKeyMap?.chosenUnionBranchRawSchema ??
-      //     currentTypeCheckKeyMap?.jzodObjectFlattenedSchema ??
-      //     currentTypeCheckKeyMap?.rawSchema
-      // );
 
       // log.info(
       //   "addObjectOptionalAttribute clicked2!",
@@ -1247,24 +1261,28 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
 
   return (
     <div id={rootLessListKey} key={rootLessListKey}>
-      <JsonDisplayHelper debug={true}
+      <JsonDisplayHelper
+        debug={true}
         componentName={`JzodObjectEditor insideAny=${insideAny} rootLessListKey=${rootLessListKey}`}
-        elements={[{
-          label: `JzodObjectEditor: rootLessListKey=${rootLessListKey}`,
-          data: {
-            rootLessListKey,
-            itemsOrder,
-            formik: Object.keys(formik.values),
-            pageParams: formik.values.pageParams,
-            formikRootLessListKey,
-            rawSchema: currentTypeCheckKeyMap?.rawSchema,
-            resolvedSchema: currentTypeCheckKeyMap?.resolvedSchema,
-            jzodObjectFlattenedSchema: currentTypeCheckKeyMap?.jzodObjectFlattenedSchema ?? "NO FLATTENED SCHEMA",
-            currentValueObjectAtKey,
+        elements={[
+          {
+            label: `JzodObjectEditor: rootLessListKey=${rootLessListKey}`,
+            data: {
+              rootLessListKey,
+              itemsOrder,
+              formik: Object.keys(formik.values),
+              pageParams: formik.values.pageParams,
+              formikRootLessListKey,
+              rawSchema: currentTypeCheckKeyMap?.rawSchema,
+              resolvedSchema: currentTypeCheckKeyMap?.resolvedSchema,
+              jzodObjectFlattenedSchema:
+                currentTypeCheckKeyMap?.jzodObjectFlattenedSchema ?? "NO FLATTENED SCHEMA",
+              currentValueObjectAtKey,
+            },
+            copyButton: true,
+            useCodeBlock: true,
           },
-          copyButton: true,
-          useCodeBlock: true,
-        }]}
+        ]}
       />
       {/* Performance statistics */}
       {!currentTypeCheckKeyMap?.resolvedSchema?.tag?.value?.display?.objectWithoutHeader && (
@@ -1313,7 +1331,11 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
           {/* add record attribute button for records */}
           <span>
             {!readOnly &&
-            (currentTypeCheckKeyMap?.rawSchema.type == "record" || resolvedRawSchema?.type == "record") &&
+            (
+              insideAny ||
+              currentTypeCheckKeyMap?.rawSchema.type == "record" ||
+              resolvedRawSchema?.type == "record"
+            ) &&
             !reportContext.isNodeFolded(rootLessListKeyArray) ? (
               <ThemedSizedButton
                 id={formikRootLessListKey + ".addRecordAttribute"}

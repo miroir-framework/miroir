@@ -17,6 +17,7 @@ import {
   resolvePathOnObject,
   selfApplicationMiroir,
   SyncBoxedExtractorOrQueryRunnerMap,
+  type JzodPlainAttribute,
   type JzodReference,
   type KeyMapEntry,
   type MiroirModelEnvironment,
@@ -51,6 +52,7 @@ import {
 } from "./JzodElementEditor";
 import { getFoldedDisplayValue } from "./JzodElementEditorHooks";
 import { JzodArrayEditorProps } from "./JzodElementEditorInterface";
+import { valueToJzod } from "@miroir-framework/jzod";
 // import { JzodUnion } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -145,7 +147,7 @@ interface ProgressiveArrayItemProps {
   rootLessListKeyArray: (string | number)[];
   anyRootLessListKey: string | undefined;
   reportSectionPathAsString: string;
-  currentArrayElementRawDefinitionDEFUNCT: JzodElement | undefined;
+  // currentArrayElementRawDefinitionDEFUNCT: JzodElement | undefined;
   typeCheckKeyMap?: Record<string, KeyMapEntry>;
   usedIndentLevel: number;
   currentApplication: Uuid;
@@ -179,7 +181,7 @@ const ProgressiveArrayItem: React.FC<ProgressiveArrayItemProps> = ({
   rootLessListKey,
   rootLessListKeyArray,
   reportSectionPathAsString,
-  currentArrayElementRawDefinitionDEFUNCT,
+  // currentArrayElementRawDefinitionDEFUNCT,
   typeCheckKeyMap,
   usedIndentLevel,
   currentDeploymentUuid,
@@ -271,7 +273,7 @@ const ProgressiveArrayItem: React.FC<ProgressiveArrayItemProps> = ({
                     currentValue: currentValue,
                     formikValues: formik.values,
                     // rawJzodSchema: currentArrayElementRawDefinition.element,
-                    rawJzodSchema: currentArrayElementRawDefinitionDEFUNCT,
+                    // rawJzodSchema: currentArrayElementRawDefinitionDEFUNCT,
                   }}
                 />
               )}
@@ -361,47 +363,35 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
     () => onChangeVector?.[rootLessListKey],
     [onChangeVector, rootLessListKey]
   );
+
+  // current value & type
   const currentValue = resolvePathOnObject(
     formik.values[reportSectionPathAsString],
     rootLessListKeyArray
   );
-  // log.info(
-  //   "############################################### JzodArrayEditor",
-  //   "rootLessListKey",
-  //   JSON.stringify(rootLessListKey),
-  //   "reportSectionPathAsString",
-  //   JSON.stringify(reportSectionPathAsString),
-  //   "values",
-  //   JSON.stringify(formik.values),
-  //   "currentValue",
-  //   currentValue,
-  // );
 
-  // log.info(
-  //   "JzodArrayEditor render",
-  //   jzodArrayEditorRenderCount,
-  //   "name",
-  //   name,
-  //   "rootLessListKey",
-  //   rootLessListKey,
-  //   "itemsOrder",
-  //   itemsOrder,
-  //   "resolvedElementJzodSchema",
-  //   // resolvedElementJzodSchema,
-  //   JSON.stringify(resolvedElementJzodSchema, null, 2),
-  //   "rawJzodSchema",
-  //   JSON.stringify(rawJzodSchema, null, 2),
-  // );
+  const currentTypeCheckKeyMap =  typeCheckKeyMap
+    ? typeCheckKeyMap[rootLessListKey]
+    : undefined;
 
-  // const currentModel: MetaModel = useCurrentModel(
-  //   currentDeploymentUuid ?? selfApplicationMiroir.uuid,
-  //   props.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap
-  // );
+  const currentRawJzodSchema: JzodElement | undefined = insideAny ? { type: "any" } : currentTypeCheckKeyMap?.rawSchema;
+  const localResolvedElementJzodSchemaBasedOnValue: JzodElement | undefined = useMemo(
+    () => {
+      if (insideAny) {
+        return valueToJzod(currentValue) as JzodElement;
+      }
+      if (currentTypeCheckKeyMap?.resolvedSchema) {
+        return currentTypeCheckKeyMap.resolvedSchema;
+      }
+      if (currentValue !== undefined && currentValue !== null) {
+        return valueToJzod(currentValue) as JzodElement;
+      }
+      return undefined;
+    },
+    [currentTypeCheckKeyMap, currentValue]
+  );
+
   const reportContext = useReportPageContext();
-  // const miroirMetaModel: MetaModel = useCurrentModel(
-  //   selfApplicationMiroir.uuid,
-  //   props.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap
-  // );
   const currentMiroirModelEnvironment: MiroirModelEnvironment = useCurrentModelEnvironment(
     currentDeploymentUuid ?? selfApplicationMiroir.uuid,
     props.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap
@@ -414,7 +404,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
 
   const arrayValueObject = currentValue;
 
-  const currentTypeCheckKeyMap = typeCheckKeyMap ? typeCheckKeyMap[rootLessListKey] : undefined;
+
   const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState> =
       getMemoizedReduxDeploymentsStateSelectorMap();
 
@@ -429,24 +419,24 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
   );
 
   const foldableItemsCount = useMemo(() => {
-    return currentTypeCheckKeyMap?.resolvedSchema.type === "tuple" // for array type, the resolvedSchema is a JzodTuple
-      ? (currentTypeCheckKeyMap.resolvedSchema as JzodTuple).definition.filter(
+    return localResolvedElementJzodSchemaBasedOnValue?.type === "tuple" // for array type, the resolvedSchema is a JzodTuple
+      ? (localResolvedElementJzodSchemaBasedOnValue as JzodTuple).definition.filter(
         (item: JzodElement) => foldableElementTypes.includes(item.type)
       ).length : 0
-  }, [currentTypeCheckKeyMap?.resolvedSchema]);
+  }, [localResolvedElementJzodSchemaBasedOnValue]);
 
   // ##############################################################################################
   // Get unfoldingDepth from schema tag or default to 1
   const unfoldingDepth = useMemo(() => {
-    return (currentTypeCheckKeyMap?.resolvedSchema?.tag?.value?.display as any)?.unfoldSubLevels ?? 1;
-  }, [currentTypeCheckKeyMap?.resolvedSchema]);
+    return (localResolvedElementJzodSchemaBasedOnValue?.tag?.value?.display as any)?.unfoldSubLevels ?? 1;
+  }, [localResolvedElementJzodSchemaBasedOnValue]);
 
   // ##############################################################################################
   const addNewArrayItem = useCallback(
     async (e:any) => {
       e.stopPropagation();
       e.preventDefault();
-      let schema: JzodElement | undefined = currentTypeCheckKeyMap?.rawSchema;
+      let schema: JzodElement | undefined = currentRawJzodSchema;
 
       if (schema?.type === "schemaReference") {
         schema = resolveJzodSchemaReferenceInContext(
@@ -456,10 +446,10 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
         );
       }
 
-      if (!schema || schema.type !== "array") {
+      if (!currentRawJzodSchema || !["array", "any"].includes(currentRawJzodSchema.type)) {
         throw new Error(
-          "JzodArrayEditor addNewArrayItem called with a non-array schema: " +
-            JSON.stringify(schema, null, 2)
+          "JzodArrayEditor addNewArrayItem called with a non-array / non-any schema: " +
+            JSON.stringify(currentRawJzodSchema, null, 2)
         );
       }
 
@@ -482,7 +472,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
         currentValue,
       );
 
-      let newItemSchema: JzodElement | undefined = schema.definition;
+      let newItemSchema: JzodElement | undefined = insideAny?{ type: "string"}:(schema as any)?.definition;
 
       if ((schema as any).definition?.tag?.value?.ifThenElseMMLS?.parentUuid?.defaultValuePath) {
         const entityPath = (schema as any).definition?.tag?.value?.ifThenElseMMLS?.parentUuid?.defaultValuePath;
@@ -561,7 +551,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
       
       const newItem = getDefaultValueForJzodSchemaWithResolutionNonHook(
         "build",
-        newItemSchema, // TODO: not correct with runtimeTypes
+        newItemSchema ?? { type: "string" }, // TODO: not correct with runtimeTypes
         currentValue, // formik.values,
         rootLessListKey,
         undefined, // currentDefaultValue is not known yet, this is what this call will determine
@@ -591,7 +581,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
         newItem,
         // JSON.stringify(newItem, null, 2),
         "rawJzodSchema",
-        currentTypeCheckKeyMap?.rawSchema,
+        currentRawJzodSchema,
         // JSON.stringify(currentTypeCheckKeyMap.rawSchema, null, 2),
         "currentValue",
         currentValue,
@@ -612,13 +602,10 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
       formik.setFieldValue(formikRootLessListKey, newArrayValue, true); // enable validation / refresh of formik component
 
       reportContext.unfoldAllChildren(rootLessListKeyArray, Object.keys(newItem));
-
-      // // Update the items order
-      // setItemsOrder(getItemsOrder(newArrayValue, resolvedElementJzodSchema));
     },
     [
       formik,
-      currentTypeCheckKeyMap?.rawSchema,
+      currentRawJzodSchema,
       arrayValueObject,
       onChangeCallback,
       rootLessListKey,
@@ -656,35 +643,35 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
               //   "typeCheckKeyMap",
               //   typeCheckKeyMap,
               // );
-              const currentArrayElementRawDefinitionDEFUNCT: JzodElement | undefined =
-                typeCheckKeyMap &&
-                typeCheckKeyMap[rootLessListKey].rawSchema &&
-                typeCheckKeyMap[rootLessListKey].rawSchema.type !== "any" &&
-                typeCheckKeyMap[attributeRootLessListKey] &&
-                typeCheckKeyMap[attributeRootLessListKey].rawSchema
-                  ? typeCheckKeyMap[attributeRootLessListKey].rawSchema
-                  : { type: "any" };
-              // const attributeTypeCheckKeyMap = typeCheckKeyMap? typeCheckKeyMap[attributeRootLessListKey]: undefined;
-              if (!currentArrayElementRawDefinitionDEFUNCT) {
-                log.error(
-                  "JzodArrayEditor could not find typeCheckKeyMap for attribute",
-                  index,
-                  "in rootLessListKey",
-                  rootLessListKey,
-                  "with typeCheckKeyMap",
-                  typeCheckKeyMap
-                  // typeCheckKeyMap?.[rootLessListKey],
-                  // JSON.stringify(typeCheckKeyMap, null, 2)
-                );
-                throw new Error(
-                  "JzodArrayEditor could not find typeCheckKeyMap for attribute " +
-                    index +
-                    " in rootLessListKey " +
-                    rootLessListKey
-                  // " with typeCheckKeyMap " +
-                  // JSON.stringify(typeCheckKeyMap, null, 2)
-                );
-              }
+              // const currentArrayElementRawDefinitionDEFUNCT: JzodElement | undefined =
+              //   typeCheckKeyMap &&
+              //   typeCheckKeyMap[rootLessListKey]?.rawSchema &&
+              //   typeCheckKeyMap[rootLessListKey]?.rawSchema.type !== "any" &&
+              //   typeCheckKeyMap[attributeRootLessListKey] &&
+              //   typeCheckKeyMap[attributeRootLessListKey]?.rawSchema
+              //     ? typeCheckKeyMap[attributeRootLessListKey]?.rawSchema
+              //     : { type: "any" };
+              // // const attributeTypeCheckKeyMap = typeCheckKeyMap? typeCheckKeyMap[attributeRootLessListKey]: undefined;
+              // if (!currentArrayElementRawDefinitionDEFUNCT) {
+              //   log.error(
+              //     "JzodArrayEditor could not find typeCheckKeyMap for attribute",
+              //     index,
+              //     "in rootLessListKey",
+              //     rootLessListKey,
+              //     "with typeCheckKeyMap",
+              //     typeCheckKeyMap
+              //     // typeCheckKeyMap?.[rootLessListKey],
+              //     // JSON.stringify(typeCheckKeyMap, null, 2)
+              //   );
+              //   throw new Error(
+              //     "JzodArrayEditor could not find typeCheckKeyMap for attribute " +
+              //       index +
+              //       " in rootLessListKey " +
+              //       rootLessListKey
+              //     // " with typeCheckKeyMap " +
+              //     // JSON.stringify(typeCheckKeyMap, null, 2)
+              //   );
+              // }
               // const currentArrayElementRawDefinition: JzodElement | undefined = attributeTypeCheckKeyMap.rawSchema;
               return (
                 <ProgressiveArrayItem
@@ -694,7 +681,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
                   rootLessListKey={rootLessListKey}
                   rootLessListKeyArray={rootLessListKeyArray}
                   reportSectionPathAsString={reportSectionPathAsString}
-                  currentArrayElementRawDefinitionDEFUNCT={currentArrayElementRawDefinitionDEFUNCT}
+                  // currentArrayElementRawDefinitionDEFUNCT={currentArrayElementRawDefinitionDEFUNCT}
                   typeCheckKeyMap={typeCheckKeyMap}
                   usedIndentLevel={usedIndentLevel}
                   currentApplication={props.currentApplication}

@@ -27,7 +27,7 @@ const testSuiteName = transformerTestSuite_jzodTypeCheck.definition.transformerT
 
 const activityTracker = new MiroirActivityTracker();
 
-afterAll(() => {
+vitest.afterAll(() => {
   if (!shouldSkip) {
     transformerTestsDisplayResults(
       transformerTestSuite_jzodTypeCheck.definition as any as TransformerTestSuite,
@@ -66,10 +66,10 @@ if (shouldSkip) {
       // "jzodTypeCheck", "test010_literal",
     ],
     effectiveTests,
-    undefined, // filter
+    // undefined, // filter
     // {testList: {"jzodTypeCheck": [
     //   // "test010_literal",
-    //   "test020_string",
+    //   // "test020_string",
     //   // "test022_boolean_true",
     //   // "test024_boolean_false",
     //   // "test030_schemaReference",
@@ -77,8 +77,11 @@ if (shouldSkip) {
     //   // "test050",
     //   // "test060",
     //   // "test070",
-    //   "test120_union",
+    //   // "test120_union",
+    //   "test150_any_object",
+    //   "test160_any_object_of_object",
     // ]}}, // filter
+    undefined, // filter
     defaultMetaModelEnvironment,
     activityTracker,
     undefined, // parentTrackingId,

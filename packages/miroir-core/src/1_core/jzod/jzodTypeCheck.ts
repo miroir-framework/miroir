@@ -50,6 +50,111 @@ MiroirLoggerFactory.registerLoggerToStart(
   MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "JzodTypeCheck"),
 ).then((logger: LoggerInterface) => {log = logger});
 
+
+// Implicit union branches used when rawSchema.type === "any"
+// These represent the full set of types that an "any" field can hold.
+export const ANY_IMPLICIT_UNION_BRANCHES: JzodElement[] = [
+  { type: "string" },
+  { type: "number" },
+  { type: "bigint" },
+  { type: "boolean" },
+  { type: "uuid" },
+  { type: "date" },
+  { type: "record", tag: {
+    value: {
+      defaultLabel: "Record<string, any>",
+      initializeTo: {
+        initializeToType: "value",
+        value: { "a": "enter attributes here..." }
+      }
+    }
+  }, definition: { type: "any" } } as JzodElement,
+  { type: "array", tag: {
+    value: {
+      defaultLabel: "Array<any>",
+      initializeTo: {
+        initializeToType: "value",
+        value: ["enter elements here..."]
+      }
+    }
+  }, definition: { type: "any" } } as JzodElement,
+];
+
+export const ANY_IMPLICIT_UNION_TYPE: JzodUnion = {
+  type: "union",
+  definition: ANY_IMPLICIT_UNION_BRANCHES,
+};
+export const ANY_SCHEMA: JzodElement = { type: "any" };
+
+// ################################################################################################
+/**
+ * Builds a keymap entry for an object value in an "any" descendant context:
+ * rawSchema is ANY_IMPLICIT_UNION_TYPE, and child entries are embedded as named properties
+ * so that paths like "keyMap.outer.inner.rawSchema" can be navigated via getValueByDottedPath.
+ */
+export function buildAnyObjectEntry(
+  v: Record<string, any>,
+  childPath: (string | number)[],
+  childTypePath: (string | number)[],
+): any {
+  const entry: any = {
+    // rawSchema: ANY_IMPLICIT_UNION_TYPE as JzodElement,
+    rawSchema: ANY_SCHEMA,
+    resolvedSchema: valueToJzod(v) as JzodElement,
+    valuePath: childPath,
+    typePath: childTypePath,
+  };
+  for (const [k2, v2] of Object.entries(v)) {
+    const subPath = [...childPath, k2];
+    const subTypePath = [...childTypePath, k2];
+    if (typeof v2 === "object" && v2 !== null && !Array.isArray(v2)) {
+      entry[k2] = buildAnyObjectEntry(v2, subPath, subTypePath);
+    } else {
+      entry[k2] = {
+        // rawSchema: ANY_IMPLICIT_UNION_TYPE as JzodElement,
+        rawSchema: ANY_SCHEMA,
+        resolvedSchema: valueToJzod(v2) as JzodElement,
+        valuePath: subPath,
+        typePath: subTypePath,
+      };
+    }
+  }
+  return entry;
+}
+
+// ################################################################################################
+/**
+ * Builds keymap entries for direct children of an object value typed as {type: "any"}.
+ * All sub-nodes use ANY_IMPLICIT_UNION_TYPE as rawSchema.
+ * Keys use the full dotted path so application lookups like keyMap["any.a"] work correctly.
+ * Object entries embed child entries as named properties so navigation paths like
+ * "keyMap.outer.inner.rawSchema" resolve via getValueByDottedPath.
+ */
+export function buildAnySubnodeKeyMap(
+  obj: Record<string, any>,
+  basePath: (string | number)[],
+  baseTypePath: (string | number)[],
+): Record<string, any> {
+  const result: Record<string, any> = {};
+  for (const [k, v] of Object.entries(obj)) {
+    const childPath = [...basePath, k];
+    const childTypePath = [...baseTypePath, k];
+    const flatKey = childPath.join(".");
+    if (typeof v === "object" && v !== null && !Array.isArray(v)) {
+      result[flatKey] = buildAnyObjectEntry(v, childPath, childTypePath);
+    } else {
+      result[flatKey] = {
+        // rawSchema: ANY_IMPLICIT_UNION_TYPE as JzodElement,
+        rawSchema: ANY_SCHEMA,
+        resolvedSchema: valueToJzod(v) as JzodElement,
+        valuePath: childPath,
+        typePath: childTypePath,
+      };
+    }
+  }
+  return result;
+}
+
 // ################################################################################################
 // to be replaced by jzodObjectFlatten?
 export function resolveObjectExtendClauseAndDefinition<T extends MiroirModelEnvironment>(
@@ -1885,18 +1990,23 @@ export function jzodTypeCheck(
     }
     // plain Attributes
     case "any": {
+      const resolvedSchema = valueToJzod(valueObject) as JzodElement;
+      const anySubnodeKeyMap: Record<string, KeyMapEntry> =
+        typeof valueObject === "object" && valueObject !== null && !Array.isArray(valueObject)
+          ? buildAnySubnodeKeyMap(valueObject, currentValuePath, currentTypePath)
+          : {};
       return {
         status: "ok",
         schemaReferenceName,
         valuePath: currentValuePath,
         typePath: currentTypePath,
         rawSchema: effectiveRawSchema,
-        resolvedSchema: valueToJzod(valueObject) as JzodElement,
+        resolvedSchema,
         keyMap: {
+          ...anySubnodeKeyMap,
           [currentValuePath.join(".")]: {
             rawSchema: effectiveRawSchema,
-            // resolvedSchema: effectiveSchema
-            resolvedSchema: valueToJzod(valueObject) as JzodElement,
+            resolvedSchema,
             valuePath: currentValuePath,
             typePath: currentTypePath,
           }, // map the current value path to the resolved schema

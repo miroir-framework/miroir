@@ -4016,7 +4016,9 @@
         "subExpectedValue": [
           ["status", "ok"],
           ["rawSchema", {"type": "any"}],
-          ["resolvedSchema", {"type": "object", "definition": {"a": {"type": "string"}}}]
+          ["resolvedSchema", {"type": "object", "definition": {"a": {"type": "string"}}}],
+          ["keyMap.a.rawSchema", {"type": "any"}],
+          ["keyMap.a.resolvedSchema", {"type": "string"}]
         ],
         "transformer": {
           "transformerType": "jzodTypeCheck",
@@ -4028,31 +4030,6 @@
           "currentValuePath": [],
           "currentTypePath": [],
           "relativeReferenceJzodContext": {}
-        },
-        "expectedValue": {
-          "status": "ok",
-          "valuePath": [],
-          "typePath": [],
-          "rawSchema": {"type": "any"},
-          "resolvedSchema": {
-            "type": "object",
-            "definition": {
-              "a": {"type": "string"}
-            }
-          },
-          "keyMap": {
-            "": {
-              "rawSchema": {"type": "any"},
-              "resolvedSchema": {
-                "type": "object",
-                "definition": {
-                  "a": {"type": "string"}
-                }
-              },
-              "valuePath": [],
-              "typePath": []
-            }
-          }
         }
       },
       {
@@ -4061,11 +4038,6 @@
         "transformerTestDescription": "Checks that a nested object value against an any schema resolves to a nested object schema",
         "transformerName": "jzodTypeCheck",
         "runTestStep": "build",
-        "subExpectedValue": [
-          ["status", "ok"],
-          ["rawSchema", {"type": "any"}],
-          ["resolvedSchema", {"type": "object", "definition": {"outer": {"type": "object", "definition": {"inner": {"type": "number"}}}}}]
-        ],
         "transformer": {
           "transformerType": "jzodTypeCheck",
           "interpolation": "build",
@@ -4077,41 +4049,15 @@
           "currentTypePath": [],
           "relativeReferenceJzodContext": {}
         },
-        "expectedValue": {
-          "status": "ok",
-          "valuePath": [],
-          "typePath": [],
-          "rawSchema": {"type": "any"},
-          "resolvedSchema": {
-            "type": "object",
-            "definition": {
-              "outer": {
-                "type": "object",
-                "definition": {
-                  "inner": {"type": "number"}
-                }
-              }
-            }
-          },
-          "keyMap": {
-            "": {
-              "rawSchema": {"type": "any"},
-              "resolvedSchema": {
-                "type": "object",
-                "definition": {
-                  "outer": {
-                    "type": "object",
-                    "definition": {
-                      "inner": {"type": "number"}
-                    }
-                  }
-                }
-              },
-              "valuePath": [],
-              "typePath": []
-            }
-          }
-        }
+        "subExpectedValue": [
+          ["status", "ok"],
+          ["rawSchema", {"type": "any"}],
+          ["resolvedSchema", {"type": "object", "definition": {"outer": {"type": "object", "definition": {"inner": {"type": "number"}}}}}],
+          ["keyMap.outer.rawSchema", {"type": "any"}],
+          ["keyMap.outer.resolvedSchema", {"type": "object", "definition": {"inner": {"type": "number"}}}],
+          ["keyMap.outer.inner.rawSchema", {"type": "any"}],
+          ["keyMap.outer.inner.resolvedSchema", {"type": "number"}]
+        ]
       },
       {
         "transformerTestType": "transformerTest",

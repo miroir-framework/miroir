@@ -12,6 +12,7 @@ import {
 import { MenuItem } from "@mui/material";
 
 import {
+  ANY_IMPLICIT_UNION_BRANCHES,
   defaultMiroirModelEnvironment,
   EntityAttribute,
   EntityInstance,
@@ -63,7 +64,6 @@ import { JzodEnumEditor } from "./JzodEnumEditor.js";
 import { JzodLiteralEditor } from "./JzodLiteralEditor.js";
 import { JzodEditorButton } from "./JzodEditorButton.js";
 import { JzodObjectEditor } from "./JzodObjectEditor.js";
-import { a } from "vitest/dist/chunks/suite.d.FvehnV49";
 
 
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -415,41 +415,6 @@ function jzodElementToTooltipText(el: any, depth: number = 1): string {
 
 let count = 0;
 
-
-// Implicit union branches used when rawSchema.type === "any"
-// These represent the full set of types that an "any" field can hold.
-const ANY_IMPLICIT_UNION_BRANCHES: JzodElement[] = [
-  { type: "string" },
-  { type: "number" },
-  { type: "bigint" },
-  { type: "boolean" },
-  { type: "uuid" },
-  { type: "date" },
-  { type: "record", tag: {
-    value: {
-      defaultLabel: "Record<string, any>",
-      initializeTo: {
-        initializeToType: "value",
-        value: { "a": "enter attributes here..." }
-      }
-    }
-  }, definition: { type: "any" } } as JzodElement,
-  { type: "array", tag: {
-    value: {
-      defaultLabel: "Array<any>",
-      initializeTo: {
-        initializeToType: "value",
-        value: ["enter elements here..."]
-      }
-    }
-  }, definition: { type: "any" } } as JzodElement,
-];
-
-const ANY_IMPLICIT_UNION_TYPE: JzodUnion = {
-  type: "union",
-  definition: ANY_IMPLICIT_UNION_BRANCHES,
-};
-
 // #####################################################################################################
 // #####################################################################################################
 // #####################################################################################################
@@ -490,6 +455,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
     props.rootLessListKeyArray,
     props.reportSectionPathAsString,
     props.typeCheckKeyMap,
+    props.insideAny,
     props.currentApplication,
     props.applicationDeploymentMap,
     props.currentDeploymentUuid,
@@ -675,8 +641,16 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
   ;
 
   const hideSubJzodEditor = useMemo(
-    () => props.hidden || props.insideAny || displayAsCodeEditor,
-    [props.hidden, props.insideAny, displayAsCodeEditor]
+    () =>
+      props.hidden ||
+      (props.insideAny && currentKeyMap?.rawSchema.tag?.value?.display?.any?.format) ||
+      displayAsCodeEditor,
+    [
+      props.hidden,
+      props.insideAny,
+      currentKeyMap?.rawSchema.tag?.value?.display?.any?.format,
+      displayAsCodeEditor,
+    ],
   );
 
 
@@ -1500,7 +1474,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
           const enumValues: string[] =
             (localResolvedElementJzodSchemaBasedOnValue &&
               localResolvedElementJzodSchemaBasedOnValue.definition) ||
-            (currentKeyMap?.rawSchema && ((currentKeyMap.rawSchema as any).definition ?? [])) ||
+            (currentKeyMap?.rawSchema && ((currentKeyMap?.rawSchema as any).definition ?? [])) ||
             [];
           return (
             // <div style={{ width: "100%" }}>
@@ -1791,67 +1765,68 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
     unionTypeSelectorElement,
   ]);
 
-  const mainElementWithDebug = useMemo(() => {
-    return (
-      <div>
-        <JsonDisplayHelper
-          debug={true}
-          componentName="JzodElementEditor"
-          elements={[
-            {
-              label: `key "${formikRootLessListKey}" of type ${localResolvedElementJzodSchemaBasedOnValue?.type}`,
-              data: {
-                existingObject,
-                itemsOrder,
-                type: currentKeyMap?.rawSchema?.type,
-                innerInsideAny,
-                unionTypeDataForControlsIsNull: unionTypeDataForControls == null,
-                isContainerType: unionTypeDataForControls?.isContainerType,
-                unionStarButtonIsNull: unionStarButton == null,
-                containerUnionControlsIsNull: containerUnionControls == null,
-                unionTypeSelectorElementIsNull: unionTypeSelectorElement == null,
-                passThrough: mainElement === mainElementWithUnionTypeSelector,
-                localResolvedElementJzodSchemaBasedOnValue,
-                // currentKeyMap,
-              },
-              initiallyUnfolded: false,
-              copyButton: true,
-              useCodeBlock: true,
-            },
-            ...(currentKeyMap?.rawSchema?.type === "any"
-              ? [
-                  {
-                    label: `rendering JzodElementEditor for 'any' at ${props.rootLessListKey || "ROOT"}, objectOrArrayOrAny=${resolvedTypeIsObjectOrArrayOrAny}, displayAsCodeEditor=${displayAsCodeEditor}`,
-                    data: {
-                      localResolvedElementJzodSchemaBasedOnValue,
-                      currentValueObjectAtKey,
-                      currentKeyMap,
-                    },
-                    useCodeBlock: true as const,
-                  },
-                ]
-              : []),
-          ]}
-        />
-        {mainElementWithUnionTypeSelector}
-      </div>
-    );
-  }, [
-    mainElementWithUnionTypeSelector,
-    formikRootLessListKey,
-    localResolvedElementJzodSchemaBasedOnValue,
-    existingObject,
-    itemsOrder,
-    currentKeyMap,
-    props.rootLessListKey,
-    unionTypeDataForControls,
-    unionStarButton,
-    containerUnionControls,
-    unionTypeSelectorElement,
-    resolvedTypeIsObjectOrArrayOrAny,
-    displayAsCodeEditor,
-    currentValueObjectAtKey,
-  ]);
+  const mainElementWithDebug = mainElementWithUnionTypeSelector;
+  // const mainElementWithDebug = useMemo(() => {
+  //   return (
+  //     <div>
+  //       <JsonDisplayHelper
+  //         debug={true}
+  //         componentName="JzodElementEditor"
+  //         elements={[
+  //           {
+  //             label: `key "${formikRootLessListKey}" of type ${localResolvedElementJzodSchemaBasedOnValue?.type}`,
+  //             data: {
+  //               existingObject,
+  //               itemsOrder,
+  //               type: currentKeyMap?.rawSchema?.type,
+  //               currentKeyMap,
+  //               innerInsideAny,
+  //               unionTypeDataForControlsIsNull: unionTypeDataForControls == null,
+  //               isContainerType: unionTypeDataForControls?.isContainerType,
+  //               unionStarButtonIsNull: unionStarButton == null,
+  //               containerUnionControlsIsNull: containerUnionControls == null,
+  //               unionTypeSelectorElementIsNull: unionTypeSelectorElement == null,
+  //               passThrough: mainElement === mainElementWithUnionTypeSelector,
+  //               localResolvedElementJzodSchemaBasedOnValue,
+  //             },
+  //             initiallyUnfolded: false,
+  //             copyButton: true,
+  //             useCodeBlock: true,
+  //           },
+  //           ...(currentKeyMap?.rawSchema?.type === "any"
+  //             ? [
+  //                 {
+  //                   label: `rendering JzodElementEditor for 'any' at ${props.rootLessListKey || "ROOT"}, objectOrArrayOrAny=${resolvedTypeIsObjectOrArrayOrAny}, displayAsCodeEditor=${displayAsCodeEditor}`,
+  //                   data: {
+  //                     localResolvedElementJzodSchemaBasedOnValue,
+  //                     currentValueObjectAtKey,
+  //                     currentKeyMap,
+  //                   },
+  //                   useCodeBlock: true as const,
+  //                 },
+  //               ]
+  //             : []),
+  //         ]}
+  //       />
+  //       {mainElementWithUnionTypeSelector}
+  //     </div>
+  //   );
+  // }, [
+  //   mainElementWithUnionTypeSelector,
+  //   formikRootLessListKey,
+  //   localResolvedElementJzodSchemaBasedOnValue,
+  //   existingObject,
+  //   itemsOrder,
+  //   currentKeyMap,
+  //   props.rootLessListKey,
+  //   unionTypeDataForControls,
+  //   unionStarButton,
+  //   containerUnionControls,
+  //   unionTypeSelectorElement,
+  //   resolvedTypeIsObjectOrArrayOrAny,
+  //   displayAsCodeEditor,
+  //   currentValueObjectAtKey,
+  // ]);
 
   // ##############################################################################################
   // ##############################################################################################
@@ -1938,9 +1913,12 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
         {mainElementWithDebug}
       </span>
     ): (<>hidden4</>);
-  return (
+  
+  // ##############################################################
+  const result = (
     <>
-      {props.isTopLevel && (
+    {/* AAAAAA */}
+      {/* {props.isTopLevel && (
         <>
           <JsonDisplayHelper debug={true}
             componentName="JzodElementEditor"
@@ -1969,7 +1947,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
           />
           {props.submitButton ?? <></>}
         </>
-      )}
+      )} */}
       <div>
         {props.rootLessListKey === "" && (
           <RenderPerformanceMetrics.RenderPerformanceDisplay
@@ -2044,4 +2022,71 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
       <FieldValidationError error={fieldValidationError} />
     </>
   );
+  const resultWithDebug = useMemo(() => {
+    return (
+      <div>
+        <JsonDisplayHelper
+          debug={true}
+          componentName="JzodElementEditor"
+          elements={[
+            {
+              label: `key "${formikRootLessListKey}" of type ${localResolvedElementJzodSchemaBasedOnValue?.type}`,
+              data: {
+                existingObject,
+                itemsOrder,
+                type: currentKeyMap?.rawSchema?.type,
+                // localReadOnly,
+                insideAny: !!props.insideAny,
+                displayAsCodeEditor,
+                hidden: !!props.hidden,
+                hideSubJzodEditor,
+                currentKeyMap,
+                localResolvedElementJzodSchemaBasedOnValue,
+                innerInsideAny,
+                unionTypeDataForControlsIsNull: unionTypeDataForControls == null,
+                isContainerType: unionTypeDataForControls?.isContainerType,
+                unionStarButtonIsNull: unionStarButton == null,
+                containerUnionControlsIsNull: containerUnionControls == null,
+                unionTypeSelectorElementIsNull: unionTypeSelectorElement == null,
+                passThrough: mainElement === mainElementWithUnionTypeSelector,
+              },
+              initiallyUnfolded: false,
+              copyButton: true,
+              useCodeBlock: true,
+            },
+            ...(currentKeyMap?.rawSchema?.type === "any"
+              ? [
+                  {
+                    label: `rendering JzodElementEditor for 'any' at ${props.rootLessListKey || "ROOT"}, objectOrArrayOrAny=${resolvedTypeIsObjectOrArrayOrAny}, displayAsCodeEditor=${displayAsCodeEditor}`,
+                    data: {
+                      localResolvedElementJzodSchemaBasedOnValue,
+                      currentValueObjectAtKey,
+                      currentKeyMap,
+                    },
+                    useCodeBlock: true as const,
+                  },
+                ]
+              : []),
+          ]}
+        />
+        {result}
+      </div>
+    );
+  }, [
+    mainElementWithUnionTypeSelector,
+    formikRootLessListKey,
+    localResolvedElementJzodSchemaBasedOnValue,
+    existingObject,
+    itemsOrder,
+    currentKeyMap,
+    props.rootLessListKey,
+    unionTypeDataForControls,
+    unionStarButton,
+    containerUnionControls,
+    unionTypeSelectorElement,
+    resolvedTypeIsObjectOrArrayOrAny,
+    displayAsCodeEditor,
+    currentValueObjectAtKey,
+  ]);
+  return resultWithDebug;
 }

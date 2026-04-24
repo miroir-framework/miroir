@@ -87,12 +87,11 @@ export interface JzodElementEditorHooks {
 // ################################################################################################
 // ##############################################################################################
 export function getItemsOrder(
-  formikRootLessListKey: string,
-  typeCheckKeyMapEntry: KeyMapEntry | undefined,
   currentValue: any,
   rawMLSchema: JzodElement | undefined,
   flattenedMLSchema: JzodObject | undefined,
   resolvedMLSchema: JzodElement | undefined,
+  resolvedSchemaReference?: JzodElement | undefined,
 ) {
   // log.info(
   //   "getItemsOrder",
@@ -110,15 +109,18 @@ export function getItemsOrder(
   //   resolvedMLSchema,
   // );
   if (
-    (resolvedMLSchema?.type == "object" ||
+    (
+      rawMLSchema?.type == "any" ||
       rawMLSchema?.type == "record" ||
-      typeCheckKeyMapEntry?.resolvedReferenceSchemaInContext?.type == "record") &&
+      resolvedMLSchema?.type == "object" ||
+      resolvedSchemaReference?.type == "record"
+    ) &&
     typeof currentValue == "object" &&
     currentValue !== null
   ) {
     if (
       rawMLSchema?.type == "record" ||
-      typeCheckKeyMapEntry?.resolvedReferenceSchemaInContext?.type == "record"
+      resolvedSchemaReference?.type == "record"
     ) {
       // For records: sort entries by value's tag.value.id if any entries have one, otherwise use memory order
       const keys = Object.keys(currentValue);
@@ -142,7 +144,8 @@ export function getItemsOrder(
     const definition =
       rawMLSchema?.type === "object"
         ? (flattenedMLSchema?.definition)
-        : (resolvedMLSchema as any)?.definition;
+        : (resolvedMLSchema as any)?.definition // for rawMLSchema?.type === "record"
+    ;
     const presentKeys = Object.keys(definition).filter((k) => k in currentValue);
     const withId: { key: string; id: number }[] = [];
     const withoutId: string[] = [];
@@ -176,6 +179,7 @@ export function useJzodElementEditorHooks(
   rootLessListKeyArray: (string | number)[],
   reportSectionPathAsString: string,
   typeCheckKeyMap: Record<string, KeyMapEntry> | undefined,
+  insideAny: boolean,
   currentApplication: Uuid,
   applicationDeploymentMap: ApplicationDeploymentMap,
   currentDeploymentUuid: Uuid | undefined,
@@ -254,6 +258,9 @@ export function useJzodElementEditorHooks(
   // Memoize to prevent infinite re-renders when used in useMemo dependencies
   const localResolvedElementJzodSchemaBasedOnValue: JzodElement | undefined = useMemo(
     () => {
+      if (insideAny) {
+        return valueToJzod(currentValueObjectAtKey) as JzodElement;
+      }
       if (currentTypecheckKeyMap?.resolvedSchema) {
         return currentTypecheckKeyMap.resolvedSchema;
       }
@@ -268,12 +275,11 @@ export function useJzodElementEditorHooks(
   const itemsOrder: any[] = useMemo(
     () =>
       getItemsOrder(
-        formikRootLessListKey,
-        currentTypecheckKeyMap,
         currentValueObjectAtKey,
         currentTypecheckKeyMap?.rawSchema,
         currentTypecheckKeyMap?.jzodObjectFlattenedSchema,
         localResolvedElementJzodSchemaBasedOnValue,
+        currentTypecheckKeyMap?.resolvedReferenceSchemaInContext
       ),
     [localResolvedElementJzodSchemaBasedOnValue, currentValueObjectAtKey],
   );

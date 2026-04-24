@@ -705,7 +705,9 @@ export {
 } from "./1_core/jzod/jzodResolveSchemaReferenceInContext";
 export {
   jzodTypeCheck,
-  jzodUnionResolvedTypeForObject, selectUnionBranchFromDiscriminator, unionObjectChoices
+  jzodUnionResolvedTypeForObject, selectUnionBranchFromDiscriminator, unionObjectChoices,
+  ANY_IMPLICIT_UNION_BRANCHES,
+  ANY_IMPLICIT_UNION_TYPE,
 } from "./1_core/jzod/jzodTypeCheck.js";
 export {
   localizeJzodSchemaReferenceContext,
