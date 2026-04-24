@@ -856,7 +856,6 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
           minWidth="120px"
           navigateWithoutOpening={true}
         />
-        {formikRootLessListKey}
       </span>
     );
   }, [unionTypeDataForControls, isUnionTypeSelectorOpen, handleUnionTypeChange, formikRootLessListKey]);
@@ -1752,7 +1751,6 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
       <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "nowrap" }}>
         {mainElement}
         {unionStarButton}
-        {formikRootLessListKey}
         {unionTypeSelectorElement}
       </div>
     );
@@ -1761,72 +1759,10 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
     unionTypeDataForControls,
     mainElement,
     unionStarButton,
-    formikRootLessListKey,
     unionTypeSelectorElement,
   ]);
 
   const mainElementWithDebug = mainElementWithUnionTypeSelector;
-  // const mainElementWithDebug = useMemo(() => {
-  //   return (
-  //     <div>
-  //       <JsonDisplayHelper
-  //         debug={true}
-  //         componentName="JzodElementEditor"
-  //         elements={[
-  //           {
-  //             label: `key "${formikRootLessListKey}" of type ${localResolvedElementJzodSchemaBasedOnValue?.type}`,
-  //             data: {
-  //               existingObject,
-  //               itemsOrder,
-  //               type: currentKeyMap?.rawSchema?.type,
-  //               currentKeyMap,
-  //               innerInsideAny,
-  //               unionTypeDataForControlsIsNull: unionTypeDataForControls == null,
-  //               isContainerType: unionTypeDataForControls?.isContainerType,
-  //               unionStarButtonIsNull: unionStarButton == null,
-  //               containerUnionControlsIsNull: containerUnionControls == null,
-  //               unionTypeSelectorElementIsNull: unionTypeSelectorElement == null,
-  //               passThrough: mainElement === mainElementWithUnionTypeSelector,
-  //               localResolvedElementJzodSchemaBasedOnValue,
-  //             },
-  //             initiallyUnfolded: false,
-  //             copyButton: true,
-  //             useCodeBlock: true,
-  //           },
-  //           ...(currentKeyMap?.rawSchema?.type === "any"
-  //             ? [
-  //                 {
-  //                   label: `rendering JzodElementEditor for 'any' at ${props.rootLessListKey || "ROOT"}, objectOrArrayOrAny=${resolvedTypeIsObjectOrArrayOrAny}, displayAsCodeEditor=${displayAsCodeEditor}`,
-  //                   data: {
-  //                     localResolvedElementJzodSchemaBasedOnValue,
-  //                     currentValueObjectAtKey,
-  //                     currentKeyMap,
-  //                   },
-  //                   useCodeBlock: true as const,
-  //                 },
-  //               ]
-  //             : []),
-  //         ]}
-  //       />
-  //       {mainElementWithUnionTypeSelector}
-  //     </div>
-  //   );
-  // }, [
-  //   mainElementWithUnionTypeSelector,
-  //   formikRootLessListKey,
-  //   localResolvedElementJzodSchemaBasedOnValue,
-  //   existingObject,
-  //   itemsOrder,
-  //   currentKeyMap,
-  //   props.rootLessListKey,
-  //   unionTypeDataForControls,
-  //   unionStarButton,
-  //   containerUnionControls,
-  //   unionTypeSelectorElement,
-  //   resolvedTypeIsObjectOrArrayOrAny,
-  //   displayAsCodeEditor,
-  //   currentValueObjectAtKey,
-  // ]);
 
   // ##############################################################################################
   // ##############################################################################################
@@ -1917,37 +1853,6 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
   // ##############################################################
   const result = (
     <>
-    {/* AAAAAA */}
-      {/* {props.isTopLevel && (
-        <>
-          <JsonDisplayHelper debug={true}
-            componentName="JzodElementEditor"
-            elements={[
-              {
-                label: `key "${formikRootLessListKey}" of type ${localResolvedElementJzodSchemaBasedOnValue?.type}`,
-                data: {
-                  existingObject,
-                  itemsOrder,
-                  localResolvedElementJzodSchemaBasedOnValue,
-                },
-                initiallyUnfolded: false,
-                copyButton: true,
-                useCodeBlock: true,
-              },
-              ...(currentKeyMap?.rawSchema?.type === "any" ? [{
-                label: `rendering JzodElementEditor for 'any' at ${props.rootLessListKey || "ROOT"}, objectOrArrayOrAny=${resolvedTypeIsObjectOrArrayOrAny}, displayAsCodeEditor=${displayAsCodeEditor}`,
-                data: {
-                  localResolvedElementJzodSchemaBasedOnValue,
-                  currentValueObjectAtKey,
-                  currentKeyMap,
-                },
-                useCodeBlock: true as const,
-              }] : []),
-            ]}
-          />
-          {props.submitButton ?? <></>}
-        </>
-      )} */}
       <div>
         {props.rootLessListKey === "" && (
           <RenderPerformanceMetrics.RenderPerformanceDisplay

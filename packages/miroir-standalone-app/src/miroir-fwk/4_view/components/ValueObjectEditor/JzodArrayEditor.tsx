@@ -167,6 +167,7 @@ interface ProgressiveArrayItemProps {
     errorMessage: string;
   };
   onChangeVector?: Record<string, (value: any, rootLessListKey: string) => void>;
+  removeItemAtIndex?: (index: number) => void;
 }
 
 // ################################################################################################
@@ -197,6 +198,7 @@ const ProgressiveArrayItem: React.FC<ProgressiveArrayItemProps> = ({
   existingObject,
   displayError,
   onChangeVector,
+  removeItemAtIndex,
   ...props
 }) => {
   const isTestMode = process.env.VITE_TEST_MODE === 'true';
@@ -255,6 +257,17 @@ const ProgressiveArrayItem: React.FC<ProgressiveArrayItemProps> = ({
                   currentValue={currentValue}
                   onChangeVector={onChangeVector}
                 />
+                {removeItemAtIndex && (
+                  <ThemedStyledButton
+                    variant="transparent"
+                    type="button"
+                    aria-label={reportSectionPathAsString + "." + itemRootLessListKey + "-removeArrayItem"}
+                    onClick={() => removeItemAtIndex(index)}
+                    title="Remove array item"
+                  >
+                    ×
+                  </ThemedStyledButton>
+                )}
               </>
             )}
             <ErrorBoundary
@@ -614,6 +627,20 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
   );
   
   // ##############################################################################################
+  const removeItemAtIndex = useCallback(
+    (index: number) => {
+      const arr = [...(arrayValueObject as any[])];
+      const numIndex = typeof index === "string" ? parseInt(index, 10) : index;
+      const newArrayValue = arr.filter((_: any, i: number) => i !== numIndex);
+      if (onChangeVector?.[rootLessListKey]) {
+        onChangeVector[rootLessListKey](newArrayValue, rootLessListKey);
+      }
+      formik.setFieldValue(formikRootLessListKey, newArrayValue, true);
+    },
+    [arrayValueObject, formik, formikRootLessListKey, onChangeVector, rootLessListKey]
+  );
+
+  // ##############################################################################################
   // Get displayed value when array/tuple is folded using the shared utility function
   const foldedDisplayValue = useMemo(() => {
     return getFoldedDisplayValue(currentTypeCheckKeyMap?.resolvedSchema, currentValue);
@@ -700,6 +727,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
                   
                   displayError={displayError}
                   onChangeVector={onChangeVector}
+                  removeItemAtIndex={!readOnly && insideAny ? removeItemAtIndex : undefined}
                 />
               );
             })}
@@ -719,6 +747,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
       itemsOrder,
       insideAny,
       displayAsStructuredElementSwitch,
+      removeItemAtIndex,
     ]
   );
   ;
