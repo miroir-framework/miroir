@@ -404,6 +404,27 @@ export function getJzodArrayEditorTests(
             ]);
           },
         },
+        "duplicate an element in a string array when duplicate button for item 1 is clicked": {
+          tests: async (expect: ExpectStatic, container: Container) => {
+            const duplicateButton = screen.getByRole("button", {
+              name: formikFieldName("testField.1-duplicateArrayItem"),
+            });
+            expect(duplicateButton).toBeTruthy();
+            await act(() => {
+              fireEvent.click(duplicateButton);
+            });
+            await waitAfterUserInteraction();
+            const formValues: Record<string, any> = extractValuesFromRenderedElements(
+              expect,
+              undefined,
+              container,
+              formikFieldName("testField"),
+              "after duplicate button click"
+            );
+            const testResult = formValuesToJSON(formValues);
+            expect(testResult).toEqual(["value1", "value2", "value2", "value3"]);
+          },
+        },
       },
     },
   };
@@ -758,7 +779,7 @@ export function getJzodObjectEditorTests(
               undefined,
               container,
               formikFieldName("testField"),
-              "after delete button click"
+              "after delete button click",
             );
             const testResult = formValuesToJSON(values);
             expect(testResult).toEqual({ a: "test string", b: 42 });
@@ -787,7 +808,7 @@ export function getJzodObjectEditorTests(
               undefined,
               container,
               formikFieldName("testField"),
-              "initial"
+              "initial",
             );
             const testResult = formValuesToJSON(values);
             expect(testResult).toEqual({ e: "123" });
@@ -814,11 +835,11 @@ export function getJzodObjectEditorTests(
             // console.log("########### OBJECT INPUTS", inputs.map(e => e.outerHTML));
             const inputA = inputs.find(
               (input: HTMLElement) =>
-                (input as HTMLInputElement).name === formikFieldName("testField.a")
+                (input as HTMLInputElement).name === formikFieldName("testField.a"),
             ) as HTMLInputElement;
             const inputB = inputs.find(
               (input: HTMLElement) =>
-                (input as HTMLInputElement).name === formikFieldName("testField.b")
+                (input as HTMLInputElement).name === formikFieldName("testField.b"),
             ) as HTMLInputElement;
             expect(inputA).toHaveValue("test string");
             expect(inputB).toHaveValue(42);
@@ -835,7 +856,7 @@ export function getJzodObjectEditorTests(
               undefined,
               container,
               formikFieldName("testField"),
-              "after change"
+              "after change",
             );
             // console.log("########### OBJECT VALUES AFTER CHANGE", values);
             const testResult = formValuesToJSON(values);
@@ -882,7 +903,7 @@ export function getJzodObjectEditorTests(
                 undefined,
                 container,
                 formikFieldName("testField"),
-                "after add button click"
+                "after add button click",
               );
               const testResult = formValuesToJSON(screenValues);
               expect(testResult).toEqual({
@@ -925,7 +946,7 @@ export function getJzodObjectEditorTests(
                 undefined,
                 container,
                 formikFieldName("testField"),
-                "after delete button click"
+                "after delete button click",
               );
               const testResult = formValuesToJSON(screenValues);
               expect(testResult).toEqual({});
@@ -968,7 +989,7 @@ export function getJzodObjectEditorTests(
                 undefined,
                 container,
                 formikFieldName("testField"),
-                "after delete button click"
+                "after delete button click",
               );
               const testResult = formValuesToJSON(screenValues);
               expect(testResult).toEqual({
@@ -1005,7 +1026,7 @@ export function getJzodObjectEditorTests(
               undefined,
               container,
               formikFieldName("testField"),
-              "initial"
+              "initial",
             );
             expect(values).toEqual({
               // "firstRecordName": "firstRecord",
@@ -1049,7 +1070,7 @@ export function getJzodObjectEditorTests(
                 undefined,
                 container,
                 formikFieldName("testField"),
-                "after add button click"
+                "after add button click",
               );
               const testResult = formValuesToJSON(values);
               expect(testResult).toEqual({
@@ -1115,7 +1136,7 @@ export function getJzodObjectEditorTests(
                 undefined,
                 container,
                 formikFieldName("testField"),
-                "after rename"
+                "after rename",
               );
               const testResult = formValuesToJSON(values);
               expect(testResult).toEqual({
@@ -1160,7 +1181,7 @@ export function getJzodObjectEditorTests(
               undefined,
               container,
               formikFieldName("testField"),
-              "after delete button click"
+              "after delete button click",
             );
             const testResult = formValuesToJSON(values);
             expect(testResult).toEqual({});
@@ -1200,7 +1221,9 @@ export function getJzodObjectEditorTests(
               // expect(screen.getByText(/Test LabelAAAAAAAAAAAAAAAAAAAAAAAAAAAA/)).toBeInTheDocument();
               // screen.debug(undefined, Infinity); // Prints entire DOM with no size limit
               const deleteButton = screen.getByRole("button", {
-                name: formikFieldName("testField.secondRecord-removeOptionalAttributeOrRecordEntry"),
+                name: formikFieldName(
+                  "testField.secondRecord-removeOptionalAttributeOrRecordEntry",
+                ),
               });
               expect(deleteButton).toBeInTheDocument();
               await act(() => {
@@ -1211,7 +1234,7 @@ export function getJzodObjectEditorTests(
                 undefined,
                 container,
                 formikFieldName("testField"),
-                "after delete button click"
+                "after delete button click",
               );
               const testResult = formValuesToJSON(values);
               expect(testResult).toEqual({
@@ -2996,6 +3019,36 @@ export function getJzodAnyEditorTests(
             expect(testResult).toEqual(["item1", "item3"]);
           },
         },
+        "any-typed array can have an item duplicated": {
+          props: {
+            label: "Test Label",
+            name: "testField",
+            listKey: "ROOT.testField",
+            rootLessListKey: "testField",
+            rootLessListKeyArray: ["testField"],
+            rawJzodSchema: { type: "any" },
+            initialFormState: ["item1", "item2", "item3"],
+          },
+          tests: async (expect: ExpectStatic, container: Container) => {
+            const duplicateButton = screen.getByRole("button", {
+              name: formikFieldName("testField.1-duplicateArrayItem"),
+            });
+            expect(duplicateButton).toBeTruthy();
+            await act(() => {
+              fireEvent.click(duplicateButton);
+            });
+            await waitAfterUserInteraction();
+            const formValues: Record<string, any> = extractValuesFromRenderedElements(
+              expect,
+              undefined,
+              container,
+              formikFieldName("testField"),
+              "after duplicate button click"
+            );
+            const testResult = formValuesToJSON(formValues);
+            expect(testResult).toEqual(["item1", "item2", "item2", "item3"]);
+          },
+        },
         "any-typed object can be added an attribute (it is a record)": {
           props: {
             label: "Test Label",
@@ -3280,36 +3333,36 @@ const jzodElementEditorTests: Record<
   string,
   ReactComponentTestSuitePrep<any> & { modes?: ModesType }
 > = {
-  // JzodArrayEditor: {
-  //   editor: getJzodElementEditorForTest(pageLabel),
-  //   getJzodEditorTests: getJzodArrayEditorTests,
-  //   modes: "jzodElementEditor",
-  // },
-  // JzodEnumEditor: {
-  //   editor: getJzodElementEditorForTest(pageLabel),
-  //   getJzodEditorTests: getJzodEnumEditorTests,
-  //   modes: "jzodElementEditor",
-  // },
-  // JzodLiteralEditor: {
-  //   editor: getJzodElementEditorForTest(pageLabel),
-  //   getJzodEditorTests: getJzodLiteralEditorTests,
-  //   modes: "jzodElementEditor",
-  // },
-  // JzodObjectEditor: {
-  //   editor: getJzodElementEditorForTest(pageLabel),
-  //   getJzodEditorTests: getJzodObjectEditorTests,
-  //   modes: "jzodElementEditor",
-  // },
-  // JzodSimpleTypeEditor: {
-  //   editor: getJzodElementEditorForTest(pageLabel),
-  //   getJzodEditorTests: getJzodSimpleTypeEditorTests,
-  //   modes: "jzodElementEditor",
-  // },
-  // JzodUnionEditor: {
-  //   editor: getJzodElementEditorForTest(pageLabel),
-  //   getJzodEditorTests: getJzodUnionEditorTests,
-  //   modes: "jzodElementEditor",
-  // },
+  JzodArrayEditor: {
+    editor: getJzodElementEditorForTest(pageLabel),
+    getJzodEditorTests: getJzodArrayEditorTests,
+    modes: "jzodElementEditor",
+  },
+  JzodEnumEditor: {
+    editor: getJzodElementEditorForTest(pageLabel),
+    getJzodEditorTests: getJzodEnumEditorTests,
+    modes: "jzodElementEditor",
+  },
+  JzodLiteralEditor: {
+    editor: getJzodElementEditorForTest(pageLabel),
+    getJzodEditorTests: getJzodLiteralEditorTests,
+    modes: "jzodElementEditor",
+  },
+  JzodObjectEditor: {
+    editor: getJzodElementEditorForTest(pageLabel),
+    getJzodEditorTests: getJzodObjectEditorTests,
+    modes: "jzodElementEditor",
+  },
+  JzodSimpleTypeEditor: {
+    editor: getJzodElementEditorForTest(pageLabel),
+    getJzodEditorTests: getJzodSimpleTypeEditorTests,
+    modes: "jzodElementEditor",
+  },
+  JzodUnionEditor: {
+    editor: getJzodElementEditorForTest(pageLabel),
+    getJzodEditorTests: getJzodUnionEditorTests,
+    modes: "jzodElementEditor",
+  },
   JzodAnyEditor: {
     editor: getJzodElementEditorForTest(pageLabel),
     getJzodEditorTests: getJzodAnyEditorTests,

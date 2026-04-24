@@ -168,6 +168,7 @@ interface ProgressiveArrayItemProps {
   };
   onChangeVector?: Record<string, (value: any, rootLessListKey: string) => void>;
   removeItemAtIndex?: (index: number) => void;
+  duplicateItemAtIndex?: (index: number) => void;
 }
 
 // ################################################################################################
@@ -199,6 +200,7 @@ const ProgressiveArrayItem: React.FC<ProgressiveArrayItemProps> = ({
   displayError,
   onChangeVector,
   removeItemAtIndex,
+  duplicateItemAtIndex,
   ...props
 }) => {
   const isTestMode = process.env.VITE_TEST_MODE === 'true';
@@ -266,6 +268,17 @@ const ProgressiveArrayItem: React.FC<ProgressiveArrayItemProps> = ({
                     title="Remove array item"
                   >
                     ×
+                  </ThemedStyledButton>
+                )}
+                {duplicateItemAtIndex && (
+                  <ThemedStyledButton
+                    variant="transparent"
+                    type="button"
+                    aria-label={reportSectionPathAsString + "." + itemRootLessListKey + "-duplicateArrayItem"}
+                    onClick={() => duplicateItemAtIndex(index)}
+                    title="Duplicate array item"
+                  >
+                    ⧉
                   </ThemedStyledButton>
                 )}
               </>
@@ -641,6 +654,25 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
   );
 
   // ##############################################################################################
+  const duplicateItemAtIndex = useCallback(
+    (index: number) => {
+      const arr = [...(arrayValueObject as any[])];
+      const numIndex = typeof index === "string" ? parseInt(index, 10) : index;
+      const itemToDuplicate = arr[numIndex];
+      const duplicate =
+        typeof itemToDuplicate === "object" && itemToDuplicate !== null
+          ? JSON.parse(JSON.stringify(itemToDuplicate))
+          : itemToDuplicate;
+      const newArrayValue = [...arr.slice(0, numIndex + 1), duplicate, ...arr.slice(numIndex + 1)];
+      if (onChangeVector?.[rootLessListKey]) {
+        onChangeVector[rootLessListKey](newArrayValue, rootLessListKey);
+      }
+      formik.setFieldValue(formikRootLessListKey, newArrayValue, true);
+    },
+    [arrayValueObject, formik, formikRootLessListKey, onChangeVector, rootLessListKey]
+  );
+
+  // ##############################################################################################
   // Get displayed value when array/tuple is folded using the shared utility function
   const foldedDisplayValue = useMemo(() => {
     return getFoldedDisplayValue(currentTypeCheckKeyMap?.resolvedSchema, currentValue);
@@ -728,6 +760,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
                   displayError={displayError}
                   onChangeVector={onChangeVector}
                   removeItemAtIndex={!readOnly && insideAny ? removeItemAtIndex : undefined}
+                  duplicateItemAtIndex={!readOnly ? duplicateItemAtIndex : undefined}
                 />
               );
             })}
@@ -748,6 +781,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
       insideAny,
       displayAsStructuredElementSwitch,
       removeItemAtIndex,
+      duplicateItemAtIndex,
     ]
   );
   ;
