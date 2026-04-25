@@ -8,7 +8,7 @@
   "name": "UseCase",
   "icon": "PlaylistAddCheck",
   "defaultInstanceDetailsReportUuid": "ee31f325-3e77-46b7-a3dd-025ed33c4b0d",
-  "viewAttributes": ["name", "defaultLabel", "description", "activity", "designerApplication", "uuid"],
+  "viewAttributes": ["name", "defaultLabel", "description", "role", "benefit", "goal", "userStory", "activity", "designerApplication", "uuid"],
   "mlSchema": {
     "type": "object",
     "extend": {
@@ -61,6 +61,36 @@
             }
           }
         }
+      },
+      "role": {
+        "type": "uuid",
+        "optional": true,
+        "tag": {
+          "value": {
+            "id": 11,
+            "defaultLabel": "Role",
+            "display": { "editable": true },
+            "foreignKeyParams": {
+              "targetEntity": "702535cd-e6fa-49d6-aa6f-b5874821e5a3",
+              "targetEntityOrderInstancesBy": "name"
+            }
+          }
+        }
+      },
+      "benefit": {
+        "type": "string",
+        "optional": true,
+        "tag": { "value": { "id": 9, "defaultLabel": "Benefit", "display": { "editable": true } } }
+      },
+      "goal": {
+        "type": "string",
+        "optional": true,
+        "tag": { "value": { "id": 10, "defaultLabel": "Goal", "display": { "editable": true } } }
+      },
+      "userStory": {
+        "type": "string",
+        "optional": true,
+        "tag": { "value": { "id": 12, "defaultLabel": "User Story", "display": { "editable": false } } }
       }
     }
   }

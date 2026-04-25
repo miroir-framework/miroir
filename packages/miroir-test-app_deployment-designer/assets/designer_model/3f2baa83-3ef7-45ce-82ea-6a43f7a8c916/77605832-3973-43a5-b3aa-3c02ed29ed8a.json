@@ -14,6 +14,79 @@
         "label": "UseCaseList_useCases",
         "parentName": "UseCase",
         "parentUuid": "59debf06-405d-4def-a7eb-3db45360310d"
+      },
+      "roles": {
+        "extractorOrCombinerType": "extractorInstancesByEntity",
+        "label": "UseCaseList_roles",
+        "parentName": "Role",
+        "parentUuid": "702535cd-e6fa-49d6-aa6f-b5874821e5a3"
+      }
+    },
+    "runtimeTransformers": {
+      "rolesIndex": {
+        "transformerType": "indexListBy",
+        "interpolation": "runtime",
+        "applyTo": {
+          "transformerType": "getFromContext",
+          "interpolation": "runtime",
+          "referenceName": "roles"
+        },
+        "indexAttribute": "uuid"
+      },
+      "useCasesWithUserStory": {
+        "transformerType": "mapList",
+        "interpolation": "runtime",
+        "applyTo": {
+          "transformerType": "getFromContext",
+          "interpolation": "runtime",
+          "referenceName": "useCases"
+        },
+        "referenceToOuterObject": "currentUseCase",
+        "elementTransformer": {
+          "transformerType": "mergeIntoObject",
+          "interpolation": "runtime",
+          "applyTo": {
+            "transformerType": "getFromContext",
+            "interpolation": "runtime",
+            "referenceName": "currentUseCase"
+          },
+          "referenceToOuterObject": "currentUseCase",
+          "definition": {
+            "transformerType": "dataflowObject",
+            "interpolation": "runtime",
+            "definition": {
+              "roleName": {
+                "transformerType": "accessDynamicPath",
+                "interpolation": "runtime",
+                "objectAccessPath": [
+                  {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referenceName": "rolesIndex"
+                  },
+                  {
+                    "transformerType": "accessDynamicPath",
+                    "interpolation": "runtime",
+                    "objectAccessPath": [
+                      {
+                        "transformerType": "getFromContext",
+                        "interpolation": "runtime",
+                        "referenceName": "currentUseCase"
+                      },
+                      "role"
+                    ]
+                  },
+                  "name"
+                ]
+              },
+              "userStory": {
+                "transformerType": "mustacheStringTemplate",
+                "interpolation": "runtime",
+                "definition": "In order to {{currentUseCase.benefit}} as a {{roleName}}, I can {{currentUseCase.goal}}"
+              }
+            }
+          }
+        }
       }
     },
     "section": {
@@ -25,7 +98,7 @@
             "label": "Use Cases",
             "parentName": "UseCase",
             "parentUuid": "59debf06-405d-4def-a7eb-3db45360310d",
-            "fetchedDataReference": "useCases",
+            "fetchedDataReference": "useCasesWithUserStory",
             "sortByAttribute": "name"
           }
         }
