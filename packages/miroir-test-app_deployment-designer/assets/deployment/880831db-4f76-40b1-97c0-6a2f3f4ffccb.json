@@ -1,0 +1,9 @@
+{
+  "uuid": "880831db-4f76-40b1-97c0-6a2f3f4ffccb",
+  "parentName": "AdminApplication",
+  "parentUuid": "25d935e7-9e93-42c2-aade-0472b883492b",
+  "name": "Designer",
+  "defaultLabel": "The Designer selfApplication.",
+  "description": "The model and data of the Designer selfApplication.",
+  "selfApplication": "880831db-4f76-40b1-97c0-6a2f3f4ffccb"
+}

@@ -1,0 +1,48 @@
+{
+  "uuid": "3fb6203e-f639-4b2a-afe1-e1fb45d6b2ea",
+  "parentName": "EntityDefinition",
+  "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+  "parentDefinitionVersionUuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
+  "entityUuid": "25d935e7-9e93-42c2-aade-0472b883492b",
+  "conceptLevel": "Model",
+  "name": "AdminApplication",
+  "icon": "Interests",
+  "defaultInstanceDetailsReportUuid": "f730ecf1-88b6-46ea-8147-aa24ff7cdfcf",
+  "viewAttributes": ["name", "defaultLabel", "description", "selfApplication", "uuid"],
+  "mlSchema": {
+    "type": "object",
+    "extend": {
+      "type": "schemaReference",
+       "definition": {
+        "eager": true,
+        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+        "relativePath": "entityDefinitionRoot"
+       }
+    },
+    "definition": {
+      "name": {
+        "type": "string",
+        "tag": { "value": { "id": 5, "defaultLabel": "Name", "display": { "editable": true  } } }
+      },
+      "defaultLabel": {
+        "type": "string",
+        "tag": { "value": { "id": 6, "defaultLabel": "Default Label", "display": { "editable": true  } } }
+      },
+      "description": {
+        "type": "string",
+        "optional": true,
+        "tag": { "value": { "id": 7, "defaultLabel": "Description", "display": { "editable": true  } } }
+      },
+      "selfApplication": {
+        "type": "uuid",
+        "tag": {
+          "value": {
+            "id": 8,
+            "defaultLabel": "Self SelfApplication",
+            "display": { "editable": true  }
+          }
+        }
+      }
+    }
+  }
+}

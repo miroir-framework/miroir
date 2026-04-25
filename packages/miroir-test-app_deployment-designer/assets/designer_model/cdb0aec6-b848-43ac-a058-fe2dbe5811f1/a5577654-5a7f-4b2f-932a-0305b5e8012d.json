@@ -1,0 +1,9 @@
+{
+  "uuid":"a5577654-5a7f-4b2f-932a-0305b5e8012d",
+  "parentName":"ApplicationModelBranch",
+  "parentUuid":"cdb0aec6-b848-43ac-a058-fe2dbe5811f1",
+  "selfApplication":"880831db-4f76-40b1-97c0-6a2f3f4ffccb",
+  "headVersion":"710d0cea-26cf-4ecd-8436-936ee5537fc1",
+  "name":"master",
+  "description": "The master Branch of the Designer SelfApplication"
+}

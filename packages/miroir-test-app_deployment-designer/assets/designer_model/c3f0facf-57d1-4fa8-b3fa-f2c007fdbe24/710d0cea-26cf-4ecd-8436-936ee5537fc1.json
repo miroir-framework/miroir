@@ -1,0 +1,11 @@
+{
+  "uuid": "710d0cea-26cf-4ecd-8436-936ee5537fc1",
+  "parentName":"SelfApplicationVersion",
+  "parentUuid":"c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24",
+  "name":"Initial",
+  "selfApplication":"880831db-4f76-40b1-97c0-6a2f3f4ffccb",
+  "branch":"9034141b-0d0d-4beb-82af-dfc02be15c2d",
+  "description": "Initial Designer selfApplication version",
+  "modelStructureMigration":[],
+  "modelCUDMigration":[]
+}
