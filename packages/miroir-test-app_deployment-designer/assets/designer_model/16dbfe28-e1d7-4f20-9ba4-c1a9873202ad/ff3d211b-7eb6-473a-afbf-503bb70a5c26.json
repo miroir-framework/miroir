@@ -6,5 +6,5 @@
   "name":"ApplicationVersion",
   "selfApplication": "880331db-4f76-40b1-97c0-6a2f3f4ffccb",
   "conceptLevel":"Model",
-  "description": "A Version of an SelfApplication"
+  "description": "A Version of a DesignerApplication"
 }

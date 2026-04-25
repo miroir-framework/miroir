@@ -3,8 +3,8 @@
   "parentName":"Entity",
   "parentUuid":"16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
   "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
-  "name":"AdminApplication",
+  "name":"DesignerApplication",
   "selfApplication": "880331db-4f76-40b1-97c0-6a2f3f4ffccb",
   "conceptLevel":"Model",
-  "description": "An AdminApplication"
+  "description": "A DesignerApplication"
 }

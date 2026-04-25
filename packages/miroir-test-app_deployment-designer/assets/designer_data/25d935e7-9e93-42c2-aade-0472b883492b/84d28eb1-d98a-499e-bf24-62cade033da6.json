@@ -1,6 +1,6 @@
 {
   "uuid": "84d28eb1-d98a-499e-bf24-62cade033da6",
-  "parentName": "AdminApplication",
+  "parentName": "DesignerApplication",
   "parentUuid": "25d935e7-9e93-42c2-aade-0472b883492b",
   "name": "Postgres",
   "defaultLabel": "The Postgres Application.",
