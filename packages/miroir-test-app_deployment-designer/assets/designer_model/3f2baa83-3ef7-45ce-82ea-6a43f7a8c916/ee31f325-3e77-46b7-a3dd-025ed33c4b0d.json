@@ -1,0 +1,35 @@
+{
+  "uuid": "ee31f325-3e77-46b7-a3dd-025ed33c4b0d",
+  "selfApplication": "880831db-4f76-40b1-97c0-6a2f3f4ffccb",
+  "parentName": "Report",
+  "parentUuid": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+  "conceptLevel": "Model",
+  "name": "UseCaseDetails",
+  "defaultLabel": "Detailed information about a Use Case",
+  "definition": {
+    "extractorTemplates": {
+      "useCase": {
+        "extractorOrCombinerType": "extractorByPrimaryKey",
+        "parentName": "UseCase",
+        "parentUuid": "59debf06-405d-4def-a7eb-3db45360310d",
+        "instanceUuid": {
+          "transformerType": "getFromParameters",
+          "interpolation": "build",
+          "referenceName": "instanceUuid"
+        }
+      }
+    },
+    "section": {
+      "type": "list",
+      "definition": [
+        {
+          "type": "objectInstanceReportSection",
+          "definition": {
+            "parentUuid": "59debf06-405d-4def-a7eb-3db45360310d",
+            "fetchedDataReference": "useCase"
+          }
+        }
+      ]
+    }
+  }
+}

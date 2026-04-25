@@ -1,10 +1,10 @@
 {
-  "uuid": "c4a6b3f1-7b2e-4d5a-8e8f-1a2b3c4d5e6f",
+  "uuid": "59debf06-405d-4def-a7eb-3db45360310d",
   "parentName": "Entity",
   "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
   "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
-  "name": "Role",
+  "name": "UseCase",
   "selfApplication": "880331db-4f76-40b1-97c0-6a2f3f4ffccb",
   "conceptLevel": "Model",
-  "description": "A Role associated with a Designer Application"
+  "description": "A Use Case belonging to an Activity and associated with a Designer Application"
 }

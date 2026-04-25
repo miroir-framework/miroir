@@ -1,0 +1,10 @@
+{
+  "uuid": "9526c710-3c59-4c8c-a572-0ba98e430907",
+  "parentName": "UseCase",
+  "parentUuid": "59debf06-405d-4def-a7eb-3db45360310d",
+  "name": "Define Activities",
+  "defaultLabel": "Define Activities",
+  "description": "Identify and document all high-level activities performed within the system.",
+  "activity": "15087491-e519-420f-8f1e-3226cc91b243",
+  "designerApplication": "880831db-4f76-40b1-97c0-6a2f3f4ffccb"
+}

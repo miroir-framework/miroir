@@ -1,0 +1,35 @@
+{
+  "uuid": "1366684b-e0c0-4c91-9496-dccd97d9a28d",
+  "selfApplication": "880831db-4f76-40b1-97c0-6a2f3f4ffccb",
+  "parentName": "Report",
+  "parentUuid": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+  "conceptLevel": "Model",
+  "name": "ActivityList",
+  "defaultLabel": "List of Activities",
+  "definition": {
+    "reportParameters": {},
+    "extractors": {
+      "activities": {
+        "extractorOrCombinerType": "extractorInstancesByEntity",
+        "label": "ActivityList_activities",
+        "parentName": "Activity",
+        "parentUuid": "fd622624-1a7e-46fa-9964-c4ecfb543de3"
+      }
+    },
+    "section": {
+      "type": "list",
+      "definition": [
+        {
+          "type": "objectListReportSection",
+          "definition": {
+            "label": "Activities",
+            "parentName": "Activity",
+            "parentUuid": "fd622624-1a7e-46fa-9964-c4ecfb543de3",
+            "fetchedDataReference": "activities",
+            "sortByAttribute": "name"
+          }
+        }
+      ]
+    }
+  }
+}

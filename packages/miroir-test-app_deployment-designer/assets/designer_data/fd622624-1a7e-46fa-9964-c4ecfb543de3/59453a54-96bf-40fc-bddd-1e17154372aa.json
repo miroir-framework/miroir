@@ -1,0 +1,9 @@
+{
+  "uuid": "59453a54-96bf-40fc-bddd-1e17154372aa",
+  "parentName": "Activity",
+  "parentUuid": "fd622624-1a7e-46fa-9964-c4ecfb543de3",
+  "name": "Data Model Design",
+  "defaultLabel": "Data Model Design",
+  "description": "The activity of defining the data entities, attributes, and relationships for the application.",
+  "designerApplication": "880831db-4f76-40b1-97c0-6a2f3f4ffccb"
+}

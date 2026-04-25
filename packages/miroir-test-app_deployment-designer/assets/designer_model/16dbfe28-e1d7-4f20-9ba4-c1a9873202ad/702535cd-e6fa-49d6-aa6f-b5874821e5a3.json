@@ -1,10 +1,10 @@
 {
-  "uuid": "e6c8d5b3-9d4e-4f7c-b0a1-3456789abcde",
+  "uuid": "702535cd-e6fa-49d6-aa6f-b5874821e5a3",
   "parentName": "Entity",
   "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
   "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
-  "name": "Activity",
+  "name": "Role",
   "selfApplication": "880331db-4f76-40b1-97c0-6a2f3f4ffccb",
   "conceptLevel": "Model",
-  "description": "An Activity associated with a Designer Application"
+  "description": "A Role associated with a Designer Application"
 }

@@ -1,13 +1,14 @@
 {
-  "uuid": "f7d9e6c4-ae5f-4089-8cb2-456789abcdef",
+  "uuid": "e08fdc20-e87f-4728-8bac-2ee0e427c3ac",
   "parentName": "EntityDefinition",
   "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
   "parentDefinitionVersionUuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
-  "entityUuid": "e6c8d5b3-9d4e-4f7c-b0a1-3456789abcde",
+  "entityUuid": "59debf06-405d-4def-a7eb-3db45360310d",
   "conceptLevel": "Model",
-  "name": "Activity",
-  "icon": "Task",
-  "viewAttributes": ["name", "defaultLabel", "description", "designerApplication", "uuid"],
+  "name": "UseCase",
+  "icon": "PlaylistAddCheck",
+  "defaultInstanceDetailsReportUuid": "ee31f325-3e77-46b7-a3dd-025ed33c4b0d",
+  "viewAttributes": ["name", "defaultLabel", "description", "activity", "designerApplication", "uuid"],
   "mlSchema": {
     "type": "object",
     "extend": {
@@ -33,11 +34,25 @@
         "optional": true,
         "tag": { "value": { "id": 6, "defaultLabel": "Description", "display": { "editable": true } } }
       },
-      "designerApplication": {
+      "activity": {
         "type": "uuid",
         "tag": {
           "value": {
             "id": 7,
+            "defaultLabel": "Activity",
+            "display": { "editable": true },
+            "foreignKeyParams": {
+              "targetEntity": "fd622624-1a7e-46fa-9964-c4ecfb543de3",
+              "targetEntityOrderInstancesBy": "name"
+            }
+          }
+        }
+      },
+      "designerApplication": {
+        "type": "uuid",
+        "tag": {
+          "value": {
+            "id": 8,
             "defaultLabel": "Designer Application",
             "display": { "editable": true },
             "foreignKeyParams": {

@@ -1,0 +1,35 @@
+{
+  "uuid": "87f62ef5-913a-4652-b331-c126ff0e4fdb",
+  "selfApplication": "880831db-4f76-40b1-97c0-6a2f3f4ffccb",
+  "parentName": "Report",
+  "parentUuid": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+  "conceptLevel": "Model",
+  "name": "RoleList",
+  "defaultLabel": "List of Roles",
+  "definition": {
+    "reportParameters": {},
+    "extractors": {
+      "roles": {
+        "extractorOrCombinerType": "extractorInstancesByEntity",
+        "label": "RoleList_roles",
+        "parentName": "Role",
+        "parentUuid": "702535cd-e6fa-49d6-aa6f-b5874821e5a3"
+      }
+    },
+    "section": {
+      "type": "list",
+      "definition": [
+        {
+          "type": "objectListReportSection",
+          "definition": {
+            "label": "Roles",
+            "parentName": "Role",
+            "parentUuid": "702535cd-e6fa-49d6-aa6f-b5874821e5a3",
+            "fetchedDataReference": "roles",
+            "sortByAttribute": "name"
+          }
+        }
+      ]
+    }
+  }
+}

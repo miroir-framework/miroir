@@ -1,12 +1,13 @@
 {
-  "uuid": "d5b7c4a2-8c3f-4e6b-af90-2a3b4c5d6e7f",
+  "uuid": "ad4810cf-a746-4999-9572-830d66f366f6",
   "parentName": "EntityDefinition",
   "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
   "parentDefinitionVersionUuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
-  "entityUuid": "c4a6b3f1-7b2e-4d5a-8e8f-1a2b3c4d5e6f",
+  "entityUuid": "fd622624-1a7e-46fa-9964-c4ecfb543de3",
   "conceptLevel": "Model",
-  "name": "Role",
-  "icon": "ManageAccounts",
+  "name": "Activity",
+  "icon": "Task",
+  "defaultInstanceDetailsReportUuid": "27204998-2a4c-4ae0-b867-c145df0e599b",
   "viewAttributes": ["name", "defaultLabel", "description", "designerApplication", "uuid"],
   "mlSchema": {
     "type": "object",

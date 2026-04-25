@@ -1,0 +1,10 @@
+{
+  "uuid": "508a6e4c-4036-4d98-a89e-8d63559457f5",
+  "parentName": "UseCase",
+  "parentUuid": "59debf06-405d-4def-a7eb-3db45360310d",
+  "name": "Create Reports",
+  "defaultLabel": "Create Reports",
+  "description": "Define list and detail reports to display the application data to users.",
+  "activity": "56669790-bde1-46e8-8444-fc0cdff3b08e",
+  "designerApplication": "880831db-4f76-40b1-97c0-6a2f3f4ffccb"
+}

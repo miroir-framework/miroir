@@ -1,0 +1,9 @@
+{
+  "uuid": "56669790-bde1-46e8-8444-fc0cdff3b08e",
+  "parentName": "Activity",
+  "parentUuid": "fd622624-1a7e-46fa-9964-c4ecfb543de3",
+  "name": "Application Design",
+  "defaultLabel": "Application Design",
+  "description": "The activity of designing the UI, navigation, and reports for the application.",
+  "designerApplication": "880831db-4f76-40b1-97c0-6a2f3f4ffccb"
+}

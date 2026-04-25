@@ -1,0 +1,10 @@
+{
+  "uuid": "9be0f11b-2ca3-431a-af6c-71359885810a",
+  "parentName": "UseCase",
+  "parentUuid": "59debf06-405d-4def-a7eb-3db45360310d",
+  "name": "Identify User Roles",
+  "defaultLabel": "Identify User Roles",
+  "description": "Identify and document all user roles that interact with the system.",
+  "activity": "15087491-e519-420f-8f1e-3226cc91b243",
+  "designerApplication": "880831db-4f76-40b1-97c0-6a2f3f4ffccb"
+}
