@@ -16,7 +16,7 @@ import {
   menuDefaultAdmin
 } from "miroir-test-app_deployment-admin";
 
-import { useMiroirContextService } from 'miroir-react';
+import { JsonDisplayHelper, useMiroirContextService } from 'miroir-react';
 import { packageName } from '../../../../constants.js';
 import { cleanLevel } from '../../constants.js';
 import { useMenusOfApplications } from '../../ReduxHooks.js';
@@ -205,7 +205,25 @@ export const Sidebar: FC<{
         />
         {/* </div> */}
       </ThemedDrawerHeader>
-      <ThemedScrollableContent hideScrollbar>{memoizedSidebarSections}</ThemedScrollableContent>
+      <ThemedScrollableContent hideScrollbar>
+        <JsonDisplayHelper debug={true}
+          componentName="Sidebar"
+          elements={[
+            {
+              label: "Sidebar",
+              data: {
+                props,
+                currentApplication,
+                currentApplicationDeploymentMap,
+                filteredAppSidebarSections,
+                applicationMenus,
+              },
+              useCodeBlock: true,
+            },
+          ]}
+        />
+        {memoizedSidebarSections}
+      </ThemedScrollableContent>
       {/* Resize handle - only show when sidebar is open */}
     </ThemedDrawer>
   );
