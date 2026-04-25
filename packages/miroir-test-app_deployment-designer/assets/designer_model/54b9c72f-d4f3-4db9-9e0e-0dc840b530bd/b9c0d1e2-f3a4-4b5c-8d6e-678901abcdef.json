@@ -1,0 +1,66 @@
+{
+  "uuid": "b9c0d1e2-f3a4-4b5c-8d6e-678901abcdef",
+  "parentName": "EntityDefinition",
+  "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+  "parentDefinitionVersionUuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
+  "entityUuid": "a8b9c0d1-e2f3-4a4b-9c5d-567890abcdef",
+  "conceptLevel": "Model",
+  "name": "UseCase",
+  "icon": "PlaylistAddCheck",
+  "viewAttributes": ["name", "defaultLabel", "description", "activity", "designerApplication", "uuid"],
+  "mlSchema": {
+    "type": "object",
+    "extend": {
+      "type": "schemaReference",
+      "definition": {
+        "eager": true,
+        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+        "relativePath": "entityDefinitionRoot"
+      }
+    },
+    "definition": {
+      "name": {
+        "type": "string",
+        "tag": { "value": { "id": 4, "defaultLabel": "Name", "display": { "editable": true } } }
+      },
+      "defaultLabel": {
+        "type": "string",
+        "optional": true,
+        "tag": { "value": { "id": 5, "defaultLabel": "Default Label", "display": { "editable": true } } }
+      },
+      "description": {
+        "type": "string",
+        "optional": true,
+        "tag": { "value": { "id": 6, "defaultLabel": "Description", "display": { "editable": true } } }
+      },
+      "activity": {
+        "type": "uuid",
+        "tag": {
+          "value": {
+            "id": 7,
+            "defaultLabel": "Activity",
+            "display": { "editable": true },
+            "foreignKeyParams": {
+              "targetEntity": "e6c8d5b3-9d4e-4f7c-b0a1-3456789abcde",
+              "targetEntityOrderInstancesBy": "name"
+            }
+          }
+        }
+      },
+      "designerApplication": {
+        "type": "uuid",
+        "tag": {
+          "value": {
+            "id": 8,
+            "defaultLabel": "Designer Application",
+            "display": { "editable": true },
+            "foreignKeyParams": {
+              "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+              "targetEntityOrderInstancesBy": "name"
+            }
+          }
+        }
+      }
+    }
+  }
+}
