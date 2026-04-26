@@ -74,6 +74,16 @@ export interface MermaidClassDiagramProps {
    * `buildEntityDefinitionClickLinks`).
    */
   onClassClick?: (entityDefinitionUuid: string) => void;
+  /**
+   * CSS color for relation lines (arrows / connections between classes).
+   * Defaults to "#888888" in light mode, "#aaaaaa" in dark mode.
+   */
+  relationsColor?: string;
+  /**
+   * CSS color for relation lines when the diagram is displayed in fullscreen mode.
+   * Defaults to "#cccccc" (light grey, clearly visible on the dark fullscreen background).
+   */
+  fullscreenRelationsColor?: string;
 }
 
 // ############################################################################
@@ -87,6 +97,8 @@ export const MermaidClassDiagram: React.FC<MermaidClassDiagramProps> = ({
   options = {},
   height = "auto",
   onClassClick,
+  relationsColor,
+  fullscreenRelationsColor,
 }) => {
   const miroirTheme = useMiroirTheme();
   const containerRef = useRef<HTMLDivElement>(null);
@@ -106,8 +118,10 @@ export const MermaidClassDiagram: React.FC<MermaidClassDiagramProps> = ({
   // needing to re-attach DOM listeners on every render.
   const onClassClickRef = useRef(onClassClick);
   const classClickLinksRef = useRef(options?.classClickLinks);
+  const fullscreenRelationsColorRef = useRef(fullscreenRelationsColor);
   onClassClickRef.current = onClassClick;
   classClickLinksRef.current = options?.classClickLinks;
+  fullscreenRelationsColorRef.current = fullscreenRelationsColor;
 
   // Derive theme-aware colors for Mermaid
   const isDark = miroirTheme.currentTheme.colors.background
@@ -147,7 +161,7 @@ export const MermaidClassDiagram: React.FC<MermaidClassDiagramProps> = ({
             primaryColor: themeColors.primary,
             primaryTextColor: themeColors.text,
             primaryBorderColor: themeColors.border,
-            lineColor: themeColors.text,
+            lineColor: relationsColor ?? (isDark ? "#aaaaaa" : "#888888"),
             secondaryColor: themeColors.surface,
             tertiaryColor: themeColors.background,
           },
@@ -186,7 +200,7 @@ export const MermaidClassDiagram: React.FC<MermaidClassDiagramProps> = ({
       setError(err.message ?? "Failed to render diagram");
       setSvgContent("");
     }
-  }, [entityDefinitions, diagramOptions, isDark, themeColors, diagramMode]);
+  }, [entityDefinitions, diagramOptions, isDark, themeColors, diagramMode, relationsColor]);
 
   // Key capturing all inputs that should trigger a re-render.
   const diagramKey = JSON.stringify({
@@ -195,6 +209,7 @@ export const MermaidClassDiagram: React.FC<MermaidClassDiagramProps> = ({
     showInfra,
     theme: isDark,
     diagramMode,
+    relationsColor,
     hasClickLinks: !!options?.classClickLinks && Object.keys(options.classClickLinks).length > 0,
   });
 
@@ -267,6 +282,41 @@ export const MermaidClassDiagram: React.FC<MermaidClassDiagramProps> = ({
 
     el.addEventListener("wheel", handleWheel, { capture: true, passive: false });
 
+    // Fullscreen: keep original strokes to revert when leaving fullscreen.
+    const originalStrokes = new Map<SVGElement, { stroke: string; strokeWidth: string }>();
+
+    const applyFullscreenSvgStyles = () => {
+      const fsColor = fullscreenRelationsColorRef.current ?? "#cccccc";
+      el.querySelectorAll<SVGElement>("path.relation, .er.relationshipLine").forEach((svgEl) => {
+        originalStrokes.set(svgEl, { stroke: svgEl.style.stroke, strokeWidth: svgEl.style.strokeWidth });
+        svgEl.style.stroke = fsColor;
+        svgEl.style.strokeWidth = "2";
+      });
+    };
+
+    const revertFullscreenSvgStyles = () => {
+      originalStrokes.forEach((original, svgEl) => {
+        svgEl.style.stroke = original.stroke;
+        svgEl.style.strokeWidth = original.strokeWidth;
+      });
+      originalStrokes.clear();
+    };
+
+    const handleFullscreenChange = () => {
+      if (document.fullscreenElement) {
+        applyFullscreenSvgStyles();
+      } else {
+        revertFullscreenSvgStyles();
+      }
+    };
+
+    document.addEventListener("fullscreenchange", handleFullscreenChange);
+
+    // If we are already in fullscreen when the SVG content changes, apply styles immediately.
+    if (document.fullscreenElement) {
+      applyFullscreenSvgStyles();
+    }
+
     // Attach click handlers to every node Mermaid marked as clickable.
     // Mermaid sets class="node … clickable" and id="classId-{ClassName}-{N}" on those nodes.
     // We parse the class name from the id, look up the entity-definition UUID from
@@ -291,6 +341,7 @@ export const MermaidClassDiagram: React.FC<MermaidClassDiagramProps> = ({
 
     return () => {
       el.removeEventListener("wheel", handleWheel, { capture: true });
+      document.removeEventListener("fullscreenchange", handleFullscreenChange);
       enhancer.destroy();
       toolbeltRef.current = null;
     };
