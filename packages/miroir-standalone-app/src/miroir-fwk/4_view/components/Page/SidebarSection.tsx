@@ -163,28 +163,31 @@ export const SidebarSection:FC<SidebarSectionProps> = (props: SidebarSectionProp
     []
   )
 
-  const fetchDeploymentMenusQueryParams: SyncQueryRunnerExtractorAndParams<ReduxDeploymentsState> = useMemo(
-    () =>
-      getQueryRunnerParamsForReduxDeploymentsState(
-        currentModel?.entities?.length > 0? 
-        {
-              queryType: "boxedQueryWithExtractorCombinerTransformer",
-              application: props.applicationUuid,
-              extractors: {
-                menus: {
-                  extractorOrCombinerType: "extractorByPrimaryKey",
-                  parentName: "Menu",
-                  applicationSection: getApplicationSection(props.applicationUuid, entityMenu.uuid),
-                  parentUuid: entityMenu.uuid,
-                  instanceUuid: props.menuUuid,
+  // const menuApplicationSection = getApplicationSection(props.applicationUuid, props.menuUuid);
+  const menuApplicationSection = getApplicationSection(props.applicationUuid, entityMenu.uuid);
+  const fetchDeploymentMenusQueryParams: SyncQueryRunnerExtractorAndParams<ReduxDeploymentsState> =
+    useMemo(
+      () =>
+        getQueryRunnerParamsForReduxDeploymentsState(
+          currentModel?.applicationVersions?.length > 0
+            ? {
+                queryType: "boxedQueryWithExtractorCombinerTransformer",
+                application: props.applicationUuid,
+                extractors: {
+                  menus: {
+                    extractorOrCombinerType: "extractorByPrimaryKey",
+                    parentName: "Menu",
+                    applicationSection: menuApplicationSection,
+                    parentUuid: entityMenu.uuid,
+                    instanceUuid: props.menuUuid,
+                  },
                 },
-              },
-            }
-          : dummyDomainManyQueryWithDeploymentUuid
-          , deploymentEntityStateSelectorMap
-      ),
-    [deploymentEntityStateSelectorMap, currentModel, props.deploymentUuid, props.menuUuid]
-  );
+              }
+            : dummyDomainManyQueryWithDeploymentUuid,
+          deploymentEntityStateSelectorMap,
+        ),
+      [deploymentEntityStateSelectorMap, currentModel, props.deploymentUuid, props.menuUuid],
+    );
 
   // log.info("SidebarSection fetchDeploymentMenusQueryParams",fetchDeploymentMenusQueryParams)
   const miroirMenusDomainElementObject: Domain2QueryReturnType<
@@ -261,6 +264,10 @@ export const SidebarSection:FC<SidebarSectionProps> = (props: SidebarSectionProp
                   label: "SidebarSection",
                   data: {
                     props,
+                    menuApplicationSection,
+                    currentModelLoaded: currentModel?.entities?.length > 0,
+                    currentModel,
+                    fetchDeploymentMenusQueryParams,
                     miroirMenusDomainElementObject,
                   },
                   useCodeBlock: true,

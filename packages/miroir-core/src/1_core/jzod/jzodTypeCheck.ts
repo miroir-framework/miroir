@@ -175,10 +175,10 @@ export function resolveObjectExtendClauseAndDefinition<T extends MiroirModelEnvi
           e[0],
           resolveJzodSchemaReferenceInContext(
             e[1] as JzodReference,
-            relativeReferenceJzodContext,
-            modelEnvironment
+            { ...relativeReferenceJzodContext, ...((e[1] as JzodReference).context ?? {}) },
+            modelEnvironment,
           ),
-        ])
+        ]),
     );
     if (extension.type == "object") {
       return {

@@ -753,8 +753,8 @@ const filteredRunnerTestParams: Record<string, RunnerTestParams> = Object.fromEn
   Object.entries(runnerTestParams).filter(([testName]) =>
     [
       // localRunnerCreateApplication.name,
-      localRunnerInstallApplication.name,
-      // runnerCreateEntity.name,
+      // localRunnerInstallApplication.name,
+      runnerCreateEntity.name,
       // runnerDropEntity.name,
       // runnerDropApplication.name,
     ].includes(testName)

@@ -824,7 +824,7 @@ export function getMiroirFundamentalJzodSchema(
                   transformerType: "returnValue",
                   value: 0,
                 },
-              }
+              },
             },
           },
           definition: [
@@ -1318,7 +1318,39 @@ export function getMiroirFundamentalJzodSchema(
         jzodObjectOrReference: (entityDefinitionJzodSchemaV1 as any).mlSchema.definition.definition
           .context.jzodObjectOrReference,
         mlSchema: entityDefinitionJzodSchemaV1.mlSchema as any,
-        report: (entityDefinitionReportV1 as any).mlSchema,
+        ...makeReferencesAbsolute(
+          (entityDefinitionReportV1 as any).mlSchema.definition.definition,
+          miroirFundamentalJzodSchemaUuid,
+          true,
+        ).context,
+        // DIRTY HACK to avoid internale re-conversion of all memebers of the report context to internal schemaReference context.
+        //  using the above-converted absolute references
+        report: {
+          ...(entityDefinitionReportV1 as any).mlSchema,
+          definition: {
+            ...(entityDefinitionReportV1 as any).mlSchema.definition,
+            definition: { // replacing the schema local reference with an absolute reference
+              type: "schemaReference",
+              definition: {
+                absolutePath: miroirFundamentalJzodSchemaUuid,
+                relativePath: "rootReport",
+              }
+            }
+          }
+        },
+        // report: makeReferencesAbsolute(
+        //   (entityDefinitionReportV1 as any).mlSchema,
+        //   miroirFundamentalJzodSchemaUuid,
+        //   true,
+        // ) as any,
+        // report: {
+        //   type: "schemaReference",
+        //   definition: {
+        //     absolutePath: miroirFundamentalJzodSchemaUuid,
+        //     relativePath: "rootReport",
+        //   }
+        // },
+        // rootReport: (entityDefinitionReportV1 as any).mlSchema.definition.definition.context.rootReport,
         dataSet: {
           type: "object",
           definition: {
@@ -1331,7 +1363,7 @@ export function getMiroirFundamentalJzodSchema(
                 type: "schemaReference",
                 definition: {
                   absolutePath: miroirFundamentalJzodSchemaUuid,
-                  relativePath: "entityInstance"
+                  relativePath: "entityInstance",
                 },
               },
             },
@@ -3818,4 +3850,5 @@ export function getMiroirFundamentalJzodSchema(
 
   return miroirFundamentalJzodSchemaWithActionTemplate;
 
+  
 }

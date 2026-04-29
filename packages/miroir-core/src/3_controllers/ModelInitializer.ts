@@ -1,65 +1,65 @@
+import { v4 as uuidv4 } from "uuid";
+
+import { menuDefaultLibrary } from "miroir-test-app_deployment-library";
 import {
-  entityEntity,
-  entitySelfApplicationDeploymentConfiguration,
+  applicationEndpointV1,
+  compactStoredMiroirTheme,
+  darkStoredMiroirTheme,
+  defaultStoredMiroirTheme,
+  storeManagementEndpoint as deploymentEndpointV1,
+  entityDefinitionEndpoint,
+  entityDefinitionEntity,
+  entityDefinitionEntityDefinition,
+  entityDefinitionJzodSchema,
+  entityDefinitionMenu,
+  entityDefinitionQuery,
+  entityDefinitionReport,
+  entityDefinitionRunner,
+  entityDefinitionSelfApplication,
+  entityDefinitionSelfApplicationModelBranch,
+  entityDefinitionSelfApplicationVersion,
+  entityDefinitionTheme,
   entityEndpointVersion,
-  entityReport,
+  entityEntity,
   entityEntityDefinition,
   entityJzodSchema,
-  entityStoreBasedConfiguration,
-  entitySelfApplication,
-  entitySelfApplicationVersion,
-  entitySelfApplicationModelBranch,
   entityMenu,
   entityQueryVersion,
+  entityReport,
   entityRunner,
-  entityDefinitionMenu,
-  entityDefinitionJzodSchema,
-  entityDefinitionSelfApplicationVersion,
-  entityDefinitionQuery,
-  entityDefinitionEntity,
-  entityDefinitionSelfApplicationModelBranch,
-  entityDefinitionSelfApplication,
-  entityDefinitionReport,
-  entityDefinitionSelfApplicationDeploymentConfiguration,
-  entityDefinitionEntityDefinition,
-  entityDefinitionEndpoint,
-  entityDefinitionStoreBasedConfiguration,
-  entityDefinitionRunner,
-  reportApplicationVersionList,
-  reportApplicationList,
-  reportReportList,
-  reportConfigurationList,
-  reportApplicationModelBranchList,
-  reportQueryList,
-  reportJzodSchemaList,
-  reportEndpointVersionList,
-  reportEntityList,
-  reportApplicationDeploymentConfigurationList,
-  reportMenuList,
-  reportEntityDefinitionList,
-  queryVersionBundleProducerV1,
-  modelEndpointV1,
-  storeManagementEndpoint as deploymentEndpointV1,
-  applicationEndpointV1,
-  instanceEndpointV1,
-  miroirJzodSchemaBootstrap,
-  menuDefaultMiroir,
+  entitySelfApplication,
+  entitySelfApplicationModelBranch,
+  entitySelfApplicationVersion,
   entityTheme,
-  entityDefinitionTheme,
-  defaultStoredMiroirTheme,
-  darkStoredMiroirTheme,
-  compactStoredMiroirTheme,
+  instanceEndpointV1,
   materialStoredMiroirTheme,
+  menuDefaultMiroir,
+  miroirJzodSchemaBootstrap,
+  modelEndpointV1,
+  queryVersionBundleProducerV1,
+  reportApplicationDeploymentConfigurationList,
+  reportApplicationList,
+  reportApplicationModelBranchList,
+  reportApplicationVersionList,
+  reportConfigurationList,
+  reportEndpointVersionList,
+  reportEntityDefinitionList,
+  reportEntityList,
+  reportJzodSchemaList,
+  reportMenuList,
+  reportQueryList,
+  reportReportList
 } from "miroir-test-app_deployment-miroir";
-import { menuDefaultLibrary } from "miroir-test-app_deployment-library";
 
+import {
+  entityDefinitionWithResolvedMLSchema
+} from "../0_interfaces/1_core/EntityDefinition";
 import {
   Entity,
   EntityDefinition,
   EntityInstance,
-  MetaModel,
   SelfApplication,
-  Deployment,
+  type Menu
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { DataStoreApplicationType } from "../0_interfaces/3_controllers/ApplicationControllerInterface.js";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
@@ -67,10 +67,6 @@ import { PersistenceStoreControllerInterface } from "../0_interfaces/4-services/
 import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory.js";
 import { packageName } from "../constants.js";
 import { cleanLevel } from "./constants.js";
-import {
-  entityDefinitionMLSchema,
-  entityDefinitionWithResolvedMLSchema,
-} from "../0_interfaces/1_core/EntityDefinition";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -444,7 +440,105 @@ export async function modelInitialize(
     await persistenceStoreController.upsertInstance("model", selfApplicationModelBranch);
     await persistenceStoreController.upsertInstance("model", selfApplicationVersion);
     // await persistenceStoreController.upsertInstance("model", selfApplicationStoreBasedConfiguration);
-    await persistenceStoreController.upsertInstance("model", menuDefaultLibrary);
+    const defaultMenu: Menu = {
+      uuid: uuidv4(),
+      parentName: "Menu",
+      parentUuid: entityMenu.uuid,
+      name: "defaultMenu_" + selfApplication.name,
+      defaultLabel: "Default Menu for " + selfApplication.name,
+      description: "Default menu for " + selfApplication.name,
+      definition: {
+        menuType: "complexMenu",
+        definition: [
+          {
+            title: selfApplication.name + " Menu",
+            label: selfApplication.name,
+            items: [
+              {
+                miroirMenuItemType: "miroirMenuReportLink",
+                label: selfApplication.name + " Application",
+                section: "model",
+                selfApplication: selfApplication.uuid,
+                reportUuid: "cd24df86-204c-4a72-9ac0-87f2b92f25fe",
+                icon: "category",
+                menuItemScope: "model",
+                instanceUuid: selfApplication.uuid,
+              },
+              {
+                miroirMenuItemType: "miroirMenuReportLink",
+                label: selfApplication.name + " Entities",
+                section: "model",
+                selfApplication: selfApplication.uuid,
+                reportUuid: "c9ea3359-690c-4620-9603-b5b402e4a2b9",
+                icon: "category",
+                menuItemScope: "model",
+              },
+              {
+                miroirMenuItemType: "miroirMenuReportLink",
+                label: selfApplication.name + " Entity Definitions",
+                section: "model",
+                selfApplication: selfApplication.uuid,
+                reportUuid: "f9aff35d-8636-4519-8361-c7648e0ddc68",
+                icon: "category",
+                menuItemScope: "model",
+              },
+              {
+                miroirMenuItemType: "miroirMenuReportLink",
+                label: selfApplication.name + " Queries",
+                section: "model",
+                selfApplication: selfApplication.uuid,
+                reportUuid: "32e52150-ac95-4d96-91b7-f231b85fe76e",
+                icon: "saved_search",
+                menuItemScope: "model",
+              },
+              {
+                miroirMenuItemType: "miroirMenuReportLink",
+                label: selfApplication.name + " Reports",
+                section: "model",
+                selfApplication: selfApplication.uuid,
+                reportUuid: "1fc7e12e-90f2-4c0a-8ed9-ed35ce3a7855",
+                icon: "newspaper",
+                menuItemScope: "model",
+              },
+              {
+                miroirMenuItemType: "miroirMenuReportLink",
+                label: selfApplication.name + " Menus",
+                section: "model",
+                selfApplication: selfApplication.uuid,
+                reportUuid: "ecfd8787-09cc-417d-8d2c-173633c9f998",
+                icon: "list",
+                menuItemScope: "model",
+              },
+              {
+                miroirMenuItemType: "miroirMenuReportLink",
+                label: selfApplication.name + " Endpoints",
+                section: "model",
+                selfApplication: selfApplication.uuid,
+                reportUuid: "ace3d5c9-b6a7-43e6-a277-595329e7532a",
+                icon: "list",
+                menuItemScope: "model",
+              },
+              {
+                miroirMenuItemType: "miroirMenuReportLink",
+                label: selfApplication.name + " Runners",
+                section: "model",
+                selfApplication: selfApplication.uuid,
+                reportUuid: "3c26c31e-c988-40b2-af47-d7380e35ba80",
+                icon: "directions_run",
+                menuItemScope: "model",
+              },
+              {
+                miroirMenuItemType: "miroirMenuItemDivider",
+                label: selfApplication.name + " Model-Data Divider",
+                selfApplication: selfApplication.uuid,
+                menuItemScope: "model",
+              },
+            ],
+          },
+        ],
+      },
+    };
+    await persistenceStoreController.upsertInstance("model", defaultMenu);
   }
 
   // HUGE LOG!

@@ -35,7 +35,11 @@ import {
 } from "miroir-react";
 import { packageName } from "../../../../constants";
 import { cleanLevel } from "../../constants";
-import { useCurrentModelEnvironment, useDefaultValueParams, useReduxDeploymentsStateQuerySelectorForCleanedResult } from "../../ReduxHooks";
+import {
+  useCurrentModelEnvironment,
+  useDefaultValueParams,
+  useReduxDeploymentsStateQuerySelectorForCleanedResult,
+} from "../../ReduxHooks";
 import {
   ThemedDisplayValue,
   ThemedLabeledEditor,
@@ -64,7 +68,7 @@ const handleDiscriminatorChange = (
   currentDeploymentUuid: string | undefined,
   defaultValueParams: ReturnType<typeof useDefaultValueParams>,
   modelEnvironment: MiroirModelEnvironment,
-  ReduxDeploymentsState: ReduxDeploymentsState | undefined,
+  reduxDeploymentsState: ReduxDeploymentsState | undefined,
   formik: any,
   log: LoggerInterface,
   onChangeCallback?: (value: any, rootLessListKey: string) => void
@@ -236,16 +240,16 @@ const handleDiscriminatorChange = (
         formik.values[reportSectionPathAsString],
         rootLessListKey,
         undefined,
-        [],
+        [], // currentValuePath
         // undefined,
-        true,
+        false, // forceOptional
         currentApplication,
         applicationDeploymentMap,
         currentDeploymentUuid,
         modelEnvironment,
         defaultValueParams, // transformerParams
         {}, // contextResult
-        ReduxDeploymentsState,
+        reduxDeploymentsState,
       ),
       // [Array.isArray(parentKeyMap.discriminator) ? parentKeyMap.discriminator[0] : parentKeyMap.discriminator]: selectedValue,
       [localChosenDiscriminator]: selectedValue,

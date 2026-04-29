@@ -126,7 +126,7 @@ export const metaModelEntities: Entity[] = [
   // entityStoreBasedConfiguration,
 ] as Entity[];
 
-export const metaModelEntityUuids: Uuid[] = metaModelEntities.map((e) => e.uuid!);
+export const metaModelEntityUuids: Uuid[] = metaModelEntities.map((e) => e.uuid);
 // console.log("metaModelEntities", metaModelEntities)
 
 export const miroirModelEntities: Entity[] = metaModelEntities.filter((e: Entity) => {

@@ -108,17 +108,17 @@ export function AppBar(props:AppBarProps) {
         />
       </IconButton>
     </Link>,
-    {
-      miroirMenuItemType: "miroirMenuReportLink",
-      label: "Home",
-      section: "data",
-      selfApplication: adminApplication_Miroir.uuid,
-      reportUuid: "29ef8018-43fc-4ee9-a736-6f9d625be7b7",
-      icon: {
-        iconType: "mui",
-        name: "construction",
-      },
-    },
+    // {
+    //   miroirMenuItemType: "miroirMenuReportLink",
+    //   label: "Tools",
+    //   section: "data",
+    //   selfApplication: adminApplication_Miroir.uuid,
+    //   reportUuid: "29ef8018-43fc-4ee9-a736-6f9d625be7b7",
+    //   icon: {
+    //     iconType: "mui",
+    //     name: "construction",
+    //   },
+    // },
     props.onEditModeToggle ? (
       <Tooltip
         title={

@@ -13,12 +13,14 @@ import {
   type ApplicationDeploymentMap,
   type JzodObject,
   type JzodUnion,
+  type ReduxDeploymentsState,
+  type ReduxStateWithUndoRedo,
+  type SyncBoxedExtractorOrQueryRunnerMap,
   type Uuid
 } from "miroir-core";
 import React, { FC, useCallback, useMemo } from "react";
 import { packageName } from "../../../../constants";
 import { cleanLevel } from "../../constants";
-import { useMiroirContextService } from "miroir-react";
 import { useCurrentModelEnvironment, useDefaultValueParams } from "../../ReduxHooks";
 import {
   ThemedDisplayValue,
@@ -26,6 +28,8 @@ import {
   ThemedSelectWithPortal
 } from "../Themes/index";
 import { JzodEnumEditorProps } from "./JzodElementEditorInterface";
+import { useSelector } from "react-redux";
+import { getMemoizedReduxDeploymentsStateSelectorMap } from "miroir-localcache-redux";
 
 // Common function to handle discriminator changes
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -49,6 +53,7 @@ const handleDiscriminatorChange = (
   currentDeploymentUuid: string | undefined,
   defaultValueParams: ReturnType<typeof useDefaultValueParams>,
   modelEnvironment: MiroirModelEnvironment,
+  reduxDeploymentsState: ReduxDeploymentsState | undefined,
   formik: any,
   log: LoggerInterface,
   onChangeCallback?: (value: any, rootLessListKey: string) => void
@@ -189,12 +194,14 @@ const handleDiscriminatorChange = (
           rootLessListKey,
           undefined, // currentDefaultValue
           [], // currentValuePath
-          true, // forceOptional
+          false, // forceOptional
           currentApplication,
           appliationDeploymentMap,
           currentDeploymentUuid,
           modelEnvironment,
-          defaultValueParams, // transformerParams
+          defaultValueParams, // transformerParams;
+          {}, // contextResults
+          reduxDeploymentsState,
         ),
         // [Array.isArray(parentKeyMap.discriminator) ? parentKeyMap.discriminator[0] : parentKeyMap.discriminator]: selectedValue,
         [localChosenDiscriminator]: selectedValue,
@@ -250,7 +257,7 @@ export const JzodEnumEditor: FC<JzodEnumEditorProps> = ({
   forceTestingMode,
   typeCheckKeyMap,
   currentApplication,
-  applicationDeploymentMap: appliationDeploymentMap,
+  applicationDeploymentMap,
   currentDeploymentUuid,
   readOnly,
   onChangeVector,
@@ -270,21 +277,28 @@ export const JzodEnumEditor: FC<JzodEnumEditorProps> = ({
 
   const defaultValueParams = useDefaultValueParams(currentApplication, currentDeploymentUuid);
 
+  const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState> =
+        getMemoizedReduxDeploymentsStateSelectorMap();
+  // Create the model environment needed for discriminator change handling
+  const currentMiroirModelEnvironment: MiroirModelEnvironment = useCurrentModelEnvironment(
+    currentApplication,
+    applicationDeploymentMap
+  );
+  const deploymentEntityState: ReduxDeploymentsState = useSelector(
+    (state: ReduxStateWithUndoRedo) =>
+      deploymentEntityStateSelectorMap.extractState(
+        state.presentModelSnapshot.current,
+        applicationDeploymentMap,
+        () => ({}),
+        currentMiroirModelEnvironment
+      )
+  );
+
   // Memoize the onChangeVector callback for this field to avoid repeated lookups
   const onChangeCallback = useMemo(
     () => onChangeVector?.[rootLessListKey],
     [onChangeVector, rootLessListKey]
   );
-
-  // const possibleEnumValues = (currentKeyMap?.resolvedSchema).;
-  // Log only when component renders to track performance
-  // log.info(
-  //   "JzodEnumEditor: render for",
-  //     name,
-  //     "rootLessListKey=",rootLessListKey,
-  //     "rawJzodSchema=", rawJzodSchema,
-  // );
-
 
   const discriminatorIndex: number = !parentKeyMap?.discriminator
     ? -1
@@ -298,13 +312,6 @@ export const JzodEnumEditor: FC<JzodEnumEditorProps> = ({
     parentKeyMap?.discriminator &&
     parentKeyMap?.discriminatorValues &&
     discriminatorIndex !== -1;
-
-
-  // Create the model environment needed for discriminator change handling
-  const currentMiroirModelEnvironment: MiroirModelEnvironment = useCurrentModelEnvironment(
-    currentApplication,
-    appliationDeploymentMap
-  );
 
   // Handler for discriminator select change (using common function)
   const handleSelectEnumChange = useCallback(
@@ -321,10 +328,11 @@ export const JzodEnumEditor: FC<JzodEnumEditorProps> = ({
         // formikRootLessListKey,
         reportSectionPathAsString,
         currentApplication,
-        appliationDeploymentMap,
+        applicationDeploymentMap,
         currentDeploymentUuid,
         defaultValueParams,
         currentMiroirModelEnvironment,
+        deploymentEntityState,
         formik,
         log,
         onChangeCallback
@@ -337,6 +345,7 @@ export const JzodEnumEditor: FC<JzodEnumEditorProps> = ({
       formikRootLessListKey,
       currentDeploymentUuid,
       currentMiroirModelEnvironment,
+      deploymentEntityState,
       formik,
       onChangeCallback,
     ]
@@ -394,10 +403,11 @@ export const JzodEnumEditor: FC<JzodEnumEditorProps> = ({
           // formikRootLessListKey,
           reportSectionPathAsString,
           currentApplication,
-          appliationDeploymentMap,
+          applicationDeploymentMap,
           currentDeploymentUuid,
           defaultValueParams,
           currentMiroirModelEnvironment,
+          deploymentEntityState,
           formik,
           log,
           onChangeCallback
@@ -420,6 +430,7 @@ export const JzodEnumEditor: FC<JzodEnumEditorProps> = ({
       formikRootLessListKey,
       currentDeploymentUuid,
       currentMiroirModelEnvironment,
+      deploymentEntityState,
       formik,
       onChangeVector
     ]

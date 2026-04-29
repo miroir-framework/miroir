@@ -14,6 +14,7 @@ import { Runner_DropApplication } from './Runner_DropApplication';
 import { Runner_InstallApplication } from './Runner_InstallApplication';
 import { packageName } from '../../../../constants';
 import { cleanLevel } from '../../constants';
+import { Runner_CreateApplication } from './Runner_CreateApplication';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -27,38 +28,38 @@ export type RunnerConfig = {
   component: React.FC<any>; // TODO: give a proper type to the component props
 }
 export const runnerConfigs: RunnerConfig[] = [
-  // // {
-  // //   title: "Endpoint Action Caller",
-  // //   component: EndpointActionCaller,
-  // // },
-  {
-    title: "Install Existing Application",
-    component: Runner_InstallApplication,
-  },
+  // // // {
+  // // //   title: "Endpoint Action Caller",
+  // // //   component: EndpointActionCaller,
+  // // // },
+  // {
+  //   title: "Install Existing Application",
+  //   component: Runner_InstallApplication,
+  // },
   // {
   //   title: "Create Application (and Deployment)",
   //   component: Runner_CreateApplication,
   // },
-  {
-    title: "Drop Application (and Deployment)",
-    component: Runner_DropApplication,
-  },
+  // {
+  //   title: "Drop Application (and Deployment)",
+  //   component: Runner_DropApplication,
+  // },
   {
     title: "Create Entity",
     component: Runner_CreateEntity,
   },
-  // {
-  //   title: "Drop Entity",
-  //   component: Runner_DropEntity,
-  // },
-  // // // // {
-  // // // //   title: "Import Entity From Spreadsheet",
-  // // // //   component: ImportEntityFromSpreadsheetRunner,
-  // // // // },
-  // // {
-  // //   title: "Lend Document",
-  // //   component: LibraryRunner_LendDocument,
-  // // },
+  {
+    title: "Drop Entity",
+    component: Runner_DropEntity,
+  },
+  // // // // // {
+  // // // // //   title: "Import Entity From Spreadsheet",
+  // // // // //   component: ImportEntityFromSpreadsheetRunner,
+  // // // // // },
+  // // // {
+  // // //   title: "Lend Document",
+  // // //   component: LibraryRunner_LendDocument,
+  // // // },
 ] as const;
 
 // ################################################################################################

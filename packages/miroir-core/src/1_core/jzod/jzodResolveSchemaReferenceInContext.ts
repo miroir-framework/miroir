@@ -37,6 +37,18 @@ export function resolveSchemaReferenceInContextTransformer<T extends MiroirModel
 // ################################################################################################
 // ################################################################################################
 // ################################################################################################
+/**
+ * 
+ * TODO: inappropriate interface, passing the testSchema and the testSchema.context separately is redundant.
+ * resolveJzodSchemaReferenceInContext should take a relativeReferenceJzodContext, and add to it the
+ * local context found in the jzodReference
+ * 
+ * 
+ * @param jzodReference 
+ * @param relativeReferenceJzodContext 
+ * @param miroirEnvironment 
+ * @returns 
+ */
 export function resolveJzodSchemaReferenceInContext<T extends MiroirModelEnvironment>(
   jzodReference: JzodReference | JzodObject | (JzodReference | JzodObject | undefined)[],
   relativeReferenceJzodContext: { [k: string]: JzodElement } = {},
@@ -91,10 +103,11 @@ export function resolveJzodSchemaReferenceInContext<T extends MiroirModelEnviron
         ...((miroirEnvironment.miroirMetaModel as any)?.jzodSchemas || []),
       ] // very inefficient!
     : [miroirEnvironment.miroirFundamentalJzodSchema];
-  const absoluteReferenceTargetJzodSchema: { [k: string]: JzodElement } = jzodReference?.definition.absolutePath
-    ? absoluteReferences.find((s: MlSchema) => s.uuid == jzodReference?.definition.absolutePath)?.definition
-        .context ?? {}
-    : relativeReferenceJzodContext ?? jzodReference;
+  const absoluteReferenceTargetJzodSchema: { [k: string]: JzodElement } = jzodReference?.definition
+    .absolutePath
+    ? (absoluteReferences.find((s: MlSchema) => s.uuid == jzodReference?.definition.absolutePath)
+        ?.definition.context ?? {})
+    : (relativeReferenceJzodContext ?? jzodReference);
 
   const targetJzodSchema: JzodElement | undefined = jzodReference?.definition.relativePath
     ? absoluteReferenceTargetJzodSchema[jzodReference?.definition.relativePath]

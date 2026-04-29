@@ -671,7 +671,7 @@ export const EntityInstanceGrid = (props: TableComponentProps) => {
 
           const primaryKeyValue = getInstancePrimaryKeyValue(props.currentEntityDefinition, rowData.rawValue);
           navigate(
-            `/report/${props.application}/${contextDeploymentUuid}/${applicationSection}/${props.currentEntityDefinition?.defaultInstanceDetailsReportUuid}/${primaryKeyValue}`
+            `/report/${props.application}/${contextDeploymentUuid}/${applicationSection}/${props.currentEntityDefinition?.defaultInstanceDetailsReportUuid}/${primaryKeyValue}`,
           );
         } else {
           // Cache schema definition lookup
@@ -884,8 +884,6 @@ export const EntityInstanceGrid = (props: TableComponentProps) => {
                 currentMiroirModel={miroirMetaModel}
                 onSubmit={onEditDialogFormSubmit}
                 onClose={handleEditDialogFormClose}
-                // addObjectdialogFormIsOpen={addObjectdialogFormIsOpen}
-                // setAddObjectdialogFormIsOpen={setAddObjectdialogFormIsOpen}
                 isOpen={props.addObjectdialogFormIsOpen} // redundant with addObjectdialogFormIsOpen?
                 addObjectdialogFormIsOpen={props.addObjectdialogFormIsOpen}
                 setAddObjectdialogFormIsOpen={props.setAddObjectdialogFormIsOpen}

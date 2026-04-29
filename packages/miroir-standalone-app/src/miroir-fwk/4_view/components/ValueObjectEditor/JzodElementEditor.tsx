@@ -1974,6 +1974,11 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
               : []),
           ]}
         />
+        {props.isTopLevel && (
+          <>
+            {props.submitButton ?? <></>}
+          </>
+        )}
         {result}
       </div>
     );

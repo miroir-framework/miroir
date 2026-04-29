@@ -184,31 +184,31 @@ export function getDefaultValueForJzodSchemaWithResolution(
     "defaultValue" // Specify this is for default value generation
   );
 
-  log.info(
-    "getDefaultValueForJzodSchemaWithResolution called with",
-    "step",
-    step,
-    "currentValuePath",
-    currentValuePath.join("."),
-    "transformerParams",
-    transformerParams,
-    "mlSchema",
-    mlSchema,
-    "rootObject",
-    rootObject,
-    // "reduxDeploymentsState",
-    // reduxDeploymentsState,
-    // "deploymentUuid",
-    // deploymentUuid,
-    "forceOptional",
-    forceOptional,
-    "effectiveSchemaOrError",
-    effectiveSchemaOrError,
-    "transformerParams",
-    transformerParams,
-    "contextResults",
-    contextResults,
-  );
+  // log.info(
+  //   "getDefaultValueForJzodSchemaWithResolution called with",
+  //   "step",
+  //   step,
+  //   "currentValuePath",
+  //   currentValuePath.join("."),
+  //   "transformerParams",
+  //   transformerParams,
+  //   "mlSchema",
+  //   mlSchema,
+  //   "rootObject",
+  //   rootObject,
+  //   // "reduxDeploymentsState",
+  //   // reduxDeploymentsState,
+  //   // "deploymentUuid",
+  //   // deploymentUuid,
+  //   "forceOptional",
+  //   forceOptional,
+  //   "effectiveSchemaOrError",
+  //   effectiveSchemaOrError,
+  //   "transformerParams",
+  //   transformerParams,
+  //   "contextResults",
+  //   contextResults,
+  // );
 
   // if (Object.hasOwn(effectiveSchemaOrError, 'error')) {
   if (!effectiveSchemaOrError || Object.hasOwn(effectiveSchemaOrError, "error")) {
