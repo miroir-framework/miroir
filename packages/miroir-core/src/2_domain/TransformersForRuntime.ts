@@ -401,10 +401,30 @@ export function getDefaultValueForJzodSchemaWithResolution(
             "getDefaultValueForJzodSchemaWithResolution called with UUID foreign key but no applicationDeploymentMap provided"
           );
         }
+
+        const targetApplicationUuid = effectiveSchema.tag.value.foreignKeyParams
+          .targetApplicationUuid
+          ? typeof effectiveSchema.tag.value.foreignKeyParams.targetApplicationUuid === "string"
+            ? effectiveSchema.tag.value.foreignKeyParams.targetApplicationUuid
+            : transformer_extended_apply_wrapper(
+                //TODO: transformer_extended_apply instead
+                undefined, // activityTracker
+                "runtime",
+                [...currentValuePath, "initializeTo"],
+                undefined,
+                effectiveSchema.tag.value.foreignKeyParams.targetApplicationUuid,
+                miroirEnvironment,
+                transformerParams, // parameters
+                contextResults, // runtimeContext
+                "value",
+                reduxDeploymentsState,
+              )
+          : application;
+
         const foreignKeyObjects: EntityInstance[] = getEntityInstancesIndexNonHook(
           reduxDeploymentsState,
           miroirEnvironment,
-          application,
+          targetApplicationUuid,
           applicationDeploymentMap,
           deploymentUuid,
           effectiveSchema.tag.value.foreignKeyParams.targetEntity,

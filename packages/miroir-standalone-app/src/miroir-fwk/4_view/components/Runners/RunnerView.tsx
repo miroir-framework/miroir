@@ -200,7 +200,6 @@ export function StoredRunnerView(props: {
           viewParams: viewParams || {},
         },
         {
-          // viewParams: viewParams || {},
         },
         "value",
       ) as JzodObject

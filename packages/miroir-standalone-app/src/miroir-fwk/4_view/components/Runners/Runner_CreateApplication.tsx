@@ -1567,6 +1567,7 @@ export const Runner_CreateApplication: React.FC<CreateApplicationToolProps> = ({
   const viewParams: ViewParams | undefined = defaultViewParamsFromAdminStorageFetchQueryResults?.[
     "viewParams"
   ] as any;
+  log.info("viewParams in Runner_CreateApplication", { viewParams });
   // const formMLSchema: FormMLSchema = (runner.definition as any).formMLSchema as FormMLSchema;
   const formMLSchema: FormMLSchema = (runner.definition as any).formMLSchema.formMLSchemaType === "transformer"
       ? {
@@ -1579,11 +1580,9 @@ export const Runner_CreateApplication: React.FC<CreateApplicationToolProps> = ({
           (runner.definition as any).formMLSchema.transformer as CoreTransformerForBuildPlusRuntime,
         defaultMiroirModelEnvironment,
         {
-          // ...(viewParams || {}),
-          // viewParams: viewParams || {},
+          viewParams: viewParams || {},
         },
         {
-          // viewParams: viewParams || {},
         },
         "value",
       ) as JzodObject}
@@ -1596,7 +1595,9 @@ export const Runner_CreateApplication: React.FC<CreateApplicationToolProps> = ({
           ...getDefaultValueForJzodSchemaWithResolutionNonHook(
             "build",
             // (formMLSchema as any).mlSchema,
-            formMLSchema.formMLSchemaType === "mlSchema" ? formMLSchema.mlSchema : { type: "object", definition: {} },
+            formMLSchema.formMLSchemaType === "mlSchema"
+              ? formMLSchema.mlSchema
+              : { type: "object", definition: {} },
             undefined, // rootObject
             "", // rootLessListKey,
             undefined, // No need to pass currentDefaultValue here
@@ -1606,11 +1607,11 @@ export const Runner_CreateApplication: React.FC<CreateApplicationToolProps> = ({
             defaultSelfApplicationDeploymentMap,
             runnerDeploymentUuid,
             miroirModelEnvironment,
-            {}, // transformerParams
+            {
+              viewParams: viewParams || {},
+            }, // transformerParams
             {}, // contextResults
             deploymentEntityState, // TODO: keep this? improve so that it does not depend on entire deployment state
-          // ),
-          // ).createApplicationAndDeployment,
           ).createApplicationAndDeployment.applicationStorage,
         },
         newApplicationUuid: testSelfApplicationUuid,

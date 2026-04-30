@@ -32,26 +32,26 @@ export const runnerConfigs: RunnerConfig[] = [
   // // //   title: "Endpoint Action Caller",
   // // //   component: EndpointActionCaller,
   // // // },
-  {
-    title: "Create Entity",
-    component: Runner_CreateEntity,
-  },
-  {
-    title: "Drop Entity",
-    component: Runner_DropEntity,
-  },
+  // {
+  //   title: "Create Entity",
+  //   component: Runner_CreateEntity,
+  // },
+  // {
+  //   title: "Drop Entity",
+  //   component: Runner_DropEntity,
+  // },
   // {
   //   title: "Install Existing Application",
   //   component: Runner_InstallApplication,
   // },
-  // {
-  //   title: "Create Application (and Deployment)",
-  //   component: Runner_CreateApplication,
-  // },
-  // {
-  //   title: "Drop Application (and Deployment)",
-  //   component: Runner_DropApplication,
-  // },
+  {
+    title: "Create Application (and Deployment)",
+    component: Runner_CreateApplication,
+  },
+  {
+    title: "Drop Application (and Deployment)",
+    component: Runner_DropApplication,
+  },
   // // // // // {
   // // // // //   title: "Import Entity From Spreadsheet",
   // // // // //   component: ImportEntityFromSpreadsheetRunner,
