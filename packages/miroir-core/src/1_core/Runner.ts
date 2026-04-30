@@ -37,7 +37,6 @@ export function testBuildPlusRuntimeCompositeActionSuiteForRunner(
   internalMiroirConfig: MiroirConfigClient,
   adminDeployment: Deployment,
   testDeploymentStorageConfiguration: StoreUnitConfiguration,
-  // testApplicationModelEnvironment: MiroirModelEnvironment,
   initialModel: MetaModel,
   preRunnerCompositeActions?: CompositeAction[],
   testCompositeActionLabel?: string,
@@ -55,13 +54,11 @@ export function testBuildPlusRuntimeCompositeActionSuiteForRunner(
   };
   delete (actionTemplateWithoutTemplates as any).payload.templates;
 
-  // const testActions: Record<string, TestCompositeActionParams> = {
   const testActions: TestCompositeActionParams = {
     testActionType: "testBuildPlusRuntimeCompositeActionSuite",
     testActionLabel: pageLabel,
     application: testApplicationUuid,
     testParams,
-    // testParams, // TODO: have it working with testParams up here, make testParams optional
     testCompositeAction: {
       testType: "testBuildPlusRuntimeCompositeActionSuite",
       testLabel: pageLabel,
@@ -91,9 +88,7 @@ export function testBuildPlusRuntimeCompositeActionSuiteForRunner(
             description: `The model and data of the ${testApplicationName} selfApplication.`,
             homePageUrl: `/report/${testApplicationUuid}/${testApplicationDeploymentUuid}/data/9c0cdb97-9537-4ee2-8053-a6ece3e0afe8/xxxxx`,
           },
-          // deployment: selfApplicationDeploymentLibrary,
           applicationModelBranch: selfApplicationModelBranchLibraryMasterBranch,
-          // applicationStoreBasedConfiguration: selfApplicationStoreBasedConfigurationLibrary,
           applicationVersion: selfApplicationVersionLibraryInitialVersion,
         },
         [], // applicationEntitiesDefinitionAndInstances

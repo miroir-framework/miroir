@@ -2741,7 +2741,8 @@ export function handleTransformer_FreeObjectTemplate(
 ): TransformerReturnType<any> {
   log.info(
     "innerTransformer_apply createObject",
-    JSON.stringify(transformer, null, 2),
+    transformer,
+    // JSON.stringify(transformer, null, 2),
     "step",
     step,
     "contextResults",
@@ -4191,7 +4192,8 @@ export function transformer_extended_apply_wrapper(
     "step",
     step,
     "transformer",
-    JSON.stringify(transformer, null, 2),
+    transformer,
+    // JSON.stringify(transformer, null, 2),
     "reduxDeploymentsState",
     reduxDeploymentsState,
     activityTracker ? "with activityTracker" : "without activityTracker",

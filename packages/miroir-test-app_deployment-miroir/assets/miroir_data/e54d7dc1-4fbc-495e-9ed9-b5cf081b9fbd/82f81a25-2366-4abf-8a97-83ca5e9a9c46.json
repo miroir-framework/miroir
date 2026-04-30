@@ -34,6 +34,8 @@
                   "name": ""
                 }
               },
+              "addDefaultReports": true,
+              "addMenuLink": true,
               "entityDefinition": {
                 "transformerType": "createObject",
                 "definition": {
@@ -162,6 +164,30 @@
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
               "relativePath": "entityDefinition"
             }
+          },
+          "addDefaultReports": {
+            "type": "boolean",
+            "tag": {
+              "value": {
+                "defaultLabel": "Add Default Reports",
+                "initializeTo": {
+                  "initializeToType": "value",
+                  "value": true
+                }
+              }
+            }
+          },
+          "addMenuLink": {
+            "type": "boolean",
+            "tag": {
+              "value": {
+                "defaultLabel": "Add Menu Link",
+                "initializeTo": {
+                  "initializeToType": "value",
+                  "value": true
+                }
+              }
+            }
           }
         }
       }
@@ -171,6 +197,14 @@
       "actionLabel": "createEntitySequence",
       "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
       "payload": {
+        "templates": {
+          "listReportUuid": {
+            "transformerType": "generateUuid"
+          },
+          "detailsReportUuid": {
+            "transformerType": "generateUuid"
+          }
+        },
         "actionSequence": [
           {
             "actionType": "createEntity",
@@ -193,6 +227,361 @@
                   }
                 }
               ]
+            }
+          },
+          {
+            "actionType": "compositeRunBoxedQueryAction",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+            "actionLabel": "getMenusForMenuLink",
+            "nameGivenToResult": "menuQueryResult",
+            "payload": {
+              "actionType": "runBoxedQueryAction",
+              "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+              "payload": {
+                "application": {
+                  "transformerType": "getFromParameters",
+                  "referencePath": ["createEntity", "application"]
+                },
+                "applicationSection": "model",
+                "query": {
+                  "queryType": "boxedQueryWithExtractorCombinerTransformer",
+                  "application": {
+                    "transformerType": "getFromParameters",
+                    "referencePath": ["createEntity", "application"]
+                  },
+                  "extractors": {
+                    "menuList": {
+                      "extractorOrCombinerType": "extractorInstancesByEntity",
+                      "applicationSection": "model",
+                      "parentName": "Menu",
+                      "parentUuid": "dde4c883-ae6d-47c3-b6df-26bc6e3c1842"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "actionType": "createInstance",
+            "actionLabel": "createDefaultReports",
+            "endpoint": "ed520de4-55a9-4550-ac50-b1b713b72a89",
+            "payload": {
+              "application": {
+                "transformerType": "getFromParameters",
+                "referencePath": ["createEntity", "application"]
+              },
+              "applicationSection": "model",
+              "objects": {
+                "transformerType": "ifThenElse",
+                "if": {
+                  "transformerType": "boolExpr",
+                  "operator": "==",
+                  "left": {
+                    "transformerType": "getFromParameters",
+                    "referencePath": ["createEntity", "addDefaultReports"]
+                  },
+                  "right": true
+                },
+                "then": [
+                  {
+                    "uuid": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referencePath": ["listReportUuid"]
+                    },
+                    "selfApplication": {
+                      "transformerType": "getFromParameters",
+                      "referencePath": ["createEntity", "application"]
+                    },
+                    "parentName": "Report",
+                    "parentUuid": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+                    "conceptLevel": "Model",
+                    "name": {
+                      "transformerType": "mustacheStringTemplate",
+                      "definition": "{{createEntity.entity.name}}List"
+                    },
+                    "defaultLabel": {
+                      "transformerType": "mustacheStringTemplate",
+                      "definition": "List of {{createEntity.entity.name}}s"
+                    },
+                    "definition": {
+                      "extractors": {
+                        "instanceList": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "parentName": {
+                            "transformerType": "getFromParameters",
+                            "referencePath": ["createEntity", "entity", "name"]
+                          },
+                          "parentUuid": {
+                            "transformerType": "getFromParameters",
+                            "referencePath": ["createEntity", "entity", "uuid"]
+                          }
+                        }
+                      },
+                      "section": {
+                        "type": "list",
+                        "definition": [
+                          {
+                            "type": "objectListReportSection",
+                            "definition": {
+                              "parentName": {
+                                "transformerType": "getFromParameters",
+                                "referencePath": ["createEntity", "entity", "name"]
+                              },
+                              "parentUuid": {
+                                "transformerType": "getFromParameters",
+                                "referencePath": ["createEntity", "entity", "uuid"]
+                              },
+                              "fetchedDataReference": "instanceList",
+                              "sortByAttribute": "name"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  {
+                    "uuid": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referencePath": ["detailsReportUuid"]
+                    },
+                    "selfApplication": {
+                      "transformerType": "getFromParameters",
+                      "referencePath": ["createEntity", "application"]
+                    },
+                    "parentName": "Report",
+                    "parentUuid": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+                    "conceptLevel": "Model",
+                    "name": {
+                      "transformerType": "mustacheStringTemplate",
+                      "definition": "{{createEntity.entity.name}}Details"
+                    },
+                    "defaultLabel": {
+                      "transformerType": "mustacheStringTemplate",
+                      "definition": "Details of {{createEntity.entity.name}}"
+                    },
+                    "definition": {
+                      "extractorTemplates": {
+                        "instance": {
+                          "extractorOrCombinerType": "extractorByPrimaryKey",
+                          "parentName": {
+                            "transformerType": "getFromParameters",
+                            "referencePath": ["createEntity", "entity", "name"]
+                          },
+                          "parentUuid": {
+                            "transformerType": "getFromParameters",
+                            "referencePath": ["createEntity", "entity", "uuid"]
+                          },
+                          "instanceUuid": {
+                            "transformerType": "returnValue",
+                            "interpolation": "runtime",
+                            "value": {
+                              "transformerType": "getFromParameters",
+                              "referenceName": "instanceUuid"
+                            }
+                          }
+                        }
+                      },
+                      "section": {
+                        "type": "list",
+                        "definition": [
+                          {
+                            "type": "objectInstanceReportSection",
+                            "definition": {
+                              "parentUuid": {
+                                "transformerType": "getFromParameters",
+                                "referencePath": ["createEntity", "entity", "uuid"]
+                              },
+                              "fetchedDataReference": "instance"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  }
+                ],
+                "else": []
+              }
+            }
+          },
+          {
+            "actionType": "updateInstance",
+            "actionLabel": "updateMenuWithEntityLink",
+            "endpoint": "ed520de4-55a9-4550-ac50-b1b713b72a89",
+            "payload": {
+              "application": {
+                "transformerType": "getFromParameters",
+                "referencePath": ["createEntity", "application"]
+              },
+              "applicationSection": "model",
+              "objects": {
+                "transformerType": "dataflowObject",
+                "interpolation": "runtime",
+                "target": "99_result",
+                "definition": {
+                  "00_firstMenu": {
+                    "transformerType": "ifThenElse",
+                    "if": {
+                      "transformerType": "boolExpr",
+                      "operator": "==",
+                      "left": {
+                        "transformerType": "getFromParameters",
+                        "referencePath": ["createEntity", "addMenuLink"]
+                      },
+                      "right": true
+                    },
+                    "then": {
+                      "transformerType": "pickFromList",
+                      "interpolation": "runtime",
+                      "applyTo": {
+                        "transformerType": "getFromContext",
+                        "interpolation": "runtime",
+                        "referencePath": ["menuQueryResult", "menuList"]
+                      },
+                      "index": 0
+                    },
+                    "else": null
+                  },
+                  "01_newMenuItem": {
+                    "transformerType": "ifThenElse",
+                    "if": {
+                      "transformerType": "boolExpr",
+                      "operator": "!=",
+                      "left": {
+                        "transformerType": "getFromContext",
+                        "interpolation": "runtime",
+                        "referenceName": "00_firstMenu"
+                      },
+                      "right": {
+                        "transformerType": "returnValue",
+                        "value": null
+                      }
+                    },
+                    "then": {
+                      "transformerType": "createObject",
+                      "definition": {
+                        "miroirMenuItemType": "miroirMenuReportLink",
+                        "label": {
+                          "transformerType": "mustacheStringTemplate",
+                          "definition": "{{createEntity.entity.name}} List"
+                        },
+                        "section": "data",
+                        "selfApplication": {
+                          "transformerType": "getFromParameters",
+                          "referencePath": ["createEntity", "application"]
+                        },
+                        "reportUuid": {
+                          "transformerType": "getFromContext",
+                          "interpolation": "runtime",
+                          "referenceName": "listReportUuid"
+                        },
+                        "icon": "category",
+                        "menuItemScope": "data"
+                      }
+                    },
+                    "else": null
+                  },
+                  "02_updatedMenu": {
+                    "transformerType": "ifThenElse",
+                    "if": {
+                      "transformerType": "boolExpr",
+                      "operator": "!=",
+                      "left": {
+                        "transformerType": "getFromContext",
+                        "interpolation": "runtime",
+                        "referenceName": "firstMenu"
+                      },
+                      "right": {
+                        "transformerType": "returnValue",
+                        "value": null
+                      }
+                    },
+                    "then": {
+                      "transformerType": "transformer_menu_addItem",
+                      "interpolation": "runtime",
+                      "menuItemReference": {
+                        "transformerType": "getFromContext",
+                        "interpolation": "runtime",
+                        "referenceName": "01_newMenuItem"
+                      },
+                      "menuReference": {
+                        "transformerType": "getFromContext",
+                        "interpolation": "runtime",
+                        "referenceName": "00_firstMenu"
+                      },
+                      "menuSectionItemInsertionIndex": -1
+                    },
+                    "else": null
+                  },
+                  "99_result": {
+                    "transformerType": "ifThenElse",
+                    "if": {
+                      "transformerType": "boolExpr",
+                      "operator": "!=",
+                      "left": {
+                        "transformerType": "getFromContext",
+                        "interpolation": "runtime",
+                        "referencePath": ["02_updatedMenu"]
+                      },
+                      "right": {
+                        "transformerType": "returnValue",
+                        "value": null
+                      }
+                    },
+                    "then": [
+                      {
+                        "transformerType": "getFromContext",
+                        "interpolation": "runtime",
+                        "referencePath": ["02_updatedMenu"]
+                      }
+                    ],
+                    "else": []
+                  }
+                }
+              }
+            }
+          },
+          {
+            "actionType": "updateInstance",
+            "actionLabel": "updateEntityDefinitionWithDetailsReportUuid",
+            "endpoint": "ed520de4-55a9-4550-ac50-b1b713b72a89",
+            "payload": {
+              "application": {
+                "transformerType": "getFromParameters",
+                "referencePath": ["createEntity", "application"]
+              },
+              "applicationSection": "model",
+              "objects": {
+                "transformerType": "ifThenElse",
+                "if": {
+                  "transformerType": "boolExpr",
+                  "operator": "==",
+                  "left": {
+                    "transformerType": "getFromParameters",
+                    "referencePath": ["createEntity", "addDefaultReports"]
+                  },
+                  "right": true
+                },
+                "then": [
+                  {
+                    "transformerType": "mergeIntoObject",
+                    "interpolation": "runtime",
+                    "applyTo": {
+                      "transformerType": "getFromParameters",
+                      "referencePath": ["createEntity", "entityDefinition"]
+                    },
+                    "definition": {
+                      "defaultInstanceDetailsReportUuid": {
+                        "transformerType": "getFromContext",
+                        "interpolation": "runtime",
+                        "referencePath": ["detailsReportUuid"]
+                      }
+                    }
+                  }
+                ],
+                "else": []
+              }
             }
           },
           {

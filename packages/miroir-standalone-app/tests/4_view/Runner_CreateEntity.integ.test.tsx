@@ -18,6 +18,7 @@ import {
   type DomainControllerInterface,
   type LoggerInterface,
   type LoggerOptions,
+  type MetaModel,
   type Runner,
   type StoreUnitConfiguration
 } from "miroir-core";
@@ -29,7 +30,7 @@ import {
   entityAuthor,
   entityDefinitionAuthor
 } from "miroir-test-app_deployment-library";
-import { entityEntity, runnerCreateEntity } from "miroir-test-app_deployment-miroir";
+import { entityEntity, entityEntityDefinition, entityMenu, entityReport, runnerCreateEntity } from "miroir-test-app_deployment-miroir";
 import { env } from "process";
 import { loglevelnext } from "../../src/loglevelnextImporter";
 import { runTestOrTestSuite } from "../../src/miroir-fwk/4-tests/tests-utils";
@@ -91,6 +92,9 @@ const testApplicationUuid = uuidv4();
 const testApplicationDeploymentUuid = uuidv4();
 const testApplicationName = "testApplication_" + formatYYYYMMDD_HHMMSS(new Date());
 
+// Fixed UUID for the test menu used in the withReports test
+const testMenuUuid = "a1b2c3d4-e5f6-7890-abcd-ef1234567890";
+
 const {
   applicationDeploymentMap,
   miroirDeploymentStorageConfiguration,
@@ -143,7 +147,7 @@ beforeEach(async () => {
 afterAll(async () => {
   await afterAllTests(
     miroirActivityTracker,
-    [runnerCreateEntity.name],
+    [runnerCreateEntity.name, runnerCreateEntity.name + "_withReports"],
   );
 });
   
@@ -162,6 +166,8 @@ const runnerTestParams: Record<string, RunnerTestParams> = {
           application: testApplicationUuid,
           entity: entityAuthor,
           entityDefinition: entityDefinitionAuthor,
+          addDefaultReports: false,
+          addMenuLink: false,
         },
       },
     }, // testParams
@@ -236,6 +242,160 @@ const runnerTestParams: Record<string, RunnerTestParams> = {
             resultAccessPath: ["libraryEntityList", "entities"],
             ignoreAttributes: ["author", "storageAccess"],
             expectedValue: [entityAuthor],
+          },
+        },
+      },
+    ],
+    internalMiroirConfig,
+    adminDeployment,
+    testDeploymentStorageConfiguration,
+    initialModel: emptyApplicationModel,
+  },
+  [runnerCreateEntity.name + "_withReports"]: {
+    pageLabel,
+    runner: runnerCreateEntity as Runner,
+    testApplicationUuid,
+    testApplicationDeploymentUuid,
+    testApplicationName,
+    testParams: {
+      [runnerCreateEntity.name]: {
+        transformerType: "returnValue",
+        value: {
+          application: testApplicationUuid,
+          entity: entityAuthor,
+          entityDefinition: entityDefinitionAuthor,
+          addDefaultReports: true,
+          addMenuLink: true,
+        },
+      },
+    }, // testParams
+    preRunnerCompositeActions: [
+      {
+        actionType: "createInstance",
+        actionLabel: "createTestMenuForMenuLinkTest",
+        endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+        payload: {
+          application: testApplicationUuid,
+          applicationSection: "model",
+          objects: [
+            {
+              uuid: testMenuUuid,
+              parentName: entityMenu.name,
+              parentUuid: entityMenu.uuid,
+              name: "TestMenu",
+              defaultLabel: "Test Menu",
+              definition: {
+                menuType: "complexMenu",
+                definition: [
+                  {
+                    title: "Test",
+                    label: "test",
+                    items: [],
+                  },
+                ],
+              },
+            },
+          ],
+        },
+      } as any,
+    ],
+    preTestCompositeActions: [
+      {
+        actionType: "compositeRunBoxedQueryAction",
+        endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+        actionLabel: "getReportsAndMenus",
+        nameGivenToResult: "reportsAndMenus",
+        payload: {
+          actionType: "runBoxedQueryAction",
+          endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+          payload: {
+            application: testApplicationUuid,
+            applicationSection: "model",
+            query: {
+              queryType: "boxedQueryWithExtractorCombinerTransformer",
+              application: testApplicationUuid,
+              pageParams: {
+                currentDeploymentUuid: testApplicationDeploymentUuid,
+              },
+              extractors: {
+                reports: {
+                  extractorOrCombinerType: "extractorInstancesByEntity",
+                  applicationSection: "model",
+                  parentName: entityReport.name,
+                  parentUuid: entityReport.uuid,
+                  orderBy: {
+                    attributeName: "name",
+                    direction: "ASC",
+                  },
+                },
+                menus: {
+                  extractorOrCombinerType: "extractorInstancesByEntity",
+                  applicationSection: "model",
+                  parentName: entityMenu.name,
+                  parentUuid: entityMenu.uuid,
+                },
+                entityDefs: {
+                  extractorOrCombinerType: "extractorInstancesByEntity",
+                  applicationSection: "model",
+                  parentName: entityEntityDefinition.name,
+                  parentUuid: entityEntityDefinition.uuid,
+                },
+              },
+            },
+          },
+        },
+      },
+    ], // preTestCompositeActions
+    testCompositeActionAssertions: [
+      {
+        actionType: "compositeRunTestAssertion",
+        actionLabel: "checkNumberOfReports",
+        nameGivenToResult: "checkNumberOfReports",
+        testAssertion: {
+          testType: "testAssertion",
+          testLabel: "checkNumberOfReports",
+          definition: {
+            resultAccessPath: ["0"],
+            resultTransformer: {
+              transformerType: "aggregate",
+              interpolation: "runtime",
+              applyTo: {
+                transformerType: "getFromContext",
+                interpolation: "runtime",
+                referencePath: ["reportsAndMenus", "reports"],
+              },
+            },
+            expectedValue: { aggregate: 2 },
+          },
+        },
+      },
+      {
+        actionType: "compositeRunTestAssertion",
+        actionLabel: "checkMenuHasNewItem",
+        nameGivenToResult: "checkMenuHasNewItem",
+        testAssertion: {
+          testType: "testAssertion",
+          testLabel: "checkMenuHasNewItem",
+          definition: {
+            resultAccessPath: ["0"],
+            resultTransformer: {
+              transformerType: "aggregate",
+              interpolation: "runtime",
+              applyTo: {
+                transformerType: "getFromContext",
+                interpolation: "runtime",
+                referencePath: [
+                  "reportsAndMenus",
+                  "menus",
+                  "0",
+                  "definition",
+                  "definition",
+                  "0",
+                  "items",
+                ],
+              },
+            },
+            expectedValue: { aggregate: 1 },
           },
         },
       },

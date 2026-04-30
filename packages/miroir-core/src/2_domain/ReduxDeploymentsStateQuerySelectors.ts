@@ -140,7 +140,12 @@ export const selectEntityInstanceFromReduxDeploymentsState: SyncBoxedExtractorRu
       }
 
       if (!deploymentEntityState[index]) {
-        log.error("selectEntityInstanceFromReduxDeploymentsState combinerOneToOne, could not find index", index, "in deploymentEntityState", deploymentEntityState);
+        log.error(
+          "selectEntityInstanceFromReduxDeploymentsState combinerOneToOne, could not find index",
+          index,
+          "in deploymentEntityState",
+          Object.keys(deploymentEntityState),
+        );
         return new Domain2ElementFailed({
           queryFailure: "EntityNotFound",
           deploymentUuid,
@@ -330,7 +335,7 @@ export const selectEntityInstanceUuidIndexFromReduxDeploymentsState: SyncBoxedEx
       "selectEntityInstanceUuidIndexFromReduxDeploymentsState could not find index",
       deploymentEntityStateIndex,
       "in deploymentEntityState",
-      deploymentEntityState
+      Object.keys(deploymentEntityState)
       // JSON.stringify(deploymentEntityState, undefined, 2)
     );
     return new Domain2ElementFailed({
