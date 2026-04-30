@@ -428,7 +428,6 @@ export function useTransformer(
 export function useRunner(
   application: Uuid,
   applicationDeploymentMap: ApplicationDeploymentMap,
-  deploymentUuid: Uuid,
   runnerUuid: Uuid | undefined
 ): Domain2QueryReturnType<Runner | undefined>  {
   const runnerApplicationSection = getApplicationSection(
@@ -438,7 +437,6 @@ export function useRunner(
 
   const runnerQuery:
     | BoxedQueryWithExtractorCombinerTransformer
-    // | BoxedQueryTemplateWithExtractorCombinerTransformer
     | undefined = useMemo(
     () =>
       application && application !== noValue.uuid

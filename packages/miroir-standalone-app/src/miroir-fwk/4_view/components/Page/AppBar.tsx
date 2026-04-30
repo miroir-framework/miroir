@@ -201,20 +201,20 @@ export function AppBar(props:AppBarProps) {
         name: "search",
       },
     },
-    {
-      miroirMenuItemType: "miroirMenuPageLink",
-      label: "Transformer Builder",
-      targetRoot: "transformerBuilder",
-      section: "model",
-      icon: {
-        iconType: "mui",
-        name: "build",
-        superImpose: {
-          letter: "T",
-          color: "#FF0000",
-        },
-      },
-    },
+    // {
+    //   miroirMenuItemType: "miroirMenuPageLink",
+    //   label: "Transformer Builder",
+    //   targetRoot: "transformerBuilder",
+    //   section: "model",
+    //   icon: {
+    //     iconType: "mui",
+    //     name: "build",
+    //     superImpose: {
+    //       letter: "T",
+    //       color: "#FF0000",
+    //     },
+    //   },
+    // },
     // {
     //   "label": "runners",
     //   "section": "model",

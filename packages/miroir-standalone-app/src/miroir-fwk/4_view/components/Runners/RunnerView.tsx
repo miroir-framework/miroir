@@ -71,7 +71,7 @@ export function StoredRunnerView(props: {
   const runnerDefinitionFromLocalCache: Domain2QueryReturnType<Runner | undefined> = useRunner(
     props.applicationUuid,
     applicationDeploymentMap,
-    runnerDeploymentUuid,
+    // runnerDeploymentUuid,
     props.runnerUuid
   );
   log.info(

@@ -32,6 +32,7 @@ import {
   MiroirLoggerFactory,
   noValue,
   prodRelativePathPrefix,
+  selfApplication,
   selfApplicationMiroir,
   transformer_extended_apply_wrapper
 } from "miroir-core";
@@ -703,7 +704,8 @@ function getCreateApplicationActionTemplate(
           actionType: "initModel",
           actionLabel: {
             transformerType: "mustacheStringTemplate",
-            definition: "resetAndInitializeDeployment_initModel_{{createApplicationAndDeployment.newApplicationUuid}}"
+            definition:
+              "resetAndInitializeDeployment_initModel_{{createApplicationAndDeployment.newApplicationUuid}}",
           } as any,
           endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
           payload: {
@@ -724,11 +726,11 @@ function getCreateApplicationActionTemplate(
                 // transformerType: "returnValue",
                 // "interpolation": "runtime",
                 // value: {
-                  transformerType: "getFromContext",
-                  interpolation: "runtime",
-                  referenceName: "initParametersForTest",
+                transformerType: "getFromContext",
+                interpolation: "runtime",
+                referenceName: "initParametersForTest",
                 // },
-              }
+              },
             } as any, // TODO: fix type
             // params: {
             //   transformerType: "getFromParameters",
@@ -738,17 +740,17 @@ function getCreateApplicationActionTemplate(
             // } as any, // TODO: fix type
           },
         },
-        {
-          actionType: "commit", // in the case where initModel has a model attribute
-          actionLabel: "refreshLocalCacheForApplication",
-          endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-          payload: {
-            application: {
-              transformerType: "getFromParameters",
-              referencePath: ["createApplicationAndDeployment", "newApplicationUuid"],
-            },
-          },
-        },
+        // {
+        //   actionType: "commit", // in the case where initModel has a model attribute
+        //   actionLabel: "refreshLocalCacheForApplication",
+        //   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+        //   payload: {
+        //     application: {
+        //       transformerType: "getFromParameters",
+        //       referencePath: ["createApplicationAndDeployment", "newApplicationUuid"],
+        //     },
+        //   },
+        // },
         {
           actionType: "rollback",
           actionLabel: "refreshLocalCacheForApplication",
@@ -773,17 +775,6 @@ function getCreateApplicationActionTemplate(
           },
         },
         {
-          actionType: "commit",
-          actionLabel: "CommitApplicationStoreEntities",
-          endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-          payload: {
-            application: {
-              transformerType: "getFromParameters",
-              referencePath: ["createApplicationAndDeployment", "newApplicationUuid"],
-            },
-          },
-        },
-        {
           actionType: "createInstance",
           actionLabel: "CreateApplicationStoreInstances",
           endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
@@ -792,8 +783,25 @@ function getCreateApplicationActionTemplate(
               transformerType: "getFromParameters",
               referencePath: ["createApplicationAndDeployment", "newApplicationUuid"],
             } as any,
-            applicationSection: "data",
-            objects: appEntitesAndInstances,
+            applicationSection: "model",
+            objects: [
+              {
+                transformerType: "getFromContext",
+                interpolation: "runtime",
+                referencePath: ["appDefaultMenu"],
+              },
+            ],
+          },
+        },
+        {
+          actionType: "commit",
+          actionLabel: "CommitApplicationStoreEntities",
+          endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+          payload: {
+            application: {
+              transformerType: "getFromParameters",
+              referencePath: ["createApplicationAndDeployment", "newApplicationUuid"],
+            },
           },
         },
       ],
@@ -862,6 +870,181 @@ function getCreateApplicationActionTemplate(
               referencePath: ["createApplicationAndDeployment", "newApplicationUuid"],
             },
           },
+        },
+        appDefaultMenu: {
+          transformerType: "createObject",
+          definition: {
+            uuid: {
+              transformerType: "generateUuid",
+            },
+            parentName: "Menu",
+            parentUuid: "dde4c883-ae6d-47c3-b6df-26bc6e3c1842",
+            name: {
+              transformerType: "mustacheStringTemplate",
+              definition: "defaultMenu_{{createApplicationAndDeployment.applicationName}}",
+            },
+            defaultLabel: {
+              transformerType: "mustacheStringTemplate",
+              definition: "Default Menu for {{createApplicationAndDeployment.applicationName}}",
+            },
+            description: {
+              transformerType: "mustacheStringTemplate",
+              definition: "Default menu for {{createApplicationAndDeployment.applicationName}}",
+            },
+            definition: {
+              menuType: "complexMenu",
+              definition: [
+                {
+                  title: {
+                    transformerType: "mustacheStringTemplate",
+                    definition: "{{createApplicationAndDeployment.applicationName}} Menu",
+                  },
+                  label: {
+                    transformerType: "mustacheStringTemplate",
+                    definition: "{{createApplicationAndDeployment.applicationName}}",
+                  },
+                  items: [
+                    {
+                      miroirMenuItemType: "miroirMenuReportLink",
+                      label: {
+                        transformerType: "mustacheStringTemplate",
+                        definition: "{{createApplicationAndDeployment.applicationName}} Application",
+                      },
+                      section: "model",
+                      selfApplication: {
+                        transformerType: "getFromParameters",
+                        referencePath: ["createApplicationAndDeployment", "newApplicationUuid"],
+                      },
+                      reportUuid: "cd24df86-204c-4a72-9ac0-87f2b92f25fe",
+                      icon: "category",
+                      menuItemScope: "model",
+                      instanceUuid: {
+                        transformerType: "getFromParameters",
+                        referencePath: ["createApplicationAndDeployment", "newApplicationUuid"],
+                      },
+                    },
+                    {
+                      miroirMenuItemType: "miroirMenuReportLink",
+                      label: {
+                        transformerType: "mustacheStringTemplate",
+                        definition: "{{createApplicationAndDeployment.applicationName}} Entities",
+                      },
+                      section: "model",
+                      selfApplication: {
+                        transformerType: "getFromParameters",
+                        referencePath: ["createApplicationAndDeployment", "newApplicationUuid"],
+                      },
+                      reportUuid: "c9ea3359-690c-4620-9603-b5b402e4a2b9",
+                      icon: "category",
+                      menuItemScope: "model",
+                    },
+                    {
+                      miroirMenuItemType: "miroirMenuReportLink",
+                      label: {
+                        transformerType: "mustacheStringTemplate",
+                        definition: "{{createApplicationAndDeployment.applicationName}} Entity Definitions",
+                      },
+                      section: "model",
+                      selfApplication: {
+                        transformerType: "getFromParameters",
+                        referencePath: ["createApplicationAndDeployment", "newApplicationUuid"],
+                      },
+                      reportUuid: "f9aff35d-8636-4519-8361-c7648e0ddc68",
+                      icon: "category",
+                      menuItemScope: "model",
+                    },
+                    {
+                      miroirMenuItemType: "miroirMenuReportLink",
+                      label: {
+                        transformerType: "mustacheStringTemplate",
+                        definition: "{{createApplicationAndDeployment.applicationName}} Queries",
+                      },
+                      section: "model",
+                      selfApplication: {
+                        transformerType: "getFromParameters",
+                        referencePath: ["createApplicationAndDeployment", "newApplicationUuid"],
+                      },
+                      reportUuid: "32e52150-ac95-4d96-91b7-f231b85fe76e",
+                      icon: "saved_search",
+                      menuItemScope: "model",
+                    },
+                    {
+                      miroirMenuItemType: "miroirMenuReportLink",
+                      label: {
+                        transformerType: "mustacheStringTemplate",
+                        definition: "{{createApplicationAndDeployment.applicationName}} Reports",
+                      },
+                      section: "model",
+                      selfApplication: {
+                        transformerType: "getFromParameters",
+                        referencePath: ["createApplicationAndDeployment", "newApplicationUuid"],
+                      },
+                      reportUuid: "1fc7e12e-90f2-4c0a-8ed9-ed35ce3a7855",
+                      icon: "newspaper",
+                      menuItemScope: "model",
+                    },
+                    {
+                      miroirMenuItemType: "miroirMenuReportLink",
+                      label: {
+                        transformerType: "mustacheStringTemplate",
+                        definition: "{{createApplicationAndDeployment.applicationName}} Menus",
+                      },
+                      section: "model",
+                      selfApplication: {
+                        transformerType: "getFromParameters",
+                        referencePath: ["createApplicationAndDeployment", "newApplicationUuid"],
+                      },
+                      reportUuid: "ecfd8787-09cc-417d-8d2c-173633c9f998",
+                      icon: "list",
+                      menuItemScope: "model",
+                    },
+                    {
+                      miroirMenuItemType: "miroirMenuReportLink",
+                      label: {
+                        transformerType: "mustacheStringTemplate",
+                        definition: "{{createApplicationAndDeployment.applicationName}} Endpoints",
+                      },
+                      section: "model",
+                      selfApplication: {
+                        transformerType: "getFromParameters",
+                        referencePath: ["createApplicationAndDeployment", "newApplicationUuid"],
+                      },
+                      reportUuid: "ace3d5c9-b6a7-43e6-a277-595329e7532a",
+                      icon: "list",
+                      menuItemScope: "model",
+                    },
+                    {
+                      miroirMenuItemType: "miroirMenuReportLink",
+                      label: {
+                        transformerType: "mustacheStringTemplate",
+                        definition: "{{createApplicationAndDeployment.applicationName}} Runners",
+                      },
+                      section: "model",
+                      selfApplication: {
+                        transformerType: "getFromParameters",
+                        referencePath: ["createApplicationAndDeployment", "newApplicationUuid"],
+                      },
+                      reportUuid: "3c26c31e-c988-40b2-af47-d7380e35ba80",
+                      icon: "directions_run",
+                      menuItemScope: "model",
+                    },
+                    {
+                      miroirMenuItemType: "miroirMenuItemDivider",
+                      label: {
+                        transformerType: "mustacheStringTemplate",
+                        definition: "{{createApplicationAndDeployment.applicationName}} Model-Data Divider",
+                      },
+                      selfApplication: {
+                        transformerType: "getFromParameters",
+                        referencePath: ["createApplicationAndDeployment", "newApplicationUuid"],
+                      },
+                      menuItemScope: "model",
+                    },
+                  ],
+                },
+              ],
+            },
+          }
         },
         initParametersForTest: {
           transformerType: "createObject",
@@ -983,10 +1166,7 @@ function getCreateApplicationActionTemplate(
                       args: [
                         {
                           transformerType: "getFromParameters",
-                          referencePath: [
-                            "createApplicationAndDeployment",
-                            "applicationName",
-                          ],
+                          referencePath: ["createApplicationAndDeployment", "applicationName"],
                         },
                       ],
                     },
@@ -1006,10 +1186,7 @@ function getCreateApplicationActionTemplate(
                       args: [
                         {
                           transformerType: "getFromParameters",
-                          referencePath: [
-                            "createApplicationAndDeployment",
-                            "applicationName",
-                          ],
+                          referencePath: ["createApplicationAndDeployment", "applicationName"],
                         },
                       ],
                     },
@@ -1050,10 +1227,7 @@ function getCreateApplicationActionTemplate(
                       args: [
                         {
                           transformerType: "getFromParameters",
-                          referencePath: [
-                            "createApplicationAndDeployment",
-                            "applicationName",
-                          ],
+                          referencePath: ["createApplicationAndDeployment", "applicationName"],
                         },
                       ],
                     },
@@ -1074,10 +1248,7 @@ function getCreateApplicationActionTemplate(
                       args: [
                         {
                           transformerType: "getFromParameters",
-                          referencePath: [
-                            "createApplicationAndDeployment",
-                            "applicationName",
-                          ],
+                          referencePath: ["createApplicationAndDeployment", "applicationName"],
                         },
                       ],
                     },
@@ -1116,10 +1287,7 @@ function getCreateApplicationActionTemplate(
                         },
                         {
                           transformerType: "getFromParameters",
-                          referencePath: [
-                            "createApplicationAndDeployment",
-                            "applicationName",
-                          ],
+                          referencePath: ["createApplicationAndDeployment", "applicationName"],
                         },
                       ],
                     },
@@ -1136,10 +1304,7 @@ function getCreateApplicationActionTemplate(
                         },
                         {
                           transformerType: "getFromParameters",
-                          referencePath: [
-                            "createApplicationAndDeployment",
-                            "applicationName",
-                          ],
+                          referencePath: ["createApplicationAndDeployment", "applicationName"],
                         },
                       ],
                     },
@@ -1178,10 +1343,7 @@ function getCreateApplicationActionTemplate(
                         },
                         {
                           transformerType: "getFromParameters",
-                          referencePath: [
-                            "createApplicationAndDeployment",
-                            "applicationName",
-                          ],
+                          referencePath: ["createApplicationAndDeployment", "applicationName"],
                         },
                       ],
                     },
@@ -1198,10 +1360,7 @@ function getCreateApplicationActionTemplate(
                         },
                         {
                           transformerType: "getFromParameters",
-                          referencePath: [
-                            "createApplicationAndDeployment",
-                            "applicationName",
-                          ],
+                          referencePath: ["createApplicationAndDeployment", "applicationName"],
                         },
                       ],
                     },

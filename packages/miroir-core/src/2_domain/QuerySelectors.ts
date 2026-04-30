@@ -599,11 +599,11 @@ export const extractEntityInstanceListWithObjectListExtractorInMemory
     modelEnvironment
   );
 
-  log.info(
-    "extractEntityInstanceUuidIndexWithObjectListExtractorInMemory for",
-    foreignKeyParams,
-    "found selectedInstances", selectedInstancesUuidIndex,
-  );
+  // log.info(
+  //   "extractEntityInstanceUuidIndexWithObjectListExtractorInMemory for",
+  //   foreignKeyParams,
+  //   "found selectedInstances", selectedInstancesUuidIndex,
+  // );
 
   return applyExtractorForSingleObjectListToSelectedInstancesListInMemory(
     selectedInstancesUuidIndex,
