@@ -3,7 +3,7 @@
   "parentName": "TransformerTest",
   "parentUuid": "681be9ca-c593-45f5-b45a-5f1d4969e91e",
   "name": "resolveSchemaReferenceInContext",
-  "selfApplication": "21840247-b5b1-4344-baec-f818f4797d92",
+  "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
   "description": "The Test for the resolveSchemaReferenceInContext Transformer",
   "definition": {
