@@ -1,14 +1,14 @@
 import {
-  ApplicationSection,
+  type ApplicationSection,
   ErrorAdminStore,
   ErrorDataStore,
   ErrorModelStore,
-  LoggerInterface,
+  type LoggerInterface,
   MiroirLoggerFactory,
-  PersistenceStoreAdminSectionInterface,
-  PersistenceStoreDataSectionInterface,
-  PersistenceStoreModelSectionInterface,
-  StoreSectionConfiguration,
+  type PersistenceStoreAdminSectionInterface,
+  type PersistenceStoreDataSectionInterface,
+  type PersistenceStoreModelSectionInterface,
+  type StoreSectionConfiguration,
   type ConfigurationServiceInner
 } from "miroir-core";
 import { SqlDbDataStoreSection } from "./4_services/SqlDbDataStoreSection.js";

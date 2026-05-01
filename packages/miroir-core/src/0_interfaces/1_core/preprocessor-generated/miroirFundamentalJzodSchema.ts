@@ -6120,6 +6120,90 @@ export const miroirFundamentalJzodSchema = {
           }
         }
       },
+      "applicationModelBranch": {
+        "type": "object",
+        "extend": {
+          "type": "schemaReference",
+          "definition": {
+            "eager": true,
+            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            "relativePath": "entityDefinitionRoot"
+          }
+        },
+        "definition": {
+          "name": {
+            "type": "string",
+            "tag": {
+              "value": {
+                "id": 6,
+                "defaultLabel": "Name",
+                "display": {
+                  "editable": true
+                }
+              }
+            }
+          },
+          "defaultLabel": {
+            "type": "string",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 7,
+                "defaultLabel": "Name",
+                "display": {
+                  "editable": true
+                }
+              }
+            }
+          },
+          "selfApplication": {
+            "type": "uuid",
+            "tag": {
+              "value": {
+                "id": 8,
+                "display": {
+                  "editable": false
+                },
+                "defaultLabel": "SelfApplication",
+                "foreignKeyParams": {
+                  "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
+                  "targetEntityOrderInstancesBy": "name"
+                }
+              }
+            }
+          },
+          "headVersion": {
+            "type": "uuid",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 9,
+                "display": {
+                  "editable": true
+                },
+                "defaultLabel": "Head Version",
+                "foreignKeyParams": {
+                  "targetEntity": "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24",
+                  "targetEntityOrderInstancesBy": "name"
+                }
+              }
+            }
+          },
+          "description": {
+            "type": "string",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 10,
+                "defaultLabel": "Description",
+                "display": {
+                  "editable": true
+                }
+              }
+            }
+          }
+        }
+      },
       "bundle": {
         "type": "object",
         "definition": {
@@ -12162,6 +12246,64 @@ export const miroirFundamentalJzodSchema = {
           }
         ]
       },
+      "localCacheExtractor": {
+        "type": "object",
+        "definition": {
+          "queryType": {
+            "type": "literal",
+            "tag": {
+              "value": {
+                "canBeTemplate": false
+              }
+            },
+            "definition": "localCacheEntityInstancesExtractor"
+          },
+          "definition": {
+            "type": "object",
+            "definition": {
+              "application": {
+                "type": "uuid",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Uuid",
+                    "editable": false
+                  }
+                }
+              },
+              "applicationSection": {
+                "type": "schemaReference",
+                "optional": true,
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "applicationSection"
+                }
+              },
+              "entityUuid": {
+                "type": "uuid",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "id": 1,
+                    "defaultLabel": "Entity",
+                    "editable": false
+                  }
+                }
+              },
+              "instanceUuid": {
+                "type": "uuid",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "id": 1,
+                    "defaultLabel": "Instance",
+                    "editable": false
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
       "shippingBox": {
         "type": "object",
         "definition": {
@@ -12397,6 +12539,26 @@ export const miroirFundamentalJzodSchema = {
             }
           }
         }
+      },
+      "miroirQueryTemplate": {
+        "type": "union",
+        "discriminator": "queryType",
+        "definition": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "boxedQueryTemplateWithExtractorCombinerTransformer"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "localCacheExtractor"
+            }
+          }
+        ]
       },
       "______________________________________________runners_____________________________________________": {
         "type": "never"

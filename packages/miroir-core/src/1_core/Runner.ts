@@ -1,11 +1,9 @@
-import {
-  selfApplicationModelBranchLibraryMasterBranch,
-  selfApplicationVersionLibraryInitialVersion
-} from "miroir-test-app_deployment-library";
 import { selfApplicationMiroir } from "miroir-test-app_deployment-miroir";
 
 
 import type {
+  ApplicationModelBranch,
+  ApplicationVersion,
   CompositeAction,
   CompositeRunTestAssertion,
   Deployment,
@@ -80,7 +78,7 @@ export function testBuildPlusRuntimeCompositeActionSuiteForRunner(
           dataStoreType: "app", // TODO: comparison between deployment and selfAdminConfigurationDeployment
           metaModel: defaultMiroirMetaModel,
           selfApplication: {
-            uuid: "5af03c98-fe5e-490b-b08f-e1230971c57f",
+            uuid: testApplicationUuid,
             parentName: "SelfApplication",
             parentUuid: "a659d350-dd97-4da9-91de-524fa01745dc",
             name: testApplicationName,
@@ -88,8 +86,23 @@ export function testBuildPlusRuntimeCompositeActionSuiteForRunner(
             description: `The model and data of the ${testApplicationName} selfApplication.`,
             homePageUrl: `/report/${testApplicationUuid}/${testApplicationDeploymentUuid}/data/9c0cdb97-9537-4ee2-8053-a6ece3e0afe8/xxxxx`,
           },
-          applicationModelBranch: selfApplicationModelBranchLibraryMasterBranch,
-          applicationVersion: selfApplicationVersionLibraryInitialVersion,
+          applicationModelBranch: {
+            uuid: "00000000-0000-0000-0000-000000000001",
+            parentName: "ApplicationModelBranch",
+            parentUuid: "a659d350-dd97-4da9-91de-524fa01745dc",
+            conceptLevel: "Model",
+            name: "master",
+            defaultLabel: "Master branch of the application model.",
+            description: "The master branch of the application model.",
+            selfApplication: testApplicationUuid,
+          } as ApplicationModelBranch,
+          applicationVersion: {
+            uuid: "00000000-0000-0000-0000-000000000001",
+            parentName: "ApplicationVersion",
+            parentUuid: "a659d350-dd97-4da9-91de-524fa01745dc",
+          } as ApplicationVersion,
+          // applicationModelBranch: selfApplicationModelBranchLibraryMasterBranch,
+          // applicationVersion: selfApplicationVersionLibraryInitialVersion,
         },
         [], // applicationEntitiesDefinitionAndInstances
         initialModel,

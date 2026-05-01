@@ -2,6 +2,8 @@
   "name": "miroir-store-postgres",
   "private": true,
   "version": "0.0.0",
+  "author": "Miroir Framework <miroir-framework@protonmail.com>",
+  "license": "MIT",
   "description": "The Miroir implementation for accessing Postgres databases.",
   "main": "dist/bundle.esm.js",
   "types": "dist/bundle.d.ts",
@@ -35,15 +37,12 @@
   },
   "scripts": {
     "watch": "lerna watch --scope='miroir-store-postgres' --include-dependencies -- lerna run build --scope='miroir-store-postgres'",
-    "build-tsup": "tsup --target=node20 --format esm src/index.ts",
-    "build": "rollup --config --logLevel info",
-    "build4": "npm run build",
-    "build5": "npm run build",
+    "build-tsup-broken": "tsup --target=node20 --format esm src/index.ts",
+    "build": "npm run build-rollup",
+    "build-rollup": "rollup --config --logLevel info",
     "copy-files": "copyfiles -u 1 src/**/*.json src/**/*.css dist/src",
     "test": "jest --verbose --silent=false -t",
     "vitest": "cross-env VITE_TEST_MODE='true' vitest run --reporter=verbose --poolOptions.forks.singleFork --bail=1",
     "generate-ts-types": "tsx ./scripts/postgres-generate-ts-types.ts"
-  },
-  "author": "Miroir Framework <miroir-framework@protonmail.com>",
-  "license": "MIT"
+  }
 }

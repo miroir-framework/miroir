@@ -22,8 +22,8 @@
     "dist/index.js.map"
   ],
   "scripts": {
-    "copy-files": "copyfiles -u 1 assets/**/*.json dist/assets",
     "build": "tsup",
+    "devBuild": "npm run build",
     "test": "vitest run --poolOptions.threads.singleThread -t",
     "testByFile": "vitest run --poolOptions.forks.singleFork --reporter=verbose"
   },

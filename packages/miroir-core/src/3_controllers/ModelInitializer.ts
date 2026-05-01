@@ -1,6 +1,3 @@
-import { v4 as uuidv4 } from "uuid";
-
-import { menuDefaultLibrary } from "miroir-test-app_deployment-library";
 import {
   applicationEndpointV1,
   compactStoredMiroirTheme,
@@ -58,8 +55,7 @@ import {
   Entity,
   EntityDefinition,
   EntityInstance,
-  SelfApplication,
-  type Menu
+  SelfApplication
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { DataStoreApplicationType } from "../0_interfaces/3_controllers/ApplicationControllerInterface.js";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";

@@ -185,6 +185,7 @@ export function getMiroirFundamentalJzodSchema(
   entityDefinitionAdminApplication: any,
   entityDefinitionSelfApplicationV1: any,
   entityDefinitionSelfApplicationVersionV1: any,
+  entityDefinitionSelfApplicationModelBranch: any,
   entityDefinitionDeployment: any,
   entityDefinitionEntity: any,
   entityDefinitionEntityDefinitionV1: any,
@@ -227,47 +228,47 @@ export function getMiroirFundamentalJzodSchema(
   // ##############################################################################################
   // ##############################################################################################
   const extraQueryElements: Record<string, any /*JzodElement*/> = {
-    // localCacheExtractor: {
-    //   type: "object",
-    //   definition: {
-    //     queryType: {
-    //       type: "literal",
-    //       tag: {
-    //         value: {
-    //           canBeTemplate: false,
-    //         },
-    //       },
-    //       definition: "localCacheEntityInstancesExtractor",
-    //     },
-    //     definition: {
-    //       type: "object",
-    //       definition: {
-    //         application: {
-    //           type: "uuid",
-    //           tag: { value: { defaultLabel: "Uuid", editable: false } },
-    //         },
-    //         applicationSection: {
-    //           type: "schemaReference",
-    //           optional: true,
-    //           definition: {
-    //             absolutePath: miroirFundamentalJzodSchemaUuid,
-    //             relativePath: "applicationSection",
-    //           },
-    //         },
-    //         entityUuid: {
-    //           type: "uuid",
-    //           optional: true,
-    //           tag: { value: { id: 1, defaultLabel: "Entity", editable: false } },
-    //         },
-    //         instanceUuid: {
-    //           type: "uuid",
-    //           optional: true,
-    //           tag: { value: { id: 1, defaultLabel: "Instance", editable: false } },
-    //         },
-    //       },
-    //     },
-    //   },
-    // },
+    localCacheExtractor: {
+      type: "object",
+      definition: {
+        queryType: {
+          type: "literal",
+          tag: {
+            value: {
+              canBeTemplate: false,
+            },
+          },
+          definition: "localCacheEntityInstancesExtractor",
+        },
+        definition: {
+          type: "object",
+          definition: {
+            application: {
+              type: "uuid",
+              tag: { value: { defaultLabel: "Uuid", editable: false } },
+            },
+            applicationSection: {
+              type: "schemaReference",
+              optional: true,
+              definition: {
+                absolutePath: miroirFundamentalJzodSchemaUuid,
+                relativePath: "applicationSection",
+              },
+            },
+            entityUuid: {
+              type: "uuid",
+              optional: true,
+              tag: { value: { id: 1, defaultLabel: "Entity", editable: false } },
+            },
+            instanceUuid: {
+              type: "uuid",
+              optional: true,
+              tag: { value: { id: 1, defaultLabel: "Instance", editable: false } },
+            },
+          },
+        },
+      },
+    },
     shippingBox: {
       type: "object",
       definition: {
@@ -507,6 +508,26 @@ export function getMiroirFundamentalJzodSchema(
           },
         },
       },
+    },
+    miroirQueryTemplate: {
+      type: "union",
+      discriminator: "queryType",
+      definition: [
+        {
+          type: "schemaReference",
+          definition: {
+            absolutePath: miroirFundamentalJzodSchemaUuid,
+            relativePath: "boxedQueryTemplateWithExtractorCombinerTransformer",
+          },
+        },
+        {
+          type: "schemaReference",
+          definition: {
+            absolutePath: miroirFundamentalJzodSchemaUuid,
+            relativePath: "localCacheExtractor",
+          },
+        },
+      ],
     },
   };
   // ##############################################################################################
@@ -1216,6 +1237,7 @@ export function getMiroirFundamentalJzodSchema(
         adminApplication: entityDefinitionAdminApplication.mlSchema as any,
         selfApplication: entityDefinitionSelfApplicationV1.mlSchema as any,
         applicationVersion: entityDefinitionSelfApplicationVersionV1.mlSchema as any,
+        applicationModelBranch: entityDefinitionSelfApplicationModelBranch.mlSchema as any,
         bundle: entityDefinitionBundleV1.mlSchema as any,
         deployment: entityDefinitionDeployment.mlSchema as any,
         entity: entityDefinitionEntity.mlSchema as any,

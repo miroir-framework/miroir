@@ -41,7 +41,6 @@ import {
   adminApplication_Miroir
 } from "miroir-test-app_deployment-admin";
 import { noValue } from "./Instance";
-import { selfApplicationDeploymentLibrary } from "miroir-test-app_deployment-library";
 
 export const defaultDeployments: Deployment[] = [
   deployment_Miroir as Deployment,
@@ -418,7 +417,7 @@ export function dropApplicationAndDeploymentCompositeAction(
 
 // ################################################################################################
 export function testUtils_resetApplicationDeployment(
-  application: Uuid = selfApplicationDeploymentLibrary.uuid,
+  application: Uuid,
 ): CompositeActionSequence {
   return {
     actionType: "compositeActionSequence",
