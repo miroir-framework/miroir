@@ -11,8 +11,8 @@
   "private": true,
   "scripts": {
     "build": "npx tsc --noEmit --skipLibCheck",
-    "build-main": "tsc src/main.ts --outDir dist --target es2020 --module esnext --moduleResolution bundler --allowSyntheticDefaultImports --strict --skipLibCheck",
-    "build-preload": "tsc src/preload.ts --outDir dist --target es2020 --module commonjs --moduleResolution node --allowSyntheticDefaultImports --strict --skipLibCheck",
+    "build-main": "npx tsc src/main.ts --ignoreConfig --outDir dist --target es2020 --module esnext --moduleResolution bundler --allowSyntheticDefaultImports --strict --skipLibCheck",
+    "build-preload": "npx tsc src/preload.ts --ignoreConfig --ignoreDeprecations 6.0 --outDir dist --target es2020 --module commonjs --moduleResolution node --allowSyntheticDefaultImports --strict --skipLibCheck",
     "build-electron": "npm run build-main && npm run build-preload",
     "electron": "npm run build-electron && electron .",
     "electron-dev": "npm run build-electron && electron . --dev",
@@ -73,6 +73,7 @@
         "to": "miroir-assets/miroir-test-app_deployment-admin/assets/admin_data",
         "filter": [
           "**/*",
+          "!7959d814-400c-4e80-988f-a00fe582ab98/5bbd19a1-e2c3-4ab8-83fa-26ccfd4cbb7e.json",
           "!7959d814-400c-4e80-988f-a00fe582ab98/10ff36f2-50a3-48d8-b80f-e48e5d13af8e.json",
           "!7959d814-400c-4e80-988f-a00fe582ab98/18db21bf-f8d3-4f6a-8296-84b69f6dc48b.json"
         ]

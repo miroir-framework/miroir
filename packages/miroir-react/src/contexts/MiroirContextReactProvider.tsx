@@ -144,12 +144,6 @@ export interface MiroirReactContext {
   >;
   // ###################################################################################################
   // outline <-> instance editor
-  // typeCheckKeyMap: Record<string, KeyMapEntry>,
-  // setTypeCheckKeyMap: React.Dispatch<React.SetStateAction<Record<string, KeyMapEntry>>>,
-  // setTypeCheckKeyMap: React.Dispatch<React.SetStateAction<Record<string, KeyMapEntry>>> | undefined;
-  // setSetTypeCheckKeyMap: (
-  //   setTypeCheckKeyMap: React.Dispatch<React.SetStateAction<Record<string, KeyMapEntry>>>
-  // ) => void;
   setFoldedObjectAttributeOrArrayItems:
     | React.Dispatch<React.SetStateAction<FoldedStateTree>>
     | undefined;
@@ -213,18 +207,9 @@ export function MiroirContextReactProvider(props: {
   const [applicationSection, setApplicationSection] = useState<ApplicationSection>("data");
   const [innerFormOutput, setInnerFormOutput] = useState<any>({});
   const [formHelperState, setformHelperState] = useState<any>({});
-  // const [typeCheckKeyMap, setTypeCheckKeyMap] = useState<Record<string, KeyMapEntry>>({});
-
-  // const [setTypeCheckKeyMap, setSetTypeCheckKeyMap] =
-  //   useState<Dispatch<SetStateAction<Record<string, KeyMapEntry>>>>();
 
   const [setFoldedObjectAttributeOrArrayItems, setSetFoldedObjectAttributeOrArrayItems] =
     useState<Dispatch<SetStateAction<FoldedStateTree>>>();
-
-  //     setTypeCheckKeyMap: React.Dispatch<React.SetStateAction<Record<string, KeyMapEntry>>>,
-  // setSetTypeCheckKeyMap: (
-  //   setTypeCheckKeyMap: React.Dispatch<React.SetStateAction<Record<string, KeyMapEntry>>>
-  // ) => void;
 
   const [
     deploymentUuidToReportsEntitiesDefinitionsMapping,
@@ -553,8 +538,6 @@ export function MiroirContextReactProvider(props: {
       // // Outline for Instance Editor
       setFoldedObjectAttributeOrArrayItems,
       setSetFoldedObjectAttributeOrArrayItems,
-      // setSetTypeCheckKeyMap,
-      // setTypeCheckKeyMap,
       // ###################################################################################################
       // Snackbar functionality
       snackbarOpen,
@@ -584,8 +567,6 @@ export function MiroirContextReactProvider(props: {
       viewParams,
       setFoldedObjectAttributeOrArrayItems,
       setSetFoldedObjectAttributeOrArrayItems,
-      // setTypeCheckKeyMap,
-      // setSetTypeCheckKeyMap,
       formHelperState,
       showSnackbar,
       handleAsyncAction,

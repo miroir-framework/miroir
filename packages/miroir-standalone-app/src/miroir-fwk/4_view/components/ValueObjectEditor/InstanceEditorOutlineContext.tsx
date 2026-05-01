@@ -1,8 +1,7 @@
 import { MiroirLoggerFactory, type KeyMapEntry, type LoggerInterface } from "miroir-core";
-import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import { createContext, useContext, useMemo, useState } from "react";
 import { packageName } from "../../../../constants";
 import { cleanLevel } from "../../constants";
-import { useMiroirContextService } from "miroir-react";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -25,41 +24,25 @@ export interface DocumentOutlineContextType {
   setOutlineTitle: (title: string) => void;
   typeCheckKeyMap: Record<string, KeyMapEntry>,
   setTypeCheckKeyMap: React.Dispatch<React.SetStateAction<Record<string, KeyMapEntry>>>,
-  // setFoldedObjectAttributeOrArrayItems: React.Dispatch<
-  //     React.SetStateAction<FoldedStateTree>
-  //   > | undefined;
-  // setSetFoldedObjectAttributeOrArrayItems: (
-  //   setFoldedObjectAttributeOrArrayItems: React.Dispatch<
-  //     React.SetStateAction<FoldedStateTree>
-  //   >
-  // ) => void;
 }
-export class DocumentOutlineContextDefault implements DocumentOutlineContextType {
-  constructor(
-    public isOutlineOpen = false,
-    public outlineWidth = 300,
-    public outlineData = null,
-    public outlineTitle = "Document Outline",
-    public reportInstance = null,
-    public onToggleOutline = () => {},
-    public onNavigateToPath = (path: string[]) => {},
-    public setOutlineData = (data: any) => {},
-    public setOutlineTitle = (title: string) => {},
-    public setReportInstance = (instance: any) => {},
-    public typeCheckKeyMap: Record<string, KeyMapEntry>,
-    public setTypeCheckKeyMap: React.Dispatch<React.SetStateAction<Record<string, KeyMapEntry>>>,
-    // public setFoldedObjectAttributeOrArrayItems: React.Dispatch<
-    //     React.SetStateAction<FoldedStateTree>
-    //   > | undefined,
-    // public setSetFoldedObjectAttributeOrArrayItems: (
-    //   setFoldedObjectAttributeOrArrayItems: React.Dispatch<
-    //     React.SetStateAction<FoldedStateTree>
-    //   >
-    // ) => void,
-  ) {
-    // Empty constructor
-  }
-}
+// export class DocumentOutlineContextDefault implements DocumentOutlineContextType {
+//   constructor(
+//     public isOutlineOpen = false,
+//     public outlineWidth = 300,
+//     public outlineData = null,
+//     public outlineTitle = "Document Outline",
+//     public reportInstance = null,
+//     public onToggleOutline = () => {},
+//     public onNavigateToPath = (path: string[]) => {},
+//     public setOutlineData = (data: any) => {},
+//     public setOutlineTitle = (title: string) => {},
+//     public setReportInstance = (instance: any) => {},
+//     public typeCheckKeyMap: Record<string, KeyMapEntry>,
+//     public setTypeCheckKeyMap: React.Dispatch<React.SetStateAction<Record<string, KeyMapEntry>>>,
+//   ) {
+//     // Empty constructor
+//   }
+// }
 
 export const DocumentOutlineContext = createContext<DocumentOutlineContextType | null>(null);
 
@@ -74,7 +57,6 @@ export const useDocumentOutlineContext = () => {
 let count = 0;
 // ################################################################################################
 export function DocumentOutlineContextProvider(props: {
-  // value: DocumentOutlineContextType;
   isOutlineOpen: boolean;
   onToggleOutline: () => void;
   onNavigateToPath: (path: string[]) => void;
@@ -92,14 +74,14 @@ export function DocumentOutlineContextProvider(props: {
   const [onNavigateToPath, setOnNavigateToPath] = useState<(path: string[]) => void>(() => {});
   const [typeCheckKeyMap, setTypeCheckKeyMap] = useState<Record<string, KeyMapEntry>>({});
 
-  const context = useMiroirContextService();
+  // const context = useMiroirContextService();
 
-  useEffect(() => {
-    context.setSetTypeCheckKeyMap((a) => {
-      // console.log("DocumentOutlineContextProvider: called setTypeCheckKeyMap in context");
-      return setTypeCheckKeyMap;
-    });
-  }, [context.setSetTypeCheckKeyMap, setTypeCheckKeyMap]);
+  // useEffect(() => {
+  //   context.setSetTypeCheckKeyMap((a) => {
+  //     // console.log("DocumentOutlineContextProvider: called setTypeCheckKeyMap in context");
+  //     return setTypeCheckKeyMap;
+  //   });
+  // }, [context.setSetTypeCheckKeyMap, setTypeCheckKeyMap]);
   
   const outlineContextValue: DocumentOutlineContextType = useMemo<DocumentOutlineContextType>(
     () => ({
