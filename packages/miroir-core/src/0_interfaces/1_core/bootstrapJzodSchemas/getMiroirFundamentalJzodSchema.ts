@@ -90,38 +90,38 @@ export const entityDefinitionRoot = {
           id: 3,
           defaultLabel: "Entity Uuid",
           display: { editable: false },
-          // targetApplicationUuid: {
-          //   transformerType: "ifThenElse",
-          //   interpolation: "build",
-          //   if: {
-          //     transformerType: "boolExpr",
-          //     interpolation: "build",
-          //     operator: "==",
-          //     left: {
-          //       transformerType: "getFromParameters",
-          //       interpolation: "build",
-          //       safe: true,
-          //       referencePath: ["dropEntity", "application"],
-          //     },
-          //     right: {
-          //       transformerType: "returnValue",
-          //       interpolation: "build",
-          //       value: true,
-          //     },
-          //   },
-          //   then: {
-          //     transformerType: "getFromParameters",
-          //     interpolation: "build",
-          //     safe: true,
-          //     referencePath: ["dropEntity", "application"],
-          //   },
-          //   else: {
-          //     transformerType: "returnValue",
-          //     interpolation: "build",
-          //     value: "31f3a03a-f150-416d-9315-d3a752cb4eb4",
-          //   },
-          // },
           foreignKeyParams: {
+            // targetApplicationUuid: {
+            //   transformerType: "ifThenElse",
+            //   interpolation: "build",
+            //   if: {
+            //     transformerType: "boolExpr",
+            //     interpolation: "build",
+            //     operator: "==",
+            //     left: {
+            //       transformerType: "getFromParameters",
+            //       interpolation: "build",
+            //       safe: true,
+            //       referencePath: ["dropEntity", "application"],
+            //     },
+            //     right: {
+            //       transformerType: "returnValue",
+            //       interpolation: "build",
+            //       value: true,
+            //     },
+            //   },
+            //   then: {
+            //     transformerType: "getFromParameters",
+            //     interpolation: "build",
+            //     safe: true,
+            //     referencePath: ["dropEntity", "application"],
+            //   },
+            //   else: {
+            //     transformerType: "returnValue",
+            //     interpolation: "build",
+            //     value: "31f3a03a-f150-416d-9315-d3a752cb4eb4",
+            //   },
+            // },
             targetEntityApplicationSection: "model",
             targetEntity: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
             targetEntityOrderInstancesBy: "name",

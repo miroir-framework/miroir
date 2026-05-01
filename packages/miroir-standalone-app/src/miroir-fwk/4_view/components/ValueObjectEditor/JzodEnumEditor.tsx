@@ -30,6 +30,7 @@ import {
 import { JzodEnumEditorProps } from "./JzodElementEditorInterface";
 import { useSelector } from "react-redux";
 import { getMemoizedReduxDeploymentsStateSelectorMap } from "miroir-localcache-redux";
+import { JsonDisplayHelper } from "miroir-react";
 
 // Common function to handle discriminator changes
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -270,7 +271,7 @@ export const JzodEnumEditor: FC<JzodEnumEditorProps> = ({
     : "";
   const parentKeyMap = typeCheckKeyMap ? typeCheckKeyMap[parentKey] : undefined;
   const currentKeyMap = typeCheckKeyMap ? typeCheckKeyMap[rootLessListKey] : undefined;
-  const rawJzodSchema = currentKeyMap?.rawSchema;
+  // const rawJzodSchema = currentKeyMap?.rawSchema;
   const currentEnumSchema: JzodElement | undefined = currentKeyMap?.resolvedSchema;
   const formikRootLessListKeyArray = [reportSectionPathAsString, ...rootLessListKeyArray];
   const formikRootLessListKey = formikRootLessListKeyArray.join(".");
@@ -302,11 +303,13 @@ export const JzodEnumEditor: FC<JzodEnumEditorProps> = ({
 
   const discriminatorIndex: number = !parentKeyMap?.discriminator
     ? -1
-    : typeof parentKeyMap?.discriminator == "string"
-    ? 0
-    : parentKeyMap?.discriminator?.findIndex((d: string | string[]) =>
-        Array.isArray(d) ? d.includes(name) : d === name
-      );
+    : typeof parentKeyMap?.discriminator == "string" && parentKeyMap.discriminator === name
+      ? 0
+      : typeof parentKeyMap?.discriminator == "string"
+        ? -1
+        : parentKeyMap?.discriminator?.findIndex((d: string | string[]) =>
+            Array.isArray(d) ? d.includes(name) : d === name,
+          );
 
   const isDiscriminator =
     parentKeyMap?.discriminator &&
@@ -476,7 +479,7 @@ export const JzodEnumEditor: FC<JzodEnumEditorProps> = ({
             />
           )}
           {forceTestingMode ? (
-            <div>enumValues={JSON.stringify((rawJzodSchema as JzodEnum).definition)}</div>
+            <div>enumValues={JSON.stringify((currentEnumSchema as JzodEnum).definition)}</div>
           ) : (
             <></>
           )}
@@ -501,15 +504,38 @@ export const JzodEnumEditor: FC<JzodEnumEditorProps> = ({
     name,
     selectOptions,
     handleFilterableSelectEnumChange,
-    rawJzodSchema,
+    // rawJzodSchema,
     forceTestingMode,
     isDiscriminator,
     handleSelectEnumChange,
   ]);
   return (
-    <ThemedLabeledEditor
-      labelElement={labelElement ?? <></>}
-      editor={editor}
-    />
+    <div>
+        <JsonDisplayHelper
+          debug={true}
+          componentName="JzodEnumEditor"
+          elements={[
+            {
+              label: `key "${formikRootLessListKey}" of type ${currentEnumSchema?.type}`,
+              data: {
+                isDiscriminator,
+                selectOptions,
+                // rawJzodSchema,
+                currentEnumSchema,
+                currentKeyMap,
+                currentDiscriminatorValues,
+                parentKeyMap,
+              },
+              initiallyUnfolded: false,
+              copyButton: true,
+              useCodeBlock: true,
+            },
+          ]}
+        />
+      <ThemedLabeledEditor
+        labelElement={labelElement ?? <></>}
+        editor={editor}
+      />
+    </div>
   );
 };
