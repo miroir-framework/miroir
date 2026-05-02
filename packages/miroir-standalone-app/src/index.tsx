@@ -18,6 +18,7 @@ import {
   defaultMetaModelEnvironment,
   defaultSelfApplicationDeploymentMap,
   expect,
+  getMiroirEnvironmentMode,
   LoggerInterface,
   MiroirActivityTracker,
   MiroirConfigClient,
@@ -29,6 +30,7 @@ import {
   RestClient,
   RestClientStub,
   SpecificLoggerOptionsMap,
+  templateEvaluationParams,
   type ApplicationDeploymentMap,
   type Deployment,
   type DomainControllerInterface,
@@ -72,8 +74,6 @@ import { RunnersPage } from "./miroir-fwk/4_view/routes/Runners.js";
 import { SearchPage } from "./miroir-fwk/4_view/routes/SearchPage.js";
 import { SettingsPage } from "./miroir-fwk/4_view/routes/SettingsPage.js";
 import { TransformerBuilderPage } from "./miroir-fwk/4_view/routes/TransformerBuilderPage.js";
-// import { RestPersistenceClientAndRestClient, setupMiroirDomainController } from "miroir-localcache-redux";
-// import { ThemesPage } from "./miroir-fwk/4_view/routes/ThemesPage.js";
 
 const specificLoggerOptions: SpecificLoggerOptionsMap = {
   // "5_miroir-core_DomainController": {level:defaultLevels.INFO, template:"[{{time}}] {{level}} ({{name}}) BBBBB-"},
@@ -311,6 +311,9 @@ export async function setupMiroirPlatform(
     miroirConfig
   );
   console.log("setupMiroirPlatform miroirConfig", JSON.stringify(miroirConfig, null, 2));
+  console.log("setupMiroirPlatform import.meta.env", JSON.stringify((import.meta as any).env, null, 2));
+  console.log("setupMiroirPlatform getMiroirEnvironmentMode", getMiroirEnvironmentMode());
+  console.log("setupMiroirPlatform templateEvaluationParams", JSON.stringify(templateEvaluationParams, null, 2));
 
   let restClient: RestClientInterface | undefined = undefined;
   let persistenceStoreRestClient: RestPersistenceClientAndRestClientInterface | undefined = undefined;
@@ -366,7 +369,8 @@ export async function setupMiroirPlatform(
   if (miroirConfig.client.emulateServer && !options?.customRestClient) {
     persistenceStoreControllerManagerForServer = new PersistenceStoreControllerManager(
       ConfigurationService.configurationService.adminStoreFactoryRegister,
-      ConfigurationService.configurationService.StoreSectionFactoryRegister
+      ConfigurationService.configurationService.StoreSectionFactoryRegister,
+      miroirConfig.client.filesystemRootDirectory
     );
 
     domainControllerForServer = await setupMiroirDomainController(
@@ -442,11 +446,13 @@ async function startWebApp(root:Root) {
   theme.spacing(10);
 
   console.warn("start in mode", process.env.NODE_ENV);
-  const desktopMiroirConfig: MiroirConfigClient = {
+  const electronMiroirConfig: MiroirConfigClient = {
     miroirConfigType: "client",
     client: {
       emulateServer: true,
       rootApiUrl: "http://localhost:3080",
+      // filesystemRootDirectory: "../miroir-test-app_deployment-admin/assets",
+      filesystemRootDirectory: electronRestClient ? electronRestClient.getDefaultFilesystemFolder() : "no default filesystem folder because not in Electron",
       deploymentStorageConfig: {
         // rootApiUrl: "http://localhost:3080",
         // dataflowConfiguration: {
@@ -479,7 +485,7 @@ async function startWebApp(root:Root) {
   };
   // Electron uses desktopMiroirConfig (emulated server via IPC).
   // The browser webapp uses webMiroirConfig (real HTTP server).
-  const miroirConfigToUse = isElectron ? desktopMiroirConfig : webMiroirConfig;
+  const miroirConfigToUse = isElectron ? electronMiroirConfig : webMiroirConfig;
   const {
     domainControllerForClient,
     domainControllerForServer: rawDomainControllerForServer,
@@ -497,7 +503,7 @@ async function startWebApp(root:Root) {
     ? (new ElectronServerDomainControllerProxy() as any as DomainControllerInterface)
     : rawDomainControllerForServer;
 
-  if (isElectron && desktopMiroirConfig.client.emulateServer) {
+  if (isElectron && electronMiroirConfig.client.emulateServer) {
     if (!domainControllerForServer) {
       throw new Error("Domain controller for server is not defined");
     }

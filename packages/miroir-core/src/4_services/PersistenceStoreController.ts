@@ -64,9 +64,15 @@ export async function storeSectionFactory (
   StoreSectionFactoryRegister:StoreSectionFactoryRegister,
   section:ApplicationSection,
   config: StoreSectionConfiguration,
+  filesystemRootDirectory: string,
   dataStore?: PersistenceStoreDataSectionInterface,
 ):Promise<PersistenceStoreDataSectionInterface | PersistenceStoreModelSectionInterface> {
-  log.info('PersistenceStoreController storeSectionFactory called for', section, config, StoreSectionFactoryRegister);
+  log.info(
+    "PersistenceStoreController storeSectionFactory called for",
+    section,
+    config,
+    StoreSectionFactoryRegister,
+  );
   if (section == 'model' && !dataStore) {
     throw new Error('PersistenceStoreController storeSectionFactory model section factory must receive data section store.')
   }
@@ -75,9 +81,9 @@ export async function storeSectionFactory (
   const foundStoreSectionFactory = StoreSectionFactoryRegister.get(storeFactoryRegisterKey);
   if (foundStoreSectionFactory) {
     if (section == 'model') {
-      return foundStoreSectionFactory(section,config,dataStore)
+      return foundStoreSectionFactory(section,config,filesystemRootDirectory,dataStore)
     } else {
-      return foundStoreSectionFactory(section,config)
+      return foundStoreSectionFactory(section,config,filesystemRootDirectory)
     }
   } else {
     throw new Error('foundStoreFactory is undefined for ' + config.emulatedServerType + ', section ' + section)

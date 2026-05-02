@@ -26,13 +26,10 @@ import {
   defaultMiroirModelEnvironment,
   defaultSelfApplicationDeploymentMap,
   defaultViewParamsFromAdminStorageFetchQueryParams,
-  devRelativePathPrefix,
   formatYYYYMMDD_HHMMSS,
   getDefaultValueForJzodSchemaWithResolutionNonHook,
   MiroirLoggerFactory,
   noValue,
-  prodRelativePathPrefix,
-  selfApplication,
   selfApplicationMiroir,
   transformer_extended_apply_wrapper
 } from "miroir-core";
@@ -53,10 +50,6 @@ let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
   MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "Runner_CreateApplication"), "UI",
 ).then((logger: LoggerInterface) => {log = logger});
-
-// ################################################################################################
-const prefix =
-  process.env.NODE_ENV === "development" ? devRelativePathPrefix : prodRelativePathPrefix;
 
 export interface CreateApplicationToolProps {
   applicationDeploymentMap: ApplicationDeploymentMap;
@@ -235,7 +228,6 @@ export const Runner_CreateApplication_formMLSchema: FormMLSchema = {
 
 // ################################################################################################
 function getCreateApplicationActionTemplate(
-  prefix: string,
   testSelfApplicationUuid: Uuid,
   testDeploymentUuid: Uuid,
   testApplicationName: string,
@@ -824,25 +816,8 @@ function getCreateApplicationActionTemplate(
           transformerType: "generateUuid",
         },
         prefix: {
-          transformerType: "ifThenElse",
-          if: {
-            transformerType: "boolExpr",
-            operator: "==",
-            left: {
-              transformerType: "getFromParameters",
-              safe: true,
-              referencePath: ["env", "NODE_ENV"],
-            },
-            right: "development",
-          },
-          then: {
-            transformerType: "getFromParameters",
-            referencePath: ["devRelativePathPrefix"],
-          },
-          else: {
-            transformerType: "getFromParameters",
-            referencePath: ["prodRelativePathPrefix"],
-          },
+          transformerType: "getFromParameters",
+          referencePath: ["filesystemDeploymentRootDirectory"],
         },
         testSelfApplication: {
           transformerType: "createObject",
@@ -1271,6 +1246,7 @@ function getCreateApplicationActionTemplate(
                           interpolation: "runtime",
                           referencePath: ["prefix"],
                         },
+                          "/",
                         "admin",
                       ],
                     },
@@ -1285,6 +1261,7 @@ function getCreateApplicationActionTemplate(
                           interpolation: "runtime",
                           referencePath: ["prefix"],
                         },
+                          "/",
                         {
                           transformerType: "getFromParameters",
                           referencePath: ["createApplicationAndDeployment", "applicationName"],
@@ -1302,6 +1279,7 @@ function getCreateApplicationActionTemplate(
                           interpolation: "runtime",
                           referencePath: ["prefix"],
                         },
+                          "/",
                         {
                           transformerType: "getFromParameters",
                           referencePath: ["createApplicationAndDeployment", "applicationName"],
@@ -1327,6 +1305,7 @@ function getCreateApplicationActionTemplate(
                           interpolation: "runtime",
                           referencePath: ["prefix"],
                         },
+                          "/",
                         "admin",
                       ],
                     },
@@ -1341,6 +1320,7 @@ function getCreateApplicationActionTemplate(
                           interpolation: "runtime",
                           referencePath: ["prefix"],
                         },
+                          "/",
                         {
                           transformerType: "getFromParameters",
                           referencePath: ["createApplicationAndDeployment", "applicationName"],
@@ -1358,6 +1338,7 @@ function getCreateApplicationActionTemplate(
                           interpolation: "runtime",
                           referencePath: ["prefix"],
                         },
+                          "/",
                         {
                           transformerType: "getFromParameters",
                           referencePath: ["createApplicationAndDeployment", "applicationName"],
@@ -1658,7 +1639,6 @@ export function getRunner_CreateApplication(
       runnerType: "customRunner",
       formMLSchema: Runner_CreateApplication_formMLSchema,
       actionTemplate: getCreateApplicationActionTemplate(
-        prefix,
         testSelfApplicationUuid,
         testDeploymentUuid,
         testApplicationName,
@@ -1713,15 +1693,17 @@ export const Runner_CreateApplication: React.FC<CreateApplicationToolProps> = ({
   );
 
 
-  const defaultViewParamsFromAdminStorageFetchQueryResults: Record<string, EntityInstancesUuidIndex> =
-    useReduxDeploymentsStateQuerySelectorForCleanedResult(
-      deploymentEntityStateSelectorMap.runQuery as SyncQueryRunner<
-        ReduxDeploymentsState,
-        Domain2QueryReturnType<DomainElementSuccess>
-      >,
-      defaultViewParamsFromAdminStorageFetchQueryParams(deploymentEntityStateSelectorMap),
-      applicationDeploymentMap,
-    );
+  const defaultViewParamsFromAdminStorageFetchQueryResults: Record<
+    string,
+    EntityInstancesUuidIndex
+  > = useReduxDeploymentsStateQuerySelectorForCleanedResult(
+    deploymentEntityStateSelectorMap.runQuery as SyncQueryRunner<
+      ReduxDeploymentsState,
+      Domain2QueryReturnType<DomainElementSuccess>
+    >,
+    defaultViewParamsFromAdminStorageFetchQueryParams(deploymentEntityStateSelectorMap),
+    applicationDeploymentMap,
+  );
   
   const viewParams: ViewParams | undefined = defaultViewParamsFromAdminStorageFetchQueryResults?.[
     "viewParams"

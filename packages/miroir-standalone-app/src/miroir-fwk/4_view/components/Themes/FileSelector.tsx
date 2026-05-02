@@ -5,8 +5,7 @@ import { Box, Button, Typography, Alert } from '@mui/material';
 import { CloudUploadIcon, CheckCircle as CheckCircleIcon, Clear as ClearIcon } from './MaterialSymbolWrappers';
 import { useMiroirTheme } from '../../contexts/MiroirThemeContext';
 import { ThemedComponentProps } from 'miroir-react';
-import { devRelativePathPrefix, prodRelativePathPrefix } from 'miroir-core';
-// removed Node 'path' import; use browser-safe string operations instead
+// import { devRelativePathPrefix } from 'miroir-core';
 
 // ################################################################################################
 export interface FileSelectorProps extends Omit<ThemedComponentProps, 'children'> {
@@ -38,10 +37,14 @@ export interface FileSelectorProps extends Omit<ThemedComponentProps, 'children'
   showBorder?: boolean;
   /** Compact mode for inline form display (single line, minimal padding) */
   compact?: boolean;
+  /** Server-side filesystem root directory for folder-selection mode.
+   *  When provided, overrides the default fallback in handleFileChange.
+   *  Pass the value returned by useServerFilesystemRoot() from the parent component.
+   */
+  filesystemRootDirectory?: string;
 }
 
 
-// export const devRelativePathPrefix = "../tests/tmp/";
 const getDirectoryFromWebkitPath = (webkitPath: string) => {
   if (!webkitPath) return "";
   // Normalize backslashes to forward slashes then remove trailing slash if any
@@ -80,6 +83,7 @@ export const FileSelector: React.FC<FileSelectorProps> = ({
   compact = false,
   className,
   style,
+  filesystemRootDirectory,
 }) => {
   const { currentTheme } = useMiroirTheme();
 
@@ -146,10 +150,9 @@ export const FileSelector: React.FC<FileSelectorProps> = ({
     } else {
       if (file && onFileSelect) {
         if (folder) {
-          const prefix =
-            process.env.NODE_ENV === "development" ? devRelativePathPrefix : prodRelativePathPrefix;
+          // const prefix = filesystemRootDirectory ?? devRelativePathPrefix;
           console.warn("Folder selection is not fully supported in all browsers.", file.webkitRelativePath);
-          const dir = file.webkitRelativePath ? prefix + getDirectoryFromWebkitPath(file.webkitRelativePath) : "";
+          const dir = file.webkitRelativePath ? getDirectoryFromWebkitPath(file.webkitRelativePath) : "";
           onFileSelect(dir || file.name);
           setSelectedFileName(dir || file.name);
           setSelectedFileContents(undefined);

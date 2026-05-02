@@ -163,7 +163,6 @@ export async function storeActionOrBundleActionStoreRunner(
 
       // TODO: NOT CLEAN, IMPLEMENTATION-DEPENDENT, METHOD SHOULD BE INJECTED
       // TODO: addPersistenceStoreController takes deploymentUuid, not ApplicationSection as 1st parameter!
-      // for (const deployment of Object.entries(action.configuration)) {
       if (!action.payload.configuration[deploymentUuid]) {
         log.error(
           "storeActionOrBundleActionStoreRunner openStore no configuration entry found for deployment uuid ",

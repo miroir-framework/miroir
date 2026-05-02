@@ -456,7 +456,8 @@ export async function setupMiroirTest(
   if (miroirConfig.client.emulateServer) {
     persistenceStoreControllerManagerForServer = new PersistenceStoreControllerManager(
       ConfigurationService.configurationService.adminStoreFactoryRegister,
-      ConfigurationService.configurationService.StoreSectionFactoryRegister
+      ConfigurationService.configurationService.StoreSectionFactoryRegister,
+      miroirConfig.client.filesystemRootDirectory,
     );
 
     const domainControllerForServer = await setupMiroirDomainController(

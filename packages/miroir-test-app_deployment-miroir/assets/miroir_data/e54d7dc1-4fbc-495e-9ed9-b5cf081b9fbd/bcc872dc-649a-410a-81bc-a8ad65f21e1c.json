@@ -174,7 +174,7 @@
               "transformerType": "boolExpr",
               "operator": "==",
               "left": {
-                "transformerType": "getFromParameters",
+            "transformerType": "getFromParameters",
                 "safe": true,
                 "referencePath": ["env", "NODE_ENV"]
               },

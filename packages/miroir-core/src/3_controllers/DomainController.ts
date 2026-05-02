@@ -42,6 +42,7 @@ import {
   EntityInstance,
   InstanceAction,
   MetaModel,
+  MiroirConfigServer,
   ModelAction,
   ModelActionResetModel,
   RestPersistenceAction,
@@ -103,14 +104,19 @@ import {
   removeUndefinedProperties,
   unNullify,
 } from "../4_services/otherTools.js";
-import { defaultApplicationSection, entityQueryVersion, entityRunner } from '../index.js';
+import {
+  defaultApplicationSection,
+  entityQueryVersion,
+  entityRunner,
+  getMiroirEnvironmentMode,
+} from "../index.js";
 import { ConfigurationService } from './ConfigurationService.js';
 
-export const devRelativePathPrefix = "tests/tmp/";
+export const devRelativePathPrefix = "miroir-server/tests/tmp";
 export const prodRelativePathPrefix = "./deployments/";
 
-const templateEvaluationParams = {
-  env: process.env,
+export const templateEvaluationParams = {
+  env: { NODE_ENV: getMiroirEnvironmentMode() === "dev" ? "development" : "production" },
   devRelativePathPrefix,
   prodRelativePathPrefix,
 };
@@ -219,6 +225,10 @@ export class DomainController implements DomainControllerInterface {
   ) {
     // this.callUtil = new CallUtils(miroirContext.errorLogService, persistenceStoreLocalOrRemote);
     this.callUtil = new CallUtils(persistenceStoreLocalOrRemote);
+    // Make the server-configured filesystem deployment root available to transformer evaluation.
+    // Falls back to the NODE_ENV-based constants for backward compatibility.
+    
+    // const serverCfg = ((miroirContext.getMiroirConfig() as MiroirConfigServer)?.server) as any;
   }
 
   getPersistenceStoreAccessMode(): "local" | "remote" {

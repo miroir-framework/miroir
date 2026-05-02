@@ -29,28 +29,41 @@ export function miroirIndexedDbStoreSectionStartup(
 ) {
   configurationService.registerAdminStoreFactory(
     "indexedDb",
-    async (config: StoreSectionConfiguration): Promise<PersistenceStoreAdminSectionInterface> => {
+    async (
+      config: StoreSectionConfiguration,
+      filesystemRootDirectory: string,
+    ): Promise<PersistenceStoreAdminSectionInterface> => {
       if (config.emulatedServerType == "indexedDb") {
-        const indexedDbStoreName: string = config.indexedDbName + '-model'
-        return Promise.resolve(new IndexedDbAdminStore(indexedDbStoreName, new IndexedDb("data",indexedDbStoreName))) // TODO: add "admin" ApplicationSection?
+        const indexedDbStoreName: string = config.indexedDbName + "-model";
+        return Promise.resolve(
+          new IndexedDbAdminStore(
+            indexedDbStoreName,
+            new IndexedDb("data", filesystemRootDirectory, indexedDbStoreName),
+          ),
+        ); // TODO: add "admin" ApplicationSection?
       } else {
-        return Promise.resolve(new ErrorAdminStore())
+        return Promise.resolve(new ErrorAdminStore());
       }
-    }
-  )
+    },
+  );
   configurationService.registerStoreSectionFactory(
     "indexedDb",
     "model",
     async (
       section: ApplicationSection, // TODO: remove?
       config: StoreSectionConfiguration,
+      filesystemRootDirectory: string,
       dataStore?: PersistenceStoreDataSectionInterface
     ): Promise<PersistenceStoreDataOrModelSectionInterface> => {
       log.info('called registerStoreSectionFactory model function for',section, config.emulatedServerType);
       
       if (config.emulatedServerType == "indexedDb" && dataStore) {
         const indexedDbStoreName = config.indexedDbName + '-model'
-        const db = new IndexedDbModelStoreSection(indexedDbStoreName, new IndexedDb("model", indexedDbStoreName), dataStore)
+        const db = new IndexedDbModelStoreSection(
+          indexedDbStoreName,
+          new IndexedDb("model", filesystemRootDirectory, indexedDbStoreName),
+          dataStore,
+        );
         return Promise.resolve(db);
       } else {
         log.warn('called registerStoreSectionFactory model for', section, config, "returns ErrorDataStore!");
@@ -64,12 +77,16 @@ export function miroirIndexedDbStoreSectionStartup(
     async (
       section: ApplicationSection, // TODO: remove?
       config: StoreSectionConfiguration,
+      filesystemRootDirectory: string,
       dataStore?: PersistenceStoreDataSectionInterface
     ): Promise<PersistenceStoreDataOrModelSectionInterface> => {
       if (config.emulatedServerType == "indexedDb") {
-        log.info('called registerStoreSectionFactory data function for', section, config);
+        log.info("called registerStoreSectionFactory data function for", section, config);
         const indexedDbStoreName = config.indexedDbName + '-data'
-        const db = new IndexedDbDataStoreSection(indexedDbStoreName, new IndexedDb("data", indexedDbStoreName))
+        const db = new IndexedDbDataStoreSection(
+          indexedDbStoreName,
+          new IndexedDb("data", filesystemRootDirectory, indexedDbStoreName),
+        );
         return Promise.resolve(db);
       } else {
         log.warn('called registerStoreSectionFactory data for', section, config, "returns ErrorDataStore!");

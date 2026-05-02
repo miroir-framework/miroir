@@ -24,7 +24,7 @@ export interface PersistenceStoreControllerManagerInterface {
 
   addPersistenceStoreController(
     deploymentUuid: Uuid,
-    config: StoreUnitConfiguration
+    config: StoreUnitConfiguration,
   ): Promise<void>;
   deletePersistenceStoreController(deploymentUuid: Uuid): Promise<void>;
 

@@ -32,7 +32,9 @@ MiroirLoggerFactory.registerLoggerToStart(
 
 // ################################################################################################
 export class PersistenceStoreControllerManager implements PersistenceStoreControllerManagerInterface {
-  private persistenceStoreControllers: { [deploymentUuid: Uuid]: PersistenceStoreControllerInterface } = {};
+  private persistenceStoreControllers: {
+    [deploymentUuid: Uuid]: PersistenceStoreControllerInterface;
+  } = {};
   private persistenceStoreLocalOrRemote: PersistenceStoreLocalOrRemoteInterface | undefined; // receives instance of PersistenceReduxSaga
   private localCache: LocalCacheInterface | undefined;
   private domainController: DomainController | undefined;
@@ -40,14 +42,15 @@ export class PersistenceStoreControllerManager implements PersistenceStoreContro
   constructor(
     private adminStoreFactoryRegister: AdminStoreFactoryRegister,
     private storeSectionFactoryRegister: StoreSectionFactoryRegister,
+    private filesystemRootDirectory: string | undefined = undefined,
   ) {}
 
   // ################################################################################################
   /**
    * this is like prop drilling, this is not directly used by this class, but by the created DomainController (this.domainController)
-   * @param persistenceStore 
+   * @param persistenceStore
    */
-  setPersistenceStoreLocalOrRemote(persistenceStore: PersistenceStoreLocalOrRemoteInterface)  {
+  setPersistenceStoreLocalOrRemote(persistenceStore: PersistenceStoreLocalOrRemoteInterface) {
     this.persistenceStoreLocalOrRemote = persistenceStore;
   }
 
@@ -56,13 +59,14 @@ export class PersistenceStoreControllerManager implements PersistenceStoreContro
     if (this.persistenceStoreLocalOrRemote) {
       return this.persistenceStoreLocalOrRemote;
     } else {
-      throw new Error("PersistenceStoreControllerManager getPersistenceStoreLocalOrRemote no persistenceStore yet!");
-      
+      throw new Error(
+        "PersistenceStoreControllerManager getPersistenceStoreLocalOrRemote no persistenceStore yet!",
+      );
     }
   }
 
   // ################################################################################################
-  setLocalCache(localCache: LocalCacheInterface)  {
+  setLocalCache(localCache: LocalCacheInterface) {
     this.localCache = localCache;
   }
 
@@ -78,26 +82,35 @@ export class PersistenceStoreControllerManager implements PersistenceStoreContro
   // ################################################################################################
   /**
    * USED ONLY ON THE SERVER SIDE, INCLUDING EMULATED SIDE, FOR NOW.
-   * @returns 
+   * @returns
    */
   getServerDomainControllerDEFUNCT(): DomainControllerInterface {
-    throw new Error("PersistenceStoreControllerManager getServerDomainControllerDEFUNCT not implemented yet!");
+    throw new Error(
+      "PersistenceStoreControllerManager getServerDomainControllerDEFUNCT not implemented yet!",
+    );
   }
 
   // ################################################################################################
-  async addPersistenceStoreController(deploymentUuid: string, config: StoreUnitConfiguration): Promise<void> {
+  async addPersistenceStoreController(
+    deploymentUuid: string,
+    config: StoreUnitConfiguration,
+  ): Promise<void> {
     log.info("addPersistenceStoreController", deploymentUuid, config);
     if (this.persistenceStoreControllers[deploymentUuid]) {
-      log.info("addPersistenceStoreController for", deploymentUuid, "already exists, doing nothing!");
+      log.info(
+        "addPersistenceStoreController for",
+        deploymentUuid,
+        "already exists, doing nothing!",
+      );
     } else {
       if (!config.admin) {
-       throw new Error(
-         "PersistenceStoreControllerManager addPersistenceStoreController could not find admin section in configuration " +
-           JSON.stringify(config)
-       );
+        throw new Error(
+          "PersistenceStoreControllerManager addPersistenceStoreController could not find admin section in configuration " +
+            JSON.stringify(config),
+        );
       }
       const adminStoreFactory = this.adminStoreFactoryRegister.get(
-        JSON.stringify({ storageType: config.admin.emulatedServerType })
+        JSON.stringify({ storageType: config.admin.emulatedServerType }),
       );
 
       if (!adminStoreFactory) {
@@ -105,17 +118,29 @@ export class PersistenceStoreControllerManager implements PersistenceStoreContro
           "addPersistenceStoreController no admin store factory found for deployment",
           deploymentUuid,
           " with adminStoreFactoryRegister=",
-          JSON.stringify(this.adminStoreFactoryRegister, undefined, 2)
+          JSON.stringify(this.adminStoreFactoryRegister, undefined, 2),
         );
         throw new Error(
-          "addPersistenceStoreController no admin store factory found for server type " + config.admin.emulatedServerType
+          "addPersistenceStoreController no admin store factory found for server type " +
+            config.admin.emulatedServerType,
         );
       }
-      const adminStore = await adminStoreFactory(config.admin);
+      if (!this.filesystemRootDirectory) {
+        // log.info(
+        //   "addPersistenceStoreController no filesystemRootDirectory provided for deployment",
+        //   deploymentUuid,
+        // );
+        throw new Error(
+          "addPersistenceStoreController no filesystemRootDirectory provided for deployment " +
+            deploymentUuid + ", can not create admin store for server type " + config.admin.emulatedServerType,
+        );
+      }
+      const adminStore = await adminStoreFactory(config.admin, this.filesystemRootDirectory);
       const dataStore = (await storeSectionFactory(
         this.storeSectionFactoryRegister,
         "data",
-        config.data
+        config.data,
+        this.filesystemRootDirectory,
       )) as PersistenceStoreDataSectionInterface;
       // log.info("addPersistenceStoreController found dataStore", dataStore)
       log.info("addPersistenceStoreController found dataStore ok for deployment", deploymentUuid);
@@ -123,12 +148,16 @@ export class PersistenceStoreControllerManager implements PersistenceStoreContro
         this.storeSectionFactoryRegister,
         "model",
         config.model,
-        dataStore
+        this.filesystemRootDirectory,
+        dataStore,
       )) as PersistenceStoreModelSectionInterface;
 
-      this.persistenceStoreControllers[deploymentUuid] = new PersistenceStoreController(adminStore, modelStore, dataStore);
+      this.persistenceStoreControllers[deploymentUuid] = new PersistenceStoreController(
+        adminStore,
+        modelStore,
+        dataStore,
+      );
       log.info("addPersistenceStoreController DONE for deployment", deploymentUuid);
-
     }
   }
 
@@ -138,7 +167,9 @@ export class PersistenceStoreControllerManager implements PersistenceStoreContro
   }
 
   // ################################################################################################
-  getPersistenceStoreController(deploymentUuid: string): PersistenceStoreControllerInterface | undefined {
+  getPersistenceStoreController(
+    deploymentUuid: string,
+  ): PersistenceStoreControllerInterface | undefined {
     return this.persistenceStoreControllers[deploymentUuid];
   }
 
@@ -148,7 +179,11 @@ export class PersistenceStoreControllerManager implements PersistenceStoreContro
       await this.persistenceStoreControllers[deploymentUuid].close();
       delete this.persistenceStoreControllers[deploymentUuid];
     } else {
-      log.info("deletePersistenceStoreController for", deploymentUuid, "does not exist, doing nothing!");
+      log.info(
+        "deletePersistenceStoreController for",
+        deploymentUuid,
+        "does not exist, doing nothing!",
+      );
     }
   }
 
@@ -161,10 +196,11 @@ export class PersistenceStoreControllerManager implements PersistenceStoreContro
   ): Promise<Action2VoidReturnType> {
     await this.addPersistenceStoreController(
       newDeploymentUuid,
-      storeUnitConfiguration
+      storeUnitConfiguration,
     );
-    const testLocalMiroirPersistenceStoreController: PersistenceStoreControllerInterface | undefined =
-      this.getPersistenceStoreController(newDeploymentUuid);
+    const testLocalMiroirPersistenceStoreController:
+      | PersistenceStoreControllerInterface
+      | undefined = this.getPersistenceStoreController(newDeploymentUuid);
 
     if (testLocalMiroirPersistenceStoreController) {
       await testLocalMiroirPersistenceStoreController.clear();
@@ -172,7 +208,7 @@ export class PersistenceStoreControllerManager implements PersistenceStoreContro
         console.log(
           "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ initApplication",
           initApplicationParameters.dataStoreType,
-          "START"
+          "START",
         );
         await testLocalMiroirPersistenceStoreController.initApplication(
           initApplicationParameters.dataStoreType,
@@ -184,17 +220,24 @@ export class PersistenceStoreControllerManager implements PersistenceStoreContro
         console.log(
           "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ deployModule initApplication",
           initApplicationParameters.dataStoreType,
-          "END"
+          "END",
         );
       } catch (error) {
-        console.error('could not initApplication for',initApplicationParameters.dataStoreType,"datastore, can not go further!");
-        throw(error);
+        console.error(
+          "could not initApplication for",
+          initApplicationParameters.dataStoreType,
+          "datastore, can not go further!",
+        );
+        throw error;
       }
-
-    } else { // TODO: inject interface to raise errors!
+    } else {
+      // TODO: inject interface to raise errors!
       // throw new Error("deployModule could not find persistenceStoreController for " + newDeploymentUuid);
-      return new Action2Error("FailedToDeployModule", "deployModule could not find persistenceStoreController for " + newDeploymentUuid);
+      return new Action2Error(
+        "FailedToDeployModule",
+        "deployModule could not find persistenceStoreController for " + newDeploymentUuid,
+      );
     }
-    return ACTION_OK
+    return ACTION_OK;
   }
 }

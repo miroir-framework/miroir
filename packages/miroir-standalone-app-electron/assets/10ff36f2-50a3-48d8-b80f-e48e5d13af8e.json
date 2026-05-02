@@ -9,7 +9,7 @@
   "configuration": {
     "admin": {
       "emulatedServerType": "filesystem",
-      "directory":"../miroir-core/src/assets/admin"
+      "directory":"./resources/miroir-core/src/assets/admin"
     },
     "model": {
       "emulatedServerType": "filesystem",

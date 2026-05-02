@@ -585,7 +585,6 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
     }
     const result = yield* call(() =>
       storeActionOrBundleActionStoreRunner(
-        // action.actionName,
         action.actionType,
         action,
         applicationDeploymentMap,
@@ -616,7 +615,6 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
     }
     const result = yield* call(() =>
       storeActionOrBundleActionStoreRunner(
-        // action.actionName,
         action.actionType,
         action,
         applicationDeploymentMap,

@@ -23,11 +23,9 @@
 import {
   Action2Error,
   type ApplicationDeploymentMap,
-  type DomainControllerInterface,
   type RestClientCallReturnType,
   type RestClientInterface,
 } from "miroir-core";
-
 // ################################################################################################
 // Helpers
 // ################################################################################################
@@ -70,6 +68,13 @@ function reconstructIpcResult(result: any): any {
  * Drop-in replacement for RestClientStub when the app runs inside Electron.
  */
 export class ElectronRestClient implements RestClientInterface {
+
+  getDefaultFilesystemFolder(): string {
+    return (window as any).electronAPI.callMiroirIpc({
+      type: "get-default-filesystem-folder"
+    });
+  }
+
   async get(
     rawUrl: string,
     endpoint: string,

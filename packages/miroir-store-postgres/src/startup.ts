@@ -33,7 +33,15 @@ export function miroirPostgresStoreSectionStartup(configurationService: Configur
         const sqlDbStoreName: string = config.connectionString + ":" + config.schema
         const logHeader = "SqlDbAdminStore " + sqlDbStoreName;
         // return Promise.resolve(new SqlDbAdminStore(sqlDbStoreName, config.connectionString, config.schema))
-        return Promise.resolve(new SqlDbAdminStore("admin", sqlDbStoreName, config.connectionString, config.schema, logHeader))
+        return Promise.resolve(
+          new SqlDbAdminStore(
+            "admin",
+            sqlDbStoreName,
+            config.connectionString,
+            config.schema,
+            logHeader,
+          ),
+        );
       } else {
         return Promise.resolve(new ErrorAdminStore())
       }
@@ -45,6 +53,7 @@ export function miroirPostgresStoreSectionStartup(configurationService: Configur
     async (
       section: ApplicationSection,
       config: StoreSectionConfiguration,
+      filesystemRootDirectory: string,
       dataStore?: PersistenceStoreDataSectionInterface
     ): Promise<PersistenceStoreDataSectionInterface | PersistenceStoreModelSectionInterface> => {
       log.info('called registerStoreSectionFactory function for', section, 'sql', config);
@@ -53,9 +62,16 @@ export function miroirPostgresStoreSectionStartup(configurationService: Configur
         const sqlDbStoreName: string = config.connectionString + ":" + config.schema
         return Promise.resolve(
           config.emulatedServerType == "sql" && dataStore
-            ? new SqlDbModelStoreSection("model", sqlDbStoreName, config.connectionString, config.schema, dataStore, config.forceNullOptionalAttributeToUndefined ?? false)
-            : new ErrorModelStore()
-        )
+            ? new SqlDbModelStoreSection(
+                "model",
+                sqlDbStoreName,
+                config.connectionString,
+                config.schema,
+                dataStore,
+                config.forceNullOptionalAttributeToUndefined ?? false,
+              )
+            : new ErrorModelStore(),
+        );
       } else {
         return Promise.resolve(new ErrorModelStore())
       }
@@ -68,6 +84,7 @@ export function miroirPostgresStoreSectionStartup(configurationService: Configur
     async (
       section: ApplicationSection,
       config: StoreSectionConfiguration,
+      filesystemRootDirectory: string,
       dataStore?: PersistenceStoreDataSectionInterface
     ): Promise<PersistenceStoreDataSectionInterface | PersistenceStoreModelSectionInterface> => {
       log.info('called registerStoreSectionFactory function for', section, 'sql', config);
@@ -75,8 +92,14 @@ export function miroirPostgresStoreSectionStartup(configurationService: Configur
         const sqlDbStoreName: string = config.connectionString + ":" + config.schema
         return Promise.resolve(
           config.emulatedServerType == "sql"
-            ? new SqlDbDataStoreSection("data", sqlDbStoreName, config.connectionString, config.schema, config.forceNullOptionalAttributeToUndefined ?? false)
-            : new ErrorDataStore()
+            ? new SqlDbDataStoreSection(
+                "data",
+                sqlDbStoreName,
+                config.connectionString,
+                config.schema,
+                config.forceNullOptionalAttributeToUndefined ?? false,
+              )
+            : new ErrorDataStore(),
         );
       } else {
         return Promise.resolve(new ErrorDataStore());

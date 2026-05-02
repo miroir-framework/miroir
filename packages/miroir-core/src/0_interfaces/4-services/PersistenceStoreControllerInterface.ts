@@ -148,6 +148,7 @@ export type PersistenceStoreDataOrModelSectionInterface = PersistenceStoreDataSe
 export type PersistenceStoreSectionFactory = (
   section:ApplicationSection,
   config: StoreSectionConfiguration,
+  filesystemRootDirectory: string,
   dataStore?: PersistenceStoreDataSectionInterface,
 )=>Promise<PersistenceStoreDataOrModelSectionInterface>;
 
@@ -156,6 +157,7 @@ export type StoreSectionFactoryRegister = Map<string,PersistenceStoreSectionFact
 // ###############################################################################################################
 export type PersistenceStoreAdminSectionFactory = (
   config: StoreSectionConfiguration,
+  filesystemRootDirectory: string, 
 )=>Promise<PersistenceStoreAdminSectionInterface>;
 
 export type AdminStoreFactoryRegister = Map<string,PersistenceStoreAdminSectionFactory>;

@@ -26,7 +26,7 @@
   ],
   "scripts": {
     "copy-files": "copyfiles -u 1 assets/**/*.json dist/assets",
-    "build": "tsup",
+    "build": "tsup && npm run extract-postgresManager-model",
     "extract-postgresManager-model": "tsx ./scripts/extract-postgresManager-model.ts",
     "test": "vitest run --poolOptions.threads.singleThread -t",
     "testByFile": "vitest run --poolOptions.forks.singleFork --reporter=verbose"

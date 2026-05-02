@@ -495,7 +495,8 @@ export const RunnerView = <T extends Record<string, any>>(props: RunnerProps<T>)
             action.compositeActionTemplate,
             applicationDeploymentMapForAction,
             currentModelEnvironment,
-            values as Record<string, any>
+            values as Record<string, any>,
+            // templateEvaluationParams
           );
           log.info(
             "RunnerView handleSubmit done for compositeActionTemplate",

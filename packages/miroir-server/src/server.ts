@@ -32,7 +32,8 @@ import {
   defaultMetaModelEnvironment,
   defaultSelfApplicationDeploymentMap,
   miroirCoreStartup,
-  restServerDefaultHandlers
+  restServerDefaultHandlers,
+  templateEvaluationParams,
 } from "miroir-core";
 import {
   deployment_Miroir,
@@ -87,6 +88,8 @@ const configFileContents = JSON.parse(
 
 const miroirConfig: MiroirConfigServer = configFileContents as MiroirConfigServer;
 myLogger.info('miroirConfig',miroirConfig)
+myLogger.info(`process.env`, JSON.stringify(process.env, null, 2));
+myLogger.info(`import.meta`, JSON.stringify((import.meta as any), null, 2));
 
 const portFromConfig: number = Number(miroirConfig.server.rootApiUrl.substring(miroirConfig.server.rootApiUrl.lastIndexOf(":") + 1));
 
@@ -158,6 +161,15 @@ app.use(
   })
 );
 
+// Expose server configuration to browser clients.
+// Currently exposes the filesystem deployment root directory so clients don't need to guess it.
+const filesystemDeploymentRootDirectory: string =
+  (miroirConfig.server as any).filesystemDeploymentRootDirectory ?? "./tests/deployments/";
+
+app.get('/api/serverConfig', (_req: any, res: any) => {
+  res.json({ filesystemDeploymentRootDirectory });
+});
+
 miroirCoreStartup();
 miroirFileSystemStoreSectionStartup(ConfigurationService.configurationService);
 miroirIndexedDbStoreSectionStartup(ConfigurationService.configurationService);
@@ -187,6 +199,7 @@ const miroirContext = new MiroirContext(
 const persistenceStoreControllerManager = new PersistenceStoreControllerManager(
   ConfigurationService.configurationService.adminStoreFactoryRegister,
   ConfigurationService.configurationService.StoreSectionFactoryRegister,
+  miroirConfig.server.filesystemDeploymentRootDirectory,
 );
 
 const domainController = await setupMiroirDomainController(
@@ -409,6 +422,9 @@ if (existsSync(certFile) && existsSync(keyFile)) {
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   const http = await import('http');
   http.createServer(app).listen(portFromConfig, () => {
+    myLogger.info("process.env", process.env);
+    myLogger.info("templateEvaluationParams", templateEvaluationParams);
+    myLogger.info(`Server accesses filesystem deployment root directory at: ${filesystemDeploymentRootDirectory}`);
     myLogger.info(`HTTP server listening on port ${portFromConfig} (no TLS — run setup-https to enable HTTPS)`);
   });
 }

@@ -349,7 +349,7 @@
               "transformerType": "boolExpr",
               "operator": "==",
               "left": {
-                "transformerType": "getFromParameters",
+            "transformerType": "getFromParameters",
                 "safe": true,
                 "referencePath": ["env", "NODE_ENV"]
               },
@@ -606,7 +606,7 @@
                             "interpolation": "runtime",
                             "referencePath": ["prefix"]
                           },
-                          "admin"
+                          "/admin"
                         ]
                       }
                     },
@@ -620,6 +620,7 @@
                             "interpolation": "runtime",
                             "referencePath": ["prefix"]
                           },
+                          "/",
                           {
                             "transformerType": "getFromParameters",
                             "referencePath": [
@@ -641,6 +642,7 @@
                             "interpolation": "runtime",
                             "referencePath": ["prefix"]
                           },
+                          "/",
                           {
                             "transformerType": "getFromParameters",
                             "referencePath": [
@@ -670,6 +672,7 @@
                             "interpolation": "runtime",
                             "referencePath": ["prefix"]
                           },
+                          "/",
                           "admin"
                         ]
                       }
@@ -684,6 +687,7 @@
                             "interpolation": "runtime",
                             "referencePath": ["prefix"]
                           },
+                          "/",
                           {
                             "transformerType": "getFromParameters",
                             "referencePath": [
@@ -705,6 +709,7 @@
                             "interpolation": "runtime",
                             "referencePath": ["prefix"]
                           },
+                          "/",
                           {
                             "transformerType": "getFromParameters",
                             "referencePath": [

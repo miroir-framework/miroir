@@ -1,6 +1,7 @@
 {
   "development": {
     "webAppUrl": "https://localhost:5173",
+    "filesystemDeploymentRootDirectory": "..",
     "enableDevTools": true,
     "windowSize": {
       "width": 1200,
@@ -9,6 +10,7 @@
   },
   "production": {
     "appPath": "../miroir-standalone-app/dist/index.html",
+    "filesystemDeploymentRootDirectory": ".",
     "enableDevTools": false,
     "windowSize": {
       "width": 1200,

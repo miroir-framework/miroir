@@ -1,5 +1,15 @@
 import { Level } from 'level';
-import { ACTION_OK, Action2Error, Action2VoidReturnType, ApplicationSection, LoggerInterface, MiroirLoggerFactory, entityDefinitionEntityDefinition } from "miroir-core";
+import path from 'path';
+
+import {
+  ACTION_OK,
+  Action2Error,
+  Action2VoidReturnType,
+  ApplicationSection,
+  LoggerInterface,
+  MiroirLoggerFactory,
+  entityDefinitionEntityDefinition,
+} from "miroir-core";
 
 import { packageName } from "../constants.js";
 import { cleanLevel } from "./constants.js";
@@ -18,6 +28,7 @@ export class IndexedDb {
   // #############################################################################################
   constructor(
     public applicationSection: ApplicationSection,
+    private filesystemRootDirectory: string,
     private databaseName: string
   ) {
     this.logHeader = 'IndexedDb ' + databaseName;
@@ -26,10 +37,24 @@ export class IndexedDb {
   // #############################################################################################
   public async closeObjectStore():Promise<void> {
     if (this.db?.status =='open' ) {
-      log.info(this.logHeader,'closeObjectStore closing db',this.databaseName, this.applicationSection, '...', this.db?.status);
+      log.info(
+        this.logHeader,
+        "closeObjectStore closing db",
+        this.databaseName,
+        this.applicationSection,
+        "...",
+        this.db?.status,
+      );
       await this.db?.close();
     } else {
-      log.info(this.logHeader, 'closeObjectStore db already closed',this.databaseName, this.applicationSection,'...', this.db?.status);
+      log.info(
+        this.logHeader,
+        "closeObjectStore db already closed",
+        this.databaseName,
+        this.applicationSection,
+        "...",
+        this.db?.status,
+      );
     }
     // log.info('IndexedDb closeObjectStore db closed!');
     this.db = undefined;
@@ -50,7 +75,11 @@ export class IndexedDb {
         }
       } else {
         // TODO: allow to set path in config!???
-        this.db = new Level<string, any>("tests/tmp/" + this.databaseName, {valueEncoding: 'json', })
+        // this.db = new Level<string, any>("tests/tmp/" + this.databaseName, {valueEncoding: 'json', })
+        this.db = new Level<string, any>(
+          path.join(this.filesystemRootDirectory, this.databaseName),
+          { valueEncoding: "json" },
+        );
         await this.db?.open();
         log.info('openObjectStore created and opened db',this.databaseName);
       }

@@ -1713,6 +1713,9 @@ export function getMiroirFundamentalJzodSchema(
               type: "literal",
               definition: true,
             },
+            filesystemRootDirectory: {
+              type: "string",
+            },
             rootApiUrl: {
               type: "string",
             },
@@ -1780,6 +1783,9 @@ export function getMiroirFundamentalJzodSchema(
               type: "object",
               definition: {
                 rootApiUrl: {
+                  type: "string",
+                },
+                filesystemDeploymentRootDirectory: {
                   type: "string",
                 },
               },

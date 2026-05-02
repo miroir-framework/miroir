@@ -136,6 +136,18 @@ function serializeRestResult(result: any): any {
 }
 
 // ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+export function getDefaultFilesystemFolder(): string {
+    const envKey = app.isPackaged ? "production" : "development";
+    const appConfig = require("../app.config.json");
+    const configured: string | undefined = (appConfig[envKey] as any)?.filesystemDeploymentRootDirectory;
+    return (configured && configured.length > 0) ? configured : os.homedir();
+  }
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
 /**
  * Initialises the server-side Miroir stack and registers the IPC handler.
  * Must be called from the main process before loadURL() so the handler is ready when the
@@ -158,7 +170,9 @@ export async function setupIpcServer(mainDirname: string): Promise<void> {
 
   const electronServerConfig: MiroirConfigServer = {
     miroirConfigType: "server",
-    server: { rootApiUrl: "https://localhost:3080" },
+    server: { 
+      filesystemDeploymentRootDirectory: getDefaultFilesystemFolder(),
+      rootApiUrl: "https://localhost:3080" },
   };
 
   const miroirContext = new MiroirContext(
@@ -169,7 +183,8 @@ export async function setupIpcServer(mainDirname: string): Promise<void> {
 
   const persistenceStoreControllerManager = new PersistenceStoreControllerManager(
     ConfigurationService.configurationService.adminStoreFactoryRegister,
-    ConfigurationService.configurationService.StoreSectionFactoryRegister
+    ConfigurationService.configurationService.StoreSectionFactoryRegister,
+    electronServerConfig.server.filesystemDeploymentRootDirectory,
   );
 
   const domainController = await setupMiroirDomainController(miroirContext, {
@@ -190,8 +205,15 @@ export async function setupIpcServer(mainDirname: string): Promise<void> {
 
   // Expose the platform-appropriate default filesystem folder so the renderer can
   // pre-populate filesystem / indexedDb deployment paths in Runner components.
-  // Returns os.homedir() which resolves to e.g. /home/user on Linux, C:\Users\user on Windows.
-  ipcMain.handle("get-default-filesystem-folder", () => os.homedir());
+  // Returns the configured filesystemDeploymentRootDirectory from app.config.json if set,
+  // otherwise falls back to os.homedir().
+  ipcMain.handle("get-default-filesystem-folder", () => {
+    // const envKey = app.isPackaged ? "production" : "development";
+    // const appConfig = require("../app.config.json");
+    // const configured: string | undefined = (appConfig[envKey] as any)?.filesystemDeploymentRootDirectory;
+    // return (configured && configured.length > 0) ? configured : os.homedir();
+    return getDefaultFilesystemFolder();
+  });
 
   ipcMain.handle(MIROIR_IPC_CHANNEL, async (_event, payload: any) => {
     switch (payload.type) {

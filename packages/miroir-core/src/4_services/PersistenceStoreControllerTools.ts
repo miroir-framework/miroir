@@ -49,7 +49,8 @@ export async function mountApplicationDeployment(
     console.log("4. Creating persistence store controller manager...");
     const persistenceStoreControllerManager = new PersistenceStoreControllerManager(
       ConfigurationService.configurationService.adminStoreFactoryRegister,
-      ConfigurationService.configurationService.StoreSectionFactoryRegister
+      ConfigurationService.configurationService.StoreSectionFactoryRegister,
+      miroirConfig.client.filesystemRootDirectory,
     );
 
     // Get storage configurations

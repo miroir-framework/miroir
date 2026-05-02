@@ -1,8 +1,16 @@
 import * as fs from "fs";
 
-import { ACTION_OK, Action2VoidReturnType, ApplicationSection, LoggerInterface, MiroirLoggerFactory, PersistenceStoreAbstractInterface } from "miroir-core";
+import {
+  ACTION_OK,
+  Action2VoidReturnType,
+  ApplicationSection,
+  LoggerInterface,
+  MiroirLoggerFactory,
+  PersistenceStoreAbstractInterface,
+} from "miroir-core";
 import { packageName } from "../constants.js";
 import { cleanLevel } from "./constants.js";
+import path from "path";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -10,13 +18,19 @@ MiroirLoggerFactory.registerLoggerToStart(
 ).then((logger: LoggerInterface) => {log = logger});
 
 export class FileSystemStore implements PersistenceStoreAbstractInterface {
+  public directory: string;
+
   // ##############################################################################################
   constructor(
     public applicationSection: ApplicationSection,
     public filesystemStoreName: string,
-    public directory: string,
+    rootDirectory: string,
+    subDirectory: string,
     public logHeader: string
-  ) {}
+  ) {
+    this.directory = path.join(rootDirectory, subDirectory);
+    log.debug(this.logHeader, "constructor initialized with directory:", this.directory);
+  }
 
   // #########################################################################################
   getStoreName(): string {
@@ -25,7 +39,6 @@ export class FileSystemStore implements PersistenceStoreAbstractInterface {
 
   // #########################################################################################
   open(): Promise<Action2VoidReturnType> {
-    // const entityDirectories = fs.readdirSync(this.directory);
     if (fs.existsSync(this.directory)) {
       log.debug(this.logHeader, "open checked that directory exist:", this.directory);
     } else {

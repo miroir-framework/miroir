@@ -28,7 +28,7 @@
   ],
   "scripts": {
     "copy-files": "copyfiles -u 1 assets/**/*.json dist/assets",
-    "build": "tsup",
+    "build": "tsup && npm run extract-library-model",
     "generate-library-model": "tsx ./scripts/generate-library-metamodel.ts",
     "extract-library-model": "tsx ./scripts/extract-library-model.ts",
     "test": "vitest run --poolOptions.threads.singleThread -t",

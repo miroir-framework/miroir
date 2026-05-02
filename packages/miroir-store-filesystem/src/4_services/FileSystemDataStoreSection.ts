@@ -26,12 +26,14 @@ export class FileSystemDataStoreSection extends MixedFileSystemInstanceStoreSect
   constructor(
     applicationSection: ApplicationSection,
     filesystemStoreName: string,
-    directory: string,
+    filesystemRootDirectory: string,
+    subDirectory: string,
   ) {
     super(
       applicationSection,
       filesystemStoreName,
-      directory,
+      filesystemRootDirectory,
+      subDirectory,
       'FileSystemDataStoreSection (' + filesystemStoreName + ')' 
     );
   }

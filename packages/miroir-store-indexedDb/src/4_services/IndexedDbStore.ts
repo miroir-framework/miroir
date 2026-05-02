@@ -20,7 +20,11 @@ export class IndexedDbStore implements PersistenceStoreAbstractInterface {
   // public logHeader: string;
 
   // ##############################################################################################
-  constructor(public indexedDbStoreName: string, public localUuidIndexedDb: IndexedDb, public logHeader: string) {}
+  constructor(
+    public indexedDbStoreName: string,
+    public localUuidIndexedDb: IndexedDb,
+    public logHeader: string,
+  ) {}
 
   // #########################################################################################
   getStoreName(): string {

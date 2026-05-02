@@ -10636,6 +10636,9 @@ export const miroirFundamentalJzodSchema = {
             "type": "literal",
             "definition": true
           },
+          "filesystemRootDirectory": {
+            "type": "string"
+          },
           "rootApiUrl": {
             "type": "string"
           },
@@ -10703,6 +10706,9 @@ export const miroirFundamentalJzodSchema = {
             "type": "object",
             "definition": {
               "rootApiUrl": {
+                "type": "string"
+              },
+              "filesystemDeploymentRootDirectory": {
                 "type": "string"
               }
             }

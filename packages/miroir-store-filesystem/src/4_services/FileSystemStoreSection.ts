@@ -35,20 +35,17 @@ export class FileSystemStoreSection
 {
   // Map from entity UUID to idAttribute (defaults to "uuid" when absent)
   public entityIdAttributes: Record<string, string | string[]> = {};
-  // public filesystemStoreName: string;
-  // public directory: string;
-
-  // public logHeader: string;
 
   // ##############################################################################################
   constructor(
     // public applicationSection: ApplicationSection,
     // public filesystemStoreName: string,
-    // private directory: string,
+    // rootDirectory: string,
+    // subDirectory: string,
     // public logHeader: string;
     ...args: any[] // mixin constructors are limited to args:any[] parameters
   ) {
-    super(args[0], args[1], args[2], args[3]);
+    super(args[0], args[1], args[2], args[3], args[4]);
   }
 
   // #############################################################################################

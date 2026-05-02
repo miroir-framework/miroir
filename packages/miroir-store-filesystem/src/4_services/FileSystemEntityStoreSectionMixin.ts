@@ -51,18 +51,20 @@ export function FileSystemDbEntityStoreSectionMixin<TBase extends typeof MixedFi
     constructor(
       // applicationSection: ApplicationSection,
       // filesystemStoreName: string,
-      // directory: string,
+      // rootDirectory: string,
+      // subDirectory: string,
       // logHeader: string,
       // dataStore: PersistenceStoreDataSectionInterface,
       ...args: any[]
     ) {
       super(
         // public filesystemStoreName: string, // used only for debugging purposes
-        // private directory: string,
+        // rootDirectory: string,
+        // subDirectory: string,
         // public logHeader: string;
-        ...args.slice(0, 4)
+        ...args.slice(0, 5)
       );
-      this.dataStore = args[4];
+      this.dataStore = args[5];
       log.info(this.logHeader, "MixedIndexedDbEntityStoreSection constructor", args);
     }
 

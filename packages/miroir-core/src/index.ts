@@ -869,11 +869,19 @@ export {
 } from "./3_controllers/ActionRunner.js";
 export {
   cacheFetchPolicy,
-  cacheInvalidationPolicy, ConfigurationService, ConfigurationServiceInner, PackageConfiguration,
-  undoRedoHistorization
+  cacheInvalidationPolicy,
+  ConfigurationService,
+  ConfigurationServiceInner,
+  PackageConfiguration,
+  undoRedoHistorization,
 } from "./3_controllers/ConfigurationService";
 export {
-  DeploymentConfiguration, devRelativePathPrefix, DomainController, prodRelativePathPrefix, resetAndInitApplicationDeployment
+  DeploymentConfiguration,
+  devRelativePathPrefix,
+  DomainController,
+  prodRelativePathPrefix,
+  resetAndInitApplicationDeployment,
+  templateEvaluationParams,
 } from "./3_controllers/DomainController";
 // export { Endpoint } from "./3_controllers/Endpoint.js";
 export { CallUtils } from "./3_controllers/ErrorHandling/CallUtils.js";
@@ -932,7 +940,7 @@ export {
   getSchemaAtPath,
   getValueAtPath, interpolateExpression, mStringify, RelativePath, resolvePathOnObject, resolveRelativePath, ResolveRelativePathError,
   ResolveRelativePathResult, type AbsolutePath as ResultAccessPath,
-  safeResolvePathOnObject, setValueAtPath, stringTuple
+  safeResolvePathOnObject, setValueAtPath, stringTuple, getMiroirEnvironmentMode
 } from "./tools";
 
 export {

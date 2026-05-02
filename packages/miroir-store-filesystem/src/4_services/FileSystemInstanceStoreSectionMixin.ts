@@ -56,7 +56,8 @@ export function FileSystemInstanceStoreSectionMixin<TBase extends MixableFileSys
       // ...args stands for:
       // public applicationSection: ApplicationSection,
       // public filesystemStoreName: string,
-      // private directory: string,
+      // rootDirectory: string,
+      // subDirectory: string,
       // public logHeader: string,
       ...args: any[]
     ) {

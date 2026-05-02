@@ -28,13 +28,15 @@ export class FileSystemModelStoreSection
   constructor(
     applicationSection: ApplicationSection,
     filesystemStoreName: string,
-    directory: string,
+    filesystemRootDirectory: string,
+    subDirectory: string,
     dataStore: PersistenceStoreDataSectionInterface
   ) {
     super(
       applicationSection,
       filesystemStoreName,
-      directory,
+      filesystemRootDirectory,
+      subDirectory,
       "FileSystemModelStoreSection " + filesystemStoreName, // logheader
       dataStore
     );

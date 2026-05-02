@@ -8,22 +8,16 @@
   "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "configuration": {
     "admin": {
-      "emulatedServerType": "sql",
-      "connectionString": "postgres://postgres:postgres@localhost:5432/postgres",
-      "schema": "miroirAdmin",
-      "forceNullOptionalAttributeToUndefined": true
+      "emulatedServerType": "filesystem",
+      "directory": "./tests/tmp/miroir_admin"
     },
     "model": {
-      "emulatedServerType": "sql",
-      "connectionString": "postgres://postgres:postgres@localhost:5432/postgres",
-      "schema": "miroir",
-      "forceNullOptionalAttributeToUndefined": true
+      "emulatedServerType": "filesystem",
+      "directory": "./tests/tmp/miroir_model"
     },
     "data": {
-      "emulatedServerType": "sql",
-      "connectionString": "postgres://postgres:postgres@localhost:5432/postgres",
-      "schema": "miroir",
-      "forceNullOptionalAttributeToUndefined": true
+      "emulatedServerType": "filesystem",
+      "directory": "./tests/tmp/miroir_data"
     }
   }
 }

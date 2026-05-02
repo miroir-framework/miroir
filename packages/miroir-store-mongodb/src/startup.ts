@@ -63,6 +63,7 @@ export function miroirMongoDbStoreSectionStartup(configurationService: Configura
     async (
       section: ApplicationSection,
       config: StoreSectionConfiguration,
+      filesystemRootDirectory: string,
       dataStore?: PersistenceStoreDataSectionInterface
     ): Promise<PersistenceStoreDataOrModelSectionInterface> => {
       log.info('called registerStoreSectionFactory model function for', section, config.emulatedServerType);
@@ -88,6 +89,7 @@ export function miroirMongoDbStoreSectionStartup(configurationService: Configura
     async (
       section: ApplicationSection,
       config: StoreSectionConfiguration,
+      filesystemRootDirectory: string,
       dataStore?: PersistenceStoreDataSectionInterface
     ): Promise<PersistenceStoreDataOrModelSectionInterface> => {
       if (isMongoDbConfig(config)) {

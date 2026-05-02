@@ -69,7 +69,7 @@ export async function extractApplicationAndData(
 ) {
   try {
 
-        if (!miroirConfig || !miroirConfig.client || !miroirConfig.client.emulateServer) {
+    if (!miroirConfig || !miroirConfig.client || !miroirConfig.client.emulateServer) {
       throw new Error("Invalid configuration: 'client.emulateServer' must be defined in extractMetaModelConfig.json");
     }
 
@@ -100,20 +100,21 @@ export async function extractApplicationAndData(
     if (appDeploymentConfig.admin.emulatedServerType !== "filesystem") {
       throw new Error("Invalid configuration: The deployment storage config for the library must have 'emulatedServerType' set to 'filesystem'");
     }
-    // Convert relative paths to absolute, resolving from scripts directory
-    const modelDir = resolve(scriptsDir, appDeploymentConfig.model.directory);
-    const dataDir = resolve(scriptsDir, appDeploymentConfig.data.directory);
-    const adminDir = resolve(scriptsDir, appDeploymentConfig.admin.directory);
+    // // Convert relative paths to absolute, resolving from scripts directory
+    // const modelDir = resolve(scriptsDir, appDeploymentConfig.model.directory);
+    // const dataDir = resolve(scriptsDir, appDeploymentConfig.data.directory);
+    // const adminDir = resolve(scriptsDir, appDeploymentConfig.admin.directory);
     
-    // Update the config with absolute paths
-    appDeploymentConfig.model.directory = modelDir;
-    appDeploymentConfig.data.directory = dataDir;
-    appDeploymentConfig.admin.directory = adminDir;
+    // // Update the config with absolute paths
+    // appDeploymentConfig.model.directory = modelDir;
+    // appDeploymentConfig.data.directory = dataDir;
+    // appDeploymentConfig.admin.directory = adminDir;
     
     console.log("   Configuration loaded successfully");
     console.log("   Scripts directory:", scriptsDir);
-    console.log("   Model directory:", modelDir);
-    console.log("   Data directory:", dataDir);
+    console.log("   Model directory:", appDeploymentConfig.model.directory);
+    console.log("   Data directory:", appDeploymentConfig.data.directory);
+    console.log("   Admin directory:", appDeploymentConfig.admin.directory);
 
 
     const { storeController, persistenceStoreControllerManager } = await mountApplicationDeployment(

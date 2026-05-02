@@ -570,6 +570,8 @@ export const getJzodElementEditorForTest: (pageLabel: string) => React.FC<JzodEl
                         currentApplicationSection={"data"}
                         typeCheckKeyMap={resolvedJzodSchema.keyMap}
                         foreignKeyObjects={emptyObject}
+                        insideAny={false}
+                        anyRootLessListKey=""
                         indentLevel={0}
                       />
                       <button type="submit" role="form" name={pageLabel} form={"form." + pageLabel}>

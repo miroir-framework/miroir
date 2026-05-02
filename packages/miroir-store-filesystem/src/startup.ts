@@ -28,21 +28,32 @@ export function miroirFileSystemStoreSectionStartup(
 ) {
   configurationService.registerAdminStoreFactory(
     "filesystem",
-    async (config: StoreSectionConfiguration): Promise<PersistenceStoreAdminSectionInterface> => {
+    async (
+      config: StoreSectionConfiguration,
+      filesystemRootDirectory: string,
+    ): Promise<PersistenceStoreAdminSectionInterface> => {
       if (config.emulatedServerType == "filesystem") {
-        const filesystemStoreName: string = config.directory
-        return Promise.resolve(new FileSystemAdminStore("data",filesystemStoreName, config.directory)) // TODO: provide adequate applicationSection! "admin"?
+        const filesystemStoreName: string = config.directory;
+        return Promise.resolve(
+          new FileSystemAdminStore(
+            "data",
+            filesystemStoreName,
+            filesystemRootDirectory,
+            config.directory,
+          ),
+        ); // TODO: provide adequate applicationSection! "admin"?
       } else {
-        return Promise.resolve(new ErrorAdminStore())
+        return Promise.resolve(new ErrorAdminStore());
       }
-    }
-  )
+    },
+  );
   configurationService.registerStoreSectionFactory(
     "filesystem",
     "model",
     async (
       section: ApplicationSection, // TODO: remove!
       config: StoreSectionConfiguration,
+      filesystemRootDirectory: string,
       dataStore?: PersistenceStoreDataSectionInterface
     ): Promise<PersistenceStoreDataSectionInterface | PersistenceStoreModelSectionInterface> => {
       
@@ -52,9 +63,15 @@ export function miroirFileSystemStoreSectionStartup(
         
         return Promise.resolve(
           config.emulatedServerType == "filesystem" && dataStore
-            ? new FileSystemModelStoreSection("model", filesystemStoreName, config.directory, dataStore)
-            : new ErrorModelStore()
-        )
+            ? new FileSystemModelStoreSection(
+                "model",
+                filesystemStoreName,
+                filesystemRootDirectory,
+                config.directory,
+                dataStore,
+              )
+            : new ErrorModelStore(),
+        );
       } else {
         return Promise.resolve(new ErrorModelStore())
       }
@@ -66,6 +83,7 @@ export function miroirFileSystemStoreSectionStartup(
     async (
       section: ApplicationSection,
       config: StoreSectionConfiguration,
+      filesystemRootDirectory: string,
       dataStore?: PersistenceStoreDataSectionInterface
     ): Promise<PersistenceStoreDataSectionInterface | PersistenceStoreModelSectionInterface> => {
       if (config.emulatedServerType == "filesystem") {
@@ -73,9 +91,14 @@ export function miroirFileSystemStoreSectionStartup(
         const filesystemStoreName: string = config.directory
         return Promise.resolve(
           config.emulatedServerType == "filesystem"
-            ? new FileSystemDataStoreSection("data", filesystemStoreName, config.directory)
-            : new ErrorDataStore()
-        )
+            ? new FileSystemDataStoreSection(
+                "data",
+                filesystemStoreName,
+                filesystemRootDirectory,
+                config.directory,
+              )
+            : new ErrorDataStore(),
+        );
       } else {
         return Promise.resolve(new ErrorDataStore());
       }

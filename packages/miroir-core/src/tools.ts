@@ -9,6 +9,25 @@ export function stringTuple<T extends [string] | string[]>(...data: T): T {
   return data;
 }
 
+/**
+ * Returns "dev" or "prod" regardless of the execution environment:
+ * - Browser (Vite): reads import.meta.env.MODE ("development" -> "dev", else "prod")
+ * - Node.js / Electron main: reads process.env.NODE_ENV
+ * - Falls back to "prod" when neither is available
+ */
+export function getMiroirEnvironmentMode(): "dev" | "prod" {
+  // Node.js / Electron main process
+  if (typeof process !== "undefined" && (process as any).versions?.node) {
+    return (process.env.NODE_ENV === "development") ? "dev" : "prod";
+  }
+  // Browser / Electron renderer built with Vite
+  const viteEnv = (typeof import.meta !== "undefined") ? (import.meta as any).env : undefined;
+  if (viteEnv) {
+    return (viteEnv.MODE === "development") ? "dev" : "prod";
+  }
+  return "prod";
+}
+
 export const circularReplacer = () => {
   const seen = new WeakSet();
   return (key: any, value: object | null) => {
