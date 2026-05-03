@@ -2,9 +2,9 @@
 
 This tutorial introduces the Miroir Framework through a concrete example: a Library application. You'll learn by doing - starting with basic operations, then discovering how Miroir's architecture makes them possible.
 
-We assume you have a working Miroir Framework instance. If not, follow the setup documentation [here TBW](//https://github.com/miroir-framework/miroir).
+We assume you have a working Miroir Framework instance. If not, follow the [Quickstart guide](../getting-started/quickstart.md).
 
-estimated reading time: 20 minutes (according to ChatGPT 4.1).
+**estimated reading time: 20 minutes.**
 
 ## Getting Started
 
