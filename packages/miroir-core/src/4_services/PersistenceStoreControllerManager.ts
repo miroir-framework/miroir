@@ -42,7 +42,7 @@ export class PersistenceStoreControllerManager implements PersistenceStoreContro
   constructor(
     private adminStoreFactoryRegister: AdminStoreFactoryRegister,
     private storeSectionFactoryRegister: StoreSectionFactoryRegister,
-    private filesystemRootDirectory: string | undefined = undefined,
+    public filesystemRootDirectory: string | undefined = undefined,
   ) {}
 
   // ################################################################################################

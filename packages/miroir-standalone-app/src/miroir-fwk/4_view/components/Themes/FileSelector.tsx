@@ -37,11 +37,6 @@ export interface FileSelectorProps extends Omit<ThemedComponentProps, 'children'
   showBorder?: boolean;
   /** Compact mode for inline form display (single line, minimal padding) */
   compact?: boolean;
-  /** Server-side filesystem root directory for folder-selection mode.
-   *  When provided, overrides the default fallback in handleFileChange.
-   *  Pass the value returned by useServerFilesystemRoot() from the parent component.
-   */
-  filesystemRootDirectory?: string;
 }
 
 
@@ -83,7 +78,6 @@ export const FileSelector: React.FC<FileSelectorProps> = ({
   compact = false,
   className,
   style,
-  filesystemRootDirectory,
 }) => {
   const { currentTheme } = useMiroirTheme();
 

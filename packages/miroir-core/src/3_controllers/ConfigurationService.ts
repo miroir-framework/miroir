@@ -52,7 +52,6 @@ export class ConfigurationServiceInner {
   public registerStoreSectionFactory(
     storageType: StorageType,
     section: ApplicationSection,
-    // filesystemRootDirectory: string,
     storeSectionFactory: PersistenceStoreSectionFactory,
   ) {
     log.info("ConfigurationService registerStoreSectionFactory", this.StoreSectionFactoryRegister);

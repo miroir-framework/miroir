@@ -54,14 +54,22 @@ import { RootComponent } from "./miroir-fwk/4_view/components/Page/RootComponent
 import { MiroirEventsPage } from "./miroir-fwk/4_view/pages/MiroirEventsPage.js";
 import { HomePage } from "./miroir-fwk/4_view/routes/HomePage.js";
 import { ReportPage } from "./miroir-fwk/4_view/routes/ReportPage.js";
-import { ElectronRestClient, ElectronServerDomainControllerProxy } from "./miroir-fwk/4_view/services/ElectronIpcProxy.js";
+import {
+  ElectronRestClient,
+  ElectronServerDomainControllerProxy,
+} from "./miroir-fwk/4_view/services/ElectronIpcProxy.js";
 import { initializePerformanceConfig } from "./miroir-fwk/4_view/tools/performanceConfig.js";
 import { miroirAppStartup } from "./startup.js";
 
 import { packageName } from "./constants.js";
 import { cleanLevel } from "./miroir-fwk/4_view/constants.js";
 
-import { adminSelfApplication, deployment_Admin, deployment_Miroir, entityDeployment } from "miroir-test-app_deployment-admin";
+import {
+  adminSelfApplication,
+  deployment_Admin,
+  deployment_Miroir,
+  entityDeployment,
+} from "miroir-test-app_deployment-admin";
 import miroirConfigEmulatedServerIndexedDb from "./assets/miroirConfig-emulatedServer-IndexedDb.json";
 import miroirConfigRealServerFilesystemGit from "./assets/miroirConfig-realServer-filesystem-git.json";
 import miroirConfigRealServerFilesystemTmp from "./assets/miroirConfig-realServer-filesystem-tmp.json";
@@ -95,7 +103,10 @@ MiroirLoggerFactory.registerLoggerToStart(
   MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "index.tsx"), "UI",
 ).then((logger: LoggerInterface) => {log = logger});
 
-export const isElectron = typeof window !== "undefined" && typeof window.process === "object" && window.process.versions?.electron;
+export const isElectron =
+  typeof window !== "undefined" &&
+  typeof window.process === "object" &&
+  window.process.versions?.electron;
 
 const miroirConfigFiles: {[k: string]: MiroirConfigClient} = {
   "miroirConfigEmulatedServerIndexedDb": miroirConfigEmulatedServerIndexedDb as MiroirConfigClient,
@@ -457,8 +468,8 @@ async function startWebApp(root:Root) {
       emulateServer: true,
       rootApiUrl: "http://localhost:3080",
       // filesystemRootDirectory: "../miroir-test-app_deployment-admin/assets",
-      // filesystemRootDirectory,
-      filesystemRootDirectory: "./resources/miroir-assets",
+      filesystemRootDirectory,
+      // filesystemRootDirectory: "./resources/miroir-assets",
       // filesystemRootDirectory: electronRestClient
       //   ? await electronRestClient.getDefaultFilesystemFolder()
       //   : "no default filesystem folder because not in Electron",

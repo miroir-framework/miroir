@@ -211,17 +211,11 @@ export const SettingsPage: React.FC<any> = (props: any) => {
             </FormControl>
           </Box>
 
-          <Typography
-            variant="body2"
-            color="textSecondary"
-            sx={{
-              mt: 2,
-              fontStyle: "italic",
-              opacity: 0.8,
-            }}
-          >
-            Customize the appearance and behavior of the application
-          </Typography>
+          {/* <Box>
+            <Typography variant="h6" gutterBottom sx={{ mb: 3, mt: 4 }}>
+              Filesystem folder for user application data: <strong>{}</strong>
+            </Typography>
+          </Box> */}
           <ReportDisplay
             pageParams={
               {

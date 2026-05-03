@@ -136,7 +136,6 @@ export const JzodElementStringEditor: React.FC<JzodElementStringEditorProps> = (
             showBorder={false}
             compact={true}
             style={{ marginBottom: 0 }}
-            // filesystemRootDirectory={serverFilesystemRoot}
           />
         }
       />
