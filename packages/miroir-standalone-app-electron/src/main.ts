@@ -107,6 +107,7 @@ class MainWindow {
       height: 1000,
       width: 1400,
       // icon: path.join(__dirname, 'miroir-logo.png'), // Specify the path to your icon file
+      backgroundColor: '#fff',
       icon: this.getIconPath(),
       webPreferences: {
         preload: path.join(__dirname, "preload.js"),
