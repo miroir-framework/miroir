@@ -150,7 +150,6 @@ export const FileSelector: React.FC<FileSelectorProps> = ({
     } else {
       if (file && onFileSelect) {
         if (folder) {
-          // const prefix = filesystemRootDirectory ?? devRelativePathPrefix;
           console.warn("Folder selection is not fully supported in all browsers.", file.webkitRelativePath);
           const dir = file.webkitRelativePath ? getDirectoryFromWebkitPath(file.webkitRelativePath) : "";
           onFileSelect(dir || file.name);

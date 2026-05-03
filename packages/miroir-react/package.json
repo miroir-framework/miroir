@@ -15,7 +15,8 @@
     }
   },
   "scripts": {
-    "build": "tsup"
+    "build": "tsup",
+    "devBuild": "npm run build"
   },
   "dependencies": {
     "@codemirror/lang-javascript": "^6.2.2",

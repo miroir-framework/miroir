@@ -8,7 +8,7 @@ import {
   ThemedTextEditor
 } from "../Themes/index";
 import { FileSelector } from "../Themes/FileSelector.js";
-import { useServerFilesystemRoot } from "../../hooks/useServerFilesystemRoot.js";
+// import { useServerFilesystemRoot } from "../../hooks/useServerFilesystemRoot.js";
 import type { JzodEditorPropsRoot } from "./JzodElementEditorInterface";
 import { LoggerInterface, MiroirLoggerFactory, type JzodBaseObject, type MetaModel } from "miroir-core";
 import { packageName } from "../../../../constants";
@@ -64,7 +64,7 @@ export const JzodElementStringEditor: React.FC<JzodElementStringEditorProps> = (
   const format = stringDisplay?.format;
   const multiline = stringDisplay?.multiline;
   const rows = stringDisplay?.rows || 4;
-  const serverFilesystemRoot = useServerFilesystemRoot();
+  // const serverFilesystemRoot = useServerFilesystemRoot();
   const [selectedFileName, setSelectedFileName] = useState<string | undefined>(
     currentValueObjectAtKey || undefined
   );
@@ -136,7 +136,7 @@ export const JzodElementStringEditor: React.FC<JzodElementStringEditorProps> = (
             showBorder={false}
             compact={true}
             style={{ marginBottom: 0 }}
-            filesystemRootDirectory={serverFilesystemRoot}
+            // filesystemRootDirectory={serverFilesystemRoot}
           />
         }
       />

@@ -8,6 +8,16 @@
   "module": "dist/bundle.esm.js",
   "browser": "dist/bundle-browser.esm.js",
   "type": "module",
+  "author": "Miroir Framework <miroir-framework@protonmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "watch": "lerna watch --scope='miroir-store-filesystem' --include-dependencies -- lerna run build --scope='miroir-store-filesystem'",
+    "build-tsup": "tsup",
+    "build": "rollup --config --logLevel info",
+    "devBuild": "npm run build",
+    "copy-files": "copyfiles -u 1 src/**/*.json src/**/*.css dist/src",
+    "test": "cross-env NODE_ENV=test vitest"
+  },
   "dependencies": {
     "electron": "40.6.1",
     "miroir-core": "*",
@@ -33,16 +43,5 @@
     "tsconfig-paths": "^4.1.2",
     "typescript": "^6.0.0",
     "vite-plugin-node": "^7.0.0"
-  },
-  "scripts": {
-    "watch": "lerna watch --scope='miroir-store-filesystem' --include-dependencies -- lerna run build --scope='miroir-store-filesystem'",
-    "build-tsup": "tsup",
-    "build": "rollup --config --logLevel info",
-    "build4": "npm run build",
-    "build5": "npm run build",
-    "copy-files": "copyfiles -u 1 src/**/*.json src/**/*.css dist/src",
-    "test": "cross-env NODE_ENV=test vitest"
-  },
-  "author": "Miroir Framework <miroir-framework@protonmail.com>",
-  "license": "MIT"
+  }
 }

@@ -10,7 +10,7 @@
   },
   "production": {
     "appPath": "../miroir-standalone-app/dist/index.html",
-    "filesystemDeploymentRootDirectory": ".",
+    "filesystemDeploymentRootDirectory": "./resources/miroir-assets",
     "enableDevTools": false,
     "windowSize": {
       "width": 1200,

@@ -58,7 +58,84 @@ export {
   // ===
   ConceptLevel,
   conceptLevel,
-  DataSet,
+  // // Transformer_orderBy,
+  // // transformer_orderBy,
+  // // TransformerForBuild,
+  // // // transformerForBuild_InnerReference,
+  // // transformerForBuild,
+  // TransformerForBuild_accessDynamicPath,
+  // transformerForBuild_accessDynamicPath, TransformerForBuild_constantAsExtractor,
+  // transformerForBuild_constantAsExtractor, TransformerForBuild_createObject,
+  // transformerForBuild_createObject, TransformerForBuild_createObjectFromPairs,
+  // transformerForBuild_createObjectFromPairs,
+  // // TransformerForBuild_constantArray,
+  // TransformerForBuild_dataflowObject, TransformerForBuild_generateUuid,
+  // transformerForBuild_generateUuid,
+  // TransformerForBuild_getFromParameters,
+  // transformerForBuild_getFromParameters,
+  // TransformerForBuild_getObjectEntries_root,
+  // transformerForBuild_getObjectEntries_root,
+  // TransformerForBuild_getObjectEntries,
+  // TransformerForBuild_getObjectValues,
+  // transformerForBuild_getUniqueValues,
+  // // TransformerForBuild_getObjectValues_root,
+  // // transformerForBuild_getObjectValues_root,
+  // // TransformerForRuntime_indexListBy,
+  // // transformerForRuntime_indexListBy,
+  // TransformerForBuild_indexListBy,
+  // transformerForBuild_indexListBy, TransformerForBuild_InnerReference,
+  // transformerForBuild_InnerReference, TransformerForBuild_menu_addItem,
+  // transformerForBuild_menu_addItem, TransformerForBuild_mustacheStringTemplate,
+  // transformerForBuild_mustacheStringTemplate, TransformerForBuild_returnValue,
+  // transformerForBuild_returnValue,
+  //
+  CoreTransformerForBuildPlusRuntime,
+  coreTransformerForBuildPlusRuntime,
+  CoreTransformerForBuildPlusRuntime_accessDynamicPath,
+  coreTransformerForBuildPlusRuntime_accessDynamicPath,
+  CoreTransformerForBuildPlusRuntime_aggregate,
+  CoreTransformerForBuildPlusRuntime_boolExpr,
+  coreTransformerForBuildPlusRuntime_boolExpr,
+  // TransformerForRuntime_innerFullObjectTemplate,
+  // transformerForRuntime_innerFullObjectTemplate,
+  // TransformerForRuntime_constants,
+  CoreTransformerForBuildPlusRuntime_concatLists,
+  CoreTransformerForBuildPlusRuntime_constantAsExtractor,
+  coreTransformerForBuildPlusRuntime_constantAsExtractor,
+  CoreTransformerForBuildPlusRuntime_createObject,
+  CoreTransformerForBuildPlusRuntime_createObjectFromPairs,
+  coreTransformerForBuildPlusRuntime_createObjectFromPairs,
+  CoreTransformerForBuildPlusRuntime_dataflowObject,
+  // TransformerForRuntime_mapper_listToObject,
+  // TransformerForRuntime_mustacheStringTemplate_NOT_IMPLEMENTED,
+  CoreTransformerForBuildPlusRuntime_generateUuid,
+  coreTransformerForBuildPlusRuntime_generateUuid,
+  // TransformerForRuntime_constantArray,
+  CoreTransformerForBuildPlusRuntime_getFromContext,
+  coreTransformerForBuildPlusRuntime_getFromContext,
+  CoreTransformerForBuildPlusRuntime_getObjectEntries,
+  CoreTransformerForBuildPlusRuntime_getObjectValues,
+  // TransformerForRuntime_orderedTransformer,
+  // transformerForRuntime_orderedTransformer,
+  CoreTransformerForBuildPlusRuntime_getUniqueValues,
+  CoreTransformerForBuildPlusRuntime_ifThenElse,
+  coreTransformerForBuildPlusRuntime_ifThenElse,
+  CoreTransformerForBuildPlusRuntime_indexListBy,
+  CoreTransformerForBuildPlusRuntime_InnerReference,
+  CoreTransformerForBuildPlusRuntime_listReducerToSpreadObject,
+  CoreTransformerForBuildPlusRuntime_mapList,
+  // CoreTransformerForBuildPlusRuntime_menu_addItem,
+  // coreTransformerForBuildPlusRuntime_menu_addItem,
+  CoreTransformerForBuildPlusRuntime_mergeIntoObject,
+  CoreTransformerForBuildPlusRuntime_mustacheStringTemplate,
+  coreTransformerForBuildPlusRuntime_mustacheStringTemplate,
+  CoreTransformerForBuildPlusRuntime_pickFromList,
+
+  //
+  // TransformerForRuntime,
+  // transformerForRuntime,
+  CoreTransformerForBuildPlusRuntime_returnValue,
+  coreTransformerForBuildPlusRuntime_returnValue, DataSet,
   dataSet,
   //
   Deployment,
@@ -345,86 +422,7 @@ export {
   transactionalInstanceAction,
   transformer_contextOrParameterReferenceTO_REMOVE,
   Transformer_inner_label,
-  transformer_inner_label,
-  // // Transformer_orderBy,
-  // // transformer_orderBy,
-  // // TransformerForBuild,
-  // // // transformerForBuild_InnerReference,
-  // // transformerForBuild,
-  // TransformerForBuild_accessDynamicPath,
-  // transformerForBuild_accessDynamicPath, TransformerForBuild_constantAsExtractor,
-  // transformerForBuild_constantAsExtractor, TransformerForBuild_createObject,
-  // transformerForBuild_createObject, TransformerForBuild_createObjectFromPairs,
-  // transformerForBuild_createObjectFromPairs,
-  // // TransformerForBuild_constantArray,
-  // TransformerForBuild_dataflowObject, TransformerForBuild_generateUuid,
-  // transformerForBuild_generateUuid,
-  // TransformerForBuild_getFromParameters,
-  // transformerForBuild_getFromParameters,
-  // TransformerForBuild_getObjectEntries_root,
-  // transformerForBuild_getObjectEntries_root,
-  // TransformerForBuild_getObjectEntries,
-  // TransformerForBuild_getObjectValues,
-  // transformerForBuild_getUniqueValues,
-  // // TransformerForBuild_getObjectValues_root,
-  // // transformerForBuild_getObjectValues_root,
-  // // TransformerForRuntime_indexListBy,
-  // // transformerForRuntime_indexListBy,
-  // TransformerForBuild_indexListBy,
-  // transformerForBuild_indexListBy, TransformerForBuild_InnerReference,
-  // transformerForBuild_InnerReference, TransformerForBuild_menu_addItem,
-  // transformerForBuild_menu_addItem, TransformerForBuild_mustacheStringTemplate,
-  // transformerForBuild_mustacheStringTemplate, TransformerForBuild_returnValue,
-  // transformerForBuild_returnValue,
-  //
-  CoreTransformerForBuildPlusRuntime,
-  coreTransformerForBuildPlusRuntime,
-  CoreTransformerForBuildPlusRuntime_accessDynamicPath,
-  coreTransformerForBuildPlusRuntime_accessDynamicPath,
-  CoreTransformerForBuildPlusRuntime_aggregate,
-  CoreTransformerForBuildPlusRuntime_boolExpr,
-  coreTransformerForBuildPlusRuntime_boolExpr,
-  // TransformerForRuntime_innerFullObjectTemplate,
-  // transformerForRuntime_innerFullObjectTemplate,
-  // TransformerForRuntime_constants,
-  CoreTransformerForBuildPlusRuntime_concatLists,
-  CoreTransformerForBuildPlusRuntime_constantAsExtractor,
-  coreTransformerForBuildPlusRuntime_constantAsExtractor,
-  CoreTransformerForBuildPlusRuntime_createObject,
-  CoreTransformerForBuildPlusRuntime_createObjectFromPairs,
-  coreTransformerForBuildPlusRuntime_createObjectFromPairs,
-  CoreTransformerForBuildPlusRuntime_dataflowObject,
-  // TransformerForRuntime_mapper_listToObject,
-  // TransformerForRuntime_mustacheStringTemplate_NOT_IMPLEMENTED,
-  CoreTransformerForBuildPlusRuntime_generateUuid,
-  coreTransformerForBuildPlusRuntime_generateUuid,
-  // TransformerForRuntime_constantArray,
-  CoreTransformerForBuildPlusRuntime_getFromContext,
-  coreTransformerForBuildPlusRuntime_getFromContext,
-  CoreTransformerForBuildPlusRuntime_getObjectEntries,
-  CoreTransformerForBuildPlusRuntime_getObjectValues,
-  // TransformerForRuntime_orderedTransformer,
-  // transformerForRuntime_orderedTransformer,
-  CoreTransformerForBuildPlusRuntime_getUniqueValues,
-  CoreTransformerForBuildPlusRuntime_ifThenElse,
-  coreTransformerForBuildPlusRuntime_ifThenElse,
-  CoreTransformerForBuildPlusRuntime_indexListBy,
-  CoreTransformerForBuildPlusRuntime_InnerReference,
-  CoreTransformerForBuildPlusRuntime_listReducerToSpreadObject,
-  CoreTransformerForBuildPlusRuntime_mapList,
-  // CoreTransformerForBuildPlusRuntime_menu_addItem,
-  // coreTransformerForBuildPlusRuntime_menu_addItem,
-  CoreTransformerForBuildPlusRuntime_mergeIntoObject,
-  CoreTransformerForBuildPlusRuntime_mustacheStringTemplate,
-  coreTransformerForBuildPlusRuntime_mustacheStringTemplate,
-  CoreTransformerForBuildPlusRuntime_pickFromList,
-
-  //
-  // TransformerForRuntime,
-  // transformerForRuntime,
-  CoreTransformerForBuildPlusRuntime_returnValue,
-  coreTransformerForBuildPlusRuntime_returnValue,
-  TransformerTest,
+  transformer_inner_label, TransformerTest,
   transformerTest,
   TransformerTestDefinition,
   transformerTestDefinition,
@@ -435,7 +433,7 @@ export {
   ZodParseError,
   zodParseError,
   ZodParseErrorIssue,
-  zodParseErrorIssue,
+  zodParseErrorIssue
 } from "./0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
 export {
@@ -446,14 +444,13 @@ export {
   BlobContents, BlobUploadResult, BlobValidationResult
 } from "./0_interfaces/1_core/Blob.js";
 export {
-  InstanceDictionary,
+  entityDefinitionMLSchema,
+  entityDefinitionWithResolvedMLSchema, InstanceDictionary,
   InstanceDictionaryNum,
   MetaEntity,
   MetaEntitySchema,
   Uuid,
-  UuidSchema,
-  entityDefinitionMLSchema,
-  entityDefinitionWithResolvedMLSchema,
+  UuidSchema
 } from "./0_interfaces/1_core/EntityDefinition.js";
 export { HttpMethod, HttpMethodsArray, HttpMethodsObject } from "./0_interfaces/1_core/Http.js";
 export {
@@ -704,10 +701,12 @@ export {
   resolveJzodSchemaReferenceInContext
 } from "./1_core/jzod/jzodResolveSchemaReferenceInContext";
 export {
-  jzodTypeCheck,
-  jzodUnionResolvedTypeForObject, selectUnionBranchFromDiscriminator, unionObjectChoices,
+  jzodToJzod_Summary
+} from "./1_core/jzod/JzodToJzod_Summary";
+export {
   ANY_IMPLICIT_UNION_BRANCHES,
-  ANY_IMPLICIT_UNION_TYPE,
+  ANY_IMPLICIT_UNION_TYPE, jzodTypeCheck,
+  jzodUnionResolvedTypeForObject, selectUnionBranchFromDiscriminator, unionObjectChoices
 } from "./1_core/jzod/jzodTypeCheck.js";
 export {
   localizeJzodSchemaReferenceContext,
@@ -715,9 +714,6 @@ export {
   UnfoldJzodSchemaOnceReturnTypeError,
   UnfoldJzodSchemaOnceReturnTypeOK
 } from "./1_core/jzod/JzodUnfoldSchemaOnce.js";
-export {
-  jzodToJzod_Summary
-} from "./1_core/jzod/JzodToJzod_Summary";
 export {
   jzodUnion_recursivelyUnfold
 } from "./1_core/jzod/jzodUnion_RecursivelyUnfold";
@@ -801,13 +797,12 @@ export { ExtractorRunnerInMemory } from "./2_domain/ExtractorRunnerInMemory.js";
 export { ExtractorTemplateRunnerInMemory } from "./2_domain/ExtractorTemplateRunnerInMemory.js";
 export { ModelEntityActionTransformer } from "./2_domain/ModelEntityActionTransformer.js";
 export {
-  domainElementToPlainObjectDEFUNCT,
+  applyExtractorTransformerInMemory, domainElementToPlainObjectDEFUNCT,
   extractEntityInstanceListWithObjectListExtractorInMemory,
   extractEntityInstanceUuidIndexWithObjectListExtractorInMemory,
   extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList,
   plainObjectToDomainElementDEFUNCT,
-  runQuery,
-  applyExtractorTransformerInMemory
+  runQuery
 } from "./2_domain/QuerySelectors.js";
 export {
   handleQueryTemplateAction,
@@ -873,15 +868,13 @@ export {
   ConfigurationService,
   ConfigurationServiceInner,
   PackageConfiguration,
-  undoRedoHistorization,
+  undoRedoHistorization
 } from "./3_controllers/ConfigurationService";
 export {
   DeploymentConfiguration,
-  devRelativePathPrefix,
   DomainController,
-  prodRelativePathPrefix,
   resetAndInitApplicationDeployment,
-  templateEvaluationParams,
+  templateEvaluationParams
 } from "./3_controllers/DomainController";
 // export { Endpoint } from "./3_controllers/Endpoint.js";
 export { CallUtils } from "./3_controllers/ErrorHandling/CallUtils.js";
@@ -934,13 +927,29 @@ export { miroirCoreStartup } from "./startup.js";
 export {
   alterObjectAtPath,
   alterObjectAtPath2,
-  alterObjectAtPathWithCreate, circularReplacer, cleanupObject,
-  deleteObjectAtPath, domainStateToReduxDeploymentsState, evaluateExpression,
-  // 
+  alterObjectAtPathWithCreate,
+  circularReplacer,
+  cleanupObject,
+  deleteObjectAtPath,
+  devRelativePathPrefix,
+  domainStateToReduxDeploymentsState,
+  evaluateExpression,
+  getMiroirEnvironmentMode,
+  //
   getSchemaAtPath,
-  getValueAtPath, interpolateExpression, mStringify, RelativePath, resolvePathOnObject, resolveRelativePath, ResolveRelativePathError,
-  ResolveRelativePathResult, type AbsolutePath as ResultAccessPath,
-  safeResolvePathOnObject, setValueAtPath, stringTuple, getMiroirEnvironmentMode
+  getValueAtPath,
+  interpolateExpression,
+  mStringify,
+  prodRelativePathPrefix,
+  RelativePath,
+  resolvePathOnObject,
+  resolveRelativePath,
+  ResolveRelativePathError,
+  ResolveRelativePathResult,
+  safeResolvePathOnObject,
+  setValueAtPath,
+  stringTuple,
+  type AbsolutePath as ResultAccessPath,
 } from "./tools";
 
 export {

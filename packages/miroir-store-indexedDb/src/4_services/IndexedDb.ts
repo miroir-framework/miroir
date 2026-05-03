@@ -75,7 +75,6 @@ export class IndexedDb {
         }
       } else {
         // TODO: allow to set path in config!???
-        // this.db = new Level<string, any>("tests/tmp/" + this.databaseName, {valueEncoding: 'json', })
         this.db = new Level<string, any>(
           path.join(this.filesystemRootDirectory, this.databaseName),
           { valueEncoding: "json" },

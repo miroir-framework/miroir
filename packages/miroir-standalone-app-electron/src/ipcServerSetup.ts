@@ -48,17 +48,12 @@ import {
   RestClientStub,
   miroirCoreStartup
 } from "miroir-core";
-// import {
-//   adminSelfApplication,
-//   deployment_Admin,
-//   deployment_Miroir,
-//   entityDeployment,
-// } from "miroir-test-app_deployment-admin";
 import { setupMiroirDomainController } from "miroir-localcache-redux";
 import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
 import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
 import { miroirMongoDbStoreSectionStartup } from "miroir-store-mongodb";
 import { miroirPostgresStoreSectionStartup } from "miroir-store-postgres";
+import { log } from "console";
 
 export const MIROIR_IPC_CHANNEL = "miroir-ipc";
 
@@ -98,6 +93,7 @@ function resolveStoreDir(dir: string, assetsBasePath: string): string {
  * returned unchanged.
  */
 function resolveOpenStoreAction(action: any, assetsBasePath: string): any {
+  return action;
   if (action?.actionType !== "storeManagementAction_openStore") return action;
   const config = action.payload?.configuration;
   if (!config) return action;
@@ -107,6 +103,7 @@ function resolveOpenStoreAction(action: any, assetsBasePath: string): any {
     const resolved: Record<string, any> = {};
     for (const [section, sectionCfg] of Object.entries(deploymentConfig as Record<string, any>)) {
       if (sectionCfg && typeof sectionCfg === "object" && "directory" in sectionCfg) {
+        // resolved[section] = { ...sectionCfg, directory: resolveStoreDir(sectionCfg.directory, assetsBasePath) };
         resolved[section] = { ...sectionCfg, directory: resolveStoreDir(sectionCfg.directory, assetsBasePath) };
       } else {
         resolved[section] = sectionCfg;
@@ -139,11 +136,15 @@ function serializeRestResult(result: any): any {
 // ################################################################################################
 // ################################################################################################
 // ################################################################################################
-export function getDefaultFilesystemFolder(): string {
+export async function getDefaultFilesystemFolder(): Promise<string> {
     const envKey = app.isPackaged ? "production" : "development";
-    const appConfig = require("../app.config.json");
-    const configured: string | undefined = (appConfig[envKey] as any)?.filesystemDeploymentRootDirectory;
-    return (configured && configured.length > 0) ? configured : os.homedir();
+    console.log("getDefaultFilesystemFolder envKey", envKey);
+    const appConfig = await import("../app.config.json", { with: { type: "json" } });
+    const configured: string | undefined = (appConfig.default[envKey] as any)?.filesystemDeploymentRootDirectory;
+    console.log("getDefaultFilesystemFolder filesystemDeploymentRootDirectory", configured);
+    const result = (configured && configured.length > 0) ? configured : os.homedir();
+    console.log("getDefaultFilesystemFolder result", result);
+    return result;
   }
 // ################################################################################################
 // ################################################################################################
@@ -171,7 +172,7 @@ export async function setupIpcServer(mainDirname: string): Promise<void> {
   const electronServerConfig: MiroirConfigServer = {
     miroirConfigType: "server",
     server: { 
-      filesystemDeploymentRootDirectory: getDefaultFilesystemFolder(),
+      filesystemDeploymentRootDirectory: await getDefaultFilesystemFolder(),
       rootApiUrl: "https://localhost:3080" },
   };
 
@@ -203,24 +204,18 @@ export async function setupIpcServer(mainDirname: string): Promise<void> {
   // normal operation.
   ipcMain.handle("get-assets-base-path", () => getAssetsBasePath(mainDirname));
 
-  // Expose the platform-appropriate default filesystem folder so the renderer can
-  // pre-populate filesystem / indexedDb deployment paths in Runner components.
-  // Returns the configured filesystemDeploymentRootDirectory from app.config.json if set,
-  // otherwise falls back to os.homedir().
-  ipcMain.handle("get-default-filesystem-folder", () => {
-    // const envKey = app.isPackaged ? "production" : "development";
-    // const appConfig = require("../app.config.json");
-    // const configured: string | undefined = (appConfig[envKey] as any)?.filesystemDeploymentRootDirectory;
-    // return (configured && configured.length > 0) ? configured : os.homedir();
-    return getDefaultFilesystemFolder();
-  });
-
+  
   ipcMain.handle(MIROIR_IPC_CHANNEL, async (_event, payload: any) => {
     switch (payload.type) {
       case "rest-call": {
         const { rawUrl, method, endpoint, args } = payload;
         const result = await restClientStub.call(rawUrl, method, endpoint, args);
         return serializeRestResult(result);
+      }
+      
+      // Expose the platform-appropriate default filesystem folder
+      case "get-default-filesystem-folder": {
+        return getDefaultFilesystemFolder();
       }
 
       case "server-action": {

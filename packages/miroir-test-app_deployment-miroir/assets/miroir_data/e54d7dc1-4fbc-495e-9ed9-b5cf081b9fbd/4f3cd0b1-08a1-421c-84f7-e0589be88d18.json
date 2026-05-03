@@ -695,7 +695,8 @@
                               "applicationBundle",
                               "applicationName"
                             ]
-                          }
+                          },
+                          "-model"
                         ]
                       }
                     },
@@ -717,7 +718,8 @@
                               "applicationBundle",
                               "applicationName"
                             ]
-                          }
+                          },
+                          "-data"
                         ]
                       }
                     }

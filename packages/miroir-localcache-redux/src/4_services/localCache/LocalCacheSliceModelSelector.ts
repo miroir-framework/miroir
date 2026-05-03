@@ -41,7 +41,6 @@ import {
   selectMiroirSelectorQueryParams,
 } from "./LocalCacheSliceSelectors.js";
 import { ReduxStateWithUndoRedo } from "./localCacheReduxSliceInterface.js";
-import { select } from "typed-redux-saga";
 import { entitySelfApplication, entityTheme } from "miroir-test-app_deployment-miroir";
 
 let log: LoggerInterface = console as any as LoggerInterface;

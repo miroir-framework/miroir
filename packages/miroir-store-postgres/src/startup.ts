@@ -32,7 +32,6 @@ export function miroirPostgresStoreSectionStartup(configurationService: Configur
       if (config.emulatedServerType == "sql") {
         const sqlDbStoreName: string = config.connectionString + ":" + config.schema
         const logHeader = "SqlDbAdminStore " + sqlDbStoreName;
-        // return Promise.resolve(new SqlDbAdminStore(sqlDbStoreName, config.connectionString, config.schema))
         return Promise.resolve(
           new SqlDbAdminStore(
             "admin",

@@ -9,6 +9,10 @@ export function stringTuple<T extends [string] | string[]>(...data: T): T {
   return data;
 }
 
+export const devRelativePathPrefix = "miroir-server/tests/tmp";
+export const prodRelativePathPrefix = ".";
+
+
 /**
  * Returns "dev" or "prod" regardless of the execution environment:
  * - Browser (Vite): reads import.meta.env.MODE ("development" -> "dev", else "prod")

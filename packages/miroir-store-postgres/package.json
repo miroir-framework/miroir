@@ -10,6 +10,17 @@
   "module": "dist/bundle.esm.js",
   "browser": "dist/bundle-browser.esm.js",
   "type": "module",
+  "scripts": {
+    "watch": "lerna watch --scope='miroir-store-postgres' --include-dependencies -- lerna run build --scope='miroir-store-postgres'",
+    "build-tsup-broken": "tsup --target=node20 --format esm src/index.ts",
+    "build": "npm run build-rollup",
+    "devBuild": "npm run build",
+    "build-rollup": "rollup --config --logLevel info",
+    "copy-files": "copyfiles -u 1 src/**/*.json src/**/*.css dist/src",
+    "test": "jest --verbose --silent=false -t",
+    "vitest": "cross-env VITE_TEST_MODE='true' vitest run --reporter=verbose --poolOptions.forks.singleFork --bail=1",
+    "generate-ts-types": "tsx ./scripts/postgres-generate-ts-types.ts"
+  },
   "dependencies": {
     "miroir-core": "*",
     "pg": "^8.9.0",
@@ -34,15 +45,5 @@
     "tsconfig-paths": "^4.1.2",
     "tsup": "^8.0.1",
     "typescript": "^6.0.0"
-  },
-  "scripts": {
-    "watch": "lerna watch --scope='miroir-store-postgres' --include-dependencies -- lerna run build --scope='miroir-store-postgres'",
-    "build-tsup-broken": "tsup --target=node20 --format esm src/index.ts",
-    "build": "npm run build-rollup",
-    "build-rollup": "rollup --config --logLevel info",
-    "copy-files": "copyfiles -u 1 src/**/*.json src/**/*.css dist/src",
-    "test": "jest --verbose --silent=false -t",
-    "vitest": "cross-env VITE_TEST_MODE='true' vitest run --reporter=verbose --poolOptions.forks.singleFork --bail=1",
-    "generate-ts-types": "tsx ./scripts/postgres-generate-ts-types.ts"
   }
 }

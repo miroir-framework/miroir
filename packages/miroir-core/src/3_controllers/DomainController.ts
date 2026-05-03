@@ -79,7 +79,7 @@ import { LoggerGlobalContext } from '../4_services/LoggerContext.js';
 import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory.js";
 import { packageName } from "../constants";
 
-import { resolvePathOnObject } from "../tools";
+import { devRelativePathPrefix, prodRelativePathPrefix, resolvePathOnObject } from "../tools";
 import { cleanLevel } from "./constants";
 // import { Endpoint } from "./Endpoint";
 import { CallUtils } from "./ErrorHandling/CallUtils";
@@ -111,9 +111,6 @@ import {
   getMiroirEnvironmentMode,
 } from "../index.js";
 import { ConfigurationService } from './ConfigurationService.js';
-
-export const devRelativePathPrefix = "miroir-server/tests/tmp";
-export const prodRelativePathPrefix = "./deployments/";
 
 export const templateEvaluationParams = {
   env: { NODE_ENV: getMiroirEnvironmentMode() === "dev" ? "development" : "production" },

@@ -1,19 +1,19 @@
 {
   "name": "miroir-standalone-app-electron",
-  "version": "1.0.0",
+  "version": "0.5.0-rc.1",
   "description": "Electron desktop application wrapper for miroir-standalone-app",
   "author": "Miroir Framework <miroir-framework@protonmail.com>",
   "homepage": "https://github.com/miroir-framework/miroir/packages/miroir-standalone-app-electron/#readme",
   "bugs": "https://github.com/miroir-framework/miroir/issues",
   "license": "MIT",
-  "main": "dist/main.js",
+  "main": "dist/src/main.js",
   "type": "module",
   "private": true,
   "scripts": {
-    "build": "npx tsc --noEmit --skipLibCheck",
     "build-main": "npx tsc src/main.ts --ignoreConfig --outDir dist --target es2020 --module esnext --moduleResolution bundler --allowSyntheticDefaultImports --strict --skipLibCheck",
-    "build-preload": "npx tsc src/preload.ts --ignoreConfig --ignoreDeprecations 6.0 --outDir dist --target es2020 --module commonjs --moduleResolution node --allowSyntheticDefaultImports --strict --skipLibCheck",
+    "build-preload": "npx tsc src/preload.ts --ignoreConfig --ignoreDeprecations 6.0 --outDir dist/src --target es2020 --module commonjs --moduleResolution node --allowSyntheticDefaultImports --strict --skipLibCheck",
     "build-electron": "npm run build-main && npm run build-preload",
+    "build": "npm run build-electron",
     "electron": "npm run build-electron && electron .",
     "electron-dev": "npm run build-electron && electron . --dev",
     "pack": "npm run build-electron && electron-builder --dir",
@@ -62,20 +62,10 @@
         ]
       },
       {
-        "from": "../miroir-core/src/assets/admin",
-        "to": "miroir-assets/miroir-core/src/assets/admin",
-        "filter": [
-          "**/*"
-        ]
-      },
-      {
         "from": "../miroir-test-app_deployment-admin/assets/admin_data",
         "to": "miroir-assets/miroir-test-app_deployment-admin/assets/admin_data",
         "filter": [
-          "**/*",
-          "!7959d814-400c-4e80-988f-a00fe582ab98/5bbd19a1-e2c3-4ab8-83fa-26ccfd4cbb7e.json",
-          "!7959d814-400c-4e80-988f-a00fe582ab98/10ff36f2-50a3-48d8-b80f-e48e5d13af8e.json",
-          "!7959d814-400c-4e80-988f-a00fe582ab98/18db21bf-f8d3-4f6a-8296-84b69f6dc48b.json"
+          "**/*"
         ]
       },
       {
@@ -84,14 +74,6 @@
         "filter": [
           "**/*"
         ]
-      },
-      {
-        "from": "assets/10ff36f2-50a3-48d8-b80f-e48e5d13af8e.json",
-        "to": "miroir-assets/miroir-test-app_deployment-admin/assets/admin_data/7959d814-400c-4e80-988f-a00fe582ab98/10ff36f2-50a3-48d8-b80f-e48e5d13af8e.json"
-      },
-      {
-        "from": "assets/18db21bf-f8d3-4f6a-8296-84b69f6dc48b.json",
-        "to": "miroir-assets/miroir-test-app_deployment-admin/assets/admin_data/7959d814-400c-4e80-988f-a00fe582ab98/18db21bf-f8d3-4f6a-8296-84b69f6dc48b.json"
       },
       {
         "from": "../miroir-test-app_deployment-miroir/assets",
@@ -104,8 +86,8 @@
         "from": "../miroir-test-app_deployment-library/dist",
         "to": "miroir-assets/bundles",
         "filter": [
-          "library-model-*.json",
-          "library-data-*.json"
+          "library-model*.json",
+          "library-data*.json"
         ]
       }
     ],

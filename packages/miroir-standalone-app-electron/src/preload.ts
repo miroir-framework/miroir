@@ -17,10 +17,10 @@ contextBridge.exposeInMainWorld('electronAPI', {
   // Prod: <resourcesPath>/miroir-assets/
   getAssetsBasePath: () => ipcRenderer.invoke('get-assets-base-path'),
 
-  // Returns the platform-appropriate default filesystem folder (os.homedir()).
-  // Used by Runner_CreateApplication / Runner_InstallApplication to pre-populate
-  // the default target directory for filesystem / indexedDb deployments.
-  getDefaultFilesystemFolder: () => ipcRenderer.invoke('get-default-filesystem-folder'),
+  // // Returns the platform-appropriate default filesystem folder (os.homedir()).
+  // // Used by Runner_CreateApplication / Runner_InstallApplication to pre-populate
+  // // the default target directory for filesystem / indexedDb deployments.
+  // getDefaultFilesystemFolder: () => ipcRenderer.invoke('get-default-filesystem-folder'),
 
   // File system operations (if needed)
   openFile: () => ipcRenderer.invoke('dialog:openFile'),

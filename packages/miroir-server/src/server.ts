@@ -422,7 +422,7 @@ if (existsSync(certFile) && existsSync(keyFile)) {
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   const http = await import('http');
   http.createServer(app).listen(portFromConfig, () => {
-    myLogger.info("process.env", process.env);
+    // myLogger.info("process.env", process.env);
     myLogger.info("templateEvaluationParams", templateEvaluationParams);
     myLogger.info(`Server accesses filesystem deployment root directory at: ${filesystemDeploymentRootDirectory}`);
     myLogger.info(`HTTP server listening on port ${portFromConfig} (no TLS — run setup-https to enable HTTPS)`);

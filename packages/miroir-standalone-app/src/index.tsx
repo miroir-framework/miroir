@@ -445,14 +445,23 @@ async function startWebApp(root:Root) {
 
   theme.spacing(10);
 
-  console.warn("start in mode", process.env.NODE_ENV);
+  console.warn("startWebApp start in mode", process.env.NODE_ENV);
+  const filesystemRootDirectory: string = electronRestClient
+        ? await electronRestClient.getDefaultFilesystemFolder()
+        : "no default filesystem folder because not in Electron";
+  console.log("startWebApp filesystemRootDirectory:", filesystemRootDirectory);
+
   const electronMiroirConfig: MiroirConfigClient = {
     miroirConfigType: "client",
     client: {
       emulateServer: true,
       rootApiUrl: "http://localhost:3080",
       // filesystemRootDirectory: "../miroir-test-app_deployment-admin/assets",
-      filesystemRootDirectory: electronRestClient ? electronRestClient.getDefaultFilesystemFolder() : "no default filesystem folder because not in Electron",
+      // filesystemRootDirectory,
+      filesystemRootDirectory: "./resources/miroir-assets",
+      // filesystemRootDirectory: electronRestClient
+      //   ? await electronRestClient.getDefaultFilesystemFolder()
+      //   : "no default filesystem folder because not in Electron",
       deploymentStorageConfig: {
         // rootApiUrl: "http://localhost:3080",
         // dataflowConfiguration: {
@@ -469,15 +478,15 @@ async function startWebApp(root:Root) {
         "18db21bf-f8d3-4f6a-8296-84b69f6dc48b": {
           admin: {
             emulatedServerType: "filesystem",
-            directory: "../miroir-test-app_deployment-admin/assets",
+            directory: "miroir-test-app_deployment-admin/assets",
           },
           model: {
             emulatedServerType: "filesystem",
-            directory: "../miroir-test-app_deployment-admin/assets/admin_model",
+            directory: "miroir-test-app_deployment-admin/assets/admin_model",
           },
           data: {
             emulatedServerType: "filesystem",
-            directory: "../miroir-test-app_deployment-admin/assets/admin_data",
+            directory: "miroir-test-app_deployment-admin/assets/admin_data",
           },
         },
       },
@@ -512,6 +521,7 @@ async function startWebApp(root:Root) {
       [deployment_Miroir.uuid]: deployment_Miroir as Deployment,
     };
 
+    console.log("Electron mode: opening stores for configured deployments:", configurations);
     // open all configured stores
     for (const c of Object.entries(configurations)) {
       const openStoreAction: StoreOrBundleAction = {
@@ -525,11 +535,15 @@ async function startWebApp(root:Root) {
           },
         },
       };
-      await domainControllerForServer.handleAction(
+      const openStoreActionResult = await domainControllerForServer.handleAction(
         openStoreAction,
         defaultSelfApplicationDeploymentMap,
         defaultMetaModelEnvironment,
       );
+      if (openStoreActionResult instanceof Action2Error) {
+        log.error("Error opening store for deployment " + c[0], openStoreActionResult);
+        throw new Error(`Error opening store for deployment ${c[0]}: ${openStoreActionResult.errorMessage}`);
+      }
     }
     const deploymentsQueryResults =
       await domainControllerForServer.handleBoxedExtractorOrQueryAction(
@@ -557,6 +571,7 @@ async function startWebApp(root:Root) {
       );
 
     if (deploymentsQueryResults instanceof Action2Error) {
+      log.error("Error fetching deployments:", deploymentsQueryResults);
       throw new Error(`Error fetching deployments: ${deploymentsQueryResults.errorMessage}`);
     }
 

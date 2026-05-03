@@ -6,6 +6,8 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "type": "module",
+  "author": "Miroir Framework <miroir-framework@protonmail.com>",
+  "license": "MIT",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -15,9 +17,7 @@
   },
   "scripts": {
     "build": "tsup",
-    "build3": "npm run build",
-    "build4": "npm run build",
-    "build5": "npm run build",
+    "devBuild": "npm run build",
     "vitest": "vitest run --poolOptions.threads.singleThread --passWithNoTests"
   },
   "tsup": {
@@ -57,7 +57,5 @@
   },
   "peerDependencies": {
     "react": "^18.2.0"
-  },
-  "author": "Miroir Framework <miroir-framework@protonmail.com>",
-  "license": "MIT"
+  }
 }

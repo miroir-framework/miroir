@@ -17,9 +17,7 @@
     "watch": "lerna watch --scope='miroir-localcache-redux' --include-dependencies -- lerna run build --scope='miroir-localcache-redux'",
     "tsbuild": "tsc ./src/index.ts --rootDir . --baseUrl . --target ES2015 --module commonjs --skipLibCheck --strict --moduleResolution node --allowSyntheticDefaultImports --resolveJsonModule --outdir ./dist",
     "build": "tsup",
-    "build3": "npm run build",
-    "build4": "npm run build",
-    "build5": "npm run build",
+    "devBuild": "npm run build",
     "copy-files": "copyfiles -u 1 src/**/*.json src/**/*.css dist/src",
     "test": "cross-env NODE_ENV=test jest --verbose --debug --silent=false -t",
     "vitest": "vitest run --poolOptions.threads.singleThread --passWithNoTests"

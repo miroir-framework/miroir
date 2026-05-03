@@ -7,13 +7,6 @@
   "bin": {
     "miroir-cli": "./dist/index.js"
   },
-  "scripts": {
-    "copy-files": "copyfiles -u 1 src/**/*.json dist/src",
-    "build": "npm run copy-files && tsup --target=node20 --format esm src/index.ts",
-    "dev": "npm run build && node ./dist/index.js",
-    "test": "cross-env NODE_ENV=test vitest run --poolOptions.threads.singleThread --bail=1",
-    "testByFile": "cross-env NODE_ENV=test vitest run"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/miroir-framework/miroir.git"
@@ -26,6 +19,14 @@
     "framework",
     "command-line"
   ],
+  "scripts": {
+    "copy-files": "copyfiles -u 1 src/**/*.json dist/src",
+    "build": "npm run copy-files && tsup --target=node20 --format esm src/index.ts",
+    "devBuild": "npm run build",
+    "dev": "npm run build && node ./dist/index.js",
+    "test": "cross-env NODE_ENV=test vitest run --poolOptions.threads.singleThread --bail=1",
+    "testByFile": "cross-env NODE_ENV=test vitest run"
+  },
   "dependencies": {
     "miroir-core": "*",
     "miroir-test-app_deployment-library": "*",

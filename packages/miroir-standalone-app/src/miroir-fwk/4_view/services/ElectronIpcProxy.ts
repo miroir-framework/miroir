@@ -69,9 +69,12 @@ function reconstructIpcResult(result: any): any {
  */
 export class ElectronRestClient implements RestClientInterface {
 
+  // getDefaultFilesystemFolder(): Promise<string> {
+  //   return (window as any).electronAPI.getDefaultFilesystemFolder();
+  // }
   getDefaultFilesystemFolder(): string {
     return (window as any).electronAPI.callMiroirIpc({
-      type: "get-default-filesystem-folder"
+      type: "get-default-filesystem-folder",
     });
   }
 

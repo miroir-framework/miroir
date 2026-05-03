@@ -16,6 +16,7 @@
   },
   "scripts": {
     "build": "tsup",
+    "devBuild": "npm run build",
     "test": "vitest run"
   },
   "dependencies": {

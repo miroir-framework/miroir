@@ -122,7 +122,15 @@ export class FileSystemExtractorRunner implements ExtractorOrQueryPersistenceSto
       defaultMiroirModelEnvironment
     );
     if (queryResult instanceof Domain2ElementFailed) {
-      return Promise.resolve(new Action2Error("FailedToGetInstances", JSON.stringify(queryResult)));
+      return Promise.resolve(
+        new Action2Error("FailedToGetInstances", 
+          "handleBoxedQueryAction failed to run query with extractor",
+          [], // errorStack
+          queryResult, // innerError
+          {
+            query: runBoxedQueryAction
+          }
+        ));
     } else {
       const result: Action2ReturnType = { status: "ok", returnedDomainElement: queryResult };
       log.info(
@@ -315,12 +323,11 @@ export class FileSystemExtractorRunner implements ExtractorOrQueryPersistenceSto
   > = async (
     extractorRunnerParams: AsyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObjectList>
   ): Promise<Domain2QueryReturnType<EntityInstance[]>> => {
-    // const deploymentUuid = extractorRunnerParams.extractor.deploymentUuid;
     const application = extractorRunnerParams.extractor.application;
     const applicationSection = extractorRunnerParams.extractor.select.applicationSection ?? "data";
     const entityUuid = extractorRunnerParams.extractor.select.parentUuid;
 
-    // log.info("extractEntityInstanceUuidIndex params", foreignKeyParams, deploymentUuid, applicationSection, entityUuid);
+    log.info("extractEntityInstanceList", this.persistenceStoreController.getStoreName(), applicationSection, entityUuid);
     // log.info("extractEntityInstanceUuidIndex domainState", domainState);
 
     if (!application || !applicationSection || !entityUuid) {
@@ -340,14 +347,18 @@ export class FileSystemExtractorRunner implements ExtractorOrQueryPersistenceSto
       entityInstanceCollection instanceof Action2Error ||
       entityInstanceCollection.returnedDomainElement instanceof Domain2ElementFailed
     ) {
-      // return data;
-      return {
-        elementType: "failure",
+      return new Domain2ElementFailed({
         queryFailure: "EntityNotFound", // TODO: find corresponding queryFailure from data.status
-        application,
-        applicationSection,
-        entityUuid: entityUuid,
-      };
+        errorStack: [],
+        innerError: entityInstanceCollection as any,
+        queryParameters: extractorRunnerParams as any,
+        queryContext: {
+          application,
+          applicationSection,
+          entityUuid: entityUuid,
+          storeName: this.persistenceStoreController.getStoreName(),
+        } as any
+      });
     }
     return entityInstanceCollection.returnedDomainElement.instances;
   };
