@@ -1,5 +1,8 @@
 import { Level } from 'level';
-import path from 'path';
+
+// Cross-environment path join (no Node.js `path` dependency needed for browser builds)
+const joinPath = (...segments: string[]): string =>
+  segments.filter(Boolean).join('/').replace(/\/+/g, '/');
 
 import {
   ACTION_OK,
@@ -76,7 +79,7 @@ export class IndexedDb {
       } else {
         // TODO: allow to set path in config!???
         this.db = new Level<string, any>(
-          path.join(this.filesystemRootDirectory, this.databaseName),
+          joinPath(this.filesystemRootDirectory, this.databaseName),
           { valueEncoding: "json" },
         );
         await this.db?.open();

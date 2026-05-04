@@ -43,6 +43,9 @@ RUN rm -f package-lock.json && npm install
 # 1. Application deployment metadata packages (define core types as Jzod schemas)
 RUN npm run build -w miroir-test-app_deployment-miroir
 RUN npm run build -w miroir-test-app_deployment-admin
+RUN npm run build -w miroir-test-app_deployment-library
+RUN npm run build -w miroir-test-app_deployment-postgres
+RUN npm run build -w miroir-test-app_deployment-designer
 
 # 2. miroir-core — includes devBuild step to generate TypeScript types from schemas
 RUN npm run devBuild -w miroir-core
@@ -54,6 +57,10 @@ RUN npm run build -w miroir-localcache-redux \
  && npm run build -w miroir-store-mongodb \
  && npm run build -w miroir-store-postgres
 
+# 3'. extract model bundles from example applications
+RUN npm run extract-library-model -w miroir-test-app_deployment-library
+# RUN npm run extract-postgresManager-model -w miroir-test-app_deployment-postgres
+
 # 4. UI / MCP / diagram packages
 RUN npm run build -w miroir-react
 RUN npm run build -w miroir-mcp
@@ -62,8 +69,10 @@ RUN npm run build -w miroir-diagram-class
 # 5. Server (tsup bundle) and standalone app (Vite production build)
 #    The standalone-app Vite config auto-detects missing TLS certs → uses plain
 #    HTTP proxy target http://localhost:3080, which is correct for Docker.
+#    NODE_OPTIONS increases the V8 heap limit to prevent OOM during Vite's large
+#    bundle compilation (default ~2 GB is not enough for this workspace).
 RUN npm run build-tsup -w miroir-server
-RUN npm run build -w miroir-standalone-app
+RUN NODE_OPTIONS=--max-old-space-size=4096 npm run build -w miroir-standalone-app
 
 # Remove devDependencies from node_modules to reduce the layer transferred to
 # the final stage (saves several hundred MB).

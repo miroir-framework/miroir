@@ -456,7 +456,7 @@ async function startWebApp(root:Root) {
 
   theme.spacing(10);
 
-  console.warn("startWebApp start in mode", process.env.NODE_ENV);
+  console.warn("startWebApp start in mode", getMiroirEnvironmentMode(), "isElectron:", isElectron);
   const filesystemRootDirectory: string = electronRestClient
         ? await electronRestClient.getDefaultFilesystemFolder()
         : "no default filesystem folder because not in Electron";

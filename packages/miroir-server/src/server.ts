@@ -34,6 +34,7 @@ import {
   miroirCoreStartup,
   restServerDefaultHandlers,
   templateEvaluationParams,
+  getMiroirEnvironmentMode,
 } from "miroir-core";
 import {
   deployment_Miroir,
@@ -118,6 +119,11 @@ app.use(bodyParser.json({limit: '50mb'}));
 
 myLogger.info(`Server being set-up, going to execute on the port::${portFromConfig}`);
 
+// ##############################################################################################
+// Resolve file paths
+// const __filename = fileURLToPath(import.meta.url);
+// const __dirname = path.dirname(__filename);
+
 // Serve static assets (images, etc.) from a `public` directory.
 // The mount path may be configured in the miroir server config under `server.assetsMountPath`.
 // Default to `/assets` so files in `packages/miroir-server/public/...` are available at `/<assetsMountPath>/...`.
@@ -151,7 +157,7 @@ app.use(
     setHeaders: (
       res: import("http").ServerResponse,
       filePath: string,
-      stat: import("fs").Stats
+      // stat: import("fs").Stats
     ) => {
       // If it's an HTML file, don't cache
       if (filePath.endsWith(".html")) {
@@ -388,9 +394,45 @@ const server = await setupMcpServer(
 );
 
 // ##############################################################################################
-app.get('/', (req: any,res: any) => {
-  res.send('App Works !!!!');
-});
+// ##############################################################################################
+// Serve React SPA — MUST be registered AFTER all API/MCP routes.
+// Static files are served from dist/client/ (built from miroir-standalone-app).
+// All unmatched routes fall through to index.html to support client-side routing.
+if (getMiroirEnvironmentMode() === 'prod') {
+  myLogger.info('Running in production mode - serving React SPA');
+  myLogger.info(`Found dirname: ${__dirname}`);
+  const pathToClient = path.join(__dirname, 'client');
+  myLogger.info(`Serving React SPA from ${pathToClient}`);
+  
+  const indexPath = path.join(pathToClient, 'index.html');
+   if (!existsSync(indexPath)) {
+    throw new Error(`React client build not found at ${indexPath}. Please run "npm run build" in the miroir-standalone-app package and ensure the output is copied to the server's client directory.`);
+  }
+  app.use(express.static(pathToClient, {
+    maxAge: "1d",
+    setHeaders: (res: import("http").ServerResponse, filePath: string) => {
+      if (filePath.endsWith(".html")) {
+        res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+      }
+    },
+  }));
+  
+  // SPA catch-all: serve index.html for all routes not matched above
+  app.get('*', (req: any, res: any) => {
+    
+    if (existsSync(indexPath)) {
+      res.sendFile(indexPath);
+    } else {
+      res.status(404).send('React client build not found. Run "npm run build" first.');
+    }
+  });
+} else {
+  myLogger.info('Not in production mode - skipping React SPA setup');
+  app.get('/', (req: any,res: any) => {
+    res.send('App Works !!!!');
+  });
+}
+
 
 // ##############################################################################################
 // Start HTTPS server. Certificate paths are resolved from environment variables
@@ -424,6 +466,7 @@ if (existsSync(certFile) && existsSync(keyFile)) {
   http.createServer(app).listen(portFromConfig, () => {
     // myLogger.info("process.env", process.env);
     myLogger.info("templateEvaluationParams", templateEvaluationParams);
+    myLogger.info(`Server running in ${getMiroirEnvironmentMode()} mode`);
     myLogger.info(`Server accesses filesystem deployment root directory at: ${filesystemDeploymentRootDirectory}`);
     myLogger.info(`HTTP server listening on port ${portFromConfig} (no TLS — run setup-https to enable HTTPS)`);
   });
