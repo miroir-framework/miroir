@@ -21,11 +21,11 @@ The current Operating systems are supported for standalone application deploymen
 
 ## Miroir Installation
 
-The fastest way to get up and running is to use the standalone app available for your platform. Alternatively, you can [deploy Miroir as a service](./installation.md) or [build Miroir from scratch](./installation.md)
+The fastest way to get up and running is to use the standalone app available for your platform. Alternatively, you can [deploy Miroir as a service (NOT UPDATED)](./installation.md) or [build Miroir from scratch (NOT UPDATED)](./installation.md)
 
 ### 1. Download the binary for your platform and install it
 
-Go [there]() to download the latest available binaries of the standalone app.
+Go [there](https://github.com/miroir-framework/miroir/releases) to download the latest available binaries of the standalone app.
 
 
 ## Running Miroir
