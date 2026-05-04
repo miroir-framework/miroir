@@ -28,7 +28,7 @@
   ],
   "scripts": {
     "copy-files": "copyfiles -u 1 assets/**/*.json dist/assets",
-    "build": "tsup && npm run extract-library-model",
+    "build": "tsup",
     "devBuild": "npm run build",
     "generate-library-model": "tsx ./scripts/generate-library-metamodel.ts",
     "extract-library-model": "tsx ./scripts/extract-library-model.ts",

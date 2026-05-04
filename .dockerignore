@@ -1,0 +1,35 @@
+# =============================================================================
+# .dockerignore — keep the build context lean
+# =============================================================================
+
+# Git history
+.git
+.gitignore
+
+# Editor / OS noise
+.vscode
+.DS_Store
+Thumbs.db
+
+# All node_modules — Docker re-installs via npm ci inside the builder stage
+node_modules
+packages/*/node_modules
+
+# All compiled output — Docker re-builds from source in the builder stage
+packages/*/dist
+packages/*/tmp
+
+# Test artefacts
+packages/*/tests/tmp
+packages/*/coverage
+
+# Development certs (Docker uses plain HTTP)
+certs/*.pem
+certs/*.key
+
+# Electron release outputs (not needed for the server Docker image)
+packages/miroir-standalone-app-electron/release
+
+# Large generated docs / reports that are not needed at build time
+docs-OLD
+tmp

@@ -105,6 +105,22 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
       // // log.info(this.logHeader, "sqlForExtractor called with queryGenerator", this.sequelize.getQueryInterface().queryGenerator);
       // log.info(this.logHeader, "sqlForExtractor called with selectQuery", (this.sequelize.getQueryInterface().queryGenerator as any).selectQuery);
       switch (query.queryType) {
+        // case "boxedExtractorOrCombinerReturningObjectList": {
+        //   const result: string = (
+        //     this.sequelize.getQueryInterface().queryGenerator as any
+        //   ).selectQuery(query.select.parentUuid, {
+        //     attributes: ["*"],
+        //   });
+        //   log.info(
+        //     this.logHeader,
+        //     "sqlForExtractor",
+        //     "boxedExtractorOrCombinerReturningObjectList",
+        //     result
+        //   );
+        //   // return "SELECT * FROM domainModel WHERE uuid = " + extractor.deploymentUuid;
+        //   return result;
+        //   break;
+        // }
         case "boxedExtractorOrCombinerReturningObjectList": {
           // TODO: use queryGenerator?
           switch (query.select.extractorOrCombinerType) {
@@ -136,22 +152,6 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
               break;
           }
           // return result;
-          break;
-        }
-        case "boxedExtractorOrCombinerReturningObjectList": {
-          const result: string = (
-            this.sequelize.getQueryInterface().queryGenerator as any
-          ).selectQuery(query.select.parentUuid, {
-            attributes: ["*"],
-          });
-          log.info(
-            this.logHeader,
-            "sqlForExtractor",
-            "boxedExtractorOrCombinerReturningObjectList",
-            result
-          );
-          // return "SELECT * FROM domainModel WHERE uuid = " + extractor.deploymentUuid;
-          return result;
           break;
         }
         case "boxedQueryWithExtractorCombinerTransformer": {
