@@ -6,6 +6,7 @@
     "packages/*"
   ],
   "devDependencies": {
+    "@types/node": "^25.6.0",
     "lerna": "^9.0.0",
     "typescript": "^6.0.2"
   },
@@ -17,7 +18,9 @@
           "command": "npm run build",
           "cwd": "{projectRoot}"
         },
-        "dependsOn": ["^build"]
+        "dependsOn": [
+          "^build"
+        ]
       },
       "devBuild": {
         "executor": "nx:run-commands",
@@ -25,7 +28,9 @@
           "command": "npm run devBuild",
           "cwd": "{projectRoot}"
         },
-        "dependsOn": ["^devBuild"]
+        "dependsOn": [
+          "^devBuild"
+        ]
       }
     }
   }
