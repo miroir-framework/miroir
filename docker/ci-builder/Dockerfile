@@ -54,10 +54,10 @@ RUN npm run build -w miroir-test-app_deployment-designer
 RUN npm run devBuild -w miroir-core
 
 # 3. Local-cache and store packages (can run in parallel, all only depend on miroir-core)
-RUN npm run build -w miroir-localcache-redux \
-RUN npm run build -w miroir-store-filesystem \
-RUN npm run build -w miroir-store-indexedDb \
-RUN npm run build -w miroir-store-mongodb \
+RUN npm run build -w miroir-localcache-redux
+RUN npm run build -w miroir-store-filesystem
+RUN npm run build -w miroir-store-indexedDb
+RUN npm run build -w miroir-store-mongodb
 RUN npm run build -w miroir-store-postgres
 
 # 3'. extract model bundles from example applications
@@ -75,7 +75,8 @@ RUN npm run build -w miroir-diagram-class
 # #    NODE_OPTIONS increases the V8 heap limit to prevent OOM during Vite's large
 # #    bundle compilation (default ~2 GB is not enough for this workspace).
 RUN NODE_OPTIONS=--max-old-space-size=4096 npm run build -w miroir-standalone-app
-RUN npm run build-tsup -w miroir-server
+RUN npm run build:dev -w miroir-server
+RUN npm run build:release -w miroir-server
 
 # Remove devDependencies from node_modules to reduce the layer transferred to
 # the final stage (saves several hundred MB).
