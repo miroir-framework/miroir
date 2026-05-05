@@ -10,7 +10,7 @@
 # Stage 1: builder — install all deps and build every workspace package
 # =============================================================================
 FROM node:22-alpine AS ci-workspace-dev
-WORKDIR /miroir
+WORKDIR /miroir-build
 
 # Native build tools required by some npm packages (e.g. bcrypt, node-gyp)
 # RUN apk add --no-cache python3 make g++

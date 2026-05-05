@@ -21,7 +21,9 @@ import {
   entityEndpointVersion,
   entityEntity,
   entityMenu,
+  entityQueryVersion,
   entityReport,
+  entityRunner,
   entitySelfApplicationVersion,
   selfApplicationMiroir,
   selfApplicationModelBranchMiroirMasterBranch,
@@ -42,7 +44,6 @@ import {
   EntityInstance,
   InstanceAction,
   MetaModel,
-  MiroirConfigServer,
   ModelAction,
   ModelActionResetModel,
   RestPersistenceAction,
@@ -59,10 +60,9 @@ import {
   UndoRedoAction,
   type CompositeRunBoxedQueryAction,
   type CompositeRunBoxedQueryTemplateAction,
+  type CoreTransformerForBuildPlusRuntime,
   type EndpointDefinition,
-  type ModelActionInitModel,
-  type Report,
-  type CoreTransformerForBuildPlusRuntime
+  type ModelActionInitModel
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { type MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
@@ -79,7 +79,12 @@ import { LoggerGlobalContext } from '../4_services/LoggerContext.js';
 import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory.js";
 import { packageName } from "../constants";
 
-import { devRelativePathPrefix, prodRelativePathPrefix, resolvePathOnObject } from "../tools";
+import {
+  devRelativePathPrefix,
+  getMiroirEnvironmentMode,
+  prodRelativePathPrefix,
+  resolvePathOnObject,
+} from "../tools";
 import { cleanLevel } from "./constants";
 // import { Endpoint } from "./Endpoint";
 import { CallUtils } from "./ErrorHandling/CallUtils";
@@ -93,9 +98,9 @@ import {
   type TransformerReturnType
 } from "../0_interfaces/2_domain/DomainElement.js";
 import {
+  defaultEndpointApplicationMap,
   type ApplicationDeploymentMap,
   type EndpointApplicationMap,
-  defaultEndpointApplicationMap,
 } from "../1_core/Deployment.js";
 import { resolveTestCompositeActionTemplateSuite } from '../2_domain/TestSuiteTemplate.js';
 import {
@@ -104,12 +109,7 @@ import {
   removeUndefinedProperties,
   unNullify,
 } from "../4_services/otherTools.js";
-import {
-  defaultApplicationSection,
-  entityQueryVersion,
-  entityRunner,
-  getMiroirEnvironmentMode,
-} from "../index.js";
+import { defaultApplicationSection } from '../0_interfaces/1_core/Model.js';
 import { ConfigurationService } from './ConfigurationService.js';
 
 export const templateEvaluationParams = {

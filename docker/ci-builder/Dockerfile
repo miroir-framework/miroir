@@ -23,12 +23,12 @@ RUN apk add --no-cache python3 make g++
 #RUN npm link
 
 # Install ALL dependencies (including devDeps needed for building).
-WORKDIR /miroir/jzod
+WORKDIR /miroir-build/jzod
 RUN npm link
 RUN rm -f package-lock.json && npm install
 RUN npm run build
 
-WORKDIR /miroir/jzod-ts
+WORKDIR /miroir-build/jzod-ts
 RUN npm link
 RUN npm link @miroir-framework/jzod
 RUN rm -f package-lock.json && npm install
@@ -38,7 +38,7 @@ RUN npm run build
 # ---------------------------------------------------------------------------
 # Build in strict dependency order (mirrors build-all.sh / copilot-instructions)
 # ---------------------------------------------------------------------------
-WORKDIR /miroir/miroir
+WORKDIR /miroir-build/miroir
 
 RUN npm link @miroir-framework/jzod
 RUN npm link @miroir-framework/jzod-ts
