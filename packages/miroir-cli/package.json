@@ -31,7 +31,7 @@
     "miroir-core": "*",
     "miroir-test-app_deployment-library": "*",
     "miroir-localcache-redux": "*",
-    "@miroir-framework/jzod": "0.8.2",
+    "@miroir-framework/jzod": "0.8.3",
     "commander": "^12.1.0",
     "zod": "^3.21.4",
     "uuid": "^11.0.0",

@@ -32,7 +32,7 @@
     "miroir-test-app_deployment-library": "*",
     "miroir-test-app_deployment-miroir": "*",
     "miroir-localcache-redux": "*",
-    "@miroir-framework/jzod": "0.8.2",
+    "@miroir-framework/jzod": "0.8.3",
     "@modelcontextprotocol/sdk": "^1.0.4",
     "express": "^4.18.2",
     "zod": "^3.21.4",
