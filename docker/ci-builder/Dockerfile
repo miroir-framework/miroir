@@ -6,7 +6,7 @@
 #
 # Usage (see docker-compose.yml for the easy path):
 #   docker build -t miroir-framework/ci-builder:latest .
-#   docker run -p 3080:3080 -v miroir-data:/data miroir-framework/ci-builder:latest
+#   #docker run -p 3080:3080 -v miroir-data:/data miroir-framework/ci-builder:latest
 #
 # =============================================================================
 
@@ -74,9 +74,9 @@ RUN npm run build -w miroir-diagram-class
 # #    HTTP proxy target http://localhost:3080, which is correct for Docker.
 # #    NODE_OPTIONS increases the V8 heap limit to prevent OOM during Vite's large
 # #    bundle compilation (default ~2 GB is not enough for this workspace).
-RUN NODE_OPTIONS=--max-old-space-size=4096 npm run build -w miroir-standalone-app
-RUN npm run build:dev -w miroir-server
-RUN npm run build:release -w miroir-server
+# RUN NODE_OPTIONS=--max-old-space-size=4096 npm run build -w miroir-standalone-app
+# RUN NODE_OPTIONS=--max-old-space-size=4096 npm run build:dev -w miroir-server
+RUN NODE_OPTIONS=--max-old-space-size=4096 npm run build:release -w miroir-server
 
 # Remove devDependencies from node_modules to reduce the layer transferred to
 # the final stage (saves several hundred MB).
