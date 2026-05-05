@@ -58,6 +58,9 @@ export default defineConfig({
   // //     // )
   //   }
   // },
+  resolve: {
+    dedupe: ['react', 'react-dom', '@emotion/react', '@emotion/styled', '@mui/material'],
+  },
   optimizeDeps: {
     include: [
       '@emotion/react', 
