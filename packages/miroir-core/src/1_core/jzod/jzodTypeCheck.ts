@@ -36,7 +36,7 @@ import { Step } from "../../2_domain/Transformers";
 import { packageName } from "../../constants";
 import { cleanLevel } from "../constants";
 import { defaultMiroirModelEnvironment } from "../Model";
-import { getObjectUnionDiscriminatorValuesFromResolvedSchema } from "./getObjectUnionDiscriminatorValuesFromResolvedSchema";
+import { getObjectUnionDiscriminatorValuesFromResolvedSchema } from "./getObjectUnionDiscriminatorValues";
 import { jzodObjectFlatten } from "./jzodObjectFlatten";
 import { resolveConditionalSchema, type ResolveConditionalSchemaError } from "./resolveConditionalSchema";
 import { TransformerFailure } from "../../0_interfaces/2_domain/DomainElement";
