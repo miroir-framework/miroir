@@ -818,33 +818,25 @@ describe("selectUnionBranchFromDiscriminator", () => {
             tag: {
               value: {
                 id: 3,
+                canBeTemplate: true,
                 defaultLabel: "Parent Name",
               },
             },
           },
           parentUuid: {
-            type: "union",
-            discriminator: "transformerType",
+            type: "uuid",
             tag: {
               value: {
-                id: 4,
+                // id: 4,
                 defaultLabel: "Parent Uuid",
                 canBeTemplate: true,
+                foreignKeyParams: {
+                  targetEntity: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                  targetEntityApplicationSection: "model",
+                  targetEntityOrderInstancesBy: "name",
+                },
               },
             },
-            definition: [
-              {
-                type: "string",
-              },
-              {
-                type: "schemaReference",
-                definition: {
-                  absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  relativePath: "transformerForBuildPlusRuntime",
-                },
-                context: {},
-              },
-            ],
           },
           extractorOrCombinerType: {
             type: "literal",

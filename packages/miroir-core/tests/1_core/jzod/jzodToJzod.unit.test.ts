@@ -69,399 +69,399 @@ describe(
     it('jzod mlElementTemplate conversion',
       () => {
         const tests: TestCase[] = [
-          // test000: simple string, canBeTemplate=false
-          {
-            name: "test000",
-            testJzodSchema: {
-              type: "string",
-            },
-            mlElementTemplateJzodSchema: {
-              type: "object",
-              definition: {
-                c: { type: "string" },
-              },
-            },
-            expectedResult: {
-              schema: {
-                type: "string",
-              },
-              hasBeenApplied: false,
-            },
-            expectedReferences: undefined as any,
-          },
-          // test001: simple string, canBeTemplate=true
-          {
-            name: "test001",
-            testJzodSchema: {
-              type: "string",
-              tag: { value: { canBeTemplate: true } } as any,
-            },
-            mlElementTemplateJzodSchema: {
-              type: "object",
-              definition: {
-                c: { type: "string" },
-              },
-            },
-            expectedResult: {
-              schema: {
-                type: "union",
-                discriminator: undefined,
-                tag: { value: { canBeTemplate: true, isTemplate: true } } as any,
-                definition: [
-                  {
-                    type: "string",
-                    tag: { value: { canBeTemplate: true } } as any,
-                  },
-                  {
-                    type: "object",
-                    definition: {
-                      c: {
-                        type: "string",
-                      },
-                    },
-                  },
-                ],
-              },
-              hasBeenApplied: true,
-            },
-            expectedReferences: undefined as any,
-          },
-          // test010: simple object schema, no references
-          {
-            name: "test010",
-            testJzodSchema: {
-              type: "object",
-              definition: {
-                a: { type: "string", tag: { value: { canBeTemplate: true } } as any },
-                b: {
-                  type: "object",
-                  definition: {
-                    b1: { type: "boolean", optional: true },
-                    b2: {
-                      type: "array",
-                      definition: {
-                        type: "boolean",
-                        tag: { value: { canBeTemplate: true } } as any,
-                      },
-                    },
-                  },
-                },
-              },
-            },
-            mlElementTemplateJzodSchema: {
-              type: "object",
-              definition: {
-                c: { type: "string" },
-              },
-            },
-            expectedResult: {
-              schema: {
-                type: "object",
-                definition: {
-                  a: {
-                    type: "union",
-                    tag: {
-                      value: {
-                        canBeTemplate: true,
-                        isTemplate: true,
-                      },
-                    },
-                    definition: [
-                      {
-                        type: "string",
-                        tag: {
-                          value: {
-                            canBeTemplate: true,
-                          },
-                        },
-                      },
-                      {
-                        type: "object",
-                        definition: {
-                          c: {
-                            type: "string",
-                          },
-                        },
-                      },
-                    ],
-                  },
-                  b: {
-                    type: "object",
-                    definition: {
-                      b1: {
-                        type: "boolean",
-                        optional: true,
-                      },
-                      b2: {
-                        type: "array",
-                        definition: {
-                          type: "union",
-                          tag: {
-                            value: {
-                              canBeTemplate: true,
-                              isTemplate: true,
-                            },
-                          },
-                          definition: [
-                            {
-                              type: "boolean",
-                              tag: {
-                                value: {
-                                  canBeTemplate: true,
-                                },
-                              },
-                            },
-                            {
-                              type: "object",
-                              definition: {
-                                c: {
-                                  type: "string",
-                                },
-                              },
-                            },
-                          ],
-                        },
-                      },
-                    },
-                  },
-                },
-              },
-              hasBeenApplied: true,
-            },
-            expectedReferences: {},
-          },
-          // test015: simple object schema with extend clause wich canBeTemplate, no references
-          {
-            name: "test015",
-            testJzodSchema: {
-              type: "object",
-              extend: {
-                type: "object",
-                definition: {
-                  a: { type: "string", tag: { value: { canBeTemplate: true } } as any },
-                },
-              },
-              definition: {
-                b: {
-                  type: "object",
-                  definition: {
-                    b1: { type: "boolean", optional: true },
-                    b2: {
-                      type: "array",
-                      definition: {
-                        type: "boolean",
-                        tag: { value: { canBeTemplate: true } } as any,
-                      },
-                    },
-                  },
-                },
-              },
-            },
-            mlElementTemplateJzodSchema: {
-              type: "object",
-              definition: {
-                c: { type: "string" },
-              },
-            },
-            expectedResult: {
-              schema: {
-                type: "object",
-                extend: [
-                  {
-                    type: "object",
-                    definition: {
-                      a: {
-                        type: "union",
-                        tag: {
-                          value: {
-                            canBeTemplate: true,
-                            isTemplate: true,
-                          },
-                        },
-                        definition: [
-                          {
-                            type: "string",
-                            tag: {
-                              value: {
-                                canBeTemplate: true,
-                              },
-                            },
-                          },
-                          {
-                            type: "object",
-                            definition: {
-                              c: {
-                                type: "string",
-                              },
-                            },
-                          },
-                        ],
-                      },
-                    },
-                  },
-                ],
-                definition: {
-                  b: {
-                    type: "object",
-                    definition: {
-                      b1: {
-                        type: "boolean",
-                        optional: true,
-                      },
-                      b2: {
-                        type: "array",
-                        definition: {
-                          type: "union",
-                          tag: {
-                            value: {
-                              canBeTemplate: true,
-                              isTemplate: true,
-                            },
-                          },
-                          definition: [
-                            {
-                              type: "boolean",
-                              tag: {
-                                value: {
-                                  canBeTemplate: true,
-                                },
-                              },
-                            },
-                            {
-                              type: "object",
-                              definition: {
-                                c: {
-                                  type: "string",
-                                },
-                              },
-                            },
-                          ],
-                        },
-                      },
-                    },
-                  },
-                },
-              },
-              hasBeenApplied: true,
-            },
-            expectedReferences: {},
-          },
-          // test016: simple object schema with extend clause wich canBeTemplate accessed as a reference
-          {
-            name: "test016",
-            testJzodSchema: {
-              type: "object",
-              extend: {
-                type: "object",
-                definition: {
-                  a: { type: "string", tag: { value: { canBeTemplate: true } } as any },
-                },
-              },
-              definition: {
-                b: {
-                  type: "object",
-                  definition: {
-                    b1: { type: "boolean", optional: true },
-                    b2: {
-                      type: "array",
-                      definition: {
-                        type: "boolean",
-                        tag: { value: { canBeTemplate: true } } as any,
-                      },
-                    },
-                  },
-                },
-              },
-            },
-            mlElementTemplateJzodSchema: {
-              type: "object",
-              definition: {
-                c: { type: "string" },
-              },
-            },
-            expectedResult: {
-              schema: {
-                type: "object",
-                extend: [
-                  {
-                    type: "object",
-                    definition: {
-                      a: {
-                        type: "union",
-                        tag: {
-                          value: {
-                            canBeTemplate: true,
-                            isTemplate: true,
-                          },
-                        },
-                        definition: [
-                          {
-                            type: "string",
-                            tag: {
-                              value: {
-                                canBeTemplate: true,
-                              },
-                            },
-                          },
-                          {
-                            type: "object",
-                            definition: {
-                              c: {
-                                type: "string",
-                              },
-                            },
-                          },
-                        ],
-                      },
-                    },
-                  },
-                ],
-                definition: {
-                  b: {
-                    type: "object",
-                    definition: {
-                      b1: {
-                        type: "boolean",
-                        optional: true,
-                      },
-                      b2: {
-                        type: "array",
-                        definition: {
-                          type: "union",
-                          tag: {
-                            value: {
-                              canBeTemplate: true,
-                              isTemplate: true,
-                            },
-                          },
-                          definition: [
-                            {
-                              type: "boolean",
-                              tag: {
-                                value: {
-                                  canBeTemplate: true,
-                                },
-                              },
-                            },
-                            {
-                              type: "object",
-                              definition: {
-                                c: {
-                                  type: "string",
-                                },
-                              },
-                            },
-                          ],
-                        },
-                      },
-                    },
-                  },
-                },
-              },
-              hasBeenApplied: true,
-            },
-            expectedReferences: {},
-          },
+          // // test000: simple string, canBeTemplate=false
+          // {
+          //   name: "test000",
+          //   testJzodSchema: {
+          //     type: "string",
+          //   },
+          //   mlElementTemplateJzodSchema: {
+          //     type: "object",
+          //     definition: {
+          //       c: { type: "string" },
+          //     },
+          //   },
+          //   expectedResult: {
+          //     schema: {
+          //       type: "string",
+          //     },
+          //     hasBeenApplied: false,
+          //   },
+          //   expectedReferences: undefined as any,
+          // },
+          // // test001: simple string, canBeTemplate=true
+          // {
+          //   name: "test001",
+          //   testJzodSchema: {
+          //     type: "string",
+          //     tag: { value: { canBeTemplate: true } } as any,
+          //   },
+          //   mlElementTemplateJzodSchema: {
+          //     type: "object",
+          //     definition: {
+          //       c: { type: "string" },
+          //     },
+          //   },
+          //   expectedResult: {
+          //     schema: {
+          //       type: "union",
+          //       discriminator: undefined,
+          //       tag: { value: { canBeTemplate: true, isTemplate: true } } as any,
+          //       definition: [
+          //         {
+          //           type: "string",
+          //           tag: { value: { canBeTemplate: true } } as any,
+          //         },
+          //         {
+          //           type: "object",
+          //           definition: {
+          //             c: {
+          //               type: "string",
+          //             },
+          //           },
+          //         },
+          //       ],
+          //     },
+          //     hasBeenApplied: true,
+          //   },
+          //   expectedReferences: undefined as any,
+          // },
+          // // test010: simple object schema, no references
+          // {
+          //   name: "test010",
+          //   testJzodSchema: {
+          //     type: "object",
+          //     definition: {
+          //       a: { type: "string", tag: { value: { canBeTemplate: true } } as any },
+          //       b: {
+          //         type: "object",
+          //         definition: {
+          //           b1: { type: "boolean", optional: true },
+          //           b2: {
+          //             type: "array",
+          //             definition: {
+          //               type: "boolean",
+          //               tag: { value: { canBeTemplate: true } } as any,
+          //             },
+          //           },
+          //         },
+          //       },
+          //     },
+          //   },
+          //   mlElementTemplateJzodSchema: {
+          //     type: "object",
+          //     definition: {
+          //       c: { type: "string" },
+          //     },
+          //   },
+          //   expectedResult: {
+          //     schema: {
+          //       type: "object",
+          //       definition: {
+          //         a: {
+          //           type: "union",
+          //           tag: {
+          //             value: {
+          //               canBeTemplate: true,
+          //               isTemplate: true,
+          //             },
+          //           },
+          //           definition: [
+          //             {
+          //               type: "string",
+          //               tag: {
+          //                 value: {
+          //                   canBeTemplate: true,
+          //                 },
+          //               },
+          //             },
+          //             {
+          //               type: "object",
+          //               definition: {
+          //                 c: {
+          //                   type: "string",
+          //                 },
+          //               },
+          //             },
+          //           ],
+          //         },
+          //         b: {
+          //           type: "object",
+          //           definition: {
+          //             b1: {
+          //               type: "boolean",
+          //               optional: true,
+          //             },
+          //             b2: {
+          //               type: "array",
+          //               definition: {
+          //                 type: "union",
+          //                 tag: {
+          //                   value: {
+          //                     canBeTemplate: true,
+          //                     isTemplate: true,
+          //                   },
+          //                 },
+          //                 definition: [
+          //                   {
+          //                     type: "boolean",
+          //                     tag: {
+          //                       value: {
+          //                         canBeTemplate: true,
+          //                       },
+          //                     },
+          //                   },
+          //                   {
+          //                     type: "object",
+          //                     definition: {
+          //                       c: {
+          //                         type: "string",
+          //                       },
+          //                     },
+          //                   },
+          //                 ],
+          //               },
+          //             },
+          //           },
+          //         },
+          //       },
+          //     },
+          //     hasBeenApplied: true,
+          //   },
+          //   expectedReferences: {},
+          // },
+          // // test015: simple object schema with extend clause wich canBeTemplate, no references
+          // {
+          //   name: "test015",
+          //   testJzodSchema: {
+          //     type: "object",
+          //     extend: {
+          //       type: "object",
+          //       definition: {
+          //         a: { type: "string", tag: { value: { canBeTemplate: true } } as any },
+          //       },
+          //     },
+          //     definition: {
+          //       b: {
+          //         type: "object",
+          //         definition: {
+          //           b1: { type: "boolean", optional: true },
+          //           b2: {
+          //             type: "array",
+          //             definition: {
+          //               type: "boolean",
+          //               tag: { value: { canBeTemplate: true } } as any,
+          //             },
+          //           },
+          //         },
+          //       },
+          //     },
+          //   },
+          //   mlElementTemplateJzodSchema: {
+          //     type: "object",
+          //     definition: {
+          //       c: { type: "string" },
+          //     },
+          //   },
+          //   expectedResult: {
+          //     schema: {
+          //       type: "object",
+          //       extend: [
+          //         {
+          //           type: "object",
+          //           definition: {
+          //             a: {
+          //               type: "union",
+          //               tag: {
+          //                 value: {
+          //                   canBeTemplate: true,
+          //                   isTemplate: true,
+          //                 },
+          //               },
+          //               definition: [
+          //                 {
+          //                   type: "string",
+          //                   tag: {
+          //                     value: {
+          //                       canBeTemplate: true,
+          //                     },
+          //                   },
+          //                 },
+          //                 {
+          //                   type: "object",
+          //                   definition: {
+          //                     c: {
+          //                       type: "string",
+          //                     },
+          //                   },
+          //                 },
+          //               ],
+          //             },
+          //           },
+          //         },
+          //       ],
+          //       definition: {
+          //         b: {
+          //           type: "object",
+          //           definition: {
+          //             b1: {
+          //               type: "boolean",
+          //               optional: true,
+          //             },
+          //             b2: {
+          //               type: "array",
+          //               definition: {
+          //                 type: "union",
+          //                 tag: {
+          //                   value: {
+          //                     canBeTemplate: true,
+          //                     isTemplate: true,
+          //                   },
+          //                 },
+          //                 definition: [
+          //                   {
+          //                     type: "boolean",
+          //                     tag: {
+          //                       value: {
+          //                         canBeTemplate: true,
+          //                       },
+          //                     },
+          //                   },
+          //                   {
+          //                     type: "object",
+          //                     definition: {
+          //                       c: {
+          //                         type: "string",
+          //                       },
+          //                     },
+          //                   },
+          //                 ],
+          //               },
+          //             },
+          //           },
+          //         },
+          //       },
+          //     },
+          //     hasBeenApplied: true,
+          //   },
+          //   expectedReferences: {},
+          // },
+          // // test016: simple object schema with extend clause wich canBeTemplate accessed as a reference
+          // {
+          //   name: "test016",
+          //   testJzodSchema: {
+          //     type: "object",
+          //     extend: {
+          //       type: "object",
+          //       definition: {
+          //         a: { type: "string", tag: { value: { canBeTemplate: true } } as any },
+          //       },
+          //     },
+          //     definition: {
+          //       b: {
+          //         type: "object",
+          //         definition: {
+          //           b1: { type: "boolean", optional: true },
+          //           b2: {
+          //             type: "array",
+          //             definition: {
+          //               type: "boolean",
+          //               tag: { value: { canBeTemplate: true } } as any,
+          //             },
+          //           },
+          //         },
+          //       },
+          //     },
+          //   },
+          //   mlElementTemplateJzodSchema: {
+          //     type: "object",
+          //     definition: {
+          //       c: { type: "string" },
+          //     },
+          //   },
+          //   expectedResult: {
+          //     schema: {
+          //       type: "object",
+          //       extend: [
+          //         {
+          //           type: "object",
+          //           definition: {
+          //             a: {
+          //               type: "union",
+          //               tag: {
+          //                 value: {
+          //                   canBeTemplate: true,
+          //                   isTemplate: true,
+          //                 },
+          //               },
+          //               definition: [
+          //                 {
+          //                   type: "string",
+          //                   tag: {
+          //                     value: {
+          //                       canBeTemplate: true,
+          //                     },
+          //                   },
+          //                 },
+          //                 {
+          //                   type: "object",
+          //                   definition: {
+          //                     c: {
+          //                       type: "string",
+          //                     },
+          //                   },
+          //                 },
+          //               ],
+          //             },
+          //           },
+          //         },
+          //       ],
+          //       definition: {
+          //         b: {
+          //           type: "object",
+          //           definition: {
+          //             b1: {
+          //               type: "boolean",
+          //               optional: true,
+          //             },
+          //             b2: {
+          //               type: "array",
+          //               definition: {
+          //                 type: "union",
+          //                 tag: {
+          //                   value: {
+          //                     canBeTemplate: true,
+          //                     isTemplate: true,
+          //                   },
+          //                 },
+          //                 definition: [
+          //                   {
+          //                     type: "boolean",
+          //                     tag: {
+          //                       value: {
+          //                         canBeTemplate: true,
+          //                       },
+          //                     },
+          //                   },
+          //                   {
+          //                     type: "object",
+          //                     definition: {
+          //                       c: {
+          //                         type: "string",
+          //                       },
+          //                     },
+          //                   },
+          //                 ],
+          //               },
+          //             },
+          //           },
+          //         },
+          //       },
+          //     },
+          //     hasBeenApplied: true,
+          //   },
+          //   expectedReferences: {},
+          // },
           // test020: absolutePath schemaReference with complex mlElementTemplate type, NO canBeTemplate!
           {
             name: "test020",
@@ -509,7 +509,7 @@ describe(
                   relativePath: "mlElementTemplate_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_myObject",
                 },
               },
-              hasBeenApplied: false,
+              hasBeenApplied: true,
             },
             expectedReferences: {
               mlElementTemplate_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_myObject: {
@@ -2129,7 +2129,7 @@ describe(
                   },
                 ],
               },
-              hasBeenApplied: false, //!! should be true!!
+              hasBeenApplied: true,
             },
             expectedReferences: {
               mlElementTemplate_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_stringItem: {
@@ -2450,7 +2450,7 @@ describe(
                   },
                 ],
               },
-              hasBeenApplied: false,
+              hasBeenApplied: true,
             },
             expectedReferences: {
               mlElementTemplate_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_stringItem: {

@@ -1,7 +1,6 @@
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import express, { Request } from 'express';
-// import {bodyParser} from 'body-parser';
 import { existsSync, readFileSync } from 'fs';
 import * as https from 'https';
 import log from 'loglevelnext'; // TODO: use this? or plain "console" log?

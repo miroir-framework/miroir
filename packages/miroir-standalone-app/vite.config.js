@@ -30,6 +30,7 @@ export default defineConfig({
     // Relative to the root
     outDir: '../dist',
     target: 'esnext',
+    sourcemap: true,
     // rollupOptions: {
     //   external: ["process"]
     // },

@@ -236,7 +236,10 @@
           }
         },
         "transformerParams": {},
-        "expectedValue": ""
+        "expectedValue": {
+          "transformerType": "returnValue",
+          "value": 0
+        }
       }
     ]
   }

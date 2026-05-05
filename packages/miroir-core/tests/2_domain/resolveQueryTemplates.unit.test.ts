@@ -178,7 +178,6 @@ describe("resolveQueryTemplates.unit.test", () => {
         queryParams: {
           parentUuid: "yyyyy",
         },
-        deploymentUuid: "xxxxx",
         queryType: "boxedQueryWithExtractorCombinerTransformer",
         application: "test",
         extractors: {
@@ -229,6 +228,7 @@ describe("resolveQueryTemplates.unit.test", () => {
             objectListReferenceAttribute: "publisher",
           },
         },
+        runtimeTransformers: undefined,
       });
       console.log("convert queryTemplate to query with resolveQueryTemplateWithExtractorCombinerTransformer END")
     }

@@ -40,7 +40,6 @@
     ]
   },
   "dependencies": {
-    "@types/cors": "^2.8.19",
     "body-parser": "^1.20.3",
     "cors": "^2.8.5",
     "cross-fetch": "^4.0.0",
