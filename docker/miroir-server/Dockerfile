@@ -20,26 +20,26 @@
 # Stage 1: builder — get built artifacts from the ci-builder image
 # (which has all dependencies installed and every workspace package built)
 # =============================================================================
-# FROM miroir-framework/ci-builder:latest AS builder
-# WORKDIR /miroir-build
+FROM miroir-framework/ci-builder:latest AS builder
+WORKDIR /miroir-build
 
 
 # =============================================================================
 # Stage 2: final — slim production image
 # =============================================================================
 # FROM miroir-framework/ci-builder:latest
-FROM miroir-framework/ci-builder:latest
-# FROM node:22-alpine
-WORKDIR /miroir-build
+# FROM miroir-framework/ci-builder:latest
+FROM node:22-alpine
+WORKDIR /miroir
 
 # tini provides proper PID-1 signal handling (SIGTERM → graceful shutdown)
 RUN apk add --no-cache tini
 
-# # -------------------------------------------------------------------------
-# # Serve the SPA from the same Express server (same origin → no CORS needed)
-# # -------------------------------------------------------------------------
-# COPY --from=builder /miroir-build/miroir/packages /miroir/packages
-# COPY --from=builder /miroir-build/miroir/node_modules /miroir/node_modules
+# -------------------------------------------------------------------------
+# Serve the SPA from the same Express server (same origin → no CORS needed)
+# -------------------------------------------------------------------------
+COPY --from=builder /miroir-build/miroir/packages/miroir-server/release \
+  /miroir/release
 
 # COPY --from=builder /miroir-build/miroir/packages/miroir-server/release \
 #                     /miroir/packages/miroir-server/release
@@ -81,33 +81,36 @@ RUN apk add --no-cache tini
 # # Docker-specific server config (HTTP, filesystemDeploymentRootDirectory=/data)
 # # Overrides the dev config that was pulled in with the packages/ copy above.
 # # -------------------------------------------------------------------------
-RUN cp -r /miroir-build/miroir/packages/miroir-server/config/miroirConfig.server.docker.json \
-      /miroir-build/miroir/packages/miroir-server/config/miroirConfig.server.json
-# COPY --from=builder /miroir-build/miroir/packages/miroir-server/config/miroirConfig.server.docker.json \
-#     /miroir/packages/miroir-server/config/miroirConfig.server.json
+# RUN cp -r /miroir-build/miroir/packages/miroir-server/config/miroirConfig.server.docker.json \
+#       /miroir-build/miroir/packages/miroir-server/config/miroirConfig.server.json
+COPY --from=builder /miroir-build/miroir/packages/miroir-server/config/miroirConfig.server.docker.json \
+    /miroir/release/miroirConfig.server.json
 
 
-# Miroir framework assets
-RUN mkdir -p /seed/miroir-test-app_deployment-miroir && \
-    cp -r /miroir-build/miroir/packages/miroir-test-app_deployment-miroir/assets \
-          /seed/miroir-test-app_deployment-miroir/assets
+# # Miroir framework assets
+# RUN mkdir -p /seed/miroir-test-app_deployment-miroir && \
+#     cp -r /miroir-build/miroir/packages/miroir-test-app_deployment-miroir/assets \
+#           /seed/miroir-test-app_deployment-miroir/assets
 
-# Admin application assets
-RUN mkdir -p /seed/miroir-test-app_deployment-admin && \
-    cp -r /miroir-build/miroir/packages/miroir-test-app_deployment-admin/assets \
-          /seed/miroir-test-app_deployment-admin/assets
+# # Admin application assets
+# RUN mkdir -p /seed/miroir-test-app_deployment-admin && \
+#     cp -r /miroir-build/miroir/packages/miroir-test-app_deployment-admin/assets \
+#           /seed/miroir-test-app_deployment-admin/assets
 
 # Docker-specific seed overrides (Docker-compatible library deployment record with
 # corrected directory paths — no ".." traversal — placed into admin_data).
-RUN cp -r /miroir-build/miroir/packages/miroir-server/docker/seed/. /seed/
+# RUN cp -r /miroir-build/miroir/packages/miroir-server/docker/seed/. /seed/
+COPY --from=builder /miroir-build/miroir/packages/miroir-server/docker/seed/. /seed/
 
 # RUN rm -rf /miroir-build
 # RUN rm -rf /miroir/node_modules
 # -------------------------------------------------------------------------
 # Entrypoint
 # -------------------------------------------------------------------------
-RUN cp /miroir-build/miroir/packages/miroir-server/docker-entrypoint.sh /docker-entrypoint.sh && \
-    chmod +x /docker-entrypoint.sh
+COPY --from=builder /miroir-build/miroir/packages/miroir-server/docker-entrypoint.sh /docker-entrypoint.sh
+RUN chmod +x /docker-entrypoint.sh
+# RUN cp /miroir-build/miroir/packages/miroir-server/docker-entrypoint.sh /docker-entrypoint.sh && \
+#     chmod +x /docker-entrypoint.sh
 
 # -------------------------------------------------------------------------
 # Runtime declarations
@@ -116,4 +119,4 @@ VOLUME /data
 EXPOSE 3080
 
 ENTRYPOINT ["/sbin/tini", "--", "/docker-entrypoint.sh"]
-CMD ["node", "/miroir-build/miroir/packages/miroir-server/release/server.js"]
+CMD ["node", "/miroir/release/index.js"]
