@@ -3034,7 +3034,7 @@ export type ServerConfigForClientConfig = {
 };
 export type MiroirConfigForClientStub = {
     emulateServer: true;
-    filesystemRootDirectory: string;
+    filesystemDeploymentRootDirectory: string;
     rootApiUrl: string;
     deploymentStorageConfig: DeploymentStorageConfig;
 };
@@ -9857,7 +9857,7 @@ export const storeSectionConfiguration: z.ZodType<StoreSectionConfiguration> = z
 export const storeUnitConfiguration: z.ZodType<StoreUnitConfiguration> = z.object({admin:z.lazy(() =>storeSectionConfiguration), model:z.lazy(() =>storeSectionConfiguration), data:z.lazy(() =>storeSectionConfiguration)}).strict();
 export const deploymentStorageConfig: z.ZodType<DeploymentStorageConfig> = z.record(z.string(),z.lazy(() =>storeUnitConfiguration));
 export const serverConfigForClientConfig: z.ZodType<ServerConfigForClientConfig> = z.object({rootApiUrl:z.string(), dataflowConfiguration:z.any(), storeSectionConfiguration:z.record(z.string(),z.lazy(() =>storeUnitConfiguration))}).strict();
-export const miroirConfigForClientStub: z.ZodType<MiroirConfigForClientStub> = z.object({emulateServer:z.literal(true), filesystemRootDirectory:z.string(), rootApiUrl:z.string(), deploymentStorageConfig:z.lazy(() =>deploymentStorageConfig)}).strict();
+export const miroirConfigForClientStub: z.ZodType<MiroirConfigForClientStub> = z.object({emulateServer:z.literal(true), filesystemDeploymentRootDirectory:z.string(), rootApiUrl:z.string(), deploymentStorageConfig:z.lazy(() =>deploymentStorageConfig)}).strict();
 export const miroirConfigForRestClient: z.ZodType<MiroirConfigForRestClient> = z.object({emulateServer:z.literal(false), serverConfig:z.lazy(() =>serverConfigForClientConfig)}).strict();
 export const miroirConfigClient: z.ZodType<MiroirConfigClient> = z.object({miroirConfigType:z.literal("client"), client:z.union([z.lazy(() =>miroirConfigForClientStub), z.lazy(() =>miroirConfigForRestClient)])}).strict();
 export const miroirConfigServer: z.ZodType<MiroirConfigServer> = z.object({miroirConfigType:z.literal("server"), server:z.object({rootApiUrl:z.string(), filesystemDeploymentRootDirectory:z.string()}).strict()}).strict();

@@ -381,7 +381,7 @@ export async function setupMiroirPlatform(
     persistenceStoreControllerManagerForServer = new PersistenceStoreControllerManager(
       ConfigurationService.configurationService.adminStoreFactoryRegister,
       ConfigurationService.configurationService.StoreSectionFactoryRegister,
-      miroirConfig.client.filesystemRootDirectory
+      miroirConfig.client.filesystemDeploymentRootDirectory
     );
 
     domainControllerForServer = await setupMiroirDomainController(
@@ -457,20 +457,20 @@ async function startWebApp(root:Root) {
   theme.spacing(10);
 
   console.warn("startWebApp start in mode", getMiroirEnvironmentMode(), "isElectron:", isElectron);
-  const filesystemRootDirectory: string = electronRestClient
+  const filesystemDeploymentRootDirectory: string = electronRestClient
         ? await electronRestClient.getDefaultFilesystemFolder()
         : "no default filesystem folder because not in Electron";
-  console.log("startWebApp filesystemRootDirectory:", filesystemRootDirectory);
+  console.log("startWebApp filesystemDeploymentRootDirectory:", filesystemDeploymentRootDirectory);
 
   const electronMiroirConfig: MiroirConfigClient = {
     miroirConfigType: "client",
     client: {
       emulateServer: true,
       rootApiUrl: "http://localhost:3080",
-      // filesystemRootDirectory: "../miroir-test-app_deployment-admin/assets",
-      filesystemRootDirectory,
-      // filesystemRootDirectory: "./resources/miroir-assets",
-      // filesystemRootDirectory: electronRestClient
+      // filesystemDeploymentRootDirectory: "../miroir-test-app_deployment-admin/assets",
+      filesystemDeploymentRootDirectory,
+      // filesystemDeploymentRootDirectory: "./resources/miroir-assets",
+      // filesystemDeploymentRootDirectory: electronRestClient
       //   ? await electronRestClient.getDefaultFilesystemFolder()
       //   : "no default filesystem folder because not in Electron",
       deploymentStorageConfig: {

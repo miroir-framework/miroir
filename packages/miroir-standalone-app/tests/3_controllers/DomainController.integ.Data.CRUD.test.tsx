@@ -1,8 +1,8 @@
-import { describe, expect } from "vitest";
+import { describe, expect, beforeAll, afterAll, it } from "vitest";
 
 import process from "process";
 
-import type { ApplicationDeploymentMap, EndpointDefinition, Entity, MlSchema } from "miroir-core";
+import type { ApplicationDeploymentMap, EndpointDefinition, Entity, MlSchema, SelfApplication } from "miroir-core";
 import {
   ConfigurationService,
   createDeploymentCompositeAction,
@@ -83,7 +83,6 @@ import { cleanLevel, packageName } from "./constants.js";
 // const env: any = (import.meta as any).env;
 const env: any = process.env;
 
-console.log("@@@@@@@@@@@@@@@@@@ env", env);
 
 const myConsoleLog = (...args: any[]) => console.log(fileName, ...args);
 const fileName = "DomainController.integ.Data.CRUD.test";
@@ -224,14 +223,6 @@ const testDeploymentStorageConfiguration = miroirConfig.client.emulateServer
   ? miroirConfig.client.deploymentStorageConfig[testApplicationDeploymentUuid]
   : miroirConfig.client.serverConfig.storeSectionConfiguration[testApplicationDeploymentUuid];
 
-// const testDeployment: Deployment = {
-//   ...deployment_Library_DO_NO_USE,
-//   configuration: testDeploymentStorageConfiguration,
-// };
-
-
-// const typedAdminConfigurationDeploymentLibrary: AdminApplicationDeploymentConfiguration =
-//   deployment_Library_DO_NO_USE as any;
   
 let domainController: DomainControllerInterface;
 // let localCache: LocalCacheInterface;
@@ -332,7 +323,8 @@ const testActions: Record<string, TestCompositeActionParams> = {
         {
           dataStoreType: "app", // TODO: comparison between deployment and selfAdminConfigurationDeployment
           metaModel: defaultMiroirMetaModel,
-          selfApplication: selfApplicationLibrary,
+          selfApplication: selfApplicationLibrary as SelfApplication,
+          // selfApplication
           applicationModelBranch: selfApplicationModelBranchLibraryMasterBranch,
           applicationVersion: selfApplicationVersionLibraryInitialVersion,
         },

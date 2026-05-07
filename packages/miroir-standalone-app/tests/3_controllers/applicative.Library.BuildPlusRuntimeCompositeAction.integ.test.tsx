@@ -57,7 +57,6 @@ let persistenceStoreControllerManager: PersistenceStoreControllerManagerInterfac
 // ################################################################################################
 
 const env:any = (import.meta as any).env
-console.log("@@@@@@@@@@@@@@@@@@ env", env);
 
 const RUN_TEST= process.env.RUN_TEST
 

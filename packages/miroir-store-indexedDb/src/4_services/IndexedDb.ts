@@ -31,7 +31,7 @@ export class IndexedDb {
   // #############################################################################################
   constructor(
     public applicationSection: ApplicationSection,
-    private filesystemRootDirectory: string,
+    private filesystemDeploymentRootDirectory: string,
     private databaseName: string
   ) {
     this.logHeader = 'IndexedDb ' + databaseName;
@@ -79,7 +79,7 @@ export class IndexedDb {
       } else {
         // TODO: allow to set path in config!???
         this.db = new Level<string, any>(
-          joinPath(this.filesystemRootDirectory, this.databaseName),
+          joinPath(this.filesystemDeploymentRootDirectory, this.databaseName),
           { valueEncoding: "json" },
         );
         await this.db?.open();

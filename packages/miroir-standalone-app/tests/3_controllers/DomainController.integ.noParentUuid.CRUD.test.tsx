@@ -157,7 +157,6 @@ const noParentUuidTestMetaModel: MetaModel = {
 // ##############################################################################################
 
 const env: any = process.env;
-console.log("@@@@@@@@@@@@@@@@@@ env", env);
 
 const fileName = "DomainController.integ.noParentUuid.CRUD.test";
 const myConsoleLog = (...args: any[]) => console.log(fileName, ...args);

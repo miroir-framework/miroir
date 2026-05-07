@@ -17,7 +17,6 @@ import { resolveTestCompositeActionTemplate, resolveTestCompositeActionTemplateS
 // import { act } from 'react';
 
 // const env:any = (import.meta as any).env
-// console.log("@@@@@@@@@@@@@@@@@@ env", env);
 
 // console.log("@@@@@@@@@@@@@@@@@@ miroirConfig", miroirConfig);
 const adminConfigurationDeploymentParis = {

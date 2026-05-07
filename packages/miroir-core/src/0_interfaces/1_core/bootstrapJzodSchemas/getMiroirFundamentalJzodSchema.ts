@@ -1713,7 +1713,7 @@ export function getMiroirFundamentalJzodSchema(
               type: "literal",
               definition: true,
             },
-            filesystemRootDirectory: {
+            filesystemDeploymentRootDirectory: {
               type: "string",
             },
             rootApiUrl: {

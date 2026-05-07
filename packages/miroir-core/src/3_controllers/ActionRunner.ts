@@ -185,11 +185,22 @@ export async function storeActionOrBundleActionStoreRunner(
       }
 
       await persistenceStoreControllerManager.deletePersistenceStoreController(deploymentUuid);
-      await persistenceStoreControllerManager.addPersistenceStoreController(
+      const addResult = await persistenceStoreControllerManager.addPersistenceStoreController(
         deploymentUuid,
         action.payload.configuration[deploymentUuid]
       );
 
+      if (addResult instanceof Action2Error) {
+        log.error(
+          "storeActionOrBundleActionStoreRunner openStore failed to add persistence store controller for deployment uuid ",
+          deploymentUuid,
+          "with error",
+          addResult.errorMessage,
+          "and context",
+          addResult.errorContext
+        );
+        return addResult;
+      }
       const localPersistenceStoreController = persistenceStoreControllerManager.getPersistenceStoreController(deploymentUuid);
       await localPersistenceStoreController?.open();
       log.info("storeActionOrBundleActionStoreRunner openStore for deployment", deploymentUuid, "opened! booting up...");

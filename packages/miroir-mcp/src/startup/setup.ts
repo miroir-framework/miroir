@@ -96,7 +96,7 @@ export async function setupMiroirPlatform(
     persistenceStoreControllerManagerForServer = new PersistenceStoreControllerManager(
       ConfigurationService.configurationService.adminStoreFactoryRegister,
       ConfigurationService.configurationService.StoreSectionFactoryRegister,
-      miroirConfig.client.filesystemRootDirectory
+      miroirConfig.client.filesystemDeploymentRootDirectory
     );
 
     const domainControllerForServer = await setupMiroirDomainController(

@@ -1,7 +1,7 @@
 import { Uuid } from "../1_core/EntityDefinition";
 import { StoreUnitConfiguration } from "../1_core/preprocessor-generated/miroirFundamentalType";
 import { DomainControllerInterface } from "../2_domain/DomainControllerInterface";
-import { Action2ReturnType } from "../2_domain/DomainElement";
+import { Action2ReturnType, type Action2VoidReturnType } from "../2_domain/DomainElement";
 import { LocalCacheInterface } from "./LocalCacheInterface";
 import { PersistenceStoreLocalOrRemoteInterface } from "./PersistenceInterface";
 import { InitApplicationParameters, PersistenceStoreControllerInterface } from "./PersistenceStoreControllerInterface";
@@ -25,8 +25,8 @@ export interface PersistenceStoreControllerManagerInterface {
   addPersistenceStoreController(
     deploymentUuid: Uuid,
     config: StoreUnitConfiguration,
-  ): Promise<void>;
-  deletePersistenceStoreController(deploymentUuid: Uuid): Promise<void>;
+  ): Promise<Action2VoidReturnType>;
+  deletePersistenceStoreController(deploymentUuid: Uuid): Promise<Action2VoidReturnType>;
 
   deployModule(
     adminPersistenceStoreController: PersistenceStoreControllerInterface,

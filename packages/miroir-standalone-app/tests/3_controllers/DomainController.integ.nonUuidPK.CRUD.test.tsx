@@ -1,4 +1,4 @@
-import { describe, expect } from "vitest";
+import { describe, expect, beforeAll, beforeEach, afterAll, afterEach, it } from "vitest";
 
 import process from "process";
 
@@ -9,6 +9,7 @@ import type {
   EntityDefinition,
   EntityInstance,
   MetaModel,
+  SelfApplication,
 } from "miroir-core";
 
 import {
@@ -159,12 +160,12 @@ const codeNumberTestMetaModel: MetaModel = {
   reports: [],
   storedQueries: [],
   applicationVersionCrossEntityDefinition: [],
+  applications: [],
 };
 
 // ##############################################################################################
 
 const env: any = process.env;
-console.log("@@@@@@@@@@@@@@@@@@ env", env);
 
 const fileName = "DomainController.integ.nonUuidPK.CRUD.test";
 const myConsoleLog = (...args: any[]) => console.log(fileName, ...args);
@@ -417,7 +418,7 @@ const modelTestActions: Record<string, TestCompositeActionParams> = {
         {
           dataStoreType: "app",
           metaModel: defaultMiroirMetaModel,
-          selfApplication: selfApplicationLibrary,
+          selfApplication: selfApplicationLibrary as SelfApplication,
           applicationModelBranch: selfApplicationModelBranchLibraryMasterBranch,
           applicationVersion: selfApplicationVersionLibraryInitialVersion,
         },
@@ -446,6 +447,7 @@ const modelTestActions: Record<string, TestCompositeActionParams> = {
           reports: [],
           storedQueries: [],
           applicationVersionCrossEntityDefinition: [],
+          applications: [],
         } as MetaModel,
         [entityPublisher.uuid],
       ),
@@ -593,7 +595,7 @@ const dataTestActions: Record<string, TestCompositeActionParams> = {
         {
           dataStoreType: "app",
           metaModel: defaultMiroirMetaModel,
-          selfApplication: selfApplicationLibrary,
+          selfApplication: selfApplicationLibrary as SelfApplication,
           applicationModelBranch: selfApplicationModelBranchLibraryMasterBranch,
           applicationVersion: selfApplicationVersionLibraryInitialVersion,
         },

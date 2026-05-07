@@ -46,9 +46,12 @@ import {
   selfApplicationMiroir,
   type ApplicationDeploymentMap,
   type Deployment,
-  type MiroirActivityTrackerInterface
+  type MiroirActivityTrackerInterface,
+  defaultSelfApplicationDeploymentMap,
+  defaultMetaModelEnvironment
 } from "miroir-core";
 import {
+  deployment_Admin,
   deployment_Miroir
 } from "miroir-test-app_deployment-admin";
 
@@ -58,7 +61,8 @@ import {
 } from "miroir-test-app_deployment-library";
 
 import {
-  TestCompositeActionParams
+  TestCompositeActionParams,
+  type StoreOrBundleAction
 } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import {
   LocalCache,
@@ -406,7 +410,14 @@ export async function setupMiroirTest(
   miroirActivityTracker?: MiroirActivityTracker,
   miroirEventService?: MiroirEventService,
   customfetch?: any,
-) {
+): Promise<{
+  domainControllerForClient: DomainControllerInterface;
+  domainControllerForServer?: DomainControllerInterface | undefined;
+  persistenceStoreControllerManagerForServer?: PersistenceStoreControllerManagerInterface;
+  persistenceStoreControllerManagerForClient: PersistenceStoreControllerManagerInterface;
+  localCache: LocalCacheInterface;
+  miroirContext: MiroirContext;
+}> {
   const localMiroirActivityTracker = miroirActivityTracker??new MiroirActivityTracker();
   const localMiroirEventService = miroirEventService??new MiroirEventService(localMiroirActivityTracker);
   const miroirContext = new MiroirContext(
@@ -454,10 +465,14 @@ export async function setupMiroirTest(
 
   let persistenceStoreControllerManagerForServer: PersistenceStoreControllerManager | undefined = undefined;
   if (miroirConfig.client.emulateServer) {
+
+    if (!miroirConfig.client.filesystemDeploymentRootDirectory) {
+      throw new Error("tests-utils setupMiroirTest: when emulateServer is true, filesystemDeploymentRootDirectory must be provided in miroirConfig.client");
+    }
     persistenceStoreControllerManagerForServer = new PersistenceStoreControllerManager(
       ConfigurationService.configurationService.adminStoreFactoryRegister,
       ConfigurationService.configurationService.StoreSectionFactoryRegister,
-      miroirConfig.client.filesystemRootDirectory,
+      miroirConfig.client.filesystemDeploymentRootDirectory,
     );
 
     const domainControllerForServer = await setupMiroirDomainController(
@@ -470,12 +485,20 @@ export async function setupMiroirTest(
 
     (client as RestClientStub).setServerDomainController(domainControllerForServer);
     (client as RestClientStub).setPersistenceStoreControllerManager(persistenceStoreControllerManagerForServer);
+    return {
+      persistenceStoreControllerManagerForClient,
+      persistenceStoreControllerManagerForServer,
+      domainControllerForServer,
+      domainControllerForClient,
+      localCache: domainControllerForClient.getLocalCache(),
+      miroirContext,
+    };
   }
-
   return {
-    persistenceStoreControllerManagerForClient: persistenceStoreControllerManagerForClient,
-    persistenceStoreControllerManagerForServer: persistenceStoreControllerManagerForServer,
-    domainController: domainControllerForClient,
+    persistenceStoreControllerManagerForClient,
+    persistenceStoreControllerManagerForServer: undefined,
+    domainControllerForClient,
+    domainControllerForServer: undefined,
     localCache: domainControllerForClient.getLocalCache(),
     miroirContext,
   };
@@ -613,11 +636,43 @@ export async function setupMiroirTestAndCreateMiroirDeployment(
   customFetch?: any,
 ): Promise<{
   domainController: DomainControllerInterface;
-  persistenceStoreControllerManagerForClient: PersistenceStoreControllerManagerInterface;
+  // persistenceStoreControllerManagerForClient: PersistenceStoreControllerManagerInterface;
 }> {
-  const { domainController, persistenceStoreControllerManagerForClient } = await setupMiroirTest(
+  // const { domainController, persistenceStoreControllerManagerForClient } = await setupMiroirTest(
+  const { domainControllerForClient, domainControllerForServer } = await setupMiroirTest(
     miroirConfig, miroirActivityTracker, miroirEventService, customFetch,
   );
+
+  if (miroirConfig.client.emulateServer && domainControllerForServer) {
+    log.info('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ setupMiroirTestAndCreateMiroirDeployment created server domain controller');
+    const configurations: Record<string, Deployment> = {
+      [deployment_Admin.uuid]: deployment_Admin as Deployment,
+      [deployment_Miroir.uuid]: deployment_Miroir as Deployment,
+    }
+    
+    // open all configured stores
+    for (const c of Object.entries(configurations)) {
+      const openStoreAction: StoreOrBundleAction = {
+        actionType: "storeManagementAction_openStore",
+        endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
+        payload: {
+          application: c[1].selfApplication,
+          deploymentUuid: c[0],
+          configuration: {
+            [c[0]]: c[1].configuration as StoreUnitConfiguration,
+          },
+        },
+      };
+      await domainControllerForServer.handleAction(
+        openStoreAction,
+        defaultSelfApplicationDeploymentMap,
+        defaultMetaModelEnvironment
+      );
+    }
+  }
+
+  
+
   const createMiroirDeploymentCompositeAction = createDeploymentCompositeAction(
     "miroir",
     miroirDeploymentUuid,
@@ -625,6 +680,10 @@ export async function setupMiroirTestAndCreateMiroirDeployment(
     adminDeployment,
     miroirDeploymentStorageConfiguration,
   );
+  const domainController =
+    miroirConfig.client.emulateServer && domainControllerForServer
+      ? domainControllerForServer
+      : domainControllerForClient;
   const createDeploymentResult = await domainController.handleCompositeAction(
     createMiroirDeploymentCompositeAction,
     applicationDeploymentMap,
@@ -634,7 +693,9 @@ export async function setupMiroirTestAndCreateMiroirDeployment(
   if (createDeploymentResult.status !== "ok") {
     throw new Error("Failed to create Miroir deployment: " + JSON.stringify(createDeploymentResult));
   }
-  return { domainController, persistenceStoreControllerManagerForClient };
+  return { domainController: domainControllerForClient, 
+    // persistenceStoreControllerManagerForClient
+   };
 }
 
 // #################################################################################################################

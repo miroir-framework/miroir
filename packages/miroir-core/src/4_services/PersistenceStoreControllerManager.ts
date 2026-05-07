@@ -22,7 +22,7 @@ import { DomainController } from "../3_controllers/DomainController";
 import { packageName } from "../constants";
 import { MiroirLoggerFactory } from "./MiroirLoggerFactory";
 import { cleanLevel } from "./constants";
-import { Action2Error, Action2VoidReturnType } from "../0_interfaces/2_domain/DomainElement";
+import { Action2Error, Action2VoidReturnType, type Action2ReturnType } from "../0_interfaces/2_domain/DomainElement";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -42,7 +42,7 @@ export class PersistenceStoreControllerManager implements PersistenceStoreContro
   constructor(
     private adminStoreFactoryRegister: AdminStoreFactoryRegister,
     private storeSectionFactoryRegister: StoreSectionFactoryRegister,
-    public filesystemRootDirectory: string | undefined = undefined,
+    public filesystemDeploymentRootDirectory: string | undefined = undefined,
   ) {}
 
   // ################################################################################################
@@ -94,8 +94,8 @@ export class PersistenceStoreControllerManager implements PersistenceStoreContro
   async addPersistenceStoreController(
     deploymentUuid: string,
     config: StoreUnitConfiguration,
-  ): Promise<void> {
-    log.info("addPersistenceStoreController", deploymentUuid, config);
+  ): Promise<Action2VoidReturnType> {
+    log.info("addPersistenceStoreController called with deploymentUuid:", deploymentUuid, "and config:", config);
     if (this.persistenceStoreControllers[deploymentUuid]) {
       log.info(
         "addPersistenceStoreController for",
@@ -109,38 +109,79 @@ export class PersistenceStoreControllerManager implements PersistenceStoreContro
             JSON.stringify(config),
         );
       }
-      const adminStoreFactory = this.adminStoreFactoryRegister.get(
-        JSON.stringify({ storageType: config.admin.emulatedServerType }),
+      const keyForAdminFactory = JSON.stringify({ storageType: config.admin.emulatedServerType });
+      const adminStoreFactory = this.adminStoreFactoryRegister.get(keyForAdminFactory);
+      log.info(
+        "addPersistenceStoreController searched admin store factory for deployment",
+        deploymentUuid,
+        "with admin.emulatedServerType=",
+        config.admin.emulatedServerType,
+        " keyForAdminFactory=",
+        keyForAdminFactory,
+        " result adminStoreFactory=",
+        adminStoreFactory,
+        !adminStoreFactory,
+        // JSON.stringify(adminStoreFactory, undefined, 2),
+        " adminStoreFactoryRegister=",
+        this.adminStoreFactoryRegister.keys(),
+        // JSON.stringify(Array.from(this.adminStoreFactoryRegister.keys()), undefined, 2)
       );
 
+      log.info("1");
       if (!adminStoreFactory) {
-        log.info(
-          "addPersistenceStoreController no admin store factory found for deployment",
-          deploymentUuid,
-          " with adminStoreFactoryRegister=",
-          JSON.stringify(this.adminStoreFactoryRegister, undefined, 2),
-        );
-        throw new Error(
+        log.info("2");
+        return Promise.resolve(new Action2Error(
+          "FailedToOpenStore",
           "addPersistenceStoreController no admin store factory found for server type " +
-            config.admin.emulatedServerType,
-        );
-      }
-      if (!this.filesystemRootDirectory) {
+            config.admin.emulatedServerType + " in " + JSON.stringify(Array.from(this.adminStoreFactoryRegister.keys()), undefined, 2)
+        ));
         // log.info(
-        //   "addPersistenceStoreController no filesystemRootDirectory provided for deployment",
+        //   "addPersistenceStoreController no admin store factory found for deployment",
         //   deploymentUuid,
+        //   " with adminStoreFactoryRegister=",
+        //   JSON.stringify(this.adminStoreFactoryRegister, undefined, 2),
         // );
+        // throw new Error(
+        //   "addPersistenceStoreController no admin store factory found for server type " +
+        //     config.admin.emulatedServerType + " in " + JSON.stringify(Array.from(this.adminStoreFactoryRegister.keys()), undefined, 2)
+        // );
+      }
+      log.info("3");
+      if (!this.filesystemDeploymentRootDirectory) {
+        log.info(4);
+        log.error(
+          "addPersistenceStoreController no filesystemDeploymentRootDirectory provided for deployment",
+          deploymentUuid,
+          "with config.admin",
+          config.admin,
+        );
+        return Promise.resolve(new Action2Error(
+          "FailedToOpenStore",
+          "addPersistenceStoreController no filesystemDeploymentRootDirectory provided for deployment " +
+            deploymentUuid + ", can not create admin store for server type " + config.admin.emulatedServerType,
+        ));
+        log.info(5);
         throw new Error(
-          "addPersistenceStoreController no filesystemRootDirectory provided for deployment " +
+          "addPersistenceStoreController no filesystemDeploymentRootDirectory provided for deployment " +
             deploymentUuid + ", can not create admin store for server type " + config.admin.emulatedServerType,
         );
       }
-      const adminStore = await adminStoreFactory(config.admin, this.filesystemRootDirectory);
+      log.info("6");
+      log.info(
+        "addPersistenceStoreController calling adminStoreFactory for deployment",
+        deploymentUuid,
+        "with config.admin",
+        config.admin,
+        "and filesystemDeploymentRootDirectory",
+        this.filesystemDeploymentRootDirectory,
+      );
+      const adminStore = await adminStoreFactory(config.admin, this.filesystemDeploymentRootDirectory);
+      log.info("addPersistenceStoreController created admin store for deployment", deploymentUuid);
       const dataStore = (await storeSectionFactory(
         this.storeSectionFactoryRegister,
         "data",
         config.data,
-        this.filesystemRootDirectory,
+        this.filesystemDeploymentRootDirectory,
       )) as PersistenceStoreDataSectionInterface;
       // log.info("addPersistenceStoreController found dataStore", dataStore)
       log.info("addPersistenceStoreController found dataStore ok for deployment", deploymentUuid);
@@ -148,7 +189,7 @@ export class PersistenceStoreControllerManager implements PersistenceStoreContro
         this.storeSectionFactoryRegister,
         "model",
         config.model,
-        this.filesystemRootDirectory,
+        this.filesystemDeploymentRootDirectory,
         dataStore,
       )) as PersistenceStoreModelSectionInterface;
 
@@ -159,6 +200,7 @@ export class PersistenceStoreControllerManager implements PersistenceStoreContro
       );
       log.info("addPersistenceStoreController DONE for deployment", deploymentUuid);
     }
+    return ACTION_OK;
   }
 
   // ################################################################################################
@@ -174,7 +216,7 @@ export class PersistenceStoreControllerManager implements PersistenceStoreContro
   }
 
   // ################################################################################################
-  async deletePersistenceStoreController(deploymentUuid: string): Promise<void> {
+  async deletePersistenceStoreController(deploymentUuid: string): Promise<Action2VoidReturnType> {
     if (this.persistenceStoreControllers[deploymentUuid]) {
       await this.persistenceStoreControllers[deploymentUuid].close();
       delete this.persistenceStoreControllers[deploymentUuid];
@@ -185,6 +227,7 @@ export class PersistenceStoreControllerManager implements PersistenceStoreContro
         "does not exist, doing nothing!",
       );
     }
+    return ACTION_OK;
   }
 
   // ################################################################################################

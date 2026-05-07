@@ -1,4 +1,4 @@
-import { describe, expect } from "vitest";
+import { describe, expect, beforeAll, beforeEach, afterAll, afterEach, it } from "vitest";
 
 import { fetch as crossFetch } from "cross-fetch";
 import process from "process";
@@ -53,6 +53,7 @@ import type {
   Deployment,
   EndpointDefinition,
   MlSchema,
+  SelfApplication,
 } from "miroir-core";
 import {
   defaultSelfApplicationDeploymentMap,
@@ -79,7 +80,6 @@ import { cleanLevel } from "./constants.js";
 // import { entityBook } from "miroir-core";
 
 const env: any = process.env;
-console.log("@@@@@@@@@@@@@@@@@@ env", env);
 
 const fileName = "DomainController.integ.Data.CRUD.test";
 const myConsoleLog = (...args: any[]) => console.log(fileName, ...args);
@@ -324,7 +324,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
         {
           dataStoreType: "app", // TODO: comparison between deployment and selfAdminConfigurationDeployment
           metaModel: defaultMiroirMetaModel,
-          selfApplication: selfApplicationLibrary,
+          selfApplication: selfApplicationLibrary as SelfApplication,
           // deployment: selfApplicationDeploymentLibrary,
           applicationModelBranch: selfApplicationModelBranchLibraryMasterBranch,
           // applicationStoreBasedConfiguration: selfApplicationStoreBasedConfigurationLibrary,

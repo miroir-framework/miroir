@@ -1,4 +1,4 @@
-import { describe, expect } from "vitest";
+import { describe, expect, beforeAll, beforeEach, afterAll, afterEach, it } from "vitest";
 
 import process from "process";
 
@@ -9,6 +9,7 @@ import type {
   EntityDefinition,
   EntityInstance,
   MetaModel,
+  SelfApplication,
 } from "miroir-core";
 
 import {
@@ -49,10 +50,7 @@ import {
   setupMiroirTestAndCreateMiroirDeployment,
 } from "../../src/miroir-fwk/4-tests/tests-utils.js";
 
-import {
-  adminApplication_Miroir,
-  deployment_Admin,
-} from "miroir-test-app_deployment-admin";
+import { adminApplication_Miroir, deployment_Admin } from "miroir-test-app_deployment-admin";
 
 import {
   entityDefinitionPublisher,
@@ -154,10 +152,7 @@ const compositePKTestMetaModel: MetaModel = {
   applicationUuid: selfApplicationLibrary.uuid,
   applicationName: selfApplicationLibrary.name,
   entities: [entityPublisher as Entity, entityCompositePK],
-  entityDefinitions: [
-    entityDefinitionPublisher as EntityDefinition,
-    entityDefinitionCompositePK,
-  ],
+  entityDefinitions: [entityDefinitionPublisher as EntityDefinition, entityDefinitionCompositePK],
   endpoints: [],
   jzodSchemas: [],
   menus: [],
@@ -167,6 +162,7 @@ const compositePKTestMetaModel: MetaModel = {
   reports: [],
   storedQueries: [],
   applicationVersionCrossEntityDefinition: [],
+  applications: [],
 };
 
 // ##############################################################################################
@@ -180,7 +176,7 @@ let miroirConfig: any;
 let loggerOptions: LoggerOptions;
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, fileName)
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, fileName),
 ).then((logger: LoggerInterface) => {
   log = logger;
 });
@@ -203,7 +199,7 @@ MiroirLoggerFactory.startRegisteredLoggers(
   miroirActivityTracker,
   miroirEventService,
   loglevelnext,
-  loggerOptions
+  loggerOptions,
 );
 
 const globalTimeOut = 30000;
@@ -265,11 +261,13 @@ const applicationDeploymentMap: ApplicationDeploymentMap = {
   [selfApplicationLibrary.uuid]: deployment_Library_DO_NO_USE.uuid,
 };
 
-const miroirDeploymentStorageConfiguration: StoreUnitConfiguration = miroirConfig.client.emulateServer
+const miroirDeploymentStorageConfiguration: StoreUnitConfiguration = miroirConfig.client
+  .emulateServer
   ? miroirConfig.client.deploymentStorageConfig[deployment_Miroir.uuid]
   : miroirConfig.client.serverConfig.storeSectionConfiguration[deployment_Miroir.uuid];
 
-const adminDeploymentStorageConfiguration: StoreUnitConfiguration = miroirConfig.client.emulateServer
+const adminDeploymentStorageConfiguration: StoreUnitConfiguration = miroirConfig.client
+  .emulateServer
   ? miroirConfig.client.deploymentStorageConfig[deployment_Admin.uuid]
   : miroirConfig.client.serverConfig.storeSectionConfiguration[deployment_Admin.uuid];
 
@@ -384,11 +382,7 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
-  displayTestSuiteResultsDetails(
-    Object.keys(dataTestActions)[0],
-    [],
-    miroirActivityTracker
-  );
+  displayTestSuiteResultsDetails(Object.keys(dataTestActions)[0], [], miroirActivityTracker);
 });
 
 // ##############################################################################################
@@ -418,7 +412,7 @@ const dataTestActions: Record<string, TestCompositeActionParams> = {
         {
           dataStoreType: "app",
           metaModel: defaultMiroirMetaModel,
-          selfApplication: selfApplicationLibrary,
+          selfApplication: selfApplicationLibrary as SelfApplication,
           applicationModelBranch: selfApplicationModelBranchLibraryMasterBranch,
           applicationVersion: selfApplicationVersionLibraryInitialVersion,
         },
@@ -448,10 +442,7 @@ const dataTestActions: Record<string, TestCompositeActionParams> = {
             actionLabel: "refreshAndQuery",
             endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             payload: {
-              actionSequence: [
-                ...refreshMiroirAndLibrary,
-                queryCompositePKInstances,
-              ],
+              actionSequence: [...refreshMiroirAndLibrary, queryCompositePKInstances],
             },
           },
           testCompositeActionAssertions: [
@@ -628,12 +619,12 @@ describe.sequential("DomainController.integ.compositePK.Data.CRUD", () => {
         testAction,
         applicationDeploymentMap,
         miroirActivityTracker,
-        {}
+        {},
       );
       if (!testSuiteResults || testSuiteResults.status !== "ok") {
         expect(testSuiteResults?.status, `${currentTestSuiteName} failed!`).toBe("ok");
       }
     },
-    globalTimeOut
+    globalTimeOut,
   );
 });

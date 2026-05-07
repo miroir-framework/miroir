@@ -35,7 +35,7 @@ export async function loadTestSingleConfigFile( fileName:string): Promise<Miroir
 // ################################################################################################
 export async function loadTestConfigFiles(env:any) {
   try {
-    log.info("@@@@@@@@@@@@@@@@@@ loadTestConfigFiles started", JSON.stringify(env, null, 2));
+    // log.info("@@@@@@@@@@@@@@@@@@ loadTestConfigFiles started", JSON.stringify(env, null, 2));
     let miroirConfig:MiroirConfigClient
     if (env.VITE_MIROIR_TEST_CONFIG_FILENAME) {
       miroirConfig = await loadTestSingleConfigFile(env.VITE_MIROIR_TEST_CONFIG_FILENAME??"");

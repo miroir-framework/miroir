@@ -50,7 +50,7 @@ export async function mountApplicationDeployment(
     const persistenceStoreControllerManager = new PersistenceStoreControllerManager(
       ConfigurationService.configurationService.adminStoreFactoryRegister,
       ConfigurationService.configurationService.StoreSectionFactoryRegister,
-      miroirConfig.client.filesystemRootDirectory,
+      miroirConfig.client.filesystemDeploymentRootDirectory,
     );
 
     // Get storage configurations

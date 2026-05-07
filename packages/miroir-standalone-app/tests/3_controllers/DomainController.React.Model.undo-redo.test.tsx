@@ -66,7 +66,6 @@ import { cleanLevel, packageName } from "./constants.js";
 
 
 const env:any = (import.meta as any).env
-console.log("@@@@@@@@@@@@@@@@@@ env", env);
 
 const myConsoleLog = (...args: any[]) => console.log(fileName, ...args);
 const fileName = "DomainController.React.Model.test";

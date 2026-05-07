@@ -52,7 +52,7 @@ export function miroirPostgresStoreSectionStartup(configurationService: Configur
     async (
       section: ApplicationSection,
       config: StoreSectionConfiguration,
-      filesystemRootDirectory: string,
+      filesystemDeploymentRootDirectory: string,
       dataStore?: PersistenceStoreDataSectionInterface
     ): Promise<PersistenceStoreDataSectionInterface | PersistenceStoreModelSectionInterface> => {
       log.info('called registerStoreSectionFactory function for', section, 'sql', config);
@@ -83,7 +83,7 @@ export function miroirPostgresStoreSectionStartup(configurationService: Configur
     async (
       section: ApplicationSection,
       config: StoreSectionConfiguration,
-      filesystemRootDirectory: string,
+      filesystemDeploymentRootDirectory: string,
       dataStore?: PersistenceStoreDataSectionInterface
     ): Promise<PersistenceStoreDataSectionInterface | PersistenceStoreModelSectionInterface> => {
       log.info('called registerStoreSectionFactory function for', section, 'sql', config);

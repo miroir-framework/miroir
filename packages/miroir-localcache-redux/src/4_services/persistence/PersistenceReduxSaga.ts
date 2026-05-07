@@ -860,9 +860,6 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
         //   action
         // );
         const deploymentUuid = applicationDeploymentMap[action.payload.application];
-        // const deploymentUuid = actionsWithDeploymentInPayload.includes(action.actionType)
-        //   ? (action as any).payload.deploymentUuid
-        //   : (action as any).deploymentUuid;
         try {
           if (this.params.persistenceStoreAccessMode == "local") {
             const localPersistenceStoreController =

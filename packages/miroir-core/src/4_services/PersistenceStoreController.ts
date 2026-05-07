@@ -64,7 +64,7 @@ export async function storeSectionFactory (
   StoreSectionFactoryRegister:StoreSectionFactoryRegister,
   section:ApplicationSection,
   config: StoreSectionConfiguration,
-  filesystemRootDirectory: string,
+  filesystemDeploymentRootDirectory: string,
   dataStore?: PersistenceStoreDataSectionInterface,
 ):Promise<PersistenceStoreDataSectionInterface | PersistenceStoreModelSectionInterface> {
   log.info(
@@ -81,9 +81,9 @@ export async function storeSectionFactory (
   const foundStoreSectionFactory = StoreSectionFactoryRegister.get(storeFactoryRegisterKey);
   if (foundStoreSectionFactory) {
     if (section == 'model') {
-      return foundStoreSectionFactory(section,config,filesystemRootDirectory,dataStore)
+      return foundStoreSectionFactory(section,config,filesystemDeploymentRootDirectory,dataStore)
     } else {
-      return foundStoreSectionFactory(section,config,filesystemRootDirectory)
+      return foundStoreSectionFactory(section,config,filesystemDeploymentRootDirectory)
     }
   } else {
     throw new Error('foundStoreFactory is undefined for ' + config.emulatedServerType + ', section ' + section)

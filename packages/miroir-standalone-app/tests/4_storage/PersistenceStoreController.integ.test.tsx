@@ -75,7 +75,6 @@ let persistenceStoreControllerManager: PersistenceStoreControllerManagerInterfac
 
 // const env:any = (import.meta as any).env
 const env: any = process.env;
-console.log("@@@@@@@@@@@@@@@@@@ env", env);
 
 const myConsoleLog = (...args: any[]) => console.log(fileName, ...args);
 // const {miroirConfig, logConfig:loggerOptions} = await loadTestConfigFiles(env);

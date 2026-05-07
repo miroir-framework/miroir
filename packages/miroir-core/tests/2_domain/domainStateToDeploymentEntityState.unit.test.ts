@@ -10,7 +10,6 @@ const domainState: DomainState = domainStateImport as DomainState;
 import { ReduxDeploymentsState } from "../../src/0_interfaces/2_domain/ReduxDeploymentsStateInterface";
 import { domainStateToReduxDeploymentsState } from "../../src/tools";
 // const env:any = (import.meta as any).env
-// console.log("@@@@@@@@@@@@@@@@@@ env", env);
 
 // console.log("@@@@@@@@@@@@@@@@@@ miroirConfig", miroirConfig);
 
