@@ -33,7 +33,27 @@ FROM node:22-alpine
 WORKDIR /miroir
 
 # tini provides proper PID-1 signal handling (SIGTERM → graceful shutdown)
-RUN apk add --no-cache tini mkcert nano
+RUN apk add --no-cache tini nano bash
+
+# mkcert is not in the Alpine apk registry; install the pre-built binary instead.
+# Note: If you're building for ARM (e.g., Apple Silicon / linux/arm64),
+# change TARGETARCH to "arm64"
+ARG MKCERT_VERSION=v1.4.4
+ARG TARGETARCH
+RUN apk add --no-cache ca-certificates nss-tools && \
+    if [ "$TARGETARCH" = "arm64" ]; then \
+      ARCH=arm64; \
+    else \
+      ARCH=amd64; \
+    fi && \
+    wget -qO /usr/local/bin/mkcert \
+      "https://github.com/FiloSottile/mkcert/releases/download/${MKCERT_VERSION}/mkcert-${MKCERT_VERSION}-linux-$ARCH" && \
+    chmod +x /usr/local/bin/mkcert
+#ARG MKCERT_VERSION=v1.4.4
+#RUN apk add --no-cache ca-certificates nss-tools && \
+#    wget -qO /usr/local/bin/mkcert \
+#      "https://github.com/FiloSottile/mkcert/releases/download/${MKCERT_VERSION}/mkcert-${MKCERT_VERSION}-linux-amd64" && \
+#    chmod +x /usr/local/bin/mkcert
 
 # -------------------------------------------------------------------------
 # Setup the certificates for https (mkcert is available in the image)
