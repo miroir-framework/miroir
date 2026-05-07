@@ -30,5 +30,12 @@ else
   echo "[miroir] Data volume already initialised — skipping seed."
 fi
 
+CAROOT="$(mkcert -CAROOT)"
+echo "─────────────────────────────────────────────────────────"
+echo "IMPORTANT — adding NODE_EXTRA_CA_CERTS environment variable for this session:"
+echo ""
+echo "  export NODE_EXTRA_CA_CERTS=\"$CAROOT/rootCA.pem\""
+export NODE_EXTRA_CA_CERTS="$CAROOT/rootCA.pem"
+
 echo "[miroir] Starting server..."
 exec "$@"

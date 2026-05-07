@@ -33,7 +33,15 @@ FROM node:22-alpine
 WORKDIR /miroir
 
 # tini provides proper PID-1 signal handling (SIGTERM → graceful shutdown)
-RUN apk add --no-cache tini
+RUN apk add --no-cache tini mkcert nano
+
+# -------------------------------------------------------------------------
+# Setup the certificates for https (mkcert is available in the image)
+# -------------------------------------------------------------------------
+COPY --from=builder /miroir-build/miroir/scripts \
+  /scripts
+RUN chmod +x /scripts/setup-https.sh
+RUN /scripts/setup-https.sh
 
 # -------------------------------------------------------------------------
 # Serve the SPA from the same Express server (same origin → no CORS needed)
