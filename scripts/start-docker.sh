@@ -26,55 +26,71 @@
 set -e
 
 REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-CERTS_DIR="$REPO_ROOT/certs"
+# CERTS_DIR="$REPO_ROOT/certs"
 
-IMAGE="${MIROIR_IMAGE:-miroir-framework/miroir:latest}"
-DATA_VOLUME="${MIROIR_DATA_VOLUME:-miroir-data}"
+IMAGE="${MIROIR_IMAGE:-miroir-framework/miroir-server:latest}"
+DATA_VOLUME="${MIROIR_DATA_VOLUME:-/mnt/c/miroir-data}"
 PORT="${MIROIR_PORT:-3080}"
 
-# ── 1. Check mkcert is installed ──────────────────────────────────────────────
-if ! command -v mkcert &>/dev/null; then
-  echo ""
-  echo "ERROR: mkcert is not installed."
-  echo ""
-  echo "Install it with one of:"
-  echo "  macOS:    brew install mkcert"
-  echo "  Linux:    sudo apt install mkcert   OR   brew install mkcert"
-  echo "  Windows:  choco install mkcert       OR   winget install mkcert"
-  echo "  Any:      https://github.com/FiloSottile/mkcert/releases"
-  echo ""
-  echo "Then re-run this script."
-  exit 1
-fi
-
-# ── 2. Install mkcert root CA into OS/browser trust store (idempotent) ────────
-echo "[start-docker] Installing mkcert local CA into OS/browser trust store..."
-mkcert -install
-
-# ── 3. Generate certificates if they don't exist ──────────────────────────────
-mkdir -p "$CERTS_DIR"
-
-if [ ! -f "$CERTS_DIR/localhost.pem" ] || [ ! -f "$CERTS_DIR/localhost-key.pem" ]; then
-  echo "[start-docker] Generating TLS certificates in $CERTS_DIR ..."
-  mkcert \
-    -cert-file "$CERTS_DIR/localhost.pem" \
-    -key-file  "$CERTS_DIR/localhost-key.pem" \
-    localhost 127.0.0.1 ::1
-  echo "[start-docker] Certificates generated."
+if [ -n "$MIROIR_CERTS_DIR" ]; then
+  CERTS_DIR="$MIROIR_CERTS_DIR"
+  echo "[start-docker] Using provided certs directory: $CERTS_DIR"
+  if [ ! -f "$CERTS_DIR/localhost.pem" ] || [ ! -f "$CERTS_DIR/localhost-key.pem" ]; then
+    echo "ERROR: $CERTS_DIR must contain localhost.pem and localhost-key.pem"
+    echo "  Generate them on the Windows host: bash scripts/setup-https.sh"
+    exit 1
+  fi
+  if [ ! -f "$CERTS_DIR/rootCA.pem" ]; then
+    echo "WARNING: rootCA.pem missing — copy it from Windows:"
+    echo "  cp \"\$(mkcert -CAROOT)/rootCA.pem\" certs/rootCA.pem"
+  fi
 else
-  echo "[start-docker] TLS certificates already present in $CERTS_DIR — skipping generation."
-fi
+  CERTS_DIR="$REPO_ROOT/certs"
+  # ... existing mkcert steps ...
+  # ── 1. Check mkcert is installed ──────────────────────────────────────────────
+  if ! command -v mkcert &>/dev/null; then
+    echo ""
+    echo "ERROR: mkcert is not installed."
+    echo ""
+    echo "Install it with one of:"
+    echo "  macOS:    brew install mkcert"
+    echo "  Linux:    sudo apt install mkcert   OR   brew install mkcert"
+    echo "  Windows:  choco install mkcert       OR   winget install mkcert"
+    echo "  Any:      https://github.com/FiloSottile/mkcert/releases"
+    echo ""
+    echo "Then re-run this script."
+    exit 1
+  fi
 
-# ── 4. Copy mkcert root CA into certs/ for Node.js inside the container ───────
-CAROOT="$(mkcert -CAROOT)"
-if [ -f "$CAROOT/rootCA.pem" ]; then
-  cp "$CAROOT/rootCA.pem" "$CERTS_DIR/rootCA.pem"
-  echo "[start-docker] Copied $CAROOT/rootCA.pem → $CERTS_DIR/rootCA.pem"
+  # ── 2. Install mkcert root CA into OS/browser trust store (idempotent) ────────
+  echo "[start-docker] Installing mkcert local CA into OS/browser trust store..."
+  mkcert -install
+
+  # ── 3. Generate certificates if they don't exist ──────────────────────────────
+  mkdir -p "$CERTS_DIR"
+
+  if [ ! -f "$CERTS_DIR/localhost.pem" ] || [ ! -f "$CERTS_DIR/localhost-key.pem" ]; then
+    echo "[start-docker] Generating TLS certificates in $CERTS_DIR ..."
+    mkcert \
+      -cert-file "$CERTS_DIR/localhost.pem" \
+      -key-file  "$CERTS_DIR/localhost-key.pem" \
+      localhost 127.0.0.1 ::1
+    echo "[start-docker] Certificates generated."
+  else
+    echo "[start-docker] TLS certificates already present in $CERTS_DIR — skipping generation."
+  fi
+  # ── 4. Copy mkcert root CA into certs/ for Node.js inside the container ───────
+  CAROOT="$(mkcert -CAROOT)"
+  if [ -f "$CAROOT/rootCA.pem" ]; then
+    cp "$CAROOT/rootCA.pem" "$CERTS_DIR/rootCA.pem"
+    echo "[start-docker] Copied $CAROOT/rootCA.pem → $CERTS_DIR/rootCA.pem"
+  fi
 fi
 
 # ── 5. Run the container ──────────────────────────────────────────────────────
 echo ""
-echo "[start-docker] Starting $IMAGE on https://localhost:${PORT} ..."
+echo "[start-docker] Starting $IMAGE on with data volume '$DATA_VOLUME' and certs from $CERTS_DIR ..."
+echo "[start-docker] Starting $IMAGE on port https://localhost:${PORT} ..."
 echo ""
 
 docker run \
