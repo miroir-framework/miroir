@@ -77,6 +77,30 @@ npm run dev -w miroir-standalone-app
 
 Open your browser at **https://localhost:5173**.  You should see a valid padlock in the address bar (no certificate warning).
 
+### Docker container
+
+The Docker image does **not** generate its own certificates.  Instead, it expects the host-generated certs (the same ones in `certs/`) to be mounted into `/certs` at runtime, so the browser already trusts them.
+
+Use the provided convenience script (runs `mkcert`, copies the CA root, then `docker run`):
+
+```bash
+bash scripts/start-docker.sh           # foreground
+bash scripts/start-docker.sh -d        # detached / background
+```
+
+Or with `docker compose` (mounts `./certs` automatically if present):
+
+```bash
+# One-time cert setup (if not already done for dev)
+bash scripts/setup-https.sh
+# Copy the mkcert root CA so Node.js inside the container trusts it
+cp "$(mkcert -CAROOT)/rootCA.pem" certs/rootCA.pem
+
+docker compose up
+```
+
+> **Note**: If `./certs` is absent or empty, the server gracefully falls back to plain HTTP.
+
 ### Electron (dev mode)
 
 ```bash

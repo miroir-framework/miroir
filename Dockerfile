@@ -164,6 +164,11 @@ RUN chmod +x /docker-entrypoint.sh
 # -------------------------------------------------------------------------
 # Runtime declarations
 # -------------------------------------------------------------------------
+# /certs — mount the host's mkcert-generated cert directory here at runtime:
+#   docker run -v ./certs:/certs:ro ...
+# Required files: localhost.pem, localhost-key.pem, rootCA.pem
+# If absent the server falls back to HTTP.
+VOLUME /certs
 VOLUME /data
 EXPOSE 3080
 

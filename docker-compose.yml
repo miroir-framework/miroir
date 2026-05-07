@@ -30,18 +30,24 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      # Host port 3080 → container port 3080 (plain HTTP)
+      # Host port 3080 → container port 3080
       # Change the left-hand side to expose on a different host port, e.g. "8080:3080"
       - "3080:3080"
     volumes:
       # Named volume for user application data (auto-seeded with demo data on first run)
       - miroir-data:/data
+      # TLS certificates — mount the host's mkcert-generated certs so the browser
+      # already trusts them.  Run `bash scripts/setup-https.sh` once to generate them,
+      # then copy $(mkcert -CAROOT)/rootCA.pem into certs/ before starting.
+      # If the ./certs directory is absent the server falls back to plain HTTP.
+      - ./certs:/certs:ro
       # Uncomment to override the server config:
       # - ./packages/miroir-server/config/miroirConfig.server.docker.json:/miroir/packages/miroir-server/config/miroirConfig.server.json:ro
+    environment:
+      # Explicit paths inside the container (match the volume mount above)
+      - MIROIR_TLS_CERT=/certs/localhost.pem
+      - MIROIR_TLS_KEY=/certs/localhost-key.pem
     restart: unless-stopped
-    # Optional: set log level via environment (requires server to read it; see README)
-    # environment:
-    #   - NODE_ENV=production
 
 volumes:
   miroir-data:

@@ -35,33 +35,8 @@ WORKDIR /miroir
 # tini provides proper PID-1 signal handling (SIGTERM → graceful shutdown)
 RUN apk add --no-cache tini nano bash
 
-# mkcert is not in the Alpine apk registry; install the pre-built binary instead.
-# Note: If you're building for ARM (e.g., Apple Silicon / linux/arm64),
-# change TARGETARCH to "arm64"
-ARG MKCERT_VERSION=v1.4.4
-ARG TARGETARCH
-RUN apk add --no-cache ca-certificates nss-tools && \
-    if [ "$TARGETARCH" = "arm64" ]; then \
-      ARCH=arm64; \
-    else \
-      ARCH=amd64; \
-    fi && \
-    wget -qO /usr/local/bin/mkcert \
-      "https://github.com/FiloSottile/mkcert/releases/download/${MKCERT_VERSION}/mkcert-${MKCERT_VERSION}-linux-$ARCH" && \
-    chmod +x /usr/local/bin/mkcert
-#ARG MKCERT_VERSION=v1.4.4
-#RUN apk add --no-cache ca-certificates nss-tools && \
-#    wget -qO /usr/local/bin/mkcert \
-#      "https://github.com/FiloSottile/mkcert/releases/download/${MKCERT_VERSION}/mkcert-${MKCERT_VERSION}-linux-amd64" && \
-#    chmod +x /usr/local/bin/mkcert
-
-# -------------------------------------------------------------------------
-# Setup the certificates for https (mkcert is available in the image)
-# -------------------------------------------------------------------------
-COPY --from=builder /miroir-build/miroir/scripts \
-  /scripts
-RUN chmod +x /scripts/setup-https.sh
-RUN /scripts/setup-https.sh
+# TLS certificates are NOT generated inside the image.
+# Mount host-generated certs (trusted by the host browser) at runtime — see VOLUME below.
 
 # -------------------------------------------------------------------------
 # Serve the SPA from the same Express server (same origin → no CORS needed)
@@ -143,6 +118,11 @@ RUN chmod +x /docker-entrypoint.sh
 # -------------------------------------------------------------------------
 # Runtime declarations
 # -------------------------------------------------------------------------
+# /certs — mount the host's mkcert-generated cert directory here at runtime:
+#   docker run -v ./certs:/certs:ro ...
+# Required files: localhost.pem, localhost-key.pem, rootCA.pem
+# If absent the server falls back to HTTP.
+VOLUME /certs
 VOLUME /data
 EXPOSE 3080
 
