@@ -3,18 +3,16 @@
 
 ## An end-to-end, low-code, agentic development platform for data-centric applications.
 
-
-⚠️ *We're in "early adopter" phase, documentation is insufficient, and things will break!* ⚠️
 ---
 
 ## Miroir in a few Words
 
-Miroir is a comprehensive development framework that transforms how you create web applications by:
+**Miroir** is a comprehensive development framework that **transforms how you create web applications** by:
 
 - **adopting a data-centric approach** - you start by **describing the concepts** manipulated by your application, then Miroir helps you create your application around these concepts (**creating business logic**, **testing**, **scripting**, transferring data, etc.)
 - **providing end-to-end support** - in Miroir, described concepts and business logic become alive as Graphical User Interfaces (webapp **GUI**), APIs (**Rest**), and **database schemas**, end-to-end!
-- **enabling low-code description** - in Miroir the business logic is defined as **block-like** elements, not as code; these elements can be combined, modified and tested interactively, all at run-time.
-- **supporting AI agents** - business logic written in Miroir can automatically be exposed to AI agents using the **Model Context Protocol** (MCP)
+- **enabling low-code description** - in Miroir the business logic is defined as **block-like elements**, **not** as **code**; these elements can be combined, modified and tested interactively, **all at run-time**.
+- **supporting AI agents** - business logic written in Miroir can automatically be exposed to AI agents **using the Model Context Protocol** (MCP)
 
 <!-- - **Unifying development and runtime** - Define concepts once, use everywhere (database, API, UI, business logic)
 - **Enabling low-code creation** - Build and modify applications at runtime without recompilation
@@ -23,7 +21,7 @@ Miroir is a comprehensive development framework that transforms how you create w
 
 ## Example use case
 
-You need to **manage a small library inventory**, with Books, Authors, Publishers and Members, where the Members may borrow and return Books under given conditions. Using Miroir, you may typically:
+**You need to manage a small library inventory**, with Books, Authors, Publishers and Members, where the Members may borrow and return Books under given conditions. Using Miroir, you may typically:
 
 - **install Miroir on a laptop** - the Miroir desktop app is made available on a single machine in the library, perfect for a nascent inventory
 - **create the wanted entities** - start creating you application in Miroir by creating **Book**, **Author**, **Publisher** and **Member** entities, each Entity defining potential relations to others (for example a Book must have 1 or more Authors)
@@ -76,50 +74,15 @@ You need to **manage a small library inventory**, with Books, Authors, Publisher
 
 ---
 
-## Quick Start
+## Want to try it?
 
-### Prerequisites
+Miroir is [available](https://github.com/miroir-framework/miroir/releases) as a standalone app for Windows (portable or with installer). It can also run locally on nodejs (Linux & Windows), or in a docker container (Linux, Mac, Windows)
 
-- Node.js 18+ and npm
-- (Optional) PostgreSQL 14+ for database persistence
-- (Optional) Git for version control
+**🏃 [Head to the Quickstart Guide →](docs/getting-started/quickstart.md)**
 
-### Installation
-### Installing Node.js
+<!-- ### Installation
 
-If Node.js is not already installed, download the LTS version (18 or higher) from:
-https://nodejs.org
-
-After installation, verify it by running:
-node -v
-npm -v
-
-```bash
-# Clone the repository
-git clone https://github.com/miroir-framework/miroir.git
-cd miroir
-
-# Install dependencies
-npm install
-
-# Build core packages
-npm run devBuild -w miroir-core
-npm run build -w miroir-localcache-redux -w miroir-store-filesystem -w miroir-store-indexedDb -w miroir-store-postgres
-```
-
-### Run Your First Application
-
-```bash
-# Terminal 1: Start the server
-npm run dev -w miroir-server
-
-# Terminal 2: Start the client
-npm run dev -w miroir-standalone-app
-```
-
-Open http://localhost:5173 in your browser and explore the Library example application!
-
-**📖 [Complete Getting Started Guide →](docs/getting-started/quickstart.md)**
+**📖 [Complete Getting Started Guide →](docs/getting-started/quickstart.md)** -->
 
 ---
 
@@ -184,8 +147,8 @@ This section gives a slightly simplified syntax for better understanding of the 
 
 ### Define The Book Entity Model Schema
 
-```json
-{
+```ts
+const BookModelSchema: EntityDefinition = {
   "type": "object",
   "definition": {
     "uuid": { "type": "uuid" },
@@ -199,17 +162,17 @@ This section gives a slightly simplified syntax for better understanding of the 
 
 ### Query for the list of Books (Declarative)
 
-```json
-{
+```ts
+const listOfBooks: Query = {
   "queryType": "extractorInstancesByEntity",
   "targetEntity": "Book"
 }
 ```
 
-### Extract The Book Titles Only: Transform Data (Portable Logic)
+### Extract The Book Titles from the List of Books: Transform Data (Portable Logic)
 
-```json
-{
+```ts
+const listOfBookTitles: Transformer = {
   "transformerType": "mapperListToList",
   "interpolation": "runtime",
   "referencedExtractor": "books",
@@ -219,8 +182,8 @@ This section gives a slightly simplified syntax for better understanding of the 
 
 ### Display Books in the UI: The BookList Report
 
-```json
-{
+```ts
+const listOfBooks: Report = {
   "type": "list",
   "definition": {
     "entityUuid": "Book",
@@ -249,16 +212,18 @@ This section gives a slightly simplified syntax for better understanding of the 
 - ✅ Electron desktop application
 - ✅ MCP server for AI integration (Proof of Concept)
 - ✅ Command Line Interface (Proof of Concept)
+- ✅ Interactive Transformer/Query/Action editors
+- ✅ Visual model viewer (UML-like)
 
 ### 🚧 In Active Development
 
-- 🚧 Interactive Transformer/Query/Action editors
-- 🚧 Visual model editor (UML-like)
+- 🚧 Packing releases for Linux, Mac, Windows
+- 🚧 running / editing integrations tests at runtime
 - 🚧 Spreadsheet connector (ODS, Excel)
 
 ### 📅 Roadmap
 
-- 📅 Block-based visual programming (low-code)
+- 📅 Block-based visual programming (low-code à la Scratch / Blockly)
 - 📅 Additional NoSQL stores (DuckDB, ElasticSearch)
 - 📅 Git/GitHub integration
 - 📅 Code generation ("freeze to JavaScript/Rust")
