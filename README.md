@@ -215,11 +215,12 @@ const listOfBooks: Report = {
 - ✅ Interactive Transformer/Query/Action editors
 - ✅ Visual model viewer (UML-like)
 
-### 🚧 In Active Development
+### 🚧 Current Activities
 
+- 🚧 Improving the documentation (!)
 - 🚧 Packing releases for Linux, Mac, Windows
-- 🚧 running / editing integrations tests at runtime
-- 🚧 Spreadsheet connector (ODS, Excel)
+- 🚧 feature: running / editing integrations tests at runtime
+- 🚧 feature: Spreadsheet connector (ODS, Excel)
 
 ### 📅 Roadmap
 
