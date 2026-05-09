@@ -40,6 +40,9 @@ RUN npm run build
 # ---------------------------------------------------------------------------
 WORKDIR /miroir-build/miroir
 
+# no need to install to build, the build does not depend on additional packages
+
+# 0. use local versions of packages, this is a dev build, not a production release build
 RUN npm link @miroir-framework/jzod
 RUN npm link @miroir-framework/jzod-ts
 
