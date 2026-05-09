@@ -7,7 +7,10 @@
 
 #   docker run -p 3080:3080 -v /mnt/c/miroir-data:/data miroir-framework/miroir:latest
 #   docker run -p 3080:3080 -v /mnt/c/miroir-release:/release miroir-framework/ci-builder-electron:latest
-#   docker run -p 3080:3080 -v /mnt/c/miroir-build:/miroir-build -it miroir-framework/ci:latest bash
+
+# docker run -p 3080:3080 -v 'c:/miroir-build':'/build' -it miroir-framework/ci:latest bash
+# docker run -p 3080:3080 -v /c/miroir-build:/build -it miroir-framework/ci:latest bash
+
 # docker exec -i miroir-framework/ci /bin/bash
 
 docker build --no-cache --rm -t miroir-framework/ci:latest ci

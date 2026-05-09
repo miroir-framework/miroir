@@ -5,6 +5,9 @@
   "workspaces": [
     "packages/*"
   ],
+  "overrides": {
+    "yaml": "^2.4.2"
+  },
   "devDependencies": {
     "@types/node": "^25.6.0",
     "lerna": "^9.0.0",
