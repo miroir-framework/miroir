@@ -4,5 +4,5 @@
 
 docker image rm miroir-framework/ci-workspace-dev:latest
 docker image rm miroir-framework/ci-builder:latest
-docker image rm miroir-framework/miroir-server:latest
+docker image rm --force miroir-framework/ci-builder-electron:latest
 # docker image rm miroir-framework/miroir:latest

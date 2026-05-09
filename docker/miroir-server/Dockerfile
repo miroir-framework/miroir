@@ -17,18 +17,15 @@
 # =============================================================================
 
 # =============================================================================
-# Stage 1: builder — get built artifacts from the ci-builder image
-# (which has all dependencies installed and every workspace package built)
+# Stage 1: final — slim production image
 # =============================================================================
-FROM miroir-framework/ci-builder:latest AS builder
-WORKDIR /miroir-build
-
-
+# Build artifacts are supplied via a named build context (BuildKit ≥ 0.8 / Docker ≥ 23).
+# Pass the path to the pre-built workspace on the host at build time:
+#
+#   docker build --build-context builder=/path/to/miroir-build -t miroir-framework/miroir:latest .
+#
+# Every COPY --from=builder below resolves against that host directory.
 # =============================================================================
-# Stage 2: final — slim production image
-# =============================================================================
-# FROM miroir-framework/ci-builder:latest
-# FROM miroir-framework/ci-builder:latest
 FROM node:22-alpine
 WORKDIR /miroir
 

@@ -63,6 +63,9 @@ git clone https://github.com/miroir-framework/jzod-ts.git && \
 git clone https://github.com/miroir-framework/miroir.git" >> /git-clone.sh
 RUN chmod +x /git-clone.sh
 
+RUN git config --global --add safe.directory /build/jzod
+RUN git config --global --add safe.directory /build/jzod-ts
+RUN git config --global --add safe.directory /build/miroir
 
 VOLUME /build
 
