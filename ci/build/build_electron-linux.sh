@@ -48,18 +48,20 @@ echo "========================================================================"
 
 cd "${BUILD_DIR}"
 
-echo "[build_electron-linux.sh] Copying build artifacts to /tmp/miroir-build..."
-rm -rf /tmp/miroir-build
-mkdir -p /tmp/miroir-build
-cp -r * /tmp/miroir-build/
+# echo "[build_electron-linux.sh] Copying build artifacts to $HOME/tmp/miroir-build..."
+# rm -rf $HOME/tmp/miroir-build
+# mkdir -p $HOME/tmp/miroir-build
+# cp -r miroir $HOME/tmp/miroir-build/
 
-cd /tmp/miroir-build
+# cd $HOME/tmp/miroir-build/miroir
 
 # ---------------------------------------------------------------------------
 # Build
 # ---------------------------------------------------------------------------
 step "1/1 · miroir-standalone-app-electron (Linux dist)"
 NODE_OPTIONS=--max-old-space-size=4096 npm run dist-linux -w miroir-standalone-app-electron
+
+cd "${BUILD_DIR}"
 
 echo ""
 echo "========================================================================"
