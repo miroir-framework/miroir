@@ -32,24 +32,6 @@ RUN export NVM_DIR="$HOME/.nvm" ; \
   if [ -s "$NVM_DIR/bash_completion" ]; then . "$NVM_DIR/bash_completion"; fi ; \
   nvm install --lts ;
 
-# RUN apt-get install -y libfuse2
-
-# install libglib-2.0.so.0 dependency needed to run electron app
-# RUN DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-#   ucf
-# RUN wget http://ftp.it.debian.org/debian/pool/main/g/gconf/gconf2-common_3.2.6-8_all.deb
-# RUN wget http://ftp.it.debian.org/debian/pool/main/g/gconf/gconf2_3.2.6-8_amd64.deb
-# RUN wget http://ftp.it.debian.org/debian/pool/main/g/gconf/libgconf-2-4_3.2.6-8_amd64.deb
-# RUN wget http://ftp.it.debian.org/debian/pool/main/g/gconf/gconf-service_3.2.6-8_amd64.deb
-# RUN wget http://ftp.it.debian.org/debian/pool/main/o/openldap/libldap-2.5-0_2.5.13%2bdfsg-5_amd64.deb
-# RUN dpkg -i gconf2-common_3.2.6-8_all.deb
-# RUN dpkg -i libgconf-2-4_3.2.6-8_amd64.deb
-# RUN dpkg -i libldap-2.5-0_2.5.13+dfsg-5_amd64.deb
-# RUN dpkg -i gconf-service_3.2.6-8_amd64.deb
-# RUN dpkg -i gconf2_3.2.6-8_amd64.deb
-
-#RUN NODE_OPTIONS=--max-old-space-size=4096 npm run dist-linux -w miroir-standalone-app-electron
-
 RUN echo "This is the CI image. It is meant to be used as a base image for other CI images that need to build the miroir packages and access the built release artifacts." \
   && echo "To build the miroir packages and access the built release artifacts, create a container from this image and mount a volume to /build/release:" \
   && echo "  docker run -p 3080:3080 -v /path/to/local/release:/release -it miroir-framework/ci:latest bash" \
