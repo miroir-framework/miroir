@@ -82,6 +82,8 @@ docker build \
   -f "${DOCKERFILE}" \
   "${MIROIR_BUILD_DIR}"
 
+docker save "${TAG}" | gzip > "${TAG//[:\/]/_}-docker_image.tar.gz"
+
 echo ""
 echo "========================================================================"
 echo "  ALL DONE  →  image tagged as '${TAG}'"
