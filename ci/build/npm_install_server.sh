@@ -1,14 +1,17 @@
 #!/usr/bin/env bash
 # =============================================================================
-# build_pull.sh  –  Pull the latest changes for all Miroir source repositories.
+# npm_install_server.sh  –  Install all Miroir package dependencies and set up
+#                       npm links before building the server release bundle.
 #
 # Usage:
-#   ./build_pull.sh [OPTIONS] <build-dir>
+#   ./npm_install_server.sh [OPTIONS]
 #
 # OPTIONS:
 #   --build-dir DIR   Root directory that contains  jzod/, jzod-ts/, miroir/
 #                     (default: current working directory)
 #   -h, --help        Show this help message and exit
+#
+# Run this script once per environment setup, before build_server.sh.
 # =============================================================================
 set -euo pipefail
 
@@ -20,22 +23,14 @@ source "${SCRIPT_DIR}/../lib/common.sh"
 # ---------------------------------------------------------------------------
 
 usage() {
-  sed -n '2,14p' "$0"
+  sed -n '2,16p' "$0"
   exit 0
 }
 
 # ---------------------------------------------------------------------------
 # Argument parsing
 # ---------------------------------------------------------------------------
-
-# Default value
-BUILD_DIR="/build"
-
-# If first argument is not an option, treat as BUILD_DIR
-if [[ $# -gt 0 && ! "$1" =~ ^- ]]; then
-  BUILD_DIR="$1"
-  shift
-fi
+BUILD_DIR="$(pwd)"
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -52,32 +47,38 @@ done
 
 echo ""
 echo "========================================================================"
-echo "  Miroir — git pull all repositories"
+echo "  Miroir server — install dependencies"
 echo "  BUILD_DIR : ${BUILD_DIR}"
 echo "========================================================================"
 
 # ---------------------------------------------------------------------------
 # Step 1 – jzod
 # ---------------------------------------------------------------------------
-step "1/3 · jzod"
+step "1/3 · jzod — npm install + link"
 cd "${BUILD_DIR}/jzod"
-git pull
+rm -f package-lock.json
+npm install
+npm link
 
 # ---------------------------------------------------------------------------
-# Step 2 – jzod-ts
+# Step 2 – jzod-ts (depends on jzod)
 # ---------------------------------------------------------------------------
-step "2/3 · jzod-ts"
+step "2/3 · jzod-ts — npm install + link"
 cd "${BUILD_DIR}/jzod-ts"
-git pull
+npm link @miroir-framework/jzod
+rm -f package-lock.json
+npm install
+npm link
 
 # ---------------------------------------------------------------------------
-# Step 3 – miroir
+# Step 3 – miroir workspace: link local jzod / jzod-ts
 # ---------------------------------------------------------------------------
-step "3/3 · miroir"
+step "3/3 · miroir workspace — link local packages"
 cd "${BUILD_DIR}/miroir"
-git pull
+npm link @miroir-framework/jzod
+npm link @miroir-framework/jzod-ts
 
 echo ""
 echo "========================================================================"
-echo "  ALL DONE  →  all repositories up to date."
+echo "  ALL DONE  →  dependencies installed, local packages linked."
 echo "========================================================================"

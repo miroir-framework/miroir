@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 # =============================================================================
-# build_server-docker.sh  –  Build the miroir-server Docker image.
+# build_miroir.sh  –  Build the miroir-server Docker image.
 #
 # Usage:
-#   ./build_server-docker.sh [OPTIONS] <miroir-build-path>
+#   ./build_miroir.sh [OPTIONS] <miroir-build-path>
 #
 # ARGUMENTS:
 #   <miroir-build-path>   Path to the pre-built miroir workspace on the
@@ -20,9 +20,9 @@
 #   -h, --help              Show this help message and exit
 #
 # Examples:
-#   ./build_server-docker.sh /mnt/c/miroir-build/miroir
-#   ./build_server-docker.sh --tag miroir-framework/miroir:1.2.3 /mnt/c/miroir-build/miroir
-#   ./build_server-docker.sh --build-dir subdir --no-cache /mnt/c/miroir-build
+#   ./build_miroir.sh /mnt/c/miroir-build/miroir
+#   ./build_miroir.sh --tag miroir-framework/miroir:1.2.3 /mnt/c/miroir-build/miroir
+#   ./build_miroir.sh --build-dir subdir --no-cache /mnt/c/miroir-build
 # =============================================================================
 set -euo pipefail
 

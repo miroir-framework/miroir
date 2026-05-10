@@ -15,6 +15,8 @@
 # docker exec -it  bash
 # docker run -it -d eager_sammet /bin/bash
 
+# cd /build/miroir/ && clear && npm run run:prod -w miroir-server
+
 docker build --no-cache --rm -t miroir-framework/ci:latest ci
 docker build --no-cache --rm -t miroir-framework/ci-workspace-dev:latest ci-workspace-dev
 docker build --no-cache --rm -t miroir-framework/ci-builder:latest ci-builder
