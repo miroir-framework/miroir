@@ -40,15 +40,21 @@ RUN echo "This is the CI image. It is meant to be used as a base image for other
   && echo "This will copy the built release artifacts to your local machine." \
   && echo "Note: The build process can take a while, especially for the electron app, so be patient."
 
-RUN echo "git clone https://github.com/miroir-framework/jzod.git && \
-git clone https://github.com/miroir-framework/jzod-ts.git && \
-git clone https://github.com/miroir-framework/miroir.git" >> /git-clone.sh
-RUN chmod +x /git-clone.sh
+RUN git clone https://github.com/miroir-framework/jzod.git
+RUN git clone https://github.com/miroir-framework/jzod-ts.git
+RUN git clone https://github.com/miroir-framework/miroir.git
+# RUN echo "git clone https://github.com/miroir-framework/jzod.git && \
+# git clone https://github.com/miroir-framework/jzod-ts.git && \
+# git clone https://github.com/miroir-framework/miroir.git" >> /git-clone.sh
+# RUN chmod +x /git-clone.sh
 
-RUN git config --global --add safe.directory /build/jzod
-RUN git config --global --add safe.directory /build/jzod-ts
-RUN git config --global --add safe.directory /build/miroir
+# RUN git config --global --add safe.directory /build/jzod
+# RUN git config --global --add safe.directory /build/jzod-ts
+# RUN git config --global --add safe.directory /build/miroir
 
-VOLUME /build
+RUN chmod a+x /build/miroir/ci/build/*.sh
+
+# VOLUME /build
+VOLUME /release
 
 # # # RUN cp -r /miroir-build/miroir/packages/miroir-standalone-app-electron/release/* /release/

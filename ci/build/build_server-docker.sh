@@ -3,14 +3,14 @@
 # build_server-docker.sh  –  Build the miroir-server Docker image.
 #
 # Usage:
-#   ./build_server-docker.sh [OPTIONS] <miroir-workspace-path>
+#   ./build_server-docker.sh [OPTIONS] <miroir-build-path>
 #
 # ARGUMENTS:
-#   <miroir-workspace-path>   Path to the pre-built miroir workspace on the
-#                             host (the directory that directly contains
-#                             packages/miroir-server/).  Used as the Docker
-#                             build context.
-#                             e.g. /home/ci/miroir-build/miroir
+#   <miroir-build-path>   Path to the pre-built miroir workspace on the
+#                         host (the directory that directly contains
+#                         packages/miroir-server/).  Used as the Docker
+#                         build context.
+#                         e.g. /home/ci/miroir-build/miroir
 #
 # OPTIONS:
 #   -t, --tag TAG           Docker image tag  (default: miroir-framework/miroir:latest)
@@ -45,7 +45,7 @@ usage() {
 TAG="miroir-framework/miroir:latest"
 DOCKERFILE="${REPO_ROOT}/docker/miroir-server/Dockerfile"
 NO_CACHE=""
-DOCKER_BUILD_CONTEXT_PATH=""
+MIROIR_BUILD_DIR=""
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -56,22 +56,22 @@ while [[ $# -gt 0 ]]; do
                   DOCKERFILE="$2"; shift 2 ;;
     --no-cache)   NO_CACHE="--no-cache"; shift ;;
     -*)           die "Unknown option: '$1'" ;;
-    *)            [[ -z "$DOCKER_BUILD_CONTEXT_PATH" ]] || die "Unexpected argument: '$1'"
-                  DOCKER_BUILD_CONTEXT_PATH="$1"; shift ;;
+    *)            [[ -z "$MIROIR_BUILD_DIR" ]] || die "Unexpected argument: '$1'"
+                  MIROIR_BUILD_DIR="$1"; shift ;;
   esac
 done
 
-[[ -n "$DOCKER_BUILD_CONTEXT_PATH" ]]  || die "<builder-path> is required."
-[[ -d "$DOCKER_BUILD_CONTEXT_PATH" ]]  || die "builder-path does not exist or is not a directory: '$DOCKER_BUILD_CONTEXT_PATH'"
+[[ -n "$MIROIR_BUILD_DIR" ]]  || die "<builder-path> is required."
+[[ -d "$MIROIR_BUILD_DIR" ]]  || die "builder-path does not exist or is not a directory: '$MIROIR_BUILD_DIR'"
 [[ -f "$DOCKERFILE"   ]]  || die "Dockerfile not found: '$DOCKERFILE'"
 
-DOCKER_BUILD_CONTEXT_PATH="$(cd "$DOCKER_BUILD_CONTEXT_PATH" && pwd)"   # normalize to absolute path
+MIROIR_BUILD_DIR="$(cd "$MIROIR_BUILD_DIR" && pwd)"   # normalize to absolute path
 
 # ---------------------------------------------------------------------------
 # Build
 # ---------------------------------------------------------------------------
 step "Building Docker image '${TAG}'"
-echo "  path to Miroir build : ${DOCKER_BUILD_CONTEXT_PATH}"
+echo "  path to Miroir build : ${MIROIR_BUILD_DIR}"
 echo "  Dockerfile    : ${DOCKERFILE}"
 [[ -n "$NO_CACHE" ]] && echo "  --no-cache    : enabled"
 
@@ -79,7 +79,7 @@ docker build \
   ${NO_CACHE} \
   -t "${TAG}" \
   -f "${DOCKERFILE}" \
-  "${DOCKER_BUILD_CONTEXT_PATH}"
+  "${MIROIR_BUILD_DIR}"
 
 echo ""
 echo "========================================================================"
