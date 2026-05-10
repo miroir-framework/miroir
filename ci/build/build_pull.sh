@@ -3,7 +3,7 @@
 # build_pull.sh  –  Pull the latest changes for all Miroir source repositories.
 #
 # Usage:
-#   ./build_pull.sh [OPTIONS]
+#   ./build_pull.sh [OPTIONS] <build-dir>
 #
 # OPTIONS:
 #   --build-dir DIR   Root directory that contains  jzod/, jzod-ts/, miroir/
@@ -27,8 +27,15 @@ usage() {
 # ---------------------------------------------------------------------------
 # Argument parsing
 # ---------------------------------------------------------------------------
-# BUILD_DIR="$(pwd)"
+
+# Default value
 BUILD_DIR="/build"
+
+# If first argument is not an option, treat as BUILD_DIR
+if [[ $# -gt 0 && ! "$1" =~ ^- ]]; then
+  BUILD_DIR="$1"
+  shift
+fi
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
