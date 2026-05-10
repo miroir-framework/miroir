@@ -30,8 +30,10 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-ins
   curl \
   wget \
   nano \
-  make \ 
-  g++
+  make \
+  g++ \
+  xz-utils \
+  rpm
   # libgtk-3-0 \
   # libnss3 \
   # libxss1 \

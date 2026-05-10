@@ -100,7 +100,7 @@
       "icon": "assets/miroir-logo.png"
     },
     "linux": {
-      "target": ["AppImage", "apk", "deb", "rpm", "snap"],
+      "target": ["AppImage", "flatpak", "snap", "deb", "apk" ],
       "icon": "assets/miroir-logo.png"
     },
     "nsis": {
