@@ -81,10 +81,21 @@ const testSuiteName = "transformers.integ.test";
 
 // Skip this test when running resolveConditionalSchema pattern
 const shouldSkip = filePattern.includes(testSuiteName);
+/**
+ * to get host IP on Linux:
+ * grep nameserver /etc/resolv.conf | sed 's/nameserver //'
+ * sed -n 's/nameserver //p' /etc/resolv.conf
+  * ip route|awk '/^default/{print $3}'
+ *  */ 
+// const postgresHostName = "localhost";
+const postgresHostName = "192.168.1.160";
+
+console.log(`@@@@@@@@@@@@@@@@@@ postgres Hostname: ${postgresHostName}`);
+console.log(`@@@@@@@@@@@@@@@@@@ Should skip: ${shouldSkip}`);
 
 const testApplicationName = "testApplication"
 const sqlDbStoreName = "testStoreName"
-const connectionString = "postgres://postgres:postgres@localhost:5432/postgres"
+const connectionString = `postgres://postgres:postgres@${postgresHostName}:5432/postgres`
 // const schema = "testSchema"
 const schema = testApplicationName;
 const paramSelfApplicationUuid = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa";
@@ -99,7 +110,8 @@ let sqlDbModelStore: SqlDbModelStoreSection;
 let persistenceStoreController: PersistenceStoreController;
 const testStoreConfig: StoreUnitConfiguration = getBasicStoreUnitConfiguration(testApplicationName, {
   emulatedServerType: "sql",
-  connectionString: "postgres://postgres:postgres@localhost:5432/postgres",
+  // connectionString: "postgres://postgres:postgres@localhost:5432/postgres",
+  connectionString: `postgres://postgres:postgres@${postgresHostName}:5432/postgres`,
 })
 
 const libraryEntitesAndInstances = [

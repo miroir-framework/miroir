@@ -2,6 +2,7 @@ import type {
   EndpointDefinition,
   Entity,
   EntityDefinition,
+  Menu,
   MetaModel,
   MiroirModelEnvironment,
   MlSchema,
@@ -35,6 +36,7 @@ import lendingEndpoint from "../assets/library_model/3d8da4d4-8f76-4bb4-9212-148
 import bookEndpoint from "../assets/library_model/3d8da4d4-8f76-4bb4-9212-14869d81c00c/9884c1a4-5122-488a-85db-a99fbc02e678.json" assert { type: "json" };
 
 import selfApplicationLibrary from "../assets/library_model/a659d350-dd97-4da9-91de-524fa01745dc/5af03c98-fe5e-490b-b08f-e1230971c57f.json" assert { type: "json" };
+import menuDefaultLibrary from "../assets/library_model/dde4c883-ae6d-47c3-b6df-26bc6e3c1842/dd168e5a-2a21-4d2d-a443-032c6d15eb22.json" assert { type: "json" };
 
 
 export type EntityDefinitionCouple = {
@@ -68,7 +70,9 @@ export const defaultLibraryAppModelDEFUNCT: MetaModel = {
     lendingEndpoint as any as EndpointDefinition,
   ],
   jzodSchemas: [],
-  menus: [],
+  menus: [
+    menuDefaultLibrary as Menu
+  ],
   runners: [],
   themes: [],
   applicationVersions: [],
@@ -77,6 +81,7 @@ export const defaultLibraryAppModelDEFUNCT: MetaModel = {
   ],
   applicationVersionCrossEntityDefinition: [
   ],
+  applications: []
 };
 // console.log("###################################################################################")
 // console.log("###################################################################################")

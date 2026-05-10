@@ -2,7 +2,7 @@
   "client": {
     "emulateServer": true,
     "rootApiUrl":"https://localhost:3080",
-    "filesystemDeploymentRootDirectory": "/build/miroir/packages/miroir-standalone-app/tests/assets",
+    "filesystemDeploymentRootDirectory": "/build/miroir/packages/miroir-standalone-app",
     "deploymentStorageConfig": {
       "18db21bf-f8d3-4f6a-8296-84b69f6dc48b": {
         "admin": {

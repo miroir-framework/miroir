@@ -74,12 +74,12 @@ export class ConfigurationServiceInner {
   }
 
   public registerTestImplementation(implement: TestImplementation) {
-    log.info("ConfigurationService registerTestImplementation in", implement);
+    // log.info("ConfigurationService registerTestImplementation in", implement);
     this.testImplementation = implement;
-    log.info(
-      "ConfigurationService registered in registerTestImplementation",
-      this.testImplementation,
-    );
+    // log.info(
+    //   "ConfigurationService registered in registerTestImplementation",
+    //   this.testImplementation,
+    // );
   }
 }
 

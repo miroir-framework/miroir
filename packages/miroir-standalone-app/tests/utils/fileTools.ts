@@ -9,17 +9,17 @@ MiroirLoggerFactory.registerLoggerToStart(
 ).then((logger: LoggerInterface) => {log = logger});
 
 // ################################################################################################
-export async function loadTestSingleConfigFile( fileName:string): Promise<MiroirConfigClient> {
+export async function loadTestSingleConfigFile(fileName:string): Promise<MiroirConfigClient> {
   try {
     const pwd = process.env["PWD"]??""
-    log.info("@@@@@@@@@@@@@@@@@@ loadTestSingleConfigFile pwd", pwd, "fileName", fileName);
-    // log.info("@@@@@@@@@@@@@@@@@@ env", process.env["npm_config_env"]);
-    // const configFilePath = path.join(pwd, "./packages/miroir-standalone-app/tests/" + fileName + ".json")
-    const configFilePath = path.join(pwd, fileName + ".json")
-    log.info("@@@@@@@@@@@@@@@@@@ loadTestSingleConfigFile configFilePath", configFilePath);
+    const ext = fileName.split('.').pop();
+    if(ext !== "json") {
+      throw new Error(`Config file ${fileName} must have .json extension`);
+    }
+    const configFilePath = fileName[0] === "/" ? fileName : path.join(pwd, fileName);
+    log.info("@@@@@@@@@@@@@@@@@@ loadTestSingleConfigFile fileName", fileName, "configFilePath", configFilePath);
+    // log.info("@@@@@@@@@@@@@@@@@@ loadTestSingleConfigFile configFilePath", configFilePath);
     const configFileContents = await import(configFilePath);
-    // const configFileContents = JSON.parse(fs.readFileSync(new URL(configFilePath, import.meta.url)).toString());
-    // const configFileContents = JSON.parse(fs.readFileSync(new URL(configFilePath)).toString());
     log.info("@@@@@@@@@@@@@@@@@@ loadTestSingleConfigFile configFileContents", configFileContents);
   
     const miroirConfig:MiroirConfigClient = configFileContents as MiroirConfigClient;
