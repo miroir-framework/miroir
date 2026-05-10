@@ -23,7 +23,10 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-ins
   make \
   g++ \
   xz-utils \
-  rpm
+  rpm \
+  flatpak \
+  flatpak-builder \
+  snapd 
 
 # install nvm to handle more recent npm version than available on ubuntu:26.04
 # (needed for langium@4.2.3, that requires: { node: '>=20.10.0', npm: '>=10.2.3' }, ubuntu:26.04 has node 22 and npm 9 (!))
