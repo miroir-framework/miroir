@@ -50,7 +50,7 @@ export async function setupMiroirPlatform(
     localMiroirEventService,
     miroirConfig
   );
-  console.log("setupMiroirTest miroirConfig", JSON.stringify(miroirConfig, null, 2));
+  console.log("setupMiroirPlatform miroirConfig", JSON.stringify(miroirConfig, null, 2));
   let client: RestClientInterface | undefined = undefined;
   let remotePersistenceStoreRestClient: RestPersistenceClientAndRestClientInterface | undefined = undefined;
   if (miroirConfig.client.emulateServer) {

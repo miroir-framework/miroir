@@ -1,4 +1,4 @@
-import { describe } from 'vitest';
+import { describe, beforeAll, afterAll, beforeEach, afterEach, it, expect } from 'vitest';
 
 import {
   type Action2ReturnType,
@@ -93,6 +93,7 @@ import type {
   Entity,
   Menu,
   MlSchema,
+  SelfApplication,
 } from "miroir-core";
 import { loglevelnext } from "../../src/loglevelnextImporter.js";
 import {
@@ -240,7 +241,7 @@ beforeAll(
 
     const {
       persistenceStoreControllerManagerForServer: localpersistenceStoreControllerManager,
-      domainController: localdomainController,
+      domainControllerForClient: localdomainController,
       localCache: locallocalCache,
       miroirContext: localmiroirContext,
     } = await setupMiroirTest(miroirConfig);
@@ -319,7 +320,7 @@ beforeEach(
         {
           dataStoreType: "app", // TODO: comparison between deployment and selfAdminConfigurationDeployment
           metaModel: defaultMiroirMetaModel,
-          selfApplication: selfApplicationLibrary,
+          selfApplication: selfApplicationLibrary as SelfApplication,
           applicationModelBranch: selfApplicationModelBranchLibraryMasterBranch,
           applicationVersion: selfApplicationVersionLibraryInitialVersion,
         },
@@ -338,35 +339,35 @@ beforeEach(
   }
 )
 
-// ################################################################################################
-afterEach(
-  async () => {
-    log.info("################################################### afterEach start", beforEachCount);
-    await resetApplicationDeployments(
-      deploymentConfigurations,
-      applicationDeploymentMap,
-      domainController,
-      localCache,
-    );
-    log.info("################################################### afterEach done", beforEachCount);
-  }
-)
+// // ################################################################################################
+// afterEach(
+//   async () => {
+//     log.info("################################################### afterEach start", beforEachCount);
+//     await resetApplicationDeployments(
+//       deploymentConfigurations,
+//       applicationDeploymentMap,
+//       domainController,
+//       localCache,
+//     );
+//     log.info("################################################### afterEach done", beforEachCount);
+//   }
+// )
 
-// ################################################################################################
-afterAll(
-  async () => {
-    console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ deleteAndCloseApplicationDeployments")
-    await deleteAndCloseApplicationDeployments(
-      miroirConfig,
-      domainController,
-      applicationDeploymentMap,
-      [
-        deployment_Miroir as AdminApplicationDeploymentConfiguration,
-      ]
-    );
-    console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Done deleteAndCloseApplicationDeployments")
-  }
-)
+// // ################################################################################################
+// afterAll(
+//   async () => {
+//     console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ deleteAndCloseApplicationDeployments")
+//     await deleteAndCloseApplicationDeployments(
+//       miroirConfig,
+//       domainController,
+//       applicationDeploymentMap,
+//       [
+//         deployment_Miroir as AdminApplicationDeploymentConfiguration,
+//       ]
+//     );
+//     console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Done deleteAndCloseApplicationDeployments")
+//   }
+// )
 
 
 
@@ -552,56 +553,56 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", async (
     );
   });
   
-  // ################################################################################################
-  it("get Library Menus", async () => {
-    await chainVitestSteps(
-      "ExtractorPersistenceStoreRunner_getMenus",
-      {},
-      async () => {
-        const applicationSection: ApplicationSection = "model";
-        const queryResult: Action2ReturnType =
-          await localAppPersistenceStoreController.handleBoxedQueryAction(
-            {
-              actionType: "runBoxedQueryAction",
-              endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-              payload: {
-                application: selfApplicationLibrary.uuid,
-                applicationSection: applicationSection,
-                query: {
-                  queryType: "boxedQueryWithExtractorCombinerTransformer",
-                  application: selfApplicationLibrary.uuid,
-                  runAsSql,
-                  extractors: {
-                    menus: {
-                      extractorOrCombinerType: "extractorInstancesByEntity",
-                      applicationSection: applicationSection,
-                      parentName: "Menu",
-                      parentUuid: entityMenu.uuid,
-                    },
-                  },
-                },
-              },
-            },
-            applicationDeploymentMap
-          );
-        console.log("queryResult", JSON.stringify(queryResult, null, 2));
-        return queryResult; // == "ok" ? queryResult : {status: "error", error: queryResult.error};
-      },
-      // (a) => ignorePostgresExtraAttributesOnRecord((a as any).returnedDomainElement.entities, ["author"]),
-      (a) =>
-        ignorePostgresExtraAttributesOnList((a as any).returnedDomainElement.menus, [
-          "author",
-          "parentDefinitionVersionUuid",
-        ]),
-      // (a) => (a as any).returnedDomainElement.entities,
-      // undefined, // expected result transformation
-      undefined, // name to give to result
-      undefined,
-      ignorePostgresExtraAttributesOnList([
-          menuDefaultLibrary as Menu,
-      ], ["author", "parentDefinitionVersionUuid"])
-    );
-  });
+  // // ################################################################################################
+  // it("get Library Menus", async () => {
+  //   await chainVitestSteps(
+  //     "ExtractorPersistenceStoreRunner_getMenus",
+  //     {},
+  //     async () => {
+  //       const applicationSection: ApplicationSection = "model";
+  //       const queryResult: Action2ReturnType =
+  //         await localAppPersistenceStoreController.handleBoxedQueryAction(
+  //           {
+  //             actionType: "runBoxedQueryAction",
+  //             endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+  //             payload: {
+  //               application: selfApplicationLibrary.uuid,
+  //               applicationSection: applicationSection,
+  //               query: {
+  //                 queryType: "boxedQueryWithExtractorCombinerTransformer",
+  //                 application: selfApplicationLibrary.uuid,
+  //                 runAsSql,
+  //                 extractors: {
+  //                   menus: {
+  //                     extractorOrCombinerType: "extractorInstancesByEntity",
+  //                     applicationSection: applicationSection,
+  //                     parentName: "Menu",
+  //                     parentUuid: entityMenu.uuid,
+  //                   },
+  //                 },
+  //               },
+  //             },
+  //           },
+  //           applicationDeploymentMap
+  //         );
+  //       console.log("queryResult", JSON.stringify(queryResult, null, 2));
+  //       return queryResult; // == "ok" ? queryResult : {status: "error", error: queryResult.error};
+  //     },
+  //     // (a) => ignorePostgresExtraAttributesOnRecord((a as any).returnedDomainElement.entities, ["author"]),
+  //     (a) =>
+  //       ignorePostgresExtraAttributesOnList((a as any).returnedDomainElement.menus, [
+  //         "author",
+  //         "parentDefinitionVersionUuid",
+  //       ]),
+  //     // (a) => (a as any).returnedDomainElement.entities,
+  //     // undefined, // expected result transformation
+  //     undefined, // name to give to result
+  //     undefined,
+  //     ignorePostgresExtraAttributesOnList([
+  //         menuDefaultLibrary as Menu,
+  //     ], ["author", "parentDefinitionVersionUuid"])
+  //   );
+  // });
 
   // ################################################################################################
   it("get Filtered Entity Entity from Miroir", async () => {

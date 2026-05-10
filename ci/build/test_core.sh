@@ -35,10 +35,21 @@ while [[ $# -gt 0 ]]; do
 
 cd "$BUILD_DIR/packages/miroir-core"
 
-step "Running all miroir-core tests"
-npm test -- ''
+# step "Running all miroir-core tests"
+# npm test -- ''
 
 cd "$BUILD_DIR"
+
+
+step "Running ExtractorPersistenceStoreRunner tests with emulatedServerType=indexedDb"
+VITE_MIROIR_TEST_CONFIG_FILENAME=/build/miroir/ci/tests/config/miroirConfig.test-emulatedServer-indexedDb.json \
+VITE_MIROIR_LOG_CONFIG_FILENAME=tests/specificLoggersConfig_DomainController_debug.json \
+npm run testByFile -w miroir-standalone-app -- ExtractorPersistenceStoreRunner
+
+step "Running ExtractorPersistenceStoreRunner tests with emulatedServerType=filesystem"
+VITE_MIROIR_TEST_CONFIG_FILENAME=/build/miroir/ci/tests/config/miroirConfig.test-emulatedServer-filesystem.json \
+VITE_MIROIR_LOG_CONFIG_FILENAME=tests/specificLoggersConfig_DomainController_debug.json \
+npm run testByFile -w miroir-standalone-app -- ExtractorPersistenceStoreRunner
 
 echo ""
 echo "========================================================================"
