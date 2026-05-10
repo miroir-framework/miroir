@@ -100,6 +100,12 @@ npm run dist-linux  # Linux AppImage
 - `npm run dist-mac` - Create macOS DMG
 - `npm run dist-linux` - Create Linux AppImage
 
+## Linux package formats
+
+Possible Target package type: list of AppImage, flatpak, snap, deb, rpm, freebsd, pacman, p5p, apk, 7z, zip, tar.xz, tar.lz, tar.gz, tar.bz2, dir.
+
+supported: AppImage, flatpak, snap, deb, rpm, freebsd, pacman, p5p, apk, 7z, zip, tar.xz, tar.lz, tar.gz, tar.bz2, dir.
+
 ## Architecture
 
 The Electron app consists of three main parts:

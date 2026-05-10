@@ -1,0 +1,19 @@
+name: Build Linux
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npx lerna run devBuild --scope=miroir-standalone-app
+      - run: npm run dist-linux -w miroir-standalone-app-electron
+      - uses: actions/upload-artifact@v4
+        with:
+          name: linux-build
+          path: packages/miroir-standalone-app-electron/release/

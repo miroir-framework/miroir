@@ -48,14 +48,6 @@ RUN echo "This is the CI image. It is meant to be used as a base image for other
 RUN git clone https://github.com/miroir-framework/jzod.git
 RUN git clone https://github.com/miroir-framework/jzod-ts.git
 RUN git clone https://github.com/miroir-framework/miroir.git
-# RUN echo "git clone https://github.com/miroir-framework/jzod.git && \
-# git clone https://github.com/miroir-framework/jzod-ts.git && \
-# git clone https://github.com/miroir-framework/miroir.git" >> /git-clone.sh
-# RUN chmod +x /git-clone.sh
-
-# RUN git config --global --add safe.directory /build/jzod
-# RUN git config --global --add safe.directory /build/jzod-ts
-# RUN git config --global --add safe.directory /build/miroir
 
 RUN chmod a+x /build/miroir/ci/build/*.sh
 

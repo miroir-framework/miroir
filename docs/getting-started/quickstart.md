@@ -2,7 +2,7 @@
 
 **Estimated time: 5 minutes**
 
-Get up and running with Miroir Framework in under 5 minutes with the standalone app, or explore other solutions (access a local Miroir server through a browser, deploy on a local network, etc.).
+Get up and running with Miroir Framework in under 5 minutes **using the standalone app for Windows or Linux**, or explore other solutions (access a local Miroir server through a browser, deploy on a local network, etc.).
 
 ---
 
@@ -10,18 +10,18 @@ Get up and running with Miroir Framework in under 5 minutes with the standalone 
 
 The current Operating systems are supported for standalone application deployment (via [Electron](https://github.com/electron/electron/blob/v40.6.1/README.md#platform-support)):
 
-- Linux:
+- **Linux**:
   - Ubuntu 18.04 and newer
   - Fedora 32 and newer
   - Debian 10 and newer
-- Windows 10 and up
-- macOS (Monterey and up)
+- **Windows** 10 and up
+- macOS (Monterey and up, YET TO BE RELEASED)
 
 ---
 
-## Miroir Installation
+## Miroir Standalone app Installation
 
-The fastest way to get up and running is to use the standalone app available for your platform. Alternatively, you can [deploy Miroir as a service (NOT UPDATED)](./installation.md) or [build Miroir from scratch (NOT UPDATED)](./installation.md)
+If your platform is not supported for the standalone app or if you want a more robust solution, you can [deploy Miroir as a service (NOT UPDATED)](./installation.md) or [build Miroir from scratch (NOT UPDATED)](./installation.md)
 
 ### 1. Download the binary for your platform and install it
 
