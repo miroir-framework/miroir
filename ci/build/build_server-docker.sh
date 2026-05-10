@@ -42,10 +42,12 @@ usage() {
 # ---------------------------------------------------------------------------
 # Argument parsing
 # ---------------------------------------------------------------------------
+
 TAG="miroir-framework/miroir:latest"
 DOCKERFILE="${REPO_ROOT}/docker/miroir-server/Dockerfile"
 NO_CACHE=""
-MIROIR_BUILD_DIR=""
+MIROIR_BUILD_DIR="/build/miroir"
+
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -56,12 +58,11 @@ while [[ $# -gt 0 ]]; do
                   DOCKERFILE="$2"; shift 2 ;;
     --no-cache)   NO_CACHE="--no-cache"; shift ;;
     -*)           die "Unknown option: '$1'" ;;
-    *)            [[ -z "$MIROIR_BUILD_DIR" ]] || die "Unexpected argument: '$1'"
-                  MIROIR_BUILD_DIR="$1"; shift ;;
+    *)            MIROIR_BUILD_DIR="$1"; shift ;;
   esac
 done
 
-[[ -n "$MIROIR_BUILD_DIR" ]]  || die "<builder-path> is required."
+
 [[ -d "$MIROIR_BUILD_DIR" ]]  || die "builder-path does not exist or is not a directory: '$MIROIR_BUILD_DIR'"
 [[ -f "$DOCKERFILE"   ]]  || die "Dockerfile not found: '$DOCKERFILE'"
 

@@ -28,7 +28,7 @@ usage() {
 # Argument parsing
 # ---------------------------------------------------------------------------
 # BUILD_DIR="$(pwd)"
-BUILD_DIR=""
+BUILD_DIR="/build"
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
