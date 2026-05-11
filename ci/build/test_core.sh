@@ -51,6 +51,48 @@ VITE_MIROIR_TEST_CONFIG_FILENAME=/build/miroir/ci/tests/config/miroirConfig.test
 VITE_MIROIR_LOG_CONFIG_FILENAME=tests/specificLoggersConfig_DomainController_debug.json \
 npm run testByFile -w miroir-standalone-app -- ExtractorPersistenceStoreRunner
 
+step "################################################################################"
+step "################################################################################"
+step "################################################################################"
+step "################################################################################"
+step "################################################################################"
+step "################################################################################"
+step "################################################################################"
+step "################################################################################"
+step "################################################################################"
+
+step "Running ExtractorTemplatePersistenceStoreRunner tests with emulatedServerType=indexedDb"
+VITE_MIROIR_TEST_CONFIG_FILENAME=/build/miroir/ci/tests/config/miroirConfig.test-emulatedServer-indexedDb.json \
+VITE_MIROIR_LOG_CONFIG_FILENAME=tests/specificLoggersConfig_DomainController_debug.json \
+npm run testByFile -w miroir-standalone-app -- ExtractorTemplatePersistenceStoreRunner
+
+step "Running ExtractorTemplatePersistenceStoreRunner tests with emulatedServerType=filesystem"
+VITE_MIROIR_TEST_CONFIG_FILENAME=/build/miroir/ci/tests/config/miroirConfig.test-emulatedServer-filesystem.json \
+VITE_MIROIR_LOG_CONFIG_FILENAME=tests/specificLoggersConfig_DomainController_debug.json \
+npm run testByFile -w miroir-standalone-app -- ExtractorTemplatePersistenceStoreRunner
+
+step "################################################################################"
+step "################################################################################"
+step "Running PersistenceStoreController tests with emulatedServerType=filesystem"
+VITE_MIROIR_TEST_CONFIG_FILENAME=/build/miroir/ci/tests/config/miroirConfig.test-emulatedServer-filesystem.json \
+VITE_MIROIR_LOG_CONFIG_FILENAME=tests/specificLoggersConfig_DomainController_debug.json \
+npm run testByFile -w miroir-standalone-app -- PersistenceStoreController
+
+step "################################################################################"
+step "################################################################################"
+step "Running DomainController.integ.Data tests with emulatedServerType=filesystem"
+VITE_MIROIR_TEST_CONFIG_FILENAME=/build/miroir/ci/tests/config/miroirConfig.test-emulatedServer-filesystem.json \
+VITE_MIROIR_LOG_CONFIG_FILENAME=tests/specificLoggersConfig_DomainController_debug.json \
+npm run testByFile -w miroir-standalone-app -- DomainController.integ.Data
+
+step "################################################################################"
+step "################################################################################"
+step "Running DomainController.integ.Model.CRUD tests with emulatedServerType=filesystem"
+VITE_MIROIR_TEST_CONFIG_FILENAME=/build/miroir/ci/tests/config/miroirConfig.test-emulatedServer-filesystem.json \
+VITE_MIROIR_LOG_CONFIG_FILENAME=tests/specificLoggersConfig_DomainController_debug.json \
+npm run testByFile -w miroir-standalone-app -- DomainController.integ.Model.CRUD
+
+
 echo ""
 echo "========================================================================"
 echo "  ALL DONE  →  miroir-core tests complete."

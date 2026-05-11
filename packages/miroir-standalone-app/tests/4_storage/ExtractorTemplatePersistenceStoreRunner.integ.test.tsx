@@ -1,4 +1,4 @@
-import { describe } from 'vitest';
+import { describe, beforeAll, afterAll, beforeEach, afterEach, expect, it } from 'vitest';
 
 // import { miroirFileSystemStoreSectionStartup } from "../dist/bundle";
 import {
@@ -169,7 +169,7 @@ beforeAll(
 
     const {
       persistenceStoreControllerManagerForServer: localpersistenceStoreControllerManager,
-      domainController: localdomainController,
+      domainControllerForClient: localdomainController,
       localCache: locallocalCache,
       miroirContext: localmiroirContext,
     } = await setupMiroirTest(miroirConfig);
@@ -887,7 +887,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
                         transformerType: "getFromContext",
                         interpolation: "runtime",
                         referenceName: "book",
-                      },
+                      } as any, // TODO: correct type to accept transformer
                       AttributeOfObjectToCompareToReferenceUuid: "author",
                     },
                     booksOfAuthor: {
@@ -903,7 +903,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
                         transformerType: "getFromContext",
                         interpolation: "runtime",
                         referenceName: "author",
-                      },
+                      } as any, // TODO: correct type to accept transformer
                       AttributeOfListObjectToCompareToReferenceUuid: "author",
                     },
                   },

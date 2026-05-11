@@ -260,7 +260,7 @@ beforeAll(async () => {
   // Establish requests interception layer before all tests.
   console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ beforeAll");
   const {
-    persistenceStoreControllerManagerForClient: localpersistenceStoreControllerManager,
+    // persistenceStoreControllerManagerForClient: localpersistenceStoreControllerManager,
     domainController: localdomainController,
   } = await setupMiroirTestAndCreateMiroirDeployment(
     miroirConfig, miroirActivityTracker, miroirEventService,
@@ -272,7 +272,7 @@ beforeAll(async () => {
     crossFetch,
   );
 
-  persistenceStoreControllerManager = localpersistenceStoreControllerManager;
+  // persistenceStoreControllerManager = localpersistenceStoreControllerManager;
   domainController = localdomainController;
   console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ beforeAll DONE");
 

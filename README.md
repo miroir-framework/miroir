@@ -87,7 +87,7 @@ Miroir defined as punchlines for hipsters:
 
 ## Want to try it?
 
-According to your platform, Miroir is [available in pre-release](https://github.com/miroir-framework/miroir/releases):
+Miroir is [available in pre-release](https://github.com/miroir-framework/miroir/releases):
 
 - **Linux**
   - standalone Electron app (amd64) packaged as [debian](https://github.com/miroir-framework/miroir/releases/download/0.5.0-rc.1/miroir-standalone-app-electron_0.5.0-rc.1_amd64.deb), [snap](https://github.com/miroir-framework/miroir/releases/download/0.5.0-rc.1/miroir-standalone-app-electron_0.5.0-rc.1_amd64.snap), [apk](https://github.com/miroir-framework/miroir/releases/download/0.5.0-rc.1/miroir-standalone-app-electron-0.5.0-rc.1.apk) or [appImage](https://github.com/miroir-framework/miroir/releases/download/0.5.0-rc.1/Miroir.Standalone.App-0.5.0-rc.1.AppImage),

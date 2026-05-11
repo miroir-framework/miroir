@@ -168,7 +168,7 @@ beforeAll(async () => {
 
   const {
     persistenceStoreControllerManagerForServer: localpersistenceStoreControllerManager,
-    domainController: localdomainController,
+    domainControllerForClient: localdomainController,
     localCache: locallocalCache,
     miroirContext: localmiroirContext,
   } = await setupMiroirTest(miroirConfig);

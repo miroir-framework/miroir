@@ -23,8 +23,6 @@ The current Operating systems are supported for standalone application deploymen
 
 If your platform is not supported for the standalone app [build Miroir from scratch](../guides/build-it-yourself.md)
 
-### 1. Download the binary for your platform and install it
-
 The standalone Electron app is available for
 
 - **Linux**: packaged as [debian](https://github.com/miroir-framework/miroir/releases/download/0.5.0-rc.1/miroir-standalone-app-electron_0.5.0-rc.1_amd64.deb), [snap](https://github.com/miroir-framework/miroir/releases/download/0.5.0-rc.1/miroir-standalone-app-electron_0.5.0-rc.1_amd64.snap), [apk](https://github.com/miroir-framework/miroir/releases/download/0.5.0-rc.1/miroir-standalone-app-electron-0.5.0-rc.1.apk) or [appImage](https://github.com/miroir-framework/miroir/releases/download/0.5.0-rc.1/Miroir.Standalone.App-0.5.0-rc.1.AppImage),
@@ -35,7 +33,7 @@ The standalone Electron app is available for
 
 Once you've installed the Miroir standalone app and run it, you may deploy your first Miroir application.
 
-The Library application Model and sample data files are available in the installation folder, in the `resources\miroir-assets\bundles` subfolder. You can download them directly:
+The Library application Model and sample data files are available in the installation folder, in the `resources\miroir-assets\bundles` subfolder. You can also download them directly using the following links:
 
 - [the model (use "save as....")](https://github.com/miroir-framework/miroir/releases/download/untagged-8eb448b720da212062bb/library-model.json) and
 - [the sample data (use "save as...")](https://github.com/miroir-framework/miroir/releases/download/untagged-8eb448b720da212062bb/library-data.json)
@@ -59,7 +57,7 @@ Once the installation is over, you'll get a green notification of success, then 
 
 ### Display the current Model of the Library Application
 
-Once on the homepage of the Library application, you may start exploring what it does, and how it works. First review tha application's `Model` by clicking the on model icon in the application bar:
+Once on the homepage of the Library application, you may start exploring what it does, and how it works. First review the application's `Model` by clicking the on model icon in the application bar:
 
 <img src="../tutorials/libraryTutorial/library_homepage.png" alt="The Library Home page: view Model" width="80%"/>
 
