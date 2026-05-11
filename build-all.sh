@@ -65,57 +65,22 @@ if [[ ${#ARTEFACTS[@]} -eq 0 ]]; then
 fi
 
 # ---------------------------------------------------------------------------
-# Helpers
-# ---------------------------------------------------------------------------
-
-step() {
-  echo ""
-  echo "========================================================================"
-  echo "  STEP: $*"
-  echo "========================================================================"
-}
-
-# Run several npm build commands in parallel; fail if any one fails.
-# Usage: run_parallel "pkg1" "pkg2" ...
-# Each argument is a workspace package name; 'npm run build -w <pkg>' is used.
-run_parallel_builds() {
-  local pids=()
-  for pkg in "$@"; do
-    npm run build -w "$pkg" &
-    pids+=($!)
-  done
-  local failed=0
-  for pid in "${pids[@]}"; do
-    wait "$pid" || failed=$((failed + 1))
-  done
-  if [[ $failed -gt 0 ]]; then
-    echo "ERROR: $failed parallel build job(s) failed." >&2
-    exit 1
-  fi
-}
-
-
-# ---------------------------------------------------------------------------
-# Optional: Build jzod and jzod-ts if present
-# ---------------------------------------------------------------------------
-
-# ---------------------------------------------------------------------------
 # Step 1 – Optional: Build jzod and jzod-ts if present
 # ---------------------------------------------------------------------------
 if [ -d "$SCRIPT_DIR/../../jzod" ]; then
   step "1/7 · jzod (optional)"
-  t0=$(date +%s)
+  t0=$(now_secs)
   (cd "$SCRIPT_DIR/../../jzod" && npm run build)
-  record_time "1/7  jzod (optional)" $(($(date +%s) - t0))
+  record_time "1/7  jzod (optional)" "$t0"
 else
   echo "[SKIP] jzod directory not found, skipping jzod build."
 fi
 
 if [ -d "$SCRIPT_DIR/../../jzod-ts" ]; then
   step "2/7 · jzod-ts (optional)"
-  t0=$(date +%s)
+  t0=$(now_secs)
   (cd "$SCRIPT_DIR/../../jzod-ts" && npm run build)
-  record_time "2/7  jzod-ts (optional)" $(($(date +%s) - t0))
+  record_time "2/7  jzod-ts (optional)" "$t0"
 else
   echo "[SKIP] jzod-ts directory not found, skipping jzod-ts build."
 fi
@@ -124,29 +89,29 @@ fi
 # Step 3 – Deployment packages (schema definitions; no miroir-core dependency)
 # ---------------------------------------------------------------------------
 step "3/7 · miroir-test-app_deployment-miroir & miroir-test-app_deployment-admin"
-t0=$(date +%s)
+t0=$(now_secs)
 run_parallel_builds \
   miroir-test-app_deployment-miroir \
   miroir-test-app_deployment-admin
-record_time "3/7  miroir-test-app_deployment-miroir & miroir-test-app_deployment-admin" $(($(date +%s) - t0))
+record_time "3/7  miroir-test-app_deployment-miroir & miroir-test-app_deployment-admin" "$t0"
 
 # ---------------------------------------------------------------------------
 # Step 4 – miroir-core (optionally with type generation)
 # ---------------------------------------------------------------------------
 step "4/7 · miroir-core ($CORE_BUILD_MODE)"
-t0=$(date +%s)
+t0=$(now_secs)
 if [[ "$CORE_BUILD_MODE" == "devBuild" ]]; then
   npm run devBuild -w miroir-core
 else
   npm run build -w miroir-core
 fi
-record_time "4/7  miroir-core ($CORE_BUILD_MODE)" $(($(date +%s) - t0))
+record_time "4/7  miroir-core ($CORE_BUILD_MODE)" "$t0"
 
 # ---------------------------------------------------------------------------
 # Step 5 – Local caches & store backends (all depend only on miroir-core)
 # ---------------------------------------------------------------------------
 step "5/7 · localcaches & stores"
-t0=$(date +%s)
+t0=$(now_secs)
 run_parallel_builds \
   miroir-localcache \
   miroir-localcache-redux \
@@ -155,39 +120,39 @@ run_parallel_builds \
   miroir-store-indexedDb \
   miroir-store-postgres \
   miroir-store-mongodb
-record_time "5/7  localcaches & stores" $(($(date +%s) - t0))
+record_time "5/7  localcaches & stores" "$t0"
 
 # ---------------------------------------------------------------------------
 # Step 6 – UI library and service packages
 # ---------------------------------------------------------------------------
 step "6/7 · miroir-react, miroir-mcp, miroir-diagram-class"
-t0=$(date +%s)
+t0=$(now_secs)
 run_parallel_builds \
   miroir-react \
   miroir-mcp \
   miroir-diagram-class
-record_time "6/7  miroir-react, miroir-mcp, miroir-diagram-class" $(($(date +%s) - t0))
+record_time "6/7  miroir-react, miroir-mcp, miroir-diagram-class" "$t0"
 
 # ---------------------------------------------------------------------------
 # Step 7 – Application-level packages
 # ---------------------------------------------------------------------------
 step "7/7 · miroir-server, miroir-standalone-app, miroir-cli"
-t0=$(date +%s)
+t0=$(now_secs)
 run_parallel_builds \
   miroir-server \
   miroir-standalone-app \
   miroir-cli
-record_time "7/7  miroir-server, miroir-standalone-app, miroir-cli" $(($(date +%s) - t0))
+record_time "7/7  miroir-server, miroir-standalone-app, miroir-cli" "$t0"
 
 # ---------------------------------------------------------------------------
 # Step 8 – Test/example deployment packages
 # ---------------------------------------------------------------------------
 step "8/7 · miroir-test-app_deployment-library & miroir-test-app_deployment-postgres"
-t0=$(date +%s)
+t0=$(now_secs)
 run_parallel_builds \
   miroir-test-app_deployment-library \
   miroir-test-app_deployment-postgres
-record_time "8/7  miroir-test-app_deployment-library & miroir-test-app_deployment-postgres" $(($(date +%s) - t0))
+record_time "8/7  miroir-test-app_deployment-library & miroir-test-app_deployment-postgres" "$t0"
 
 # ---------------------------------------------------------------------------
 # Artefact-specific builds
@@ -200,27 +165,28 @@ record_time "8/7  miroir-test-app_deployment-library & miroir-test-app_deploymen
 for artefact in "${ARTEFACTS[@]}"; do
   case "$artefact" in
 
+
     electron)
       step "ARTEFACT · electron desktop application"
-      t0=$(date +%s)
+      t0=$(now_secs)
       npm run dist -w miroir-standalone-app-electron
-      record_time "ARTEFACT  electron desktop application" $(($(date +%s) - t0))
+      record_time "ARTEFACT  electron desktop application" "$t0"
       echo ""
       echo "Electron distributable → packages/miroir-standalone-app-electron/release/"
       ;;
 
     server-binary)
       step "ARTEFACT · server binary (npm run build:release)"
-      t0=$(date +%s)
+      t0=$(now_secs)
       npm run build:release -w miroir-server
-      record_time "ARTEFACT  server binary (npm run build:release)" $(($(date +%s) - t0))
+      record_time "ARTEFACT  server binary (npm run build:release)" "$t0"
       echo ""
       echo "Server binary built → packages/miroir-server/release/"
       ;;
 
     docker)
       step "ARTEFACT · Docker container image (build_miroir.sh)"
-      t0=$(date +%s)
+      t0=$(now_secs)
       DOCKER_TAG_ARG=""
       NEXT_ARG=false
       for arg in "$@"; do
@@ -237,7 +203,7 @@ for artefact in "${ARTEFACTS[@]}"; do
       else
         "$SCRIPT_DIR/ci/docker/build_miroir.sh" "$SCRIPT_DIR/.."
       fi
-      record_time "ARTEFACT  docker image (build_miroir.sh)" $(($(date +%s) - t0))
+      record_time "ARTEFACT  docker image (build_miroir.sh)" "$t0"
       ;;
 
     vm)
@@ -249,7 +215,6 @@ for artefact in "${ARTEFACTS[@]}"; do
 done
 
 print_timing_summary
-done
 
 echo ""
 echo "========================================================================"

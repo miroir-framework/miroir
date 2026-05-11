@@ -37,30 +37,7 @@ usage() {
   exit 0
 }
 
-# Timing infrastructure
-STEP_LABELS=()
-STEP_SECS=()
 
-record_time() {
-  STEP_LABELS+=("$1")
-  STEP_SECS+=("$2")
-}
-
-print_timing_summary() {
-  local total=0
-  echo ""
-  echo "========================================================================"
-  echo "  Build timing summary"
-  echo "========================================================================"
-  for i in "${!STEP_LABELS[@]}"; do
-    local t="${STEP_SECS[$i]}"
-    total=$((total + t))
-    printf "  %-54s %3dm %02ds\n" "${STEP_LABELS[$i]}" $((t / 60)) $((t % 60))
-  done
-  echo "------------------------------------------------------------------------"
-  printf "  %-54s %3dm %02ds\n" "TOTAL" $((total / 60)) $((total % 60))
-  echo "========================================================================"
-}
 
 # ---------------------------------------------------------------------------
 # Argument parsing
@@ -90,19 +67,19 @@ echo "========================================================================"
 # Step 1 – jzod (peer library)
 # ---------------------------------------------------------------------------
 step "1/7 · jzod"
+t0=$(now_secs)
 cd "${BUILD_DIR}/jzod"
-t0=$(date +%s)
 npm run build
-record_time "1/7  jzod" $(($(date +%s) - t0))
+record_time "1/7  jzod" "$t0"
 
 # ---------------------------------------------------------------------------
 # Step 2 – jzod-ts (depends on jzod)
 # ---------------------------------------------------------------------------
 step "2/7 · jzod-ts"
+t0=$(now_secs)
 cd "${BUILD_DIR}/jzod-ts"
-t0=$(date +%s)
 npm run build
-record_time "2/7  jzod-ts" $(($(date +%s) - t0))
+record_time "2/7  jzod-ts" "$t0"
 
 cd "${BUILD_DIR}/miroir"
 
@@ -110,60 +87,62 @@ cd "${BUILD_DIR}/miroir"
 # Step 3 – Deployment packages
 # ---------------------------------------------------------------------------
 step "3/7 · deployment metadata packages"
+t0=$(now_secs)
 # These define core types as Jzod schemas; no miroir-core dependency.
-t0=$(date +%s)
 run_parallel_builds \
   miroir-test-app_deployment-miroir \
   miroir-test-app_deployment-admin \
   miroir-test-app_deployment-library \
   miroir-test-app_deployment-postgres \
   miroir-test-app_deployment-designer
-record_time "3/7  deployment packages" $(($(date +%s) - t0))
+record_time "3/7  deployment packages" "$t0"
 
 # ---------------------------------------------------------------------------
 # Step 4 – miroir-core (devBuild regenerates TS types from Jzod schemas)
 # ---------------------------------------------------------------------------
 step "4/7 · miroir-core devBuild"
-t0=$(date +%s)
+t0=$(now_secs)
 npm run devBuild -w miroir-core
-record_time "4/7  miroir-core devBuild" $(($(date +%s) - t0))
+record_time "4/7  miroir-core devBuild" "$t0"
+
 
 # ---------------------------------------------------------------------------
 # Step 5 – Local-cache and store backends (all depend only on miroir-core)
 # ---------------------------------------------------------------------------
 step "5/7 · localcache + store packages"
-t0=$(date +%s)
+t0=$(now_secs)
 run_parallel_builds \
   miroir-localcache-redux \
   miroir-store-filesystem \
   miroir-store-indexedDb \
   miroir-store-mongodb \
   miroir-store-postgres
-record_time "5/7  localcache + store packages" $(($(date +%s) - t0))
+record_time "5/7  localcache + store packages" "$t0"
 
 # Extract model bundles from example applications.
-t0=$(date +%s)
+step "5b/7 model bundle extraction"
+t0=$(now_secs)
 npm run extract-library-model -w miroir-test-app_deployment-library
-record_time "5b/7 model bundle extraction" $(($(date +%s) - t0))
+record_time "5b/7 model bundle extraction" "$t0"
 
 # ---------------------------------------------------------------------------
 # Step 6 – UI / MCP / diagram packages
 # ---------------------------------------------------------------------------
 step "6/7 · miroir-react, miroir-mcp, miroir-diagram-class"
-t0=$(date +%s)
+t0=$(now_secs)
 run_parallel_builds \
   miroir-react \
   miroir-mcp \
   miroir-diagram-class
-record_time "6/7  miroir-react, miroir-mcp, miroir-diagram-class" $(($(date +%s) - t0))
+record_time "6/7  miroir-react, miroir-mcp, miroir-diagram-class" "$t0"
 
 # ---------------------------------------------------------------------------
 # Step 7 – miroir-server release bundle
 # ---------------------------------------------------------------------------
 step "7/7 · miroir-server (release bundle)"
-t0=$(date +%s)
+t0=$(now_secs)
 NODE_OPTIONS=--max-old-space-size=4096 npm run build:release -w miroir-server
-record_time "7/7  miroir-server release bundle" $(($(date +%s) - t0))
+record_time "7/7  miroir-server release bundle" "$t0"
 
 # ---------------------------------------------------------------------------
 # Summary

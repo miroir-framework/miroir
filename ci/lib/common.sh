@@ -2,10 +2,26 @@
 STEP_LABELS=()
 STEP_SECS=()
 
+# Return current time in seconds since epoch
+now_secs() {
+  date +%s
+}
+
 # Record a timing entry
 record_time() {
-  STEP_LABELS+=("$1")
-  STEP_SECS+=("$2")
+  local label="$1"
+  local t0="$2"
+  # Check t0 is a non-empty integer
+  if ! [[ "$t0" =~ ^[0-9]+$ ]]; then
+    echo "ERROR: record_time: t0 argument ('$t0') is not a valid integer timestamp" >&2
+    exit 1
+  fi
+  local t1
+  t1=$(now_secs)
+  local secs=$((t1 - t0))
+  STEP_LABELS+=("$label")
+  STEP_SECS+=("$secs")
+  printf "  [TIMING] %-54s %3dm %02ds\n" "$label" $((secs / 60)) $((secs % 60))
 }
 
 # Print timing summary
