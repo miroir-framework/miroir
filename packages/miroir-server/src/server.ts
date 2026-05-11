@@ -83,30 +83,73 @@ MiroirLoggerFactory.registerLoggerToStart(
 
 
 
-// Argument parsing for config file path
-function printUsageAndExit() {
-  console.error(`Usage: node server.js [--config <configFilePath>]`);
-  console.error(`  --config <configFilePath>  Path to the server config JSON file (default: ../config/miroirConfig.server.json)`);
-  process.exit(1);
+// Argument parsing
+function printUsageAndExit(exitCode = 1): never {
+  console.error(`Usage: node server.js [OPTIONS]`);
+  console.error(``);
+  console.error(`OPTIONS:`);
+  console.error(`  --config   <path>   Path to the server config JSON file`);
+  console.error(`                      (default: ../config/miroirConfig.server.json)`);
+  console.error(`  --certsdir <dir>    Directory containing TLS certificate files`);
+  console.error(`                      (default: <repo-root>/certs/)`);
+  console.error(`  --cert     <path>   Path to the TLS certificate file (.pem)`);
+  console.error(`                      Overrides --certsdir. Also reads from env: MIROIR_TLS_CERT`);
+  console.error(`                      (default: <certsdir>/localhost.pem)`);
+  console.error(`  --key      <path>   Path to the TLS private key file (.pem)`);
+  console.error(`                      Overrides --certsdir. Also reads from env: MIROIR_TLS_KEY`);
+  console.error(`                      (default: <certsdir>/localhost-key.pem)`);
+  console.error(`  -h, --help          Show this help message and exit`);
+  process.exit(exitCode);
 }
 
 let configFilePath = "../config/miroirConfig.server.json";
+let argCertsDir: string | undefined;
+let argCertFile: string | undefined;
+let argKeyFile: string | undefined;
+
 for (let i = 2; i < process.argv.length; i++) {
-  if (process.argv[i] === "--help" || process.argv[i] === "-h") {
-    printUsageAndExit();
-  } else if (process.argv[i] === "--config") {
+  const arg = process.argv[i];
+  if (arg === "--help" || arg === "-h") {
+    printUsageAndExit(0);
+  } else if (arg === "--config") {
     if (i + 1 < process.argv.length) {
-      configFilePath = process.argv[i + 1];
-      i++;
+      configFilePath = process.argv[++i];
     } else {
       console.error("Error: --config requires a file path argument.");
       printUsageAndExit();
     }
-  } else if (process.argv[i].startsWith("-")) {
-    console.error(`Unknown option: ${process.argv[i]}`);
+  } else if (arg === "--certsdir") {
+    if (i + 1 < process.argv.length) {
+      argCertsDir = process.argv[++i];
+    } else {
+      console.error("Error: --certsdir requires a directory path argument.");
+      printUsageAndExit();
+    }
+  } else if (arg === "--cert") {
+    if (i + 1 < process.argv.length) {
+      argCertFile = process.argv[++i];
+    } else {
+      console.error("Error: --cert requires a file path argument.");
+      printUsageAndExit();
+    }
+  } else if (arg === "--key") {
+    if (i + 1 < process.argv.length) {
+      argKeyFile = process.argv[++i];
+    } else {
+      console.error("Error: --key requires a file path argument.");
+      printUsageAndExit();
+    }
+  } else if (arg.startsWith("-")) {
+    console.error(`Error: Unknown option: ${arg}`);
     printUsageAndExit();
   }
 }
+
+console.log(`Server startup parameters:`);
+console.log(`  --config   : ${configFilePath}`);
+console.log(`  --certsdir : ${argCertsDir ?? '(default: <repo-root>/certs/)'}`);
+console.log(`  --cert     : ${argCertFile ?? process.env.MIROIR_TLS_CERT ?? '(default: <certsdir>/localhost.pem)'}`);
+console.log(`  --key      : ${argKeyFile  ?? process.env.MIROIR_TLS_KEY  ?? '(default: <certsdir>/localhost-key.pem)'}`);
 
 const configFileContents = JSON.parse(
   readFileSync(new URL(configFilePath, import.meta.url)).toString()
@@ -465,9 +508,14 @@ if (getMiroirEnvironmentMode() === 'prod') {
 // (MIROIR_TLS_CERT / MIROIR_TLS_KEY) or default to <repo-root>/certs/ relative to this file.
 // If the certificate files are absent, the server falls back to plain HTTP with a warning —
 // run scripts/setup-https.sh (or .ps1) once to generate the certificates.
-const defaultCertsDir = path.resolve(__dirname, '../../../certs');
-const certFile = process.env.MIROIR_TLS_CERT ?? path.join(defaultCertsDir, 'localhost.pem');
-const keyFile  = process.env.MIROIR_TLS_KEY  ?? path.join(defaultCertsDir, 'localhost-key.pem');
+const defaultCertsDir = argCertsDir ?? path.resolve(__dirname, '../../../certs');
+const certFile = argCertFile ?? process.env.MIROIR_TLS_CERT ?? path.join(defaultCertsDir, 'localhost.pem');
+const keyFile  = argKeyFile  ?? process.env.MIROIR_TLS_KEY  ?? path.join(defaultCertsDir, 'localhost-key.pem');
+
+myLogger.info(`TLS configuration:`);
+myLogger.info(`  certsdir : ${defaultCertsDir}`);
+myLogger.info(`  certFile : ${certFile}`);
+myLogger.info(`  keyFile  : ${keyFile}`);
 
 if (existsSync(certFile) && existsSync(keyFile)) {
   const tlsOptions = {
