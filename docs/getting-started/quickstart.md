@@ -25,7 +25,10 @@ If your platform is not supported for the standalone app [build Miroir from scra
 
 ### 1. Download the binary for your platform and install it
 
-Go [there](https://github.com/miroir-framework/miroir/releases) to download the latest available binaries of the standalone app.
+The standalone Electron app is available for
+
+- **Linux**: packaged as [debian](https://github.com/miroir-framework/miroir/releases/download/0.5.0-rc.1/miroir-standalone-app-electron_0.5.0-rc.1_amd64.deb), [snap](https://github.com/miroir-framework/miroir/releases/download/0.5.0-rc.1/miroir-standalone-app-electron_0.5.0-rc.1_amd64.snap), [apk](https://github.com/miroir-framework/miroir/releases/download/0.5.0-rc.1/miroir-standalone-app-electron-0.5.0-rc.1.apk) or [appImage](https://github.com/miroir-framework/miroir/releases/download/0.5.0-rc.1/Miroir.Standalone.App-0.5.0-rc.1.AppImage),
+- **Windows**: ([portable](https://github.com/miroir-framework/miroir/releases/download/0.5.0-rc.1/Miroir.Standalone.App.Win.Portable.0.5.0-rc.1.zip) or [with installer](https://github.com/miroir-framework/miroir/releases/download/0.5.0-rc.1/Miroir.Standalone.App.Win.Setup.0.5.0-rc.1.exe)).
 
 
 ## Running Miroir
