@@ -14,6 +14,17 @@
 - **enabling low-code description** - in Miroir the business logic is defined as **block-like elements**, **not** as **code**; these elements can be combined, modified and tested interactively, **all at run-time**.
 - **supporting AI agents** - business logic written in Miroir can automatically be exposed to AI agents **using the Model Context Protocol** (MCP)
 
+<!-- 
+Miroir defined as punchlines for hipsters:
+
+- In the beginning, there was JSON!
+- the best curry-howard isomorphism typescript implementation
+- the Domain Specific Language of software creation
+- the Domain Specific Language of Domain Specific Language creation
+- Forget syntax, give me semantics!
+
+ -->
+
 <!-- - **Unifying development and runtime** - Define concepts once, use everywhere (database, API, UI, business logic)
 - **Enabling low-code creation** - Build and modify applications at runtime without recompilation
 - **Supporting AI agents** - Native Model Context Protocol (MCP) integration for natural language development
@@ -84,7 +95,7 @@ According to your platform, Miroir is [available in pre-release](https://github.
   - [docker image](https://github.com/miroir-framework/miroir/releases/download/0.5.0-rc.1/miroir-framework_miroir-amd64_0.5.0-rc.1-docker_image.tar.gz) (amd64)
 - **Mac** - no arm64 package available yet, [must be built from source](https://github.com/miroir-framework/miroir)
 - **Windows**
-  - standalone app for Windows ([portable](https://github.com/miroir-framework/miroir/releases/download/0.5.0-rc.1/Miroir.Standalone.App.Win.Portable.0.5.0-rc.1.zip) or [with installer](https://github.com/miroir-framework/miroir/releases/download/0.5.0-rc.1/Miroir.Standalone.App.Win.Setup.0.5.0-rc.1.exe)).
+  - standalone Electron app for Windows ([portable](https://github.com/miroir-framework/miroir/releases/download/0.5.0-rc.1/Miroir.Standalone.App.Win.Portable.0.5.0-rc.1.zip) or [with installer](https://github.com/miroir-framework/miroir/releases/download/0.5.0-rc.1/Miroir.Standalone.App.Win.Setup.0.5.0-rc.1.exe)).
   - [nodejs-deployable package](https://github.com/miroir-framework/miroir/releases/download/0.5.0-rc.1/miroir-server-nodejs-win-0.5.0-rc.1.zip)
   - [docker image](https://github.com/miroir-framework/miroir/releases/download/0.5.0-rc.1/miroir-framework_miroir-amd64_0.5.0-rc.1-docker_image.tar.gz)
 
@@ -151,7 +162,7 @@ Miroir integrates development-time and runtime activities in a single environmen
 
 --- -->
 
-## Detailing the Library App (Idealized)
+## Detailing the Library App (Slightly Idealized)
 
 This section gives a slightly simplified syntax for better understanding of the main features that constitute a Library Miroir application. See it for real in **[the Library Tutorial →](docs/tutorials/library-tutorial.md)**
 

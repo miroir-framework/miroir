@@ -133,7 +133,14 @@ If you modified schema definitions under `packages/miroir-test-app_deployment-mi
 
 ---
 
-## 4. Generate TLS certificates (optional but recommended)
+## 4. Server Parameters
+
+The server requires 3 arguments to start:
+- the running mode (`development` or `production`)
+- the path to a folder that contains TLS certificates, neede to enable HTTPS (we strongly recommend using HTTPS)
+- the path to a folder containing **bootstrap** filesystem deployments of the `admin`and `miroir` applications
+
+## 5. Generate TLS certificates (optional but recommended)
 
 The server supports HTTPS via locally-trusted certificates created with [mkcert](https://github.com/FiloSottile/mkcert).
 
@@ -156,9 +163,17 @@ Both scripts place the certificates in `certs/` and print the `NODE_EXTRA_CA_CER
 
 ---
 
-## 5. Configure the server
+## 6. Configure the server (optional)
 
-Edit `packages/miroir-server/config/miroirConfig.server.json`:
+The main configuration file for the server is:
+
+```packages/miroir-server/config/miroirConfig.server.json```
+
+In this file, the `filesystemDeploymentRootDirectory` must point to a directory that contains both the `admin` and `miroir` application deployments. **The default value `".."` resolves to the monorepo root and works out of the box when running directly from the repo**.
+
+The filesystem deployments of your applications will be placed in a subdirectory of the given `filesystemDeploymentRootDirectory`.
+
+If you wish to use another location, edit `packages/miroir-server/config/miroirConfig.server.json`:
 
 ```json
 {
@@ -170,11 +185,10 @@ Edit `packages/miroir-server/config/miroirConfig.server.json`:
 }
 ```
 
-`filesystemDeploymentRootDirectory` must point to a directory that contains both the `admin` and `miroir` application deployments (subdirectories of JSON files). The default value `".."` resolves to the monorepo root and works out of the box when running directly from the repo.
 
 ---
 
-## 6. Start the server
+## 7. Start the server
 
 ```sh
 # Linux / macOS
@@ -201,7 +215,7 @@ The server is accessible at **https://localhost:3080** (or http://localhost:3080
 
 ---
 
-## 7. (Optional) Build the Electron desktop application
+## 8. (Optional) Build the Electron desktop application
 
 After step 3 has completed successfully:
 
@@ -226,7 +240,7 @@ npm run dist-mac   -w miroir-standalone-app-electron   # .dmg
 
 ---
 
-## 8. (Optional) Docker build
+## 9. (Optional) Docker build
 
 If you prefer a container, the repo ships a multi-stage `Dockerfile` and a `docker-compose.yml`:
 

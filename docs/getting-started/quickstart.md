@@ -32,7 +32,10 @@ Go [there](https://github.com/miroir-framework/miroir/releases) to download the 
 
 Once you've installed the Miroir standalone app and run it, you may deploy your first Miroir application.
 
-Download the Library application [Model](https://github.com/miroir-framework/miroir/releases/download/untagged-8eb448b720da212062bb/library-model.json) and [sample data](https://github.com/miroir-framework/miroir/releases/download/untagged-8eb448b720da212062bb/library-data.json)
+The Library application Model and sample data files are available in the installation folder, in the `resources\miroir-assets\bundles` subfolder. You can download them directly:
+
+- [the model (use "save as....")](https://github.com/miroir-framework/miroir/releases/download/untagged-8eb448b720da212062bb/library-model.json) and
+- [the sample data (use "save as...")](https://github.com/miroir-framework/miroir/releases/download/untagged-8eb448b720da212062bb/library-data.json)
 
 ### Deploy the Library Application in Miroir
 

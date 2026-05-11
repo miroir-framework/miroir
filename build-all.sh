@@ -6,22 +6,24 @@
 #   ./build-all.sh [CORE_BUILD_MODE] [ARTEFACT...]
 #
 # CORE_BUILD_MODE:
-#   build      Standard build (default)
-#   devbuild   Full devBuild – regenerates TypeScript types from Jzod schemas
+#   build      Standard build - faster, but does not regenerate TypeScript types from Jzod schemas.
+#   devbuild   Full devBuild (default) – regenerates TypeScript types from Jzod schemas
 #              before building miroir-core. Required when schemas in
 #              packages/miroir-test-app_deployment-miroir/assets are modified.
 #
-# ARTEFACT (one or more; default: electron):
+# ARTEFACT (one or more; default: server-binary):
+#   server-binary   Self-contained server binary  (npm run build:release)
 #   electron        Electron desktop application  (dist via electron-builder)
-#   server-binary   Self-contained server binary  (not yet implemented)
-#   docker          Docker container image         (not yet implemented)
+#   docker          Docker container image         (calls build_miroir.sh; optional tag argument)
 #   vm              Virtual machine image          (not yet implemented)
 #
 # Examples:
-#   ./build-all.sh                         # build → electron app
-#   ./build-all.sh devbuild                # devBuild core → electron app
-#   ./build-all.sh build electron          # explicit flags, same as default
+#   ./build-all.sh                         # build → server binary
+#   ./build-all.sh devbuild                # devBuild core → server binary
+#   ./build-all.sh build electron          # explicit flags, build electron app
 #   ./build-all.sh devbuild electron       # devBuild core → electron app
+#   ./build-all.sh docker                  # build Docker image with default tag
+#   ./build-all.sh docker mycustomtag      # build Docker image with custom tag
 # =============================================================================
 set -euo pipefail
 
@@ -31,7 +33,7 @@ cd "$SCRIPT_DIR"
 # ---------------------------------------------------------------------------
 # Argument parsing
 # ---------------------------------------------------------------------------
-CORE_BUILD_MODE="build"
+CORE_BUILD_MODE="devBuild"
 ARTEFACTS=()
 
 for arg in "$@"; do
@@ -43,7 +45,7 @@ for arg in "$@"; do
       ARTEFACTS+=("$arg")
       ;;
     -h|--help)
-      sed -n '2,24p' "$0"   # print the header comment block
+      sed -n '2,27p' "$0"   # print the header comment block
       exit 0
       ;;
     *)
@@ -56,7 +58,7 @@ done
 
 # Default artefact
 if [[ ${#ARTEFACTS[@]} -eq 0 ]]; then
-  ARTEFACTS=("electron")
+  ARTEFACTS=("server-binary")
 fi
 
 # ---------------------------------------------------------------------------
@@ -89,18 +91,40 @@ run_parallel_builds() {
   fi
 }
 
+
 # ---------------------------------------------------------------------------
-# Step 1 – Deployment packages (schema definitions; no miroir-core dependency)
+# Optional: Build jzod and jzod-ts if present
 # ---------------------------------------------------------------------------
-step "1/6 · miroir-test-app_deployment-miroir & miroir-test-app_deployment-admin"
+
+# ---------------------------------------------------------------------------
+# Step 1 – Optional: Build jzod and jzod-ts if present
+# ---------------------------------------------------------------------------
+if [ -d "$SCRIPT_DIR/../../jzod" ]; then
+  step "1/7 · jzod (optional)"
+  (cd "$SCRIPT_DIR/../../jzod" && npm run build)
+else
+  echo "[SKIP] jzod directory not found, skipping jzod build."
+fi
+
+if [ -d "$SCRIPT_DIR/../../jzod-ts" ]; then
+  step "2/7 · jzod-ts (optional)"
+  (cd "$SCRIPT_DIR/../../jzod-ts" && npm run build)
+else
+  echo "[SKIP] jzod-ts directory not found, skipping jzod-ts build."
+fi
+
+# ---------------------------------------------------------------------------
+# Step 3 – Deployment packages (schema definitions; no miroir-core dependency)
+# ---------------------------------------------------------------------------
+step "3/7 · miroir-test-app_deployment-miroir & miroir-test-app_deployment-admin"
 run_parallel_builds \
   miroir-test-app_deployment-miroir \
   miroir-test-app_deployment-admin
 
 # ---------------------------------------------------------------------------
-# Step 2 – miroir-core (optionally with type generation)
+# Step 4 – miroir-core (optionally with type generation)
 # ---------------------------------------------------------------------------
-step "2/6 · miroir-core ($CORE_BUILD_MODE)"
+step "4/7 · miroir-core ($CORE_BUILD_MODE)"
 if [[ "$CORE_BUILD_MODE" == "devbuild" ]]; then
   npm run devBuild -w miroir-core
 else
@@ -108,9 +132,9 @@ else
 fi
 
 # ---------------------------------------------------------------------------
-# Step 3 – Local caches & store backends (all depend only on miroir-core)
+# Step 5 – Local caches & store backends (all depend only on miroir-core)
 # ---------------------------------------------------------------------------
-step "3/6 · localcaches & stores"
+step "5/7 · localcaches & stores"
 run_parallel_builds \
   miroir-localcache \
   miroir-localcache-redux \
@@ -121,27 +145,27 @@ run_parallel_builds \
   miroir-store-mongodb
 
 # ---------------------------------------------------------------------------
-# Step 4 – UI library and service packages
+# Step 6 – UI library and service packages
 # ---------------------------------------------------------------------------
-step "4/6 · miroir-react, miroir-mcp, miroir-diagram-class"
+step "6/7 · miroir-react, miroir-mcp, miroir-diagram-class"
 run_parallel_builds \
   miroir-react \
   miroir-mcp \
   miroir-diagram-class
 
 # ---------------------------------------------------------------------------
-# Step 5 – Application-level packages
+# Step 7 – Application-level packages
 # ---------------------------------------------------------------------------
-step "5/6 · miroir-server, miroir-standalone-app, miroir-cli"
+step "7/7 · miroir-server, miroir-standalone-app, miroir-cli"
 run_parallel_builds \
   miroir-server \
   miroir-standalone-app \
   miroir-cli
 
 # ---------------------------------------------------------------------------
-# Step 6 – Test/example deployment packages
+# Step 8 – Test/example deployment packages
 # ---------------------------------------------------------------------------
-step "6/6 · miroir-test-app_deployment-library & miroir-test-app_deployment-postgres"
+step "8/7 · miroir-test-app_deployment-library & miroir-test-app_deployment-postgres"
 run_parallel_builds \
   miroir-test-app_deployment-library \
   miroir-test-app_deployment-postgres
@@ -161,21 +185,31 @@ for artefact in "${ARTEFACTS[@]}"; do
       ;;
 
     server-binary)
-      # TODO: produce a self-contained server binary.
-      # Candidates: pkg, nexe, esbuild single-file bundle, or Deno compile.
-      # Build target: packages/miroir-server  (already built in step 5)
-      step "ARTEFACT · server binary (not yet implemented)"
-      echo "ERROR: 'server-binary' artefact is not yet implemented." >&2
-      exit 1
+      step "ARTEFACT · server binary (npm run build:release)"
+      npm run build:release -w miroir-server
+      echo ""
+      echo "Server binary built → packages/miroir-server/release/"
       ;;
 
     docker)
-      # TODO: build a Docker image.
-      # Example command (add a Dockerfile to the repo root first):
-      #   docker build -t miroir-server:latest -f Dockerfile .
-      step "ARTEFACT · Docker container image (not yet implemented)"
-      echo "ERROR: 'docker' artefact is not yet implemented." >&2
-      exit 1
+      step "ARTEFACT · Docker container image (build_miroir.sh)"
+      # Check for optional tag argument after 'docker' in ARTEFACTS
+      DOCKER_TAG_ARG=""
+      NEXT_ARG=false
+      for arg in "$@"; do
+        if $NEXT_ARG; then
+          DOCKER_TAG_ARG="$arg"
+          break
+        fi
+        if [[ "$arg" == "docker" ]]; then
+          NEXT_ARG=true
+        fi
+      done
+      if [[ -n "$DOCKER_TAG_ARG" && "$DOCKER_TAG_ARG" != "docker" && "$DOCKER_TAG_ARG" != "server-binary" && "$DOCKER_TAG_ARG" != "electron" && "$DOCKER_TAG_ARG" != "vm" ]]; then
+        "$SCRIPT_DIR/ci/docker/build_miroir.sh" --tag "$DOCKER_TAG_ARG" "$SCRIPT_DIR/.."
+      else
+        "$SCRIPT_DIR/ci/docker/build_miroir.sh" "$SCRIPT_DIR/.."
+      fi
       ;;
 
     vm)
