@@ -1,3 +1,29 @@
+# Timing infrastructure for build scripts
+STEP_LABELS=()
+STEP_SECS=()
+
+# Record a timing entry
+record_time() {
+  STEP_LABELS+=("$1")
+  STEP_SECS+=("$2")
+}
+
+# Print timing summary
+print_timing_summary() {
+  local total=0
+  echo ""
+  echo "========================================================================"
+  echo "  Build timing summary"
+  echo "========================================================================"
+  for i in "${!STEP_LABELS[@]}"; do
+    local t="${STEP_SECS[$i]}"
+    total=$((total + t))
+    printf "  %-54s %3dm %02ds\n" "${STEP_LABELS[$i]}" $((t / 60)) $((t % 60))
+  done
+  echo "------------------------------------------------------------------------"
+  printf "  %-54s %3dm %02ds\n" "TOTAL" $((total / 60)) $((total % 60))
+  echo "========================================================================"
+}
 #!/usr/bin/env bash
 # =============================================================================
 # ci/lib/common.sh  —  Shared helper functions for Miroir CI scripts.
