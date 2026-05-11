@@ -21,7 +21,7 @@ The current Operating systems are supported for standalone application deploymen
 
 ## Miroir Standalone app Installation
 
-If your platform is not supported for the standalone app or if you want a more robust solution, you can [deploy Miroir as a service (NOT UPDATED)](./installation.md) or [build Miroir from scratch (NOT UPDATED)](./installation.md)
+If your platform is not supported for the standalone app [build Miroir from scratch](../guides/build-it-yourself.md)
 
 ### 1. Download the binary for your platform and install it
 

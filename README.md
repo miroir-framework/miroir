@@ -81,7 +81,7 @@ According to your platform, Miroir is [available in pre-release](https://github.
 - **Linux**
   - standalone Electron app (amd64) packaged as [debian](https://github.com/miroir-framework/miroir/releases/download/0.5.0-rc.1/miroir-standalone-app-electron_0.5.0-rc.1_amd64.deb), [snap](https://github.com/miroir-framework/miroir/releases/download/0.5.0-rc.1/miroir-standalone-app-electron_0.5.0-rc.1_amd64.snap), [apk](https://github.com/miroir-framework/miroir/releases/download/0.5.0-rc.1/miroir-standalone-app-electron-0.5.0-rc.1.apk) or [appImage](https://github.com/miroir-framework/miroir/releases/download/0.5.0-rc.1/Miroir.Standalone.App-0.5.0-rc.1.AppImage),
   - [nodejs-deployable archive](https://github.com/miroir-framework/miroir/releases/download/0.5.0-rc.1/miroir-server-nodejs-linux-0.5.0-rc.1.zip) (amd64),
-  - docker image (amd64)
+  - [docker image](https://github.com/miroir-framework/miroir/releases/download/0.5.0-rc.1/miroir-framework_miroir-amd64_0.5.0-rc.1-docker_image.tar.gz) (amd64)
 - **Mac** - no arm64 package available yet, [must be built from source](https://github.com/miroir-framework/miroir)
 - **Windows**
   - standalone app for Windows ([portable](https://github.com/miroir-framework/miroir/releases/download/0.5.0-rc.1/Miroir.Standalone.App.Win.Portable.0.5.0-rc.1.zip) or [with installer](https://github.com/miroir-framework/miroir/releases/download/0.5.0-rc.1/Miroir.Standalone.App.Win.Setup.0.5.0-rc.1.exe)).
