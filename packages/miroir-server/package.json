@@ -20,7 +20,7 @@
     "build:dev": "npm run build-tsup",
     "build": "npm run build:dev",
     "devBuild": "npm run build",
-    "run:dev": "cross-env NODE_ENV=development nodemon ./dist/server.js localhost 3080",
+    "run:dev": "cross-env NODE_ENV=development nodemon ./dist/server.js",
     "test": "cross-env NODE_ENV=test vitest"
   },
   "repository": {

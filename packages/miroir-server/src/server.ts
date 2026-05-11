@@ -81,8 +81,35 @@ MiroirLoggerFactory.registerLoggerToStart(
   MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "Server")
 ).then((logger: LoggerInterface) => {myLogger = logger});
 
+
+
+// Argument parsing for config file path
+function printUsageAndExit() {
+  console.error(`Usage: node server.js [--config <configFilePath>]`);
+  console.error(`  --config <configFilePath>  Path to the server config JSON file (default: ../config/miroirConfig.server.json)`);
+  process.exit(1);
+}
+
+let configFilePath = "../config/miroirConfig.server.json";
+for (let i = 2; i < process.argv.length; i++) {
+  if (process.argv[i] === "--help" || process.argv[i] === "-h") {
+    printUsageAndExit();
+  } else if (process.argv[i] === "--config") {
+    if (i + 1 < process.argv.length) {
+      configFilePath = process.argv[i + 1];
+      i++;
+    } else {
+      console.error("Error: --config requires a file path argument.");
+      printUsageAndExit();
+    }
+  } else if (process.argv[i].startsWith("-")) {
+    console.error(`Unknown option: ${process.argv[i]}`);
+    printUsageAndExit();
+  }
+}
+
 const configFileContents = JSON.parse(
-  readFileSync(new URL("../config/miroirConfig.server.json", import.meta.url)).toString()
+  readFileSync(new URL(configFilePath, import.meta.url)).toString()
 );
 
 
