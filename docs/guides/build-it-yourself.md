@@ -133,6 +133,7 @@ If you modified schema definitions under `packages/miroir-test-app_deployment-mi
 
 ---
 
+
 ## 4. Server Parameters
 
 The server requires 3 arguments to start:
@@ -188,27 +189,38 @@ If you wish to use another location, edit `packages/miroir-server/config/miroirC
 
 ---
 
+
 ## 7. Start the server
+
+The server now accepts parameters via explicit CLI flags:
+
+- `--config <path>`: Path to the server configuration file (default: `../config/miroirConfig.server.json`)
+- `--certsdir <dir>`: Path to the directory containing TLS certificates (default: `<repo-root>/certs/`)
+- `--cert <file>`: Path to the TLS certificate file (default: `<certsdir>/localhost.pem`)
+- `--key <file>`: Path to the TLS key file (default: `<certsdir>/localhost-key.pem`)
+- `-h`, `--help`: Show usage information
+
+All parameters are optional; defaults are chosen to work out of the box for local development. You can override any of them as needed.
 
 ```sh
 # Linux / macOS
 NODE_ENV=production \
 NODE_EXTRA_CA_CERTS="$(mkcert -CAROOT)/rootCA.pem" \
-node packages/miroir-server/release/index.js
+node packages/miroir-server/release/index.js [--config <config>] [--certsdir <dir>] [--cert <file>] [--key <file>]
 ```
 
 ```powershell
 # Windows (PowerShell)
 $env:NODE_ENV = "production"
 $env:NODE_EXTRA_CA_CERTS = "$(mkcert -CAROOT)\rootCA.pem"
-node packages\miroir-server\release\index.js
+node packages\miroir-server\release\index.js [--config <config>] [--certsdir <dir>] [--cert <file>] [--key <file>]
 ```
 
 ```dos
 REM Windows (cmd.exe)
 set NODE_ENV=production
 set NODE_EXTRA_CA_CERTS=<path-from-mkcert-CAROOT>\rootCA.pem
-node packages\miroir-server\release\index.js
+node packages\miroir-server\release\index.js [--config <config>] [--certsdir <dir>] [--cert <file>] [--key <file>]
 ```
 
 The server is accessible at **https://localhost:3080** (or http://localhost:3080 if you skipped certificate generation).
