@@ -9,8 +9,8 @@
 
 **Miroir** is a comprehensive development framework that **transforms how you create web applications** by:
 
-- **adopting a data-centric approach** - you start by **describing the concepts** manipulated by your application, then Miroir helps you create your application around these concepts (**creating business logic**, **testing**, **scripting**, transferring data, etc.)
-- **providing end-to-end support** - in Miroir, described concepts and business logic become alive as Graphical User Interfaces (webapp **GUI**), APIs (**Rest**), and **database schemas**, end-to-end!
+- **adopting a data-centric approach** - you start by **describing the concepts** manipulated by your application, **then create** your application around these concepts (**business logic**, **testing**, **scripting**, data manipulation, etc.)
+- **providing end-to-end support** - in Miroir, described **concepts and business logic become alive as** Graphical User Interfaces (**webapp GUI**), APIs (**Rest**), and **database schemas**, end-to-end!
 - **enabling low-code description** - in Miroir the business logic is defined as **block-like elements**, **not** as **code**; these elements can be combined, modified and tested interactively, **all at run-time**.
 - **supporting AI agents** - business logic written in Miroir can automatically be exposed to AI agents **using the Model Context Protocol** (MCP)
 
@@ -76,7 +76,17 @@
 
 ## Want to try it?
 
-Miroir is [available](https://github.com/miroir-framework/miroir/releases) as a standalone app for Windows (portable or with installer). It can also run locally on nodejs (Linux & Windows), or in a docker container (Linux, Mac, Windows)
+According to your platform, Miroir is [available in pre-release](https://github.com/miroir-framework/miroir/releases):
+
+- **Linux**
+  - standalone Electron app (amd64) packaged as [debian](https://github.com/miroir-framework/miroir/releases/download/0.5.0-rc.1/miroir-standalone-app-electron_0.5.0-rc.1_amd64.deb), [snap](https://github.com/miroir-framework/miroir/releases/download/0.5.0-rc.1/miroir-standalone-app-electron_0.5.0-rc.1_amd64.snap), [apk](https://github.com/miroir-framework/miroir/releases/download/0.5.0-rc.1/miroir-standalone-app-electron-0.5.0-rc.1.apk) or [appImage](https://github.com/miroir-framework/miroir/releases/download/0.5.0-rc.1/Miroir.Standalone.App-0.5.0-rc.1.AppImage),
+  - [nodejs-deployable archive](https://github.com/miroir-framework/miroir/releases/download/0.5.0-rc.1/miroir-server-nodejs-linux-0.5.0-rc.1.zip) (amd64),
+  - docker image (amd64)
+- **Mac** - no arm64 package available yet, [must be built from source](https://github.com/miroir-framework/miroir)
+- **Windows**
+  - standalone app for Windows ([portable](https://github.com/miroir-framework/miroir/releases/download/0.5.0-rc.1/Miroir.Standalone.App.Win.Portable.0.5.0-rc.1.zip) or [with installer](https://github.com/miroir-framework/miroir/releases/download/0.5.0-rc.1/Miroir.Standalone.App.Win.Setup.0.5.0-rc.1.exe)).
+  - [nodejs-deployable package](https://github.com/miroir-framework/miroir/releases/download/0.5.0-rc.1/miroir-server-nodejs-win-0.5.0-rc.1.zip)
+  - [docker image](https://github.com/miroir-framework/miroir/releases/download/0.5.0-rc.1/miroir-framework_miroir-amd64_0.5.0-rc.1-docker_image.tar.gz)
 
 **🏃 [Head to the Quickstart Guide →](docs/getting-started/quickstart.md)**
 
