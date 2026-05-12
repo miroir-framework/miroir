@@ -13,6 +13,7 @@ import {
   type MiroirConfigClient,
   type MiroirEventService,
   type PersistenceStoreControllerManager,
+  type PersistenceStoreControllerManagerInterface,
   type Runner,
   type StoreUnitConfiguration,
   type Uuid,
@@ -62,17 +63,21 @@ export async function beforeAllTests(
 ): Promise<{
   localCache: LocalCacheInterface;
   domainController: DomainControllerInterface;
-  persistenceStoreControllerManager: PersistenceStoreControllerManager;
+  persistenceStoreControllerManager: PersistenceStoreControllerManagerInterface;
 }> {
   // Establish requests interception layer before all tests.
   console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ beforeAll");
   const {
     persistenceStoreControllerManagerForClient: localpersistenceStoreControllerManager,
-    domainController: localdomainController,
+    domainControllerForClient,
+    domainControllerForServer,
     localCache: locallocalCache,
     miroirContext: localmiroirContext,
   } = await setupMiroirTest(miroirConfig, miroirActivityTracker, miroirEventService, crossFetch);
 
+  const domainController = miroirConfig.client.emulateServer && domainControllerForServer
+    ? domainControllerForServer
+      : domainControllerForClient
   // persistenceStoreControllerManager = localpersistenceStoreControllerManager;
   // domainController = localdomainController;
   // localCache = locallocalCache;
@@ -86,7 +91,7 @@ export async function beforeAllTests(
     adminDeployment,
     miroirDeploymentStorageConfiguration,
   );
-  const createDeploymentResult = await localdomainController.handleCompositeAction(
+  const createDeploymentResult = await domainController.handleCompositeAction(
     createMiroirDeploymentCompositeAction,
     applicationDeploymentMap,
     defaultMiroirModelEnvironment,
@@ -103,7 +108,7 @@ export async function beforeAllTests(
 
   return Promise.resolve({
     localCache: locallocalCache,
-    domainController: localdomainController,
+    domainController: domainControllerForClient,
     persistenceStoreControllerManager: localpersistenceStoreControllerManager,
   });
 }

@@ -34,8 +34,32 @@
                   "name": ""
                 }
               },
-              "addDefaultReports": true,
-              "addMenuLink": true,
+              "addDefaultReports": {
+                "type": "boolean",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Add Default Reports",
+                    "initializeTo": {
+                      "initializeToType": "value",
+                      "value": false
+                    }
+                  }
+                }
+              },
+              "addMenuLink": {
+                "type": "boolean",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Add Menu Link",
+                    "initializeTo": {
+                      "initializeToType": "value",
+                      "value": false
+                    }
+                  }
+                }
+              },
               "entityDefinition": {
                 "transformerType": "createObject",
                 "definition": {
@@ -422,6 +446,7 @@
                 "definition": {
                   "00_firstMenu": {
                     "transformerType": "ifThenElse",
+                    "label": "00_firstMenu Check if addMenuLink is true and if there is at least one menu to add the link to",
                     "if": {
                       "transformerType": "boolExpr",
                       "operator": "==",
@@ -447,16 +472,25 @@
                     "transformerType": "ifThenElse",
                     "if": {
                       "transformerType": "boolExpr",
-                      "operator": "!=",
-                      "left": {
-                        "transformerType": "getFromContext",
-                        "interpolation": "runtime",
-                        "referenceName": "00_firstMenu"
-                      },
-                      "right": {
-                        "transformerType": "returnValue",
-                        "value": null
-                      }
+                      "operator": "&&",
+                      "args": [
+                        {
+                        "transformerType": "getFromParameters",
+                        "referencePath": ["createEntity", "addMenuLink"]
+                        },
+                        {
+                          "operator": "!=",
+                          "left": {
+                            "transformerType": "getFromContext",
+                            "interpolation": "runtime",
+                            "referenceName": "00_firstMenu"
+                          },
+                          "right": {
+                            "transformerType": "returnValue",
+                            "value": null
+                          }
+                        }
+                      ]
                     },
                     "then": {
                       "transformerType": "createObject",
@@ -484,13 +518,14 @@
                   },
                   "02_updatedMenu": {
                     "transformerType": "ifThenElse",
+                    "label": "02_updatedMenu",
                     "if": {
                       "transformerType": "boolExpr",
                       "operator": "!=",
                       "left": {
                         "transformerType": "getFromContext",
                         "interpolation": "runtime",
-                        "referenceName": "firstMenu"
+                        "referenceName": "00_firstMenu"
                       },
                       "right": {
                         "transformerType": "returnValue",

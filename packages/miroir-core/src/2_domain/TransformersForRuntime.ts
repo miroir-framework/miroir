@@ -1833,8 +1833,8 @@ export function transformer_resolveReference(
   // ReferenceNotFound
   if (transformerInnerReference.referenceName) {
     // ReferenceNotFound
-    // if (!Object.hasOwn(bank, transformerInnerReference.referenceName)) {
-    if (!bank[transformerInnerReference.referenceName]) {
+    if (!Object.hasOwn(bank, transformerInnerReference.referenceName)) {
+    // if (!bank[transformerInnerReference.referenceName]) {
       // log.error(
       //   "transformer_resolveReference failed, reference not found for step",
       //   step,
@@ -2997,6 +2997,15 @@ export function handleTransformer_ifThenElse(
     reduxDeploymentsState
   );
 
+  if (conditionValue instanceof TransformerFailure) {
+    return new TransformerFailure({
+      queryFailure: "FailedTransformer",
+      transformerPath,
+      failureOrigin: ["handleTransformer_ifThenElse"],
+      failureMessage: "Failed to evaluate condition in ifThenElse transformer",
+      innerError: conditionValue,
+    });
+  }
   // Helper: apply the branch transformer, or return true/false if omitted.
   // When 'then' is omitted, a truthy condition returns true.
   // When 'else' is omitted, a falsy condition returns false.
@@ -3028,7 +3037,7 @@ export function handleTransformer_ifThenElse(
     "label",
     label,
     "condition result",
-    condition ? "THEN" : "ELSE",
+    condition ? "THEN" : "ELSE"
   );
   return condition
     ? applyBranch(transformer.then, true, "then")
@@ -3064,6 +3073,15 @@ export function handleTransformer_boolExpr(
     contextResults,
     reduxDeploymentsState
   );
+  if (leftValue instanceof TransformerFailure) {
+    return new TransformerFailure({
+      queryFailure: "FailedTransformer",
+      transformerPath,
+      failureOrigin: ["handleTransformer_boolExpr"],
+      failureMessage: "Failed to resolve left operand",
+      innerError: leftValue,
+    });
+  }
   // Unary operators (isNull, isNotNull, !) do not use right operand.
   const op = transformer.operator;
   const isUnaryOperator = op === "isNull" || op === "isNotNull" || op === "!";
@@ -3080,7 +3098,15 @@ export function handleTransformer_boolExpr(
         reduxDeploymentsState
       )
     : undefined;
-
+  if (!isUnaryOperator && rightValue instanceof TransformerFailure) {
+    return new TransformerFailure({
+      queryFailure: "FailedTransformer",
+      transformerPath,
+      failureOrigin: ["handleTransformer_boolExpr"],
+      failureMessage: "Failed to resolve right operand",
+      innerError: rightValue,
+    });
+  }
   let condition: boolean;
   switch (op) {
     case "==":        condition = leftValue == rightValue;       break;
@@ -3097,19 +3123,19 @@ export function handleTransformer_boolExpr(
     default:          condition = false;                         break;
   }
 
-  // log.info(
-  //   "handleTransformer_boolExpr",
-  //   "label",
-  //   label,
-  //   "operator",
-  //   op,
-  //   "leftValue",
-  //   leftValue,
-  //   "rightValue",
-  //   rightValue,
-  //   "result",
-  //   condition,
-  // );
+  log.info(
+    "handleTransformer_boolExpr",
+    "label",
+    label,
+    "operator",
+    op,
+    "leftValue",
+    leftValue,
+    "rightValue",
+    rightValue,
+    "result",
+    condition,
+  );
   return condition;
 }
 

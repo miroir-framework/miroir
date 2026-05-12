@@ -18,6 +18,7 @@ import {
   type DomainControllerInterface,
   type LoggerInterface,
   type LoggerOptions,
+  type Menu,
   type MiroirConfigClient,
   type Runner,
   type StoreUnitConfiguration
@@ -43,7 +44,7 @@ import { miroirAppStartup } from "../../src/startup";
 import { loadTestConfigFiles } from "../utils/fileTools";
 
 import { adminSelfApplication, entityApplicationForAdmin, entityDeployment } from "miroir-test-app_deployment-admin";
-import { entityAuthor, entityDefinitionAuthor } from "miroir-test-app_deployment-library";
+import { entityAuthor, entityDefinitionAuthor, menuDefaultLibrary } from "miroir-test-app_deployment-library";
 import simplifiedLibraryData from "../assets/library_extract/simplified-library-data.json";
 import simplifiedLibraryModel from "../assets/library_extract/simplified-library-model.json";
 import {
@@ -739,6 +740,7 @@ const runnerTestParams: Record<string, RunnerTestParams> = {
         entity: entityAuthor.uuid,
       },
     }, // testParams
+    preRunnerCompositeActions: [runnerCreateEntity.definition.actionTemplate as any], // preRunnerCompositeActions: create the entity before dropping it
     preTestCompositeActions: [
       {
         // performs query on local cache for emulated server, and on server for remote server
@@ -816,8 +818,23 @@ const runnerTestParams: Record<string, RunnerTestParams> = {
     internalMiroirConfig: installInternalMiroirConfig,
     adminDeployment,
     testDeploymentStorageConfiguration: installTestDeploymentStorageConfiguration,
-    initialModel: emptyApplicationModel,
-    preRunnerCompositeActions: [runnerCreateEntity.definition.actionTemplate as any], // preRunnerCompositeActions: create the entity before dropping it
+    // initialModel: emptyApplicationModel,
+    initialModel: {
+      applicationUuid: "",
+      applicationName: "",
+      applications: [],
+      applicationVersions: [],
+      applicationVersionCrossEntityDefinition: [],
+      endpoints: [],
+      entities: [],
+      entityDefinitions: [],
+      jzodSchemas: [],
+      menus: [ menuDefaultLibrary as Menu ],
+      reports: [],
+      runners: [],
+      storedQueries: [],
+      themes: [],
+    },
     testCompositeActionLabel: "Create and Drop Entity Author",
   },
   [runnerDropApplication.name]: {
@@ -920,8 +937,8 @@ const filteredRunnerTestParams: Record<string, RunnerTestParams> = Object.fromEn
       // localRunnerCreateApplication.name,
       // localRunnerInstallApplication.name,
       // runnerCreateEntity.name,
-      runnerCreateEntity.name + "_withReports",
-      // runnerDropEntity.name,
+      // runnerCreateEntity.name + "_withReports",
+      runnerDropEntity.name,
       // runnerDropApplication.name,
     ].includes(testName)
   )

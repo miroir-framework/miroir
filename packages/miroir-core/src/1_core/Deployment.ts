@@ -347,6 +347,7 @@ export function resetAndinitializeDeploymentCompositeAction(
             application: applicationUuid,
           },
         },
+        // create entities from metaModel
         {
           actionType: "createEntity",
           actionLabel: "resetAndinitializeDeploymentCompositeAction_createEntities",
@@ -354,6 +355,17 @@ export function resetAndinitializeDeploymentCompositeAction(
           payload: {
             application: applicationUuid,
             entities: entities,
+          },
+        },
+        // add reports, menus, etc. from metaModel
+        {
+          actionType: "createInstance" as const,
+          actionLabel: "resetAndinitializeDeploymentCompositeAction_createMetaModelInstances",
+          endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89" as const,
+          payload: {
+            application: applicationUuid,
+            applicationSection: "model" as const,
+            objects: appMetaModel.menus as EntityInstance[],
           },
         },
         {
