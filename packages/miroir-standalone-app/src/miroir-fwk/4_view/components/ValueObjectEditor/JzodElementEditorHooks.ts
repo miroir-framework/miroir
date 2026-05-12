@@ -174,7 +174,6 @@ export function getItemsOrder(
 let count = 0;
 
 export function useJzodElementEditorHooks(
-  // props: P,
   rootLessListKey: string,
   rootLessListKeyArray: (string | number)[],
   reportSectionPathAsString: string,
@@ -298,7 +297,6 @@ export function useJzodElementEditorHooks(
         currentTypecheckKeyMap.resolvedSchema.tag?.value?.foreignKeyParams?.targetEntity &&
         currentTypecheckKeyMap.resolvedSchema.tag?.value?.foreignKeyParams?.targetEntity !== noValue.uuid
       ) {
-
         let targetApplication: TransformerReturnType<any> =
           currentTypecheckKeyMap.resolvedSchema.tag?.value?.foreignKeyParams?.targetApplicationUuid &&
           currentTypecheckKeyMap.resolvedSchema.tag?.value?.foreignKeyParams?.targetApplicationUuid !==
@@ -342,14 +340,17 @@ export function useJzodElementEditorHooks(
             );
           }
         }
-        // log.info(
-        //   "useJzodElementEditorHooks",
-        //   "rootLessListKey:",
-        //   rootLessListKey,
-        //   "for foreignKeyObjects",
-        //   "targetApplication:",
-        //   targetApplication,
-        // );
+        log.info(
+          "useJzodElementEditorHooks foreignKeyObjects",
+          "rootLessListKey:",
+          rootLessListKey,
+          "for foreignKeyObjects",
+          "currentApplication:", currentApplication,
+          "applicationDeploymentMap:", applicationDeploymentMap,
+          "currentDeploymentUuid:", currentDeploymentUuid,
+          "targetApplication:",
+          targetApplication,
+        );
         // let deploymentUuid: Uuid | undefined = applicationDeploymentMap[targetApplication];
         const applicationSection = getApplicationSection(
           targetApplication,
@@ -407,18 +408,18 @@ export function useJzodElementEditorHooks(
   ) || {};
 
 
-  // log.info(
-  //   "useJzodElementEditorHooks",
-  //   "rootLessListKey:",
-  //   rootLessListKey,
-  //   "currentDeploymentUuid:",
-  //   currentDeploymentUuid,
-  //   "currentTypecheckKeyMap?.rawSchema.tag?.value?.foreignKeyParams:",
-  //   currentTypecheckKeyMap?.rawSchema.tag?.value?.foreignKeyParams,
-  //   "foreignKeyObjectsFetchQueryParams",
-  //   foreignKeyObjectsFetchQueryParams,
-  //   "foreignKeyObjects", foreignKeyObjects,
-  // );
+  log.info(
+    "useJzodElementEditorHooks foreignKeyObjects",
+    "rootLessListKey:",
+    rootLessListKey,
+    "currentDeploymentUuid:",
+    currentDeploymentUuid,
+    "currentTypecheckKeyMap?.rawSchema.tag?.value?.foreignKeyParams:",
+    currentTypecheckKeyMap?.rawSchema.tag?.value?.foreignKeyParams,
+    "foreignKeyObjectsFetchQueryParams",
+    foreignKeyObjectsFetchQueryParams,
+    "foreignKeyObjects", foreignKeyObjects,
+  );
 
   // ######################### optional attributes #########################
   const typeCheckMapJzodObjectFlattenedSchema: JzodObject | undefined =

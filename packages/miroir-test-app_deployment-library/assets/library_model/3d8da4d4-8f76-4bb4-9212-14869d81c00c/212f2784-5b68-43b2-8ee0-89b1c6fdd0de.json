@@ -76,14 +76,12 @@
           "definition": {
             "actionType": "compositeActionSequence",
             "actionLabel": "lendDocumentImplementation",
-            "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
             "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "payload": {
               "actionSequence": [
                 {
                   "actionType": "createInstance",
                   "actionLabel": "lendDocument_createInstance_LendingHistoryItem",
-                  "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                   "endpoint": "ed520de4-55a9-4550-ac50-b1b713b72a89",
                   "payload": {
                     "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
@@ -91,27 +89,174 @@
                     "parentUuid": "e81078f3-2de7-4301-bd79-d3a156aec149",
                     "objects": [
                       {
-                        "uuid": {
-                          "transformerType": "generateUuid"
-                        },
-                        "parentName": "LendingHistoryItem",
-                        "parentUuid": "e81078f3-2de7-4301-bd79-d3a156aec149",
-                        "book": {
-                          "transformerType": "getFromParameters",
-                          "referencePath": ["payload", "book"]
-                        },
-                        "user": {
-                          "transformerType": "getFromParameters",
-                          "referencePath": ["payload", "user"]
-                        },
-                        "startDate": {
-                          "transformerType": "getFromParameters",
-                          "referencePath": ["payload", "startDate"]
-                        },
-                        "note": {
-                          "transformerType": "getFromParameters",
-                          "safe": true,
-                          "referencePath": ["payload", "note"]
+                        "transformerType": "createObject",
+                        "definition": {
+                          "uuid": {
+                            "transformerType": "generateUuid"
+                          },
+                          "parentName": "LendingHistoryItem",
+                          "parentUuid": "e81078f3-2de7-4301-bd79-d3a156aec149",
+                          "book": {
+                            "transformerType": "getFromParameters",
+                            "referencePath": [
+                              "payload",
+                              "book"
+                            ]
+                          },
+                          "user": {
+                            "transformerType": "getFromParameters",
+                            "referencePath": [
+                              "payload",
+                              "user"
+                            ]
+                          },
+                          "startDate": {
+                            "transformerType": "getFromParameters",
+                            "referencePath": [
+                              "payload",
+                              "startDate"
+                            ]
+                          },
+                          "note": {
+                            "transformerType": "getFromParameters",
+                            "safe": true,
+                            "referencePath": [
+                              "payload",
+                              "note"
+                            ]
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "actionErrors": {
+          "type": "literal",
+          "definition": "FailedToLendDocument"
+        }
+      },
+      {
+        "actionParameters": {
+          "actionType": {
+            "type": "literal",
+            "definition": "returnDocument"
+          },
+          "actionLabel": {
+            "type": "string",
+            "optional": true
+          },
+          "endpoint": {
+            "type": "literal",
+            "definition": "212f2784-5b68-43b2-8ee0-89b1c6fdd0de"
+          },
+          "payload": {
+            "type": "object",
+            "definition": {
+              "user": {
+                "type": "uuid",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "User",
+                    "initializeTo": {
+                      "initializeToType": "value",
+                      "value": "31f3a03a-f150-416d-9315-d3a752cb4eb4"
+                    },
+                    "foreignKeyParams": {
+                      "targetEntity": "ca794e28-b2dc-45b3-8137-00151557eea8",
+                      "targetEntityOrderInstancesBy": "name"
+                    }
+                  }
+                }
+              },
+              "book": {
+                "type": "uuid",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Book",
+                    "initializeTo": {
+                      "initializeToType": "value",
+                      "value": "31f3a03a-f150-416d-9315-d3a752cb4eb4"
+                    },
+                    "foreignKeyParams": {
+                      "targetEntity": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                      "targetEntityOrderInstancesBy": "name"
+                    }
+                  }
+                }
+              },
+              "note": {
+                "type": "string",
+                "optional": true
+              },
+              "endDate": {
+                "type": "date",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "End Date"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "actionImplementation": {
+          "actionImplementationType": "compositeActionTemplate",
+          "definition": {
+            "actionType": "compositeActionSequence",
+            "actionLabel": "lendDocumentImplementation",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+            "payload": {
+              "actionSequence": [
+                {
+                  "actionType": "createInstance",
+                  "actionLabel": "lendDocument_createInstance_LendingHistoryItem",
+                  "endpoint": "ed520de4-55a9-4550-ac50-b1b713b72a89",
+                  "payload": {
+                    "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                    "applicationSection": "data",
+                    "parentUuid": "e81078f3-2de7-4301-bd79-d3a156aec149",
+                    "objects": [
+                      {
+                        "transformerType": "createObject",
+                        "definition": {
+                          "uuid": {
+                            "transformerType": "generateUuid"
+                          },
+                          "parentName": "LendingHistoryItem",
+                          "parentUuid": "e81078f3-2de7-4301-bd79-d3a156aec149",
+                          "book": {
+                            "transformerType": "getFromParameters",
+                            "referencePath": [
+                              "payload",
+                              "book"
+                            ]
+                          },
+                          "user": {
+                            "transformerType": "getFromParameters",
+                            "referencePath": [
+                              "payload",
+                              "user"
+                            ]
+                          },
+                          "note": {
+                            "transformerType": "getFromParameters",
+                            "safe": true,
+                            "referencePath": [
+                              "payload",
+                              "note"
+                            ]
+                          },
+                          "endDate": {
+                            "transformerType": "getFromParameters",
+                            "referencePath": [
+                              "payload",
+                              "endDate"
+                            ]
+                          }
                         }
                       }
                     ]

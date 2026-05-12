@@ -92,6 +92,10 @@ VITE_MIROIR_TEST_CONFIG_FILENAME=/build/miroir/ci/tests/config/miroirConfig.test
 VITE_MIROIR_LOG_CONFIG_FILENAME=tests/specificLoggersConfig_DomainController_debug.json \
 npm run testByFile -w miroir-standalone-app -- DomainController.integ.Model.CRUD
 
+step "################################################################################"
+step "################################################################################"
+step "Running JzodElementEditor tests with emulatedServerType=filesystem"
+npm run testByFile -w miroir-standalone-app -- 'JzodElementEditor.test'
 
 echo ""
 echo "========================================================================"

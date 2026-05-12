@@ -759,7 +759,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
                   
                   displayError={displayError}
                   onChangeVector={onChangeVector}
-                  removeItemAtIndex={!readOnly && insideAny ? removeItemAtIndex : undefined}
+                  removeItemAtIndex={!readOnly || insideAny ? removeItemAtIndex : undefined}
                   duplicateItemAtIndex={!readOnly ? duplicateItemAtIndex : undefined}
                 />
               );

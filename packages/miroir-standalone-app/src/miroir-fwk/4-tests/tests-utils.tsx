@@ -787,7 +787,6 @@ export async function deleteAndCloseApplicationDeployments(
 
 // ################################################################################################
 export async function runTestOrTestSuite(
-  // localCache: LocalCacheInterface,
   domainController: DomainControllerInterface,
   testAction: TestCompositeActionParams,
   applicationDeploymentMap: ApplicationDeploymentMap,

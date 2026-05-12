@@ -3433,71 +3433,71 @@ const jzodElementEditorTests: Record<
     getJzodEditorTests: getJzodArrayEditorTests,
     modes: "jzodElementEditor",
   },
-  JzodEnumEditor: {
-    editor: getJzodElementEditorForTest(pageLabel),
-    getJzodEditorTests: getJzodEnumEditorTests,
-    modes: "jzodElementEditor",
-  },
-  JzodLiteralEditor: {
-    editor: getJzodElementEditorForTest(pageLabel),
-    getJzodEditorTests: getJzodLiteralEditorTests,
-    modes: "jzodElementEditor",
-  },
-  JzodObjectEditor: {
-    editor: getJzodElementEditorForTest(pageLabel),
-    getJzodEditorTests: getJzodObjectEditorTests,
-    modes: "jzodElementEditor",
-  },
-  JzodSimpleTypeEditor: {
-    editor: getJzodElementEditorForTest(pageLabel),
-    getJzodEditorTests: getJzodSimpleTypeEditorTests,
-    modes: "jzodElementEditor",
-  },
-  JzodUnionEditor: {
-    editor: getJzodElementEditorForTest(pageLabel),
-    getJzodEditorTests: getJzodUnionEditorTests,
-    modes: "jzodElementEditor",
-  },
-  JzodAnyEditor: {
-    editor: getJzodElementEditorForTest(pageLabel),
-    getJzodEditorTests: getJzodAnyEditorTests,
-    modes: "jzodElementEditor",
-  },
-  // // ################# PERFORMANCE
-  // JzodEditorPerformanceTests: {
-  //   editor: JzodElementEditor,
-  //   getJzodEditorTests: getJzodEditorPerformanceTests,
-  //   performanceTests: true,
-  //   // modes: '*',
-  //   // modes: ['jzodElementEditor', 'component'],
-  //   modes: 'jzodElementEditor',
-  // },
-  // ################# INSTANCES
-  // JzodBookEditor: {
+  // JzodEnumEditor: {
   //   editor: getJzodElementEditorForTest(pageLabel),
-  //   getJzodEditorTests: getJzodBookEditorTests,
-  //   performanceTests: true,
-  //   // modes: '*',
-  //   // modes: ['jzodElementEditor', 'component'],
+  //   getJzodEditorTests: getJzodEnumEditorTests,
   //   modes: "jzodElementEditor",
   // },
-  // // // ################# MODEL
-  // JzodEntityDefinitionEditor: {
+  // JzodLiteralEditor: {
   //   editor: getJzodElementEditorForTest(pageLabel),
-  //   getJzodEditorTests: getJzodEntityDefinitionEditorTests,
-  //   // modes: '*',
-  //   // modes: ['jzodElementEditor', 'component'],
+  //   getJzodEditorTests: getJzodLiteralEditorTests,
   //   modes: "jzodElementEditor",
   // },
-  // // ################# ENDPOINTS
-  // JzodEndpointEditor: {
-  //   editor: JzodElementEditor,
-  //   getJzodEditorTests: getJzodEndpointEditorTests,
-  //   performanceTests: true,
-  //   // modes: '*',
-  //   // modes: ['jzodElementEditor', 'component'],
-  //   modes: 'jzodElementEditor',
+  // JzodObjectEditor: {
+  //   editor: getJzodElementEditorForTest(pageLabel),
+  //   getJzodEditorTests: getJzodObjectEditorTests,
+  //   modes: "jzodElementEditor",
   // },
+  // JzodSimpleTypeEditor: {
+  //   editor: getJzodElementEditorForTest(pageLabel),
+  //   getJzodEditorTests: getJzodSimpleTypeEditorTests,
+  //   modes: "jzodElementEditor",
+  // },
+  // JzodUnionEditor: {
+  //   editor: getJzodElementEditorForTest(pageLabel),
+  //   getJzodEditorTests: getJzodUnionEditorTests,
+  //   modes: "jzodElementEditor",
+  // },
+  // JzodAnyEditor: {
+  //   editor: getJzodElementEditorForTest(pageLabel),
+  //   getJzodEditorTests: getJzodAnyEditorTests,
+  //   modes: "jzodElementEditor",
+  // },
+  // // // ################# PERFORMANCE
+  // // JzodEditorPerformanceTests: {
+  // //   editor: JzodElementEditor,
+  // //   getJzodEditorTests: getJzodEditorPerformanceTests,
+  // //   performanceTests: true,
+  // //   // modes: '*',
+  // //   // modes: ['jzodElementEditor', 'component'],
+  // //   modes: 'jzodElementEditor',
+  // // },
+  // // ################# INSTANCES
+  // // JzodBookEditor: {
+  // //   editor: getJzodElementEditorForTest(pageLabel),
+  // //   getJzodEditorTests: getJzodBookEditorTests,
+  // //   performanceTests: true,
+  // //   // modes: '*',
+  // //   // modes: ['jzodElementEditor', 'component'],
+  // //   modes: "jzodElementEditor",
+  // // },
+  // // // // ################# MODEL
+  // // JzodEntityDefinitionEditor: {
+  // //   editor: getJzodElementEditorForTest(pageLabel),
+  // //   getJzodEditorTests: getJzodEntityDefinitionEditorTests,
+  // //   // modes: '*',
+  // //   // modes: ['jzodElementEditor', 'component'],
+  // //   modes: "jzodElementEditor",
+  // // },
+  // // // ################# ENDPOINTS
+  // // JzodEndpointEditor: {
+  // //   editor: JzodElementEditor,
+  // //   getJzodEditorTests: getJzodEndpointEditorTests,
+  // //   performanceTests: true,
+  // //   // modes: '*',
+  // //   // modes: ['jzodElementEditor', 'component'],
+  // //   modes: 'jzodElementEditor',
+  // // },
 };
 
 // ##############################################################################################

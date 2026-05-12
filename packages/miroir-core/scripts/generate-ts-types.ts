@@ -327,7 +327,6 @@ async function generateSchemas(generateFundamentalJzodSchema = true) {
         entityDefinitionQueryVersionV1,
         entityDefinitionReportV1,
         entityDefinitionRunner,
-        // entityDefinitionSelfApplicationDeploymentConfiguration,
         entityDefinitionTest,
         entityDefinitionTransformerTest,
         entityDefinitionTransformerDefinition,

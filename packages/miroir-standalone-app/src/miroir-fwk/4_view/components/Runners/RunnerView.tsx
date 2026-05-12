@@ -368,6 +368,7 @@ export function StoredRunnerView(props: {
           {runnerDefinitionFromLocalCache.definition.runnerType == "customRunner" ? (
             <RunnerView
               runnerName={runnerName}
+              application={props.applicationUuid}
               applicationDeploymentMap={
                 props.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap
               }
@@ -388,6 +389,7 @@ export function StoredRunnerView(props: {
             <>
               <RunnerView
                 runnerName={runnerName}
+                application={props.applicationUuid}
                 applicationDeploymentMap={
                   props.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap
                 }
@@ -532,7 +534,14 @@ export const RunnerView = <T extends Record<string, any>>(props: RunnerProps<T>)
           data: initialValues,
           copyButton: true,
           useCodeBlock: true,
-        }]}
+        },
+        {
+          label: `RunnerView ${runnerName} props`,
+          data: props,
+          copyButton: true,
+          useCodeBlock: true,
+        }
+      ]}
       />
       <Formik
         enableReinitialize={true}

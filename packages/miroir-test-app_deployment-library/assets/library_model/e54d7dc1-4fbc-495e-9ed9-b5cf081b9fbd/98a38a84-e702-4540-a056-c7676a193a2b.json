@@ -1,0 +1,13 @@
+{
+  "uuid": "98a38a84-e702-4540-a056-c7676a193a2b",
+  "parentUuid": "e54d7dc1-4fbc-495e-9ed9-b5cf081b9fbd",
+  "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+  "name": "returnDocument",
+  "defaultLabel": "Return Document",
+  "parentName": "Runner",
+  "definition": {
+    "runnerType": "actionRunner",
+    "endpoint": "212f2784-5b68-43b2-8ee0-89b1c6fdd0de",
+    "action": "returnDocument"
+  }
+}

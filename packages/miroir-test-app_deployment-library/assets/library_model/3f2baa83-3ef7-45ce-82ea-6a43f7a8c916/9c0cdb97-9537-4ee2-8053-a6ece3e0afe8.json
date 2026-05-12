@@ -22,6 +22,14 @@
           }
         },
         {
+          "type": "runnerReportSection",
+          "definition": {
+            "runnerReportSectionType": "storedRunner",
+            "label": "returnBook",
+            "runner": "98a38a84-e702-4540-a056-c7676a193a2b"
+          }
+        },
+        {
           "type": "storedReportDisplay",
           "definition": {
             "transformerType": "returnValue",

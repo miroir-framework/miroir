@@ -18,6 +18,7 @@
 Miroir defined as punchlines for hipsters:
 
 - In the beginning, there was JSON!
+- the most bombastic JSON editor around
 - the best curry-howard isomorphism typescript implementation
 - the Domain Specific Language of software creation
 - the Domain Specific Language of Domain Specific Language creation
@@ -107,33 +108,6 @@ Miroir is [available in pre-release](https://github.com/miroir-framework/miroir/
 
 ---
 
-## Learn Miroir
-
-### 🎓 For Beginners
-
-1. **[Quickstart Guide](docs/getting-started/quickstart.md)** - 15-minute introduction
-2. **[Library Tutorial](docs/tutorials/library-tutorial.md)** - Hands-on walkthrough (20 min)
-3. **[Core Concepts](docs/guides/core-concepts.md)** - Understanding Entity, Query, Transformer, Action, Report
-
-### 💻 For Developers
-
-1. **[Creating Your First Application](docs/guides/developer/creating-applications.md)** - Build from scratch
-2. **[Developer Guides](docs/guides/developer/)** - In-depth development topics
-3. **[API Reference](docs/reference/api/)** - Complete API documentation
-
-### 🤖 For AI Integration
-
-1. **[MCP Integration Guide](docs/guides/mcp-integration.md)** - Connect with Claude, ChatGPT, and other AI agents
-2. **[Natural Language Development](docs/tutorials/natural-language-interface.md)** - **Coming Soon**
-
-### 📚 Full Documentation
-
-**[Complete Documentation Index →](docs/index.md)**
-
-Documentation organized by role: Executives, Project Managers, Architects, Developers, End Users, AI Integrators, Contributors
-
----
-
 <!-- ## Why Miroir?
 
 ### The Problem: Development Tools Are Fragmented
@@ -162,7 +136,7 @@ Miroir integrates development-time and runtime activities in a single environmen
 
 --- -->
 
-## Detailing the Library App (Slightly Idealized)
+## What's in the Library Application (Slightly Idealized)
 
 This section gives a slightly simplified syntax for better understanding of the main features that constitute a Library Miroir application. See it for real in **[the Library Tutorial →](docs/tutorials/library-tutorial.md)**
 
@@ -251,6 +225,33 @@ const listOfBooks: Report = {
 - 📅 Code generation ("freeze to JavaScript/Rust")
 
 **[Full Roadmap →](docs/guides/roadmap.md)**
+
+---
+
+## Learn Miroir
+
+### 🎓 For Beginners
+
+1. **[Quickstart Guide](docs/getting-started/quickstart.md)** - 15-minute introduction
+2. **[Library Tutorial](docs/tutorials/library-tutorial.md)** - Hands-on walkthrough (20 min)
+3. **[Core Concepts](docs/guides/core-concepts.md)** - Understanding Entity, Query, Transformer, Action, Report
+
+### 💻 For Developers
+
+1. **[Creating Your First Application](docs/guides/developer/creating-applications.md)** - Build from scratch
+2. **[Developer Guides](docs/guides/developer/)** - In-depth development topics
+3. **[API Reference](docs/reference/api/)** - Complete API documentation
+
+### 🤖 For AI Integration
+
+1. **[MCP Integration Guide](docs/guides/mcp-integration.md)** - Connect with Claude, ChatGPT, and other AI agents
+2. **[Natural Language Development](docs/tutorials/natural-language-interface.md)** - **Coming Soon**
+
+### 📚 Full Documentation
+
+**[Complete Documentation Index →](docs/index.md)**
+
+Documentation organized by role: Executives, Project Managers, Architects, Developers, End Users, AI Integrators, Contributors
 
 ---
 

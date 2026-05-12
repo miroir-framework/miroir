@@ -51,14 +51,12 @@ export type FormMLSchema =
 // ################################################################################################
 export interface RunnerProps<T extends Record<string, any>> {
   runnerName: string;
-  application?: Uuid;
+  application: Uuid;
   applicationDeploymentMap: ApplicationDeploymentMap;
   runnerApplicationDeploymentMap?: ((value: any) => ApplicationDeploymentMap);
   formMLSchema: FormMLSchema;
   initialFormValue: T | InitialFormValue<T>;
   action: RunnerAction<T>;
-  // miroirModelEnvironment?: MiroirModelEnvironment;
-  // labelElement?: ReactElement;
   formikValuePathAsString: string;
   formLabel: string;
   displaySubmitButton?: "onTop" | "onFirstLine";
