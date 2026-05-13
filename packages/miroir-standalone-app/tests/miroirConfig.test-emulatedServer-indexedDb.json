@@ -2,47 +2,48 @@
   "client": {
     "emulateServer": true,
     "rootApiUrl":"https://localhost:3080",
+    "filesystemDeploymentRootDirectory": "/users/nono/documents/devhome/miroir-app-dev/packages",
     "deploymentStorageConfig": {
       "18db21bf-f8d3-4f6a-8296-84b69f6dc48b": {
         "admin": {
           "emulatedServerType": "filesystem",
-          "directory": "../miroir-standalone-app/tests/assets/admin"
+          "directory": "miroir-standalone-app/tests/assets/admin"
         },
         "model": {
           "emulatedServerType": "filesystem",
-          "directory": "../miroir-standalone-app/tests/assets/admin_model"
+          "directory": "miroir-standalone-app/tests/assets/admin_model"
         },
         "data": {
           "emulatedServerType": "filesystem",
-          "directory": "../miroir-standalone-app/tests/assets/admin_data"
+          "directory": "miroir-standalone-app/tests/assets/admin_data"
         }
       },
       "10ff36f2-50a3-48d8-b80f-e48e5d13af8e": {
         "admin": {
           "emulatedServerType": "indexedDb",
-          "indexedDbName":"./tests/tmp/indexedDb-admin"
+          "indexedDbName":"miroir-standalone-app/tests/tmp/indexedDb-admin"
         },
         "model": {
           "emulatedServerType": "indexedDb",
-          "indexedDbName":"./tests/tmp/indexedDb-miroir"
+          "indexedDbName":"miroir-standalone-app/tests/tmp/indexedDb-miroir"
         },
         "data": {
           "emulatedServerType": "indexedDb",
-          "indexedDbName":"./tests/tmp/indexedDb-miroir"
+          "indexedDbName":"miroir-standalone-app/tests/tmp/indexedDb-miroir"
         }
       },
       "f714bb2f-a12d-4e71-a03b-74dcedea6eb4": {
         "admin": {
           "emulatedServerType": "indexedDb",
-          "indexedDbName":"./tests/tmp/indexedDb-admin"
+          "indexedDbName":"miroir-standalone-app/tests/tmp/indexedDb-admin"
         },
         "model": {
           "emulatedServerType": "indexedDb",
-          "indexedDbName":"./tests/tmp/indexedDb-app"
+          "indexedDbName":"miroir-standalone-app/tests/tmp/indexedDb-app"
         },
         "data": {
           "emulatedServerType": "indexedDb",
-          "indexedDbName":"./tests/tmp/indexedDb-app"
+          "indexedDbName":"miroir-standalone-app/tests/tmp/indexedDb-app"
         }
       }
     },

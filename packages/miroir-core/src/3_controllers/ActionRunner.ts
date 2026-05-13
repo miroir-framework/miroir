@@ -105,12 +105,6 @@ export async function storeActionOrBundleActionStoreRunner(
       const localAppPersistenceStoreController =
         persistenceStoreControllerManager.getPersistenceStoreController(deploymentUuid);
       if (!localAppPersistenceStoreController) {
-        // throw new Error(
-        //   "storeActionOrBundleActionStoreRunner could not find controller for deployment: " +
-        //     action.payload.deploymentUuid +
-        //     " available controllers: " +
-        //     persistenceStoreControllerManager.getPersistenceStoreControllers()
-        // );
         return new Action2Error(
           "FailedToDeleteStore",
           "storeActionOrBundleActionStoreRunner could not find controller for application " + 
@@ -136,7 +130,8 @@ export async function storeActionOrBundleActionStoreRunner(
         action.payload.application,
         "deployment",
         deploymentUuid,
-        "model store deleted"
+        "appModelStoreDeleted",
+        appModelStoreDeleted
       );
       
       const appDataStoreDeleted: Action2ReturnType =
@@ -146,14 +141,17 @@ export async function storeActionOrBundleActionStoreRunner(
         action.payload.application,
         "deployment",
         deploymentUuid,
-        "data store deleted"
+        "appDataStoreDeleted",
+        appDataStoreDeleted
       );
       if (appModelStoreDeleted instanceof Action2Error || appDataStoreDeleted instanceof Action2Error) {
         return new Action2Error(
           "FailedToDeleteStore",
           (appModelStoreDeleted instanceof Action2Error ? appModelStoreDeleted.errorMessage : "model store deleted OK") +
             " --- " +
-            (appDataStoreDeleted instanceof Action2Error ? appDataStoreDeleted.errorMessage : "data store deleted OK")
+            (appDataStoreDeleted instanceof Action2Error ? appDataStoreDeleted.errorMessage : "data store deleted OK"),
+            [], // errorStack,
+          appModelStoreDeleted instanceof Action2Error ? appModelStoreDeleted : appDataStoreDeleted as Action2Error
         );
       }
       break;

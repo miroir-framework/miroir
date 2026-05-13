@@ -493,22 +493,22 @@ export function testUtils_deleteApplicationDeployment(
               } as EntityInstance,
             ],
           },
-        },
-        {
-          actionType: "deleteInstance",
-          actionLabel: "deleteAdminApplication",
-          endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-          payload: {
-            application: "55af124e-8c05-4bae-a3ef-0933d41daa92",
-            applicationSection: "data",
-            objects: [
-              {
-                parentUuid: "25d935e7-9e93-42c2-aade-0472b883492b",
-                uuid: application,
-              },
-            ],
-          },
-        },
+        }
+        // {
+        //   actionType: "deleteInstance",
+        //   actionLabel: "deleteAdminApplication",
+        //   endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+        //   payload: {
+        //     application: "55af124e-8c05-4bae-a3ef-0933d41daa92",
+        //     applicationSection: "data",
+        //     objects: [
+        //       {
+        //         parentUuid: "25d935e7-9e93-42c2-aade-0472b883492b",
+        //         uuid: application,
+        //       },
+        //     ],
+        //   },
+        // },
       ],
     },
   };

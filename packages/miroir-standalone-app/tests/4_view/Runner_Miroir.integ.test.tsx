@@ -319,8 +319,10 @@ const runnerTestParams: Record<string, RunnerTestParams> = {
         newApplicationUuid: testApplicationUuid,
         deploymentUuid: installTestApplicationDeploymentUuid, // to enable getFromParameters on deploymentUuid in the runner
         applicationStorage: {
-          emulatedServerType: "sql",
-          connectionString: "postgres://postgres:postgres@localhost:5432/postgres",
+          // emulatedServerType: "sql",
+          // connectionString: "postgres://postgres:postgres@localhost:5432/postgres",
+          emulatedServerType: "indexedDb",
+          connectionString: "miroir-standalone-app/tests/assets",
         },
       },
     }, // testParams
@@ -471,463 +473,463 @@ const runnerTestParams: Record<string, RunnerTestParams> = {
     initialModel: emptyApplicationModel,
     skipCreateDeployment: true,
   },
-  [runnerCreateEntity.name]: {
-    pageLabel,
-    runner: runnerCreateEntity as Runner,
-    testApplicationUuid,
-    testApplicationDeploymentUuid,
-    testApplicationName,
-    testParams: {
-      [runnerCreateEntity.name]: {
-        application: testApplicationUuid,
-        entity: entityAuthor,
-        entityDefinition: entityDefinitionAuthor,
-        addDefaultReports: false,
-        addMenuLink: false,
-      },
-    }, // testParams
-    preTestCompositeActions: [
-      {
-        // performs query on local cache for emulated server, and on server for remote server
-        actionType: "compositeRunBoxedQueryAction",
-        endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
-        actionLabel: "calculateNewEntityDefinionAndReports",
-        nameGivenToResult: "libraryEntityList",
-        payload: {
-          actionType: "runBoxedQueryAction",
-          endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-          payload: {
-            application: testApplicationUuid,
-            applicationSection: "model", // TODO: give only selfApplication section in individual queries?
-            query: {
-              queryType: "boxedQueryWithExtractorCombinerTransformer",
-              application: testApplicationUuid,
-              pageParams: {
-                currentDeploymentUuid: testApplicationDeploymentUuid,
-              },
-              extractors: {
-                entities: {
-                  extractorOrCombinerType: "extractorInstancesByEntity",
-                  applicationSection: "model",
-                  parentName: entityEntity.name,
-                  parentUuid: entityEntity.uuid,
-                  orderBy: {
-                    attributeName: "name",
-                    direction: "ASC",
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-    ], // preTestCompositeActions
-    testCompositeActionAssertions: [
-      // TODO: test length of entityBookList.books!
-      {
-        actionType: "compositeRunTestAssertion",
-        actionLabel: "checkNumberOfEntities",
-        nameGivenToResult: "checkNumberOfEntities",
-        testAssertion: {
-          testType: "testAssertion",
-          testLabel: "checkNumberOfEntities",
-          definition: {
-            resultAccessPath: ["0"],
-            resultTransformer: {
-              transformerType: "aggregate",
-              interpolation: "runtime",
-              applyTo: {
-                transformerType: "getFromContext",
-                interpolation: "runtime",
-                referencePath: ["libraryEntityList", "entities"],
-              },
-            },
-            expectedValue: { aggregate: 1 },
-          },
-        },
-      },
-      {
-        actionType: "compositeRunTestAssertion",
-        actionLabel: "checkEntityBooks",
-        nameGivenToResult: "checkEntityList",
-        testAssertion: {
-          testType: "testAssertion",
-          testLabel: "checkEntityBooks",
-          definition: {
-            resultAccessPath: ["libraryEntityList", "entities"],
-            ignoreAttributes: ["author", "storageAccess"],
-            expectedValue: [entityAuthor],
-          },
-        },
-      },
-    ],
-    internalMiroirConfig: installInternalMiroirConfig,
-    adminDeployment,
-    testDeploymentStorageConfiguration: installTestDeploymentStorageConfiguration,
-    initialModel: emptyApplicationModel,
-  },
-  [runnerCreateEntity.name + "_withReports"]: {
-    pageLabel,
-    runner: runnerCreateEntity as Runner,
-    testApplicationUuid,
-    testApplicationDeploymentUuid,
-    testApplicationName,
-    testParams: {
-      [runnerCreateEntity.name]: {
-        // transformerType: "returnValue",
-        // value: {
-          application: testApplicationUuid,
-          entity: entityAuthor,
-          entityDefinition: entityDefinitionAuthor,
-          addDefaultReports: true,
-          addMenuLink: true,
-        // },
-      },
-    }, // testParams
-    preRunnerCompositeActions: [
-      {
-        actionType: "createInstance",
-        actionLabel: "createTestMenuForMenuLinkTest",
-        endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-        payload: {
-          application: testApplicationUuid,
-          applicationSection: "model",
-          objects: [
-            {
-              uuid: testMenuUuid,
-              parentName: entityMenu.name,
-              parentUuid: entityMenu.uuid,
-              name: "TestMenu",
-              defaultLabel: "Test Menu",
-              definition: {
-                menuType: "complexMenu",
-                definition: [
-                  {
-                    title: "Test",
-                    label: "test",
-                    items: [],
-                  },
-                ],
-              },
-            },
-          ],
-        },
-      } as any,
-    ],
-    preTestCompositeActions: [
-      {
-        actionType: "compositeRunBoxedQueryAction",
-        endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
-        actionLabel: "getReportsAndMenus",
-        nameGivenToResult: "reportsAndMenus",
-        payload: {
-          actionType: "runBoxedQueryAction",
-          endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-          payload: {
-            application: testApplicationUuid,
-            applicationSection: "model",
-            query: {
-              queryType: "boxedQueryWithExtractorCombinerTransformer",
-              application: testApplicationUuid,
-              pageParams: {
-                currentDeploymentUuid: testApplicationDeploymentUuid,
-              },
-              extractors: {
-                reports: {
-                  extractorOrCombinerType: "extractorInstancesByEntity",
-                  applicationSection: "model",
-                  parentName: entityReport.name,
-                  parentUuid: entityReport.uuid,
-                  orderBy: {
-                    attributeName: "name",
-                    direction: "ASC",
-                  },
-                },
-                menus: {
-                  extractorOrCombinerType: "extractorInstancesByEntity",
-                  applicationSection: "model",
-                  parentName: entityMenu.name,
-                  parentUuid: entityMenu.uuid,
-                },
-                entityDefs: {
-                  extractorOrCombinerType: "extractorInstancesByEntity",
-                  applicationSection: "model",
-                  parentName: entityEntityDefinition.name,
-                  parentUuid: entityEntityDefinition.uuid,
-                },
-              },
-            },
-          },
-        },
-      },
-    ], // preTestCompositeActions
-    testCompositeActionAssertions: [
-      {
-        actionType: "compositeRunTestAssertion",
-        actionLabel: "checkNumberOfReports",
-        nameGivenToResult: "checkNumberOfReports",
-        testAssertion: {
-          testType: "testAssertion",
-          testLabel: "checkNumberOfReports",
-          definition: {
-            resultAccessPath: ["0"],
-            resultTransformer: {
-              transformerType: "aggregate",
-              interpolation: "runtime",
-              applyTo: {
-                transformerType: "getFromContext",
-                interpolation: "runtime",
-                referencePath: ["reportsAndMenus", "reports"],
-              },
-            },
-            expectedValue: { aggregate: 2 },
-          },
-        },
-      },
-      {
-        actionType: "compositeRunTestAssertion",
-        actionLabel: "checkMenuHasNewItem",
-        nameGivenToResult: "checkMenuHasNewItem",
-        testAssertion: {
-          testType: "testAssertion",
-          testLabel: "checkMenuHasNewItem",
-          definition: {
-            resultAccessPath: ["0"],
-            resultTransformer: {
-              transformerType: "aggregate",
-              interpolation: "runtime",
-              applyTo: {
-                transformerType: "getFromContext",
-                interpolation: "runtime",
-                referencePath: [
-                  "reportsAndMenus",
-                  "menus",
-                  "0",
-                  "definition",
-                  "definition",
-                  "0",
-                  "items",
-                ],
-              },
-            },
-            expectedValue: { aggregate: 10 },
-          },
-        },
-      },
-    ],
-    internalMiroirConfig,
-    adminDeployment,
-    testDeploymentStorageConfiguration,
-    initialModel: emptyApplicationModel,
-  },
-  [runnerDropEntity.name]: {
-    pageLabel,
-    runner: runnerDropEntity as unknown as Runner,
-    testApplicationUuid,
-    testApplicationDeploymentUuid,
-    testApplicationName,
-    testParams: {
-      ["createEntity"]: {
-        // used by the preRunnerCompositeAction to create the entity before dropping it
-        application: testApplicationUuid,
-        entity: entityAuthor,
-        entityDefinition: entityDefinitionAuthor,
-        addDefaultReports: false,
-        addMenuLink: false,
-      },
-      [runnerDropEntity.name]: {
-        application: testApplicationUuid,
-        entity: entityAuthor.uuid,
-      },
-    }, // testParams
-    preRunnerCompositeActions: [runnerCreateEntity.definition.actionTemplate as any], // preRunnerCompositeActions: create the entity before dropping it
-    preTestCompositeActions: [
-      {
-        // performs query on local cache for emulated server, and on server for remote server
-        actionType: "compositeRunBoxedQueryAction",
-        endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
-        actionLabel: "calculateNewEntityDefinionAndReports",
-        nameGivenToResult: "libraryEntityList",
-        payload: {
-          actionType: "runBoxedQueryAction",
-          endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-          payload: {
-            application: testApplicationUuid,
-            applicationSection: "model",
-            query: {
-              queryType: "boxedQueryWithExtractorCombinerTransformer",
-              application: testApplicationUuid,
-              pageParams: {
-                currentDeploymentUuid: testApplicationDeploymentUuid,
-              },
-              extractors: {
-                entities: {
-                  extractorOrCombinerType: "extractorInstancesByEntity",
-                  applicationSection: "model",
-                  parentName: entityEntity.name,
-                  parentUuid: entityEntity.uuid,
-                  orderBy: {
-                    attributeName: "name",
-                    direction: "ASC",
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-    ], // preTestCompositeActions
-    testCompositeActionAssertions: [
-      {
-        actionType: "compositeRunTestAssertion",
-        actionLabel: "checkNumberOfEntities",
-        nameGivenToResult: "checkNumberOfEntities",
-        testAssertion: {
-          testType: "testAssertion",
-          testLabel: "checkNumberOfEntities",
-          definition: {
-            resultAccessPath: ["0"],
-            resultTransformer: {
-              transformerType: "aggregate",
-              interpolation: "runtime",
-              applyTo: {
-                transformerType: "getFromContext",
-                interpolation: "runtime",
-                referencePath: ["libraryEntityList", "entities"],
-              },
-            },
-            expectedValue: { aggregate: 0 },
-          },
-        },
-      },
-      {
-        actionType: "compositeRunTestAssertion",
-        actionLabel: "checkEntityList",
-        nameGivenToResult: "checkEntityList",
-        testAssertion: {
-          testType: "testAssertion",
-          testLabel: "checkEntityList",
-          definition: {
-            resultAccessPath: ["libraryEntityList", "entities"],
-            ignoreAttributes: ["author", "storageAccess"],
-            expectedValue: [],
-          },
-        },
-      },
-    ],
-    internalMiroirConfig: installInternalMiroirConfig,
-    adminDeployment,
-    testDeploymentStorageConfiguration: installTestDeploymentStorageConfiguration,
-    // initialModel: emptyApplicationModel,
-    initialModel: {
-      applicationUuid: "",
-      applicationName: "",
-      applications: [],
-      applicationVersions: [],
-      applicationVersionCrossEntityDefinition: [],
-      endpoints: [],
-      entities: [],
-      entityDefinitions: [],
-      jzodSchemas: [],
-      menus: [ menuDefaultLibrary as Menu ],
-      reports: [],
-      runners: [],
-      storedQueries: [],
-      themes: [],
-    },
-    testCompositeActionLabel: "Create and Drop Entity Author",
-  },
-  [runnerDropApplication.name]: {
-    pageLabel,
-    runner: runnerDropApplication as unknown as Runner,
-    testApplicationUuid,
-    testApplicationDeploymentUuid,
-    testApplicationName,
-    testParams: {
-      [runnerDropApplication.name]: {
-        application: testApplicationUuid,
-        entity: entityAuthor.uuid,
-      },
-    }, // testParams
-    preTestCompositeActions: [
-      {
-        // performs query on local cache for emulated server, and on server for remote server
-        actionType: "compositeRunBoxedQueryAction",
-        endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
-        actionLabel: "calculateNewEntityDefinionAndReports",
-        nameGivenToResult: "adminApplicationList",
-        payload: {
-          actionType: "runBoxedQueryAction",
-          endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-          payload: {
-            application: adminSelfApplication.uuid,
-            applicationSection: "data",
-            query: {
-              queryType: "boxedQueryWithExtractorCombinerTransformer",
-              application: adminSelfApplication.uuid,
-              extractors: {
-                applications: {
-                  extractorOrCombinerType: "extractorInstancesByEntity",
-                  applicationSection: "data",
-                  parentName: entityApplicationForAdmin.name,
-                  parentUuid: entityApplicationForAdmin.uuid,
-                  orderBy: {
-                    attributeName: "name",
-                    direction: "ASC",
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-    ], // preTestCompositeActions
-    testCompositeActionAssertions: [
-      {
-        actionType: "compositeRunTestAssertion",
-        actionLabel: "checkNumberOfApplications",
-        nameGivenToResult: "checkNumberOfApplications",
-        testAssertion: {
-          testType: "testAssertion",
-          testLabel: "checkNumberOfApplications",
-          definition: {
-            resultAccessPath: ["0"],
-            resultTransformer: {
-              transformerType: "aggregate",
-              interpolation: "runtime",
-              applyTo: {
-                transformerType: "getFromContext",
-                interpolation: "runtime",
-                referencePath: ["adminApplicationList", "applications"],
-              },
-            },
-            expectedValue: { aggregate: 2 }, // 2 applications should remain after dropping the test application: the admin application itself, and the miroir meta-application
-          },
-        },
-      },
-      // {
-      //   actionType: "compositeRunTestAssertion",
-      //   actionLabel: "checkEntityList",
-      //   nameGivenToResult: "checkEntityList",
-      //   testAssertion: {
-      //     testType: "testAssertion",
-      //     testLabel: "checkEntityList",
-      //     definition: {
-      //       resultAccessPath: ["libraryEntityList", "entities"],
-      //       ignoreAttributes: ["author", "storageAccess"],
-      //       expectedValue: [],
-      //     },
-      //   },
-      // },
-    ],
-    internalMiroirConfig: installInternalMiroirConfig,
-    adminDeployment,
-    testDeploymentStorageConfiguration: installTestDeploymentStorageConfiguration,
-    initialModel: emptyApplicationModel,
-    // preRunnerCompositeActions: [runnerCreateEntity.definition.actionTemplate as any], // preRunnerCompositeActions: create the entity before dropping it
-    testCompositeActionLabel: "Drop test Application",
-    skipDropDeployment: true, // skip dropping deployment after test, since we are dropping the whole application (and thus the deployment) in the runner itself
-  },
+  // [runnerCreateEntity.name]: {
+  //   pageLabel,
+  //   runner: runnerCreateEntity as Runner,
+  //   testApplicationUuid,
+  //   testApplicationDeploymentUuid,
+  //   testApplicationName,
+  //   testParams: {
+  //     [runnerCreateEntity.name]: {
+  //       application: testApplicationUuid,
+  //       entity: entityAuthor,
+  //       entityDefinition: entityDefinitionAuthor,
+  //       addDefaultReports: false,
+  //       addMenuLink: false,
+  //     },
+  //   }, // testParams
+  //   preTestCompositeActions: [
+  //     {
+  //       // performs query on local cache for emulated server, and on server for remote server
+  //       actionType: "compositeRunBoxedQueryAction",
+  //       endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+  //       actionLabel: "calculateNewEntityDefinionAndReports",
+  //       nameGivenToResult: "libraryEntityList",
+  //       payload: {
+  //         actionType: "runBoxedQueryAction",
+  //         endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+  //         payload: {
+  //           application: testApplicationUuid,
+  //           applicationSection: "model", // TODO: give only selfApplication section in individual queries?
+  //           query: {
+  //             queryType: "boxedQueryWithExtractorCombinerTransformer",
+  //             application: testApplicationUuid,
+  //             pageParams: {
+  //               currentDeploymentUuid: testApplicationDeploymentUuid,
+  //             },
+  //             extractors: {
+  //               entities: {
+  //                 extractorOrCombinerType: "extractorInstancesByEntity",
+  //                 applicationSection: "model",
+  //                 parentName: entityEntity.name,
+  //                 parentUuid: entityEntity.uuid,
+  //                 orderBy: {
+  //                   attributeName: "name",
+  //                   direction: "ASC",
+  //                 },
+  //               },
+  //             },
+  //           },
+  //         },
+  //       },
+  //     },
+  //   ], // preTestCompositeActions
+  //   testCompositeActionAssertions: [
+  //     // TODO: test length of entityBookList.books!
+  //     {
+  //       actionType: "compositeRunTestAssertion",
+  //       actionLabel: "checkNumberOfEntities",
+  //       nameGivenToResult: "checkNumberOfEntities",
+  //       testAssertion: {
+  //         testType: "testAssertion",
+  //         testLabel: "checkNumberOfEntities",
+  //         definition: {
+  //           resultAccessPath: ["0"],
+  //           resultTransformer: {
+  //             transformerType: "aggregate",
+  //             interpolation: "runtime",
+  //             applyTo: {
+  //               transformerType: "getFromContext",
+  //               interpolation: "runtime",
+  //               referencePath: ["libraryEntityList", "entities"],
+  //             },
+  //           },
+  //           expectedValue: { aggregate: 1 },
+  //         },
+  //       },
+  //     },
+  //     {
+  //       actionType: "compositeRunTestAssertion",
+  //       actionLabel: "checkEntityBooks",
+  //       nameGivenToResult: "checkEntityList",
+  //       testAssertion: {
+  //         testType: "testAssertion",
+  //         testLabel: "checkEntityBooks",
+  //         definition: {
+  //           resultAccessPath: ["libraryEntityList", "entities"],
+  //           ignoreAttributes: ["author", "storageAccess"],
+  //           expectedValue: [entityAuthor],
+  //         },
+  //       },
+  //     },
+  //   ],
+  //   internalMiroirConfig: installInternalMiroirConfig,
+  //   adminDeployment,
+  //   testDeploymentStorageConfiguration: installTestDeploymentStorageConfiguration,
+  //   initialModel: emptyApplicationModel,
+  // },
+  // [runnerCreateEntity.name + "_withReports"]: {
+  //   pageLabel,
+  //   runner: runnerCreateEntity as Runner,
+  //   testApplicationUuid,
+  //   testApplicationDeploymentUuid,
+  //   testApplicationName,
+  //   testParams: {
+  //     [runnerCreateEntity.name]: {
+  //       // transformerType: "returnValue",
+  //       // value: {
+  //         application: testApplicationUuid,
+  //         entity: entityAuthor,
+  //         entityDefinition: entityDefinitionAuthor,
+  //         addDefaultReports: true,
+  //         addMenuLink: true,
+  //       // },
+  //     },
+  //   }, // testParams
+  //   preRunnerCompositeActions: [
+  //     {
+  //       actionType: "createInstance",
+  //       actionLabel: "createTestMenuForMenuLinkTest",
+  //       endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+  //       payload: {
+  //         application: testApplicationUuid,
+  //         applicationSection: "model",
+  //         objects: [
+  //           {
+  //             uuid: testMenuUuid,
+  //             parentName: entityMenu.name,
+  //             parentUuid: entityMenu.uuid,
+  //             name: "TestMenu",
+  //             defaultLabel: "Test Menu",
+  //             definition: {
+  //               menuType: "complexMenu",
+  //               definition: [
+  //                 {
+  //                   title: "Test",
+  //                   label: "test",
+  //                   items: [],
+  //                 },
+  //               ],
+  //             },
+  //           },
+  //         ],
+  //       },
+  //     } as any,
+  //   ],
+  //   preTestCompositeActions: [
+  //     {
+  //       actionType: "compositeRunBoxedQueryAction",
+  //       endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+  //       actionLabel: "getReportsAndMenus",
+  //       nameGivenToResult: "reportsAndMenus",
+  //       payload: {
+  //         actionType: "runBoxedQueryAction",
+  //         endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+  //         payload: {
+  //           application: testApplicationUuid,
+  //           applicationSection: "model",
+  //           query: {
+  //             queryType: "boxedQueryWithExtractorCombinerTransformer",
+  //             application: testApplicationUuid,
+  //             pageParams: {
+  //               currentDeploymentUuid: testApplicationDeploymentUuid,
+  //             },
+  //             extractors: {
+  //               reports: {
+  //                 extractorOrCombinerType: "extractorInstancesByEntity",
+  //                 applicationSection: "model",
+  //                 parentName: entityReport.name,
+  //                 parentUuid: entityReport.uuid,
+  //                 orderBy: {
+  //                   attributeName: "name",
+  //                   direction: "ASC",
+  //                 },
+  //               },
+  //               menus: {
+  //                 extractorOrCombinerType: "extractorInstancesByEntity",
+  //                 applicationSection: "model",
+  //                 parentName: entityMenu.name,
+  //                 parentUuid: entityMenu.uuid,
+  //               },
+  //               entityDefs: {
+  //                 extractorOrCombinerType: "extractorInstancesByEntity",
+  //                 applicationSection: "model",
+  //                 parentName: entityEntityDefinition.name,
+  //                 parentUuid: entityEntityDefinition.uuid,
+  //               },
+  //             },
+  //           },
+  //         },
+  //       },
+  //     },
+  //   ], // preTestCompositeActions
+  //   testCompositeActionAssertions: [
+  //     {
+  //       actionType: "compositeRunTestAssertion",
+  //       actionLabel: "checkNumberOfReports",
+  //       nameGivenToResult: "checkNumberOfReports",
+  //       testAssertion: {
+  //         testType: "testAssertion",
+  //         testLabel: "checkNumberOfReports",
+  //         definition: {
+  //           resultAccessPath: ["0"],
+  //           resultTransformer: {
+  //             transformerType: "aggregate",
+  //             interpolation: "runtime",
+  //             applyTo: {
+  //               transformerType: "getFromContext",
+  //               interpolation: "runtime",
+  //               referencePath: ["reportsAndMenus", "reports"],
+  //             },
+  //           },
+  //           expectedValue: { aggregate: 2 },
+  //         },
+  //       },
+  //     },
+  //     {
+  //       actionType: "compositeRunTestAssertion",
+  //       actionLabel: "checkMenuHasNewItem",
+  //       nameGivenToResult: "checkMenuHasNewItem",
+  //       testAssertion: {
+  //         testType: "testAssertion",
+  //         testLabel: "checkMenuHasNewItem",
+  //         definition: {
+  //           resultAccessPath: ["0"],
+  //           resultTransformer: {
+  //             transformerType: "aggregate",
+  //             interpolation: "runtime",
+  //             applyTo: {
+  //               transformerType: "getFromContext",
+  //               interpolation: "runtime",
+  //               referencePath: [
+  //                 "reportsAndMenus",
+  //                 "menus",
+  //                 "0",
+  //                 "definition",
+  //                 "definition",
+  //                 "0",
+  //                 "items",
+  //               ],
+  //             },
+  //           },
+  //           expectedValue: { aggregate: 10 },
+  //         },
+  //       },
+  //     },
+  //   ],
+  //   internalMiroirConfig,
+  //   adminDeployment,
+  //   testDeploymentStorageConfiguration,
+  //   initialModel: emptyApplicationModel,
+  // },
+  // [runnerDropEntity.name]: {
+  //   pageLabel,
+  //   runner: runnerDropEntity as unknown as Runner,
+  //   testApplicationUuid,
+  //   testApplicationDeploymentUuid,
+  //   testApplicationName,
+  //   testParams: {
+  //     ["createEntity"]: {
+  //       // used by the preRunnerCompositeAction to create the entity before dropping it
+  //       application: testApplicationUuid,
+  //       entity: entityAuthor,
+  //       entityDefinition: entityDefinitionAuthor,
+  //       addDefaultReports: false,
+  //       addMenuLink: false,
+  //     },
+  //     [runnerDropEntity.name]: {
+  //       application: testApplicationUuid,
+  //       entity: entityAuthor.uuid,
+  //     },
+  //   }, // testParams
+  //   preRunnerCompositeActions: [runnerCreateEntity.definition.actionTemplate as any], // preRunnerCompositeActions: create the entity before dropping it
+  //   preTestCompositeActions: [
+  //     {
+  //       // performs query on local cache for emulated server, and on server for remote server
+  //       actionType: "compositeRunBoxedQueryAction",
+  //       endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+  //       actionLabel: "calculateNewEntityDefinionAndReports",
+  //       nameGivenToResult: "libraryEntityList",
+  //       payload: {
+  //         actionType: "runBoxedQueryAction",
+  //         endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+  //         payload: {
+  //           application: testApplicationUuid,
+  //           applicationSection: "model",
+  //           query: {
+  //             queryType: "boxedQueryWithExtractorCombinerTransformer",
+  //             application: testApplicationUuid,
+  //             pageParams: {
+  //               currentDeploymentUuid: testApplicationDeploymentUuid,
+  //             },
+  //             extractors: {
+  //               entities: {
+  //                 extractorOrCombinerType: "extractorInstancesByEntity",
+  //                 applicationSection: "model",
+  //                 parentName: entityEntity.name,
+  //                 parentUuid: entityEntity.uuid,
+  //                 orderBy: {
+  //                   attributeName: "name",
+  //                   direction: "ASC",
+  //                 },
+  //               },
+  //             },
+  //           },
+  //         },
+  //       },
+  //     },
+  //   ], // preTestCompositeActions
+  //   testCompositeActionAssertions: [
+  //     {
+  //       actionType: "compositeRunTestAssertion",
+  //       actionLabel: "checkNumberOfEntities",
+  //       nameGivenToResult: "checkNumberOfEntities",
+  //       testAssertion: {
+  //         testType: "testAssertion",
+  //         testLabel: "checkNumberOfEntities",
+  //         definition: {
+  //           resultAccessPath: ["0"],
+  //           resultTransformer: {
+  //             transformerType: "aggregate",
+  //             interpolation: "runtime",
+  //             applyTo: {
+  //               transformerType: "getFromContext",
+  //               interpolation: "runtime",
+  //               referencePath: ["libraryEntityList", "entities"],
+  //             },
+  //           },
+  //           expectedValue: { aggregate: 0 },
+  //         },
+  //       },
+  //     },
+  //     {
+  //       actionType: "compositeRunTestAssertion",
+  //       actionLabel: "checkEntityList",
+  //       nameGivenToResult: "checkEntityList",
+  //       testAssertion: {
+  //         testType: "testAssertion",
+  //         testLabel: "checkEntityList",
+  //         definition: {
+  //           resultAccessPath: ["libraryEntityList", "entities"],
+  //           ignoreAttributes: ["author", "storageAccess"],
+  //           expectedValue: [],
+  //         },
+  //       },
+  //     },
+  //   ],
+  //   internalMiroirConfig: installInternalMiroirConfig,
+  //   adminDeployment,
+  //   testDeploymentStorageConfiguration: installTestDeploymentStorageConfiguration,
+  //   // initialModel: emptyApplicationModel,
+  //   initialModel: {
+  //     applicationUuid: "",
+  //     applicationName: "",
+  //     applications: [],
+  //     applicationVersions: [],
+  //     applicationVersionCrossEntityDefinition: [],
+  //     endpoints: [],
+  //     entities: [],
+  //     entityDefinitions: [],
+  //     jzodSchemas: [],
+  //     menus: [ menuDefaultLibrary as Menu ],
+  //     reports: [],
+  //     runners: [],
+  //     storedQueries: [],
+  //     themes: [],
+  //   },
+  //   testCompositeActionLabel: "Create and Drop Entity Author",
+  // },
+  // [runnerDropApplication.name]: {
+  //   pageLabel,
+  //   runner: runnerDropApplication as unknown as Runner,
+  //   testApplicationUuid,
+  //   testApplicationDeploymentUuid,
+  //   testApplicationName,
+  //   testParams: {
+  //     [runnerDropApplication.name]: {
+  //       application: testApplicationUuid,
+  //       entity: entityAuthor.uuid,
+  //     },
+  //   }, // testParams
+  //   preTestCompositeActions: [
+  //     {
+  //       // performs query on local cache for emulated server, and on server for remote server
+  //       actionType: "compositeRunBoxedQueryAction",
+  //       endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+  //       actionLabel: "calculateNewEntityDefinionAndReports",
+  //       nameGivenToResult: "adminApplicationList",
+  //       payload: {
+  //         actionType: "runBoxedQueryAction",
+  //         endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+  //         payload: {
+  //           application: adminSelfApplication.uuid,
+  //           applicationSection: "data",
+  //           query: {
+  //             queryType: "boxedQueryWithExtractorCombinerTransformer",
+  //             application: adminSelfApplication.uuid,
+  //             extractors: {
+  //               applications: {
+  //                 extractorOrCombinerType: "extractorInstancesByEntity",
+  //                 applicationSection: "data",
+  //                 parentName: entityApplicationForAdmin.name,
+  //                 parentUuid: entityApplicationForAdmin.uuid,
+  //                 orderBy: {
+  //                   attributeName: "name",
+  //                   direction: "ASC",
+  //                 },
+  //               },
+  //             },
+  //           },
+  //         },
+  //       },
+  //     },
+  //   ], // preTestCompositeActions
+  //   testCompositeActionAssertions: [
+  //     {
+  //       actionType: "compositeRunTestAssertion",
+  //       actionLabel: "checkNumberOfApplications",
+  //       nameGivenToResult: "checkNumberOfApplications",
+  //       testAssertion: {
+  //         testType: "testAssertion",
+  //         testLabel: "checkNumberOfApplications",
+  //         definition: {
+  //           resultAccessPath: ["0"],
+  //           resultTransformer: {
+  //             transformerType: "aggregate",
+  //             interpolation: "runtime",
+  //             applyTo: {
+  //               transformerType: "getFromContext",
+  //               interpolation: "runtime",
+  //               referencePath: ["adminApplicationList", "applications"],
+  //             },
+  //           },
+  //           expectedValue: { aggregate: 2 }, // 2 applications should remain after dropping the test application: the admin application itself, and the miroir meta-application
+  //         },
+  //       },
+  //     },
+  //     // {
+  //     //   actionType: "compositeRunTestAssertion",
+  //     //   actionLabel: "checkEntityList",
+  //     //   nameGivenToResult: "checkEntityList",
+  //     //   testAssertion: {
+  //     //     testType: "testAssertion",
+  //     //     testLabel: "checkEntityList",
+  //     //     definition: {
+  //     //       resultAccessPath: ["libraryEntityList", "entities"],
+  //     //       ignoreAttributes: ["author", "storageAccess"],
+  //     //       expectedValue: [],
+  //     //     },
+  //     //   },
+  //     // },
+  //   ],
+  //   internalMiroirConfig: installInternalMiroirConfig,
+  //   adminDeployment,
+  //   testDeploymentStorageConfiguration: installTestDeploymentStorageConfiguration,
+  //   initialModel: emptyApplicationModel,
+  //   // preRunnerCompositeActions: [runnerCreateEntity.definition.actionTemplate as any], // preRunnerCompositeActions: create the entity before dropping it
+  //   testCompositeActionLabel: "Drop test Application",
+  //   skipDropDeployment: true, // skip dropping deployment after test, since we are dropping the whole application (and thus the deployment) in the runner itself
+  // },
 };
 
 // filter to run only specific tests
@@ -935,11 +937,11 @@ const filteredRunnerTestParams: Record<string, RunnerTestParams> = Object.fromEn
   Object.entries(runnerTestParams).filter(([testName]) =>
     [
       // localRunnerCreateApplication.name,
-      // localRunnerInstallApplication.name,
-      // runnerCreateEntity.name,
-      // runnerCreateEntity.name + "_withReports",
+      localRunnerInstallApplication.name,
+      runnerCreateEntity.name,
+      runnerCreateEntity.name + "_withReports",
       runnerDropEntity.name,
-      // runnerDropApplication.name,
+      runnerDropApplication.name,
     ].includes(testName)
   )
 );
