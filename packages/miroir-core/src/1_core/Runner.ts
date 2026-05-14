@@ -53,26 +53,13 @@ export function testBuildPlusRuntimeCompositeActionSuiteForRunner(
           payload: { ...runner.definition.actionTemplate.payload },
         }
       : {
-          // actionType: "compositeActionTemplate",
-          // compositeActionTemplate: 
-          // {
-          //   actionType: "compositeActionSequence",
-          //   actionLabel: runner.defaultLabel,
-          //   endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
-          //   payload: {
-          //     actionSequence: [
-                // {
-                  actionType: "lendDocument",
-                  endpoint: "212f2784-5b68-43b2-8ee0-89b1c6fdd0de",
-                  payload: {
-                    transformerType: "getFromParameters",
-                    interpolation: "build",
-                    referencePath: [runner.name],
-                  } as any, // TODO: fix type!!
-                // },
-          //     ],
-          //   },
-          // },
+          // actionType: "lendDocument",
+          // endpoint: "212f2784-5b68-43b2-8ee0-89b1c6fdd0de",
+          // payload: {
+            transformerType: "getFromParameters",
+            interpolation: "build",
+            referencePath: [runner.name],
+          // } as any, // TODO: fix type!!
         };
 
   if (runner.definition.runnerType === "customRunner") {

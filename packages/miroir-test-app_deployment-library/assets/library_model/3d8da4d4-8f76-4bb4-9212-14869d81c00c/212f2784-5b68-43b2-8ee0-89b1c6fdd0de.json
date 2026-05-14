@@ -207,13 +207,13 @@
           "actionImplementationType": "compositeActionTemplate",
           "definition": {
             "actionType": "compositeActionSequence",
-            "actionLabel": "lendDocumentImplementation",
+            "actionLabel": "returnDocumentImplementation",
             "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "payload": {
               "actionSequence": [
                 {
                   "actionType": "createInstance",
-                  "actionLabel": "lendDocument_createInstance_LendingHistoryItem",
+                  "actionLabel": "returnDocument_createInstance_LendingHistoryItem",
                   "endpoint": "ed520de4-55a9-4550-ac50-b1b713b72a89",
                   "payload": {
                     "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
@@ -248,6 +248,13 @@
                             "referencePath": [
                               "payload",
                               "note"
+                            ]
+                          },
+                          "startDate": {
+                            "transformerType": "getFromParameters",
+                            "referencePath": [
+                              "payload",
+                              "endDate"
                             ]
                           },
                           "endDate": {

@@ -56,7 +56,11 @@ import {
   type RunnerTestParams,
 } from "./RunnerIntegTestTools";
 
-import {libraryLendBookRunnerTest, libraryTestIdentifiers} from "./Runner_Library.ts";
+import {
+  libraryLendBookRunnerTest,
+  libraryReturnBookRunnerTest,
+  libraryTestIdentifiers
+} from "./Runner_Library.ts";
 // ################################################################################################
 const pageLabel = "Runner_Miroir.integ.test";
 
@@ -197,6 +201,7 @@ const localRunnerInstallApplication = runnerDeployApplication as Runner;
   
 const runnerTestParams: Record<string, RunnerTestParams> = {
   ["libraryLendBookRunnerTest"]: libraryLendBookRunnerTest,
+  ["libraryReturnBookRunnerTest"]: libraryReturnBookRunnerTest,
   // [localRunnerCreateApplication.name]: {
   //   pageLabel,
   //   runner: localRunnerCreateApplication as Runner,
@@ -941,6 +946,7 @@ const filteredRunnerTestParams: Record<string, RunnerTestParams> = Object.fromEn
   Object.entries(runnerTestParams).filter(([testName]) =>
     [
       "libraryLendBookRunnerTest",
+      "libraryReturnBookRunnerTest",
       // // localRunnerCreateApplication.name,
       // localRunnerInstallApplication.name,
       // runnerCreateEntity.name,
