@@ -12,7 +12,7 @@ import {
   LoggerInterface,
   MiroirLoggerFactory,
   MlSchema,
-  // defaultLibraryAppModelDEFUNCT,
+  // defaultLibraryAppModel,
   defaultMiroirMetaModel,
   defaultSelfApplicationDeploymentMap,
   // getDefaultLibraryModelEnvironmentDEFUNCT,
@@ -373,7 +373,7 @@ export const mcpRequestHandlers_EntityEndpoint: McpRequestHandlers = {
   miroir_loadNewInstancesInLocalCache: mcpToolEntry(instanceEndpointV1 as any as EndpointDefinition, "loadNewInstancesInLocalCache"),
 };
 
-const defaultLibraryAppModelDEFUNCT = getDefaultLibraryModelEnvironmentDEFUNCT(
+const defaultLibraryAppModel = getDefaultLibraryModelEnvironmentDEFUNCT(
   miroirFundamentalJzodSchema as any,
   defaultMiroirMetaModel,
   instanceEndpointV1 as any as EndpointDefinition,
@@ -382,7 +382,7 @@ const defaultLibraryAppModelDEFUNCT = getDefaultLibraryModelEnvironmentDEFUNCT(
     [selfApplicationLibrary.uuid]: deployment_Library_DO_NO_USE.uuid
   } as ApplicationDeploymentMap,
 )
-export const mcpRequestHandlers_Library_lendingEndpoint: McpRequestHandlers = defaultLibraryAppModelDEFUNCT.currentModel.endpoints
+export const mcpRequestHandlers_Library_lendingEndpoint: McpRequestHandlers = defaultLibraryAppModel.currentModel.endpoints
   .filter((endpoint) => endpoint.uuid === "212f2784-5b68-43b2-8ee0-89b1c6fdd0de") // lendingEndpoint UUID
   .reduce((acc, endpoint) => {
     const createInstanceHandler = mcpToolEntry(endpoint as EndpointDefinition, "lendDocument");

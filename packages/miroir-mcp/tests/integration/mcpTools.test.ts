@@ -3,7 +3,7 @@ import { beforeAll, beforeEach, describe, expect, it } from "vitest";
 
 import {
   ApplicationDeploymentMap,
-  // defaultLibraryAppModelDEFUNCT,
+  // defaultLibraryAppModel,
   defaultMiroirMetaModel,
   defaultMiroirModelEnvironment,
   DomainControllerInterface,
@@ -266,7 +266,8 @@ describe("MCP Tools Integration Tests", () => {
 
       const openStoreAction: StoreOrBundleAction = {
         actionType: "storeManagementAction_openStore",
-        actionLabel: `Open stores for ${deploymentUuid}`,        endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
+        actionLabel: `Open stores for ${deploymentUuid}`,
+        endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
         payload: {
           application: Object.keys(applicationDeploymentMap).find(
             (appUuid) => applicationDeploymentMap[appUuid] === deploymentUuid
@@ -310,7 +311,7 @@ describe("MCP Tools Integration Tests", () => {
         applicationModelBranch: selfApplicationModelBranchLibraryMasterBranch,
         applicationVersion: selfApplicationVersionLibraryInitialVersion,
       },
-      libraryEntitiesAndInstancesWithoutBook3,
+      defaultLibraryAppModelthoutBook3,
       defaultLibraryAppModelDEFUNCT,
     );
     const beforeEachResult = await domainController.handleCompositeAction(
@@ -326,7 +327,8 @@ describe("MCP Tools Integration Tests", () => {
     const refreshLibrary = await domainController.handleAction(
       {
         actionType: "rollback",
-        actionLabel: "Refresh Library Local Cache",        endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+        actionLabel: "Refresh Library Local Cache",
+        endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
         payload: {
           application: selfApplicationLibrary.uuid,
         },

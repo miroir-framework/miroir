@@ -41,17 +41,81 @@ export function testBuildPlusRuntimeCompositeActionSuiteForRunner(
   skipCreateDeployment?: boolean,
   skipDropDeployment?: boolean,
 ): TestCompositeActionParams {
-  if (runner.definition.runnerType !== "customRunner") {
-    throw new Error(
-      "Runner_CreateEntity.integ.test: testRunnerActions only supports customRunner type",
-    );
-  }
-  const actionTemplateWithoutTemplates = {
-    ...runner.definition.actionTemplate,
-    payload: { ...runner.definition.actionTemplate.payload },
-  };
-  delete (actionTemplateWithoutTemplates as any).payload.templates;
+  // if (runner.definition.runnerType !== "customRunner") {
+  //   throw new Error(
+  //     "Runner_CreateEntity.integ.test: testRunnerActions only supports customRunner type",
+  //   );
+  // }
+  const actionTemplateWithoutTemplates =
+    runner.definition.runnerType === "customRunner"
+      ? {
+          ...runner.definition.actionTemplate,
+          payload: { ...runner.definition.actionTemplate.payload },
+        }
+      : {
+          // actionType: "compositeActionTemplate",
+          // compositeActionTemplate: 
+          // {
+          //   actionType: "compositeActionSequence",
+          //   actionLabel: runner.defaultLabel,
+          //   endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+          //   payload: {
+          //     actionSequence: [
+                // {
+                  actionType: "lendDocument",
+                  endpoint: "212f2784-5b68-43b2-8ee0-89b1c6fdd0de",
+                  payload: {
+                    transformerType: "getFromParameters",
+                    interpolation: "build",
+                    referencePath: [runner.name],
+                  } as any, // TODO: fix type!!
+                // },
+          //     ],
+          //   },
+          // },
+        };
 
+  if (runner.definition.runnerType === "customRunner") {
+    delete (actionTemplateWithoutTemplates as any).payload.templates;
+  }
+
+  console.log(
+    "testBuildPlusRuntimeCompositeActionSuiteForRunner called with",
+    "pageLabel",
+    pageLabel,
+    "actionTemplateWithoutTemplates",
+    JSON.stringify(actionTemplateWithoutTemplates, null, 2),
+    // "runner",
+    // runner,
+    // "testApplicationUuid",
+    // testApplicationUuid,
+    // "testApplicationDeploymentUuid",
+    // testApplicationDeploymentUuid,
+    // "testApplicationName",
+    // testApplicationName,
+    // "testParams",
+    // testParams,
+    // "preTestCompositeActions",
+    // preTestCompositeActions,
+    // "testCompositeActionAssertions",
+    // testCompositeActionAssertions,
+    // "internalMiroirConfig",
+    // internalMiroirConfig,
+    // "adminDeployment",
+    // adminDeployment,
+    // "testDeploymentStorageConfiguration",
+    // testDeploymentStorageConfiguration,
+    // "initialModel",
+    // initialModel,
+    // "preRunnerCompositeActions",
+    // preRunnerCompositeActions,
+    // "testCompositeActionLabel",
+    // testCompositeActionLabel,
+    // "skipCreateDeployment",
+    // skipCreateDeployment,
+    // "skipDropDeployment",
+    // skipDropDeployment,
+  );
   const testActions: TestCompositeActionParams = {
     testActionType: "testBuildPlusRuntimeCompositeActionSuite",
     testActionLabel: pageLabel,
@@ -72,50 +136,52 @@ export function testBuildPlusRuntimeCompositeActionSuiteForRunner(
       beforeEach: skipCreateDeployment
         ? undefined
         : resetAndinitializeDeploymentCompositeAction(
-        testApplicationUuid,
-        testApplicationDeploymentUuid,
-        {
-          dataStoreType: "app", // TODO: comparison between deployment and selfAdminConfigurationDeployment
-          metaModel: defaultMiroirMetaModel,
-          selfApplication: {
-            uuid: testApplicationUuid,
-            parentName: "SelfApplication",
-            parentUuid: "a659d350-dd97-4da9-91de-524fa01745dc",
-            name: testApplicationName,
-            defaultLabel: `The ${testApplicationName} selfApplication.`,
-            description: `The model and data of the ${testApplicationName} selfApplication.`,
-            homePageUrl: `/report/${testApplicationUuid}/${testApplicationDeploymentUuid}/data/9c0cdb97-9537-4ee2-8053-a6ece3e0afe8/xxxxx`,
-          },
-          applicationModelBranch: {
-            uuid: "00000000-0000-0000-0000-000000000001",
-            parentName: "ApplicationModelBranch",
-            parentUuid: "a659d350-dd97-4da9-91de-524fa01745dc",
-            conceptLevel: "Model",
-            name: "master",
-            defaultLabel: "Master branch of the application model.",
-            description: "The master branch of the application model.",
-            selfApplication: testApplicationUuid,
-          } as ApplicationModelBranch,
-          applicationVersion: {
-            uuid: "00000000-0000-0000-0000-000000000001",
-            parentName: "ApplicationVersion",
-            parentUuid: "a659d350-dd97-4da9-91de-524fa01745dc",
-          } as ApplicationVersion,
-          // applicationModelBranch: selfApplicationModelBranchLibraryMasterBranch,
-          // applicationVersion: selfApplicationVersionLibraryInitialVersion,
-        },
-        [], // applicationEntitiesDefinitionAndInstances
-        initialModel,
-        [
-          // entityPublisher.uuid
-        ],
-      ),
+            testApplicationUuid,
+            testApplicationDeploymentUuid,
+            {
+              dataStoreType: "app", // TODO: comparison between deployment and selfAdminConfigurationDeployment
+              metaModel: defaultMiroirMetaModel,
+              selfApplication: {
+                uuid: testApplicationUuid,
+                parentName: "SelfApplication",
+                parentUuid: "a659d350-dd97-4da9-91de-524fa01745dc",
+                name: testApplicationName,
+                defaultLabel: `The ${testApplicationName} selfApplication.`,
+                description: `The model and data of the ${testApplicationName} selfApplication.`,
+                homePageUrl: `/report/${testApplicationUuid}/${testApplicationDeploymentUuid}/data/9c0cdb97-9537-4ee2-8053-a6ece3e0afe8/xxxxx`,
+              },
+              applicationModelBranch: {
+                uuid: "00000000-0000-0000-0000-000000000001",
+                parentName: "ApplicationModelBranch",
+                parentUuid: "a659d350-dd97-4da9-91de-524fa01745dc",
+                conceptLevel: "Model",
+                name: "master",
+                defaultLabel: "Master branch of the application model.",
+                description: "The master branch of the application model.",
+                selfApplication: testApplicationUuid,
+              } as ApplicationModelBranch,
+              applicationVersion: {
+                uuid: "00000000-0000-0000-0000-000000000001",
+                parentName: "ApplicationVersion",
+                parentUuid: "a659d350-dd97-4da9-91de-524fa01745dc",
+              } as ApplicationVersion,
+              // applicationModelBranch: selfApplicationModelBranchLibraryMasterBranch,
+              // applicationVersion: selfApplicationVersionLibraryInitialVersion,
+            },
+            [], // applicationEntitiesDefinitionAndInstances
+            initialModel,
+            // [
+            //   // entityPublisher.uuid
+            // ],
+          ),
       afterEach: testUtils_resetApplicationDeployment(testApplicationUuid),
-      afterAll: skipDropDeployment ? undefined : testUtils_deleteApplicationDeployment(
-        internalMiroirConfig,
-        testApplicationUuid,
-        testApplicationDeploymentUuid,
-      ),
+      afterAll: skipDropDeployment
+        ? undefined
+        : testUtils_deleteApplicationDeployment(
+            internalMiroirConfig,
+            testApplicationUuid,
+            testApplicationDeploymentUuid,
+          ),
       testCompositeActions: {
         [testCompositeActionLabel ?? "no_testCompositeActionLabel_given"]: {
           testType: "testBuildPlusRuntimeCompositeAction",
@@ -126,7 +192,8 @@ export function testBuildPlusRuntimeCompositeActionSuiteForRunner(
             actionLabel: testCompositeActionLabel ?? "no_testCompositeActionLabel_given",
             endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             payload: {
-              ...(runner.definition.actionTemplate.payload.templates
+              ...(runner.definition.runnerType === "customRunner" &&
+              runner.definition.actionTemplate.payload.templates
                 ? {
                     templates: runner.definition.actionTemplate.payload.templates,
                   }
@@ -140,16 +207,19 @@ export function testBuildPlusRuntimeCompositeActionSuiteForRunner(
                     application: selfApplicationMiroir.uuid,
                   },
                 },
-                ...(skipCreateDeployment ? [] : [{
-                  actionType: "rollback",
-                  actionLabel: "refreshTestApplicationLocalCache",
-                  endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                  payload: {
-                    application: testApplicationUuid,
-                  },
-                }]),
+                ...(skipCreateDeployment
+                  ? []
+                  : [
+                      {
+                        actionType: "rollback",
+                        actionLabel: "refreshTestApplicationLocalCache",
+                        endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                        payload: {
+                          application: testApplicationUuid,
+                        },
+                      },
+                    ]),
                 ...((preRunnerCompositeActions ?? []) as any[]),
-                // runner.definition.actionTemplate as any,
                 actionTemplateWithoutTemplates as any,
                 {
                   actionType: "commit",

@@ -403,7 +403,8 @@ describe("CLI Commands Integration Tests", () => {
 
       const openStoreAction: StoreOrBundleAction = {
         actionType: "storeManagementAction_openStore",
-        actionLabel: `Open stores for ${deploymentUuid}`,        endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
+        actionLabel: `Open stores for ${deploymentUuid}`,
+        endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
         payload: {
           application: Object.keys(applicationDeploymentMap).find(
             (appUuid) => applicationDeploymentMap[appUuid] === deploymentUuid
@@ -435,7 +436,7 @@ describe("CLI Commands Integration Tests", () => {
     await resetAndInitApplicationDeployment(domainController, applicationDeploymentMap, [
       selfApplicationDeploymentMiroir as Deployment,
     ]);
-
+defaultLibraryAppModel
     const defaultLibraryAppModelDEFUNCT = getDefaultLibraryModelEnvironmentDEFUNCT(
       miroirFundamentalJzodSchema as MlSchema,
       defaultMiroirMetaModel,
@@ -453,7 +454,7 @@ describe("CLI Commands Integration Tests", () => {
         applicationModelBranch: selfApplicationModelBranchLibraryMasterBranch,
         applicationVersion: selfApplicationVersionLibraryInitialVersion,
       },
-      libraryEntitiesAndInstancesWithoutBook3,
+      defaultLibraryAppModelthoutBook3,
       defaultLibraryAppModelDEFUNCT.currentModel as any,
     );
     const beforeEachResult = await domainController.handleCompositeAction(
@@ -469,7 +470,8 @@ describe("CLI Commands Integration Tests", () => {
     const refreshLibrary = await domainController.handleAction(
       {
         actionType: "rollback",
-        actionLabel: "Refresh Library Local Cache",        endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+        actionLabel: "Refresh Library Local Cache",
+        endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
         payload: {
           application: selfApplicationLibrary.uuid,
         },

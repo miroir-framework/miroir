@@ -795,13 +795,16 @@ export async function runTestOrTestSuite(
 ) {
   const fullTestName = testAction.testActionLabel??testAction.testActionType;
   log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ STARTING test:", fullTestName, );
-  // log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ STARTING test:", fullTestName, "testAction", testAction, );
 
   try {
+    const currentModelEnvironment = domainController.currentModelEnvironment(
+      testAction.application,
+      applicationDeploymentMap,
+    );
+
     switch (testAction.testActionType) {
       case 'testBuildPlusRuntimeCompositeActionSuite':
       case "testCompositeActionSuite": {
-        // const newParams = {...testActionParamValues??{}, ...(testAction.testCompositeAction as any)["testActionParams"]??{}};
         const newParams = {
           ...(testActionParamValues ?? {}),
           ...(testAction.testActionType == "testBuildPlusRuntimeCompositeActionSuite"
@@ -821,27 +824,19 @@ export async function runTestOrTestSuite(
           undefined, // parentTrackId
           async () =>
             await domainController.handleTestCompositeActionSuite(
+              testAction.application,
               testAction.testCompositeAction as any, // TODO: remove cast
               applicationDeploymentMap,
-              domainController.currentModelEnvironment(
-                testAction.application,
-                applicationDeploymentMap,
-              ),
+              currentModelEnvironment,
               newParams
             )
         ); 
-        // const queryResult: Action2ReturnType = await domainController.handleTestCompositeActionSuite(
-        //   testAction.testCompositeAction as any, // TODO: remove cast
-        //   newParams,
-        //   domainController.currentModel(testAction.deploymentUuid)
-        // );
         log.info(
           "received results for test testCompositeActionSuite",
           fullTestName,
           ": queryResult=",
           JSON.stringify(queryResult, null, 2),
           "TestContextResults",
-          // JSON.stringify(miroirActivityTracker.getTestAssertionsResults([{testSuite: testAction.testActionLabel}]), null, 2)
           JSON.stringify(miroirActivityTracker.getTestAssertionsResults([]), null, 2)
         );
         // log.info(
@@ -861,11 +856,7 @@ export async function runTestOrTestSuite(
             await domainController.handleTestCompositeAction(
               testAction.testCompositeAction as any, // TODO: remove cast
               applicationDeploymentMap,
-              domainController.currentModelEnvironment(
-                testAction.application,
-                applicationDeploymentMap,
-                // testAction.deploymentUuid
-              ),
+              currentModelEnvironment,
               {},
             )
         );
@@ -882,9 +873,7 @@ export async function runTestOrTestSuite(
         );
         return queryResult;
       }
-      // case "testRuntimeCompositeActionTemplateSuite": {
       case "testCompositeActionTemplateSuite": {
-        // throw new Error("testCompositeActionTemplateSuite not implemented yet!");
         log.info("testCompositeActionTemplateSuite", fullTestName, "running for testActionParamValues", testActionParamValues);
         const queryResult: Action2ReturnType = await miroirActivityTracker.trackTest(
           fullTestName,
@@ -892,19 +881,10 @@ export async function runTestOrTestSuite(
           async() => await domainController.handleTestCompositeActionTemplateSuite(
             testAction.testCompositeActionSuite,
             applicationDeploymentMap,
-            domainController.currentModelEnvironment(
-              testAction.application,
-              applicationDeploymentMap,
-              // testAction.deploymentUuid
-            ),
+            currentModelEnvironment,
             testActionParamValues??{},
           )
         )
-        // const queryResult: Action2ReturnType = await domainController.handleTestCompositeActionTemplateSuite(
-        //   testAction.testCompositeActionSuite,
-        //   testActionParamValues??{},
-        //   domainController.currentModel(testAction.deploymentUuid)
-        // );
         log.info(
           "received results for test testCompositeActionSuite",
           fullTestName,

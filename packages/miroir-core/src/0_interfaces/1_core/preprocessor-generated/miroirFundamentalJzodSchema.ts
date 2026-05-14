@@ -7104,6 +7104,19 @@ export const miroirFundamentalJzodSchema = {
           "testLabel": {
             "type": "string"
           },
+          "testApplication": {
+            "type": "uuid",
+            "tag": {
+              "value": {
+                "canBeTemplate": true,
+                "defaultLabel": "Test Application",
+                "foreignKeyParams": {
+                  "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+                  "targetEntityOrderInstancesBy": "name"
+                }
+              }
+            }
+          },
           "beforeAll": {
             "type": "schemaReference",
             "optional": true,
@@ -7641,6 +7654,19 @@ export const miroirFundamentalJzodSchema = {
                       },
                       "testLabel": {
                         "type": "string"
+                      },
+                      "testApplication": {
+                        "type": "uuid",
+                        "tag": {
+                          "value": {
+                            "canBeTemplate": true,
+                            "defaultLabel": "Test Application",
+                            "foreignKeyParams": {
+                              "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+                              "targetEntityOrderInstancesBy": "name"
+                            }
+                          }
+                        }
                       },
                       "beforeAll": {
                         "type": "schemaReference",

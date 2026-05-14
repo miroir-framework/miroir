@@ -114,6 +114,7 @@ export interface DomainControllerInterface {
     actionParamValues: Record<string, any>
   ): Promise<Action2VoidReturnType>;
   handleTestCompositeActionSuite(
+    testApplication: Uuid,
     testAction: TestCompositeActionSuite,
     applicationDeploymentMap: ApplicationDeploymentMap,
     currentModel: MiroirModelEnvironment,

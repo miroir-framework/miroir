@@ -40,6 +40,10 @@ import {
   adminApplication_Admin,
   adminApplication_Miroir
 } from "miroir-test-app_deployment-admin";
+import {
+  lendingEndpoint,
+  selfApplicationLibrary
+} from "miroir-test-app_deployment-library";
 import { noValue } from "./Instance";
 
 export const defaultDeployments: Deployment[] = [
@@ -89,6 +93,7 @@ export const defaultEndpointApplicationMap: EndpointApplicationMap = {
   [queryEndpointVersionV1.uuid]: selfApplicationMiroir.uuid,
   [persistenceEndpointVersionV1.uuid]: selfApplicationMiroir.uuid,
   [menuEndpointV1.uuid]: selfApplicationMiroir.uuid,
+  [lendingEndpoint.uuid]: selfApplicationLibrary.uuid,
 };
 
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -286,11 +291,21 @@ export function resetAndinitializeDeploymentCompositeAction(
   filterEntities?: Uuid[],
 ): CompositeActionSequence {
 
-  const entities: EntityDefinitionCouple[] = metaModelFilterEntities(
-    appMetaModel,
-    filterEntities,
-  ).entities.map((entity) => {
-    const entityDefinition = appMetaModel.entityDefinitions.find(
+  const filteredEntitiesMetaModel = metaModelFilterEntities(appMetaModel, filterEntities);
+
+  log.info(
+    "resetAndinitializeDeploymentCompositeAction for application=",
+    applicationUuid,
+    "deploymentUuid=",
+    deploymentUuid,
+    "filteredEntities to create=",
+    filteredEntitiesMetaModel.entities.map((e) => ({ name: e.name, uuid: e.uuid })),
+    "filteredEntityDefinitions=",
+    filteredEntitiesMetaModel.entityDefinitions.map((ed) => ({ name: ed.name, uuid: ed.uuid, entityUuid: ed.entityUuid })),
+  );
+
+  const entities: EntityDefinitionCouple[] = filteredEntitiesMetaModel.entities.map((entity) => {
+    const entityDefinition = filteredEntitiesMetaModel.entityDefinitions.find(
       (ed) => ed.entityUuid === entity.uuid,
     );
     if (!entityDefinition) {
@@ -305,8 +320,19 @@ export function resetAndinitializeDeploymentCompositeAction(
   });
 
   log.info(
-    "createDeploymentCompositeAction deploymentConfiguration",
-    deploymentUuid
+    "resetAndinitializeDeploymentCompositeAction for application=",
+    applicationUuid,
+    "deploymentUuid=",
+    deploymentUuid,
+    "entities to create=",
+    entities.map((e) => ({ name: e.entity.name, uuid: e.entity.uuid })),
+    "appMetaModel",
+    "entities=",
+    appMetaModel.entities.map((ed) => ({ name: ed.name, uuid: ed.uuid })),
+    "entityDefinitions=",
+    appMetaModel.entityDefinitions.map((ed) => ({ name: ed.name, uuid: ed.uuid, entityUuid: ed.entityUuid })),
+    // "initApplicationParameters=",
+    // initApplicationParameters,
   );
   return {
     actionType: "compositeActionSequence",
@@ -365,7 +391,18 @@ export function resetAndinitializeDeploymentCompositeAction(
           payload: {
             application: applicationUuid,
             applicationSection: "model" as const,
-            objects: appMetaModel.menus as EntityInstance[],
+            objects: [
+              ...appMetaModel.menus as EntityInstance[],
+              ...appMetaModel.reports as EntityInstance[],
+              ...appMetaModel.storedQueries as EntityInstance[],
+              ...appMetaModel.runners as EntityInstance[],
+              ...appMetaModel.themes as EntityInstance[],
+              ...appMetaModel.jzodSchemas as EntityInstance[],
+              ...appMetaModel.endpoints as EntityInstance[],
+              ...appMetaModel.applicationVersionCrossEntityDefinition as EntityInstance[],
+              ...appMetaModel.applicationVersions as EntityInstance[],
+              ...appMetaModel.applications as EntityInstance[],
+            ],
           },
         },
         {

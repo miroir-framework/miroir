@@ -1166,7 +1166,7 @@ const testTemplateSuitesDEFUNCT: Record<string, TestCompositeActionParams> = {
         testAdminConfigurationDeploymentUuid,
         initParametersForTest,
         // libraryEntitesAndInstances
-        []
+        // []
       ),
       // afterEach: testUtils_resetApplicationDeployment(
       //   miroirConfig,

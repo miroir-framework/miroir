@@ -410,7 +410,7 @@ export async function extractApplicationModel(
   applicationUuid: Uuid,
   applicationName: string,
   // persistenceStoreControllerManager: PersistenceStoreControllerManager
-) {
+): Promise<MetaModel> {
   try {
     // Read all model elements from the store
     console.log("\n7. Reading model elements from filesystem store...");

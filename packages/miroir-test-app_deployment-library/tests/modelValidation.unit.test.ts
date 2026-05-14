@@ -39,7 +39,7 @@ import entityDefinitionLendingHistoryItem from "../assets/library_model/54b9c72f
 import deployment_Library_DO_NO_USE from "../assets/deployment/f714bb2f-a12d-4e71-a03b-74dcedea6eb4.json";
 
 // Library model (built from static assets)
-import { defaultLibraryAppModelDEFUNCT } from "../src/Library";
+import { defaultLibraryAppModel } from "../src/Library";
 
 // ================================================================================================
 // Model environments
@@ -54,7 +54,7 @@ const libraryModelEnvironment: MiroirModelEnvironment = {
   miroirMetaModel: defaultMiroirMetaModel,
   endpointsByUuid: {},
   deploymentUuid: deployment_Library_DO_NO_USE.uuid,
-  currentModel: defaultLibraryAppModelDEFUNCT,
+  currentModel: defaultLibraryAppModel,
 };
 
 // ================================================================================================
