@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 
 import type { EntityDefinition } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
-import { getModelUpdate } from "../../src/1_core/ModelUpdate.js";
+import { getModelUpdate } from "../../src/1_core/model/ModelUpdate.js";
 import { selfApplicationLibrary } from "miroir-test-app_deployment-library";
 
 const entityDefinitionBook: EntityDefinition = {

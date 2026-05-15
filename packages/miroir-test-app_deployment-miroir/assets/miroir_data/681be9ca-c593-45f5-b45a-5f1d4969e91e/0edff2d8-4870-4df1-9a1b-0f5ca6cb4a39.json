@@ -1,0 +1,133 @@
+{
+  "uuid": "0edff2d8-4870-4df1-9a1b-0f5ca6cb4a39",
+  "parentName": "TransformerTest",
+  "parentUuid": "681be9ca-c593-45f5-b45a-5f1d4969e91e",
+  "name": "metaModelTransformers",
+  "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+  "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
+  "description": "The Test for the Miroir MetaModel Transformers",
+  "definition": {
+    "transformerTestType": "transformerTestSuite",
+    "transformerTestLabel": "metaModelTransformers",
+    "transformerTests": [
+      {
+        "transformerTestType": "transformerTestSuite",
+        "transformerTestLabel": "entityDefinitionTransformerTests",
+        "transformerTests": [
+          {
+            "transformerTestType": "transformerTest",
+            "transformerTestLabel": "resolve basic build transformer return value for empty Array",
+            "transformerName": "entityDefinition_extractAttributes",
+            "runTestStep": "build",
+            "transformer": {
+              "transformerType": "entityDefinition_extractAttributes",
+              "entityDefinition": {
+                "uuid": "8a4b9e9f-ae19-489f-977f-f3062107e066",
+                "parentName": "EntityDefinition",
+                "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+                "parentDefinitionVersionUuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
+                "name": "User",
+                "entityUuid": "ca794e28-b2dc-45b3-8137-00151557eea8",
+                "mlSchema": {
+                  "type": "object",
+                  "extend": {
+                    "type": "schemaReference",
+                    "definition": {
+                      "eager": true,
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "entityDefinitionRoot"
+                    }
+                  },
+                  "definition": {
+                    "name": {
+                      "tag": {
+                        "value": {
+                          "defaultLabel": "Name",
+                          "id": 5
+                        }
+                      },
+                      "type": "string"
+                    },
+                    "firstName": {
+                      "tag": {
+                        "value": {
+                          "defaultLabel": "First Name",
+                          "id": 6
+                        }
+                      },
+                      "type": "string"
+                    },
+                    "lastName": {
+                      "tag": {
+                        "value": {
+                          "defaultLabel": "Last Name",
+                          "id": 7
+                        }
+                      },
+                      "type": "string"
+                    },
+                    "street": {
+                      "tag": {
+                        "value": {
+                          "defaultLabel": "Street Adress",
+                          "id": 8
+                        }
+                      },
+                      "type": "string"
+                    },
+                    "postalCode": {
+                      "tag": {
+                        "value": {
+                          "defaultLabel": "Postal Code",
+                          "id": 9
+                        }
+                      },
+                      "type": "string"
+                    },
+                    "city": {
+                      "tag": {
+                        "value": {
+                          "defaultLabel": "City",
+                          "id": 10
+                        }
+                      },
+                      "type": "string"
+                    },
+                    "state": {
+                      "tag": {
+                        "value": {
+                          "defaultLabel": "State",
+                          "id": 11
+                        }
+                      },
+                      "type": "string"
+                    },
+                    "country": {
+                      "tag": {
+                        "value": {
+                          "defaultLabel": "Country",
+                          "foreignKeyParams": {
+                            "targetEntity": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+                            "targetEntityOrderInstancesBy": "name"
+                          },
+                          "id": 12
+                        }
+                      },
+                      "type": "uuid",
+                      "optional": true
+                    }
+                  }
+                }
+              },
+              "interpolation": "build",
+              "value": []
+            },
+            "transformerParams": {},
+            "expectedValue": [
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -35,13 +35,15 @@ import {
   type CoreTransformerForBuildPlusRuntime_generateUuid,
   type CoreTransformerForBuildPlusRuntime_constantAsExtractor,
   type CoreTransformerForBuildPlusRuntime_getFromParameters,
-  type CoreTransformerForBuildPlusRuntime_defaultValueForMLSchema,
+  // type CoreTransformerForBuildPlusRuntime_defaultValueForMLSchema,
   type TransformerForBuildPlusRuntime_getActiveDeployment,
   type TransformerForBuildPlusRuntime_duplicateApplicationModel,
   type MetaModel,
   type Menu,
   type SelfApplication,
   type ReportLink,
+  type MlsTransformerForBuildPlusRuntime_resolveConditionalSchema,
+  type MlsTransformerForBuildPlusRuntime_defaultValueForMLSchema,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import {
   defaultTransformerInput,
@@ -113,6 +115,7 @@ import {
   transformer_ansiColumnsToJzodSchema,
   transformer_defaultValueForMLSchema,
   transformer_duplicateApplicationModel,
+  metaModelTransformers,
 } from "./Transformers";
 import type { MiroirActivityTrackerInterface } from "../0_interfaces/3_controllers/MiroirActivityTrackerInterface";
 import { defaultAdminApplicationDeploymentMapNOTGOOD, type ApplicationDeploymentMap } from "../1_core/Deployment";
@@ -645,7 +648,8 @@ export function defaultValueForMLSchemaTransformer(
   step: Step,
   transformerPath: string[],
   label: string | undefined,
-  transformer: CoreTransformerForBuildPlusRuntime_defaultValueForMLSchema,
+  transformer: MlsTransformerForBuildPlusRuntime_defaultValueForMLSchema,
+  // transformer: CoreTransformerForBuildPlusRuntime_defaultValueForMLSchema,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
   modelEnvironment: MiroirModelEnvironment,
   transformerParams: Record<string, any>,
@@ -702,6 +706,8 @@ const inMemoryTransformerImplementations: Record<string, ITransformerHandler<any
   // 
   handleTransformer_getActiveDeployment,
   handleTransformer_duplicateApplicationModel,
+  // 
+
   //
   handleCountTransformer,
   handleListPickElementTransformer,
@@ -780,6 +786,13 @@ export const applicationTransformerDefinitions: Record<string, TransformerDefini
   // MLS
   ...Object.fromEntries(
     Object.entries(mlsTransformers).map(([key, value]) => [
+      key.replace("transformer_", ""),
+      value as TransformerDefinition,
+    ])
+  ),
+  // meta model
+  ...Object.fromEntries(
+    Object.entries(metaModelTransformers).map(([key, value]) => [
       key.replace("transformer_", ""),
       value as TransformerDefinition,
     ])
@@ -3814,14 +3827,14 @@ export function transformer_extended_apply(
           let preResult;
           const foundApplicationTransformer =
             applicationTransformerDefinitions[(transformer as any).transformerType];
-          // log.info(
-          //   "transformer_extended_apply foundApplicationTransformer",
-          //   foundApplicationTransformer,
-          //   "for transformer",
-          //   JSON.stringify(transformer, null, 2),
-          //   "applicationTransformerDefinitions",
-          //   Object.keys(applicationTransformerDefinitions)
-          // );
+          log.info(
+            "transformer_extended_apply foundApplicationTransformer",
+            foundApplicationTransformer,
+            "for transformer",
+            JSON.stringify(transformer, null, 2),
+            "applicationTransformerDefinitions",
+            Object.keys(applicationTransformerDefinitions)
+          );
           if (!foundApplicationTransformer) {
             log.error(
               "transformer_extended_apply failed for",
@@ -3839,15 +3852,15 @@ export function transformer_extended_apply(
               queryParameters: JSON.stringify(transformer),
             });
           }
-          // log.info(
-          //   "transformer_extended_apply foundApplicationTransformer",
-          //   JSON.stringify(foundApplicationTransformer, null, 2)
-          // );
+          log.info(
+            "transformer_extended_apply foundApplicationTransformer",
+            JSON.stringify(foundApplicationTransformer, null, 2)
+          );
           // log.info(
           //   "transformer_extended_apply foundApplicationTransformer.transformerImplementation",
           //   JSON.stringify(foundApplicationTransformer.transformerImplementation, null, 2)
           // );
-          if (!foundApplicationTransformer.transformerImplementation) {
+          if (!foundApplicationTransformer?.transformerImplementation) {
             log.error(
               "transformer_extended_apply failed for",
               label,

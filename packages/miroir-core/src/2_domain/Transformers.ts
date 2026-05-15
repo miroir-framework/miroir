@@ -28,15 +28,18 @@ import {
   transformer_getObjectValues_json,
   transformer_getFromParameters_json,
   transformer_getUniqueValues_json,
-  transformer_defaultValueForMLSchema_json,
-  transformer_resolveConditionalSchema_json,
-  transformer_resolveSchemaReferenceInContext_json,
-  transformer_unfoldSchemaOnce_json,
-  transformer_jzodTypeCheck_json,
   transformer_getActiveDeployment_json,
   transformer_duplicateApplicationModel_json,
   transformer_ansiColumnsToJzodSchema_json,
   transformer_concatLists_json,
+  // MLS
+  transformer_defaultValueForMLSchema_json,
+  transformer_jzodTypeCheck_json,
+  transformer_resolveConditionalSchema_json,
+  transformer_resolveSchemaReferenceInContext_json,
+  transformer_unfoldSchemaOnce_json,
+  // meta model
+  transformer_metaModel_entityDefinition_extractAttributes_json,
 } from "miroir-test-app_deployment-miroir";
 
 // ################################################################################################
@@ -82,6 +85,8 @@ export const transformer_getActiveDeployment: TransformerDefinition = transforme
 export const transformer_duplicateApplicationModel: TransformerDefinition = transformer_duplicateApplicationModel_json as TransformerDefinition;
 export const transformer_ansiColumnsToJzodSchema: TransformerDefinition = transformer_ansiColumnsToJzodSchema_json as TransformerDefinition;
 export const transformer_concatLists: TransformerDefinition = transformer_concatLists_json as TransformerDefinition;
+// meta model
+export const transformer_entityDefinition_extractAttributes: TransformerDefinition = transformer_metaModel_entityDefinition_extractAttributes_json as TransformerDefinition;
 
 export const adminTransformers: Record<string,TransformerDefinition> = {
   transformer_getActiveDeployment,
@@ -94,12 +99,16 @@ export const spreadsheetTransformers: Record<string,TransformerDefinition> = {
 };
 
 export const mlsTransformers: Record<string,TransformerDefinition> = {
-  // transformer_defaultValueForMLSchema,
   transformer_resolveConditionalSchema,
   transformer_resolveSchemaReferenceInContext,
   transformer_unfoldSchemaOnce,
   transformer_jzodTypeCheck,
   transformer_ansiColumnsToJzodSchema,
+  transformer_defaultValueForMLSchema,
+};
+
+export const metaModelTransformers: Record<string,TransformerDefinition> = {
+  transformer_entityDefinition_extractAttributes,
 };
 
 // export const miroirAdminTransformers: Record<string,TransformerDefinition> = {
@@ -136,13 +145,14 @@ export const miroirCoreTransformers: Record<string,TransformerDefinition> = {
   transformer_concatLists,
   // transformer_constantBigint,
   // MLS
-  transformer_defaultValueForMLSchema,
+  // transformer_defaultValueForMLSchema,
 };
 export const miroirTransformers: Record<string,TransformerDefinition> = {
   ...miroirCoreTransformers,
   ...adminTransformers,
   ...spreadsheetTransformers,
   ...mlsTransformers,
+  ...metaModelTransformers,
   transformer_menu_addItem,
 };
 
@@ -158,14 +168,14 @@ export const coreTransformerForBuildPlusRuntimeNames = Object.keys(miroirCoreTra
 // );
 
 
-const buildPlusRuntimeReferenceMap: Record<string, string> = {
-  transformer: "transformerForBuildPlusRuntime",
-  transformer_returnValue: "transformerForBuildPlusRuntime_returnValue",
-  transformer_createObject: "transformerForBuildPlusRuntime_createObject",
-  transformer_getFromContext: "transformerForBuildPlusRuntime_getFromContext",
-  transformer_accessDynamicPath: "transformerForBuildPlusRuntime_accessDynamicPath",
-  transformer_mustacheStringTemplate: "transformerForBuildPlusRuntime_mustacheStringTemplate", // TODO: rename to transformer_mustacheStringTemplate
-};
+// const buildPlusRuntimeReferenceMap: Record<string, string> = {
+//   transformer: "transformerForBuildPlusRuntime",
+//   transformer_returnValue: "transformerForBuildPlusRuntime_returnValue",
+//   transformer_createObject: "transformerForBuildPlusRuntime_createObject",
+//   transformer_getFromContext: "transformerForBuildPlusRuntime_getFromContext",
+//   transformer_accessDynamicPath: "transformerForBuildPlusRuntime_accessDynamicPath",
+//   transformer_mustacheStringTemplate: "transformerForBuildPlusRuntime_mustacheStringTemplate", // TODO: rename to transformer_mustacheStringTemplate
+// };
 
 const coreBuildPlusRuntimeReferenceMap: Record<string, string> = {
   transformer: "coreTransformerForBuildPlusRuntime",

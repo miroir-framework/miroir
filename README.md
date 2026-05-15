@@ -18,11 +18,11 @@
 Miroir defined as punchlines for hipsters:
 
 - In the beginning, there was JSON!
-- the most bombastic JSON editor around
-- the best curry-howard isomorphism typescript implementation
-- the Domain Specific Language of software creation
-- the Domain Specific Language of Domain Specific Language creation
+- the most uselessly intricate JSON editor around
 - Forget syntax, give me semantics!
+- you too! Go Turing encode yourself!
+- the best curry-howard isomorphism typescript implementation
+- the Domain Specific Language of Domain Specific Language creation
 
  -->
 

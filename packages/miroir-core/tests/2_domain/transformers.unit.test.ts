@@ -10,9 +10,13 @@ import {
 // import {
 //   currentTestSuite,
 // } from "./transformersTests_miroir.data";
-import { transformerTest_miroirCoreTransformers } from "miroir-test-app_deployment-miroir";
+import {
+   transformerTest_miroirCoreTransformers,
+   transformerTest_metaModelTransformers,
+ } from "miroir-test-app_deployment-miroir";
 import type { TransformerTestSuite } from '../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType';
-const transformerTestSuite_miroirTransformers: TransformerTestSuite = transformerTest_miroirCoreTransformers.definition as any;
+// const transformerTestSuite_miroirTransformers: TransformerTestSuite = transformerTest_miroirCoreTransformers.definition as any;
+const transformerTestSuite_miroirTransformers: TransformerTestSuite = transformerTest_metaModelTransformers.definition as any;
 
 type VitestNamespace = typeof vitest;
 

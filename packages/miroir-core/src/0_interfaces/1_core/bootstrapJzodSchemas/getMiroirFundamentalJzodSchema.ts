@@ -803,6 +803,14 @@ export function getMiroirFundamentalJzodSchema(
             ],
           ]),
         ),
+        ...Object.fromEntries(
+          Object.entries(mlsTransformers).map(([key, value]) => [
+            key.replace("transformer_", "mlsTransformerForBuildPlusRuntime_"),
+            miroirCoreTransformersForBuildPlusRuntime[
+              key as keyof typeof miroirCoreTransformersForBuildPlusRuntime
+            ],
+          ]),
+        ),
         coreTransformerForBuildPlusRuntimeWithoutArray: {
           type: "union",
           optInDiscriminator: true,
