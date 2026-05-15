@@ -17,6 +17,7 @@ import {
   type CoreTransformerForBuildPlusRuntime_createObjectFromPairs,
   type CoreTransformerForBuildPlusRuntime_mergeIntoObject,
   type CoreTransformerForBuildPlusRuntime_mapList,
+  type CoreTransformerForBuildPlusRuntime_filterList,
   type CoreTransformerForBuildPlusRuntime_pickFromList,
   type CoreTransformerForBuildPlusRuntime_indexListBy,
   type CoreTransformerForBuildPlusRuntime_listReducerToSpreadObject,
@@ -109,6 +110,7 @@ import {
   transformer_getFromParameters,
   transformer_getUniqueValues,
   transformer_concatLists,
+  transformer_filterList,
   type ResolveBuildTransformersTo,
   type Step,
   transformer_getActiveDeployment,
@@ -745,6 +747,7 @@ const inMemoryTransformerImplementations: Record<string, ITransformerHandler<any
   transformer_jzodTypeCheck: jzodTypeCheckTransformer,
   handleTransformer_ansiColumnsToJzodSchema,
   handleTransformer_concatLists,
+  handleTransformer_filterList,
 };
 
 // ################################################################################################
@@ -782,6 +785,7 @@ export const applicationTransformerDefinitions: Record<string, TransformerDefini
   getUniqueValues: transformer_getUniqueValues,
   ansiColumnsToJzodSchema: transformer_ansiColumnsToJzodSchema,
   concatLists: transformer_concatLists,
+  filterList: transformer_filterList,
   defaultValueForMLSchema: transformer_defaultValueForMLSchema,
   // MLS
   ...Object.fromEntries(
@@ -4531,4 +4535,82 @@ export function handleTransformer_concatLists(
   }
 
   return result;
+}
+
+// ################################################################################################
+export function handleTransformer_filterList(
+  step: Step,
+  transformerPath: string[],
+  label: string | undefined,
+  transformer: CoreTransformerForBuildPlusRuntime_filterList,
+  resolveBuildTransformersTo: ResolveBuildTransformersTo,
+  modelEnvironment: MiroirModelEnvironment,
+  queryParams: Record<string, any>,
+  contextResults?: Record<string, any>,
+  reduxDeploymentsState?: ReduxDeploymentsState | undefined
+): TransformerReturnType<any[]> {
+  const resolvedApplyTo = resolveApplyTo_legacy(
+    transformer as any,
+    step,
+    transformerPath,
+    resolveBuildTransformersTo,
+    modelEnvironment,
+    queryParams,
+    contextResults,
+    label,
+    reduxDeploymentsState
+  );
+  if (resolvedApplyTo instanceof TransformerFailure) {
+    log.error(
+      "handleTransformer_filterList can not apply to failed resolvedReference",
+      resolvedApplyTo
+    );
+    return new TransformerFailure({
+      queryFailure: "FailedTransformer",
+      transformerPath,
+      failureOrigin: ["handleTransformer_filterList"],
+      queryContext: "handleTransformer_filterList can not apply to failed resolvedReference",
+      innerError: resolvedApplyTo,
+    });
+  }
+  if (!Array.isArray(resolvedApplyTo)) {
+    return new TransformerFailure({
+      queryFailure: "FailedTransformer",
+      transformerPath,
+      failureOrigin: ["handleTransformer_filterList"],
+      failureMessage: "filterList: applyTo is not an array, got: " + typeof resolvedApplyTo,
+    });
+  }
+  const resultArray: any[] = [];
+  for (const element of resolvedApplyTo) {
+    const predicateResult = defaultTransformers.transformer_extended_apply(
+      step,
+      transformerPath,
+      (element as any).name ?? "No name for element",
+      transformer.predicate as any,
+      resolveBuildTransformersTo,
+      modelEnvironment,
+      queryParams,
+      {
+        ...contextResults,
+        [transformer.referenceToOuterObject ?? defaultTransformerInput]: element,
+      },
+      reduxDeploymentsState
+    );
+    if (predicateResult instanceof TransformerFailure) {
+      continue;
+    }
+    if (predicateResult === true) {
+      resultArray.push(element);
+    }
+  }
+  const sortByAttribute = transformer.orderBy
+    ? (a: any[]) =>
+        a.sort((a, b) =>
+          a[transformer.orderBy ?? ""].localeCompare(b[transformer.orderBy ?? ""], "en", {
+            sensitivity: "base",
+          })
+        )
+    : (a: any[]) => a;
+  return sortByAttribute(resultArray);
 }

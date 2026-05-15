@@ -1,0 +1,69 @@
+{
+  "uuid": "40e894e5-2f6c-4b75-87f3-3a9dd3c0a65d",
+  "name": "filterList",
+  "defaultLabel": "filterList",
+  "description": "Filters elements of a list by applying a predicate transformer to each item, keeping only items for which the predicate returns true.",
+  "parentUuid": "a557419d-a288-4fb8-8a1e-971c86c113b8",
+  "parentDefinitionVersionUuid": "54a16d69-c1f0-4dd7-aba4-a2cda883586c",
+  "parentName": "TransformerDefinition",
+  "classification": "basic",
+  "transformerInterface": {
+    "inputOutput": {
+      "input": "array",
+      "output": "array"
+    },
+    "transformerParameterSchema": {
+      "transformerType": {
+        "type": "literal",
+        "definition": "filterList"
+      },
+      "transformerDefinition": {
+        "type": "object",
+        "extend": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "transformer_orderBy"
+            }
+          }
+        ],
+        "definition": {
+          "applyTo": {
+            "type": "any",
+            "optional": true,
+            "description": "The list to filter. The actual type is set by the platform depending on interpolation for the transformer."
+          },
+          "referenceToOuterObject": {
+            "type": "string",
+            "optional": true,
+            "description": "If set, each element of the list will be accessible under this name in the predicate context."
+          },
+          "predicate": {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "transformer"
+            },
+            "description": "Transformer that evaluates to boolean for each element; only items for which it returns true are kept."
+          }
+        }
+      }
+    },
+    "transformerResultSchema": {
+      "returns": "mlSchema",
+      "definition": {
+        "type": "array",
+        "definition": {
+          "type": "any"
+        }
+      }
+    }
+  },
+  "transformerImplementation": {
+    "transformerImplementationType": "libraryImplementation",
+    "inMemoryImplementationFunctionName": "handleTransformer_filterList",
+    "sqlImplementationFunctionName": "sqlStringForFilterListTransformer"
+  }
+}

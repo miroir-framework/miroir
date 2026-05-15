@@ -28,6 +28,7 @@ import {
   type CoreTransformerForBuildPlusRuntime_getObjectValues,
   type CoreTransformerForBuildPlusRuntime_getUniqueValues,
   type CoreTransformerForBuildPlusRuntime_concatLists,
+  type CoreTransformerForBuildPlusRuntime_filterList,
   defaultMetaModelEnvironment,
   defaultTransformerInput,
   type CoreTransformerForBuildPlusRuntime_ifThenElse,
@@ -206,6 +207,7 @@ const sqlTransformerImplementations: Record<string, ITransformerHandler<any>> = 
   sqlStringForParameterReferenceTransformer,
   sqlStringForPlusTransformer,
   sqlStringForConcatListsTransformer,
+  sqlStringForFilterListTransformer,
   sqlStringForUniqueTransformer,
 }
 
@@ -639,6 +641,7 @@ function sqlStringForApplyTo(
     | CoreTransformerForBuildPlusRuntime_listReducerToSpreadObject
     | CoreTransformerForBuildPlusRuntime_indexListBy
     | CoreTransformerForBuildPlusRuntime_getUniqueValues
+    | CoreTransformerForBuildPlusRuntime_filterList
     // | TransformerForBuildPlusRuntime_innerFullObjectTemplate
   ,
   preparedStatementParametersIndex: number,
@@ -1232,13 +1235,13 @@ function sqlStringForBoolExprTransformer(
     right = rightResult;
   }
 
-  // For standard binary comparison operators, both sides must be scalar
+  // For standard binary comparison operators, both scalar and json (JSONB) types are allowed
   const isBinaryComparisonOperator = jsOperatorToSqlOperatorMap[op] !== undefined;
-  if (isBinaryComparisonOperator && right && (left.type !== "scalar" || right.type !== "scalar")) {
+  if (isBinaryComparisonOperator && right && (left.type === "table" || left.type === "json_array" || right.type === "table" || right.type === "json_array")) {
     return new Domain2ElementFailed({
       queryFailure: "QueryNotExecutable",
       query: actionRuntimeTransformer as any,
-      failureMessage: "sqlStringForBoolExprTransformer boolExpr left or right is not scalar for operator " + op,
+      failureMessage: "sqlStringForBoolExprTransformer boolExpr left or right is table/json_array for operator " + op,
     });
   }
 
@@ -1265,9 +1268,18 @@ function sqlStringForBoolExprTransformer(
       conditionSql =
         `NOT ${sqlIsFalsy(leftExpr, left.type)} OR NOT ${sqlIsFalsy(rightExpr, right?.type ?? "scalar")}`;
       break;
-    default:
-      conditionSql = `${leftExpr} ${jsOperatorToSqlOperatorMap[op]} ${rightExpr}`;
+    default: {
+      // When comparing JSON (JSONB) to scalar, cast scalar to JSONB via to_jsonb()
+      let actualLeftExpr = leftExpr;
+      let actualRightExpr = rightExpr;
+      if (left.type === "json" && right && right.type === "scalar") {
+        actualRightExpr = `to_jsonb(${rightExpr})`;
+      } else if (right && right.type === "json" && left.type === "scalar") {
+        actualLeftExpr = `to_jsonb(${leftExpr})`;
+      }
+      conditionSql = `${actualLeftExpr} ${jsOperatorToSqlOperatorMap[op]} ${actualRightExpr}`;
       break;
+    }
   }
 
   const columnName = withClauseColumnName ?? "boolExpr";
@@ -2432,6 +2444,143 @@ function sqlStringForMapperListToListTransformer(
       break;
     }
   }
+}
+
+// ################################################################################################
+function sqlStringForFilterListTransformer(
+  actionRuntimeTransformer: CoreTransformerForBuildPlusRuntime_filterList,
+  preparedStatementParametersCount: number,
+  indentLevel: number,
+  queryParams: Record<string, any>,
+  definedContextEntries: Record<string, SqlContextEntry>,
+  useAccessPathForContextReference: boolean,
+  topLevelTransformer: boolean,
+  withClauseColumnName?: string,
+  iterateOn?: string,
+): Domain2QueryReturnType<SqlStringForTransformerElementValue> {
+  let newPreparedStatementParametersCount = preparedStatementParametersCount;
+  const transformerLabel: string = (actionRuntimeTransformer as any).label ?? actionRuntimeTransformer.transformerType;
+  const referenceToOuterObjectName = actionRuntimeTransformer.referenceToOuterObject ?? defaultTransformerInput;
+  const referenceToOuterObjectRenamed: string = transformerLabel + "_" + referenceToOuterObjectName;
+
+  // Step 1: Compute predicate SQL with topLevelTransformer=false (produces a boolean expression)
+  const sqlStringForPredicate = sqlStringForRuntimeTransformer(
+    actionRuntimeTransformer.predicate as CoreTransformerForBuildPlusRuntime,
+    newPreparedStatementParametersCount,
+    indentLevel,
+    queryParams,
+    {
+      ...definedContextEntries,
+      [referenceToOuterObjectName]: {
+        type: "json",
+        renameTo: referenceToOuterObjectRenamed,
+        attributeResultAccessPath: ["element"],
+      },
+    },
+    useAccessPathForContextReference,
+    false, // topLevelTransformer — we need just an expression for WHERE
+  );
+
+  if (sqlStringForPredicate instanceof Domain2ElementFailed) {
+    return sqlStringForPredicate;
+  }
+
+  let preparedStatementParameters: any[] = sqlStringForPredicate.preparedStatementParameters ?? [];
+  newPreparedStatementParametersCount += preparedStatementParameters.length;
+
+  // Step 2: Compute applyTo SQL
+  const applyTo = sqlStringForApplyTo(
+    actionRuntimeTransformer,
+    newPreparedStatementParametersCount,
+    indentLevel + 2,
+    queryParams,
+    definedContextEntries,
+    useAccessPathForContextReference,
+    topLevelTransformer,
+  );
+
+  if (applyTo instanceof Domain2ElementFailed) {
+    return applyTo;
+  }
+  if (!(["json", "json_array"] as string[]).includes(applyTo.type)) {
+    return new Domain2ElementFailed({
+      queryFailure: "QueryNotExecutable",
+      query: actionRuntimeTransformer as any,
+      failureMessage: "sqlStringForFilterListTransformer filterList applyTo result is not json: " + applyTo.type,
+    });
+  }
+
+  if (applyTo.preparedStatementParameters) {
+    preparedStatementParameters = [...preparedStatementParameters, ...applyTo.preparedStatementParameters];
+    newPreparedStatementParametersCount += applyTo.preparedStatementParameters.length;
+  }
+
+  // Step 3: Build the unnesting CTEs (same pattern as mapList)
+  const middleSql = sqlQuery(indentLevel + 1, {
+    queryPart: "query",
+    select: [{
+      queryPart: "defineColumn",
+      value: {
+        queryPart: "call",
+        fct: "jsonb_array_elements",
+        params: [{
+          queryPart: "tableColumnAccess",
+          table: { queryPart: "tableLiteral", name: transformerLabel + "_applyTo" },
+          col: (applyTo as any).resultAccessPath[1],
+        }],
+      },
+      as: "element",
+    }],
+    from: [{
+      queryPart: "hereTable",
+      definition: `(${applyTo.sqlStringOrObject})`,
+      as: transformerLabel + "_applyTo",
+    }],
+  });
+  const outerSql = sqlQuery(indentLevel, {
+    queryPart: "query",
+    select: `"${transformerLabel}_oneElementPerRow"."element"`,
+    from: [{
+      queryPart: "hereTable",
+      definition: `(${middleSql})`,
+      as: transformerLabel + "_oneElementPerRow",
+    }],
+  });
+
+  // Step 4: Build the filter query with WHERE predicate
+  const outputColName = withClauseColumnName ?? transformerLabel;
+  const filterSql = sqlQuery(indentLevel, {
+    queryPart: "query",
+    select: [{
+      queryPart: "defineColumn",
+      value: `jsonb_agg(element)`,
+      as: outputColName,
+    }],
+    from: [{ queryPart: "tableLiteral", name: referenceToOuterObjectRenamed }],
+    where: sqlStringForPredicate.sqlStringOrObject,
+  });
+
+  const extraWith: { name: string; sql: string }[] = [
+    ...(applyTo.extraWith ?? []),
+    {
+      name: referenceToOuterObjectRenamed,
+      sql: outerSql,
+    },
+    ...(sqlStringForPredicate.extraWith ?? []),
+  ];
+
+  return {
+    type: "json_array",
+    sqlStringOrObject: filterSql,
+    preparedStatementParameters,
+    extraWith,
+    resultAccessPath: topLevelTransformer ? [0, outputColName] : undefined,
+    columnNameContainingJsonValue: topLevelTransformer ? outputColName : undefined,
+    usedContextEntries: [
+      ...(sqlStringForPredicate.usedContextEntries ?? []),
+      ...(applyTo.usedContextEntries ?? []),
+    ],
+  };
 }
 
 // ################################################################################################

@@ -7053,6 +7053,153 @@
                 }
               }
             ]
+          },
+          {
+            "transformerTestType": "transformerTestSuite",
+            "transformerTestLabel": "filterList",
+            "transformerTests": [
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "filterList keeps elements where predicate is true (boolExpr ==)",
+                "transformerName": "filterList_basicStringFilter",
+                "transformer": {
+                  "transformerType": "filterList",
+                  "interpolation": "runtime",
+                  "referenceToOuterObject": "__element__",
+                  "applyTo": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "value": ["a", "b", "c", "b"]
+                  },
+                  "predicate": {
+                    "transformerType": "boolExpr",
+                    "interpolation": "runtime",
+                    "operator": "==",
+                    "left": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referenceName": "__element__"
+                    },
+                    "right": {
+                      "transformerType": "returnValue",
+                      "interpolation": "runtime",
+                      "value": "b"
+                    }
+                  }
+                },
+                "transformerParams": {},
+                "expectedValue": ["b", "b"]
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "filterList filters objects by attribute value",
+                "transformerName": "filterList_objectAttributeFilter",
+                "transformer": {
+                  "transformerType": "filterList",
+                  "interpolation": "runtime",
+                  "referenceToOuterObject": "__element__",
+                  "applyTo": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "value": [
+                      {"id": 1, "active": true},
+                      {"id": 2, "active": false},
+                      {"id": 3, "active": true}
+                    ]
+                  },
+                  "predicate": {
+                    "transformerType": "boolExpr",
+                    "interpolation": "runtime",
+                    "operator": "==",
+                    "left": {
+                      "transformerType": "accessDynamicPath",
+                      "interpolation": "runtime",
+                      "objectAccessPath": [
+                        {
+                          "transformerType": "getFromContext",
+                          "interpolation": "runtime",
+                          "referenceName": "__element__"
+                        },
+                        "active"
+                      ]
+                    },
+                    "right": {
+                      "transformerType": "returnValue",
+                      "interpolation": "runtime",
+                      "value": true
+                    }
+                  }
+                },
+                "transformerParams": {},
+                "expectedValue": [{"id": 1, "active": true}, {"id": 3, "active": true}]
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "filterList returns empty array when no element matches",
+                "transformerName": "filterList_noMatch",
+                "transformer": {
+                  "transformerType": "filterList",
+                  "interpolation": "runtime",
+                  "referenceToOuterObject": "__element__",
+                  "applyTo": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "value": ["a", "b", "c"]
+                  },
+                  "predicate": {
+                    "transformerType": "boolExpr",
+                    "interpolation": "runtime",
+                    "operator": "==",
+                    "left": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referenceName": "__element__"
+                    },
+                    "right": {
+                      "transformerType": "returnValue",
+                      "interpolation": "runtime",
+                      "value": "z"
+                    }
+                  }
+                },
+                "transformerParams": {},
+                "unitTestExpectedValue": [],
+                "integrationTestExpectedValue": null
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "filterList with context reference for applyTo",
+                "transformerName": "filterList_contextReference",
+                "transformer": {
+                  "transformerType": "filterList",
+                  "interpolation": "runtime",
+                  "referenceToOuterObject": "__element__",
+                  "applyTo": {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referenceName": "myList"
+                  },
+                  "predicate": {
+                    "transformerType": "boolExpr",
+                    "interpolation": "runtime",
+                    "operator": "==",
+                    "left": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referenceName": "__element__"
+                    },
+                    "right": {
+                      "transformerType": "returnValue",
+                      "interpolation": "runtime",
+                      "value": "b"
+                    }
+                  }
+                },
+                "transformerParams": {},
+                "transformerRuntimeContext": {"myList": ["a", "b", "c", "b"]},
+                "expectedValue": ["b", "b"]
+              }
+            ]
           }
         ]
       }
