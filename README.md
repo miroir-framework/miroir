@@ -170,7 +170,12 @@ const listOfBooks: Query = {
 const listOfBookTitles: Transformer = {
   "transformerType": "mapperListToList",
   "interpolation": "runtime",
-  "referencedExtractor": "books",
+  "referencedExtractor": "listOfBooks",
+  "elementTransformer": {
+    "transformerType": "getFromContext",
+    "interpolation": "runtime",
+    "referencePath": [ "defaultInput", "title" ]
+  },
   "orderBy": { "attributeName": "title" }
 }
 ```
@@ -178,11 +183,11 @@ const listOfBookTitles: Transformer = {
 ### Display Books in the UI: The BookList Report
 
 ```ts
-const listOfBooks: Report = {
+const listOfBooksReport: Report = {
   "type": "list",
   "definition": {
     "entityUuid": "Book",
-    "fetchQuery": { "queryReference": "booksQuery" }
+    "fetchQuery": { "queryReference": "listOfBooks" }
   }
 }
 ```
