@@ -207,6 +207,7 @@ export type CoreTransformerForBuildPlusRuntime =
   | CoreTransformerForBuildPlusRuntime_concatLists
   | CoreTransformerForBuildPlusRuntime_filterList
   | CoreTransformerForBuildPlusRuntime_find
+  | CoreTransformerForBuildPlusRuntime_object_fromEntries
   | CoreTransformerForBuildPlusRuntime_InnerReference
   | CoreTransformerForBuildPlusRuntime_dataflowSequence
 ;
@@ -260,6 +261,7 @@ export const coreTransformerForBuildPlusRuntime: z.ZodType<CoreTransformerForBui
     coreTransformerForBuildPlusRuntime_concatLists,
     coreTransformerForBuildPlusRuntime_filterList,
     coreTransformerForBuildPlusRuntime_find,
+    coreTransformerForBuildPlusRuntime_object_fromEntries,
     coreTransformerForBuildPlusRuntime_InnerReference,
     coreTransformerForBuildPlusRuntime_dataflowSequence,
   ]);

@@ -1,0 +1,46 @@
+{
+  "uuid": "74b05e4c-1575-418d-b6ea-7d59e4f4cb1f",
+  "name": "object_fromEntries",
+  "defaultLabel": "object_fromEntries",
+  "description": "Builds an object from an array of key-value pairs, like Object.fromEntries(). Inverse of getObjectEntries.",
+  "parentUuid": "a557419d-a288-4fb8-8a1e-971c86c113b8",
+  "parentDefinitionVersionUuid": "54a16d69-c1f0-4dd7-aba4-a2cda883586c",
+  "parentName": "TransformerDefinition",
+  "classification": "basic",
+  "transformerInterface": {
+    "inputOutput": {
+      "input": "array",
+      "output": "any"
+    },
+    "transformerParameterSchema": {
+      "transformerType": {
+        "type": "literal",
+        "definition": "object_fromEntries"
+      },
+      "transformerDefinition": {
+        "type": "object",
+        "definition": {
+          "applyTo": {
+            "type": "any",
+            "optional": true,
+            "description": "The array of key-value pairs to convert to an object. Each element must be a two-element array [key, value] or an object with key and value properties."
+          }
+        }
+      }
+    },
+    "transformerResultSchema": {
+      "returns": "mlSchema",
+      "definition": {
+        "type": "record",
+        "definition": {
+          "type": "any"
+        }
+      }
+    }
+  },
+  "transformerImplementation": {
+    "transformerImplementationType": "libraryImplementation",
+    "inMemoryImplementationFunctionName": "handleTransformer_object_fromEntries",
+    "sqlImplementationFunctionName": "sqlStringForObjectFromEntriesTransformer"
+  }
+}

@@ -204,6 +204,7 @@ const sqlTransformerImplementations: Record<string, ITransformerHandler<any>> = 
   sqlStringForObjectAlterTransformer,
   sqlStringForObjectDynamicAccessTransformer,
   sqlStringForObjectEntriesTransformer,
+  sqlStringForObjectFromEntriesTransformer,
   sqlStringForObjectValuesTransformer,
   sqlStringForParameterReferenceTransformer,
   sqlStringForPlusTransformer,
@@ -3469,6 +3470,107 @@ function sqlStringForObjectEntriesTransformer(
     resultAccessPath: [0, "getObjectEntries"],
     columnNameContainingJsonValue: "getObjectEntries",
     extraWith,
+  };
+}
+
+// ################################################################################################
+function sqlStringForObjectFromEntriesTransformer(
+  actionRuntimeTransformer: any,
+  preparedStatementParametersCount: number,
+  indentLevel: number,
+  queryParams: Record<string, any>,
+  definedContextEntries: Record<string, SqlContextEntry>,
+  useAccessPathForContextReference: boolean,
+  topLevelTransformer: boolean,
+  withClauseColumnName?: string,
+  iterateOn?: string,
+): Domain2QueryReturnType<SqlStringForTransformerElementValue> {
+  const transformerLabel: string = (actionRuntimeTransformer as any).label ?? actionRuntimeTransformer.transformerType;
+
+  const applyTo = sqlStringForApplyTo(
+    actionRuntimeTransformer,
+    preparedStatementParametersCount,
+    indentLevel + 2,
+    queryParams,
+    definedContextEntries,
+    useAccessPathForContextReference,
+    topLevelTransformer,
+  );
+
+  if (applyTo instanceof Domain2ElementFailed) {
+    return applyTo;
+  }
+  if (!(["json", "json_array"] as string[]).includes(applyTo.type)) {
+    return new Domain2ElementFailed({
+      queryFailure: "QueryNotExecutable",
+      query: actionRuntimeTransformer as any,
+      failureMessage:
+        "sqlStringForObjectFromEntriesTransformer applyTo result is not json or json_array: " + applyTo.type,
+    });
+  }
+
+  const preparedStatementParameters: any[] = applyTo.preparedStatementParameters ?? [];
+
+  // Unnest the outer array: one element (2-element array) per row
+  const elemCteLabel = transformerLabel + "_elements";
+  const elemSql = sqlQuery(indentLevel + 1, {
+    queryPart: "query",
+    select: [
+      {
+        queryPart: "defineColumn",
+        value: {
+          queryPart: "call",
+          fct: "jsonb_array_elements",
+          params: [
+            {
+              queryPart: "tableColumnAccess",
+              table: { queryPart: "tableLiteral", name: transformerLabel + "_applyTo" },
+              col: (applyTo as any).columnNameContainingJsonValue,
+            },
+          ],
+        },
+        as: "element",
+      },
+    ],
+    from: [
+      {
+        queryPart: "hereTable",
+        definition: `(${applyTo.sqlStringOrObject})`,
+        as: transformerLabel + "_applyTo",
+      },
+    ],
+  });
+
+  // Aggregate pairs into object: element->>0 is key, element->1 is value
+  const outputColName = withClauseColumnName ?? transformerLabel;
+  const aggregateSql = sqlQuery(indentLevel, {
+    queryPart: "query",
+    select: [
+      {
+        queryPart: "defineColumn",
+        value: `COALESCE(jsonb_object_agg("element" ->> 0, "element" -> 1), '{}'::jsonb)`,
+        as: outputColName,
+      },
+    ],
+    from: [{ queryPart: "tableLiteral", name: elemCteLabel }],
+  });
+
+  const extraWith: { name: string; sql: string }[] = [
+    ...(applyTo.extraWith ?? []),
+    {
+      name: elemCteLabel,
+      sql: elemSql,
+    },
+  ];
+
+  return {
+    type: "json",
+    sqlStringOrObject: aggregateSql,
+    preparedStatementParameters,
+    extraWith,
+    resultAccessPath: topLevelTransformer ? [0, outputColName] : undefined,
+    columnNameContainingJsonValue: topLevelTransformer ? outputColName : undefined,
+    usedContextEntries: applyTo.usedContextEntries ?? [],
   };
 }
 

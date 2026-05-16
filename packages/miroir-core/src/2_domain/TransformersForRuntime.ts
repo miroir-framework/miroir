@@ -19,6 +19,7 @@ import {
   type CoreTransformerForBuildPlusRuntime_mapList,
   type CoreTransformerForBuildPlusRuntime_filterList,
   type CoreTransformerForBuildPlusRuntime_find,
+  type CoreTransformerForBuildPlusRuntime_object_fromEntries,
   type CoreTransformerForBuildPlusRuntime_pickFromList,
   type CoreTransformerForBuildPlusRuntime_indexListBy,
   type CoreTransformerForBuildPlusRuntime_listReducerToSpreadObject,
@@ -113,6 +114,7 @@ import {
   transformer_concatLists,
   transformer_filterList,
   transformer_find,
+  transformer_object_fromEntries,
   type ResolveBuildTransformersTo,
   type Step,
   transformer_getActiveDeployment,
@@ -751,6 +753,7 @@ const inMemoryTransformerImplementations: Record<string, ITransformerHandler<any
   handleTransformer_concatLists,
   handleTransformer_filterList,
   handleTransformer_find,
+  handleTransformer_object_fromEntries,
 };
 
 // ################################################################################################
@@ -790,6 +793,7 @@ export const applicationTransformerDefinitions: Record<string, TransformerDefini
   concatLists: transformer_concatLists,
   filterList: transformer_filterList,
   find: transformer_find,
+  object_fromEntries: transformer_object_fromEntries,
   defaultValueForMLSchema: transformer_defaultValueForMLSchema,
   // MLS
   ...Object.fromEntries(
@@ -4686,4 +4690,51 @@ export function handleTransformer_find(
     }
   }
   return undefined;
+}
+
+// ################################################################################################
+export function handleTransformer_object_fromEntries(
+  step: Step,
+  transformerPath: string[],
+  label: string | undefined,
+  transformer: CoreTransformerForBuildPlusRuntime_object_fromEntries,
+  resolveBuildTransformersTo: ResolveBuildTransformersTo,
+  modelEnvironment: MiroirModelEnvironment,
+  queryParams: Record<string, any>,
+  contextResults?: Record<string, any>,
+  reduxDeploymentsState?: ReduxDeploymentsState | undefined
+): TransformerReturnType<any> {
+  const resolvedApplyTo = resolveApplyTo_legacy(
+    transformer as any,
+    step,
+    transformerPath,
+    resolveBuildTransformersTo,
+    modelEnvironment,
+    queryParams,
+    contextResults,
+    label,
+    reduxDeploymentsState
+  );
+  if (resolvedApplyTo instanceof TransformerFailure) {
+    log.error(
+      "handleTransformer_object_fromEntries can not apply to failed resolvedReference",
+      resolvedApplyTo
+    );
+    return new TransformerFailure({
+      queryFailure: "FailedTransformer",
+      transformerPath,
+      failureOrigin: ["handleTransformer_object_fromEntries"],
+      queryContext: "handleTransformer_object_fromEntries can not apply to failed resolvedReference",
+      innerError: resolvedApplyTo,
+    });
+  }
+  if (!Array.isArray(resolvedApplyTo)) {
+    return new TransformerFailure({
+      queryFailure: "FailedTransformer",
+      transformerPath,
+      failureOrigin: ["handleTransformer_object_fromEntries"],
+      failureMessage: "object_fromEntries: applyTo is not an array, got: " + typeof resolvedApplyTo,
+    });
+  }
+  return Object.fromEntries(resolvedApplyTo);
 }

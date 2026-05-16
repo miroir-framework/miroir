@@ -7350,6 +7350,100 @@
                 "expectedValue": "b"
               }
             ]
+          },
+          {
+            "transformerTestType": "transformerTestSuite",
+            "transformerTestLabel": "object_fromEntries",
+            "transformerTests": [
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "object_fromEntries builds object from returnValue array of pairs",
+                "transformerName": "object_fromEntries_fromReturnValue",
+                "transformer": {
+                  "transformerType": "object_fromEntries",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "value": [
+                      ["a", "testA"],
+                      ["b", "testB"]
+                    ]
+                  }
+                },
+                "transformerParams": {},
+                "expectedValue": {
+                  "a": "testA",
+                  "b": "testB"
+                }
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "object_fromEntries builds object from parameter array of pairs",
+                "transformerName": "object_fromEntries_fromParam",
+                "transformer": {
+                  "transformerType": "object_fromEntries",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                    "transformerType": "getFromParameters",
+                    "referenceName": "testPairs"
+                  }
+                },
+                "transformerParams": {
+                  "testPairs": [
+                    ["x", 1],
+                    ["y", 2],
+                    ["z", 3]
+                  ]
+                },
+                "expectedValue": {
+                  "x": 1,
+                  "y": 2,
+                  "z": 3
+                }
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "object_fromEntries builds object from context array of pairs",
+                "transformerName": "object_fromEntries_fromContext",
+                "transformer": {
+                  "transformerType": "object_fromEntries",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referenceName": "testPairs"
+                  }
+                },
+                "transformerParams": {},
+                "transformerRuntimeContext": {
+                  "testPairs": [
+                    ["a", "testA"],
+                    ["b", "testB"]
+                  ]
+                },
+                "expectedValue": {
+                  "a": "testA",
+                  "b": "testB"
+                }
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "object_fromEntries returns empty object for empty array",
+                "transformerName": "object_fromEntries_empty",
+                "transformer": {
+                  "transformerType": "object_fromEntries",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "value": []
+                  }
+                },
+                "transformerParams": {},
+                "expectedValue": {}
+              }
+            ]
           }
         ]
       }
