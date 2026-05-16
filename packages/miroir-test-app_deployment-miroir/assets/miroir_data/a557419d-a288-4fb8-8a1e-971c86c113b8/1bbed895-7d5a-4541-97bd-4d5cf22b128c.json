@@ -3,7 +3,7 @@
   "parentName": "TransformerDefinition",
   "parentUuid": "a557419d-a288-4fb8-8a1e-971c86c113b8",
   "name": "entityDefinition_extractAttributes",
-  "defaultLabel": "Extract Attribute",
+  "defaultLabel": "Extract Attributes",
   "classification": "metaModel",
   "transformerInterface": {
     "transformerParameterSchema": {
@@ -33,15 +33,65 @@
     "transformerResultSchema": {
       "returns": "mlSchema",
       "definition": {
-        "type": "any"
+        "type":"array",
+        "definition": {
+          "type": "tuple",
+          "definition": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "any"
+            }
+          ]
+        }
       }
     }
   },
   "transformerImplementation": {
     "transformerImplementationType": "transformer",
     "definition": {
-      "transformerType": "returnValue",
-      "value": 0
+      "transformerType": "filterList",
+      "applyTo": {
+        "transformerType": "getObjectEntries",
+        "interpolation": "runtime",
+        "applyTo": {
+          "transformerType": "getFromContext",
+          "interpolation": "runtime",
+          "referencePath": ["entityDefinition", "mlSchema", "definition"]
+        }
+      },
+      "referenceToOuterObject": "attribute",
+      "predicate": {
+        "transformerType": "boolExpr",
+        "interpolation": "runtime",
+        "operator": "isNotNull",
+        "left": {
+          "transformerType": "find",
+          "interpolation": "runtime",
+          "applyTo": {
+            "transformerType": "getFromContext",
+            "interpolation": "runtime",
+            "referencePath": ["attributeNames"]
+          },
+          "referenceToOuterObject": "attributeName",
+          "predicate": {
+            "transformerType": "boolExpr",
+            "interpolation": "runtime",
+            "operator": "==",
+            "left": {
+              "transformerType": "getFromContext",
+              "interpolation": "runtime",
+              "referencePath": ["attribute", "0"]
+            },
+            "right": {
+              "transformerType": "getFromContext",
+              "interpolation": "runtime",
+              "referencePath": ["attributeName"]
+            }
+          }
+        }
+      }
     }
   }
 }
