@@ -7444,6 +7444,158 @@
                 "expectedValue": {}
               }
             ]
+          },
+          {
+            "transformerTestType": "transformerTestSuite",
+            "transformerTestLabel": "sortList",
+            "transformerTests": [
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "sortList sorts string list ascending",
+                "transformerName": "sortList_stringAsc",
+                "transformer": {
+                  "transformerType": "sortList",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "value": ["c", "a", "b"]
+                  }
+                },
+                "transformerParams": {},
+                "expectedValue": ["a", "b", "c"]
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "sortList sorts string list descending",
+                "transformerName": "sortList_stringDesc",
+                "transformer": {
+                  "transformerType": "sortList",
+                  "interpolation": "runtime",
+                  "orderByDirection": "desc",
+                  "applyTo": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "value": ["c", "a", "b"]
+                  }
+                },
+                "transformerParams": {},
+                "expectedValue": ["c", "b", "a"]
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "sortList sorts objects by attribute ascending",
+                "transformerName": "sortList_objectAttrAsc",
+                "transformer": {
+                  "transformerType": "sortList",
+                  "interpolation": "runtime",
+                  "orderBy": "name",
+                  "applyTo": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "value": [
+                      {"id": 1, "name": "charlie"},
+                      {"id": 2, "name": "alice"},
+                      {"id": 3, "name": "bob"}
+                    ]
+                  }
+                },
+                "transformerParams": {},
+                "expectedValue": [
+                  {"id": 2, "name": "alice"},
+                  {"id": 3, "name": "bob"},
+                  {"id": 1, "name": "charlie"}
+                ]
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "sortList with context reference for applyTo",
+                "transformerName": "sortList_contextReference",
+                "transformer": {
+                  "transformerType": "sortList",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referenceName": "myList"
+                  }
+                },
+                "transformerParams": {},
+                "transformerRuntimeContext": {"myList": ["banana", "apple", "cherry"]},
+                "expectedValue": ["apple", "banana", "cherry"]
+              }
+            ]
+          },
+          {
+            "transformerTestType": "transformerTestSuite",
+            "transformerTestLabel": "listLength",
+            "transformerTests": [
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "listLength returns length of string list",
+                "transformerName": "listLength_stringList",
+                "transformer": {
+                  "transformerType": "listLength",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "value": ["a", "b", "c"]
+                  }
+                },
+                "transformerParams": {},
+                "expectedValue": 3
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "listLength returns 0 for empty list",
+                "transformerName": "listLength_emptyList",
+                "transformer": {
+                  "transformerType": "listLength",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "value": []
+                  }
+                },
+                "transformerParams": {},
+                "expectedValue": 0
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "listLength returns length of object list",
+                "transformerName": "listLength_objectList",
+                "transformer": {
+                  "transformerType": "listLength",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "value": [{"id": 1}, {"id": 2}]
+                  }
+                },
+                "transformerParams": {},
+                "expectedValue": 2
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "listLength with context reference for applyTo",
+                "transformerName": "listLength_contextReference",
+                "transformer": {
+                  "transformerType": "listLength",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referenceName": "myList"
+                  }
+                },
+                "transformerParams": {},
+                "transformerRuntimeContext": {"myList": ["x", "y", "z", "w"]},
+                "expectedValue": 4
+              }
+            ]
           }
         ]
       }

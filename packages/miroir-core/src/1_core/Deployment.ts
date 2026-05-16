@@ -301,7 +301,11 @@ export function resetAndinitializeDeploymentCompositeAction(
     "filteredEntities to create=",
     filteredEntitiesMetaModel.entities.map((e) => ({ name: e.name, uuid: e.uuid })),
     "filteredEntityDefinitions=",
-    filteredEntitiesMetaModel.entityDefinitions.map((ed) => ({ name: ed.name, uuid: ed.uuid, entityUuid: ed.entityUuid })),
+    filteredEntitiesMetaModel.entityDefinitions.map((ed) => ({
+      name: ed.name,
+      uuid: ed.uuid,
+      entityUuid: ed.entityUuid,
+    })),
   );
 
   const entities: EntityDefinitionCouple[] = filteredEntitiesMetaModel.entities.map((entity) => {

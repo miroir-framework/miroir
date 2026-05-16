@@ -1,0 +1,28 @@
+{
+  "uuid": "d9e2b3c4-1f8a-4e7b-9d6c-5a8f2b3e4c1d",
+  "name": "listLength",
+  "defaultLabel": "listLength",
+  "description": "Returns the number of elements in a list.",
+  "parentUuid": "a557419d-a288-4fb8-8a1e-971c86c113b8",
+  "parentDefinitionVersionUuid": "54a16d69-c1f0-4dd7-aba4-a2cda883586c",
+  "parentName": "TransformerDefinition",
+  "classification": "basic",
+  "transformerInterface": {
+    "inputOutput": { "input": "array", "output": "number" },
+    "transformerParameterSchema": {
+      "transformerType": { "type": "literal", "definition": "listLength" },
+      "transformerDefinition": {
+        "type": "object",
+        "definition": {
+          "applyTo": { "type": "any", "optional": true, "description": "The list whose length to compute." }
+        }
+      }
+    },
+    "transformerResultSchema": { "returns": "mlSchema", "definition": { "type": "number" } }
+  },
+  "transformerImplementation": {
+    "transformerImplementationType": "libraryImplementation",
+    "inMemoryImplementationFunctionName": "handleTransformer_listLength",
+    "sqlImplementationFunctionName": "sqlStringForListLengthTransformer"
+  }
+}

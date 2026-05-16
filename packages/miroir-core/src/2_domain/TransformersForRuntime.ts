@@ -20,6 +20,8 @@ import {
   type CoreTransformerForBuildPlusRuntime_filterList,
   type CoreTransformerForBuildPlusRuntime_find,
   type CoreTransformerForBuildPlusRuntime_object_fromEntries,
+  type CoreTransformerForBuildPlusRuntime_sortList,
+  type CoreTransformerForBuildPlusRuntime_listLength,
   type CoreTransformerForBuildPlusRuntime_pickFromList,
   type CoreTransformerForBuildPlusRuntime_indexListBy,
   type CoreTransformerForBuildPlusRuntime_listReducerToSpreadObject,
@@ -115,6 +117,8 @@ import {
   transformer_filterList,
   transformer_find,
   transformer_object_fromEntries,
+  transformer_sortList,
+  transformer_listLength,
   type ResolveBuildTransformersTo,
   type Step,
   transformer_getActiveDeployment,
@@ -754,6 +758,8 @@ const inMemoryTransformerImplementations: Record<string, ITransformerHandler<any
   handleTransformer_filterList,
   handleTransformer_find,
   handleTransformer_object_fromEntries,
+  handleTransformer_sortList,
+  handleTransformer_listLength,
 };
 
 // ################################################################################################
@@ -794,6 +800,8 @@ export const applicationTransformerDefinitions: Record<string, TransformerDefini
   filterList: transformer_filterList,
   find: transformer_find,
   object_fromEntries: transformer_object_fromEntries,
+  sortList: transformer_sortList,
+  listLength: transformer_listLength,
   defaultValueForMLSchema: transformer_defaultValueForMLSchema,
   // MLS
   ...Object.fromEntries(
@@ -4737,4 +4745,105 @@ export function handleTransformer_object_fromEntries(
     });
   }
   return Object.fromEntries(resolvedApplyTo);
+}
+
+// ################################################################################################
+export function handleTransformer_sortList(
+  step: Step,
+  transformerPath: string[],
+  label: string | undefined,
+  transformer: CoreTransformerForBuildPlusRuntime_sortList,
+  resolveBuildTransformersTo: ResolveBuildTransformersTo,
+  modelEnvironment: MiroirModelEnvironment,
+  queryParams: Record<string, any>,
+  contextResults?: Record<string, any>,
+  reduxDeploymentsState?: ReduxDeploymentsState | undefined
+): TransformerReturnType<any[]> {
+  const resolvedApplyTo = resolveApplyTo_legacy(
+    transformer as any,
+    step,
+    transformerPath,
+    resolveBuildTransformersTo,
+    modelEnvironment,
+    queryParams,
+    contextResults,
+    label,
+    reduxDeploymentsState
+  );
+  if (resolvedApplyTo instanceof TransformerFailure) {
+    log.error("handleTransformer_sortList can not apply to failed resolvedReference", resolvedApplyTo);
+    return new TransformerFailure({
+      queryFailure: "FailedTransformer",
+      transformerPath,
+      failureOrigin: ["handleTransformer_sortList"],
+      queryContext: "handleTransformer_sortList can not apply to failed resolvedReference",
+      innerError: resolvedApplyTo,
+    });
+  }
+  if (!Array.isArray(resolvedApplyTo)) {
+    return new TransformerFailure({
+      queryFailure: "FailedTransformer",
+      transformerPath,
+      failureOrigin: ["handleTransformer_sortList"],
+      failureMessage: "sortList: applyTo is not an array, got: " + typeof resolvedApplyTo,
+    });
+  }
+  const direction = transformer.orderByDirection ?? "asc";
+  const directionMultiplier = direction === "desc" ? -1 : 1;
+  const sortedArray = [...resolvedApplyTo].sort((a, b) => {
+    const aVal = transformer.orderBy ? a[transformer.orderBy] : a;
+    const bVal = transformer.orderBy ? b[transformer.orderBy] : b;
+    if (typeof aVal === "string" && typeof bVal === "string") {
+      return directionMultiplier * aVal.localeCompare(bVal, "en", { sensitivity: "base" });
+    }
+    if (typeof aVal === "number" && typeof bVal === "number") {
+      return directionMultiplier * (aVal - bVal);
+    }
+    return 0;
+  });
+  return sortedArray;
+}
+
+// ################################################################################################
+export function handleTransformer_listLength(
+  step: Step,
+  transformerPath: string[],
+  label: string | undefined,
+  transformer: CoreTransformerForBuildPlusRuntime_listLength,
+  resolveBuildTransformersTo: ResolveBuildTransformersTo,
+  modelEnvironment: MiroirModelEnvironment,
+  queryParams: Record<string, any>,
+  contextResults?: Record<string, any>,
+  reduxDeploymentsState?: ReduxDeploymentsState | undefined
+): TransformerReturnType<number> {
+  const resolvedApplyTo = resolveApplyTo_legacy(
+    transformer as any,
+    step,
+    transformerPath,
+    resolveBuildTransformersTo,
+    modelEnvironment,
+    queryParams,
+    contextResults,
+    label,
+    reduxDeploymentsState
+  );
+  if (resolvedApplyTo instanceof TransformerFailure) {
+    log.error("handleTransformer_listLength can not apply to failed resolvedReference", resolvedApplyTo);
+    return new TransformerFailure({
+      queryFailure: "FailedTransformer",
+      transformerPath,
+      failureOrigin: ["handleTransformer_listLength"],
+      queryContext: "handleTransformer_listLength can not apply to failed resolvedReference",
+      innerError: resolvedApplyTo,
+    });
+  }
+  if (!Array.isArray(resolvedApplyTo)) {
+    return new TransformerFailure({
+      queryFailure: "FailedTransformer",
+      transformerPath,
+      failureOrigin: ["handleTransformer_listLength"],
+      failureMessage: "listLength: applyTo is not an array, got: " + typeof resolvedApplyTo,
+    });
+  }
+  return resolvedApplyTo.length;
 }

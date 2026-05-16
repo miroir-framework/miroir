@@ -30,6 +30,8 @@ import {
   type CoreTransformerForBuildPlusRuntime_concatLists,
   type CoreTransformerForBuildPlusRuntime_filterList,
   type CoreTransformerForBuildPlusRuntime_find,
+  type CoreTransformerForBuildPlusRuntime_sortList,
+  type CoreTransformerForBuildPlusRuntime_listLength,
   defaultMetaModelEnvironment,
   defaultTransformerInput,
   type CoreTransformerForBuildPlusRuntime_ifThenElse,
@@ -211,6 +213,8 @@ const sqlTransformerImplementations: Record<string, ITransformerHandler<any>> = 
   sqlStringForConcatListsTransformer,
   sqlStringForFilterListTransformer,
   sqlStringForFindTransformer,
+  sqlStringForSortListTransformer,
+  sqlStringForListLengthTransformer,
   sqlStringForUniqueTransformer,
 }
 
@@ -646,6 +650,8 @@ function sqlStringForApplyTo(
     | CoreTransformerForBuildPlusRuntime_getUniqueValues
     | CoreTransformerForBuildPlusRuntime_filterList
     | CoreTransformerForBuildPlusRuntime_find
+    | CoreTransformerForBuildPlusRuntime_sortList
+    | CoreTransformerForBuildPlusRuntime_listLength
     // | TransformerForBuildPlusRuntime_innerFullObjectTemplate
   ,
   preparedStatementParametersIndex: number,
@@ -3566,6 +3572,162 @@ function sqlStringForObjectFromEntriesTransformer(
   return {
     type: "json",
     sqlStringOrObject: aggregateSql,
+    preparedStatementParameters,
+    extraWith,
+    resultAccessPath: topLevelTransformer ? [0, outputColName] : undefined,
+    columnNameContainingJsonValue: topLevelTransformer ? outputColName : undefined,
+    usedContextEntries: applyTo.usedContextEntries ?? [],
+  };
+}
+
+// ################################################################################################
+function sqlStringForSortListTransformer(
+  actionRuntimeTransformer: CoreTransformerForBuildPlusRuntime_sortList,
+  preparedStatementParametersCount: number,
+  indentLevel: number,
+  queryParams: Record<string, any>,
+  definedContextEntries: Record<string, SqlContextEntry>,
+  useAccessPathForContextReference: boolean,
+  topLevelTransformer: boolean,
+  withClauseColumnName?: string,
+  iterateOn?: string,
+): Domain2QueryReturnType<SqlStringForTransformerElementValue> {
+  const transformerLabel: string = (actionRuntimeTransformer as any).label ?? actionRuntimeTransformer.transformerType;
+  const direction = (actionRuntimeTransformer.orderByDirection ?? "asc").toUpperCase();
+
+  const applyTo = sqlStringForApplyTo(
+    actionRuntimeTransformer,
+    preparedStatementParametersCount,
+    indentLevel + 2,
+    queryParams,
+    definedContextEntries,
+    useAccessPathForContextReference,
+    topLevelTransformer,
+  );
+
+  if (applyTo instanceof Domain2ElementFailed) {
+    return applyTo;
+  }
+  if (!(["json", "json_array"] as string[]).includes(applyTo.type)) {
+    return new Domain2ElementFailed({
+      queryFailure: "QueryNotExecutable",
+      query: actionRuntimeTransformer as any,
+      failureMessage: "sqlStringForSortListTransformer applyTo result is not json: " + applyTo.type,
+    });
+  }
+
+  const preparedStatementParameters: any[] = applyTo.preparedStatementParameters ?? [];
+
+  const elemCteLabel = transformerLabel + "_elements";
+  const elemSql = sqlQuery(indentLevel + 1, {
+    queryPart: "query",
+    select: [{
+      queryPart: "defineColumn",
+      value: {
+        queryPart: "call",
+        fct: "jsonb_array_elements",
+        params: [{
+          queryPart: "tableColumnAccess",
+          table: { queryPart: "tableLiteral", name: transformerLabel + "_applyTo" },
+          col: (applyTo as any).columnNameContainingJsonValue,
+        }],
+      },
+      as: "element",
+    }],
+    from: [{
+      queryPart: "hereTable",
+      definition: `(${applyTo.sqlStringOrObject})`,
+      as: transformerLabel + "_applyTo",
+    }],
+  });
+
+  const outputColName = withClauseColumnName ?? transformerLabel;
+  const orderByExpr = actionRuntimeTransformer.orderBy
+    ? `element->>'${actionRuntimeTransformer.orderBy}'`
+    : `element #>> '{}'`;
+  const sortSql = sqlQuery(indentLevel, {
+    queryPart: "query",
+    select: [{
+      queryPart: "defineColumn",
+      value: `COALESCE(jsonb_agg(element ORDER BY ${orderByExpr} ${direction}), '[]'::jsonb)`,
+      as: outputColName,
+    }],
+    from: [{ queryPart: "tableLiteral", name: elemCteLabel }],
+  });
+
+  const extraWith: { name: string; sql: string }[] = [
+    ...(applyTo.extraWith ?? []),
+    { name: elemCteLabel, sql: elemSql },
+  ];
+
+  return {
+    type: "json_array",
+    sqlStringOrObject: sortSql,
+    preparedStatementParameters,
+    extraWith,
+    resultAccessPath: topLevelTransformer ? [0, outputColName] : undefined,
+    columnNameContainingJsonValue: topLevelTransformer ? outputColName : undefined,
+    usedContextEntries: applyTo.usedContextEntries ?? [],
+  };
+}
+
+// ################################################################################################
+function sqlStringForListLengthTransformer(
+  actionRuntimeTransformer: CoreTransformerForBuildPlusRuntime_listLength,
+  preparedStatementParametersCount: number,
+  indentLevel: number,
+  queryParams: Record<string, any>,
+  definedContextEntries: Record<string, SqlContextEntry>,
+  useAccessPathForContextReference: boolean,
+  topLevelTransformer: boolean,
+  withClauseColumnName?: string,
+  iterateOn?: string,
+): Domain2QueryReturnType<SqlStringForTransformerElementValue> {
+  const transformerLabel: string = (actionRuntimeTransformer as any).label ?? actionRuntimeTransformer.transformerType;
+
+  const applyTo = sqlStringForApplyTo(
+    actionRuntimeTransformer,
+    preparedStatementParametersCount,
+    indentLevel + 2,
+    queryParams,
+    definedContextEntries,
+    useAccessPathForContextReference,
+    topLevelTransformer,
+  );
+
+  if (applyTo instanceof Domain2ElementFailed) {
+    return applyTo;
+  }
+  if (!(["json", "json_array"] as string[]).includes(applyTo.type)) {
+    return new Domain2ElementFailed({
+      queryFailure: "QueryNotExecutable",
+      query: actionRuntimeTransformer as any,
+      failureMessage: "sqlStringForListLengthTransformer applyTo result is not json: " + applyTo.type,
+    });
+  }
+
+  const preparedStatementParameters: any[] = applyTo.preparedStatementParameters ?? [];
+
+  const outputColName = withClauseColumnName ?? transformerLabel;
+  const lengthSql = sqlQuery(indentLevel, {
+    queryPart: "query",
+    select: [{
+      queryPart: "defineColumn",
+      value: `jsonb_array_length("${transformerLabel}_applyTo"."${(applyTo as any).columnNameContainingJsonValue}")`,
+      as: outputColName,
+    }],
+    from: [{
+      queryPart: "hereTable",
+      definition: `(${applyTo.sqlStringOrObject})`,
+      as: transformerLabel + "_applyTo",
+    }],
+  });
+
+  const extraWith: { name: string; sql: string }[] = [...(applyTo.extraWith ?? [])];
+
+  return {
+    type: "scalar",
+    sqlStringOrObject: lengthSql,
     preparedStatementParameters,
     extraWith,
     resultAccessPath: topLevelTransformer ? [0, outputColName] : undefined,

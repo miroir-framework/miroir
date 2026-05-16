@@ -1,0 +1,30 @@
+{
+  "uuid": "c8f3a1b5-2e9d-4f6a-8c7b-3d5e9a2f1b4c",
+  "name": "sortList",
+  "defaultLabel": "sortList",
+  "description": "Sorts a list by an optional attribute name. If orderBy is not provided, sorts primitive elements by their value. Direction defaults to ascending.",
+  "parentUuid": "a557419d-a288-4fb8-8a1e-971c86c113b8",
+  "parentDefinitionVersionUuid": "54a16d69-c1f0-4dd7-aba4-a2cda883586c",
+  "parentName": "TransformerDefinition",
+  "classification": "basic",
+  "transformerInterface": {
+    "inputOutput": { "input": "array", "output": "array" },
+    "transformerParameterSchema": {
+      "transformerType": { "type": "literal", "definition": "sortList" },
+      "transformerDefinition": {
+        "type": "object",
+        "definition": {
+          "applyTo": { "type": "any", "optional": true, "description": "The list to sort." },
+          "orderBy": { "type": "string", "optional": true, "description": "Attribute name to sort objects by. Omit to sort primitive elements by value." },
+          "orderByDirection": { "type": "enum", "definition": ["asc", "desc"], "optional": true, "description": "Sort direction. Defaults to asc." }
+        }
+      }
+    },
+    "transformerResultSchema": { "returns": "mlSchema", "definition": { "type": "array", "definition": { "type": "any" } } }
+  },
+  "transformerImplementation": {
+    "transformerImplementationType": "libraryImplementation",
+    "inMemoryImplementationFunctionName": "handleTransformer_sortList",
+    "sqlImplementationFunctionName": "sqlStringForSortListTransformer"
+  }
+}

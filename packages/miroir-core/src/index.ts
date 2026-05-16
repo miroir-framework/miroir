@@ -102,6 +102,8 @@ export {
   CoreTransformerForBuildPlusRuntime_concatLists,
   CoreTransformerForBuildPlusRuntime_filterList,
   CoreTransformerForBuildPlusRuntime_find,
+  CoreTransformerForBuildPlusRuntime_sortList,
+  CoreTransformerForBuildPlusRuntime_listLength,
   CoreTransformerForBuildPlusRuntime_object_fromEntries,
   CoreTransformerForBuildPlusRuntime_constantAsExtractor,
   coreTransformerForBuildPlusRuntime_constantAsExtractor,
