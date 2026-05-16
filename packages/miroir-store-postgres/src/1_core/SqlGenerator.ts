@@ -29,6 +29,7 @@ import {
   type CoreTransformerForBuildPlusRuntime_getUniqueValues,
   type CoreTransformerForBuildPlusRuntime_concatLists,
   type CoreTransformerForBuildPlusRuntime_filterList,
+  type CoreTransformerForBuildPlusRuntime_find,
   defaultMetaModelEnvironment,
   defaultTransformerInput,
   type CoreTransformerForBuildPlusRuntime_ifThenElse,
@@ -208,6 +209,7 @@ const sqlTransformerImplementations: Record<string, ITransformerHandler<any>> = 
   sqlStringForPlusTransformer,
   sqlStringForConcatListsTransformer,
   sqlStringForFilterListTransformer,
+  sqlStringForFindTransformer,
   sqlStringForUniqueTransformer,
 }
 
@@ -642,6 +644,7 @@ function sqlStringForApplyTo(
     | CoreTransformerForBuildPlusRuntime_indexListBy
     | CoreTransformerForBuildPlusRuntime_getUniqueValues
     | CoreTransformerForBuildPlusRuntime_filterList
+    | CoreTransformerForBuildPlusRuntime_find
     // | TransformerForBuildPlusRuntime_innerFullObjectTemplate
   ,
   preparedStatementParametersIndex: number,
@@ -2553,7 +2556,7 @@ function sqlStringForFilterListTransformer(
     queryPart: "query",
     select: [{
       queryPart: "defineColumn",
-      value: `jsonb_agg(element)`,
+      value: `COALESCE(jsonb_agg(element), '[]'::jsonb)`,
       as: outputColName,
     }],
     from: [{ queryPart: "tableLiteral", name: referenceToOuterObjectRenamed }],
@@ -2572,6 +2575,144 @@ function sqlStringForFilterListTransformer(
   return {
     type: "json_array",
     sqlStringOrObject: filterSql,
+    preparedStatementParameters,
+    extraWith,
+    resultAccessPath: topLevelTransformer ? [0, outputColName] : undefined,
+    columnNameContainingJsonValue: topLevelTransformer ? outputColName : undefined,
+    usedContextEntries: [
+      ...(sqlStringForPredicate.usedContextEntries ?? []),
+      ...(applyTo.usedContextEntries ?? []),
+    ],
+  };
+}
+
+// ################################################################################################
+function sqlStringForFindTransformer(
+  actionRuntimeTransformer: CoreTransformerForBuildPlusRuntime_find,
+  preparedStatementParametersCount: number,
+  indentLevel: number,
+  queryParams: Record<string, any>,
+  definedContextEntries: Record<string, SqlContextEntry>,
+  useAccessPathForContextReference: boolean,
+  topLevelTransformer: boolean,
+  withClauseColumnName?: string,
+  iterateOn?: string,
+): Domain2QueryReturnType<SqlStringForTransformerElementValue> {
+  let newPreparedStatementParametersCount = preparedStatementParametersCount;
+  const transformerLabel: string = (actionRuntimeTransformer as any).label ?? actionRuntimeTransformer.transformerType;
+  const referenceToOuterObjectName = actionRuntimeTransformer.referenceToOuterObject ?? defaultTransformerInput;
+  const referenceToOuterObjectRenamed: string = transformerLabel + "_" + referenceToOuterObjectName;
+
+  // Step 1: Compute predicate SQL
+  const sqlStringForPredicate = sqlStringForRuntimeTransformer(
+    actionRuntimeTransformer.predicate as CoreTransformerForBuildPlusRuntime,
+    newPreparedStatementParametersCount,
+    indentLevel,
+    queryParams,
+    {
+      ...definedContextEntries,
+      [referenceToOuterObjectName]: {
+        type: "json",
+        renameTo: referenceToOuterObjectRenamed,
+        attributeResultAccessPath: ["element"],
+      },
+    },
+    useAccessPathForContextReference,
+    false, // topLevelTransformer — we need just an expression for WHERE
+  );
+
+  if (sqlStringForPredicate instanceof Domain2ElementFailed) {
+    return sqlStringForPredicate;
+  }
+
+  let preparedStatementParameters: any[] = sqlStringForPredicate.preparedStatementParameters ?? [];
+  newPreparedStatementParametersCount += preparedStatementParameters.length;
+
+  // Step 2: Compute applyTo SQL
+  const applyTo = sqlStringForApplyTo(
+    actionRuntimeTransformer,
+    newPreparedStatementParametersCount,
+    indentLevel + 2,
+    queryParams,
+    definedContextEntries,
+    useAccessPathForContextReference,
+    topLevelTransformer,
+  );
+
+  if (applyTo instanceof Domain2ElementFailed) {
+    return applyTo;
+  }
+  if (!(["json", "json_array"] as string[]).includes(applyTo.type)) {
+    return new Domain2ElementFailed({
+      queryFailure: "QueryNotExecutable",
+      query: actionRuntimeTransformer as any,
+      failureMessage: "sqlStringForFindTransformer find applyTo result is not json: " + applyTo.type,
+    });
+  }
+
+  if (applyTo.preparedStatementParameters) {
+    preparedStatementParameters = [...preparedStatementParameters, ...applyTo.preparedStatementParameters];
+    newPreparedStatementParametersCount += applyTo.preparedStatementParameters.length;
+  }
+
+  // Step 3: Build the unnesting CTEs
+  const middleSql = sqlQuery(indentLevel + 1, {
+    queryPart: "query",
+    select: [{
+      queryPart: "defineColumn",
+      value: {
+        queryPart: "call",
+        fct: "jsonb_array_elements",
+        params: [{
+          queryPart: "tableColumnAccess",
+          table: { queryPart: "tableLiteral", name: transformerLabel + "_applyTo" },
+          col: (applyTo as any).resultAccessPath[1],
+        }],
+      },
+      as: "element",
+    }],
+    from: [{
+      queryPart: "hereTable",
+      definition: `(${applyTo.sqlStringOrObject})`,
+      as: transformerLabel + "_applyTo",
+    }],
+  });
+  const outerSql = sqlQuery(indentLevel, {
+    queryPart: "query",
+    select: `"${transformerLabel}_oneElementPerRow"."element"`,
+    from: [{
+      queryPart: "hereTable",
+      definition: `(${middleSql})`,
+      as: transformerLabel + "_oneElementPerRow",
+    }],
+  });
+
+  // Step 4: Build the find query — select single element with LIMIT 1
+  const outputColName = withClauseColumnName ?? transformerLabel;
+  const findSql = sqlQuery(indentLevel, {
+    queryPart: "query",
+    select: [{
+      queryPart: "defineColumn",
+      value: `element`,
+      as: outputColName,
+    }],
+    from: [{ queryPart: "tableLiteral", name: referenceToOuterObjectRenamed }],
+    where: sqlStringForPredicate.sqlStringOrObject,
+    limit: 1,
+  });
+
+  const extraWith: { name: string; sql: string }[] = [
+    ...(applyTo.extraWith ?? []),
+    {
+      name: referenceToOuterObjectRenamed,
+      sql: outerSql,
+    },
+    ...(sqlStringForPredicate.extraWith ?? []),
+  ];
+
+  return {
+    type: "json",
+    sqlStringOrObject: findSql,
     preparedStatementParameters,
     extraWith,
     resultAccessPath: topLevelTransformer ? [0, outputColName] : undefined,

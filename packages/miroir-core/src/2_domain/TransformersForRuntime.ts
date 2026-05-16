@@ -18,6 +18,7 @@ import {
   type CoreTransformerForBuildPlusRuntime_mergeIntoObject,
   type CoreTransformerForBuildPlusRuntime_mapList,
   type CoreTransformerForBuildPlusRuntime_filterList,
+  type CoreTransformerForBuildPlusRuntime_find,
   type CoreTransformerForBuildPlusRuntime_pickFromList,
   type CoreTransformerForBuildPlusRuntime_indexListBy,
   type CoreTransformerForBuildPlusRuntime_listReducerToSpreadObject,
@@ -111,6 +112,7 @@ import {
   transformer_getUniqueValues,
   transformer_concatLists,
   transformer_filterList,
+  transformer_find,
   type ResolveBuildTransformersTo,
   type Step,
   transformer_getActiveDeployment,
@@ -748,6 +750,7 @@ const inMemoryTransformerImplementations: Record<string, ITransformerHandler<any
   handleTransformer_ansiColumnsToJzodSchema,
   handleTransformer_concatLists,
   handleTransformer_filterList,
+  handleTransformer_find,
 };
 
 // ################################################################################################
@@ -786,6 +789,7 @@ export const applicationTransformerDefinitions: Record<string, TransformerDefini
   ansiColumnsToJzodSchema: transformer_ansiColumnsToJzodSchema,
   concatLists: transformer_concatLists,
   filterList: transformer_filterList,
+  find: transformer_find,
   defaultValueForMLSchema: transformer_defaultValueForMLSchema,
   // MLS
   ...Object.fromEntries(
@@ -4613,4 +4617,73 @@ export function handleTransformer_filterList(
         )
     : (a: any[]) => a;
   return sortByAttribute(resultArray);
+}
+
+// ################################################################################################
+export function handleTransformer_find(
+  step: Step,
+  transformerPath: string[],
+  label: string | undefined,
+  transformer: CoreTransformerForBuildPlusRuntime_find,
+  resolveBuildTransformersTo: ResolveBuildTransformersTo,
+  modelEnvironment: MiroirModelEnvironment,
+  queryParams: Record<string, any>,
+  contextResults?: Record<string, any>,
+  reduxDeploymentsState?: ReduxDeploymentsState | undefined
+): TransformerReturnType<any> {
+  const resolvedApplyTo = resolveApplyTo_legacy(
+    transformer as any,
+    step,
+    transformerPath,
+    resolveBuildTransformersTo,
+    modelEnvironment,
+    queryParams,
+    contextResults,
+    label,
+    reduxDeploymentsState
+  );
+  if (resolvedApplyTo instanceof TransformerFailure) {
+    log.error(
+      "handleTransformer_find can not apply to failed resolvedReference",
+      resolvedApplyTo
+    );
+    return new TransformerFailure({
+      queryFailure: "FailedTransformer",
+      transformerPath,
+      failureOrigin: ["handleTransformer_find"],
+      queryContext: "handleTransformer_find can not apply to failed resolvedReference",
+      innerError: resolvedApplyTo,
+    });
+  }
+  if (!Array.isArray(resolvedApplyTo)) {
+    return new TransformerFailure({
+      queryFailure: "FailedTransformer",
+      transformerPath,
+      failureOrigin: ["handleTransformer_find"],
+      failureMessage: "find: applyTo is not an array, got: " + typeof resolvedApplyTo,
+    });
+  }
+  for (const element of resolvedApplyTo) {
+    const predicateResult = defaultTransformers.transformer_extended_apply(
+      step,
+      transformerPath,
+      (element as any).name ?? "No name for element",
+      transformer.predicate as any,
+      resolveBuildTransformersTo,
+      modelEnvironment,
+      queryParams,
+      {
+        ...contextResults,
+        [transformer.referenceToOuterObject ?? defaultTransformerInput]: element,
+      },
+      reduxDeploymentsState
+    );
+    if (predicateResult instanceof TransformerFailure) {
+      continue;
+    }
+    if (predicateResult === true) {
+      return element;
+    }
+  }
+  return undefined;
 }

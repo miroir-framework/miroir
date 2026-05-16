@@ -208,6 +208,7 @@ export { default as transformer_duplicateApplicationModel_json } from "./assets/
 export { default as transformer_ansiColumnsToJzodSchema_json } from "./assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/53b8073b-72d5-4c3f-8b5a-79c90744b5b7.json" assert { type: "json" };
 export { default as transformer_concatLists_json } from "./assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/a128c238-3a56-478b-a9b0-02876884ae92.json" assert { type: "json" };
 export { default as transformer_filterList_json } from "./assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/40e894e5-2f6c-4b75-87f3-3a9dd3c0a65d.json" assert { type: "json" };
+export { default as transformer_find_json } from "./assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/8dcbd709-08a0-4464-b60c-438262d5af36.json" assert { type: "json" };
 // Alias for menu transformer (exported from Transformers.ts as transformer_menu_addItem)
 export { default as transformer_menu_addItem_json } from "./assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/685440be-7f3f-4774-b90d-bafa82d6832b.json" assert { type: "json" };
 

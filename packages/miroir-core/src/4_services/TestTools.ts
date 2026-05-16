@@ -342,10 +342,11 @@ export async function runTransformerTestInMemory(
   //   JSON.stringify(transformerTest.expectedValue, null, 2)
   // );
   const resultWithIgnored = ignorePostgresExtraAttributes(rawResult, transformerTest.ignoreAttributes);
-  const resultWithRetain = transformerTest.retainAttributes?
-    Object.fromEntries(
-      Object.entries(resultWithIgnored).filter(([key]) => transformerTest.retainAttributes!.includes(key))
-    ): resultWithIgnored;
+  const resultWithRetain = (transformerTest.retainAttributes && (rawResult instanceof TransformerFailure || (rawResult as any)?.elementType === "failure"))
+    ? Object.fromEntries(
+        Object.entries(resultWithIgnored).filter(([key]) => transformerTest.retainAttributes!.includes(key))
+      )
+    : resultWithIgnored;
   // log.info(
   //   "################################ runTransformerTestInMemory result",
   //   // resultWithRetain

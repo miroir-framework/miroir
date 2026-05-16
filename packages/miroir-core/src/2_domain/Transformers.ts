@@ -33,6 +33,7 @@ import {
   transformer_ansiColumnsToJzodSchema_json,
   transformer_concatLists_json,
   transformer_filterList_json,
+  transformer_find_json,
   // MLS
   transformer_defaultValueForMLSchema_json,
   transformer_jzodTypeCheck_json,
@@ -87,6 +88,7 @@ export const transformer_duplicateApplicationModel: TransformerDefinition = tran
 export const transformer_ansiColumnsToJzodSchema: TransformerDefinition = transformer_ansiColumnsToJzodSchema_json as TransformerDefinition;
 export const transformer_concatLists: TransformerDefinition = transformer_concatLists_json as TransformerDefinition;
 export const transformer_filterList: TransformerDefinition = transformer_filterList_json as TransformerDefinition;
+export const transformer_find: TransformerDefinition = transformer_find_json as TransformerDefinition;
 // meta model
 export const transformer_entityDefinition_extractAttributes: TransformerDefinition = transformer_metaModel_entityDefinition_extractAttributes_json as TransformerDefinition;
 
@@ -146,6 +148,7 @@ export const miroirCoreTransformers: Record<string,TransformerDefinition> = {
   transformer_mergeIntoObject,
   transformer_concatLists,
   transformer_filterList,
+  transformer_find,
   // transformer_constantBigint,
   // MLS
   // transformer_defaultValueForMLSchema,

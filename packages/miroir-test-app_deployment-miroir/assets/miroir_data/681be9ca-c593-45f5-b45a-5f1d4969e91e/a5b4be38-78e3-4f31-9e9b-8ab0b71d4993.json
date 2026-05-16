@@ -7131,6 +7131,8 @@
                   }
                 },
                 "transformerParams": {},
+                "retainAttributes": ["queryFailure"],
+                "integrationTestExpectedValue": {"queryFailure": "QueryNotExecutable"},
                 "expectedValue": [{"id": 1, "active": true}, {"id": 3, "active": true}]
               },
               {
@@ -7163,8 +7165,7 @@
                   }
                 },
                 "transformerParams": {},
-                "unitTestExpectedValue": [],
-                "integrationTestExpectedValue": null
+                "expectedValue": []
               },
               {
                 "transformerTestType": "transformerTest",
@@ -7198,6 +7199,155 @@
                 "transformerParams": {},
                 "transformerRuntimeContext": {"myList": ["a", "b", "c", "b"]},
                 "expectedValue": ["b", "b"]
+              }
+            ]
+          },
+          {
+            "transformerTestType": "transformerTestSuite",
+            "transformerTestLabel": "find",
+            "transformerTests": [
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "find returns first element where predicate is true (boolExpr ==)",
+                "transformerName": "find_basicStringFind",
+                "transformer": {
+                  "transformerType": "find",
+                  "interpolation": "runtime",
+                  "referenceToOuterObject": "__element__",
+                  "applyTo": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "value": ["a", "b", "c", "b"]
+                  },
+                  "predicate": {
+                    "transformerType": "boolExpr",
+                    "interpolation": "runtime",
+                    "operator": "==",
+                    "left": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referenceName": "__element__"
+                    },
+                    "right": {
+                      "transformerType": "returnValue",
+                      "interpolation": "runtime",
+                      "value": "b"
+                    }
+                  }
+                },
+                "transformerParams": {},
+                "expectedValue": "b"
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "find returns first object where attribute matches",
+                "transformerName": "find_objectAttributeFind",
+                "transformer": {
+                  "transformerType": "find",
+                  "interpolation": "runtime",
+                  "referenceToOuterObject": "__element__",
+                  "applyTo": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "value": [
+                      {"id": 1, "active": true},
+                      {"id": 2, "active": false},
+                      {"id": 3, "active": true}
+                    ]
+                  },
+                  "predicate": {
+                    "transformerType": "boolExpr",
+                    "interpolation": "runtime",
+                    "operator": "==",
+                    "left": {
+                      "transformerType": "accessDynamicPath",
+                      "interpolation": "runtime",
+                      "objectAccessPath": [
+                        {
+                          "transformerType": "getFromContext",
+                          "interpolation": "runtime",
+                          "referenceName": "__element__"
+                        },
+                        "active"
+                      ]
+                    },
+                    "right": {
+                      "transformerType": "returnValue",
+                      "interpolation": "runtime",
+                      "value": true
+                    }
+                  }
+                },
+                "transformerParams": {},
+                "retainAttributes": ["queryFailure"],
+                "integrationTestExpectedValue": {"queryFailure": "QueryNotExecutable"},
+                "expectedValue": {"id": 1, "active": true}
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "find returns null when no element matches",
+                "transformerName": "find_noMatch",
+                "transformer": {
+                  "transformerType": "find",
+                  "interpolation": "runtime",
+                  "referenceToOuterObject": "__element__",
+                  "applyTo": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "value": ["a", "b", "c"]
+                  },
+                  "predicate": {
+                    "transformerType": "boolExpr",
+                    "interpolation": "runtime",
+                    "operator": "==",
+                    "left": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referenceName": "__element__"
+                    },
+                    "right": {
+                      "transformerType": "returnValue",
+                      "interpolation": "runtime",
+                      "value": "z"
+                    }
+                  }
+                },
+                "transformerParams": {},
+                "unitTestExpectedValue": null,
+                "integrationTestExpectedValue": null
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "find with context reference for applyTo",
+                "transformerName": "find_contextReference",
+                "transformer": {
+                  "transformerType": "find",
+                  "interpolation": "runtime",
+                  "referenceToOuterObject": "__element__",
+                  "applyTo": {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referenceName": "myList"
+                  },
+                  "predicate": {
+                    "transformerType": "boolExpr",
+                    "interpolation": "runtime",
+                    "operator": "==",
+                    "left": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referenceName": "__element__"
+                    },
+                    "right": {
+                      "transformerType": "returnValue",
+                      "interpolation": "runtime",
+                      "value": "b"
+                    }
+                  }
+                },
+                "transformerParams": {},
+                "transformerRuntimeContext": {"myList": ["a", "b", "c", "b"]},
+                "expectedValue": "b"
               }
             ]
           }
