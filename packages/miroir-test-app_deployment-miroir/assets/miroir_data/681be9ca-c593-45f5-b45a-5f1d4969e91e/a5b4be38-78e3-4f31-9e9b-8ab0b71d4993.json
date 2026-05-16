@@ -7596,6 +7596,172 @@
                 "expectedValue": 4
               }
             ]
+          },
+          {
+            "transformerTestType": "transformerTestSuite",
+            "transformerTestLabel": "stringOp",
+            "transformerTests": [
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "stringOp toLowerCase",
+                "transformerName": "stringOp_toLowerCase",
+                "transformer": {
+                  "transformerType": "stringOp",
+                  "interpolation": "runtime",
+                  "op": "toLowerCase",
+                  "applyTo": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "value": "Hello World"
+                  }
+                },
+                "transformerParams": {},
+                "expectedValue": "hello world"
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "stringOp toUpperCase",
+                "transformerName": "stringOp_toUpperCase",
+                "transformer": {
+                  "transformerType": "stringOp",
+                  "interpolation": "runtime",
+                  "op": "toUpperCase",
+                  "applyTo": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "value": "hello"
+                  }
+                },
+                "transformerParams": {},
+                "expectedValue": "HELLO"
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "stringOp trim",
+                "transformerName": "stringOp_trim",
+                "transformer": {
+                  "transformerType": "stringOp",
+                  "interpolation": "runtime",
+                  "op": "trim",
+                  "applyTo": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "value": "  hello  "
+                  }
+                },
+                "transformerParams": {},
+                "expectedValue": "hello"
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "stringOp substring",
+                "transformerName": "stringOp_substring",
+                "transformer": {
+                  "transformerType": "stringOp",
+                  "interpolation": "runtime",
+                  "op": "substring",
+                  "applyTo": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "value": "hello world"
+                  },
+                  "start": 1,
+                  "length": 5
+                },
+                "transformerParams": {},
+                "expectedValue": "hello"
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "stringOp replace",
+                "transformerName": "stringOp_replace",
+                "transformer": {
+                  "transformerType": "stringOp",
+                  "interpolation": "runtime",
+                  "op": "replace",
+                  "applyTo": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "value": "hello world"
+                  },
+                  "from": "world",
+                  "to": "earth"
+                },
+                "transformerParams": {},
+                "expectedValue": "hello earth"
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "stringOp length",
+                "transformerName": "stringOp_length",
+                "transformer": {
+                  "transformerType": "stringOp",
+                  "interpolation": "runtime",
+                  "op": "length",
+                  "applyTo": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "value": "hello"
+                  }
+                },
+                "transformerParams": {},
+                "expectedValue": 5
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "stringOp split",
+                "transformerName": "stringOp_split",
+                "transformer": {
+                  "transformerType": "stringOp",
+                  "interpolation": "runtime",
+                  "op": "split",
+                  "applyTo": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "value": "a,b,c"
+                  },
+                  "separator": ","
+                },
+                "transformerParams": {},
+                "expectedValue": ["a", "b", "c"]
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "stringOp join",
+                "transformerName": "stringOp_join",
+                "transformer": {
+                  "transformerType": "stringOp",
+                  "interpolation": "runtime",
+                  "op": "join",
+                  "applyTo": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "value": ["a", "b", "c"]
+                  },
+                  "separator": "-"
+                },
+                "transformerParams": {},
+                "expectedValue": "a-b-c"
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "stringOp toLowerCase with context reference",
+                "transformerName": "stringOp_toLowerCase_contextRef",
+                "transformer": {
+                  "transformerType": "stringOp",
+                  "interpolation": "runtime",
+                  "op": "toLowerCase",
+                  "applyTo": {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referenceName": "myString"
+                  }
+                },
+                "transformerParams": {},
+                "transformerRuntimeContext": {"myString": "HELLO WORLD"},
+                "expectedValue": "hello world"
+              }
+            ]
           }
         ]
       }

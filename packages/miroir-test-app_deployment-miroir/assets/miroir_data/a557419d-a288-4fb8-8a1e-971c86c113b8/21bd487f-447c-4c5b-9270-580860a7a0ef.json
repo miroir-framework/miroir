@@ -1,0 +1,38 @@
+{
+  "uuid": "21bd487f-447c-4c5b-9270-580860a7a0ef",
+  "name": "stringOp",
+  "defaultLabel": "stringOp",
+  "description": "Applies a string operation (toLowerCase, toUpperCase, trim, substring, replace, split, join, length) to a string or array value.",
+  "parentUuid": "a557419d-a288-4fb8-8a1e-971c86c113b8",
+  "parentDefinitionVersionUuid": "54a16d69-c1f0-4dd7-aba4-a2cda883586c",
+  "parentName": "TransformerDefinition",
+  "classification": "basic",
+  "transformerInterface": {
+    "inputOutput": { "input": "any", "output": "any" },
+    "transformerParameterSchema": {
+      "transformerType": { "type": "literal", "definition": "stringOp" },
+      "transformerDefinition": {
+        "type": "object",
+        "definition": {
+          "applyTo": { "type": "any", "optional": true, "description": "The string (or array for join) to operate on." },
+          "op": {
+            "type": "enum",
+            "definition": ["substring", "trim", "toLowerCase", "toUpperCase", "replace", "split", "join", "length"],
+            "description": "The string operation to apply."
+          },
+          "start": { "type": "number", "optional": true, "description": "1-based start position for substring." },
+          "length": { "type": "number", "optional": true, "description": "Number of characters for substring." },
+          "separator": { "type": "string", "optional": true, "description": "Delimiter string for split or join." },
+          "from": { "type": "string", "optional": true, "description": "Substring to find for replace." },
+          "to": { "type": "string", "optional": true, "description": "Replacement string for replace." }
+        }
+      }
+    },
+    "transformerResultSchema": { "returns": "mlSchema", "definition": { "type": "any" } }
+  },
+  "transformerImplementation": {
+    "transformerImplementationType": "libraryImplementation",
+    "inMemoryImplementationFunctionName": "handleTransformer_stringOp",
+    "sqlImplementationFunctionName": "sqlStringForStringOpTransformer"
+  }
+}

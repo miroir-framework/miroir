@@ -37,6 +37,7 @@ import {
   transformer_object_fromEntries_json,
   transformer_sortList_json,
   transformer_listLength_json,
+  transformer_stringOp_json,
   // MLS
   transformer_defaultValueForMLSchema_json,
   transformer_jzodTypeCheck_json,
@@ -95,6 +96,7 @@ export const transformer_find: TransformerDefinition = transformer_find_json as 
 export const transformer_object_fromEntries: TransformerDefinition = transformer_object_fromEntries_json as TransformerDefinition;
 export const transformer_sortList: TransformerDefinition = transformer_sortList_json as TransformerDefinition;
 export const transformer_listLength: TransformerDefinition = transformer_listLength_json as TransformerDefinition;
+export const transformer_stringOp: TransformerDefinition = transformer_stringOp_json as TransformerDefinition;
 // meta model
 export const transformer_entityDefinition_extractAttributes: TransformerDefinition = transformer_metaModel_entityDefinition_extractAttributes_json as TransformerDefinition;
 
@@ -158,6 +160,7 @@ export const miroirCoreTransformers: Record<string,TransformerDefinition> = {
   transformer_object_fromEntries,
   transformer_sortList,
   transformer_listLength,
+  transformer_stringOp,
   // transformer_constantBigint,
   // MLS
   // transformer_defaultValueForMLSchema,

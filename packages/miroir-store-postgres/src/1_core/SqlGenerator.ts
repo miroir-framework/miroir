@@ -32,6 +32,7 @@ import {
   type CoreTransformerForBuildPlusRuntime_find,
   type CoreTransformerForBuildPlusRuntime_sortList,
   type CoreTransformerForBuildPlusRuntime_listLength,
+  type CoreTransformerForBuildPlusRuntime_stringOp,
   defaultMetaModelEnvironment,
   defaultTransformerInput,
   type CoreTransformerForBuildPlusRuntime_ifThenElse,
@@ -215,6 +216,7 @@ const sqlTransformerImplementations: Record<string, ITransformerHandler<any>> = 
   sqlStringForFindTransformer,
   sqlStringForSortListTransformer,
   sqlStringForListLengthTransformer,
+  sqlStringForStringOpTransformer,
   sqlStringForUniqueTransformer,
 }
 
@@ -3732,6 +3734,122 @@ function sqlStringForListLengthTransformer(
     extraWith,
     resultAccessPath: topLevelTransformer ? [0, outputColName] : undefined,
     columnNameContainingJsonValue: topLevelTransformer ? outputColName : undefined,
+    usedContextEntries: applyTo.usedContextEntries ?? [],
+  };
+}
+
+// ################################################################################################
+function sqlStringForStringOpTransformer(
+  actionRuntimeTransformer: CoreTransformerForBuildPlusRuntime_stringOp,
+  preparedStatementParametersCount: number,
+  indentLevel: number,
+  queryParams: Record<string, any>,
+  definedContextEntries: Record<string, SqlContextEntry>,
+  useAccessPathForContextReference: boolean,
+  topLevelTransformer: boolean,
+  withClauseColumnName?: string,
+  iterateOn?: string,
+): Domain2QueryReturnType<SqlStringForTransformerElementValue> {
+  const transformerLabel: string = (actionRuntimeTransformer as any).label ?? actionRuntimeTransformer.transformerType;
+  const op = actionRuntimeTransformer.op;
+  const outputColName = withClauseColumnName ?? transformerLabel;
+
+  // Resolve applyTo as a top-level query (full SELECT), following the listLength pattern
+  const applyTo = sqlStringForApplyTo(
+    actionRuntimeTransformer as any,
+    preparedStatementParametersCount,
+    indentLevel + 2,
+    queryParams,
+    definedContextEntries,
+    useAccessPathForContextReference,
+    topLevelTransformer,
+  );
+
+  if (applyTo instanceof Domain2ElementFailed) return applyTo;
+
+  const preparedStatementParameters: any[] = [...(applyTo.preparedStatementParameters ?? [])];
+  let newPreparedStatementParametersCount = preparedStatementParametersCount + preparedStatementParameters.length;
+
+  // Column name in the applyTo subquery result
+  const applyToColName = String(applyTo.resultAccessPath?.[1] ?? "constantString");
+  const applyToAlias = transformerLabel + "_applyTo";
+
+  let sqlExpr: string;
+  let resultType: "scalar" | "json" | "json_array" = "scalar";
+
+  switch (op) {
+    case "toLowerCase":
+      sqlExpr = `LOWER("${applyToAlias}"."${applyToColName}")`;
+      break;
+    case "toUpperCase":
+      sqlExpr = `UPPER("${applyToAlias}"."${applyToColName}")`;
+      break;
+    case "trim":
+      sqlExpr = `TRIM("${applyToAlias}"."${applyToColName}")`;
+      break;
+    case "length":
+      sqlExpr = `LENGTH("${applyToAlias}"."${applyToColName}")`;
+      break;
+    case "substring": {
+      const start = actionRuntimeTransformer.start ?? 1; // 1-based (SQL style)
+      const len = actionRuntimeTransformer.length;
+      if (len !== undefined) {
+        sqlExpr = `SUBSTRING("${applyToAlias}"."${applyToColName}" FROM ${start} FOR ${len})`;
+      } else {
+        sqlExpr = `SUBSTRING("${applyToAlias}"."${applyToColName}" FROM ${start})`;
+      }
+      break;
+    }
+    case "replace": {
+      const fromIdx = newPreparedStatementParametersCount + 1;
+      const toIdx = fromIdx + 1;
+      preparedStatementParameters.push(actionRuntimeTransformer.from ?? "", actionRuntimeTransformer.to ?? "");
+      newPreparedStatementParametersCount += 2;
+      sqlExpr = `REPLACE("${applyToAlias}"."${applyToColName}", $${fromIdx}::text, $${toIdx}::text)`;
+      break;
+    }
+    case "split": {
+      const sepIdx = newPreparedStatementParametersCount + 1;
+      preparedStatementParameters.push(actionRuntimeTransformer.separator ?? "");
+      newPreparedStatementParametersCount += 1;
+      sqlExpr = `to_jsonb(STRING_TO_ARRAY("${applyToAlias}"."${applyToColName}", $${sepIdx}::text))`;
+      resultType = "json";
+      break;
+    }
+    case "join": {
+      const sepIdx = newPreparedStatementParametersCount + 1;
+      preparedStatementParameters.push(actionRuntimeTransformer.separator ?? "");
+      newPreparedStatementParametersCount += 1;
+      sqlExpr = `ARRAY_TO_STRING(ARRAY(SELECT elem FROM jsonb_array_elements_text("${applyToAlias}"."${applyToColName}") AS elem), $${sepIdx}::text)`;
+      break;
+    }
+    default:
+      return new Domain2ElementFailed({
+        queryFailure: "QueryNotExecutable",
+        query: actionRuntimeTransformer as any,
+        failureMessage: `sqlStringForStringOpTransformer unknown op: ${(actionRuntimeTransformer as any).op}`,
+      });
+  }
+
+  const extraWith: { name: string; sql: string }[] = [...(applyTo.extraWith ?? [])];
+
+  const resultSql = sqlQuery(indentLevel, {
+    queryPart: "query",
+    select: [{ queryPart: "defineColumn", value: sqlExpr, as: outputColName }],
+    from: [{
+      queryPart: "hereTable",
+      definition: `(${applyTo.sqlStringOrObject})`,
+      as: applyToAlias,
+    }],
+  });
+
+  return {
+    type: resultType,
+    sqlStringOrObject: resultSql,
+    preparedStatementParameters,
+    extraWith,
+    resultAccessPath: topLevelTransformer ? [0, outputColName] : undefined,
+    columnNameContainingJsonValue: resultType !== "scalar" && topLevelTransformer ? outputColName : undefined,
     usedContextEntries: applyTo.usedContextEntries ?? [],
   };
 }

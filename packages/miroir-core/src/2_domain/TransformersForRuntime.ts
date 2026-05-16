@@ -22,6 +22,7 @@ import {
   type CoreTransformerForBuildPlusRuntime_object_fromEntries,
   type CoreTransformerForBuildPlusRuntime_sortList,
   type CoreTransformerForBuildPlusRuntime_listLength,
+  type CoreTransformerForBuildPlusRuntime_stringOp,
   type CoreTransformerForBuildPlusRuntime_pickFromList,
   type CoreTransformerForBuildPlusRuntime_indexListBy,
   type CoreTransformerForBuildPlusRuntime_listReducerToSpreadObject,
@@ -119,6 +120,7 @@ import {
   transformer_object_fromEntries,
   transformer_sortList,
   transformer_listLength,
+  transformer_stringOp,
   type ResolveBuildTransformersTo,
   type Step,
   transformer_getActiveDeployment,
@@ -760,6 +762,7 @@ const inMemoryTransformerImplementations: Record<string, ITransformerHandler<any
   handleTransformer_object_fromEntries,
   handleTransformer_sortList,
   handleTransformer_listLength,
+  handleTransformer_stringOp,
 };
 
 // ################################################################################################
@@ -802,6 +805,7 @@ export const applicationTransformerDefinitions: Record<string, TransformerDefini
   object_fromEntries: transformer_object_fromEntries,
   sortList: transformer_sortList,
   listLength: transformer_listLength,
+  stringOp: transformer_stringOp,
   defaultValueForMLSchema: transformer_defaultValueForMLSchema,
   // MLS
   ...Object.fromEntries(
@@ -4846,4 +4850,141 @@ export function handleTransformer_listLength(
     });
   }
   return resolvedApplyTo.length;
+}
+
+// ################################################################################################
+export function handleTransformer_stringOp(
+  step: Step,
+  transformerPath: string[],
+  label: string | undefined,
+  transformer: CoreTransformerForBuildPlusRuntime_stringOp,
+  resolveBuildTransformersTo: ResolveBuildTransformersTo,
+  modelEnvironment: MiroirModelEnvironment,
+  queryParams: Record<string, any>,
+  contextResults?: Record<string, any>,
+  reduxDeploymentsState?: ReduxDeploymentsState | undefined
+): TransformerReturnType<any> {
+  const resolvedApplyTo = resolveApplyTo_legacy(
+    transformer as any,
+    step,
+    transformerPath,
+    resolveBuildTransformersTo,
+    modelEnvironment,
+    queryParams,
+    contextResults,
+    label,
+    reduxDeploymentsState
+  );
+  if (resolvedApplyTo instanceof TransformerFailure) {
+    log.error("handleTransformer_stringOp can not apply to failed resolvedReference", resolvedApplyTo);
+    return new TransformerFailure({
+      queryFailure: "FailedTransformer",
+      transformerPath,
+      failureOrigin: ["handleTransformer_stringOp"],
+      queryContext: "handleTransformer_stringOp can not apply to failed resolvedReference",
+      innerError: resolvedApplyTo,
+    });
+  }
+  switch (transformer.op) {
+    case "toLowerCase": {
+      if (typeof resolvedApplyTo !== "string") {
+        return new TransformerFailure({
+          queryFailure: "FailedTransformer",
+          transformerPath,
+          failureOrigin: ["handleTransformer_stringOp"],
+          failureMessage: "stringOp toLowerCase: applyTo is not a string, got: " + typeof resolvedApplyTo,
+        });
+      }
+      return resolvedApplyTo.toLowerCase();
+    }
+    case "toUpperCase": {
+      if (typeof resolvedApplyTo !== "string") {
+        return new TransformerFailure({
+          queryFailure: "FailedTransformer",
+          transformerPath,
+          failureOrigin: ["handleTransformer_stringOp"],
+          failureMessage: "stringOp toUpperCase: applyTo is not a string, got: " + typeof resolvedApplyTo,
+        });
+      }
+      return resolvedApplyTo.toUpperCase();
+    }
+    case "trim": {
+      if (typeof resolvedApplyTo !== "string") {
+        return new TransformerFailure({
+          queryFailure: "FailedTransformer",
+          transformerPath,
+          failureOrigin: ["handleTransformer_stringOp"],
+          failureMessage: "stringOp trim: applyTo is not a string, got: " + typeof resolvedApplyTo,
+        });
+      }
+      return resolvedApplyTo.trim();
+    }
+    case "length": {
+      if (typeof resolvedApplyTo !== "string") {
+        return new TransformerFailure({
+          queryFailure: "FailedTransformer",
+          transformerPath,
+          failureOrigin: ["handleTransformer_stringOp"],
+          failureMessage: "stringOp length: applyTo is not a string, got: " + typeof resolvedApplyTo,
+        });
+      }
+      return resolvedApplyTo.length;
+    }
+    case "substring": {
+      if (typeof resolvedApplyTo !== "string") {
+        return new TransformerFailure({
+          queryFailure: "FailedTransformer",
+          transformerPath,
+          failureOrigin: ["handleTransformer_stringOp"],
+          failureMessage: "stringOp substring: applyTo is not a string, got: " + typeof resolvedApplyTo,
+        });
+      }
+      const start = (transformer.start ?? 1) - 1; // convert 1-based to 0-based
+      const len = transformer.length;
+      return resolvedApplyTo.slice(start, len !== undefined ? start + len : undefined);
+    }
+    case "replace": {
+      if (typeof resolvedApplyTo !== "string") {
+        return new TransformerFailure({
+          queryFailure: "FailedTransformer",
+          transformerPath,
+          failureOrigin: ["handleTransformer_stringOp"],
+          failureMessage: "stringOp replace: applyTo is not a string, got: " + typeof resolvedApplyTo,
+        });
+      }
+      const from = transformer.from ?? "";
+      const to = transformer.to ?? "";
+      return resolvedApplyTo.split(from).join(to);
+    }
+    case "split": {
+      if (typeof resolvedApplyTo !== "string") {
+        return new TransformerFailure({
+          queryFailure: "FailedTransformer",
+          transformerPath,
+          failureOrigin: ["handleTransformer_stringOp"],
+          failureMessage: "stringOp split: applyTo is not a string, got: " + typeof resolvedApplyTo,
+        });
+      }
+      return resolvedApplyTo.split(transformer.separator ?? "");
+    }
+    case "join": {
+      if (!Array.isArray(resolvedApplyTo)) {
+        return new TransformerFailure({
+          queryFailure: "FailedTransformer",
+          transformerPath,
+          failureOrigin: ["handleTransformer_stringOp"],
+          failureMessage: "stringOp join: applyTo is not an array, got: " + typeof resolvedApplyTo,
+        });
+      }
+      return resolvedApplyTo.join(transformer.separator ?? "");
+    }
+    default: {
+      return new TransformerFailure({
+        queryFailure: "FailedTransformer",
+        transformerPath,
+        failureOrigin: ["handleTransformer_stringOp"],
+        failureMessage: "stringOp: unknown op: " + (transformer as any).op,
+      });
+    }
+  }
 }

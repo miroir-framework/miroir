@@ -4291,6 +4291,74 @@ export const miroirFundamentalJzodSchema = {
           }
         }
       },
+      "coreTransformerForBuildPlusRuntime_stringOp": {
+        "type": "object",
+        "extend": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "transformerForBuildPlusRuntime_optional_Abstract"
+            },
+            "context": {}
+          }
+        ],
+        "definition": {
+          "transformerType": {
+            "type": "literal",
+            "definition": "stringOp"
+          },
+          "applyTo": {
+            "type": "schemaReference",
+            "optional": true,
+            "definition": {
+              "relativePath": "coreTransformerForBuildPlusRuntime",
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+            },
+            "context": {}
+          },
+          "op": {
+            "type": "enum",
+            "definition": [
+              "substring",
+              "trim",
+              "toLowerCase",
+              "toUpperCase",
+              "replace",
+              "split",
+              "join",
+              "length"
+            ],
+            "description": "The string operation to apply."
+          },
+          "start": {
+            "type": "number",
+            "optional": true,
+            "description": "1-based start position for substring."
+          },
+          "length": {
+            "type": "number",
+            "optional": true,
+            "description": "Number of characters for substring."
+          },
+          "separator": {
+            "type": "string",
+            "optional": true,
+            "description": "Delimiter string for split or join."
+          },
+          "from": {
+            "type": "string",
+            "optional": true,
+            "description": "Substring to find for replace."
+          },
+          "to": {
+            "type": "string",
+            "optional": true,
+            "description": "Replacement string for replace."
+          }
+        }
+      },
       "mlsTransformerForBuildPlusRuntime_resolveConditionalSchema": {
         "type": "object",
         "extend": [
@@ -4889,6 +4957,13 @@ export const miroirFundamentalJzodSchema = {
             "type": "schemaReference",
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "coreTransformerForBuildPlusRuntime_stringOp"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
               "relativePath": "coreTransformerForBuildPlusRuntime_dataflowSequence"
             }
           }
@@ -5135,6 +5210,13 @@ export const miroirFundamentalJzodSchema = {
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
               "relativePath": "coreTransformerForBuildPlusRuntime_listLength"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "coreTransformerForBuildPlusRuntime_stringOp"
             }
           },
           {
@@ -28458,6 +28540,13 @@ export const miroirFundamentalJzodSchema = {
             "type": "schemaReference",
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_coreTransformerForBuildPlusRuntime_stringOp"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
               "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_coreTransformerForBuildPlusRuntime_dataflowSequence"
             }
           }
@@ -29748,6 +29837,72 @@ export const miroirFundamentalJzodSchema = {
               "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_coreTransformerForBuildPlusRuntime",
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
             }
+          }
+        }
+      },
+      "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_coreTransformerForBuildPlusRuntime_stringOp": {
+        "type": "object",
+        "extend": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_optional_Abstract_extend"
+            }
+          }
+        ],
+        "definition": {
+          "transformerType": {
+            "type": "literal",
+            "definition": "stringOp"
+          },
+          "applyTo": {
+            "type": "schemaReference",
+            "optional": true,
+            "definition": {
+              "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_coreTransformerForBuildPlusRuntime",
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+            }
+          },
+          "op": {
+            "type": "enum",
+            "definition": [
+              "substring",
+              "trim",
+              "toLowerCase",
+              "toUpperCase",
+              "replace",
+              "split",
+              "join",
+              "length"
+            ],
+            "description": "The string operation to apply."
+          },
+          "start": {
+            "type": "number",
+            "optional": true,
+            "description": "1-based start position for substring."
+          },
+          "length": {
+            "type": "number",
+            "optional": true,
+            "description": "Number of characters for substring."
+          },
+          "separator": {
+            "type": "string",
+            "optional": true,
+            "description": "Delimiter string for split or join."
+          },
+          "from": {
+            "type": "string",
+            "optional": true,
+            "description": "Substring to find for replace."
+          },
+          "to": {
+            "type": "string",
+            "optional": true,
+            "description": "Replacement string for replace."
           }
         }
       },
@@ -42246,6 +42401,13 @@ export const miroirFundamentalJzodSchema = {
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
               "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_coreTransformerForBuildPlusRuntime_listLength"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_coreTransformerForBuildPlusRuntime_stringOp"
             }
           },
           {
