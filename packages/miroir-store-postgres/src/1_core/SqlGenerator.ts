@@ -35,6 +35,7 @@ import {
   type CoreTransformerForBuildPlusRuntime_stringOp,
   type CoreTransformerForBuildPlusRuntime_currentTimestamp,
   type CoreTransformerForBuildPlusRuntime_currentDate,
+  type CoreTransformerForBuildPlusRuntime_numericOp,
   defaultMetaModelEnvironment,
   defaultTransformerInput,
   type CoreTransformerForBuildPlusRuntime_ifThenElse,
@@ -221,6 +222,7 @@ const sqlTransformerImplementations: Record<string, ITransformerHandler<any>> = 
   sqlStringForStringOpTransformer,
   sqlStringForCurrentTimestampTransformer,
   sqlStringForCurrentDateTransformer,
+  sqlStringForNumericOpTransformer,
   sqlStringForUniqueTransformer,
 }
 
@@ -4921,10 +4923,102 @@ function sqlStringForCurrentDateTransformer(
 
 // ################################################################################################
 /**
+ * Generates SQL string for a numericOp transformer (subtraction, multiplication, division).
+ * Operations: '-', '*', '/'. For division, divisors are wrapped in NULLIF(..., 0).
+ */
+function sqlStringForNumericOpTransformer(
+  actionRuntimeTransformer: CoreTransformerForBuildPlusRuntime_numericOp,
+  preparedStatementParametersCount: number,
+  indentLevel: number,
+  queryParams: Record<string, any>,
+  definedContextEntries: Record<string, SqlContextEntry>,
+  useAccessPathForContextReference: boolean,
+  topLevelTransformer: boolean,
+  withClauseColumnName?: string,
+  iterateOn?: string,
+): Domain2QueryReturnType<SqlStringForTransformerElementValue> {
+  if (!actionRuntimeTransformer.args || actionRuntimeTransformer.args.length === 0) {
+    return new Domain2ElementFailed({
+      queryFailure: "QueryNotExecutable",
+      query: actionRuntimeTransformer as any,
+      failureMessage: "sqlStringForNumericOpTransformer requires at least one argument",
+    });
+  }
+
+  let preparedStatementParameters: any[] = [];
+
+  const evaluatedArgs: SqlStringForTransformerElementValue[] = [];
+  for (const arg of actionRuntimeTransformer.args) {
+    const evaluatedArg = sqlStringForRuntimeTransformer(
+      arg,
+      preparedStatementParameters.length + preparedStatementParametersCount,
+      indentLevel + 1,
+      queryParams,
+      definedContextEntries,
+      useAccessPathForContextReference,
+      false
+    );
+    if (evaluatedArg instanceof Domain2ElementFailed) {
+      return evaluatedArg;
+    }
+    if (evaluatedArg.type !== "scalar") {
+      return new Domain2ElementFailed({
+        queryFailure: "QueryNotExecutable",
+        query: actionRuntimeTransformer as any,
+        failureMessage: `sqlStringForNumericOpTransformer argument is not scalar`,
+      });
+    }
+    evaluatedArgs.push(evaluatedArg);
+    if (evaluatedArg.preparedStatementParameters) {
+      preparedStatementParameters.push(...evaluatedArg.preparedStatementParameters);
+    }
+  }
+
+  const allUsedContextEntries: string[] = [];
+  for (const arg of evaluatedArgs) {
+    if (arg.usedContextEntries) {
+      allUsedContextEntries.push(...arg.usedContextEntries);
+    }
+  }
+
+  const outputColName = withClauseColumnName ?? "numericOp";
+  const sqlOp = actionRuntimeTransformer.op;
+
+  let sqlExpression = evaluatedArgs[0].sqlStringOrObject;
+  for (let i = 1; i < evaluatedArgs.length; i++) {
+    const operand = sqlOp === "/"
+      ? `NULLIF(${evaluatedArgs[i].sqlStringOrObject}, 0)`
+      : evaluatedArgs[i].sqlStringOrObject;
+    sqlExpression = `${sqlExpression} ${sqlOp} ${operand}`;
+  }
+
+  return {
+    type: "scalar",
+    sqlStringOrObject: topLevelTransformer
+      ? sqlQuery(undefined, {
+          queryPart: "query",
+          select: [
+            {
+              queryPart: "defineColumn",
+              value: sqlExpression,
+              as: outputColName,
+            },
+          ],
+        })
+      : sqlExpression,
+    preparedStatementParameters,
+    resultAccessPath: topLevelTransformer ? [0, outputColName] : undefined,
+    columnNameContainingJsonValue: topLevelTransformer ? outputColName : undefined,
+    usedContextEntries: allUsedContextEntries,
+  };
+}
+
+// ################################################################################################
+/**
  * TODO: WILL NOT WORK IN THE GENERAL CAS, NEEDS TO BE DONE AS EXPRESSION, NOT AS FULL SUBQUERY
- * 
+ *
  * Generates SQL string for a Mustache string template transformer.
- * @param actionRuntimeTransformer 
+ * @param actionRuntimeTransformer
  * @param preparedStatementParametersCount 
  * @param indentLevel 
  * @param queryParams 

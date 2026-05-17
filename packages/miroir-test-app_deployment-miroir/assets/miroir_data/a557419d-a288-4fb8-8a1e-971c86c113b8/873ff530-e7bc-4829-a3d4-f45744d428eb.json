@@ -1,0 +1,52 @@
+{
+  "uuid": "873ff530-e7bc-4829-a3d4-f45744d428eb",
+  "name": "numericOp",
+  "defaultLabel": "numericOp",
+  "description": "Performs numeric arithmetic operations on a list of numbers (subtraction, multiplication, division). Evaluates arguments left-to-right. Returns error when args is empty, types are not numbers, or division by zero.",
+  "parentUuid": "a557419d-a288-4fb8-8a1e-971c86c113b8",
+  "parentDefinitionVersionUuid": "54a16d69-c1f0-4dd7-aba4-a2cda883586c",
+  "parentName": "TransformerDefinition",
+  "classification": "basic",
+  "transformerInterface": {
+    "inputOutput": {
+      "input": "any",
+      "output": "number"
+    },
+    "transformerParameterSchema": {
+      "transformerType": {
+        "type": "literal",
+        "definition": "numericOp"
+      },
+      "transformerDefinition": {
+        "type": "object",
+        "definition": {
+          "op": {
+            "type": "enum",
+            "definition": ["-", "*", "/"]
+          },
+          "args": {
+            "type": "array",
+            "definition": {
+              "type": "schemaReference",
+              "definition": {
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                "relativePath": "transformer"
+              }
+            }
+          }
+        }
+      }
+    },
+    "transformerResultSchema": {
+      "returns": "mlSchema",
+      "definition": {
+        "type": "number"
+      }
+    }
+  },
+  "transformerImplementation": {
+    "transformerImplementationType": "libraryImplementation",
+    "inMemoryImplementationFunctionName": "handleTransformer_numericOp",
+    "sqlImplementationFunctionName": "sqlStringForNumericOpTransformer"
+  }
+}

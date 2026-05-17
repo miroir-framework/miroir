@@ -110,6 +110,8 @@ export {
   coreTransformerForBuildPlusRuntime_currentTimestamp,
   CoreTransformerForBuildPlusRuntime_currentDate,
   coreTransformerForBuildPlusRuntime_currentDate,
+  CoreTransformerForBuildPlusRuntime_numericOp,
+  coreTransformerForBuildPlusRuntime_numericOp,
   CoreTransformerForBuildPlusRuntime_constantAsExtractor,
   coreTransformerForBuildPlusRuntime_constantAsExtractor,
   CoreTransformerForBuildPlusRuntime_createObject,

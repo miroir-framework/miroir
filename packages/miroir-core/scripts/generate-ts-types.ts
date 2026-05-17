@@ -213,6 +213,7 @@ export type CoreTransformerForBuildPlusRuntime =
   | CoreTransformerForBuildPlusRuntime_stringOp
   | CoreTransformerForBuildPlusRuntime_currentTimestamp
   | CoreTransformerForBuildPlusRuntime_currentDate
+  | CoreTransformerForBuildPlusRuntime_numericOp
   | CoreTransformerForBuildPlusRuntime_InnerReference
   | CoreTransformerForBuildPlusRuntime_dataflowSequence
 ;
@@ -272,6 +273,7 @@ export const coreTransformerForBuildPlusRuntime: z.ZodType<CoreTransformerForBui
     coreTransformerForBuildPlusRuntime_stringOp,
     coreTransformerForBuildPlusRuntime_currentTimestamp,
     coreTransformerForBuildPlusRuntime_currentDate,
+    coreTransformerForBuildPlusRuntime_numericOp,
     coreTransformerForBuildPlusRuntime_InnerReference,
     coreTransformerForBuildPlusRuntime_dataflowSequence,
   ]);

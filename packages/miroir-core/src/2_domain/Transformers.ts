@@ -40,6 +40,7 @@ import {
   transformer_stringOp_json,
   transformer_currentTimestamp_json,
   transformer_currentDate_json,
+  transformer_numericOp_json,
   // MLS
   transformer_defaultValueForMLSchema_json,
   transformer_jzodTypeCheck_json,
@@ -101,6 +102,7 @@ export const transformer_listLength: TransformerDefinition = transformer_listLen
 export const transformer_stringOp: TransformerDefinition = transformer_stringOp_json as TransformerDefinition;
 export const transformer_currentTimestamp: TransformerDefinition = transformer_currentTimestamp_json as TransformerDefinition;
 export const transformer_currentDate: TransformerDefinition = transformer_currentDate_json as TransformerDefinition;
+export const transformer_numericOp: TransformerDefinition = transformer_numericOp_json as TransformerDefinition;
 // meta model
 export const transformer_entityDefinition_extractAttributes: TransformerDefinition = transformer_metaModel_entityDefinition_extractAttributes_json as TransformerDefinition;
 
@@ -167,6 +169,7 @@ export const miroirCoreTransformers: Record<string,TransformerDefinition> = {
   transformer_stringOp,
   transformer_currentTimestamp,
   transformer_currentDate,
+  transformer_numericOp,
   // transformer_constantBigint,
   // MLS
   // transformer_defaultValueForMLSchema,

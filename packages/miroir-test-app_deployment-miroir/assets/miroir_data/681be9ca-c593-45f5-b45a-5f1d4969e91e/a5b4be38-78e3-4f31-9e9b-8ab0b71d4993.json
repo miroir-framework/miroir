@@ -7830,6 +7830,174 @@
                 "ignoreAttributes": ["date"]
               }
             ]
+          },
+          {
+            "transformerTestType": "transformerTestSuite",
+            "transformerTestLabel": "numericOp",
+            "transformerTests": [
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "numericOp subtracts two numbers",
+                "transformerName": "numericOp_subtract",
+                "transformer": {
+                  "transformerType": "numericOp",
+                  "interpolation": "runtime",
+                  "op": "-",
+                  "args": [
+                    {
+                      "transformerType": "returnValue",
+                      "mlSchema": { "type": "number" },
+                      "interpolation": "runtime",
+                      "value": 10
+                    },
+                    {
+                      "transformerType": "returnValue",
+                      "mlSchema": { "type": "number" },
+                      "interpolation": "runtime",
+                      "value": 3
+                    }
+                  ]
+                },
+                "transformerParams": {},
+                "expectedValue": 7
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "numericOp subtracts three numbers",
+                "transformerName": "numericOp_subtract3",
+                "transformer": {
+                  "transformerType": "numericOp",
+                  "interpolation": "runtime",
+                  "op": "-",
+                  "args": [
+                    {
+                      "transformerType": "returnValue",
+                      "mlSchema": { "type": "number" },
+                      "interpolation": "runtime",
+                      "value": 20
+                    },
+                    {
+                      "transformerType": "returnValue",
+                      "mlSchema": { "type": "number" },
+                      "interpolation": "runtime",
+                      "value": 5
+                    },
+                    {
+                      "transformerType": "returnValue",
+                      "mlSchema": { "type": "number" },
+                      "interpolation": "runtime",
+                      "value": 3
+                    }
+                  ]
+                },
+                "transformerParams": {},
+                "expectedValue": 12
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "numericOp multiplies two numbers",
+                "transformerName": "numericOp_multiply",
+                "transformer": {
+                  "transformerType": "numericOp",
+                  "interpolation": "runtime",
+                  "op": "*",
+                  "args": [
+                    {
+                      "transformerType": "returnValue",
+                      "mlSchema": { "type": "number" },
+                      "interpolation": "runtime",
+                      "value": 4
+                    },
+                    {
+                      "transformerType": "returnValue",
+                      "mlSchema": { "type": "number" },
+                      "interpolation": "runtime",
+                      "value": 3
+                    }
+                  ]
+                },
+                "transformerParams": {},
+                "expectedValue": 12
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "numericOp multiplies three numbers",
+                "transformerName": "numericOp_multiply3",
+                "transformer": {
+                  "transformerType": "numericOp",
+                  "interpolation": "runtime",
+                  "op": "*",
+                  "args": [
+                    {
+                      "transformerType": "returnValue",
+                      "mlSchema": { "type": "number" },
+                      "interpolation": "runtime",
+                      "value": 2
+                    },
+                    {
+                      "transformerType": "returnValue",
+                      "mlSchema": { "type": "number" },
+                      "interpolation": "runtime",
+                      "value": 3
+                    },
+                    {
+                      "transformerType": "returnValue",
+                      "mlSchema": { "type": "number" },
+                      "interpolation": "runtime",
+                      "value": 5
+                    }
+                  ]
+                },
+                "transformerParams": {},
+                "expectedValue": 30
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "numericOp divides two numbers",
+                "transformerName": "numericOp_divide",
+                "transformer": {
+                  "transformerType": "numericOp",
+                  "interpolation": "runtime",
+                  "op": "/",
+                  "args": [
+                    {
+                      "transformerType": "returnValue",
+                      "mlSchema": { "type": "number" },
+                      "interpolation": "runtime",
+                      "value": 10
+                    },
+                    {
+                      "transformerType": "returnValue",
+                      "mlSchema": { "type": "number" },
+                      "interpolation": "runtime",
+                      "value": 4
+                    }
+                  ]
+                },
+                "transformerParams": {},
+                "expectedValue": 2.5
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "numericOp single element returns it",
+                "transformerName": "numericOp_single",
+                "transformer": {
+                  "transformerType": "numericOp",
+                  "interpolation": "runtime",
+                  "op": "-",
+                  "args": [
+                    {
+                      "transformerType": "returnValue",
+                      "mlSchema": { "type": "number" },
+                      "interpolation": "runtime",
+                      "value": 42
+                    }
+                  ]
+                },
+                "transformerParams": {},
+                "expectedValue": 42
+              }
+            ]
           }
         ]
       }

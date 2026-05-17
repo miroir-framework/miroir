@@ -25,6 +25,7 @@ import {
   type CoreTransformerForBuildPlusRuntime_stringOp,
   type CoreTransformerForBuildPlusRuntime_currentTimestamp,
   type CoreTransformerForBuildPlusRuntime_currentDate,
+  type CoreTransformerForBuildPlusRuntime_numericOp,
   type CoreTransformerForBuildPlusRuntime_pickFromList,
   type CoreTransformerForBuildPlusRuntime_indexListBy,
   type CoreTransformerForBuildPlusRuntime_listReducerToSpreadObject,
@@ -125,6 +126,7 @@ import {
   transformer_stringOp,
   transformer_currentTimestamp,
   transformer_currentDate,
+  transformer_numericOp,
   type ResolveBuildTransformersTo,
   type Step,
   transformer_getActiveDeployment,
@@ -769,6 +771,7 @@ const inMemoryTransformerImplementations: Record<string, ITransformerHandler<any
   handleTransformer_stringOp,
   handleTransformer_currentTimestamp,
   handleTransformer_currentDate,
+  handleTransformer_numericOp,
 };
 
 // ################################################################################################
@@ -814,6 +817,7 @@ export const applicationTransformerDefinitions: Record<string, TransformerDefini
   stringOp: transformer_stringOp,
   currentTimestamp: transformer_currentTimestamp,
   currentDate: transformer_currentDate,
+  numericOp: transformer_numericOp,
   defaultValueForMLSchema: transformer_defaultValueForMLSchema,
   // MLS
   ...Object.fromEntries(
@@ -5025,4 +5029,102 @@ export function handleTransformer_currentDate(
   reduxDeploymentsState?: ReduxDeploymentsState | undefined
 ): TransformerReturnType<any> {
   return new Date().toISOString().split("T")[0];
+}
+
+// ################################################################################################
+/**
+ * handleTransformer_numericOp
+ * Implements numeric arithmetic operations (-, *, /) on a list of numbers.
+ * Evaluates arguments left-to-right.
+ *
+ * Error cases:
+ * - Empty args array returns TransformerFailure
+ * - Non-number operand returns TransformerFailure
+ * - Division by zero returns TransformerFailure
+ */
+export function handleTransformer_numericOp(
+  step: Step,
+  transformerPath: string[],
+  label: string | undefined,
+  transformer: CoreTransformerForBuildPlusRuntime_numericOp,
+  resolveBuildTransformersTo: ResolveBuildTransformersTo,
+  modelEnvironment: MiroirModelEnvironment,
+  transformerParams: Record<string, any>,
+  contextResults?: Record<string, any>,
+  reduxDeploymentsState?: ReduxDeploymentsState | undefined
+): TransformerReturnType<any> {
+  if (!transformer.args || transformer.args.length === 0) {
+    return new TransformerFailure({
+      queryFailure: "FailedTransformer",
+      transformerPath,
+      failureOrigin: ["handleTransformer_numericOp"],
+      failureMessage: `Cannot apply ${transformer.op} to empty args array`,
+    });
+  }
+
+  const evaluatedArgs: number[] = [];
+  for (let i = 0; i < transformer.args.length; i++) {
+    const argValue = defaultTransformers.transformer_extended_apply(
+      step,
+      [...transformerPath, "args", i.toString()],
+      transformer.label ? `${transformer.label}_arg${i}` : `arg${i}`,
+      transformer.args[i],
+      resolveBuildTransformersTo,
+      modelEnvironment,
+      transformerParams,
+      contextResults,
+      reduxDeploymentsState
+    );
+
+    if (argValue instanceof TransformerFailure) {
+      return new TransformerFailure({
+        queryFailure: "FailedTransformer",
+        transformerPath,
+        failureOrigin: ["handleTransformer_numericOp"],
+        failureMessage: `Failed to resolve argument at index ${i}`,
+        innerError: argValue,
+      });
+    }
+
+    if (typeof argValue !== "number") {
+      return new TransformerFailure({
+        queryFailure: "FailedTransformer",
+        transformerPath,
+        failureOrigin: ["handleTransformer_numericOp"],
+        failureMessage: `Argument at index ${i} is not a number: ${typeof argValue}`,
+      });
+    }
+
+    evaluatedArgs.push(argValue);
+  }
+
+  if (evaluatedArgs.length === 1) {
+    return evaluatedArgs[0];
+  }
+
+  let result = evaluatedArgs[0];
+  for (let i = 1; i < evaluatedArgs.length; i++) {
+    const next = evaluatedArgs[i];
+    switch (transformer.op) {
+      case "-":
+        result = result - next;
+        break;
+      case "*":
+        result = result * next;
+        break;
+      case "/":
+        if (next === 0) {
+          return new TransformerFailure({
+            queryFailure: "FailedTransformer",
+            transformerPath,
+            failureOrigin: ["handleTransformer_numericOp"],
+            failureMessage: `Division by zero at index ${i}`,
+          });
+        }
+        result = result / next;
+        break;
+    }
+  }
+
+  return result;
 }
