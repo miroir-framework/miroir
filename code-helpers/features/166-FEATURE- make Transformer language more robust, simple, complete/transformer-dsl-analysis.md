@@ -147,6 +147,7 @@ All three accept **primitive values** (string, number, boolean), **arrays**, and
 | transformerType | Description | In-memory | SQL |
 |---|---|---|---|
 | `+` | Addition (numbers) or concatenation (strings) | ✅ | ✅ |
+| `numericOp` | Unified numeric ops with `op: "-" | "*" | "/"` and `args: Transformer[]` | ✅ | ✅ |
 
 ### Analysis
 
@@ -157,7 +158,7 @@ All three accept **primitive values** (string, number, boolean), **arrays**, and
 - Type-safe: rejects mixed number/string operands
 
 **Potential issues**:
-- **Only addition/concatenation** — no subtraction, multiplication, division, or modulo
+- ~~**Only addition/concatenation** — no subtraction, multiplication, division, or modulo~~ **Resolved for subtraction/multiplication/division (ARITH-1/2/3); modulo remains open**
 - **No unary minus** (negation)
 - **No numeric functions**: `abs`, `floor`, `ceil`, `round`, `min`, `max` are absent
 - **`args` naming** is generic — could be confusing vs object/list operation `args`
@@ -167,9 +168,9 @@ All three accept **primitive values** (string, number, boolean), **arrays**, and
 
 | ID | Recommendation | Priority | Rationale |
 |---|---|---|---|
-| ARITH-1 | Add `-` (subtraction) transformer, same `args: Transformer[]` shape | High | Basic arithmetic necessity |
-| ARITH-2 | Add `*` (multiplication) transformer | High | Basic arithmetic necessity |
-| ARITH-3 | Add `/` (division) transformer with defined behavior for division by zero | High | Basic arithmetic necessity |
+| ARITH-1 | ~~Add `-` (subtraction) transformer, same `args: Transformer[]` shape~~ **DONE** | High | Basic arithmetic necessity |
+| ARITH-2 | ~~Add `*` (multiplication) transformer~~ **DONE** | High | Basic arithmetic necessity |
+| ARITH-3 | ~~Add `/` (division) transformer with defined behavior for division by zero~~ **DONE** | High | Basic arithmetic necessity |
 | ARITH-4 | Add `%` (modulo) transformer | Medium | Common in pagination, cycling logic |
 | ARITH-5 | Add `negate` / unary `-` transformer | Medium | Sign inversion |
 | ARITH-6 | Add `math` transformer with `function: "abs" \| "floor" \| "ceil" \| "round" \| "min" \| "max"` | Medium | All map directly to SQL functions |
@@ -291,6 +292,7 @@ All three accept **primitive values** (string, number, boolean), **arrays**, and
 |---|---|---|---|
 | `createObject` | Build an object from key→transformer map (parallel evaluation) | ✅ | ✅ |
 | `createObjectFromPairs` | Build an object from an array of `{ attributeKey, attributeValue }` definitions | ✅ | ✅ |
+| `object_fromEntries` | Build an object from key/value entry tuples | ✅ | ✅ |
 | `mergeIntoObject` | Shallow-merge a base object (`applyTo`) with an override object (`definition`) | ✅ | ✅ |
 | `getObjectEntries` | Return `Object.entries()` of an object | ✅ | ✅ |
 | `getObjectValues` | Return `Object.values()` of an object | ✅ | ✅ |
@@ -332,6 +334,11 @@ All three accept **primitive values** (string, number, boolean), **arrays**, and
 | transformerType | Description | In-memory | SQL |
 |---|---|---|---|
 | `mapList` | Map a transformer over each element of a list (or object values) | ✅ | ✅ |
+| `filterList` | Filter list elements with a predicate transformer | ✅ | ✅ |
+| `find` | Return first list element matching a predicate | ✅ | ✅ |
+| `sortList` | Sort a list by field/expression and direction | ✅ | ✅ |
+| `listLength` | Return list length as a number | ✅ | ✅ |
+| `concatLists` | Concatenate multiple lists | ✅ | ✅ |
 | `pickFromList` | Pick an element by index (supports negative indexing) | ✅ | ✅ |
 | `indexListBy` | Convert list to object keyed by an attribute | ✅ | ✅ |
 | `listReducerToSpreadObject` | Spread all objects in a list into one merged object | ✅ | ✅ |
@@ -349,18 +356,18 @@ All three accept **primitive values** (string, number, boolean), **arrays**, and
 - `getUniqueValues` maps to SQL `DISTINCT`
 
 **Potential issues — MAJOR GAPS**:
-- **No `filter` / `filterList`**: Cannot filter a list by a predicate. This is arguably the most critical missing collection operation. Currently, filtering requires `mapList` + `ifThenElse` returning `null` + a custom "remove nulls" step — extremely verbose
-- **No `find` / `findFirst`**: Cannot find the first element matching a predicate
+- ~~**No `filter` / `filterList`**: Cannot filter a list by a predicate. This is arguably the most critical missing collection operation. Currently, filtering requires `mapList` + `ifThenElse` returning `null` + a custom "remove nulls" step — extremely verbose~~ **DONE (LIST-1)**
+- ~~**No `find` / `findFirst`**: Cannot find the first element matching a predicate~~ **DONE (LIST-2)**
 - **No `flatMap`**: Cannot flatten nested lists produced by mapping
 - **No `reduce` / `fold`**: The only reducer is `listReducerToSpreadObject` (spread merge). No general-purpose reduce with accumulator
-- **No `sort`**: `orderBy` is available on some transformers but there's no standalone sort transformer
+- ~~**No `sort`**: `orderBy` is available on some transformers but there's no standalone sort transformer~~ **DONE (LIST-3)**
 - **No `some` / `any`**: Cannot test if any element matches a predicate (boolean result)
 - **No `every` / `all`**: Cannot test if all elements match a predicate (boolean result)
-- **No `concat` / `append`**: Cannot concatenate two lists
+- ~~**No `concat` / `append`**: Cannot concatenate two lists~~ **DONE (LIST-6)**
 - **No `flatten`**: Cannot flatten a list of lists
 - **No `zip`**: Cannot combine two lists element-wise
 - **No `take` / `drop` / `slice`**: Cannot take/skip N elements from a list
-- **No `length` / `count`**: Must use `aggregate` without `groupBy` to count — awkward. A direct `listLength` would be cleaner
+- ~~**No `length` / `count`**: Must use `aggregate` without `groupBy` to count — awkward. A direct `listLength` would be cleaner~~ **Resolved for `listLength` (LIST-4), aggregate gap note still applies for grouped counting use-cases**
 - **No `reverse`**: Cannot reverse a list
 - **No `head` / `tail`**: Must use `pickFromList` with index 0 / -1 — works but not idiomatic
 - **`mapList` on objects**: Works but semantics are unclear from the name. Consider a separate `mapObject` or rename to `map`
@@ -370,9 +377,9 @@ All three accept **primitive values** (string, number, boolean), **arrays**, and
 
 | ID | Recommendation | Priority | Status | Rationale |
 |---|---|---|---|---|
-| LIST-1 | **Add `filterList`**: `{ applyTo, predicate: Transformer (→ boolean) }` | **Critical** | | Most important missing operation. Maps to SQL `WHERE`. Without it, business logic requiring filtering is extremely verbose |
-| LIST-2 | Add `find` / `findFirst`: `{ applyTo, predicate }` → first matching element or `null` | High | | Common operation; maps to SQL `... WHERE ... LIMIT 1` |
-| LIST-3 | Add `sortList`: `{ applyTo, by: string \| Transformer, direction: "asc" \| "desc" }` | High | | Standalone sort; maps to SQL `ORDER BY` |
+| LIST-1 | **~~Add `filterList`~~**: `{ applyTo, predicate: Transformer (→ boolean) }` | **Critical** | **DONE** | Most important missing operation. Maps to SQL `WHERE`. Without it, business logic requiring filtering is extremely verbose |
+| LIST-2 | ~~Add `find` / `findFirst`~~: `{ applyTo, predicate }` → first matching element or `null` | High | **DONE** | Common operation; maps to SQL `... WHERE ... LIMIT 1` |
+| LIST-3 | ~~Add `sortList`~~: `{ applyTo, by: string \| Transformer, direction: "asc" \| "desc" }` | High | **DONE** | Standalone sort; maps to SQL `ORDER BY` |
 | LIST-4 | Add `listLength` / `count`: `{ applyTo }` → number | High | | Simpler than `aggregate`; maps to SQL `array_length` or `COUNT(*)` |
 | LIST-5 | Add `flatMap`: `{ applyTo, elementTransformer }` | Medium | | Maps to SQL `LATERAL`; essential for one-to-many transformations |
 | LIST-6 | Add `concatLists`: `{ lists: Transformer[] }` → merged list | Medium | DONE | Maps to SQL `ARRAY_CAT` or `UNION ALL` |
@@ -577,15 +584,15 @@ All handlers return `TransformerReturnType<T>` = `T | TransformerFailure`. `Tran
 - The only intentional side-effect in the transformer language — appropriately isolated
 
 **Potential issues**:
-- **No `currentTimestamp` / `now()`**: Cannot access current time — useful for audit trails, created_at fields. Maps to SQL `NOW()` / `CURRENT_TIMESTAMP`
-- **No `currentDate`**: Similarly useful
+- ~~**No `currentTimestamp` / `now()`**: Cannot access current time — useful for audit trails, created_at fields. Maps to SQL `NOW()` / `CURRENT_TIMESTAMP`~~ **DONE (SIDE-1)**
+- ~~**No `currentDate`**: Similarly useful~~ **DONE (SIDE-2)**
 
 ### Recommendations
 
 | ID | Recommendation | Priority | Rationale |
 |---|---|---|---|
-| SIDE-1 | Add `currentTimestamp` transformer returning ISO string | Medium | Maps to SQL `NOW()`. Common need for audit/tracking fields |
-| SIDE-2 | Add `currentDate` transformer | Low | Maps to SQL `CURRENT_DATE` |
+| SIDE-1 | ~~Add `currentTimestamp` transformer returning ISO string~~ **DONE** | Medium | Maps to SQL `NOW()`. Common need for audit/tracking fields |
+| SIDE-2 | ~~Add `currentDate` transformer~~ **DONE** | Low | Maps to SQL `CURRENT_DATE` |
 
 ---
 
@@ -662,8 +669,8 @@ Every transformer type exists in both `TransformerForBuild_X` and `TransformerFo
 
 | Category | Gap | Recommendation ID |
 |---|---|---|
-| **List operations** | No `filter` / `filterList` | LIST-1 |
-| **Arithmetic** | Only `+` — no subtraction, multiplication, division | ARITH-1, ARITH-2, ARITH-3 |
+| **List operations** | ~~No `filter` / `filterList`~~ **DONE** | ~~LIST-1~~ **DONE** |
+| **Arithmetic** | ~~Only `+` — no subtraction, multiplication, division~~ **DONE** | ~~ARITH-1, ARITH-2, ARITH-3~~ **DONE** |
 | **Error handling** | No `tryCatch` or `coalesce` for graceful fallbacks | ERR-1, ERR-2 |
 | **Boolean** | Legacy `transformerType` shortcuts (`"&&"`, `"isNotNull"`) not dispatched | BOOL-5 |
 | **Type conversion** | No `toNumber`, `toString` — data parsing is impossible | TYPE-1, TYPE-2 |
@@ -676,7 +683,7 @@ Every transformer type exists in both `TransformerForBuild_X` and `TransformerFo
 | Error handling | Fix `ifThenElse` and `dataflowObject` failure propagation | ERR-3, ERR-4 |
 | Aggregation | ~~Support `sum`, `avg`, `min`, `max` — not just `count`~~ | ~~AGG-1~~ **DONE** |
 | Objects | `pick` and `omit` transformers | OBJ-2, OBJ-3 |
-| Lists | `find`, `sortList`, `listLength` | LIST-2, LIST-3, LIST-4 |
+| Lists | ~~`find`, `sortList`~~ `listLength` | ~~LIST-2, LIST-3~~ LIST-4 |
 | Strings | String manipulation (`substring`, `trim`, `lower`, `upper`, `replace`, `split`, `join`, `length`) | STR-1 |
 | Variables | Fix `accessDynamicPath` initial accumulator; complete SQL impl | VAR-2, VAR-3 |
 | Sequencing | Implement or remove `dataflowSequence`; add failure propagation to `dataflowObject` | SEQ-1, SEQ-2 |
@@ -690,11 +697,11 @@ Every transformer type exists in both `TransformerForBuild_X` and `TransformerFo
 | Strings | Boolean string tests (`startsWith`, etc.) | STR-2 |
 | Boolean | `between` operator; guard-style `case` | BOOL-3, COND-2 |
 | Objects | `getObjectKeys`, `removeKey`, `hasKey` | OBJ-1, OBJ-5, OBJ-7 |
-| Lists | `flatMap`, `concatLists`, `some`/`every`, `slice`, `groupBy` | LIST-5, LIST-6, LIST-7, LIST-8, LIST-12 |
+| Lists | `flatMap`, ~~`concatLists`~~, `some`/`every`, `slice`, `groupBy` | LIST-5, ~~LIST-6~~, LIST-7, LIST-8, LIST-12 |
 | Aggregation | ~~`having` clause, `countDistinct`~~ | ~~AGG-2, AGG-4~~ **DONE** |
 | Functions | `pipe`/`compose`, deprecate `applyFunction`, `callTransformer` | FN-1, FN-2, FN-3 |
 | Type system | `toBoolean`, `parseJson`, `jsonStringify`, `typeOf` | TYPE-3, TYPE-4, TYPE-5, TYPE-6 |
-| Side effects | `currentTimestamp` | SIDE-1 |
+| Side effects | ~~`currentTimestamp`, `currentDate`~~ **DONE** | ~~SIDE-1, SIDE-2~~ **DONE** |
 | Variables | Unified `get` accessor, `let` binding | VAR-1, VAR-5 |
 | Sequencing | Rename `dataflowObject` for clarity | SEQ-3 |
 | Naming | Standardize naming conventions across transformers | §17.1 |
