@@ -211,6 +211,8 @@ export type CoreTransformerForBuildPlusRuntime =
   | CoreTransformerForBuildPlusRuntime_listLength
   | CoreTransformerForBuildPlusRuntime_object_fromEntries
   | CoreTransformerForBuildPlusRuntime_stringOp
+  | CoreTransformerForBuildPlusRuntime_currentTimestamp
+  | CoreTransformerForBuildPlusRuntime_currentDate
   | CoreTransformerForBuildPlusRuntime_InnerReference
   | CoreTransformerForBuildPlusRuntime_dataflowSequence
 ;
@@ -268,6 +270,8 @@ export const coreTransformerForBuildPlusRuntime: z.ZodType<CoreTransformerForBui
     coreTransformerForBuildPlusRuntime_listLength,
     coreTransformerForBuildPlusRuntime_object_fromEntries,
     coreTransformerForBuildPlusRuntime_stringOp,
+    coreTransformerForBuildPlusRuntime_currentTimestamp,
+    coreTransformerForBuildPlusRuntime_currentDate,
     coreTransformerForBuildPlusRuntime_InnerReference,
     coreTransformerForBuildPlusRuntime_dataflowSequence,
   ]);

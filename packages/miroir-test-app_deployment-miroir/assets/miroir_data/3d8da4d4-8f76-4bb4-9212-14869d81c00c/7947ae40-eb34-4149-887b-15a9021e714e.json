@@ -500,14 +500,6 @@
                 "type": "boolean",
                 "optional": true
               },
-              "entityDefinitionUuid": {
-                "type": "string",
-                "validations": [
-                  {
-                    "type": "uuid"
-                  }
-                ]
-              },
               "columns": {
                 "type": "array",
                 "optional": true,
@@ -540,6 +532,53 @@
             "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
             "payload": {
               "actionSequence": [
+                {
+                  "actionType": "compositeRunBoxedQueryAction",
+                  "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                  "actionLabel": "calculateNewEntityDefinionAndReports",
+                  "nameGivenToResult": "libraryEntityDefinitionListFromPersistentStore",
+                  "payload": {
+                    "actionType": "runBoxedQueryAction",
+                    "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+                    "payload": {
+                      "application": {
+                        "transformerType": "getFromContext",
+                        "interpolation": "runtime",
+                        "referenceName": "application"
+                      },
+                      "applicationSection": "model", 
+                      "queryExecutionStrategy": "storage",
+                      "query": {
+                        "queryType": "boxedQueryWithExtractorCombinerTransformer",
+                        "application": {
+                          "transformerType": "getFromContext",
+                          "interpolation": "runtime",
+                          "referenceName": "application"
+                        },
+                        "extractors": {
+                          "entityDefinitions": {
+                            "extractorOrCombinerType": "extractorInstancesByEntity",
+                            "applicationSection": "model",
+                            "parentName": {
+                              "transformerType": "getFromContext",
+                              "interpolation": "runtime",
+                              "referenceName": "sourceEntityName"
+                            },
+                            "parentUuid": {
+                              "transformerType": "getFromContext",
+                              "interpolation": "runtime",
+                              "referenceName": "sourceEntityUuid"
+                            },
+                            "orderBy": {
+                              "attributeName": "name",
+                              "direction": "ASC"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
               ]
             }
           }

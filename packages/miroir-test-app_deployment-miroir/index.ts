@@ -213,6 +213,8 @@ export { default as transformer_object_fromEntries_json } from "./assets/miroir_
 export { default as transformer_sortList_json } from "./assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/c8f3a1b5-2e9d-4f6a-8c7b-3d5e9a2f1b4c.json" assert { type: "json" };
 export { default as transformer_listLength_json } from "./assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/d9e2b3c4-1f8a-4e7b-9d6c-5a8f2b3e4c1d.json" assert { type: "json" };
 export { default as transformer_stringOp_json } from "./assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/21bd487f-447c-4c5b-9270-580860a7a0ef.json" assert { type: "json" };
+export { default as transformer_currentTimestamp_json } from "./assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/da131ffd-fa70-4902-ae02-77ba0e7e0fa8.json" assert { type: "json" };
+export { default as transformer_currentDate_json } from "./assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/f8987008-3709-4a5b-9c87-beaa65dc0c84.json" assert { type: "json" };
 // Alias for menu transformer (exported from Transformers.ts as transformer_menu_addItem)
 export { default as transformer_menu_addItem_json } from "./assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/685440be-7f3f-4774-b90d-bafa82d6832b.json" assert { type: "json" };
 

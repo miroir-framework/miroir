@@ -33,6 +33,8 @@ import {
   type CoreTransformerForBuildPlusRuntime_sortList,
   type CoreTransformerForBuildPlusRuntime_listLength,
   type CoreTransformerForBuildPlusRuntime_stringOp,
+  type CoreTransformerForBuildPlusRuntime_currentTimestamp,
+  type CoreTransformerForBuildPlusRuntime_currentDate,
   defaultMetaModelEnvironment,
   defaultTransformerInput,
   type CoreTransformerForBuildPlusRuntime_ifThenElse,
@@ -217,6 +219,8 @@ const sqlTransformerImplementations: Record<string, ITransformerHandler<any>> = 
   sqlStringForSortListTransformer,
   sqlStringForListLengthTransformer,
   sqlStringForStringOpTransformer,
+  sqlStringForCurrentTimestampTransformer,
+  sqlStringForCurrentDateTransformer,
   sqlStringForUniqueTransformer,
 }
 
@@ -3849,7 +3853,7 @@ function sqlStringForStringOpTransformer(
     preparedStatementParameters,
     extraWith,
     resultAccessPath: topLevelTransformer ? [0, outputColName] : undefined,
-    columnNameContainingJsonValue: resultType !== "scalar" && topLevelTransformer ? outputColName : undefined,
+    columnNameContainingJsonValue: topLevelTransformer ? outputColName : undefined,
     usedContextEntries: applyTo.usedContextEntries ?? [],
   };
 }
@@ -4324,13 +4328,13 @@ function sqlStringForDataflowObjectTransformer(
           );
           return [f[0], itemSql];
         }
-        if (itemSql.type != "json") {
+        if (itemSql.type != "json" && !itemSql.columnNameContainingJsonValue) {
           return [
             f[0],
             new Domain2ElementFailed({
               queryFailure: "QueryNotExecutable",
               query: actionRuntimeTransformer as any,
-              failureMessage: "sqlStringForDataflowObjectTransformer itemSql not json",
+              failureMessage: "sqlStringForDataflowObjectTransformer itemSql not json and has no columnNameContainingJsonValue",
             }),
           ];
         }
@@ -4844,6 +4848,74 @@ function sqlStringForNewUuidTransformer(
       : "gen_random_uuid()",
     preparedStatementParameters: [],
     resultAccessPath: topLevelTransformer ? [0, columnName] : undefined,
+  };
+}
+
+// ################################################################################################
+function sqlStringForCurrentTimestampTransformer(
+  actionRuntimeTransformer: CoreTransformerForBuildPlusRuntime_currentTimestamp,
+  preparedStatementParametersCount: number,
+  indentLevel: number,
+  queryParams: Record<string, any>,
+  definedContextEntries: Record<string, SqlContextEntry>,
+  useAccessPathForContextReference: boolean,
+  topLevelTransformer: boolean,
+  withClauseColumnName?: string,
+  iterateOn?: string,
+): Domain2QueryReturnType<SqlStringForTransformerElementValue> {
+  const columnName = withClauseColumnName ?? 'currentTimestamp';
+  const sqlExpr = "TO_CHAR(NOW() AT TIME ZONE 'UTC', 'YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"')";
+  return {
+    type: "scalar",
+    sqlStringOrObject: topLevelTransformer
+      ? sqlQuery(undefined, {
+          queryPart: "query",
+          select: [
+            {
+              queryPart: "defineColumn",
+              value: sqlExpr,
+              as: columnName,
+            },
+          ],
+        })
+      : sqlExpr,
+    preparedStatementParameters: [],
+    resultAccessPath: topLevelTransformer ? [0, columnName] : undefined,
+    columnNameContainingJsonValue: columnName,
+  };
+}
+
+// ################################################################################################
+function sqlStringForCurrentDateTransformer(
+  actionRuntimeTransformer: CoreTransformerForBuildPlusRuntime_currentDate,
+  preparedStatementParametersCount: number,
+  indentLevel: number,
+  queryParams: Record<string, any>,
+  definedContextEntries: Record<string, SqlContextEntry>,
+  useAccessPathForContextReference: boolean,
+  topLevelTransformer: boolean,
+  withClauseColumnName?: string,
+  iterateOn?: string,
+): Domain2QueryReturnType<SqlStringForTransformerElementValue> {
+  const columnName = withClauseColumnName ?? 'currentDate';
+  const sqlExpr = "TO_CHAR(CURRENT_DATE, 'YYYY-MM-DD')";
+  return {
+    type: "scalar",
+    sqlStringOrObject: topLevelTransformer
+      ? sqlQuery(undefined, {
+          queryPart: "query",
+          select: [
+            {
+              queryPart: "defineColumn",
+              value: sqlExpr,
+              as: columnName,
+            },
+          ],
+        })
+      : sqlExpr,
+    preparedStatementParameters: [],
+    resultAccessPath: topLevelTransformer ? [0, columnName] : undefined,
+    columnNameContainingJsonValue: columnName,
   };
 }
 

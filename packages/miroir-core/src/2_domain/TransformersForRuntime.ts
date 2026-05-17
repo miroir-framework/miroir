@@ -23,6 +23,8 @@ import {
   type CoreTransformerForBuildPlusRuntime_sortList,
   type CoreTransformerForBuildPlusRuntime_listLength,
   type CoreTransformerForBuildPlusRuntime_stringOp,
+  type CoreTransformerForBuildPlusRuntime_currentTimestamp,
+  type CoreTransformerForBuildPlusRuntime_currentDate,
   type CoreTransformerForBuildPlusRuntime_pickFromList,
   type CoreTransformerForBuildPlusRuntime_indexListBy,
   type CoreTransformerForBuildPlusRuntime_listReducerToSpreadObject,
@@ -121,6 +123,8 @@ import {
   transformer_sortList,
   transformer_listLength,
   transformer_stringOp,
+  transformer_currentTimestamp,
+  transformer_currentDate,
   type ResolveBuildTransformersTo,
   type Step,
   transformer_getActiveDeployment,
@@ -763,6 +767,8 @@ const inMemoryTransformerImplementations: Record<string, ITransformerHandler<any
   handleTransformer_sortList,
   handleTransformer_listLength,
   handleTransformer_stringOp,
+  handleTransformer_currentTimestamp,
+  handleTransformer_currentDate,
 };
 
 // ################################################################################################
@@ -806,6 +812,8 @@ export const applicationTransformerDefinitions: Record<string, TransformerDefini
   sortList: transformer_sortList,
   listLength: transformer_listLength,
   stringOp: transformer_stringOp,
+  currentTimestamp: transformer_currentTimestamp,
+  currentDate: transformer_currentDate,
   defaultValueForMLSchema: transformer_defaultValueForMLSchema,
   // MLS
   ...Object.fromEntries(
@@ -4987,4 +4995,34 @@ export function handleTransformer_stringOp(
       });
     }
   }
+}
+
+// ################################################################################################
+export function handleTransformer_currentTimestamp(
+  step: Step,
+  transformerPath: string[],
+  label: string | undefined,
+  transformer: CoreTransformerForBuildPlusRuntime_currentTimestamp,
+  resolveBuildTransformersTo: ResolveBuildTransformersTo,
+  modelEnvironment: MiroirModelEnvironment,
+  transformerParams: Record<string, any>,
+  contextResults?: Record<string, any>,
+  reduxDeploymentsState?: ReduxDeploymentsState | undefined
+): TransformerReturnType<any> {
+  return new Date().toISOString();
+}
+
+// ################################################################################################
+export function handleTransformer_currentDate(
+  step: Step,
+  transformerPath: string[],
+  label: string | undefined,
+  transformer: CoreTransformerForBuildPlusRuntime_currentDate,
+  resolveBuildTransformersTo: ResolveBuildTransformersTo,
+  modelEnvironment: MiroirModelEnvironment,
+  transformerParams: Record<string, any>,
+  contextResults?: Record<string, any>,
+  reduxDeploymentsState?: ReduxDeploymentsState | undefined
+): TransformerReturnType<any> {
+  return new Date().toISOString().split("T")[0];
 }

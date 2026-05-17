@@ -7762,6 +7762,74 @@
                 "expectedValue": "hello world"
               }
             ]
+          },
+          {
+            "transformerTestType": "transformerTestSuite",
+            "transformerTestLabel": "currentTimestamp",
+            "transformerTests": [
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "currentTimestamp returns ISO timestamp of length 24",
+                "transformerName": "currentTimestamp_length",
+                "transformer": {
+                  "transformerType": "dataflowObject",
+                  "interpolation": "runtime",
+                  "definition": {
+                    "ts": {
+                      "transformerType": "currentTimestamp",
+                      "interpolation": "runtime"
+                    },
+                    "tsLength": {
+                      "transformerType": "stringOp",
+                      "interpolation": "runtime",
+                      "op": "length",
+                      "applyTo": {
+                        "transformerType": "getFromContext",
+                        "interpolation": "runtime",
+                        "referenceName": "ts"
+                      }
+                    }
+                  }
+                },
+                "transformerParams": {},
+                "expectedValue": { "tsLength": 24 },
+                "ignoreAttributes": ["ts"]
+              }
+            ]
+          },
+          {
+            "transformerTestType": "transformerTestSuite",
+            "transformerTestLabel": "currentDate",
+            "transformerTests": [
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "currentDate returns ISO date of length 10",
+                "transformerName": "currentDate_length",
+                "transformer": {
+                  "transformerType": "dataflowObject",
+                  "interpolation": "runtime",
+                  "definition": {
+                    "date": {
+                      "transformerType": "currentDate",
+                      "interpolation": "runtime"
+                    },
+                    "dateLength": {
+                      "transformerType": "stringOp",
+                      "interpolation": "runtime",
+                      "op": "length",
+                      "applyTo": {
+                        "transformerType": "getFromContext",
+                        "interpolation": "runtime",
+                        "referenceName": "date"
+                      }
+                    }
+                  }
+                },
+                "transformerParams": {},
+                "expectedValue": { "dateLength": 10 },
+                "ignoreAttributes": ["date"]
+              }
+            ]
           }
         ]
       }

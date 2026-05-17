@@ -1,0 +1,37 @@
+{
+  "uuid": "da131ffd-fa70-4902-ae02-77ba0e7e0fa8",
+  "name": "currentTimestamp",
+  "defaultLabel": "currentTimestamp",
+  "description": "Returns the current date and time as an ISO 8601 timestamp string (YYYY-MM-DDTHH:MM:SS.sssZ).",
+  "parentUuid": "a557419d-a288-4fb8-8a1e-971c86c113b8",
+  "parentDefinitionVersionUuid": "54a16d69-c1f0-4dd7-aba4-a2cda883586c",
+  "parentName": "TransformerDefinition",
+  "classification": "basic",
+  "transformerInterface": {
+    "inputOutput": {
+      "input": "undefined",
+      "output": "string"
+    },
+    "transformerParameterSchema": {
+      "transformerType": {
+        "type": "literal",
+        "definition": "currentTimestamp"
+      },
+      "transformerDefinition": {
+        "type": "object",
+        "definition": {}
+      }
+    },
+    "transformerResultSchema": {
+      "returns": "mlSchema",
+      "definition": {
+        "type": "string"
+      }
+    }
+  },
+  "transformerImplementation": {
+    "transformerImplementationType": "libraryImplementation",
+    "inMemoryImplementationFunctionName": "handleTransformer_currentTimestamp",
+    "sqlImplementationFunctionName": "sqlStringForCurrentTimestampTransformer"
+  }
+}

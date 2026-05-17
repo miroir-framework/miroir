@@ -2566,7 +2566,11 @@ export function getMiroirFundamentalJzodSchema(
         modelAction: {
           type: "union",
           discriminator: "actionType",
-          definition: modelEndpointVersionV1.definition.actions.map((e: any) => ({
+          definition: modelEndpointVersionV1.definition.actions
+          .filter((e: any) => ![
+            "entity_DuplicateAttribute",
+          ].includes(e.actionParameters.actionType.definition))
+          .map((e: any) => ({
             type: "object",
             tag: { value: { display: { displayedAttributeValueWhenFolded: "actionLabel" } } },
             definition: e.actionParameters,
