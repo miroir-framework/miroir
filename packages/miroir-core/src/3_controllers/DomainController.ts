@@ -1144,7 +1144,7 @@ export class DomainController implements DomainControllerInterface {
                 };
                 
                 // const createResult = await this.callUtil.callPersistenceAction(
-                  const createResult = await this.handleModelAction(
+                const createResult = await this.handleModelAction(
                   createEntityAction,
                   applicationDeploymentMap,
                   currentModelEnvironment,
@@ -1287,7 +1287,7 @@ export class DomainController implements DomainControllerInterface {
                 };
                 
                 // const createResult = await this.callUtil.callPersistenceAction(
-                  const createResult = await this.handleModelAction(
+                const createResult = await this.handleModelAction(
                   createEntityAction,
                   applicationDeploymentMap,
                   currentModelEnvironment,
@@ -1844,7 +1844,7 @@ export class DomainController implements DomainControllerInterface {
 
   // ##############################################################################################
   async handleAction(
-    domainAction: DomainAction,
+    domainAction: DomainAction, // TODO: actions from other applications can be handled, too!
     applicationDeploymentMap: ApplicationDeploymentMap,
     currentModelEnvironment?: MiroirModelEnvironment,
     endpointApplicationMap?: EndpointApplicationMap,
@@ -1871,7 +1871,10 @@ export class DomainController implements DomainControllerInterface {
           "resolvedEndpointApplicationMap",
           resolvedEndpointApplicationMap,
         );
-        if (applicationUuid !== undefined && applicationUuid !== selfApplicationMiroir.uuid) {
+        if (applicationUuid !== undefined && (
+          applicationUuid !== selfApplicationMiroir.uuid ||
+          (domainAction as any).actionType == "entity_DuplicateAttribute" 
+        )) {
           return this.handleApplicationAction(
             domainAction,
             applicationDeploymentMap,
@@ -1933,7 +1936,8 @@ export class DomainController implements DomainControllerInterface {
     }
     // look up the action implementation in the currentModelEnvironment
     const currentEndpointDefinition: EndpointDefinition | undefined =
-      currentModelEnvironment?.endpointsByUuid[(domainAction as any).endpoint];
+      currentModelEnvironment?.endpointsByUuid[(domainAction as any).endpoint] ??
+      currentModelEnvironment?.miroirMetaModel?.endpoints?.find((e) => e.uuid === (domainAction as any).endpoint);
 
     // log.info(
     //   "DomainController handleApplicationAction currentEndpointDefinition",
@@ -2783,10 +2787,10 @@ export class DomainController implements DomainControllerInterface {
           [],
           t[0],
           t[1] as any,
+          "value",
           modelEnvironment,
           localActionParams, // queryParams
           newLocalParameters, // contextResults
-          "value",
         );
         if (resolvedTemplate.queryFailure) {
           log.error(
@@ -2852,10 +2856,10 @@ export class DomainController implements DomainControllerInterface {
       [],
       buildPlusRuntimeCompositeAction.actionLabel,
       buildPlusRuntimeCompositeAction.payload.actionSequence as any as CoreTransformerForBuildPlusRuntime,
+      "value",
       modelEnvironment,
       queryParamsForActionResolution, // queryParams
       localContext, // contextResults
-      "value",
     );
 
     // log.info(

@@ -72,12 +72,12 @@ export const InnerRunnerView = <T extends Record<string, any>>({
           [], // transformerPath
           "formMlSchemaAsTransformer", // transformerLabel
           formMLSchema.transformer as any as CoreTransformerForBuildPlusRuntime, // TODO: correct type
+          "value", // resolveBuildTransformersTo
           currentMiroirModelEnvironment, // TODO: the DeploymentUuid can change, need to handle that?
           { 
             [runnerName]: formikContext.values[runnerName] }, // transformerParams
           // { [runnerName]: { deploymentUuidQuery: deploymentUuidFromApplicationUuid } }, // transformerParams
           {}, // contextResults
-          "value"
         ) as JzodObject;
       }
     } else {

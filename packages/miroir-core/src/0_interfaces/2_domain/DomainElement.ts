@@ -49,7 +49,7 @@ export interface ITransformerFailure {
   instanceUuid?: string | undefined;
 }
 
-export class TransformerFailure implements ITransformerFailure {
+export class TransformerFailure extends Error implements ITransformerFailure {
   public get elementType() {
     return "failure";
   }
@@ -74,6 +74,7 @@ export class TransformerFailure implements ITransformerFailure {
 
   // constructor(elementValue: QueryFailed | Domain2ElementFailed) {
   constructor(elementValue: ITransformerFailure) {
+    super(elementValue.failureMessage);
     this.queryFailure = elementValue.queryFailure;
     this.query = elementValue.query;
     this.step = elementValue.step;

@@ -259,10 +259,10 @@ const TypedValueObjectEditorInner: React.FC<TypedValueObjectEditorProps> = ({
         [], // transformerPath
         transformerLabel, // label
         validationTransformer,
+        "value", // resolveBuildTransformersTo
         currentMiroirModelEnvironment,
         formik.values, // transformerParams: full formik values available to the transformer
         {}, // contextResults
-        "value", // resolveBuildTransformersTo
         reduxDeploymentsState,
         deploymentUuid,
       );

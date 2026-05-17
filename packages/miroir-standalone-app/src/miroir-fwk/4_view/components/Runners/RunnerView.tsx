@@ -195,13 +195,13 @@ export function StoredRunnerView(props: {
           [],
           "resolving formMLSchema transformer",
           formMLSchema.transformer as CoreTransformerForBuildPlusRuntime,
+          "value",
         defaultMiroirModelEnvironment,
         {
           viewParams: viewParams || {},
         },
         {
         },
-        "value",
       ) as JzodObject
       : formMLSchema.mlSchema as JzodObject;
   }, [formMLSchema, viewParams]);
@@ -249,10 +249,10 @@ export function StoredRunnerView(props: {
                   "initialFormValueAsTransformer", // transformerLabel
                   storedRunner.definition.formMLSchema
                     .initialFormValues as any as CoreTransformerForBuildPlusRuntime, // TODO: correct type
+                  "value",
                   currentModelEnvironment, // TODO: the DeploymentUuid can change, need to handle that?
                   {}, // transformerParams
                   {}, // contextResults
-                  "value",
                 ),
               }
             : getDefaultValueForJzodSchemaWithResolutionNonHook(
@@ -443,10 +443,10 @@ export const RunnerView = <T extends Record<string, any>>(props: RunnerProps<T>)
             [], // transformerPath
             "initialFormValueAsTransformer", // transformerLabel
             (initialFormValue as any).transformer as any as CoreTransformerForBuildPlusRuntime, // TODO: correct type
+            "value", // resolveBuildTransformersTo
             currentModelEnvironment, // TODO: the DeploymentUuid can change, need to handle that?
             {}, // transformerParams
             {}, // contextResults
-            "value"
           )
       : initialFormValue;
 

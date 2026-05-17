@@ -21,7 +21,7 @@ import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory";
 import { packageName } from "../constants";
 import { cleanLevel } from "./constants";
-import { transformer_extended_apply } from "./TransformersForRuntime";
+import { transformer_extended_apply, transformer_extended_apply_wrapper } from "./TransformersForRuntime";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -50,7 +50,8 @@ export function resolveExtractorTemplate(
     case "extractorInstancesByEntity": {
       if (extractorOrCombinerTemplate.filter) {
         // const filterValue = transformer_extended_apply_wrapper(
-        const filterValue = transformer_extended_apply(
+        const filterValue = transformer_extended_apply_wrapper(
+          undefined, // activityTracker
           "build", // TODO: resolve for runtime transformer. Does it make sense?
           [], // transformerPath
           undefined,
@@ -67,7 +68,8 @@ export function resolveExtractorTemplate(
           parentUuid:
             typeof extractorOrCombinerTemplate.parentUuid == "string"
               ? extractorOrCombinerTemplate.parentUuid
-              : transformer_extended_apply(
+              : transformer_extended_apply_wrapper(
+                  undefined, // activityTracker
                   "build", // TODO: should this be "build" or "runtime"? "value" is not consistent with "build"
                   [], // transformerPath
                   extractorOrCombinerTemplate.label??extractorOrCombinerTemplate.extractorOrCombinerType,

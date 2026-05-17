@@ -2292,11 +2292,10 @@ function sqlStringForMapperListToListTransformer(
               [], // tranformerPath
               undefined,
               actionRuntimeTransformer.elementTransformer,
-              // {...defaultMetaModelEnvironment, ...queryParams},
+              "value", // resolveBuildTransformersTo
               defaultMetaModelEnvironment, // TODO: use actual model environment for current deployment
               queryParams,
               {}, // contextResults, we are evaluating a build transformer here, not a runtime transformer
-              "value"
             ),
           },
           newPreparedStatementParametersCount,

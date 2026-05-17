@@ -493,13 +493,11 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
                 ["rootTransformer"], // transformerPath
                 "TransformerEditor", // label
                 currentFormikTransformerDefinition, // transformer
+                "value", // resolveBuildTransformersTo
                 defaultMiroirModelEnvironment,// currentMiroirModelEnvironment, // TODO: effectively get the currentMiroirModelEnvironment from the deploymentUuid selected as input
                 transformerParams,
                 // inputSelectorData, // contextResults - pass the instance to transform
                 transformerInput, // contextResults - pass the input to transform
-                "value", // resolveBuildTransformersTo
-                // deploymentEntityState,
-                // deploymentUuid,
               );
               // }, [formikContext.values.transformerEditor_editor.currentTransformerDefinition]);
             }, [formikContext.values.transformerEditor_transformer_selector.transformer, transformerInput]);

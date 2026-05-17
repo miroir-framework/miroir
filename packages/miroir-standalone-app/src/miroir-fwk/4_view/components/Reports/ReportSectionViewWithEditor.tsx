@@ -132,11 +132,11 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
       "runtime",
       [],
       (reportSectionDefinitionFromFormik as any).definition?.label ?? "modelDiagramReportSection entityDefinitions",
-      edInput,
+      edInput, // transformer
+      "value", // resolveBuildTransformersTo
       defaultMiroirModelEnvironment,
       formik.values,
       formik.values,
-      "value",
     );
     if (!result || result instanceof TransformerFailure || !Array.isArray(result)) return [];
     return result;
@@ -152,10 +152,10 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
       [], // transformerPath
       reportSectionDefinitionFromFormik?.label ?? "evaluation of storedReportDisplay parameters", // label
       reportSectionDefinitionFromFormik?.definition, // transformer
+      "value", // resolveBuildTransformersTo
       defaultMiroirModelEnvironment, // TODO: use the real environment
       formik.values, // queryParams
       formik.values, // contextResults - pass the instance to transform
-      "value", // resolveBuildTransformersTo
     );
   }, [reportSectionDefinitionFromFormik]);
 

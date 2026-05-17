@@ -110,10 +110,10 @@ export const JzodAnyEditor: React.FC<JzodAnyEditorProps> = (
         [formikRootLessListKey, "initializeTo"],
         "initializeTo",
         initializeTo.transformer,
+        "value",
         currentMiroirModelEnvironment,
         formik.values, // transformerParams
         {}, // contextResults
-        "value",
       );
     }
     return undefined;

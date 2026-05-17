@@ -1721,13 +1721,13 @@ export const Runner_CreateApplication: React.FC<CreateApplicationToolProps> = ({
           [],
           "resolving formMLSchema transformer",
           (runner.definition as any).formMLSchema.transformer as CoreTransformerForBuildPlusRuntime,
+          "value",
         defaultMiroirModelEnvironment,
         {
           viewParams: viewParams || {},
         },
         {
         },
-        "value",
       ) as JzodObject}
       : (runner.definition as any).formMLSchema;
 
@@ -1834,6 +1834,8 @@ export const Runner_CreateApplication: React.FC<CreateApplicationToolProps> = ({
 
       <RunnerView
         runnerName={runnerName}
+        // application={selfApplicationMiroir.uuid}
+        application={testSelfApplicationUuid}
         applicationDeploymentMap={applicationDeploymentMapWithNewApplication}
         formMLSchema={formMLSchema}
         initialFormValue={initialFormValue}

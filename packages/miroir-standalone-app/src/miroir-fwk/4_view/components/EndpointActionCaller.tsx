@@ -259,13 +259,13 @@ export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
                   ["rootTransformer"], // transformerPath
                   "TransformerEditor", // label
                   runnerDefinition.transformer, // transformer
+                  "value", // resolveBuildTransformersTo
                   defaultMiroirModelEnvironment, // currentMiroirModelEnvironment, // TODO: effectively get the currentMiroirModelEnvironment from the deploymentUuid selected as input
                   {
                     defaultInput: currentEndpoint || { actions: [] },
                     currentEndpoint: currentEndpoint || { actions: [] },
                   }, // transformerParams
                   {}, // contextResults - pass the input to transform
-                  "value" // resolveBuildTransformersTo
                 )
               : { actions: [], actionTypes: [] };
           }, [

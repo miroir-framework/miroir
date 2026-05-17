@@ -949,10 +949,10 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
             [], // transformerPath
             (hidden as any)?.label ?? "evaluation of hidden property", // label
             hidden, // transformer
+            "value", // resolveBuildTransformersTo
             defaultMiroirModelEnvironment, // TODO: use the real environment
             {}, // queryParams
             newContext, // contextResults - pass the instance to transform
-            "value" // resolveBuildTransformersTo
           );
         if (hiddenTransformerResult === true) {
           log.info("JzodElementEditor Hiding element due to hidden transformer result:", props.rootLessListKey, hidden, newContext);

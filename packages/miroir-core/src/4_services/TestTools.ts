@@ -304,11 +304,10 @@ export async function runTransformerTestInMemory(
     [], // transformerPath
     undefined,
     runtimeTransformer,
-    // {...modelEnvironment, ...transformerTest.transformerParams},
+    "value",
     modelEnvironment,
     transformerTest.transformerParams??{},
     transformerTest.transformerRuntimeContext ?? {},
-    "value"
   );
   // log.info(
   //   "################################ runTransformerTestInMemory convertedTransformer after applying build step",
@@ -323,7 +322,7 @@ export async function runTransformerTestInMemory(
       [], // transformerPath
       undefined,
       convertedTransformer,
-      // {...modelEnvironment, ...transformerTest.transformerParams},
+      "value",
       modelEnvironment,
       transformerTest.transformerParams??{},
       transformerTest.transformerRuntimeContext ?? {}
@@ -729,11 +728,10 @@ export function runTransformerIntegrationTest(sqlDbDataStore: any) {
         [], // transformerPath
         (transformerTest.transformer as any)?.label,
         transformerTest.transformer,
-        // {...modelEnvironment, ...transformerTest.transformerParams},
+        "value", // resolveBuildTransformerTo
         modelEnvironment,
         transformerTest.transformerParams ?? {},
         transformerTest.transformerRuntimeContext ?? {},
-        "value" // resolveBuildTransformerTo
       );
 
     log.info(

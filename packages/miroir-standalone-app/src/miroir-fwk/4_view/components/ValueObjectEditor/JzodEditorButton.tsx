@@ -60,13 +60,13 @@ export const JzodEditorButton: React.FC<JzodEditorButtonProps> = ({
         [],
         editorButton?.label ?? `editorButton@${rootLessListKey || "ROOT"}`,
         editorButton?.transformer,
+        "value",
         currentApplicationModelEnvironment,
         {},
         {
           originTransformer: currentValue,
           originValue: currentValue,
         },
-        "value"
       );
 
       if ((result as any)?.status === "error") {

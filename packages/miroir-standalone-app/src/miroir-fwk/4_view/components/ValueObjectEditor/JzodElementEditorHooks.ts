@@ -317,10 +317,10 @@ export function useJzodElementEditorHooks(
                 ?.targetApplicationUuid as any
             )?.label ?? "evaluation of hidden property", // label
             targetApplication, // transformer
+            "value", // resolveBuildTransformersTo
             defaultMiroirModelEnvironment, // TODO: use the real environment
             formik.values, // queryParams
             formik.values, // contextResults - pass the instance to transform
-            "value" // resolveBuildTransformersTo
           );
           // log.info(
           //   "useJzodElementEditorHooks",
@@ -608,10 +608,10 @@ export function useFieldValidation(
         [],
         transformerLabel,
         formValidation.transformer,
+        "value", // resolveBuildTransformersTo
         currentMiroirModelEnvironment,
         formikValues,
         {},
-        "value",
         reduxDeploymentsState,
         deploymentUuid,
       );

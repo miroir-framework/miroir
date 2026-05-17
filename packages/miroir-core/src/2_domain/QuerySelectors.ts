@@ -628,6 +628,7 @@ export const applyExtractorTransformerInMemory = (
     [],
     "ROOT" /**WHAT?? */,
     actionRuntimeTransformer,
+    "value",
     modelEnvironment,
     queryParams,
     newFetchedData

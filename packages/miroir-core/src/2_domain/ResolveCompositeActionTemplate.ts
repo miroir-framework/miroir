@@ -70,10 +70,10 @@ export function resolveCompositeActionTemplate(
         [],
         t[0],
         t[1] as any,
+        "value",
         currentModel,
         {...defaultMetaModelEnvironment, ...actionParamValues}, // queryParams
         newLocalParameters, // contextResults
-        "value",
       );
       if (resolvedTemplate.elementType == "failure") {
         log.error("resolveCompositeActionTemplate resolved template error", resolvedTemplate);
@@ -118,10 +118,10 @@ export function resolveCompositeActionTemplate(
     [],
     compositeActionLabel,
     compositeActionTemplate.payload.actionSequence as any,
+    "value",
     currentModel,
     actionParamsAndTemplates,
     undefined,// localContext,
-    "value",
   );
   log.info(
     "resolveCompositeActionTemplate for action", compositeActionLabel,
