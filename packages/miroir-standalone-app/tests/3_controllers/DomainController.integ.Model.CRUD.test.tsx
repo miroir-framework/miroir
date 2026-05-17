@@ -358,12 +358,12 @@ const testActions: Record<string, TestCompositeActionParams> = {
         defaultLibraryModelEnvironment.currentModel as any,
         [entityPublisher.uuid, entityCountry.uuid],
       ),
-      afterEach: testUtils_resetApplicationDeployment(deployment_Library_DO_NO_USE.uuid),
-      afterAll: testUtils_deleteApplicationDeployment(
-        miroirConfig,
-        selfApplicationLibrary.uuid,
-        deployment_Library_DO_NO_USE.uuid,
-      ),
+      // afterEach: testUtils_resetApplicationDeployment(deployment_Library_DO_NO_USE.uuid),
+      // afterAll: testUtils_deleteApplicationDeployment(
+      //   miroirConfig,
+      //   selfApplicationLibrary.uuid,
+      //   deployment_Library_DO_NO_USE.uuid,
+      // ),
       testCompositeActions: {
         // "Refresh all Instances": {
         //   testType: "testCompositeAction",
@@ -1406,22 +1406,26 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   },
                 },
                 {
-                  actionType: "alterEntityAttribute",
-                  actionLabel: "alterEntityPublisher",
+                  actionType: "entity_DuplicateAttribute",
+                  actionLabel: "entity_DuplicateAttribute",
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   payload: {
                     application: testApplicationUuid,
                     entityName: entityPublisher.name,
-                    entityUuid: entityPublisher.uuid,
-                    entityDefinitionUuid: entityDefinitionPublisher.uuid,
-                    addColumns: [
-                      {
-                        name: "aNewColumnForTest",
-                        definition: columnForTestDefinition,
-                      },
+                    sourceEntityUuid: entityCountry.uuid,
+                    targetEntityUuid: entityPublisher.uuid,
+                    // entityDefinitionUuid: entityDefinitionPublisher.uuid,
+                    sourceEntityDefinitionUuid: entityDefinitionCountry.uuid,
+                    targetEntityDefinitionUuid: entityDefinitionPublisher.uuid,
+                    columns: [
+                      "iso3166-1Alpha-2"
+                      // {
+                      //   name: "aNewColumnForTest",
+                      //   definition: columnForTestDefinition,
+                      // },
                     ],
                   },
-                },
+                } as any,
                 {
                   actionType: "commit",
                   actionLabel: "commitLibraryLocalCache",
@@ -1434,8 +1438,8 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   // performs query on local cache for emulated server, and on server for remote server
                   actionType: "compositeRunBoxedQueryAction",
                   endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
-                  actionLabel: "calculateNewEntityDefinionAndReports",
-                  nameGivenToResult: "libraryEntityDefinitionListFromPersistentStore",
+                  actionLabel: "fetchEntityDefinitionAfterAction",
+                  nameGivenToResult: "entityDefinitionAfterAction",
                   payload: {
                     actionType: "runBoxedQueryAction",
                     endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
@@ -1446,50 +1450,13 @@ const testActions: Record<string, TestCompositeActionParams> = {
                       query: {
                         queryType: "boxedQueryWithExtractorCombinerTransformer",
                         application: testApplicationUuid,
-                        pageParams: {
-                          currentDeploymentUuid: testApplicationDeploymentUuid,
-                        },
                         extractors: {
                           entityDefinitions: {
-                            extractorOrCombinerType: "extractorInstancesByEntity",
+                            extractorOrCombinerType: "extractorByPrimaryKey",
                             applicationSection: "model",
                             parentName: entityEntityDefinition.name,
                             parentUuid: entityEntityDefinition.uuid,
-                            orderBy: {
-                              attributeName: "name",
-                              direction: "ASC",
-                            },
-                          },
-                        },
-                      },
-                    },
-                  },
-                },
-                {
-                  // performs query on local cache for emulated server, and on server for remote server
-                  actionType: "compositeRunBoxedQueryAction",
-                  endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
-                  actionLabel: "calculateNewEntityDefinionAndReports",
-                  nameGivenToResult: "libraryEntityDefinitionListFromLocalCache",
-                  payload: {
-                    actionType: "runBoxedQueryAction",
-                    endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-                    payload: {
-                      application: testApplicationUuid,
-                      applicationSection: "model", // TODO: give only selfApplication section in individual queries?
-                      queryExecutionStrategy: "localCacheOrFail",
-                      query: {
-                        queryType: "boxedQueryWithExtractorCombinerTransformer",
-                        application: testApplicationUuid,
-                        pageParams: {
-                          currentDeploymentUuid: testApplicationDeploymentUuid,
-                        },
-                        extractors: {
-                          entityDefinitions: {
-                            extractorOrCombinerType: "extractorInstancesByEntity",
-                            applicationSection: "model",
-                            parentName: entityEntityDefinition.name,
-                            parentUuid: entityEntityDefinition.uuid,
+                            instanceUuid: entityDefinitionPublisher.uuid,
                             orderBy: {
                               attributeName: "name",
                               direction: "ASC",
@@ -1507,51 +1474,44 @@ const testActions: Record<string, TestCompositeActionParams> = {
             // TODO: test length of entityBookList.books!
             {
               actionType: "compositeRunTestAssertion",
-              actionLabel: "checkNumberOfBooksFromPersisentStore",
-              nameGivenToResult: "checkNumberOfEntitiesFromPersistentStore",
+              actionLabel: "checkPublisherHasNotChanged",
+              nameGivenToResult: "checkPublisherHasNotChanged",
               testAssertion: {
                 testType: "testAssertion",
-                testLabel: "checkNumberOfBooksFromPersisentStore",
+                testLabel: "checkPublisherHasNotChanged",
                 definition: {
-                  resultAccessPath: ["0"],
                   resultTransformer: {
-                    transformerType: "aggregate",
+                    transformerType: "boolExpr",
                     interpolation: "runtime",
-                    applyTo: {
-                      transformerType: "getFromContext",
+                    operator: "&&",
+                    left: {
+                      transformerType: "boolExpr",
                       interpolation: "runtime",
-                      referencePath: [
-                        "libraryEntityDefinitionListFromPersistentStore",
-                        "entityDefinitions",
-                      ],
+                      operator: "==",
+                      left: {
+                        transformerType: "getFromContext",
+                        interpolation: "runtime",
+                        referencePath: ["entityDefinitionAfterAction", "entityDefinitions", "uuid"],
+                      },
+                      right: entityDefinitionPublisher.uuid,
+                    },
+                    right: {
+                      transformerType: "boolExpr",
+                      interpolation: "runtime",
+                      operator: "==",
+                      left: {
+                        transformerType: "getFromContext",
+                        interpolation: "runtime",
+                        referencePath: ["entityDefinitionAfterAction", "entityDefinitions", "mlSchema", "definition", "aNewColumnForTest"],
+                      },
+                      right: {
+                        "type": "number",
+                        "optional": true,
+                        "tag": { "value": { "id": 6, "defaultLabel": "Gender (narrow-minded)" } }
+                      },
                     },
                   },
-                  expectedValue: { aggregate: 1 },
-                },
-              },
-            },
-            {
-              actionType: "compositeRunTestAssertion",
-              actionLabel: "checkNumberOfBooksFromLocalCache",
-              nameGivenToResult: "checkNumberOfEntitiesFromLocalCache",
-              testAssertion: {
-                testType: "testAssertion",
-                testLabel: "checkNumberOfBooksFromLocalCache",
-                definition: {
-                  resultAccessPath: ["0"],
-                  resultTransformer: {
-                    transformerType: "aggregate",
-                    interpolation: "runtime",
-                    applyTo: {
-                      transformerType: "getFromContext",
-                      interpolation: "runtime",
-                      referencePath: [
-                        "libraryEntityDefinitionListFromLocalCache",
-                        "entityDefinitions",
-                      ],
-                    },
-                  },
-                  expectedValue: { aggregate: 1 },
+                  expectedValue: true,
                 },
               },
             },

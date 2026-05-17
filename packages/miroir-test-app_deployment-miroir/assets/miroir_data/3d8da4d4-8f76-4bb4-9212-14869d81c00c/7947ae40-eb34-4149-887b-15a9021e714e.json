@@ -521,6 +521,12 @@
               },
               "targetEntityUuid": {
                 "type": "uuid"
+              },
+              "sourceEntityDefinitionUuid": {
+                "type": "uuid"
+              },
+              "targetEntityDefinitionUuid": {
+                "type": "uuid"
               }
             }
           }
@@ -535,8 +541,8 @@
                 {
                   "actionType": "compositeRunBoxedQueryAction",
                   "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
-                  "actionLabel": "calculateNewEntityDefinionAndReports",
-                  "nameGivenToResult": "libraryEntityDefinitionListFromPersistentStore",
+                  "actionLabel": "sourceEntityDefinitionLookup",
+                  "nameGivenToResult": "sourceEntityDefinition",
                   "payload": {
                     "actionType": "runBoxedQueryAction",
                     "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
@@ -544,7 +550,7 @@
                       "application": {
                         "transformerType": "getFromContext",
                         "interpolation": "runtime",
-                        "referenceName": "application"
+                        "referencePath": ["payload", "application"]
                       },
                       "applicationSection": "model", 
                       "queryExecutionStrategy": "storage",
@@ -553,30 +559,95 @@
                         "application": {
                           "transformerType": "getFromContext",
                           "interpolation": "runtime",
-                          "referenceName": "application"
+                          "referencePath": ["payload", "application"]
                         },
                         "extractors": {
                           "entityDefinitions": {
-                            "extractorOrCombinerType": "extractorInstancesByEntity",
+                            "extractorOrCombinerType": "extractorByPrimaryKey",
                             "applicationSection": "model",
-                            "parentName": {
+                            "parentName": "EntittyDefinition",
+                            "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+                            "instanceUuid": {
                               "transformerType": "getFromContext",
                               "interpolation": "runtime",
-                              "referenceName": "sourceEntityName"
-                            },
-                            "parentUuid": {
-                              "transformerType": "getFromContext",
-                              "interpolation": "runtime",
-                              "referenceName": "sourceEntityUuid"
-                            },
-                            "orderBy": {
-                              "attributeName": "name",
-                              "direction": "ASC"
+                              "referencePath": ["payload", "sourceEntityUuid"]
                             }
                           }
                         }
                       }
                     }
+                  }
+                },
+                {
+                  "actionType": "compositeRunBoxedQueryAction",
+                  "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                  "actionLabel": "targetEntityDefinitionLookup",
+                  "nameGivenToResult": "targetEntityDefinition",
+                  "payload": {
+                    "actionType": "runBoxedQueryAction",
+                    "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+                    "payload": {
+                      "application": {
+                        "transformerType": "getFromContext",
+                        "interpolation": "runtime",
+                        "referencePath": ["payload", "application"]
+                      },
+                      "applicationSection": "model", 
+                      "queryExecutionStrategy": "storage",
+                      "query": {
+                        "queryType": "boxedQueryWithExtractorCombinerTransformer",
+                        "application": {
+                          "transformerType": "getFromContext",
+                          "interpolation": "runtime",
+                          "referencePath": ["payload", "application"]
+                        },
+                        "extractors": {
+                          "entityDefinitions": {
+                            "extractorOrCombinerType": "extractorByPrimaryKey",
+                            "applicationSection": "model",
+                            "parentName": "EntittyDefinition",
+                            "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+                            "instanceUuid": {
+                              "transformerType": "getFromContext",
+                              "interpolation": "runtime",
+                              "referencePath": ["payload", "targetEntityUuid"]
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                {
+                  "actionType": "alterEntityAttribute",
+                  "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                  "actionLabel": "duplicateAttributes",
+                  "payload": {
+                    "application": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referencePath": ["payload", "application"]
+                    },
+                    "entityUuid": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referencePath": ["payload", "targetEntityUuid"]
+                    },
+                    "entityDefinitionUuid": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referencePath": ["payload", "targetEntityDefinitionUuid"]
+                    },
+                    "addColumns": [
+                      {
+                        "name": "aNewColumnForTest",
+                        "definition": {
+                          "type": "number",
+                          "optional": true,
+                          "tag": { "value": { "id": 6, "defaultLabel": "Gender (narrow-minded)" } }
+                        }
+                      }
+                    ]
                   }
                 }
               ]

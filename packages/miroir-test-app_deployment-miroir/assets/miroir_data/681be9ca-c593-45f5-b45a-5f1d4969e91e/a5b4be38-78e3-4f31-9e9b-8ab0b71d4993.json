@@ -3433,7 +3433,6 @@
           {
             "transformerTestType": "transformerTestSuite",
             "transformerTestLabel": "references",
-            "skip": true,
             "transformerTests": [
               {
                 "transformerTestType": "transformerTestSuite",
@@ -3609,7 +3608,6 @@
           {
             "transformerTestType": "transformerTestSuite",
             "transformerTestLabel": "getObjectEntries",
-            "skip": true,
             "transformerTests": [
               {
                 "transformerTestType": "transformerTest",
@@ -3728,7 +3726,6 @@
           {
             "transformerTestType": "transformerTestSuite",
             "transformerTestLabel": "getObjectValues",
-            "skip": true,
             "transformerTests": [
               {
                 "transformerTestType": "transformerTest",
@@ -3835,7 +3832,6 @@
           {
             "transformerTestType": "transformerTestSuite",
             "transformerTestLabel": "pickFromList",
-            "skip": true,
             "transformerTests": [
               {
                 "transformerTestType": "transformerTest",
@@ -4036,7 +4032,6 @@
           {
             "transformerTestType": "transformerTestSuite",
             "transformerTestLabel": "getUniqueValues",
-            "skip": true,
             "transformerTests": [
               {
                 "transformerTestType": "transformerTest",
@@ -4948,7 +4943,6 @@
           {
             "transformerTestType": "transformerTestSuite",
             "transformerTestLabel": "createObjectFromPairs",
-            "skip": true,
             "transformerTests": [
               {
                 "transformerTestType": "transformerTest",
@@ -5297,7 +5291,6 @@
           {
             "transformerTestType": "transformerTestSuite",
             "transformerTestLabel": "createObject",
-            "skip": true,
             "transformerTests": [
               {
                 "transformerTestType": "transformerTest",
@@ -5556,7 +5549,6 @@
           {
             "transformerTestType": "transformerTestSuite",
             "transformerTestLabel": "mergeIntoObject",
-            "skip": true,
             "transformerTests": [
               {
                 "transformerTestType": "transformerTest",
@@ -5744,7 +5736,6 @@
           {
             "transformerTestType": "transformerTestSuite",
             "transformerTestLabel": "mapList",
-            "skip": true,
             "transformerTests": [
               {
                 "transformerTestType": "transformerTest",
@@ -7996,6 +7987,145 @@
                 },
                 "transformerParams": {},
                 "expectedValue": 42
+              }
+            ]
+          },
+          {
+            "transformerTestType": "transformerTestSuite",
+            "transformerTestLabel": "generateUuid",
+            "transformerTests": [
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "generateUuid returns a string of length 36",
+                "transformerName": "generateUuid_length",
+                "transformer": {
+                  "transformerType": "dataflowObject",
+                  "interpolation": "runtime",
+                  "definition": {
+                    "uuid": {
+                      "transformerType": "generateUuid",
+                      "interpolation": "runtime"
+                    },
+                    "uuidLength": {
+                      "transformerType": "stringOp",
+                      "interpolation": "runtime",
+                      "op": "length",
+                      "applyTo": {
+                        "transformerType": "getFromContext",
+                        "interpolation": "runtime",
+                        "referenceName": "uuid"
+                      }
+                    }
+                  }
+                },
+                "transformerParams": {},
+                "expectedValue": { "uuidLength": 36 },
+                "ignoreAttributes": ["uuid"]
+              }
+            ]
+          },
+          {
+            "transformerTestType": "transformerTestSuite",
+            "transformerTestLabel": "mustacheStringTemplate",
+            "transformerTests": [
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "mustacheStringTemplate renders template with runtime context",
+                "transformerName": "mustacheStringTemplate_runtime",
+                "transformer": {
+                  "transformerType": "mustacheStringTemplate",
+                  "interpolation": "runtime",
+                  "definition": "Hello {{name}}!"
+                },
+                "transformerParams": {},
+                "transformerRuntimeContext": {
+                  "name": "World"
+                },
+                "expectedValue": "Hello World!"
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "mustacheStringTemplate renders template with multiple variables",
+                "transformerName": "mustacheStringTemplate_runtime_multi",
+                "transformer": {
+                  "transformerType": "mustacheStringTemplate",
+                  "interpolation": "runtime",
+                  "definition": "{{greeting}}, {{name}}! You have {{count}} messages."
+                },
+                "transformerParams": {},
+                "transformerRuntimeContext": {
+                  "greeting": "Hi",
+                  "name": "Alice",
+                  "count": 5
+                },
+                "expectedValue": "Hi, Alice! You have 5 messages."
+              }
+            ]
+          },
+          {
+            "transformerTestType": "transformerTestSuite",
+            "transformerTestLabel": "accessDynamicPath",
+            "transformerTests": [
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "accessDynamicPath accesses nested object value",
+                "transformerName": "accessDynamicPath_nested",
+                "transformer": {
+                  "transformerType": "accessDynamicPath",
+                  "interpolation": "runtime",
+                  "objectAccessPath": [
+                    {
+                      "transformerType": "returnValue",
+                      "interpolation": "runtime",
+                      "value": { "a": { "b": 42 } }
+                    },
+                    "a",
+                    "b"
+                  ]
+                },
+                "transformerParams": {},
+                "expectedValue": 42
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "accessDynamicPath accesses top-level object attribute",
+                "transformerName": "accessDynamicPath_topLevel",
+                "transformer": {
+                  "transformerType": "accessDynamicPath",
+                  "interpolation": "runtime",
+                  "objectAccessPath": [
+                    {
+                      "transformerType": "returnValue",
+                      "interpolation": "runtime",
+                      "value": { "name": "testValue", "other": 99 }
+                    },
+                    "name"
+                  ]
+                },
+                "transformerParams": {},
+                "expectedValue": "testValue"
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "accessDynamicPath accesses value from context object",
+                "transformerName": "accessDynamicPath_fromContext",
+                "transformer": {
+                  "transformerType": "accessDynamicPath",
+                  "interpolation": "runtime",
+                  "objectAccessPath": [
+                    {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referenceName": "myObj"
+                    },
+                    "x"
+                  ]
+                },
+                "transformerParams": {},
+                "transformerRuntimeContext": {
+                  "myObj": { "x": "found!" }
+                },
+                "expectedValue": "found!"
               }
             ]
           }
