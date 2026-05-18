@@ -34,7 +34,7 @@ export interface ITransformerFailure {
   queryFailure: TransformerFailureType;
   query?: string | undefined;
   step?: Step;
-  transformerPath?: string[];
+  transformerPath?: (string | number)[];
   failureOrigin?: string[] | undefined;
   failureMessage?: string | undefined;
   queryReference?: string | undefined;
@@ -57,7 +57,7 @@ export class TransformerFailure extends Error implements ITransformerFailure {
   public queryFailure: TransformerFailureType;
   public query?: string | undefined;
   public step?: Step;
-  public transformerPath?: string[] | undefined;
+  public transformerPath?: (string | number)[] | undefined;
   public failureOrigin?: string[] | undefined;
   public failureMessage?: string | undefined;
   public queryReference?: string | undefined;

@@ -397,7 +397,9 @@ export function SqlDbEntityStoreSectionMixin<TBase extends typeof MixedSqlDbInst
         "alterEntityAttribute table",
         update.payload.entityName,
         "addColumns",
-        JSON.stringify(update.payload.addColumns, null, 2)
+        JSON.stringify(update.payload.addColumns, null, 2),
+        "modifiedEntityDefinition",
+        JSON.stringify(modifiedEntityDefinition, null, 2)
       );
 
       // TODO: relies on implementation, IT SHOULD NOT! does side effect, to worsen the insult

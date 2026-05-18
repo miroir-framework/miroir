@@ -570,7 +570,7 @@
                             "instanceUuid": {
                               "transformerType": "getFromContext",
                               "interpolation": "runtime",
-                              "referencePath": ["payload", "sourceEntityUuid"]
+                              "referencePath": ["payload", "sourceEntityDefinitionUuid"]
                             }
                           }
                         }
@@ -610,7 +610,7 @@
                             "instanceUuid": {
                               "transformerType": "getFromContext",
                               "interpolation": "runtime",
-                              "referencePath": ["payload", "targetEntityUuid"]
+                              "referencePath": ["payload", "targetEntityDefinitionUuid"]
                             }
                           }
                         }
@@ -628,6 +628,11 @@
                       "interpolation": "runtime",
                       "referencePath": ["payload", "application"]
                     },
+                    "entityName": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referencePath": ["targetEntityDefinition", "entityDefinitions", "name"]
+                    },
                     "entityUuid": {
                       "transformerType": "getFromContext",
                       "interpolation": "runtime",
@@ -638,16 +643,41 @@
                       "interpolation": "runtime",
                       "referencePath": ["payload", "targetEntityDefinitionUuid"]
                     },
-                    "addColumns": [
-                      {
-                        "name": "aNewColumnForTest",
+                    "addColumns": {
+                      "transformerType": "mapList",
+                      "interpolation": "runtime",
+                      "applyTo": {
+                        "transformerType": "entityDefinition_extractAttributes",
+                        "interpolation": "runtime",
+                        "entityDefinition": {
+                          "transformerType": "getFromContext",
+                          "interpolation": "runtime",
+                          "referencePath": ["sourceEntityDefinition", "entityDefinitions"]
+                        },
+                        "attributeNames": {
+                          "transformerType": "getFromContext",
+                          "interpolation": "runtime",
+                          "referencePath": ["payload", "columns"]
+                        }
+                      },
+                      "referenceToOuterObject": "attribute",
+                      "elementTransformer": {
+                        "transformerType": "createObject",
+                        "interpolation": "runtime",
                         "definition": {
-                          "type": "number",
-                          "optional": true,
-                          "tag": { "value": { "id": 6, "defaultLabel": "Gender (narrow-minded)" } }
+                          "name": {
+                            "transformerType": "getFromContext",
+                            "interpolation": "runtime",
+                            "referencePath": ["attribute", "0"]
+                          },
+                          "definition": {
+                            "transformerType": "getFromContext",
+                            "interpolation": "runtime",
+                            "referencePath": ["attribute", "1"]
+                          }
                         }
                       }
-                    ]
+                    }
                   }
                 }
               ]

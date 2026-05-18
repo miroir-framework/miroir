@@ -1502,13 +1502,24 @@ const testActions: Record<string, TestCompositeActionParams> = {
                       left: {
                         transformerType: "getFromContext",
                         interpolation: "runtime",
-                        referencePath: ["entityDefinitionAfterAction", "entityDefinitions", "mlSchema", "definition", "aNewColumnForTest"],
+                        // referencePath: ["entityDefinitionAfterAction", "entityDefinitions", "mlSchema"],
+                        referencePath: ["entityDefinitionAfterAction", "entityDefinitions", "mlSchema", "definition", "iso3166-1Alpha-2", "type"],
                       },
                       right: {
-                        "type": "number",
-                        "optional": true,
-                        "tag": { "value": { "id": 6, "defaultLabel": "Gender (narrow-minded)" } }
-                      },
+                        transformerType: "returnValue",
+                        interpolation: "runtime",
+                        value: "string"
+                      }
+                      // right: {
+                      //   "type": "string",
+                      //   "optional": true,
+                      //   "tag": {
+                      //     "value": {
+                      //       "id": 5,
+                      //       "defaultLabel": "Country Code"
+                      //     }
+                      //   }
+                      // },
                     },
                   },
                   expectedValue: true,

@@ -2374,7 +2374,7 @@ export class DomainController implements DomainControllerInterface {
               currentAction.actionLabel || "unnamed assertion",
               this.miroirContext.miroirActivityTracker.getCurrentActivityId() || "unknown",
               (async () =>
-                await this.handleTestCompositeActionAssertion(
+                this.handleTestCompositeActionAssertion(
                   currentAction,
                   modelEnvironment,
                   localContext,
@@ -2697,6 +2697,9 @@ export class DomainController implements DomainControllerInterface {
               localContext,
               actionResult,
             );
+            if (actionResult instanceof Action2Error) {
+              return actionResult;
+            }
             break;
           }
           default: {
@@ -2934,7 +2937,7 @@ export class DomainController implements DomainControllerInterface {
     modelEnvironment: MiroirModelEnvironment,
     localContext: Record<string, any>,
     actionResult: Action2ReturnType | undefined,
-  ) {
+  ): Action2ReturnType {
     if (!ConfigurationService.configurationService.testImplementation) {
       throw new Error(
         "ConfigurationService.testImplementation is not set, please inject a test implementation using ConfigurationService.registerTestImplementation on startup if you want to run tests at runtime.",
@@ -2957,26 +2960,49 @@ export class DomainController implements DomainControllerInterface {
             localContext, // TODO: should be {}?
           )
         : localContext;
+      
+      if (prePreValueToTest instanceof TransformerFailure) {
+        log.error(
+          "handleTestCompositeActionAssertion prePreValueToTest is a TransformerFailure",
+          prePreValueToTest,
+        );
+        return new Action2Error(
+          "FailedToResolveTemplate",
+          "handleTestCompositeActionAssertion error resolving template ",
+          [currentAction.testAssertion.testLabel],
+          prePreValueToTest as any,
+        );
+      } else {
+        log.info(
+          "handleTestCompositeActionAssertion prePreValueToTest is not a TransformerFailure, value=",
+          prePreValueToTest,
+        );
+      }
 
-      const preValueToTest = resolvePathOnObject(
-        prePreValueToTest,
-        currentAction.testAssertion.definition.resultAccessPath ?? [],
-      );
-
-      valueToTest = removeUndefinedProperties(
-        unNullify(
-          Array.isArray(preValueToTest)
-            ? ignorePostgresExtraAttributesOnList(
-                preValueToTest,
-                currentAction.testAssertion.definition.ignoreAttributes ?? [],
-              )
-            : ignorePostgresExtraAttributesOnObject(
-                preValueToTest,
-                currentAction.testAssertion.definition.ignoreAttributes ?? [],
-              ),
-        ),
-      );
-      const expectedValue = Array.isArray(currentAction.testAssertion.definition.expectedValue)
+      if (typeof prePreValueToTest === "object") {
+        const preValueToTest =  resolvePathOnObject(
+          prePreValueToTest,
+          currentAction.testAssertion.definition.resultAccessPath ?? [],
+        );
+  
+        valueToTest = removeUndefinedProperties(
+          unNullify(
+            Array.isArray(preValueToTest)
+              ? ignorePostgresExtraAttributesOnList(
+                  preValueToTest,
+                  currentAction.testAssertion.definition.ignoreAttributes ?? [],
+                )
+              : ignorePostgresExtraAttributesOnObject(
+                  preValueToTest,
+                  currentAction.testAssertion.definition.ignoreAttributes ?? [],
+                ),
+          ),
+        );
+      } else {
+        valueToTest = prePreValueToTest;
+      }
+      const expectedValue = typeof currentAction.testAssertion.definition.expectedValue === "object"?
+      Array.isArray(currentAction.testAssertion.definition.expectedValue)
         ? ignorePostgresExtraAttributesOnList(
             currentAction.testAssertion.definition.expectedValue,
             currentAction.testAssertion.definition.ignoreAttributes ?? [],
@@ -2984,7 +3010,7 @@ export class DomainController implements DomainControllerInterface {
         : ignorePostgresExtraAttributesOnObject(
             currentAction.testAssertion.definition.expectedValue,
             currentAction.testAssertion.definition.ignoreAttributes ?? [],
-          );
+          ):currentAction.testAssertion.definition.expectedValue;
       log.info(
         "handleTestCompositeActionAssertion compositeRunTestAssertion to handle",
         JSON.stringify(currentAction.testAssertion, null, 2),

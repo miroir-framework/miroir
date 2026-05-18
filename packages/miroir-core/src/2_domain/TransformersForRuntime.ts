@@ -3585,14 +3585,14 @@ export function transformer_extended_apply(
             let preResult;
             const foundApplicationTransformer =
               applicationTransformerDefinitions[(transformer as any).transformerType];
-            log.info(
-              "transformer_extended_apply foundApplicationTransformer",
-              foundApplicationTransformer,
-              "for transformer",
-              JSON.stringify(transformer, null, 2),
-              "applicationTransformerDefinitions",
-              Object.keys(applicationTransformerDefinitions),
-            );
+            // log.info(
+            //   "transformer_extended_apply foundApplicationTransformer",
+            //   foundApplicationTransformer,
+            //   "for transformer",
+            //   JSON.stringify(transformer, null, 2),
+            //   "applicationTransformerDefinitions",
+            //   Object.keys(applicationTransformerDefinitions),
+            // );
             if (!foundApplicationTransformer) {
               log.error(
                 "transformer_extended_apply failed for",
@@ -3611,10 +3611,10 @@ export function transformer_extended_apply(
                 queryParameters: JSON.stringify(transformer),
               });
             }
-            log.info(
-              "transformer_extended_apply foundApplicationTransformer",
-              JSON.stringify(foundApplicationTransformer, null, 2),
-            );
+            // log.info(
+            //   "transformer_extended_apply foundApplicationTransformer",
+            //   JSON.stringify(foundApplicationTransformer, null, 2),
+            // );
             // log.info(
             //   "transformer_extended_apply foundApplicationTransformer.transformerImplementation",
             //   JSON.stringify(foundApplicationTransformer.transformerImplementation, null, 2)
@@ -4006,28 +4006,28 @@ export function transformer_extended_apply_wrapper(
   reduxDeploymentsState?: ReduxDeploymentsState | undefined, // used by getDefaultValueForJzodSchemaWithResolution only, somewhat redundant with modelEnvironment
   deploymentUuid?: Uuid,
 ): TransformerReturnType<any> {
-  log.info(
-    "transformer_extended_apply_wrapper called for",
-    "'" + label + "'",
-    "step",
-    step,
-    "transformer",
-    transformer,
-    // JSON.stringify(transformer, null, 2),
-    "reduxDeploymentsState",
-    reduxDeploymentsState,
-    activityTracker ? "with activityTracker" : "without activityTracker",
-    "isTransformerTrackingEnabled():",
-    activityTracker?.isTransformerTrackingEnabled(),
-    "contextResults:",
-    // contextResults ? Object.keys(contextResults) : "no contextResults",
-    contextResults ? contextResults : "no contextResults",
-    "transformerParams:",
-    // Object.keys(transformerParams)
-    transformerParams
-    // "eventTracker?.isTransformerTrackingEnabled()",
-    // eventTracker?.isTransformerTrackingEnabled()
-  );
+  // log.info(
+  //   "transformer_extended_apply_wrapper called for",
+  //   "'" + label + "'",
+  //   "step",
+  //   step,
+  //   "transformer",
+  //   transformer,
+  //   // JSON.stringify(transformer, null, 2),
+  //   "reduxDeploymentsState",
+  //   reduxDeploymentsState,
+  //   activityTracker ? "with activityTracker" : "without activityTracker",
+  //   "isTransformerTrackingEnabled():",
+  //   activityTracker?.isTransformerTrackingEnabled(),
+  //   "contextResults:",
+  //   // contextResults ? Object.keys(contextResults) : "no contextResults",
+  //   contextResults ? contextResults : "no contextResults",
+  //   "transformerParams:",
+  //   // Object.keys(transformerParams)
+  //   transformerParams
+  //   // "eventTracker?.isTransformerTrackingEnabled()",
+  //   // eventTracker?.isTransformerTrackingEnabled()
+  // );
   // if (activityTracker?.isTransformerTrackingEnabled()) {
   //   const transformerType = (transformer as any)?.transformerType || "unknown";
   //   trackingId = activityTracker.startTransformer(
@@ -4094,12 +4094,12 @@ export function transformer_extended_apply_wrapper(
       //   activityTracker.endTransformer(trackingId, result);
       // }
 
-      // log.info(
-      //   "transformer_extended_apply_wrapper called for",
-      //   label,
-      //   "transformer_extended_apply result",
-      //   JSON.stringify(result, null, 2),
-      // );
+      log.info(
+        "transformer_extended_apply_wrapper called for",
+        label,
+        "transformer_extended_apply result",
+        JSON.stringify(result, null, 2),
+      );
       return result;
     }
   } catch (e) {

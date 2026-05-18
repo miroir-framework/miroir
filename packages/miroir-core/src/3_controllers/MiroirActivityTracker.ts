@@ -425,7 +425,6 @@ export class MiroirActivityTracker implements MiroirActivityTrackerInterface {
         this.currentTestPath
       );
       const result = await actionFn(parentTrackingId);
-      // this.setTestAssertionResult(currentTestAssertionPath, testAssertionResult);
       this.endActivity(trackingId);
       this.setTestAssertion(undefined);
       return Promise.resolve(result);

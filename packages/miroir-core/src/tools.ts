@@ -3,7 +3,7 @@ import { DomainState } from "./0_interfaces/2_domain/DomainControllerInterface";
 import { ReduxDeploymentsState } from "./0_interfaces/2_domain/ReduxDeploymentsStateInterface";
 import { getReduxDeploymentsStateIndex } from "./2_domain/ReduxDeploymentsState";
 import { ApplicationSection } from "./0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
-import type { Domain2QueryReturnType } from "./0_interfaces/2_domain/DomainElement";
+import { TransformerFailure, type Domain2QueryReturnType } from "./0_interfaces/2_domain/DomainElement";
 
 export function stringTuple<T extends [string] | string[]>(...data: T): T {
   return data;
@@ -141,24 +141,30 @@ export function resolvePathOnObject(valueObject:any, path: AbsolutePath) {
         (Array.isArray(acc) && acc.length < Number(curr) ) ||
         (!Array.isArray(acc) && !Object.hasOwn(acc, curr )) 
       ) {
-        throw new Error(
-          "resolvePathOnObject value object=" +
-            JSON.stringify(acc) +
-            " of type " +
-            typeof valueObject +
-            ", path=" +
-            path +
-            " either attribute " +
-            curr +
-            " of type " +
-            typeof curr +
-            " not found in " +
-            JSON.stringify(acc) +
-            " of type " +
-            typeof acc +
-            " or not last in path but leading to undefined " +
-            (curr as any)[acc]
-        );
+        // throw new Error(
+        //   "resolvePathOnObject value object=" +
+        //     JSON.stringify(acc) +
+        //     " of type " +
+        //     typeof valueObject +
+        //     ", path=" +
+        //     path +
+        //     " either attribute " +
+        //     curr +
+        //     " of type " +
+        //     typeof curr +
+        //     " not found in " +
+        //     JSON.stringify(acc) +
+        //     " of type " +
+        //     typeof acc +
+        //     " or not last in path but leading to undefined " +
+        //     (curr as any)[acc]
+        // );
+        throw new TransformerFailure({
+          queryFailure: "ReferenceNotFound",
+          transformerPath: path.map((p) => typeof p === "object" ? p.key : typeof p === "number" ? p.toString() : p),
+          failureOrigin: ["resolvePathOnObject"],
+          innerError: new Error("resolvePathOnObject value object=" + JSON.stringify(acc) + " of type " + typeof valueObject + ", path=" + path + " either attribute " + curr + " of type " + typeof curr + " not found in " + JSON.stringify(acc) + " of type " + typeof acc + " or not last in path but leading to undefined " + (curr as any)[acc]),
+        });
       } else {
         // console.log("resolvePathOnObject called with", valueObject, "path", path, "result", acc[curr])
         return acc[curr];
