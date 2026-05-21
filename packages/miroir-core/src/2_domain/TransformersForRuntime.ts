@@ -1,4 +1,5 @@
 import mustache from "mustache";
+import deepEqual from "fast-deep-equal";
 import { serializeError } from "serialize-error";
 // import Mustache from "mustache";
 import { v4 as uuidv4 } from "uuid";
@@ -2940,6 +2941,10 @@ export function handleTransformer_boolExpr(
   switch (op) {
     case "==":        condition = leftValue == rightValue;       break;
     case "!=":        condition = leftValue != rightValue;       break;
+    case "===":       condition = leftValue === rightValue;      break;
+    case "!==":       condition = leftValue !== rightValue;      break;
+    case "deepEqual":    condition = deepEqual(leftValue, rightValue);  break;
+    case "notDeepEqual": condition = !deepEqual(leftValue, rightValue); break;
     case "<":         condition = leftValue < rightValue;        break;
     case "<=":        condition = leftValue <= rightValue;       break;
     case ">":         condition = leftValue > rightValue;        break;

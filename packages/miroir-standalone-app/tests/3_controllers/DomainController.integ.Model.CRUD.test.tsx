@@ -1381,10 +1381,12 @@ const testActions: Record<string, TestCompositeActionParams> = {
         // },
         "Duplicate iso3166-1Alpha-2 from Entity Country to Entity Publisher and Commit": {
           testType: "testCompositeAction",
-          testLabel: "Duplicate iso3166-1Alpha-2 from Entity Country to Entity Publisher and Commit",
+          testLabel:
+            "Duplicate iso3166-1Alpha-2 from Entity Country to Entity Publisher and Commit",
           compositeActionSequence: {
             actionType: "compositeActionSequence",
-            actionLabel: "Duplicate iso3166-1Alpha-2 from Entity Country to Entity Publisher and Commit",
+            actionLabel:
+              "Duplicate iso3166-1Alpha-2 from Entity Country to Entity Publisher and Commit",
             endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             payload: {
               actionSequence: [
@@ -1393,9 +1395,8 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   actionLabel: "refreshMiroirLocalCache",
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   payload: {
-
                     application: selfApplicationMiroir.uuid,
-                    },
+                  },
                 },
                 {
                   actionType: "rollback",
@@ -1418,7 +1419,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
                     sourceEntityDefinitionUuid: entityDefinitionCountry.uuid,
                     targetEntityDefinitionUuid: entityDefinitionPublisher.uuid,
                     columns: [
-                      "iso3166-1Alpha-2"
+                      "iso3166-1Alpha-2",
                       // {
                       //   name: "aNewColumnForTest",
                       //   definition: columnForTestDefinition,
@@ -1498,28 +1499,33 @@ const testActions: Record<string, TestCompositeActionParams> = {
                     right: {
                       transformerType: "boolExpr",
                       interpolation: "runtime",
-                      operator: "==",
+                      operator: "deepEqual",
                       left: {
                         transformerType: "getFromContext",
                         interpolation: "runtime",
-                        // referencePath: ["entityDefinitionAfterAction", "entityDefinitions", "mlSchema"],
-                        referencePath: ["entityDefinitionAfterAction", "entityDefinitions", "mlSchema", "definition", "iso3166-1Alpha-2", "type"],
+                        referencePath: [
+                          "entityDefinitionAfterAction",
+                          "entityDefinitions",
+                          "mlSchema",
+                          "definition",
+                          "iso3166-1Alpha-2",
+                        ],
                       },
-                      right: {
-                        transformerType: "returnValue",
-                        interpolation: "runtime",
-                        value: "string"
-                      }
                       // right: {
-                      //   "type": "string",
-                      //   "optional": true,
-                      //   "tag": {
-                      //     "value": {
-                      //       "id": 5,
-                      //       "defaultLabel": "Country Code"
-                      //     }
-                      //   }
-                      // },
+                      //   transformerType: "returnValue",
+                      //   interpolation: "runtime",
+                      //   value: "string"
+                      // }
+                      right: {
+                        type: "string",
+                        optional: true,
+                        tag: {
+                          value: {
+                            id: 5,
+                            defaultLabel: "Country Code",
+                          },
+                        },
+                      },
                     },
                   },
                   expectedValue: true,

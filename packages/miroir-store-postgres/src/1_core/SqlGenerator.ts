@@ -1072,6 +1072,8 @@ const jsOperatorToSqlOperatorMap: Record<string, string> = {
   "===": "=",
   "!=": "<>",
   "!==": "<>",
+  "deepEqual": "=",
+  "notDeepEqual": "<>",
   "<": "<",
   "<=": "<=",
   ">": ">",

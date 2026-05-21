@@ -2677,6 +2677,366 @@
                   "userType": "admin"
                 },
                 "expectedValue": true
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "boolExpr strict equality true - identical strings",
+                "transformerName": "boolExprStrictEqualityTrue",
+                "transformer": {
+                  "transformerType": "boolExpr",
+                  "interpolation": "runtime",
+                  "left": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "mlSchema": { "type": "string" },
+                    "value": "hello"
+                  },
+                  "right": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "mlSchema": { "type": "string" },
+                    "value": "hello"
+                  },
+                  "operator": "==="
+                },
+                "transformerParams": {},
+                "expectedValue": true
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "boolExpr strict equality false - string vs number (no type coercion)",
+                "transformerName": "boolExprStrictEqualityFalseTypeCoercion",
+                "transformer": {
+                  "transformerType": "boolExpr",
+                  "interpolation": "runtime",
+                  "left": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "mlSchema": { "type": "string" },
+                    "value": "1"
+                  },
+                  "right": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "mlSchema": { "type": "number" },
+                    "value": 1
+                  },
+                  "operator": "==="
+                },
+                "transformerParams": {},
+                "expectedValue": false
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "boolExpr strict inequality true - string vs number (no type coercion)",
+                "transformerName": "boolExprStrictInequalityTrueTypeCoercion",
+                "transformer": {
+                  "transformerType": "boolExpr",
+                  "interpolation": "runtime",
+                  "left": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "mlSchema": { "type": "string" },
+                    "value": "1"
+                  },
+                  "right": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "mlSchema": { "type": "number" },
+                    "value": 1
+                  },
+                  "operator": "!=="
+                },
+                "transformerParams": {},
+                "expectedValue": true
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "boolExpr strict inequality false - identical strings",
+                "transformerName": "boolExprStrictInequalityFalse",
+                "transformer": {
+                  "transformerType": "boolExpr",
+                  "interpolation": "runtime",
+                  "left": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "mlSchema": { "type": "string" },
+                    "value": "hello"
+                  },
+                  "right": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "mlSchema": { "type": "string" },
+                    "value": "hello"
+                  },
+                  "operator": "!=="
+                },
+                "transformerParams": {},
+                "expectedValue": false
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "boolExpr deepEqual true - identical objects",
+                "transformerName": "boolExprDeepEqualTrueObjects",
+                "transformer": {
+                  "transformerType": "boolExpr",
+                  "interpolation": "runtime",
+                  "left": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "mlSchema": { "type": "object", "definition": {} },
+                    "value": { "a": 1, "b": "hello" }
+                  },
+                  "right": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "mlSchema": { "type": "object", "definition": {} },
+                    "value": { "a": 1, "b": "hello" }
+                  },
+                  "operator": "deepEqual"
+                },
+                "transformerParams": {},
+                "expectedValue": true
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "boolExpr deepEqual false - different objects",
+                "transformerName": "boolExprDeepEqualFalseObjects",
+                "transformer": {
+                  "transformerType": "boolExpr",
+                  "interpolation": "runtime",
+                  "left": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "mlSchema": { "type": "object", "definition": {} },
+                    "value": { "a": 1, "b": "hello" }
+                  },
+                  "right": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "mlSchema": { "type": "object", "definition": {} },
+                    "value": { "a": 1, "b": "world" }
+                  },
+                  "operator": "deepEqual"
+                },
+                "transformerParams": {},
+                "expectedValue": false
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "boolExpr deepEqual true - nested arrays with same content",
+                "transformerName": "boolExprDeepEqualTrueArrays",
+                "transformer": {
+                  "transformerType": "boolExpr",
+                  "interpolation": "runtime",
+                  "left": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "mlSchema": { "type": "array", "definition": { "type": "number" } },
+                    "value": [1, 2, 3]
+                  },
+                  "right": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "mlSchema": { "type": "array", "definition": { "type": "number" } },
+                    "value": [1, 2, 3]
+                  },
+                  "operator": "deepEqual"
+                },
+                "transformerParams": {},
+                "expectedValue": true
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "boolExpr notDeepEqual true - different objects",
+                "transformerName": "boolExprNotDeepEqualTrue",
+                "transformer": {
+                  "transformerType": "boolExpr",
+                  "interpolation": "runtime",
+                  "left": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "mlSchema": { "type": "object", "definition": {} },
+                    "value": { "x": 1 }
+                  },
+                  "right": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "mlSchema": { "type": "object", "definition": {} },
+                    "value": { "x": 2 }
+                  },
+                  "operator": "notDeepEqual"
+                },
+                "transformerParams": {},
+                "expectedValue": true
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "boolExpr notDeepEqual false - identical objects",
+                "transformerName": "boolExprNotDeepEqualFalse",
+                "transformer": {
+                  "transformerType": "boolExpr",
+                  "interpolation": "runtime",
+                  "left": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "mlSchema": { "type": "object", "definition": {} },
+                    "value": { "x": 1 }
+                  },
+                  "right": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "mlSchema": { "type": "object", "definition": {} },
+                    "value": { "x": 1 }
+                  },
+                  "operator": "notDeepEqual"
+                },
+                "transformerParams": {},
+                "expectedValue": false
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "boolExpr loose equality: 0 == \"\" is true (loose, both coerce to 0)",
+                "transformerName": "boolExprLooseZeroEqualsEmptyString",
+                "transformer": {
+                  "transformerType": "boolExpr",
+                  "interpolation": "runtime",
+                  "left": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "mlSchema": { "type": "number" },
+                    "value": 0
+                  },
+                  "right": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "mlSchema": { "type": "string" },
+                    "value": ""
+                  },
+                  "operator": "=="
+                },
+                "transformerParams": {},
+                "expectedValue": true
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "boolExpr strict equality: 0 === \"\" is false (strict, different types)",
+                "transformerName": "boolExprStrictZeroNotEqualsEmptyString",
+                "transformer": {
+                  "transformerType": "boolExpr",
+                  "interpolation": "runtime",
+                  "left": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "mlSchema": { "type": "number" },
+                    "value": 0
+                  },
+                  "right": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "mlSchema": { "type": "string" },
+                    "value": ""
+                  },
+                  "operator": "==="
+                },
+                "transformerParams": {},
+                "expectedValue": false
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "boolExpr loose equality: 0 == false is true (loose)",
+                "transformerName": "boolExprLooseZeroEqualsBoolean",
+                "transformer": {
+                  "transformerType": "boolExpr",
+                  "interpolation": "runtime",
+                  "left": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "mlSchema": { "type": "number" },
+                    "value": 0
+                  },
+                  "right": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "mlSchema": { "type": "boolean" },
+                    "value": false
+                  },
+                  "operator": "=="
+                },
+                "transformerParams": {},
+                "expectedValue": true
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "boolExpr strict equality: 0 === false is false (strict)",
+                "transformerName": "boolExprStrictZeroNotEqualsBoolean",
+                "transformer": {
+                  "transformerType": "boolExpr",
+                  "interpolation": "runtime",
+                  "left": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "mlSchema": { "type": "number" },
+                    "value": 0
+                  },
+                  "right": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "mlSchema": { "type": "boolean" },
+                    "value": false
+                  },
+                  "operator": "==="
+                },
+                "transformerParams": {},
+                "expectedValue": false
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "boolExpr deepEqual with deeply nested identical objects",
+                "transformerName": "boolExprDeepEqualNestedObjects",
+                "transformer": {
+                  "transformerType": "boolExpr",
+                  "interpolation": "runtime",
+                  "left": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "mlSchema": { "type": "object", "definition": {} },
+                    "value": { "a": { "b": { "c": 42 } }, "d": [1, 2] }
+                  },
+                  "right": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "mlSchema": { "type": "object", "definition": {} },
+                    "value": { "a": { "b": { "c": 42 } }, "d": [1, 2] }
+                  },
+                  "operator": "deepEqual"
+                },
+                "transformerParams": {},
+                "expectedValue": true
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "boolExpr deepEqual: different nested value returns false",
+                "transformerName": "boolExprDeepEqualNestedDiff",
+                "transformer": {
+                  "transformerType": "boolExpr",
+                  "interpolation": "runtime",
+                  "left": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "mlSchema": { "type": "object", "definition": {} },
+                    "value": { "a": { "b": { "c": 42 } } }
+                  },
+                  "right": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "mlSchema": { "type": "object", "definition": {} },
+                    "value": { "a": { "b": { "c": 99 } } }
+                  },
+                  "operator": "deepEqual"
+                },
+                "transformerParams": {},
+                "expectedValue": false
               }
             ]
           },
