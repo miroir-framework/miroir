@@ -1623,6 +1623,13 @@ export function getMiroirFundamentalJzodSchema(
             database: { type: "string" },
           },
         },
+        bundledStoreSectionConfiguration: {
+          type: "object",
+          definition: {
+            emulatedServerType: { type: "literal", definition: "bundled" },
+            deploymentUuid: { type: "string" },
+          },
+        },
         storeSectionConfiguration: {
           type: "union",
           discriminator: "emulatedServerType",
@@ -1653,6 +1660,13 @@ export function getMiroirFundamentalJzodSchema(
               definition: {
                 absolutePath: miroirFundamentalJzodSchemaUuid,
                 relativePath: "mongoDbStoreSectionConfiguration",
+              },
+            },
+            {
+              type: "schemaReference",
+              definition: {
+                absolutePath: miroirFundamentalJzodSchemaUuid,
+                relativePath: "bundledStoreSectionConfiguration",
               },
             },
           ],

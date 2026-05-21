@@ -1,0 +1,47 @@
+{
+  "name": "miroir-demo",
+  "version": "1.0.0",
+  "description": "Static GitHub-Pages-deployable demo of the Miroir Framework",
+  "author": "Miroir Framework <miroir-framework@protonmail.com>",
+  "homepage": "https://github.com/miroir-framework/miroir/packages/miroir-demo/#readme",
+  "bugs": "https://github.com/miroir-framework/miroir/issues",
+  "license": "MIT",
+  "main": "index.js",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host",
+    "build": "node --max-old-space-size=4096 ../../node_modules/vite/bin/vite.js build --emptyOutDir",
+    "build:static": "npm run build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@emotion/react": "^11.10.5",
+    "@emotion/styled": "^11.10.5",
+    "@miroir-framework/jzod": "0.8.3",
+    "@mui/material": "^5.10.14",
+    "loglevelnext": "^6.0.0",
+    "material-symbols": "^0.25.0",
+    "miroir-core": "*",
+    "miroir-localcache-redux": "*",
+    "miroir-react": "*",
+    "miroir-store-bundled": "*",
+    "miroir-store-indexedDb": "*",
+    "miroir-test-app_deployment-admin": "*",
+    "miroir-test-app_deployment-miroir": "*",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-redux": "^8.0.5",
+    "react-router-dom": "^6.13.0",
+    "uuid": "^11.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.8.9",
+    "@types/react": "^18.0.25",
+    "@types/react-dom": "^18.0.9",
+    "@vitejs/plugin-react": "^5.1.4",
+    "typescript": "^6.0.0",
+    "vite": "^6.3.5",
+    "vite-plugin-node-polyfills": "^0.23.0"
+  }
+}

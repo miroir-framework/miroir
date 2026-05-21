@@ -255,6 +255,8 @@ export {
   graphReportSection,
   GridReportSection,
   gridReportSection,
+  BundledStoreSectionConfiguration,
+  bundledStoreSectionConfiguration,
   IndexedDbStoreSectionConfiguration,
   InstanceAction,
   JzodArray,

@@ -3766,6 +3766,10 @@ export const miroirFundamentalJzodSchema = {
             "definition": [
               "==",
               "!=",
+              "===",
+              "!==",
+              "deepEqual",
+              "notDeepEqual",
               "<",
               "<=",
               ">",
@@ -11370,6 +11374,18 @@ export const miroirFundamentalJzodSchema = {
           }
         }
       },
+      "bundledStoreSectionConfiguration": {
+        "type": "object",
+        "definition": {
+          "emulatedServerType": {
+            "type": "literal",
+            "definition": "bundled"
+          },
+          "deploymentUuid": {
+            "type": "string"
+          }
+        }
+      },
       "storeSectionConfiguration": {
         "type": "union",
         "discriminator": "emulatedServerType",
@@ -11400,6 +11416,13 @@ export const miroirFundamentalJzodSchema = {
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
               "relativePath": "mongoDbStoreSectionConfiguration"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "bundledStoreSectionConfiguration"
             }
           }
         ]
@@ -29392,6 +29415,10 @@ export const miroirFundamentalJzodSchema = {
             "definition": [
               "==",
               "!=",
+              "===",
+              "!==",
+              "deepEqual",
+              "notDeepEqual",
               "<",
               "<=",
               ">",
@@ -40882,6 +40909,13 @@ export const miroirFundamentalJzodSchema = {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
               "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_mongoDbStoreSectionConfiguration"
             }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_bundledStoreSectionConfiguration"
+            }
           }
         ]
       },
@@ -41238,6 +41272,13 @@ export const miroirFundamentalJzodSchema = {
         "definition": {
           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
           "relativePath": "mongoDbStoreSectionConfiguration"
+        }
+      },
+      "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_bundledStoreSectionConfiguration": {
+        "type": "schemaReference",
+        "definition": {
+          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          "relativePath": "bundledStoreSectionConfiguration"
         }
       },
       "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_menuItemArray": {

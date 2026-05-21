@@ -9,6 +9,7 @@ export const StorageTypeSchema = z.enum([
   "filesystem",
   "indexedDb",
   "mongodb",
+  "bundled",
 ]);
 
 export type StorageType = z.infer<typeof StorageTypeSchema>;

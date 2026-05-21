@@ -1,0 +1,23 @@
+{
+  "name": "miroir-store-bundled",
+  "private": true,
+  "version": "0.0.0",
+  "description": "The Miroir read-only bundled store, serving pre-loaded JSON data for static (GitHub Pages) deployments.",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "module": "dist/index.js",
+  "type": "module",
+  "scripts": {
+    "build": "tsup",
+    "devBuild": "npm run build"
+  },
+  "dependencies": {
+    "miroir-core": "*"
+  },
+  "devDependencies": {
+    "tsup": "^8.0.1",
+    "typescript": "^6.0.0"
+  },
+  "author": "Miroir Framework <miroir-framework@protonmail.com>",
+  "license": "MIT"
+}
