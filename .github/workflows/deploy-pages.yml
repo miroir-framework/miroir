@@ -53,12 +53,13 @@ jobs:
       - name: Build miroir-core (with type generation)
         run: npm run devBuild -w miroir-core
 
-      # 3. Store & cache packages (can run in parallel)
-      - name: Build store and cache packages
+      # 3. Store, cache, and diagram packages (can run in parallel)
+      - name: Build store, cache, and diagram packages
         run: |
           npm run build -w miroir-store-bundled &
           npm run build -w miroir-store-indexedDb &
           npm run build -w miroir-localcache-redux &
+          npm run build -w miroir-diagram-class &
           wait
 
       # 4. React bindings
