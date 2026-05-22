@@ -1,0 +1,78 @@
+name: Build Miroir Demo for GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Allow only one concurrent deployment, cancelling in-progress runs
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+
+      - name: Install dependencies
+        # package-lock.json is generated on Windows; deleting it lets npm
+        # resolve platform-specific optional deps (e.g. @rollup/rollup-linux-x64-gnu)
+        run: |
+          rm -f package-lock.json
+          npm install --no-audit --prefer-dedupe
+
+      # ── Build order per copilot-instructions.md ─────────────────────────
+      # 1. Core type definitions (data deployed by miroir & admin test apps)
+      - name: Build miroir-test-app_deployment-miroir
+        run: npm run build -w miroir-test-app_deployment-miroir
+
+      - name: Build miroir-test-app_deployment-admin
+        run: npm run build -w miroir-test-app_deployment-admin
+
+      - name: Build miroir-test-app_deployment-library
+        run: npm run build -w miroir-test-app_deployment-library
+
+      # 2. miroir-core with generated TypeScript types (devBuild)
+      - name: Build miroir-core (with type generation)
+        run: npm run devBuild -w miroir-core
+
+      # 3. Store, cache, and diagram packages (can run in parallel)
+      - name: Build store, cache, and diagram packages
+        run: |
+          npm run build -w miroir-store-bundled &
+          npm run build -w miroir-store-indexedDb &
+          npm run build -w miroir-localcache-redux &
+          npm run build -w miroir-diagram-class &
+          wait
+
+      # 4. React bindings
+      - name: Build miroir-react
+        run: npm run build -w miroir-react
+
+      # 5. Static demo
+      - name: Build miroir-demo (static)
+        run: npm run build:static -w miroir-demo
+        env:
+          VITE_BASE_URL: /miroir-demo/
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: packages/miroir-demo/dist
