@@ -3783,10 +3783,40 @@
                 "retainAttributes": [
                   "queryFailure"
                 ],
+                "expectedValue": 150
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "plus with reference values fails",
+                "transformerName": "plusWithReferenceValues",
+                "transformer": {
+                  "transformerType": "+",
+                  "interpolation": "runtime",
+                  "args": [
+                    {
+                      "transformerType": "getFromParameters",
+                      "interpolation": "runtime",
+                      "referenceName": "value1"
+                    },
+                    {
+                      "transformerType": "getFromParameters",
+                      "interpolation": "runtime",
+                      "referenceName": "value2"
+                    }
+                  ]
+                },
+                "transformerParams": {
+                  "value1": 100
+                },
+                "retainAttributes": [
+                  "queryFailure"
+                ],
                 "integrationTestExpectedValue": {
                   "queryFailure": "QueryNotExecutable"
                 },
-                "unitTestExpectedValue": 150
+                "unitTestExpectedValue": {
+                  "queryFailure": "FailedTransformer"
+                }
               }
             ]
           },
@@ -6038,7 +6068,7 @@
                   "queryFailure"
                 ],
                 "unitTestExpectedValue": {
-                  "queryFailure": "FailedTransformer"
+                  "queryFailure": "ReferenceNotFound"
                 },
                 "integrationTestExpectedValue": {
                   "queryFailure": "QueryNotExecutable"
@@ -7482,8 +7512,6 @@
                   }
                 },
                 "transformerParams": {},
-                "retainAttributes": ["queryFailure"],
-                "integrationTestExpectedValue": {"queryFailure": "QueryNotExecutable"},
                 "expectedValue": [{"id": 1, "active": true}, {"id": 3, "active": true}]
               },
               {
@@ -7611,14 +7639,10 @@
                     "interpolation": "runtime",
                     "operator": "==",
                     "left": {
-                      "transformerType": "accessDynamicPath",
+                      "transformerType": "getFromContext",
                       "interpolation": "runtime",
-                      "objectAccessPath": [
-                        {
-                          "transformerType": "getFromContext",
-                          "interpolation": "runtime",
-                          "referenceName": "__element__"
-                        },
+                      "referencePath": [
+                        "__element__",
                         "active"
                       ]
                     },
@@ -7629,9 +7653,6 @@
                     }
                   }
                 },
-                "transformerParams": {},
-                "retainAttributes": ["queryFailure"],
-                "integrationTestExpectedValue": {"queryFailure": "QueryNotExecutable"},
                 "expectedValue": {"id": 1, "active": true}
               },
               {
@@ -7664,8 +7685,7 @@
                   }
                 },
                 "transformerParams": {},
-                "unitTestExpectedValue": null,
-                "integrationTestExpectedValue": null
+                "expectedValue": null
               },
               {
                 "transformerTestType": "transformerTest",

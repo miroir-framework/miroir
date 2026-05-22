@@ -1060,9 +1060,7 @@ function resolveApplyTo(
   transformerPath: string[],
   label: string | undefined,
   transformer:
-    // | TransformerForBuild_createObjectFromPairs
     | CoreTransformerForBuildPlusRuntime_createObjectFromPairs
-    // | TransformerForBuild_mergeIntoObject
     | CoreTransformerForBuildPlusRuntime_mergeIntoObject,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
   modelEnvironment: MiroirModelEnvironment,
@@ -2667,7 +2665,7 @@ export function handleTransformer_FreeObjectTemplate(
     JSON.stringify(Object.keys(contextResults ?? {}), null, 2)
     // JSON.stringify(contextResults, null, 2)
   );
-  const result = Object.fromEntries(
+  const entries = 
     Object.entries(transformer.definition).map((objectTemplateEntry: [string, any]) => {
       return [
         objectTemplateEntry[0],
@@ -2684,7 +2682,20 @@ export function handleTransformer_FreeObjectTemplate(
         ),
       ];
     })
-  );
+  ;
+  const failure: [string, TransformerFailure] | undefined = entries.find((entry) => entry[1] instanceof TransformerFailure) as any;
+  if (failure && failure.length == 2) {
+    // return new TransformerFailure({
+    throw new TransformerFailure({
+      queryFailure: "FailedTransformer",
+      transformerPath, //: [...transformerPath, transformer.transformerType],
+      failureOrigin: ["handleTransformer_FreeObjectTemplate"],
+      query: transformer as any,
+      failureMessage: "error in handleTransformer_FreeObjectTemplate, one of the entries failed to resolve.",
+      innerError: failure[1],
+    });
+  }
+  const result = Object.fromEntries(entries);
   // log.info(
   //   "handleTransformer_FreeObjectTemplate createObject for",
   //   label,
@@ -3607,7 +3618,8 @@ export function transformer_extended_apply(
                 "transformer",
                 JSON.stringify(transformer, null, 2),
               );
-              preResult = new TransformerFailure({
+              // preResult = new TransformerFailure({
+              throw new TransformerFailure({
                 queryFailure: "TransformerNotFound",
                 transformerPath, //: [...transformerPath, transformer.transformerType],
                 failureOrigin: ["transformer_extended_apply"],
@@ -3633,7 +3645,8 @@ export function transformer_extended_apply(
                 "transformer",
                 JSON.stringify(transformer, null, 2),
               );
-              preResult = new TransformerFailure({
+              // preResult = new TransformerFailure({
+              throw new TransformerFailure({
                 queryFailure: "FailedTransformer",
                 transformerPath, //: [...transformerPath, transformer.transformerType],
                 failureOrigin: ["transformer_extended_apply"],
@@ -3669,8 +3682,8 @@ export function transformer_extended_apply(
                     "transformer",
                     JSON.stringify(transformer, null, 2),
                   );
-                  preResult = new TransformerFailure({
-                    // queryFailure: "FailedTransformer",
+                  // preResult = new TransformerFailure({
+                  throw new TransformerFailure({
                     queryFailure: "TransformerNotFound",
                     transformerPath, //: [...transformerPath, transformer.transformerType],
                     failureOrigin: ["transformer_extended_apply"],
@@ -3725,7 +3738,8 @@ export function transformer_extended_apply(
                     "transformer",
                     JSON.stringify(transformer, null, 2),
                   );
-                  preResult = new TransformerFailure({
+                  // preResult = new TransformerFailure({
+                  throw new TransformerFailure({
                     queryFailure: "FailedTransformer",
                     transformerPath, //: [...transformerPath, transformer.transformerType],
                     failureOrigin: ["transformer_extended_apply"],
@@ -3733,7 +3747,6 @@ export function transformer_extended_apply(
                       "transformer " + (transformer as any).transformerType + " not found",
                     queryParameters: transformer as any,
                   });
-                  return preResult;
                 }
                 // CALL BY-VALUE: evaluate parameters to transformer first
                 const evaluatedParams = Object.fromEntries(

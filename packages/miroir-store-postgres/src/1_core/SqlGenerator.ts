@@ -1195,6 +1195,27 @@ function sqlStringForConditionalTransformer(
 // ################################################################################################
 // SQL implementation of the boolExpr transformer
 // Evaluates a boolean condition and always returns a boolean (true or false), no then/else branches.
+// ################################################################################################
+// Helper: determine the JavaScript type of a transformer argument without evaluating SQL.
+// Checks mlSchema first, then falls back to the actual value type from queryParams.
+function getArgJsType(transformer: any, queryParams: Record<string, any>): string | undefined {
+  if (transformer?.mlSchema?.type) return transformer.mlSchema.type;
+  let value: any = undefined;
+  if (transformer?.transformerType === "returnValue") {
+    value = transformer.value;
+  } else if (
+    (transformer?.transformerType === "getFromParameters" || transformer?.transformerType === "getFromContext") &&
+    transformer?.referenceName
+  ) {
+    value = queryParams[transformer.referenceName];
+  }
+  if (value !== undefined) {
+    const t = typeof value;
+    if (t === "number" || t === "string" || t === "bigint" || t === "boolean") return t;
+  }
+  return undefined;
+}
+
 function sqlStringForBoolExprTransformer(
   actionRuntimeTransformer: CoreTransformerForBuildPlusRuntime_boolExpr,
   preparedStatementParametersCount: number,
@@ -1215,6 +1236,38 @@ function sqlStringForBoolExprTransformer(
     op === "isNull" ||
     op === "isNotNull" ||
     op === "!";
+
+  // Pre-evaluate JS types for early short-circuit (strict equality/inequality with different types)
+  const leftRaw = (actionRuntimeTransformer as any).left;
+  const rightRaw = (actionRuntimeTransformer as any).right;
+  const leftJsType = !isUnaryOperator ? getArgJsType(leftRaw, queryParams) : undefined;
+  const rightJsType = !isUnaryOperator ? getArgJsType(rightRaw, queryParams) : undefined;
+  const jsTypesDiffer = leftJsType !== undefined && rightJsType !== undefined && leftJsType !== rightJsType;
+
+  // === between different JS types is always false; !== is always true
+  if (jsTypesDiffer) {
+    const columnName = withClauseColumnName ?? "boolExpr";
+    if (op === "===") {
+      return {
+        type: "scalar" as const,
+        sqlStringOrObject: topLevelTransformer ? `select false::boolean AS "${columnName}"` : "false::boolean",
+        preparedStatementParameters: [],
+        resultAccessPath: topLevelTransformer ? [0, columnName] : undefined,
+        columnNameContainingJsonValue: topLevelTransformer ? columnName : undefined,
+        usedContextEntries: [],
+      };
+    }
+    if (op === "!==") {
+      return {
+        type: "scalar" as const,
+        sqlStringOrObject: topLevelTransformer ? `select true::boolean AS "${columnName}"` : "true::boolean",
+        preparedStatementParameters: [],
+        resultAccessPath: topLevelTransformer ? [0, columnName] : undefined,
+        columnNameContainingJsonValue: topLevelTransformer ? columnName : undefined,
+        usedContextEntries: [],
+      };
+    }
+  }
 
   const left = sqlStringForRuntimeTransformer(
     (actionRuntimeTransformer as any).left as CoreTransformerForBuildPlusRuntime,
@@ -1257,12 +1310,22 @@ function sqlStringForBoolExprTransformer(
 
   // For standard binary comparison operators, both scalar and json (JSONB) types are allowed
   const isBinaryComparisonOperator = jsOperatorToSqlOperatorMap[op] !== undefined;
-  if (isBinaryComparisonOperator && right && (left.type === "table" || left.type === "json_array" || right.type === "table" || right.type === "json_array")) {
-    return new Domain2ElementFailed({
-      queryFailure: "QueryNotExecutable",
-      query: actionRuntimeTransformer as any,
-      failureMessage: "sqlStringForBoolExprTransformer boolExpr left or right is table/json_array for operator " + op,
-    });
+  const isDeepEqualOp = op === "deepEqual" || op === "notDeepEqual";
+  if (isBinaryComparisonOperator && right) {
+    if (left.type === "table" || right.type === "table") {
+      return new Domain2ElementFailed({
+        queryFailure: "QueryNotExecutable",
+        query: actionRuntimeTransformer as any,
+        failureMessage: "sqlStringForBoolExprTransformer boolExpr left or right is table for operator " + op,
+      });
+    }
+    if ((left.type === "json_array" || right.type === "json_array") && !isDeepEqualOp) {
+      return new Domain2ElementFailed({
+        queryFailure: "QueryNotExecutable",
+        query: actionRuntimeTransformer as any,
+        failureMessage: "sqlStringForBoolExprTransformer boolExpr left or right is json_array for non-deepEqual operator " + op,
+      });
+    }
   }
 
   // Build the SQL condition expression based on operator type
@@ -1292,6 +1355,26 @@ function sqlStringForBoolExprTransformer(
       // When comparing JSON (JSONB) to scalar, cast scalar to JSONB via to_jsonb()
       let actualLeftExpr = leftExpr;
       let actualRightExpr = rightExpr;
+
+      // JS-like type coercion for loose equality (== / !=) with different types
+      if ((op === "==" || op === "!=") && jsTypesDiffer && leftJsType && rightJsType) {
+        if (leftJsType === "number" && rightJsType === "string") {
+          // Coerce right string to number (empty string → 0, numeric string → number, else NULL)
+          actualRightExpr = `CASE WHEN TRIM(${rightExpr}) = '' THEN 0::double precision WHEN TRIM(${rightExpr}) ~ '^-?[0-9]+([.][0-9]+)?([eE][+-]?[0-9]+)?$' THEN TRIM(${rightExpr})::double precision ELSE NULL END`;
+        } else if (leftJsType === "string" && rightJsType === "number") {
+          // Coerce left string to number
+          actualLeftExpr = `CASE WHEN TRIM(${leftExpr}) = '' THEN 0::double precision WHEN TRIM(${leftExpr}) ~ '^-?[0-9]+([.][0-9]+)?([eE][+-]?[0-9]+)?$' THEN TRIM(${leftExpr})::double precision ELSE NULL END`;
+        } else if (leftJsType === "number" && rightJsType === "boolean") {
+          // Coerce right boolean to number (false → 0, true → 1)
+          actualRightExpr = `${rightExpr}::integer::double precision`;
+        } else if (leftJsType === "boolean" && rightJsType === "number") {
+          // Coerce left boolean to number
+          actualLeftExpr = `${leftExpr}::integer::double precision`;
+        }
+        conditionSql = `${actualLeftExpr} ${jsOperatorToSqlOperatorMap[op]} ${actualRightExpr}`;
+        break;
+      }
+
       if (left.type === "json" && right && right.type === "scalar") {
         actualRightExpr = `to_jsonb(${rightExpr})`;
       } else if (right && right.type === "json" && left.type === "scalar") {
@@ -1388,9 +1471,9 @@ function sqlStringForPlusTransformer(
     }
   }
 
-  // Determine operation based on first argument's mlSchema type
+  // Determine operation based on first argument's type
   const firstTransformer = actionRuntimeTransformer.args[0] as any;
-  const firstType = firstTransformer?.mlSchema?.type;
+  const firstType = getArgJsType(firstTransformer, queryParams);
   
   // Validate all arguments have the same type and determine operator
   let sqlOperator: string;
@@ -1400,20 +1483,20 @@ function sqlStringForPlusTransformer(
     return new Domain2ElementFailed({
       queryFailure: "QueryNotExecutable",
       query: actionRuntimeTransformer as any,
-      failureMessage: "sqlStringForPlusTransformer cannot determine operand types (no mlSchema)",
+      failureMessage: "sqlStringForPlusTransformer cannot determine operand types (no mlSchema or queryParams)",
     });
   }
   
   // Validate all args have the same type
   for (let i = 1; i < actionRuntimeTransformer.args.length; i++) {
     const argTransformer = actionRuntimeTransformer.args[i] as any;
-    const argType = argTransformer?.mlSchema?.type;
+    const argType = getArgJsType(argTransformer, queryParams);
     
     if (!argType) {
       return new Domain2ElementFailed({
         queryFailure: "QueryNotExecutable",
         query: actionRuntimeTransformer as any,
-        failureMessage: `sqlStringForPlusTransformer cannot determine type for argument at index ${i} (no mlSchema)`,
+        failureMessage: `sqlStringForPlusTransformer cannot determine type for argument at index ${i} (no mlSchema or queryParams)`,
       });
     }
     
@@ -2703,19 +2786,10 @@ function sqlStringForFindTransformer(
     }],
   });
 
-  // Step 4: Build the find query — select single element with LIMIT 1
+  // Step 4: Build the find query — scalar subquery always returns exactly 1 row (NULL when no match)
   const outputColName = withClauseColumnName ?? transformerLabel;
-  const findSql = sqlQuery(indentLevel, {
-    queryPart: "query",
-    select: [{
-      queryPart: "defineColumn",
-      value: `element`,
-      as: outputColName,
-    }],
-    from: [{ queryPart: "tableLiteral", name: referenceToOuterObjectRenamed }],
-    where: sqlStringForPredicate.sqlStringOrObject,
-    limit: 1,
-  });
+  const innerFindSql = `SELECT "${referenceToOuterObjectRenamed}"."element" FROM "${referenceToOuterObjectRenamed}" WHERE ${sqlStringForPredicate.sqlStringOrObject} LIMIT 1`;
+  const findSql = `SELECT (${innerFindSql}) AS "${outputColName}"`;
 
   const extraWith: { name: string; sql: string }[] = [
     ...(applyTo.extraWith ?? []),
@@ -4614,14 +4688,24 @@ function sqlStringForParameterReferenceTransformer(
 ): Domain2QueryReturnType<SqlStringForTransformerElementValue> {
   // this resolves references to static values, passed as parameters upon executing of the query
   // TODO: resolve each parameter as WITH clause, then only call the name of the clause in each reference?
-  const resolvedReference = transformer_resolveReference(
-    "runtime",
-    [], // transformerPath
-    actionRuntimeTransformer,
-    "param",
-    queryParams,
-    definedContextEntries
-  );
+  let resolvedReference: any;
+  try {
+    resolvedReference = transformer_resolveReference(
+      "runtime",
+      [], // transformerPath
+      actionRuntimeTransformer,
+      "param",
+      queryParams,
+      definedContextEntries
+    );
+  } catch (e: any) {
+    return new Domain2ElementFailed({
+      queryFailure: "QueryNotExecutable",
+      query: actionRuntimeTransformer as any,
+      failureMessage:
+        "sqlStringForParameterReferenceTransformer: reference not found: " + (e?.failureMessage ?? String(e)),
+    });
+  }
   if (resolvedReference instanceof Domain2ElementFailed) {
     return resolvedReference;
   }
@@ -4656,12 +4740,75 @@ function sqlStringForObjectDynamicAccessTransformer(
   withClauseColumnName?: string,
   iterateOn?: string,
 ): Domain2QueryReturnType<SqlStringForTransformerElementValue> {
-  return new Domain2ElementFailed({
-    queryFailure: "QueryNotExecutable",
-    query: JSON.stringify(actionRuntimeTransformer),
-    failureMessage:
-      "sqlStringForObjectDynamicAccessTransformer not implemented: " + actionRuntimeTransformer.transformerType,
-  });
+  const { objectAccessPath } = actionRuntimeTransformer;
+  if (!objectAccessPath || objectAccessPath.length === 0) {
+    return new Domain2ElementFailed({
+      queryFailure: "QueryNotExecutable",
+      query: JSON.stringify(actionRuntimeTransformer),
+      failureMessage: "sqlStringForObjectDynamicAccessTransformer: objectAccessPath is empty",
+    });
+  }
+  const firstElement = objectAccessPath[0];
+  if (typeof firstElement === "string") {
+    return new Domain2ElementFailed({
+      queryFailure: "QueryNotExecutable",
+      query: JSON.stringify(actionRuntimeTransformer),
+      failureMessage: "sqlStringForObjectDynamicAccessTransformer: first element must be a transformer, not a string",
+    });
+  }
+  // Evaluate the base transformer (not top-level — we need just an expression)
+  const baseResult = sqlStringForRuntimeTransformer(
+    firstElement as CoreTransformerForBuildPlusRuntime,
+    preparedStatementParametersCount,
+    indentLevel,
+    queryParams,
+    definedContextEntries,
+    useAccessPathForContextReference,
+    false, // not top-level
+  );
+  if (baseResult instanceof Domain2ElementFailed) return baseResult;
+
+  let preparedStatementParameters: any[] = [...(baseResult.preparedStatementParameters ?? [])];
+  let extraWith: { name: string; sql: string }[] = [...(baseResult.extraWith ?? [])];
+  let usedContextEntries: string[] = [...(baseResult.usedContextEntries ?? [])];
+
+  // Wrap scalar base in ::jsonb so JSONB -> operator works
+  let currentExpr =
+    baseResult.type === "scalar"
+      ? `(${baseResult.sqlStringOrObject})::jsonb`
+      : baseResult.sqlStringOrObject;
+
+  // Apply each string key via the JSONB -> operator
+  for (let i = 1; i < objectAccessPath.length; i++) {
+    const key = objectAccessPath[i];
+    if (typeof key !== "string") {
+      return new Domain2ElementFailed({
+        queryFailure: "QueryNotExecutable",
+        query: JSON.stringify(actionRuntimeTransformer),
+        failureMessage: `sqlStringForObjectDynamicAccessTransformer: path element at index ${i} must be a string key`,
+      });
+    }
+    currentExpr = `(${currentExpr} -> '${key}')`;
+  }
+
+  const columnName = withClauseColumnName ?? "accessDynamicPath";
+
+  // When this is the top-level transformer, we need a full SELECT statement.
+  // If the base expression references context CTEs (usedContextEntries), they must appear in the FROM clause.
+  let fromClause = "";
+  if (topLevelTransformer && usedContextEntries.length > 0) {
+    fromClause = ` FROM ${usedContextEntries.map((e) => `"${e}"`).join(" CROSS JOIN ")}`;
+  }
+
+  return {
+    type: "json",
+    sqlStringOrObject: topLevelTransformer ? `SELECT ${currentExpr} AS "${columnName}"${fromClause}` : currentExpr,
+    preparedStatementParameters,
+    extraWith,
+    resultAccessPath: topLevelTransformer ? [0, columnName] : undefined,
+    columnNameContainingJsonValue: topLevelTransformer ? columnName : undefined,
+    usedContextEntries,
+  };
 }
 
 // ################################################################################################
@@ -4843,14 +4990,15 @@ function sqlStringForNewUuidTransformer(
           select: [
             {
               queryPart: "defineColumn",
-              value: "gen_random_uuid()",
+              value: "gen_random_uuid()::text",
               as: columnName,
             },
           ],
         })
-      : "gen_random_uuid()",
+      : "gen_random_uuid()::text",
     preparedStatementParameters: [],
     resultAccessPath: topLevelTransformer ? [0, columnName] : undefined,
+    columnNameContainingJsonValue: topLevelTransformer ? columnName : undefined,
   };
 }
 

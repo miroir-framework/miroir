@@ -334,23 +334,32 @@ export async function runTransformerTestInMemory(
   log.info(
     "################################ runTransformerTestInMemory raw result",
     // JSON.stringify(rawResult, null, 2)
-    rawResult
+    rawResult,
+    "ignoreAttributes",
+    transformerTest.ignoreAttributes,
+    "retainAttributes",
+    transformerTest.retainAttributes
   );
   // log.info(
   //   "################################ runTransformerTestInMemory expectedResult",
   //   JSON.stringify(transformerTest.expectedValue, null, 2)
   // );
   const resultWithIgnored = ignorePostgresExtraAttributes(rawResult, transformerTest.ignoreAttributes);
-  const resultWithRetain = (transformerTest.retainAttributes && (rawResult instanceof TransformerFailure || (rawResult as any)?.elementType === "failure"))
-    ? Object.fromEntries(
-        Object.entries(resultWithIgnored).filter(([key]) => transformerTest.retainAttributes!.includes(key))
-      )
-    : resultWithIgnored;
-  // log.info(
-  //   "################################ runTransformerTestInMemory result",
-  //   // resultWithRetain
-  //   JSON.stringify(resultWithRetain, null, 2)
-  // );
+  const resultWithRetain =
+    transformerTest.retainAttributes && typeof resultWithIgnored === "object" && !Array.isArray(resultWithIgnored)
+    // (rawResult instanceof TransformerFailure || (rawResult as any)?.elementType === "failure")
+    // (rawResult instanceof TransformerFailure)
+      ? Object.fromEntries(
+          Object.entries(resultWithIgnored).filter(([key]) =>
+            transformerTest.retainAttributes!.includes(key),
+          ),
+        )
+      : resultWithIgnored;
+  log.info(
+    "################################ runTransformerTestInMemory result",
+    // resultWithRetain
+    JSON.stringify(resultWithRetain, null, 2)
+  );
   const testSuiteNamePathAsString = MiroirActivityTracker.testPathName(testNamePath);
   const jsonifiedResult = jsonify(resultWithRetain);
   
@@ -753,13 +762,16 @@ export function runTransformerIntegrationTest(sqlDbDataStore: any) {
         resolvedTransformer as any,
         transformerTest.ignoreAttributes
       );
-      const resultWithRetain = transformerTest.retainAttributes
-        ? Object.fromEntries(
-            Object.entries(resultWithIgnored).filter(([key]) =>
-              transformerTest.retainAttributes!.includes(key)
+      const resultWithRetain =
+        transformerTest.retainAttributes &&
+        typeof resultWithIgnored === "object" &&
+        !Array.isArray(resultWithIgnored)
+          ? Object.fromEntries(
+              Object.entries(resultWithIgnored).filter(([key]) =>
+                transformerTest.retainAttributes!.includes(key),
+              ),
             )
-          )
-        : resultWithIgnored;
+          : resultWithIgnored;
       try {
         log.info(
           "runTransformerIntegrationTest",
@@ -851,7 +863,6 @@ export function runTransformerIntegrationTest(sqlDbDataStore: any) {
     let resultWithRetain: any;
     let testAssertionResult: TestAssertionResult;
     try {
-      // if (queryResult instanceof Action2Error) { // DOES NOT WORK, because we use the local version of the class, not the version of the class that is available in the miroir-core package
       if (queryResult["status"] == "error") {
         // cannot use 'instanceof' to determine error because we use the local version of the class, not the version of the class that is available in the miroir-core package
         resultWithIgnored = ignorePostgresExtraAttributes(
@@ -887,13 +898,17 @@ export function runTransformerIntegrationTest(sqlDbDataStore: any) {
                 transformerTest.ignoreAttributes
               )
             : (queryResult as Action2Success).returnedDomainElement;
-        resultWithRetain = transformerTest.retainAttributes
-          ? Object.fromEntries(
-              Object.entries(resultWithIgnored).filter(([key]) =>
-                transformerTest.retainAttributes!.includes(key)
+        resultWithRetain =
+          transformerTest.retainAttributes &&
+          typeof resultWithIgnored === "object" &&
+          resultWithIgnored !== null &&
+          !Array.isArray(resultWithIgnored)
+            ? Object.fromEntries(
+                Object.entries(resultWithIgnored).filter(([key]) =>
+                  transformerTest.retainAttributes!.includes(key)
+                )
               )
-            )
-          : resultWithIgnored;
+            : resultWithIgnored;
 
         log.info(testPathName, "testResult", JSON.stringify(resultWithRetain, null, 2));
         log.info(testPathName, "expectedValue", expectedValue);
