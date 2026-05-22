@@ -59,12 +59,14 @@ jobs:
           npm run build -w miroir-store-bundled &
           npm run build -w miroir-store-indexedDb &
           npm run build -w miroir-localcache-redux &
-          npm run build -w miroir-diagram-class &
           wait
 
       # 4. React bindings
       - name: Build miroir-react
-        run: npm run build -w miroir-react
+        run: |
+          npm run build -w miroir-react &
+          npm run build -w miroir-diagram-class &
+          wait
 
       # 5. Static demo
       - name: Build miroir-demo (static)
