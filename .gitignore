@@ -5,7 +5,6 @@ certs/*.key
 node_modules*/
 node_modules/.cache*/
 tmp*/
-package-lock.json
 packages/miroir-cli/dist*/
 packages/miroir-cli/tmp*/
 packages/miroir-cli/tests/tmp*/
@@ -52,6 +51,4 @@ packages/miroir-standalone-app/miroir*/
 packages/miroir-standalone-app/node_modules*/
 packages/miroir-standalone-app/package-lock.json
 packages/miroir-standalone-app/tests/tmp/*
-package-lock.json
-packages/*/package-lock.json
 .vitest
