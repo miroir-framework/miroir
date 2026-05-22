@@ -207,7 +207,7 @@ export function IndexedDbEntityStoreSectionMixin<TBase extends typeof MixedIndex
         localEntityDefinition,
         {
           mlSchema: {
-            type: "object",
+            ...localEntityDefinition.mlSchema,
             definition: {
               ...localEntityJzodSchemaDefinition,
               ...(update.payload.addColumns?Object.fromEntries(update.payload.addColumns.map(c=>[c.name, c.definition])):{})

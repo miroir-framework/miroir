@@ -280,7 +280,7 @@ export function FileSystemDbEntityStoreSectionMixin<TBase extends typeof MixedFi
           : localEntityDefinition.mlSchema.definition;
       const modifiedEntityDefinition: EntityDefinition = Object.assign({}, localEntityDefinition, {
         mlSchema: {
-          type: "object",
+          ...localEntityDefinition.mlSchema,
           definition: {
             ...localEntityJzodSchemaDefinition,
             ...(update.payload.addColumns

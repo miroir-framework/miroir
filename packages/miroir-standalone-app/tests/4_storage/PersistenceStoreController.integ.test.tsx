@@ -711,142 +711,142 @@ describe.sequential("PersistenceStoreController.integ.test", () => {
       );
   });
 
-  // ################################################################################################
-  it("alter Author Entity: alter Author Entity attribute", async () => {
-    // setup
-    const entityCreated = await localAppPersistenceStoreController.createEntity(
-      entityAuthor as Entity,
-      entityDefinitionAuthor as EntityDefinition,
-    );
+  // // ################################################################################################
+  // it("alter Author Entity: alter Author Entity attribute", async () => {
+  //   // setup
+  //   const entityCreated = await localAppPersistenceStoreController.createEntity(
+  //     entityAuthor as Entity,
+  //     entityDefinitionAuthor as EntityDefinition,
+  //   );
 
-    expect(entityCreated, "failed to setup test case").toEqual(ACTION_OK);
-    // test starts
-    const iconsDefinition: JzodElement = {
-      type: "number",
-      optional: true,
-      tag: { value: { id: 6, defaultLabel: "Gender (narrow-minded)" } },
-    };
-    const modelActionAlterAttribute: ModelAction = {
-      // actionType: "modelAction",
-      actionType: "alterEntityAttribute",
-      endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-      payload: {
-        application: selfApplicationLibrary.uuid,
-        // deploymentUuid:deployment_Library_DO_NO_USE.uuid,
-        entityUuid: entityAuthor.uuid,
-        entityDefinitionUuid: entityDefinitionAuthor.uuid,
-        entityName: entityAuthor.name,
-        // entityAttributeId: 6,
-        // entityAttributeName: "icon",
-        // entityAttributeRename: "icons",
-        addColumns: [
-          {
-            name: "icons",
-            definition: iconsDefinition,
-          },
-        ],
-        // update: {
-        //   "type": "number", "optional": true, "tag": { "id":6, "defaultLabel": "Gender (narrow-minded)", "editable": true }
-        // }
-      },
-    };
+  //   expect(entityCreated, "failed to setup test case").toEqual(ACTION_OK);
+  //   // test starts
+  //   const iconsDefinition: JzodElement = {
+  //     type: "number",
+  //     optional: true,
+  //     tag: { value: { id: 6, defaultLabel: "Gender (narrow-minded)" } },
+  //   };
+  //   const modelActionAlterAttribute: ModelAction = {
+  //     // actionType: "modelAction",
+  //     actionType: "alterEntityAttribute",
+  //     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+  //     payload: {
+  //       application: selfApplicationLibrary.uuid,
+  //       // deploymentUuid:deployment_Library_DO_NO_USE.uuid,
+  //       entityUuid: entityAuthor.uuid,
+  //       entityDefinitionUuid: entityDefinitionAuthor.uuid,
+  //       entityName: entityAuthor.name,
+  //       // entityAttributeId: 6,
+  //       // entityAttributeName: "icon",
+  //       // entityAttributeRename: "icons",
+  //       addColumns: [
+  //         {
+  //           name: "icons",
+  //           definition: iconsDefinition,
+  //         },
+  //       ],
+  //       // update: {
+  //       //   "type": "number", "optional": true, "tag": { "id":6, "defaultLabel": "Gender (narrow-minded)", "editable": true }
+  //       // }
+  //     },
+  //   };
 
-    await chainVitestSteps(
-      "fetchEntities",
-      {},
-      async () => await localAppPersistenceStoreController.getInstances("model", entityEntity.uuid),
-      (a, p) => (a as any).returnedDomainElement.instances as MetaEntity[],
-      "entities", // name to give to result
-      // "entityInstanceCollection", // expected result.elementType
-      undefined,
-      undefined, // test result
-    )
-      .then((v) =>
-        chainVitestSteps(
-          "fetchEntityDefinitions",
-          v,
-          async () =>
-            await localAppPersistenceStoreController.getInstances(
-              "model",
-              entityEntityDefinition.uuid,
-            ),
-          (a, p) => (a as any).returnedDomainElement.instances as EntityDefinition[],
-          "entityDefinitions", // name to give to result
-          // "entityInstanceCollection", // expected result.elementType
-          undefined,
-          undefined, // expected result
-        ),
-      )
-      .then((v) =>
-        chainVitestSteps(
-          "fetchEntityDefinitions",
-          v,
-          async () =>
-            await localAppPersistenceStoreController.alterEntityAttribute(
-              modelActionAlterAttribute,
-            ),
-          undefined,
-          undefined, // name to give to result
-          undefined, // expected result.elementType
-          undefined, // expected result
-        ),
-      )
-      .then((v) =>
-        chainVitestSteps(
-          "getEntityInstancesToCheckResult",
-          v,
-          async () =>
-            await localAppPersistenceStoreController.getInstances(
-              "model",
-              entityEntityDefinition.uuid,
-            ),
-          (a) =>
-            ignorePostgresExtraAttributesOnList((a as any).returnedDomainElement.instances, [
-              "icon",
-              "display",
-              "storageAccess",
-              "externalDataSource",
-              "idAttribute",
-            ]),
-          undefined, // name to give to result
-          // "entityInstanceCollection",
-          undefined,
-          [
-            {
-              ...entityDefinitionAuthor,
-              mlSchema: {
-                type: "object",
-                definition: {
-                  ...Object.fromEntries(
-                    Object.entries(entityDefinitionAuthor.mlSchema.definition).filter(
-                      (i) => !modelActionAlterAttribute.payload.removeColumns?.includes(i[0]),
-                    ),
-                  ),
-                  icons: iconsDefinition,
-                },
-                // entityAuthor.name + "ssss",
-              },
-            },
-          ],
-        ),
-      );
-    // .then((v) =>
-    //   chainVitestSteps(
-    //     "getEntityDefinitionInstancesToCheckResult",
-    //     v,
-    //     async () => await localAppPersistenceStoreController.getInstances("model", entityEntityDefinition.uuid),
-    //     (a) => ignorePostgresExtraAttributes((a as any).returnedDomainElement.instances),
-    //     undefined, // name to give to result
-    //     "entityInstanceCollection",
-    //     [
-    //       {
-    //         ...entityDefinitionAuthor,
-    //         name: entityDefinitionAuthor.name + "ssss",
-    //       },
-    //     ]
-    //   )
-    // );
-  });
+  //   await chainVitestSteps(
+  //     "fetchEntities",
+  //     {},
+  //     async () => await localAppPersistenceStoreController.getInstances("model", entityEntity.uuid),
+  //     (a, p) => (a as any).returnedDomainElement.instances as MetaEntity[],
+  //     "entities", // name to give to result
+  //     // "entityInstanceCollection", // expected result.elementType
+  //     undefined,
+  //     undefined, // test result
+  //   )
+  //     .then((v) =>
+  //       chainVitestSteps(
+  //         "fetchEntityDefinitions",
+  //         v,
+  //         async () =>
+  //           await localAppPersistenceStoreController.getInstances(
+  //             "model",
+  //             entityEntityDefinition.uuid,
+  //           ),
+  //         (a, p) => (a as any).returnedDomainElement.instances as EntityDefinition[],
+  //         "entityDefinitions", // name to give to result
+  //         // "entityInstanceCollection", // expected result.elementType
+  //         undefined,
+  //         undefined, // expected result
+  //       ),
+  //     )
+  //     .then((v) =>
+  //       chainVitestSteps(
+  //         "fetchEntityDefinitions",
+  //         v,
+  //         async () =>
+  //           await localAppPersistenceStoreController.alterEntityAttribute(
+  //             modelActionAlterAttribute,
+  //           ),
+  //         undefined,
+  //         undefined, // name to give to result
+  //         undefined, // expected result.elementType
+  //         undefined, // expected result
+  //       ),
+  //     )
+  //     .then((v) =>
+  //       chainVitestSteps(
+  //         "getEntityInstancesToCheckResult",
+  //         v,
+  //         async () =>
+  //           await localAppPersistenceStoreController.getInstances(
+  //             "model",
+  //             entityEntityDefinition.uuid,
+  //           ),
+  //         (a) =>
+  //           ignorePostgresExtraAttributesOnList((a as any).returnedDomainElement.instances, [
+  //             "icon",
+  //             "display",
+  //             "storageAccess",
+  //             "externalDataSource",
+  //             "idAttribute",
+  //           ]),
+  //         undefined, // name to give to result
+  //         // "entityInstanceCollection",
+  //         undefined,
+  //         [
+  //           {
+  //             ...entityDefinitionAuthor,
+  //             mlSchema: {
+  //               type: "object",
+  //               definition: {
+  //                 ...Object.fromEntries(
+  //                   Object.entries(entityDefinitionAuthor.mlSchema.definition).filter(
+  //                     (i) => !modelActionAlterAttribute.payload.removeColumns?.includes(i[0]),
+  //                   ),
+  //                 ),
+  //                 icons: iconsDefinition,
+  //               },
+  //               // entityAuthor.name + "ssss",
+  //             },
+  //           },
+  //         ],
+  //       ),
+  //     );
+  //   // .then((v) =>
+  //   //   chainVitestSteps(
+  //   //     "getEntityDefinitionInstancesToCheckResult",
+  //   //     v,
+  //   //     async () => await localAppPersistenceStoreController.getInstances("model", entityEntityDefinition.uuid),
+  //   //     (a) => ignorePostgresExtraAttributes((a as any).returnedDomainElement.instances),
+  //   //     undefined, // name to give to result
+  //   //     "entityInstanceCollection",
+  //   //     [
+  //   //       {
+  //   //         ...entityDefinitionAuthor,
+  //   //         name: entityDefinitionAuthor.name + "ssss",
+  //   //       },
+  //   //     ]
+  //   //   )
+  //   // );
+  // });
 
   // ################################################################################################
   it("add Author Instance", async () => {

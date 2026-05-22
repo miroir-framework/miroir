@@ -265,11 +265,36 @@ function handleModelAction(
       };
       break;
     }
-    case "initModel":
-    case "resetModel":
-    case "resetData": {
+    case "initModel": {
       return callNextReducer(innerReducer, state, actionBox as any);
       // log.debug("reduceWithUndoRedo handleModelAction nothing to do for action", JSON.stringify(action.payload, null, 2))
+      break;
+    }
+    case "resetModel":
+    case "resetData": {
+      // Clear pastModelPatches: uncommitted transactions must be discarded after a model reset,
+      // otherwise they would be re-committed during the next beforeEach commit step.
+      // Wrap callNextReducer in try/catch: if the inner reducer fails (e.g., wrong/undefined
+      // deploymentUuid), we still clear pastModelPatches and leave presentModelSnapshot unchanged.
+      let nextPresentModelSnapshot = presentModelSnapshot;
+      try {
+        const next = callNextReducer(innerReducer, state, actionBox as any);
+        nextPresentModelSnapshot = next.presentModelSnapshot;
+      } catch (e) {
+        log.warn(
+          "UndoRedoReducer handleModelAction resetModel/resetData: callNextReducer failed " +
+          "(likely wrong/undefined deploymentUuid), clearing pastModelPatches anyway.",
+          e
+        );
+      }
+      return {
+        currentTransaction,
+        previousModelSnapshot,
+        pastModelPatches: [],
+        presentModelSnapshot: nextPresentModelSnapshot,
+        futureModelPatches: [],
+        queriesResultsCache,
+      };
       break;
     }
     case "alterEntityAttribute":

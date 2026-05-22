@@ -1213,10 +1213,25 @@ export class DomainController implements DomainControllerInterface {
               }
             }
           }
+          // Dispatch resetModel to local cache to clear any uncommitted transactions (pastModelPatches).
+          // This prevents stale transactions from being accidentally committed during subsequent beforeEach.
+          await this.callUtil.callLocalCacheAction(
+            {}, // context
+            {}, // continuation
+            applicationDeploymentMap,
+            modelAction,
+          );
           break;
         }
         case "resetData": {
           await this.callUtil.callPersistenceAction(
+            {}, // context
+            {}, // continuation
+            applicationDeploymentMap,
+            modelAction,
+          );
+          // Dispatch resetData to local cache to clear any uncommitted transactions (pastModelPatches).
+          await this.callUtil.callLocalCacheAction(
             {}, // context
             {}, // continuation
             applicationDeploymentMap,

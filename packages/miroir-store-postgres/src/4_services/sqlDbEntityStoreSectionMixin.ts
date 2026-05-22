@@ -19,7 +19,8 @@ import {
   entityDefinitionMLSchema,
   entityDefinitionWithResolvedMLSchema,
   entityEntity,
-  entityEntityDefinition
+  entityEntityDefinition,
+  type JzodObject
 } from "miroir-core";
 import { EntityUuidIndexedSequelizeModel, fromMiroirEntityDefinitionToSequelizeEntityDefinition } from "../utils";
 import { SqlDbStoreSection } from "./SqlDbStoreSection";
@@ -364,7 +365,9 @@ export function SqlDbEntityStoreSectionMixin<TBase extends typeof MixedSqlDbInst
       }
       const localEntityDefinition: EntityDefinition =
         currentEntityDefinition.returnedDomainElement as EntityDefinition;
-      const resolvedSchema = entityDefinitionMLSchema(localEntityDefinition)
+      // const resolvedSchema = entityDefinitionMLSchema(localEntityDefinition)
+      // attributes in the extended schema are not supported.
+      const resolvedSchema: JzodObject = localEntityDefinition.mlSchema
 
       const localEntityJzodSchemaDefinition =
         update.payload.removeColumns != undefined && Array.isArray(update.payload.removeColumns)
@@ -376,7 +379,8 @@ export function SqlDbEntityStoreSectionMixin<TBase extends typeof MixedSqlDbInst
           : resolvedSchema.definition;
       const modifiedEntityDefinition: EntityDefinition = Object.assign({}, localEntityDefinition, {
         mlSchema: {
-          type: "object",
+          // type: "object",
+          ...resolvedSchema, // for the "extend" clause
           definition: {
             ...localEntityJzodSchemaDefinition,
             ...(update.payload.addColumns

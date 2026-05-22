@@ -665,10 +665,16 @@ function handleModelAction(
   // switch (action.actionName) {
   switch (action.actionType) {
     case "rollback": {
-      // TODO: DIRTY, DIRTY, DIRTY...
+      // Remove all entries for the current deployment from state.current,
+      // then merge state.loading (which has the fresh data from persistent store).
+      // This ensures uncommitted entities (never sent to persistent store) are properly discarded.
+      const currentWithoutDeployment = Object.fromEntries(
+        Object.entries(state.current).filter(
+          ([key]) => getLocalCacheIndexDeploymentUuid(key) !== deploymentUuid
+        )
+      );
       state.current = {
-        // can not REMOVE stuff from state this way!
-        ...state.current,
+        ...currentWithoutDeployment,
         ...state.loading
       };
       state.loading = {};

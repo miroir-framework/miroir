@@ -152,7 +152,7 @@ export class ModelEntityActionTransformer{
               : currentEntityDefinition.mlSchema.definition;
           const modifiedEntityDefinition: EntityDefinition = Object.assign({}, currentEntityDefinition, {
             mlSchema: {
-              type: "object",
+              ...currentEntityDefinition.mlSchema,
               definition: {
                 ...localEntityJzodSchemaDefinition,
                 ...(modelAction.payload.addColumns
