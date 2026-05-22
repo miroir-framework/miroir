@@ -72,7 +72,7 @@ jobs:
       - name: Build miroir-demo (static)
         run: npm run build:static -w miroir-demo
         env:
-          VITE_BASE_URL: /miroir-demo/
+          VITE_BASE_URL: /miroir/
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
