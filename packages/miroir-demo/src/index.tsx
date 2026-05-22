@@ -30,11 +30,14 @@ import {
 } from "miroir-react";
 
 import { loglevelnext } from './loglevelnextImporter.js';
+import { DemoInitializer } from "./DemoInitializer.js";
 import { PageDispatcher } from "./PageDispatcher.js";
 import { packageName } from "./constants.js";
 import { cleanLevel } from "./4_view/constants.js";
 import { miroirDemoAppStartup } from "./startup.js";
 import { ADMIN_DEPLOYMENT_UUID, demoBundledData, MIROIR_DEPLOYMENT_UUID } from "./bundledData.js";
+import { RootComponent } from "@miroir-app/miroir-fwk/4_view/components/Page/RootComponent.js";
+import { ErrorPage } from "@miroir-app/miroir-fwk/4_view/ErrorPage.js";
 
 // ---------------------------------------------------------------------------
 // Logger setup
@@ -77,12 +80,20 @@ const demoMiroirConfig: MiroirConfigClient = {
 const theme = createTheme({});
 
 // ---------------------------------------------------------------------------
-// Hash router: single catch-all route, PageDispatcher handles query params
+// Hash router: RootComponent provides the layout (AppBar, sidebar);
+// PageDispatcher handles all navigation via path segments or ?page= query params.
 // ---------------------------------------------------------------------------
 const router = createHashRouter([
   {
-    path: "*",
-    element: <PageDispatcher />,
+    path: "/",
+    element: <RootComponent />,
+    errorElement: <ErrorPage />,
+    children: [
+      {
+        path: "*",
+        element: <PageDispatcher />,
+      },
+    ],
   },
 ]);
 
@@ -180,6 +191,8 @@ async function startDemoApp() {
               miroirContext={miroirContext}
               domainController={domainControllerForClient}
             >
+              {/* Auto-fetch Miroir & App configurations on startup */}
+              <DemoInitializer />
               <RouterProvider router={router} />
             </MiroirContextReactProvider>
           </LocalCacheProvider>

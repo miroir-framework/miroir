@@ -2,7 +2,9 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "baseUrl": ".",
-    "paths": {}
+    "paths": {
+      "@miroir-app/*": ["../miroir-standalone-app/src/*"]
+    }
   },
   "include": [
     "src/**/*.ts",
