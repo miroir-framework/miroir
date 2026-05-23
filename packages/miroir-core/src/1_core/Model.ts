@@ -145,7 +145,7 @@ export const defaultMiroirMetaModel: MetaModel = {
   // configuration: [instanceConfigurationReference],
   storedQueries: [],
   applications: [
-    selfApplicationMiroir
+    selfApplicationMiroir as SelfApplication,
   ],
   entities: [
     // this is used in tests, the bootstrap entities have to come first
