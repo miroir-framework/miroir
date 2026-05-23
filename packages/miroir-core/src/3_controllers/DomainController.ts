@@ -62,7 +62,8 @@ import {
   type CompositeRunBoxedQueryTemplateAction,
   type CoreTransformerForBuildPlusRuntime,
   type EndpointDefinition,
-  type ModelActionInitModel
+  type ModelActionInitModel,
+  type SelfApplication
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { type MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
@@ -159,7 +160,6 @@ export async function resetAndInitApplicationDeployment(
         endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
         payload: {
           application: selfAdminConfigurationDeployment.selfApplication,
-          // deploymentUuid: selfAdminConfigurationDeployment.uuid,
           params: {
             dataStoreType:
               selfAdminConfigurationDeployment.uuid == deployment_Miroir.uuid
@@ -167,7 +167,7 @@ export async function resetAndInitApplicationDeployment(
                 : "app", // TODO: comparison between deployment and selfAdminConfigurationDeployment
             metaModel: defaultMiroirMetaModel,
             // TODO: this is wrong, selfApplication, selfApplication version, etc. must be passed as parameters!!!!!!!!!!!!!!!!!!!!
-            selfApplication: selfApplicationMiroir,
+            selfApplication: selfApplicationMiroir as SelfApplication,
             // deployment: selfAdminConfigurationDeployment,
             applicationModelBranch: selfApplicationModelBranchMiroirMasterBranch,
             // applicationStoreBasedConfiguration: selfApplicationStoreBasedConfigurationMiroir,

@@ -223,6 +223,24 @@ export function AppBar(props:AppBarProps) {
     //   "reportUuid": "c9ea3359-690c-4620-9603-b5b402e4a2b9", //not used
     //   "icon": "directions_run"
     // },
+    // {
+    //   "miroirMenuItemType": "miroirMenuReportLink",
+    //   "label": "Miroir Entities",
+    //   "section": "model",
+    //   "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+    //   "reportUuid": "c9ea3359-690c-4620-9603-b5b402e4a2b9",
+    //   "icon": "category"
+    // },
+    {
+      "miroirMenuItemType": "miroirMenuReportLink",
+      label: "runners",
+      section: "data",
+      "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+      // "reportUuid": "29ef8018-43fc-4ee9-a736-6f9d625be7b7",
+      "reportUuid": "1c306453-7958-47e9-ba6c-9b79a7b37c92",
+      // targetRoot: "runners",
+      icon: "directions_run"
+    },
     {
       miroirMenuItemType: "miroirMenuPageLink",
       label: "events",
