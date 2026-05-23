@@ -1,4 +1,4 @@
-name: Build Miroir Demo for GitHub Pages
+name: Build Miroir Sandbox for GitHub Pages
 
 on:
   push:
@@ -69,15 +69,15 @@ jobs:
           wait
 
       # 5. Static demo
-      - name: Build miroir-demo (static)
-        run: npm run build:static -w miroir-demo
+      - name: Build miroir-sandbox (static)
+        run: npm run build:static -w miroir-sandbox
         env:
           VITE_BASE_URL: /miroir/
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: packages/miroir-demo/dist
+          path: packages/miroir-sandbox/dist
 
   deploy:
     needs: build

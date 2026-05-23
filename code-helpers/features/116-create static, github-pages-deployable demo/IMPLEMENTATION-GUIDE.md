@@ -285,7 +285,7 @@ of `useParams()`.
 
 #### Implementation approach
 
-In `miroir-demo/src/index.tsx`:
+In `miroir-sandbox/src/index.tsx`:
 
 ```typescript
 import { createHashRouter, RouterProvider, useSearchParams } from "react-router-dom";
@@ -343,7 +343,7 @@ const instanceUuid    = searchParams.get("instance")   ?? undefined;
 All calls to `navigate(...)` and `<Link to={...}>` in `EntityInstanceLink`, `ReportInstanceLink`,
 `AppBar`, and `HomePage` must be updated to produce query-parameter URLs.
 
-> **Scope note**: This SPA routing conversion is scoped to `miroir-demo`. The existing
+> **Scope note**: This SPA routing conversion is scoped to `miroir-sandbox`. The existing
 > `miroir-standalone-app` keeps its current browser-history routing unchanged. The refactored
 > routing logic lives only in the new demo package, keeping divergence minimal.
 

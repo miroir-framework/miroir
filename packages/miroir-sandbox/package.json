@@ -1,9 +1,9 @@
 {
-  "name": "miroir-demo",
+  "name": "miroir-sandbox",
   "version": "1.0.0",
-  "description": "Static GitHub-Pages-deployable demo of the Miroir Framework",
+  "description": "Static GitHub-Pages-deployable sandbox of the Miroir Framework",
   "author": "Miroir Framework <miroir-framework@protonmail.com>",
-  "homepage": "https://github.com/miroir-framework/miroir/packages/miroir-demo/#readme",
+  "homepage": "https://github.com/miroir-framework/miroir/packages/miroir-sandbox/#readme",
   "bugs": "https://github.com/miroir-framework/miroir/issues",
   "license": "MIT",
   "main": "index.js",
