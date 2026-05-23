@@ -15,6 +15,7 @@ import { useMiroirContextService } from 'miroir-react';
 import { adminApplication_Miroir } from 'miroir-test-app_deployment-admin';
 import { Link, useNavigate } from 'react-router-dom';
 import { packageName } from '../../../../constants.js';
+import { pageUrl, reportUrl } from '../../navigation.js';
 import { cleanLevel } from '../../constants.js';
 import { useMiroirTheme } from '../../contexts/MiroirThemeContext.js';
 import { usePageConfiguration } from '../../services/index.js';
@@ -89,11 +90,11 @@ export function AppBar(props:AppBarProps) {
 
   const goToLabelPage = (event: any, l: string) => {
     log.info("goToLabelPage: ", l, " event: ", event);
-    navigate("/"+l)
+    navigate(pageUrl(l))
   }
   const appbarItems: (MiroirMenuItem | JSX.Element)[] = [
     /* HOME */
-    <Link to={`/home`}>
+    <Link to={pageUrl("home")}>
       <IconButton
         sx={{
           // mr: 2,
@@ -337,21 +338,20 @@ export function AppBar(props:AppBarProps) {
                   );
                 }
                 case "miroirMenuReportLink":
-                  // <Link
-                  //   to={`/report/${item.selfApplication}/${(context.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap)[item.selfApplication]}/${item.section}/${item.reportUuid}/${item.instanceUuid ?? "xxxxxx"}`}
-                  // >
-                  //  {/* {item.icon ? <ThemedIcon icon={item.icon} /> : item.label} */}
                   {
                     return (
                        <Button
                          key={item.label}
-                         onClick={(e: any) =>
-                           goToLabelPage(
-                             e,
-                             `report/${item.selfApplication}/${
+                         onClick={() =>
+                           navigate(
+                             reportUrl(
+                               item.selfApplication,
                                (context.applicationDeploymentMap ??
-                                 defaultSelfApplicationDeploymentMap)[item.selfApplication]
-                             }/${item.section}/${item.reportUuid}/${item.instanceUuid ?? "xxxxxx"}`,
+                                 defaultSelfApplicationDeploymentMap)[item.selfApplication] ?? "",
+                               item.section,
+                               item.reportUuid ?? "",
+                               item.instanceUuid ?? "xxxxxx",
+                             )
                            )
                          }
                          sx={{

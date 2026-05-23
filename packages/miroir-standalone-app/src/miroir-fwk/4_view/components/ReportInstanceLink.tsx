@@ -9,6 +9,7 @@ import {
 
 import { packageName } from "../../../constants.js";
 import { cleanLevel } from "../constants.js";
+import { reportUrl } from "../navigation.js";
 
 
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -41,7 +42,7 @@ export const ReportInstanceLink = (props: EntityInstanceLinkProps) => {
       return (
         <button
           onClick={() => {
-            navigate(`/report/${props.application}/${props.deploymentUuid}/${props.applicationSection}/${props?.reportUuid}/${props.instanceUuid}`);
+            navigate(reportUrl(props.application, props.deploymentUuid ?? "", props.applicationSection, props?.reportUuid ?? "", props.instanceUuid));
           }}
         >
           {/* {instance?.name} */}
@@ -51,7 +52,7 @@ export const ReportInstanceLink = (props: EntityInstanceLinkProps) => {
     } else {
       return (
         <Link
-          to={`/report/${props.application}/${props.deploymentUuid}/${props.applicationSection}/${props?.reportUuid}/${props.instanceUuid}`}
+          to={reportUrl(props.application, props.deploymentUuid ?? "", props.applicationSection, props?.reportUuid ?? "", props.instanceUuid)}
         >
           {props.label ? props.label : instance?.name ? instance?.name : "no label for link!"}
         </Link>

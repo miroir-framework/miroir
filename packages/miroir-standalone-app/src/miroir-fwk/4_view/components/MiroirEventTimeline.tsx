@@ -37,6 +37,7 @@ import { LoggerInterface, MiroirEventTrackingData, MiroirLoggerFactory } from "m
 import { useMiroirContextService, useMiroirEventTrackingData } from "miroir-react";
 import { packageName } from '../../../constants.js';
 import { cleanLevel } from '../constants.js';
+import { eventsUrl } from '../navigation.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -185,7 +186,7 @@ export const MiroirEventTimeLine: React.FC<RunActionTimelineProps> = React.memo(
   }, []);
 
   const handleViewActionLogs = useCallback((eventId: string) => {
-    navigate(`/events?eventId=${eventId}`);
+    navigate(eventsUrl(eventId));
   }, [navigate]);
 
   const handleClearActions = useCallback(() => {

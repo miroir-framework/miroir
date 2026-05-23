@@ -10,6 +10,7 @@ import { Link, useNavigate } from 'react-router-dom';
 
 import { packageName } from "../../../constants.js";
 import { cleanLevel } from "../constants.js";
+import { instanceUrl } from "../navigation.js";
 import { useEntityInstanceUuidIndexFromLocalCache } from "../ReduxHooks.js";
 
 
@@ -59,7 +60,7 @@ export const EntityInstanceLink = (props: EntityInstanceLinkProps) => {
       return (
         <button
           onClick={() => {
-            navigate(`/instance/${props.deploymentUuid}/${props.applicationSection}/${props?.entityUuid}/${props.instanceUuid}`);
+            navigate(instanceUrl(props.deploymentUuid ?? "", props.applicationSection, props?.entityUuid ?? "", props.instanceUuid));
           }}
         >
           {/* {instance?.name} */}
@@ -69,7 +70,7 @@ export const EntityInstanceLink = (props: EntityInstanceLinkProps) => {
     } else {
       return (
         <Link
-          to={`/instance/${props.deploymentUuid}/${props.applicationSection}/${props?.entityUuid}/${props.instanceUuid}`}
+          to={instanceUrl(props.deploymentUuid ?? "", props.applicationSection, props?.entityUuid ?? "", props.instanceUuid)}
         >
           {props.label ? props.label : instance?.name ? instance?.name : "no label for link!"}
         </Link>

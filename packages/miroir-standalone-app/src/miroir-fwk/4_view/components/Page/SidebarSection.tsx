@@ -41,6 +41,7 @@ import { useCurrentModel, useReduxDeploymentsStateQuerySelector } from '../../Re
 import { ErrorFallbackComponent } from '../ErrorFallbackComponent.js';
 import { JsonDisplayHelper } from 'miroir-react';
 import type { MiroirMenuItemDivider, MiroirMenuReportLink } from 'miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js';
+import { pageUrl, reportUrl } from '../../navigation.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -84,7 +85,7 @@ const MenuItemDisplay: FC<MenuItemProps> = ({ menuItem, applicationDeploymentMap
           <ThemedListItemButton
             sx={showPadding ? { padding: 0 } : undefined}
             component={Link}
-            to={`/${menuItem.targetRoot}`}
+            to={pageUrl(menuItem.targetRoot)}
           >
             <ThemedListMiroirIcon>
               <ThemedIcon icon={menuItem.icon} />
@@ -100,9 +101,16 @@ const MenuItemDisplay: FC<MenuItemProps> = ({ menuItem, applicationDeploymentMap
           <ThemedListItemButton
             sx={showPadding ? { padding: 0 } : undefined}
             component={Link}
-            to={`/report/${menuItem.selfApplication}/${
-              applicationDeploymentMap[menuItem.selfApplication]
-            }/${menuItem.section}/${menuItem.reportUuid}/${menuItem.instanceUuid ?? "xxxxxx"}`}
+            to={reportUrl(
+              menuItem.selfApplication,
+              applicationDeploymentMap[menuItem.selfApplication] ?? "",
+              menuItem.section,
+              menuItem.reportUuid!,
+              menuItem.instanceUuid ?? "xxxxxx"
+            )}
+            // to={`/report/${menuItem.selfApplication}/${
+            //   applicationDeploymentMap[menuItem.selfApplication]
+            // }/${menuItem.section}/${menuItem.reportUuid}/${menuItem.instanceUuid ?? "xxxxxx"}`}
           >
             <ThemedListMiroirIcon>
               <ThemedIcon icon={menuItem.icon} />

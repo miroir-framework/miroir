@@ -24,6 +24,7 @@ import {
 } from "miroir-react";
 import { PageContainer } from "../components/Page/PageContainer.js";
 import { usePageConfiguration } from "../services/index.js";
+import { reportUrl } from "../navigation.js";
 
 
 // import entityPublisher from "../../assets/library_model/";
@@ -140,9 +141,13 @@ export const HomePage = (props: RootComponentProps) => {
         if (typeof applicationDefinition.homePageUrl === "string") {
           navigate(applicationDefinition.homePageUrl);
         } else {
-          const homepageUrl = `/report/${applicationDefinition.homePageUrl.selfApplication}/${
-              currentApplicationDeploymentMap[applicationDefinition.homePageUrl.selfApplication]
-            }/${applicationDefinition.homePageUrl.section}/${applicationDefinition.homePageUrl.reportUuid}/${applicationDefinition.homePageUrl.instanceUuid ?? "xxxxxx"}`
+          const homepageUrl = reportUrl(
+            applicationDefinition.homePageUrl.selfApplication,
+            currentApplicationDeploymentMap[applicationDefinition.homePageUrl.selfApplication] ?? "",
+            applicationDefinition.homePageUrl.section,
+            applicationDefinition.homePageUrl.reportUuid ?? "",
+            applicationDefinition.homePageUrl.instanceUuid ?? "xxxxxx",
+          );
           log.info("HomePage navigating to homePageUrl", { homepageUrl, applicationDefinition });
           navigate(homepageUrl);
         }

@@ -49,6 +49,7 @@ import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { packageName } from '../../../constants.js';
 import { EventLogComponent, getLogLevelColor } from '../components/EventLogComponent';
 import { cleanLevel } from '../constants.js';
+import { eventsUrl } from '../navigation.js';
 import { useMiroirContextService, useMiroirEvents } from 'miroir-react';
 import { usePageConfiguration } from '../services';
 
@@ -229,7 +230,7 @@ export const MiroirEventsPage: React.FC = () => {
             <Button 
               variant="outlined" 
               color="primary" 
-              onClick={() => navigate('/events')}
+              onClick={() => navigate(eventsUrl())}
               startIcon={<Assignment />}
             >
               View All Miroir Events
@@ -258,7 +259,7 @@ export const MiroirEventsPage: React.FC = () => {
                   <ListItem 
                     key={event.activity.activityId} 
                     button
-                    onClick={() => navigate(`/events?eventId=${event.activity.activityId}`)}
+                    onClick={() => navigate(eventsUrl(event.activity.activityId))}
                     sx={{ borderBottom: '1px solid #e0e0e0' }}
                   >
                     <ListItemIcon>
@@ -276,7 +277,7 @@ export const MiroirEventsPage: React.FC = () => {
                 <Box sx={{ mt: 2, textAlign: 'right' }}>
                   <Button 
                     color="primary"
-                    onClick={() => navigate('/events')}
+                    onClick={() => navigate(eventsUrl())}
                   >
                     View All {allEvents.length} Miroir Events
                   </Button>
@@ -310,7 +311,7 @@ export const MiroirEventsPage: React.FC = () => {
           </Button>
           <Button 
             variant="outlined"
-            onClick={() => navigate('/events')}
+            onClick={() => navigate(eventsUrl())}
           >
             View All Miroir Events
           </Button>
@@ -337,7 +338,7 @@ export const MiroirEventsPage: React.FC = () => {
           </Tooltip>
           {eventId && (
             <>
-              <Button variant="outlined" onClick={() => navigate('/events')}>
+              <Button variant="outlined" onClick={() => navigate(eventsUrl())}>
                 Back to All Logs
               </Button>
               <Button variant="text" onClick={() => navigate(-1)}>
@@ -525,7 +526,7 @@ export const MiroirEventsPage: React.FC = () => {
                     key={actionLog.activity.activityId}
                     divider
                     sx={{ cursor: 'pointer' }}
-                    onClick={() => navigate(`/events?eventId=${actionLog.activity.activityId}`)}
+                    onClick={() => navigate(eventsUrl(actionLog.activity.activityId))}
                   >
                     <ListItemIcon>
                       {getActionStatusIcon(actionLog.activity.status)}

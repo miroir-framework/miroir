@@ -32,6 +32,7 @@ import { adminSelfApplication, entityApplicationForAdmin } from "miroir-test-app
 import { Formik, type FormikProps } from "formik";
 import { TypedValueObjectEditor } from "../components/Reports/TypedValueObjectEditor.js";
 import { reportEntityDefinitionDetails } from "miroir-test-app_deployment-miroir";
+import { reportUrl } from "../navigation.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -135,7 +136,13 @@ export const ModelDiagramPage: React.FC<any> = () => {
         const handleClassClick = (entityDefUuid: string) => {
           log.info("Class clicked", { entityDefUuid });
           navigate(
-            `/report/${application}/${deploymentUuid}/model/${(reportEntityDefinitionDetails as any).uuid}/${entityDefUuid}`,
+            reportUrl(
+              application,
+              deploymentUuid,
+              "model",
+              (reportEntityDefinitionDetails as any).uuid,
+              entityDefUuid,
+            )
           );
         };
         return (

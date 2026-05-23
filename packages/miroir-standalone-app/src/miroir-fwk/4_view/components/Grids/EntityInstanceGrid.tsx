@@ -38,6 +38,7 @@ import {
   useMiroirContextService,
 } from "miroir-react";
 import { packageName } from '../../../../constants.js';
+import { reportUrl } from '../../navigation.js';
 import EntityEditor from '../../EntityEditor.js';
 import { useCurrentModel, useReduxDeploymentsStateQuerySelectorForCleanedResult } from '../../ReduxHooks.js';
 import { ToolsColumnDefinition } from '../../adaptiveColumnWidths.js';
@@ -667,11 +668,17 @@ export const EntityInstanceGrid = (props: TableComponentProps) => {
             props.currentEntityDefinition.conceptLevel as any
           )
             ? "model"
-            : context.applicationSection;
+            : context.applicationSection ?? "";
 
           const primaryKeyValue = getInstancePrimaryKeyValue(props.currentEntityDefinition, rowData.rawValue);
           navigate(
-            `/report/${props.application}/${contextDeploymentUuid}/${applicationSection}/${props.currentEntityDefinition?.defaultInstanceDetailsReportUuid}/${primaryKeyValue}`,
+            reportUrl(
+              props.application,
+              contextDeploymentUuid ?? "",
+              applicationSection,
+              props.currentEntityDefinition?.defaultInstanceDetailsReportUuid ?? "",
+              String(primaryKeyValue),
+            )
           );
         } else {
           // Cache schema definition lookup
@@ -697,7 +704,13 @@ export const EntityInstanceGrid = (props: TableComponentProps) => {
               context.applicationSection;
 
             navigate(
-              `/report/${props.application}/${contextDeploymentUuid}/${targetApplicationSection}/${targetEntityDefinition?.defaultInstanceDetailsReportUuid}/${(rowData.rawValue as any)[fieldName]}`
+              reportUrl(
+                props.application,
+                contextDeploymentUuid ?? "",
+                targetApplicationSection,
+                targetEntityDefinition?.defaultInstanceDetailsReportUuid ?? "",
+                String((rowData.rawValue as any)[fieldName]),
+              )
             );
           } else {
             log.info(
@@ -758,11 +771,17 @@ export const EntityInstanceGrid = (props: TableComponentProps) => {
             props.currentEntityDefinition.conceptLevel as any
           )
             ? "model"
-            : context.applicationSection;
+            : context.applicationSection ?? "";
 
           const primaryKeyValue = getInstancePrimaryKeyValue(props.currentEntityDefinition, event.data.rawValue);
           navigate(
-            `/report/${props.application}/${contextDeploymentUuid}/${applicationSection}/${props.currentEntityDefinition?.defaultInstanceDetailsReportUuid}/${primaryKeyValue}`
+            reportUrl(
+              props.application,
+              contextDeploymentUuid ?? "",
+              applicationSection,
+              props.currentEntityDefinition?.defaultInstanceDetailsReportUuid ?? "",
+              String(primaryKeyValue),
+            )
           );
         } else { // other columns
           // Cache schema definition lookup
@@ -783,7 +802,13 @@ export const EntityInstanceGrid = (props: TableComponentProps) => {
             const targetApplicationSection =
               (columnDefinitionAttribute as any)?.tag?.value?.targetEntityApplicationSection ||
               context.applicationSection;
-            const navigateTo: string = `/report/${props.application}/${contextDeploymentUuid}/${targetApplicationSection}/${targetEntityDefinition?.defaultInstanceDetailsReportUuid}/${event.data.rawValue[fieldName]}`;
+            const navigateTo: string = reportUrl(
+              props.application,
+              contextDeploymentUuid ?? "",
+              targetApplicationSection,
+              targetEntityDefinition?.defaultInstanceDetailsReportUuid ?? "",
+              String(event.data.rawValue[fieldName]),
+            );
             log.info("onCellClicked navigating to", navigateTo);
             navigate(navigateTo);
           } else {

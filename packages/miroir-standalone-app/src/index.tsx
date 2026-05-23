@@ -6,7 +6,6 @@ import { StrictMode } from "react";
 import { createRoot, Root } from "react-dom/client";
 import {
   createBrowserRouter,
-  Navigate,
   RouterProvider
 } from "react-router-dom";
 
@@ -48,12 +47,9 @@ import {
 import { MiroirContextReactProvider } from "miroir-react";
 
 import { loglevelnext } from './loglevelnextImporter.js';
-import { ErrorLogsPageDEFUNCT } from "./miroir-fwk/4_view/ErrorLogsPageDEFUNCT.js";
 import { ErrorPage } from "./miroir-fwk/4_view/ErrorPage.js";
 import { RootComponent } from "./miroir-fwk/4_view/components/Page/RootComponent.js";
-import { MiroirEventsPage } from "./miroir-fwk/4_view/pages/MiroirEventsPage.js";
-import { HomePage } from "./miroir-fwk/4_view/routes/HomePage.js";
-import { ReportPage } from "./miroir-fwk/4_view/routes/ReportPage.js";
+import { PageDispatcher } from "./miroir-fwk/4_view/PageDispatcher.js";
 import {
   ElectronRestClient,
   ElectronServerDomainControllerProxy,
@@ -76,12 +72,7 @@ import miroirConfigRealServerFilesystemTmp from "./assets/miroirConfig-realServe
 import miroirConfigRealServerIndexedDb from "./assets/miroirConfig-realServer-indexedDb.json";
 import miroirConfigRealServerSql from "./assets/miroirConfig-realServer-sql.json";
 import miroirConfig from "./assets/miroirConfig.json";
-import { CheckPage } from "./miroir-fwk/4_view/routes/Check.js";
-import { ModelDiagramPage } from "./miroir-fwk/4_view/routes/ModelDiagramPage.js";
-import { RunnersPage } from "./miroir-fwk/4_view/routes/Runners.js";
-import { SearchPage } from "./miroir-fwk/4_view/routes/SearchPage.js";
-import { SettingsPage } from "./miroir-fwk/4_view/routes/SettingsPage.js";
-import { TransformerBuilderPage } from "./miroir-fwk/4_view/routes/TransformerBuilderPage.js";
+
 
 const specificLoggerOptions: SpecificLoggerOptionsMap = {
   // "5_miroir-core_DomainController": {level:defaultLevels.INFO, template:"[{{time}}] {{level}} ({{name}}) BBBBB-"},
@@ -159,74 +150,11 @@ const router = createBrowserRouter([
   {
     path: "/",
     element: <RootComponent></RootComponent>,
-    // element: <HomePage></HomePage>,
     errorElement: <ErrorPage />,
     children: [
-      {
-        index: true,
-        element: <Navigate to="home" replace />,
-      },
-      {
-        path: "home",
-        element: <HomePage></HomePage>,
-        // errorElement: <ErrorPage />,
-      },
-      {
-        path: "report/:application/:deploymentUuid/:applicationSection/:reportUuid",
-        element: <ReportPage />,
-        // errorElement: <ErrorPage />,
-      },
-      {
-        path: "report/:application/:deploymentUuid/:applicationSection/:reportUuid/:instanceUuid",
-        element: <ReportPage />,
-        // errorElement: <ErrorPage />,
-      },
-      {
-        path: "transformerBuilder",
-        element: <TransformerBuilderPage />,
-        // errorElement: <ErrorPage />,
-      },
-      {
-        path: "runners",
-        element: <RunnersPage />,
-        // errorElement: <ErrorPage />,
-      },
-      // {
-      //   path: "themes",
-      //   element: <ThemesPage />,
-      //   // errorElement: <ErrorPage />,
-      // },
-      {
-        path: "check",
-        element: <CheckPage />,
-        // errorElement: <ErrorPage />,
-      },
-      {
-        path: "error-logs",
-        element: <ErrorLogsPageDEFUNCT />,
-        // errorElement: <ErrorPage />,
-      },
-      {
-        path: "events",
-        element: <MiroirEventsPage />,
-        // errorElement: <ErrorPage />,
-      },
-      {
-        path: "settings",
-        element: <SettingsPage />,
-        // errorElement: <ErrorPage />,
-      },
-      {
-        path: "search",
-        element: <SearchPage />,
-        // errorElement: <ErrorPage />,
-      },
-      {
-        path: "model",
-        element: <ModelDiagramPage />,
-      },
-      // Renamed from action-logs to events
-    ]
+      { index: true, element: <PageDispatcher /> },
+      { path: "*", element: <PageDispatcher /> },
+    ],
   },
 ]);
 
