@@ -86,11 +86,9 @@ export class RestClientStub implements RestClientInterface {
 
       // log.info("RestClientStub methodToCall", methodToCall);
       const result = await methodToCall.handler(
-        // false, // useDomainControllerToHandleModelAndInstanceActions: since we're emulating the REST server, we have direct access the persistenceStore, do not use the domainController
         true, // useDomainControllerToHandleModelAndInstanceActions: the domainController knows whether it has access to the persistenceStore or not, and will use the appropriate access method, depending on the query.
         (response: any) => (localData: any) => localData, // continuationFunction: the result from RestServer is wrapped in a "data" object
         undefined,
-        //   response /* response object provided by Express Rest interface, which is not needed by this stub*/,
         this.persistenceStoreControllerManager,
         this.serverDomainController,
         method as any /* method */,

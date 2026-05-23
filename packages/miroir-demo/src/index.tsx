@@ -7,6 +7,8 @@ import { createHashRouter, RouterProvider } from "react-router-dom";
 
 import {
   ConfigurationService,
+  defaultMetaModelEnvironment,
+  defaultSelfApplicationDeploymentMap,
   expect,
   LoggerInterface,
   MiroirActivityTracker,
@@ -19,6 +21,9 @@ import {
   PersistenceStoreControllerManager,
   RestClientStub,
   SpecificLoggerOptionsMap,
+  type Deployment,
+  type StoreOrBundleAction,
+  type StoreUnitConfiguration,
 } from "miroir-core";
 import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
 import { miroirBundledStoreSectionStartup } from "miroir-store-bundled";
@@ -35,9 +40,10 @@ import { PageDispatcher } from "./PageDispatcher.js";
 import { packageName } from "./constants.js";
 import { cleanLevel } from "./4_view/constants.js";
 import { miroirDemoAppStartup } from "./startup.js";
-import { ADMIN_DEPLOYMENT_UUID, demoBundledData, MIROIR_DEPLOYMENT_UUID } from "./bundledData.js";
+import { ADMIN_DEPLOYMENT_UUID, demoBundledData, demoMiroirConfig, MIROIR_DEPLOYMENT_UUID } from "./bundledData.js";
 import { RootComponent } from "@miroir-app/miroir-fwk/4_view/components/Page/RootComponent.js";
 import { ErrorPage } from "@miroir-app/miroir-fwk/4_view/ErrorPage.js";
+import { deployment_Admin, deployment_Miroir } from "miroir-test-app_deployment-admin";
 
 // ---------------------------------------------------------------------------
 // Logger setup
@@ -53,26 +59,6 @@ MiroirLoggerFactory.registerLoggerToStart(
 // Miroir Demo configuration
 // All deployments use bundled (read-only, in-memory) stores.
 // ---------------------------------------------------------------------------
-const demoMiroirConfig: MiroirConfigClient = {
-  miroirConfigType: "client",
-  client: {
-    emulateServer: true,
-    rootApiUrl: "http://localhost:3080",
-    filesystemDeploymentRootDirectory: "no-filesystem-in-demo",
-    deploymentStorageConfig: {
-      [MIROIR_DEPLOYMENT_UUID]: {
-        admin: { emulatedServerType: "bundled", deploymentUuid: MIROIR_DEPLOYMENT_UUID },
-        model: { emulatedServerType: "bundled", deploymentUuid: MIROIR_DEPLOYMENT_UUID },
-        data:  { emulatedServerType: "bundled", deploymentUuid: MIROIR_DEPLOYMENT_UUID },
-      },
-      [ADMIN_DEPLOYMENT_UUID]: {
-        admin: { emulatedServerType: "bundled", deploymentUuid: ADMIN_DEPLOYMENT_UUID },
-        model: { emulatedServerType: "bundled", deploymentUuid: ADMIN_DEPLOYMENT_UUID },
-        data:  { emulatedServerType: "bundled", deploymentUuid: ADMIN_DEPLOYMENT_UUID },
-      },
-    },
-  },
-};
 
 // ---------------------------------------------------------------------------
 // MUI theme (minimal)
@@ -180,7 +166,54 @@ async function startDemoApp() {
   restClient.setServerDomainController(domainControllerForServer);
   restClient.setPersistenceStoreControllerManager(persistenceStoreControllerManagerForServer);
 
-  log.info("startDemoApp: domain controllers ready");
+  log.info("startDemoApp: domain controllers ready, opening admin and miroir deployments");
+
+    //   [MIROIR_DEPLOYMENT_UUID]: {
+    //   admin: { emulatedServerType: "bundled", deploymentUuid: MIROIR_DEPLOYMENT_UUID },
+    //   model: { emulatedServerType: "bundled", deploymentUuid: MIROIR_DEPLOYMENT_UUID },
+    //   data:  { emulatedServerType: "bundled", deploymentUuid: MIROIR_DEPLOYMENT_UUID },
+    // },
+    // [ADMIN_DEPLOYMENT_UUID]: {
+    //   admin: { emulatedServerType: "bundled", deploymentUuid: ADMIN_DEPLOYMENT_UUID },
+    //   model: { emulatedServerType: "bundled", deploymentUuid: ADMIN_DEPLOYMENT_UUID },
+    //   data:  { emulatedServerType: "bundled", deploymentUuid: ADMIN_DEPLOYMENT_UUID },
+    // },
+
+  const configurations: Record<string, Deployment> = {
+    [ADMIN_DEPLOYMENT_UUID]: {
+      ...deployment_Admin,
+      configuration: (demoMiroirConfig as any).client.deploymentStorageConfig[
+        ADMIN_DEPLOYMENT_UUID
+      ],
+    } as Deployment,
+    [MIROIR_DEPLOYMENT_UUID]: {
+      ...deployment_Miroir,
+      configuration: (demoMiroirConfig as any).client.deploymentStorageConfig[
+        MIROIR_DEPLOYMENT_UUID
+      ],
+    } as Deployment,
+    // [ADMIN_DEPLOYMENT_UUID]: (demoMiroirConfig as any).client.deploymentStorageConfig[ADMIN_DEPLOYMENT_UUID] as Deployment,
+    // [MIROIR_DEPLOYMENT_UUID]: (demoMiroirConfig as any).client.deploymentStorageConfig[MIROIR_DEPLOYMENT_UUID] as Deployment,
+  };
+  // open all configured stores
+  for (const c of Object.entries(configurations)) {
+    const openStoreAction: StoreOrBundleAction = {
+      actionType: "storeManagementAction_openStore",
+      endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
+      payload: {
+        application: c[1].selfApplication,
+        deploymentUuid: c[0],
+        configuration: {
+          [c[0]]: c[1].configuration as StoreUnitConfiguration,
+        },
+      },
+    };
+    await domainControllerForServer.handleAction(
+      openStoreAction,
+      defaultSelfApplicationDeploymentMap,
+      defaultMetaModelEnvironment,
+    );
+  }
 
   root.render(
     <StrictMode>

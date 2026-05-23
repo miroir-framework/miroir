@@ -377,11 +377,11 @@ export class DomainController implements DomainControllerInterface {
         .then(async (context) => {
           if (context instanceof Action2Error) {
             throw new Error(
-              "DomainController loadConfigurationFromPersistenceStore application" +
+              "DomainController loadConfigurationFromPersistenceStore application " +
                 applicationUuid +
-                "deployment" +
+                " deployment " +
                 deploymentUuid +
-                "could not fetch entity instance list " +
+                " could not fetch entity instance list " +
                 JSON.stringify(context, undefined, 2),
             );
           }

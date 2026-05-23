@@ -10,10 +10,14 @@
  * Admin section  = empty (no admin-level data needed for read-only demo)
  */
 
-import type { EntityInstance } from "miroir-core";
+import type { EntityInstance, MiroirConfigClient, StoreUnitConfiguration } from "miroir-core";
 import type { BundledDeploymentData, BundledSectionData } from "miroir-store-bundled";
 
 import * as adminDeployment from "miroir-test-app_deployment-admin";
+import {
+  deployment_Admin as localDeploymentAdmin,
+  deployment_Miroir as localDeploymentMiroir,
+} from "miroir-test-app_deployment-admin";
 import * as miroirDeployment from "miroir-test-app_deployment-miroir";
 
 // ---------------------------------------------------------------------------
@@ -21,6 +25,29 @@ import * as miroirDeployment from "miroir-test-app_deployment-miroir";
 // ---------------------------------------------------------------------------
 export const MIROIR_DEPLOYMENT_UUID = "10ff36f2-50a3-48d8-b80f-e48e5d13af8e";
 export const ADMIN_DEPLOYMENT_UUID = "18db21bf-f8d3-4f6a-8296-84b69f6dc48b";
+
+// TODO: duplicates from miroir-test-app_deployment-admin, and miroir-test-app_deployment-miroir
+export const demoMiroirConfig: MiroirConfigClient = {
+  miroirConfigType: "client",
+  client: {
+    emulateServer: true,
+    rootApiUrl: "http://localhost:3080",
+    filesystemDeploymentRootDirectory: "no-filesystem-in-demo",
+    deploymentStorageConfig: {
+      [MIROIR_DEPLOYMENT_UUID]: {
+        admin: { emulatedServerType: "bundled", deploymentUuid: MIROIR_DEPLOYMENT_UUID },
+        model: { emulatedServerType: "bundled", deploymentUuid: MIROIR_DEPLOYMENT_UUID },
+        data:  { emulatedServerType: "bundled", deploymentUuid: MIROIR_DEPLOYMENT_UUID },
+      },
+      [ADMIN_DEPLOYMENT_UUID]: {
+        admin: { emulatedServerType: "bundled", deploymentUuid: ADMIN_DEPLOYMENT_UUID },
+        model: { emulatedServerType: "bundled", deploymentUuid: ADMIN_DEPLOYMENT_UUID },
+        data:  { emulatedServerType: "bundled", deploymentUuid: ADMIN_DEPLOYMENT_UUID },
+      },
+    },
+  },
+};
+
 
 // ---------------------------------------------------------------------------
 // Entity & EntityDefinition parentUuids  →  go into the model section
@@ -56,6 +83,7 @@ function groupByParentUuid(
 
 function makeBundledDeploymentData(
   starImport: Record<string, unknown>,
+  dataOverrides: BundledSectionData = {},
 ): BundledDeploymentData {
   const all = groupByParentUuid(starImport);
 
@@ -70,7 +98,7 @@ function makeBundledDeploymentData(
     }
   }
 
-  return { admin: {} as BundledSectionData, model, data };
+  return { admin: {} as BundledSectionData, model, data: {...data, ...dataOverrides} };
 }
 
 // ---------------------------------------------------------------------------
@@ -82,5 +110,17 @@ export const demoBundledData: Record<string, BundledDeploymentData> = {
   ),
   [ADMIN_DEPLOYMENT_UUID]: makeBundledDeploymentData(
     adminDeployment as unknown as Record<string, unknown>,
-  ),
+    {
+      "7959d814-400c-4e80-988f-a00fe582ab98": [
+        {
+          ...localDeploymentAdmin,
+          configuration: (demoMiroirConfig as any).client.deploymentStorageConfig[ADMIN_DEPLOYMENT_UUID] as StoreUnitConfiguration,
+        } as unknown as EntityInstance,
+        {
+          ...localDeploymentMiroir,
+          configuration: (demoMiroirConfig as any).client.deploymentStorageConfig[MIROIR_DEPLOYMENT_UUID] as StoreUnitConfiguration,
+        } as unknown as EntityInstance,
+      ],
+    },
+  )
 };
