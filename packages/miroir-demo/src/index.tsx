@@ -1,5 +1,7 @@
 declare global { interface Window { process?: any } }
 
+import 'material-symbols/outlined.css';
+
 import { createTheme, StyledEngineProvider, ThemeProvider } from "@mui/material";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
@@ -75,6 +77,7 @@ const router = createHashRouter([
     element: <RootComponent />,
     errorElement: <ErrorPage />,
     children: [
+      { index: true, element: <PageDispatcher /> },
       {
         path: "*",
         element: <PageDispatcher />,
