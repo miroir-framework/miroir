@@ -40,8 +40,12 @@ export class IndexedDbStoreSection
 
   // ##################################################################################################
   bootFromPersistedState(entities: Entity[], entityDefinitions: EntityDefinition[]): Promise<Action2VoidReturnType> {
-    log.info(this.logHeader, "bootFromPersistedState does nothing!");
-    // Register idAttribute for each entity
+    log.info(this.logHeader, "bootFromPersistedState registering", entities.length, "entity sublevels without clearing");
+    // Register all known entity UUIDs in the subLevels Map without clearing their data.
+    // This is required so that getEntityUuids() / hasSubLevel() return correct results after
+    // a fresh open(), enabling upsertInstance / deleteInstance guards to pass correctly.
+    this.localUuidIndexedDb.registerSubLevelsWithoutClearing(entities.map(e => e.uuid));
+    // Register idAttribute for non-UUID PK entities
     for (const ed of entityDefinitions) {
       const idAttr = (ed as any).idAttribute ?? "uuid";
       if (idAttr !== "uuid") {

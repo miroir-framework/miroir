@@ -30,6 +30,15 @@ import * as miroirDeployment from "miroir-test-app_deployment-miroir";
 export const MIROIR_DEPLOYMENT_UUID = "10ff36f2-50a3-48d8-b80f-e48e5d13af8e";
 export const ADMIN_DEPLOYMENT_UUID = "18db21bf-f8d3-4f6a-8296-84b69f6dc48b";
 
+// ---------------------------------------------------------------------------
+// Bundled config for each deployment (read-only, used as migration source)
+// ---------------------------------------------------------------------------
+export const ADMIN_BUNDLED_CONFIG: StoreUnitConfiguration = {
+  admin: { emulatedServerType: "bundled", deploymentUuid: ADMIN_DEPLOYMENT_UUID },
+  model: { emulatedServerType: "bundled", deploymentUuid: ADMIN_DEPLOYMENT_UUID },
+  data:  { emulatedServerType: "bundled", deploymentUuid: ADMIN_DEPLOYMENT_UUID },
+};
+
 // TODO: duplicates from miroir-test-app_deployment-admin, and miroir-test-app_deployment-miroir
 export const demoMiroirConfig: MiroirConfigClient = {
   miroirConfigType: "client",
@@ -74,8 +83,11 @@ const MIROIR_MODEL_PARENT_UUIDS = new Set([
  * storeBasedConfiguration instances — all of which must go into the model
  * section so that loadConfigurationFromPersistenceStore can find them when it
  * queries metaModelEntities from the model section.
+ *
+ * Exported as an array so that adminMigration.ts can iterate over it when
+ * copying the bundled admin model section into IndexedDB.
  */
-const ADMIN_MODEL_PARENT_UUIDS = new Set([
+export const ADMIN_MODEL_PARENT_UUIDS_ARRAY: string[] = [
   "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad", // entityEntity
   "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd", // entityEntityDefinition
   "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916", // entityReport (8 admin reports)
@@ -90,7 +102,10 @@ const ADMIN_MODEL_PARENT_UUIDS = new Set([
   "bdcf956a-771d-40a1-a878-06e0bf6efd3e", // (placeholder)
   "e4320b9e-ab45-4abe-85d8-359604b3c62f", // entityQueryVersion
   "e54d7dc1-4fbc-495e-9ed9-b5cf081b9fbd", // entityRunner
-]);
+];
+
+/** Set version of the array, used internally for O(1) lookups. */
+const ADMIN_MODEL_PARENT_UUIDS = new Set(ADMIN_MODEL_PARENT_UUIDS_ARRAY);
 
 // ---------------------------------------------------------------------------
 // Helpers

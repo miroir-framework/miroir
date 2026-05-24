@@ -42,7 +42,8 @@ import { PageDispatcher } from "./PageDispatcher.js";
 import { packageName } from "./constants.js";
 import { cleanLevel } from "./4_view/constants.js";
 import { miroirDemoAppStartup } from "./startup.js";
-import { ADMIN_DEPLOYMENT_UUID, demoBundledData, demoMiroirConfig, MIROIR_DEPLOYMENT_UUID } from "./bundledData.js";
+import { ADMIN_DEPLOYMENT_UUID, ADMIN_BUNDLED_CONFIG, ADMIN_MODEL_PARENT_UUIDS_ARRAY, demoBundledData, demoMiroirConfig, MIROIR_DEPLOYMENT_UUID } from "./bundledData.js";
+import { migrateAdminToIndexedDbIfNeeded } from "./adminMigration.js";
 import { RootComponent } from "@miroir-app/miroir-fwk/4_view/components/Page/RootComponent.js";
 import { ErrorPage } from "@miroir-app/miroir-fwk/4_view/ErrorPage.js";
 import { deployment_Admin, deployment_Miroir } from "miroir-test-app_deployment-admin";
@@ -59,7 +60,9 @@ MiroirLoggerFactory.registerLoggerToStart(
 
 // ---------------------------------------------------------------------------
 // Miroir Demo configuration
-// All deployments use bundled (read-only, in-memory) stores.
+// Admin deployment uses IndexedDB (writable); Miroir deployment uses bundled
+// (read-only, in-memory).  See adminMigration.ts for the copy-on-first-run
+// logic.
 // ---------------------------------------------------------------------------
 
 // ---------------------------------------------------------------------------
@@ -169,25 +172,22 @@ async function startDemoApp() {
   restClient.setServerDomainController(domainControllerForServer);
   restClient.setPersistenceStoreControllerManager(persistenceStoreControllerManagerForServer);
 
-  log.info("startDemoApp: domain controllers ready, opening admin and miroir deployments");
+  log.info("startDemoApp: domain controllers ready; running admin→IndexedDB migration check");
 
-    //   [MIROIR_DEPLOYMENT_UUID]: {
-    //   admin: { emulatedServerType: "bundled", deploymentUuid: MIROIR_DEPLOYMENT_UUID },
-    //   model: { emulatedServerType: "bundled", deploymentUuid: MIROIR_DEPLOYMENT_UUID },
-    //   data:  { emulatedServerType: "bundled", deploymentUuid: MIROIR_DEPLOYMENT_UUID },
-    // },
-    // [ADMIN_DEPLOYMENT_UUID]: {
-    //   admin: { emulatedServerType: "bundled", deploymentUuid: ADMIN_DEPLOYMENT_UUID },
-    //   model: { emulatedServerType: "bundled", deploymentUuid: ADMIN_DEPLOYMENT_UUID },
-    //   data:  { emulatedServerType: "bundled", deploymentUuid: ADMIN_DEPLOYMENT_UUID },
-    // },
+  // Migrate bundled admin data to IndexedDB on first run (or when ?reset is
+  // in the URL).  Returns the config to use for the admin deployment.
+  const adminConfig = await migrateAdminToIndexedDbIfNeeded(
+    persistenceStoreControllerManagerForServer,
+    ADMIN_BUNDLED_CONFIG,
+    ADMIN_MODEL_PARENT_UUIDS_ARRAY,
+  );
+
+  log.info("startDemoApp: migration done, opening admin and miroir deployments");
 
   const configurations: Record<string, Deployment> = {
     [ADMIN_DEPLOYMENT_UUID]: {
       ...deployment_Admin,
-      configuration: (demoMiroirConfig as any).client.deploymentStorageConfig[
-        ADMIN_DEPLOYMENT_UUID
-      ],
+      configuration: adminConfig,
     } as Deployment,
     [MIROIR_DEPLOYMENT_UUID]: {
       ...deployment_Miroir,
@@ -195,8 +195,6 @@ async function startDemoApp() {
         MIROIR_DEPLOYMENT_UUID
       ],
     } as Deployment,
-    // [ADMIN_DEPLOYMENT_UUID]: (demoMiroirConfig as any).client.deploymentStorageConfig[ADMIN_DEPLOYMENT_UUID] as Deployment,
-    // [MIROIR_DEPLOYMENT_UUID]: (demoMiroirConfig as any).client.deploymentStorageConfig[MIROIR_DEPLOYMENT_UUID] as Deployment,
   };
   // open all configured stores
   for (const c of Object.entries(configurations)) {

@@ -130,6 +130,22 @@ export class IndexedDb {
   }
 
   // #############################################################################
+  // Like addSubLevels but does NOT clear existing sublevel data.
+  // Used by bootFromPersistedState to register already-populated sublevels after a fresh open().
+  public registerSubLevelsWithoutClearing(tableNames: string[]) {
+    log.info(this.logHeader, 'registerSubLevelsWithoutClearing:', tableNames, 'existing sublevels', this.getSubLevels());
+    this.subLevels = new Map<string, any>([
+      ...this.subLevels.entries(),
+      ...tableNames.filter(n => !this.subLevels.has(n)).map(
+        (tableName: string): [string, any] => {
+          return [tableName, (<any>this.db).sublevel(tableName)];
+          // No clear() call — data must be preserved
+        }
+      ),
+    ]);
+  }
+
+  // #############################################################################
   public addSubLevels(tableNames:string[]) {
     log.info(this.logHeader, 'addSubLevels:',tableNames,'existing sublevels',this.getSubLevels());
     // log.info('indexedDb addSubLevels db:',this.db);
@@ -192,7 +208,8 @@ export class IndexedDb {
 
   // #############################################################################################
   public async resolvePathOnObject(parentUuid: string, instanceUuid: string): Promise<any> {
-    const table = this.subLevels.get(parentUuid)
+    // Fall back to db.sublevel() directly when not registered in Map (same pattern as getAllValue)
+    const table = this.subLevels.get(parentUuid) ?? (this.db ? (<any>this.db).sublevel(parentUuid) : undefined);
     log.debug(this.logHeader, 'resolvePathOnObject for entity',parentUuid,'instance uuid',instanceUuid,table);
     let result = {};
     if (table) {
@@ -206,7 +223,10 @@ export class IndexedDb {
 
   // #############################################################################################
   public async getAllValue(parentUuid: string):Promise<any[]> {
-    const store = this.subLevels.get(parentUuid);
+    // Fall back to db.sublevel() directly when the sublevel is not yet registered in the Map
+    // (e.g. after a fresh open() without createStorageSpaceForInstancesOfEntity being called first,
+    //  which happens on application reload when the Map is empty but Level data already exists on disk)
+    const store = this.subLevels.get(parentUuid) ?? (this.db ? (<any>this.db).sublevel(parentUuid) : undefined);
     if (!store) {
       throw new Error(`Entity ${parentUuid} does not exist!`);
     }
@@ -216,7 +236,8 @@ export class IndexedDb {
   }
   // #############################################################################################
   public async putValue(parentUuid: string, value: any, idAttribute: string | string[] = "uuid"):Promise<Action2VoidReturnType> {
-    const store = this.subLevels.get(parentUuid);
+    // Fall back to db.sublevel() directly when not registered in Map (same pattern as getAllValue)
+    const store = this.subLevels.get(parentUuid) ?? (this.db ? (<any>this.db).sublevel(parentUuid) : undefined);
     const pkValue = Array.isArray(idAttribute)
       ? idAttribute.map(attr => String((value as any)[attr])).join("|")
       : String((value as any)[idAttribute]);
@@ -230,7 +251,8 @@ export class IndexedDb {
   // #############################################################################################
   public async putBulkValue(tableName: string, values: any[], idAttribute: string | string[] = "uuid"):Promise<any> {
     // const tx = this.db.transaction(tableName, 'readwrite');
-    const store = this.subLevels.get(tableName);
+    // Fall back to db.sublevel() directly when not registered in Map (same pattern as getAllValue)
+    const store = this.subLevels.get(tableName) ?? (this.db ? (<any>this.db).sublevel(tableName) : undefined);
     for (const value of values) {
       const pkValue = Array.isArray(idAttribute)
         ? idAttribute.map(attr => String((value as any)[attr])).join("|")
@@ -245,8 +267,9 @@ export class IndexedDb {
   public async deleteEntityInstance(tableUuid: string, uuid: string):Promise<Action2VoidReturnType> {
     // const tx = this.db.transaction(tableName, 'readwrite');
     log.info(this.logHeader, 'deleteValue called for entity', tableUuid, "instance", uuid);
-    if (this.getSubLevels().includes(tableUuid)) {
-      const store = this.subLevels.get(tableUuid);
+    // Fall back to db.sublevel() directly when not registered in Map (same pattern as getAllValue)
+    const store = this.subLevels.get(tableUuid) ?? (this.db ? (<any>this.db).sublevel(tableUuid) : undefined);
+    if (store) {
       try {
         const instance = await store?.get(uuid);
         if (!instance) {
@@ -256,7 +279,7 @@ export class IndexedDb {
             `failed to delete instance ${uuid} of entity ${tableUuid}`
           ));
         } else {
-          await store?.del(uuid);
+          await store.del(uuid);
           log.debug(this.logHeader, 'DeleteValue done for entity', tableUuid, "instance with uuid", uuid);
           return Promise.resolve(ACTION_OK);
         }
