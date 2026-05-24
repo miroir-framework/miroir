@@ -2655,16 +2655,16 @@ export function handleTransformer_FreeObjectTemplate(
   contextResults?: Record<string, any>,
   reduxDeploymentsState?: ReduxDeploymentsState | undefined // used by getDefaultValueForJzodSchemaWithResolution only, somewhat redundant with modelEnvironment
 ): TransformerReturnType<any> {
-  log.info(
-    "innerTransformer_apply createObject",
-    transformer,
-    // JSON.stringify(transformer, null, 2),
-    "step",
-    step,
-    "contextResults",
-    JSON.stringify(Object.keys(contextResults ?? {}), null, 2)
-    // JSON.stringify(contextResults, null, 2)
-  );
+  // log.info(
+  //   "innerTransformer_apply createObject",
+  //   transformer,
+  //   // JSON.stringify(transformer, null, 2),
+  //   "step",
+  //   step,
+  //   "contextResults",
+  //   JSON.stringify(Object.keys(contextResults ?? {}), null, 2)
+  //   // JSON.stringify(contextResults, null, 2)
+  // );
   const entries = 
     Object.entries(transformer.definition).map((objectTemplateEntry: [string, any]) => {
       return [

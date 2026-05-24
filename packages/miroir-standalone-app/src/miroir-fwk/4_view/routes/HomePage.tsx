@@ -36,6 +36,7 @@ import { JsonDisplayHelper } from "miroir-react";
 import { cleanLevel } from "../constants.js";
 import { useCurrentModel } from "../ReduxHooks.js";
 import { RunnerList, runnerConfigs } from "../components/Runners/RunnersList.js";
+import { ThemedText } from "../components/Themes/BasicComponents.js";
 
 
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -169,7 +170,13 @@ export const HomePage = (props: RootComponentProps) => {
         },
       }}
     >
-      <h2>Welcome to the Miroir Platform!</h2>
+      <ThemedText variant="h2">
+      <h2>Welcome to the Miroir Sandbox!</h2>
+      </ThemedText>
+      <ThemedText>
+      To get an idea of Miroir's capabilities, start by looking at the <a href="https://github.com/miroir-framework/miroir/blob/master/docs/tutorials/library-tutorial.md">Library Tutorial</a>
+      </ThemedText>
+      <p/>
       <JsonDisplayHelper debug={true}
         componentName="HomePage"
         elements={[{

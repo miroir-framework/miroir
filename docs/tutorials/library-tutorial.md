@@ -10,7 +10,12 @@ We assume you have a working Miroir Framework instance. If not, follow the [Quic
 
 ### Deploy the Library Application
 
-Use the **Install Existing Application** runner:
+Go to the **Runner page**:
+
+<img src="./libraryTutorial/library_homepage-GO-TO-RUNNER.png" alt="Go to Runners" width="80%"/>
+
+
+Use the **Deploy an Existing Application** runner:
 
 <img src="./libraryTutorial/miroir-install_application.png" alt="Install Application" width="80%"/>
 

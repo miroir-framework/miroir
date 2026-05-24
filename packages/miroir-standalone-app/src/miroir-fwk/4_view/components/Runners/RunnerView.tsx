@@ -54,6 +54,8 @@ MiroirLoggerFactory.registerLoggerToStart(
   log = logger;
 });
 
+
+
 // ################################################################################################
 export function StoredRunnerView(props: {
   applicationUuid: Uuid,
@@ -63,6 +65,7 @@ export function StoredRunnerView(props: {
 }) {
   // const context = useMiroirContextService();
   const applicationDeploymentMap = props.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap;
+
   const runnerDeploymentUuid: Uuid = applicationDeploymentMap[props.applicationUuid];
   const context = useMiroirContextService();
   const currentModelEnvironment: MiroirModelEnvironment =
@@ -457,6 +460,21 @@ export const RunnerView = <T extends Record<string, any>>(props: RunnerProps<T>)
     ? runnerApplicationDeploymentMap(values)
     : applicationDeploymentMap;
     
+    // hard-coded extension of applicationDeploymentMap for RunnerView, to avoid general tinkering with applicationDeploymentMap
+    // TODO: see if this could be enabled at runner level without compromising security of sandbox
+    // (typical attack: mapping to another user's deployment)
+    const runnerApplicationDeploymentMapForDeployApplication = 
+      (values: any) => (
+        values.deployApplication?.applicationBundle?.applicationUuid?{
+        ...applicationDeploymentMapForAction,
+        [(values.deployApplication?.duplicateApplication
+          ? values.deployApplication?.newApplicationUuid
+          : values.deployApplication?.applicationBundle?.applicationUuid) ?? "NO_APPLICATION_UUID"]:
+          values.deployApplication?.deploymentUuid ?? "NO_DEPLOYMENT_UUID",
+      }: applicationDeploymentMapForAction);
+    
+      const localApplicationDeploymentMap = runnerApplicationDeploymentMapForDeployApplication(values);
+
     log.info(
       "RunnerView handleSubmit",
       action.actionType,
@@ -466,6 +484,8 @@ export const RunnerView = <T extends Record<string, any>>(props: RunnerProps<T>)
       values,
       "applicationDeploymentMapForAction",
       applicationDeploymentMapForAction,
+      "localApplicationDeploymentMap",
+      localApplicationDeploymentMap,
     );
 
     switch (action.actionType) {
@@ -480,7 +500,7 @@ export const RunnerView = <T extends Record<string, any>>(props: RunnerProps<T>)
         // return async () => {
           const result = await domainController.handleCompositeAction(
             action.compositeActionSequence,
-            applicationDeploymentMapForAction,
+            localApplicationDeploymentMap,
             currentModelEnvironment,
             values as Record<string, any>
           );
@@ -495,7 +515,7 @@ export const RunnerView = <T extends Record<string, any>>(props: RunnerProps<T>)
         return handleAsyncAction(async () => {
           const result = await domainController.handleCompositeActionTemplate(
             action.compositeActionTemplate,
-            applicationDeploymentMapForAction,
+            localApplicationDeploymentMap,
             currentModelEnvironment,
             values as Record<string, any>,
             // templateEvaluationParams

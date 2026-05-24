@@ -166,7 +166,9 @@ export async function storeActionOrBundleActionStoreRunner(
           "storeActionOrBundleActionStoreRunner openStore no configuration entry found for deployment uuid ",
           deploymentUuid,
           "configuration: ",
-          JSON.stringify(action.payload.configuration, null, 2)
+          JSON.stringify(action.payload.configuration, null, 2),
+          "applicationDeploymentMap",
+          JSON.stringify(applicationDeploymentMap, null, 2)
         );
         return new Action2Error(
           "FailedToOpenStore",
