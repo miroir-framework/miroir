@@ -340,17 +340,17 @@ export function useJzodElementEditorHooks(
             );
           }
         }
-        log.info(
-          "useJzodElementEditorHooks foreignKeyObjects",
-          "rootLessListKey:",
-          rootLessListKey,
-          "for foreignKeyObjects",
-          "currentApplication:", currentApplication,
-          "applicationDeploymentMap:", applicationDeploymentMap,
-          "currentDeploymentUuid:", currentDeploymentUuid,
-          "targetApplication:",
-          targetApplication,
-        );
+        // log.info(
+        //   "useJzodElementEditorHooks foreignKeyObjects",
+        //   "rootLessListKey:",
+        //   rootLessListKey,
+        //   "for foreignKeyObjects",
+        //   "currentApplication:", currentApplication,
+        //   "applicationDeploymentMap:", applicationDeploymentMap,
+        //   "currentDeploymentUuid:", currentDeploymentUuid,
+        //   "targetApplication:",
+        //   targetApplication,
+        // );
         // let deploymentUuid: Uuid | undefined = applicationDeploymentMap[targetApplication];
         const applicationSection = getApplicationSection(
           targetApplication,
@@ -408,18 +408,18 @@ export function useJzodElementEditorHooks(
   ) || {};
 
 
-  log.info(
-    "useJzodElementEditorHooks foreignKeyObjects",
-    "rootLessListKey:",
-    rootLessListKey,
-    "currentDeploymentUuid:",
-    currentDeploymentUuid,
-    "currentTypecheckKeyMap?.rawSchema.tag?.value?.foreignKeyParams:",
-    currentTypecheckKeyMap?.rawSchema.tag?.value?.foreignKeyParams,
-    "foreignKeyObjectsFetchQueryParams",
-    foreignKeyObjectsFetchQueryParams,
-    "foreignKeyObjects", foreignKeyObjects,
-  );
+  // log.info(
+  //   "useJzodElementEditorHooks foreignKeyObjects",
+  //   "rootLessListKey:",
+  //   rootLessListKey,
+  //   "currentDeploymentUuid:",
+  //   currentDeploymentUuid,
+  //   "currentTypecheckKeyMap?.rawSchema.tag?.value?.foreignKeyParams:",
+  //   currentTypecheckKeyMap?.rawSchema.tag?.value?.foreignKeyParams,
+  //   "foreignKeyObjectsFetchQueryParams",
+  //   foreignKeyObjectsFetchQueryParams,
+  //   "foreignKeyObjects", foreignKeyObjects,
+  // );
 
   // ######################### optional attributes #########################
   const typeCheckMapJzodObjectFlattenedSchema: JzodObject | undefined =
