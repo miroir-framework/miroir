@@ -42,6 +42,7 @@ import {
   entityDeployment,
 } from "miroir-test-app_deployment-admin";
 import { mcpRequestHandlers, setupMcpServer } from "miroir-mcp";
+import { createCopilotKitRouter } from "miroir-ai";
 
 import { setupMiroirDomainController } from 'miroir-localcache-redux';
 import { miroirFileSystemStoreSectionStartup } from 'miroir-store-filesystem';
@@ -461,6 +462,9 @@ const server = await setupMcpServer(
   mcpRequestHandlers,
   domainController,
 );
+
+// AI / CopilotKit endpoint — MUST be after API routes and MCP, before SPA catch-all.
+app.use('/api/copilotkit', createCopilotKitRouter());
 
 // ##############################################################################################
 // ##############################################################################################

@@ -1,0 +1,10 @@
+{
+  "uuid": "8a36e922-c131-444a-8709-9c92e772b1ff",
+  "parentName": "Entity",
+  "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+  "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
+  "name": "AiConfiguration",
+  "selfApplication": "55af124e-8c05-4bae-a3ef-0933d41daa92",
+  "conceptLevel": "Model",
+  "description": "Configuration for LLM/AI provider (provider type, model name). API keys are stored as server-side environment variables."
+}
