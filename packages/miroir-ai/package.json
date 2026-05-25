@@ -13,7 +13,9 @@
   "scripts": {
     "build": "tsup --target=node20 --format esm src/index.ts --dts",
     "devBuild": "npm run build",
-    "dev": "npm run build && node ./dist/index.js"
+    "dev": "npm run build && node ./dist/index.js",
+    "test": "cross-env NODE_ENV=test vitest run --poolOptions.threads.singleThread --bail=1",
+    "testByFile": "cross-env NODE_ENV=test vitest run"
   },
   "repository": {
     "type": "git",
@@ -43,6 +45,7 @@
     "@types/node": "^20.8.9",
     "cross-env": "^7.0.3",
     "tsup": "^8.0.0",
-    "typescript": "^6.0.0"
+    "typescript": "^6.0.0",
+    "vitest": "^3.0.0"
   }
 }

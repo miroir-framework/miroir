@@ -57,6 +57,8 @@ import {
 import { initializePerformanceConfig } from "./miroir-fwk/4_view/tools/performanceConfig.js";
 import { miroirAppStartup } from "./startup.js";
 
+import { CopilotKit } from "@copilotkit/react-core";
+
 import { packageName } from "./constants.js";
 import { cleanLevel } from "./miroir-fwk/4_view/constants.js";
 
@@ -561,18 +563,20 @@ async function startWebApp(root:Root) {
       {/* <span>electron {isElectron ? "yes" : "no"}</span>
         <pre>{JSON.stringify(webMiroirConfig, null, 2)}</pre> */}
       <StrictMode>
-        <ThemeProvider theme={theme}>
-          <StyledEngineProvider injectFirst>
-            <LocalCacheProvider store={domainControllerForClient.getLocalCache().getInnerStore()}>
-              <MiroirContextReactProvider
-                miroirContext={miroirContext}
-                domainController={domainControllerForClient}
-              >
-                <RouterProvider router={router} />
-              </MiroirContextReactProvider>
-            </LocalCacheProvider>
-          </StyledEngineProvider>
-        </ThemeProvider>
+        <CopilotKit runtimeUrl="/api/copilotkit">
+          <ThemeProvider theme={theme}>
+            <StyledEngineProvider injectFirst>
+              <LocalCacheProvider store={domainControllerForClient.getLocalCache().getInnerStore()}>
+                <MiroirContextReactProvider
+                  miroirContext={miroirContext}
+                  domainController={domainControllerForClient}
+                >
+                  <RouterProvider router={router} />
+                </MiroirContextReactProvider>
+              </LocalCacheProvider>
+            </StyledEngineProvider>
+          </ThemeProvider>
+        </CopilotKit>
       </StrictMode>
     </>,
   );

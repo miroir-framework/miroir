@@ -7,8 +7,7 @@
 
 import { Router, type Request, type Response, type NextFunction } from "express";
 import { copilotRuntimeNodeHttpEndpoint } from "@copilotkit/runtime";
-
-import { buildCopilotRuntime, getDefaultRuntimeConfig, type AiRuntimeConfig } from "../runtime/copilotRuntimeFactory.js";
+import { buildCopilotRuntime, buildMinimalCopilotRuntime, getDefaultRuntimeConfig, type AiRuntimeConfig } from "../runtime/copilotRuntimeFactory.js";
 
 const ENDPOINT_PATH = "/api/copilotkit";
 
@@ -38,7 +37,39 @@ function resolveConfig(req: Request): AiRuntimeConfig | null {
 export function createCopilotKitRouter(): Router {
   const router = Router();
 
+  // Health/config check endpoint — GET /api/copilotkit/health
+  // Returns whether an AI provider is configured, with a human-readable message.
+  router.get("/health", (_req: Request, res: Response) => {
+    const config = getDefaultRuntimeConfig();
+    if (config) {
+      res.json({ configured: true, provider: config.providerType, model: config.model });
+    } else {
+      res.status(503).json({
+        configured: false,
+        message:
+          "AI provider not configured. " +
+          "Set AI_PROVIDER_TYPE, AI_MODEL, and the corresponding API key " +
+          "environment variable on the server (AI_OPENAI_KEY / AI_ANTHROPIC_KEY / AI_GOOGLE_KEY / AI_GITHUB_TOKEN).",
+      });
+    }
+  });
+
   router.use(async (req: Request, res: Response, next: NextFunction) => {
+    // Runtime-info discovery is a POST with { method: "info" } — no AI call needed.
+    // Using the minimal no-op runtime lets CopilotKit enumerate available actions
+    // without requiring an AI provider to be configured at startup.
+    if (req.body?.method === "info") {
+      const { runtime, serviceAdapter } = buildMinimalCopilotRuntime();
+      const handler = copilotRuntimeNodeHttpEndpoint({ endpoint: "/", runtime, serviceAdapter });
+      try {
+        return await handler(req as any, res as any);
+      } catch (err) {
+        const message = err instanceof Error ? err.message : String(err);
+        if (!res.headersSent) res.status(500).json({ error: `AI runtime error: ${message}` });
+        return;
+      }
+    }
+
     const config = resolveConfig(req);
 
     if (!config) {
@@ -64,12 +95,17 @@ export function createCopilotKitRouter(): Router {
     }
 
     const handler = copilotRuntimeNodeHttpEndpoint({
-      endpoint: ENDPOINT_PATH,
+      endpoint: "/",
       runtime,
       serviceAdapter,
     });
 
-    return handler(req, res, next);
+    try {
+      return await handler(req as any, res as any);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      if (!res.headersSent) res.status(500).json({ error: `AI runtime error: ${message}` });
+    }
   });
 
   return router;

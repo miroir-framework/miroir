@@ -4,13 +4,16 @@
 // pre-filled proposal forms for user review before applying.
 
 import { v4 as uuidv4 } from "uuid";
-import type { Action } from "@copilotkit/runtime";
+import type { Action, Parameter } from "@copilotkit/shared";
+
+// Convenience alias for a typed Action with known parameters
+type MiroirAction = Action<Parameter[]>;
 
 // ──────────────────────────────────────────────────────────────────────────────
 // Tool: generateMiroirEntity
 // Returns both the Entity record and its EntityDefinition.
 // ──────────────────────────────────────────────────────────────────────────────
-export const generateMiroirEntityTool: Action = {
+export const generateMiroirEntityTool: MiroirAction = {
   name: "generateMiroirEntity",
   description:
     "Generate a new Miroir Entity (concept/table definition) with its EntityDefinition schema. " +
@@ -30,13 +33,15 @@ export const generateMiroirEntityTool: Action = {
     },
     {
       name: "attributes",
-      type: "array",
-      description: "List of attributes (fields) for this entity",
+      type: "object[]",
+      description: "List of attributes (fields) for this entity. Each item: { name, type, required, description?, enumValues? }",
       required: true,
-      items: {
-        type: "object",
-      },
-      // Each item: { name: string, type: string, required: boolean, description?: string, enumValues?: string[] }
+      attributes: [
+        { name: "name", type: "string", required: true },
+        { name: "type", type: "string", required: true },
+        { name: "required", type: "boolean", required: false },
+        { name: "description", type: "string", required: false },
+      ],
     },
     {
       name: "deploymentUuid",
@@ -136,7 +141,7 @@ export const generateMiroirEntityTool: Action = {
 // ──────────────────────────────────────────────────────────────────────────────
 // Tool: generateMiroirQuery
 // ──────────────────────────────────────────────────────────────────────────────
-export const generateMiroirQueryTool: Action = {
+export const generateMiroirQueryTool: MiroirAction = {
   name: "generateMiroirQuery",
   description:
     "Generate a new Miroir Query that fetches instances of a given entity. " +
@@ -211,7 +216,7 @@ export const generateMiroirQueryTool: Action = {
 // ──────────────────────────────────────────────────────────────────────────────
 // Tool: generateMiroirTransformer
 // ──────────────────────────────────────────────────────────────────────────────
-export const generateMiroirTransformerTool: Action = {
+export const generateMiroirTransformerTool: MiroirAction = {
   name: "generateMiroirTransformer",
   description:
     "Generate a new Miroir Transformer definition (pure data transformation function). " +
@@ -276,7 +281,7 @@ export const generateMiroirTransformerTool: Action = {
 // ──────────────────────────────────────────────────────────────────────────────
 // Tool: generateMiroirReport
 // ──────────────────────────────────────────────────────────────────────────────
-export const generateMiroirReportTool: Action = {
+export const generateMiroirReportTool: MiroirAction = {
   name: "generateMiroirReport",
   description:
     "Generate a new Miroir Report that displays instances of a given entity in a list/grid. " +
@@ -365,7 +370,7 @@ export const generateMiroirReportTool: Action = {
 // Tool: getMiroirContext
 // Read-only tool that provides the LLM with context about existing Miroir elements.
 // ──────────────────────────────────────────────────────────────────────────────
-export const getMiroirContextTool: Action = {
+export const getMiroirContextTool: MiroirAction = {
   name: "getMiroirContext",
   description:
     "Get the list of existing Miroir entities, queries, and reports in the current deployment. " +
@@ -401,7 +406,7 @@ export const getMiroirContextTool: Action = {
 // ──────────────────────────────────────────────────────────────────────────────
 // All tools exported as an array for use in CopilotRuntime
 // ──────────────────────────────────────────────────────────────────────────────
-export const miroirTools: Action[] = [
+export const miroirTools: MiroirAction[] = [
   generateMiroirEntityTool,
   generateMiroirQueryTool,
   generateMiroirTransformerTool,

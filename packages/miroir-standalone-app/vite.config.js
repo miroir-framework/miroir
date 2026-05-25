@@ -119,7 +119,8 @@ export default defineConfig({
       '/queryTemplate': { target: apiBase, secure: false },
       '/query':         { target: apiBase, secure: false },
       '/action':        { target: apiBase, secure: false },
-      '/CRUD':          { target: apiBase, secure: false }
+      '/CRUD':          { target: apiBase, secure: false },
+      '/api/copilotkit': { target: apiBase, secure: false }
     }
   },
   test: {

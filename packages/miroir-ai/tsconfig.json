@@ -5,6 +5,7 @@
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
     "ignoreDeprecations": "6.0",
+    "skipLibCheck": true,
     "outDir": "./dist",
     "rootDir": "./",
     "baseUrl": "./"

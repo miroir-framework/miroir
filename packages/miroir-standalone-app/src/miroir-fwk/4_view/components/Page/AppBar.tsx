@@ -184,6 +184,16 @@ export function AppBar(props:AppBarProps) {
     ),
     {
       miroirMenuItemType: "miroirMenuPageLink",
+      label: "AI",
+      targetRoot: "ai",
+      section: "model",
+      icon: {
+        iconType: "mui",
+        name: "auto_awesome",
+      },
+    },
+    {
+      miroirMenuItemType: "miroirMenuPageLink",
       label: "Model",
       targetRoot: "model",
       section: "model",

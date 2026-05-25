@@ -38,6 +38,7 @@ import { MiroirEventsPage } from "./pages/MiroirEventsPage.js";
 import { ErrorLogsPageDEFUNCT } from "./ErrorLogsPageDEFUNCT.js";
 import type { ReportUrlParamKeys } from "../../constants.js";
 import { usePageConfiguration } from "./services/index.js";
+import { AiAssistantPage } from "./routes/ai/AiAssistantPage.js";
 
 // ---------------------------------------------------------------------------
 // ReportWrapper
@@ -117,6 +118,9 @@ export function PageDispatcher(): React.JSX.Element {
       case "model":
         return <ModelDiagramPage />;
 
+      case "ai":
+        return <AiAssistantPage />;
+
       default:
         return <Navigate to="/?page=home" replace />;
     }
@@ -164,6 +168,9 @@ export function PageDispatcher(): React.JSX.Element {
 
     case "model":
       return <ModelDiagramPage />;
+
+    case "ai":
+      return <AiAssistantPage />;
 
     default:
       return <HomePage />;
