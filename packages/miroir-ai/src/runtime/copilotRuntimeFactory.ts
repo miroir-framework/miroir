@@ -8,6 +8,8 @@ import {
   GoogleGenerativeAIAdapter,
   type CopilotServiceAdapter,
 } from "@copilotkit/runtime";
+import { createOpenAI } from "@ai-sdk/openai";
+import type { LanguageModel } from "ai";
 import type { Parameter } from "@copilotkit/shared";
 import OpenAI from "openai";
 import Anthropic from "@anthropic-ai/sdk";
@@ -42,6 +44,23 @@ function getApiKey(providerType: AiProviderType): string {
     );
   }
   return key;
+}
+
+/**
+ * Adapter for GitHub Copilot / GitHub Models.
+ * Extends OpenAIAdapter but overrides getLanguageModel() to use the Chat
+ * Completions API instead of the Responses API (which GitHub Models does not
+ * support). Uses .chat(model) from @ai-sdk/openai to force the right endpoint.
+ */
+class GithubOpenAIAdapter extends OpenAIAdapter {
+  override getLanguageModel(): LanguageModel {
+    const oi = this.openai;
+    const factory = createOpenAI({
+      baseURL: oi.baseURL,
+      apiKey: oi.apiKey,
+    });
+    return factory.chat(this.model);
+  }
 }
 
 /**
@@ -85,10 +104,11 @@ export function buildCopilotRuntime(config: AiRuntimeConfig): {
     case "github": {
       // GitHub Copilot / GitHub Models — OpenAI-compatible API.
       // Default endpoint: https://models.inference.ai.azure.com
+      // Uses Chat Completions (/chat/completions), not the Responses API.
       // Auth: personal access token with `models:read` scope (AI_GITHUB_TOKEN).
       const githubBaseUrl = baseUrl ?? "https://models.inference.ai.azure.com";
       const openai = new OpenAI({ apiKey, baseURL: githubBaseUrl });
-      serviceAdapter = new OpenAIAdapter({ openai, model });
+      serviceAdapter = new GithubOpenAIAdapter({ openai, model });
       break;
     }
     default: {

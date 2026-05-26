@@ -12,8 +12,8 @@
  * Each "generate" tool uses renderAndWaitForResponse so the user reviews and
  * accepts/rejects the proposal before it is applied.
  */
-import React, { useState, useEffect } from "react";
-import { Alert, Box, Typography } from "@mui/material";
+import React, { useState, useEffect, useMemo } from "react";
+import { Alert, Box, FormControl, InputLabel, MenuItem, Select, Typography } from "@mui/material";
 import { useCopilotAction, useCopilotAdditionalInstructions, useCopilotReadable } from "@copilotkit/react-core";
 import { CopilotSidebar } from "@copilotkit/react-ui";
 import "@copilotkit/react-ui/styles.css";
@@ -97,6 +97,31 @@ export function AiAssistantPage(): React.JSX.Element {
       .catch(() => setAiConfigStatus({ configured: false, message: "Could not reach the AI server at /api/copilotkit/health." }));
   }, []);
 
+  // ── Deployment selection ────────────────────────────────────────────────────
+  // Compute available deployment options from the application deployment map.
+  // Entries: appUuid → deploymentUuid.  We show the deploymentUuid as the value
+  // and a short label "App <appUuid truncated>".
+  const deploymentOptions = useMemo((): { value: string; label: string }[] => {
+    const map = context.applicationDeploymentMap ?? {};
+    return Object.entries(map)
+      .filter(([, depUuid]) => Boolean(depUuid))
+      .map(([appUuid, depUuid]) => ({
+        value: depUuid,
+        label: `${appUuid.slice(0, 8)}…  →  deploy ${depUuid.slice(0, 8)}…`,
+      }));
+  }, [context.applicationDeploymentMap]);
+
+  // User-selected deployment UUID (empty = not yet chosen)
+  const [selectedDeploymentUuid, setSelectedDeploymentUuid] = useState<string>("");
+
+  // Effective deployment UUID: explicit selection → context page UUID → single available option
+  const effectiveDeploymentUuid = useMemo(() => {
+    if (selectedDeploymentUuid) return selectedDeploymentUuid;
+    if (context.deploymentUuid) return context.deploymentUuid;
+    if (deploymentOptions.length === 1) return deploymentOptions[0].value;
+    return "";
+  }, [selectedDeploymentUuid, context.deploymentUuid, deploymentOptions]);
+
   // Inject system prompt into LLM context
   useCopilotAdditionalInstructions({
     instructions: MIROIR_SYSTEM_PROMPT,
@@ -104,8 +129,10 @@ export function AiAssistantPage(): React.JSX.Element {
 
   // Expose current deployment UUID to the LLM via useCopilotReadable
   useCopilotReadable({
-    description: "Current deployment UUID in the Miroir application",
-    value: context.deploymentUuid ?? "(none)",
+    description:
+      "Currently selected target deployment UUID. Use this for all entity/query creation " +
+      "unless the user explicitly requests a different deployment.",
+    value: effectiveDeploymentUuid || "(none — the user has not selected a target application yet)",
   });
 
   // ── generateMiroirEntity ──────────────────────────────────────────────────
@@ -205,7 +232,7 @@ export function AiAssistantPage(): React.JSX.Element {
             definition: { ...systemAttrs, ...customAttrs },
           },
         },
-        deploymentUuid: deploymentUuid ?? context.deploymentUuid ?? "",
+        deploymentUuid: deploymentUuid ?? effectiveDeploymentUuid ?? "",
         summary: `AI proposes to create entity "${entityName}"${description ? `: ${description}` : ""}.`,
       };
 
@@ -267,6 +294,36 @@ export function AiAssistantPage(): React.JSX.Element {
             {aiConfigStatus.message ?? "AI provider not configured."}
           </Alert>
         )}
+
+        {/* Deployment selector — must pick a target before the AI can create elements */}
+        <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 2 }}>
+          <FormControl size="small" sx={{ minWidth: 420 }}>
+            <InputLabel id="ai-deployment-select-label">Target deployment</InputLabel>
+            <Select
+              labelId="ai-deployment-select-label"
+              value={effectiveDeploymentUuid}
+              label="Target deployment"
+              onChange={(e) => setSelectedDeploymentUuid(e.target.value as string)}
+              displayEmpty
+            >
+              {deploymentOptions.length === 0 && (
+                <MenuItem value="" disabled>
+                  No deployments loaded — navigate to an application first
+                </MenuItem>
+              )}
+              {deploymentOptions.map((opt) => (
+                <MenuItem key={opt.value} value={opt.value}>
+                  {opt.label}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+          {!effectiveDeploymentUuid && (
+            <Typography variant="body2" color="warning.main">
+              Select a target deployment before asking the AI to create elements.
+            </Typography>
+          )}
+        </Box>
 
         {/* CopilotSidebar provides the chat UI — it is rendered inline here */}
         <CopilotSidebar
