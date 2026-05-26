@@ -47,6 +47,7 @@ export const MiroirCliConfigSchema = z.object({
   client: z.object({
     emulateServer: z.boolean().optional().default(false),
     rootApiUrl: z.string().optional().default("http://localhost:3080"),
+    mcpUrl: z.string().optional().default("http://localhost:4080"),
     applicationDeploymentMap: z.record(z.string(), z.string()),
     deploymentStorageConfig: z.record(z.string(), StoreUnitConfigurationSchema),
     logConfig: LoggerConfigSchema.optional(),

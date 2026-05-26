@@ -61,6 +61,10 @@ function jzodPayloadToZodSchema(jzodPayload: JzodElement): ZodTypeAny {
   // this leads to problems with recursive references, but those are not used in MCP tool payloads currently.
   const resolvedJzodSchema = resolveAllReferences(jzodPayload);
   
+  log.info(
+    "jzodPayloadToZodSchema - resolved Jzod schema with all references resolved:",
+    JSON.stringify(resolvedJzodSchema, null, 2)
+  );
   // Convert the resolved Jzod schema to Zod
   const zodTextAndSchema: ZodTextAndZodSchema = jzodToZodTextAndZodSchema(
     resolvedJzodSchema as any,
@@ -153,13 +157,14 @@ export async function handleInstanceAction(
   applicationDeploymentMap: ApplicationDeploymentMap,
 ): Promise<{ content: Array<{ type: string; text: string; parsed: Record<string, any> }> }> {
   try {
-    log.info(`${toolName} - received params:`, params);
+    log.info(`${toolName} - received params:`, JSON.stringify(params, null, 2));
+    log.info(`${toolName} - received schema:`, JSON.stringify(schema, null, 2));
 
     // log.info(`${toolName} - received domainController:`, domainController);
     log.info(`${toolName} - received applicationDeploymentMap:`, applicationDeploymentMap);
 
     // Validate parameters
-    const validatedParams = schema.parse(params);
+    const validatedParams = schema.passthrough().parse(params);
     log.info(`${toolName} - validated params:`, validatedParams);
 
     // Build the action
@@ -313,6 +318,8 @@ export function mcpToolHandler(
       // domainController,
       "applicationDeploymentMap",
       applicationDeploymentMap,
+      "payload",
+      JSON.stringify(payload, null, 2)
     );
     return handleInstanceAction(
       toolName,
@@ -346,15 +353,24 @@ function mcpToolEntry(endpoint: EndpointDefinition, actionType: string): McpRequ
     || actionDef.actionParameters.actionType.tag?.value?.defaultLabel
     || `Execute ${actionType} action on ${endpoint.name || endpoint.uuid}`;
   
+  log.info(
+    "Creating tool entry for actionType: ",
+    actionType,
+    ", toolName: ",
+    toolName,
+    ", actionDescription: ",
+    actionDescription,
+    "jzodPayload", JSON.stringify(jzodPayload, null, 2)
+  );
+  const schema = jzodPayloadToZodSchema(jzodPayload);
+
   return {
     mcpToolDescription: {
       name: toolName,
       description: actionDescription,
       inputSchema: jzodElementToJsonSchema(jzodPayload) as McpToolDescriptionPropertyObject,
     },
-    payloadZodSchema: jzodPayloadToZodSchema(
-      jzodPayload
-    ),
+    payloadZodSchema: schema,
     actionEnvelope: {
       actionType: actionType,
       actionLabel: `MCP: ${actionType.replace(/([A-Z])/g, ' $1').trim()}`,
@@ -363,6 +379,7 @@ function mcpToolEntry(endpoint: EndpointDefinition, actionType: string): McpRequ
     actionHandler: mcpToolHandler(toolName),
   };
 }
+// ################################################################################################
 export const mcpRequestHandlers_EntityEndpoint: McpRequestHandlers = {
   miroir_createInstance: mcpToolEntry(instanceEndpointV1 as any as EndpointDefinition, "createInstance"),
   miroir_getInstance: mcpToolEntry(instanceEndpointV1 as any as EndpointDefinition, "getInstance"),
@@ -373,6 +390,7 @@ export const mcpRequestHandlers_EntityEndpoint: McpRequestHandlers = {
   miroir_loadNewInstancesInLocalCache: mcpToolEntry(instanceEndpointV1 as any as EndpointDefinition, "loadNewInstancesInLocalCache"),
 };
 
+// ################################################################################################
 const defaultLibraryAppModel = getDefaultLibraryModelEnvironmentDEFUNCT(
   miroirFundamentalJzodSchema as any,
   defaultMiroirMetaModel,
@@ -382,6 +400,8 @@ const defaultLibraryAppModel = getDefaultLibraryModelEnvironmentDEFUNCT(
     [selfApplicationLibrary.uuid]: deployment_Library_DO_NO_USE.uuid
   } as ApplicationDeploymentMap,
 )
+
+// ################################################################################################
 export const mcpRequestHandlers_Library_lendingEndpoint: McpRequestHandlers = defaultLibraryAppModel.currentModel.endpoints
   .filter((endpoint) => endpoint.uuid === "212f2784-5b68-43b2-8ee0-89b1c6fdd0de") // lendingEndpoint UUID
   .reduce((acc, endpoint) => {

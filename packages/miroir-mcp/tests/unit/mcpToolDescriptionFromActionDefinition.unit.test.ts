@@ -19,20 +19,19 @@ describe('mcpToolDescriptionFromActionDefinition', () => {
         "Create new entity instances in Miroir. Creates one or more instances of a specific entity type in the specified application deployment.",
       inputSchema: {
         type: "object",
-        additionalProperties: true,
         properties: {
           application: {
             type: "string",
             description: "Application UUID where instances will be created",
           },
+          parentUuid: {
+            type: "string",
+            description: "UUID of parent entity under which instances will be created",
+          },
           applicationSection: {
             type: "string",
             enum: ["model", "data"],
             description: "A section of the application (model or data)",
-          },
-          parentUuid: {
-            type: "string",
-            description: "Entity UUID (parent entity of the instances to create)",
           },
           objects: {
             type: "array",
@@ -40,48 +39,34 @@ describe('mcpToolDescriptionFromActionDefinition', () => {
             items: {
               type: "object",
               properties: {
+                uuid: {
+                  type: "string",
+                  description: "Uuid",
+                },
                 parentName: {
                   type: "string",
-                  description: "Parent Name",
+                  description: "Entity Name",
                 },
                 parentUuid: {
                   type: "string",
-                  description: "Parent Uuid",
+                  description: "Entity Uuid",
                 },
-                applicationSection: {
+                conceptLevel: {
                   type: "string",
-                  enum: ["model", "data"],
-                  description: "A section of the application (model or data)",
+                  description: "Concept Level",
+                  enum: ["MetaModel", "Model", "Data", "External"],
                 },
-                instances: {
-                  type: "array",
-                  description: "instances to be created",
-                  items: {
-                    type: "object",
-                    properties: {
-                      uuid: { type: "string", description: "Uuid" },
-                      parentName: { type: "string", description: "Entity Name" },
-                      parentUuid: { type: "string", description: "Entity Uuid" },
-                      conceptLevel: {
-                        type: "string",
-                        enum: ["MetaModel", "Model", "Data"],
-                        description: "Concept Level",
-                      },
-                    },
-                    required: ["uuid", "parentUuid"],
-                    additionalProperties: true,
-                  }
-                }
               },
-              required: ["parentUuid", "applicationSection", "instances"],
+              required: [],
               additionalProperties: true,
             },
           },
         },
-        required: ["application", "applicationSection", "parentUuid", "objects"],
+        required: ["application", "applicationSection", "objects"],
+        additionalProperties: true,
       },
     };
-
+    // console.log('result:', JSON.stringify(result, null, 2));
     expect(result).toEqual(expected);
   });
 
@@ -161,11 +146,11 @@ describe('mcpToolDescriptionFromActionDefinition', () => {
 
   it('should generate mcpToolDescription for updateInstance action', () => {
     const result = mcpToolDescriptionFromActionDefinition(
-      'miroir_updateInstance',
-      instanceEndpointV1 as any
+      "miroir_updateInstance",
+      instanceEndpointV1 as any,
     );
 
-    console.log('result:', JSON.stringify(result, null, 2));
+    // console.log("result:", JSON.stringify(result, null, 2));
     const expected = {
       name: "miroir_updateInstance",
       description:
@@ -182,13 +167,13 @@ describe('mcpToolDescriptionFromActionDefinition', () => {
             description: "A section of the application (model or data)",
             enum: ["model", "data"],
           },
+          parentUuid: {
+            type: "string",
+            description: "UUID of parent entity under which instances will be deleted",
+          },
           includeInTransaction: {
             type: "boolean",
             description: "Set to true to include update in a transaction",
-          },
-          parentUuid: {
-            type: "string",
-            description: "The Entity UUID of which instances will be updated",
           },
           objects: {
             type: "array",
@@ -196,58 +181,33 @@ describe('mcpToolDescriptionFromActionDefinition', () => {
             items: {
               type: "object",
               properties: {
+                uuid: {
+                  type: "string",
+                  description: "Uuid",
+                },
                 parentName: {
                   type: "string",
-                  description: "Parent Name",
+                  description: "Entity Name",
                 },
                 parentUuid: {
                   type: "string",
-                  description: "Parent Name",
+                  description: "Entity Uuid",
                 },
-                applicationSection: {
+                conceptLevel: {
                   type: "string",
-                  description: "A section of the application (model or data)",
-                  enum: ["model", "data"],
-                },
-                instances: {
-                  type: "array",
-                  description: "",
-                  items: {
-                    type: "object",
-                    properties: {
-                      uuid: {
-                        type: "string",
-                        description: "Uuid",
-                      },
-                      parentName: {
-                        type: "string",
-                        description: "Entity Name",
-                      },
-                      parentUuid: {
-                        type: "string",
-                        description: "Entity Uuid",
-                      },
-                      conceptLevel: {
-                        type: "string",
-                        description: "Concept Level",
-                        enum: ["MetaModel", "Model", "Data"],
-                      },
-                    },
-                    required: ["uuid", "parentUuid"],
-                    additionalProperties: true,
-                  },
+                  description: "Concept Level",
+                  enum: ["MetaModel", "Model", "Data", "External"],
                 },
               },
-              required: ["parentUuid", "applicationSection", "instances"],
+              required: [],
               additionalProperties: true,
             },
           },
         },
-        required: ["application", "applicationSection", "parentUuid", "objects"],
+        required: ["application", "applicationSection", "objects"],
         additionalProperties: true,
       },
     };
-
     expect(result).toEqual(expected);
   });
 });

@@ -19,7 +19,7 @@ import { setupMiroirPlatform } from "./startup/setup.js";
 import { initializeStoreStartup } from "./startup/storeStartup.js";
 import { mcpRequestHandlers } from "./tools/handlersForEndpoint.js";
 
-const PORT = 3080;
+// const PORT = 3080;
 let server: MiroirMcpServer | null = null;
 
 /**
@@ -72,7 +72,7 @@ async function main() {
       // localmiroirContext,
     );
     
-    await server.run(PORT);
+    await server.run(config.client.mcpUrl ? (Number.parseInt(new URL(config.client.mcpUrl).port) ?? 4080) : 4080);
 
     console.error("[miroir-mcp] Server started successfully");
   } catch (error) {
@@ -114,8 +114,8 @@ process.on("unhandledRejection", (reason, promise) => {
 });
 
 // Start the server
-console.warn("[miroir-mcp] Miroir MCP is in library mode, not starting server automatically...");
-// main();
+// console.warn("[miroir-mcp] Miroir MCP is in library mode, not starting server automatically...");
+main();
 
 // Export for programmatic use
 export * from "./config/configLoader.js";

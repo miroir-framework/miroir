@@ -1,5 +1,5 @@
 import loglevelNextLog from 'loglevelnext';
-import { beforeAll, beforeEach, describe, expect, it } from "vitest";
+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from "vitest";
 
 import {
   ApplicationDeploymentMap,
@@ -20,6 +20,7 @@ import {
   StoreOrBundleAction,
   StoreUnitConfiguration,
   type ApplicationEntitiesAndInstances,
+  type Entity,
   type EntityDefinition,
   type EntityInstance,
   type LoggerFactoryInterface,
@@ -27,7 +28,12 @@ import {
   type MetaEntity,
   type MiroirConfigClient,
   type SpecificLoggerOptionsMap,
-  ConfigurationService
+  ConfigurationService,
+  type SelfApplication,
+  miroirFundamentalJzodSchema,
+  type EndpointDefinition,
+  type MlSchema,
+  defaultSelfApplicationDeploymentMap
 } from "miroir-core";
 import { loadMiroirMcpConfig } from "../../src/config/configLoader.js";
 import { MiroirMcpConfig } from "../../src/config/configSchema.js";
@@ -66,6 +72,9 @@ import {
   user1,
   user2,
   user3,
+  defaultLibraryAppModel,
+  endpointDocument,
+  getDefaultLibraryModelEnvironmentDEFUNCT,
 } from "miroir-test-app_deployment-library";
 import { callMcpToolViaHttp } from './mcpClient.js';
 
@@ -97,15 +106,19 @@ MiroirLoggerFactory.registerLoggerToStart(
   log = logger;
 });
 
+const applicationDeploymentMapWithLibrary: ApplicationDeploymentMap = {
+  ...defaultSelfApplicationDeploymentMap,
+  [selfApplicationLibrary.uuid]: deployment_Library_DO_NO_USE.uuid,
+};
 
 const libraryEntitiesAndInstancesWithoutBook3: ApplicationEntitiesAndInstances = [
   {
-    entity: entityAuthor as MetaEntity,
+    entity: entityAuthor as Entity,
     entityDefinition: entityDefinitionAuthor as EntityDefinition,
     instances: [author1, author2, author3 as EntityInstance],
   },
   {
-    entity: entityBook as MetaEntity,
+    entity: entityBook as Entity,
     entityDefinition: entityDefinitionBook as EntityDefinition,
     instances: [
       book1 as EntityInstance,
@@ -117,12 +130,12 @@ const libraryEntitiesAndInstancesWithoutBook3: ApplicationEntitiesAndInstances =
     ],
   },
   {
-    entity: entityPublisher as MetaEntity,
+    entity: entityPublisher as Entity,
     entityDefinition: entityDefinitionPublisher as EntityDefinition,
     instances: [publisher1 as EntityInstance, publisher2 as EntityInstance, publisher3 as EntityInstance],
   },
   {
-    entity: entityUser as MetaEntity,
+    entity: entityUser as Entity,
     entityDefinition: entityDefinitionUser as EntityDefinition,
     instances: [
       user1 as EntityInstance,
@@ -146,7 +159,7 @@ const globalTimeOut = 60000;
  */
 export async function runMcpTestsViaHttp(
   mcpTest: McpToolTest,
-  serverUrl: string = 'http://localhost:3080',
+  serverUrl: string,
   // timeout = 30000,
 ) {
   // Extract tool name from handler
@@ -185,6 +198,13 @@ export async function runMcpTestsViaHandler(
   mcpTest.tests(expect, result);
   return result;
 }
+
+const defaultLibraryModelEnvironment = getDefaultLibraryModelEnvironmentDEFUNCT(
+  miroirFundamentalJzodSchema as MlSchema,
+  defaultMiroirMetaModel,
+  endpointDocument as EndpointDefinition,
+  deployment_Library_DO_NO_USE.uuid,
+);
 
 
 describe("MCP Tools Integration Tests", () => {
@@ -307,16 +327,16 @@ describe("MCP Tools Integration Tests", () => {
       {
         dataStoreType: "app", // TODO: comparison between deployment and selfAdminConfigurationDeployment
         metaModel: defaultMiroirMetaModel,
-        selfApplication: selfApplicationLibrary,
+        selfApplication: selfApplicationLibrary as SelfApplication,
         applicationModelBranch: selfApplicationModelBranchLibraryMasterBranch,
         applicationVersion: selfApplicationVersionLibraryInitialVersion,
       },
-      defaultLibraryAppModelthoutBook3,
-      defaultLibraryAppModelDEFUNCT,
+      libraryEntitiesAndInstancesWithoutBook3,
+      defaultLibraryModelEnvironment.currentModel as any,
     );
     const beforeEachResult = await domainController.handleCompositeAction(
       createLibraryAction,
-      applicationDeploymentMap,
+      applicationDeploymentMapWithLibrary,
       defaultMiroirModelEnvironment,
       {},
     );
@@ -333,7 +353,7 @@ describe("MCP Tools Integration Tests", () => {
           application: selfApplicationLibrary.uuid,
         },
       },
-      applicationDeploymentMap,
+      applicationDeploymentMapWithLibrary,
       defaultMiroirModelEnvironment,
     );
 
@@ -344,27 +364,28 @@ describe("MCP Tools Integration Tests", () => {
     }
   });
 
-  // // ##############################################################################################
-  // afterAll(async () => {
-  //   // Close all stores
-  //   for (const deploymentUuid of Object.keys(miroirConfig.client.deploymentStorageConfig)) {
-  //     const closeStoreAction: StoreOrBundleAction = {
-  //       actionType: "storeManagementAction_closeStore",
-  //       actionLabel: `Close stores for ${deploymentUuid}`,
-  //       application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-  //       endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
-  //       payload: {
-  //         application: Object.keys(applicationDeploymentMap).find(
-  //           (appUuid) => applicationDeploymentMap[appUuid] === deploymentUuid
-  //         ) || "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-  //       },
-  //     };
+  // ##############################################################################################
+  afterAll(async () => {
+    // Close all stores
+    for (const deploymentUuid of Object.keys(miroirConfig.client.deploymentStorageConfig)) {
+      const closeStoreAction: StoreOrBundleAction = {
+        actionType: "storeManagementAction_closeStore",
+        actionLabel: `Close stores for ${deploymentUuid}`,
+        // application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+        endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
+        payload: {
+          application: Object.keys(applicationDeploymentMap).find(
+            (appUuid) => applicationDeploymentMap[appUuid] === deploymentUuid
+          ) || "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+        },
+      };
 
-  //     await domainController.handleAction(closeStoreAction, applicationDeploymentMap);
-  //   }
+      // TODO: closeStore fails on filesystem!
+      // await domainController.handleAction(closeStoreAction, applicationDeploymentMap);
+    }
 
-  //   log.info("MCP test teardown completed");
-  // });
+    log.info("MCP test teardown completed");
+  });
 
   // describe.sequential(
   //   "MCP Tool Handlers - All Tests",
@@ -392,7 +413,7 @@ describe("MCP Tools Integration Tests", () => {
         async (currentTestSuiteName, testAction: McpToolTest) => {
           const testSuiteResults = await runMcpTestsViaHttp(
             testAction,
-            'http://localhost:3080',
+            miroirConfig.client.mcpUrl,
           );
         },
         globalTimeOut

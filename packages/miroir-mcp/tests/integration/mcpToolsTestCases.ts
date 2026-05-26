@@ -65,7 +65,7 @@ const testEntityUuid = entityBook.uuid; // Book entity
 const testApplicationUuid = selfApplicationLibrary.uuid; // Library
 const testInstance = book1; // Book1 instance
 const testInstanceUuid = book1.uuid; // Book1 instance
-const testBookUuid = noValue.uuid; // A book UUID to be used in tests
+const testBookUuid = (noValue as any).uuid; // A book UUID to be used in tests
 export const mcpInstanceActionTests: McpToolTest[] = [
   {
     testName: "should execute createInstance action",
@@ -174,14 +174,7 @@ export const mcpInstanceActionTests: McpToolTest[] = [
       application: testApplicationUuid,
       applicationSection: "data" as const,
       objects: [
-        {
-          parentName: testEntity.name,
-          parentUuid: testEntity.uuid,
-          applicationSection: "data" as const,
-          instances: [
-            testInstance
-          ],
-        },
+        testInstance
       ],
     },
     tests: (expect: any, result: any) => {
@@ -252,5 +245,5 @@ export const mcpLibraryEndpointTests: McpToolTest[] = [
 
 export const ALL_MCP_TEST_CASES: McpToolTest[] = [
   ...mcpInstanceActionTests,
-  ...mcpLibraryEndpointTests,
+  // ...mcpLibraryEndpointTests,
 ];

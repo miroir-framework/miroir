@@ -118,7 +118,6 @@ export function FileSystemInstanceStoreSectionMixin<TBase extends MixableFileSys
         const fileContents = fs.readFileSync(entityInstancePath, { encoding: "utf-8" }).toString();
         return Promise.resolve({
           status: "ok",
-          // returnedDomainElement: { elementType: "instance", elementValue: JSON.parse(fileContents) },
           returnedDomainElement: JSON.parse(fileContents),
         });
       } catch (error) {
@@ -126,6 +125,11 @@ export function FileSystemInstanceStoreSectionMixin<TBase extends MixableFileSys
           new Action2Error(
             "FailedToGetInstance",
             `failed to get instance ${instancePrimaryKey} of entity ${entityUuid}`,
+            [],
+            undefined,
+            {
+              attemptedPath: entityInstancePath
+            }
           ),
         );
       }
@@ -160,6 +164,11 @@ export function FileSystemInstanceStoreSectionMixin<TBase extends MixableFileSys
           new Action2Error(
             "FailedToGetInstances",
             `FileSystemInstanceStore getInstances entityUuid ${entityUuid} could not find path ${entityInstancesPath}`,
+            [],
+            undefined,
+            {
+              attemptedPath: entityInstancesPath
+            }
           ),
         );
       }
@@ -210,18 +219,24 @@ export function FileSystemInstanceStoreSectionMixin<TBase extends MixableFileSys
           new Action2Error(
             "FailedToGetInstances",
             `FileSystemInstanceStore getInstances entityUuid ${entityUuid} failed to read directory ${entityInstancesPath}`,
+            [],
+            undefined,
+            {
+              attemptedPath: entityInstancesPath
+            }
           ),
         );
       }
     }
     // #########################################################################################
     upsertInstance(entityUuid: string, instance: EntityInstance): Promise<Action2VoidReturnType> {
+      let filePath = "";
       try {
         const idAttribute = this.entityIdAttributes[entityUuid] ?? "uuid";
         const pkValue = Array.isArray(idAttribute)
           ? idAttribute.map(attr => encodeURIComponent(String((instance as any)[attr]))).join("_")
           : String((instance as any)[idAttribute]);
-        const filePath = path.join(this.directory, entityUuid, fullName(pkValue));
+        filePath = path.join(this.directory, entityUuid, fullName(pkValue));
         log.info(
           this.logHeader,
           "upsertInstance called",
@@ -249,6 +264,11 @@ export function FileSystemInstanceStoreSectionMixin<TBase extends MixableFileSys
           new Action2Error(
             "FailedToUpdateInstance",
             `failed to upsert instance of entity ${entityUuid}`,
+            [],
+            undefined,
+            {
+              attemptedPath: filePath
+            }
           ),
         );
       }
