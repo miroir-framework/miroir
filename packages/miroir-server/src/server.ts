@@ -510,29 +510,46 @@ for (const op of restServerDefaultHandlers) {
   );
 }
 
+const defaultLibraryAppModel = getDefaultLibraryModelEnvironmentDEFUNCT(
+  miroirFundamentalJzodSchema as any,
+  defaultMiroirMetaModel,
+  instanceEndpointV1 as any as EndpointDefinition,
+  {
+    ...defaultSelfApplicationDeploymentMap,
+    [selfApplicationLibrary.uuid]: deployment_Library_DO_NO_USE.uuid,
+  } as ApplicationDeploymentMap,
+);
+
+
+const endpointDefinition: EndpointDefinition[] | undefined =
+    defaultLibraryAppModel.currentModel.endpoints.filter((endpoint) => endpoint.uuid === "212f2784-5b68-43b2-8ee0-89b1c6fdd0de") as EndpointDefinition[]; // lendingEndpoint UUID
+  
+if (!endpointDefinition || endpointDefinition.length === 0) {
+  throw new Error("Lending endpoint definition not found: " + "212f2784-5b68-43b2-8ee0-89b1c6fdd0de");
+}
 
 const mcpRequestHandlers = getMcpRequestHandlers(
-  defaultGetMcpRequestHandlersFromEndpointParams
-  // [
-  //   {
-  //     instanceEndpoint: instanceEndpointV1 as any as EndpointDefinition,
-  //     endpointActions: [
-  //       "createInstance",
-  //       "getInstance",
-  //       "getInstances",
-  //       "updateInstance",
-  //       "deleteInstance",
-  //       "deleteInstanceWithCascade",
-  //       "loadNewInstancesInLocalCache",
-  //     ],
-  //     toolPrefix: "miroir_",
-  //   },
-  //   {
-  //     instanceEndpoint: endpointDefinition[0],
-  //     endpointActions: ["lendDocument"],
-  //     toolPrefix: "library_",
-  //   }, // Pass the existing handlers to allow for composition};
-  // ]
+  // defaultGetMcpRequestHandlersFromEndpointParams
+  [
+    {
+      instanceEndpoint: instanceEndpointV1 as any as EndpointDefinition,
+      endpointActions: [
+        "createInstance",
+        "getInstance",
+        "getInstances",
+        "updateInstance",
+        "deleteInstance",
+        "deleteInstanceWithCascade",
+        "loadNewInstancesInLocalCache",
+      ],
+      toolPrefix: "miroir_",
+    },
+    {
+      instanceEndpoint: endpointDefinition[0],
+      endpointActions: ["lendDocument"],
+      toolPrefix: "library_",
+    }, // Pass the existing handlers to allow for composition};
+  ]
 );
 myLogger.info(`SETTING UP MCP SERVER NOW...`, JSON.stringify(Object.keys(mcpRequestHandlers), null, 2));
 const mcpApp = express();
@@ -546,7 +563,7 @@ mcpApp.use(cors({
 mcpApp.use(bodyParser.json({limit: '50mb'}));
 
 myLogger.info(`MCP Server being set-up, going to execute on the port::${mcpPortFromConfig}`);
-const server = await setupMcpServer(
+const mcpServer = await setupMcpServer(
   mcpApp,
   applicationDeploymentMap,
   mcpRequestHandlers,
@@ -640,14 +657,7 @@ if (existsSync(certFile) && existsSync(keyFile)) {
   });
 }
 if ( mcpPortFromConfig) {
-  const http = await import('http');
-  http.createServer(mcpApp).listen(mcpPortFromConfig, () => {
-    // myLogger.info("process.env", process.env);
-    // myLogger.info("templateEvaluationParams", templateEvaluationParams);
-    myLogger.info(`MCP Server running in ${getMiroirEnvironmentMode()} mode`);
-    // myLogger.info(`Server accesses filesystem deployment root directory at: ${filesystemDeploymentRootDirectory}`);
-    myLogger.info(`MCP server listening on port ${mcpPortFromConfig} (no TLS — run setup-https to enable HTTPS)`);
-  });
+  mcpServer.run(mcpPortFromConfig);
 } else {
   myLogger.warn(`MCP port not configured, skipping MCP server startup`);
 }
