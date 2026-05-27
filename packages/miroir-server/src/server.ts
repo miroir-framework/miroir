@@ -34,6 +34,10 @@ import {
   restServerDefaultHandlers,
   templateEvaluationParams,
   getMiroirEnvironmentMode,
+  type EndpointDefinition,
+  instanceEndpointV1,
+  defaultMiroirMetaModel,
+  miroirFundamentalJzodSchema,
 } from "miroir-core";
 import {
   deployment_Miroir,
@@ -41,8 +45,18 @@ import {
   adminSelfApplication,
   entityDeployment,
 } from "miroir-test-app_deployment-admin";
-import { getMcpRequestHandlers, setupMcpServer } from "miroir-mcp";
+import {
+  getMcpRequestHandlers,
+  defaultGetMcpRequestHandlersFromEndpointParams,
+  setupMcpServer,
+} from "miroir-mcp";
 import { createCopilotKitRouter } from "miroir-ai";
+
+import {
+  deployment_Library_DO_NO_USE,
+  getDefaultLibraryModelEnvironmentDEFUNCT,
+  selfApplicationLibrary,
+} from "miroir-test-app_deployment-library";
 
 import { setupMiroirDomainController } from 'miroir-localcache-redux';
 import { miroirFileSystemStoreSectionStartup } from 'miroir-store-filesystem';
@@ -496,7 +510,30 @@ for (const op of restServerDefaultHandlers) {
   );
 }
 
-const mcpRequestHandlers = getMcpRequestHandlers();
+
+const mcpRequestHandlers = getMcpRequestHandlers(
+  defaultGetMcpRequestHandlersFromEndpointParams
+  // [
+  //   {
+  //     instanceEndpoint: instanceEndpointV1 as any as EndpointDefinition,
+  //     endpointActions: [
+  //       "createInstance",
+  //       "getInstance",
+  //       "getInstances",
+  //       "updateInstance",
+  //       "deleteInstance",
+  //       "deleteInstanceWithCascade",
+  //       "loadNewInstancesInLocalCache",
+  //     ],
+  //     toolPrefix: "miroir_",
+  //   },
+  //   {
+  //     instanceEndpoint: endpointDefinition[0],
+  //     endpointActions: ["lendDocument"],
+  //     toolPrefix: "library_",
+  //   }, // Pass the existing handlers to allow for composition};
+  // ]
+);
 myLogger.info(`SETTING UP MCP SERVER NOW...`, JSON.stringify(Object.keys(mcpRequestHandlers), null, 2));
 const mcpApp = express();
 mcpApp.use(cors({

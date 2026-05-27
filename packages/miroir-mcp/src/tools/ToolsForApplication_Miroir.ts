@@ -3,16 +3,20 @@ import {
 } from "miroir-core";
 import { mcpToolEntry, type McpRequestHandler, type McpRequestHandlers } from "./handlersForEndpoint.js";
 
+export interface getMcpRequestHandlersFromEndpointParams {
+  instanceEndpoint: EndpointDefinition;
+  endpointActions: string[];
+  toolPrefix: string;
+}
+
 // ################################################################################################
 export function getMcpRequestHandlersFromEndpoint(
-  instanceEndpointV1:EndpointDefinition,
-  endpointActions: string[],
-  toolPrefix: string,
+  {instanceEndpoint, endpointActions, toolPrefix}: getMcpRequestHandlersFromEndpointParams,
 ): McpRequestHandlers {
   const result: McpRequestHandlers = endpointActions.reduce((acc, actionType) => {
     const toolName = toolPrefix + actionType;
     const toolConfig: McpRequestHandler<any> = mcpToolEntry(
-      instanceEndpointV1,
+      instanceEndpoint,
       actionType,
       toolPrefix
     );

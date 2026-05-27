@@ -21,7 +21,7 @@ import {
   selfApplicationLibrary,
   user1,
 } from "miroir-test-app_deployment-library";
-import { getMcpRequestHandlers } from "../../src/index.js";
+import { defaultGetMcpRequestHandlersFromEndpointParams, getMcpRequestHandlers } from "../../src/index.js";
 
 
 const packageName = "miroir-mcp";
@@ -60,7 +60,7 @@ export interface McpToolTest {
   tests: (expect: any, result: any) => void;
 }
 
-const mcpRequestHandlers = getMcpRequestHandlers();
+const mcpRequestHandlers = getMcpRequestHandlers(defaultGetMcpRequestHandlersFromEndpointParams);
 
 // ################################################################################################
 const testEntity = entityBook; // Book entity
@@ -228,8 +228,8 @@ export const mcpInstanceActionTests: McpToolTest[] = [
 export const mcpLibraryEndpointTests: McpToolTest[] = [
   {
     testName: "should execute lendDocument action",
-    toolName: "miroir_lendDocument",
-    handler: mcpRequestHandlers.miroir_lendDocument,
+    toolName: "library_lendDocument",
+    handler: mcpRequestHandlers.library_lendDocument,
     params: {
       book: book1.uuid,
       user: user1.uuid,
@@ -251,6 +251,6 @@ if (!mcpLibraryEndpointTests) {
 }
 
 export const ALL_MCP_TEST_CASES: McpToolTest[] = [
-  // ...mcpInstanceActionTests,
+  ...mcpInstanceActionTests,
   ...mcpLibraryEndpointTests,
 ];

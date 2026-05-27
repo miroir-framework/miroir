@@ -17,7 +17,7 @@ import { loadMiroirMcpConfig } from "./config/configLoader.js";
 import { MiroirMcpServer, openStores, setupLogging, setupMcpServer } from "./mcpServer.js";
 import { setupMiroirPlatform } from "./startup/setup.js";
 import { initializeStoreStartup } from "./startup/storeStartup.js";
-import { getMcpRequestHandlers } from "./tools/Tools.js";
+import { defaultGetMcpRequestHandlersFromEndpointParams, getMcpRequestHandlers } from "./tools/Tools.js";
 
 // const PORT = 3080;
 let server: MiroirMcpServer | null = null;
@@ -67,7 +67,7 @@ async function main() {
     server = await setupMcpServer(
       app,
       config.client.applicationDeploymentMap,
-      getMcpRequestHandlers(),
+      getMcpRequestHandlers(defaultGetMcpRequestHandlersFromEndpointParams),
       localdomainController,
       // localmiroirContext,
     );
@@ -120,5 +120,5 @@ console.warn("[miroir-mcp] Miroir MCP is in library mode, not starting server au
 // Export for programmatic use
 export * from "./config/configLoader.js";
 export * from "./config/configSchema.js";
-export { getMcpRequestHandlers, MiroirMcpServer, setupMcpServer };
+export { getMcpRequestHandlers, defaultGetMcpRequestHandlersFromEndpointParams, MiroirMcpServer, setupMcpServer };
 
