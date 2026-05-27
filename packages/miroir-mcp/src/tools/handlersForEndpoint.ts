@@ -357,7 +357,7 @@ export function mcpToolHandler(
 export function mcpToolEntry(
   endpoint: EndpointDefinition,
   actionType: string,
-  // toolConfig: McpRequestHandler<any>,
+  toolPrefix: string,
 ): McpRequestHandler<any> {
   const actionDef = endpoint.definition.actions.find(
     (action: any) => action.actionParameters.actionType.definition === actionType
@@ -369,7 +369,7 @@ export function mcpToolEntry(
     throw new Error(`Payload definition not found for action type: ${actionType}`);
   }
   const jzodPayload = actionDef.actionParameters.payload;
-  const toolName = `miroir_${actionType}`;
+  const toolName = `${toolPrefix}${actionType}`;
   const actionDescription = actionDef.actionParameters.actionType.tag?.value?.description 
     || actionDef.actionParameters.actionType.tag?.value?.defaultLabel
     || `Execute ${actionType} action on ${endpoint.name || endpoint.uuid}`;
@@ -398,9 +398,6 @@ export function mcpToolEntry(
     },
     payloadZodSchema: schema,
     actionEnvelope,
-    // actionHandler: mcpToolHandler(toolName, mcpRequestHandlers),
-    // actionHandler: mcpToolHandler(toolName, getMcpRequestHandlers()),
-    // actionHandler: mcpToolHandler(toolName, toolConfig.payloadZodSchema, toolConfig.actionEnvelope),
     actionHandler: mcpToolHandler(toolName, schema, actionEnvelope),
   };
 }
