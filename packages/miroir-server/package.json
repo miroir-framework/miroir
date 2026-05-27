@@ -8,7 +8,7 @@
     "build:client": "cross-env NODE_OPTIONS=--max-old-space-size=6144 npm run build -w miroir-standalone-app",
     "copy:client": "node scripts/copy-client.mjs",
     "copy:release-config": "copyfiles -u 1 config/**/*.json release/config",
-    "build:server:OLD": "tsup --target=node20 --format esm src/server.ts --outDir release",
+    "build:server:OLD": "tsup --target=node20 --format esm src/server.ts --outDir dist",
     "build:server": "cross-env NODE_OPTIONS=--max-old-space-size=6144 npx @vercel/ncc build src/server.ts -o release/",
     "build:release": "npm run build:client && npm run copy:client && npm run copy:release-config && npm run build:server",
     "run:prod": "cross-env NODE_ENV=production node release/index.js",

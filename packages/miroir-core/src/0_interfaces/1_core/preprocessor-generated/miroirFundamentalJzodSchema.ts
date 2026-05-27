@@ -11570,6 +11570,10 @@ export const miroirFundamentalJzodSchema = {
               "rootApiUrl": {
                 "type": "string"
               },
+              "mcpUrl": {
+                "type": "string",
+                "optional": true
+              },
               "filesystemDeploymentRootDirectory": {
                 "type": "string"
               }

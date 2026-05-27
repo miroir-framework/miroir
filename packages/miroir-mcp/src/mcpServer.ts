@@ -41,15 +41,12 @@ let log: LoggerInterface = console as any as LoggerInterface;
 export class MiroirMcpServer {
   private server: Server;
   private httpServer?: any;
-  // private port: number = 3080;
   private sessions: Map<string, { server: Server; transport: SSEServerTransport }> = new Map();
   private isShuttingDown: boolean = false;
-  // private applicationDeploymentMap: ApplicationDeploymentMap;
 
   constructor(
     private app: Express,
     private applicationDeploymentMap: ApplicationDeploymentMap,
-    // private config: MiroirMcpConfig, // TODO: should be identical to MiroirConfigClient
     private domainController: DomainControllerInterface,
     private mcpRequestHandlers: McpRequestHandlers,
   ) {
@@ -304,7 +301,8 @@ export class MiroirMcpServer {
 
       const openStoreAction: StoreOrBundleAction = {
         actionType: "storeManagementAction_openStore",
-        actionLabel: `Open stores for ${deploymentUuid}`,        endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
+        actionLabel: `Open stores for ${deploymentUuid}`,
+        endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
         payload: {
           application:
             Object.keys(applicationDeploymentMap).find(
@@ -407,7 +405,6 @@ export class MiroirMcpServer {
 export async function setupMcpServer(
   app: Express,
   applicationDeploymentMap: ApplicationDeploymentMap,
-  // config: MiroirMcpConfig,
   mcpRequestHandlers: McpRequestHandlers,
   domainController: DomainControllerInterface,
 ): Promise<MiroirMcpServer> {

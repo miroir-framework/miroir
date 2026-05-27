@@ -41,7 +41,7 @@ import {
   adminSelfApplication,
   entityDeployment,
 } from "miroir-test-app_deployment-admin";
-import { mcpRequestHandlers, setupMcpServer } from "miroir-mcp";
+import { getMcpRequestHandlers, setupMcpServer } from "miroir-mcp";
 import { createCopilotKitRouter } from "miroir-ai";
 
 import { setupMiroirDomainController } from 'miroir-localcache-redux';
@@ -162,7 +162,10 @@ myLogger.info('miroirConfig',miroirConfig)
 myLogger.info(`process.env`, JSON.stringify(process.env, null, 2));
 myLogger.info(`import.meta`, JSON.stringify((import.meta as any), null, 2));
 
-const portFromConfig: number = Number(miroirConfig.server.rootApiUrl.substring(miroirConfig.server.rootApiUrl.lastIndexOf(":") + 1));
+const restPortFromConfig: number = Number(miroirConfig.server.rootApiUrl.substring(miroirConfig.server.rootApiUrl.lastIndexOf(":") + 1));
+const mcpPortFromConfig: number = Number(
+  miroirConfig.server.mcpUrl?.substring(miroirConfig.server.mcpUrl.lastIndexOf(":") + 1) ?? 0,
+);
 
 
 // Derive CORS allowed origins: prefer explicit config, otherwise allow both http/https on common dev ports
@@ -187,7 +190,7 @@ app.use(cors({
 
 app.use(bodyParser.json({limit: '50mb'}));
 
-myLogger.info(`Server being set-up, going to execute on the port::${portFromConfig}`);
+myLogger.info(`Server being set-up, going to execute on the port::${restPortFromConfig}`);
 
 // ##############################################################################################
 // Resolve file paths
@@ -455,9 +458,21 @@ for (const op of restServerDefaultHandlers) {
   );
 }
 
+const mcpRequestHandlers = getMcpRequestHandlers();
 myLogger.info(`SETTING UP MCP SERVER NOW...`, JSON.stringify(Object.keys(mcpRequestHandlers), null, 2));
+const mcpApp = express();
+mcpApp.use(cors({
+  origin: corsAllowedOrigins,
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
+
+mcpApp.use(bodyParser.json({limit: '50mb'}));
+
+myLogger.info(`MCP Server being set-up, going to execute on the port::${mcpPortFromConfig}`);
 const server = await setupMcpServer(
-  app,
+  mcpApp,
   applicationDeploymentMap,
   mcpRequestHandlers,
   domainController,
@@ -526,8 +541,8 @@ if (existsSync(certFile) && existsSync(keyFile)) {
     cert: readFileSync(certFile),
     key:  readFileSync(keyFile),
   };
-  https.createServer(tlsOptions, app).listen(portFromConfig, () => {
-    myLogger.info(`HTTPS server listening on port ${portFromConfig}`);
+  https.createServer(tlsOptions, app).listen(restPortFromConfig, () => {
+    myLogger.info(`HTTPS server listening on port ${restPortFromConfig}`);
     myLogger.info(`  cert: ${certFile}`);
     myLogger.info(`  key:  ${keyFile}`);
   });
@@ -541,13 +556,25 @@ if (existsSync(certFile) && existsSync(keyFile)) {
   );
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   const http = await import('http');
-  http.createServer(app).listen(portFromConfig, () => {
+  http.createServer(app).listen(restPortFromConfig, () => {
     // myLogger.info("process.env", process.env);
     myLogger.info("templateEvaluationParams", templateEvaluationParams);
     myLogger.info(`Server running in ${getMiroirEnvironmentMode()} mode`);
     myLogger.info(`Server accesses filesystem deployment root directory at: ${filesystemDeploymentRootDirectory}`);
-    myLogger.info(`HTTP server listening on port ${portFromConfig} (no TLS — run setup-https to enable HTTPS)`);
+    myLogger.info(`HTTP server listening on port ${restPortFromConfig} (no TLS — run setup-https to enable HTTPS)`);
   });
+}
+if ( mcpPortFromConfig) {
+  const http = await import('http');
+  http.createServer(mcpApp).listen(mcpPortFromConfig, () => {
+    // myLogger.info("process.env", process.env);
+    // myLogger.info("templateEvaluationParams", templateEvaluationParams);
+    myLogger.info(`MCP Server running in ${getMiroirEnvironmentMode()} mode`);
+    // myLogger.info(`Server accesses filesystem deployment root directory at: ${filesystemDeploymentRootDirectory}`);
+    myLogger.info(`MCP server listening on port ${mcpPortFromConfig} (no TLS — run setup-https to enable HTTPS)`);
+  });
+} else {
+  myLogger.warn(`MCP port not configured, skipping MCP server startup`);
 }
 
 // Adjust Request type

@@ -1,6 +1,7 @@
 {
   "server": {
     "rootApiUrl": "https://localhost:3080",
+    "mcpUrl": "https://localhost:4080",
     "filesystemDeploymentRootDirectory": "..",
     "corsAllowedOrigins": [
       "http://localhost:5173",

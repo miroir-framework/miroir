@@ -1807,6 +1807,10 @@ export function getMiroirFundamentalJzodSchema(
                 rootApiUrl: {
                   type: "string",
                 },
+                mcpUrl: {
+                  type: "string",
+                  optional: true,
+                },
                 filesystemDeploymentRootDirectory: {
                   type: "string",
                 },

@@ -151,7 +151,7 @@ function resolveAllReferences(element: JzodElement): JzodElement {
 export async function handleInstanceAction(
   toolName: string,
   params: unknown,
-  schema: any,
+  schema: ZodTypeAny,
   actionBuilder: (validatedParams: any) => InstanceAction,
   domainController: DomainControllerInterface,
   applicationDeploymentMap: ApplicationDeploymentMap,
@@ -164,7 +164,7 @@ export async function handleInstanceAction(
     log.info(`${toolName} - received applicationDeploymentMap:`, applicationDeploymentMap);
 
     // Validate parameters
-    const validatedParams = schema.passthrough().parse(params);
+    const validatedParams = schema.parse(params);
     log.info(`${toolName} - validated params:`, validatedParams);
 
     // Build the action
@@ -284,7 +284,6 @@ export type McpRequestHandler<T extends McpToolDescription> = {
   actionEnvelope: {
     actionType: string;
     actionLabel: string;
-    // application: string;
     endpoint: string;
   };
   actionHandler: ToolHandler;
@@ -300,6 +299,10 @@ export type McpRequestHandlers = Record<string, McpRequestHandler<any>>;
  */
 export function mcpToolHandler(
   toolName: string,
+  // mcpRequestHandlers: McpRequestHandlers,
+  // config: McpRequestHandler<any>,
+  payloadZodSchema: ZodTypeAny,
+  actionEnvelope: McpRequestHandler<any>["actionEnvelope"],
 ): (
   payload: unknown,
   domainController: DomainControllerInterface,
@@ -310,7 +313,7 @@ export function mcpToolHandler(
     domainController: DomainControllerInterface,
     applicationDeploymentMap: ApplicationDeploymentMap
   ) => {
-    const config = mcpRequestHandlers[toolName];
+    // const config = mcpRequestHandlers[toolName];
     log.info(`mcpToolHandler - invoking tool: ${toolName}`);
     log.info(
       `mcpToolHandler - invoking tool: ${toolName},
@@ -324,10 +327,10 @@ export function mcpToolHandler(
     return handleInstanceAction(
       toolName,
       payload,
-      config.payloadZodSchema,
+      payloadZodSchema,
       (payload) =>
         ({
-          ...config.actionEnvelope,
+          ...actionEnvelope,
           payload,
         }) as InstanceAction,
       domainController,
@@ -337,7 +340,11 @@ export function mcpToolHandler(
 }
 
 // ################################################################################################
-function mcpToolEntry(endpoint: EndpointDefinition, actionType: string): McpRequestHandler<any> {
+export function mcpToolEntry(
+  endpoint: EndpointDefinition,
+  actionType: string,
+  // toolConfig: McpRequestHandler<any>,
+): McpRequestHandler<any> {
   const actionDef = endpoint.definition.actions.find(
     (action: any) => action.actionParameters.actionType.definition === actionType
   );
@@ -364,6 +371,11 @@ function mcpToolEntry(endpoint: EndpointDefinition, actionType: string): McpRequ
   );
   const schema = jzodPayloadToZodSchema(jzodPayload);
 
+  const actionEnvelope = {
+    actionType,
+    actionLabel: `MCP: ${actionType.replace(/([A-Z])/g, ' $1').trim()}`,
+    endpoint: endpoint.uuid,
+  };
   return {
     mcpToolDescription: {
       name: toolName,
@@ -371,49 +383,13 @@ function mcpToolEntry(endpoint: EndpointDefinition, actionType: string): McpRequ
       inputSchema: jzodElementToJsonSchema(jzodPayload) as McpToolDescriptionPropertyObject,
     },
     payloadZodSchema: schema,
-    actionEnvelope: {
-      actionType: actionType,
-      actionLabel: `MCP: ${actionType.replace(/([A-Z])/g, ' $1').trim()}`,
-      endpoint: endpoint.uuid,
-    },
-    actionHandler: mcpToolHandler(toolName),
+    actionEnvelope,
+    // actionHandler: mcpToolHandler(toolName, mcpRequestHandlers),
+    // actionHandler: mcpToolHandler(toolName, getMcpRequestHandlers()),
+    // actionHandler: mcpToolHandler(toolName, toolConfig.payloadZodSchema, toolConfig.actionEnvelope),
+    actionHandler: mcpToolHandler(toolName, schema, actionEnvelope),
   };
 }
-// ################################################################################################
-export const mcpRequestHandlers_EntityEndpoint: McpRequestHandlers = {
-  miroir_createInstance: mcpToolEntry(instanceEndpointV1 as any as EndpointDefinition, "createInstance"),
-  miroir_getInstance: mcpToolEntry(instanceEndpointV1 as any as EndpointDefinition, "getInstance"),
-  miroir_getInstances: mcpToolEntry(instanceEndpointV1 as any as EndpointDefinition, "getInstances"),
-  miroir_updateInstance: mcpToolEntry(instanceEndpointV1 as any as EndpointDefinition, "updateInstance"),
-  miroir_deleteInstance: mcpToolEntry(instanceEndpointV1 as any as EndpointDefinition, "deleteInstance"),
-  miroir_deleteInstanceWithCascade: mcpToolEntry(instanceEndpointV1 as any as EndpointDefinition, "deleteInstanceWithCascade"),
-  miroir_loadNewInstancesInLocalCache: mcpToolEntry(instanceEndpointV1 as any as EndpointDefinition, "loadNewInstancesInLocalCache"),
-};
 
-// ################################################################################################
-const defaultLibraryAppModel = getDefaultLibraryModelEnvironmentDEFUNCT(
-  miroirFundamentalJzodSchema as any,
-  defaultMiroirMetaModel,
-  instanceEndpointV1 as any as EndpointDefinition,
-  {
-    ...defaultSelfApplicationDeploymentMap,
-    [selfApplicationLibrary.uuid]: deployment_Library_DO_NO_USE.uuid
-  } as ApplicationDeploymentMap,
-)
 
-// ################################################################################################
-export const mcpRequestHandlers_Library_lendingEndpoint: McpRequestHandlers = defaultLibraryAppModel.currentModel.endpoints
-  .filter((endpoint) => endpoint.uuid === "212f2784-5b68-43b2-8ee0-89b1c6fdd0de") // lendingEndpoint UUID
-  .reduce((acc, endpoint) => {
-    const createInstanceHandler = mcpToolEntry(endpoint as EndpointDefinition, "lendDocument");
-    acc["miroir_" + createInstanceHandler.actionEnvelope.actionType] = createInstanceHandler;
-    return acc;
-  }, {} as McpRequestHandlers);
 
-// ################################################################################################
-// aggregate all instance action tools
-// ################################################################################################
-export const mcpRequestHandlers: McpRequestHandlers = {
-  ...mcpRequestHandlers_EntityEndpoint,
-  // ...mcpRequestHandlers_Library_lendingEndpoint,
-};
