@@ -162,7 +162,9 @@ myLogger.info('miroirConfig',miroirConfig)
 myLogger.info(`process.env`, JSON.stringify(process.env, null, 2));
 myLogger.info(`import.meta`, JSON.stringify((import.meta as any), null, 2));
 
-const restPortFromConfig: number = Number(miroirConfig.server.rootApiUrl.substring(miroirConfig.server.rootApiUrl.lastIndexOf(":") + 1));
+const restPortFromConfig: number = Number(
+  miroirConfig.server.rootApiUrl.substring(miroirConfig.server.rootApiUrl.lastIndexOf(":") + 1),
+);
 const mcpPortFromConfig: number = Number(
   miroirConfig.server.mcpUrl?.substring(miroirConfig.server.mcpUrl.lastIndexOf(":") + 1) ?? 0,
 );
@@ -290,9 +292,45 @@ const domainController = await setupMiroirDomainController(
 ); // even when emulating server, we use remote persistence store, since MSW makes it appear as if we are using a remote server.
 
 const configurations: Record<string, Deployment> = {
-  [deployment_Admin.uuid]: deployment_Admin as Deployment,
-  [deployment_Miroir.uuid]: deployment_Miroir as Deployment,
-}
+  // [deployment_Admin.uuid]: deployment_Admin as Deployment,
+  // [deployment_Miroir.uuid]: deployment_Miroir as Deployment,
+  // for mcp server tests
+  [deployment_Admin.uuid]: {
+    ...deployment_Admin,
+    configuration: {
+      admin: {
+        emulatedServerType: "filesystem",
+        directory: "miroir-mcp/tests/assets/miroir_admin",
+      },
+      model: {
+        emulatedServerType: "filesystem",
+        directory: "miroir-mcp/tests/assets/admin_model",
+      },
+      data: {
+        emulatedServerType: "filesystem",
+        directory: "miroir-mcp/tests/assets/admin_data",
+      },
+    } as any as StoreUnitConfiguration,
+  } as Deployment,
+  [deployment_Miroir.uuid]: {
+    ...deployment_Miroir,
+    configuration: {
+      admin: {
+        emulatedServerType: "filesystem",
+        directory: "miroir-mcp/tests/tmp/miroir_admin",
+      },
+      model: {
+        emulatedServerType: "filesystem",
+        directory: "miroir-mcp/tests/tmp/miroir_model",
+      },
+      data: {
+        emulatedServerType: "filesystem",
+        directory: "miroir-mcp/tests/tmp/miroir_data",
+      },
+    } as any as StoreUnitConfiguration,
+  } as Deployment,
+
+};
 
 // open all configured stores
 for (const c of Object.entries(configurations)) {

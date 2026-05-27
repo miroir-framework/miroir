@@ -3,7 +3,6 @@
 
 import type { McpRequestHandlers } from "./handlersForEndpoint.js";
 import { mcpRequestHandlers_Library_lendingEndpoint } from "./ToolsForApplication_Library.js";
-// import { mcpRequestHandlers_Library_lendingEndpoint } from "./ToolsForApplication_Library.js";
 import { getMcpRequestHandlers_EntityEndpoint } from "./ToolsForApplication_Miroir.js";
 
 // ################################################################################################

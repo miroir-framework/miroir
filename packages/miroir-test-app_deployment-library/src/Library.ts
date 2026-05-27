@@ -203,14 +203,21 @@ export const defaultLibraryAppModel: MetaModel = {
 export function getDefaultLibraryModelEnvironmentDEFUNCT(
   miroirFundamentalJzodSchema: MlSchema,
   defaultMiroirMetaModel: MetaModel,
-  endpointDocument: EndpointDefinition,
+  endpointDocumentNOTUSED: EndpointDefinition,
   libraryDeploymentUuid: string,
 ): MiroirModelEnvironment {
   return {
     miroirFundamentalJzodSchema: miroirFundamentalJzodSchema as MlSchema,
     miroirMetaModel: defaultMiroirMetaModel,
-    endpointsByUuid: {[endpointDocument.uuid]: endpointDocument},
+    // endpointsByUuid: {[endpointDocument.uuid]: endpointDocument},
+    endpointsByUuid: defaultLibraryAppModel.endpoints.reduce(
+      (acc, endpoint) => {
+        acc[endpoint.uuid] = endpoint;
+        return acc;
+      },
+      {} as Record<string, EndpointDefinition>,
+    ),
     deploymentUuid: libraryDeploymentUuid,
     currentModel: defaultLibraryAppModel,
-  }
+  };
 }

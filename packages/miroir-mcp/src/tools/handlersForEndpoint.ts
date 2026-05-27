@@ -174,9 +174,23 @@ export async function handleInstanceAction(
     const defaultLibraryModelEnvironment = getDefaultLibraryModelEnvironmentDEFUNCT(
       miroirFundamentalJzodSchema as any,
       defaultMiroirMetaModel,
-      instanceEndpointV1,
+      undefined, // not used
       applicationDeploymentMap[selfApplicationLibrary.uuid],
     );
+    // log.info(`${toolName} - constructed defaultLibraryModelEnvironment:`, JSON.stringify(defaultLibraryModelEnvironment, null, 2));
+    log.info(
+      `${toolName} - constructed defaultLibraryModelEnvironment.endpointsByUuid:`,
+      JSON.stringify(Object.keys(defaultLibraryModelEnvironment.endpointsByUuid), null, 2),
+    );
+    log.info(
+      `${toolName} - constructed defaultLibraryModelEnvironment.currentModel.endpoints:`,
+      JSON.stringify(
+        defaultLibraryModelEnvironment.currentModel.endpoints.map((e) => e.uuid),
+        null,
+        2,
+      ),
+    );
+
     // Execute via DomainController
     const result: Action2VoidReturnType = await domainController.handleAction(
       action,

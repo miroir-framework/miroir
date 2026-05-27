@@ -1881,10 +1881,12 @@ export class DomainController implements DomainControllerInterface {
           endpointUuid,
           "derived applicationUuid",
           applicationUuid,
-          "endpointApplicationMap used for resolution",
+          "received endpointApplicationMap",
           endpointApplicationMap,
-          "resolvedEndpointApplicationMap",
+          "resolvedEndpointApplicationMap used for resolution",
           resolvedEndpointApplicationMap,
+          "resulting applicationUuid",
+          applicationUuid,
         );
         if (applicationUuid !== undefined && (
           applicationUuid !== selfApplicationMiroir.uuid ||
@@ -1954,10 +1956,10 @@ export class DomainController implements DomainControllerInterface {
       currentModelEnvironment?.endpointsByUuid[(domainAction as any).endpoint] ??
       currentModelEnvironment?.miroirMetaModel?.endpoints?.find((e) => e.uuid === (domainAction as any).endpoint);
 
-    // log.info(
-    //   "DomainController handleApplicationAction currentEndpointDefinition",
-    //   currentEndpointDefinition,
-    // );
+    log.info(
+      "DomainController handleApplicationAction currentEndpointDefinition",
+      currentEndpointDefinition,
+    );
     if (!currentEndpointDefinition) {
       return Promise.resolve(
         new Action2Error(
@@ -1969,6 +1971,15 @@ export class DomainController implements DomainControllerInterface {
             " currentModelEnvironment deploymentUuid: " +
             (currentModelEnvironment as any).deploymentUuid,
           [],
+          undefined, // innerError
+          { 
+            domainAction, 
+            deploymentUuid: currentModelEnvironment.deploymentUuid,
+            applicationName: currentModelEnvironment.currentModel?.applicationName,
+            applicationUuid: currentModelEnvironment.currentModel?.applicationUuid,
+            endpointsInModelEnvironment: Object.keys(currentModelEnvironment?.endpointsByUuid || {}),
+            application: currentModelEnvironment.currentModel?.applications,
+          },
         ),
       );
     }

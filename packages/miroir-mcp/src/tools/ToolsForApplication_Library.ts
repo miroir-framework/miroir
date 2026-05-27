@@ -25,11 +25,12 @@ const defaultLibraryAppModel = getDefaultLibraryModelEnvironmentDEFUNCT(
 );
 
 // ################################################################################################
-export const mcpRequestHandlers_Library_lendingEndpoint: McpRequestHandlers =
-  defaultLibraryAppModel.currentModel.endpoints
-    .filter((endpoint) => endpoint.uuid === "212f2784-5b68-43b2-8ee0-89b1c6fdd0de") // lendingEndpoint UUID
-    .reduce((acc, endpoint) => {
+const endpointDefinition: EndpointDefinition[] | undefined =
+  defaultLibraryAppModel.currentModel.endpoints.filter((endpoint) => endpoint.uuid === "212f2784-5b68-43b2-8ee0-89b1c6fdd0de") as EndpointDefinition[]; // lendingEndpoint UUID
+
+export const mcpRequestHandlers_Library_lendingEndpoint: McpRequestHandlers | undefined =
+  endpointDefinition?endpointDefinition.reduce((acc, endpoint) => {
       const createInstanceHandler = mcpToolEntry(endpoint as EndpointDefinition, "lendDocument");
       acc["miroir_" + createInstanceHandler.actionEnvelope.actionType] = createInstanceHandler;
       return acc;
-    }, {} as McpRequestHandlers);
+    }, {} as McpRequestHandlers): undefined;
