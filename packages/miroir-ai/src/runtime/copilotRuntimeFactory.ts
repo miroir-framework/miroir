@@ -10,11 +10,9 @@ import {
 } from "@copilotkit/runtime";
 import { createOpenAI } from "@ai-sdk/openai";
 import type { LanguageModel } from "ai";
-import type { Parameter } from "@copilotkit/shared";
+import type { Action, Parameter } from "@copilotkit/shared";
 import OpenAI from "openai";
 import Anthropic from "@anthropic-ai/sdk";
-
-import { miroirTools } from "../tools/miroirTools.js";
 
 export type AiProviderType = "openai" | "anthropic" | "google" | "github";
 
@@ -70,7 +68,7 @@ class GithubOpenAIAdapter extends OpenAIAdapter {
  * Called per-request so that provider/model changes take effect immediately
  * without restarting the server.
  */
-export function buildCopilotRuntime(config: AiRuntimeConfig): {
+export function buildCopilotRuntime(config: AiRuntimeConfig, actions: Action<Parameter[]>[] = []): {
   runtime: CopilotRuntime<Parameter[]>;
   serviceAdapter: CopilotServiceAdapter;
 } {
@@ -117,7 +115,7 @@ export function buildCopilotRuntime(config: AiRuntimeConfig): {
   }
 
   const runtime = new CopilotRuntime({
-    actions: miroirTools,
+    actions,
     // System instructions are passed from the frontend via <CopilotKit instructions="...">
     // using the exported MIROIR_SYSTEM_PROMPT constant.
   });
@@ -129,7 +127,7 @@ export function buildCopilotRuntime(config: AiRuntimeConfig): {
  * Builds a minimal CopilotRuntime with a no-op service adapter.
  * Used for GET runtime-info requests (action discovery) which do not call any AI provider.
  */
-export function buildMinimalCopilotRuntime(): {
+export function buildMinimalCopilotRuntime(actions: Action<Parameter[]>[] = []): {
   runtime: CopilotRuntime<Parameter[]>;
   serviceAdapter: CopilotServiceAdapter;
 } {
@@ -144,7 +142,7 @@ export function buildMinimalCopilotRuntime(): {
       throw new Error("No AI provider configured. Set AI_PROVIDER_TYPE and AI_MODEL environment variables.");
     },
   };
-  const runtime = new CopilotRuntime({ actions: miroirTools });
+  const runtime = new CopilotRuntime({ actions });
   return { runtime, serviceAdapter: noopAdapter };
 }
 

@@ -1,4 +1,4 @@
-// Unit tests for miroirTools.ts
+// Unit tests for miroirCopilotKitActions.ts
 // Tests that each tool's handler:
 // 1. Generates structurally valid Miroir JSON
 // 2. Sets the correct parentUuid/parentName
@@ -12,8 +12,8 @@ import {
   generateMiroirTransformerTool,
   generateMiroirReportTool,
   getMiroirContextTool,
-  miroirTools,
-} from "../../src/tools/miroirTools.js";
+  miroirCopilotKitActions,
+} from "../../src/tools/miroirCopilotKitActions.js";
 
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -27,13 +27,13 @@ const TEST_DEPLOYMENT_UUID = "aaaaaaaa-0000-0000-0000-000000000001";
 const TEST_ENTITY_UUID = "bbbbbbbb-0000-0000-0000-000000000002";
 
 // ──────────────────────────────────────────────────────────────────────────────
-describe("miroirTools — registry", () => {
+describe("miroirCopilotKitActions — registry", () => {
   it("exports exactly 5 tools", () => {
-    expect(miroirTools).toHaveLength(5);
+    expect(miroirCopilotKitActions).toHaveLength(5);
   });
 
   it("all tools have required fields: name, description, handler", () => {
-    for (const tool of miroirTools) {
+    for (const tool of miroirCopilotKitActions) {
       expect(tool.name, `tool ${tool.name} missing name`).toBeTruthy();
       expect(tool.description, `tool ${tool.name} missing description`).toBeTruthy();
       expect(typeof tool.handler, `tool ${tool.name} handler not function`).toBe("function");

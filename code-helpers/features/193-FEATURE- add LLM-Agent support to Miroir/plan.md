@@ -92,7 +92,7 @@ Key files:
 | `tsup.config.ts` | Build config mirroring `miroir-mcp` |
 | `src/index.ts` | Package entry point, exports `copilotKitRouter` |
 | `src/runtime/copilotRuntimeFactory.ts` | Builds `CopilotRuntime` + adapter from env/config |
-| `src/tools/miroirTools.ts` | All Miroir tool definitions |
+| `src/tools/miroirCopilotKitActions.ts` | All Miroir tool definitions |
 | `src/prompts/miroirSystemPrompt.ts` | System prompt with Miroir schema context |
 | `src/routes/copilotKitRoute.ts` | Express Router exposing `POST /copilotkit` |
 
@@ -114,7 +114,7 @@ Dependencies:
 
 ### Step 1.3 — Miroir tool definitions
 
-`src/tools/miroirTools.ts` defines CopilotKit `Action[]`:
+`src/tools/miroirCopilotKitActions.ts` defines CopilotKit `Action[]`:
 
 | Tool name | Parameters | Returns |
 |-----------|------------|---------|
@@ -250,7 +250,7 @@ Users can then use `@miroir` tools directly in VS Code Copilot chat.
 | `packages/miroir-ai/tsup.config.ts` | 1 |
 | `packages/miroir-ai/src/index.ts` | 1 |
 | `packages/miroir-ai/src/runtime/copilotRuntimeFactory.ts` | 1 |
-| `packages/miroir-ai/src/tools/miroirTools.ts` | 1 |
+| `packages/miroir-ai/src/tools/miroirCopilotKitActions.ts` | 1 |
 | `packages/miroir-ai/src/prompts/miroirSystemPrompt.ts` | 1 |
 | `packages/miroir-ai/src/routes/copilotKitRoute.ts` | 1 |
 | `packages/miroir-standalone-app/src/miroir-fwk/4_view/routes/AiAssistantPage.tsx` | 2 |

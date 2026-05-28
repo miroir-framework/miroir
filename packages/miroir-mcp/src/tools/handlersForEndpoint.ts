@@ -148,7 +148,7 @@ function resolveAllReferences(element: JzodElement): JzodElement {
  * - DomainController invocation
  * - Response formatting
  */
-export async function handleInstanceAction(
+export async function handleMcpAction(
   toolName: string,
   params: unknown,
   schema: ZodTypeAny,
@@ -338,7 +338,7 @@ export function mcpToolHandler(
       "payload",
       JSON.stringify(payload, null, 2)
     );
-    return handleInstanceAction(
+    return handleMcpAction(
       toolName,
       payload,
       payloadZodSchema,
@@ -398,6 +398,11 @@ export function mcpToolEntry(
     },
     payloadZodSchema: schema,
     actionEnvelope,
+//     (
+//   payload: unknown,
+//   domainController: DomainControllerInterface,
+//   applicationDeploymentMap: ApplicationDeploymentMap
+// ) => Promise<{ content: Array<{ type: string; text: string, parsed: Record<string, any> }> }>
     actionHandler: mcpToolHandler(toolName, schema, actionEnvelope),
   };
 }

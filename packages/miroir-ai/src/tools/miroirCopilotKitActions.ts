@@ -6,8 +6,143 @@
 import { v4 as uuidv4 } from "uuid";
 import type { Action, Parameter } from "@copilotkit/shared";
 
+import {
+  Action2Error,
+  defaultMiroirMetaModel,
+  defaultSelfApplicationDeploymentMap,
+  instanceEndpointV1,
+  jzodToCopilotKitParameter,
+  jzodToJsonSchema,
+  miroirFundamentalJzodSchema,
+  type ApplicationDeploymentMap,
+  type DomainControllerInterface,
+  type EndpointDefinition,
+  type JzodObject,
+  type MiroirModelEnvironment,
+} from "miroir-core";
+import {
+  deployment_Library_DO_NO_USE,
+  getDefaultLibraryModelEnvironmentDEFUNCT,
+  selfApplicationLibrary,
+} from "miroir-test-app_deployment-library";
 // Convenience alias for a typed Action with known parameters
 type MiroirAction = Action<Parameter[]>;
+
+const defaultLibraryAppModel = getDefaultLibraryModelEnvironmentDEFUNCT(
+  miroirFundamentalJzodSchema as any,
+  defaultMiroirMetaModel,
+  instanceEndpointV1 as any as EndpointDefinition,
+  {
+    ...defaultSelfApplicationDeploymentMap,
+    [selfApplicationLibrary.uuid]: deployment_Library_DO_NO_USE.uuid,
+  } as ApplicationDeploymentMap,
+);
+
+
+const endpointDefinition: EndpointDefinition[] | undefined =
+    defaultLibraryAppModel.currentModel.endpoints.filter((endpoint) => endpoint.uuid === "212f2784-5b68-43b2-8ee0-89b1c6fdd0de") as EndpointDefinition[]; // lendingEndpoint UUID
+  
+if (!endpointDefinition || endpointDefinition.length === 0) {
+  throw new Error("Lending endpoint definition not found: " + "212f2784-5b68-43b2-8ee0-89b1c6fdd0de");
+}
+
+if (!endpointDefinition[0].definition.actions[0].actionParameters.payload) {
+  throw new Error("Lending endpoint action parameters not found for endpoint: " + "212f2784-5b68-43b2-8ee0-89b1c6fdd0de");
+}
+
+if (endpointDefinition[0].definition.actions[0].actionParameters.payload.type !== "object") {
+  throw new Error("Lending endpoint action parameters payload type is not 'object' for endpoint: " + "212f2784-5b68-43b2-8ee0-89b1c6fdd0de");
+}
+
+// const lendDocumentActionJzodParameters = Object.entries(endpointDefinition[0].definition.actions[0].actionParameters.payload.definition);
+const lendDocumentActionCopilotKitParameters = jzodToCopilotKitParameter(
+  "payload",
+  endpointDefinition[0].definition.actions[0].actionParameters.payload
+).attributes ?? [];
+
+const lendDocumentActionJsonSchema = jzodToJsonSchema(
+  endpointDefinition[0].definition.actions[0].actionParameters.payload as JzodObject,
+);
+
+const lendDocumentActionJsonSchemaParameters = lendDocumentActionJsonSchema.properties ? Object.entries(lendDocumentActionJsonSchema.properties).map(([key, value]) => ({
+  name: key,
+  ...value,
+})) : [];
+// const lendDocumentActionJsonSchemaParameters = lendDocumentActionJzodParameters.map(([key, value]) =>
+//     jzodToJsonSchema(
+//       value,
+//       (endpointDefinition[0].definition.actions[0].actionParameters.payload as JzodObject)
+//         .definition,
+//     ),
+//   )
+
+/**
+ * Returns an async executor function for the lendDocument action.
+ * Used both by createLendDocumentTool (as the CopilotKit handler) and by the
+ * /api/copilotkit/lendDocument REST endpoint (called from the frontend useCopilotAction).
+ */
+export function createLendDocumentExecutor(
+  domainController: DomainControllerInterface,
+  applicationDeploymentMap: ApplicationDeploymentMap,
+) {
+  // Build a deployment map that is guaranteed to include the library application entry.
+  const libraryAwareDeploymentMap: ApplicationDeploymentMap = {
+    ...applicationDeploymentMap,
+    [selfApplicationLibrary.uuid]: deployment_Library_DO_NO_USE.uuid,
+  };
+
+  const libraryModelEnvironment = getDefaultLibraryModelEnvironmentDEFUNCT(
+    miroirFundamentalJzodSchema as any,
+    defaultMiroirMetaModel,
+    undefined as any,
+    deployment_Library_DO_NO_USE.uuid,
+  );
+
+  return async ({ user, book, startDate, note }: Record<string, any>) => {
+    console.log("[lendDocument] executor called with:", { user, book, startDate, note });
+    try {
+      const action = {
+        actionType: "lendDocument",
+        actionLabel: "CopilotKit: Lend Document",
+        endpoint: "212f2784-5b68-43b2-8ee0-89b1c6fdd0de",
+        payload: { user, book, startDate, note },
+      };
+      console.log("[lendDocument] calling domainController.handleAction with action:", JSON.stringify(action));
+      const result = await domainController.handleAction(
+        action as any,
+        libraryAwareDeploymentMap,
+        libraryModelEnvironment as any as MiroirModelEnvironment,
+      );
+      console.log("[lendDocument] handleAction result:", JSON.stringify(result));
+      if (result instanceof Action2Error) {
+        const msg = `lendDocument failed [${result.errorType}]: ${result.errorMessage ?? "unknown error"}`;
+        console.error("[lendDocument]", msg, result);
+        return { status: "error", message: msg };
+      }
+      return { status: "success", summary: "Document lent successfully." };
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      console.error("[lendDocument] unexpected error:", err);
+      return { status: "error", message: `Unexpected error: ${msg}` };
+    }
+  };
+}
+
+export function createLendDocumentTool(
+  domainController: DomainControllerInterface,
+  applicationDeploymentMap: ApplicationDeploymentMap,
+): MiroirAction {
+  return {
+    name: "lendDocument",
+    description: endpointDefinition![0].definition.actions[0].actionParameters.actionType?.tag?.value?.description ?? "",
+    parameters: lendDocumentActionCopilotKitParameters,
+    handler: createLendDocumentExecutor(domainController, applicationDeploymentMap),
+  };
+}
+
+console.log("lendDocumentTool lendDocumentActionCopilotKitParameters:", JSON.stringify(lendDocumentActionCopilotKitParameters, null, 2));
+// console.log("lendDocumentTool lendDocumentActionJsonSchema:", JSON.stringify(lendDocumentActionJsonSchema, null, 2));
+// console.log("lendDocumentTool parameters:", JSON.stringify(lendDocumentTool.parameters, null, 2));
 
 // ──────────────────────────────────────────────────────────────────────────────
 // Tool: generateMiroirEntity
@@ -406,10 +541,16 @@ export const getMiroirContextTool: MiroirAction = {
 // ──────────────────────────────────────────────────────────────────────────────
 // All tools exported as an array for use in CopilotRuntime
 // ──────────────────────────────────────────────────────────────────────────────
-export const miroirTools: MiroirAction[] = [
-  generateMiroirEntityTool,
-  generateMiroirQueryTool,
-  generateMiroirTransformerTool,
-  generateMiroirReportTool,
-  getMiroirContextTool,
-];
+export function createMiroirCopilotKitActions(
+  domainController: DomainControllerInterface,
+  applicationDeploymentMap: ApplicationDeploymentMap,
+): MiroirAction[] {
+  return [
+    createLendDocumentTool(domainController, applicationDeploymentMap),
+    generateMiroirEntityTool,
+    generateMiroirQueryTool,
+    generateMiroirTransformerTool,
+    generateMiroirReportTool,
+    getMiroirContextTool,
+  ];
+}

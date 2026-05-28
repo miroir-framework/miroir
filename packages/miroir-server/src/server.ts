@@ -306,44 +306,43 @@ const domainController = await setupMiroirDomainController(
 ); // even when emulating server, we use remote persistence store, since MSW makes it appear as if we are using a remote server.
 
 const configurations: Record<string, Deployment> = {
-  // [deployment_Admin.uuid]: deployment_Admin as Deployment,
-  // [deployment_Miroir.uuid]: deployment_Miroir as Deployment,
-  // for mcp server tests
-  [deployment_Admin.uuid]: {
-    ...deployment_Admin,
-    configuration: {
-      admin: {
-        emulatedServerType: "filesystem",
-        directory: "miroir-mcp/tests/assets/miroir_admin",
-      },
-      model: {
-        emulatedServerType: "filesystem",
-        directory: "miroir-mcp/tests/assets/admin_model",
-      },
-      data: {
-        emulatedServerType: "filesystem",
-        directory: "miroir-mcp/tests/assets/admin_data",
-      },
-    } as any as StoreUnitConfiguration,
-  } as Deployment,
-  [deployment_Miroir.uuid]: {
-    ...deployment_Miroir,
-    configuration: {
-      admin: {
-        emulatedServerType: "filesystem",
-        directory: "miroir-mcp/tests/tmp/miroir_admin",
-      },
-      model: {
-        emulatedServerType: "filesystem",
-        directory: "miroir-mcp/tests/tmp/miroir_model",
-      },
-      data: {
-        emulatedServerType: "filesystem",
-        directory: "miroir-mcp/tests/tmp/miroir_data",
-      },
-    } as any as StoreUnitConfiguration,
-  } as Deployment,
-
+  [deployment_Admin.uuid]: deployment_Admin as Deployment,
+  [deployment_Miroir.uuid]: deployment_Miroir as Deployment,
+  // // for mcp server tests
+  // [deployment_Admin.uuid]: {
+  //   ...deployment_Admin,
+  //   configuration: {
+  //     admin: {
+  //       emulatedServerType: "filesystem",
+  //       directory: "miroir-mcp/tests/assets/miroir_admin",
+  //     },
+  //     model: {
+  //       emulatedServerType: "filesystem",
+  //       directory: "miroir-mcp/tests/assets/admin_model",
+  //     },
+  //     data: {
+  //       emulatedServerType: "filesystem",
+  //       directory: "miroir-mcp/tests/assets/admin_data",
+  //     },
+  //   } as any as StoreUnitConfiguration,
+  // } as Deployment,
+  // [deployment_Miroir.uuid]: {
+  //   ...deployment_Miroir,
+  //   configuration: {
+  //     admin: {
+  //       emulatedServerType: "filesystem",
+  //       directory: "miroir-mcp/tests/tmp/miroir_admin",
+  //     },
+  //     model: {
+  //       emulatedServerType: "filesystem",
+  //       directory: "miroir-mcp/tests/tmp/miroir_model",
+  //     },
+  //     data: {
+  //       emulatedServerType: "filesystem",
+  //       directory: "miroir-mcp/tests/tmp/miroir_data",
+  //     },
+  //   } as any as StoreUnitConfiguration,
+  // } as Deployment,
 };
 
 // open all configured stores
@@ -571,7 +570,7 @@ const mcpServer = await setupMcpServer(
 );
 
 // AI / CopilotKit endpoint — MUST be after API routes and MCP, before SPA catch-all.
-app.use('/api/copilotkit', createCopilotKitRouter());
+app.use('/api/copilotkit', createCopilotKitRouter(domainController, applicationDeploymentMap));
 
 // ##############################################################################################
 // ##############################################################################################

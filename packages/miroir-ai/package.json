@@ -37,6 +37,7 @@
     "@anthropic-ai/sdk": "^0.57.0",
     "@google/generative-ai": "^0.21.0",
     "miroir-core": "*",
+    "miroir-test-app_deployment-library": "*",
     "express": "^4.18.2",
     "uuid": "^11.0.0",
     "loglevelnext": "^6.0.0"

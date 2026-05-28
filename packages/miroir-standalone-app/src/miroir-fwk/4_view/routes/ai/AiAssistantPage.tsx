@@ -278,6 +278,82 @@ export function AiAssistantPage(): React.JSX.Element {
     },
   });
 
+  // ── lendDocument ──────────────────────────────────────────────────────────
+  // CopilotKit in agent/run mode forwards all LLM tool calls to the frontend.
+  // This handler calls the /api/copilotkit/lendDocument REST endpoint which uses
+  // the server-side domainController to perform the actual domain action.
+  useCopilotAction({
+    name: "lendDocument",
+    description: "Lend a library document (book) to a user.",
+    parameters: [
+      {
+        name: "user",
+        type: "string",
+        description: "UUID of the user borrowing the document",
+        required: true,
+      },
+      {
+        name: "book",
+        type: "string",
+        description: "UUID of the book/document to lend",
+        required: true,
+      },
+      {
+        name: "startDate",
+        type: "string",
+        description: "Start date of the loan (ISO date string, e.g. '2024-01-15')",
+        required: true,
+      },
+      {
+        name: "note",
+        type: "string",
+        description: "Optional note about the loan",
+        required: false,
+      },
+    ],
+    handler: async ({ user, book, startDate, note }: Record<string, any>) => {
+      const response = await fetch("/api/copilotkit/lendDocument", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ user, book, startDate, note }),
+      });
+      if (!response.ok) {
+        const err = await response.json().catch(() => ({ message: "Request failed" }));
+        return { status: "error", message: (err as any).message ?? "Request failed" };
+      }
+      return response.json();
+    },
+  });
+
+  // ── getCurrentDate ────────────────────────────────────────────────────────
+  // Mirrors the miroir `currentDate` transformer: returns the current date as
+  // an ISO date string (YYYY-MM-DD). Use this whenever the user says "today".
+  useCopilotAction({
+    name: "getCurrentDate",
+    description:
+      "Return today's date as an ISO date string (YYYY-MM-DD, e.g. '2026-05-28'). " +
+      "Use this to get the real current date before calling lendDocument or any other " +
+      "action that needs a date — do NOT guess or invent a date.",
+    parameters: [],
+    handler: async () => {
+      return { date: new Date().toISOString().split("T")[0] };
+    },
+  });
+
+  // ── getCurrentTimestamp ───────────────────────────────────────────────────
+  // Mirrors the miroir `currentTimestamp` transformer: returns the current
+  // date-time as a full ISO 8601 timestamp string.
+  useCopilotAction({
+    name: "getCurrentTimestamp",
+    description:
+      "Return the current date and time as a full ISO 8601 timestamp string " +
+      "(e.g. '2026-05-28T14:32:10.123Z'). Use this when a precise timestamp is needed.",
+    parameters: [],
+    handler: async () => {
+      return { timestamp: new Date().toISOString() };
+    },
+  });
+
   return (
     <PageContainer withSidebar={false} withDocumentOutline={false}>
       <Box sx={{ p: 3, height: "100%", display: "flex", flexDirection: "column" }}>

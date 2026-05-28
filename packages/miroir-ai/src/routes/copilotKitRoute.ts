@@ -7,7 +7,14 @@
 
 import { Router, type Request, type Response, type NextFunction } from "express";
 import { copilotRuntimeNodeHttpEndpoint } from "@copilotkit/runtime";
-import { buildCopilotRuntime, buildMinimalCopilotRuntime, getDefaultRuntimeConfig, type AiRuntimeConfig } from "../runtime/copilotRuntimeFactory.js";
+import type { ApplicationDeploymentMap, DomainControllerInterface } from "miroir-core";
+import {
+  buildCopilotRuntime,
+  buildMinimalCopilotRuntime,
+  getDefaultRuntimeConfig,
+  type AiRuntimeConfig,
+} from "../runtime/copilotRuntimeFactory.js";
+import { createMiroirCopilotKitActions, createLendDocumentExecutor } from "../tools/miroirCopilotKitActions.js";
 
 const ENDPOINT_PATH = "/api/copilotkit";
 
@@ -34,8 +41,27 @@ function resolveConfig(req: Request): AiRuntimeConfig | null {
   return getDefaultRuntimeConfig();
 }
 
-export function createCopilotKitRouter(): Router {
+export function createCopilotKitRouter(
+  domainController: DomainControllerInterface,
+  applicationDeploymentMap: ApplicationDeploymentMap,
+): Router {
+  const actions = createMiroirCopilotKitActions(domainController, applicationDeploymentMap);
+  const lendDocumentExecutor = createLendDocumentExecutor(domainController, applicationDeploymentMap);
+
   const router = Router();
+
+  // REST endpoint called by the frontend useCopilotAction("lendDocument") handler.
+  // CopilotKit in agent/run mode forwards ALL tool calls to the frontend; this endpoint
+  // is what the frontend's useCopilotAction handler calls to actually execute the action.
+  router.post("/lendDocument", async (req: Request, res: Response) => {
+    try {
+      const result = await lendDocumentExecutor(req.body);
+      res.json(result);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      res.status(500).json({ status: "error", message: `Internal error: ${message}` });
+    }
+  });
 
   // Health/config check endpoint — GET /api/copilotkit/health
   // Returns whether an AI provider is configured, with a human-readable message.
@@ -59,7 +85,7 @@ export function createCopilotKitRouter(): Router {
     // Using the minimal no-op runtime lets CopilotKit enumerate available actions
     // without requiring an AI provider to be configured at startup.
     if (req.body?.method === "info") {
-      const { runtime, serviceAdapter } = buildMinimalCopilotRuntime();
+      const { runtime, serviceAdapter } = buildMinimalCopilotRuntime(actions);
       const handler = copilotRuntimeNodeHttpEndpoint({ endpoint: "/", runtime, serviceAdapter });
       try {
         return await handler(req as any, res as any);
@@ -87,7 +113,7 @@ export function createCopilotKitRouter(): Router {
     let serviceAdapter: ReturnType<typeof buildCopilotRuntime>["serviceAdapter"];
 
     try {
-      ({ runtime, serviceAdapter } = buildCopilotRuntime(config));
+      ({ runtime, serviceAdapter } = buildCopilotRuntime(config, actions));
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);
       res.status(503).json({ error: `AI configuration error: ${message}` });

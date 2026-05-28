@@ -717,6 +717,10 @@ export {
 export {
   jzodToJzod_Summary
 } from "./1_core/jzod/JzodToJzod_Summary";
+export type { JsonSchema, JzodToJsonSchemaContext } from "./1_core/jzod/JzodToJsonSchema";
+export { jzodToJsonSchema } from "./1_core/jzod/JzodToJsonSchema";
+export type { CopilotKitParameter, CopilotKitParameterType } from "./1_core/jzod/JzodToCopilotKitParameter";
+export { jzodToCopilotKitParameter } from "./1_core/jzod/JzodToCopilotKitParameter";
 export {
   ANY_IMPLICIT_UNION_BRANCHES,
   ANY_IMPLICIT_UNION_TYPE, jzodTypeCheck,
