@@ -1,0 +1,53 @@
+{
+  "version": 1,
+  "skills": {
+    "a2ui-renderer": {
+      "source": "CopilotKit/CopilotKit",
+      "sourceType": "github",
+      "skillPath": "skills/a2ui-renderer/SKILL.md",
+      "computedHash": "5e04f5356e4d105018e16338d0e4fabac45a78694e08873055257698aff3e8f5"
+    },
+    "copilotkit-agui": {
+      "source": "CopilotKit/CopilotKit",
+      "sourceType": "github",
+      "skillPath": "skills/copilotkit-agui/SKILL.md",
+      "computedHash": "57a8f89ba1212667813a69505f37249e8d7ed52472249a4d5dda250dbdbd987c"
+    },
+    "copilotkit-debug": {
+      "source": "CopilotKit/CopilotKit",
+      "sourceType": "github",
+      "skillPath": "skills/copilotkit-debug/SKILL.md",
+      "computedHash": "42e3afa985d42b9662c24044f6005f2727ed1e0fca0f0a47bf331c53f1afbfd7"
+    },
+    "copilotkit-develop": {
+      "source": "CopilotKit/CopilotKit",
+      "sourceType": "github",
+      "skillPath": "skills/copilotkit-develop/SKILL.md",
+      "computedHash": "0e6979650cbbcf195244e039b1cff847469edba73bc7891aee1adcd087df936b"
+    },
+    "copilotkit-integrations": {
+      "source": "CopilotKit/CopilotKit",
+      "sourceType": "github",
+      "skillPath": "skills/copilotkit-integrations/SKILL.md",
+      "computedHash": "261d421765249d281b1ce0f0405f4a4d9dbb0528c5546c332e22e0e3eea335c7"
+    },
+    "copilotkit-self-update": {
+      "source": "CopilotKit/CopilotKit",
+      "sourceType": "github",
+      "skillPath": "skills/copilotkit-self-update/SKILL.md",
+      "computedHash": "22d09f38a1b83fdb6ee30629f5921f749072bcd63e885b23c19fcd723e6ea452"
+    },
+    "copilotkit-upgrade": {
+      "source": "CopilotKit/CopilotKit",
+      "sourceType": "github",
+      "skillPath": "skills/copilotkit-upgrade/SKILL.md",
+      "computedHash": "1ce42708e818076387eb186b29befc96d3fce4d787d15d062cb043688945f117"
+    },
+    "react-core": {
+      "source": "CopilotKit/CopilotKit",
+      "sourceType": "github",
+      "skillPath": "skills/react-core/SKILL.md",
+      "computedHash": "35ab531ef8545b9e4aa3630a036918c08ecf047f38aac0037e13c1939bedc4ed"
+    }
+  }
+}
