@@ -9,10 +9,6 @@ import { Router, type Request, type Response, type NextFunction } from "express"
 import { copilotRuntimeNodeHttpEndpoint } from "@copilotkit/runtime";
 import { Action2Error, defaultMetaModelEnvironment, type ApplicationDeploymentMap, type DomainControllerInterface } from "miroir-core";
 import {
-  selfApplicationLibrary,
-  deployment_Library_DO_NO_USE,
-} from "miroir-test-app_deployment-library";
-import {
   buildCopilotRuntime,
   buildMinimalCopilotRuntime,
   getDefaultRuntimeConfig,
@@ -103,15 +99,16 @@ export function createCopilotKitRouter(
       const section = applicationSection ?? "data";
 
       // Ensure the target application is in the deployment map.
-      const resolvedDeploymentUuid =
-        deploymentUuid ??
-        applicationDeploymentMap[applicationUuid] ??
-        (applicationUuid === selfApplicationLibrary.uuid ? deployment_Library_DO_NO_USE.uuid : undefined);
+      // The client should always supply deploymentUuid (obtained via lookupDeploymentByApplicationUuid);
+      // we fall back to the server-side map only as a convenience.
+      const resolvedDeploymentUuid = deploymentUuid ?? applicationDeploymentMap[applicationUuid];
 
       if (!resolvedDeploymentUuid) {
         res.status(400).json({
           status: "error",
-          message: `Cannot resolve deployment UUID for application "${applicationUuid}".`,
+          message:
+            `Cannot resolve deployment UUID for application "${applicationUuid}". ` +
+            "Call lookupDeploymentByApplicationUuid first to obtain the deploymentUuid.",
         });
         return;
       }

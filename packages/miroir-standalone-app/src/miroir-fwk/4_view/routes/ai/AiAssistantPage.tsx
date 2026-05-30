@@ -38,7 +38,9 @@ import {
   LoggerInterface,
   MiroirLoggerFactory,
 } from "miroir-core";
-import { useDomainControllerService, useMiroirContextService } from "miroir-react";
+import { useDomainControllerService, useMiroirContextService, useSelector, selectInstanceArrayForDeploymentSectionEntity, type ReduxStateWithUndoRedo } from "miroir-react";
+import { entityEntity, entitySelfApplication, selfApplicationMiroir } from "miroir-test-app_deployment-miroir";
+import { adminSelfApplication, entityDeployment } from "miroir-test-app_deployment-admin";
 import { MIROIR_SYSTEM_PROMPT } from "./miroirSystemPrompt.js";
 
 import { packageName } from "../../../../constants.js";
@@ -73,9 +75,24 @@ const AGENT_TOOLS: AgentToolEntry[] = [
     category: "miroir",
   },
   {
-    name: "findLibraryInstanceByName",
-    description: "Look up a library entity (book, user, author, publisher) by name. Returns the UUID when exactly one match is found, presents choices for 2–10 results, errors otherwise.",
-    category: "library",
+    name: "lookupApplicationByName",
+    description: "Find an application UUID from its name (client-side, zero latency). Call first when you have a name but not a UUID.",
+    category: "miroir",
+  },
+  {
+    name: "lookupDeploymentByApplicationUuid",
+    description: "Find a deployment UUID for a given application UUID (client-side). Call after lookupApplicationByName.",
+    category: "miroir",
+  },
+  {
+    name: "lookupEntityByName",
+    description: "Find an entity type UUID from its name within an application's model. Call after lookupDeploymentByApplicationUuid, before findInstanceByName.",
+    category: "miroir",
+  },
+  {
+    name: "findInstanceByName",
+    description: "Look up any entity instance by name (partial, case-insensitive). Requires applicationUuid, deploymentUuid, entityUuid from the previous lookup tools.",
+    category: "miroir",
   },
   {
     name: "lendDocument",
@@ -192,6 +209,30 @@ function AgentToolsPanel(): React.JSX.Element {
   );
 }
 
+// Module-level selector params — constant, no need to memoize inside the component.
+// Applications (SelfApplication instances) live in the miroir application's data section.
+const APPLICATIONS_SELECTOR_PARAMS = {
+  queryType: "localCacheEntityInstancesExtractor" as const,
+  definition: {
+    application: selfApplicationMiroir.uuid,
+    applicationSection: "data" as const,
+    entityUuid: entitySelfApplication.uuid,
+  },
+};
+// Deployments live in the admin application's data section.
+const DEPLOYMENTS_SELECTOR_PARAMS = {
+  queryType: "localCacheEntityInstancesExtractor" as const,
+  definition: {
+    application: adminSelfApplication.uuid,
+    applicationSection: "data" as const,
+    entityUuid: entityDeployment.uuid,
+  },
+};
+
+// UUID of the Miroir meta-entity "Entity" — used by lookupEntityByName to query entity
+// metadata from any application's model section via the generic findInstanceByName endpoint.
+const ENTITY_ENTITY_UUID = entityEntity.uuid;
+
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
   MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "AiAssistantPage"),
@@ -245,6 +286,17 @@ function useApplyEntityProposal() {
 export function AiAssistantPage(): React.JSX.Element {
   const context = useMiroirContextService();
   const applyEntityProposal = useApplyEntityProposal();
+  const applicationDeploymentMap = context.applicationDeploymentMap ?? {};
+
+  // Read all registered SelfApplications and Deployments from the local cache.
+  // Captured by closure in the useCopilotAction handlers below so they can do
+  // instant client-side lookups without a server round-trip.
+  const allApplications = useSelector((state: ReduxStateWithUndoRedo) =>
+    selectInstanceArrayForDeploymentSectionEntity(state, applicationDeploymentMap, APPLICATIONS_SELECTOR_PARAMS)
+  ) ?? [];
+  const allDeployments = useSelector((state: ReduxStateWithUndoRedo) =>
+    selectInstanceArrayForDeploymentSectionEntity(state, applicationDeploymentMap, DEPLOYMENTS_SELECTOR_PARAMS)
+  ) ?? [];
 
   // Check AI provider configuration on mount and surface any problem to the user
   const [aiConfigStatus, setAiConfigStatus] = useState<{ configured: boolean; message?: string } | null>(null);
@@ -436,74 +488,213 @@ export function AiAssistantPage(): React.JSX.Element {
     },
   });
 
-  // ── findLibraryInstanceByName ─────────────────────────────────────────────
-  // Looks up a library entity (book, user, author, publisher) by (partial) name.
-  // Calls /api/copilotkit/findInstanceByName, which runs a filtered query via the
-  // server-side domainController.
+  // ── lookupApplicationByName ───────────────────────────────────────────────
+  // Client-side lookup: reads SelfApplication instances from the Redux store.
+  // Returns the application UUID when exactly one match is found so the LLM can
+  // chain into lookupDeploymentByApplicationUuid → lookupEntityByName → findInstanceByName.
+  useCopilotAction({
+    name: "lookupApplicationByName",
+    description:
+      "Find a Miroir application UUID from its name (partial, case-insensitive). " +
+      "Call this first when you have an application name but not its UUID. " +
+      "If status is 'single', use the returned uuid in subsequent calls. " +
+      "If status is 'multiple', show the options to the user and ask which one they mean. " +
+      "If status is 'not_found', report failure.",
+    parameters: [
+      {
+        name: "name",
+        type: "string",
+        description: "Application name or partial name to search for",
+        required: true,
+      },
+    ],
+    handler: async ({ name }: Record<string, any>) => {
+      const needle = (name ?? "").toLowerCase();
+      const matches = (allApplications as Array<{ uuid?: string; name?: string }>)
+        .filter((app) => (app.name ?? "").toLowerCase().includes(needle));
+      if (matches.length === 0) {
+        return { status: "not_found", message: `No application matching "${name}" found.` };
+      }
+      const simplified = matches.map((a) => ({ uuid: a.uuid, name: a.name }));
+      if (matches.length === 1) {
+        return { status: "single", uuid: matches[0].uuid, name: matches[0].name };
+      }
+      if (matches.length <= 10) {
+        return {
+          status: "multiple",
+          count: matches.length,
+          applications: simplified,
+          message: `Found ${matches.length} applications matching "${name}". Please specify which one.`,
+        };
+      }
+      return {
+        status: "too_many",
+        count: matches.length,
+        message: `Too many applications (${matches.length}) matching "${name}". Please be more specific.`,
+      };
+    },
+  });
+
+  // ── lookupDeploymentByApplicationUuid ────────────────────────────────────
+  // Client-side lookup: reads Deployment instances from the Redux store.
+  // Returns the deployment UUID needed for lookupEntityByName and findInstanceByName.
+  useCopilotAction({
+    name: "lookupDeploymentByApplicationUuid",
+    description:
+      "Find the deployment UUID(s) for a given application UUID. " +
+      "Call this after lookupApplicationByName. " +
+      "If status is 'single', use the returned deploymentUuid in subsequent calls. " +
+      "If status is 'multiple', show the options to the user.",
+    parameters: [
+      {
+        name: "applicationUuid",
+        type: "string",
+        description: "Application UUID to look deployments up for",
+        required: true,
+      },
+    ],
+    handler: async ({ applicationUuid }: Record<string, any>) => {
+      const matches = (
+        allDeployments as Array<{ uuid?: string; name?: string; selfApplication?: string }>
+      ).filter((d) => d.selfApplication === applicationUuid);
+      if (matches.length === 0) {
+        return {
+          status: "not_found",
+          message: `No deployment found for application "${applicationUuid}".`,
+        };
+      }
+      const simplified = matches.map((d) => ({
+        uuid: d.uuid,
+        name: d.name,
+        selfApplication: d.selfApplication,
+      }));
+      if (matches.length === 1) {
+        return { status: "single", deploymentUuid: matches[0].uuid, name: matches[0].name };
+      }
+      return {
+        status: "multiple",
+        count: matches.length,
+        deployments: simplified,
+        message: `Found ${matches.length} deployments for application "${applicationUuid}". Please specify which one.`,
+      };
+    },
+  });
+
+  // ── lookupEntityByName ────────────────────────────────────────────────────
+  // Server-side lookup using the Miroir meta-model: queries the "Entity" entity
+  // (uuid = ENTITY_ENTITY_UUID) in the "model" applicationSection.
+  // This reuses the generic /findInstanceByName endpoint — the self-referential
+  // trick: findInstanceByName can look up entity types just like data instances.
+  useCopilotAction({
+    name: "lookupEntityByName",
+    description:
+      "Find an entity type UUID from its name within an application's model (case-insensitive). " +
+      "Call this after lookupDeploymentByApplicationUuid to get the entityUuid for findInstanceByName. " +
+      "If status is 'single', use the returned uuid as entityUuid for findInstanceByName.",
+    parameters: [
+      {
+        name: "applicationUuid",
+        type: "string",
+        description: "Application UUID that owns the entity type",
+        required: true,
+      },
+      {
+        name: "deploymentUuid",
+        type: "string",
+        description: "Deployment UUID of the application",
+        required: true,
+      },
+      {
+        name: "entityName",
+        type: "string",
+        description: "Entity type name or partial name to search for (e.g. 'Book', 'User')",
+        required: true,
+      },
+    ],
+    handler: async ({ applicationUuid, deploymentUuid, entityName }: Record<string, any>) => {
+      const response = await fetch("/api/copilotkit/findInstanceByName", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          // Search in the "Entity" meta-entity within the model section.
+          entityUuid: ENTITY_ENTITY_UUID,
+          entityParentName: "Entity",
+          namePattern: entityName,
+          applicationUuid,
+          deploymentUuid,
+          applicationSection: "model",
+        }),
+      });
+      if (!response.ok) {
+        const err = await response.json().catch(() => ({ message: "Request failed" }));
+        return { status: "error", message: (err as any).message ?? "Request failed" };
+      }
+      return response.json();
+    },
+  });
+
+  // ── findInstanceByName ────────────────────────────────────────────────────
+  // Generic server-side instance lookup.  Requires all three UUIDs (application,
+  // deployment, entity) which the LLM should have obtained from the previous tools.
   //
-  // Return shapes (pass through to the LLM):
+  // Return shapes (passed through from /api/copilotkit/findInstanceByName):
   //   { status: "not_found", message }                         — 0 matches
   //   { status: "single",    uuid, name, instance }            — 1 match → use uuid
   //   { status: "multiple",  count, instances, message }       — 2–10 → ask user to pick
   //   { status: "too_many",  count, message }                  — >10 → ask for more specific name
   //   { status: "error",     message }                         — error
   useCopilotAction({
-    name: "findLibraryInstanceByName",
+    name: "findInstanceByName",
     description:
-      "Look up a library entity by name (partial, case-insensitive). " +
-      "Use this BEFORE calling lendDocument whenever you have a book title or a user name " +
-      "instead of a UUID. " +
-      "If status is 'single', use the returned uuid directly. " +
-      "If status is 'multiple', show the options to the user and ask which one they mean, " +
-      "then call findLibraryInstanceByName again with the exact name. " +
-      "If status is 'not_found' or 'too_many', report the message to the user.",
+      "Look up any entity instance by name (partial, case-insensitive). " +
+      "Requires applicationUuid, deploymentUuid (from lookupDeploymentByApplicationUuid) " +
+      "and entityUuid (from lookupEntityByName). " +
+      "If status is 'single', use the returned uuid. " +
+      "If status is 'multiple', show options to the user. " +
+      "If status is 'not_found' or 'too_many', report the message.",
     parameters: [
       {
-        name: "entityType",
+        name: "applicationUuid",
         type: "string",
-        description:
-          'Type of library entity to search: "book" (also called document), "user", "author", or "publisher"',
+        description: "Application UUID",
         required: true,
       },
       {
-        name: "name",
+        name: "deploymentUuid",
         type: "string",
-        description: "Name or partial name to search for (case-insensitive substring match)",
+        description: "Deployment UUID",
+        required: true,
+      },
+      {
+        name: "entityUuid",
+        type: "string",
+        description: "UUID of the entity type to search in",
+        required: true,
+      },
+      {
+        name: "namePattern",
+        type: "string",
+        description: "Name or partial name to search for (case-insensitive)",
         required: true,
       },
     ],
-    handler: async ({ entityType, name }: Record<string, any>) => {
-      // Map human-readable entity types to their library entity UUIDs.
-      const LIBRARY_APP_UUID = "5af03c98-fe5e-490b-b08f-e1230971c57f";
-      const LIBRARY_DEPLOYMENT_UUID = "f714bb2f-a12d-4e71-a03b-74dcedea6eb4";
-      const entityTypeMap: Record<string, { entityUuid: string; entityParentName: string }> = {
-        book:      { entityUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5", entityParentName: "Book" },
-        document:  { entityUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5", entityParentName: "Book" },
-        user:      { entityUuid: "ca794e28-b2dc-45b3-8137-00151557eea8", entityParentName: "User" },
-        author:    { entityUuid: "d7a144ff-d1b9-4135-800c-a7cfc1f38733", entityParentName: "Author" },
-        publisher: { entityUuid: "a027c379-8468-43a5-ba4d-bf618be25cab", entityParentName: "Publisher" },
-      };
-
-      const typeInfo = entityTypeMap[(entityType ?? "").toLowerCase()];
-      if (!typeInfo) {
-        return {
-          status: "error",
-          message: `Unknown entity type "${entityType}". Supported values: book, user, author, publisher.`,
-        };
-      }
-
+    handler: async ({
+      applicationUuid,
+      deploymentUuid,
+      entityUuid,
+      namePattern,
+    }: Record<string, any>) => {
       const response = await fetch("/api/copilotkit/findInstanceByName", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          entityUuid: typeInfo.entityUuid,
-          entityParentName: typeInfo.entityParentName,
-          namePattern: name,
-          applicationUuid: LIBRARY_APP_UUID,
-          deploymentUuid: LIBRARY_DEPLOYMENT_UUID,
+          entityUuid,
+          namePattern,
+          applicationUuid,
+          deploymentUuid,
+          applicationSection: "data",
         }),
       });
-
       if (!response.ok) {
         const err = await response.json().catch(() => ({ message: "Request failed" }));
         return { status: "error", message: (err as any).message ?? "Request failed" };
