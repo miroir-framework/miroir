@@ -1,4 +1,4 @@
-name: Build Miroir Sandbox for GitHub Pages
+name: Build Miroir Homepage + Sandbox for GitHub Pages
 
 on:
   push:
@@ -38,6 +38,12 @@ jobs:
           rm -f package-lock.json
           npm install --no-audit --prefer-dedupe
 
+      # ── Homepage (no Miroir deps — build first for fast feedback) ────────
+      - name: Build miroir-homepage
+        run: npm run build -w miroir-homepage
+        env:
+          VITE_BASE_URL: /miroir/
+
       # ── Build order per copilot-instructions.md ─────────────────────────
       # 1. Core type definitions (data deployed by miroir & admin test apps)
       - name: Build miroir-test-app_deployment-miroir
@@ -68,16 +74,24 @@ jobs:
           npm run build -w miroir-diagram-class &
           wait
 
-      # 5. Static demo
+      # 5. Sandbox — deployed at /miroir/sandbox/
       - name: Build miroir-sandbox (static)
         run: npm run build:static -w miroir-sandbox
         env:
-          VITE_BASE_URL: /miroir/
+          VITE_BASE_URL: /miroir/sandbox/
+
+      # 6. Assemble final Pages artifact:
+      #    homepage/dist/           → https://miroir-framework.github.io/miroir/
+      #    homepage/dist/sandbox/   → https://miroir-framework.github.io/miroir/sandbox/
+      - name: Assemble Pages artifact
+        run: |
+          mkdir -p packages/miroir-homepage/dist/sandbox
+          cp -r packages/miroir-sandbox/dist/. packages/miroir-homepage/dist/sandbox/
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: packages/miroir-sandbox/dist
+          path: packages/miroir-homepage/dist
 
   deploy:
     needs: build
