@@ -7,7 +7,11 @@
 
 import { Router, type Request, type Response, type NextFunction } from "express";
 import { copilotRuntimeNodeHttpEndpoint } from "@copilotkit/runtime";
-import type { ApplicationDeploymentMap, DomainControllerInterface } from "miroir-core";
+import { Action2Error, defaultMetaModelEnvironment, type ApplicationDeploymentMap, type DomainControllerInterface } from "miroir-core";
+import {
+  selfApplicationLibrary,
+  deployment_Library_DO_NO_USE,
+} from "miroir-test-app_deployment-library";
 import {
   buildCopilotRuntime,
   buildMinimalCopilotRuntime,
@@ -57,6 +61,138 @@ export function createCopilotKitRouter(
     try {
       const result = await lendDocumentExecutor(req.body);
       res.json(result);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      res.status(500).json({ status: "error", message: `Internal error: ${message}` });
+    }
+  });
+
+  // REST endpoint: look up entity instances by name (partial, case-insensitive).
+  // Called from the frontend useCopilotAction("findLibraryInstanceByName") handler.
+  // Returns:
+  //   { status: "not_found", message }             — 0 matches
+  //   { status: "single", uuid, name, instance }   — exactly 1 match
+  //   { status: "multiple", count, instances, message } — 2–10 matches
+  //   { status: "too_many", count, message }        — > 10 matches
+  router.post("/findInstanceByName", async (req: Request, res: Response) => {
+    try {
+      const {
+        entityUuid,
+        entityParentName,
+        namePattern,
+        applicationUuid,
+        deploymentUuid,
+        applicationSection,
+      } = req.body as {
+        entityUuid?: string;
+        entityParentName?: string;
+        namePattern?: string;
+        applicationUuid?: string;
+        deploymentUuid?: string;
+        applicationSection?: string;
+      };
+
+      if (!entityUuid || !namePattern || !applicationUuid) {
+        res.status(400).json({
+          status: "error",
+          message: "Missing required parameters: entityUuid, namePattern, applicationUuid",
+        });
+        return;
+      }
+
+      const section = applicationSection ?? "data";
+
+      // Ensure the target application is in the deployment map.
+      const resolvedDeploymentUuid =
+        deploymentUuid ??
+        applicationDeploymentMap[applicationUuid] ??
+        (applicationUuid === selfApplicationLibrary.uuid ? deployment_Library_DO_NO_USE.uuid : undefined);
+
+      if (!resolvedDeploymentUuid) {
+        res.status(400).json({
+          status: "error",
+          message: `Cannot resolve deployment UUID for application "${applicationUuid}".`,
+        });
+        return;
+      }
+
+      const targetDeploymentMap: ApplicationDeploymentMap = {
+        ...applicationDeploymentMap,
+        [applicationUuid]: resolvedDeploymentUuid,
+      };
+
+      const runQuery = {
+        actionType: "runBoxedQueryAction" as const,
+        endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+        payload: {
+          application: applicationUuid,
+          applicationSection: section,
+          queryExecutionStrategy: "storage" as const,
+          query: {
+            queryType: "boxedQueryWithExtractorCombinerTransformer" as const,
+            application: applicationUuid,
+            contextResults: {},
+            pageParams: { applicationSection: section },
+            queryParams: {},
+            extractors: {
+              results: {
+                extractorOrCombinerType: "extractorInstancesByEntity" as const,
+                applicationSection: section,
+                parentName: entityParentName ?? "",
+                parentUuid: entityUuid,
+                filter: {
+                  attributeName: "name",
+                  value: namePattern,
+                },
+              },
+            },
+          },
+        },
+      };
+
+      const result = await domainController.handleBoxedExtractorOrQueryAction(
+        runQuery as any,
+        targetDeploymentMap,
+        defaultMetaModelEnvironment,
+      );
+
+      if (result instanceof Action2Error || (result as any).status === "error") {
+        res.status(500).json({
+          status: "error",
+          message:
+            (result as any).errorMessage ?? (result as any).message ?? "Query execution failed",
+        });
+        return;
+      }
+
+      // Result shape for boxedQueryWithExtractorCombinerTransformer:
+      //   returnedDomainElement = { results: EntityInstancesUuidIndex }
+      const instancesMap: Record<string, any> =
+        (result as any).returnedDomainElement?.results ?? {};
+      const instances: Array<{ uuid?: string; name?: string }> = Object.values(instancesMap);
+
+      if (instances.length === 0) {
+        res.json({
+          status: "not_found",
+          message: `No ${entityParentName ?? "entity"} matching "${namePattern}" was found.`,
+        });
+      } else if (instances.length === 1) {
+        const inst = instances[0];
+        res.json({ status: "single", uuid: inst.uuid, name: inst.name, instance: inst });
+      } else if (instances.length <= 10) {
+        res.json({
+          status: "multiple",
+          count: instances.length,
+          instances: instances.map((i) => ({ uuid: i.uuid, name: i.name })),
+          message: `Found ${instances.length} ${entityParentName ?? "entity"} matches for "${namePattern}". Please specify which one.`,
+        });
+      } else {
+        res.json({
+          status: "too_many",
+          count: instances.length,
+          message: `Too many matches (${instances.length}) for "${namePattern}". Please be more specific.`,
+        });
+      }
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);
       res.status(500).json({ status: "error", message: `Internal error: ${message}` });

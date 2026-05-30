@@ -1,7 +1,7 @@
 import {
   type EndpointDefinition
 } from "miroir-core";
-import { mcpToolEntry, type McpRequestHandler, type McpRequestHandlers } from "./handlersForEndpoint.js";
+import { mcpToolEntry, type McpRequestHandler, type McpRequestHandlers } from "./mcpHandlersForEndpoint.js";
 
 export interface getMcpRequestHandlersFromEndpointParams {
   instanceEndpoint: EndpointDefinition;

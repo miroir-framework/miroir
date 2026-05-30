@@ -7,50 +7,47 @@ import log from 'loglevelnext'; // TODO: use this? or plain "console" log?
 import path from 'path';
 import { fileURLToPath } from 'url';
 
-// import { fetch } from 'cross-fetch';
-
+import { createCopilotKitRouter } from "miroir-ai";
 import {
   Action2Error,
   type ApplicationDeploymentMap,
+  circularReplacer,
+  ConfigurationService,
+  defaultLevels,
+  defaultMetaModelEnvironment,
+  defaultMiroirMetaModel,
+  defaultSelfApplicationDeploymentMap,
   type Deployment,
+  type EndpointDefinition,
+  getMiroirEnvironmentMode,
+  instanceEndpointV1,
   LoggerFactoryInterface,
   LoggerInterface,
   LoggerOptions,
   MiroirActivityTracker,
   MiroirConfigServer,
   MiroirContext,
+  miroirCoreStartup,
   MiroirEventService,
+  miroirFundamentalJzodSchema,
   MiroirLoggerFactory,
   PersistenceStoreControllerManager,
+  restServerDefaultHandlers,
   SpecificLoggerOptionsMap,
   StoreOrBundleAction,
   StoreUnitConfiguration,
-  circularReplacer,
-  ConfigurationService,
-  defaultLevels,
-  defaultMetaModelEnvironment,
-  defaultSelfApplicationDeploymentMap,
-  miroirCoreStartup,
-  restServerDefaultHandlers,
   templateEvaluationParams,
-  getMiroirEnvironmentMode,
-  type EndpointDefinition,
-  instanceEndpointV1,
-  defaultMiroirMetaModel,
-  miroirFundamentalJzodSchema,
 } from "miroir-core";
 import {
-  deployment_Miroir,
-  deployment_Admin,
+  getMcpRequestHandlers,
+  setupMcpServer
+} from "miroir-mcp";
+import {
   adminSelfApplication,
+  deployment_Admin,
+  deployment_Miroir,
   entityDeployment,
 } from "miroir-test-app_deployment-admin";
-import {
-  getMcpRequestHandlers,
-  defaultGetMcpRequestHandlersFromEndpointParams,
-  setupMcpServer,
-} from "miroir-mcp";
-import { createCopilotKitRouter } from "miroir-ai";
 
 import {
   deployment_Library_DO_NO_USE,
@@ -61,8 +58,8 @@ import {
 import { setupMiroirDomainController } from 'miroir-localcache-redux';
 import { miroirFileSystemStoreSectionStartup } from 'miroir-store-filesystem';
 import { miroirIndexedDbStoreSectionStartup } from 'miroir-store-indexedDb';
-import { miroirPostgresStoreSectionStartup } from 'miroir-store-postgres';
 import { miroirMongoDbStoreSectionStartup } from 'miroir-store-mongodb';
+import { miroirPostgresStoreSectionStartup } from 'miroir-store-postgres';
 
 const packageName = "server"
 const cleanLevel = "5"
@@ -209,10 +206,6 @@ app.use(bodyParser.json({limit: '50mb'}));
 myLogger.info(`Server being set-up, going to execute on the port::${restPortFromConfig}`);
 
 // ##############################################################################################
-// Resolve file paths
-// const __filename = fileURLToPath(import.meta.url);
-// const __dirname = path.dirname(__filename);
-
 // Serve static assets (images, etc.) from a `public` directory.
 // The mount path may be configured in the miroir server config under `server.assetsMountPath`.
 // Default to `/assets` so files in `packages/miroir-server/public/...` are available at `/<assetsMountPath>/...`.
@@ -528,7 +521,6 @@ if (!endpointDefinition || endpointDefinition.length === 0) {
 }
 
 const mcpRequestHandlers = getMcpRequestHandlers(
-  // defaultGetMcpRequestHandlersFromEndpointParams
   [
     {
       instanceEndpoint: instanceEndpointV1 as any as EndpointDefinition,

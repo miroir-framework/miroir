@@ -6,7 +6,7 @@ import {
   type ApplicationDeploymentMap,
   type EndpointDefinition,
 } from "miroir-core";
-import { type McpRequestHandlers, mcpToolEntry } from "./handlersForEndpoint.js";
+import { type McpRequestHandlers, mcpToolEntry } from "./mcpHandlersForEndpoint.js";
 import {
   getDefaultLibraryModelEnvironmentDEFUNCT,
   selfApplicationLibrary,

@@ -142,22 +142,10 @@ export function useQueryTemplateResults(
     queryOrQueryTemplate && isQueryTemplate
       ? (queryOrQueryTemplate as BoxedQueryTemplateWithExtractorCombinerTransformer)
       : undefined;
-  // log.info("useQueryTemplateResults queryTemplate", queryTemplate);
   const query: BoxedQueryWithExtractorCombinerTransformer | undefined =
     queryOrQueryTemplate && !isQueryTemplate
       ? (queryOrQueryTemplate as BoxedQueryWithExtractorCombinerTransformer)
       : undefined;
-  // log.info("useQueryTemplateResults  query", query);
-  // log.info(
-  //   "################################################################### useQueryTemplateResults isQueryTemplate",
-  //   isQueryTemplate,
-  //   "queryOrQueryTemplate",
-  //   queryOrQueryTemplate,
-  //   "queryTemplate",
-  //   queryTemplate,
-  //   "query",
-  //   query,
-  // );
 
   // fetching report definition
   const resolvedTemplateQuery: BoxedQueryWithExtractorCombinerTransformer | undefined = useMemo(
@@ -174,23 +162,6 @@ export function useQueryTemplateResults(
     [queryTemplate]
   );
 
-  // log.info(
-  //   "################################################################### useQueryTemplateResults",
-  //   '"' + (queryOrQueryTemplate as any)?.label + '"',
-  //   "queryOrQueryTemplate",
-  //   queryOrQueryTemplate,
-  //   "isQueryTemplate",
-  //   isQueryTemplate,
-  //   "query",
-  //   query,
-  //   "queryTemplate",
-  //   queryTemplate,
-  //   "resolvedTemplateQuery",
-  //   resolvedTemplateQuery
-  // );
-  // log.info(
-  //   "################################################################ useQueryTemplateResults resolved query Template DONE"
-  // );
   // fetching report data
   const reportDataQuery: BoxedQueryWithExtractorCombinerTransformer = useMemo(() => {
     const result: BoxedQueryWithExtractorCombinerTransformer =
@@ -205,7 +176,6 @@ export function useQueryTemplateResults(
     return result;
   }, [pageParams, query, resolvedTemplateQuery]);
 
-  // log.info("useQueryTemplateResults reportDataQuery", reportDataQuery);
   const deploymentEntityStateFetchQueryParams: SyncQueryRunnerExtractorAndParams<ReduxDeploymentsState> =
     useMemo(
       () =>

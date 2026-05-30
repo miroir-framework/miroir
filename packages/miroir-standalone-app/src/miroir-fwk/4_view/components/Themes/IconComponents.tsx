@@ -522,6 +522,7 @@ const muiIconNameMap: Record<string, string> = {
   CompressOutlined: "compress",
   Style: "style",
   ExpandMoreIcon: "expand_more",
+  ExpandLessIcon: "expand_less",
   Assignment: "assignment",
   AssignmentTurnedIn: "assignment_turned_in",
   CheckCircle: "check_circle",

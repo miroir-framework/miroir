@@ -330,9 +330,7 @@ export function mcpToolHandler(
     // const config = mcpRequestHandlers[toolName];
     log.info(`mcpToolHandler - invoking tool: ${toolName}`);
     log.info(
-      `mcpToolHandler - invoking tool: ${toolName},
-      //  domainController:`,
-      // domainController,
+      `mcpToolHandler - invoking tool: ${toolName}`,
       "applicationDeploymentMap",
       applicationDeploymentMap,
       "payload",
@@ -398,11 +396,6 @@ export function mcpToolEntry(
     },
     payloadZodSchema: schema,
     actionEnvelope,
-//     (
-//   payload: unknown,
-//   domainController: DomainControllerInterface,
-//   applicationDeploymentMap: ApplicationDeploymentMap
-// ) => Promise<{ content: Array<{ type: string; text: string, parsed: Record<string, any> }> }>
     actionHandler: mcpToolHandler(toolName, schema, actionEnvelope),
   };
 }

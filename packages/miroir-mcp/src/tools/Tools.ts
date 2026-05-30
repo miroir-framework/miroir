@@ -14,8 +14,11 @@ import {
   getDefaultLibraryModelEnvironmentDEFUNCT,
   selfApplicationLibrary,
 } from "miroir-test-app_deployment-library";
-import { type McpRequestHandlers } from "./handlersForEndpoint.js";
-import { getMcpRequestHandlersFromEndpoint, type getMcpRequestHandlersFromEndpointParams } from "./ToolsForApplication_Miroir.js";
+import { type McpRequestHandlers } from "./mcpHandlersForEndpoint.js";
+import {
+  getMcpRequestHandlersFromEndpoint,
+  type getMcpRequestHandlersFromEndpointParams,
+} from "./ToolsForApplication_Miroir.js";
 
 const defaultLibraryAppModel = getDefaultLibraryModelEnvironmentDEFUNCT(
   miroirFundamentalJzodSchema as any,

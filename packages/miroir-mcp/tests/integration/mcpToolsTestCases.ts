@@ -3,7 +3,7 @@
 import {
   // mcpRequestHandlers,
   // mcpRequestHandlers_Library_lendingEndpoint
-} from "../../src/tools/handlersForEndpoint.js";
+} from "../../src/tools/mcpHandlersForEndpoint.js";
 
 import loglevelNextLog from 'loglevelnext';
 import {

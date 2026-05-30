@@ -246,10 +246,7 @@ describe("MCP Tools Integration Tests", () => {
     );
 
     const {
-      // persistenceStoreControllerManagerForClient: localpersistenceStoreControllerManager,
       domainController: localdomainController,
-      // localCache: locallocalCache,
-      // miroirContext: localmiroirContext,
     } = await setupMiroirPlatform(
       miroirConfig as any as MiroirConfigClient,
       miroirActivityTracker,

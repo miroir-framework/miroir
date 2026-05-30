@@ -144,274 +144,274 @@ console.log("lendDocumentTool lendDocumentActionCopilotKitParameters:", JSON.str
 // console.log("lendDocumentTool lendDocumentActionJsonSchema:", JSON.stringify(lendDocumentActionJsonSchema, null, 2));
 // console.log("lendDocumentTool parameters:", JSON.stringify(lendDocumentTool.parameters, null, 2));
 
-// ──────────────────────────────────────────────────────────────────────────────
-// Tool: generateMiroirEntity
-// Returns both the Entity record and its EntityDefinition.
-// ──────────────────────────────────────────────────────────────────────────────
-export const generateMiroirEntityTool: MiroirAction = {
-  name: "generateMiroirEntity",
-  description:
-    "Generate a new Miroir Entity (concept/table definition) with its EntityDefinition schema. " +
-    "Returns both the Entity record and the EntityDefinition JSON ready to be applied.",
-  parameters: [
-    {
-      name: "entityName",
-      type: "string",
-      description: "PascalCase name for the new entity (e.g. 'Product', 'CustomerOrder')",
-      required: true,
-    },
-    {
-      name: "description",
-      type: "string",
-      description: "Short description of what this entity represents",
-      required: false,
-    },
-    {
-      name: "attributes",
-      type: "object[]",
-      description: "List of attributes (fields) for this entity. Each item: { name, type, required, description?, enumValues? }",
-      required: true,
-      attributes: [
-        { name: "name", type: "string", required: true },
-        { name: "type", type: "string", required: true },
-        { name: "required", type: "boolean", required: false },
-        { name: "description", type: "string", required: false },
-      ],
-    },
-    {
-      name: "deploymentUuid",
-      type: "string",
-      description: "UUID of the deployment this entity belongs to",
-      required: true,
-    },
-  ],
-  handler: async ({ entityName, description, attributes, deploymentUuid }: Record<string, any>) => {
-    const entityUuid = uuidv4();
-    const entityDefUuid = uuidv4();
+// // ──────────────────────────────────────────────────────────────────────────────
+// // Tool: generateMiroirEntity
+// // Returns both the Entity record and its EntityDefinition.
+// // ──────────────────────────────────────────────────────────────────────────────
+// export const generateMiroirEntityTool: MiroirAction = {
+//   name: "generateMiroirEntity",
+//   description:
+//     "Generate a new Miroir Entity (concept/table definition) with its EntityDefinition schema. " +
+//     "Returns both the Entity record and the EntityDefinition JSON ready to be applied.",
+//   parameters: [
+//     {
+//       name: "entityName",
+//       type: "string",
+//       description: "PascalCase name for the new entity (e.g. 'Product', 'CustomerOrder')",
+//       required: true,
+//     },
+//     {
+//       name: "description",
+//       type: "string",
+//       description: "Short description of what this entity represents",
+//       required: false,
+//     },
+//     {
+//       name: "attributes",
+//       type: "object[]",
+//       description: "List of attributes (fields) for this entity. Each item: { name, type, required, description?, enumValues? }",
+//       required: true,
+//       attributes: [
+//         { name: "name", type: "string", required: true },
+//         { name: "type", type: "string", required: true },
+//         { name: "required", type: "boolean", required: false },
+//         { name: "description", type: "string", required: false },
+//       ],
+//     },
+//     {
+//       name: "deploymentUuid",
+//       type: "string",
+//       description: "UUID of the deployment this entity belongs to",
+//       required: true,
+//     },
+//   ],
+//   handler: async ({ entityName, description, attributes, deploymentUuid }: Record<string, any>) => {
+//     const entityUuid = uuidv4();
+//     const entityDefUuid = uuidv4();
 
-    const entity = {
-      uuid: entityUuid,
-      parentName: "Entity",
-      parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-      parentDefinitionVersionUuid: "381ab1be-337f-4198-b1d3-f686867fc1dd",
-      conceptLevel: "Model",
-      name: entityName,
-      description: description ?? `A ${entityName} instance`,
-    };
+//     const entity = {
+//       uuid: entityUuid,
+//       parentName: "Entity",
+//       parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+//       parentDefinitionVersionUuid: "381ab1be-337f-4198-b1d3-f686867fc1dd",
+//       conceptLevel: "Model",
+//       name: entityName,
+//       description: description ?? `A ${entityName} instance`,
+//     };
 
-    // Build mlSchema definition from attributes
-    const schemaDefinition: Record<string, any> = {};
-    let fieldId = 5;
+//     // Build mlSchema definition from attributes
+//     const schemaDefinition: Record<string, any> = {};
+//     let fieldId = 5;
 
-    // name is always first
-    schemaDefinition["name"] = {
-      type: "string",
-      tag: { value: { id: fieldId++, defaultLabel: "Name", display: { editable: true } } },
-    };
+//     // name is always first
+//     schemaDefinition["name"] = {
+//       type: "string",
+//       tag: { value: { id: fieldId++, defaultLabel: "Name", display: { editable: true } } },
+//     };
 
-    for (const attr of (attributes ?? []) as Array<{
-      name: string;
-      type: string;
-      required?: boolean;
-      description?: string;
-      enumValues?: string[];
-    }>) {
-      if (attr.name === "name") continue; // already added above
+//     for (const attr of (attributes ?? []) as Array<{
+//       name: string;
+//       type: string;
+//       required?: boolean;
+//       description?: string;
+//       enumValues?: string[];
+//     }>) {
+//       if (attr.name === "name") continue; // already added above
 
-      const fieldDef: Record<string, any> = {};
+//       const fieldDef: Record<string, any> = {};
 
-      if (attr.type === "enum" && attr.enumValues?.length) {
-        fieldDef["type"] = "enum";
-        fieldDef["definition"] = attr.enumValues;
-      } else {
-        fieldDef["type"] = attr.type ?? "string";
-      }
+//       if (attr.type === "enum" && attr.enumValues?.length) {
+//         fieldDef["type"] = "enum";
+//         fieldDef["definition"] = attr.enumValues;
+//       } else {
+//         fieldDef["type"] = attr.type ?? "string";
+//       }
 
-      if (!attr.required) {
-        fieldDef["optional"] = true;
-      }
+//       if (!attr.required) {
+//         fieldDef["optional"] = true;
+//       }
 
-      fieldDef["tag"] = {
-        value: {
-          id: fieldId++,
-          defaultLabel: attr.description ?? attr.name,
-          display: { editable: true },
-        },
-      };
+//       fieldDef["tag"] = {
+//         value: {
+//           id: fieldId++,
+//           defaultLabel: attr.description ?? attr.name,
+//           display: { editable: true },
+//         },
+//       };
 
-      schemaDefinition[attr.name] = fieldDef;
-    }
+//       schemaDefinition[attr.name] = fieldDef;
+//     }
 
-    const entityDefinition = {
-      uuid: entityDefUuid,
-      parentName: "EntityDefinition",
-      parentUuid: "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
-      parentDefinitionVersionUuid: "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
-      entityUuid,
-      conceptLevel: "Model",
-      name: entityName,
-      mlSchema: {
-        type: "object",
-        extend: {
-          type: "schemaReference",
-          definition: {
-            eager: true,
-            absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-            relativePath: "entityDefinitionRoot",
-          },
-        },
-        definition: schemaDefinition,
-      },
-    };
+//     const entityDefinition = {
+//       uuid: entityDefUuid,
+//       parentName: "EntityDefinition",
+//       parentUuid: "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+//       parentDefinitionVersionUuid: "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
+//       entityUuid,
+//       conceptLevel: "Model",
+//       name: entityName,
+//       mlSchema: {
+//         type: "object",
+//         extend: {
+//           type: "schemaReference",
+//           definition: {
+//             eager: true,
+//             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+//             relativePath: "entityDefinitionRoot",
+//           },
+//         },
+//         definition: schemaDefinition,
+//       },
+//     };
 
-    return {
-      entity,
-      entityDefinition,
-      deploymentUuid,
-      summary: `Created Entity '${entityName}' with ${Object.keys(schemaDefinition).length} field(s).`,
-    };
-  },
-};
+//     return {
+//       entity,
+//       entityDefinition,
+//       deploymentUuid,
+//       summary: `Created Entity '${entityName}' with ${Object.keys(schemaDefinition).length} field(s).`,
+//     };
+//   },
+// };
 
-// ──────────────────────────────────────────────────────────────────────────────
-// Tool: generateMiroirQuery
-// ──────────────────────────────────────────────────────────────────────────────
-export const generateMiroirQueryTool: MiroirAction = {
-  name: "generateMiroirQuery",
-  description:
-    "Generate a new Miroir Query that fetches instances of a given entity. " +
-    "Returns a QueryTemplate JSON ready to be applied.",
-  parameters: [
-    {
-      name: "queryName",
-      type: "string",
-      description: "camelCase name for the query (e.g. 'getAllProducts')",
-      required: true,
-    },
-    {
-      name: "description",
-      type: "string",
-      description: "What data this query returns",
-      required: false,
-    },
-    {
-      name: "entityName",
-      type: "string",
-      description: "Name of the entity to fetch",
-      required: true,
-    },
-    {
-      name: "entityUuid",
-      type: "string",
-      description: "UUID of the entity to fetch",
-      required: true,
-    },
-    {
-      name: "deploymentUuid",
-      type: "string",
-      description: "UUID of the deployment this query belongs to",
-      required: true,
-    },
-  ],
-  handler: async ({ queryName, description, entityName, entityUuid, deploymentUuid }: Record<string, any>) => {
-    const queryUuid = uuidv4();
+// // ──────────────────────────────────────────────────────────────────────────────
+// // Tool: generateMiroirQuery
+// // ──────────────────────────────────────────────────────────────────────────────
+// export const generateMiroirQueryTool: MiroirAction = {
+//   name: "generateMiroirQuery",
+//   description:
+//     "Generate a new Miroir Query that fetches instances of a given entity. " +
+//     "Returns a QueryTemplate JSON ready to be applied.",
+//   parameters: [
+//     {
+//       name: "queryName",
+//       type: "string",
+//       description: "camelCase name for the query (e.g. 'getAllProducts')",
+//       required: true,
+//     },
+//     {
+//       name: "description",
+//       type: "string",
+//       description: "What data this query returns",
+//       required: false,
+//     },
+//     {
+//       name: "entityName",
+//       type: "string",
+//       description: "Name of the entity to fetch",
+//       required: true,
+//     },
+//     {
+//       name: "entityUuid",
+//       type: "string",
+//       description: "UUID of the entity to fetch",
+//       required: true,
+//     },
+//     {
+//       name: "deploymentUuid",
+//       type: "string",
+//       description: "UUID of the deployment this query belongs to",
+//       required: true,
+//     },
+//   ],
+//   handler: async ({ queryName, description, entityName, entityUuid, deploymentUuid }: Record<string, any>) => {
+//     const queryUuid = uuidv4();
 
-    const query = {
-      uuid: queryUuid,
-      parentName: "QueryTemplate",
-      parentUuid: "e48b9e43-6d8a-4c9e-b7f5-3e2c1b4d5a6f",
-      name: queryName,
-      description: description ?? `Fetch all ${entityName} instances`,
-      deploymentUuid,
-      definition: {
-        queryType: "boxedQueryWithExtractorCombinerTransformer",
-        deploymentUuid,
-        pageParams: {},
-        queryParams: {},
-        contextResults: {},
-        extractors: {
-          [queryName]: {
-            extractorOrCombinerType: "extractorForObjectByDirectReference",
-            parentName: entityName,
-            parentUuid: entityUuid,
-            applicationSection: "data",
-          },
-        },
-      },
-    };
+//     const query = {
+//       uuid: queryUuid,
+//       parentName: "QueryTemplate",
+//       parentUuid: "e48b9e43-6d8a-4c9e-b7f5-3e2c1b4d5a6f",
+//       name: queryName,
+//       description: description ?? `Fetch all ${entityName} instances`,
+//       deploymentUuid,
+//       definition: {
+//         queryType: "boxedQueryWithExtractorCombinerTransformer",
+//         deploymentUuid,
+//         pageParams: {},
+//         queryParams: {},
+//         contextResults: {},
+//         extractors: {
+//           [queryName]: {
+//             extractorOrCombinerType: "extractorForObjectByDirectReference",
+//             parentName: entityName,
+//             parentUuid: entityUuid,
+//             applicationSection: "data",
+//           },
+//         },
+//       },
+//     };
 
-    return {
-      query,
-      deploymentUuid,
-      summary: `Created Query '${queryName}' fetching ${entityName} instances.`,
-    };
-  },
-};
+//     return {
+//       query,
+//       deploymentUuid,
+//       summary: `Created Query '${queryName}' fetching ${entityName} instances.`,
+//     };
+//   },
+// };
 
-// ──────────────────────────────────────────────────────────────────────────────
-// Tool: generateMiroirTransformer
-// ──────────────────────────────────────────────────────────────────────────────
-export const generateMiroirTransformerTool: MiroirAction = {
-  name: "generateMiroirTransformer",
-  description:
-    "Generate a new Miroir Transformer definition (pure data transformation function). " +
-    "Returns a Transformer JSON ready to be applied.",
-  parameters: [
-    {
-      name: "transformerName",
-      type: "string",
-      description: "camelCase name for the transformer",
-      required: true,
-    },
-    {
-      name: "description",
-      type: "string",
-      description: "What this transformer does",
-      required: true,
-    },
-    {
-      name: "inputDescription",
-      type: "string",
-      description: "Description of the input data structure",
-      required: false,
-    },
-    {
-      name: "deploymentUuid",
-      type: "string",
-      description: "UUID of the deployment this transformer belongs to",
-      required: true,
-    },
-  ],
-  handler: async ({ transformerName, description, inputDescription, deploymentUuid }: Record<string, any>) => {
-    const transformerUuid = uuidv4();
+// // ──────────────────────────────────────────────────────────────────────────────
+// // Tool: generateMiroirTransformer
+// // ──────────────────────────────────────────────────────────────────────────────
+// export const generateMiroirTransformerTool: MiroirAction = {
+//   name: "generateMiroirTransformer",
+//   description:
+//     "Generate a new Miroir Transformer definition (pure data transformation function). " +
+//     "Returns a Transformer JSON ready to be applied.",
+//   parameters: [
+//     {
+//       name: "transformerName",
+//       type: "string",
+//       description: "camelCase name for the transformer",
+//       required: true,
+//     },
+//     {
+//       name: "description",
+//       type: "string",
+//       description: "What this transformer does",
+//       required: true,
+//     },
+//     {
+//       name: "inputDescription",
+//       type: "string",
+//       description: "Description of the input data structure",
+//       required: false,
+//     },
+//     {
+//       name: "deploymentUuid",
+//       type: "string",
+//       description: "UUID of the deployment this transformer belongs to",
+//       required: true,
+//     },
+//   ],
+//   handler: async ({ transformerName, description, inputDescription, deploymentUuid }: Record<string, any>) => {
+//     const transformerUuid = uuidv4();
 
-    const transformer = {
-      uuid: transformerUuid,
-      parentName: "Transformer",
-      parentUuid: "54a16d69-c1f0-4dd7-aba4-a2cda883586c",
-      name: transformerName,
-      description,
-      deploymentUuid,
-      definition: {
-        transformerType: "transformer",
-        transformerImplementationType: "transformer",
-        referencedTransformers: [],
-        // TODO: Define the actual transformer composition based on description
-        // This is a placeholder — the user should complete the transformer definition
-        // using the TransformerBuilderPage
-      },
-    };
+//     const transformer = {
+//       uuid: transformerUuid,
+//       parentName: "Transformer",
+//       parentUuid: "54a16d69-c1f0-4dd7-aba4-a2cda883586c",
+//       name: transformerName,
+//       description,
+//       deploymentUuid,
+//       definition: {
+//         transformerType: "transformer",
+//         transformerImplementationType: "transformer",
+//         referencedTransformers: [],
+//         // TODO: Define the actual transformer composition based on description
+//         // This is a placeholder — the user should complete the transformer definition
+//         // using the TransformerBuilderPage
+//       },
+//     };
 
-    return {
-      transformer,
-      deploymentUuid,
-      summary:
-        `Created Transformer stub '${transformerName}'. ` +
-        `Note: The transformer logic placeholder needs to be completed in the TransformerBuilder. ` +
-        `Input: ${inputDescription ?? "not specified"}.`,
-    };
-  },
-};
+//     return {
+//       transformer,
+//       deploymentUuid,
+//       summary:
+//         `Created Transformer stub '${transformerName}'. ` +
+//         `Note: The transformer logic placeholder needs to be completed in the TransformerBuilder. ` +
+//         `Input: ${inputDescription ?? "not specified"}.`,
+//     };
+//   },
+// };
 
 // ──────────────────────────────────────────────────────────────────────────────
 // Tool: generateMiroirReport
@@ -547,9 +547,9 @@ export function createMiroirCopilotKitActions(
 ): MiroirAction[] {
   return [
     createLendDocumentTool(domainController, applicationDeploymentMap),
-    generateMiroirEntityTool,
-    generateMiroirQueryTool,
-    generateMiroirTransformerTool,
+    // generateMiroirEntityTool,
+    // generateMiroirQueryTool,
+    // generateMiroirTransformerTool,
     generateMiroirReportTool,
     getMiroirContextTool,
   ];

@@ -16,6 +16,8 @@ export const EditOff: React.FC<any> = (props) => <ThemedIcon icon="edit_off" {..
 export const BugReport: React.FC<any> = (props) => <ThemedIcon icon="bug_report" {...props} />;
 export const ErrorIcon: React.FC<any> = (props) => <ThemedIcon icon="error" {...props} />;
 export const ExpandLess: React.FC<any> = (props) => <ThemedIcon icon="expand_less" {...props} />;
+export const ExpandLessIcon: React.FC<any> = (props) => <ThemedIcon icon="expand_less" {...props} />;
+export const ExpandMoreIcon: React.FC<any> = (props) => <ThemedIcon icon="expand_more" {...props} />;
 export const ExpandMore: React.FC<any> = (props) => <ThemedIcon icon="expand_more" {...props} />;
 export const Info: React.FC<any> = (props) => <ThemedIcon icon="info" {...props} />;
 export const Warning: React.FC<any> = (props) => <ThemedIcon icon="warning" {...props} />;
@@ -42,7 +44,6 @@ export const Palette: React.FC<any> = (props) => <ThemedIcon icon="palette" {...
 export const DarkMode: React.FC<any> = (props) => <ThemedIcon icon="dark_mode" {...props} />;
 export const CompressOutlined: React.FC<any> = (props) => <ThemedIcon icon="compress" {...props} />;
 export const Style: React.FC<any> = (props) => <ThemedIcon icon="style" {...props} />;
-export const ExpandMoreIcon: React.FC<any> = (props) => <ThemedIcon icon="expand_more" {...props} />;
 export const Assignment: React.FC<any> = (props) => <ThemedIcon icon="assignment" {...props} />;
 export const AssignmentTurnedIn: React.FC<any> = (props) => <ThemedIcon icon="assignment_turned_in" {...props} />;
 export const CheckCircle: React.FC<any> = (props) => <ThemedIcon icon="check_circle" {...props} />;

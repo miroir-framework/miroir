@@ -12,7 +12,7 @@ import {
   generateMiroirTransformerTool,
   generateMiroirReportTool,
   getMiroirContextTool,
-  miroirCopilotKitActions,
+  createMiroirCopilotKitActions,
 } from "../../src/tools/miroirCopilotKitActions.js";
 
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -25,6 +25,11 @@ const TRANSFORMER_PARENT_UUID = "54a16d69-c1f0-4dd7-aba4-a2cda883586c";
 
 const TEST_DEPLOYMENT_UUID = "aaaaaaaa-0000-0000-0000-000000000001";
 const TEST_ENTITY_UUID = "bbbbbbbb-0000-0000-0000-000000000002";
+
+
+// const miroirCopilotKitActions = createMiroirCopilotKitActions(domainController, applicationDeploymentMap)
+const miroirCopilotKitActions = createMiroirCopilotKitActions(undefined as any, undefined as any);
+
 
 // ──────────────────────────────────────────────────────────────────────────────
 describe("miroirCopilotKitActions — registry", () => {

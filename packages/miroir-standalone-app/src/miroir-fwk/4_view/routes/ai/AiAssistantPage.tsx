@@ -13,7 +13,22 @@
  * accepts/rejects the proposal before it is applied.
  */
 import React, { useState, useEffect, useMemo } from "react";
-import { Alert, Box, FormControl, InputLabel, MenuItem, Select, Typography } from "@mui/material";
+import {
+  Alert,
+  Box,
+  Chip,
+  Collapse,
+  FormControl,
+  IconButton,
+  InputLabel,
+  MenuItem,
+  Paper,
+  Select,
+  Tooltip,
+  Typography,
+} from "@mui/material";
+// import ExpandLessIcon from "@mui/icons-material/ExpandLess";
+// import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { useCopilotAction, useCopilotAdditionalInstructions, useCopilotReadable } from "@copilotkit/react-core";
 import { CopilotSidebar } from "@copilotkit/react-ui";
 import "@copilotkit/react-ui/styles.css";
@@ -33,6 +48,149 @@ import {
   AiEntityProposalForm,
   type EntityProposal,
 } from "./AiEntityProposalForm.js";
+import { ExpandLessIcon, ExpandMoreIcon } from "../../components/Themes/MaterialSymbolWrappers.js";
+
+// ──────────────────────────────────────────────────────────────────────────────
+// Tool catalog — kept in sync with the useCopilotAction registrations below.
+// Displayed in the AgentToolsPanel component.
+// ──────────────────────────────────────────────────────────────────────────────
+type ToolCategory = "miroir" | "library" | "utility";
+interface AgentToolEntry {
+  name: string;
+  description: string;
+  category: ToolCategory;
+}
+
+const AGENT_TOOLS: AgentToolEntry[] = [
+  {
+    name: "generateMiroirEntity",
+    description: "Generate a new Miroir Entity and EntityDefinition from a description. Presents a proposal for review before applying.",
+    category: "miroir",
+  },
+  {
+    name: "getMiroirContext",
+    description: "Return the current Miroir deployment context (deployment UUID, available entity types, etc.).",
+    category: "miroir",
+  },
+  {
+    name: "findLibraryInstanceByName",
+    description: "Look up a library entity (book, user, author, publisher) by name. Returns the UUID when exactly one match is found, presents choices for 2–10 results, errors otherwise.",
+    category: "library",
+  },
+  {
+    name: "lendDocument",
+    description: "Lend a library document (book) to a user. Requires user UUID, book UUID, and a start date.",
+    category: "library",
+  },
+  {
+    name: "getCurrentDate",
+    description: "Return today's date as an ISO date string (YYYY-MM-DD). Use before any action that needs a date.",
+    category: "utility",
+  },
+  {
+    name: "getCurrentTimestamp",
+    description: "Return the current date-time as a full ISO 8601 timestamp string.",
+    category: "utility",
+  },
+];
+
+const CATEGORY_COLOR: Record<ToolCategory, "primary" | "secondary" | "default"> = {
+  miroir: "primary",
+  library: "secondary",
+  utility: "default",
+};
+
+const CATEGORY_LABEL: Record<ToolCategory, string> = {
+  miroir: "Miroir",
+  library: "Library",
+  utility: "Utility",
+};
+
+// ──────────────────────────────────────────────────────────────────────────────
+// AgentToolsPanel — displays the registered tools in a collapsible themed card
+// ──────────────────────────────────────────────────────────────────────────────
+function AgentToolsPanel(): React.JSX.Element {
+  const [open, setOpen] = useState(true);
+
+  return (
+    <Paper
+      variant="outlined"
+      sx={{
+        mb: 2,
+        borderRadius: 2,
+        overflow: "hidden",
+        borderColor: "primary.main",
+        opacity: 0.92,
+      }}
+    >
+      {/* Header */}
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          px: 2,
+          py: 0.75,
+          bgcolor: "primary.main",
+          color: "primary.contrastText",
+          cursor: "pointer",
+          userSelect: "none",
+        }}
+        onClick={() => setOpen((v) => !v)}
+      >
+        <Typography variant="subtitle2" sx={{ fontWeight: 700, letterSpacing: 0.5 }}>
+          Agent tools ({AGENT_TOOLS.length})
+        </Typography>
+        <IconButton size="small" sx={{ color: "inherit", p: 0 }}>
+          {open ? <ExpandLessIcon fontSize="small" /> : <ExpandMoreIcon fontSize="small" />}
+        </IconButton>
+      </Box>
+
+      {/* Tool chips */}
+      <Collapse in={open}>
+        <Box
+          sx={{
+            display: "flex",
+            flexWrap: "wrap",
+            gap: 1,
+            p: 1.5,
+            bgcolor: "background.paper",
+          }}
+        >
+          {AGENT_TOOLS.map((tool) => (
+            <Tooltip
+              key={tool.name}
+              title={
+                <Box sx={{ maxWidth: 280 }}>
+                  <Typography variant="caption" sx={{ fontWeight: 700, display: "block", mb: 0.5 }}>
+                    {tool.name}
+                  </Typography>
+                  <Typography variant="caption">{tool.description}</Typography>
+                  <Typography
+                    variant="caption"
+                    sx={{ display: "block", mt: 0.5, opacity: 0.8, fontStyle: "italic" }}
+                  >
+                    category: {CATEGORY_LABEL[tool.category]}
+                  </Typography>
+                </Box>
+              }
+              placement="top"
+              arrow
+            >
+              <Chip
+                label={tool.name}
+                color={CATEGORY_COLOR[tool.category]}
+                size="small"
+                variant="outlined"
+                sx={{ fontFamily: "monospace", fontSize: "0.75rem" }}
+              />
+            </Tooltip>
+          ))}
+        </Box>
+      </Collapse>
+    </Paper>
+  );
+}
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -278,6 +436,82 @@ export function AiAssistantPage(): React.JSX.Element {
     },
   });
 
+  // ── findLibraryInstanceByName ─────────────────────────────────────────────
+  // Looks up a library entity (book, user, author, publisher) by (partial) name.
+  // Calls /api/copilotkit/findInstanceByName, which runs a filtered query via the
+  // server-side domainController.
+  //
+  // Return shapes (pass through to the LLM):
+  //   { status: "not_found", message }                         — 0 matches
+  //   { status: "single",    uuid, name, instance }            — 1 match → use uuid
+  //   { status: "multiple",  count, instances, message }       — 2–10 → ask user to pick
+  //   { status: "too_many",  count, message }                  — >10 → ask for more specific name
+  //   { status: "error",     message }                         — error
+  useCopilotAction({
+    name: "findLibraryInstanceByName",
+    description:
+      "Look up a library entity by name (partial, case-insensitive). " +
+      "Use this BEFORE calling lendDocument whenever you have a book title or a user name " +
+      "instead of a UUID. " +
+      "If status is 'single', use the returned uuid directly. " +
+      "If status is 'multiple', show the options to the user and ask which one they mean, " +
+      "then call findLibraryInstanceByName again with the exact name. " +
+      "If status is 'not_found' or 'too_many', report the message to the user.",
+    parameters: [
+      {
+        name: "entityType",
+        type: "string",
+        description:
+          'Type of library entity to search: "book" (also called document), "user", "author", or "publisher"',
+        required: true,
+      },
+      {
+        name: "name",
+        type: "string",
+        description: "Name or partial name to search for (case-insensitive substring match)",
+        required: true,
+      },
+    ],
+    handler: async ({ entityType, name }: Record<string, any>) => {
+      // Map human-readable entity types to their library entity UUIDs.
+      const LIBRARY_APP_UUID = "5af03c98-fe5e-490b-b08f-e1230971c57f";
+      const LIBRARY_DEPLOYMENT_UUID = "f714bb2f-a12d-4e71-a03b-74dcedea6eb4";
+      const entityTypeMap: Record<string, { entityUuid: string; entityParentName: string }> = {
+        book:      { entityUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5", entityParentName: "Book" },
+        document:  { entityUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5", entityParentName: "Book" },
+        user:      { entityUuid: "ca794e28-b2dc-45b3-8137-00151557eea8", entityParentName: "User" },
+        author:    { entityUuid: "d7a144ff-d1b9-4135-800c-a7cfc1f38733", entityParentName: "Author" },
+        publisher: { entityUuid: "a027c379-8468-43a5-ba4d-bf618be25cab", entityParentName: "Publisher" },
+      };
+
+      const typeInfo = entityTypeMap[(entityType ?? "").toLowerCase()];
+      if (!typeInfo) {
+        return {
+          status: "error",
+          message: `Unknown entity type "${entityType}". Supported values: book, user, author, publisher.`,
+        };
+      }
+
+      const response = await fetch("/api/copilotkit/findInstanceByName", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          entityUuid: typeInfo.entityUuid,
+          entityParentName: typeInfo.entityParentName,
+          namePattern: name,
+          applicationUuid: LIBRARY_APP_UUID,
+          deploymentUuid: LIBRARY_DEPLOYMENT_UUID,
+        }),
+      });
+
+      if (!response.ok) {
+        const err = await response.json().catch(() => ({ message: "Request failed" }));
+        return { status: "error", message: (err as any).message ?? "Request failed" };
+      }
+      return response.json();
+    },
+  });
+
   // ── lendDocument ──────────────────────────────────────────────────────────
   // CopilotKit in agent/run mode forwards all LLM tool calls to the frontend.
   // This handler calls the /api/copilotkit/lendDocument REST endpoint which uses
@@ -370,6 +604,9 @@ export function AiAssistantPage(): React.JSX.Element {
             {aiConfigStatus.message ?? "AI provider not configured."}
           </Alert>
         )}
+
+        {/* Agent tools panel */}
+        <AgentToolsPanel />
 
         {/* Deployment selector — must pick a target before the AI can create elements */}
         <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 2 }}>
