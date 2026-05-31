@@ -19,8 +19,9 @@
   },
   "dependencies": {
     "@codemirror/lang-javascript": "^6.2.2",
-    "@copilotkit/react-core": "^1.57.4",
-    "@copilotkit/react-ui": "^1.57.4",
+    "@copilotkit/react-core": "^1.59.2",
+    "@copilotkit/react-textarea": "^1.59.2",
+    "@copilotkit/react-ui": "^1.59.2",
     "@emotion/babel-plugin": "^11.13.5",
     "@emotion/react": "^11.10.5",
     "@emotion/styled": "^11.10.5",

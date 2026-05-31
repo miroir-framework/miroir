@@ -1,0 +1,8 @@
+/*
+ * Override CopilotKit sidebar window positioning so it starts below the
+ * Miroir AppBar (64px by default).  Without this the copilotKitHeader is
+ * hidden behind the AppBar.
+ */
+/* .copilotKitSidebar .copilotKitWindow {
+  top: 64px !important;
+} */

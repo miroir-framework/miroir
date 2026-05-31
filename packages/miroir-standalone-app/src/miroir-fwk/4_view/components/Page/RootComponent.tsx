@@ -83,6 +83,7 @@ import { DocumentOutlineContextProvider } from '../ValueObjectEditor/InstanceEdi
 import { ViewParamsUpdateQueue, ViewParamsUpdateQueueConfig } from '../ViewParamsUpdateQueue.js';
 import { Sidebar } from "./Sidebar.js";
 import { SidebarWidth } from "./SidebarSection.js";
+import { AiActionsProvider } from "../../routes/ai/AiActionsProvider.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -857,6 +858,8 @@ export const RootComponent = (props: RootComponentProps) => {
                 <Outlet></Outlet>
               </ThemedMainPanel>
             </ThemedGrid>
+            {/* AI Sidebar — always in DOM to preserve chat history; visibility via showAiSidebar */}
+            <AiActionsProvider />
             {/* Document Outline - Full height on right side */}
             <InstanceEditorOutline
               isOpen={isOutlineOpen}

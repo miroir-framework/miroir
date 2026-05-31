@@ -182,16 +182,93 @@ export function AppBar(props:AppBarProps) {
     ) : (
       <> </>
     ),
-    {
-      miroirMenuItemType: "miroirMenuPageLink",
-      label: "AI",
-      targetRoot: "ai",
-      section: "model",
-      icon: {
-        iconType: "mui",
-        name: "auto_awesome",
-      },
-    },
+    context.setShowAiSidebar ? (
+      <Tooltip
+        title={
+          context.showAiSidebar
+            ? "AI Assistant: ON (click to hide)"
+            : "AI Assistant: OFF (click to show)"
+        }
+      >
+        <ThemedIconButton
+          onClick={() => {
+            log.info(
+              "Toggling AI Sidebar. Current state: ",
+              context.showAiSidebar,
+              " -> ",
+              !context.showAiSidebar,
+              "context.setShowAiSidebar: ",
+              !!context.setShowAiSidebar,
+            );
+            return context.setShowAiSidebar?.(!context.showAiSidebar) as any}
+          }
+          aria-label="AI Assistant"
+        >
+          <ThemedIcon
+            icon={
+              context.showAiSidebar
+                ? {
+                    iconType: "mui",
+                    name: "auto_awesome",
+                    color: {
+                      colorType: "themeColor",
+                      currentThemeColorPath: "colors.warning",
+                    },
+                  }
+                : {
+                    iconType: "mui",
+                    name: "auto_awesome",
+                  }
+            }
+          />
+        </ThemedIconButton>
+      </Tooltip>
+    ) : (
+      <> </>
+    ),
+    context.setShowCopilotDevConsole ? (
+      <Tooltip
+        title={
+          context.showCopilotDevConsole
+            ? "AI Dev Console: ON (click to hide)"
+            : "AI Dev Console: OFF (click to show)"
+        }
+      >
+        <ThemedIconButton
+          onClick={() => {
+            log.info(
+              "Toggling AI Dev Console. Current state: ",
+              context.showCopilotDevConsole,
+              " -> ",
+              !context.showCopilotDevConsole,
+              "context.setShowCopilotDevConsole: ",
+              !!context.setShowCopilotDevConsole,
+            );
+            return context.setShowCopilotDevConsole?.(!context.showCopilotDevConsole) as any}}
+          aria-label="AI Dev Console"
+        >
+          <ThemedIcon
+            icon={
+              context.showCopilotDevConsole
+                ? {
+                    iconType: "mui",
+                    name: "terminal",
+                    color: {
+                      colorType: "themeColor",
+                      currentThemeColorPath: "colors.warning",
+                    },
+                  }
+                : {
+                    iconType: "mui",
+                    name: "terminal",
+                  }
+            }
+          />
+        </ThemedIconButton>
+      </Tooltip>
+    ) : (
+      <> </>
+    ),
     {
       miroirMenuItemType: "miroirMenuPageLink",
       label: "Model",

@@ -166,6 +166,10 @@ export interface MiroirReactContext {
   setShowDebugInfo: (value: boolean | ((prev: boolean) => boolean)) => void;
   showModelTools: boolean;
   setShowModelTools: (value: boolean | ((prev: boolean) => boolean)) => void;
+  showAiSidebar: boolean;
+  setShowAiSidebar: (value: boolean | ((prev: boolean) => boolean)) => void;
+  showCopilotDevConsole: boolean;
+  setShowCopilotDevConsole: (value: boolean | ((prev: boolean) => boolean)) => void;
   // ##################################################################################################
   // Snackbar functionality
   snackbarOpen: boolean;
@@ -255,6 +259,17 @@ export function MiroirContextReactProvider(props: {
   const [showModelTools, setShowModelTools] = useState(() => {
     // Persist showModelTools state across navigation
     const saved = sessionStorage.getItem("showModelTools");
+    return saved ? JSON.parse(saved) : false;
+  });
+
+  const [showAiSidebar, setShowAiSidebar] = useState(() => {
+    // Persist showAiSidebar state across navigation
+    const saved = sessionStorage.getItem("showAiSidebar");
+    return saved ? JSON.parse(saved) : false;
+  });
+
+  const [showCopilotDevConsole, setShowCopilotDevConsole] = useState(() => {
+    const saved = sessionStorage.getItem("showCopilotDevConsole");
     return saved ? JSON.parse(saved) : false;
   });
 
@@ -534,6 +549,18 @@ export function MiroirContextReactProvider(props: {
         setShowModelTools(newValue);
         sessionStorage.setItem("showModelTools", JSON.stringify(newValue));
       },
+      showAiSidebar,
+      setShowAiSidebar: (value: boolean | ((prev: boolean) => boolean)) => {
+        const newValue = typeof value === "function" ? value(showAiSidebar) : value;
+        setShowAiSidebar(newValue);
+        sessionStorage.setItem("showAiSidebar", JSON.stringify(newValue));
+      },
+      showCopilotDevConsole,
+      setShowCopilotDevConsole: (value: boolean | ((prev: boolean) => boolean)) => {
+        const newValue = typeof value === "function" ? value(showCopilotDevConsole) : value;
+        setShowCopilotDevConsole(newValue);
+        sessionStorage.setItem("showCopilotDevConsole", JSON.stringify(newValue));
+      },
       // // ###################################################################################################
       // // Outline for Instance Editor
       setFoldedObjectAttributeOrArrayItems,
@@ -574,6 +601,8 @@ export function MiroirContextReactProvider(props: {
       showActionTimeline,
       showDebugInfo,
       showModelTools,
+      showAiSidebar,
+      showCopilotDevConsole,
       snackbarOpen,
       snackbarMessage,
       snackbarSeverity,
