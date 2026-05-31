@@ -182,7 +182,7 @@ export function AppBar(props:AppBarProps) {
     ) : (
       <> </>
     ),
-    context.setShowAiSidebar ? (
+    !(import.meta as any).env?.VITE_STATIC_DEMO ? (
       <Tooltip
         title={
           context.showAiSidebar
@@ -226,7 +226,7 @@ export function AppBar(props:AppBarProps) {
     ) : (
       <> </>
     ),
-    context.setShowCopilotDevConsole ? (
+    !(import.meta as any).env?.VITE_STATIC_DEMO ? (
       <Tooltip
         title={
           context.showCopilotDevConsole
