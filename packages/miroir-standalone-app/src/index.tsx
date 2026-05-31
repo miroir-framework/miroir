@@ -1,14 +1,14 @@
-declare global { interface Window { process?: any } }
+declare global {
+  interface Window {
+    process?: any;
+  }
+}
 
 import { createTheme, StyledEngineProvider, ThemeProvider, type ThemeOptions } from "@mui/material";
-import 'material-symbols/outlined.css';
+import "material-symbols/outlined.css";
 import { StrictMode } from "react";
 import { createRoot, Root } from "react-dom/client";
-import {
-  createBrowserRouter,
-  RouterProvider
-} from "react-router-dom";
-
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
 import {
   Action2Error,
@@ -36,7 +36,7 @@ import {
   type RestClientInterface,
   type RestPersistenceClientAndRestClientInterface,
   type StoreOrBundleAction,
-  type StoreUnitConfiguration
+  type StoreUnitConfiguration,
 } from "miroir-core";
 import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
 import {
@@ -46,7 +46,7 @@ import {
 } from "miroir-react";
 import { MiroirContextReactProvider, useMiroirContextService } from "miroir-react";
 
-import { loglevelnext } from './loglevelnextImporter.js';
+import { loglevelnext } from "./loglevelnextImporter.js";
 import { ErrorPage } from "./miroir-fwk/4_view/ErrorPage.js";
 import { RootComponent } from "./miroir-fwk/4_view/components/Page/RootComponent.js";
 import { PageDispatcher } from "./miroir-fwk/4_view/PageDispatcher.js";
@@ -94,14 +94,13 @@ import miroirConfigRealServerIndexedDb from "./assets/miroirConfig-realServer-in
 import miroirConfigRealServerSql from "./assets/miroirConfig-realServer-sql.json";
 import miroirConfig from "./assets/miroirConfig.json";
 
-
 const specificLoggerOptions: SpecificLoggerOptionsMap = {
   // "5_miroir-core_DomainController": {level:defaultLevels.INFO, template:"[{{time}}] {{level}} ({{name}}) BBBBB-"},
   // "5_miroir-core_DomainController": {level:defaultLevels.TRACE},
   // "4_miroir-redux_LocalCacheSlice": {level:defaultLevels.INFO, template:"[{{time}}] {{level}} ({{name}}) CCCCC-"},
   // "4_miroir-redux_LocalCacheSlice": {level:undefined, template:undefined}
   // "4_miroir-redux_LocalCacheSlice": {template:"[{{time}}] {{level}} ({{name}}) -"},
-}
+};
 
 // MiroirLoggerFactory.setEffectiveLoggerFactoryWithLogLevelNext(
 //   loglevelnext,
@@ -112,27 +111,32 @@ const specificLoggerOptions: SpecificLoggerOptionsMap = {
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "index.tsx"), "UI",
-).then((logger: LoggerInterface) => {log = logger});
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "index.tsx"),
+  "UI",
+).then((logger: LoggerInterface) => {
+  log = logger;
+});
 
 export const isElectron =
   typeof window !== "undefined" &&
   typeof window.process === "object" &&
   window.process.versions?.electron;
 
-const miroirConfigFiles: {[k: string]: MiroirConfigClient} = {
-  "miroirConfigEmulatedServerIndexedDb": miroirConfigEmulatedServerIndexedDb as MiroirConfigClient,
-  "miroirConfigRealServerIndexedDb": miroirConfigRealServerIndexedDb as any as MiroirConfigClient,
-  "miroirConfigRealServerFilesystemGit": miroirConfigRealServerFilesystemGit as any as MiroirConfigClient,
-  "miroirConfigRealServerFilesystemTmp": miroirConfigRealServerFilesystemTmp as any as MiroirConfigClient,
-  "miroirConfigRealServerSql": miroirConfigRealServerSql as any as MiroirConfigClient,
-}
+const miroirConfigFiles: { [k: string]: MiroirConfigClient } = {
+  miroirConfigEmulatedServerIndexedDb: miroirConfigEmulatedServerIndexedDb as MiroirConfigClient,
+  miroirConfigRealServerIndexedDb: miroirConfigRealServerIndexedDb as any as MiroirConfigClient,
+  miroirConfigRealServerFilesystemGit:
+    miroirConfigRealServerFilesystemGit as any as MiroirConfigClient,
+  miroirConfigRealServerFilesystemTmp:
+    miroirConfigRealServerFilesystemTmp as any as MiroirConfigClient,
+  miroirConfigRealServerSql: miroirConfigRealServerSql as any as MiroirConfigClient,
+};
 
 // ##############################################################################################
 // ##############################################################################################
 // const currentMiroirConfigName: string | undefined = "miroirConfigEmulatedServerIndexedDb"
 // const currentMiroirConfigName: string | undefined = "miroirConfigRealServerIndexedDb"
-const webMiroirConfigName: string | undefined = "miroirConfigRealServerFilesystemGit"
+const webMiroirConfigName: string | undefined = "miroirConfigRealServerFilesystemGit";
 // const currentMiroirConfigName: string | undefined = "miroirConfigRealServerFilesystemTmp"
 // const currentMiroirConfigName: string | undefined = "miroirConfigRealServerSql"
 // ##############################################################################################
@@ -143,7 +147,7 @@ const webMiroirConfig: MiroirConfigClient =
     ? miroirConfigFiles[webMiroirConfigName ?? ""]
     : (miroirConfig as unknown as MiroirConfigClient);
 
-log.info("currentMiroirConfigName:",webMiroirConfigName, "currentMiroirConfig", webMiroirConfig); 
+log.info("currentMiroirConfigName:", webMiroirConfigName, "currentMiroirConfig", webMiroirConfig);
 
 const miroirActivityTracker = new MiroirActivityTracker();
 const miroirEventService = new MiroirEventService(miroirActivityTracker);
@@ -153,14 +157,13 @@ MiroirLoggerFactory.startRegisteredLoggers(
   miroirEventService,
   loglevelnext,
   {
-    "defaultLevel": "INFO",
-    "defaultTemplate": "[{{time}}] {{level}} {{name}} ### ",
+    defaultLevel: "INFO",
+    defaultTemplate: "[{{time}}] {{level}} {{name}} ### ",
     // "context": {
     //   "testSuite": "DomainController.integ.Data.CRUD",
     //   "test": "Add Book instance"
     // },
-    "specificLoggerOptions": {
-    }
+    specificLoggerOptions: {},
   },
 );
 log.info("started registered loggers DONE");
@@ -221,29 +224,29 @@ export const themeParams: ThemeOptions = {
     //   // overflowY: 'auto', // Allow scrolling when content overflows
     // },
     MuiList: {
-      defaultProps:{
-        style: {border: `0`,}
+      defaultProps: {
+        style: { border: `0` },
         // style: {border: `10px dashed ${blue[500]}`,}
-      }
+      },
     },
     MuiDialog: {
-      defaultProps:{
+      defaultProps: {
         // style: {maxWidth: "100vw",display:"inline-flex"}
         // style: {maxWidth: "100vw"}
-        style: {display:"inline-flex", justifyContent:'center', alignItems:"center"}
-      }
+        style: { display: "inline-flex", justifyContent: "center", alignItems: "center" },
+      },
     },
     MuiDialogTitle: {
-      defaultProps:{
-        style: {display:"flex"}
-      }
+      defaultProps: {
+        style: { display: "flex" },
+      },
     },
     //   defaultProps:{
     //     style: {maxHeight:"90vh",maxWidth:"90vw",display:"inline-flex"}
     //     // style: {display:"inline-flex"}
     //   }
     // }
-  }
+  },
 };
 
 // ################################################################################################
@@ -261,22 +264,30 @@ export async function setupMiroirPlatform(
   customfetch?: any,
   options?: { customRestClient?: RestClientInterface },
 ) {
-  ConfigurationService.configurationService.registerTestImplementation({expect: expect as any});
+  ConfigurationService.configurationService.registerTestImplementation({ expect: expect as any });
 
   const localMiroirActivityTracker = miroirActivityTracker ?? new MiroirActivityTracker();
-  const localMiroirEventService = miroirEventService ?? new MiroirEventService(localMiroirActivityTracker);
+  const localMiroirEventService =
+    miroirEventService ?? new MiroirEventService(localMiroirActivityTracker);
   const miroirContext = new MiroirContext(
     localMiroirActivityTracker,
     localMiroirEventService,
-    miroirConfig
+    miroirConfig,
   );
   console.log("setupMiroirPlatform miroirConfig", JSON.stringify(miroirConfig, null, 2));
-  console.log("setupMiroirPlatform import.meta.env", JSON.stringify((import.meta as any).env, null, 2));
+  console.log(
+    "setupMiroirPlatform import.meta.env",
+    JSON.stringify((import.meta as any).env, null, 2),
+  );
   console.log("setupMiroirPlatform getMiroirEnvironmentMode", getMiroirEnvironmentMode());
-  console.log("setupMiroirPlatform templateEvaluationParams", JSON.stringify(templateEvaluationParams, null, 2));
+  console.log(
+    "setupMiroirPlatform templateEvaluationParams",
+    JSON.stringify(templateEvaluationParams, null, 2),
+  );
 
   let restClient: RestClientInterface | undefined = undefined;
-  let persistenceStoreRestClient: RestPersistenceClientAndRestClientInterface | undefined = undefined;
+  let persistenceStoreRestClient: RestPersistenceClientAndRestClientInterface | undefined =
+    undefined;
 
   if (options?.customRestClient) {
     // Electron IPC mode: the renderer uses a proxy client that forwards calls to the main process.
@@ -302,47 +313,45 @@ export async function setupMiroirPlatform(
     );
   }
 
-
   if (!restClient) {
     throw new Error("miroir-cli setupMiroirPlatform could not create client");
   }
   if (!persistenceStoreRestClient) {
-    throw new Error("miroir-cli setupMiroirPlatform could not create remotePersistenceStoreRestClient");
+    throw new Error(
+      "miroir-cli setupMiroirPlatform could not create remotePersistenceStoreRestClient",
+    );
   }
 
   const persistenceStoreControllerManagerForClient = new PersistenceStoreControllerManager(
     ConfigurationService.configurationService.adminStoreFactoryRegister,
-    ConfigurationService.configurationService.StoreSectionFactoryRegister
+    ConfigurationService.configurationService.StoreSectionFactoryRegister,
   );
 
-  const domainControllerForClient = await setupMiroirDomainController(
-    miroirContext, 
-    {
-      persistenceStoreAccessMode: "remote",
-      localPersistenceStoreControllerManager: persistenceStoreControllerManagerForClient,
-      remotePersistenceStoreRestClient: persistenceStoreRestClient,
-    }
-  );
+  const domainControllerForClient = await setupMiroirDomainController(miroirContext, {
+    persistenceStoreAccessMode: "remote",
+    localPersistenceStoreControllerManager: persistenceStoreControllerManagerForClient,
+    remotePersistenceStoreRestClient: persistenceStoreRestClient,
+  });
 
-  let persistenceStoreControllerManagerForServer: PersistenceStoreControllerManager | undefined = undefined;
+  let persistenceStoreControllerManagerForServer: PersistenceStoreControllerManager | undefined =
+    undefined;
   let domainControllerForServer: DomainControllerInterface | undefined = undefined;
   if (miroirConfig.client.emulateServer && !options?.customRestClient) {
     persistenceStoreControllerManagerForServer = new PersistenceStoreControllerManager(
       ConfigurationService.configurationService.adminStoreFactoryRegister,
       ConfigurationService.configurationService.StoreSectionFactoryRegister,
-      miroirConfig.client.filesystemDeploymentRootDirectory
+      miroirConfig.client.filesystemDeploymentRootDirectory,
     );
 
-    domainControllerForServer = await setupMiroirDomainController(
-      miroirContext, 
-      {
-        persistenceStoreAccessMode: "local",
-        localPersistenceStoreControllerManager: persistenceStoreControllerManagerForServer,
-      }
-    );
+    domainControllerForServer = await setupMiroirDomainController(miroirContext, {
+      persistenceStoreAccessMode: "local",
+      localPersistenceStoreControllerManager: persistenceStoreControllerManagerForServer,
+    });
 
     (restClient as RestClientStub).setServerDomainController(domainControllerForServer);
-    (restClient as RestClientStub).setPersistenceStoreControllerManager(persistenceStoreControllerManagerForServer);
+    (restClient as RestClientStub).setPersistenceStoreControllerManager(
+      persistenceStoreControllerManagerForServer,
+    );
   }
 
   return {
@@ -384,7 +393,7 @@ async function setupClient(
 }
 
 // ###################################################################################
-async function startWebApp(root:Root) {
+async function startWebApp(root: Root) {
   // Initialize performance monitoring configuration
   initializePerformanceConfig();
 
@@ -407,8 +416,8 @@ async function startWebApp(root:Root) {
 
   console.warn("startWebApp start in mode", getMiroirEnvironmentMode(), "isElectron:", isElectron);
   const filesystemDeploymentRootDirectory: string = electronRestClient
-        ? await electronRestClient.getDefaultFilesystemFolder()
-        : "no default filesystem folder because not in Electron";
+    ? await electronRestClient.getDefaultFilesystemFolder()
+    : "no default filesystem folder because not in Electron";
   console.log("startWebApp filesystemDeploymentRootDirectory:", filesystemDeploymentRootDirectory);
 
   const electronMiroirConfig: MiroirConfigClient = {
@@ -502,7 +511,9 @@ async function startWebApp(root:Root) {
       );
       if (openStoreActionResult instanceof Action2Error) {
         log.error("Error opening store for deployment " + c[0], openStoreActionResult);
-        throw new Error(`Error opening store for deployment ${c[0]}: ${openStoreActionResult.errorMessage}`);
+        throw new Error(
+          `Error opening store for deployment ${c[0]}: ${openStoreActionResult.errorMessage}`,
+        );
       }
     }
     const deploymentsQueryResults =
@@ -582,20 +593,20 @@ async function startWebApp(root:Root) {
       {/* <span>electron {isElectron ? "yes" : "no"}</span>
         <pre>{JSON.stringify(webMiroirConfig, null, 2)}</pre> */}
       <StrictMode>
-        <ThemeProvider theme={theme}>
-          <StyledEngineProvider injectFirst>
-            <LocalCacheProvider store={domainControllerForClient.getLocalCache().getInnerStore()}>
-              <MiroirContextReactProvider
-                miroirContext={miroirContext}
-                domainController={domainControllerForClient}
-              >
-                <CopilotKitWrapper>
+        <CopilotKitWrapper>
+          <ThemeProvider theme={theme}>
+            <StyledEngineProvider injectFirst>
+              <LocalCacheProvider store={domainControllerForClient.getLocalCache().getInnerStore()}>
+                <MiroirContextReactProvider
+                  miroirContext={miroirContext}
+                  domainController={domainControllerForClient}
+                >
                   <RouterProvider router={router} />
-                </CopilotKitWrapper>
-              </MiroirContextReactProvider>
-            </LocalCacheProvider>
-          </StyledEngineProvider>
-        </ThemeProvider>
+                </MiroirContextReactProvider>
+              </LocalCacheProvider>
+            </StyledEngineProvider>
+          </ThemeProvider>
+        </CopilotKitWrapper>
       </StrictMode>
     </>,
   );
