@@ -23,7 +23,7 @@ export default defineConfig({
   },
   define: {
     // Lets standalone-app code branch on static-demo mode (e.g. hide server-only UI)
-    'import.meta.env.VITE_STATIC_DEMO': JSON.stringify('true'),
+    'import.meta.env.MIROIR_IS_SANDBOX': JSON.stringify('true'),
   },
   resolve: {
     alias: [

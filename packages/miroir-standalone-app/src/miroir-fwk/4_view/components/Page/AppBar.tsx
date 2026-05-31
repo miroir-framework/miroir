@@ -182,7 +182,7 @@ export function AppBar(props:AppBarProps) {
     ) : (
       <> </>
     ),
-    !(import.meta as any).env?.VITE_STATIC_DEMO ? (
+    !(import.meta as any).env?.MIROIR_IS_SANDBOX ? (
       <Tooltip
         title={
           context.showAiSidebar
@@ -226,7 +226,7 @@ export function AppBar(props:AppBarProps) {
     ) : (
       <> </>
     ),
-    !(import.meta as any).env?.VITE_STATIC_DEMO ? (
+    !(import.meta as any).env?.MIROIR_IS_SANDBOX ? (
       <Tooltip
         title={
           context.showCopilotDevConsole

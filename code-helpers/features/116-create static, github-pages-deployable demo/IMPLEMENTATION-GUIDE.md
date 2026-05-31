@@ -445,7 +445,7 @@ export default defineConfig({
     },
   },
   define: {
-    'import.meta.env.VITE_STATIC_DEMO': JSON.stringify('true'),
+    'import.meta.env.MIROIR_IS_SANDBOX': JSON.stringify('true'),
   },
   // Same plugins as vite.config.js, no server proxy needed
 });
@@ -529,7 +529,7 @@ jobs:
 
 In `miroir-standalone-app` (shared UI code):
 
-- Detect the static-demo mode via `import.meta.env.VITE_STATIC_DEMO === 'true'`.
+- Detect the static-demo mode via `import.meta.env.MIROIR_IS_SANDBOX === 'true'`.
 - In the Settings page and any deployment-creation UI, grey out / hide filesystem, PostgreSQL,
   and MongoDB storage type options.
 - Show a banner informing the user they are in demo mode and data is stored locally in the

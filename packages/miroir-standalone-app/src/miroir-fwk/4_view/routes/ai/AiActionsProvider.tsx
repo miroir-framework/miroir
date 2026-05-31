@@ -594,7 +594,7 @@ function AiActionsProviderInner(): React.JSX.Element {
 // ── AiActionsProvider ─────────────────────────────────────────────────────────
 // Guard: skip CopilotKit rendering entirely in sandbox / static-demo mode so
 // that CopilotKit hooks are never called without a <CopilotKit> provider.
-const isStaticDemo = (import.meta as any).env?.VITE_STATIC_DEMO === "true";
+const isStaticDemo = (import.meta as any).env?.MIROIR_IS_SANDBOX === "true";
 
 export function AiActionsProvider(): React.JSX.Element {
   if (isStaticDemo) {

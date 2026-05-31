@@ -2,7 +2,7 @@
 
 interface ImportMetaEnv {
   readonly VITE_APP_TITLE: string
-  readonly VITE_STATIC_DEMO?: string
+  readonly MIROIR_IS_SANDBOX?: string
   // more env variables...
 }
 
