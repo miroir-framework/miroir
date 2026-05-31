@@ -112,6 +112,52 @@
     @apply rounded-2xl p-6
       border border-gray-200 dark:border-gray-700;
   }
+  .concept-card-text {
+    @apply text-gray-600 dark:text-gray-400;
+  }
+  .concept-card-title {
+    @apply inline-block px-2.5 py-0.5 text-xs font-bold rounded-md mb-4;
+  }
+  .concept-card-body {
+    @apply text-sm concept-card-text leading-relaxed;
+  }
+
+  /* concept-card title color variants */
+  .concept-card-title-indigo { @apply bg-indigo-100 dark:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300; }
+  .concept-card-title-purple { @apply bg-purple-100 dark:bg-purple-900/60 text-purple-700 dark:text-purple-300; }
+  .concept-card-title-green  { @apply bg-green-100  dark:bg-green-900/60  text-green-700  dark:text-green-300;  }
+  .concept-card-title-orange { @apply bg-orange-100 dark:bg-orange-900/60 text-orange-700 dark:text-orange-300; }
+
+  /* ── Feature-card sub-elements ── */
+  .feature-card-icon-wrap  { @apply h-11 w-11 rounded-xl flex items-center justify-center mb-5; }
+  .feature-card-icon-glyph { @apply h-5 w-5; }
+  .feature-card-heading    { @apply text-lg font-semibold mb-2; }
+  .feature-card-body       { @apply text-sm text-gray-600 dark:text-gray-400 leading-relaxed; }
+
+  /* feature-card icon color variants — bg on wrapper, text color cascades to SVG / icon child */
+  .feature-card-icon-indigo { @apply bg-indigo-100 dark:bg-indigo-900/50; }
+  .feature-card-icon-indigo > svg,
+  .feature-card-icon-indigo > .material-symbols-outlined { @apply text-indigo-600 dark:text-indigo-400; }
+
+  .feature-card-icon-purple { @apply bg-purple-100 dark:bg-purple-900/50; }
+  .feature-card-icon-purple > svg,
+  .feature-card-icon-purple > .material-symbols-outlined { @apply text-purple-600 dark:text-purple-400; }
+
+  .feature-card-icon-green { @apply bg-green-100 dark:bg-green-900/50; }
+  .feature-card-icon-green > svg,
+  .feature-card-icon-green > .material-symbols-outlined { @apply text-green-600 dark:text-green-400; }
+
+  .feature-card-icon-orange { @apply bg-orange-100 dark:bg-orange-900/50; }
+  .feature-card-icon-orange > svg,
+  .feature-card-icon-orange > .material-symbols-outlined { @apply text-orange-600 dark:text-orange-400; }
+
+  .feature-card-icon-sky { @apply bg-sky-100 dark:bg-sky-900/50; }
+  .feature-card-icon-sky > svg,
+  .feature-card-icon-sky > .material-symbols-outlined { @apply text-sky-600 dark:text-sky-400; }
+
+  .feature-card-icon-pink { @apply bg-pink-100 dark:bg-pink-900/50; }
+  .feature-card-icon-pink > svg,
+  .feature-card-icon-pink > .material-symbols-outlined { @apply text-pink-600 dark:text-pink-400; }
 
   /* ── Theme-toggle tooltip ── */
   /* Uses data-tooltip attribute; text is set by JS to reflect current mode.
