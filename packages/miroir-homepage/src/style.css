@@ -2,7 +2,36 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ── Semantic surface tokens ──────────────────────────────────────────────
+   Edit ONLY these blocks to retheme light or dark mode globally.
+   Variables live in @layer base so they are always present and cascade to
+   every child element.  color-scheme tells the browser which set of
+   system defaults (scrollbars, form controls, default background) to use,
+   and background-color on html ensures an explicit colour is always set
+   even before body renders (prevents the browser dark-default flash). */
+@layer base {
+  html {
+    --color-surface-1:    #ffffff;   /* primary page background              */
+    --color-surface-2:    #f9fafb;   /* alternate section bg  (≈ gray-50)    */
+    --color-surface-card: #ffffff;   /* card / panel background              */
+    color-scheme: light;
+    background-color: #ffffff;
+  }
+  html.dark {
+    --color-surface-1:    #030712;   /* gray-950 */
+    --color-surface-2:    #111827;   /* gray-900 */
+    --color-surface-card: #1f2937;   /* gray-800 */
+    color-scheme: dark;
+    background-color: #030712;
+  }
+}
+
 @layer utilities {
+  /* ── Surface background utilities (use CSS vars directly, bypass Tailwind's rgb() wrapper) ── */
+  .bg-surface-1    { background-color: var(--color-surface-1); }
+  .bg-surface-2    { background-color: var(--color-surface-2); }
+  .bg-surface-card { background-color: var(--color-surface-card); }
+
   /* Scroll-reveal: elements start invisible, transition in when .revealed is added by JS */
   .reveal {
     opacity: 0;
@@ -74,12 +103,42 @@
 
   /* ── Cards ── */
   .feature-card {
-    @apply bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-sm
+    background-color: var(--color-surface-card);
+    @apply rounded-2xl p-8 shadow-sm
       border border-gray-200 dark:border-gray-700 hover:shadow-md transition-shadow;
   }
   .concept-card {
-    @apply bg-white dark:bg-gray-800 rounded-2xl p-6
+    background-color: var(--color-surface-card);
+    @apply rounded-2xl p-6
       border border-gray-200 dark:border-gray-700;
+  }
+
+  /* ── Theme-toggle tooltip ── */
+  /* Uses data-tooltip attribute; text is set by JS to reflect current mode.
+     Tooltip appears BELOW the button so it never clips into the viewport top. */
+  .theme-tooltip {
+    position: relative;
+  }
+  .theme-tooltip::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 50%;
+    transform: translateX(-50%);
+    white-space: nowrap;
+    border-radius: 0.375rem;
+    padding: 0.125rem 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    pointer-events: none;
+    background-color: #1f2937; /* gray-800 */
+    color: #f3f4f6;            /* gray-100 */
+    opacity: 0;
+    transition: opacity 150ms ease;
+    z-index: 60;
+  }
+  .theme-tooltip:hover::after {
+    opacity: 1;
   }
 
   /* ── Screenshots ── */

@@ -4,7 +4,7 @@
 
 const STORAGE_KEY = 'miroir-theme'
 
-document.addEventListener('DOMContentLoaded', () => {
+function init() {
   const html = document.documentElement
 
   // ── Theme toggle ──────────────────────────────────────────────────────────
@@ -12,6 +12,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const isDark = html.classList.contains('dark')
     document.getElementById('icon-sun')?.classList.toggle('hidden', !isDark)
     document.getElementById('icon-moon')?.classList.toggle('hidden', isDark)
+    const btn = document.getElementById('theme-toggle')
+    if (btn) btn.dataset.tooltip = isDark ? 'Switch to light mode' : 'Switch to dark mode'
   }
   syncIcons()
 
@@ -78,4 +80,12 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('lightbox-close')?.addEventListener('click', closeLightbox)
   lightbox?.addEventListener('click', e => { if (e.target === lightbox) closeLightbox() })
   document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox() })
-})
+}
+
+// Module scripts are deferred, so DOM is ready when this runs.
+// Guard against Vite HMR re-evaluation after DOMContentLoaded has already fired.
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', init)
+} else {
+  init()
+}
