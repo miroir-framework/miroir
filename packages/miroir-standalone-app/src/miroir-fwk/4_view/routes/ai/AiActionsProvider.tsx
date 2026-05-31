@@ -126,8 +126,10 @@ function useApplyEntityProposal() {
   };
 }
 
-// ── AiActionsProvider ─────────────────────────────────────────────────────────
-export function AiActionsProvider(): React.JSX.Element {
+// ── AiActionsProviderInner ────────────────────────────────────────────────────
+// All CopilotKit hooks live here. Only mounted when CopilotKit is available
+// (i.e. not in sandbox / static-demo mode).
+function AiActionsProviderInner(): React.JSX.Element {
   const context = useMiroirContextService();
   log.info("Rendering AiActionsProvider", "context.showAiSidebar=", context.showAiSidebar);
   const applyEntityProposal = useApplyEntityProposal();
@@ -587,4 +589,16 @@ export function AiActionsProvider(): React.JSX.Element {
       {/* CopilotDevConsole is rendered inside SidebarHeader when showCopilotDevConsole=true */}
     </div>
   );
+}
+
+// ── AiActionsProvider ─────────────────────────────────────────────────────────
+// Guard: skip CopilotKit rendering entirely in sandbox / static-demo mode so
+// that CopilotKit hooks are never called without a <CopilotKit> provider.
+const isStaticDemo = (import.meta as any).env?.VITE_STATIC_DEMO === "true";
+
+export function AiActionsProvider(): React.JSX.Element {
+  if (isStaticDemo) {
+    return <></>;
+  }
+  return <AiActionsProviderInner />;
 }
