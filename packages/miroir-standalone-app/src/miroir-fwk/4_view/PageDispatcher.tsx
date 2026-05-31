@@ -19,23 +19,27 @@
  * compatibility, but all new navigation should use the query-param helpers
  * exported from navigation.ts.
  */
-import React, { useEffect } from "react";
+import React, { Suspense, useEffect } from "react";
 import { Navigate, type Params, useParams, useSearchParams } from "react-router-dom";
 
 import { type ApplicationSection } from "miroir-core";
 import { useMiroirContextService } from "miroir-react";
 
 import { PageContainer } from "./components/Page/PageContainer.js";
-import { CheckPage } from "./routes/Check.js";
-import { HomePage } from "./routes/HomePage.js";
-import { ModelDiagramPage } from "./routes/ModelDiagramPage.js";
-import { ReportDisplay } from "./routes/ReportDisplay.js";
-import { RunnersPage } from "./routes/Runners.js";
-import { SearchPage } from "./routes/SearchPage.js";
-import { SettingsPage } from "./routes/SettingsPage.js";
-import { TransformerBuilderPage } from "./routes/TransformerBuilderPage.js";
-import { MiroirEventsPage } from "./pages/MiroirEventsPage.js";
-import { ErrorLogsPageDEFUNCT } from "./ErrorLogsPageDEFUNCT.js";
+import { CenteredSpinner } from "./components/CenteredSpinner.js";
+
+// All page components are lazy-loaded so they are excluded from the main
+// bundle and downloaded in the background after the shell renders.
+const CheckPage            = React.lazy(() => import("./routes/Check.js").then(m => ({ default: m.CheckPage })));
+const HomePage             = React.lazy(() => import("./routes/HomePage.js").then(m => ({ default: m.HomePage })));
+const ModelDiagramPage     = React.lazy(() => import("./routes/ModelDiagramPage.js").then(m => ({ default: m.ModelDiagramPage })));
+const ReportDisplay        = React.lazy(() => import("./routes/ReportDisplay.js").then(m => ({ default: m.ReportDisplay })));
+const RunnersPage          = React.lazy(() => import("./routes/Runners.js").then(m => ({ default: m.RunnersPage })));
+const SearchPage           = React.lazy(() => import("./routes/SearchPage.js").then(m => ({ default: m.SearchPage })));
+const SettingsPage         = React.lazy(() => import("./routes/SettingsPage.js").then(m => ({ default: m.SettingsPage })));
+const TransformerBuilderPage = React.lazy(() => import("./routes/TransformerBuilderPage.js").then(m => ({ default: m.TransformerBuilderPage })));
+const MiroirEventsPage     = React.lazy(() => import("./pages/MiroirEventsPage.js").then(m => ({ default: m.MiroirEventsPage })));
+const ErrorLogsPageDEFUNCT = React.lazy(() => import("./ErrorLogsPageDEFUNCT.js").then(m => ({ default: m.ErrorLogsPageDEFUNCT })));
 import type { ReportUrlParamKeys } from "../../constants.js";
 import { usePageConfiguration } from "./services/index.js";
 
@@ -69,7 +73,10 @@ function ReportWrapper({ pageParams }: { pageParams: Params<ReportUrlParamKeys> 
 // ---------------------------------------------------------------------------
 // PageDispatcher
 // ---------------------------------------------------------------------------
-export function PageDispatcher(): React.JSX.Element {
+// Inner resolver — returns the correct page element for the current URL.
+// Kept separate so PageDispatcher can wrap it in a single <Suspense>.
+// ---------------------------------------------------------------------------
+function PageContent(): React.JSX.Element {
   const { "*": wildcardPath = "" } = useParams();
   const [searchParams] = useSearchParams();
   const page = searchParams.get("page");
@@ -171,4 +178,13 @@ export function PageDispatcher(): React.JSX.Element {
     default:
       return <HomePage />;
   }
+}
+
+// ---------------------------------------------------------------------------
+export function PageDispatcher(): React.JSX.Element {
+  return (
+    <Suspense fallback={<CenteredSpinner />}>
+      <PageContent />
+    </Suspense>
+  );
 }

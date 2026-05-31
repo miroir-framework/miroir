@@ -4,10 +4,10 @@ import {
 } from '@mui/material';
 import {
   useCallback,
-  useEffect, useMemo, useRef, useState
+  useEffect, lazy, useMemo, useRef, useState, Suspense
 } from 'react';
 import { Outlet } from 'react-router-dom';
-import { EventTimelineContainer } from '../EventTimelineContainer';
+const EventTimelineContainer = lazy(() => import('../EventTimelineContainer').then(m => ({ default: m.EventTimelineContainer })));
 import {
   ThemedGrid,
   ThemedMainPanel,
@@ -77,13 +77,13 @@ import {
 } from "../../ReduxHooks.js";
 import { cleanLevel } from '../../constants.js';
 import { usePageConfiguration } from '../../services/index.js';
-import { InstanceEditorOutline } from '../InstanceEditorOutline.js';
+const InstanceEditorOutline = lazy(() => import('../InstanceEditorOutline.js').then(m => ({ default: m.InstanceEditorOutline })));
 import { ReportPageContextProvider } from '../Reports/ReportPageContext';
 import { DocumentOutlineContextProvider } from '../ValueObjectEditor/InstanceEditorOutlineContext';
 import { ViewParamsUpdateQueue, ViewParamsUpdateQueueConfig } from '../ViewParamsUpdateQueue.js';
 import { Sidebar } from "./Sidebar.js";
 import { SidebarWidth } from "./SidebarSection.js";
-import { AiActionsProvider } from "../../routes/ai/AiActionsProvider.js";
+const AiActionsProvider = lazy(() => import("../../routes/ai/AiActionsProvider.js").then(m => ({ default: m.AiActionsProvider })));
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -272,6 +272,12 @@ export const RootComponent = (props: RootComponentProps) => {
   // );
   // log.info("RootComponent applicationDeploymentMap2",applicationDeploymentMap2);
   
+  // Remove the HTML bootstrap spinner injected in index.html. This fires once
+  // on first mount, covering the blank window before React renders.
+  useEffect(() => {
+    document.getElementById("miroir-bootstrap-spinner")?.remove();
+  }, []);
+
   useEffect(() => {
     if (applicationDeploymentMap) {
       log.info("RootComponent calling setApplicationDeploymentMap in context",applicationDeploymentMap);
@@ -859,18 +865,20 @@ export const RootComponent = (props: RootComponentProps) => {
               </ThemedMainPanel>
             </ThemedGrid>
             {/* AI Sidebar — always in DOM to preserve chat history; visibility via showAiSidebar */}
-            <AiActionsProvider />
+            <Suspense fallback={null}><AiActionsProvider /></Suspense>
             {/* Document Outline - Full height on right side */}
-            <InstanceEditorOutline
-              isOpen={isOutlineOpen}
-              onToggle={handleToggleOutline}
-              // data={outlineData}
-              // rootObjectKey={Object.keys(outlineData || {})[0] || ""}
-              onNavigate={handleNavigateToPath}
-              // title={outlineTitle}
-              width={outlineWidth}
-              onWidthChange={setOutlineWidth}
-            />
+            <Suspense fallback={null}>
+              <InstanceEditorOutline
+                isOpen={isOutlineOpen}
+                onToggle={handleToggleOutline}
+                // data={outlineData}
+                // rootObjectKey={Object.keys(outlineData || {})[0] || ""}
+                onNavigate={handleNavigateToPath}
+                // title={outlineTitle}
+                width={outlineWidth}
+                onWidthChange={setOutlineWidth}
+              />
+            </Suspense>
           </div>
           <Snackbar
             open={snackbarOpen}
@@ -883,7 +891,7 @@ export const RootComponent = (props: RootComponentProps) => {
             </Alert>
           </Snackbar>
           {/* Action Timeline - Show when enabled */}
-          <EventTimelineContainer key={`action-timeline-${context.showActionTimeline}`} />
+          <Suspense fallback={null}><EventTimelineContainer key={`action-timeline-${context.showActionTimeline}`} /></Suspense>
         </ReportPageContextProvider>
       </MiroirThemeProvider>
     </DocumentOutlineContextProvider>

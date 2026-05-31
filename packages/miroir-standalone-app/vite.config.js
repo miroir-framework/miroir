@@ -31,6 +31,18 @@ export default defineConfig({
     outDir: '../dist',
     target: 'esnext',
     sourcemap: true,
+    rollupOptions: {
+      output: {
+        // Pin heavy vendor libraries to stable named chunks so the browser
+        // can cache them independently of app code changes.
+        manualChunks(id) {
+          if (id.includes("node_modules/@copilotkit")) return "vendor-copilotkit";
+          if (id.includes("node_modules/d3") || id.includes("node_modules/miroir-diagram-class")) return "vendor-d3";
+          if (id.includes("node_modules/ag-grid")) return "vendor-ag-grid";
+          if (id.includes("node_modules/@mui/material") || id.includes("node_modules/@mui/icons-material")) return "vendor-mui";
+        },
+      },
+    },
     // rollupOptions: {
     //   external: ["process"]
     // },

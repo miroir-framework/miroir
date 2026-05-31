@@ -593,20 +593,20 @@ async function startWebApp(root: Root) {
       {/* <span>electron {isElectron ? "yes" : "no"}</span>
         <pre>{JSON.stringify(webMiroirConfig, null, 2)}</pre> */}
       <StrictMode>
-        <CopilotKitWrapper>
-          <ThemeProvider theme={theme}>
-            <StyledEngineProvider injectFirst>
-              <LocalCacheProvider store={domainControllerForClient.getLocalCache().getInnerStore()}>
-                <MiroirContextReactProvider
-                  miroirContext={miroirContext}
-                  domainController={domainControllerForClient}
-                >
+        <ThemeProvider theme={theme}>
+          <StyledEngineProvider injectFirst>
+            <LocalCacheProvider store={domainControllerForClient.getLocalCache().getInnerStore()}>
+              <MiroirContextReactProvider
+                miroirContext={miroirContext}
+                domainController={domainControllerForClient}
+              >
+                <CopilotKitWrapper>
                   <RouterProvider router={router} />
-                </MiroirContextReactProvider>
-              </LocalCacheProvider>
-            </StyledEngineProvider>
-          </ThemeProvider>
-        </CopilotKitWrapper>
+                </CopilotKitWrapper>
+              </MiroirContextReactProvider>
+            </LocalCacheProvider>
+          </StyledEngineProvider>
+        </ThemeProvider>
       </StrictMode>
     </>,
   );
