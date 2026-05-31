@@ -43,3 +43,52 @@
     @apply my-10 border-gray-200 dark:border-gray-800;
   }
 }
+
+@layer components {
+  /* ── Navigation ── */
+  .nav-link {
+    @apply text-gray-600 hover:text-indigo-600 dark:text-gray-400 dark:hover:text-indigo-400 transition-colors;
+  }
+  .nav-link-active {
+    @apply text-indigo-600 dark:text-indigo-400 font-semibold;
+  }
+  .footer-link {
+    @apply hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors;
+  }
+
+  /* ── Buttons ── */
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-xl
+      bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-base
+      shadow-lg shadow-indigo-500/30 hover:shadow-xl hover:shadow-indigo-500/40
+      hover:scale-105 transition-all duration-200;
+  }
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-xl
+      border border-gray-300 dark:border-gray-700
+      bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 font-semibold text-base
+      hover:border-indigo-400 dark:hover:border-indigo-500
+      hover:text-indigo-600 dark:hover:text-indigo-400
+      hover:scale-105 transition-all duration-200;
+  }
+
+  /* ── Cards ── */
+  .feature-card {
+    @apply bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-sm
+      border border-gray-200 dark:border-gray-700 hover:shadow-md transition-shadow;
+  }
+  .concept-card {
+    @apply bg-white dark:bg-gray-800 rounded-2xl p-6
+      border border-gray-200 dark:border-gray-700;
+  }
+
+  /* ── Screenshots ── */
+  .screenshot-frame {
+    @apply overflow-hidden rounded-2xl border border-gray-200 dark:border-gray-800
+      shadow-md group-hover:shadow-xl transition-shadow duration-300;
+  }
+  .screenshot-img {
+    @apply w-full object-cover object-top
+      group-hover:scale-[1.03] transition-transform duration-500;
+  }
+}

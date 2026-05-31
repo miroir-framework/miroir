@@ -16,6 +16,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
   <link rel="stylesheet" href="./src/style.css" />
 </head>
 <body class="bg-white dark:bg-gray-950 text-gray-900 dark:text-gray-100 font-sans antialiased">
@@ -28,10 +29,10 @@
         Miroir
       </a>
       <div class="hidden md:flex items-center gap-6 text-sm font-medium ml-2">
-        <a href="./blog/" class="text-gray-600 hover:text-indigo-600 dark:text-gray-400 dark:hover:text-indigo-400 transition-colors">Blog</a>
-        <a href="./sandbox/" class="text-gray-600 hover:text-indigo-600 dark:text-gray-400 dark:hover:text-indigo-400 transition-colors">Sandbox</a>
-        <a href="https://github.com/miroir-framework/miroir/tree/master/docs" target="_blank" rel="noopener" class="text-gray-600 hover:text-indigo-600 dark:text-gray-400 dark:hover:text-indigo-400 transition-colors">Docs</a>
-        <a href="https://github.com/miroir-framework/miroir" target="_blank" rel="noopener" class="text-gray-600 hover:text-indigo-600 dark:text-gray-400 dark:hover:text-indigo-400 transition-colors">GitHub</a>
+        <a href="./blog/" class="nav-link">Blog</a>
+        <a href="./sandbox/" class="nav-link">Sandbox</a>
+        <a href="https://github.com/miroir-framework/miroir/tree/master/docs" target="_blank" rel="noopener" class="nav-link">Docs</a>
+        <a href="https://github.com/miroir-framework/miroir" target="_blank" rel="noopener" class="nav-link">GitHub</a>
       </div>
       <div class="ml-auto flex items-center gap-2">
         <button id="theme-toggle" aria-label="Toggle dark mode" class="p-2 rounded-lg text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
@@ -50,10 +51,10 @@
       </div>
     </div>
     <div id="mobile-menu" class="hidden md:hidden border-t border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950 px-5 py-4 flex flex-col gap-4 text-sm font-medium">
-      <a href="./blog/" class="text-gray-600 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400">Blog</a>
-      <a href="./sandbox/" class="text-gray-600 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400">Sandbox</a>
-      <a href="https://github.com/miroir-framework/miroir/tree/master/docs" target="_blank" rel="noopener" class="text-gray-600 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400">Docs</a>
-      <a href="https://github.com/miroir-framework/miroir" target="_blank" rel="noopener" class="text-gray-600 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400">GitHub</a>
+      <a href="./blog/" class="nav-link">Blog</a>
+      <a href="./sandbox/" class="nav-link">Sandbox</a>
+      <a href="https://github.com/miroir-framework/miroir/tree/master/docs" target="_blank" rel="noopener" class="nav-link">Docs</a>
+      <a href="https://github.com/miroir-framework/miroir" target="_blank" rel="noopener" class="nav-link">GitHub</a>
     </div>
   </nav>
 
@@ -72,18 +73,18 @@
         Open Source · MIT License
       </div>
 
-      <h1 class="text-5xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight mb-6 bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-400 bg-clip-text text-transparent leading-tight">
+      <h1 class="text-5xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight mb-6 bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-400 bg-clip-text text-transparent leading-tight" style="padding-bottom: 0.5rem;">
         Build Applications<br />at the Speed of Thought
       </h1>
       <p class="text-xl sm:text-2xl text-gray-600 dark:text-gray-400 mb-10 max-w-2xl mx-auto leading-relaxed">
         Miroir unifies development‑time and runtime into a single environment — define your data model, logic, and UI as living JSON, see results immediately.
       </p>
       <div class="flex flex-col sm:flex-row gap-4 justify-center">
-        <a href="./sandbox/" class="inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-base shadow-lg shadow-indigo-500/30 hover:shadow-xl hover:shadow-indigo-500/40 hover:scale-105 transition-all duration-200">
+        <a href="./sandbox/" class="btn-primary">
           Try the Sandbox
           <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" /></svg>
         </a>
-        <a href="https://github.com/miroir-framework/miroir/tree/master/docs" target="_blank" rel="noopener" class="inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 font-semibold text-base hover:border-indigo-400 dark:hover:border-indigo-500 hover:text-indigo-600 dark:hover:text-indigo-400 hover:scale-105 transition-all duration-200">
+        <a href="https://github.com/miroir-framework/miroir/tree/master/docs" target="_blank" rel="noopener" class="btn-secondary">
           Read the Docs
           <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.966 8.966 0 0 0-6 2.292m0-14.25v14.25" /></svg>
         </a>
@@ -106,15 +107,15 @@
       </div>
       <div class="grid md:grid-cols-3 gap-6 lg:gap-8">
 
-        <div class="reveal bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-sm border border-gray-200 dark:border-gray-700 hover:shadow-md transition-shadow">
+        <div class="reveal feature-card">
           <div class="h-11 w-11 rounded-xl bg-indigo-100 dark:bg-indigo-900/50 flex items-center justify-center mb-5">
             <svg class="h-5 w-5 text-indigo-600 dark:text-indigo-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75 22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3-4.5 16.5" /></svg>
           </div>
           <h3 class="text-lg font-semibold mb-2">Schema‑First</h3>
-          <p class="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">Define your data model as Jzod schemas (JSON + Zod). TypeScript types, runtime validation, and UI forms are all generated automatically — zero duplication, zero drift.</p>
+          <p class="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">Define your data model as Jzod schemas (JSON + Zod). UI forms and runtime validations are generated automatically — zero duplication, zero drift.</p>
         </div>
 
-        <div class="reveal bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-sm border border-gray-200 dark:border-gray-700 hover:shadow-md transition-shadow" style="transition-delay:80ms">
+        <div class="reveal feature-card" style="transition-delay:80ms">
           <div class="h-11 w-11 rounded-xl bg-purple-100 dark:bg-purple-900/50 flex items-center justify-center mb-5">
             <svg class="h-5 w-5 text-purple-600 dark:text-purple-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" /></svg>
           </div>
@@ -122,31 +123,31 @@
           <p class="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">Modify entities, queries and reports while the app is running. No compile–wait–restart cycle. Instant feedback, just like Smalltalk's legendary interactive model.</p>
         </div>
 
-        <div class="reveal bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-sm border border-gray-200 dark:border-gray-700 hover:shadow-md transition-shadow" style="transition-delay:160ms">
+        <div class="reveal feature-card" style="transition-delay:160ms">
           <div class="h-11 w-11 rounded-xl bg-green-100 dark:bg-green-900/50 flex items-center justify-center mb-5">
             <svg class="h-5 w-5 text-green-600 dark:text-green-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375m16.5 2.625c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125m16.5 5.625c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125" /></svg>
           </div>
           <h3 class="text-lg font-semibold mb-2">Multi‑Backend</h3>
-          <p class="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">One codebase, multiple persistence backends: filesystem, IndexedDB, PostgreSQL, and more. Switch with a configuration change — no code changes needed.</p>
+          <p class="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">One codebase, multiple persistence backends: PostgreSQL, MongoDB, filesystem, IndexedDB, and more. Switch with a configuration change — no code changes needed.</p>
         </div>
 
-        <div class="reveal bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-sm border border-gray-200 dark:border-gray-700 hover:shadow-md transition-shadow" style="transition-delay:240ms">
+        <div class="reveal feature-card" style="transition-delay:240ms">
           <div class="h-11 w-11 rounded-xl bg-orange-100 dark:bg-orange-900/50 flex items-center justify-center mb-5">
             <svg class="h-5 w-5 text-orange-600 dark:text-orange-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456Z" /></svg>
           </div>
           <h3 class="text-lg font-semibold mb-2">AI‑Ready</h3>
-          <p class="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">First‑class MCP (Model Context Protocol) support. LLMs can inspect, query, and modify your application model at runtime through a well‑defined structured interface.</p>
+          <p class="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">First‑class MCP (Model Context Protocol) support. LLMs can inspect, query, and modify your application model at runtime through a well‑defined, structured interface.</p>
         </div>
 
-        <div class="reveal bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-sm border border-gray-200 dark:border-gray-700 hover:shadow-md transition-shadow" style="transition-delay:320ms">
+        <div class="reveal feature-card" style="transition-delay:320ms">
           <div class="h-11 w-11 rounded-xl bg-sky-100 dark:bg-sky-900/50 flex items-center justify-center mb-5">
-            <svg class="h-5 w-5 text-sky-600 dark:text-sky-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.375 19.5h17.25m-17.25 0a1.125 1.125 0 0 1-1.125-1.125M3.375 19.5h1.5C5.496 19.5 6 18.996 6 18.375m-3.75.125a1.125 1.125 0 0 0 1.125 1.125m0 0h.375m0 0v-1.5c0-.621.504-1.125 1.125-1.125h7.5m-7.5 0h7.5" /></svg>
+            <span class="material-symbols-outlined text-xl leading-none text-sky-600 dark:text-sky-400" aria-hidden="true">saved_search</span>
           </div>
           <h3 class="text-lg font-semibold mb-2">Composable Queries</h3>
           <p class="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">A layered query language: extractors fetch data, combiners join it, transformers shape the result. The same declaration runs in‑memory, in the browser, or as SQL.</p>
         </div>
 
-        <div class="reveal bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-sm border border-gray-200 dark:border-gray-700 hover:shadow-md transition-shadow" style="transition-delay:400ms">
+        <div class="reveal feature-card" style="transition-delay:400ms">
           <div class="h-11 w-11 rounded-xl bg-pink-100 dark:bg-pink-900/50 flex items-center justify-center mb-5">
             <svg class="h-5 w-5 text-pink-600 dark:text-pink-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.59 14.37a6 6 0 0 1-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 0 0 6.16-12.12A14.98 14.98 0 0 0 9.631 8.41m5.96 5.96a14.926 14.926 0 0 1-5.841 2.58m-.119-8.54a6 6 0 0 0-7.381 5.84h4.8m2.581-5.84a14.927 14.927 0 0 0-2.58 5.84m2.699 2.7c-.103.021-.207.041-.311.06a15.09 15.09 0 0 1-2.448-2.448 14.9 14.9 0 0 1 .06-.312m-2.24 2.39a4.493 4.493 0 0 0-1.757 4.306 4.493 4.493 0 0 0 4.306-1.758M16.5 9a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Z" /></svg>
           </div>
@@ -171,29 +172,29 @@
       <div class="grid md:grid-cols-2 gap-6 lg:gap-8">
 
         <div class="reveal cursor-zoom-in group" data-lightbox="true">
-          <div class="overflow-hidden rounded-2xl border border-gray-200 dark:border-gray-800 shadow-md group-hover:shadow-xl transition-shadow duration-300">
-            <img class="w-full object-cover object-top group-hover:scale-[1.03] transition-transform duration-500" data-src="screenshots/library_homepage.png" alt="Library application home report" loading="lazy" />
+          <div class="screenshot-frame">
+            <img class="screenshot-img" data-src="screenshots/library_homepage.png" alt="Library application home report" loading="lazy" />
           </div>
           <p class="mt-3 text-sm text-center font-medium text-gray-500 dark:text-gray-500">Library App · Home Report</p>
         </div>
 
         <div class="reveal cursor-zoom-in group" data-lightbox="true" style="transition-delay:100ms">
-          <div class="overflow-hidden rounded-2xl border border-gray-200 dark:border-gray-800 shadow-md group-hover:shadow-xl transition-shadow duration-300">
-            <img class="w-full object-cover object-top group-hover:scale-[1.03] transition-transform duration-500" data-src="screenshots/library_model.png" alt="Entity and model browser" loading="lazy" />
+          <div class="screenshot-frame">
+            <img class="screenshot-img" data-src="screenshots/library_model.png" alt="Entity and model browser" loading="lazy" />
           </div>
           <p class="mt-3 text-sm text-center font-medium text-gray-500 dark:text-gray-500">Entity & Model Browser</p>
         </div>
 
         <div class="reveal cursor-zoom-in group" data-lightbox="true" style="transition-delay:200ms">
-          <div class="overflow-hidden rounded-2xl border border-gray-200 dark:border-gray-800 shadow-md group-hover:shadow-xl transition-shadow duration-300">
-            <img class="w-full object-cover object-top group-hover:scale-[1.03] transition-transform duration-500" data-src="screenshots/library_users.png" alt="Users list auto-generated report" loading="lazy" />
+          <div class="screenshot-frame">
+            <img class="screenshot-img" data-src="screenshots/library_users.png" alt="Users list auto-generated report" loading="lazy" />
           </div>
           <p class="mt-3 text-sm text-center font-medium text-gray-500 dark:text-gray-500">Auto‑Generated Data Report</p>
         </div>
 
         <div class="reveal cursor-zoom-in group" data-lightbox="true" style="transition-delay:300ms">
-          <div class="overflow-hidden rounded-2xl border border-gray-200 dark:border-gray-800 shadow-md group-hover:shadow-xl transition-shadow duration-300">
-            <img class="w-full object-cover object-top group-hover:scale-[1.03] transition-transform duration-500" data-src="screenshots/miroir-design_mode.png" alt="Live design mode" loading="lazy" />
+          <div class="screenshot-frame">
+            <img class="screenshot-img" data-src="screenshots/miroir-design_mode.png" alt="Live design mode" loading="lazy" />
           </div>
           <p class="mt-3 text-sm text-center font-medium text-gray-500 dark:text-gray-500">Live Design Mode</p>
         </div>
@@ -220,22 +221,22 @@
       </div>
       <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
 
-        <div class="reveal bg-white dark:bg-gray-800 rounded-2xl p-6 border border-gray-200 dark:border-gray-700">
+        <div class="reveal concept-card">
           <span class="inline-block px-2.5 py-0.5 text-xs font-bold rounded-md bg-indigo-100 dark:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 mb-4">Entity</span>
           <p class="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">A typed, schema‑validated data class. Single, composite and UUID primary keys; relations all first‑class.</p>
         </div>
 
-        <div class="reveal bg-white dark:bg-gray-800 rounded-2xl p-6 border border-gray-200 dark:border-gray-700" style="transition-delay:80ms">
+        <div class="reveal concept-card" style="transition-delay:80ms">
           <span class="inline-block px-2.5 py-0.5 text-xs font-bold rounded-md bg-purple-100 dark:bg-purple-900/60 text-purple-700 dark:text-purple-300 mb-4">Query</span>
           <p class="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">Composable read operations: extractors fetch raw data, combiners join it, transformers shape the result.</p>
         </div>
 
-        <div class="reveal bg-white dark:bg-gray-800 rounded-2xl p-6 border border-gray-200 dark:border-gray-700" style="transition-delay:160ms">
+        <div class="reveal concept-card" style="transition-delay:160ms">
           <span class="inline-block px-2.5 py-0.5 text-xs font-bold rounded-md bg-green-100 dark:bg-green-900/60 text-green-700 dark:text-green-300 mb-4">Transformer</span>
           <p class="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">Pure functions on data, declared as JSON. The same declaration drives in‑memory, server‑side, or SQL execution.</p>
         </div>
 
-        <div class="reveal bg-white dark:bg-gray-800 rounded-2xl p-6 border border-gray-200 dark:border-gray-700" style="transition-delay:240ms">
+        <div class="reveal concept-card" style="transition-delay:240ms">
           <span class="inline-block px-2.5 py-0.5 text-xs font-bold rounded-md bg-orange-100 dark:bg-orange-900/60 text-orange-700 dark:text-orange-300 mb-4">Report</span>
           <p class="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">Declarative UI pages that bind a query to a layout. Tables, forms, and custom sections — configurable at runtime.</p>
         </div>
@@ -307,10 +308,10 @@
         <span>MIT License</span>
       </div>
       <nav class="flex flex-wrap gap-6 justify-center">
-        <a href="./blog/" class="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">Blog</a>
-        <a href="./sandbox/" class="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">Sandbox</a>
-        <a href="https://github.com/miroir-framework/miroir/tree/master/docs" target="_blank" rel="noopener" class="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">Docs</a>
-        <a href="https://github.com/miroir-framework/miroir" target="_blank" rel="noopener" class="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">GitHub</a>
+        <a href="./blog/" class="footer-link">Blog</a>
+        <a href="./sandbox/" class="footer-link">Sandbox</a>
+        <a href="https://github.com/miroir-framework/miroir/tree/master/docs" target="_blank" rel="noopener" class="footer-link">Docs</a>
+        <a href="https://github.com/miroir-framework/miroir" target="_blank" rel="noopener" class="footer-link">GitHub</a>
       </nav>
       <span>© 2026 Miroir Framework</span>
     </div>
