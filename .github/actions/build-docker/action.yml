@@ -16,6 +16,7 @@ runs:
     - name: Build Docker image
       shell: bash
       run: |
+        chmod +x ci/docker/build_miroir.sh
         if [[ -n "${{ inputs.tag }}" ]]; then
           ci/docker/build_miroir.sh --tag "${{ inputs.tag }}" .
         else
