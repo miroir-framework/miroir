@@ -1,0 +1,59 @@
+name: Build Miroir Artefacts (Linux)
+description: >
+  Checks out the repo, sets up Node.js, installs dependencies, and builds all
+  packages up to and including step 4 (React bindings). Stops before
+  miroir-sandbox.
+
+runs:
+  using: composite
+  steps:
+    - name: Install dependencies
+      # package-lock.json is generated on Windows; deleting it lets npm
+      # resolve platform-specific optional deps (e.g. @rollup/rollup-linux-x64-gnu)
+      shell: bash
+      run: |
+        rm -f package-lock.json
+        npm install --no-audit --prefer-dedupe
+
+    # ── Homepage (no Miroir deps — build first for fast feedback) ────────
+    - name: Build miroir-homepage
+      shell: bash
+      run: npm run build -w miroir-homepage
+      env:
+        VITE_BASE_URL: /miroir/
+
+    # ── Build order per copilot-instructions.md ─────────────────────────
+    # 1. Core type definitions (data deployed by miroir & admin test apps)
+    - name: Build miroir-test-app_deployment-miroir
+      shell: bash
+      run: npm run build -w miroir-test-app_deployment-miroir
+
+    - name: Build miroir-test-app_deployment-admin
+      shell: bash
+      run: npm run build -w miroir-test-app_deployment-admin
+
+    - name: Build miroir-test-app_deployment-library
+      shell: bash
+      run: npm run build -w miroir-test-app_deployment-library
+
+    # 2. miroir-core with generated TypeScript types (devBuild)
+    - name: Build miroir-core (with type generation)
+      shell: bash
+      run: npm run devBuild -w miroir-core
+
+    # 3. Store, cache, and diagram packages (can run in parallel)
+    - name: Build store, cache, and diagram packages
+      shell: bash
+      run: |
+        npm run build -w miroir-store-bundled &
+        npm run build -w miroir-store-indexedDb &
+        npm run build -w miroir-localcache-redux &
+        wait
+
+    # 4. React bindings
+    - name: Build miroir-react
+      shell: bash
+      run: |
+        npm run build -w miroir-react &
+        npm run build -w miroir-diagram-class &
+        wait

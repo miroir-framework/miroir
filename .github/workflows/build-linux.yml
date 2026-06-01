@@ -7,11 +7,17 @@ jobs:
   build-linux:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - name: Checkout repository
+        uses: actions/checkout@v6
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
         with:
-          node-version: 20
-      - run: npm ci
+          node-version: '24'
+      - name: Install dependencies
+        run: |
+          rm -f package-lock.json
+          npm ci
+      - run: npx lerna run devBuild --scope=miroir-standalone-app
       - run: npm run dist-linux -w miroir-standalone-app-electron
       - uses: actions/upload-artifact@v4
         with:

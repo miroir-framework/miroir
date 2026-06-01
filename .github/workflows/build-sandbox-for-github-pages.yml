@@ -31,58 +31,14 @@ jobs:
         with:
           node-version: '24'
 
-      - name: Install dependencies
-        # package-lock.json is generated on Windows; deleting it lets npm
-        # resolve platform-specific optional deps (e.g. @rollup/rollup-linux-x64-gnu)
-        run: |
-          rm -f package-lock.json
-          npm install --no-audit --prefer-dedupe
+      - name: Build artefacts (steps 1–4)
+        uses: ./.github/actions/build-artefacts-linux
 
-      # ── Homepage (no Miroir deps — build first for fast feedback) ────────
-      - name: Build miroir-homepage
-        run: npm run build -w miroir-homepage
-        env:
-          VITE_BASE_URL: /miroir/
-
-      # ── Build order per copilot-instructions.md ─────────────────────────
-      # 1. Core type definitions (data deployed by miroir & admin test apps)
-      - name: Build miroir-test-app_deployment-miroir
-        run: npm run build -w miroir-test-app_deployment-miroir
-
-      - name: Build miroir-test-app_deployment-admin
-        run: npm run build -w miroir-test-app_deployment-admin
-
-      - name: Build miroir-test-app_deployment-library
-        run: npm run build -w miroir-test-app_deployment-library
-
-      # 2. miroir-core with generated TypeScript types (devBuild)
-      - name: Build miroir-core (with type generation)
-        run: npm run devBuild -w miroir-core
-
-      # 3. Store, cache, and diagram packages (can run in parallel)
-      - name: Build store, cache, and diagram packages
-        run: |
-          npm run build -w miroir-store-bundled &
-          npm run build -w miroir-store-indexedDb &
-          npm run build -w miroir-localcache-redux &
-          wait
-
-      # 4. React bindings
-      - name: Build miroir-react
-        run: |
-          npm run build -w miroir-react &
-          npm run build -w miroir-diagram-class &
-          wait
-
-      # 5. Sandbox — deployed at /miroir/sandbox/
       - name: Build miroir-sandbox (static)
         run: npm run build:static -w miroir-sandbox
         env:
           VITE_BASE_URL: /miroir/sandbox/
 
-      # 6. Assemble final Pages artifact:
-      #    homepage/dist/           → https://miroir-framework.github.io/miroir/
-      #    homepage/dist/sandbox/   → https://miroir-framework.github.io/miroir/sandbox/
       - name: Assemble Pages artifact
         run: |
           mkdir -p packages/miroir-homepage/dist/sandbox
@@ -95,6 +51,7 @@ jobs:
 
   deploy:
     needs: build
+    if: ${{ !github.event.act }} # skip during local actions testing
     runs-on: ubuntu-latest
     environment:
       name: github-pages
