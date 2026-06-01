@@ -1,0 +1,23 @@
+name: Build Miroir Docker Image
+description: >
+  Builds the miroir-server Docker container image using ci/docker/build_miroir.sh.
+  Requires the checkout, build-artefacts-linux, and build-server-binary actions
+  to have run first (the server release binary must already be produced).
+
+inputs:
+  tag:
+    description: 'Docker image tag (default: miroir-framework/miroir:latest)'
+    required: false
+    default: ''
+
+runs:
+  using: composite
+  steps:
+    - name: Build Docker image
+      shell: bash
+      run: |
+        if [[ -n "${{ inputs.tag }}" ]]; then
+          ci/docker/build_miroir.sh --tag "${{ inputs.tag }}" .
+        else
+          ci/docker/build_miroir.sh .
+        fi

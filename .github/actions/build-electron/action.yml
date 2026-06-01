@@ -1,0 +1,12 @@
+name: Build Miroir Electron App
+description: >
+  Builds the Miroir Electron desktop application via `npm run dist`.
+  Requires the checkout, build-artefacts-linux, and build-server-binary
+  actions to have run first (miroir-standalone-app must already be built).
+
+runs:
+  using: composite
+  steps:
+    - name: Build Electron distributable
+      shell: bash
+      run: npm run dist -w miroir-standalone-app-electron

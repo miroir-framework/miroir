@@ -1,0 +1,23 @@
+name: Build Miroir Server Binary
+description: >
+  Builds miroir-cli, miroir-standalone-app, and miroir-server, then produces
+  the self-contained server release binary via `npm run build:release`.
+  Requires the checkout and build-artefacts-linux actions to have run first.
+
+runs:
+  using: composite
+  steps:
+
+    - name: Build miroir-cli
+      shell: bash
+      run: npm run build -w miroir-cli
+
+    - name: Build miroir-standalone-app and miroir-server
+      shell: bash
+      run:
+        npm run build -w miroir-standalone-app
+        npm run build -w miroir-server
+
+    - name: Produce server release binary
+      shell: bash
+      run: npm run build:release -w miroir-server

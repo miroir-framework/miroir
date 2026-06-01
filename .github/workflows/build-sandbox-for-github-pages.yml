@@ -31,9 +31,18 @@ jobs:
         with:
           node-version: '24'
 
+      # ── Homepage (no Miroir deps — build first for fast feedback) ────────
+      - name: Build miroir-homepage
+        shell: bash
+        run: npm run build -w miroir-homepage
+        env:
+          VITE_BASE_URL: /miroir/
+      
+      # ── Build artefacts (steps 1–4) ───────────────────────────────────────
       - name: Build artefacts (steps 1–4)
         uses: ./.github/actions/build-artefacts-linux
 
+      # ── Build miroir-sandbox (static) ───────────────────────────────────
       - name: Build miroir-sandbox (static)
         run: npm run build:static -w miroir-sandbox
         env:

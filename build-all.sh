@@ -68,19 +68,19 @@ fi
 # Step 1 – Optional: Build jzod and jzod-ts if present
 # ---------------------------------------------------------------------------
 if [ -d "$SCRIPT_DIR/../../jzod" ]; then
-  step "1/10 · jzod (optional)"
+  step "1/9 · jzod (optional)"
   t0=$(now_secs)
   (cd "$SCRIPT_DIR/../../jzod" && npm run build)
-  record_time "1/10  jzod (optional)" "$t0"
+  record_time "1/9  jzod (optional)" "$t0"
 else
   echo "[SKIP] jzod directory not found, skipping jzod build."
 fi
 
 if [ -d "$SCRIPT_DIR/../../jzod-ts" ]; then
-  step "2/10 · jzod-ts (optional)"
+  step "2/9 · jzod-ts (optional)"
   t0=$(now_secs)
   (cd "$SCRIPT_DIR/../../jzod-ts" && npm run build)
-  record_time "2/10  jzod-ts (optional)" "$t0"
+  record_time "2/9  jzod-ts (optional)" "$t0"
 else
   echo "[SKIP] jzod-ts directory not found, skipping jzod-ts build."
 fi
@@ -88,29 +88,29 @@ fi
 # ---------------------------------------------------------------------------
 # Step 3 – Deployment packages (schema definitions; no miroir-core dependency)
 # ---------------------------------------------------------------------------
-step "3/10  · miroir-test-app_deployment-miroir & miroir-test-app_deployment-admin"
+step "3/9  · miroir-test-app_deployment-miroir & miroir-test-app_deployment-admin"
 t0=$(now_secs)
 run_parallel_builds \
   miroir-test-app_deployment-miroir \
   miroir-test-app_deployment-admin
-record_time "3/10  miroir-test-app_deployment-miroir & miroir-test-app_deployment-admin" "$t0"
+record_time "3/9  miroir-test-app_deployment-miroir & miroir-test-app_deployment-admin" "$t0"
 
 # ---------------------------------------------------------------------------
 # Step 4 – miroir-core (optionally with type generation)
 # ---------------------------------------------------------------------------
-step "4/10 · miroir-core ($CORE_BUILD_MODE)"
+step "4/9 · miroir-core ($CORE_BUILD_MODE)"
 t0=$(now_secs)
 if [[ "$CORE_BUILD_MODE" == "devBuild" ]]; then
   npm run devBuild -w miroir-core
 else
   npm run build -w miroir-core
 fi
-record_time "4/10  miroir-core ($CORE_BUILD_MODE)" "$t0"
+record_time "4/9  miroir-core ($CORE_BUILD_MODE)" "$t0"
 
 # ---------------------------------------------------------------------------
 # Step 5 – Local caches & store backends (all depend only on miroir-core)
 # ---------------------------------------------------------------------------
-step "5/10 · localcaches & stores"
+step "5/9 · localcaches & stores"
 t0=$(now_secs)
 run_parallel_builds \
   miroir-localcache \
@@ -120,52 +120,47 @@ run_parallel_builds \
   miroir-store-indexedDb \
   miroir-store-postgres \
   miroir-store-mongodb
-record_time "5/10  localcaches & stores" "$t0"
+record_time "5/9  localcaches & stores" "$t0"
 
 # ---------------------------------------------------------------------------
 # Step 6 – UI library and service packages
 # ---------------------------------------------------------------------------
-step "6/10 · miroir-react, miroir-mcp, miroir-diagram-class"
+step "6/9 · miroir-react, miroir-mcp, miroir-diagram-class"
 t0=$(now_secs)
 run_parallel_builds \
   miroir-react \
   miroir-mcp \
   miroir-diagram-class
-record_time "6/10  miroir-react, miroir-mcp, miroir-diagram-class" "$t0"
+record_time "6/9  miroir-react, miroir-mcp, miroir-diagram-class" "$t0"
 
 # ---------------------------------------------------------------------------
 # Step 7 – Application-level packages
 # ---------------------------------------------------------------------------
-step "7/10 · miroir-cli"
+step "7/9 · miroir-cli, miroir-ai, miroir-mcp"
 t0=$(now_secs)
-  npm run build -w miroir-cli
-record_time "7/10  miroir-cli" "$t0"
+run_parallel_builds \
+  miroir-cli \
+  miroir-ai \
+  miroir-mcp
+record_time "7/9  miroir-cli, miroir-ai, miroir-mcp" "$t0"
 
 # ---------------------------------------------------------------------------
 # Step 8 – Application-level packages
 # ---------------------------------------------------------------------------
-step "8/10 · miroir-standalone-app"
+step "8/9 · miroir-standalone-app"
 t0=$(now_secs)
   npm run build -w miroir-standalone-app
-record_time "8/10  miroir-standalone-app" "$t0"
+record_time "8/9  miroir-standalone-app" "$t0"
 
 # ---------------------------------------------------------------------------
-# Step 9 – Application-level packages
+# Step 9 – Test/example deployment packages
 # ---------------------------------------------------------------------------
-step "9/10 · miroir-server"
-t0=$(now_secs)
-  npm run build -w miroir-server
-record_time "9/10  miroir-server" "$t0"
-
-# ---------------------------------------------------------------------------
-# Step 10 – Test/example deployment packages
-# ---------------------------------------------------------------------------
-step "10/10 · miroir-test-app_deployment-library & miroir-test-app_deployment-postgres"
+step "9/9 · miroir-test-app_deployment-library & miroir-test-app_deployment-postgres"
 t0=$(now_secs)
 run_parallel_builds \
   miroir-test-app_deployment-library \
   miroir-test-app_deployment-postgres
-record_time "10/10  miroir-test-app_deployment-library & miroir-test-app_deployment-postgres" "$t0"
+record_time "9/9  miroir-test-app_deployment-library & miroir-test-app_deployment-postgres" "$t0"
 
 # ---------------------------------------------------------------------------
 # Artefact-specific builds with timing

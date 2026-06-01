@@ -1,8 +1,8 @@
-name: Build Miroir Artefacts (Linux)
+name: Checkout and Install Dependencies
 description: >
-  Checks out the repo, sets up Node.js, installs dependencies, and builds all
-  packages up to and including step 4 (React bindings). Stops before
-  miroir-sandbox.
+  Checks out the repository, sets up Node.js 24, and installs npm dependencies.
+  Removes any Windows-generated package-lock.json so that platform-specific
+  optional packages (e.g. @rollup/rollup-linux-x64-gnu) resolve correctly.
 
 runs:
   using: composite
@@ -22,4 +22,3 @@ runs:
       run: |
         rm -f package-lock.json
         npm install --no-audit --prefer-dedupe
-    # ── Homepage (no Miroir deps — build first for fast feedback) ────────

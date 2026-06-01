@@ -1,8 +1,8 @@
-name: Build Miroir Artefacts (Linux)
+name: Build Miroir Artefacts
 description: >
-  Checks out the repo, sets up Node.js, installs dependencies, and builds all
-  packages up to and including step 4 (React bindings). Stops before
-  miroir-sandbox.
+  builds all packages needed by Miroir runnables. This is reused by multiple
+  workflows (e.g. build-sandbox-for-github-pages, build-mac, build-linux) to
+  avoid duplicating the same build steps.
 
 runs:
   using: composite
@@ -14,13 +14,6 @@ runs:
       run: |
         rm -f package-lock.json
         npm install --no-audit --prefer-dedupe
-
-    # ── Homepage (no Miroir deps — build first for fast feedback) ────────
-    - name: Build miroir-homepage
-      shell: bash
-      run: npm run build -w miroir-homepage
-      env:
-        VITE_BASE_URL: /miroir/
 
     # ── Build order per copilot-instructions.md ─────────────────────────
     # 1. Core type definitions (data deployed by miroir & admin test apps)
@@ -41,7 +34,13 @@ runs:
       shell: bash
       run: npm run devBuild -w miroir-core
 
-    # 3. Store, cache, and diagram packages (can run in parallel)
+    - name: Build ai and mcp packages (depend on miroir-core)
+      shell: bash
+      run: |
+        npm run build -w miroir-ai &
+        npm run build -w miroir-mcp &
+        wait
+
     - name: Build store, cache, and diagram packages
       shell: bash
       run: |
@@ -56,4 +55,13 @@ runs:
       run: |
         npm run build -w miroir-react &
         npm run build -w miroir-diagram-class &
+        wait
+
+    # Server-side stores
+    - name: Build server-side store packages
+      shell: bash
+      run: |
+        npm run build -w miroir-store-filesystem &
+        npm run build -w miroir-store-mongodb &
+        npm run build -w miroir-store-postgres &
         wait

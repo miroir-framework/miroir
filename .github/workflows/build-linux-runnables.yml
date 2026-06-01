@@ -1,0 +1,42 @@
+name: Build Miroir Runnables (Linux)
+
+on:
+  workflow_dispatch:
+    inputs:
+      docker_tag:
+        description: 'Docker image tag (leave blank for default: miroir-framework/miroir:latest)'
+        required: false
+        default: ''
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+
+      # ── 2. Build all shared library packages ────────────────────────────
+      - name: Build Miroir artefacts (libs)
+        uses: ./.github/actions/build-artefacts-linux
+
+      # ── 3. Build server binary ───────────────────────────────────────────
+      - name: Build server binary
+        uses: ./.github/actions/build-server-binary
+
+      # ── 4. Build Electron desktop app ───────────────────────────────────
+      - name: Build Electron app
+        uses: ./.github/actions/build-electron
+
+      # ── 5. Build Docker image ────────────────────────────────────────────
+      - name: Build Docker image
+        uses: ./.github/actions/build-docker
+        with:
+          tag: ${{ inputs.docker_tag }}
