@@ -1,23 +1,28 @@
 name: Build Miroir Server Binary
 description: >
-  Builds miroir-cli, miroir-standalone-app, and miroir-server, then produces
-  the self-contained server release binary via `npm run build:release`.
+  Builds server-side store packages (filesystem, mongodb, postgres), miroir-cli,
+  then produces the self-contained server release binary via `npm run build:release`
+  (which internally builds miroir-standalone-app and miroir-server).
   Requires the checkout and build-artefacts-linux actions to have run first.
 
 runs:
   using: composite
   steps:
+    # Server-side stores not included in build-artefacts-linux (which targets browser/sandbox builds)
+    - name: Build server-side store packages
+      shell: bash
+      run: |
+        npm run build -w miroir-store-filesystem &
+        npm run build -w miroir-store-mongodb &
+        npm run build -w miroir-store-postgres &
+        wait
 
     - name: Build miroir-cli
       shell: bash
       run: npm run build -w miroir-cli
 
-    - name: Build miroir-standalone-app and miroir-server
-      shell: bash
-      run:
-        npm run build -w miroir-standalone-app
-        npm run build -w miroir-server
-
+    # build:release already calls build:client which builds miroir-standalone-app;
+    # miroir-server has no plain "build" script — only build:release.
     - name: Produce server release binary
       shell: bash
       run: npm run build:release -w miroir-server
