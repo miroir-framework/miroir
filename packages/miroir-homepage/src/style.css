@@ -100,6 +100,26 @@
       hover:text-indigo-600 dark:hover:text-indigo-400
       hover:scale-105 transition-all duration-200;
   }
+  /* Compact indigo button used on light/card backgrounds (e.g. blog CTA boxes).
+     Uses indigo-700 base to meet WCAG AA contrast for white text in light mode. */
+  .btn-sandbox {
+    @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-lg
+      bg-indigo-700 hover:bg-indigo-600 text-white text-sm font-semibold
+      shadow-md shadow-indigo-700/30 hover:shadow-lg hover:shadow-indigo-700/40
+      transition-all duration-200;
+  }
+  /* White button used on dark gradient CTA sections. */
+  .btn-sandbox-cta {
+    @apply inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-xl
+      bg-white text-indigo-700 font-semibold
+      hover:bg-indigo-50 shadow-lg transition-colors;
+  }
+  /* Ghost/outline button used alongside btn-sandbox-cta on dark gradient sections. */
+  .btn-ghost-cta {
+    @apply inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-xl
+      border border-white/40 text-white font-semibold
+      hover:bg-white/10 transition-colors;
+  }
 
   /* ── Cards ── */
   .feature-card {
