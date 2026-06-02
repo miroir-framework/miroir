@@ -15,7 +15,6 @@ jobs:
           node-version: '24'
       - name: Install dependencies
         run: |
-          rm -f package-lock.json
           npm ci
       - run: npx lerna run devBuild --scope=miroir-standalone-app
       - run: npm run dist-mac -w miroir-standalone-app-electron

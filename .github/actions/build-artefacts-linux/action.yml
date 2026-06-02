@@ -8,11 +8,8 @@ runs:
   using: composite
   steps:
     - name: Install dependencies
-      # package-lock.json is generated on Windows; deleting it lets npm
-      # resolve platform-specific optional deps (e.g. @rollup/rollup-linux-x64-gnu)
       shell: bash
       run: |
-        rm -f package-lock.json
         npm install --no-audit --prefer-dedupe
 
     # ── Build order per copilot-instructions.md ─────────────────────────

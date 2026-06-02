@@ -1,7 +1,6 @@
 name: Checkout and Install Dependencies
 description: >
   Checks out the repository, sets up Node.js 24, and installs npm dependencies.
-  Removes any Windows-generated package-lock.json so that platform-specific
   optional packages (e.g. @rollup/rollup-linux-x64-gnu) resolve correctly.
 
 runs:
@@ -16,9 +15,6 @@ runs:
         node-version: '24'
 
     - name: Install dependencies
-      # package-lock.json is generated on Windows; deleting it lets npm
-      # resolve platform-specific optional deps (e.g. @rollup/rollup-linux-x64-gnu)
       shell: bash
       run: |
-        rm -f package-lock.json
         npm install --no-audit --prefer-dedupe

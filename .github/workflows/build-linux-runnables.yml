@@ -1,5 +1,28 @@
 name: Build Miroir Runnables (Linux)
 
+# Progressive build: each job uploads its dist outputs as artifacts and
+# downstream jobs restore only what they need. This means:
+#   - Any single failed job can be retried without rebuilding previous stages.
+#   - Jobs at the same level run in parallel.
+#   - npm install is repeated per job but is fast thanks to setup-node's npm cache.
+#
+# Artifact path convention
+#   Multi-path uploads (several packages/*/dist): common ancestor = packages/
+#     → archive entries are relative to packages/
+#     → download with  path: packages
+#   Single-path uploads (one packages/PKG/dist):
+#     → archive root = contents of that dist dir
+#     → download with  path: packages/PKG/dist
+#
+# Job graph:
+#   deploy-packages
+#     └─ core
+#          └─ shared-libs
+#               ├─ standalone-app
+#               │    └─ electron
+#               └─ server-binary
+#                    └─ docker
+
 on:
   workflow_dispatch:
     inputs:
@@ -11,34 +34,294 @@ on:
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
+defaults:
+  run:
+    shell: bash
+
 jobs:
-  build:
+  # ──────────────────────────────────────────────────────────────────────────────
+  # Job 1 · Schema / deployment packages
+  # No dependency on other Miroir packages; must run before miroir-core devBuild.
+  # ──────────────────────────────────────────────────────────────────────────────
+  deploy-packages:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v6
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v6
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
         with:
-          node-version: '24'
+          node-version: 24
+          cache: npm
+      - name: Install dependencies
+        run: |
+          npm install --no-audit --prefer-dedupe
+      - name: Build deployment packages (parallel)
+        run: |
+          npm run build -w miroir-test-app_deployment-miroir &
+          npm run build -w miroir-test-app_deployment-admin &
+          npm run build -w miroir-test-app_deployment-library &
+          wait
+      - name: Upload dist – deployment packages
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist-deployment-packages
+          path: |
+            packages/miroir-test-app_deployment-miroir/dist
+            packages/miroir-test-app_deployment-admin/dist
+            packages/miroir-test-app_deployment-library/dist
+          if-no-files-found: error
 
-      # ── 2. Build all shared library packages ────────────────────────────
-      - name: Build Miroir artefacts (libs)
-        uses: ./.github/actions/build-artefacts-linux
+  # ──────────────────────────────────────────────────────────────────────────────
+  # Job 2 · miroir-core  (devBuild regenerates TS types from Jzod schemas)
+  # ──────────────────────────────────────────────────────────────────────────────
+  core:
+    runs-on: ubuntu-latest
+    needs: deploy-packages
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+      - name: Install dependencies
+        run: |
+          npm install --no-audit --prefer-dedupe
+      - name: Restore dist – deployment packages
+        uses: actions/download-artifact@v4
+        with:
+          name: dist-deployment-packages
+          path: packages
+      - name: devBuild miroir-core (generates TypeScript types from Jzod schemas)
+        run: npm run devBuild -w miroir-core
+      - name: Upload dist – miroir-core
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist-miroir-core
+          path: packages/miroir-core/dist
+          if-no-files-found: error
 
-      # ── 3. Build server binary ───────────────────────────────────────────
-      - name: Build server binary
-        uses: ./.github/actions/build-server-binary
+  # ──────────────────────────────────────────────────────────────────────────────
+  # Job 3 · All shared library packages (browser + server stores + services)
+  # All packages here depend only on miroir-core and are built in parallel.
+  # Server stores (filesystem/mongodb/postgres) are included here so both
+  # server-binary and electron can use them without rebuilding.
+  # ──────────────────────────────────────────────────────────────────────────────
+  shared-libs:
+    runs-on: ubuntu-latest
+    needs: core
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+      - name: Install dependencies
+        run: |
+          npm install --no-audit --prefer-dedupe
+      - name: Restore dist – deployment packages
+        uses: actions/download-artifact@v4
+        with:
+          name: dist-deployment-packages
+          path: packages
+      - name: Restore dist – miroir-core
+        uses: actions/download-artifact@v4
+        with:
+          name: dist-miroir-core
+          path: packages/miroir-core/dist
+      - name: Build local caches and browser stores (parallel)
+        run: |
+          npm run build -w miroir-localcache &
+          npm run build -w miroir-localcache-redux &
+          npm run build -w miroir-localcache-zustand &
+          npm run build -w miroir-store-bundled &
+          npm run build -w miroir-store-indexedDb &
+          wait
+      - name: Build server stores and service packages (parallel)
+        run: |
+          npm run build -w miroir-store-filesystem &
+          npm run build -w miroir-store-mongodb &
+          npm run build -w miroir-store-postgres &
+          npm run build -w miroir-ai &
+          npm run build -w miroir-mcp &
+          wait
+      - name: Build miroir-react and miroir-diagram-class
+        run: |
+          npm run build -w miroir-react &
+          npm run build -w miroir-diagram-class &
+          wait
+      - name: Upload dist – shared libs
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist-shared-libs
+          path: |
+            packages/miroir-localcache/dist
+            packages/miroir-localcache-redux/dist
+            packages/miroir-localcache-zustand/dist
+            packages/miroir-store-bundled/dist
+            packages/miroir-store-indexedDb/dist
+            packages/miroir-store-filesystem/dist
+            packages/miroir-store-mongodb/dist
+            packages/miroir-store-postgres/dist
+            packages/miroir-ai/dist
+            packages/miroir-mcp/dist
+            packages/miroir-react/dist
+            packages/miroir-diagram-class/dist
+          if-no-files-found: error
 
-      # ── 4. Build Electron desktop app ───────────────────────────────────
-      - name: Build Electron app
-        uses: ./.github/actions/build-electron
+  # ──────────────────────────────────────────────────────────────────────────────
+  # Job 4a · miroir-standalone-app (browser SPA)
+  # ──────────────────────────────────────────────────────────────────────────────
+  standalone-app:
+    runs-on: ubuntu-latest
+    needs: shared-libs
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+      - name: Install dependencies
+        run: |
+          npm install --no-audit --prefer-dedupe
+      - name: Restore dist – deployment packages
+        uses: actions/download-artifact@v4
+        with:
+          name: dist-deployment-packages
+          path: packages
+      - name: Restore dist – miroir-core
+        uses: actions/download-artifact@v4
+        with:
+          name: dist-miroir-core
+          path: packages/miroir-core/dist
+      - name: Restore dist – shared libs
+        uses: actions/download-artifact@v4
+        with:
+          name: dist-shared-libs
+          path: packages
+      - name: Build miroir-standalone-app
+        run: npm run build -w miroir-standalone-app
+      - name: Upload dist – standalone-app
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist-standalone-app
+          path: packages/miroir-standalone-app/dist
+          if-no-files-found: error
 
-      # ── 5. Build Docker image ────────────────────────────────────────────
+  # ──────────────────────────────────────────────────────────────────────────────
+  # Job 4b · Server binary
+  # Builds miroir-cli then produces the self-contained server release binary.
+  # Server-side stores are already available via dist-shared-libs.
+  # ──────────────────────────────────────────────────────────────────────────────
+  server-binary:
+    runs-on: ubuntu-latest
+    needs: shared-libs
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+      - name: Install dependencies
+        run: |
+          npm install --no-audit --prefer-dedupe
+      - name: Restore dist – deployment packages
+        uses: actions/download-artifact@v4
+        with:
+          name: dist-deployment-packages
+          path: packages
+      - name: Restore dist – miroir-core
+        uses: actions/download-artifact@v4
+        with:
+          name: dist-miroir-core
+          path: packages/miroir-core/dist
+      - name: Restore dist – shared libs
+        uses: actions/download-artifact@v4
+        with:
+          name: dist-shared-libs
+          path: packages
+      - name: Build miroir-cli
+        run: npm run build -w miroir-cli
+      - name: Produce server release binary
+        run: npm run build:release -w miroir-server
+      - name: Upload server binary
+        uses: actions/upload-artifact@v4
+        with:
+          name: miroir-server-release
+          path: packages/miroir-server/release/
+          if-no-files-found: error
+
+  # ──────────────────────────────────────────────────────────────────────────────
+  # Job 5a · Electron desktop application
+  # ──────────────────────────────────────────────────────────────────────────────
+  electron:
+    runs-on: ubuntu-latest
+    needs: standalone-app
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+      - name: Install dependencies
+        run: |
+          npm install --no-audit --prefer-dedupe
+      - name: Restore dist – deployment packages
+        uses: actions/download-artifact@v4
+        with:
+          name: dist-deployment-packages
+          path: packages
+      - name: Restore dist – miroir-core
+        uses: actions/download-artifact@v4
+        with:
+          name: dist-miroir-core
+          path: packages/miroir-core/dist
+      - name: Restore dist – shared libs
+        uses: actions/download-artifact@v4
+        with:
+          name: dist-shared-libs
+          path: packages
+      - name: Restore dist – standalone-app
+        uses: actions/download-artifact@v4
+        with:
+          name: dist-standalone-app
+          path: packages/miroir-standalone-app/dist
+      - name: Build Electron distributable
+        run: npm run dist -w miroir-standalone-app-electron
+      - name: Upload Electron release
+        uses: actions/upload-artifact@v4
+        with:
+          name: miroir-electron-release
+          path: packages/miroir-standalone-app-electron/release/
+          if-no-files-found: error
+
+  # ──────────────────────────────────────────────────────────────────────────────
+  # Job 5b · Docker container image
+  # Only needs the pre-built server binary; no npm packages required.
+  # ──────────────────────────────────────────────────────────────────────────────
+  docker:
+    runs-on: ubuntu-latest
+    needs: server-binary
+    steps:
+      - uses: actions/checkout@v6
+      - name: Restore server binary
+        uses: actions/download-artifact@v4
+        with:
+          name: miroir-server-release
+          path: packages/miroir-server/release
       - name: Build Docker image
-        uses: ./.github/actions/build-docker
+        run: |
+          mkdir -p ci/artefacts
+          chmod +x ci/docker/build_miroir.sh
+          if [[ -n "${{ inputs.docker_tag }}" ]]; then
+            ci/docker/build_miroir.sh --tag "${{ inputs.docker_tag }}" .
+            docker save "${{ inputs.docker_tag }}" -o ci/artefacts/miroir.tar
+          else
+            ci/docker/build_miroir.sh .
+            docker save miroir-framework/miroir:latest -o ci/artefacts/miroir.tar
+          fi
+      - name: Upload Docker image
+        uses: actions/upload-artifact@v4
         with:
-          tag: ${{ inputs.docker_tag }}
-
+          name: miroir-docker-release
+          path: ci/artefacts/miroir.tar
+          if-no-files-found: error
 
