@@ -4,7 +4,10 @@ name: Build Miroir Runnables (Linux)
 # downstream jobs restore only what they need. This means:
 #   - Any single failed job can be retried without rebuilding previous stages.
 #   - Jobs at the same level run in parallel.
-#   - npm install is repeated per job but is fast thanks to setup-node's npm cache.
+#   - npm install is repeated per job but is fast thanks to a shared ~/.npm cache.
+#     Cache key = runner.os + hash of all package.json files (platform-neutral).
+#     The repo's package-lock.json is Windows-generated; it is deleted before every
+#     npm install so Linux/macOS optional deps resolve correctly.
 #
 # Artifact path convention
 #   Multi-path uploads (several packages/*/dist): common ancestor = packages/
@@ -50,16 +53,32 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           node-version: 24
-          cache: npm
+      - name: Cache npm store (~/.npm)
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-npm-${{ hashFiles('package.json', 'packages/*/package.json') }}
+          restore-keys: |
+            ${{ runner.os }}-npm-
       - name: Install dependencies
         run: |
+          rm -f package-lock.json
           npm install --no-audit --prefer-dedupe
       - name: Build deployment packages (parallel)
         run: |
-          npm run build -w miroir-test-app_deployment-miroir &
-          npm run build -w miroir-test-app_deployment-admin &
-          npm run build -w miroir-test-app_deployment-library &
-          wait
+          pids=()
+          npm run build -w miroir-test-app_deployment-miroir & pids+=($!)
+          npm run build -w miroir-test-app_deployment-admin & pids+=($!)
+          npm run build -w miroir-test-app_deployment-library & pids+=($!)
+          for pid in "${pids[@]}"; do wait "$pid"; done
+      - name: Verify deployment package dist dirs
+        run: |
+          echo "--- miroir-test-app_deployment-miroir ---"
+          ls packages/miroir-test-app_deployment-miroir/dist/
+          echo "--- miroir-test-app_deployment-admin ---"
+          ls packages/miroir-test-app_deployment-admin/dist/
+          echo "--- miroir-test-app_deployment-library ---"
+          ls packages/miroir-test-app_deployment-library/dist/
       - name: Upload dist – deployment packages
         uses: actions/upload-artifact@v4
         with:
@@ -81,9 +100,16 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           node-version: 24
-          cache: npm
+      - name: Cache npm store (~/.npm)
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-npm-${{ hashFiles('package.json', 'packages/*/package.json') }}
+          restore-keys: |
+            ${{ runner.os }}-npm-
       - name: Install dependencies
         run: |
+          rm -f package-lock.json
           npm install --no-audit --prefer-dedupe
       - name: Restore dist – deployment packages
         uses: actions/download-artifact@v4
@@ -113,9 +139,16 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           node-version: 24
-          cache: npm
+      - name: Cache npm store (~/.npm)
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-npm-${{ hashFiles('package.json', 'packages/*/package.json') }}
+          restore-keys: |
+            ${{ runner.os }}-npm-
       - name: Install dependencies
         run: |
+          rm -f package-lock.json
           npm install --no-audit --prefer-dedupe
       - name: Restore dist – deployment packages
         uses: actions/download-artifact@v4
@@ -129,25 +162,28 @@ jobs:
           path: packages/miroir-core/dist
       - name: Build local caches and browser stores (parallel)
         run: |
-          npm run build -w miroir-localcache &
-          npm run build -w miroir-localcache-redux &
-          npm run build -w miroir-localcache-zustand &
-          npm run build -w miroir-store-bundled &
-          npm run build -w miroir-store-indexedDb &
-          wait
+          pids=()
+          npm run build -w miroir-localcache & pids+=($!)
+          npm run build -w miroir-localcache-redux & pids+=($!)
+          npm run build -w miroir-localcache-zustand & pids+=($!)
+          npm run build -w miroir-store-bundled & pids+=($!)
+          npm run build -w miroir-store-indexedDb & pids+=($!)
+          for pid in "${pids[@]}"; do wait "$pid"; done
       - name: Build server stores and service packages (parallel)
         run: |
-          npm run build -w miroir-store-filesystem &
-          npm run build -w miroir-store-mongodb &
-          npm run build -w miroir-store-postgres &
-          npm run build -w miroir-ai &
-          npm run build -w miroir-mcp &
-          wait
+          pids=()
+          npm run build -w miroir-store-filesystem & pids+=($!)
+          npm run build -w miroir-store-mongodb & pids+=($!)
+          npm run build -w miroir-store-postgres & pids+=($!)
+          npm run build -w miroir-ai & pids+=($!)
+          npm run build -w miroir-mcp & pids+=($!)
+          for pid in "${pids[@]}"; do wait "$pid"; done
       - name: Build miroir-react and miroir-diagram-class
         run: |
-          npm run build -w miroir-react &
-          npm run build -w miroir-diagram-class &
-          wait
+          pids=()
+          npm run build -w miroir-react & pids+=($!)
+          npm run build -w miroir-diagram-class & pids+=($!)
+          for pid in "${pids[@]}"; do wait "$pid"; done
       - name: Upload dist – shared libs
         uses: actions/upload-artifact@v4
         with:
@@ -178,9 +214,16 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           node-version: 24
-          cache: npm
+      - name: Cache npm store (~/.npm)
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-npm-${{ hashFiles('package.json', 'packages/*/package.json') }}
+          restore-keys: |
+            ${{ runner.os }}-npm-
       - name: Install dependencies
         run: |
+          rm -f package-lock.json
           npm install --no-audit --prefer-dedupe
       - name: Restore dist – deployment packages
         uses: actions/download-artifact@v4
@@ -219,9 +262,16 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           node-version: 24
-          cache: npm
+      - name: Cache npm store (~/.npm)
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-npm-${{ hashFiles('package.json', 'packages/*/package.json') }}
+          restore-keys: |
+            ${{ runner.os }}-npm-
       - name: Install dependencies
         run: |
+          rm -f package-lock.json
           npm install --no-audit --prefer-dedupe
       - name: Restore dist – deployment packages
         uses: actions/download-artifact@v4
@@ -260,9 +310,16 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           node-version: 24
-          cache: npm
+      - name: Cache npm store (~/.npm)
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-npm-${{ hashFiles('package.json', 'packages/*/package.json') }}
+          restore-keys: |
+            ${{ runner.os }}-npm-
       - name: Install dependencies
         run: |
+          rm -f package-lock.json
           npm install --no-audit --prefer-dedupe
       - name: Restore dist – deployment packages
         uses: actions/download-artifact@v4

@@ -1,1 +1,2 @@
 -e act-env.json
+--artifact-server-path /tmp/act-artifacts
