@@ -4112,12 +4112,12 @@ export function transformer_extended_apply_wrapper(
       //   activityTracker.endTransformer(trackingId, result);
       // }
 
-      log.info(
-        "transformer_extended_apply_wrapper called for",
-        label,
-        "transformer_extended_apply result",
-        JSON.stringify(result, null, 2),
-      );
+      // log.info(
+      //   "transformer_extended_apply_wrapper called for",
+      //   label,
+      //   "transformer_extended_apply result",
+      //   JSON.stringify(result, null, 2),
+      // );
       return result;
     }
   } catch (e) {

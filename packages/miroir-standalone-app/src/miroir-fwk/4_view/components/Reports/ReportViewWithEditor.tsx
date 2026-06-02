@@ -357,20 +357,6 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
                     />
                     {generalEditMode && entityDefinitionReport && (
                       <>
-                        {/* <ThemedOnScreenHelper
-                        label={"ReportViewWithEditor: reportEntityDefinition"}
-                        data={entityDefinitionReport}
-                        initiallyUnfolded={false}
-                      /> */}
-                        {/* <ThemedOnScreenHelper
-                        label={"ReportViewWithEditor: reportViewData"}
-                        data={reportViewData}
-                        initiallyUnfolded={false}
-                      /> */}
-                        {/* <ThemedOnScreenHelper
-                        label={"ReportViewWithEditor: reportNamePath"}
-                        data={reportNamePath}
-                      /> */}
                         <InlineReportEditor
                           formikValuePath={reportNamePath}
                           formikReportDefinitionPathString={reportReportDetailsKey}

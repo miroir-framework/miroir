@@ -612,7 +612,9 @@ export function EntityInstanceSelectorPanel(props:{
                   deploymentUuid={deploymentUuid}
                   applicationSection={"data"}
                   formLabel={"All Entity Instances Viewer"}
-                  onSubmit={async () => {}} // No-op for readonly
+                  onSubmit={async () => {
+                    log.warn("Submit called on read-only EntityInstanceSelectorPanel for all instances, this should not happen");
+                  }} // No-op for readonly
                   valueObjectEditMode="create" // Readonly viewer mode, not relevant here
                   maxRenderDepth={3}
                   readonly={true}
@@ -650,7 +652,9 @@ export function EntityInstanceSelectorPanel(props:{
               applicationDeploymentMap={applicationDeploymentMap}
               applicationSection={"data"}
               formLabel={"Entity Instance Viewer"}
-              onSubmit={async () => {}} // No-op for readonly
+              onSubmit={async () => {
+                log.warn("Submit called on read-only EntityInstanceSelectorPanel for single instance, this should not happen");
+              }} // No-op for readonly
               maxRenderDepth={3}
               readonly={true}
             />

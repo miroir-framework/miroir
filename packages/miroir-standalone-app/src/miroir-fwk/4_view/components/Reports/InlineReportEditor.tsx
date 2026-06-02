@@ -82,7 +82,7 @@ export const InlineReportEditor: React.FC<InlineReportEditorProps> = ({
                 }}
               /> */}
               <ReportSectionEntityInstance
-                valueObjectEditMode='create'
+                valueObjectEditMode='update'
                 application={application}
                 applicationDeploymentMap={applicationDeploymentMap}
                 deploymentUuid={deploymentUuid}

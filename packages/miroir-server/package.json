@@ -4,6 +4,16 @@
   "description": "server for mirroir-based front-end",
   "main": "server.js",
   "type": "module",
+  "author": "Miroir Framework <miroir-framework@protonmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/XXXXXXXXXXXXXXXXXXXXXXXXX/issues"
+  },
+  "homepage": "https://github.com/XXXXXXXXXXXXXXXXXXXXXXXXXXX#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/XXXXXXXXXXXXXXXXXXXXXXXX.git"
+  },
   "scripts": {
     "build:client": "cross-env NODE_OPTIONS=--max-old-space-size=6144 npm run build -w miroir-standalone-app",
     "copy:client": "node scripts/copy-client.mjs",
@@ -20,19 +30,9 @@
     "build:devNOK": "npm run build-tsupNOK",
     "buildNOK": "npm run build:devNOK",
     "devBuildNOK": "npm run buildNOK",
-    "run:dev": "cross-env NODE_ENV=development nodemon ./dist/server.js",
+    "run:devNOK": "cross-env NODE_ENV=development nodemon ./release/server.js",
     "test": "cross-env NODE_ENV=test vitest"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/XXXXXXXXXXXXXXXXXXXXXXXX.git"
-  },
-  "author": "Miroir Framework <miroir-framework@protonmail.com>",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/XXXXXXXXXXXXXXXXXXXXXXXXX/issues"
-  },
-  "homepage": "https://github.com/XXXXXXXXXXXXXXXXXXXXXXXXXXX#readme",
   "nodemonConfig": {
     "ignore": [
       "**/test/**",
