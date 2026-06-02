@@ -32,9 +32,13 @@ jobs:
           node-version: '24'
 
       # ── Homepage (no Miroir deps — build first for fast feedback) ────────
+      # node ../node_modules/vite/bin/vite.js -w miroir-homepage
       - name: Build miroir-homepage
         shell: bash
-        run: npm run build -w miroir-homepage
+        run: |
+          rm -f package-lock.json
+          npm install
+          npm run build -w miroir-homepage
         env:
           VITE_BASE_URL: /miroir/
       
