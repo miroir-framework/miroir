@@ -28,6 +28,7 @@ import {
   getDefaultValueForJzodSchemaWithResolutionNonHook,
   MiroirLoggerFactory,
   selfApplicationMiroir,
+  templateEvaluationParams,
   transformer_extended_apply_wrapper
 } from "miroir-core";
 import {
@@ -63,7 +64,6 @@ export function StoredRunnerView(props: {
   runnerApplicationDeploymentMap?: (values: Record<string, any>) => ApplicationDeploymentMap,
   runnerUuid: Uuid,
 }) {
-  // const context = useMiroirContextService();
   const applicationDeploymentMap = props.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap;
 
   const runnerDeploymentUuid: Uuid = applicationDeploymentMap[props.applicationUuid];
@@ -74,14 +74,12 @@ export function StoredRunnerView(props: {
   const runnerDefinitionFromLocalCache: Domain2QueryReturnType<Runner | undefined> = useRunner(
     props.applicationUuid,
     applicationDeploymentMap,
-    // runnerDeploymentUuid,
     props.runnerUuid
   );
   log.info(
     "StoredRunnerView runnerDefinitionFromLocalCache",
     runnerDefinitionFromLocalCache
   );
-  // const runnerLabel: string = `Stored Runner ${props.runnerUuid} for Application ${props.applicationUuid}`;
   const storedRunner: Runner | undefined =
     runnerDefinitionFromLocalCache instanceof Domain2ElementFailed? undefined : runnerDefinitionFromLocalCache;
 
@@ -141,6 +139,11 @@ export function StoredRunnerView(props: {
     "viewParams"
   ] as any;
 
+  const transformerParams = useMemo(() => ({
+    ...templateEvaluationParams,
+    viewParams: viewParams || {},
+  }), [viewParams]);
+
   const formMLSchema: FormMLSchema = useMemo(
     () =>
       !storedRunner
@@ -183,36 +186,38 @@ export function StoredRunnerView(props: {
     [storedRunner, currentActionDefinition, runnerName]
   );
 
-  const resolvedMLSchema: JzodObject = useMemo(() => {
+  const resolvedMLSchema: FormMLSchema = useMemo(() => {
     log.info("Resolving ML Schema for StoredRunnerView", {
       formMLSchema,
       runnerDeploymentUuid,
       libraryAppModelEnvironment,
       deploymentEntityState,
-      viewParams,
+      transformerParams,
     });
-    return formMLSchema.formMLSchemaType === "transformer"
-      ? transformer_extended_apply_wrapper(
-          context.miroirContext?.miroirActivityTracker,
-          "build",
-          [],
-          "resolving formMLSchema transformer",
-          formMLSchema.transformer as CoreTransformerForBuildPlusRuntime,
-          "value",
-        defaultMiroirModelEnvironment,
-        {
-          viewParams: viewParams || {},
-        },
-        {
-        },
-      ) as JzodObject
-      : formMLSchema.mlSchema as JzodObject;
-  }, [formMLSchema, viewParams]);
+    return {
+      formMLSchemaType: "mlSchema",
+      mlSchema:
+        formMLSchema.formMLSchemaType === "transformer"
+          ? (transformer_extended_apply_wrapper(
+              context.miroirContext?.miroirActivityTracker,
+              "build",
+              [],
+              "resolving formMLSchema transformer",
+              formMLSchema.transformer as CoreTransformerForBuildPlusRuntime,
+              "value",
+              defaultMiroirModelEnvironment,
+              transformerParams,
+              {},
+            ) as JzodObject)
+          : (formMLSchema.mlSchema as JzodObject),
+    };
+  }, [formMLSchema, transformerParams]);
 
   const initialFormValue = useMemo(() => {
     log.info("Calculating initialFormValue for StoredRunnerView", {
       storedRunner,
       formMLSchema,
+      resolvedMLSchema,
       runnerDeploymentUuid,
       libraryAppModelEnvironment,
       deploymentEntityState,
@@ -224,7 +229,7 @@ export function StoredRunnerView(props: {
         ? getDefaultValueForJzodSchemaWithResolutionNonHook(
             "build",
             // (formMLSchema as any).mlSchema,
-            resolvedMLSchema,
+            resolvedMLSchema.mlSchema,
             undefined, // rootObject
             "", // rootLessListKey,
             undefined, // No need to pass currentDefaultValue here
@@ -234,9 +239,7 @@ export function StoredRunnerView(props: {
             defaultSelfApplicationDeploymentMap,
             runnerDeploymentUuid,
             libraryAppModelEnvironment,
-            {
-              viewParams: viewParams || {},
-            }, // transformerParams
+            transformerParams, // transformerParams
             {
               // viewParams: viewParams || {},
             }, // contextResults
@@ -254,14 +257,13 @@ export function StoredRunnerView(props: {
                     .initialFormValues as any as CoreTransformerForBuildPlusRuntime, // TODO: correct type
                   "value",
                   currentModelEnvironment, // TODO: the DeploymentUuid can change, need to handle that?
-                  {}, // transformerParams
+                  transformerParams, // transformerParams
                   {}, // contextResults
                 ),
               }
             : getDefaultValueForJzodSchemaWithResolutionNonHook(
                 "build",
-                // (formMLSchema as any).mlSchema,
-                resolvedMLSchema,
+                resolvedMLSchema.mlSchema,
                 undefined, // rootObject
                 "", // rootLessListKey,
                 undefined, // No need to pass currentDefaultValue here
@@ -271,12 +273,8 @@ export function StoredRunnerView(props: {
                 defaultSelfApplicationDeploymentMap,
                 runnerDeploymentUuid,
                 libraryAppModelEnvironment,
-                {
-                  viewParams: viewParams || {},
-                }, // transformerParams
-                {
-                  viewParams: viewParams || {},
-                }, // contextResults
+                transformerParams, // transformerParams
+                transformerParams, // contextResults // TODO: remove!
                 deploymentEntityState, // TODO: keep this? improve so that it does not depend on entire deployment state
               )
           : undefined; // impossible case, choices are "actionRunner" || "customRunner"
@@ -350,6 +348,10 @@ export function StoredRunnerView(props: {
             data: formMLSchema,
           },
           {
+            label: `${runnerName} transformerParams`,
+            data: transformerParams,
+          },
+          {
             label: `${runnerName} resolvedMLSchema`,
             data: resolvedMLSchema,
           },
@@ -376,7 +378,8 @@ export function StoredRunnerView(props: {
                 props.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap
               }
               runnerApplicationDeploymentMap={props.runnerApplicationDeploymentMap}
-              formMLSchema={formMLSchema}
+              // formMLSchema={formMLSchema}
+              formMLSchema={resolvedMLSchema}
               initialFormValue={initialFormValue}
               action={{
                 actionType: "compositeActionTemplate",
@@ -397,7 +400,8 @@ export function StoredRunnerView(props: {
                   props.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap
                 }
                 runnerApplicationDeploymentMap={props.runnerApplicationDeploymentMap}
-                formMLSchema={formMLSchema}
+                // formMLSchema={formMLSchema}
+                formMLSchema={resolvedMLSchema}
                 initialFormValue={initialFormValue}
                 action={storedRunnerAction as any}
                 formLabel={runnerDefinitionFromLocalCache.defaultLabel}
@@ -549,18 +553,25 @@ export const RunnerView = <T extends Record<string, any>>(props: RunnerProps<T>)
     <>
       <JsonDisplayHelper debug={true}
         componentName="RunnerView"
-        elements={[{
-          label: `RunnerView ${runnerName} initialValues`,
-          data: initialValues,
-          copyButton: true,
-          useCodeBlock: true,
-        },
-        {
-          label: `RunnerView ${runnerName} props`,
-          data: props,
-          copyButton: true,
-          useCodeBlock: true,
-        }
+        elements={[
+          {
+            label: `RunnerView ${runnerName} templateEvaluationParams`,
+            data: templateEvaluationParams,
+            copyButton: true,
+            useCodeBlock: true,
+          },
+          {
+            label: `RunnerView ${runnerName} initialValues`,
+            data: initialValues,
+            copyButton: true,
+            useCodeBlock: true,
+          },
+          {
+            label: `RunnerView ${runnerName} props`,
+            data: props,
+            copyButton: true,
+            useCodeBlock: true,
+          }
       ]}
       />
       <Formik

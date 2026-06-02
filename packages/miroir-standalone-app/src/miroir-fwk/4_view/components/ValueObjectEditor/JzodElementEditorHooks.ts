@@ -57,7 +57,6 @@ export interface JzodElementEditorHooks {
   currentModel: MetaModel;
   miroirMetaModel: MetaModel;
   currentApplicationModelEnvironment: MiroirModelEnvironment;
-  // ??
   deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState>;
   // state
   currentTypecheckKeyMap: KeyMapEntry | undefined;
@@ -234,10 +233,6 @@ export function useJzodElementEditorHooks(
     applicationDeploymentMap
   );
 
-  // const defaultValueParams = useDefaultValueParams(
-  //   currentApplication,
-  //   currentDeploymentUuid,
-  // )
   const currentTypecheckKeyMap: KeyMapEntry | undefined =
     typeCheckKeyMap && typeCheckKeyMap[rootLessListKey]
       ? typeCheckKeyMap[rootLessListKey]

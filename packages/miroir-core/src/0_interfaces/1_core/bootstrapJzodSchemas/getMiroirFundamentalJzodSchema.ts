@@ -166,6 +166,11 @@ export const entityDefinitionRoot = {
   },
 };
 
+export const clientEnvironment = {
+  type: "enum",
+  definition: ["webApp", "electron", "node", "sandbox"] as const,
+};
+
 // ################################################################################################
 export function getMiroirFundamentalJzodSchema(
   entityDefinitionBundleV1: any,
@@ -564,6 +569,7 @@ export function getMiroirFundamentalJzodSchema(
           {
             type: "never",
           },
+        clientEnvironment,
         // miroirIcon: entityDefinitionEntityDefinitionV1.mlSchema.definition.icon,
         miroirIcon: {
           type: "union",

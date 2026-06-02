@@ -80,23 +80,23 @@ export const MarkdownEditorModal: React.FC<MarkdownEditorModalProps> = (props) =
 
   // formik context
   const formikContext = useFormikContext<any>();
-  const formikValuePathAsString = props.formikValuePath?.join("_") || "";
+  // const formikValuePathAsString = props.formikValuePath?.join("_") || "";
   
-  const formikReportSectionDefinitionPathString = [props.reportName, ...props.reportSectionPath || [], "definition"].join(".");
+  // const formikReportSectionDefinitionPathString = [props.reportName, ...props.reportSectionPath || [], "definition"].join(".");
 
   const reportDefinitionFromFormik = useMemo(() => {
     return formikContext.values[props.reportName];
   }, [formikContext.values, props.formikReportDefinitionPathString]);
   
-  const reportSectionDefinitionFromFormik = useMemo(() => {
-    if (reportDefinitionFromFormik && props.reportSectionPath) {
-      return resolvePathOnObject(
-        reportDefinitionFromFormik,
-        props.reportSectionPath
-      ) as MarkdownReportSection;
-    }
-    return undefined;
-  }, [reportDefinitionFromFormik, props.reportSectionPath]);
+  // const reportSectionDefinitionFromFormik = useMemo(() => {
+  //   if (reportDefinitionFromFormik && props.reportSectionPath) {
+  //     return resolvePathOnObject(
+  //       reportDefinitionFromFormik,
+  //       props.reportSectionPath
+  //     ) as MarkdownReportSection;
+  //   }
+  //   return undefined;
+  // }, [reportDefinitionFromFormik, props.reportSectionPath]);
   
   // log.info("MarkdownEditorModal render", "isOpen", props.isOpen, "initialContent length", props.initialContent.length);
   
@@ -135,22 +135,25 @@ export const MarkdownEditorModal: React.FC<MarkdownEditorModalProps> = (props) =
 
     await domainController.handleActionFromUI(
       {
-        actionType: "transactionalInstanceAction",        endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+        actionType: "transactionalInstanceAction",
+        endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
         payload: {
           application: props.application,
           instanceAction: {
-            actionType: "updateInstance",            endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+            actionType: "updateInstance",
+            endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
             payload: {
               application: props.application,
               applicationSection: applicationSection,
               parentUuid: newReportDefinition.parentUuid,
               objects: [
-                {
-                  parentName: newReportDefinition.name,
-                  parentUuid: newReportDefinition.parentUuid,
-                  applicationSection: applicationSection,
-                  instances: [newReportDefinition],
-                },
+                // {
+                //   parentName: newReportDefinition.name,
+                //   parentUuid: newReportDefinition.parentUuid,
+                //   // applicationSection: applicationSection,
+                //   instances: [newReportDefinition],
+                // },
+                newReportDefinition,
               ],
             },
           },

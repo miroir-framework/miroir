@@ -6,6 +6,8 @@ export {
 } from "../src/0_interfaces/1_core/bootstrapJzodSchemas/getMiroirFundamentalJzodSchemaHelpers";
 
 export {
+  ClientEnvironment,
+  clientEnvironment,
   Action,
   action,
   ActionEntityInstanceCollectionReturnType,
@@ -319,7 +321,7 @@ export {
   ListReportSection,
   listReportSection,
   LocalCacheAction,
-  // LocalCacheExtractor,
+  LocalCacheExtractor,
   Menu,
   menu,
   MetaModel,
@@ -958,6 +960,7 @@ export {
   getValueAtPath,
   interpolateExpression,
   mStringify,
+  getClientEnvironment,
   prodRelativePathPrefix,
   RelativePath,
   resolvePathOnObject,

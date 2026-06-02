@@ -257,56 +257,108 @@
                       {
                         "type": "schemaReference",
                         "definition": { "relativePath": "indexedDbStoreSectionConfiguration" }
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "filesystemDbStoreSectionConfiguration"
-                        }
                       }
                     ],
                     {
                       "transformerType": "ifThenElse",
                       "if": {
                         "transformerType": "boolExpr",
-                        "operator": "==",
+                        "operator": "!==",
                         "left": {
                           "transformerType": "getFromParameters",
-                          "referencePath": ["viewParams", "postgresConnectionString"]
+                          "referencePath": ["clientEnvironment"]
                         },
                         "right": {
                           "transformerType": "returnValue",
-                          "value": null
+                          "value": "sandbox"
                         }
                       },
-                      "then": [],
-                      "else": [
+                      "then": [
                         {
                           "type": "schemaReference",
-                          "definition": { "relativePath": "sqlDbStoreSectionConfiguration" }
+                          "definition": {
+                            "relativePath": "filesystemDbStoreSectionConfiguration"
+                          }
                         }
+                      ],
+                      "else": [
                       ]
                     },
                     {
                       "transformerType": "ifThenElse",
                       "if": {
                         "transformerType": "boolExpr",
-                        "operator": "==",
+                        "operator": "&&",
                         "left": {
-                          "transformerType": "getFromParameters",
-                          "referencePath": ["viewParams", "mongoConnectionString"]
+                          "transformerType": "boolExpr",
+                          "operator": "!==",
+                          "left": {
+                            "transformerType": "getFromParameters",
+                            "referencePath": ["clientEnvironment"]
+                          },
+                          "right": {
+                            "transformerType": "returnValue",
+                            "value": "sandbox"
+                          }
                         },
                         "right": {
-                          "transformerType": "returnValue",
-                          "value": null
+                          "transformerType": "boolExpr",
+                          "operator": "!=",
+                          "left": {
+                            "transformerType": "getFromParameters",
+                            "referencePath": ["viewParams", "postgresConnectionString"]
+                          },
+                          "right": {
+                            "transformerType": "returnValue",
+                            "value": null
+                          }
                         }
                       },
-                      "then": [],
-                      "else": [
+                      "then": [
+                        {
+                          "type": "schemaReference",
+                          "definition": { "relativePath": "sqlDbStoreSectionConfiguration" }
+                        }
+                      ],
+                      "else": []
+                    },
+                    {
+                      "transformerType": "ifThenElse",
+                      "if": {
+                        "transformerType": "boolExpr",
+                        "operator": "&&",
+                        "left": {
+                          "transformerType": "boolExpr",
+                          "operator": "!==",
+                          "left": {
+                            "transformerType": "getFromParameters",
+                            "referencePath": ["clientEnvironment"]
+                          },
+                          "right": {
+                            "transformerType": "returnValue",
+                            "value": "sandbox"
+                          }
+                        },
+                        "right": {
+                          "transformerType": "boolExpr",
+                          "operator": "!=",
+                          "left": {
+                            "transformerType": "getFromParameters",
+                            "referencePath": ["viewParams", "mongoConnectionString"]
+                          },
+                          "right": {
+                            "transformerType": "returnValue",
+                            "value": null
+                          }
+                        }
+                      },
+                      "then": [
                         {
                           "type": "schemaReference",
                           "definition": { "relativePath": "mongoDbStoreSectionConfiguration" }
                         }
+                      ],
+                      "else": [
                       ]
                     }
                   ]

@@ -40,11 +40,11 @@ export const ReportPage = () => {
   // const theme = useMiroirTheme();
 
   // Auto-fetch configurations when the page loads
-  const { fetchConfigurations } = usePageConfiguration({
-    autoFetchOnMount: true,
-    successMessage: `Report page configurations loaded for ${pageParams.deploymentUuid}`,
-    actionName: "report page configuration fetch",
-  });
+  // const { fetchConfigurations } = usePageConfiguration({
+  //   autoFetchOnMount: true,
+  //   successMessage: `Report page configurations loaded for ${pageParams.deploymentUuid}`,
+  //   actionName: "report page configuration fetch",
+  // });
 
   // Track render counts with centralized tracker
   // Use deployment-level key to maintain consistency across all navigation within same deployment

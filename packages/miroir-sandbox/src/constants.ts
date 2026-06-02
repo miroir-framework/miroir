@@ -1,1 +1,1 @@
-export const packageName = "miroir-demo";
+export const packageName = "miroir-sandbox";

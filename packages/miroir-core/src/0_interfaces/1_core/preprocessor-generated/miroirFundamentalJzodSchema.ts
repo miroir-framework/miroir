@@ -1588,6 +1588,15 @@ export const miroirFundamentalJzodSchema = {
       "______________________________________________basic_____________________________________________": {
         "type": "never"
       },
+      "clientEnvironment": {
+        "type": "enum",
+        "definition": [
+          "webApp",
+          "electron",
+          "node",
+          "sandbox"
+        ]
+      },
       "miroirIcon": {
         "type": "union",
         "discriminator": "iconType",

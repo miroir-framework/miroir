@@ -82,6 +82,7 @@ import { packageName } from "../constants";
 
 import {
   devRelativePathPrefix,
+  getClientEnvironment,
   getMiroirEnvironmentMode,
   prodRelativePathPrefix,
   resolvePathOnObject,
@@ -117,6 +118,7 @@ export const templateEvaluationParams = {
   env: { NODE_ENV: getMiroirEnvironmentMode() === "dev" ? "development" : "production" },
   devRelativePathPrefix,
   prodRelativePathPrefix,
+  clientEnvironment: getClientEnvironment(),
 };
 
 const autocommit = true;

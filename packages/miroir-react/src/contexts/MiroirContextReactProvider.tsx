@@ -23,36 +23,38 @@ import {
   MlSchema,
   Uuid,
   ViewParams,
+  getClientEnvironment,
   miroirFundamentalJzodSchema as globalMiroirFundamentalJzodSchema,
   type ApplicationDeploymentMap,
-  type KeyMapEntry,
+  type ClientEnvironment,
+  type CoreTransformerForBuildPlusRuntime,
   type MiroirEvent,
   type ReduxStateChanges,
-  type CoreTransformerForBuildPlusRuntime
 } from "miroir-core";
 
-import { packageName } from "../constants.js";
-import { cleanLevel } from "../constants.js";
-import { errorLogService, logServerError, type ErrorLogServiceClass } from "../components/logs/ErrorLogService.js";
+import {
+  errorLogService,
+  logServerError,
+  type ErrorLogServiceClass,
+} from "../components/logs/ErrorLogService.js";
+import { cleanLevel, packageName } from "../constants.js";
 // import {
 //   errorLogService,
 //   logServerError
 // } from "miroir-react";
 
-import {
-  selectCurrentTransaction,
-  useSelector
-} from "../miroir-localcache-imports.js"
+import { selectCurrentTransaction, useSelector } from "../miroir-localcache-imports.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "MiroirContextReactProvider"), "UI",
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "MiroirContextReactProvider"),
+  "UI",
 ).then((logger: LoggerInterface) => {
   log = logger;
 });
 
-// TODO: remove formikPath_EntityInstanceSelectorPanel from this file, it belongs with EntityInstanceSelectorPanel 
-export const formikPath_EntityInstanceSelectorPanel = "entityInstanceSelector"
+// TODO: remove formikPath_EntityInstanceSelectorPanel from this file, it belongs with EntityInstanceSelectorPanel
+export const formikPath_EntityInstanceSelectorPanel = "entityInstanceSelector";
 
 /**
  * Tree structure representing folded state where each node is either
@@ -79,21 +81,24 @@ export interface ToolsPageState {
     mode?: "here" | "defined" | "none"; // OLD
     currentDefinedTransformerDefinition?: any; // OLD
     currentTransformerDefinition?: any;
-    selector?: {
-      mode: "defined";
-      application: Uuid
-      transformerUuid: Uuid;
-    } | {
-      mode: "here";
-      transformer: CoreTransformerForBuildPlusRuntime
-    } | {
-      mode: "none";
-    };
+    selector?:
+      | {
+          mode: "defined";
+          application: Uuid;
+          transformerUuid: Uuid;
+        }
+      | {
+          mode: "here";
+          transformer: CoreTransformerForBuildPlusRuntime;
+        }
+      | {
+          mode: "none";
+        };
     input_selector?: {
       mode: "instance" | "here";
-      input?: any
-    }
-    // 
+      input?: any;
+    };
+    //
     foldedObjectAttributeOrArrayItems?: FoldedStateTree;
     foldedEntityInstanceItems?: { [k: string]: boolean };
     foldedTransformationResultItems?: { [k: string]: boolean };
@@ -105,10 +110,11 @@ export interface ToolsPageState {
 // #############################################################################################
 // #############################################################################################
 export interface MiroirReactContext {
-  // miroirContext: MiroirContextInterface, // events, client/server config
   miroirContext: MiroirContextInterface; // events, client/server config
   // level 4 access: perform side effects, via domain controller action calls
   domainController: DomainControllerInterface;
+  // ###################################################################################################
+  clientEnvironment: ClientEnvironment;
   // ###################################################################################################
   // server configuration
   serverBaseUrl: string; // Base URL for the REST API server (e.g., http://localhost:3080)
@@ -117,9 +123,11 @@ export interface MiroirReactContext {
   application: string;
   setApplication: React.Dispatch<React.SetStateAction<string>>;
   applicationDeploymentMap: ApplicationDeploymentMap | undefined;
-  setApplicationDeploymentMap: React.Dispatch<React.SetStateAction<ApplicationDeploymentMap | undefined>>;
+  setApplicationDeploymentMap: React.Dispatch<
+    React.SetStateAction<ApplicationDeploymentMap | undefined>
+  >;
   deploymentUuid: string;
-  setDeploymentUuid: React.Dispatch<React.SetStateAction<string>>;
+  setDeploymentUuid: React.Dispatch<React.SetStateAction<string>>; // TODO: remove? should deduce it using the applicationDeploymentMap and selected application
   reportUuid: Uuid | undefined;
   setReportUuid: React.Dispatch<React.SetStateAction<Uuid>>;
   applicationSection: ApplicationSection | undefined;
@@ -148,7 +156,7 @@ export interface MiroirReactContext {
     | React.Dispatch<React.SetStateAction<FoldedStateTree>>
     | undefined;
   setSetFoldedObjectAttributeOrArrayItems: (
-    setFoldedObjectAttributeOrArrayItems: React.Dispatch<React.SetStateAction<FoldedStateTree>>
+    setFoldedObjectAttributeOrArrayItems: React.Dispatch<React.SetStateAction<FoldedStateTree>>,
   ) => void;
 
   // ###################################################################################################
@@ -181,7 +189,7 @@ export interface MiroirReactContext {
   handleAsyncAction: (
     action: () => Promise<any>,
     successMessage: string,
-    actionName: string
+    actionName: string,
   ) => Promise<void>;
   // Error logging service access
   errorLogService: ErrorLogServiceClass;
@@ -198,14 +206,15 @@ const miroirReactContext = createContext<MiroirReactContext | undefined>(undefin
 // export function MiroirContextReactProvider(props:any extends {miroirContext:MiroirContextInterface}) {
 export function MiroirContextReactProvider(props: {
   miroirContext: MiroirContextInterface;
-  // miroirContext: MiroirContext;
   domainController: DomainControllerInterface;
   testingApplication?: Uuid; // for tests only! Yuck!
   testingDeploymentUuid?: Uuid; // for tests only! Yuck!
   children: ReactNode;
 }) {
   const [application, setApplication] = useState(props.testingApplication ?? "");
-  const [applicationDeploymentMap, setApplicationDeploymentMap] = useState<ApplicationDeploymentMap | undefined>(undefined);
+  const [applicationDeploymentMap, setApplicationDeploymentMap] = useState<
+    ApplicationDeploymentMap | undefined
+  >(undefined);
   const [deploymentUuid, setDeploymentUuid] = useState(props.testingDeploymentUuid ?? "");
   const [reportUuid, setReportUuid] = useState("");
   const [applicationSection, setApplicationSection] = useState<ApplicationSection>("data");
@@ -318,7 +327,7 @@ export function MiroirContextReactProvider(props: {
       // Persist to sessionStorage per deployment
       sessionStorage.setItem("toolsPageState", JSON.stringify(newState));
     },
-    [toolsPageState]
+    [toolsPageState],
   );
 
   // ##############################################################################################
@@ -333,7 +342,7 @@ export function MiroirContextReactProvider(props: {
       // Persist to sessionStorage per deployment
       sessionStorage.setItem("toolsPageState", JSON.stringify(newState));
     },
-    [toolsPageState]
+    [toolsPageState],
   );
 
   // Snackbar handlers
@@ -344,14 +353,14 @@ export function MiroirContextReactProvider(props: {
         setSnackbarSeverity(severity);
         setSnackbarOpen(true);
       },
-    []
+    [],
   );
 
   const handleSnackbarClose = useMemo(
     () => () => {
       setSnackbarOpen(false);
     },
-    []
+    [],
   );
 
   // ##############################################################################################
@@ -370,14 +379,11 @@ export function MiroirContextReactProvider(props: {
         // Check if the result is an Action2Error (server error)
         if (result && typeof result === "object" && result.status === "error") {
           // Log server errors to global error service
-          logServerError(
-            result.errorMessage || result.errorType || "Unknown server error",
-            {
-              actionName,
-              errorDetails: result,
-              timestamp: new Date().toISOString(),
-            }
-          );
+          logServerError(result.errorMessage || result.errorType || "Unknown server error", {
+            actionName,
+            errorDetails: result,
+            timestamp: new Date().toISOString(),
+          });
 
           startTransition(() => {
             if (result.isServerError && result.errorMessage) {
@@ -389,14 +395,14 @@ export function MiroirContextReactProvider(props: {
                 `Error in ${actionName}: ${
                   result.errorMessage || result.errorType || "Unknown error"
                 }`,
-                "error"
+                "error",
               );
             }
             setIsActionRunning(false);
           });
-        // startTransition(() => {
-        //   showSnackbar(result.errorMessage || result.errorType || "Unknown error", "error");
-        // });
+          // startTransition(() => {
+          //   showSnackbar(result.errorMessage || result.errorType || "Unknown error", "error");
+          // });
 
           return;
         }
@@ -441,7 +447,7 @@ export function MiroirContextReactProvider(props: {
               errorCategory === "startup"
                 ? "Application startup failed. Please check your configuration and try again."
                 : undefined,
-          }
+          },
         );
 
         // Check if the error has structured server error data
@@ -451,7 +457,7 @@ export function MiroirContextReactProvider(props: {
               `Server error: ${
                 (error as any).errorMessage || (error as any).message || "Unknown server error"
               }`,
-              "error"
+              "error",
             );
             setIsActionRunning(false);
           });
@@ -459,20 +465,20 @@ export function MiroirContextReactProvider(props: {
           startTransition(() => {
             showSnackbar(
               errorEntry.userMessage || `Error in ${actionName}: ${errorMessage}`,
-              errorCategory === "startup" ? "error" : "error" // Use "error" instead of "warning"
+              errorCategory === "startup" ? "error" : "error", // Use "error" instead of "warning"
             );
             setIsActionRunning(false);
           });
         }
       }
     },
-    [showSnackbar]
+    [showSnackbar],
   );
 
   // Extract serverBaseUrl from miroirConfig
   const serverBaseUrl = useMemo(() => {
     const config = props.miroirContext.getMiroirConfig();
-    if (config && config.miroirConfigType === 'client') {
+    if (config && config.miroirConfigType === "client") {
       const clientConfig = config.client;
       if (clientConfig.emulateServer) {
         return clientConfig.rootApiUrl;
@@ -482,7 +488,7 @@ export function MiroirContextReactProvider(props: {
     } else {
       // log.info("MiroirContextReactProvider found config:", JSON.stringify(config, null, 2));
       log.warn("MiroirContextReactProvider: Unsupported miroirConfigType for serverBaseUrl");
-      return '';
+      return "";
       // throw new Error("MiroirContextReactProvider: Unsupported miroirConfigType for serverBaseUrl");
     }
     // return 'http://localhost:3080'; // fallback default
@@ -492,12 +498,12 @@ export function MiroirContextReactProvider(props: {
   // ##############################################################################################
   // ##############################################################################################
   // ##############################################################################################
-  // const value = useMemo<MiroirReactContext>(()=>({
   const value = useMemo<MiroirReactContext>(
     () => ({
       miroirContext: props.miroirContext,
       domainController: props.domainController,
       serverBaseUrl,
+      clientEnvironment: getClientEnvironment(),
       application,
       setApplication,
       applicationDeploymentMap,
@@ -610,27 +616,9 @@ export function MiroirContextReactProvider(props: {
       toolsPageState,
       updateToolsPageStateDEFUNCT,
       updateTransformerEditorState,
-    ]
+    ],
   );
 
-  // // TODO: This belongs to the Root component
-  // // Subscribe to global error notifications
-  // useEffect(() => {
-  //   const unsubscribe = errorLogService.subscribe((errorEntry: ErrorLogEntry) => {
-  //     // Only show snackbar if the error indicates it should be shown
-  //     if (errorEntry.userMessage || errorEntry.severity === 'critical' || errorEntry.severity === 'error') {
-  //       startTransition(() => {
-  //         const message = errorEntry.userMessage || errorEntry.errorMessage;
-  //         const severity = errorEntry.severity === 'critical' ? 'error' :
-  //                         errorEntry.severity === 'warning' ? 'error' : 'error';  // Map to valid types
-  //         showSnackbar(message, severity);
-  //       });
-  //     }
-  //   });
-
-  //   return unsubscribe;
-  // }, [showSnackbar]);
-  // log.info("MiroirContextReactProvider rendered with toolsPageState:", toolsPageState);
   return (
     <miroirReactContext.Provider value={value}>
       {props.children}
@@ -726,7 +714,6 @@ export const useDomainControllerService = () => {
 
 //#########################################################################################
 export function useLocalCacheTransactions(): ReduxStateChanges[] {
-  // const result:EntityState<ReduxStateChanges[]> = useSelector(selectCurrentTransaction());
   const result: ReduxStateChanges[] = useSelector(selectCurrentTransaction());
   return result ? result : [];
 }

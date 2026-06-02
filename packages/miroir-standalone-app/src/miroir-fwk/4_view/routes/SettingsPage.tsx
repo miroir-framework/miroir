@@ -66,12 +66,12 @@ export const SettingsPage: React.FC<any> = (props: any) => {
   const context = useMiroirContextService();
   const domainController = useDomainControllerService();
 
-  // Auto-fetch configurations when the page loads
-  const { fetchConfigurations } = usePageConfiguration({
-    autoFetchOnMount: true,
-    successMessage: "Settings page configurations loaded successfully",
-    actionName: "settings page configuration fetch",
-  });
+  // // Auto-fetch configurations when the page loads
+  // const { fetchConfigurations } = usePageConfiguration({
+  //   autoFetchOnMount: true,
+  //   successMessage: "Settings page configurations loaded successfully",
+  //   actionName: "settings page configuration fetch",
+  // });
 
   // Get viewParams from Redux to access grid type
   const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState> =

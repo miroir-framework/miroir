@@ -2,7 +2,7 @@ import { ZodTypeAny } from "zod";
 import { DomainState } from "./0_interfaces/2_domain/DomainControllerInterface";
 import { ReduxDeploymentsState } from "./0_interfaces/2_domain/ReduxDeploymentsStateInterface";
 import { getReduxDeploymentsStateIndex } from "./2_domain/ReduxDeploymentsState";
-import { ApplicationSection } from "./0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import { ApplicationSection, type ClientEnvironment } from "./0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { TransformerFailure, type Domain2QueryReturnType } from "./0_interfaces/2_domain/DomainElement";
 
 export function stringTuple<T extends [string] | string[]>(...data: T): T {
@@ -12,7 +12,25 @@ export function stringTuple<T extends [string] | string[]>(...data: T): T {
 export const devRelativePathPrefix = "miroir-server/tests/tmp";
 export const prodRelativePathPrefix = ".";
 
+// export type ClientEnvironment = "webApp" | "electron" | "node" | "sandbox";
 
+export const getClientEnvironment = (): ClientEnvironment => {
+  if ((import.meta as any).env?.MIROIR_IS_SANDBOX) {
+    return "sandbox";
+  }
+  if (typeof (window as any).electronAPI?.callMiroirIpc === "function") {
+    return "electron";
+  }
+  if (typeof process !== "undefined" && (process as any).versions?.node) {
+    return "node";
+  }
+  if (typeof window !== "undefined" && typeof window.document !== "undefined") {
+    return "webApp";
+  }
+  throw new Error("Unable to determine client environment");
+}
+
+// ################################################################################################
 /**
  * Returns "dev" or "prod" regardless of the execution environment:
  * - Browser (Vite): reads import.meta.env.MODE ("development" -> "dev", else "prod")

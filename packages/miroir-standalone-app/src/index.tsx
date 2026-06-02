@@ -159,10 +159,6 @@ MiroirLoggerFactory.startRegisteredLoggers(
   {
     defaultLevel: "INFO",
     defaultTemplate: "[{{time}}] {{level}} {{name}} ### ",
-    // "context": {
-    //   "testSuite": "DomainController.integ.Data.CRUD",
-    //   "test": "Add Book instance"
-    // },
     specificLoggerOptions: {},
   },
 );
@@ -182,57 +178,16 @@ const router = createBrowserRouter([
   },
 ]);
 
-// const theme = createMuiTheme();
-
 export const themeParams: ThemeOptions = {
-  // palette: {
-  //   primary: {
-  //     // main: blue[500],
-  //     // main: rgb(124, 103, 188),
-  //     main: "#7c67bcff",
-  //   },
-  //   background: {
-  //     // main: blue[500],
-  //     // main: rgb(124, 103, 188),
-  //     default: "#7c67bcff",
-  //   },
-  // },
-  // spacing: 2,
   spacing: 0,
   components: {
-    // toolbar: {
-    //   paddingRight: 24, // keep right padding when drawer closed
-    // },
-    // MuiContainer: { // no effect?
-    //   defaultProps: {
-    //     disableGutters: true,
-    //   },
-    // },
-    // MuiToolbar: { // no effect
-    //   defaultProps: {
-    //     disableGutters: true,
-    //   },
-    // },
-    // MuiGridContainer: { // no effect?
-    //   defaultProps: {
-    //     disableGutters: true,
-    //   },
-    // },
-    // content: {
-    //   flexGrow: 1,
-    //   // height: '100vh',
-    //   // overflowY: 'auto', // Allow scrolling when content overflows
-    // },
     MuiList: {
       defaultProps: {
         style: { border: `0` },
-        // style: {border: `10px dashed ${blue[500]}`,}
       },
     },
     MuiDialog: {
       defaultProps: {
-        // style: {maxWidth: "100vw",display:"inline-flex"}
-        // style: {maxWidth: "100vw"}
         style: { display: "inline-flex", justifyContent: "center", alignItems: "center" },
       },
     },
@@ -241,11 +196,6 @@ export const themeParams: ThemeOptions = {
         style: { display: "flex" },
       },
     },
-    //   defaultProps:{
-    //     style: {maxHeight:"90vh",maxWidth:"90vw",display:"inline-flex"}
-    //     // style: {display:"inline-flex"}
-    //   }
-    // }
   },
 };
 
@@ -425,25 +375,8 @@ async function startWebApp(root: Root) {
     client: {
       emulateServer: true,
       rootApiUrl: "http://localhost:3080",
-      // filesystemDeploymentRootDirectory: "../miroir-test-app_deployment-admin/assets",
       filesystemDeploymentRootDirectory,
-      // filesystemDeploymentRootDirectory: "./resources/miroir-assets",
-      // filesystemDeploymentRootDirectory: electronRestClient
-      //   ? await electronRestClient.getDefaultFilesystemFolder()
-      //   : "no default filesystem folder because not in Electron",
       deploymentStorageConfig: {
-        // rootApiUrl: "http://localhost:3080",
-        // dataflowConfiguration: {
-        //   type: "singleNode",
-        //   metaModel: {
-        //     location: {
-        //       side: "server",
-        //       type: "filesystem",
-        //       location: "../miroir-core/src/assets",
-        //     },
-        //   },
-        // },
-        //           storeSectionConfiguration: {
         "18db21bf-f8d3-4f6a-8296-84b69f6dc48b": {
           admin: {
             emulatedServerType: "filesystem",
@@ -610,15 +543,6 @@ async function startWebApp(root: Root) {
       </StrictMode>
     </>,
   );
-
-  // root.render(
-  //   <>
-  //     {/* <span>Production mode not implemented yet!</span> */}
-  //     <span>electron </span>
-  //     <pre>{JSON.stringify(currentMiroirConfig, null, 2)}</pre>
-  //   </>
-  // )
-  // }
 }
 
 if (container) {

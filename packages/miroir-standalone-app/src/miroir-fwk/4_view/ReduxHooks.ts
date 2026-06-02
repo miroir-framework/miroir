@@ -8,12 +8,12 @@ import {
   EntityInstance,
   EntityInstancesUuidIndex,
   JzodPlainAttribute,
-  LocalCacheExtractor,
+  // LocalCacheExtractor,
   LoggerInterface,
   MetaModel,
   MiroirLoggerFactory,
   MiroirModelEnvironment,
-  MiroirQuery,
+  // MiroirQuery,
   MiroirQueryTemplate,
   MlSchema,
   ReduxDeploymentsState,
@@ -32,6 +32,7 @@ import {
   selfApplicationMiroir,
   type ApplicationDeploymentMap,
   type Deployment,
+  type LocalCacheExtractor,
   type Menu,
   type ViewParams
 } from "miroir-core";
@@ -93,7 +94,8 @@ export function useReduxDeploymentsStateQuerySelector<
   deploymentEntityStateQuerySelector: SyncQueryRunner<ReduxDeploymentsState, ResultType>,
   foreignKeyParams: SyncQueryRunnerExtractorAndParams<ReduxDeploymentsState>,
   applicationDeploymentMap: ApplicationDeploymentMap,
-  customQueryInterpreter?: { [k: string]: (query: MiroirQuery) => ResultType }
+  // customQueryInterpreter?: { [k: string]: (query: MiroirQuery) => ResultType }
+  customQueryInterpreter?: { [k: string]: (query: any) => ResultType }
 ): ResultType {
   const innerSelector = useMemo(() => {
     return applyReduxDeploymentsStateQuerySelector(deploymentEntityStateQuerySelector);
@@ -135,8 +137,9 @@ export function useReduxDeploymentsStateQuerySelectorForCleanedResult(
   >,
   foreignKeyParams: SyncQueryRunnerExtractorAndParams<ReduxDeploymentsState>,
   applicationDeploymentMap: ApplicationDeploymentMap,
-  customQueryInterpreter?: {
-    [k: string]: (query: MiroirQuery) => Domain2QueryReturnType<DomainElementSuccess>;
+  customQueryInterpreter?: { // TODO: NOT USED, REMOVE
+    // [k: string]: (query: MiroirQuery) => Domain2QueryReturnType<DomainElementSuccess>;
+    [k: string]: (query: any) => Domain2QueryReturnType<DomainElementSuccess>;
   }
 ): any {
   const innerSelector = useMemo(() => {
@@ -200,6 +203,7 @@ export function useDomainStateQueryTemplateSelectorForCleanedResult<ResultType>(
 // ################################################################################################
 // ################################################################################################
 // ################################################################################################
+// TODO: WHAT'S THE POINT??
 export function useDefaultValueParams(
   applicationUuid: Uuid | undefined,
   deploymentUuid: Uuid | undefined,

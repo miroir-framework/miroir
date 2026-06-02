@@ -29,7 +29,6 @@ export const splitEntity = async (p: {
   applicationSection: ApplicationSection;
   entityDefinition: EntityDefinition;
   entityDefinitions: EntityDefinition[];
-  // entityInstances: EntityInstance[];
   newEntityName: string,
   splitAttributes: string[]
 }) => {
@@ -147,9 +146,6 @@ export const deleteCascade = async (p: {
       );
     }
 
-    // if (foreignKeyUnfilteredObjects.returnedDomainElement.elementType != "entityInstanceCollection") {
-    //   throw new Error("deleteInstanceWithCascade deleteCascade found foreignKeyUnfilteredObjects not an instance collection " + foreignKeyUnfilteredObjects.returnedDomainElement);
-    // }
     log.info(
       "deleteInstanceWithCascade deleteCascade found foreignKeyUnfilteredObjects",
       foreignKeyUnfilteredObjects

@@ -57,7 +57,6 @@ export const ReportSectionMarkdown = (props: ReportSectionMarkdownProps) => {
   const formikContext = useFormikContext<any>();
   const formikValuePathAsString = props.formikValuePath?.join("_") || "";
   const { serverBaseUrl } = useMiroirContextService();
-  // const serverBaseUrl = 'http://localhost:3080'; // TODO: get from config
 
   log.info("ReportSectionMarkdown render", {
     serverBaseUrl,

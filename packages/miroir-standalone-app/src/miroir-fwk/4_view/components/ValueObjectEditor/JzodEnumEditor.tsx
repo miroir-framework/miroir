@@ -48,7 +48,6 @@ const handleDiscriminatorChange = (
   rootLessListKey: string,
   rootLessListKeyArray: (string | number)[],
   reportSectionPathAsString: string,
-  // formikRootLessListKey: string,
   currentApplication: Uuid,
   appliationDeploymentMap: ApplicationDeploymentMap,
   currentDeploymentUuid: string | undefined,
@@ -250,7 +249,6 @@ const handleDiscriminatorChange = (
 export const JzodEnumEditor: FC<JzodEnumEditorProps> = ({
   name,
   labelElement,
-  // rawJzodSchema,
   listKey,
   rootLessListKey,
   rootLessListKeyArray,
@@ -264,7 +262,6 @@ export const JzodEnumEditor: FC<JzodEnumEditorProps> = ({
   onChangeVector,
 }: JzodEnumEditorProps) => {
   const formik = useFormikContext<Record<string, any>>();
-  // const context = useMiroirContextService();
 
   const parentKey = rootLessListKey.includes(".")
     ? rootLessListKey.substring(0, rootLessListKey.lastIndexOf("."))
