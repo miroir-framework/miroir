@@ -10,3 +10,10 @@ runs:
     - name: Build Electron distributable
       shell: bash
       run: npm run dist -w miroir-standalone-app-electron
+
+    - name: Upload Electron app
+      uses: actions/upload-artifact@v4
+      with:
+        name: miroir-electron-release
+        path: packages/miroir-standalone-app-electron/release/
+        if-no-files-found: error

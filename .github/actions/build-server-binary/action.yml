@@ -21,8 +21,14 @@ runs:
       shell: bash
       run: npm run build -w miroir-cli
 
-    # build:release already calls build:client which builds miroir-standalone-app;
-    # miroir-server has no plain "build" script — only build:release.
     - name: Produce server release binary
       shell: bash
       run: npm run build:release -w miroir-server
+
+    # ── 6. Upload artefacts ──────────────────────────────────────────────
+    - name: Upload server binary
+      uses: actions/upload-artifact@v4
+      with:
+        name: miroir-server-release
+        path: packages/miroir-server/release/
+        if-no-files-found: error

@@ -15,10 +15,19 @@ runs:
   steps:
     - name: Build Docker image
       shell: bash
-      run: |
-        chmod +x ci/docker/build_miroir.sh
+      run: 
+        chmod +x ci/docker/build_miroir.sh && \
         if [[ -n "${{ inputs.tag }}" ]]; then
           ci/docker/build_miroir.sh --tag "${{ inputs.tag }}" .
+          docker save "${{ inputs.tag }}" -o ci/build/miroir/miroir.tar
         else
           ci/docker/build_miroir.sh .
+          docker save miroir-framework/miroir:latest -o ci/build/miroir/miroir.tar
         fi
+
+    - name: Upload Docker image
+      uses: actions/upload-artifact@v4
+      with:
+        name: miroir-docker-release
+        path: ci/build/miroir
+        if-no-files-found: error
