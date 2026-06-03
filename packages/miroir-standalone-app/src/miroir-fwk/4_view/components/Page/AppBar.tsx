@@ -21,6 +21,7 @@ import { useMiroirTheme } from '../../contexts/MiroirThemeContext.js';
 import { usePageConfiguration } from '../../services/index.js';
 import { ThemedIcon, ThemedIconButton } from '../Themes/IconComponents.js';
 import { SidebarWidth } from './SidebarSection.js';
+import { reportMiroirRunners } from 'miroir-test-app_deployment-miroir';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -324,7 +325,8 @@ export function AppBar(props:AppBarProps) {
       section: "data",
       "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
       // "reportUuid": "29ef8018-43fc-4ee9-a736-6f9d625be7b7",
-      "reportUuid": "1c306453-7958-47e9-ba6c-9b79a7b37c92",
+      // "reportUuid": "1c306453-7958-47e9-ba6c-9b79a7b37c92",
+      "reportUuid": reportMiroirRunners.uuid,
       // targetRoot: "runners",
       icon: "directions_run"
     },
