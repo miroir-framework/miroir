@@ -75,16 +75,6 @@
             }
           }
         }
-      },
-      "ISBN": {
-        "type": "string",
-        "optional": true,
-        "tag": {
-          "value": {
-            "id": 9,
-            "defaultLabel": "ISBN"
-          }
-        }
       }
     }
   }
