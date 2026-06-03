@@ -1,7 +1,7 @@
 {
   "uuid": "29ef8018-43fc-4ee9-a736-6f9d625be7b7",
   "parentUuid": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
-  "name": "MiroirHome",
+  "name": "MiroirWebAppOrDesktopHome",
   "defaultLabel": "Home",
   "definition": {
     "section": {
@@ -82,38 +82,6 @@
                 }
               }
             }
-          }
-        },
-        {
-          "type": "transformerRunnerReportSection",
-          "definition": {
-            "transformerRunnerReportSectionType": "storedTransformer",
-            "label": "homeTransformerRunner",
-            "runner": "d9c8e1c7-5b3a-4c8b-9c3a-2f0e5b6a1c2d"
-          }
-        },
-        {
-          "type": "runnerReportSection",
-          "definition": {
-            "runnerReportSectionType": "storedRunner",
-            "label": "deployApplication",
-            "runner": "4f3cd0b1-08a1-421c-84f7-e0589be88d18"
-          }
-        },
-        {
-          "type": "runnerReportSection",
-          "definition": {
-            "runnerReportSectionType": "storedRunner",
-            "label": "dropApplication",
-            "runner": "1cd065d8-dfb0-466f-974c-e81e993f2c66"
-          }
-        },
-        {
-          "type": "runnerReportSection",
-          "definition": {
-            "runnerReportSectionType": "storedRunner",
-            "label": "dropEntity",
-            "runner": "44313751-b0e5-4132-bb12-a544806e759b"
           }
         },
         {

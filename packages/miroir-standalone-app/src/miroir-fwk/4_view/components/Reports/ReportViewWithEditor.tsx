@@ -48,7 +48,18 @@ let count = 0;
 export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
   count += 1;
   log.info(
-    `ReportViewWithEditor Render Count: ${count}, application: ${props.application}, deploymentUuid: ${props.deploymentUuid}, applicationSection: ${props.applicationSection}`
+    "ReportViewWithEditor Render Count:",
+    count,
+    "application:",
+    props.application,
+    "deploymentUuid:",
+    props.deploymentUuid,
+    "applicationSection:",
+    props.applicationSection,
+    "reportDefinition:",
+    props.reportDefinition,
+    "pageParams:",
+    props.pageParams,
   );
   const context = useMiroirContextService();
   const outlineContext = useDocumentOutlineContext();

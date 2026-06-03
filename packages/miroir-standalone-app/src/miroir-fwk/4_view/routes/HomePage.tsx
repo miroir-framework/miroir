@@ -1,5 +1,5 @@
 import { useEffect, useMemo } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams, type Params } from "react-router-dom";
 
 import {
   defaultSelfApplicationDeploymentMap,
@@ -13,6 +13,8 @@ import {
   reportEntityDefinitionList,
   reportEntityDetails,
   reportEntityList,
+  selfApplicationDeploymentMiroir,
+  selfApplicationMiroir,
   type BoxedQueryWithExtractorCombinerTransformer,
   type Domain2QueryReturnType,
   type MetaModel,
@@ -29,7 +31,8 @@ import { reportUrl } from "../navigation.js";
 
 // import entityPublisher from "../../assets/library_model/";
 import {
-  packageName
+  packageName,
+  type ReportUrlParamKeys
 } from "../../../constants.js";
 import { useQueryTemplateResults } from "../components/Reports/ReportHooks.js";
 import { JsonDisplayHelper } from "miroir-react";
@@ -37,6 +40,9 @@ import { cleanLevel } from "../constants.js";
 import { useCurrentModel } from "../ReduxHooks.js";
 import { RunnerList, runnerConfigs } from "../components/Runners/RunnersList.js";
 import { ThemedText } from "../components/Themes/BasicComponents.js";
+import { ReportDisplay } from "./ReportDisplay.js";
+import { reportMiroirWebAppOrDesktopHome } from "miroir-test-app_deployment-miroir";
+import { reportMiroirSandboxHome } from "miroir-test-app_deployment-miroir";
 
 
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -73,14 +79,15 @@ export interface RootComponentProps {
 // ###################################################################################
 export const HomePage = (props: RootComponentProps) => {
   const context = useMiroirContextService();
+  const pageParams: Params<ReportUrlParamKeys> = useParams<ReportUrlParamKeys>();
 
   const currentApplication = context.toolsPageState?.applicationSelector ?? context.application;
   // Auto-fetch configurations when the page loads
-  const { fetchConfigurations } = usePageConfiguration({
-    autoFetchOnMount: true,
-    successMessage: "Home page configurations loaded successfully",
-    actionName: "home page configuration fetch"
-  });
+  // const { fetchConfigurations } = usePageConfiguration({
+  //   autoFetchOnMount: true,
+  //   successMessage: "Home page configurations loaded successfully",
+  //   actionName: "home page configuration fetch"
+  // });
 
   const displayedApplicationSection = context.applicationSection;
   const currentApplicationDeploymentMap = context.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap;
@@ -156,6 +163,18 @@ export const HomePage = (props: RootComponentProps) => {
     }
   }, [applicationDefinition]);
 
+  const storedReportDisplayPageParams = useMemo(() => {
+    return {
+      application: selfApplicationMiroir.uuid,
+      applicationSection: "data",
+      deploymentUuid: selfApplicationDeploymentMiroir.uuid,
+      reportUuid: context?.clientEnvironment == "sandbox" ? reportMiroirSandboxHome.uuid : reportMiroirWebAppOrDesktopHome.uuid,
+      // reportUuid: reportMiroirSandboxHome.uuid,
+      instanceUuid: "none",
+    };
+  // }, [context?.application, context?.applicationSection, context?.deploymentUuid]);
+  }, []);
+  
   return (
     <PageContainer
       withSidebar={true}
@@ -170,13 +189,15 @@ export const HomePage = (props: RootComponentProps) => {
         },
       }}
     >
-      <ThemedText variant="h2">
-      <h2>Welcome to the Miroir Sandbox!</h2>
+      {/* <ThemedText variant="h2">
+      <h2>Welcome to the Miroir {
+        context.clientEnvironment === "electron" ? "Desktop Application" : "Web Application"
+      }!</h2>
       </ThemedText>
       <ThemedText>
       To get an idea of Miroir's capabilities, start by looking at the <a href="https://github.com/miroir-framework/miroir/blob/master/docs/tutorials/library-tutorial.md">Library Tutorial</a>
       </ThemedText>
-      <p/>
+      <br/> */}
       <JsonDisplayHelper debug={true}
         componentName="HomePage"
         elements={[{
@@ -225,7 +246,8 @@ export const HomePage = (props: RootComponentProps) => {
           Redo
         </button>
       </span> */}
-      <RunnerList config={runnerConfigs} applicationDeploymentMap={currentApplicationDeploymentMap} />
+      <ReportDisplay pageParams={storedReportDisplayPageParams} />
+      {/* <RunnerList config={runnerConfigs} applicationDeploymentMap={currentApplicationDeploymentMap} /> */}
     </PageContainer>
   );
 };

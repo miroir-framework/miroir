@@ -120,7 +120,8 @@ export { default as reportMiroirDocumentation } from "./assets/miroir_data/3f2ba
 export { default as reportBlobList } from "./assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/be61481c-644a-4f09-8c4f-581044e98956.json" assert { type: "json" };
 export { default as reportSelfApplicationDetails } from "./assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/cd24df86-204c-4a72-9ac0-87f2b92f25fe.json" assert { type: "json" };
 export { default as reportTransformerList } from "./assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/d62a1730-8b05-42f5-9725-b0115b234627.json" assert { type: "json" };
-export { default as reportMiroirHome } from "./assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/29ef8018-43fc-4ee9-a736-6f9d625be7b7.json" assert { type: "json" };
+export { default as reportMiroirWebAppOrDesktopHome } from "./assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/29ef8018-43fc-4ee9-a736-6f9d625be7b7.json" assert { type: "json" };
+export { default as reportMiroirSandboxHome } from "./assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/1c306453-7958-47e9-ba6c-9b79a7b37c92.json" assert { type: "json" };
 export { default as reportMiroirRunners } from "./assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/1c306453-7958-47e9-ba6c-9b79a7b37c92.json" assert { type: "json" };
 
 // ################################################################################################
