@@ -1,0 +1,66 @@
+{
+  "uuid": "ac75382d-00fc-4f93-a169-3f76ef85834e",
+  "parentUuid": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+  "name": "reportMiroirRunners",
+  "defaultLabel": "Runners available to all applications",
+  "parentName": "Report",
+  "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+  "definition": {
+    "section": {
+      "type": "list",
+      "definition": [
+        {
+          "type": "markdownReportSection",
+          "definition": {
+            "content": "# Runners available to all applications"
+          }
+        },
+        {
+          "type": "runnerReportSection",
+          "definition": {
+            "runnerReportSectionType": "storedRunner",
+            "label": "deployApplication",
+            "runner": "4f3cd0b1-08a1-421c-84f7-e0589be88d18"
+          }
+        },
+        {
+          "type": "runnerReportSection",
+          "definition": {
+            "runnerReportSectionType": "storedRunner",
+            "label": "dropApplication",
+            "runner": "1cd065d8-dfb0-466f-974c-e81e993f2c66"
+          }
+        },
+        {
+          "type": "runnerReportSection",
+          "definition": {
+            "runnerReportSectionType": "storedRunner",
+            "label": "dropEntity",
+            "runner": "44313751-b0e5-4132-bb12-a544806e759b"
+          }
+        },
+        {
+          "type": "runnerReportSection",
+          "definition": {
+            "runnerReportSectionType": "storedRunner",
+            "label": "createEntity",
+            "runner": "82f81a25-2366-4abf-8a97-83ca5e9a9c46"
+          }
+        },
+        {
+          "type": "storedReportDisplay",
+          "definition": {
+            "transformerType": "returnValue",
+            "value": {
+              "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+              "deploymentUuid": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
+              "applicationSection": "data",
+              "reportUuid": "3d96f097-a0e4-47d8-aa6b-43fc13c3da68",
+              "instanceUuid": "3d96f097-a0e4-47d8-aa6b-43fc13c3da68"
+            }
+          }
+        }
+      ]
+    }
+  }
+}

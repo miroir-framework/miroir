@@ -122,7 +122,7 @@ export { default as reportSelfApplicationDetails } from "./assets/miroir_data/3f
 export { default as reportTransformerList } from "./assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/d62a1730-8b05-42f5-9725-b0115b234627.json" assert { type: "json" };
 export { default as reportMiroirWebAppOrDesktopHome } from "./assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/29ef8018-43fc-4ee9-a736-6f9d625be7b7.json" assert { type: "json" };
 export { default as reportMiroirSandboxHome } from "./assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/1c306453-7958-47e9-ba6c-9b79a7b37c92.json" assert { type: "json" };
-export { default as reportMiroirRunners } from "./assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/1c306453-7958-47e9-ba6c-9b79a7b37c92.json" assert { type: "json" };
+export { default as reportMiroirRunners } from "./assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/ac75382d-00fc-4f93-a169-3f76ef85834e.json" assert { type: "json" };
 
 // ################################################################################################
 // Miroir Data - Endpoints (parentUuid = entityEndpointVersion = 3d8da4d4)
