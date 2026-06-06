@@ -11,6 +11,9 @@
       "definition": [
         {
           "type": "markdownReportSection",
+          "style": {
+            "maxWidth": "50vw"
+          },
           "definition": {
             "content": "# Welcome to the Miroir Sandbox!\n\nThis is a sandbox environment where you can experiment with Miroir features. The sandbox runs entirely in your browser, without any external communication, meaning that after it has been loaded, you can use it entirely offline. This means that **AI integration**, which requires communication with an external provider, **is not supported in the sandbox environment**. Other sandbox features are identical to their counterparts in the web app and desktop app: **you can create and maintain Entities, Reports, Queries, Transformers, etc.**\n\n**The only storage available in the sandbox is the browser's local storage**, which means that any data you input or generate in the sandbox will only be stored on your device and will not be accessible from other devices or after you clear your browser data.\n\n To get an idea of Miroir's capabilities, start by looking at the [Library Tutorial](https://github.com/miroir-framework/miroir/blob/master/docs/tutorials/library-tutorial.md)."
           }

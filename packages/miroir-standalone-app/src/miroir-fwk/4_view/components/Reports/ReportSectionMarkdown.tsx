@@ -214,6 +214,7 @@ export const ReportSectionMarkdown = (props: ReportSectionMarkdownProps) => {
         <div
           style={{
             lineHeight: '1.6',
+            ...reportSectionDefinitionFromFormik?.style,
           }}
           className="markdown-content"
         >

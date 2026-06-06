@@ -331,6 +331,7 @@ export function getExtendedSchemas(jzodSchemajzodMiroirBootstrapSchemaDefinition
     "transformer_orderBy",
     "transformerForBuildPlusRuntime_Abstract",
     "transformerForBuildPlusRuntime_optional_Abstract",
+    "styledReportSection",
   ];
   // log.info("getExtendedSchemas result", JSON.stringify(result, null, 2));
   return result;

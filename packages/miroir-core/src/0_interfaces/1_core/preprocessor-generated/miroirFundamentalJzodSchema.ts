@@ -9644,6 +9644,19 @@ export const miroirFundamentalJzodSchema = {
           }
         }
       },
+      "styledReportSection": {
+        "type": "object",
+        "definition": {
+          "style": {
+            "type": "object",
+            "definition": {
+              "maxWidth": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      },
       "listReportSection": {
         "type": "object",
         "definition": {
@@ -9909,6 +9922,15 @@ export const miroirFundamentalJzodSchema = {
       },
       "markdownReportSection": {
         "type": "object",
+        "extend": {
+          "type": "schemaReference",
+          "definition": {
+            "eager": true,
+            "relativePath": "styledReportSection",
+            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+          },
+          "context": {}
+        },
         "tag": {
           "value": {
             "display": {
@@ -27461,6 +27483,19 @@ export const miroirFundamentalJzodSchema = {
           }
         }
       },
+      "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_styledReportSection_extend": {
+        "type": "object",
+        "definition": {
+          "style": {
+            "type": "object",
+            "definition": {
+              "maxWidth": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      },
       "______________________________________________queriesLocalizedInnerResolutionStorePlainReferences_______________________": {
         "type": "any"
       },
@@ -41539,10 +41574,64 @@ export const miroirFundamentalJzodSchema = {
         }
       },
       "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_markdownReportSection": {
-        "type": "schemaReference",
+        "type": "object",
+        "extend": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_styledReportSection_extend",
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+            }
+          }
+        ],
+        "tag": {
+          "value": {
+            "display": {
+              "displayedAttributeValueWhenFolded": "definition.label"
+            },
+            "isTemplate": true
+          }
+        },
         "definition": {
-          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-          "relativePath": "markdownReportSection"
+          "type": {
+            "type": "literal",
+            "definition": "markdownReportSection"
+          },
+          "definition": {
+            "type": "object",
+            "definition": {
+              "label": {
+                "type": "string",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "id": 1,
+                    "defaultLabel": "Label"
+                  }
+                }
+              },
+              "content": {
+                "type": "string",
+                "tag": {
+                  "value": {
+                    "id": 2,
+                    "defaultLabel": "Markdown Content"
+                  }
+                }
+              },
+              "fetchedDataReference": {
+                "type": "string",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "id": 3,
+                    "defaultLabel": "Fetched Data Reference"
+                  }
+                }
+              }
+            }
+          }
         }
       },
       "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_modelDiagramReportSection": {
@@ -42057,6 +42146,13 @@ export const miroirFundamentalJzodSchema = {
             }
           }
         ]
+      },
+      "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_styledReportSection": {
+        "type": "schemaReference",
+        "definition": {
+          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          "relativePath": "styledReportSection"
+        }
       },
       "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorReturningObject": {
         "type": "union",

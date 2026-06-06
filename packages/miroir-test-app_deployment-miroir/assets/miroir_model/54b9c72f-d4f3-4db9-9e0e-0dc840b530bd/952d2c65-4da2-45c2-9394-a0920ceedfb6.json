@@ -82,6 +82,19 @@
       "definition": {
         "type": "schemaReference",
         "context": {
+          "styledReportSection": {
+            "type": "object",
+            "definition": {
+              "style": {
+                "type": "object",
+                "definition": {
+                  "maxWidth": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
           "listReportSection": {
             "type": "object",
             "definition": {
@@ -320,6 +333,13 @@
           },
           "markdownReportSection": {
             "type": "object",
+            "extend": {
+              "type": "schemaReference",
+              "definition": {
+                "eager": true,
+                "relativePath": "styledReportSection"
+              }
+            },
             "tag": {
               "value": {
                 "display": {

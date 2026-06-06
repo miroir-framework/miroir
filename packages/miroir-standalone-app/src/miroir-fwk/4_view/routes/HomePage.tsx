@@ -168,8 +168,8 @@ export const HomePage = (props: RootComponentProps) => {
       application: selfApplicationMiroir.uuid,
       applicationSection: "data",
       deploymentUuid: selfApplicationDeploymentMiroir.uuid,
-      reportUuid: context?.clientEnvironment == "sandbox" ? reportMiroirSandboxHome.uuid : reportMiroirWebAppOrDesktopHome.uuid,
-      // reportUuid: reportMiroirSandboxHome.uuid,
+      // reportUuid: context?.clientEnvironment == "sandbox" ? reportMiroirSandboxHome.uuid : reportMiroirWebAppOrDesktopHome.uuid,
+      reportUuid: reportMiroirSandboxHome.uuid,
       instanceUuid: "none",
     };
   // }, [context?.application, context?.applicationSection, context?.deploymentUuid]);

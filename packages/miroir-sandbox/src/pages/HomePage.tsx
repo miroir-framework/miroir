@@ -14,7 +14,7 @@ export function HomePage(): React.JSX.Element {
   return (
     <Box sx={{ p: 4 }}>
       <Typography variant="h4" gutterBottom>
-        Miroir Framework – Demo
+        !!!!!!! Miroir Framework – Demo THIS PAGE IS NOT USED!!!!
       </Typography>
       <Typography variant="body1">
         Welcome to the Miroir Framework static demo.
