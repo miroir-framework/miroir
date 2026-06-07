@@ -21,6 +21,7 @@ type Describe = {
 
 type Test = {
   (title: string, testFn: () => void | Promise<void>, timeout?: number): void | Promise<void>;
+  skip(title: string, testFn: () => void | Promise<void>, timeout?: number): void | Promise<void>;
 };
 
 export function describe(title: string, testFn: () => void | Promise<void>): void | Promise<void> {
@@ -28,10 +29,16 @@ export function describe(title: string, testFn: () => void | Promise<void>): voi
   return testFn();
 }
 
-export function test(title: string, testFn: () => void | Promise<void>, timeout?: number): void | Promise<void> {
+function testImpl(title: string, testFn: () => void | Promise<void>, timeout?: number): void | Promise<void> {
   // console.log(`Test: ${title}`);
   return testFn();
 }
+
+function testSkip(title: string, _testFn: () => void | Promise<void>, _timeout?: number): void {
+  // console.log(`Test skipped: ${title}`);
+}
+
+export const test = Object.assign(testImpl, { skip: testSkip }) as Test;
 
 describe.each = function(data: any[]): (template: string, testFn: (item: any) => void | Promise<void>, timeout?: number) => Promise<void> {
   return async function(template: string, testFn: (item: any) => void | Promise<void>, timeout?: number): Promise<void> {
