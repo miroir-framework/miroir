@@ -12,6 +12,7 @@ import {
   Entity,
   EntityDefinition,
   EntityInstance,
+  extractorOrCombinerTemplate,
   ExtractorOrCombinerTemplate,
   persistenceAction,
   PersistenceAction,
@@ -19,7 +20,8 @@ import {
   testBuildPlusRuntimeCompositeAction,
   TestBuildPlusRuntimeCompositeActionSuite,
   TestCompositeActionParams,
-  ZodParseError
+  ZodParseError,
+  type StoreUnitConfiguration
 } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
 import { deployment_Miroir } from "miroir-test-app_deployment-admin";
@@ -30,8 +32,7 @@ import { selfApplicationMiroir, menuDefaultMiroir, entityEntity, entityMenu, ent
 
 import { zodErrorDeepestIssueLeaves } from "../../src/1_core/zodParseErrorHandler";
 
-import { getTestSuitesForBuildPlusRuntimeCompositeAction } from 'miroir-standalone-app/src/miroir-fwk/4-tests/applicative.Library.BuildPlusRuntimeCompositeAction';
-import { extractorOrCombinerTemplate, StoreUnitConfiguration } from '../../dist';
+// import { extractorOrCombinerTemplate, StoreUnitConfiguration } from '../../dist';
 import { Uuid } from '../../src/0_interfaces/1_core/EntityDefinition.js';
 import { getBasicApplicationConfiguration } from '../../src/2_domain/Deployment.js';
 

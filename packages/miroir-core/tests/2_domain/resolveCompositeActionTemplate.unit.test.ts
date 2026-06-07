@@ -11,9 +11,9 @@ import {
 
 import { entityEntity, entityReport, entityEntityDefinition, entityMenu } from "miroir-test-app_deployment-miroir";
 
-import { defaultMiroirModelEnvironment } from '../../dist';
-import { MetaEntity } from "../../src/0_interfaces/1_core/EntityDefinition";
+import { MetaEntity, type Uuid } from "../../src/0_interfaces/1_core/EntityDefinition";
 import { resolveTestCompositeActionTemplate, resolveTestCompositeActionTemplateSuite } from "../../src/2_domain/TestSuiteTemplate";
+import { defaultMiroirModelEnvironment } from '../../src/1_core/Model';
 // import { act } from 'react';
 
 // const env:any = (import.meta as any).env
@@ -97,7 +97,7 @@ describe('resolveTestCompositeActionTemplate', () => {
                   b: { type: "number" },
                 },
               },
-            },
+            } as any,
           },
           actionSequence: [
             // createEntity
@@ -156,7 +156,7 @@ describe('resolveTestCompositeActionTemplate', () => {
         currentDeploymentUuid,
         createEntity_newEntityName: newEntity.name,
         createEntity_newEntityDescription: newEntity.description,
-        createEntity_newEntityUuid: newEntity.uuid,
+        createEntity_newEntityUuid: newEntity.uuid as Uuid,
         createEntity_newEntityDefinitionUuid: uuidv4(),
         createEntity_newEntityDetailsReportUuid: uuidv4(),
         createEntity_newEntityListReportUuid: uuidv4(),
@@ -269,7 +269,7 @@ describe('resolveTestCompositeActionTemplateSuite', () => {
 
     const newEntityUuid = uuidv4();
 
-    const newEntity: MetaEntity = {
+    const newEntity /*:MetaEntity*/ = {
       uuid: uuidv4(),
       parentUuid: entityEntity.uuid,
       selfApplication: currentApplicationUuid,
@@ -297,6 +297,7 @@ describe('resolveTestCompositeActionTemplateSuite', () => {
     const compositeActionTemplateSuite: TestCompositeActionTemplateSuite = {
       testType: "testCompositeActionTemplateSuite",
       testLabel: "Test Suite Label",
+      testApplication: currentApplicationUuid,
       testCompositeActions: {
         action1: {
           testType: "testCompositeActionTemplate",

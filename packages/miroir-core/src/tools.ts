@@ -18,12 +18,16 @@ export const getClientEnvironment = (): ClientEnvironment => {
   if ((import.meta as any).env?.MIROIR_IS_SANDBOX) {
     return "sandbox";
   }
-  if (typeof (window as any).electronAPI?.callMiroirIpc === "function") {
-    return "electron";
-  }
+  // console.log("process", process.env.VITEST);
   if (typeof process !== "undefined" && (process as any).versions?.node) {
     return "node";
   }
+  if (typeof (window as any).electronAPI?.callMiroirIpc === "function") {
+    return "electron";
+  }
+  // if (typeof process !== "undefined" && (process as any).versions?.node) {
+  //   return "node";
+  // }
   if (typeof window !== "undefined" && typeof window.document !== "undefined") {
     return "webApp";
   }
