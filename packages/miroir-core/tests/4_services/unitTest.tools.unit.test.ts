@@ -89,10 +89,9 @@ describe("asTransformerTestFromUnitTest", () => {
         transformerTestLabel: "x",
         transformerName: "plus",
         transformer: {
-          transformerType: "plus",
+          transformerType: "+",
           interpolation: "runtime",
-          left: { transformerType: "returnValue", interpolation: "runtime", value: 1 },
-          right: { transformerType: "returnValue", interpolation: "runtime", value: 2 },
+          args: [{ transformerType: "returnValue", interpolation: "runtime", value: 1 }, { transformerType: "returnValue", interpolation: "runtime", value: 2 }],
         },
         expectedValue: 3,
       },

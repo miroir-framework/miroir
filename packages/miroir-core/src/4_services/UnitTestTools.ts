@@ -19,6 +19,33 @@ import { jsonify } from "../1_core/test-expect";
 import { resolveFunctionCallTarget } from "./FunctionCallTestRegistry";
 import { runQueryRunnerTestInMemory } from "./QueryRunnerTestTools";
 
+const JSON_UNDEFINED_SENTINEL = "__miroirJsonUndefined";
+
+/** Deserialize functionCallTest arguments / expected values from store JSON. */
+export function deserializeFunctionCallValue(value: unknown): unknown {
+  if (
+    value &&
+    typeof value === "object" &&
+    !Array.isArray(value) &&
+    JSON_UNDEFINED_SENTINEL in (value as Record<string, unknown>) &&
+    (value as Record<string, unknown>)[JSON_UNDEFINED_SENTINEL] === true
+  ) {
+    return undefined;
+  }
+  if (Array.isArray(value)) {
+    return value.map(deserializeFunctionCallValue);
+  }
+  if (value && typeof value === "object") {
+    return Object.fromEntries(
+      Object.entries(value as Record<string, unknown>).map(([key, entry]) => [
+        key,
+        deserializeFunctionCallValue(entry),
+      ]),
+    );
+  }
+  return value;
+}
+
 export {
   listQueryRunnerFixtureRefs,
   queryRunnerTestJzodSchema,
@@ -196,7 +223,7 @@ export async function runFunctionCallTestInMemory(
   }
 
   const fn = resolveFunctionCallTarget(unitTest.functionRef);
-  const args = unitTest.arguments ?? [];
+  const args = (unitTest.arguments ?? []).map(deserializeFunctionCallValue);
   const testSuiteNamePathAsString = MiroirActivityTracker.testPathName(testNamePath);
 
   let testAssertionResult: TestAssertionResult;
@@ -219,6 +246,24 @@ export async function runFunctionCallTestInMemory(
           assertionExpectedValue: unitTest.expectedError,
         };
       }
+    } else if (unitTest.expectUndefinedResult) {
+      const rawResult = fn(...args);
+      const testResult: any = localVitest
+        .expect(rawResult, `${testSuiteNamePathAsString} > ${assertionName}`)
+        .toEqual(undefined);
+
+      if (!testResult || !Object.hasOwn(testResult, "result")) {
+        testAssertionResult = { assertionName, assertionResult: "ok" };
+      } else if (testResult.result) {
+        testAssertionResult = { assertionName, assertionResult: "ok" };
+      } else {
+        testAssertionResult = {
+          assertionName,
+          assertionResult: "error",
+          assertionExpectedValue: undefined,
+          assertionActualValue: jsonify(rawResult),
+        };
+      }
     } else {
       const rawResult = fn(...args);
       const resultWithIgnored = ignorePostgresExtraAttributes(
@@ -228,7 +273,7 @@ export async function runFunctionCallTestInMemory(
       const jsonifiedResult = jsonify(resultWithIgnored);
       const normalizedResult = removeUndefinedProperties(jsonifiedResult);
       const expectedValue = ignorePostgresExtraAttributes(
-        unitTest.expectedValue,
+        deserializeFunctionCallValue(unitTest.expectedValue),
         unitTest.ignoreAttributes,
       );
       const normalizedExpected = removeUndefinedProperties(unNullify(expectedValue));

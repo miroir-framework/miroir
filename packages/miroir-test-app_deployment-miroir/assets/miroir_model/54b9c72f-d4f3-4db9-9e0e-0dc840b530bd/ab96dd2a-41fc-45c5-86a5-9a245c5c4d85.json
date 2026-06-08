@@ -227,6 +227,7 @@
               },
               "expectedValue": { "type": "any", "optional": true },
               "expectedError": { "type": "string", "optional": true },
+              "expectUndefinedResult": { "type": "boolean", "optional": true },
               "environmentRef": { "type": "string", "optional": true },
               "ignoreAttributes": {
                 "type": "array",

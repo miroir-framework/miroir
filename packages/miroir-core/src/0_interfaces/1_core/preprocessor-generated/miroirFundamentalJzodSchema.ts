@@ -6771,6 +6771,10 @@ export const miroirFundamentalJzodSchema = {
             "type": "string",
             "optional": true
           },
+          "expectUndefinedResult": {
+            "type": "boolean",
+            "optional": true
+          },
           "environmentRef": {
             "type": "string",
             "optional": true
@@ -7255,6 +7259,10 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "expectedError": {
                     "type": "string",
+                    "optional": true
+                  },
+                  "expectUndefinedResult": {
+                    "type": "boolean",
                     "optional": true
                   },
                   "environmentRef": {

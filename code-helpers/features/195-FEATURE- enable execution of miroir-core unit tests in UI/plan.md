@@ -339,12 +339,70 @@ Vitest CLI bridge:
 
 **Validation:** `RUN_TEST=queries.unit.test` (17/17); `unitTest.tools.unit.test.ts` Phase 4 cases; `jzodTypeCheck` on `queries_library` instance.
 
-### Phase 5 — Complete transformer migration & integration modes
+### Phase 5 — Complete remaining migrations
 
-- [ ] Move `menu.unit.test.ts` inline suite to store.
-- [ ] Finish `jzod.typeCheckToPass` → transformer entity migration; remove 12k-line file.
+Phase 5 is split by migration pattern. **5a** is done; **5b–5e** track the rest.
+
+#### Phase 5a — Menu + first Class B batch *(done)*
+
+- [x] `menu.unit.test.ts` → `unitTest_suite_menu` (`transformerTest` in UnitTest entity).
+- [x] Class B batch: `alterObject` (3), `jzodToCopilotKitParameter` (17), `mergePositionBased` (18).
+- [x] `functionCallTestSuites/*` data modules + `EXPORT_FUNCTION_CALL_SUITES=1` export script.
+- [x] `runDeployedUnitTestSuite` thin-wrapper helper.
+- [x] Runner: `expectUndefinedResult` + `__miroirJsonUndefined` JSON sentinel for `undefined` args/results.
+- [x] Deprecate `jzod.typeCheckToPass.unit.test.ts` → forwards to `jzodTypeCheck.test.ts` entity loader.
+
+**Export:** `EXPORT_FUNCTION_CALL_SUITES=1 npx vitest run tests/export-function-call-suites.unit.test.ts`
+
+**Validation:** `RUN_TEST=alterObject.unit.test` (3/3); `jzodToCopilotKitParameter.unit.test` (17/17); `mergePositionBased.unit.test` (18/18); `menu.unit.test` (1/1).
+
+#### Phase 5b — Bulk Class B (`functionCallTest`)
+
+Migrate remaining **ready** Class B files (~20 files, ~170 cases) using the 5a pattern:
+
+- Registry whitelist expansion per export.
+- Data module under `tests/functionCallTestSuites/`.
+- Vitest file → `runDeployedUnitTestSuite` wrapper.
+
+**Priority order:** `JzodSchemaReferencesList/Set`, `jzod.buildAnyKeyMap`, `jzodToJzod_Summary`, `jzodTransitiveDependencySet`, `tools.test.ts` (split by export), env-arg jzod utilities.
+
+#### Phase 5c — Class B extensions (minor runner/schema)
+
+Cases needing small runner additions before migration:
+
+| Extension | Files |
+|-----------|-------|
+| Error-object returns (`Action2Error`, not throws) | `EntityPrimaryKey.unit.test.ts` |
+| `expectedError` / throws | `getAttributeTypesFromJzodSchema`, `jzodObjectFlatten`, `modelUpdates` |
+| `fixtureRef` for large blobs | `domainStateToDeploymentEntityState`, `ansiColumnsToJzodSchema`, `resolveCompositeActionTemplate` |
+| Partial match (`toMatchObject`) | `selectUnionBranchFromDiscriminator`, `tools.test.ts` (`resolveRelativePath`) |
+| External package whitelist | `getAttributeTypesFromJzodSchema`, `ansiColumnsToJzodSchema` |
+
+#### Phase 5d — jzodTypeCheck consolidation
+
+- [ ] Merge `jzod.typeCheckToFail` cases into `transformerTestSuite_jzodTypeCheck` entity.
+- [x] Remove 12k-line `jzod.typeCheckToPass` inline suite (deprecated wrapper → entity loader).
+- [ ] Delete `jzod.typeCheckToFail.unit.test.ts` once entity coverage verified.
+
+#### Phase 5e — Integration modes & CI conventions
+
 - [ ] UI toggle: unit vs integration for transformer tests (reuse `integrationTestExpectedValue`).
-- [ ] Document `RUN_TEST` / vitest filter conventions for CI.
+- [ ] Document `RUN_TEST` / vitest filter conventions (see below).
+
+**Vitest selective runs (convention):**
+
+```bash
+# Single suite by env (existing pattern)
+RUN_TEST=alterObject.unit.test npx vitest run tests/1_core/alterObject.unit.test.ts
+
+# Entity-backed transformer suites
+RUN_TEST=jzodTypeCheck npx vitest run tests/1_core/jzod/jzodTypeCheck.test.ts
+
+# Regenerate functionCallTest deployment JSON
+EXPORT_FUNCTION_CALL_SUITES=1 npx vitest run tests/export-function-call-suites.unit.test.ts
+```
+
+**Out of scope (vitest-only):** Class E/F (`blobUtils`, controllers, `zodParse*`), meta tests (`unitTest.tools`, `export-function-call-suites`), `jzodToJzod.unit.test.ts` (callback harness → defer or transformerTest).
 
 ### Phase 6 — Discovery UX
 
@@ -393,7 +451,7 @@ Vitest CLI bridge:
 
 ## Success criteria
 
-- [ ] All Class A transformer suites selectable and runnable from UI (including `menu`).
+- [x] All Class A transformer suites selectable and runnable from UI (including `menu` — Phase 5a).
 - [x] Class B pilot suites runnable from UI and Vitest with identical results (Phase 3 UI wiring; manual smoke-test OK).
 - [x] Class C query suite represented as store entities and runnable in memory (CLI; UI via existing `UnitTestDisplay`).
 - [ ] `resolveCompositeActionTemplate.unit.test.ts` migrated as Class B `functionCallTest` (future Phase 2-style batch).
@@ -413,12 +471,14 @@ Vitest CLI bridge:
 | `1_core/jzod/unfoldSchemaOnce.test.ts` | A | done |
 | `1_core/defaultValueForJzodSchema.unit.test.ts` | A | done |
 | `1_core/jzod/resolveSchemaReferenceInContext.test.ts` | A | done |
-| `2_domain/menu.unit.test.ts` | A | migrate to store |
+| `2_domain/menu.unit.test.ts` | A | done (Phase 5a UnitTest) |
 | `4_services/transformers.integ.test.ts` | A+G | done (integration) |
 | `1_core/mustache.unit.test.ts` | B | pilot |
 | `1_core/jzod/jzodToJsonSchema.unit.test.ts` | B | pilot |
 | `1_core/EntityPrimaryKey.unit.test.ts` | B | high |
-| `1_core/alterObject.unit.test.ts` | B | high |
+| `1_core/alterObject.unit.test.ts` | B | done (Phase 5a) |
+| `1_core/jzod/jzodToCopilotKitParameter.unit.test.ts` | B | done (Phase 5a) |
+| `1_core/jzod/mergePositionBased.unit.test.ts` | B | done (Phase 5a) |
 | `1_core/jzod/jzod.typeCheckToFail.unit.test.ts` | B | medium (→ A migration possible via jzodTypeCheck transformer) |
 | `1_core/jzod/jzod.typeCheckToPass.unit.test.ts` | A (target) | deprecate file |
 | `1_core/jzod/*` (remaining 15 files) | B | medium |

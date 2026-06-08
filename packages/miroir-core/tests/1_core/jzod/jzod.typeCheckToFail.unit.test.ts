@@ -1,3 +1,7 @@
+/**
+ * @deprecated Prefer transformerTestSuite_jzodTypeCheck entity (jzodTypeCheck.test.ts).
+ * Fail-case coverage to be merged into the entity suite in Phase 5d.
+ */
 import { describe, expect, it } from 'vitest';
 import {
   JzodElement,

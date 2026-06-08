@@ -1,5 +1,8 @@
 import { extractDoubleBracePatterns } from "../1_core/mustache";
+import { jzodToCopilotKitParameter } from "../1_core/jzod/JzodToCopilotKitParameter";
+import { mergePositionBased } from "../1_core/jzod/JzodToJzod_CarryOn";
 import { jzodToJsonSchema } from "../1_core/jzod/JzodToJsonSchema";
+import { alterObjectAtPath } from "../tools";
 
 export type FunctionCallRef = {
   module: string;
@@ -18,6 +21,15 @@ const FUNCTION_CALL_REGISTRY: Record<string, Record<string, WhitelistedFunction>
   },
   "miroir-core/1_core/jzod/JzodToJsonSchema": {
     jzodToJsonSchema: jzodToJsonSchema as WhitelistedFunction,
+  },
+  "miroir-core/tools": {
+    alterObjectAtPath: alterObjectAtPath as WhitelistedFunction,
+  },
+  "miroir-core/1_core/jzod/JzodToCopilotKitParameter": {
+    jzodToCopilotKitParameter: jzodToCopilotKitParameter as WhitelistedFunction,
+  },
+  "miroir-core/1_core/jzod/JzodToJzod_CarryOn": {
+    mergePositionBased: mergePositionBased as WhitelistedFunction,
   },
 };
 
