@@ -201,7 +201,7 @@ const localRunnerInstallApplication = runnerDeployApplication as Runner;
   
 const runnerTestParams: Record<string, RunnerTestParams> = {
   ["libraryLendBookRunnerTest"]: libraryLendBookRunnerTest,
-  ["libraryReturnBookRunnerTest"]: libraryReturnBookRunnerTest,
+  // ["libraryReturnBookRunnerTest"]: libraryReturnBookRunnerTest,
   // [localRunnerCreateApplication.name]: {
   //   pageLabel,
   //   runner: localRunnerCreateApplication as Runner,

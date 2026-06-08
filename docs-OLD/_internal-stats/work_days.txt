@@ -1,0 +1,20 @@
+~/Mes documents/devhome/miroir-app-dev (master)
+$ git log --format="%ci" | cut -f1 -d ' ' | grep 2023 | uniq | wc -l
+194
+
+~/Mes documents/devhome/miroir-app-dev (master)
+$ git log --format="%ci" | cut -f1 -d ' ' | grep 2024 | uniq | wc -l
+193
+
+~/Mes documents/devhome/miroir-app-dev (master)
+$ git log --format="%ci" | cut -f1 -d ' ' | grep 2025 | uniq | wc -l
+258
+
+~/Mes documents/devhome/miroir-app-dev (master)
+$ git log --format="%ci" | cut -f1 -d ' ' | grep 2026 | uniq | wc -l
+134
+
+~/Mes documents/devhome/miroir-app-dev (master)
+$ git log --format="%ci" | cut -f1 -d ' ' | uniq | wc -l
+789
+

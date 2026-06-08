@@ -455,7 +455,7 @@ Practical issue: too many logs when running integration tests!
 
 # AI Analysis of the document, run 2025/08/08
 
-## prompt (Claude Sonnet 6.7 Thinking)
+## prompt (Claude Sonnet 4.5 Thinking)
 can you check for inconsisencies between the works.md and the git history of the repo? It's not relevant if a described activity starts a bit early compared to the time given for it, or ends a bit after. Are there any "major" activities missing in the descriptions?
 
 ## Analysis of works.md vs Git History

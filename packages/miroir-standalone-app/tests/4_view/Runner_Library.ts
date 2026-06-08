@@ -83,7 +83,8 @@ export const libraryLendBookRunnerTest: RunnerTestParams = {
       payload: {
         user: user1.uuid,
         book: book1.uuid,
-        startDate: new Date("2024-01-01"),
+        // startDate: new Date("2024-01-01"),
+        startDate: new Date("2024-01-01").toISOString(),
       } as any, // TODO: fix type!!
     },
   }, // testParams
