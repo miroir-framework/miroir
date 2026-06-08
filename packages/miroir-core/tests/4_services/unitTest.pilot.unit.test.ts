@@ -4,7 +4,7 @@ import * as vitest from "vitest";
 import { defaultMetaModelEnvironment } from "../../src/1_core/Model";
 import { MiroirActivityTracker } from "../../src/3_controllers/MiroirActivityTracker";
 import { runUnitTests } from "../../src/4_services/UnitTestTools";
-import { transformerTestsDisplayResults } from "../../src/4_services/TestTools";
+import { unitTestsDisplayResults } from "../../src/4_services/TestTools";
 import { unitTest_pilot_transformer_plus } from "miroir-test-app_deployment-miroir";
 import type { UnitTestSuite } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
@@ -17,8 +17,8 @@ const unitTestSuite: UnitTestSuite = unitTest_pilot_transformer_plus.definition 
 
 afterAll(() => {
   if (!shouldSkip) {
-    transformerTestsDisplayResults(
-      unitTestSuite as any,
+    unitTestsDisplayResults(
+      unitTestSuite,
       RUN_TEST,
       testSuiteName,
       miroirActivityTracker,

@@ -1,0 +1,446 @@
+{
+  "uuid": "856426e9-85ce-4c40-a607-01029de24c1f",
+  "parentName": "UnitTest",
+  "parentUuid": "a1bc5288-c982-4ff3-8316-4a2400fe9323",
+  "name": "jzodToJsonSchema",
+  "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+  "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
+  "description": "Phase 2 pilot — jzodToJsonSchema functionCallTest suite",
+  "definition": {
+    "unitTestType": "unitTestSuite",
+    "unitTestLabel": "jzodToJsonSchema",
+    "unitTests": [
+      {
+        "unitTestType": "functionCallTest",
+        "unitTestLabel": "converts string type",
+        "functionRef": {
+          "module": "miroir-core/1_core/jzod/JzodToJsonSchema",
+          "export": "jzodToJsonSchema"
+        },
+        "arguments": [
+          {
+            "type": "string"
+          }
+        ],
+        "expectedValue": {
+          "type": "string"
+        }
+      },
+      {
+        "unitTestType": "functionCallTest",
+        "unitTestLabel": "converts number type",
+        "functionRef": {
+          "module": "miroir-core/1_core/jzod/JzodToJsonSchema",
+          "export": "jzodToJsonSchema"
+        },
+        "arguments": [
+          {
+            "type": "number"
+          }
+        ],
+        "expectedValue": {
+          "type": "number"
+        }
+      },
+      {
+        "unitTestType": "functionCallTest",
+        "unitTestLabel": "converts boolean type",
+        "functionRef": {
+          "module": "miroir-core/1_core/jzod/JzodToJsonSchema",
+          "export": "jzodToJsonSchema"
+        },
+        "arguments": [
+          {
+            "type": "boolean"
+          }
+        ],
+        "expectedValue": {
+          "type": "boolean"
+        }
+      },
+      {
+        "unitTestType": "functionCallTest",
+        "unitTestLabel": "converts any type to empty schema",
+        "functionRef": {
+          "module": "miroir-core/1_core/jzod/JzodToJsonSchema",
+          "export": "jzodToJsonSchema"
+        },
+        "arguments": [
+          {
+            "type": "any"
+          }
+        ],
+        "expectedValue": {}
+      },
+      {
+        "unitTestType": "functionCallTest",
+        "unitTestLabel": "converts uuid type to string",
+        "functionRef": {
+          "module": "miroir-core/1_core/jzod/JzodToJsonSchema",
+          "export": "jzodToJsonSchema"
+        },
+        "arguments": [
+          {
+            "type": "uuid"
+          }
+        ],
+        "expectedValue": {
+          "type": "string"
+        }
+      },
+      {
+        "unitTestType": "functionCallTest",
+        "unitTestLabel": "includes description when present",
+        "functionRef": {
+          "module": "miroir-core/1_core/jzod/JzodToJsonSchema",
+          "export": "jzodToJsonSchema"
+        },
+        "arguments": [
+          {
+            "type": "string",
+            "description": "A name"
+          }
+        ],
+        "expectedValue": {
+          "type": "string",
+          "description": "A name"
+        }
+      },
+      {
+        "unitTestType": "functionCallTest",
+        "unitTestLabel": "converts literal type to JSON Schema const",
+        "functionRef": {
+          "module": "miroir-core/1_core/jzod/JzodToJsonSchema",
+          "export": "jzodToJsonSchema"
+        },
+        "arguments": [
+          {
+            "type": "literal",
+            "definition": "active"
+          }
+        ],
+        "expectedValue": {
+          "const": "active"
+        }
+      },
+      {
+        "unitTestType": "functionCallTest",
+        "unitTestLabel": "converts enum type to JSON Schema enum array",
+        "functionRef": {
+          "module": "miroir-core/1_core/jzod/JzodToJsonSchema",
+          "export": "jzodToJsonSchema"
+        },
+        "arguments": [
+          {
+            "type": "enum",
+            "definition": [
+              "draft",
+              "active",
+              "archived"
+            ]
+          }
+        ],
+        "expectedValue": {
+          "enum": [
+            "draft",
+            "active",
+            "archived"
+          ]
+        }
+      },
+      {
+        "unitTestType": "functionCallTest",
+        "unitTestLabel": "converts array type to JSON Schema array with items",
+        "functionRef": {
+          "module": "miroir-core/1_core/jzod/JzodToJsonSchema",
+          "export": "jzodToJsonSchema"
+        },
+        "arguments": [
+          {
+            "type": "array",
+            "definition": {
+              "type": "string"
+            }
+          }
+        ],
+        "expectedValue": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      {
+        "unitTestType": "functionCallTest",
+        "unitTestLabel": "converts nested array type",
+        "functionRef": {
+          "module": "miroir-core/1_core/jzod/JzodToJsonSchema",
+          "export": "jzodToJsonSchema"
+        },
+        "arguments": [
+          {
+            "type": "array",
+            "definition": {
+              "type": "array",
+              "definition": {
+                "type": "number"
+              }
+            }
+          }
+        ],
+        "expectedValue": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            }
+          }
+        }
+      },
+      {
+        "unitTestType": "functionCallTest",
+        "unitTestLabel": "converts object type with all required fields",
+        "functionRef": {
+          "module": "miroir-core/1_core/jzod/JzodToJsonSchema",
+          "export": "jzodToJsonSchema"
+        },
+        "arguments": [
+          {
+            "type": "object",
+            "definition": {
+              "name": {
+                "type": "string"
+              },
+              "age": {
+                "type": "number"
+              }
+            }
+          }
+        ],
+        "expectedValue": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "age": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "name",
+            "age"
+          ],
+          "additionalProperties": false
+        }
+      },
+      {
+        "unitTestType": "functionCallTest",
+        "unitTestLabel": "excludes optional fields from required array",
+        "functionRef": {
+          "module": "miroir-core/1_core/jzod/JzodToJsonSchema",
+          "export": "jzodToJsonSchema"
+        },
+        "arguments": [
+          {
+            "type": "object",
+            "definition": {
+              "name": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string",
+                "optional": true
+              }
+            }
+          }
+        ],
+        "expectedValue": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "name"
+          ],
+          "additionalProperties": false
+        }
+      },
+      {
+        "unitTestType": "functionCallTest",
+        "unitTestLabel": "omits required when all fields are optional",
+        "functionRef": {
+          "module": "miroir-core/1_core/jzod/JzodToJsonSchema",
+          "export": "jzodToJsonSchema"
+        },
+        "arguments": [
+          {
+            "type": "object",
+            "definition": {
+              "foo": {
+                "type": "string",
+                "optional": true
+              }
+            }
+          }
+        ],
+        "expectedValue": {
+          "type": "object",
+          "properties": {
+            "foo": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      {
+        "unitTestType": "functionCallTest",
+        "unitTestLabel": "converts union type to anyOf",
+        "functionRef": {
+          "module": "miroir-core/1_core/jzod/JzodToJsonSchema",
+          "export": "jzodToJsonSchema"
+        },
+        "arguments": [
+          {
+            "type": "union",
+            "definition": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              }
+            ]
+          }
+        ],
+        "expectedValue": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "number"
+            }
+          ]
+        }
+      },
+      {
+        "unitTestType": "functionCallTest",
+        "unitTestLabel": "resolves schemaReference from outer context",
+        "functionRef": {
+          "module": "miroir-core/1_core/jzod/JzodToJsonSchema",
+          "export": "jzodToJsonSchema"
+        },
+        "arguments": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "myString"
+            }
+          },
+          {
+            "myString": {
+              "type": "string"
+            }
+          }
+        ],
+        "expectedValue": {
+          "type": "string"
+        }
+      },
+      {
+        "unitTestType": "functionCallTest",
+        "unitTestLabel": "resolves schemaReference from inline context on the element",
+        "functionRef": {
+          "module": "miroir-core/1_core/jzod/JzodToJsonSchema",
+          "export": "jzodToJsonSchema"
+        },
+        "arguments": [
+          {
+            "type": "schemaReference",
+            "context": {
+              "address": {
+                "type": "object",
+                "definition": {
+                  "street": {
+                    "type": "string"
+                  },
+                  "city": {
+                    "type": "string"
+                  }
+                }
+              }
+            },
+            "definition": {
+              "relativePath": "address"
+            }
+          }
+        ],
+        "expectedValue": {
+          "type": "object",
+          "properties": {
+            "street": {
+              "type": "string"
+            },
+            "city": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "street",
+            "city"
+          ],
+          "additionalProperties": false
+        }
+      },
+      {
+        "unitTestType": "functionCallTest",
+        "unitTestLabel": "falls back to $ref for unresolvable schemaReference",
+        "functionRef": {
+          "module": "miroir-core/1_core/jzod/JzodToJsonSchema",
+          "export": "jzodToJsonSchema"
+        },
+        "arguments": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "unknown"
+            }
+          }
+        ],
+        "expectedValue": {
+          "$ref": "#/$defs/unknown"
+        }
+      },
+      {
+        "unitTestType": "functionCallTest",
+        "unitTestLabel": "converts record type to object with additionalProperties",
+        "functionRef": {
+          "module": "miroir-core/1_core/jzod/JzodToJsonSchema",
+          "export": "jzodToJsonSchema"
+        },
+        "arguments": [
+          {
+            "type": "record",
+            "definition": {
+              "type": "number"
+            }
+          }
+        ],
+        "expectedValue": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "number"
+          }
+        }
+      }
+    ]
+  }
+}

@@ -9,7 +9,8 @@ import {
   type TestSuiteResult,
   type CoreTransformerForBuildPlusRuntime,
   type TransformerTest,
-  type TransformerTestSuite
+  type TransformerTestSuite,
+  type UnitTestSuite,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { type MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
 import {
@@ -1367,3 +1368,17 @@ export const transformerTestsDisplayResults = async (
     miroirActivityTracker.resetResults();
   }
 };
+
+/** Generalized test execution summary for UnitTest suites (tracker-based, same as transformer tests). */
+export const unitTestsDisplayResults = async (
+  _unitTestSuite: UnitTestSuite,
+  RUN_TEST: string | undefined,
+  testSuiteName: string,
+  miroirActivityTracker: MiroirActivityTrackerInterface,
+) =>
+  transformerTestsDisplayResults(
+    _unitTestSuite as unknown as TransformerTestSuite,
+    RUN_TEST ?? "",
+    testSuiteName,
+    miroirActivityTracker,
+  );

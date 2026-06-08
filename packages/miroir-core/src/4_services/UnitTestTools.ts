@@ -3,6 +3,7 @@ import * as vitest from "vitest";
 import type {
   FunctionCallTest,
   QueryRunnerTest,
+  TestAssertionResult,
   TransformerTest,
   UnitTestAsCompositeActionTest,
   UnitTestAsTransformerTest,
@@ -15,6 +16,9 @@ import type {
   TestAssertionPath,
 } from "../0_interfaces/3_controllers/MiroirActivityTrackerInterface";
 import { MiroirActivityTracker } from "../3_controllers/MiroirActivityTracker";
+import { jsonify } from "../1_core/test-expect";
+import { resolveFunctionCallTarget } from "./FunctionCallTestRegistry";
+import { ignorePostgresExtraAttributes, removeUndefinedProperties, unNullify } from "./otherTools";
 import {
   globalTimeOut,
   runTransformerTestInMemory,
@@ -23,6 +27,13 @@ import {
   type RunTransformerTests,
   type TestSuiteListFilter,
 } from "./TestTools";
+
+export { functionCallTest as functionCallTestJzodSchema } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+export {
+  listWhitelistedFunctionRefs,
+  resolveFunctionCallTarget,
+  type FunctionCallRef,
+} from "./FunctionCallTestRegistry";
 
 type VitestNamespace = typeof vitest;
 
@@ -119,8 +130,14 @@ export async function runUnitTestInMemory(
       );
     }
     case "functionCallTest":
-      throw new Error(
-        `functionCallTest "${unitTest.unitTestLabel}" is not runnable yet (Phase 2)`,
+      return runFunctionCallTestInMemory(
+        localVitest,
+        testNamePath,
+        filter,
+        unitTest,
+        miroirActivityTracker,
+        testAssertionPath,
+        parentSkip,
       );
     case "queryRunnerTest":
       throw new Error(
@@ -135,6 +152,103 @@ export async function runUnitTestInMemory(
       throw new Error(`Unknown unitTestType: ${( _exhaustive as UnitTestLeaf).unitTestType}`);
     }
   }
+}
+
+export async function runFunctionCallTestInMemory(
+  localVitest: VitestNamespace,
+  testNamePath: string[],
+  filter: { testList?: TestSuiteListFilter; match?: RegExp } | undefined,
+  unitTest: FunctionCallTest,
+  miroirActivityTracker: MiroirActivityTrackerInterface,
+  testAssertionPath?: TestAssertionPath,
+  parentSkip?: boolean,
+): Promise<void> {
+  const assertionName = unitTest.unitTestLabel;
+  const effectiveSkip = !!(parentSkip || unitTest.skip);
+
+  const currentTestAssertionPath =
+    testAssertionPath || miroirActivityTracker.getCurrentTestAssertionPath();
+  if (!currentTestAssertionPath) {
+    throw new Error(
+      "runFunctionCallTestInMemory called without testAssertionPath and no currentTestAssertionPath available",
+    );
+  }
+
+  if (
+    effectiveSkip ||
+    (filter?.testList && !(filter.testList as string[]).includes(assertionName))
+  ) {
+    miroirActivityTracker.setTestAssertionResult(currentTestAssertionPath, {
+      assertionName,
+      assertionResult: "skipped",
+    });
+    return;
+  }
+
+  const fn = resolveFunctionCallTarget(unitTest.functionRef);
+  const args = unitTest.arguments ?? [];
+  const testSuiteNamePathAsString = MiroirActivityTracker.testPathName(testNamePath);
+
+  let testAssertionResult: TestAssertionResult;
+
+  try {
+    if (unitTest.expectedError) {
+      const throwFn = () => fn(...args);
+      const testResult: any = localVitest
+        .expect(throwFn, `${testSuiteNamePathAsString} > ${assertionName}`)
+        .toThrow(unitTest.expectedError);
+
+      if (!testResult || !Object.hasOwn(testResult, "result")) {
+        testAssertionResult = { assertionName, assertionResult: "ok" };
+      } else if (testResult.result) {
+        testAssertionResult = { assertionName, assertionResult: "ok" };
+      } else {
+        testAssertionResult = {
+          assertionName,
+          assertionResult: "error",
+          assertionExpectedValue: unitTest.expectedError,
+        };
+      }
+    } else {
+      const rawResult = fn(...args);
+      const resultWithIgnored = ignorePostgresExtraAttributes(
+        rawResult,
+        unitTest.ignoreAttributes,
+      );
+      const jsonifiedResult = jsonify(resultWithIgnored);
+      const normalizedResult = removeUndefinedProperties(jsonifiedResult);
+      const expectedValue = ignorePostgresExtraAttributes(
+        unitTest.expectedValue,
+        unitTest.ignoreAttributes,
+      );
+      const normalizedExpected = removeUndefinedProperties(unNullify(expectedValue));
+
+      const testResult: any = localVitest
+        .expect(normalizedResult, `${testSuiteNamePathAsString} > ${assertionName}`)
+        .toEqual(normalizedExpected);
+
+      if (!testResult || !Object.hasOwn(testResult, "result")) {
+        testAssertionResult = { assertionName, assertionResult: "ok" };
+      } else if (testResult.result) {
+        testAssertionResult = { assertionName, assertionResult: "ok" };
+      } else {
+        testAssertionResult = {
+          assertionName,
+          assertionResult: "error",
+          assertionExpectedValue: unitTest.expectedValue,
+          assertionActualValue: jsonifiedResult,
+        };
+      }
+    }
+  } catch {
+    testAssertionResult = {
+      assertionName,
+      assertionResult: "error",
+      assertionExpectedValue: unitTest.expectedError ?? unitTest.expectedValue,
+    };
+  }
+
+  miroirActivityTracker.setTestAssertionResult(currentTestAssertionPath, testAssertionResult);
 }
 
 function unitTestLabel(unitTest: UnitTestLeaf): string {

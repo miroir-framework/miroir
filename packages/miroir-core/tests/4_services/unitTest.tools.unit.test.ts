@@ -1,15 +1,24 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
+import * as vitest from "vitest";
 
 import {
   asTransformerTestFromUnitTest,
   defaultMetaModelEnvironment,
   entityDefinitionTransformerTest,
   entityDefinitionUnitTest,
+  functionCallTestJzodSchema,
   getInnermostTypeCheckError,
   jzodTypeCheck,
+  listWhitelistedFunctionRefs,
+  resolveFunctionCallTarget,
+  runFunctionCallTestInMemory,
   unitTestSuiteToTransformerTestSuite,
 } from "../../src";
-import { unitTest_pilot_transformer_plus } from "miroir-test-app_deployment-miroir";
+import {
+  unitTest_pilot_transformer_plus,
+  unitTest_suite_jzodToJsonSchema,
+  unitTest_suite_mustache,
+} from "miroir-test-app_deployment-miroir";
 import type {
   EntityDefinition,
   JzodElement,
@@ -113,25 +122,115 @@ describe("unitTestSuiteToTransformerTestSuite", () => {
   });
 });
 
-describe("runUnitTests dispatch (Phase 1)", () => {
-  it("runUnitTestInMemory rejects functionCallTest until Phase 2", async () => {
-    const { runUnitTestInMemory, runUnitTests } = await import("../../src/4_services/UnitTestTools");
-    await expect(
-      runUnitTestInMemory(
-        expect as any,
-        ["suite"],
-        undefined,
-        {
-          unitTestType: "functionCallTest",
-          unitTestLabel: "fn",
-          functionRef: { module: "m", export: "f" },
-        },
+describe("functionCallTest (Phase 2)", () => {
+  it("functionCallTestJzodSchema validates a minimal functionCallTest", () => {
+    const parsed = functionCallTestJzodSchema.parse({
+      unitTestType: "functionCallTest",
+      unitTestLabel: "converts string type",
+      functionRef: {
+        module: "miroir-core/1_core/jzod/JzodToJsonSchema",
+        export: "jzodToJsonSchema",
+      },
+      arguments: [{ type: "string" }],
+      expectedValue: { type: "string" },
+    });
+    expect(parsed.unitTestLabel).toBe("converts string type");
+  });
+
+  it("validates mustache and jzodToJsonSchema pilot suites via jzodTypeCheck", () => {
+    for (const instance of [unitTest_suite_mustache, unitTest_suite_jzodToJsonSchema]) {
+      const result = jzodTypeCheck(
+        unitTestJzodSchema,
+        instance,
+        [],
+        [],
         defaultMetaModelEnvironment,
-        { getCurrentTestAssertionPath: () => undefined } as any,
-        undefined,
-        false,
-        runUnitTests,
-      ),
-    ).rejects.toThrow(/Phase 2/);
+        {},
+      );
+      if (result.status === "error") {
+        console.error(getInnermostTypeCheckError(result));
+      }
+      expect(result.status).toBe("ok");
+    }
+  });
+
+  it("resolveFunctionCallTarget rejects non-whitelisted module/export", () => {
+    expect(() =>
+      resolveFunctionCallTarget({ module: "evil/module", export: "hack" }),
+    ).toThrow(/not whitelisted/);
+    expect(() =>
+      resolveFunctionCallTarget({
+        module: "miroir-core/1_core/mustache",
+        export: "unknownExport",
+      }),
+    ).toThrow(/not whitelisted/);
+  });
+
+  it("whitelist includes mustache and jzodToJsonSchema exports", () => {
+    const refs = listWhitelistedFunctionRefs();
+    expect(refs).toContainEqual({
+      module: "miroir-core/1_core/mustache",
+      export: "extractDoubleBracePatterns",
+    });
+    expect(refs).toContainEqual({
+      module: "miroir-core/1_core/jzod/JzodToJsonSchema",
+      export: "jzodToJsonSchema",
+    });
+  });
+
+  it("runFunctionCallTestInMemory executes mustache happy path", async () => {
+    const tracker = {
+      getCurrentTestAssertionPath: () => [{ test: "t" }, { testAssertion: "t" }],
+      setTestAssertionResult: vi.fn(),
+    };
+    await runFunctionCallTestInMemory(
+      vitest,
+      ["mustache"],
+      undefined,
+      {
+        unitTestType: "functionCallTest",
+        unitTestLabel: "should extract patterns with double braces",
+        functionRef: {
+          module: "miroir-core/1_core/mustache",
+          export: "extractDoubleBracePatterns",
+        },
+        arguments: ["Hello {{ name }}!"],
+        expectedValue: [{ content: "name", start: 6, end: 15 }],
+      },
+      tracker as any,
+      [{ test: "t" }, { testAssertion: "t" }],
+    );
+    expect(tracker.setTestAssertionResult).toHaveBeenCalledWith(
+      [{ test: "t" }, { testAssertion: "t" }],
+      expect.objectContaining({ assertionResult: "ok" }),
+    );
+  });
+
+  it("runFunctionCallTestInMemory executes expectedError path", async () => {
+    const tracker = {
+      getCurrentTestAssertionPath: () => [{ test: "t" }, { testAssertion: "t" }],
+      setTestAssertionResult: vi.fn(),
+    };
+    await runFunctionCallTestInMemory(
+      vitest,
+      ["mustache"],
+      undefined,
+      {
+        unitTestType: "functionCallTest",
+        unitTestLabel: "should throw an error for empty patterns",
+        functionRef: {
+          module: "miroir-core/1_core/mustache",
+          export: "extractDoubleBracePatterns",
+        },
+        arguments: ["Hello {{  }}!"],
+        expectedError: "Empty pattern found",
+      },
+      tracker as any,
+      [{ test: "t" }, { testAssertion: "t" }],
+    );
+    expect(tracker.setTestAssertionResult).toHaveBeenCalledWith(
+      [{ test: "t" }, { testAssertion: "t" }],
+      expect.objectContaining({ assertionResult: "ok" }),
+    );
   });
 });

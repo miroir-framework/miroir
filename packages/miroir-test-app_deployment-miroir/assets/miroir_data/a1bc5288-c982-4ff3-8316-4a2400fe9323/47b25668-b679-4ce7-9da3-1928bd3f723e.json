@@ -1,0 +1,116 @@
+{
+  "uuid": "47b25668-b679-4ce7-9da3-1928bd3f723e",
+  "parentName": "UnitTest",
+  "parentUuid": "a1bc5288-c982-4ff3-8316-4a2400fe9323",
+  "name": "mustache_extractDoubleBracePatterns",
+  "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+  "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
+  "description": "Phase 2 pilot — extractDoubleBracePatterns functionCallTest suite",
+  "definition": {
+    "unitTestType": "unitTestSuite",
+    "unitTestLabel": "mustache.extractDoubleBracePatterns",
+    "unitTests": [
+      {
+        "unitTestType": "functionCallTest",
+        "unitTestLabel": "should extract patterns with double braces",
+        "functionRef": {
+          "module": "miroir-core/1_core/mustache",
+          "export": "extractDoubleBracePatterns"
+        },
+        "arguments": [
+          "Hello {{ name }}!"
+        ],
+        "expectedValue": [
+          {
+            "content": "name",
+            "start": 6,
+            "end": 15
+          }
+        ]
+      },
+      {
+        "unitTestType": "functionCallTest",
+        "unitTestLabel": "should extract patterns with name sequences",
+        "functionRef": {
+          "module": "miroir-core/1_core/mustache",
+          "export": "extractDoubleBracePatterns"
+        },
+        "arguments": [
+          "Hello {{ user.name }}!"
+        ],
+        "expectedValue": [
+          {
+            "content": "user.name",
+            "start": 6,
+            "end": 20
+          }
+        ]
+      },
+      {
+        "unitTestType": "functionCallTest",
+        "unitTestLabel": "should handle multiple patterns",
+        "functionRef": {
+          "module": "miroir-core/1_core/mustache",
+          "export": "extractDoubleBracePatterns"
+        },
+        "arguments": [
+          "Hello {{ name }}! Your age is {{ age }}."
+        ],
+        "expectedValue": [
+          {
+            "content": "name",
+            "start": 6,
+            "end": 15
+          },
+          {
+            "content": "age",
+            "start": 30,
+            "end": 38
+          }
+        ]
+      },
+      {
+        "unitTestType": "functionCallTest",
+        "unitTestLabel": "should handle patterns with extra spaces",
+        "functionRef": {
+          "module": "miroir-core/1_core/mustache",
+          "export": "extractDoubleBracePatterns"
+        },
+        "arguments": [
+          "Hello {{  name  }}!"
+        ],
+        "expectedValue": [
+          {
+            "content": "name",
+            "start": 6,
+            "end": 17
+          }
+        ]
+      },
+      {
+        "unitTestType": "functionCallTest",
+        "unitTestLabel": "should return an empty array if no patterns are found",
+        "functionRef": {
+          "module": "miroir-core/1_core/mustache",
+          "export": "extractDoubleBracePatterns"
+        },
+        "arguments": [
+          "Hello world!"
+        ],
+        "expectedValue": []
+      },
+      {
+        "unitTestType": "functionCallTest",
+        "unitTestLabel": "should throw an error for empty patterns",
+        "functionRef": {
+          "module": "miroir-core/1_core/mustache",
+          "export": "extractDoubleBracePatterns"
+        },
+        "arguments": [
+          "Hello {{  }}!"
+        ],
+        "expectedError": "Empty pattern found"
+      }
+    ]
+  }
+}

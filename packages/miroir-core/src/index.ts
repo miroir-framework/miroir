@@ -938,15 +938,21 @@ export {
   // displayTestSuiteResults,
   RunTransformerTest, runTransformerTestInMemory, RunTransformerTests, runTransformerTestSuite, runUnitTransformerTests, testSuites,
   transformerTestsDisplayResults,
+  unitTestsDisplayResults,
   type TestSuiteListFilter
 } from "./4_services/TestTools.js";
 export {
   asTransformerTestFromUnitTest,
+  functionCallTestJzodSchema,
+  listWhitelistedFunctionRefs,
+  resolveFunctionCallTarget,
+  runFunctionCallTestInMemory,
   runUnitTestInMemory,
   runUnitTestSuite,
   runUnitTestSuiteAsTransformerTests,
   runUnitTests,
   unitTestSuiteToTransformerTestSuite,
+  type FunctionCallRef,
   type RunUnitTest,
   type RunUnitTests,
 } from "./4_services/UnitTestTools.js";

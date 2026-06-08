@@ -184,6 +184,8 @@ export { default as transformerTestSuite_jzodTypeCheck } from "./assets/miroir_d
 // Miroir Data - UnitTest (parentUuid = entityUnitTest = a1bc5288)
 // ################################################################################################
 export { default as unitTest_pilot_transformer_plus } from "./assets/miroir_data/a1bc5288-c982-4ff3-8316-4a2400fe9323/b03eb707-4f51-4ac3-a6ab-e7b8484a5c22.json" assert { type: "json" };
+export { default as unitTest_suite_mustache } from "./assets/miroir_data/a1bc5288-c982-4ff3-8316-4a2400fe9323/47b25668-b679-4ce7-9da3-1928bd3f723e.json" assert { type: "json" };
+export { default as unitTest_suite_jzodToJsonSchema } from "./assets/miroir_data/a1bc5288-c982-4ff3-8316-4a2400fe9323/856426e9-85ce-4c40-a607-01029de24c1f.json" assert { type: "json" };
 
 // ################################################################################################
 // Miroir Data - TransformerDefinition (parentUuid = entityTransformerDefinition = a557419d)

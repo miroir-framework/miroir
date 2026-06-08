@@ -325,11 +325,15 @@ Vitest CLI bridge:
 
 ### Phase 2 — Function-call runner (Class B) — highest ROI
 
-- [ ] Implement `runFunctionCallTest` + `functionCallTestJzodSchema`.
-- [ ] Build `functionRef` registry mapping `(module, export)` → callable (whitelist for security in UI execution).
-- [ ] Migrate **pilot suite**: `mustache.unit.test.ts` + `jzodToJsonSchema.unit.test.ts` (~25 cases) to store JSON.
-- [ ] Vitest file becomes thin wrapper: load entity, call `runUnitTests`.
-- [ ] Generalize UI report section from `TransformerTestResultExecutionSummary` → `UnitTestExecutionSummary`.
+- [x] Implement `runFunctionCallTest` + `functionCallTestJzodSchema`.
+- [x] Build `functionRef` registry mapping `(module, export)` → callable (whitelist for security in UI execution).
+- [x] Migrate **pilot suite**: `mustache.unit.test.ts` + `jzodToJsonSchema.unit.test.ts` (~25 cases) to store JSON.
+- [x] Vitest file becomes thin wrapper: load entity, call `runUnitTests`.
+- [x] Generalize UI report section from `TransformerTestResultExecutionSummary` → `UnitTestExecutionSummary`.
+
+**Deliverables:** `FunctionCallTestRegistry.ts`, `runFunctionCallTestInMemory` in `UnitTestTools.ts`, deployment suites `mustache_extractDoubleBracePatterns` + `jzodToJsonSchema`, `unitTestsDisplayResults`, `UnitTestExecutionSummary.tsx`.
+
+**Validation:** `unitTest.tools.unit.test.ts` Phase 2 cases; `RUN_TEST=mustache.unit.test` (6/6); `RUN_TEST=jzodToJsonSchema.unit.test` (18/18); transformer non-regression unchanged.
 
 ### Phase 3 — Query-runner tests (Class C)
 

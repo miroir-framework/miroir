@@ -1,50 +1,40 @@
-// import { describe, it, expect } from 'vitest';
-import { extractDoubleBracePatterns } from '../../src/1_core/mustache.js';
+import { afterAll } from "vitest";
+import * as vitest from "vitest";
 
-describe('mustache.unit', () => {
-  describe("extractDoubleBracePatterns", () => {
-    it('should extract patterns with double braces', () => {
-      const input = 'Hello {{ name }}!';
-      const result = extractDoubleBracePatterns(input);
-      expect(result).toEqual([
-        { content: 'name', start: 6, end: 15 }
-      ]);
-    });
+import { defaultMetaModelEnvironment } from "../../src/1_core/Model";
+import { MiroirActivityTracker } from "../../src/3_controllers/MiroirActivityTracker";
+import { runUnitTests, unitTestsDisplayResults } from "../../src";
+import { unitTest_suite_mustache } from "miroir-test-app_deployment-miroir";
+import type { UnitTestSuite } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
-    it('should extract patterns with name sequences', () => {
-      const input = 'Hello {{ user.name }}!';
-      const result = extractDoubleBracePatterns(input);
-      expect(result).toEqual([
-        { content: 'user.name', start: 6, end: 20 }
-      ]);
-    });
+const RUN_TEST = process.env.RUN_TEST;
+const testSuiteName = "mustache.unit.test";
+const shouldSkip = RUN_TEST !== testSuiteName;
 
-    it('should handle multiple patterns', () => {
-      const input = 'Hello {{ name }}! Your age is {{ age }}.';
-      const result = extractDoubleBracePatterns(input);
-      expect(result).toEqual([
-        { content: 'name', start: 6, end: 15 },
-        { content: 'age', start: 30, end: 38 }
-      ]);
-    });
+const miroirActivityTracker = new MiroirActivityTracker();
+const unitTestSuite: UnitTestSuite = unitTest_suite_mustache.definition as UnitTestSuite;
 
-    it('should handle patterns with extra spaces', () => {
-      const input = 'Hello {{  name  }}!';
-      const result = extractDoubleBracePatterns(input);
-      expect(result).toEqual([
-        { content: 'name', start: 6, end: 17 }
-      ]);
-    });
-
-    it('should return an empty array if no patterns are found', () => {
-      const input = 'Hello world!';
-      const result = extractDoubleBracePatterns(input);
-      expect(result).toEqual([]);
-    });
-
-    it('should throw an error for empty patterns', () => {
-      const input = 'Hello {{  }}!';
-      expect(() => extractDoubleBracePatterns(input)).toThrow('Empty pattern found');
-    });
-  });
+afterAll(() => {
+  if (!shouldSkip) {
+    unitTestsDisplayResults(unitTestSuite, RUN_TEST, testSuiteName, miroirActivityTracker);
+  }
 });
+
+if (shouldSkip) {
+  vitest.test.skip(
+    testSuiteName + " skipped (set RUN_TEST=" + testSuiteName + " to run)",
+    () => {},
+  );
+} else {
+  await runUnitTests._runUnitTestSuite(
+    vitest,
+    [],
+    unitTestSuite,
+    undefined,
+    defaultMetaModelEnvironment,
+    miroirActivityTracker,
+    undefined,
+    true,
+    runUnitTests,
+  );
+}
