@@ -9,15 +9,20 @@ import {
   functionCallTestJzodSchema,
   getInnermostTypeCheckError,
   jzodTypeCheck,
+  listQueryRunnerFixtureRefs,
   listWhitelistedFunctionRefs,
+  queryRunnerTestJzodSchema,
   resolveFunctionCallTarget,
+  resolveQueryRunnerFixture,
   runFunctionCallTestInMemory,
+  runQueryRunnerTestInMemory,
   unitTestSuiteToTransformerTestSuite,
 } from "../../src";
 import {
   unitTest_pilot_transformer_plus,
   unitTest_suite_jzodToJsonSchema,
   unitTest_suite_mustache,
+  unitTest_suite_queries_library,
 } from "miroir-test-app_deployment-miroir";
 import type {
   EntityDefinition,
@@ -137,8 +142,12 @@ describe("functionCallTest (Phase 2)", () => {
     expect(parsed.unitTestLabel).toBe("converts string type");
   });
 
-  it("validates mustache and jzodToJsonSchema pilot suites via jzodTypeCheck", () => {
-    for (const instance of [unitTest_suite_mustache, unitTest_suite_jzodToJsonSchema]) {
+  it("validates mustache, jzodToJsonSchema, and queries_library suites via jzodTypeCheck", () => {
+    for (const instance of [
+      unitTest_suite_mustache,
+      unitTest_suite_jzodToJsonSchema,
+      unitTest_suite_queries_library,
+    ]) {
       const result = jzodTypeCheck(
         unitTestJzodSchema,
         instance,
@@ -225,6 +234,57 @@ describe("functionCallTest (Phase 2)", () => {
         arguments: ["Hello {{  }}!"],
         expectedError: "Empty pattern found",
       },
+      tracker as any,
+      [{ test: "t" }, { testAssertion: "t" }],
+    );
+    expect(tracker.setTestAssertionResult).toHaveBeenCalledWith(
+      [{ test: "t" }, { testAssertion: "t" }],
+      expect.objectContaining({ assertionResult: "ok" }),
+    );
+  });
+});
+
+describe("queryRunnerTest (Phase 4)", () => {
+  it("queryRunnerTestJzodSchema validates a minimal queryRunnerTest", () => {
+    const parsed = queryRunnerTestJzodSchema.parse({
+      unitTestType: "queryRunnerTest",
+      unitTestLabel: "error on non-existing Entity: EntityNotFound",
+      fixtureRef: "libraryDomainState",
+      query: {
+        queryType: "boxedQueryWithExtractorCombinerTransformer",
+        application: "5af03c98-fe5e-490b-b08f-e1230971c57f",
+        extractors: {},
+      },
+      assertions: [
+        {
+          label: "test1",
+          expectedValue: { queryFailure: "ReferenceNotFound" },
+        },
+      ],
+    });
+    expect(parsed.fixtureRef).toBe("libraryDomainState");
+  });
+
+  it("resolveQueryRunnerFixture loads libraryDomainState", () => {
+    const refs = listQueryRunnerFixtureRefs();
+    expect(refs).toContain("libraryDomainState");
+    const fixture = resolveQueryRunnerFixture("libraryDomainState");
+    expect(fixture.domainState).toBeDefined();
+    expect(fixture.deploymentEntityState).toBeDefined();
+  });
+
+  it("runQueryRunnerTestInMemory executes first queries_library scenario", async () => {
+    const suite = unitTest_suite_queries_library.definition as UnitTestSuite;
+    const leaf = suite.unitTests[0] as import("../../src").QueryRunnerTest;
+    const tracker = {
+      getCurrentTestAssertionPath: () => [{ test: "t" }, { testAssertion: "t" }],
+      setTestAssertionResult: vi.fn(),
+    };
+    await runQueryRunnerTestInMemory(
+      vitest,
+      ["queries"],
+      undefined,
+      leaf,
       tracker as any,
       [{ test: "t" }, { testAssertion: "t" }],
     );

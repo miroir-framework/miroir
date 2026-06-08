@@ -18,6 +18,14 @@ import type {
 import { MiroirActivityTracker } from "../3_controllers/MiroirActivityTracker";
 import { jsonify } from "../1_core/test-expect";
 import { resolveFunctionCallTarget } from "./FunctionCallTestRegistry";
+import { runQueryRunnerTestInMemory } from "./QueryRunnerTestTools";
+
+export {
+  listQueryRunnerFixtureRefs,
+  queryRunnerTestJzodSchema,
+  resolveQueryRunnerFixture,
+  runQueryRunnerTestInMemory,
+} from "./QueryRunnerTestTools";
 import { ignorePostgresExtraAttributes, removeUndefinedProperties, unNullify } from "./otherTools";
 import {
   globalTimeOut,
@@ -140,8 +148,15 @@ export async function runUnitTestInMemory(
         parentSkip,
       );
     case "queryRunnerTest":
-      throw new Error(
-        `queryRunnerTest "${unitTest.unitTestLabel}" is not runnable yet (Phase 3)`,
+      return runQueryRunnerTestInMemory(
+        localVitest,
+        testNamePath,
+        filter,
+        unitTest,
+        miroirActivityTracker,
+        testAssertionPath,
+        parentSkip,
+        modelEnvironment,
       );
     case "compositeActionTest":
       throw new Error(
