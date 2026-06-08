@@ -5,7 +5,6 @@ import type {
   QueryRunnerTest,
   TestAssertionResult,
   TransformerTest,
-  UnitTestAsCompositeActionTest,
   UnitTestAsTransformerTest,
   UnitTestLeaf,
   UnitTestSuite,
@@ -158,10 +157,6 @@ export async function runUnitTestInMemory(
         parentSkip,
         modelEnvironment,
       );
-    case "compositeActionTest":
-      throw new Error(
-        `compositeActionTest "${unitTest.unitTestLabel ?? "unnamed"}" is not runnable yet (Phase 4)`,
-      );
     default: {
       const _exhaustive: never = unitTest;
       throw new Error(`Unknown unitTestType: ${( _exhaustive as UnitTestLeaf).unitTestType}`);
@@ -274,8 +269,6 @@ function unitTestLabel(unitTest: UnitTestLeaf): string {
         unitTest.payload.transformerTestLabel ??
         unitTest.payload.transformerName
       );
-    case "compositeActionTest":
-      return unitTest.unitTestLabel ?? unitTest.payload.testLabel;
     default:
       return unitTest.unitTestLabel;
   }

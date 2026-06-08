@@ -450,8 +450,6 @@ export {
   functionCallTest,
   QueryRunnerTest,
   queryRunnerTest,
-  UnitTestAsCompositeActionTest,
-  unitTestAsCompositeActionTest,
   UnitTestLeaf,
   unitTestLeaf,
   UnitTestSuite,

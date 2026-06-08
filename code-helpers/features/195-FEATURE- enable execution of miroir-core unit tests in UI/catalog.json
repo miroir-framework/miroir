@@ -1,22 +1,22 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-06-08T13:34:46.480Z",
+  "generatedAt": "2026-06-08T20:28:30.805Z",
   "generator": "generate-unit-test-catalog.mjs",
   "sourceRoot": "packages/miroir-core/tests",
   "issue": "https://github.com/miroir-framework/miroir/issues/195",
   "phase": 0,
   "summary": {
-    "totalFiles": 52,
-    "includedFiles": 50,
+    "totalFiles": 55,
+    "includedFiles": 53,
     "excludedFiles": 2,
     "vitestOnlyFiles": 8,
-    "uiMigratableFiles": 42,
-    "totalCaseCountInVitestFiles": 428,
+    "uiMigratableFiles": 45,
+    "totalCaseCountInVitestFiles": 401,
     "entityBackedFiles": 8,
     "byClass": {
       "B": {
-        "fileCount": 30,
-        "caseCountInVitestFiles": 282,
+        "fileCount": 34,
+        "caseCountInVitestFiles": 275,
         "entityBackedFiles": 0
       },
       "E": {
@@ -36,12 +36,7 @@
       },
       "C": {
         "fileCount": 1,
-        "caseCountInVitestFiles": 18,
-        "entityBackedFiles": 0
-      },
-      "D": {
-        "fileCount": 1,
-        "caseCountInVitestFiles": 2,
+        "caseCountInVitestFiles": 0,
         "entityBackedFiles": 0
       },
       "A+G": {
@@ -52,8 +47,8 @@
     },
     "byUnitTestKind": {
       "functionCallTest": {
-        "fileCount": 30,
-        "caseCountInVitestFiles": 282,
+        "fileCount": 34,
+        "caseCountInVitestFiles": 275,
         "entityBackedFiles": 0
       },
       "transformerTest": {
@@ -63,12 +58,7 @@
       },
       "queryRunnerTest": {
         "fileCount": 1,
-        "caseCountInVitestFiles": 18,
-        "entityBackedFiles": 0
-      },
-      "compositeActionTest": {
-        "fileCount": 1,
-        "caseCountInVitestFiles": 2,
+        "caseCountInVitestFiles": 0,
         "entityBackedFiles": 0
       }
     },
@@ -90,10 +80,6 @@
     "C": {
       "name": "queryRunnerTest",
       "description": "In-memory query/template runner + assertions"
-    },
-    "D": {
-      "name": "compositeActionTest",
-      "description": "Composite action template resolution and execution"
     },
     "E": {
       "name": "statefulBehaviorTest",
@@ -675,29 +661,29 @@
     },
     {
       "file": "1_core/jzod/jzodToJsonSchema.unit.test.ts",
-      "suite": "jzodToJsonSchema",
-      "suites": [
-        "jzodToJsonSchema"
-      ],
-      "label": "jzodToJsonSchema",
+      "suite": "1_core/jzod/jzodToJsonSchema",
+      "suites": [],
+      "label": "1_core/jzod/jzodToJsonSchema.unit.test.ts",
       "class": "B",
       "unitTestKind": "functionCallTest",
       "vitestOnly": false,
       "exclude": false,
       "priority": "pilot",
       "notes": null,
-      "caseCount": 18,
+      "caseCount": 0,
       "caseCountMethod": "direct-it-test-count",
       "caseCountNote": null,
       "entityBacked": false,
-      "directItCount": 18,
+      "directItCount": 0,
       "itEachBlocks": 0,
       "tableDrivenSources": [],
       "executionPattern": "vitest-standard",
       "usesRunUnitTransformerTests": false,
-      "usesRunTestEnv": false,
-      "runTestSuiteName": null,
-      "storeEntityRefs": []
+      "usesRunTestEnv": true,
+      "runTestSuiteName": "jzodToJsonSchema.unit.test",
+      "storeEntityRefs": [
+        "(deployment import — inspect manually)"
+      ]
     },
     {
       "file": "1_core/jzod/jzodToJzod.unit.test.ts",
@@ -879,7 +865,7 @@
       "executionPattern": "runUnitTransformerTests",
       "usesRunUnitTransformerTests": true,
       "usesRunTestEnv": true,
-      "runTestSuiteName": "const testSuiteName = transformerTestSuite_resolveConditionalSchema.definition.transformerTestLabel",
+      "runTestSuiteName": null,
       "storeEntityRefs": [
         "transformerTest_resolveConditionalSchema"
       ]
@@ -990,30 +976,29 @@
     },
     {
       "file": "1_core/mustache.unit.test.ts",
-      "suite": "mustache.unit",
-      "suites": [
-        "mustache.unit",
-        "extractDoubleBracePatterns"
-      ],
-      "label": "mustache.unit",
+      "suite": "1_core/mustache",
+      "suites": [],
+      "label": "1_core/mustache.unit.test.ts",
       "class": "B",
       "unitTestKind": "functionCallTest",
       "vitestOnly": false,
       "exclude": false,
       "priority": "pilot",
       "notes": null,
-      "caseCount": 6,
+      "caseCount": 0,
       "caseCountMethod": "direct-it-test-count",
       "caseCountNote": null,
       "entityBacked": false,
-      "directItCount": 6,
+      "directItCount": 0,
       "itEachBlocks": 0,
       "tableDrivenSources": [],
       "executionPattern": "vitest-standard",
       "usesRunUnitTransformerTests": false,
-      "usesRunTestEnv": false,
-      "runTestSuiteName": null,
-      "storeEntityRefs": []
+      "usesRunTestEnv": true,
+      "runTestSuiteName": "mustache.unit.test",
+      "storeEntityRefs": [
+        "(deployment import — inspect manually)"
+      ]
     },
     {
       "file": "1_core/zodParseActions.test.ts",
@@ -1154,6 +1139,32 @@
       "storeEntityRefs": []
     },
     {
+      "file": "2_domain/export-query-runner-suite.unit.test.ts",
+      "suite": "export-query-runner-suite",
+      "suites": [
+        "export-query-runner-suite"
+      ],
+      "label": "export-query-runner-suite",
+      "class": "B",
+      "unitTestKind": "functionCallTest",
+      "vitestOnly": false,
+      "exclude": false,
+      "priority": "medium",
+      "notes": "unlisted file; default Class B — review mapping",
+      "caseCount": 0,
+      "caseCountMethod": "direct-it-test-count",
+      "caseCountNote": null,
+      "entityBacked": false,
+      "directItCount": 0,
+      "itEachBlocks": 0,
+      "tableDrivenSources": [],
+      "executionPattern": "vitest-standard",
+      "usesRunUnitTransformerTests": false,
+      "usesRunTestEnv": false,
+      "runTestSuiteName": null,
+      "storeEntityRefs": []
+    },
+    {
       "file": "2_domain/menu.unit.test.ts",
       "suite": "templatesDEFUNCT.unit.test",
       "suites": [
@@ -1184,34 +1195,29 @@
     },
     {
       "file": "2_domain/queries.unit.test.ts",
-      "suite": "queries.unit",
-      "suites": [
-        "queries.unit"
-      ],
-      "label": "queries.unit",
+      "suite": "2_domain/queries",
+      "suites": [],
+      "label": "2_domain/queries.unit.test.ts",
       "class": "C",
       "unitTestKind": "queryRunnerTest",
       "vitestOnly": false,
       "exclude": false,
       "priority": "high",
       "notes": "testExtractorParams table-driven; domainState.json fixture",
-      "caseCount": 18,
-      "caseCountMethod": "it.each expanded (testExtractorParams=18)",
+      "caseCount": 0,
+      "caseCountMethod": "direct-it-test-count",
       "caseCountNote": null,
       "entityBacked": false,
       "directItCount": 0,
-      "itEachBlocks": 1,
-      "tableDrivenSources": [
-        {
-          "source": "testExtractorParams",
-          "count": 18
-        }
-      ],
-      "executionPattern": "vitest-it.each-table",
+      "itEachBlocks": 0,
+      "tableDrivenSources": [],
+      "executionPattern": "vitest-standard",
       "usesRunUnitTransformerTests": false,
-      "usesRunTestEnv": false,
-      "runTestSuiteName": null,
-      "storeEntityRefs": []
+      "usesRunTestEnv": true,
+      "runTestSuiteName": "queries.unit.test",
+      "storeEntityRefs": [
+        "(deployment import — inspect manually)"
+      ]
     },
     {
       "file": "2_domain/resolveCompositeActionTemplate.unit.test.ts",
@@ -1221,12 +1227,12 @@
         "resolveTestCompositeActionTemplateSuite"
       ],
       "label": "resolveTestCompositeActionTemplate",
-      "class": "D",
-      "unitTestKind": "compositeActionTest",
+      "class": "B",
+      "unitTestKind": "functionCallTest",
       "vitestOnly": false,
       "exclude": false,
       "priority": "medium",
-      "notes": null,
+      "notes": "Unit test of resolveTestCompositeActionTemplate / resolveTestCompositeActionTemplateSuite — NOT TestCompositeAction* integration tests (those live in standalone-app Test entity; out of scope)",
       "caseCount": 2,
       "caseCountMethod": "direct-it-test-count",
       "caseCountNote": null,
@@ -1466,6 +1472,64 @@
       "storeEntityRefs": [
         "transformerTest_miroirCoreTransformers",
         "transformerTest_miroirTransformers"
+      ]
+    },
+    {
+      "file": "4_services/unitTest.pilot.unit.test.ts",
+      "suite": "4_services/unitTest.pilot",
+      "suites": [],
+      "label": "4_services/unitTest.pilot.unit.test.ts",
+      "class": "B",
+      "unitTestKind": "functionCallTest",
+      "vitestOnly": false,
+      "exclude": false,
+      "priority": "medium",
+      "notes": "unlisted file; default Class B — review mapping",
+      "caseCount": 0,
+      "caseCountMethod": "direct-it-test-count",
+      "caseCountNote": null,
+      "entityBacked": false,
+      "directItCount": 0,
+      "itEachBlocks": 0,
+      "tableDrivenSources": [],
+      "executionPattern": "vitest-standard",
+      "usesRunUnitTransformerTests": false,
+      "usesRunTestEnv": true,
+      "runTestSuiteName": "unitTest.pilot.unit.test",
+      "storeEntityRefs": [
+        "(deployment import — inspect manually)"
+      ]
+    },
+    {
+      "file": "4_services/unitTest.tools.unit.test.ts",
+      "suite": "UnitTestDefinition schema (Phase 1)",
+      "suites": [
+        "UnitTestDefinition schema (Phase 1)",
+        "asTransformerTestFromUnitTest",
+        "unitTestSuiteToTransformerTestSuite",
+        "functionCallTest (Phase 2)",
+        "queryRunnerTest (Phase 4)"
+      ],
+      "label": "UnitTestDefinition schema (Phase 1)",
+      "class": "B",
+      "unitTestKind": "functionCallTest",
+      "vitestOnly": false,
+      "exclude": false,
+      "priority": "medium",
+      "notes": "unlisted file; default Class B — review mapping",
+      "caseCount": 15,
+      "caseCountMethod": "direct-it-test-count",
+      "caseCountNote": null,
+      "entityBacked": false,
+      "directItCount": 15,
+      "itEachBlocks": 0,
+      "tableDrivenSources": [],
+      "executionPattern": "vitest-standard",
+      "usesRunUnitTransformerTests": false,
+      "usesRunTestEnv": false,
+      "runTestSuiteName": null,
+      "storeEntityRefs": [
+        "(deployment import — inspect manually)"
       ]
     },
     {

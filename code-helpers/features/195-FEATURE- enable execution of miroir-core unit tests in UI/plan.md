@@ -22,16 +22,16 @@ Today only **transformer tests** can be executed through the Miroir UI, via the 
 | Activity tracking | `MiroirActivityTracker` → `TestSuiteResult` / `TestAssertionResult` |
 | UI report | `TransformerTestResultExecutionSummary`, `TransformerTestDisplay`, `TransformerBuilderPage` |
 
-### Parallel infrastructure already in the metamodel (not wired to UI the same way)
+### Parallel infrastructure — integration tests (out of scope for `UnitTest`)
 
 | Piece | Purpose |
 |-------|---------|
-| `Test` entity (`d2842a84-…`) | Composite-action integration tests (`TestCompositeAction*`, templates, suites) |
+| `Test` entity (`d2842a84-…`) | **Integration** composite-action tests (`TestCompositeAction*`, templates, suites) — instances live in **standalone-app**, not miroir-core unit-test migration |
 | `TestAssertion` | Assert on action results via `resultAccessPath`, optional `resultTransformer`, `expectedValue` |
 | `CompositeRunTestAssertion` | Assertion step inside a composite action sequence |
-| `runTestCompositeAction` action | Execute a resolved composite-action test |
+| `runTestCompositeAction` action | Execute a resolved composite-action test end-to-end |
 
-These overlap conceptually with query-runner tests in `queries.unit.test.ts` but are separate from `TransformerTest`.
+**Important distinction:** `resolveCompositeActionTemplate.unit.test.ts` is **not** a `TestCompositeAction` / `TestCompositeActionTemplate` instance test. It is a **Class B** unit test that calls `resolveTestCompositeActionTemplate` / `resolveTestCompositeActionTemplateSuite` with fixture payloads and compares resolved output. No `UnitTest.kind = "compositeAction"` — integration tests stay on the `Test` entity path.
 
 ### Vitest inventory (`packages/miroir-core/tests/`)
 
@@ -96,7 +96,7 @@ Tests are grouped by **how they can share a JSON representation and a single exe
 | One `it` per case | `mustache.unit.test.ts`, `jzodToJsonSchema.unit.test.ts`, `EntityPrimaryKey.unit.test.ts`, `blobUtils.unit.test.ts`, `tools.test.ts` | ~150 |
 | Table in one `it`, loop + helper | `alterObject.unit.test.ts` | 3 grouped → ~10 cases |
 | Table + `it.each` | `jzod.typeCheckToPass.unit.test.ts`, `jzod.typeCheckToFail.unit.test.ts` | ~25 + ~15 |
-| Template resolution (single function, big I/O) | `resolveQueryTemplates.unit.test.ts` | 1 |
+| Template resolution (single function, big I/O) | `resolveQueryTemplates.unit.test.ts`, `resolveCompositeActionTemplate.unit.test.ts` | 1 + 2 |
 | Domain mapping | `domainStateToDeploymentEntityState.unit.test.ts`, `modelUpdates.unit.test.ts` | 2 + 1 |
 | Transformer tooling helpers | `transformer_tools.*.unit.test.ts` | 5 |
 | Jzod graph / reference utilities | `jzodReferencesGraph*`, `jzodTransitiveDependencySet`, `mergePositionBased`, `jzodObjectFlatten`, `union*`, `JzodSchemaReferences*`, `jzod.buildAnyKeyMap`, `jzod.selectUnionBranch*`, `jzodToJzod*`, `jzodToCopilotKitParameter`, `ansiColumnsToJzodSchema`, `getAttributeTypesFromJzodSchema`, `defaultValueForJzodSchema` (if not migrated to transformer) | ~120 |
@@ -154,25 +154,7 @@ This is **almost identical** to `TestAssertion` + composite-action tests, but us
 
 **UI value:** High for query authors; depends on shipping or referencing domain-state fixtures (`domainState.json`, library deployment).
 
-**Relationship to existing `Test` entity:** consider aligning `TestAssertion.definition` with query-runner assertions so Class C and composite-action tests share assertion shape.
-
----
-
-### Class D — `compositeActionTest` *(metamodel exists, UI execution incomplete)*
-
-**Shape:** resolve template → run `TestCompositeAction` / suite via `handleTestCompositeAction` → assert with `CompositeRunTestAssertion`.
-
-**Representative files:**
-
-| File | Role |
-|------|------|
-| `2_domain/resolveCompositeActionTemplate.unit.test.ts` | Template → resolved action (2 cases) |
-| `Test` entity + `runTestCompositeAction` | Intended end-to-end runner |
-| `miroir-standalone-app/tests/3_controllers/applicative.*.integ.test.tsx` | Application-level composite-action tests |
-
-**Proposed mapping:** `UnitTest.kind = "compositeAction"` — wrap existing `TestCompositeAction*` types; `UnitTestSuite` nests like `TransformerTestSuite`.
-
-**UI value:** Medium-high — infrastructure exists; needs report + runner wiring similar to transformer tests.
+**Relationship to existing `Test` entity:** query-runner assertions may align with `TestAssertion.definition` shape; integration `Test` entity execution remains a separate track (not `UnitTest`).
 
 ---
 
@@ -236,7 +218,8 @@ If later support is needed, introduce `unitTestType: "vitestProxy"` with `{ file
 | `1_core/zodParseActions.test.ts` | Compile-time only | Vitest-only catalog entry |
 | `1_core/blobUtils.unit.test.ts` | Node `FileReader` mock | Class E unless mock is embedded in runner |
 | `2_domain/queries.unit.test.ts` | 1.8k lines, 26 scenarios, embedded `domainState.json` | Class C; split into entity suite + fixture reference |
-| Dual entities `TransformerTest` vs `Test` | Naming confusion | Unified under `UnitTest` with kind discriminator; deprecate gradually |
+| Dual entities `TransformerTest` vs `Test` | Naming confusion | `UnitTest` unifies vitest-migratable **unit** tests; `Test` entity stays for **integration** composite-action tests (standalone-app) |
+| `resolveCompositeActionTemplate.unit.test.ts` | Uses `TestCompositeActionTemplate` types as **function inputs**, not integration runner | Class B `functionCallTest` (`resolveTestCompositeActionTemplate`, `resolveTestCompositeActionTemplateSuite`) |
 
 ---
 
@@ -256,10 +239,8 @@ UnitTestSuite
 
 UnitTest (discriminated union on unitTestType)
   ├── transformerTest          // = current TransformerTest fields (alias)
-  ├── functionCallTest         // Class B
-  ├── queryRunnerTest          // Class C
-  ├── compositeActionTest      // Class D (= TestCompositeAction)
-  └── compositeActionTemplateTest  // template resolution only (optional)
+  ├── functionCallTest         // Class B (includes resolveTestCompositeActionTemplate*)
+  └── queryRunnerTest          // Class C
 ```
 
 **Shared cross-cutting fields** (all kinds):
@@ -272,9 +253,9 @@ UnitTest (discriminated union on unitTestType)
 
 **Entity strategy:**
 
-1. Add `UnitTest` **Entity** + **EntityDefinition** (or evolve `TransformerTest` definition to accept the union — less disruptive for existing data).
+1. Add `UnitTest` **Entity** + **EntityDefinition** (alongside unchanged `TransformerTest` definition).
 2. Migrate existing `TransformerTest` instances → `unitTestType: "transformerTest"` (no semantic change).
-3. Link `Test` entity instances into the same catalog (composite-action kind) or merge entities long-term.
+3. Leave `Test` entity integration tests out of `UnitTest` catalog (standalone-app; separate UI/report path when needed).
 
 ---
 
@@ -289,9 +270,8 @@ UnitTestTools.ts  ──►  MiroirActivityTracker  ──►  TestSuiteResult
         │                        └──► UI: UnitTestExecutionSummary (generalized report)
         │
         ├── runTransformerTest        (existing)
-        ├── runFunctionCallTest       (new)
-        ├── runQueryRunnerTest        (new)
-        └── runCompositeActionTest    (wire existing handleTestCompositeAction)
+        ├── runFunctionCallTest       (Class B)
+        └── runQueryRunnerTest        (Class C)
 
 Vitest CLI bridge:
   packages/miroir-core/tests/unitTestRunner.test.ts
@@ -346,7 +326,7 @@ Vitest CLI bridge:
 
 **Deliverables:** deployment reports + menu link; `UnitTestDisplay.tsx`, `RunUnitTestSuiteButton.tsx`, `UnitTestResults.tsx`; `entityDefinitionUnitTest.defaultInstanceDetailsReportUuid` → unit test details report.
 
-**Note:** Transformer and Unit test run mechanisms remain separate for now; merge deferred to Phase 7.
+**Note:** Transformer and Unit test run mechanisms remain separate for now; merge deferred to Phase 6.
 
 ### Phase 4 — Query-runner tests (Class C)
 
@@ -359,20 +339,14 @@ Vitest CLI bridge:
 
 **Validation:** `RUN_TEST=queries.unit.test` (17/17); `unitTest.tools.unit.test.ts` Phase 4 cases; `jzodTypeCheck` on `queries_library` instance.
 
-### Phase 5 — Composite-action tests (Class D)
-
-- [ ] Wire `runTestCompositeAction` into `UnitTestTools` with activity tracking.
-- [ ] UI: run / investigate from `Test` entity report (extend or share with UnitTest report).
-- [ ] Migrate `resolveCompositeActionTemplate.unit.test.ts` cases.
-
-### Phase 6 — Complete transformer migration & integration modes
+### Phase 5 — Complete transformer migration & integration modes
 
 - [ ] Move `menu.unit.test.ts` inline suite to store.
 - [ ] Finish `jzod.typeCheckToPass` → transformer entity migration; remove 12k-line file.
 - [ ] UI toggle: unit vs integration for transformer tests (reuse `integrationTestExpectedValue`).
 - [ ] Document `RUN_TEST` / vitest filter conventions for CI.
 
-### Phase 7 — Discovery UX
+### Phase 6 — Discovery UX
 
 - [ ] Runner or report to browse all `UnitTestDefinition` instances by kind, tag, module.
 - [ ] Link from function/transformer/query editor to relevant test suites.
@@ -402,8 +376,8 @@ Vitest CLI bridge:
 | Detail report | **Done (Phase 3)** | `reportUnitTestDetails`; `isUnitTest` run button in `ReportSectionEntityInstance` |
 | Execution | **Done (Phase 3)** | `RunUnitTestSuiteButton` → `runUnitTests` (separate from transformer button) |
 | Results | **Done (Phase 3)** | `UnitTestExecutionSummary` + `UnitTestResults` table |
-| Editing | Phase 7 | JzodObjectEditor for each `unitTestType` branch; kind-specific diff display |
-| Discovery | Phase 7 | Browse by kind/tag/module; links from editors |
+| Editing | Phase 6 | JzodObjectEditor for each `unitTestType` branch; kind-specific diff display |
+| Discovery | Phase 6 | Browse by kind/tag/module; links from editors |
 
 ---
 
@@ -411,7 +385,7 @@ Vitest CLI bridge:
 
 1. **`functionRef` security:** UI execution must whitelist callable exports; arbitrary module paths are unsafe.
 2. **Fixture size:** `domainState.json` and jzod schemas make large entity instances — consider blob storage or `$ref` to deployment snapshots.
-3. **Entity proliferation:** `TransformerTest` + `Test` + new `UnitTest` — merge vs extend? **Recommendation:** extend `TransformerTest` EntityDefinition to hold the union initially; rename UI labels to "Unit Test".
+3. **Entity proliferation:** `TransformerTest` + `Test` + `UnitTest` — **Recommendation:** `UnitTest` for miroir-core unit-test migration only; `Test` entity remains integration (composite-action) in standalone-app; no `compositeActionTest` `unitTestType`.
 4. **Class E coverage:** Accept that ~10% of tests remain Vitest-only; document in catalog.
 5. **jzod.typeCheckToPass:** Prioritize completing transformer migration before attempting function-call representation.
 
@@ -422,7 +396,7 @@ Vitest CLI bridge:
 - [ ] All Class A transformer suites selectable and runnable from UI (including `menu`).
 - [x] Class B pilot suites runnable from UI and Vitest with identical results (Phase 3 UI wiring; manual smoke-test OK).
 - [x] Class C query suite represented as store entities and runnable in memory (CLI; UI via existing `UnitTestDisplay`).
-- [ ] Class D composite-action tests executable with assertion investigation in UI.
+- [ ] `resolveCompositeActionTemplate.unit.test.ts` migrated as Class B `functionCallTest` (future Phase 2-style batch).
 - [ ] `npm test` / `RUN_TEST` in CI covers all entity-backed suites (non-regression).
 - [ ] Outliers documented; no false expectation of UI execution for Class E/F.
 
@@ -454,7 +428,7 @@ Vitest CLI bridge:
 | `2_domain/resolveQueryTemplates.unit.test.ts` | B | medium |
 | `2_domain/domainStateToDeploymentEntityState.unit.test.ts` | B | medium |
 | `2_domain/modelUpdates.unit.test.ts` | B | low |
-| `2_domain/resolveCompositeActionTemplate.unit.test.ts` | D | medium |
+| `2_domain/resolveCompositeActionTemplate.unit.test.ts` | B | medium (`resolveTestCompositeActionTemplate*`) |
 | `2_domain/transformer_tools.*.unit.test.ts` | B | low |
 | `3_controllers/*.unit.test.ts` | E | vitest-only |
 | `4_views/ViewParams.integ.test.ts` | E | vitest-only |

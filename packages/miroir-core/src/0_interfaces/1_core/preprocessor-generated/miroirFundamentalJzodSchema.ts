@@ -6848,40 +6848,6 @@ export const miroirFundamentalJzodSchema = {
           }
         }
       },
-      "unitTestAsCompositeActionTest": {
-        "type": "object",
-        "tag": {
-          "value": {
-            "defaultLabel": "Composite-action unit test",
-            "description": "Composite action test (Phase 4 runner)",
-            "display": {
-              "displayedAttributeValueWhenFolded": "unitTestLabel"
-            }
-          }
-        },
-        "definition": {
-          "unitTestType": {
-            "type": "literal",
-            "definition": "compositeActionTest"
-          },
-          "unitTestLabel": {
-            "type": "string",
-            "optional": true
-          },
-          "skip": {
-            "type": "boolean",
-            "optional": true
-          },
-          "payload": {
-            "type": "schemaReference",
-            "definition": {
-              "relativePath": "testCompositeAction",
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
-            },
-            "context": {}
-          }
-        }
-      },
       "unitTestLeaf": {
         "type": "union",
         "discriminator": "unitTestType",
@@ -6906,14 +6872,6 @@ export const miroirFundamentalJzodSchema = {
             "type": "schemaReference",
             "definition": {
               "relativePath": "queryRunnerTest",
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
-            },
-            "context": {}
-          },
-          {
-            "type": "schemaReference",
-            "definition": {
-              "relativePath": "unitTestAsCompositeActionTest",
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
             },
             "context": {}
@@ -6970,14 +6928,6 @@ export const miroirFundamentalJzodSchema = {
                   "type": "schemaReference",
                   "definition": {
                     "relativePath": "queryRunnerTest",
-                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
-                  },
-                  "context": {}
-                },
-                {
-                  "type": "schemaReference",
-                  "definition": {
-                    "relativePath": "unitTestAsCompositeActionTest",
                     "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
                   },
                   "context": {}
@@ -7384,39 +7334,6 @@ export const miroirFundamentalJzodSchema = {
                   }
                 }
               },
-              "unitTestAsCompositeActionTest": {
-                "type": "object",
-                "tag": {
-                  "value": {
-                    "defaultLabel": "Composite-action unit test",
-                    "description": "Composite action test (Phase 4 runner)",
-                    "display": {
-                      "displayedAttributeValueWhenFolded": "unitTestLabel"
-                    }
-                  }
-                },
-                "definition": {
-                  "unitTestType": {
-                    "type": "literal",
-                    "definition": "compositeActionTest"
-                  },
-                  "unitTestLabel": {
-                    "type": "string",
-                    "optional": true
-                  },
-                  "skip": {
-                    "type": "boolean",
-                    "optional": true
-                  },
-                  "payload": {
-                    "type": "schemaReference",
-                    "definition": {
-                      "relativePath": "testCompositeAction",
-                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
-                    }
-                  }
-                }
-              },
               "unitTestLeaf": {
                 "type": "union",
                 "discriminator": "unitTestType",
@@ -7437,12 +7354,6 @@ export const miroirFundamentalJzodSchema = {
                     "type": "schemaReference",
                     "definition": {
                       "relativePath": "queryRunnerTest"
-                    }
-                  },
-                  {
-                    "type": "schemaReference",
-                    "definition": {
-                      "relativePath": "unitTestAsCompositeActionTest"
                     }
                   }
                 ]
@@ -7493,12 +7404,6 @@ export const miroirFundamentalJzodSchema = {
                           "type": "schemaReference",
                           "definition": {
                             "relativePath": "queryRunnerTest"
-                          }
-                        },
-                        {
-                          "type": "schemaReference",
-                          "definition": {
-                            "relativePath": "unitTestAsCompositeActionTest"
                           }
                         },
                         {
