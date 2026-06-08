@@ -335,31 +335,46 @@ Vitest CLI bridge:
 
 **Validation:** `unitTest.tools.unit.test.ts` Phase 2 cases; `RUN_TEST=mustache.unit.test` (6/6); `RUN_TEST=jzodToJsonSchema.unit.test` (18/18); transformer non-regression unchanged.
 
-### Phase 3 — Query-runner tests (Class C)
+### Phase 3 — Query-runner tests (Class C) — *postponed*
 
 - [ ] Extract runner from `queries.unit.test.ts` → `runQueryRunnerTest`.
 - [ ] Externalize `domainState.json` as fixture entity or deployment snapshot ref.
 - [ ] Migrate 26 scenarios to `UnitTestDefinition` suite(s).
 - [ ] Align assertion shape with `TestAssertion`.
 
-### Phase 4 — Composite-action tests (Class D)
+### Phase 4 — Composite-action tests (Class D) — *postponed*
 
 - [ ] Wire `runTestCompositeAction` into `UnitTestTools` with activity tracking.
 - [ ] UI: run / investigate from `Test` entity report (extend or share with UnitTest report).
 - [ ] Migrate `resolveCompositeActionTemplate.unit.test.ts` cases.
 
-### Phase 5 — Complete transformer migration & integration modes
+### Phase 5 — Complete transformer migration & integration modes — *postponed*
 
 - [ ] Move `menu.unit.test.ts` inline suite to store.
 - [ ] Finish `jzod.typeCheckToPass` → transformer entity migration; remove 12k-line file.
 - [ ] UI toggle: unit vs integration for transformer tests (reuse `integrationTestExpectedValue`).
 - [ ] Document `RUN_TEST` / vitest filter conventions for CI.
 
-### Phase 6 — Discovery UX
+### Phase 6 — Minimal UI / UX (small-step validation)
+
+- [x] **Unit Test list report** (`reportUnitTestList`, uuid `cf1e1e7c-…`) — lists all `UnitTest` instances.
+- [x] **Unit Test details report** (`reportUnitTestDetails`, uuid `bb9e8b62-…`) — instance editor + run button.
+- [x] **Menu entry** “Miroir Unit Tests” in default Miroir menu → list report.
+- [x] **`UnitTestDisplay`** + **`RunUnitTestSuiteButton`** in `ReportSectionEntityInstance` (`isUnitTest`, parallel to `isTransformerTest`).
+- [x] **`UnitTestExecutionSummary`** + minimal **`UnitTestResults`** table.
+- [ ] Manual UI smoke-test: open list → open suite (e.g. `mustache_extractDoubleBracePatterns`) → Run → verify pass/fail summary.
+
+**Deliverables:** deployment reports + menu link; `UnitTestDisplay.tsx`, `RunUnitTestSuiteButton.tsx`, `UnitTestResults.tsx`; `entityDefinitionUnitTest.defaultInstanceDetailsReportUuid` → unit test details report.
+
+**Note:** Transformer and Unit test run mechanisms remain separate for now; merge deferred.
+
+### Phase 7 — Discovery UX (formerly Phase 6)
 
 - [ ] Runner or report to browse all `UnitTestDefinition` instances by kind, tag, module.
 - [ ] Link from function/transformer/query editor to relevant test suites.
 - [ ] Optional: `vitestProxy` catalog entries for Class E tests (run via CLI only).
+- [ ] Merge TransformerTest / UnitTest run UI into a single generalized component.
+- [ ] Kind-specific input viewers and assertion diff in detail report.
 
 ---
 
@@ -377,13 +392,14 @@ Vitest CLI bridge:
 
 ## UI changes (summary)
 
-| Area | Change |
-|------|--------|
-| Entity list | Show `UnitTest` / `UnitTestDefinition` alongside or replacing `TransformerTest` |
-| Detail report | Generalize Transformer Test Details → **Unit Test Details** with kind-specific input viewers |
-| Execution | Action `runUnitTestSuite` (generalize existing transformer run action) |
-| Results | Reuse `MiroirActivityTracker` pipeline; kind-specific diff display for function-call vs transformer |
-| Editing | JzodObjectEditor for each `unitTestType` branch |
+| Area | Status | Change |
+|------|--------|--------|
+| Entity list | **Done (Phase 6)** | `reportUnitTestList` + menu “Miroir Unit Tests” |
+| Detail report | **Done (Phase 6)** | `reportUnitTestDetails`; `isUnitTest` run button in `ReportSectionEntityInstance` |
+| Execution | **Done (Phase 6)** | `RunUnitTestSuiteButton` → `runUnitTests` (separate from transformer button) |
+| Results | **Done (Phase 6)** | `UnitTestExecutionSummary` + `UnitTestResults` table |
+| Editing | Phase 7 | JzodObjectEditor for each `unitTestType` branch; kind-specific diff display |
+| Discovery | Phase 7 | Browse by kind/tag/module; links from editors |
 
 ---
 
@@ -400,7 +416,7 @@ Vitest CLI bridge:
 ## Success criteria
 
 - [ ] All Class A transformer suites selectable and runnable from UI (including `menu`).
-- [ ] Class B pilot suites runnable from UI and Vitest with identical results.
+- [x] Class B pilot suites runnable from UI and Vitest with identical results (Phase 6 UI wiring; manual smoke-test pending).
 - [ ] Class C query suite represented as store entities and runnable in memory from UI.
 - [ ] Class D composite-action tests executable with assertion investigation in UI.
 - [ ] `npm test` / `RUN_TEST` in CI covers all entity-backed suites (non-regression).

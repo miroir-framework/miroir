@@ -1080,6 +1080,8 @@ export {
   reportTestList,
   reportTransformerTestDetails,
   reportTransformerTestList,
+  reportUnitTestDetails,
+  reportUnitTestList,
   runnerDropApplication,
   runnerDropEntity,
   selfApplicationDeploymentMiroir,

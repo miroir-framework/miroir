@@ -16,6 +16,7 @@ import {
   entityDefinitionMLSchema,
   entityQueryVersion,
   entityTransformerTest,
+  entityUnitTest,
   getQueryTemplateRunnerParamsForReduxDeploymentsState,
   interpolateExpression,
   resolvePathOnObject,
@@ -60,6 +61,7 @@ import {
 import { useDocumentOutlineContext } from '../ValueObjectEditor/InstanceEditorOutlineContext.js';
 import { useReportPageContext } from './ReportPageContext.js';
 import { TransformerTestDisplay } from './TransformerTestDisplay.js';
+import { UnitTestDisplay } from './UnitTestDisplay.js';
 import { TypedValueObjectEditor } from './TypedValueObjectEditor.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -335,6 +337,9 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   const isTransformerTest =
     isTransformerTestEntity && instance?.parentUuid === entityTransformerTest.uuid;
 
+  const isUnitTestEntity = currentReportTargetEntity?.uuid === entityUnitTest.uuid;
+  const isUnitTest = isUnitTestEntity && instance?.parentUuid === entityUnitTest.uuid;
+
   // ##############################################################################################
   // ##############################################################################################
   // ##############################################################################################
@@ -425,7 +430,11 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   // ##############################################################################################
   // ##############################################################################################
   // ##############################################################################################
-  const testLabel = instance?.transformerTestLabel || instance?.name || "TransformerTest";
+  const testLabel =
+    instance?.unitTestLabel ||
+    instance?.transformerTestLabel ||
+    instance?.name ||
+    (isUnitTest ? "UnitTest" : "TransformerTest");
   
   log.info("ReportSectionEntityInstance: rendering with instance:", instance, "testLabel:", testLabel);
   if (instance) {
@@ -446,6 +455,17 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
             useSnackBar={true}
             onTestComplete={(testSuiteKey, structuredResults) => {
               log.info(`Test completed for ${testSuiteKey}:`, structuredResults);
+            }}
+            gridType={viewParams.gridType}
+          />
+        )}
+        {isUnitTest && (
+          <UnitTestDisplay
+            unitTest={instance}
+            testLabel={testLabel}
+            useSnackBar={true}
+            onTestComplete={(testSuiteKey, structuredResults) => {
+              log.info(`Unit test completed for ${testSuiteKey}:`, structuredResults);
             }}
             gridType={viewParams.gridType}
           />
