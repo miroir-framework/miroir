@@ -356,15 +356,14 @@ Phase 5 is split by migration pattern. **5a** is done; **5b–5e** track the res
 
 **Validation:** `RUN_TEST=alterObject.unit.test` (3/3); `jzodToCopilotKitParameter.unit.test` (17/17); `mergePositionBased.unit.test` (18/18); `menu.unit.test` (1/1).
 
-#### Phase 5b — Bulk Class B (`functionCallTest`)
+#### Phase 5b — Bulk Class B (`functionCallTest`) *(done — batch 1)*
 
-Migrate remaining **ready** Class B files (~20 files, ~170 cases) using the 5a pattern:
+- [x] `JzodSchemaReferencesList` (9), `JzodSchemaReferencesSet` (9), `jzodTransitiveDependencySet` (6), `jzodToJzod_Summary` (25 + 1 vitest-only comparative).
+- [x] Runner fix: `Set` return values normalized before `ignorePostgresExtraAttributes`.
+- [x] `functionCallTestSuites/*` data modules + `export-function-call-suites.unit.test.ts`.
+- [ ] Remaining ready batch: `jzod.buildAnyKeyMap` (partial asserts → **5c**), `jzodTransitiveDependencySet` duplicate Set smoke tests removed from vitest file.
 
-- Registry whitelist expansion per export.
-- Data module under `tests/functionCallTestSuites/`.
-- Vitest file → `runDeployedUnitTestSuite` wrapper.
-
-**Priority order:** `JzodSchemaReferencesList/Set`, `jzod.buildAnyKeyMap`, `jzodToJzod_Summary`, `jzodTransitiveDependencySet`, `tools.test.ts` (split by export), env-arg jzod utilities.
+**Validation:** `RUN_TEST=JzodSchemaReferencesList.unit.test` (9/9); `JzodSchemaReferencesSet.unit.test` (9/9); `jzodTransitiveDependencySet.unit.test` (6/6); `jzodToJzod_Summary.unit.test` (26/26).
 
 #### Phase 5c — Class B extensions (minor runner/schema)
 
@@ -375,7 +374,7 @@ Cases needing small runner additions before migration:
 | Error-object returns (`Action2Error`, not throws) | `EntityPrimaryKey.unit.test.ts` |
 | `expectedError` / throws | `getAttributeTypesFromJzodSchema`, `jzodObjectFlatten`, `modelUpdates` |
 | `fixtureRef` for large blobs | `domainStateToDeploymentEntityState`, `ansiColumnsToJzodSchema`, `resolveCompositeActionTemplate` |
-| Partial match (`toMatchObject`) | `selectUnionBranchFromDiscriminator`, `tools.test.ts` (`resolveRelativePath`) |
+| Partial / multi-assert (`buildAnyKeyMap`, comparative tests) | `jzod.buildAnyKeyMap.unit.test.ts`, `jzodToJzod_Summary` default-depth |
 | External package whitelist | `getAttributeTypesFromJzodSchema`, `ansiColumnsToJzodSchema` |
 
 #### Phase 5d — jzodTypeCheck consolidation

@@ -6,17 +6,23 @@ import { defaultMetaModelEnvironment } from "../../src/1_core/Model";
 import { MiroirActivityTracker } from "../../src/3_controllers/MiroirActivityTracker";
 import { runUnitTests, unitTestsDisplayResults } from "../../src";
 
-type DeployedUnitTestSuite = { definition: UnitTestSuite };
+/**
+ * Deployment JSON entity instance.
+ * JSON imports infer `definition.unitTestType` as `string`, not the `"unitTestSuite"` literal.
+ */
+export type DeployedUnitTestExport = {
+  definition: UnitTestSuite /*unknown*/;
+};
 
 export async function runDeployedUnitTestSuite(
-  suiteExport: DeployedUnitTestSuite,
+  suiteExport: DeployedUnitTestExport,
   testSuiteName: string,
   modelEnvironment = defaultMetaModelEnvironment,
 ) {
   const RUN_TEST = process.env.RUN_TEST;
   const shouldSkip = RUN_TEST !== undefined && RUN_TEST !== testSuiteName;
   const miroirActivityTracker = new MiroirActivityTracker();
-  const unitTestSuite = suiteExport.definition;
+  const unitTestSuite = suiteExport.definition as UnitTestSuite;
 
   afterAll(() => {
     if (!shouldSkip) {

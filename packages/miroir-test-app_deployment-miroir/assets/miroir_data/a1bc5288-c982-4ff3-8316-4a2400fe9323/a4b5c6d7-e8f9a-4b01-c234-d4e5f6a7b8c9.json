@@ -1,0 +1,217 @@
+{
+  "uuid": "a4b5c6d7-e8f9a-4b01-c234-d4e5f6a7b8c9",
+  "parentName": "UnitTest",
+  "parentUuid": "a1bc5288-c982-4ff3-8316-4a2400fe9323",
+  "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+  "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
+  "name": "jzodTransitiveDependencySet",
+  "description": "Phase 5b — jzodTransitiveDependencySet",
+  "definition": {
+    "unitTestType": "unitTestSuite",
+    "unitTestLabel": "jzod.jzodTransitiveDependencySet",
+    "unitTests": [
+      {
+        "unitTestType": "functionCallTest",
+        "unitTestLabel": "finds direct dependency",
+        "functionRef": {
+          "module": "miroir-core/1_core/jzod/JzodSchemaReferences",
+          "export": "jzodTransitiveDependencySet"
+        },
+        "arguments": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "root"
+            },
+            "context": {
+              "root": {
+                "type": "object",
+                "definition": {
+                  "a": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "root"
+        ],
+        "expectedValue": [
+          "root"
+        ]
+      },
+      {
+        "unitTestType": "functionCallTest",
+        "unitTestLabel": "finds single level dependencies",
+        "functionRef": {
+          "module": "miroir-core/1_core/jzod/JzodSchemaReferences",
+          "export": "jzodTransitiveDependencySet"
+        },
+        "arguments": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "A"
+            },
+            "context": {
+              "A": {
+                "type": "object",
+                "definition": {
+                  "b": {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "B"
+                    }
+                  }
+                }
+              },
+              "B": {
+                "type": "string"
+              }
+            }
+          },
+          "A"
+        ],
+        "expectedValue": [
+          "A",
+          "B"
+        ]
+      },
+      {
+        "unitTestType": "functionCallTest",
+        "unitTestLabel": "finds transitive dependencies",
+        "functionRef": {
+          "module": "miroir-core/1_core/jzod/JzodSchemaReferences",
+          "export": "jzodTransitiveDependencySet"
+        },
+        "arguments": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "A"
+            },
+            "context": {
+              "A": {
+                "type": "object",
+                "definition": {
+                  "b": {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "B"
+                    }
+                  }
+                }
+              },
+              "B": {
+                "type": "object",
+                "definition": {
+                  "c": {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "C"
+                    }
+                  }
+                }
+              },
+              "C": {
+                "type": "string"
+              }
+            }
+          },
+          "A"
+        ],
+        "expectedValue": [
+          "A",
+          "B",
+          "C"
+        ]
+      },
+      {
+        "unitTestType": "functionCallTest",
+        "unitTestLabel": "handles circular dependencies",
+        "functionRef": {
+          "module": "miroir-core/1_core/jzod/JzodSchemaReferences",
+          "export": "jzodTransitiveDependencySet"
+        },
+        "arguments": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "A"
+            },
+            "context": {
+              "A": {
+                "type": "object",
+                "definition": {
+                  "b": {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "B"
+                    }
+                  }
+                }
+              },
+              "B": {
+                "type": "object",
+                "definition": {
+                  "a": {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "A"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "A"
+        ],
+        "expectedValue": [
+          "A",
+          "B"
+        ]
+      },
+      {
+        "unitTestType": "functionCallTest",
+        "unitTestLabel": "throws error when context is missing",
+        "functionRef": {
+          "module": "miroir-core/1_core/jzod/JzodSchemaReferences",
+          "export": "jzodTransitiveDependencySet"
+        },
+        "arguments": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "A"
+            }
+          },
+          "A"
+        ],
+        "expectedError": "miroirFundamentalJzodSchema.context is not defined"
+      },
+      {
+        "unitTestType": "functionCallTest",
+        "unitTestLabel": "throws error when element not found in context",
+        "functionRef": {
+          "module": "miroir-core/1_core/jzod/JzodSchemaReferences",
+          "export": "jzodTransitiveDependencySet"
+        },
+        "arguments": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "A"
+            },
+            "context": {
+              "B": {
+                "type": "string"
+              }
+            }
+          },
+          "A"
+        ],
+        "expectedError": "Element A not found in context"
+      }
+    ]
+  }
+}

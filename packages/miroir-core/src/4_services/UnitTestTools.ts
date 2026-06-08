@@ -266,8 +266,10 @@ export async function runFunctionCallTestInMemory(
       }
     } else {
       const rawResult = fn(...args);
+      const resultForNormalize =
+        rawResult instanceof Set ? Array.from(rawResult) : rawResult;
       const resultWithIgnored = ignorePostgresExtraAttributes(
-        rawResult,
+        resultForNormalize,
         unitTest.ignoreAttributes,
       );
       const jsonifiedResult = jsonify(resultWithIgnored);

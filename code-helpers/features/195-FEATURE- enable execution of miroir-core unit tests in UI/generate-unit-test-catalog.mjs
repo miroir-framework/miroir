@@ -15,7 +15,7 @@ const REPO_ROOT = join(__dirname, "..", "..", "..");
 const TESTS_ROOT = join(REPO_ROOT, "packages", "miroir-core", "tests");
 const OUTPUT_PATH = join(__dirname, "catalog.json");
 
-/** @typedef {'A'|'A+G'|'B'|'C'|'D'|'E'|'F'|'—'} TestClass */
+/** @typedef {'A'|'A+G'|'B'|'C'|'E'|'F'|'—'} TestClass */
 
 /** @type {Record<string, { class: TestClass, unitTestKind: string|null, vitestOnly: boolean, priority: string, notes?: string, exclude?: boolean }>} */
 const FILE_METADATA = {
@@ -69,8 +69,8 @@ const FILE_METADATA = {
     class: "A",
     unitTestKind: "transformerTest",
     vitestOnly: false,
-    priority: "migrate to store",
-    notes: "inline TransformerTestSuite; not yet a store instance",
+    priority: "done (Phase 5a)",
+    notes: "unitTest_suite_menu",
   },
   "4_services/transformers.integ.test.ts": {
     class: "A+G",
@@ -101,7 +101,8 @@ const FILE_METADATA = {
     class: "B",
     unitTestKind: "functionCallTest",
     vitestOnly: false,
-    priority: "high",
+    priority: "done (Phase 5a)",
+    notes: "unitTest_suite_alterObject",
   },
   "1_core/jzod/jzod.typeCheckToFail.unit.test.ts": {
     class: "B",
@@ -156,10 +157,12 @@ const FILE_METADATA = {
     priority: "low",
   },
   "2_domain/resolveCompositeActionTemplate.unit.test.ts": {
-    class: "D",
-    unitTestKind: "compositeActionTest",
+    class: "B",
+    unitTestKind: "functionCallTest",
     vitestOnly: false,
     priority: "medium",
+    notes:
+      "Unit test of resolveTestCompositeActionTemplate / resolveTestCompositeActionTemplateSuite — NOT TestCompositeAction* integration tests (those live in standalone-app Test entity; out of scope)",
   },
   "2_domain/transformer_tools.transformerInterfaceFromDefinition.unit.test.ts": {
     class: "B",
@@ -568,7 +571,6 @@ function main() {
       "A+G": { name: "transformerTest (integration)", description: "Transformer tests against Postgres" },
       B: { name: "functionCallTest", description: "Pure function input → expected output" },
       C: { name: "queryRunnerTest", description: "In-memory query/template runner + assertions" },
-      D: { name: "compositeActionTest", description: "Composite action template resolution and execution" },
       E: { name: "statefulBehaviorTest", description: "Mocks, lifecycle, class state — vitestOnly" },
       F: { name: "schemaValidationTest", description: "Zod/TS compile-time — vitestOnly" },
       "—": { name: "excluded", description: "Experiments or deprecated; not in catalog scope" },

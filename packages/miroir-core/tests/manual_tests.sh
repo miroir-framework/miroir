@@ -11,7 +11,10 @@ RUN_TEST=unitTest.pilot.unit.test npm run testByFile -w miroir-core -- 'unitTest
 RUN_TEST=unitTest.tools.unit.test npm run testByFile -w miroir-core -- 'unitTest.tools.unit.test'
 RUN_TEST=transformers.unit.test npm run testByFile -w miroir-core -- 'transformers.unit.test'
 RUN_TEST=queries.unit.test npm run testByFile -w miroir-core -- 'queries.unit.test'
-RUN_TEST=resolveConditionalSchema.test npm run testByFile -w miroir-core -- 'resolveConditionalSchema.test'
 
+RUN_TEST=JzodSchemaReferencesList.unit.test npm run testByFile -w miroir-core JzodSchemaReferencesList.unit.test
+RUN_TEST=jzodToJzod_Summary.unit.test npm run testByFile -w miroir-core jzodToJzod_Summary.unit.test
+
+RUN_TEST=resolveConditionalSchema.test npm run testByFile -w miroir-core -- 'resolveConditionalSchema.test'
 # go back to the original directory
 cd -

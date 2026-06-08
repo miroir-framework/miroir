@@ -1,6 +1,12 @@
 import { extractDoubleBracePatterns } from "../1_core/mustache";
+import {
+  JzodSchemaReferencesList,
+  JzodSchemaReferencesSet,
+  jzodTransitiveDependencySet,
+} from "../1_core/jzod/JzodSchemaReferences";
 import { jzodToCopilotKitParameter } from "../1_core/jzod/JzodToCopilotKitParameter";
 import { mergePositionBased } from "../1_core/jzod/JzodToJzod_CarryOn";
+import { jzodToJzod_Summary } from "../1_core/jzod/JzodToJzod_Summary";
 import { jzodToJsonSchema } from "../1_core/jzod/JzodToJsonSchema";
 import { alterObjectAtPath } from "../tools";
 
@@ -30,6 +36,14 @@ const FUNCTION_CALL_REGISTRY: Record<string, Record<string, WhitelistedFunction>
   },
   "miroir-core/1_core/jzod/JzodToJzod_CarryOn": {
     mergePositionBased: mergePositionBased as WhitelistedFunction,
+  },
+  "miroir-core/1_core/jzod/JzodSchemaReferences": {
+    JzodSchemaReferencesList: JzodSchemaReferencesList as WhitelistedFunction,
+    JzodSchemaReferencesSet: JzodSchemaReferencesSet as WhitelistedFunction,
+    jzodTransitiveDependencySet: jzodTransitiveDependencySet as WhitelistedFunction,
+  },
+  "miroir-core/1_core/jzod/JzodToJzod_Summary": {
+    jzodToJzod_Summary: jzodToJzod_Summary as WhitelistedFunction,
   },
 };
 
