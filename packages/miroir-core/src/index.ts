@@ -444,6 +444,20 @@ export {
   transformerTestDefinition,
   TransformerTestSuite,
   transformerTestSuite,
+  UnitTestAsTransformerTest,
+  unitTestAsTransformerTest,
+  FunctionCallTest,
+  functionCallTest,
+  QueryRunnerTest,
+  queryRunnerTest,
+  UnitTestAsCompositeActionTest,
+  unitTestAsCompositeActionTest,
+  UnitTestLeaf,
+  unitTestLeaf,
+  UnitTestSuite,
+  unitTestSuite,
+  UnitTestDefinition,
+  unitTestDefinition,
   UndoRedoAction,
   undoRedoAction,
   ZodParseError,
@@ -926,6 +940,16 @@ export {
   transformerTestsDisplayResults,
   type TestSuiteListFilter
 } from "./4_services/TestTools.js";
+export {
+  asTransformerTestFromUnitTest,
+  runUnitTestInMemory,
+  runUnitTestSuite,
+  runUnitTestSuiteAsTransformerTests,
+  runUnitTests,
+  unitTestSuiteToTransformerTestSuite,
+  type RunUnitTest,
+  type RunUnitTests,
+} from "./4_services/UnitTestTools.js";
 export { TransformerGlobalContext } from "./4_services/TransformerContext.js";
 export { defaultViewParamsFromAdminStorageFetchQueryParams } from "./4_views/viewParams";
 
@@ -999,6 +1023,7 @@ export {
   // entityDefinitionTheme,
   entityDefinitionTransformerDefinition,
   entityDefinitionTransformerTest,
+  entityDefinitionUnitTest,
   entityEndpointVersion,
   entityEntity,
   entityEntityDefinition,
@@ -1016,6 +1041,7 @@ export {
   // entityTheme,
   entityTransformerDefinition,
   entityTransformerTest,
+  entityUnitTest,
   instanceEndpointV1,
   instanceEndpointVersionV1,
   jzodSchemajzodMiroirBootstrapSchema,

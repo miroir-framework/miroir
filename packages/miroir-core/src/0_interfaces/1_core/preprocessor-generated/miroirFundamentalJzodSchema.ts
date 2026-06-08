@@ -6200,8 +6200,8 @@ export const miroirFundamentalJzodSchema = {
         "type": "object",
         "tag": {
           "value": {
-            "defaultLabel": "TransformerTest",
-            "description": "A test of a Transformer",
+            "defaultLabel": "TransformerTest payload",
+            "description": "Transformer test payload (same shape as TransformerTest entity)",
             "display": {
               "displayedAttributeValueWhenFolded": "transformerTestLabel"
             }
@@ -6239,21 +6239,7 @@ export const miroirFundamentalJzodSchema = {
           },
           "skip": {
             "type": "boolean",
-            "optional": true,
-            "tag": {
-              "value": {
-                "id": 1,
-                "defaultLabel": "Skip",
-                "display": {
-                  "editable": true
-                },
-                "description": "If true, this test will be skipped when running tests",
-                "initializeTo": {
-                  "initializeToType": "value",
-                  "value": true
-                }
-              }
-            }
+            "optional": true
           },
           "transformer": {
             "type": "schemaReference",
@@ -6668,6 +6654,867 @@ export const miroirFundamentalJzodSchema = {
             },
             "definition": {
               "relativePath": "transformerTestSuite"
+            }
+          }
+        }
+      },
+      "unitTestAsTransformerTest": {
+        "type": "object",
+        "tag": {
+          "value": {
+            "defaultLabel": "Transformer unit test",
+            "description": "Unit test that runs a transformer (Phase 1)",
+            "display": {
+              "displayedAttributeValueWhenFolded": "unitTestLabel"
+            }
+          }
+        },
+        "definition": {
+          "unitTestType": {
+            "type": "literal",
+            "definition": "transformerTest"
+          },
+          "unitTestLabel": {
+            "type": "string",
+            "optional": true
+          },
+          "testTag": {
+            "type": "union",
+            "optional": true,
+            "definition": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "array",
+                "definition": {
+                  "type": "string"
+                }
+              }
+            ]
+          },
+          "skip": {
+            "type": "boolean",
+            "optional": true
+          },
+          "payload": {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "transformerTest",
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+            },
+            "context": {}
+          }
+        }
+      },
+      "functionCallTest": {
+        "type": "object",
+        "tag": {
+          "value": {
+            "defaultLabel": "Function-call unit test",
+            "description": "Pure function input/output test (Phase 2 runner)",
+            "display": {
+              "displayedAttributeValueWhenFolded": "unitTestLabel"
+            }
+          }
+        },
+        "definition": {
+          "unitTestType": {
+            "type": "literal",
+            "definition": "functionCallTest"
+          },
+          "unitTestLabel": {
+            "type": "string"
+          },
+          "testTag": {
+            "type": "union",
+            "optional": true,
+            "definition": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "array",
+                "definition": {
+                  "type": "string"
+                }
+              }
+            ]
+          },
+          "skip": {
+            "type": "boolean",
+            "optional": true
+          },
+          "functionRef": {
+            "type": "object",
+            "definition": {
+              "module": {
+                "type": "string"
+              },
+              "export": {
+                "type": "string"
+              }
+            }
+          },
+          "arguments": {
+            "type": "array",
+            "definition": {
+              "type": "any"
+            },
+            "optional": true
+          },
+          "expectedValue": {
+            "type": "any",
+            "optional": true
+          },
+          "expectedError": {
+            "type": "string",
+            "optional": true
+          },
+          "environmentRef": {
+            "type": "string",
+            "optional": true
+          },
+          "ignoreAttributes": {
+            "type": "array",
+            "definition": {
+              "type": "string"
+            },
+            "optional": true
+          }
+        }
+      },
+      "queryRunnerTest": {
+        "type": "object",
+        "tag": {
+          "value": {
+            "defaultLabel": "Query-runner unit test",
+            "description": "In-memory query/template runner test (Phase 3 runner)",
+            "display": {
+              "displayedAttributeValueWhenFolded": "unitTestLabel"
+            }
+          }
+        },
+        "definition": {
+          "unitTestType": {
+            "type": "literal",
+            "definition": "queryRunnerTest"
+          },
+          "unitTestLabel": {
+            "type": "string"
+          },
+          "skip": {
+            "type": "boolean",
+            "optional": true
+          },
+          "fixtureRef": {
+            "type": "string",
+            "optional": true
+          },
+          "runner": {
+            "type": "string",
+            "optional": true
+          },
+          "queryTemplate": {
+            "type": "any",
+            "optional": true
+          },
+          "query": {
+            "type": "any",
+            "optional": true
+          },
+          "assertions": {
+            "type": "array",
+            "optional": true,
+            "definition": {
+              "type": "object",
+              "definition": {
+                "label": {
+                  "type": "string"
+                },
+                "resultAccessPath": {
+                  "type": "array",
+                  "optional": true,
+                  "definition": {
+                    "type": "string"
+                  }
+                },
+                "expectedValue": {
+                  "type": "any",
+                  "optional": true
+                }
+              }
+            }
+          }
+        }
+      },
+      "unitTestAsCompositeActionTest": {
+        "type": "object",
+        "tag": {
+          "value": {
+            "defaultLabel": "Composite-action unit test",
+            "description": "Composite action test (Phase 4 runner)",
+            "display": {
+              "displayedAttributeValueWhenFolded": "unitTestLabel"
+            }
+          }
+        },
+        "definition": {
+          "unitTestType": {
+            "type": "literal",
+            "definition": "compositeActionTest"
+          },
+          "unitTestLabel": {
+            "type": "string",
+            "optional": true
+          },
+          "skip": {
+            "type": "boolean",
+            "optional": true
+          },
+          "payload": {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "testCompositeAction",
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+            },
+            "context": {}
+          }
+        }
+      },
+      "unitTestLeaf": {
+        "type": "union",
+        "discriminator": "unitTestType",
+        "definition": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "unitTestAsTransformerTest",
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+            },
+            "context": {}
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "functionCallTest",
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+            },
+            "context": {}
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "queryRunnerTest",
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+            },
+            "context": {}
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "unitTestAsCompositeActionTest",
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+            },
+            "context": {}
+          }
+        ]
+      },
+      "unitTestSuite": {
+        "type": "object",
+        "tag": {
+          "value": {
+            "defaultLabel": "UnitTestSuite",
+            "description": "A suite of unit tests or nested suites",
+            "display": {
+              "editable": true,
+              "displayedAttributeValueWhenFolded": "unitTestLabel"
+            }
+          }
+        },
+        "definition": {
+          "unitTestType": {
+            "type": "literal",
+            "definition": "unitTestSuite"
+          },
+          "unitTestLabel": {
+            "type": "string"
+          },
+          "skip": {
+            "type": "boolean",
+            "optional": true
+          },
+          "unitTests": {
+            "type": "array",
+            "definition": {
+              "type": "union",
+              "discriminator": "unitTestType",
+              "definition": [
+                {
+                  "type": "schemaReference",
+                  "definition": {
+                    "relativePath": "unitTestAsTransformerTest",
+                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+                  },
+                  "context": {}
+                },
+                {
+                  "type": "schemaReference",
+                  "definition": {
+                    "relativePath": "functionCallTest",
+                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+                  },
+                  "context": {}
+                },
+                {
+                  "type": "schemaReference",
+                  "definition": {
+                    "relativePath": "queryRunnerTest",
+                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+                  },
+                  "context": {}
+                },
+                {
+                  "type": "schemaReference",
+                  "definition": {
+                    "relativePath": "unitTestAsCompositeActionTest",
+                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+                  },
+                  "context": {}
+                },
+                {
+                  "type": "schemaReference",
+                  "definition": {
+                    "relativePath": "unitTestSuite",
+                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+                  },
+                  "context": {}
+                }
+              ]
+            }
+          }
+        }
+      },
+      "unitTestDefinition": {
+        "type": "object",
+        "extend": {
+          "type": "schemaReference",
+          "definition": {
+            "eager": true,
+            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            "relativePath": "entityDefinitionRoot"
+          }
+        },
+        "definition": {
+          "selfApplication": {
+            "type": "uuid",
+            "tag": {
+              "value": {
+                "id": 9,
+                "defaultLabel": "SelfApplication",
+                "description": "The SelfApplication this UnitTest belongs to",
+                "display": {
+                  "editable": false
+                },
+                "foreignKeyParams": {
+                  "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
+                  "targetEntityOrderInstancesBy": "name"
+                }
+              }
+            }
+          },
+          "branch": {
+            "type": "uuid",
+            "tag": {
+              "value": {
+                "id": 10,
+                "defaultLabel": "Branch",
+                "description": "The Branch of the SelfApplication",
+                "display": {
+                  "editable": false
+                }
+              }
+            }
+          },
+          "name": {
+            "type": "string",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 1,
+                "defaultLabel": "Name",
+                "display": {
+                  "editable": true
+                }
+              }
+            }
+          },
+          "skip": {
+            "type": "boolean",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 1,
+                "defaultLabel": "Skip",
+                "display": {
+                  "editable": true
+                },
+                "description": "If true, this test suite will be skipped when running tests",
+                "initializeTo": {
+                  "initializeToType": "value",
+                  "value": true
+                }
+              }
+            }
+          },
+          "description": {
+            "type": "string",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 1,
+                "defaultLabel": "Description",
+                "display": {
+                  "editable": true
+                }
+              }
+            }
+          },
+          "definition": {
+            "type": "schemaReference",
+            "context": {
+              "transformerTest": {
+                "type": "object",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "TransformerTest payload",
+                    "description": "Transformer test payload (same shape as TransformerTest entity)",
+                    "display": {
+                      "displayedAttributeValueWhenFolded": "transformerTestLabel"
+                    }
+                  }
+                },
+                "definition": {
+                  "transformerTestType": {
+                    "type": "literal",
+                    "definition": "transformerTest"
+                  },
+                  "transformerTestLabel": {
+                    "type": "string"
+                  },
+                  "transformerTestDescription": {
+                    "type": "string",
+                    "optional": true
+                  },
+                  "transformerName": {
+                    "type": "string"
+                  },
+                  "testTag": {
+                    "type": "union",
+                    "optional": true,
+                    "definition": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "array",
+                        "definition": {
+                          "type": "string"
+                        }
+                      }
+                    ]
+                  },
+                  "skip": {
+                    "type": "boolean",
+                    "optional": true
+                  },
+                  "transformer": {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "coreTransformerForBuildPlusRuntime",
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+                    }
+                  },
+                  "runTestStep": {
+                    "type": "string",
+                    "optional": true
+                  },
+                  "transformerParams": {
+                    "type": "record",
+                    "definition": {
+                      "type": "any"
+                    },
+                    "optional": true
+                  },
+                  "transformerRuntimeContext": {
+                    "type": "record",
+                    "definition": {
+                      "type": "any"
+                    },
+                    "optional": true
+                  },
+                  "expectedValue": {
+                    "type": "any",
+                    "optional": true
+                  },
+                  "subExpectedValue": {
+                    "type": "array",
+                    "optional": true,
+                    "definition": {
+                      "type": "tuple",
+                      "definition": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "any"
+                        }
+                      ]
+                    }
+                  },
+                  "integrationTestExpectedValue": {
+                    "type": "any",
+                    "optional": true
+                  },
+                  "unitTestExpectedValue": {
+                    "type": "any",
+                    "optional": true
+                  },
+                  "retainAttributes": {
+                    "type": "array",
+                    "definition": {
+                      "type": "string"
+                    },
+                    "optional": true
+                  },
+                  "ignoreAttributes": {
+                    "type": "array",
+                    "definition": {
+                      "type": "string"
+                    },
+                    "optional": true
+                  }
+                }
+              },
+              "unitTestAsTransformerTest": {
+                "type": "object",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Transformer unit test",
+                    "description": "Unit test that runs a transformer (Phase 1)",
+                    "display": {
+                      "displayedAttributeValueWhenFolded": "unitTestLabel"
+                    }
+                  }
+                },
+                "definition": {
+                  "unitTestType": {
+                    "type": "literal",
+                    "definition": "transformerTest"
+                  },
+                  "unitTestLabel": {
+                    "type": "string",
+                    "optional": true
+                  },
+                  "testTag": {
+                    "type": "union",
+                    "optional": true,
+                    "definition": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "array",
+                        "definition": {
+                          "type": "string"
+                        }
+                      }
+                    ]
+                  },
+                  "skip": {
+                    "type": "boolean",
+                    "optional": true
+                  },
+                  "payload": {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "transformerTest"
+                    }
+                  }
+                }
+              },
+              "functionCallTest": {
+                "type": "object",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Function-call unit test",
+                    "description": "Pure function input/output test (Phase 2 runner)",
+                    "display": {
+                      "displayedAttributeValueWhenFolded": "unitTestLabel"
+                    }
+                  }
+                },
+                "definition": {
+                  "unitTestType": {
+                    "type": "literal",
+                    "definition": "functionCallTest"
+                  },
+                  "unitTestLabel": {
+                    "type": "string"
+                  },
+                  "testTag": {
+                    "type": "union",
+                    "optional": true,
+                    "definition": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "array",
+                        "definition": {
+                          "type": "string"
+                        }
+                      }
+                    ]
+                  },
+                  "skip": {
+                    "type": "boolean",
+                    "optional": true
+                  },
+                  "functionRef": {
+                    "type": "object",
+                    "definition": {
+                      "module": {
+                        "type": "string"
+                      },
+                      "export": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "arguments": {
+                    "type": "array",
+                    "definition": {
+                      "type": "any"
+                    },
+                    "optional": true
+                  },
+                  "expectedValue": {
+                    "type": "any",
+                    "optional": true
+                  },
+                  "expectedError": {
+                    "type": "string",
+                    "optional": true
+                  },
+                  "environmentRef": {
+                    "type": "string",
+                    "optional": true
+                  },
+                  "ignoreAttributes": {
+                    "type": "array",
+                    "definition": {
+                      "type": "string"
+                    },
+                    "optional": true
+                  }
+                }
+              },
+              "queryRunnerTest": {
+                "type": "object",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Query-runner unit test",
+                    "description": "In-memory query/template runner test (Phase 3 runner)",
+                    "display": {
+                      "displayedAttributeValueWhenFolded": "unitTestLabel"
+                    }
+                  }
+                },
+                "definition": {
+                  "unitTestType": {
+                    "type": "literal",
+                    "definition": "queryRunnerTest"
+                  },
+                  "unitTestLabel": {
+                    "type": "string"
+                  },
+                  "skip": {
+                    "type": "boolean",
+                    "optional": true
+                  },
+                  "fixtureRef": {
+                    "type": "string",
+                    "optional": true
+                  },
+                  "runner": {
+                    "type": "string",
+                    "optional": true
+                  },
+                  "queryTemplate": {
+                    "type": "any",
+                    "optional": true
+                  },
+                  "query": {
+                    "type": "any",
+                    "optional": true
+                  },
+                  "assertions": {
+                    "type": "array",
+                    "optional": true,
+                    "definition": {
+                      "type": "object",
+                      "definition": {
+                        "label": {
+                          "type": "string"
+                        },
+                        "resultAccessPath": {
+                          "type": "array",
+                          "optional": true,
+                          "definition": {
+                            "type": "string"
+                          }
+                        },
+                        "expectedValue": {
+                          "type": "any",
+                          "optional": true
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "unitTestAsCompositeActionTest": {
+                "type": "object",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Composite-action unit test",
+                    "description": "Composite action test (Phase 4 runner)",
+                    "display": {
+                      "displayedAttributeValueWhenFolded": "unitTestLabel"
+                    }
+                  }
+                },
+                "definition": {
+                  "unitTestType": {
+                    "type": "literal",
+                    "definition": "compositeActionTest"
+                  },
+                  "unitTestLabel": {
+                    "type": "string",
+                    "optional": true
+                  },
+                  "skip": {
+                    "type": "boolean",
+                    "optional": true
+                  },
+                  "payload": {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "testCompositeAction",
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+                    }
+                  }
+                }
+              },
+              "unitTestLeaf": {
+                "type": "union",
+                "discriminator": "unitTestType",
+                "definition": [
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "unitTestAsTransformerTest"
+                    }
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "functionCallTest"
+                    }
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "queryRunnerTest"
+                    }
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "unitTestAsCompositeActionTest"
+                    }
+                  }
+                ]
+              },
+              "unitTestSuite": {
+                "type": "object",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "UnitTestSuite",
+                    "description": "A suite of unit tests or nested suites",
+                    "display": {
+                      "editable": true,
+                      "displayedAttributeValueWhenFolded": "unitTestLabel"
+                    }
+                  }
+                },
+                "definition": {
+                  "unitTestType": {
+                    "type": "literal",
+                    "definition": "unitTestSuite"
+                  },
+                  "unitTestLabel": {
+                    "type": "string"
+                  },
+                  "skip": {
+                    "type": "boolean",
+                    "optional": true
+                  },
+                  "unitTests": {
+                    "type": "array",
+                    "definition": {
+                      "type": "union",
+                      "discriminator": "unitTestType",
+                      "definition": [
+                        {
+                          "type": "schemaReference",
+                          "definition": {
+                            "relativePath": "unitTestAsTransformerTest"
+                          }
+                        },
+                        {
+                          "type": "schemaReference",
+                          "definition": {
+                            "relativePath": "functionCallTest"
+                          }
+                        },
+                        {
+                          "type": "schemaReference",
+                          "definition": {
+                            "relativePath": "queryRunnerTest"
+                          }
+                        },
+                        {
+                          "type": "schemaReference",
+                          "definition": {
+                            "relativePath": "unitTestAsCompositeActionTest"
+                          }
+                        },
+                        {
+                          "type": "schemaReference",
+                          "definition": {
+                            "relativePath": "unitTestSuite"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            },
+            "definition": {
+              "relativePath": "unitTestSuite"
             }
           }
         }

@@ -27,8 +27,7 @@
         "transformerParams": {},
         "expectedValue": {
           "type": "string"
-        },
-        "skip": true
+        }
       },
       {
         "transformerTestType": "transformerTest",

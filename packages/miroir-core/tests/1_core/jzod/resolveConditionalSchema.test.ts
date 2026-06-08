@@ -7,7 +7,7 @@ import {
   runUnitTransformerTests,
   transformerTestsDisplayResults
 } from "../../../src/4_services/TestTools";
-import { transformerTest_resolveConditionalSchema as transformerTestSuite_resolveConditionalSchema } from "miroir-test-app_deployment-miroir";
+import { transformerTest_resolveConditionalSchema } from "miroir-test-app_deployment-miroir";
 
 
 // const domainState: DomainState = domainStateImport as DomainState;
@@ -28,7 +28,7 @@ const selectedTestName: string[] = [
   // "resolves schema using legacy single path configuration"
 ];
 const activityTracker = new MiroirActivityTracker();
-const testSuite: TransformerTestSuite = transformerTestSuite_resolveConditionalSchema.definition as TransformerTestSuite;
+const testSuite: TransformerTestSuite = transformerTest_resolveConditionalSchema.definition as TransformerTestSuite;
 
 console.log("testSuite transformerTests:", Object.keys((testSuite as any).transformerTests).length);
 console.log("testSuite transformerTests:", Object.entries((testSuite as any).transformerTests).map(([key, test]) => (test as any).transformerTestLabel));
@@ -48,19 +48,19 @@ const effectiveTests: TransformerTestSuite = {
 } as any;
 
 vitest.afterAll(() => {
-  if (RUN_TEST == transformerTestSuite_resolveConditionalSchema.definition.transformerTestLabel) {
+  if (RUN_TEST == transformerTest_resolveConditionalSchema.definition.transformerTestLabel) {
     transformerTestsDisplayResults(
       // transformerTestSuite_resolveConditionalSchema.definition as TransformerTestSuite,
       effectiveTests,
       RUN_TEST,
-      transformerTestSuite_resolveConditionalSchema.definition.transformerTestLabel,
+      transformerTest_resolveConditionalSchema.definition.transformerTestLabel,
       activityTracker,
     );
   }
 });
 
 // ################################################################################################
-const testSuiteName = transformerTestSuite_resolveConditionalSchema.definition.transformerTestLabel;
+const testSuiteName = transformerTest_resolveConditionalSchema.definition.transformerTestLabel;
 const currentFileName = (typeof __filename !== 'undefined'
   ? __filename.split(/[\\/]/).pop()?.replace('.ts', '')
   : '') || '';
@@ -93,7 +93,7 @@ if (shouldRun) {
 } else {
   console.log(
     "################################ skipping test suite:",
-    transformerTestSuite_resolveConditionalSchema.definition.transformerTestLabel
+    transformerTest_resolveConditionalSchema.definition.transformerTestLabel
   );
   console.log("################################ File pattern:", filePattern, "Current file:", currentFileName);
   vitest.test.skip(testSuiteName, () => {});

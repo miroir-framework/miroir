@@ -36,6 +36,7 @@ import {
   entityDefinitionTest,
   entityDefinitionTransformerDefinition,
   entityDefinitionTransformerTest,
+  entityDefinitionUnitTest,
   instanceEndpointVersionV1,
   jzodSchemajzodMiroirBootstrapSchema,
   localCacheEndpointVersionV1,
@@ -347,6 +348,7 @@ async function generateSchemas(generateFundamentalJzodSchema = true) {
         entityDefinitionRunner,
         entityDefinitionTest,
         entityDefinitionTransformerTest,
+        entityDefinitionUnitTest,
         entityDefinitionTransformerDefinition,
         entityDefinitionEndpoint,
       );

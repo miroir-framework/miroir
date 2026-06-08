@@ -13,7 +13,6 @@
       {
         "transformerTestType": "transformerTestSuite",
         "transformerTestLabel": "buildTransformerTests",
-        "skip": true,
         "transformerTests": [
           {
             "transformerTestType": "transformerTestSuite",
@@ -367,7 +366,6 @@
           {
             "transformerTestType": "transformerTestSuite",
             "transformerTestLabel": "constants",
-            "skip": true,
             "transformerTests": [
               {
                 "transformerTestType": "transformerTestSuite",
@@ -6433,7 +6431,6 @@
           {
             "transformerTestType": "transformerTestSuite",
             "transformerTestLabel": "dataflowObject",
-            "skip": true,
             "transformerTests": [
               {
                 "transformerTestType": "transformerTest",
@@ -6834,7 +6831,6 @@
           {
             "transformerTestType": "transformerTestSuite",
             "transformerTestLabel": "listReducerToSpreadObject",
-            "skip": true,
             "transformerTests": [
               {
                 "transformerTestType": "transformerTest",
@@ -6967,7 +6963,6 @@
           {
             "transformerTestType": "transformerTestSuite",
             "transformerTestLabel": "indexListBy",
-            "skip": true,
             "transformerTests": [
               {
                 "transformerTestType": "transformerTest",

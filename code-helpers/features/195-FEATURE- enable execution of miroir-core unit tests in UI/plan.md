@@ -314,10 +314,14 @@ Vitest CLI bridge:
 
 ### Phase 1 — Metamodel & backward-compatible alias
 
-- [ ] Add `UnitTest` / `UnitTestSuite` types to metamodel preprocessor source (alongside `TransformerTest`).
-- [ ] `TransformerTest` ≡ `UnitTest` where `unitTestType = "transformerTest"` (subtype alias, no data migration required).
-- [ ] Add `UnitTestDefinition` entity OR extend `TransformerTest` EntityDefinition schema to union.
-- [ ] Generalize `TestTools.ts` exports: `runUnitTests` dispatches on `unitTestType`.
+- [x] Add `UnitTest` / `UnitTestSuite` types to metamodel preprocessor source (alongside `TransformerTest`).
+- [x] `TransformerTest` ≡ `UnitTest` where `unitTestType = "transformerTest"` (subtype alias, no data migration required).
+- [x] Add `UnitTestDefinition` entity OR extend `TransformerTest` EntityDefinition schema to union.
+- [x] Generalize `TestTools.ts` exports: `runUnitTests` dispatches on `unitTestType`.
+
+**Deliverables:** `UnitTest` entity + `UnitTestDefinition` EntityDefinition (deployment assets), `UnitTestTools.ts` with `runUnitTests` / legacy bridge, pilot instance `pilot_transformer_plus`, validation tests in `unitTest.tools.unit.test.ts` + `unitTest.pilot.unit.test.ts`. `TransformerTest` EntityDefinition (`405bb1fc-…`) unchanged.
+
+**Validation:** 7/7 unit tests in `unitTest.tools.unit.test.ts`; pilot E2E via `RUN_TEST=unitTest.pilot.unit.test`; 243/243 transformer non-regression in `transformers.unit.test.ts`; 3/3 `UnitTest` model validation cases.
 
 ### Phase 2 — Function-call runner (Class B) — highest ROI
 

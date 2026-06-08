@@ -18,6 +18,7 @@ export { default as entityQueryVersion } from "./assets/miroir_model/16dbfe28-e1
 export { default as entityTest } from "./assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/c37625c7-0b35-4d6a-811d-8181eb978301.json" assert { type: "json" };
 export { default as entityTransformerDefinition } from "./assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/a557419d-a288-4fb8-8a1e-971c86c113b8.json" assert { type: "json" };
 export { default as entityTransformerTest } from "./assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/681be9ca-c593-45f5-b45a-5f1d4969e91e.json" assert { type: "json" };
+export { default as entityUnitTest } from "./assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/a1bc5288-c982-4ff3-8316-4a2400fe9323.json" assert { type: "json" };
 export { default as entityBlob } from "./assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/62209e4a-e429-4d7d-9b28-dcc1da6b51a2.json" assert { type: "json" };
 export { default as entityCommit } from "./assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/73bb0c69-e636-4e3b-a230-51f25469c089.json" assert { type: "json" };
 export { default as entityApplicationVersionCrossEntityDefinition } from "./assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/8bec933d-6287-4de7-8a88-5c24216de9f4.json" assert { type: "json" };
@@ -39,6 +40,7 @@ export { default as entityDefinitionSelfApplicationVersion } from "./assets/miro
 export { default as entityDefinitionSelfApplicationModelBranch } from "./assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/69bf7c03-a1df-4d1c-88c1-44363feeea87.json" assert { type: "json" };
 export { default as entityDefinitionTest } from "./assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/d2842a84-3e66-43ee-ac58-7e13b95b01e8.json" assert { type: "json" };
 export { default as entityDefinitionTransformerTest } from "./assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/405bb1fc-a20f-4def-9d3a-206f72350633.json" assert { type: "json" };
+export { default as entityDefinitionUnitTest } from "./assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/ab96dd2a-41fc-45c5-86a5-9a245c5c4d85.json" assert { type: "json" };
 export { default as entityDefinitionStoreBasedConfiguration } from "./assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/f93af951-ea13-4815-a2e3-ec0cab1fadd2.json" assert { type: "json" };
 export { default as entityDefinitionTransformerDefinition } from "./assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/54a16d69-c1f0-4dd7-aba4-a2cda883586c.json" assert { type: "json" };
 export { default as entityDefinitionCommit } from "./assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/b17d5e9e-12f2-4ed8-abdb-2576c01514a4.json" assert { type: "json" };
@@ -177,6 +179,11 @@ export { default as transformerTest_adminTransformers } from "./assets/miroir_da
 export { default as transformerTestSuite_resolveSchemaReferenceInContext } from "./assets/miroir_data/681be9ca-c593-45f5-b45a-5f1d4969e91e/b9e7f4d5-6543-4a1b-9c8d-987654321fed.json" assert { type: "json" };
 export { default as transformerTestSuite_unfoldSchemaOnce } from "./assets/miroir_data/681be9ca-c593-45f5-b45a-5f1d4969e91e/e8b5d1a2-9473-4f6c-b2e8-7f8a5c6d9e0f.json" assert { type: "json" };
 export { default as transformerTestSuite_jzodTypeCheck } from "./assets/miroir_data/681be9ca-c593-45f5-b45a-5f1d4969e91e/f8e3c7a1-2b9d-4e6f-8c2a-5d7b9e4f1a8c.json" assert { type: "json" };
+
+// ################################################################################################
+// Miroir Data - UnitTest (parentUuid = entityUnitTest = a1bc5288)
+// ################################################################################################
+export { default as unitTest_pilot_transformer_plus } from "./assets/miroir_data/a1bc5288-c982-4ff3-8316-4a2400fe9323/b03eb707-4f51-4ac3-a6ab-e7b8484a5c22.json" assert { type: "json" };
 
 // ################################################################################################
 // Miroir Data - TransformerDefinition (parentUuid = entityTransformerDefinition = a557419d)
