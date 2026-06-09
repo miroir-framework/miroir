@@ -365,16 +365,27 @@ Phase 5 is split by migration pattern. **5a** is done; **5b–5e** track the res
 
 **Validation:** `RUN_TEST=JzodSchemaReferencesList.unit.test` (9/9); `JzodSchemaReferencesSet.unit.test` (9/9); `jzodTransitiveDependencySet.unit.test` (6/6); `jzodToJzod_Summary.unit.test` (26/26).
 
-#### Phase 5c — Class B extensions (minor runner/schema)
+#### Phase 5c — Class B extensions (minor runner/schema) *(in progress)*
 
-Cases needing small runner additions before migration:
+Runner/schema extensions implemented:
+
+- [x] `expectedAction2ErrorType` — functions returning `Action2Error` (not throws).
+- [x] `assertions[]` with `resultAccessPath` — partial / multi-assert (e.g. `buildAnyKeyMap`).
+- [x] `fixtureRef` / `__fixtureRef` argument sentinel — reuses query-runner fixtures (`libraryDomainState`).
+- [x] `environmentRef` + `environmentArgumentIndex` — inject `defaultMiroirModelEnvironment`.
+- [x] `FunctionCallTestFixtures.ts` + registry whitelist extensions.
+
+First migration batch:
+
+- [x] `EntityPrimaryKey.unit.test.ts` → `unitTest_suite_EntityPrimaryKey` (36 cases; split composite/uuid PK checks).
+
+Remaining 5c migrations (extensions ready, suites pending):
 
 | Extension | Files |
 |-----------|-------|
-| Error-object returns (`Action2Error`, not throws) | `EntityPrimaryKey.unit.test.ts` |
 | `expectedError` / throws | `getAttributeTypesFromJzodSchema`, `jzodObjectFlatten`, `modelUpdates` |
 | `fixtureRef` for large blobs | `domainStateToDeploymentEntityState`, `ansiColumnsToJzodSchema`, `resolveCompositeActionTemplate` |
-| Partial / multi-assert (`buildAnyKeyMap`, comparative tests) | `jzod.buildAnyKeyMap.unit.test.ts`, `jzodToJzod_Summary` default-depth |
+| Partial / multi-assert | `jzod.buildAnyKeyMap.unit.test.ts` |
 | External package whitelist | `getAttributeTypesFromJzodSchema`, `ansiColumnsToJzodSchema` |
 
 #### Phase 5d — jzodTypeCheck consolidation

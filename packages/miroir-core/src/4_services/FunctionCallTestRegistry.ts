@@ -1,5 +1,17 @@
 import { extractDoubleBracePatterns } from "../1_core/mustache";
 import {
+  entityHasCompositePrimaryKey,
+  entityHasUuidPrimaryKey,
+  getEntityPrimaryKeyAttribute,
+  getEntityPrimaryKeyAttributes,
+  getForeignKeyValue,
+  getInstancePrimaryKeyValue,
+  instanceMatchesForeignKey,
+  parseCompositeKeyValue,
+  resolveInstanceParentUuid,
+  serializeCompositeKeyValue,
+} from "../1_core/EntityPrimaryKey";
+import {
   JzodSchemaReferencesList,
   JzodSchemaReferencesSet,
   jzodTransitiveDependencySet,
@@ -44,6 +56,18 @@ const FUNCTION_CALL_REGISTRY: Record<string, Record<string, WhitelistedFunction>
   },
   "miroir-core/1_core/jzod/JzodToJzod_Summary": {
     jzodToJzod_Summary: jzodToJzod_Summary as WhitelistedFunction,
+  },
+  "miroir-core/1_core/EntityPrimaryKey": {
+    resolveInstanceParentUuid: resolveInstanceParentUuid as WhitelistedFunction,
+    getEntityPrimaryKeyAttribute: getEntityPrimaryKeyAttribute as WhitelistedFunction,
+    getEntityPrimaryKeyAttributes: getEntityPrimaryKeyAttributes as WhitelistedFunction,
+    entityHasCompositePrimaryKey: entityHasCompositePrimaryKey as WhitelistedFunction,
+    entityHasUuidPrimaryKey: entityHasUuidPrimaryKey as WhitelistedFunction,
+    serializeCompositeKeyValue: serializeCompositeKeyValue as WhitelistedFunction,
+    parseCompositeKeyValue: parseCompositeKeyValue as WhitelistedFunction,
+    getInstancePrimaryKeyValue: getInstancePrimaryKeyValue as WhitelistedFunction,
+    getForeignKeyValue: getForeignKeyValue as WhitelistedFunction,
+    instanceMatchesForeignKey: instanceMatchesForeignKey as WhitelistedFunction,
   },
 };
 

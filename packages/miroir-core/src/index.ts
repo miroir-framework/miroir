@@ -941,8 +941,12 @@ export {
 } from "./4_services/TestTools.js";
 export {
   asTransformerTestFromUnitTest,
+  deserializeFunctionCallValue,
   functionCallTestJzodSchema,
+  listFunctionCallEnvironmentRefs,
+  listFunctionCallFixtureRefs,
   listWhitelistedFunctionRefs,
+  prepareFunctionCallArguments,
   resolveFunctionCallTarget,
   runFunctionCallTestInMemory,
   runQueryRunnerTestInMemory,

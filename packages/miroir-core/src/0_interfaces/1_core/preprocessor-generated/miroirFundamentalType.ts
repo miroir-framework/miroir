@@ -2519,8 +2519,18 @@ export type FunctionCallTest = {
     arguments?: any[] | undefined;
     expectedValue?: any | undefined;
     expectedError?: string | undefined;
+    expectedAction2ErrorType?: string | undefined;
     expectUndefinedResult?: boolean | undefined;
     environmentRef?: string | undefined;
+    environmentArgumentIndex?: number | undefined;
+    fixtureRef?: string | undefined;
+    fixtureProperty?: string | undefined;
+    fixtureArgumentIndex?: number | undefined;
+    assertions?: {
+        label: string;
+        resultAccessPath?: string[] | undefined;
+        expectedValue?: any | undefined;
+    }[] | undefined;
     ignoreAttributes?: string[] | undefined;
 };
 export type QueryRunnerTest = {
@@ -10113,7 +10123,7 @@ export const transformerTest: z.ZodType<TransformerTest> = z.object({transformer
 export const transformerTestSuite: z.ZodType<TransformerTestSuite> = z.object({transformerTestType:z.literal("transformerTestSuite"), transformerTestLabel:z.string(), skip:z.boolean().optional(), transformerTests:z.array(z.union([z.lazy(() =>transformerTest), z.lazy(() =>transformerTestSuite)]))}).strict();
 export const transformerTestDefinition: z.ZodType<TransformerTestDefinition> = z.object({uuid:z.string().uuid(), parentName:z.string().optional(), parentUuid:z.string().uuid(), parentDefinitionVersionUuid:z.string().uuid().optional(), conceptLevel:z.enum(["MetaModel","Model","Data","External"]).optional(), selfApplication:z.string().uuid(), branch:z.string().uuid(), name:z.string().optional(), skip:z.boolean().optional(), description:z.string().optional(), definition:z.lazy(() =>transformerTestSuite)}).strict();
 export const unitTestAsTransformerTest: z.ZodType<UnitTestAsTransformerTest> = z.object({unitTestType:z.literal("transformerTest"), unitTestLabel:z.string().optional(), testTag:z.union([z.string(), z.array(z.string())]).optional(), skip:z.boolean().optional(), payload:z.lazy(() =>transformerTest)}).strict();
-export const functionCallTest: z.ZodType<FunctionCallTest> = z.object({unitTestType:z.literal("functionCallTest"), unitTestLabel:z.string(), testTag:z.union([z.string(), z.array(z.string())]).optional(), skip:z.boolean().optional(), functionRef:z.object({module:z.string(), export:z.string()}).strict(), arguments:z.array(z.any()).optional(), expectedValue:z.any().optional(), expectedError:z.string().optional(), expectUndefinedResult:z.boolean().optional(), environmentRef:z.string().optional(), ignoreAttributes:z.array(z.string()).optional()}).strict();
+export const functionCallTest: z.ZodType<FunctionCallTest> = z.object({unitTestType:z.literal("functionCallTest"), unitTestLabel:z.string(), testTag:z.union([z.string(), z.array(z.string())]).optional(), skip:z.boolean().optional(), functionRef:z.object({module:z.string(), export:z.string()}).strict(), arguments:z.array(z.any()).optional(), expectedValue:z.any().optional(), expectedError:z.string().optional(), expectedAction2ErrorType:z.string().optional(), expectUndefinedResult:z.boolean().optional(), environmentRef:z.string().optional(), environmentArgumentIndex:z.number().optional(), fixtureRef:z.string().optional(), fixtureProperty:z.string().optional(), fixtureArgumentIndex:z.number().optional(), assertions:z.array(z.object({label:z.string(), resultAccessPath:z.array(z.string()).optional(), expectedValue:z.any().optional()}).strict()).optional(), ignoreAttributes:z.array(z.string()).optional()}).strict();
 export const queryRunnerTest: z.ZodType<QueryRunnerTest> = z.object({unitTestType:z.literal("queryRunnerTest"), unitTestLabel:z.string(), skip:z.boolean().optional(), fixtureRef:z.string().optional(), runner:z.string().optional(), queryTemplate:z.any().optional(), query:z.any().optional(), assertions:z.array(z.object({label:z.string(), resultAccessPath:z.array(z.string()).optional(), expectedValue:z.any().optional()}).strict()).optional()}).strict();
 export const unitTestLeaf: z.ZodType<UnitTestLeaf> = z.union([z.lazy(() =>unitTestAsTransformerTest), z.lazy(() =>functionCallTest), z.lazy(() =>queryRunnerTest)]);
 export const unitTestSuite: z.ZodType<UnitTestSuite> = z.object({unitTestType:z.literal("unitTestSuite"), unitTestLabel:z.string(), skip:z.boolean().optional(), unitTests:z.array(z.union([z.lazy(() =>unitTestAsTransformerTest), z.lazy(() =>functionCallTest), z.lazy(() =>queryRunnerTest), z.lazy(() =>unitTestSuite)]))}).strict();

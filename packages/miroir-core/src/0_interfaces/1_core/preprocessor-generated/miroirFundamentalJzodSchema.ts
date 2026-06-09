@@ -6771,6 +6771,10 @@ export const miroirFundamentalJzodSchema = {
             "type": "string",
             "optional": true
           },
+          "expectedAction2ErrorType": {
+            "type": "string",
+            "optional": true
+          },
           "expectUndefinedResult": {
             "type": "boolean",
             "optional": true
@@ -6778,6 +6782,45 @@ export const miroirFundamentalJzodSchema = {
           "environmentRef": {
             "type": "string",
             "optional": true
+          },
+          "environmentArgumentIndex": {
+            "type": "number",
+            "optional": true
+          },
+          "fixtureRef": {
+            "type": "string",
+            "optional": true
+          },
+          "fixtureProperty": {
+            "type": "string",
+            "optional": true
+          },
+          "fixtureArgumentIndex": {
+            "type": "number",
+            "optional": true
+          },
+          "assertions": {
+            "type": "array",
+            "optional": true,
+            "definition": {
+              "type": "object",
+              "definition": {
+                "label": {
+                  "type": "string"
+                },
+                "resultAccessPath": {
+                  "type": "array",
+                  "optional": true,
+                  "definition": {
+                    "type": "string"
+                  }
+                },
+                "expectedValue": {
+                  "type": "any",
+                  "optional": true
+                }
+              }
+            }
           },
           "ignoreAttributes": {
             "type": "array",
@@ -7261,6 +7304,10 @@ export const miroirFundamentalJzodSchema = {
                     "type": "string",
                     "optional": true
                   },
+                  "expectedAction2ErrorType": {
+                    "type": "string",
+                    "optional": true
+                  },
                   "expectUndefinedResult": {
                     "type": "boolean",
                     "optional": true
@@ -7268,6 +7315,45 @@ export const miroirFundamentalJzodSchema = {
                   "environmentRef": {
                     "type": "string",
                     "optional": true
+                  },
+                  "environmentArgumentIndex": {
+                    "type": "number",
+                    "optional": true
+                  },
+                  "fixtureRef": {
+                    "type": "string",
+                    "optional": true
+                  },
+                  "fixtureProperty": {
+                    "type": "string",
+                    "optional": true
+                  },
+                  "fixtureArgumentIndex": {
+                    "type": "number",
+                    "optional": true
+                  },
+                  "assertions": {
+                    "type": "array",
+                    "optional": true,
+                    "definition": {
+                      "type": "object",
+                      "definition": {
+                        "label": {
+                          "type": "string"
+                        },
+                        "resultAccessPath": {
+                          "type": "array",
+                          "optional": true,
+                          "definition": {
+                            "type": "string"
+                          }
+                        },
+                        "expectedValue": {
+                          "type": "any",
+                          "optional": true
+                        }
+                      }
+                    }
                   },
                   "ignoreAttributes": {
                     "type": "array",

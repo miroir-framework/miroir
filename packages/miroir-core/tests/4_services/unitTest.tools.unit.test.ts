@@ -243,6 +243,91 @@ describe("functionCallTest (Phase 2)", () => {
   });
 });
 
+describe("functionCallTest (Phase 5c extensions)", () => {
+  it("functionCallTestJzodSchema validates expectedAction2ErrorType and assertions", () => {
+    const parsed = functionCallTestJzodSchema.parse({
+      unitTestType: "functionCallTest",
+      unitTestLabel: "Action2Error case",
+      functionRef: {
+        module: "miroir-core/1_core/EntityPrimaryKey",
+        export: "resolveInstanceParentUuid",
+      },
+      arguments: [{ uuid: "00000000-0000-0000-0000-000000000004" }],
+      expectedAction2ErrorType: "FailedToResolveParentUuid",
+      assertions: [{ label: "errorType", resultAccessPath: ["errorType"], expectedValue: "x" }],
+    });
+    expect(parsed.expectedAction2ErrorType).toBe("FailedToResolveParentUuid");
+    expect(parsed.assertions).toHaveLength(1);
+  });
+
+  it("runFunctionCallTestInMemory executes expectedAction2ErrorType path", async () => {
+    const tracker = {
+      getCurrentTestAssertionPath: () => [{ test: "t" }, { testAssertion: "t" }],
+      setTestAssertionResult: vi.fn(),
+    };
+    await runFunctionCallTestInMemory(
+      vitest,
+      ["EntityPrimaryKey"],
+      undefined,
+      {
+        unitTestType: "functionCallTest",
+        unitTestLabel: "returns Action2Error when both parentUuid sources are absent",
+        functionRef: {
+          module: "miroir-core/1_core/EntityPrimaryKey",
+          export: "resolveInstanceParentUuid",
+        },
+        arguments: [{ uuid: "00000000-0000-0000-0000-000000000004" }, { __miroirJsonUndefined: true }],
+        expectedAction2ErrorType: "FailedToResolveParentUuid",
+      },
+      tracker as any,
+      [{ test: "t" }, { testAssertion: "t" }],
+    );
+    expect(tracker.setTestAssertionResult).toHaveBeenCalledWith(
+      [{ test: "t" }, { testAssertion: "t" }],
+      expect.objectContaining({ assertionResult: "ok" }),
+    );
+  });
+
+  it("runFunctionCallTestInMemory executes assertions path", async () => {
+    const tracker = {
+      getCurrentTestAssertionPath: () => [{ test: "t" }, { testAssertion: "t" }],
+      setTestAssertionResult: vi.fn(),
+    };
+    await runFunctionCallTestInMemory(
+      vitest,
+      ["EntityPrimaryKey"],
+      undefined,
+      {
+        unitTestType: "functionCallTest",
+        unitTestLabel: "composite PK attribute shape",
+        functionRef: {
+          module: "miroir-core/1_core/EntityPrimaryKey",
+          export: "getEntityPrimaryKeyAttribute",
+        },
+        arguments: [{ idAttribute: ["table_schema", "table_name", "column_name"] }],
+        assertions: [
+          {
+            label: "length",
+            resultAccessPath: ["length"],
+            expectedValue: 3,
+          },
+          {
+            label: "first",
+            resultAccessPath: ["0"],
+            expectedValue: "table_schema",
+          },
+        ],
+      },
+      tracker as any,
+      [{ test: "t" }, { testAssertion: "t" }],
+    );
+    expect(tracker.setTestAssertionResult).toHaveBeenCalledWith(
+      [{ test: "t" }, { testAssertion: "t" }],
+      expect.objectContaining({ assertionResult: "ok" }),
+    );
+  });
+});
+
 describe("queryRunnerTest (Phase 4)", () => {
   it("queryRunnerTestJzodSchema validates a minimal queryRunnerTest", () => {
     const parsed = queryRunnerTestJzodSchema.parse({

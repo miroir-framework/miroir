@@ -1,0 +1,658 @@
+{
+  "uuid": "b5c6d7e8-f9a0-4b12-c345-d6e7f8a9b0c1",
+  "parentName": "UnitTest",
+  "parentUuid": "a1bc5288-c982-4ff3-8316-4a2400fe9323",
+  "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+  "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
+  "name": "EntityPrimaryKey",
+  "description": "Phase 5c — EntityPrimaryKey helpers",
+  "definition": {
+    "unitTestType": "unitTestSuite",
+    "unitTestLabel": "EntityPrimaryKey",
+    "unitTests": [
+      {
+        "unitTestType": "functionCallTest",
+        "unitTestLabel": "returns instance.parentUuid when present",
+        "functionRef": {
+          "module": "miroir-core/1_core/EntityPrimaryKey",
+          "export": "resolveInstanceParentUuid"
+        },
+        "arguments": [
+          {
+            "uuid": "00000000-0000-0000-0000-000000000001",
+            "parentUuid": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee",
+            "parentName": "SomeEntity"
+          },
+          "11111111-2222-3333-4444-555555555555"
+        ],
+        "expectedValue": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"
+      },
+      {
+        "unitTestType": "functionCallTest",
+        "unitTestLabel": "falls back to payloadParentUuid when instance.parentUuid is absent",
+        "functionRef": {
+          "module": "miroir-core/1_core/EntityPrimaryKey",
+          "export": "resolveInstanceParentUuid"
+        },
+        "arguments": [
+          {
+            "uuid": "00000000-0000-0000-0000-000000000002"
+          },
+          "11111111-2222-3333-4444-555555555555"
+        ],
+        "expectedValue": "11111111-2222-3333-4444-555555555555"
+      },
+      {
+        "unitTestType": "functionCallTest",
+        "unitTestLabel": "falls back to payloadParentUuid when instance.parentUuid is undefined",
+        "functionRef": {
+          "module": "miroir-core/1_core/EntityPrimaryKey",
+          "export": "resolveInstanceParentUuid"
+        },
+        "arguments": [
+          {
+            "uuid": "00000000-0000-0000-0000-000000000003",
+            "parentUuid": {
+              "__miroirJsonUndefined": true
+            }
+          },
+          "11111111-2222-3333-4444-555555555555"
+        ],
+        "expectedValue": "11111111-2222-3333-4444-555555555555"
+      },
+      {
+        "unitTestType": "functionCallTest",
+        "unitTestLabel": "returns Action2Error when both parentUuid sources are absent",
+        "functionRef": {
+          "module": "miroir-core/1_core/EntityPrimaryKey",
+          "export": "resolveInstanceParentUuid"
+        },
+        "arguments": [
+          {
+            "uuid": "00000000-0000-0000-0000-000000000004"
+          },
+          {
+            "__miroirJsonUndefined": true
+          }
+        ],
+        "expectedAction2ErrorType": "FailedToResolveParentUuid"
+      },
+      {
+        "unitTestType": "functionCallTest",
+        "unitTestLabel": "returns Action2Error when both sources are empty string",
+        "functionRef": {
+          "module": "miroir-core/1_core/EntityPrimaryKey",
+          "export": "resolveInstanceParentUuid"
+        },
+        "arguments": [
+          {
+            "uuid": "00000000-0000-0000-0000-000000000005",
+            "parentUuid": ""
+          },
+          ""
+        ],
+        "expectedAction2ErrorType": "FailedToResolveParentUuid"
+      },
+      {
+        "unitTestType": "functionCallTest",
+        "unitTestLabel": "prefers instance.parentUuid over payloadParentUuid",
+        "functionRef": {
+          "module": "miroir-core/1_core/EntityPrimaryKey",
+          "export": "resolveInstanceParentUuid"
+        },
+        "arguments": [
+          {
+            "uuid": "00000000-0000-0000-0000-000000000006",
+            "parentUuid": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"
+          },
+          "11111111-2222-3333-4444-555555555555"
+        ],
+        "expectedValue": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"
+      },
+      {
+        "unitTestType": "functionCallTest",
+        "unitTestLabel": "works with instance cast from a plain object without parentUuid",
+        "functionRef": {
+          "module": "miroir-core/1_core/EntityPrimaryKey",
+          "export": "resolveInstanceParentUuid"
+        },
+        "arguments": [
+          {
+            "uuid": "00000000-0000-0000-0000-000000000007",
+            "name": "plain"
+          },
+          "11111111-2222-3333-4444-555555555555"
+        ],
+        "expectedValue": "11111111-2222-3333-4444-555555555555"
+      },
+      {
+        "unitTestType": "functionCallTest",
+        "unitTestLabel": "returns single string for single-attribute PK",
+        "functionRef": {
+          "module": "miroir-core/1_core/EntityPrimaryKey",
+          "export": "getEntityPrimaryKeyAttribute"
+        },
+        "arguments": [
+          {
+            "idAttribute": "code"
+          }
+        ],
+        "expectedValue": "code"
+      },
+      {
+        "unitTestType": "functionCallTest",
+        "unitTestLabel": "returns string[] for composite PK",
+        "functionRef": {
+          "module": "miroir-core/1_core/EntityPrimaryKey",
+          "export": "getEntityPrimaryKeyAttribute"
+        },
+        "arguments": [
+          {
+            "idAttribute": [
+              "table_schema",
+              "table_name",
+              "column_name"
+            ]
+          }
+        ],
+        "expectedValue": [
+          "table_schema",
+          "table_name",
+          "column_name"
+        ]
+      },
+      {
+        "unitTestType": "functionCallTest",
+        "unitTestLabel": "returns 'uuid' when idAttribute is not set",
+        "functionRef": {
+          "module": "miroir-core/1_core/EntityPrimaryKey",
+          "export": "getEntityPrimaryKeyAttribute"
+        },
+        "arguments": [
+          {}
+        ],
+        "expectedValue": "uuid"
+      },
+      {
+        "unitTestType": "functionCallTest",
+        "unitTestLabel": "wraps single-attribute PK in an array",
+        "functionRef": {
+          "module": "miroir-core/1_core/EntityPrimaryKey",
+          "export": "getEntityPrimaryKeyAttributes"
+        },
+        "arguments": [
+          {
+            "idAttribute": "code"
+          }
+        ],
+        "expectedValue": [
+          "code"
+        ]
+      },
+      {
+        "unitTestType": "functionCallTest",
+        "unitTestLabel": "returns array as-is for composite PK",
+        "functionRef": {
+          "module": "miroir-core/1_core/EntityPrimaryKey",
+          "export": "getEntityPrimaryKeyAttributes"
+        },
+        "arguments": [
+          {
+            "idAttribute": [
+              "table_schema",
+              "table_name",
+              "column_name"
+            ]
+          }
+        ],
+        "expectedValue": [
+          "table_schema",
+          "table_name",
+          "column_name"
+        ]
+      },
+      {
+        "unitTestType": "functionCallTest",
+        "unitTestLabel": "detects composite PK",
+        "functionRef": {
+          "module": "miroir-core/1_core/EntityPrimaryKey",
+          "export": "entityHasCompositePrimaryKey"
+        },
+        "arguments": [
+          {
+            "idAttribute": [
+              "table_schema",
+              "table_name",
+              "column_name"
+            ]
+          }
+        ],
+        "expectedValue": true
+      },
+      {
+        "unitTestType": "functionCallTest",
+        "unitTestLabel": "detects non-composite PK (single)",
+        "functionRef": {
+          "module": "miroir-core/1_core/EntityPrimaryKey",
+          "export": "entityHasCompositePrimaryKey"
+        },
+        "arguments": [
+          {
+            "idAttribute": "code"
+          }
+        ],
+        "expectedValue": false
+      },
+      {
+        "unitTestType": "functionCallTest",
+        "unitTestLabel": "detects uuid PK",
+        "functionRef": {
+          "module": "miroir-core/1_core/EntityPrimaryKey",
+          "export": "entityHasUuidPrimaryKey"
+        },
+        "arguments": [
+          {}
+        ],
+        "expectedValue": true
+      },
+      {
+        "unitTestType": "functionCallTest",
+        "unitTestLabel": "detects non-uuid PK",
+        "functionRef": {
+          "module": "miroir-core/1_core/EntityPrimaryKey",
+          "export": "entityHasUuidPrimaryKey"
+        },
+        "arguments": [
+          {
+            "idAttribute": "code"
+          }
+        ],
+        "expectedValue": false
+      },
+      {
+        "unitTestType": "functionCallTest",
+        "unitTestLabel": "single-attribute: returns plain string value",
+        "functionRef": {
+          "module": "miroir-core/1_core/EntityPrimaryKey",
+          "export": "serializeCompositeKeyValue"
+        },
+        "arguments": [
+          [
+            "code"
+          ],
+          {
+            "code": 42
+          }
+        ],
+        "expectedValue": "42"
+      },
+      {
+        "unitTestType": "functionCallTest",
+        "unitTestLabel": "single-attribute round-trip",
+        "functionRef": {
+          "module": "miroir-core/1_core/EntityPrimaryKey",
+          "export": "parseCompositeKeyValue"
+        },
+        "arguments": [
+          [
+            "code"
+          ],
+          "42"
+        ],
+        "expectedValue": {
+          "code": "42"
+        }
+      },
+      {
+        "unitTestType": "functionCallTest",
+        "unitTestLabel": "composite: joins with | separator",
+        "functionRef": {
+          "module": "miroir-core/1_core/EntityPrimaryKey",
+          "export": "serializeCompositeKeyValue"
+        },
+        "arguments": [
+          [
+            "table_schema",
+            "table_name",
+            "column_name"
+          ],
+          {
+            "table_schema": "public",
+            "table_name": "users",
+            "column_name": "id"
+          }
+        ],
+        "expectedValue": "public|users|id"
+      },
+      {
+        "unitTestType": "functionCallTest",
+        "unitTestLabel": "composite round-trip",
+        "functionRef": {
+          "module": "miroir-core/1_core/EntityPrimaryKey",
+          "export": "parseCompositeKeyValue"
+        },
+        "arguments": [
+          [
+            "table_schema",
+            "table_name",
+            "column_name"
+          ],
+          "public|users|id"
+        ],
+        "expectedValue": {
+          "table_schema": "public",
+          "table_name": "users",
+          "column_name": "id"
+        }
+      },
+      {
+        "unitTestType": "functionCallTest",
+        "unitTestLabel": "escapes | in values",
+        "functionRef": {
+          "module": "miroir-core/1_core/EntityPrimaryKey",
+          "export": "serializeCompositeKeyValue"
+        },
+        "arguments": [
+          [
+            "a",
+            "b"
+          ],
+          {
+            "a": "val|ue",
+            "b": "normal"
+          }
+        ],
+        "expectedValue": "val\\|ue|normal"
+      },
+      {
+        "unitTestType": "functionCallTest",
+        "unitTestLabel": "unescapes | in values",
+        "functionRef": {
+          "module": "miroir-core/1_core/EntityPrimaryKey",
+          "export": "parseCompositeKeyValue"
+        },
+        "arguments": [
+          [
+            "a",
+            "b"
+          ],
+          "val\\|ue|normal"
+        ],
+        "expectedValue": {
+          "a": "val|ue",
+          "b": "normal"
+        }
+      },
+      {
+        "unitTestType": "functionCallTest",
+        "unitTestLabel": "escapes backslash in values",
+        "functionRef": {
+          "module": "miroir-core/1_core/EntityPrimaryKey",
+          "export": "serializeCompositeKeyValue"
+        },
+        "arguments": [
+          [
+            "a",
+            "b"
+          ],
+          {
+            "a": "val\\ue",
+            "b": "ok"
+          }
+        ],
+        "expectedValue": "val\\\\ue|ok"
+      },
+      {
+        "unitTestType": "functionCallTest",
+        "unitTestLabel": "unescapes backslash in values",
+        "functionRef": {
+          "module": "miroir-core/1_core/EntityPrimaryKey",
+          "export": "parseCompositeKeyValue"
+        },
+        "arguments": [
+          [
+            "a",
+            "b"
+          ],
+          "val\\\\ue|ok"
+        ],
+        "expectedValue": {
+          "a": "val\\ue",
+          "b": "ok"
+        }
+      },
+      {
+        "unitTestType": "functionCallTest",
+        "unitTestLabel": "handles empty string values",
+        "functionRef": {
+          "module": "miroir-core/1_core/EntityPrimaryKey",
+          "export": "serializeCompositeKeyValue"
+        },
+        "arguments": [
+          [
+            "a",
+            "b"
+          ],
+          {
+            "a": "",
+            "b": "x"
+          }
+        ],
+        "expectedValue": "|x"
+      },
+      {
+        "unitTestType": "functionCallTest",
+        "unitTestLabel": "handles empty string values round-trip",
+        "functionRef": {
+          "module": "miroir-core/1_core/EntityPrimaryKey",
+          "export": "parseCompositeKeyValue"
+        },
+        "arguments": [
+          [
+            "a",
+            "b"
+          ],
+          "|x"
+        ],
+        "expectedValue": {
+          "a": "",
+          "b": "x"
+        }
+      },
+      {
+        "unitTestType": "functionCallTest",
+        "unitTestLabel": "returns uuid for default PK",
+        "functionRef": {
+          "module": "miroir-core/1_core/EntityPrimaryKey",
+          "export": "getInstancePrimaryKeyValue"
+        },
+        "arguments": [
+          {},
+          {
+            "uuid": "abc-123"
+          }
+        ],
+        "expectedValue": "abc-123"
+      },
+      {
+        "unitTestType": "functionCallTest",
+        "unitTestLabel": "returns serialized composite key",
+        "functionRef": {
+          "module": "miroir-core/1_core/EntityPrimaryKey",
+          "export": "getInstancePrimaryKeyValue"
+        },
+        "arguments": [
+          {
+            "idAttribute": [
+              "table_schema",
+              "table_name",
+              "column_name"
+            ]
+          },
+          {
+            "table_schema": "public",
+            "table_name": "users",
+            "column_name": "id"
+          }
+        ],
+        "expectedValue": "public|users|id"
+      },
+      {
+        "unitTestType": "functionCallTest",
+        "unitTestLabel": "returns single attribute value for string FK",
+        "functionRef": {
+          "module": "miroir-core/1_core/EntityPrimaryKey",
+          "export": "getForeignKeyValue"
+        },
+        "arguments": [
+          "publisherUuid",
+          {
+            "publisherUuid": "pub-123",
+            "name": "My Book"
+          }
+        ],
+        "expectedValue": "pub-123"
+      },
+      {
+        "unitTestType": "functionCallTest",
+        "unitTestLabel": "returns serialized composite key for array FK",
+        "functionRef": {
+          "module": "miroir-core/1_core/EntityPrimaryKey",
+          "export": "getForeignKeyValue"
+        },
+        "arguments": [
+          [
+            "fk_schema",
+            "fk_table",
+            "fk_col"
+          ],
+          {
+            "fk_schema": "public",
+            "fk_table": "users",
+            "fk_col": "id"
+          }
+        ],
+        "expectedValue": "public|users|id"
+      },
+      {
+        "unitTestType": "functionCallTest",
+        "unitTestLabel": "returns undefined when any FK attribute is null/undefined (single)",
+        "functionRef": {
+          "module": "miroir-core/1_core/EntityPrimaryKey",
+          "export": "getForeignKeyValue"
+        },
+        "arguments": [
+          "missing",
+          {
+            "other": "val"
+          }
+        ],
+        "expectedValue": {
+          "__miroirJsonUndefined": true
+        }
+      },
+      {
+        "unitTestType": "functionCallTest",
+        "unitTestLabel": "returns undefined when any FK attribute is null/undefined (composite)",
+        "functionRef": {
+          "module": "miroir-core/1_core/EntityPrimaryKey",
+          "export": "getForeignKeyValue"
+        },
+        "arguments": [
+          [
+            "fk_schema",
+            "fk_table",
+            "fk_col"
+          ],
+          {
+            "fk_schema": "public",
+            "fk_col": "id"
+          }
+        ],
+        "expectedValue": {
+          "__miroirJsonUndefined": true
+        }
+      },
+      {
+        "unitTestType": "functionCallTest",
+        "unitTestLabel": "matches single attribute FK (true)",
+        "functionRef": {
+          "module": "miroir-core/1_core/EntityPrimaryKey",
+          "export": "instanceMatchesForeignKey"
+        },
+        "arguments": [
+          "publisherUuid",
+          {
+            "publisherUuid": "pub-123",
+            "name": "Book"
+          },
+          "pub-123"
+        ],
+        "expectedValue": true
+      },
+      {
+        "unitTestType": "functionCallTest",
+        "unitTestLabel": "matches single attribute FK (false)",
+        "functionRef": {
+          "module": "miroir-core/1_core/EntityPrimaryKey",
+          "export": "instanceMatchesForeignKey"
+        },
+        "arguments": [
+          "publisherUuid",
+          {
+            "publisherUuid": "pub-123",
+            "name": "Book"
+          },
+          "pub-999"
+        ],
+        "expectedValue": false
+      },
+      {
+        "unitTestType": "functionCallTest",
+        "unitTestLabel": "matches composite FK (true)",
+        "functionRef": {
+          "module": "miroir-core/1_core/EntityPrimaryKey",
+          "export": "instanceMatchesForeignKey"
+        },
+        "arguments": [
+          [
+            "fk_schema",
+            "fk_table",
+            "fk_col"
+          ],
+          {
+            "fk_schema": "public",
+            "fk_table": "users",
+            "fk_col": "id",
+            "name": "col"
+          },
+          "public|users|id"
+        ],
+        "expectedValue": true
+      },
+      {
+        "unitTestType": "functionCallTest",
+        "unitTestLabel": "matches composite FK (false)",
+        "functionRef": {
+          "module": "miroir-core/1_core/EntityPrimaryKey",
+          "export": "instanceMatchesForeignKey"
+        },
+        "arguments": [
+          [
+            "fk_schema",
+            "fk_table",
+            "fk_col"
+          ],
+          {
+            "fk_schema": "public",
+            "fk_table": "users",
+            "fk_col": "id",
+            "name": "col"
+          },
+          "public|users|name"
+        ],
+        "expectedValue": false
+      }
+    ]
+  }
+}

@@ -11,7 +11,7 @@ import { runUnitTests, unitTestsDisplayResults } from "../../src";
  * JSON imports infer `definition.unitTestType` as `string`, not the `"unitTestSuite"` literal.
  */
 export type DeployedUnitTestExport = {
-  definition: UnitTestSuite /*unknown*/;
+  definition: UnitTestSuite;
 };
 
 export async function runDeployedUnitTestSuite(
