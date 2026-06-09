@@ -234,6 +234,7 @@ export const reportSectionsFormValue = (
       };
     }
     case "markdownReportSection":
+    case "unitTestReportSection":
     case "modelDiagramReportSection":
     case "graphReportSection":
     case "accordionReportSection":

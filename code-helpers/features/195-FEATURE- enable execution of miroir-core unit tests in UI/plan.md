@@ -71,7 +71,7 @@ Tests are grouped by **how they can share a JSON representation and a single exe
 |-------------|--------------|-------|
 | `2_domain/transformers.unit.test.ts` | `transformerTest_miroirCoreTransformers` | Main core transformer suite; `RUN_TEST=transformers.unit.test` |
 | `2_domain/adminTransformers.unit.test.ts` | `transformerTest_adminTransformers` | Meta-model admin transformers |
-| `1_core/jzod/jzodTypeCheck.test.ts` | `transformerTestSuite_jzodTypeCheck` (deployment) | 39 cases (15 pass + 24 fail); uses `jzodTypeCheck` transformer |
+| `1_core/jzod/jzodTypeCheck.test.ts` | `transformerTestSuite_jzodTypeCheck` (deployment) | 42 cases (18 pass + 24 fail); uses `jzodTypeCheck` transformer |
 | `1_core/jzod/resolveConditionalSchema.test.ts` | `transformerTest_resolveConditionalSchema` | Also has dedicated UI report wiring |
 | `1_core/jzod/unfoldSchemaOnce.test.ts` | deployment JSON | |
 | `1_core/defaultValueForJzodSchema.unit.test.ts` | deployment JSON | |
@@ -328,7 +328,7 @@ Vitest CLI bridge:
 
 **Deliverables:** deployment reports + menu link; `UnitTestDisplay.tsx`, `RunUnitTestSuiteButton.tsx`, `UnitTestResults.tsx`; `entityDefinitionUnitTest.defaultInstanceDetailsReportUuid` → unit test details report.
 
-**Note:** Transformer and Unit test run mechanisms remain separate for now; merge deferred to Phase 6.
+**Note:** Transformer and Unit test run mechanisms remain separate for now; `unitTestReportSection` refactor (Phase 6a) decouples run UI from `ReportSectionEntityInstance`.
 
 ### Phase 4 — Query-runner tests (Class C)
 
@@ -392,17 +392,40 @@ Migration batch:
 
 #### Phase 5d — jzodTypeCheck consolidation *(done)*
 
-- [x] Merge `jzod.typeCheckToFail` cases (24) into `transformerTestSuite_jzodTypeCheck` entity (39 total: 15 pass + 24 fail).
+- [x] Merge `jzod.typeCheckToFail` cases (24) into `transformerTestSuite_jzodTypeCheck` entity (42 total: 18 pass + 24 fail).
+- [x] Add `any`-type pass cases (`test180_any_null`, `test181_any_boolean`, `test182_any_empty_object`).
+- [x] Fix `jzodTypeCheck.ts` so `type: "any"` accepts `null` (union fallback + record field schema).
 - [x] Remove 12k-line `jzod.typeCheckToPass` inline suite (deprecated wrapper → entity loader).
 - [x] Deprecate `jzod.typeCheckToFail.unit.test.ts` → forwards to `jzodTypeCheck.test.ts` (same pattern as pass wrapper).
 - [x] Regenerator: `tests/scripts/merge-jzodTypeCheck-fail-cases.mjs` (source: `jzodTypeCheck-fail-cases.source.ts`).
 
-**Validation:** `RUN_TEST=jzodTypeCheck npx vitest run tests/1_core/jzod/jzodTypeCheck.test.ts` (39/39).
+**Validation:** `RUN_TEST=jzodTypeCheck npx vitest run tests/1_core/jzod/jzodTypeCheck.test.ts` (42/42).
 
-#### Phase 5e — Integration modes & CI conventions
+### Phase 6 — UI integration (TDD refactor → feature wiring)
+
+Follow established report-section patterns (`markdownReportSection`, `objectInstanceReportSection`).
+
+#### Phase 6a — `unitTestReportSection` *(done)*
+
+- [x] Add `unitTestReportSection` to Report `EntityDefinition` + `reportSection` union.
+- [x] `getMiroirFundamentalJzodSchema.ts` filter + `npm run devBuild -w miroir-core`.
+- [x] `ReportSectionUnitTest.tsx` — renders `UnitTestDisplay` from `fetchedDataReference`.
+- [x] Wire in `ReportSectionViewWithEditor`; remove hard-coded `UnitTestDisplay` from `ReportSectionEntityInstance`.
+- [x] Unit Test details report (`bb9e8b62-…`) — `unitTestReportSection` before instance editor.
+
+**Next (Phase 6b+):** `transformerTestReportSection` (same refactor for `TransformerTestDisplay`), kind-specific editors, unified run UX.
+
+### Phase 7 — Deferred migrations, integration modes & discovery
+
+Moved from Phase 5e and former Phase 6.
 
 - [ ] UI toggle: unit vs integration for transformer tests (reuse `integrationTestExpectedValue`).
 - [ ] Document `RUN_TEST` / vitest filter conventions (see below).
+- [ ] Remaining Class B jzod utility migrations (`jzod/*` remaining ~15 files, `tools.test.ts`, `resolveQueryTemplates`, etc.).
+- [ ] Runner or report to browse all `UnitTestDefinition` instances by kind, tag, module.
+- [ ] Link from function/transformer/query editor to relevant test suites.
+- [ ] Optional: `vitestProxy` catalog entries for Class E tests (run via CLI only).
+- [ ] Kind-specific input viewers and assertion diff in detail report.
 
 **Vitest selective runs (convention):**
 
@@ -420,15 +443,7 @@ EXPORT_FUNCTION_CALL_SUITES=1 npx vitest run tests/export-function-call-suites.u
 node packages/miroir-core/tests/scripts/merge-jzodTypeCheck-fail-cases.mjs
 ```
 
-**Out of scope (vitest-only):** Class E/F (`blobUtils`, controllers, `zodParse*`), meta tests (`unitTest.tools`, `export-function-call-suites`), `jzodToJzod.unit.test.ts` (callback harness → defer or transformerTest).
-
-### Phase 6 — Discovery UX
-
-- [ ] Runner or report to browse all `UnitTestDefinition` instances by kind, tag, module.
-- [ ] Link from function/transformer/query editor to relevant test suites.
-- [ ] Optional: `vitestProxy` catalog entries for Class E tests (run via CLI only).
-- [ ] Merge TransformerTest / UnitTest run UI into a single generalized component.
-- [ ] Kind-specific input viewers and assertion diff in detail report.
+**Out of scope (vitest-only):** Class E/F (`blobUtils`, controllers, `zodParse*`), meta tests (`unitTest.tools`, `export-function-call-suites`), `jzodToJzod.unit.test.ts` (callback harness → defer or transformerTest), `domainStateToDeploymentEntityState`, `resolveCompositeActionTemplate`.
 
 ---
 
@@ -449,11 +464,11 @@ node packages/miroir-core/tests/scripts/merge-jzodTypeCheck-fail-cases.mjs
 | Area | Status | Change |
 |------|--------|--------|
 | Entity list | **Done (Phase 3)** | `reportUnitTestList` + menu “Miroir Unit Tests” |
-| Detail report | **Done (Phase 3)** | `reportUnitTestDetails`; `isUnitTest` run button in `ReportSectionEntityInstance` |
+| Detail report | **Phase 6a** | `reportUnitTestDetails`; run via `unitTestReportSection` (was hard-coded in `ReportSectionEntityInstance`) |
 | Execution | **Done (Phase 3)** | `RunUnitTestSuiteButton` → `runUnitTests` (separate from transformer button) |
 | Results | **Done (Phase 3)** | `UnitTestExecutionSummary` + `UnitTestResults` table |
-| Editing | Phase 6 | JzodObjectEditor for each `unitTestType` branch; kind-specific diff display |
-| Discovery | Phase 6 | Browse by kind/tag/module; links from editors |
+| Editing | Phase 7 | JzodObjectEditor for each `unitTestType` branch; kind-specific diff display |
+| Discovery | Phase 7 | Browse by kind/tag/module; links from editors |
 
 ---
 
@@ -472,7 +487,7 @@ node packages/miroir-core/tests/scripts/merge-jzodTypeCheck-fail-cases.mjs
 - [x] All Class A transformer suites selectable and runnable from UI (including `menu` — Phase 5a).
 - [x] Class B pilot suites runnable from UI and Vitest with identical results (Phase 3 UI wiring; manual smoke-test OK).
 - [x] Class C query suite represented as store entities and runnable in memory (CLI; UI via existing `UnitTestDisplay`).
-- [x] `jzodTypeCheck` pass + fail cases consolidated in `transformerTestSuite_jzodTypeCheck` (39 cases).
+- [x] `jzodTypeCheck` pass + fail cases consolidated in `transformerTestSuite_jzodTypeCheck` (42 cases).
 - [ ] `domainStateToDeploymentEntityState` / `resolveCompositeActionTemplate` — **deferred** (vitest-only).
 - [ ] `npm test` / `RUN_TEST` in CI covers all entity-backed suites (non-regression).
 - [ ] Outliers documented; no false expectation of UI execution for Class E/F.
