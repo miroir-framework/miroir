@@ -427,65 +427,77 @@ Follow established report-section patterns (`markdownReportSection`, `objectInst
 - [x] Shared `TestExecutionPanel` + `TestResultsGrid` + `testSelectionUtils` — used by `UnitTestDisplay` and `TransformerTestDisplay` (summary, grid, selection, assertion diff via `TestCellWithDetails`).
 - [x] `ReportPageContext.navigateToUnitTestInEditor` + anchor IDs on editor rows; failed-result **Edit** button scrolls/highlights matching `unitTestLabel`.
 
-#### Phase 6d — Remaining Class B jzod utility migrations *(pending)*
+#### Phase 6d — Remaining Class B jzod utility migrations *(done)*
 
-Migrate vitest-only `functionCallTest` suites to `UnitTestDefinition` deployment JSON, following Phase 5a–5c patterns (`runDeployedUnitTestSuite` thin wrapper, `EXPORT_FUNCTION_CALL_SUITES=1`, `FunctionCallTestRegistry` whitelist).
+Migrate vitest-only `functionCallTest` suites to `UnitTestDefinition` deployment JSON, following Phase 5a–5c patterns (`runDeployedUnitTestSuite` thin wrapper, `FunctionCallTestRegistry` whitelist, generator script).
 
-**Prerequisites (likely shared across batches):**
+**Prerequisites (shared across batches):**
 
-- [ ] Register exports in `FunctionCallTestRegistry.ts` (most union helpers live in `jzodTypeCheck.ts` or sibling `1_core/jzod/*` modules).
-- [ ] Reuse `environmentRef` + `environmentArgumentIndex` where tests pass `defaultMetaModelEnvironment` / `defaultMiroirModelEnvironment`.
-- [ ] Use `expectedError` / `assertions[]` + `resultAccessPath` for functions returning `{ status: "error", … }` rather than throwing (notably `selectUnionBranchFromDiscriminator`).
-- [ ] Extend `export-function-call-suites.unit.test.ts` (or add batch-specific export script) for new `unitTest_suite_*` assets.
+- [x] Register exports in `FunctionCallTestRegistry.ts` (union helpers, reference graph, path/tool helpers).
+- [x] Reuse `environmentRef` + `environmentArgumentIndex` where tests pass `defaultMetaModelEnvironment` / `defaultMiroirModelEnvironment`.
+- [x] Use `expectedError` / `assertions[]` + `resultAccessPath` for functions returning `{ status: "error", … }` rather than throwing (notably `selectUnionBranchFromDiscriminator`).
+- [x] Generator script `packages/miroir-core/tests/scripts/generate-phase-6d-suites.ts` → 9 deployment JSON assets under parent UUID `a1bc5288-c982-4ff3-8316-4a2400fe9323`.
 
-##### Batch 6d-1 — Union resolution subgraph (~37 cases)
+##### Batch 6d-1 — Union resolution subgraph (36 cases deployed)
 
 Core union-matching utilities; complements the `jzodTypeCheck` transformer suite (Phase 5d).
 
-| Vitest file | Export | Cases (approx.) | Notes |
-|-------------|--------|-----------------|-------|
-| `jzod.selectUnionBranchFromDiscriminator.unit.test.ts` | `selectUnionBranchFromDiscriminator` | **15** | **Anchor suite** — literal/enum/multi-discriminator, extend clauses, real combiner/transformer branches; needs `environmentRef` |
-| `jzodUnion_RecursiveUnfold.test.ts` | `jzodUnion_recursivelyUnfold` | 12 | `defaultMetaModelEnvironment` arg |
+| Vitest file | Export | Cases | Notes |
+|-------------|--------|-------|-------|
+| `jzod.selectUnionBranchFromDiscriminator.unit.test.ts` | `selectUnionBranchFromDiscriminator` | **14** | 15th vitest `it` was vacuous/skipped in original |
+| `jzodUnion_RecursiveUnfold.test.ts` | `jzodUnion_recursivelyUnfold` | 12 | circular-ref cases use `captureFromRun` full-result snapshot |
 | `jzod.unionObjectChoices.test.ts` | `unionObjectChoices` | 4 | |
 | `jzod.unionResolvedTypeForObject.unit.test.ts` | `jzodUnionResolvedTypeForObject` | 2 | |
 | `jzod.unionResolvedTypeForArray.unit.test.ts` | `jzodUnionResolvedTypeForArray` | 2 | |
 | `unionArrayChoices.test.ts` | `unionArrayChoices` | 2 | |
 
-- [ ] `unitTest_suite_selectUnionBranchFromDiscriminator` — migrate all 15 cases first (validates error/success result shapes for registry).
-- [ ] `unitTest_suite_jzodUnion_RecursiveUnfold`
-- [ ] `unitTest_suite_unionObjectChoices`
-- [ ] `unitTest_suite_jzodUnionResolvedTypeForObject`
-- [ ] `unitTest_suite_jzodUnionResolvedTypeForArray`
-- [ ] `unitTest_suite_unionArrayChoices`
-- [ ] Deprecate vitest wrappers → `runDeployedUnitTestSuite` loaders.
+- [x] `unitTest_suite_selectUnionBranchFromDiscriminator` (`c6d1a001-…`)
+- [x] `unitTest_suite_jzodUnion_RecursiveUnfold` (`c6d1a002-…`)
+- [x] `unitTest_suite_unionObjectChoices` (`c6d1a003-…`)
+- [x] `unitTest_suite_jzodUnionResolvedTypeForObject` (`c6d1a004-…`)
+- [x] `unitTest_suite_jzodUnionResolvedTypeForArray` (`c6d1a005-…`)
+- [x] `unitTest_suite_unionArrayChoices` (`c6d1a006-…`)
+- [x] Vitest wrappers → `runDeployedUnitTestSuite` loaders.
 
-**Validation:** `RUN_TEST=jzod.selectUnionBranchFromDiscriminator.unit.test` (15/15); union batch combined green.
+**Validation:** all 6d-1 suites green (36/36 assertions).
 
-##### Batch 6d-2 — Reference graph & context (~7 cases)
+##### Batch 6d-2 — Reference graph & context (8 cases deployed)
 
-| Vitest file | Export | Cases (approx.) | Notes |
-|-------------|--------|-----------------|-------|
-| `jzodReferencesGraphConnectedComponents.unit.test.ts` | `jzodReferencesGraphConnectedComponents` | 6 | uses `getExtendedSchemas` + bootstrap schema fixture |
-| `jzod.localizeReferenceContext.unit.test.ts` | `localizeJzodSchemaReferenceContext` | 1 | from `JzodUnfoldSchemaOnce`; `defaultMiroirMetaModel` arg |
+| Vitest file | Export | Cases | Notes |
+|-------------|--------|-------|-------|
+| `jzodReferencesGraphConnectedComponents.unit.test.ts` | `jzodReferencesGraphConnectedComponents` | 5 | |
+| `jzod.localizeReferenceContext.unit.test.ts` | `localizeJzodSchemaReferenceContext` | 3 | 1 vitest `it` with 3 sub-cases; `miroirFundamentalJzodSchema` bare fixture |
 
-- [ ] `unitTest_suite_jzodReferencesGraphConnectedComponents`
-- [ ] `unitTest_suite_localizeJzodSchemaReferenceContext`
-- [ ] Registry whitelist + thin vitest wrappers.
+- [x] `unitTest_suite_jzodReferencesGraphConnectedComponents` (`c6d2a001-…`)
+- [x] `unitTest_suite_localizeJzodSchemaReferenceContext` (`c6d2a002-…`)
+- [x] Registry whitelist + thin vitest wrappers.
 
-**Validation:** `RUN_TEST=jzodReferencesGraphConnectedComponents.unit.test` (6/6); `RUN_TEST=jzod.localizeReferenceContext.unit.test` (1/1).
+**Validation:** 8/8 assertions green.
 
-##### Batch 6d-3 — Non-jzod Class B stragglers (~36 cases)
+##### Batch 6d-3 — Non-jzod Class B stragglers (35 cases deployed)
 
-| Vitest file | Export | Cases (approx.) | Notes |
-|-------------|--------|-----------------|-------|
-| `tools.test.ts` | various `TestTools` / path helpers | **~35** | split into one or more suites by function family if JSON size is an issue |
-| `2_domain/resolveQueryTemplates.unit.test.ts` | `resolveQueryTemplate` (verify) | 1 | may need `environmentRef` or small inline fixture |
+| Vitest file | Export | Cases | Notes |
+|-------------|--------|-------|-------|
+| `tools.test.ts` | various path/array helpers | **35** | single `unitTest_suite_tools` (`c6d3a001-…`) |
+| `2_domain/resolveQueryTemplates.unit.test.ts` | — | — | **deferred** — async / may need `queryRunnerTest` |
 
-- [ ] `unitTest_suite_tools` (or split: `unitTest_suite_getValueByDottedPath`, etc.)
-- [ ] `unitTest_suite_resolveQueryTemplates`
-- [ ] Registry whitelist for domain template resolution helpers.
+- [x] `unitTest_suite_tools`
+- [ ] `unitTest_suite_resolveQueryTemplates` — out of 6d scope (see below)
+- [x] Registry whitelist for tool helpers (`pushIfUniqueReturning`, etc.)
 
-**Validation:** `RUN_TEST=tools.test` (35/35); `RUN_TEST=resolveQueryTemplates.unit.test` (1/1).
+**Validation:** `tools.test` 35/35 green.
+
+**Runner fixes landed with 6d:**
+
+- `normalizeFunctionCallResult`: apply `unNullify` so JSON `null` expected values match runtime `null` fields (jzodElement unfold case).
+- `resolveFixtureProperty`: bare fixtures (e.g. `miroirFundamentalJzodSchema`) inject the fixture object when `domainState` is absent.
+
+**Regenerate deployment JSON after case edits:**
+
+```bash
+cd packages/miroir-core && npx tsx tests/scripts/generate-phase-6d-suites.ts
+cd packages/miroir-test-app_deployment-miroir && npm run build
+```
 
 ##### Explicitly out of Phase 6d scope
 

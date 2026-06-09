@@ -1,5 +1,7 @@
 import type { MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
-import { defaultMetaModelEnvironment } from "../1_core/Model";
+import { miroirFundamentalJzodSchema } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalJzodSchema";
+import type { MlSchema } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import { defaultMetaModelEnvironment, defaultMiroirMetaModel, defaultMiroirModelEnvironment } from "../1_core/Model";
 import {
   listQueryRunnerFixtureRefs,
   resolveQueryRunnerFixture,
@@ -12,9 +14,16 @@ export type FunctionCallFixture = QueryRunnerFixture | FunctionCallOnlyFixture;
 
 const FUNCTION_CALL_ENVIRONMENTS: Record<string, () => MiroirModelEnvironment> = {
   defaultMiroirModelEnvironment: () => defaultMetaModelEnvironment,
+  defaultMetaModelEnvironment: () => defaultMetaModelEnvironment,
 };
 
-const FUNCTION_CALL_ONLY_FIXTURES: Record<string, () => FunctionCallOnlyFixture> = {};
+const FUNCTION_CALL_META_MODEL_ENVIRONMENTS: Record<string, () => typeof defaultMiroirMetaModel> = {
+  defaultMiroirMetaModel: () => defaultMiroirMetaModel,
+};
+
+const FUNCTION_CALL_ONLY_FIXTURES: Record<string, () => FunctionCallOnlyFixture> = {
+  miroirFundamentalJzodSchema: () => miroirFundamentalJzodSchema as MlSchema,
+};
 
 export function listFunctionCallFixtureRefs(): string[] {
   return [...listQueryRunnerFixtureRefs(), ...Object.keys(FUNCTION_CALL_ONLY_FIXTURES)];
@@ -30,9 +39,13 @@ export function resolveFunctionCallFixture(fixtureRef: string): FunctionCallFixt
 
 export function resolveFunctionCallEnvironment(
   environmentRef: string | undefined,
-): MiroirModelEnvironment | undefined {
+): MiroirModelEnvironment | typeof defaultMiroirMetaModel | undefined {
   if (!environmentRef) {
     return undefined;
+  }
+  const metaModelLoader = FUNCTION_CALL_META_MODEL_ENVIRONMENTS[environmentRef];
+  if (metaModelLoader) {
+    return metaModelLoader();
   }
   const loader = FUNCTION_CALL_ENVIRONMENTS[environmentRef];
   if (!loader) {
@@ -42,7 +55,10 @@ export function resolveFunctionCallEnvironment(
 }
 
 export function listFunctionCallEnvironmentRefs(): string[] {
-  return Object.keys(FUNCTION_CALL_ENVIRONMENTS);
+  return [
+    ...Object.keys(FUNCTION_CALL_ENVIRONMENTS),
+    ...Object.keys(FUNCTION_CALL_META_MODEL_ENVIRONMENTS),
+  ];
 }
 
 export function resolveFixtureProperty(
@@ -52,6 +68,10 @@ export function resolveFixtureProperty(
   const key = fixtureProperty ?? "domainState";
   if (key in fixture) {
     return fixture[key as keyof FunctionCallFixture];
+  }
+  // Bare function-call-only fixtures (e.g. miroirFundamentalJzodSchema) are the injected value itself.
+  if (key === "domainState" && !("domainState" in fixture)) {
+    return fixture;
   }
   throw new Error(`Unknown fixture property: ${key}`);
 }

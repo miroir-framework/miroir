@@ -24,11 +24,27 @@ import { jzodObjectFlatten } from "../1_core/jzod/jzodObjectFlatten";
 import {
   buildAnyObjectEntry,
   buildAnySubnodeKeyMap,
+  jzodUnionResolvedTypeForArray,
+  jzodUnionResolvedTypeForObject,
+  selectUnionBranchFromDiscriminator,
+  unionArrayChoices,
+  unionObjectChoices,
 } from "../1_core/jzod/jzodTypeCheck";
+import { jzodUnion_recursivelyUnfold } from "../1_core/jzod/jzodUnion_RecursivelyUnfold";
+import { jzodReferencesGraphConnectedComponents } from "../1_core/jzod/jzodReferencesGraphConnectedComponents";
+import { localizeJzodSchemaReferenceContext } from "../1_core/jzod/JzodUnfoldSchemaOnce";
+import { mergeIfUnique, pushIfUnique } from "../1_core/tools";
 import { getModelUpdate } from "../1_core/model/ModelUpdate";
 import { ansiColumnsToJzodSchema } from "../1_core/ansiColumnsToJzodSchema";
-import { alterObjectAtPath } from "../tools";
+import {
+  domainStateToReduxDeploymentsState,
+  resolvePathOnObject,
+  resolveRelativePath,
+  safeResolvePathOnObject,
+  stringTuple,
+} from "../tools";
 import { getAttributeTypesFromJzodSchema } from "miroir-store-postgres/src/1_core/mlSchema";
+import { alterObjectAtPath } from "../tools";
 
 export type FunctionCallRef = {
   module: string;
@@ -50,6 +66,11 @@ const FUNCTION_CALL_REGISTRY: Record<string, Record<string, WhitelistedFunction>
   },
   "miroir-core/tools": {
     alterObjectAtPath: alterObjectAtPath as WhitelistedFunction,
+    stringTuple: stringTuple as WhitelistedFunction,
+    domainStateToReduxDeploymentsState: domainStateToReduxDeploymentsState as WhitelistedFunction,
+    safeResolvePathOnObject: safeResolvePathOnObject as WhitelistedFunction,
+    resolvePathOnObject: resolvePathOnObject as WhitelistedFunction,
+    resolveRelativePath: resolveRelativePath as WhitelistedFunction,
   },
   "miroir-core/1_core/jzod/JzodToCopilotKitParameter": {
     jzodToCopilotKitParameter: jzodToCopilotKitParameter as WhitelistedFunction,
@@ -71,6 +92,33 @@ const FUNCTION_CALL_REGISTRY: Record<string, Record<string, WhitelistedFunction>
   "miroir-core/1_core/jzod/jzodTypeCheck": {
     buildAnyObjectEntry: buildAnyObjectEntry as WhitelistedFunction,
     buildAnySubnodeKeyMap: buildAnySubnodeKeyMap as WhitelistedFunction,
+    selectUnionBranchFromDiscriminator: selectUnionBranchFromDiscriminator as WhitelistedFunction,
+    unionObjectChoices: unionObjectChoices as WhitelistedFunction,
+    unionArrayChoices: unionArrayChoices as WhitelistedFunction,
+    jzodUnionResolvedTypeForObject: jzodUnionResolvedTypeForObject as WhitelistedFunction,
+    jzodUnionResolvedTypeForArray: jzodUnionResolvedTypeForArray as WhitelistedFunction,
+  },
+  "miroir-core/1_core/jzod/jzodUnion_RecursivelyUnfold": {
+    jzodUnion_recursivelyUnfold: jzodUnion_recursivelyUnfold as WhitelistedFunction,
+  },
+  "miroir-core/1_core/jzod/jzodReferencesGraphConnectedComponents": {
+    jzodReferencesGraphConnectedComponents:
+      jzodReferencesGraphConnectedComponents as WhitelistedFunction,
+  },
+  "miroir-core/1_core/jzod/JzodUnfoldSchemaOnce": {
+    localizeJzodSchemaReferenceContext: localizeJzodSchemaReferenceContext as WhitelistedFunction,
+  },
+  "miroir-core/1_core/tools": {
+    pushIfUnique: pushIfUnique as WhitelistedFunction,
+    mergeIfUnique: mergeIfUnique as WhitelistedFunction,
+    pushIfUniqueReturning: ((array, item) => {
+      pushIfUnique(array as never[], item as never);
+      return array;
+    }) as WhitelistedFunction,
+    mergeIfUniqueReturning: ((array, items) => {
+      mergeIfUnique(array as never[], items as never[]);
+      return array;
+    }) as WhitelistedFunction,
   },
   "miroir-core/1_core/model/ModelUpdate": {
     getModelUpdate: getModelUpdate as WhitelistedFunction,

@@ -203,6 +203,15 @@ export { default as unitTest_suite_modelUpdates } from "./assets/miroir_data/a1b
 export { default as unitTest_suite_getAttributeTypesFromJzodSchema } from "./assets/miroir_data/a1bc5288-c982-4ff3-8316-4a2400fe9323/66f402a1-c69c-46b1-8633-b610673b9877.json" assert { type: "json" };
 export { default as unitTest_suite_ansiColumnsToJzodSchema } from "./assets/miroir_data/a1bc5288-c982-4ff3-8316-4a2400fe9323/7c9e6679-7425-40de-944b-e07fc1f90ae7.json" assert { type: "json" };
 export { default as unitTest_suite_buildAnyKeyMap } from "./assets/miroir_data/a1bc5288-c982-4ff3-8316-4a2400fe9323/37b822d5-b37a-42cb-9753-43d12ab5b9f0.json" assert { type: "json" };
+export { default as unitTest_suite_selectUnionBranchFromDiscriminator } from "./assets/miroir_data/a1bc5288-c982-4ff3-8316-4a2400fe9323/c6d1a001-0001-4000-8000-000000000001.json" assert { type: "json" };
+export { default as unitTest_suite_jzodUnion_RecursiveUnfold } from "./assets/miroir_data/a1bc5288-c982-4ff3-8316-4a2400fe9323/c6d1a002-0002-4000-8000-000000000002.json" assert { type: "json" };
+export { default as unitTest_suite_unionObjectChoices } from "./assets/miroir_data/a1bc5288-c982-4ff3-8316-4a2400fe9323/c6d1a003-0003-4000-8000-000000000003.json" assert { type: "json" };
+export { default as unitTest_suite_jzodUnionResolvedTypeForObject } from "./assets/miroir_data/a1bc5288-c982-4ff3-8316-4a2400fe9323/c6d1a004-0004-4000-8000-000000000004.json" assert { type: "json" };
+export { default as unitTest_suite_jzodUnionResolvedTypeForArray } from "./assets/miroir_data/a1bc5288-c982-4ff3-8316-4a2400fe9323/c6d1a005-0005-4000-8000-000000000005.json" assert { type: "json" };
+export { default as unitTest_suite_unionArrayChoices } from "./assets/miroir_data/a1bc5288-c982-4ff3-8316-4a2400fe9323/c6d1a006-0006-4000-8000-000000000006.json" assert { type: "json" };
+export { default as unitTest_suite_jzodReferencesGraphConnectedComponents } from "./assets/miroir_data/a1bc5288-c982-4ff3-8316-4a2400fe9323/c6d2a001-0001-4000-8000-000000000001.json" assert { type: "json" };
+export { default as unitTest_suite_localizeJzodSchemaReferenceContext } from "./assets/miroir_data/a1bc5288-c982-4ff3-8316-4a2400fe9323/c6d2a002-0002-4000-8000-000000000002.json" assert { type: "json" };
+export { default as unitTest_suite_tools } from "./assets/miroir_data/a1bc5288-c982-4ff3-8316-4a2400fe9323/c6d3a001-0001-4000-8000-000000000001.json" assert { type: "json" };
 
 // ################################################################################################
 // Miroir Data - TransformerDefinition (parentUuid = entityTransformerDefinition = a557419d)

@@ -1,0 +1,208 @@
+{
+  "uuid": "c6d1a003-0003-4000-8000-000000000003",
+  "parentName": "UnitTest",
+  "parentUuid": "a1bc5288-c982-4ff3-8316-4a2400fe9323",
+  "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+  "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
+  "name": "unionObjectChoices",
+  "description": "Phase 6d — unionObjectChoices",
+  "definition": {
+    "unitTestType": "unitTestSuite",
+    "unitTestLabel": "unionObjectChoices",
+    "unitTests": [
+      {
+        "unitTestType": "functionCallTest",
+        "unitTestLabel": "returns only object types from a flat union",
+        "functionRef": {
+          "module": "miroir-core/1_core/jzod/jzodTypeCheck",
+          "export": "unionObjectChoices"
+        },
+        "arguments": [
+          [
+            {
+              "type": "object",
+              "definition": {
+                "a": {
+                  "type": "string"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "definition": {
+                "b": {
+                  "type": "number"
+                }
+              }
+            },
+            {
+              "type": "string"
+            }
+          ],
+          {}
+        ],
+        "environmentRef": "defaultMiroirModelEnvironment",
+        "environmentArgumentIndex": 1,
+        "expectedValue": [
+          {
+            "type": "object",
+            "definition": {
+              "a": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "b": {
+                "type": "number"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "unitTestType": "functionCallTest",
+        "unitTestLabel": "flattens nested unions and returns all object types",
+        "functionRef": {
+          "module": "miroir-core/1_core/jzod/jzodTypeCheck",
+          "export": "unionObjectChoices"
+        },
+        "arguments": [
+          [
+            {
+              "type": "object",
+              "definition": {
+                "a": {
+                  "type": "string"
+                }
+              }
+            },
+            {
+              "type": "union",
+              "definition": [
+                {
+                  "type": "object",
+                  "definition": {
+                    "b": {
+                      "type": "number"
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "definition": {
+                    "c": {
+                      "type": "boolean"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "type": "string"
+            }
+          ],
+          {}
+        ],
+        "environmentRef": "defaultMiroirModelEnvironment",
+        "environmentArgumentIndex": 1,
+        "expectedValue": [
+          {
+            "type": "object",
+            "definition": {
+              "a": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "b": {
+                "type": "number"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "c": {
+                "type": "boolean"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "unitTestType": "functionCallTest",
+        "unitTestLabel": "resolves schemaReferences in nested unions",
+        "functionRef": {
+          "module": "miroir-core/1_core/jzod/jzodTypeCheck",
+          "export": "unionObjectChoices"
+        },
+        "arguments": [
+          [
+            {
+              "type": "union",
+              "definition": [
+                {
+                  "type": "schemaReference",
+                  "definition": {
+                    "relativePath": "refObj"
+                  },
+                  "context": {}
+                }
+              ]
+            }
+          ],
+          {
+            "refObj": {
+              "type": "object",
+              "definition": {
+                "d": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "environmentRef": "defaultMiroirModelEnvironment",
+        "environmentArgumentIndex": 1,
+        "expectedValue": [
+          {
+            "type": "object",
+            "definition": {
+              "d": {
+                "type": "string"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "unitTestType": "functionCallTest",
+        "unitTestLabel": "returns empty array if no object types are present",
+        "functionRef": {
+          "module": "miroir-core/1_core/jzod/jzodTypeCheck",
+          "export": "unionObjectChoices"
+        },
+        "arguments": [
+          [
+            {
+              "type": "string"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          {}
+        ],
+        "environmentRef": "defaultMiroirModelEnvironment",
+        "environmentArgumentIndex": 1,
+        "expectedValue": []
+      }
+    ]
+  }
+}

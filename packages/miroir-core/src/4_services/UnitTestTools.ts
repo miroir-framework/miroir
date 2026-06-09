@@ -16,7 +16,7 @@ import type {
 } from "../0_interfaces/3_controllers/MiroirActivityTrackerInterface";
 import { MiroirActivityTracker } from "../3_controllers/MiroirActivityTracker";
 import { jsonify } from "../1_core/test-expect";
-import { Action2Error } from "../0_interfaces/2_domain/DomainElement";
+import { Action2Error, TransformerFailure } from "../0_interfaces/2_domain/DomainElement";
 import { resolvePathOnObject } from "../tools";
 import { ignorePostgresExtraAttributes, removeUndefinedProperties, unNullify } from "./otherTools";
 import {
@@ -29,6 +29,9 @@ import { runQueryRunnerTestInMemory } from "./QueryRunnerTestTools";
 
 const JSON_UNDEFINED_SENTINEL = "__miroirJsonUndefined";
 const JSON_FIXTURE_REF_SENTINEL = "__fixtureRef";
+const JSON_SET_SENTINEL = "__miroirJsonSet";
+const JSON_MATCH_PATTERN_SENTINEL = "__miroirMatchPattern";
+const JSON_ENVIRONMENT_REF_SENTINEL = "__miroirEnvironmentRef";
 
 function resolveFixtureSentinel(value: Record<string, unknown>): unknown {
   const fixtureRef = value[JSON_FIXTURE_REF_SENTINEL];
@@ -51,6 +54,33 @@ export function deserializeFunctionCallValue(value: unknown): unknown {
     (value as Record<string, unknown>)[JSON_UNDEFINED_SENTINEL] === true
   ) {
     return undefined;
+  }
+  if (
+    value &&
+    typeof value === "object" &&
+    !Array.isArray(value) &&
+    JSON_SET_SENTINEL in (value as Record<string, unknown>)
+  ) {
+    const items = (value as Record<string, unknown>)[JSON_SET_SENTINEL];
+    return new Set(
+      Array.isArray(items) ? items.map((item) => deserializeFunctionCallValue(item)) : [],
+    );
+  }
+  if (
+    value &&
+    typeof value === "object" &&
+    !Array.isArray(value) &&
+    JSON_ENVIRONMENT_REF_SENTINEL in (value as Record<string, unknown>)
+  ) {
+    const environmentRef = (value as Record<string, unknown>)[JSON_ENVIRONMENT_REF_SENTINEL];
+    if (typeof environmentRef !== "string") {
+      throw new Error("functionCallTest __miroirEnvironmentRef sentinel requires a string ref");
+    }
+    const environment = resolveFunctionCallEnvironment(environmentRef);
+    if (!environment) {
+      throw new Error(`Unknown functionCallTest environmentRef: ${environmentRef}`);
+    }
+    return environment;
   }
   if (
     value &&
@@ -100,6 +130,26 @@ export function prepareFunctionCallArguments(unitTest: FunctionCallTest): unknow
   return args;
 }
 
+function deepNormalizeSets(value: unknown): unknown {
+  if (value instanceof Set) {
+    return Array.from(value)
+      .map(deepNormalizeSets)
+      .sort((a, b) => String(a).localeCompare(String(b)));
+  }
+  if (Array.isArray(value)) {
+    return value.map(deepNormalizeSets);
+  }
+  if (value && typeof value === "object") {
+    return Object.fromEntries(
+      Object.entries(value as Record<string, unknown>).map(([key, entry]) => [
+        key,
+        deepNormalizeSets(entry),
+      ]),
+    );
+  }
+  return value;
+}
+
 function normalizeFunctionCallResult(rawResult: unknown, ignoreAttributes: string[] | undefined) {
   if (rawResult instanceof Action2Error) {
     return {
@@ -107,10 +157,10 @@ function normalizeFunctionCallResult(rawResult: unknown, ignoreAttributes: strin
       errorMessage: rawResult.errorMessage,
     };
   }
-  const resultForNormalize = rawResult instanceof Set ? Array.from(rawResult) : rawResult;
+  const resultForNormalize = deepNormalizeSets(rawResult);
   const resultWithIgnored = ignorePostgresExtraAttributes(resultForNormalize, ignoreAttributes);
   const jsonifiedResult = jsonify(resultWithIgnored);
-  return removeUndefinedProperties(jsonifiedResult);
+  return removeUndefinedProperties(unNullify(jsonifiedResult));
 }
 
 function normalizeExpectedFunctionCallValue(expectedValue: unknown): unknown {
@@ -118,7 +168,7 @@ function normalizeExpectedFunctionCallValue(expectedValue: unknown): unknown {
   if (deserialized === null) {
     return null;
   }
-  return removeUndefinedProperties(unNullify(deserialized));
+  return removeUndefinedProperties(unNullify(deepNormalizeSets(deserialized)));
 }
 
 function assertFunctionCallResult(
@@ -130,7 +180,19 @@ function assertFunctionCallResult(
   ignoreAttributes: string[] | undefined,
 ): boolean {
   const normalizedActual = normalizeFunctionCallResult(actualValue, ignoreAttributes);
-  const normalizedExpected = normalizeExpectedFunctionCallValue(expectedValue);
+  const deserializedExpected = deserializeFunctionCallValue(expectedValue);
+  if (
+    deserializedExpected &&
+    typeof deserializedExpected === "object" &&
+    JSON_MATCH_PATTERN_SENTINEL in (deserializedExpected as Record<string, unknown>)
+  ) {
+    const pattern = (deserializedExpected as Record<string, unknown>)[JSON_MATCH_PATTERN_SENTINEL];
+    const testResult: any = localVitest
+      .expect(String(normalizedActual), `${testSuiteNamePathAsString} > ${assertionName}`)
+      .toMatch(new RegExp(String(pattern)));
+    return !testResult || !Object.hasOwn(testResult, "result") || !!testResult.result;
+  }
+  const normalizedExpected = normalizeExpectedFunctionCallValue(deserializedExpected);
   const testResult: any = localVitest
     .expect(normalizedActual, `${testSuiteNamePathAsString} > ${assertionName}`)
     .toEqual(normalizedExpected);
@@ -327,21 +389,32 @@ export async function runFunctionCallTestInMemory(
   try {
     if (unitTest.expectedError) {
       const throwFn = () => fn(...args);
-      const testResult: any = localVitest
-        .expect(throwFn, `${testSuiteNamePathAsString} > ${assertionName}`)
-        .toThrow(unitTest.expectedError);
-
-      if (!testResult || !Object.hasOwn(testResult, "result")) {
-        testAssertionResult = { assertionName, assertionResult: "ok" };
-      } else if (testResult.result) {
-        testAssertionResult = { assertionName, assertionResult: "ok" };
-      } else {
-        testAssertionResult = {
+      let testAssertionResultForThrow: TestAssertionResult | undefined;
+      try {
+        throwFn();
+        testAssertionResultForThrow = {
           assertionName,
           assertionResult: "error",
           assertionExpectedValue: unitTest.expectedError,
         };
+      } catch (error) {
+        const matchesMessage =
+          error instanceof Error && error.message.includes(unitTest.expectedError);
+        const matchesTransformerFailure =
+          error instanceof TransformerFailure &&
+          error.queryFailure === unitTest.expectedError;
+        if (matchesMessage || matchesTransformerFailure) {
+          testAssertionResultForThrow = { assertionName, assertionResult: "ok" };
+        } else {
+          testAssertionResultForThrow = {
+            assertionName,
+            assertionResult: "error",
+            assertionExpectedValue: unitTest.expectedError,
+            assertionActualValue: normalizeFunctionCallResult(error, unitTest.ignoreAttributes),
+          };
+        }
       }
+      testAssertionResult = testAssertionResultForThrow;
     } else if (unitTest.expectUndefinedResult) {
       const rawResult = fn(...args);
       const testResult: any = localVitest
