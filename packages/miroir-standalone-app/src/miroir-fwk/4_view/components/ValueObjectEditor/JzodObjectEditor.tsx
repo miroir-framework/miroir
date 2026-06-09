@@ -40,6 +40,12 @@ import {
 import { ErrorFallbackComponent } from "../ErrorFallbackComponent";
 import { JsonDisplayHelper } from "miroir-react";
 import { useReportPageContext } from "../Reports/ReportPageContext";
+import {
+  getUnitTestKind,
+  HIGHLIGHTED_UNIT_TEST_STYLE,
+  unitTestAnchorId,
+  UnitTestKindBadge,
+} from "../Reports/unitTestKindUi.js";
 import type { ValueObjectEditMode } from "../Reports/ReportSectionEntityInstance";
 import {
   ThemedAddIcon,
@@ -1035,6 +1041,23 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
     return getFoldedDisplayValue(localResolvedElementJzodSchemaBasedOnValue, currentValueObjectAtKey);
   }, [localResolvedElementJzodSchemaBasedOnValue, currentValueObjectAtKey]);
 
+  const unitTestKind = useMemo(
+    () => getUnitTestKind(currentValueObjectAtKey),
+    [currentValueObjectAtKey],
+  );
+  const unitTestLabel = useMemo(() => {
+    if (
+      currentValueObjectAtKey != null &&
+      typeof currentValueObjectAtKey === "object" &&
+      typeof (currentValueObjectAtKey as { unitTestLabel?: string }).unitTestLabel === "string"
+    ) {
+      return (currentValueObjectAtKey as { unitTestLabel: string }).unitTestLabel;
+    }
+    return undefined;
+  }, [currentValueObjectAtKey]);
+  const isHighlightedUnitTest =
+    unitTestLabel != null && reportContext.highlightedUnitTestLabel === unitTestLabel;
+
   // ##############################################################################################
   const deleteElement = (rootLessListKeyArray: (string | number)[]) => () => {
     if (rootLessListKeyArray.length > 0) {
@@ -1298,7 +1321,11 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
   ]);
 
   return (
-    <div id={rootLessListKey} key={rootLessListKey}>
+    <div
+      id={unitTestLabel ? unitTestAnchorId(unitTestLabel) : rootLessListKey}
+      key={rootLessListKey}
+      style={isHighlightedUnitTest ? HIGHLIGHTED_UNIT_TEST_STYLE : undefined}
+    >
       <JsonDisplayHelper
         debug={true}
         componentName={`JzodObjectEditor insideAny=${insideAny} rootLessListKey=${rootLessListKey}`}
@@ -1328,6 +1355,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
           <span>
             <ThemedFlexRow align="center">
               {labelElement}
+              {unitTestKind && <UnitTestKindBadge kind={unitTestKind} />}
               {/* Show folded display value when object is folded and a value is available */}
               {reportContext.isNodeFolded(rootLessListKeyArray) &&
                 (() => {

@@ -36,6 +36,7 @@ export interface TestCellWithDetailsProps {
   testName: string;
   type: 'testName' | 'status' | 'result';
   isSelected?: boolean; // Add optional selection state
+  onNavigateToEditor?: () => void;
 }
 
 
@@ -44,7 +45,8 @@ export const TestCellWithDetails: React.FC<TestCellWithDetailsProps> = React.mem
   testData, 
   testName, 
   type,
-  isSelected
+  isSelected,
+  onNavigateToEditor,
 }) => {
   const [showTooltip, setShowTooltip] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
@@ -526,11 +528,19 @@ export const TestCellWithDetails: React.FC<TestCellWithDetailsProps> = React.mem
     document.body
   ) : null;
 
+  const handleNavigateToEditor = useCallback(
+    (e: React.MouseEvent) => {
+      e.stopPropagation();
+      onNavigateToEditor?.();
+    },
+    [onNavigateToEditor],
+  );
+
   return (
     <>
       <div
         ref={cellRef}
-        style={cellStyle}
+        style={{ ...cellStyle, display: "inline-flex", alignItems: "center", gap: "6px" }}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
         onClick={handleClick}
@@ -538,7 +548,26 @@ export const TestCellWithDetails: React.FC<TestCellWithDetailsProps> = React.mem
         {isSkipped && type === 'status' ? (
           <span>⏭ {value}</span>
         ) : (
-          value
+          <span>{value}</span>
+        )}
+        {type === "testName" && onNavigateToEditor && (
+          <button
+            type="button"
+            title="Scroll to test in editor"
+            onClick={handleNavigateToEditor}
+            style={{
+              padding: "0 6px",
+              fontSize: "11px",
+              border: "1px solid #ff9800",
+              borderRadius: "4px",
+              backgroundColor: "#fff8e1",
+              color: "#e65100",
+              cursor: "pointer",
+              flexShrink: 0,
+            }}
+          >
+            Edit
+          </button>
         )}
       </div>
       

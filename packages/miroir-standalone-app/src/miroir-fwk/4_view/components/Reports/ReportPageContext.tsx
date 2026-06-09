@@ -1,6 +1,6 @@
 import { LoggerInterface, MiroirLoggerFactory } from "miroir-core";
 import { useMiroirContextService, type FoldedStateTree } from "miroir-react";
-import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { packageName } from "../../../../constants";
 import { cleanLevel } from "../../constants";
 import type { FoldAction } from "./FoldedStateTreeDebug";
@@ -11,6 +11,7 @@ import {
   setNodeFolded,
   unfoldAllChildren,
 } from "./FoldedStateTreeUtils";
+import { unitTestAnchorId } from "./unitTestKindUi.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -25,6 +26,9 @@ export interface ReportPageContextType {
   setNodeFolded: (path: (string | number)[], folded: FoldAction) => void;
   foldAllChildren: (path: (string | number)[], childKeys: (string | number)[]) => void;
   unfoldAllChildren: (path: (string | number)[], childKeys: (string | number)[]) => void;
+  highlightedUnitTestLabel: string | undefined;
+  setHighlightedUnitTestLabel: (label: string | undefined) => void;
+  navigateToUnitTestInEditor: (label: string) => void;
   // Legacy API - will be deprecated
   setFoldedObjectAttributeOrArrayItems: React.Dispatch<
       React.SetStateAction<FoldedStateTree>
@@ -40,6 +44,9 @@ export class ReportPageContextDefault implements ReportPageContextType {
     public setNodeFolded: (path: (string | number)[], folded: FoldAction) => void,
     public foldAllChildren: (path: (string | number)[], childKeys: (string | number)[]) => void,
     public unfoldAllChildren: (path: (string | number)[], childKeys: (string | number)[]) => void,
+    public highlightedUnitTestLabel: string | undefined,
+    public setHighlightedUnitTestLabel: (label: string | undefined) => void,
+    public navigateToUnitTestInEditor: (label: string) => void,
   ) {
     // Empty constructor
   }
@@ -52,8 +59,35 @@ export function ReportPageContextProvider(props: {
 }) {
   const [foldedObjectAttributeOrArrayItems, setFoldedObjectAttributeOrArrayItems] =
     useState<FoldedStateTree>({});
-    
+  const [highlightedUnitTestLabel, setHighlightedUnitTestLabel] = useState<string | undefined>(
+    undefined,
+  );
+  const highlightClearTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+
   const context = useMiroirContextService();
+
+  useEffect(() => {
+    return () => {
+      if (highlightClearTimerRef.current) {
+        clearTimeout(highlightClearTimerRef.current);
+      }
+    };
+  }, []);
+
+  const handleNavigateToUnitTestInEditor = useCallback((label: string): void => {
+    setHighlightedUnitTestLabel(label);
+    if (highlightClearTimerRef.current) {
+      clearTimeout(highlightClearTimerRef.current);
+    }
+    highlightClearTimerRef.current = setTimeout(() => {
+      setHighlightedUnitTestLabel(undefined);
+    }, 4000);
+
+    requestAnimationFrame(() => {
+      const anchor = document.getElementById(unitTestAnchorId(label));
+      anchor?.scrollIntoView({ behavior: "smooth", block: "center" });
+    });
+  }, []);
 
   useEffect(() =>
     context.setSetFoldedObjectAttributeOrArrayItems((a) =>{
@@ -101,6 +135,9 @@ export function ReportPageContextProvider(props: {
         handleSetNodeFoldedState,
         handleFoldAllChildren,
         handleUnfoldAllChildren,
+        highlightedUnitTestLabel,
+        setHighlightedUnitTestLabel,
+        handleNavigateToUnitTestInEditor,
       );
     },
     [
@@ -110,6 +147,8 @@ export function ReportPageContextProvider(props: {
       handleSetNodeFoldedState,
       handleFoldAllChildren,
       handleUnfoldAllChildren,
+      highlightedUnitTestLabel,
+      handleNavigateToUnitTestInEditor,
     ]
   );
 

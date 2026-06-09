@@ -1,113 +1,34 @@
-import { useState, useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import {
   LoggerInterface,
   MiroirLoggerFactory,
-  type TestSuiteListFilter,
-  safeResolvePathOnObject,
-  alterObjectAtPathWithCreate,
   type TransformerTestDefinition,
-  type TransformerTestSuite,
-  type TransformerReturnType,
   type ViewParams
 } from "miroir-core";
 
 import { packageName } from '../../../../constants.js';
 import { cleanLevel } from '../../constants.js';
 import { RunTransformerTestSuiteButton } from '../Buttons/RunTransformerTestSuiteButton.js';
-import { TransformerTestResultExecutionSummary } from './TransformerTestResultExecutionSummary.js';
-import { TransformerTestResults, type TestResultDataAndSelect } from './TransformerTestResults.js';
+import { TestExecutionPanel } from './TestExecutionPanel.js';
+import { buildTestFilter, type TestResultDataAndSelect, type TestSelectionState } from './testSelectionUtils.js';
+import { createTransformerResetSelections } from './TransformerTestResults.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
   MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "TransformerTestDisplay"), "UI",
 ).then((logger: LoggerInterface) => {log = logger});
 
-// Test Selection Types
-export type TestSelectionState = {
-  [testPath: string]: boolean; // Full test path -> selected state
-};
+export type { TestSelectionState } from './testSelectionUtils.js';
 
 export interface TransformerTestSectionProps {
-  /** The transformer test suite instance */
-  // transformerTest: TransformerReturnType<TransformerTestDefinition> | undefined;
   transformerTest: TransformerTestDefinition;
-  /** Label for the test suite (used in buttons and displays) */
   testLabel: string;
-  /** Optional custom styling for the container */
   style?: React.CSSProperties;
   gridType: ViewParams["gridType"];
-  /** Whether to use snackbar for notifications */
   useSnackBar?: boolean;
-  /** Optional callback when tests complete */
   onTestComplete?: (testSuiteKey: string, structuredResults: TestResultDataAndSelect[]) => void;
 }
 
-/**
- * Build test filter from test selection state
- * @param testSelectionsState 
- * @param transformerTestResultsData 
- * @returns undefined if no selection happened (run all tests that are non-skipped), or { testList: { suiteName: [testName, ...], ... } }
- */
-const handleBuildTestFilter = (
-  testSelectionsState: TestSelectionState | undefined,
-  transformerTestResultsData: TestResultDataAndSelect[]
-): { testList?: TestSuiteListFilter } | undefined => {
-  // Get the list of selected test data (not just test names)
-  if (!testSelectionsState) {
-    return undefined;
-  }
-
-  const selectedTestData = transformerTestResultsData.filter(
-    (test) => testSelectionsState[test.testName] === true
-  );
-
-  if (selectedTestData.length === 0) {
-    return { testList: {} }; 
-  }
-
-  // Build simple hierarchical filter: suite name -> array of test names
-  const testList: { [key: string]: string[] } = {};
-
-  selectedTestData.forEach((resultTestData) => {
-    if (resultTestData.testPath) {
-      const testSuitePath = resultTestData.testPath.slice(0, -1); // All but last element is the suite path
-      const testName = resultTestData.testPath[resultTestData.testPath.length - 1]; // Last element is the actual test name (not the display name)
-
-      const currentTestList = safeResolvePathOnObject(testList, testSuitePath);
-      if (!currentTestList) {
-        alterObjectAtPathWithCreate(testList, testSuitePath, [ testName ]);
-      } else {
-        if (!currentTestList.includes(testName)) {
-          currentTestList.push(testName);
-        }
-      }
-    }
-  });
-
-  const filterResult = { testList: testList as TestSuiteListFilter };
-
-  log.info(
-    "handleBuildTestFilter: testSelectionsState=",
-    testSelectionsState,
-    ", selectedTestData=",
-    selectedTestData.map((t) => ({ name: t.testName, path: t.testPath })),
-    "filterResult=",
-    filterResult
-  );
-
-  return filterResult;
-};
-
-// ################################################################################################
-// ################################################################################################
-// ################################################################################################
-// ################################################################################################
-// ################################################################################################
-// ################################################################################################
-// ################################################################################################
-/**
- * Reusable component for transformer test execution and results display
- */
 export const TransformerTestDisplay = (props: TransformerTestSectionProps) => {
   const { transformerTest: instance, testLabel, style, useSnackBar = true, onTestComplete } = props;
 
@@ -117,16 +38,13 @@ export const TransformerTestDisplay = (props: TransformerTestSectionProps) => {
   const [testSelectionState, setTestSelectionsState] = useState<TestSelectionState | undefined>(undefined);
 
   const currentTestFilter = useMemo(() => {
-    return handleBuildTestFilter(testSelectionState, transformerTestResultsData);
+    return buildTestFilter(testSelectionState, transformerTestResultsData);
   }, [testSelectionState, transformerTestResultsData]);
-
-  log.info("TransformerTestDisplay: currentTestFilter:", currentTestFilter, "testSelectionState:", testSelectionState, "transformerTestResultsData:", transformerTestResultsData);
 
   const handleTestComplete = (testSuiteKey: string, structuredResults: TestResultDataAndSelect[]) => {
     setTransformerTestResultsData(structuredResults);
     log.info(`Test completed for ${testSuiteKey}:`, structuredResults);
-    
-    // Call optional external callback
+
     if (onTestComplete) {
       onTestComplete(testSuiteKey, structuredResults);
     }
@@ -147,7 +65,7 @@ export const TransformerTestDisplay = (props: TransformerTestSectionProps) => {
   return (
     <div style={defaultStyle}>
       <div style={{ marginBottom: "8px", fontWeight: "bold", color: "#1976d2" }}>
-        🧪 Transformer Test Available
+        Transformer Test Available
       </div>
 
       <RunTransformerTestSuiteButton
@@ -156,7 +74,7 @@ export const TransformerTestDisplay = (props: TransformerTestSectionProps) => {
         useSnackBar={useSnackBar}
         testFilter={currentTestFilter}
         onTestComplete={handleTestComplete}
-        label={`▶️ Run All ${testLabel} Tests`}
+        label={`Run All ${testLabel} Tests`}
         style={{
           backgroundColor: "#1976d2",
           color: "white",
@@ -168,29 +86,22 @@ export const TransformerTestDisplay = (props: TransformerTestSectionProps) => {
         }}
       />
 
-      {/* Test Results Display */}
-      {transformerTestResultsData && transformerTestResultsData.length > 0 && (
-        <div style={{ margin: "20px 0", width: "100%" }}>
-          {/* Test Execution Summary */}
-          <TransformerTestResultExecutionSummary
-            resolveConditionalSchemaResultsData={transformerTestResultsData}
-            testLabel={testLabel}
-          />
-
-          {instance ? (
-            <TransformerTestResults
-              transformerTestSuite={instance.definition}
-              transformerTestResultsData={transformerTestResultsData}
-              testLabel={testLabel}
-              testSelectionsState={testSelectionState}
-              setTestSelectionsState={setTestSelectionsState}
-              gridType={props.gridType}
-            />
-          ) : (
-            <span>No test results to display</span>
-          )}
-        </div>
-      )}
+      {transformerTestResultsData.length > 0 && instance ? (
+        <TestExecutionPanel
+          testLabel={testLabel}
+          testResultsData={transformerTestResultsData}
+          gridType={props.gridType}
+          enableSelection={true}
+          testSelectionsState={testSelectionState}
+          setTestSelectionsState={setTestSelectionsState}
+          onResetSelections={() => {
+            setTestSelectionsState(
+              createTransformerResetSelections(instance.definition, transformerTestResultsData),
+            );
+          }}
+          linkResultsToEditor={true}
+        />
+      ) : null}
     </div>
   );
 };

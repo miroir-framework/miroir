@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import {
   MiroirLoggerFactory,
   type LoggerInterface,
@@ -9,8 +9,8 @@ import {
 import { packageName } from "../../../../constants.js";
 import { cleanLevel } from "../../constants.js";
 import { RunUnitTestSuiteButton, type UnitTestResultData } from "../Buttons/RunUnitTestSuiteButton.js";
-import { UnitTestExecutionSummary } from "./UnitTestExecutionSummary.js";
-import { UnitTestResults, type UnitTestResultDataAndSelect } from "./UnitTestResults.js";
+import { TestExecutionPanel } from "./TestExecutionPanel.js";
+import { buildTestFilter, type TestResultDataAndSelect, type TestSelectionState } from "./testSelectionUtils.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -26,15 +26,22 @@ export interface UnitTestSectionProps {
   style?: React.CSSProperties;
   gridType: ViewParams["gridType"];
   useSnackBar?: boolean;
-  onTestComplete?: (testSuiteKey: string, structuredResults: UnitTestResultDataAndSelect[]) => void;
+  onTestComplete?: (testSuiteKey: string, structuredResults: TestResultDataAndSelect[]) => void;
 }
 
 export const UnitTestDisplay = (props: UnitTestSectionProps) => {
   const { unitTest: instance, testLabel, style, useSnackBar = true, onTestComplete } = props;
-  const [unitTestResultsData, setUnitTestResultsData] = useState<UnitTestResultDataAndSelect[]>([]);
+  const [unitTestResultsData, setUnitTestResultsData] = useState<TestResultDataAndSelect[]>([]);
+  const [testSelectionState, setTestSelectionsState] = useState<TestSelectionState | undefined>(
+    undefined,
+  );
+
+  const currentTestFilter = useMemo(() => {
+    return buildTestFilter(testSelectionState, unitTestResultsData);
+  }, [testSelectionState, unitTestResultsData]);
 
   const handleTestComplete = (testSuiteKey: string, structuredResults: UnitTestResultData[]) => {
-    const withSelection: UnitTestResultDataAndSelect[] = structuredResults.map((result) => ({
+    const withSelection: TestResultDataAndSelect[] = structuredResults.map((result) => ({
       ...result,
       selected: false,
     }));
@@ -67,6 +74,7 @@ export const UnitTestDisplay = (props: UnitTestSectionProps) => {
         unitTestSuite={instance}
         testSuiteKey={testLabel}
         useSnackBar={useSnackBar}
+        testFilter={currentTestFilter}
         onTestComplete={handleTestComplete}
         label={`Run All ${testLabel} Unit Tests`}
         style={{
@@ -80,12 +88,15 @@ export const UnitTestDisplay = (props: UnitTestSectionProps) => {
         }}
       />
 
-      {unitTestResultsData.length > 0 && (
-        <div style={{ margin: "20px 0", width: "100%" }}>
-          <UnitTestExecutionSummary testResultsData={unitTestResultsData} testLabel={testLabel} />
-          <UnitTestResults unitTestResultsData={unitTestResultsData} testLabel={testLabel} />
-        </div>
-      )}
+      <TestExecutionPanel
+        testLabel={testLabel}
+        testResultsData={unitTestResultsData}
+        gridType={props.gridType}
+        enableSelection={true}
+        testSelectionsState={testSelectionState}
+        setTestSelectionsState={setTestSelectionsState}
+        linkResultsToEditor={true}
+      />
     </div>
   );
 };

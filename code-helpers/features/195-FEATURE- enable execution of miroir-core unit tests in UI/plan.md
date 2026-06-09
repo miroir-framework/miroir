@@ -421,7 +421,86 @@ Follow established report-section patterns (`markdownReportSection`, `objectInst
 - [x] Wire in `ReportSectionViewWithEditor`; remove hard-coded `TransformerTestDisplay` from `ReportSectionEntityInstance`.
 - [x] Transformer Test details report (`1c06268b-…`) — `transformerTestReportSection` before instance editor.
 
-**Next (Phase 6c+):** kind-specific editors, unified run UX.
+#### Phase 6c — Kind-specific editors & unified run UX *(done)*
+
+- [x] `UnitTestKindBadge` in `JzodObjectEditor` per `unitTestType` (`functionCallTest`, `queryRunnerTest`, `transformerTest`, `unitTestSuite`); union discriminator already drives branch-specific fields.
+- [x] Shared `TestExecutionPanel` + `TestResultsGrid` + `testSelectionUtils` — used by `UnitTestDisplay` and `TransformerTestDisplay` (summary, grid, selection, assertion diff via `TestCellWithDetails`).
+- [x] `ReportPageContext.navigateToUnitTestInEditor` + anchor IDs on editor rows; failed-result **Edit** button scrolls/highlights matching `unitTestLabel`.
+
+#### Phase 6d — Remaining Class B jzod utility migrations *(pending)*
+
+Migrate vitest-only `functionCallTest` suites to `UnitTestDefinition` deployment JSON, following Phase 5a–5c patterns (`runDeployedUnitTestSuite` thin wrapper, `EXPORT_FUNCTION_CALL_SUITES=1`, `FunctionCallTestRegistry` whitelist).
+
+**Prerequisites (likely shared across batches):**
+
+- [ ] Register exports in `FunctionCallTestRegistry.ts` (most union helpers live in `jzodTypeCheck.ts` or sibling `1_core/jzod/*` modules).
+- [ ] Reuse `environmentRef` + `environmentArgumentIndex` where tests pass `defaultMetaModelEnvironment` / `defaultMiroirModelEnvironment`.
+- [ ] Use `expectedError` / `assertions[]` + `resultAccessPath` for functions returning `{ status: "error", … }` rather than throwing (notably `selectUnionBranchFromDiscriminator`).
+- [ ] Extend `export-function-call-suites.unit.test.ts` (or add batch-specific export script) for new `unitTest_suite_*` assets.
+
+##### Batch 6d-1 — Union resolution subgraph (~37 cases)
+
+Core union-matching utilities; complements the `jzodTypeCheck` transformer suite (Phase 5d).
+
+| Vitest file | Export | Cases (approx.) | Notes |
+|-------------|--------|-----------------|-------|
+| `jzod.selectUnionBranchFromDiscriminator.unit.test.ts` | `selectUnionBranchFromDiscriminator` | **15** | **Anchor suite** — literal/enum/multi-discriminator, extend clauses, real combiner/transformer branches; needs `environmentRef` |
+| `jzodUnion_RecursiveUnfold.test.ts` | `jzodUnion_recursivelyUnfold` | 12 | `defaultMetaModelEnvironment` arg |
+| `jzod.unionObjectChoices.test.ts` | `unionObjectChoices` | 4 | |
+| `jzod.unionResolvedTypeForObject.unit.test.ts` | `jzodUnionResolvedTypeForObject` | 2 | |
+| `jzod.unionResolvedTypeForArray.unit.test.ts` | `jzodUnionResolvedTypeForArray` | 2 | |
+| `unionArrayChoices.test.ts` | `unionArrayChoices` | 2 | |
+
+- [ ] `unitTest_suite_selectUnionBranchFromDiscriminator` — migrate all 15 cases first (validates error/success result shapes for registry).
+- [ ] `unitTest_suite_jzodUnion_RecursiveUnfold`
+- [ ] `unitTest_suite_unionObjectChoices`
+- [ ] `unitTest_suite_jzodUnionResolvedTypeForObject`
+- [ ] `unitTest_suite_jzodUnionResolvedTypeForArray`
+- [ ] `unitTest_suite_unionArrayChoices`
+- [ ] Deprecate vitest wrappers → `runDeployedUnitTestSuite` loaders.
+
+**Validation:** `RUN_TEST=jzod.selectUnionBranchFromDiscriminator.unit.test` (15/15); union batch combined green.
+
+##### Batch 6d-2 — Reference graph & context (~7 cases)
+
+| Vitest file | Export | Cases (approx.) | Notes |
+|-------------|--------|-----------------|-------|
+| `jzodReferencesGraphConnectedComponents.unit.test.ts` | `jzodReferencesGraphConnectedComponents` | 6 | uses `getExtendedSchemas` + bootstrap schema fixture |
+| `jzod.localizeReferenceContext.unit.test.ts` | `localizeJzodSchemaReferenceContext` | 1 | from `JzodUnfoldSchemaOnce`; `defaultMiroirMetaModel` arg |
+
+- [ ] `unitTest_suite_jzodReferencesGraphConnectedComponents`
+- [ ] `unitTest_suite_localizeJzodSchemaReferenceContext`
+- [ ] Registry whitelist + thin vitest wrappers.
+
+**Validation:** `RUN_TEST=jzodReferencesGraphConnectedComponents.unit.test` (6/6); `RUN_TEST=jzod.localizeReferenceContext.unit.test` (1/1).
+
+##### Batch 6d-3 — Non-jzod Class B stragglers (~36 cases)
+
+| Vitest file | Export | Cases (approx.) | Notes |
+|-------------|--------|-----------------|-------|
+| `tools.test.ts` | various `TestTools` / path helpers | **~35** | split into one or more suites by function family if JSON size is an issue |
+| `2_domain/resolveQueryTemplates.unit.test.ts` | `resolveQueryTemplate` (verify) | 1 | may need `environmentRef` or small inline fixture |
+
+- [ ] `unitTest_suite_tools` (or split: `unitTest_suite_getValueByDottedPath`, etc.)
+- [ ] `unitTest_suite_resolveQueryTemplates`
+- [ ] Registry whitelist for domain template resolution helpers.
+
+**Validation:** `RUN_TEST=tools.test` (35/35); `RUN_TEST=resolveQueryTemplates.unit.test` (1/1).
+
+##### Explicitly out of Phase 6d scope
+
+| Item | Reason |
+|------|--------|
+| `jzodToJzod.unit.test.ts` | Callback/comparative harness — defer (Phase 7 or `transformerTest`) |
+| `jzod.resolveReferenceInContext.OLD.unit.test.ts` | Superseded — delete |
+| `domainStateToDeploymentEntityState`, `resolveCompositeActionTemplate` | Large fixtures — remain vitest-only (Phase 7) |
+| Class A transformer suites already entity-backed | `resolveConditionalSchema`, `unfoldSchemaOnce`, `resolveSchemaReferenceInContext`, `defaultValueForJzodSchema` — no `functionCallTest` migration |
+
+**Export command (unchanged pattern):**
+
+```bash
+EXPORT_FUNCTION_CALL_SUITES=1 npx vitest run tests/export-function-call-suites.unit.test.ts
+```
 
 ### Phase 7 — Deferred migrations, integration modes & discovery
 
@@ -429,7 +508,6 @@ Moved from Phase 5e and former Phase 6.
 
 - [ ] UI toggle: unit vs integration for transformer tests (reuse `integrationTestExpectedValue`).
 - [ ] Document `RUN_TEST` / vitest filter conventions (see below).
-- [ ] Remaining Class B jzod utility migrations (`jzod/*` remaining ~15 files, `tools.test.ts`, `resolveQueryTemplates`, etc.).
 - [ ] Runner or report to browse all `UnitTestDefinition` instances by kind, tag, module.
 - [ ] Link from function/transformer/query editor to relevant test suites.
 - [ ] Optional: `vitestProxy` catalog entries for Class E tests (run via CLI only).
@@ -527,11 +605,19 @@ node packages/miroir-core/tests/scripts/merge-jzodTypeCheck-fail-cases.mjs
 | `1_core/ansiColumnsToJzodSchema.unit.test.ts` | B | done (Phase 5c) |
 | `1_core/jzod/jzodObjectFlatten.test.ts` | B | done (Phase 5c) |
 | `2_domain/modelUpdates.unit.test.ts` | B | done (Phase 5c) |
-| `1_core/jzod/*` (remaining 15 files) | B | medium |
-| `tools.test.ts` | B | medium |
+| `1_core/jzod/jzod.selectUnionBranchFromDiscriminator.unit.test.ts` | B | **Phase 6d-1** (15 cases) |
+| `1_core/jzod/jzodUnion_RecursiveUnfold.test.ts` | B | Phase 6d-1 |
+| `1_core/jzod/jzod.unionObjectChoices.test.ts` | B | Phase 6d-1 |
+| `1_core/jzod/jzod.unionResolvedTypeForObject.unit.test.ts` | B | Phase 6d-1 |
+| `1_core/jzod/jzod.unionResolvedTypeForArray.unit.test.ts` | B | Phase 6d-1 |
+| `1_core/jzod/unionArrayChoices.test.ts` | B | Phase 6d-1 |
+| `1_core/jzod/jzodReferencesGraphConnectedComponents.unit.test.ts` | B | Phase 6d-2 |
+| `1_core/jzod/jzod.localizeReferenceContext.unit.test.ts` | B | Phase 6d-2 |
+| `tools.test.ts` | B | Phase 6d-3 (~35 cases) |
 | `1_core/blobUtils.unit.test.ts` | E | vitest-only |
 | `2_domain/queries.unit.test.ts` | C | done (Phase 4) |
-| `2_domain/resolveQueryTemplates.unit.test.ts` | B | medium |
+| `2_domain/resolveQueryTemplates.unit.test.ts` | B | Phase 6d-3 |
+| `1_core/jzod/jzodToJzod.unit.test.ts` | B | defer (callback harness) |
 | `2_domain/domainStateToDeploymentEntityState.unit.test.ts` | B | **deferred** (vitest-only) |
 | `2_domain/modelUpdates.unit.test.ts` | B | done (Phase 5c) |
 | `2_domain/resolveCompositeActionTemplate.unit.test.ts` | B | **deferred** (vitest-only) |
