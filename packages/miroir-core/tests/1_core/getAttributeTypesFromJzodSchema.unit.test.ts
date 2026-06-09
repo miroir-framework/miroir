@@ -1,53 +1,11 @@
-// import { describe, it, expect } from "jest";
-import { getAttributeTypesFromJzodSchema } from "../../../miroir-store-postgres/src/1_core/mlSchema";
+import { unitTest_suite_getAttributeTypesFromJzodSchema } from "miroir-test-app_deployment-miroir";
 
+import {
+  runDeployedUnitTestSuite,
+  type DeployedUnitTestExport,
+} from "../helpers/runDeployedUnitTestSuite";
 
-describe("getAttributeTypesFromJzodSchema.unit", () => {
-  // ##############################################################################################
-  it("should throw an error when jzodElement has no type", () => {
-    const jzodElement = {
-      // type is missing
-      definition: {},
-    } as any;
-    expect(() => getAttributeTypesFromJzodSchema(jzodElement)).toThrowError("MlSchema has no type");
-  });
-
-  // ##############################################################################################
-  it("should throw an error when jzodElement type is not object", () => {
-    const jzodElement = {
-      type: "string",
-      definition: {},
-    } as any;
-    expect(() => getAttributeTypesFromJzodSchema(jzodElement)).toThrowError("MlSchema type is not object");
-  });
-
-  // ##############################################################################################
-  it("should throw an error for unsupported attribute type", () => {
-    const jzodElement = {
-      type: "object",
-      definition: {
-        field: { type: "unsupported" },
-      },
-    } as any;
-    expect(() => getAttributeTypesFromJzodSchema(jzodElement)).toThrowError("Jzod type unsupported not supported");
-  });
-
-  // ##############################################################################################
-  it("should return attribute types for valid jzodElement", () => {
-    const jzodElement = {
-      type: "object",
-      definition: {
-        age: { type: "number" },
-        name: { type: "string" },
-        isActive: { type: "boolean" }
-      },
-    } as any;
-    const result = getAttributeTypesFromJzodSchema(jzodElement);
-    expect(result).toEqual({
-      age: "double precision",
-      name: "text",
-      isActive: "boolean",
-    });
-  });
-
-});
+await runDeployedUnitTestSuite(
+  unitTest_suite_getAttributeTypesFromJzodSchema as DeployedUnitTestExport,
+  "getAttributeTypesFromJzodSchema.unit.test",
+);

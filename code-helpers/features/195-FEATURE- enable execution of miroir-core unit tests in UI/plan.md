@@ -380,15 +380,15 @@ First migration batch:
 - [x] `EntityPrimaryKey.unit.test.ts` → `unitTest_suite_EntityPrimaryKey` (36 cases; split composite/uuid PK checks).
 - [x] `jzodObjectFlatten.test.ts` → `unitTest_suite_jzodObjectFlatten` (8 cases; `environmentRef` + `expectedError`).
 - [x] `modelUpdates.unit.test.ts` → `unitTest_suite_modelUpdates` (6 cases; `expectedValue: null` + `expectedError`).
+- [x] `getAttributeTypesFromJzodSchema.unit.test.ts` → `unitTest_suite_getAttributeTypesFromJzodSchema` (4 cases; external package whitelist).
 
 Remaining 5c migrations (extensions ready, suites pending):
 
 | Extension | Files |
 |-----------|-------|
-| `expectedError` / throws | `getAttributeTypesFromJzodSchema` |
 | `fixtureRef` for large blobs | `domainStateToDeploymentEntityState`, `ansiColumnsToJzodSchema`, `resolveCompositeActionTemplate` |
 | Partial / multi-assert | `jzod.buildAnyKeyMap.unit.test.ts` |
-| External package whitelist | `getAttributeTypesFromJzodSchema`, `ansiColumnsToJzodSchema` |
+| External package whitelist | `ansiColumnsToJzodSchema` |
 
 #### Phase 5d — jzodTypeCheck consolidation
 

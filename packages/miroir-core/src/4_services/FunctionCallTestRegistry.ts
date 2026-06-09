@@ -23,6 +23,7 @@ import { jzodToJsonSchema } from "../1_core/jzod/JzodToJsonSchema";
 import { jzodObjectFlatten } from "../1_core/jzod/jzodObjectFlatten";
 import { getModelUpdate } from "../1_core/model/ModelUpdate";
 import { alterObjectAtPath } from "../tools";
+import { getAttributeTypesFromJzodSchema } from "miroir-store-postgres/src/1_core/mlSchema";
 
 export type FunctionCallRef = {
   module: string;
@@ -76,6 +77,9 @@ const FUNCTION_CALL_REGISTRY: Record<string, Record<string, WhitelistedFunction>
     getInstancePrimaryKeyValue: getInstancePrimaryKeyValue as WhitelistedFunction,
     getForeignKeyValue: getForeignKeyValue as WhitelistedFunction,
     instanceMatchesForeignKey: instanceMatchesForeignKey as WhitelistedFunction,
+  },
+  "miroir-store-postgres/1_core/mlSchema": {
+    getAttributeTypesFromJzodSchema: getAttributeTypesFromJzodSchema as WhitelistedFunction,
   },
 };
 

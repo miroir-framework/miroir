@@ -1,0 +1,92 @@
+{
+  "uuid": "66f402a1-c69c-46b1-8633-b610673b9877",
+  "parentName": "UnitTest",
+  "parentUuid": "a1bc5288-c982-4ff3-8316-4a2400fe9323",
+  "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+  "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
+  "name": "getAttributeTypesFromJzodSchema",
+  "description": "Phase 5c — getAttributeTypesFromJzodSchema (miroir-store-postgres)",
+  "definition": {
+    "unitTestType": "unitTestSuite",
+    "unitTestLabel": "getAttributeTypesFromJzodSchema",
+    "unitTests": [
+      {
+        "unitTestType": "functionCallTest",
+        "unitTestLabel": "should throw an error when jzodElement has no type",
+        "functionRef": {
+          "module": "miroir-store-postgres/1_core/mlSchema",
+          "export": "getAttributeTypesFromJzodSchema"
+        },
+        "arguments": [
+          {
+            "definition": {}
+          }
+        ],
+        "expectedError": "MlSchema has no type"
+      },
+      {
+        "unitTestType": "functionCallTest",
+        "unitTestLabel": "should throw an error when jzodElement type is not object",
+        "functionRef": {
+          "module": "miroir-store-postgres/1_core/mlSchema",
+          "export": "getAttributeTypesFromJzodSchema"
+        },
+        "arguments": [
+          {
+            "type": "string",
+            "definition": {}
+          }
+        ],
+        "expectedError": "MlSchema type is not object"
+      },
+      {
+        "unitTestType": "functionCallTest",
+        "unitTestLabel": "should throw an error for unsupported attribute type",
+        "functionRef": {
+          "module": "miroir-store-postgres/1_core/mlSchema",
+          "export": "getAttributeTypesFromJzodSchema"
+        },
+        "arguments": [
+          {
+            "type": "object",
+            "definition": {
+              "field": {
+                "type": "unsupported"
+              }
+            }
+          }
+        ],
+        "expectedError": "Jzod type unsupported not supported"
+      },
+      {
+        "unitTestType": "functionCallTest",
+        "unitTestLabel": "should return attribute types for valid jzodElement",
+        "functionRef": {
+          "module": "miroir-store-postgres/1_core/mlSchema",
+          "export": "getAttributeTypesFromJzodSchema"
+        },
+        "arguments": [
+          {
+            "type": "object",
+            "definition": {
+              "age": {
+                "type": "number"
+              },
+              "name": {
+                "type": "string"
+              },
+              "isActive": {
+                "type": "boolean"
+              }
+            }
+          }
+        ],
+        "expectedValue": {
+          "age": "double precision",
+          "name": "text",
+          "isActive": "boolean"
+        }
+      }
+    ]
+  }
+}
