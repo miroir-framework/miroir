@@ -6,17 +6,25 @@ import {
   type QueryRunnerFixture,
 } from "./QueryRunnerTestTools";
 
-export type FunctionCallFixture = QueryRunnerFixture;
+export type FunctionCallOnlyFixture = Record<string, unknown>;
+
+export type FunctionCallFixture = QueryRunnerFixture | FunctionCallOnlyFixture;
 
 const FUNCTION_CALL_ENVIRONMENTS: Record<string, () => MiroirModelEnvironment> = {
   defaultMiroirModelEnvironment: () => defaultMetaModelEnvironment,
 };
 
+const FUNCTION_CALL_ONLY_FIXTURES: Record<string, () => FunctionCallOnlyFixture> = {};
+
 export function listFunctionCallFixtureRefs(): string[] {
-  return listQueryRunnerFixtureRefs();
+  return [...listQueryRunnerFixtureRefs(), ...Object.keys(FUNCTION_CALL_ONLY_FIXTURES)];
 }
 
 export function resolveFunctionCallFixture(fixtureRef: string): FunctionCallFixture {
+  const loader = FUNCTION_CALL_ONLY_FIXTURES[fixtureRef];
+  if (loader) {
+    return loader();
+  }
   return resolveQueryRunnerFixture(fixtureRef);
 }
 
@@ -42,8 +50,8 @@ export function resolveFixtureProperty(
   fixtureProperty: string | undefined,
 ): unknown {
   const key = fixtureProperty ?? "domainState";
-  if (!(key in fixture)) {
-    throw new Error(`Unknown fixture property: ${key}`);
+  if (key in fixture) {
+    return fixture[key as keyof FunctionCallFixture];
   }
-  return fixture[key as keyof FunctionCallFixture];
+  throw new Error(`Unknown fixture property: ${key}`);
 }

@@ -201,6 +201,7 @@ export { default as unitTest_suite_EntityPrimaryKey } from "./assets/miroir_data
 export { default as unitTest_suite_jzodObjectFlatten } from "./assets/miroir_data/a1bc5288-c982-4ff3-8316-4a2400fe9323/912863b2-08d6-4e57-9bdd-9c35b1948403.json" assert { type: "json" };
 export { default as unitTest_suite_modelUpdates } from "./assets/miroir_data/a1bc5288-c982-4ff3-8316-4a2400fe9323/f74cd323-fe3f-426f-913a-6ca9cb353c08.json" assert { type: "json" };
 export { default as unitTest_suite_getAttributeTypesFromJzodSchema } from "./assets/miroir_data/a1bc5288-c982-4ff3-8316-4a2400fe9323/66f402a1-c69c-46b1-8633-b610673b9877.json" assert { type: "json" };
+export { default as unitTest_suite_ansiColumnsToJzodSchema } from "./assets/miroir_data/a1bc5288-c982-4ff3-8316-4a2400fe9323/7c9e6679-7425-40de-944b-e07fc1f90ae7.json" assert { type: "json" };
 
 // ################################################################################################
 // Miroir Data - TransformerDefinition (parentUuid = entityTransformerDefinition = a557419d)

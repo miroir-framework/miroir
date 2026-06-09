@@ -22,6 +22,7 @@ import { jzodToJzod_Summary } from "../1_core/jzod/JzodToJzod_Summary";
 import { jzodToJsonSchema } from "../1_core/jzod/JzodToJsonSchema";
 import { jzodObjectFlatten } from "../1_core/jzod/jzodObjectFlatten";
 import { getModelUpdate } from "../1_core/model/ModelUpdate";
+import { ansiColumnsToJzodSchema } from "../1_core/ansiColumnsToJzodSchema";
 import { alterObjectAtPath } from "../tools";
 import { getAttributeTypesFromJzodSchema } from "miroir-store-postgres/src/1_core/mlSchema";
 
@@ -65,6 +66,9 @@ const FUNCTION_CALL_REGISTRY: Record<string, Record<string, WhitelistedFunction>
   },
   "miroir-core/1_core/model/ModelUpdate": {
     getModelUpdate: getModelUpdate as WhitelistedFunction,
+  },
+  "miroir-core/1_core/ansiColumnsToJzodSchema": {
+    ansiColumnsToJzodSchema: ansiColumnsToJzodSchema as WhitelistedFunction,
   },
   "miroir-core/1_core/EntityPrimaryKey": {
     resolveInstanceParentUuid: resolveInstanceParentUuid as WhitelistedFunction,
