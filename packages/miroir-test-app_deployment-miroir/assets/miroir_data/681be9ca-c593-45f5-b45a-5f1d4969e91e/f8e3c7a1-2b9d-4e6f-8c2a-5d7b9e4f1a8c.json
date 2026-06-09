@@ -16,9 +16,24 @@
         "transformerName": "jzodTypeCheck",
         "runTestStep": "build",
         "subExpectedValue": [
-          ["status", "ok"],
-          ["rawSchema", {"type": "literal", "definition": "myLiteral"}],
-          ["resolvedSchema", {"type": "literal", "definition": "myLiteral"}]
+          [
+            "status",
+            "ok"
+          ],
+          [
+            "rawSchema",
+            {
+              "type": "literal",
+              "definition": "myLiteral"
+            }
+          ],
+          [
+            "resolvedSchema",
+            {
+              "type": "literal",
+              "definition": "myLiteral"
+            }
+          ]
         ],
         "transformer": {
           "transformerType": "jzodTypeCheck",
@@ -67,9 +82,22 @@
         "transformerName": "jzodTypeCheck",
         "runTestStep": "build",
         "subExpectedValue": [
-          ["status", "ok"],
-          ["rawSchema", {"type": "string"}],
-          ["resolvedSchema", {"type": "string"}]
+          [
+            "status",
+            "ok"
+          ],
+          [
+            "rawSchema",
+            {
+              "type": "string"
+            }
+          ],
+          [
+            "resolvedSchema",
+            {
+              "type": "string"
+            }
+          ]
         ],
         "transformer": {
           "transformerType": "jzodTypeCheck",
@@ -113,9 +141,22 @@
         "transformerName": "jzodTypeCheck",
         "runTestStep": "build",
         "subExpectedValue": [
-          ["status", "ok"],
-          ["rawSchema", {"type": "boolean"}],
-          ["resolvedSchema", {"type": "boolean"}]
+          [
+            "status",
+            "ok"
+          ],
+          [
+            "rawSchema",
+            {
+              "type": "boolean"
+            }
+          ],
+          [
+            "resolvedSchema",
+            {
+              "type": "boolean"
+            }
+          ]
         ],
         "transformer": {
           "transformerType": "jzodTypeCheck",
@@ -159,9 +200,22 @@
         "transformerName": "jzodTypeCheck",
         "runTestStep": "build",
         "subExpectedValue": [
-          ["status", "ok"],
-          ["rawSchema", {"type": "boolean"}],
-          ["resolvedSchema", {"type": "boolean"}]
+          [
+            "status",
+            "ok"
+          ],
+          [
+            "rawSchema",
+            {
+              "type": "boolean"
+            }
+          ],
+          [
+            "resolvedSchema",
+            {
+              "type": "boolean"
+            }
+          ]
         ],
         "transformer": {
           "transformerType": "jzodTypeCheck",
@@ -205,9 +259,30 @@
         "transformerName": "jzodTypeCheck",
         "runTestStep": "build",
         "subExpectedValue": [
-          ["status", "ok"],
-          ["rawSchema", {"type": "schemaReference", "context": {"a": {"type": "string"}}, "definition": {"relativePath": "a"}}],
-          ["resolvedSchema", {"type": "string"}]
+          [
+            "status",
+            "ok"
+          ],
+          [
+            "rawSchema",
+            {
+              "type": "schemaReference",
+              "context": {
+                "a": {
+                  "type": "string"
+                }
+              },
+              "definition": {
+                "relativePath": "a"
+              }
+            }
+          ],
+          [
+            "resolvedSchema",
+            {
+              "type": "string"
+            }
+          ]
         ],
         "transformer": {
           "transformerType": "jzodTypeCheck",
@@ -232,7 +307,9 @@
           "status": "ok",
           "schemaReferenceName": "a",
           "valuePath": [],
-          "typePath": ["ref:a"],
+          "typePath": [
+            "ref:a"
+          ],
           "rawSchema": {
             "type": "schemaReference",
             "context": {
@@ -279,9 +356,65 @@
         "transformerName": "jzodTypeCheck",
         "runTestStep": "build",
         "subExpectedValue": [
-          ["status", "ok"],
-          ["rawSchema", {"type": "schemaReference", "context": {"myObject": {"type": "object", "definition": {"a": {"type": "union", "definition": [{"type": "string", "optional": true}, {"type": "schemaReference", "definition": {"relativePath": "myObject"}}]}, "b": {"type": "string", "optional": true}, "c": {"type": "number", "optional": true}}}}, "definition": {"relativePath": "myObject"}}],
-          ["resolvedSchema", {"type": "object", "definition": {"a": {"type": "string", "optional": true}, "c": {"type": "number", "optional": true}}}]
+          [
+            "status",
+            "ok"
+          ],
+          [
+            "rawSchema",
+            {
+              "type": "schemaReference",
+              "context": {
+                "myObject": {
+                  "type": "object",
+                  "definition": {
+                    "a": {
+                      "type": "union",
+                      "definition": [
+                        {
+                          "type": "string",
+                          "optional": true
+                        },
+                        {
+                          "type": "schemaReference",
+                          "definition": {
+                            "relativePath": "myObject"
+                          }
+                        }
+                      ]
+                    },
+                    "b": {
+                      "type": "string",
+                      "optional": true
+                    },
+                    "c": {
+                      "type": "number",
+                      "optional": true
+                    }
+                  }
+                }
+              },
+              "definition": {
+                "relativePath": "myObject"
+              }
+            }
+          ],
+          [
+            "resolvedSchema",
+            {
+              "type": "object",
+              "definition": {
+                "a": {
+                  "type": "string",
+                  "optional": true
+                },
+                "c": {
+                  "type": "number",
+                  "optional": true
+                }
+              }
+            }
+          ]
         ],
         "transformer": {
           "transformerType": "jzodTypeCheck",
@@ -334,7 +467,9 @@
           "status": "ok",
           "schemaReferenceName": "myObject",
           "valuePath": [],
-          "typePath": ["ref:myObject"],
+          "typePath": [
+            "ref:myObject"
+          ],
           "rawSchema": {
             "type": "schemaReference",
             "context": {
@@ -387,8 +522,13 @@
           "subSchemas": {
             "a": {
               "status": "ok",
-              "valuePath": ["a"],
-              "typePath": ["ref:myObject", "a"],
+              "valuePath": [
+                "a"
+              ],
+              "typePath": [
+                "ref:myObject",
+                "a"
+              ],
               "rawSchema": {
                 "type": "union",
                 "definition": [
@@ -461,7 +601,9 @@
                         }
                       }
                     ],
-                    "expandedReferences": ["myObject"]
+                    "expandedReferences": [
+                      "myObject"
+                    ]
                   },
                   "resolvedSchema": {
                     "type": "string",
@@ -471,15 +613,25 @@
                     "type": "string",
                     "optional": true
                   },
-                  "valuePath": ["a"],
-                  "typePath": ["ref:myObject", "a"]
+                  "valuePath": [
+                    "a"
+                  ],
+                  "typePath": [
+                    "ref:myObject",
+                    "a"
+                  ]
                 }
               }
             },
             "c": {
               "status": "ok",
-              "valuePath": ["c"],
-              "typePath": ["ref:myObject", "c"],
+              "valuePath": [
+                "c"
+              ],
+              "typePath": [
+                "ref:myObject",
+                "c"
+              ],
               "rawSchema": {
                 "type": "number",
                 "optional": true
@@ -498,8 +650,13 @@
                     "type": "number",
                     "optional": true
                   },
-                  "valuePath": ["c"],
-                  "typePath": ["ref:myObject", "c"]
+                  "valuePath": [
+                    "c"
+                  ],
+                  "typePath": [
+                    "ref:myObject",
+                    "c"
+                  ]
                 }
               }
             }
@@ -557,7 +714,9 @@
                     }
                   }
                 ],
-                "expandedReferences": ["myObject"]
+                "expandedReferences": [
+                  "myObject"
+                ]
               },
               "resolvedSchema": {
                 "type": "string",
@@ -567,8 +726,13 @@
                 "type": "string",
                 "optional": true
               },
-              "valuePath": ["a"],
-              "typePath": ["ref:myObject", "a"]
+              "valuePath": [
+                "a"
+              ],
+              "typePath": [
+                "ref:myObject",
+                "a"
+              ]
             },
             "c": {
               "rawSchema": {
@@ -579,8 +743,13 @@
                 "type": "number",
                 "optional": true
               },
-              "valuePath": ["c"],
-              "typePath": ["ref:myObject", "c"]
+              "valuePath": [
+                "c"
+              ],
+              "typePath": [
+                "ref:myObject",
+                "c"
+              ]
             },
             "": {
               "rawSchema": {
@@ -701,9 +870,74 @@
         "transformerName": "jzodTypeCheck",
         "runTestStep": "build",
         "subExpectedValue": [
-          ["status", "ok"],
-          ["rawSchema", {"type": "schemaReference", "context": {"myObject": {"type": "object", "definition": {"a": {"type": "union", "definition": [{"type": "string", "optional": true}, {"type": "schemaReference", "definition": {"relativePath": "myObject"}}]}, "b": {"type": "string", "optional": true}, "c": {"type": "number", "optional": true}}}}, "definition": {"relativePath": "myObject"}}],
-          ["resolvedSchema", {"type": "object", "definition": {"a": {"type": "object", "definition": {"a": {"type": "string", "optional": true}, "c": {"type": "number", "optional": true}}}, "c": {"type": "number", "optional": true}}}]
+          [
+            "status",
+            "ok"
+          ],
+          [
+            "rawSchema",
+            {
+              "type": "schemaReference",
+              "context": {
+                "myObject": {
+                  "type": "object",
+                  "definition": {
+                    "a": {
+                      "type": "union",
+                      "definition": [
+                        {
+                          "type": "string",
+                          "optional": true
+                        },
+                        {
+                          "type": "schemaReference",
+                          "definition": {
+                            "relativePath": "myObject"
+                          }
+                        }
+                      ]
+                    },
+                    "b": {
+                      "type": "string",
+                      "optional": true
+                    },
+                    "c": {
+                      "type": "number",
+                      "optional": true
+                    }
+                  }
+                }
+              },
+              "definition": {
+                "relativePath": "myObject"
+              }
+            }
+          ],
+          [
+            "resolvedSchema",
+            {
+              "type": "object",
+              "definition": {
+                "a": {
+                  "type": "object",
+                  "definition": {
+                    "a": {
+                      "type": "string",
+                      "optional": true
+                    },
+                    "c": {
+                      "type": "number",
+                      "optional": true
+                    }
+                  }
+                },
+                "c": {
+                  "type": "number",
+                  "optional": true
+                }
+              }
+            }
+          ]
         ],
         "transformer": {
           "transformerType": "jzodTypeCheck",
@@ -755,11 +989,13 @@
           "currentTypePath": [],
           "relativeReferenceJzodContext": {}
         },
-        "expectedValue":  {
+        "expectedValue": {
           "status": "ok",
           "schemaReferenceName": "myObject",
           "valuePath": [],
-          "typePath": ["ref:myObject"],
+          "typePath": [
+            "ref:myObject"
+          ],
           "rawSchema": {
             "type": "schemaReference",
             "context": {
@@ -821,8 +1057,14 @@
           "subSchemas": {
             "a": {
               "status": "ok",
-              "valuePath": ["a"],
-              "typePath": ["ref:myObject", "a", "union choice(undefined)"],
+              "valuePath": [
+                "a"
+              ],
+              "typePath": [
+                "ref:myObject",
+                "a",
+                "union choice(undefined)"
+              ],
               "rawSchema": {
                 "type": "union",
                 "definition": [
@@ -854,8 +1096,16 @@
               "subSchemas": {
                 "a": {
                   "status": "ok",
-                  "valuePath": ["a", "a"],
-                  "typePath": ["ref:myObject", "a", "union choice(undefined)", "a"],
+                  "valuePath": [
+                    "a",
+                    "a"
+                  ],
+                  "typePath": [
+                    "ref:myObject",
+                    "a",
+                    "union choice(undefined)",
+                    "a"
+                  ],
                   "rawSchema": {
                     "type": "union",
                     "definition": [
@@ -928,7 +1178,9 @@
                             }
                           }
                         ],
-                        "expandedReferences": ["myObject"]
+                        "expandedReferences": [
+                          "myObject"
+                        ]
                       },
                       "resolvedSchema": {
                         "type": "string",
@@ -938,15 +1190,31 @@
                         "type": "string",
                         "optional": true
                       },
-                      "valuePath": ["a", "a"],
-                      "typePath": ["ref:myObject", "a", "union choice(undefined)", "a"]
+                      "valuePath": [
+                        "a",
+                        "a"
+                      ],
+                      "typePath": [
+                        "ref:myObject",
+                        "a",
+                        "union choice(undefined)",
+                        "a"
+                      ]
                     }
                   }
                 },
                 "c": {
                   "status": "ok",
-                  "valuePath": ["a", "c"],
-                  "typePath": ["ref:myObject", "a", "union choice(undefined)", "c"],
+                  "valuePath": [
+                    "a",
+                    "c"
+                  ],
+                  "typePath": [
+                    "ref:myObject",
+                    "a",
+                    "union choice(undefined)",
+                    "c"
+                  ],
                   "rawSchema": {
                     "type": "number",
                     "optional": true
@@ -965,8 +1233,16 @@
                         "type": "number",
                         "optional": true
                       },
-                      "valuePath": ["a", "c"],
-                      "typePath": ["ref:myObject", "a", "union choice(undefined)", "c"]
+                      "valuePath": [
+                        "a",
+                        "c"
+                      ],
+                      "typePath": [
+                        "ref:myObject",
+                        "a",
+                        "union choice(undefined)",
+                        "c"
+                      ]
                     }
                   }
                 }
@@ -1024,7 +1300,9 @@
                         }
                       }
                     ],
-                    "expandedReferences": ["myObject"]
+                    "expandedReferences": [
+                      "myObject"
+                    ]
                   },
                   "resolvedSchema": {
                     "type": "string",
@@ -1034,8 +1312,16 @@
                     "type": "string",
                     "optional": true
                   },
-                  "valuePath": ["a", "a"],
-                  "typePath": ["ref:myObject", "a", "union choice(undefined)", "a"]
+                  "valuePath": [
+                    "a",
+                    "a"
+                  ],
+                  "typePath": [
+                    "ref:myObject",
+                    "a",
+                    "union choice(undefined)",
+                    "a"
+                  ]
                 },
                 "a.c": {
                   "rawSchema": {
@@ -1046,8 +1332,16 @@
                     "type": "number",
                     "optional": true
                   },
-                  "valuePath": ["a", "c"],
-                  "typePath": ["ref:myObject", "a", "union choice(undefined)", "c"]
+                  "valuePath": [
+                    "a",
+                    "c"
+                  ],
+                  "typePath": [
+                    "ref:myObject",
+                    "a",
+                    "union choice(undefined)",
+                    "c"
+                  ]
                 },
                 "a": {
                   "rawSchema": {
@@ -1106,8 +1400,14 @@
                       }
                     }
                   },
-                  "valuePath": ["a"],
-                  "typePath": ["ref:myObject", "a", "union choice(undefined)"],
+                  "valuePath": [
+                    "a"
+                  ],
+                  "typePath": [
+                    "ref:myObject",
+                    "a",
+                    "union choice(undefined)"
+                  ],
                   "recursivelyUnfoldedUnionSchema": {
                     "status": "ok",
                     "result": [
@@ -1144,7 +1444,9 @@
                         }
                       }
                     ],
-                    "expandedReferences": ["myObject"]
+                    "expandedReferences": [
+                      "myObject"
+                    ]
                   },
                   "chosenUnionBranchRawSchema": {
                     "type": "object",
@@ -1180,8 +1482,13 @@
             },
             "c": {
               "status": "ok",
-              "valuePath": ["c"],
-              "typePath": ["ref:myObject", "c"],
+              "valuePath": [
+                "c"
+              ],
+              "typePath": [
+                "ref:myObject",
+                "c"
+              ],
               "rawSchema": {
                 "type": "number",
                 "optional": true
@@ -1200,8 +1507,13 @@
                     "type": "number",
                     "optional": true
                   },
-                  "valuePath": ["c"],
-                  "typePath": ["ref:myObject", "c"]
+                  "valuePath": [
+                    "c"
+                  ],
+                  "typePath": [
+                    "ref:myObject",
+                    "c"
+                  ]
                 }
               }
             }
@@ -1259,7 +1571,9 @@
                     }
                   }
                 ],
-                "expandedReferences": ["myObject"]
+                "expandedReferences": [
+                  "myObject"
+                ]
               },
               "resolvedSchema": {
                 "type": "string",
@@ -1269,8 +1583,16 @@
                 "type": "string",
                 "optional": true
               },
-              "valuePath": ["a", "a"],
-              "typePath": ["ref:myObject", "a", "union choice(undefined)", "a"]
+              "valuePath": [
+                "a",
+                "a"
+              ],
+              "typePath": [
+                "ref:myObject",
+                "a",
+                "union choice(undefined)",
+                "a"
+              ]
             },
             "a.c": {
               "rawSchema": {
@@ -1281,8 +1603,16 @@
                 "type": "number",
                 "optional": true
               },
-              "valuePath": ["a", "c"],
-              "typePath": ["ref:myObject", "a", "union choice(undefined)", "c"]
+              "valuePath": [
+                "a",
+                "c"
+              ],
+              "typePath": [
+                "ref:myObject",
+                "a",
+                "union choice(undefined)",
+                "c"
+              ]
             },
             "a": {
               "rawSchema": {
@@ -1341,8 +1671,14 @@
                   }
                 }
               },
-              "valuePath": ["a"],
-              "typePath": ["ref:myObject", "a", "union choice(undefined)"],
+              "valuePath": [
+                "a"
+              ],
+              "typePath": [
+                "ref:myObject",
+                "a",
+                "union choice(undefined)"
+              ],
               "recursivelyUnfoldedUnionSchema": {
                 "status": "ok",
                 "result": [
@@ -1379,7 +1715,9 @@
                     }
                   }
                 ],
-                "expandedReferences": ["myObject"]
+                "expandedReferences": [
+                  "myObject"
+                ]
               },
               "chosenUnionBranchRawSchema": {
                 "type": "object",
@@ -1420,8 +1758,13 @@
                 "type": "number",
                 "optional": true
               },
-              "valuePath": ["c"],
-              "typePath": ["ref:myObject", "c"]
+              "valuePath": [
+                "c"
+              ],
+              "typePath": [
+                "ref:myObject",
+                "c"
+              ]
             },
             "": {
               "rawSchema": {
@@ -1551,9 +1894,61 @@
         "transformerName": "jzodTypeCheck",
         "runTestStep": "build",
         "subExpectedValue": [
-          ["status", "ok"],
-          ["rawSchema", {"type": "schemaReference", "context": {"myObject": {"type": "object", "definition": {"a": {"type": "union", "definition": [{"type": "string"}, {"type": "schemaReference", "definition": {"relativePath": "myObject"}}]}}}}, "definition": {"relativePath": "myObject"}}],
-          ["resolvedSchema", {"type": "object", "definition": {"a": {"type": "object", "definition": {"a": {"type": "object", "definition": {"a": {"type": "string"}}}}}}}]
+          [
+            "status",
+            "ok"
+          ],
+          [
+            "rawSchema",
+            {
+              "type": "schemaReference",
+              "context": {
+                "myObject": {
+                  "type": "object",
+                  "definition": {
+                    "a": {
+                      "type": "union",
+                      "definition": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "schemaReference",
+                          "definition": {
+                            "relativePath": "myObject"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              },
+              "definition": {
+                "relativePath": "myObject"
+              }
+            }
+          ],
+          [
+            "resolvedSchema",
+            {
+              "type": "object",
+              "definition": {
+                "a": {
+                  "type": "object",
+                  "definition": {
+                    "a": {
+                      "type": "object",
+                      "definition": {
+                        "a": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          ]
         ],
         "transformer": {
           "transformerType": "jzodTypeCheck",
@@ -1596,11 +1991,13 @@
           "currentTypePath": [],
           "relativeReferenceJzodContext": {}
         },
-        "expectedValue":  {
+        "expectedValue": {
           "status": "ok",
           "schemaReferenceName": "myObject",
           "valuePath": [],
-          "typePath": ["ref:myObject"],
+          "typePath": [
+            "ref:myObject"
+          ],
           "rawSchema": {
             "type": "schemaReference",
             "context": {
@@ -1649,8 +2046,14 @@
           "subSchemas": {
             "a": {
               "status": "ok",
-              "valuePath": ["a"],
-              "typePath": ["ref:myObject", "a", "union choice(undefined)"],
+              "valuePath": [
+                "a"
+              ],
+              "typePath": [
+                "ref:myObject",
+                "a",
+                "union choice(undefined)"
+              ],
               "rawSchema": {
                 "type": "union",
                 "definition": [
@@ -1681,7 +2084,10 @@
               "subSchemas": {
                 "a": {
                   "status": "ok",
-                  "valuePath": ["a", "a"],
+                  "valuePath": [
+                    "a",
+                    "a"
+                  ],
                   "typePath": [
                     "ref:myObject",
                     "a",
@@ -1714,7 +2120,11 @@
                   "subSchemas": {
                     "a": {
                       "status": "ok",
-                      "valuePath": ["a", "a", "a"],
+                      "valuePath": [
+                        "a",
+                        "a",
+                        "a"
+                      ],
                       "typePath": [
                         "ref:myObject",
                         "a",
@@ -1782,7 +2192,9 @@
                                 }
                               }
                             ],
-                            "expandedReferences": ["myObject"]
+                            "expandedReferences": [
+                              "myObject"
+                            ]
                           },
                           "resolvedSchema": {
                             "type": "string"
@@ -1790,7 +2202,11 @@
                           "chosenUnionBranchRawSchema": {
                             "type": "string"
                           },
-                          "valuePath": ["a", "a", "a"],
+                          "valuePath": [
+                            "a",
+                            "a",
+                            "a"
+                          ],
                           "typePath": [
                             "ref:myObject",
                             "a",
@@ -1845,7 +2261,9 @@
                             }
                           }
                         ],
-                        "expandedReferences": ["myObject"]
+                        "expandedReferences": [
+                          "myObject"
+                        ]
                       },
                       "resolvedSchema": {
                         "type": "string"
@@ -1853,7 +2271,11 @@
                       "chosenUnionBranchRawSchema": {
                         "type": "string"
                       },
-                      "valuePath": ["a", "a", "a"],
+                      "valuePath": [
+                        "a",
+                        "a",
+                        "a"
+                      ],
                       "typePath": [
                         "ref:myObject",
                         "a",
@@ -1905,7 +2327,10 @@
                           }
                         }
                       },
-                      "valuePath": ["a", "a"],
+                      "valuePath": [
+                        "a",
+                        "a"
+                      ],
                       "typePath": [
                         "ref:myObject",
                         "a",
@@ -1939,7 +2364,9 @@
                             }
                           }
                         ],
-                        "expandedReferences": ["myObject"]
+                        "expandedReferences": [
+                          "myObject"
+                        ]
                       },
                       "chosenUnionBranchRawSchema": {
                         "type": "object",
@@ -2007,7 +2434,9 @@
                         }
                       }
                     ],
-                    "expandedReferences": ["myObject"]
+                    "expandedReferences": [
+                      "myObject"
+                    ]
                   },
                   "resolvedSchema": {
                     "type": "string"
@@ -2015,7 +2444,11 @@
                   "chosenUnionBranchRawSchema": {
                     "type": "string"
                   },
-                  "valuePath": ["a", "a", "a"],
+                  "valuePath": [
+                    "a",
+                    "a",
+                    "a"
+                  ],
                   "typePath": [
                     "ref:myObject",
                     "a",
@@ -2067,7 +2500,10 @@
                       }
                     }
                   },
-                  "valuePath": ["a", "a"],
+                  "valuePath": [
+                    "a",
+                    "a"
+                  ],
                   "typePath": [
                     "ref:myObject",
                     "a",
@@ -2101,7 +2537,9 @@
                         }
                       }
                     ],
-                    "expandedReferences": ["myObject"]
+                    "expandedReferences": [
+                      "myObject"
+                    ]
                   },
                   "chosenUnionBranchRawSchema": {
                     "type": "object",
@@ -2171,8 +2609,14 @@
                       }
                     }
                   },
-                  "valuePath": ["a"],
-                  "typePath": ["ref:myObject", "a", "union choice(undefined)"],
+                  "valuePath": [
+                    "a"
+                  ],
+                  "typePath": [
+                    "ref:myObject",
+                    "a",
+                    "union choice(undefined)"
+                  ],
                   "recursivelyUnfoldedUnionSchema": {
                     "status": "ok",
                     "result": [
@@ -2199,7 +2643,9 @@
                         }
                       }
                     ],
-                    "expandedReferences": ["myObject"]
+                    "expandedReferences": [
+                      "myObject"
+                    ]
                   },
                   "chosenUnionBranchRawSchema": {
                     "type": "object",
@@ -2267,7 +2713,9 @@
                     }
                   }
                 ],
-                "expandedReferences": ["myObject"]
+                "expandedReferences": [
+                  "myObject"
+                ]
               },
               "resolvedSchema": {
                 "type": "string"
@@ -2275,7 +2723,11 @@
               "chosenUnionBranchRawSchema": {
                 "type": "string"
               },
-              "valuePath": ["a", "a", "a"],
+              "valuePath": [
+                "a",
+                "a",
+                "a"
+              ],
               "typePath": [
                 "ref:myObject",
                 "a",
@@ -2327,7 +2779,10 @@
                   }
                 }
               },
-              "valuePath": ["a", "a"],
+              "valuePath": [
+                "a",
+                "a"
+              ],
               "typePath": [
                 "ref:myObject",
                 "a",
@@ -2361,7 +2816,9 @@
                     }
                   }
                 ],
-                "expandedReferences": ["myObject"]
+                "expandedReferences": [
+                  "myObject"
+                ]
               },
               "chosenUnionBranchRawSchema": {
                 "type": "object",
@@ -2431,8 +2888,14 @@
                   }
                 }
               },
-              "valuePath": ["a"],
-              "typePath": ["ref:myObject", "a", "union choice(undefined)"],
+              "valuePath": [
+                "a"
+              ],
+              "typePath": [
+                "ref:myObject",
+                "a",
+                "union choice(undefined)"
+              ],
               "recursivelyUnfoldedUnionSchema": {
                 "status": "ok",
                 "result": [
@@ -2459,7 +2922,9 @@
                     }
                   }
                 ],
-                "expandedReferences": ["myObject"]
+                "expandedReferences": [
+                  "myObject"
+                ]
               },
               "chosenUnionBranchRawSchema": {
                 "type": "object",
@@ -2579,9 +3044,78 @@
         "transformerName": "jzodTypeCheck",
         "runTestStep": "build",
         "subExpectedValue": [
-          ["status", "ok"],
-          ["rawSchema", {"type": "schemaReference", "context": {"myObject": {"type": "object", "definition": {"a": {"type": "union", "definition": [{"type": "string"}, {"type": "schemaReference", "definition": {"relativePath": "myObject"}}]}}}, "myRecord": {"type": "record", "definition": {"type": "schemaReference", "definition": {"relativePath": "myObject"}}}}, "definition": {"relativePath": "myRecord"}}],
-          ["resolvedSchema", {"type": "object", "definition": {"r1": {"type": "object", "definition": {"a": {"type": "object", "definition": {"a": {"type": "string"}}}}}, "r2": {"type": "object", "definition": {"a": {"type": "string"}}}}}]
+          [
+            "status",
+            "ok"
+          ],
+          [
+            "rawSchema",
+            {
+              "type": "schemaReference",
+              "context": {
+                "myObject": {
+                  "type": "object",
+                  "definition": {
+                    "a": {
+                      "type": "union",
+                      "definition": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "schemaReference",
+                          "definition": {
+                            "relativePath": "myObject"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                },
+                "myRecord": {
+                  "type": "record",
+                  "definition": {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "myObject"
+                    }
+                  }
+                }
+              },
+              "definition": {
+                "relativePath": "myRecord"
+              }
+            }
+          ],
+          [
+            "resolvedSchema",
+            {
+              "type": "object",
+              "definition": {
+                "r1": {
+                  "type": "object",
+                  "definition": {
+                    "a": {
+                      "type": "object",
+                      "definition": {
+                        "a": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                },
+                "r2": {
+                  "type": "object",
+                  "definition": {
+                    "a": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          ]
         ],
         "transformer": {
           "transformerType": "jzodTypeCheck",
@@ -2636,11 +3170,13 @@
           "currentTypePath": [],
           "relativeReferenceJzodContext": {}
         },
-        "expectedValue":  {
+        "expectedValue": {
           "status": "ok",
           "schemaReferenceName": "myRecord",
           "valuePath": [],
-          "typePath": ["ref:myRecord"],
+          "typePath": [
+            "ref:myRecord"
+          ],
           "rawSchema": {
             "type": "schemaReference",
             "context": {
@@ -2707,8 +3243,14 @@
             "r1": {
               "status": "ok",
               "schemaReferenceName": "myObject",
-              "valuePath": ["r1"],
-              "typePath": ["ref:myRecord", "r1", "ref:myObject"],
+              "valuePath": [
+                "r1"
+              ],
+              "typePath": [
+                "ref:myRecord",
+                "r1",
+                "ref:myObject"
+              ],
               "rawSchema": {
                 "type": "schemaReference",
                 "definition": {
@@ -2731,7 +3273,10 @@
               "subSchemas": {
                 "a": {
                   "status": "ok",
-                  "valuePath": ["r1", "a"],
+                  "valuePath": [
+                    "r1",
+                    "a"
+                  ],
                   "typePath": [
                     "ref:myRecord",
                     "r1",
@@ -2764,7 +3309,11 @@
                   "subSchemas": {
                     "a": {
                       "status": "ok",
-                      "valuePath": ["r1", "a", "a"],
+                      "valuePath": [
+                        "r1",
+                        "a",
+                        "a"
+                      ],
                       "typePath": [
                         "ref:myRecord",
                         "r1",
@@ -2832,7 +3381,9 @@
                                 }
                               }
                             ],
-                            "expandedReferences": ["myObject"]
+                            "expandedReferences": [
+                              "myObject"
+                            ]
                           },
                           "resolvedSchema": {
                             "type": "string"
@@ -2840,7 +3391,11 @@
                           "chosenUnionBranchRawSchema": {
                             "type": "string"
                           },
-                          "valuePath": ["r1", "a", "a"],
+                          "valuePath": [
+                            "r1",
+                            "a",
+                            "a"
+                          ],
                           "typePath": [
                             "ref:myRecord",
                             "r1",
@@ -2895,7 +3450,9 @@
                             }
                           }
                         ],
-                        "expandedReferences": ["myObject"]
+                        "expandedReferences": [
+                          "myObject"
+                        ]
                       },
                       "resolvedSchema": {
                         "type": "string"
@@ -2903,7 +3460,11 @@
                       "chosenUnionBranchRawSchema": {
                         "type": "string"
                       },
-                      "valuePath": ["r1", "a", "a"],
+                      "valuePath": [
+                        "r1",
+                        "a",
+                        "a"
+                      ],
                       "typePath": [
                         "ref:myRecord",
                         "r1",
@@ -2955,7 +3516,10 @@
                           }
                         }
                       },
-                      "valuePath": ["r1", "a"],
+                      "valuePath": [
+                        "r1",
+                        "a"
+                      ],
                       "typePath": [
                         "ref:myRecord",
                         "r1",
@@ -2989,7 +3553,9 @@
                             }
                           }
                         ],
-                        "expandedReferences": ["myObject"]
+                        "expandedReferences": [
+                          "myObject"
+                        ]
                       },
                       "chosenUnionBranchRawSchema": {
                         "type": "object",
@@ -3057,7 +3623,9 @@
                         }
                       }
                     ],
-                    "expandedReferences": ["myObject"]
+                    "expandedReferences": [
+                      "myObject"
+                    ]
                   },
                   "resolvedSchema": {
                     "type": "string"
@@ -3065,7 +3633,11 @@
                   "chosenUnionBranchRawSchema": {
                     "type": "string"
                   },
-                  "valuePath": ["r1", "a", "a"],
+                  "valuePath": [
+                    "r1",
+                    "a",
+                    "a"
+                  ],
                   "typePath": [
                     "ref:myRecord",
                     "r1",
@@ -3117,7 +3689,10 @@
                       }
                     }
                   },
-                  "valuePath": ["r1", "a"],
+                  "valuePath": [
+                    "r1",
+                    "a"
+                  ],
                   "typePath": [
                     "ref:myRecord",
                     "r1",
@@ -3151,7 +3726,9 @@
                         }
                       }
                     ],
-                    "expandedReferences": ["myObject"]
+                    "expandedReferences": [
+                      "myObject"
+                    ]
                   },
                   "chosenUnionBranchRawSchema": {
                     "type": "object",
@@ -3213,8 +3790,13 @@
                       }
                     }
                   },
-                  "valuePath": ["r1"],
-                  "typePath": ["ref:myRecord", "r1"],
+                  "valuePath": [
+                    "r1"
+                  ],
+                  "typePath": [
+                    "ref:myRecord",
+                    "r1"
+                  ],
                   "resolvedReferenceSchemaInContext": {
                     "type": "object",
                     "definition": {
@@ -3240,8 +3822,14 @@
             "r2": {
               "status": "ok",
               "schemaReferenceName": "myObject",
-              "valuePath": ["r2"],
-              "typePath": ["ref:myRecord", "r2", "ref:myObject"],
+              "valuePath": [
+                "r2"
+              ],
+              "typePath": [
+                "ref:myRecord",
+                "r2",
+                "ref:myObject"
+              ],
               "rawSchema": {
                 "type": "schemaReference",
                 "definition": {
@@ -3259,8 +3847,16 @@
               "subSchemas": {
                 "a": {
                   "status": "ok",
-                  "valuePath": ["r2", "a"],
-                  "typePath": ["ref:myRecord", "r2", "ref:myObject", "a"],
+                  "valuePath": [
+                    "r2",
+                    "a"
+                  ],
+                  "typePath": [
+                    "ref:myRecord",
+                    "r2",
+                    "ref:myObject",
+                    "a"
+                  ],
                   "rawSchema": {
                     "type": "union",
                     "definition": [
@@ -3320,7 +3916,9 @@
                             }
                           }
                         ],
-                        "expandedReferences": ["myObject"]
+                        "expandedReferences": [
+                          "myObject"
+                        ]
                       },
                       "resolvedSchema": {
                         "type": "string"
@@ -3328,8 +3926,16 @@
                       "chosenUnionBranchRawSchema": {
                         "type": "string"
                       },
-                      "valuePath": ["r2", "a"],
-                      "typePath": ["ref:myRecord", "r2", "ref:myObject", "a"]
+                      "valuePath": [
+                        "r2",
+                        "a"
+                      ],
+                      "typePath": [
+                        "ref:myRecord",
+                        "r2",
+                        "ref:myObject",
+                        "a"
+                      ]
                     }
                   }
                 }
@@ -3376,7 +3982,9 @@
                         }
                       }
                     ],
-                    "expandedReferences": ["myObject"]
+                    "expandedReferences": [
+                      "myObject"
+                    ]
                   },
                   "resolvedSchema": {
                     "type": "string"
@@ -3384,8 +3992,16 @@
                   "chosenUnionBranchRawSchema": {
                     "type": "string"
                   },
-                  "valuePath": ["r2", "a"],
-                  "typePath": ["ref:myRecord", "r2", "ref:myObject", "a"]
+                  "valuePath": [
+                    "r2",
+                    "a"
+                  ],
+                  "typePath": [
+                    "ref:myRecord",
+                    "r2",
+                    "ref:myObject",
+                    "a"
+                  ]
                 },
                 "r2": {
                   "rawSchema": {
@@ -3421,8 +4037,13 @@
                       }
                     }
                   },
-                  "valuePath": ["r2"],
-                  "typePath": ["ref:myRecord", "r2"],
+                  "valuePath": [
+                    "r2"
+                  ],
+                  "typePath": [
+                    "ref:myRecord",
+                    "r2"
+                  ],
                   "resolvedReferenceSchemaInContext": {
                     "type": "object",
                     "definition": {
@@ -3488,7 +4109,9 @@
                     }
                   }
                 ],
-                "expandedReferences": ["myObject"]
+                "expandedReferences": [
+                  "myObject"
+                ]
               },
               "resolvedSchema": {
                 "type": "string"
@@ -3496,7 +4119,11 @@
               "chosenUnionBranchRawSchema": {
                 "type": "string"
               },
-              "valuePath": ["r1", "a", "a"],
+              "valuePath": [
+                "r1",
+                "a",
+                "a"
+              ],
               "typePath": [
                 "ref:myRecord",
                 "r1",
@@ -3548,8 +4175,17 @@
                   }
                 }
               },
-              "valuePath": ["r1", "a"],
-              "typePath": ["ref:myRecord", "r1", "ref:myObject", "a", "union choice(undefined)"],
+              "valuePath": [
+                "r1",
+                "a"
+              ],
+              "typePath": [
+                "ref:myRecord",
+                "r1",
+                "ref:myObject",
+                "a",
+                "union choice(undefined)"
+              ],
               "recursivelyUnfoldedUnionSchema": {
                 "status": "ok",
                 "result": [
@@ -3576,7 +4212,9 @@
                     }
                   }
                 ],
-                "expandedReferences": ["myObject"]
+                "expandedReferences": [
+                  "myObject"
+                ]
               },
               "chosenUnionBranchRawSchema": {
                 "type": "object",
@@ -3638,8 +4276,13 @@
                   }
                 }
               },
-              "valuePath": ["r1"],
-              "typePath": ["ref:myRecord", "r1"],
+              "valuePath": [
+                "r1"
+              ],
+              "typePath": [
+                "ref:myRecord",
+                "r1"
+              ],
               "resolvedReferenceSchemaInContext": {
                 "type": "object",
                 "definition": {
@@ -3701,7 +4344,9 @@
                     }
                   }
                 ],
-                "expandedReferences": ["myObject"]
+                "expandedReferences": [
+                  "myObject"
+                ]
               },
               "resolvedSchema": {
                 "type": "string"
@@ -3709,8 +4354,16 @@
               "chosenUnionBranchRawSchema": {
                 "type": "string"
               },
-              "valuePath": ["r2", "a"],
-              "typePath": ["ref:myRecord", "r2", "ref:myObject", "a"]
+              "valuePath": [
+                "r2",
+                "a"
+              ],
+              "typePath": [
+                "ref:myRecord",
+                "r2",
+                "ref:myObject",
+                "a"
+              ]
             },
             "r2": {
               "rawSchema": {
@@ -3746,8 +4399,13 @@
                   }
                 }
               },
-              "valuePath": ["r2"],
-              "typePath": ["ref:myRecord", "r2"],
+              "valuePath": [
+                "r2"
+              ],
+              "typePath": [
+                "ref:myRecord",
+                "r2"
+              ],
               "resolvedReferenceSchemaInContext": {
                 "type": "object",
                 "definition": {
@@ -3853,9 +4511,30 @@
         "transformerName": "jzodTypeCheck",
         "runTestStep": "build",
         "subExpectedValue": [
-          ["status", "ok"],
-          ["rawSchema", {"type": "union", "definition": [{"type": "string"}, {"type": "number"}]}],
-          ["resolvedSchema", {"type": "number"}]
+          [
+            "status",
+            "ok"
+          ],
+          [
+            "rawSchema",
+            {
+              "type": "union",
+              "definition": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "number"
+                }
+              ]
+            }
+          ],
+          [
+            "resolvedSchema",
+            {
+              "type": "number"
+            }
+          ]
         ],
         "transformer": {
           "transformerType": "jzodTypeCheck",
@@ -3938,9 +4617,22 @@
         "transformerName": "jzodTypeCheck",
         "runTestStep": "build",
         "subExpectedValue": [
-          ["status", "ok"],
-          ["rawSchema", {"type": "any"}],
-          ["resolvedSchema", {"type": "string"}]
+          [
+            "status",
+            "ok"
+          ],
+          [
+            "rawSchema",
+            {
+              "type": "any"
+            }
+          ],
+          [
+            "resolvedSchema",
+            {
+              "type": "string"
+            }
+          ]
         ],
         "transformer": {
           "transformerType": "jzodTypeCheck",
@@ -3957,12 +4649,20 @@
           "status": "ok",
           "valuePath": [],
           "typePath": [],
-          "rawSchema": {"type": "any"},
-          "resolvedSchema": {"type": "string"},
+          "rawSchema": {
+            "type": "any"
+          },
+          "resolvedSchema": {
+            "type": "string"
+          },
           "keyMap": {
             "": {
-              "rawSchema": {"type": "any"},
-              "resolvedSchema": {"type": "string"},
+              "rawSchema": {
+                "type": "any"
+              },
+              "resolvedSchema": {
+                "type": "string"
+              },
               "valuePath": [],
               "typePath": []
             }
@@ -3976,9 +4676,22 @@
         "transformerName": "jzodTypeCheck",
         "runTestStep": "build",
         "subExpectedValue": [
-          ["status", "ok"],
-          ["rawSchema", {"type": "any"}],
-          ["resolvedSchema", {"type": "number"}]
+          [
+            "status",
+            "ok"
+          ],
+          [
+            "rawSchema",
+            {
+              "type": "any"
+            }
+          ],
+          [
+            "resolvedSchema",
+            {
+              "type": "number"
+            }
+          ]
         ],
         "transformer": {
           "transformerType": "jzodTypeCheck",
@@ -3995,12 +4708,20 @@
           "status": "ok",
           "valuePath": [],
           "typePath": [],
-          "rawSchema": {"type": "any"},
-          "resolvedSchema": {"type": "number"},
+          "rawSchema": {
+            "type": "any"
+          },
+          "resolvedSchema": {
+            "type": "number"
+          },
           "keyMap": {
             "": {
-              "rawSchema": {"type": "any"},
-              "resolvedSchema": {"type": "number"},
+              "rawSchema": {
+                "type": "any"
+              },
+              "resolvedSchema": {
+                "type": "number"
+              },
               "valuePath": [],
               "typePath": []
             }
@@ -4014,11 +4735,39 @@
         "transformerName": "jzodTypeCheck",
         "runTestStep": "build",
         "subExpectedValue": [
-          ["status", "ok"],
-          ["rawSchema", {"type": "any"}],
-          ["resolvedSchema", {"type": "object", "definition": {"a": {"type": "string"}}}],
-          ["keyMap.a.rawSchema", {"type": "any"}],
-          ["keyMap.a.resolvedSchema", {"type": "string"}]
+          [
+            "status",
+            "ok"
+          ],
+          [
+            "rawSchema",
+            {
+              "type": "any"
+            }
+          ],
+          [
+            "resolvedSchema",
+            {
+              "type": "object",
+              "definition": {
+                "a": {
+                  "type": "string"
+                }
+              }
+            }
+          ],
+          [
+            "keyMap.a.rawSchema",
+            {
+              "type": "any"
+            }
+          ],
+          [
+            "keyMap.a.resolvedSchema",
+            {
+              "type": "string"
+            }
+          ]
         ],
         "transformer": {
           "transformerType": "jzodTypeCheck",
@@ -4026,7 +4775,9 @@
           "mlSchema": {
             "type": "any"
           },
-          "valueObject": {"a": "hello"},
+          "valueObject": {
+            "a": "hello"
+          },
           "currentValuePath": [],
           "currentTypePath": [],
           "relativeReferenceJzodContext": {}
@@ -4044,19 +4795,71 @@
           "mlSchema": {
             "type": "any"
           },
-          "valueObject": {"outer": {"inner": 42}},
+          "valueObject": {
+            "outer": {
+              "inner": 42
+            }
+          },
           "currentValuePath": [],
           "currentTypePath": [],
           "relativeReferenceJzodContext": {}
         },
         "subExpectedValue": [
-          ["status", "ok"],
-          ["rawSchema", {"type": "any"}],
-          ["resolvedSchema", {"type": "object", "definition": {"outer": {"type": "object", "definition": {"inner": {"type": "number"}}}}}],
-          ["keyMap.outer.rawSchema", {"type": "any"}],
-          ["keyMap.outer.resolvedSchema", {"type": "object", "definition": {"inner": {"type": "number"}}}],
-          ["keyMap.outer.inner.rawSchema", {"type": "any"}],
-          ["keyMap.outer.inner.resolvedSchema", {"type": "number"}]
+          [
+            "status",
+            "ok"
+          ],
+          [
+            "rawSchema",
+            {
+              "type": "any"
+            }
+          ],
+          [
+            "resolvedSchema",
+            {
+              "type": "object",
+              "definition": {
+                "outer": {
+                  "type": "object",
+                  "definition": {
+                    "inner": {
+                      "type": "number"
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          [
+            "keyMap.outer.rawSchema",
+            {
+              "type": "any"
+            }
+          ],
+          [
+            "keyMap.outer.resolvedSchema",
+            {
+              "type": "object",
+              "definition": {
+                "inner": {
+                  "type": "number"
+                }
+              }
+            }
+          ],
+          [
+            "keyMap.outer.inner.rawSchema",
+            {
+              "type": "any"
+            }
+          ],
+          [
+            "keyMap.outer.inner.resolvedSchema",
+            {
+              "type": "number"
+            }
+          ]
         ]
       },
       {
@@ -4066,9 +4869,30 @@
         "transformerName": "jzodTypeCheck",
         "runTestStep": "build",
         "subExpectedValue": [
-          ["status", "ok"],
-          ["rawSchema", {"type": "any"}],
-          ["resolvedSchema", {"type": "tuple", "definition": [{"type": "string"}, {"type": "number"}]}]
+          [
+            "status",
+            "ok"
+          ],
+          [
+            "rawSchema",
+            {
+              "type": "any"
+            }
+          ],
+          [
+            "resolvedSchema",
+            {
+              "type": "tuple",
+              "definition": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "number"
+                }
+              ]
+            }
+          ]
         ],
         "transformer": {
           "transformerType": "jzodTypeCheck",
@@ -4076,7 +4900,10 @@
           "mlSchema": {
             "type": "any"
           },
-          "valueObject": ["hello", 42],
+          "valueObject": [
+            "hello",
+            42
+          ],
           "currentValuePath": [],
           "currentTypePath": [],
           "relativeReferenceJzodContext": {}
@@ -4085,26 +4912,1495 @@
           "status": "ok",
           "valuePath": [],
           "typePath": [],
-          "rawSchema": {"type": "any"},
+          "rawSchema": {
+            "type": "any"
+          },
           "resolvedSchema": {
             "type": "tuple",
             "definition": [
-              {"type": "string"},
-              {"type": "number"}
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              }
             ]
           },
           "keyMap": {
             "": {
-              "rawSchema": {"type": "any"},
+              "rawSchema": {
+                "type": "any"
+              },
               "resolvedSchema": {
                 "type": "tuple",
                 "definition": [
-                  {"type": "string"},
-                  {"type": "number"}
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "number"
+                  }
                 ]
               },
               "valuePath": [],
               "typePath": []
+            }
+          }
+        }
+      },
+      {
+        "transformerTestType": "transformerTest",
+        "transformerTestLabel": "test180_any_null",
+        "transformerTestDescription": "Checks that null against an any schema resolves to a null schema",
+        "transformerName": "jzodTypeCheck",
+        "runTestStep": "build",
+        "subExpectedValue": [
+          [
+            "status",
+            "ok"
+          ],
+          [
+            "rawSchema",
+            {
+              "type": "any"
+            }
+          ],
+          [
+            "resolvedSchema",
+            {
+              "type": "null"
+            }
+          ]
+        ],
+        "transformer": {
+          "transformerType": "jzodTypeCheck",
+          "interpolation": "build",
+          "mlSchema": {
+            "type": "any"
+          },
+          "valueObject": null,
+          "currentValuePath": [],
+          "currentTypePath": [],
+          "relativeReferenceJzodContext": {}
+        },
+        "expectedValue": {
+          "status": "ok",
+          "valuePath": [],
+          "typePath": [],
+          "rawSchema": {
+            "type": "any"
+          },
+          "resolvedSchema": {
+            "type": "null"
+          },
+          "keyMap": {
+            "": {
+              "rawSchema": {
+                "type": "any"
+              },
+              "resolvedSchema": {
+                "type": "null"
+              },
+              "valuePath": [],
+              "typePath": []
+            }
+          }
+        }
+      },
+      {
+        "transformerTestType": "transformerTest",
+        "transformerTestLabel": "test181_any_boolean",
+        "transformerTestDescription": "Checks that a boolean value against an any schema resolves to a boolean schema",
+        "transformerName": "jzodTypeCheck",
+        "runTestStep": "build",
+        "subExpectedValue": [
+          [
+            "status",
+            "ok"
+          ],
+          [
+            "rawSchema",
+            {
+              "type": "any"
+            }
+          ],
+          [
+            "resolvedSchema",
+            {
+              "type": "boolean"
+            }
+          ]
+        ],
+        "transformer": {
+          "transformerType": "jzodTypeCheck",
+          "interpolation": "build",
+          "mlSchema": {
+            "type": "any"
+          },
+          "valueObject": false,
+          "currentValuePath": [],
+          "currentTypePath": [],
+          "relativeReferenceJzodContext": {}
+        },
+        "expectedValue": {
+          "status": "ok",
+          "valuePath": [],
+          "typePath": [],
+          "rawSchema": {
+            "type": "any"
+          },
+          "resolvedSchema": {
+            "type": "boolean"
+          },
+          "keyMap": {
+            "": {
+              "rawSchema": {
+                "type": "any"
+              },
+              "resolvedSchema": {
+                "type": "boolean"
+              },
+              "valuePath": [],
+              "typePath": []
+            }
+          }
+        }
+      },
+      {
+        "transformerTestType": "transformerTest",
+        "transformerTestLabel": "test182_any_empty_object",
+        "transformerTestDescription": "Checks that an empty object against an any schema resolves to an empty object schema",
+        "transformerName": "jzodTypeCheck",
+        "runTestStep": "build",
+        "subExpectedValue": [
+          [
+            "status",
+            "ok"
+          ],
+          [
+            "rawSchema",
+            {
+              "type": "any"
+            }
+          ],
+          [
+            "resolvedSchema",
+            {
+              "type": "object",
+              "definition": {}
+            }
+          ]
+        ],
+        "transformer": {
+          "transformerType": "jzodTypeCheck",
+          "interpolation": "build",
+          "mlSchema": {
+            "type": "any"
+          },
+          "valueObject": {},
+          "currentValuePath": [],
+          "currentTypePath": [],
+          "relativeReferenceJzodContext": {}
+        },
+        "expectedValue": {
+          "status": "ok",
+          "valuePath": [],
+          "typePath": [],
+          "rawSchema": {
+            "type": "any"
+          },
+          "resolvedSchema": {
+            "type": "object",
+            "definition": {}
+          },
+          "keyMap": {
+            "": {
+              "rawSchema": {
+                "type": "any"
+              },
+              "resolvedSchema": {
+                "type": "object",
+                "definition": {}
+              },
+              "valuePath": [],
+              "typePath": []
+            }
+          }
+        }
+      },
+      {
+        "transformerTestType": "transformerTest",
+        "transformerTestLabel": "test010",
+        "transformerTestDescription": "jzodTypeCheck fail case test010",
+        "transformerName": "jzodTypeCheck",
+        "runTestStep": "build",
+        "subExpectedValue": [
+          [
+            "status",
+            "error"
+          ],
+          [
+            "error",
+            "jzodTypeCheck failed to match value with literal schema"
+          ]
+        ],
+        "transformer": {
+          "transformerType": "jzodTypeCheck",
+          "interpolation": "build",
+          "mlSchema": {
+            "type": "literal",
+            "definition": "myLiteral"
+          },
+          "valueObject": 42,
+          "currentValuePath": [],
+          "currentTypePath": [],
+          "relativeReferenceJzodContext": {}
+        },
+        "expectedValue": {
+          "status": "error",
+          "error": "jzodTypeCheck failed to match value with literal schema",
+          "rawJzodSchemaType": "literal",
+          "valuePath": [],
+          "typePath": [],
+          "value": 42,
+          "rawSchema": {
+            "type": "literal",
+            "definition": "myLiteral"
+          }
+        }
+      },
+      {
+        "transformerTestType": "transformerTest",
+        "transformerTestLabel": "test011",
+        "transformerTestDescription": "jzodTypeCheck fail case test011",
+        "transformerName": "jzodTypeCheck",
+        "runTestStep": "build",
+        "subExpectedValue": [
+          [
+            "status",
+            "error"
+          ],
+          [
+            "error",
+            "jzodTypeCheck failed to match value with string schema"
+          ]
+        ],
+        "transformer": {
+          "transformerType": "jzodTypeCheck",
+          "interpolation": "build",
+          "mlSchema": {
+            "type": "string"
+          },
+          "valueObject": 42,
+          "currentValuePath": [],
+          "currentTypePath": [],
+          "relativeReferenceJzodContext": {}
+        },
+        "expectedValue": {
+          "status": "error",
+          "error": "jzodTypeCheck failed to match value with string schema",
+          "rawJzodSchemaType": "string",
+          "valuePath": [],
+          "typePath": [],
+          "value": 42,
+          "rawSchema": {
+            "type": "string"
+          }
+        }
+      },
+      {
+        "transformerTestType": "transformerTest",
+        "transformerTestLabel": "test012",
+        "transformerTestDescription": "jzodTypeCheck fail case test012",
+        "transformerName": "jzodTypeCheck",
+        "runTestStep": "build",
+        "subExpectedValue": [
+          [
+            "status",
+            "error"
+          ],
+          [
+            "error",
+            "jzodTypeCheck failed to match value with number schema"
+          ]
+        ],
+        "transformer": {
+          "transformerType": "jzodTypeCheck",
+          "interpolation": "build",
+          "mlSchema": {
+            "type": "number"
+          },
+          "valueObject": "42",
+          "currentValuePath": [],
+          "currentTypePath": [],
+          "relativeReferenceJzodContext": {}
+        },
+        "expectedValue": {
+          "status": "error",
+          "error": "jzodTypeCheck failed to match value with number schema",
+          "rawJzodSchemaType": "number",
+          "valuePath": [],
+          "typePath": [],
+          "value": "42",
+          "rawSchema": {
+            "type": "number"
+          }
+        }
+      },
+      {
+        "transformerTestType": "transformerTest",
+        "transformerTestLabel": "test013",
+        "transformerTestDescription": "jzodTypeCheck fail case test013",
+        "transformerName": "jzodTypeCheck",
+        "runTestStep": "build",
+        "subExpectedValue": [
+          [
+            "status",
+            "error"
+          ],
+          [
+            "error",
+            "jzodTypeCheck failed to match value with bigint schema"
+          ]
+        ],
+        "transformer": {
+          "transformerType": "jzodTypeCheck",
+          "interpolation": "build",
+          "mlSchema": {
+            "type": "bigint"
+          },
+          "valueObject": 42,
+          "currentValuePath": [],
+          "currentTypePath": [],
+          "relativeReferenceJzodContext": {}
+        },
+        "expectedValue": {
+          "status": "error",
+          "error": "jzodTypeCheck failed to match value with bigint schema",
+          "rawJzodSchemaType": "bigint",
+          "valuePath": [],
+          "typePath": [],
+          "value": 42,
+          "rawSchema": {
+            "type": "bigint"
+          }
+        }
+      },
+      {
+        "transformerTestType": "transformerTest",
+        "transformerTestLabel": "test014",
+        "transformerTestDescription": "jzodTypeCheck fail case test014",
+        "transformerName": "jzodTypeCheck",
+        "runTestStep": "build",
+        "subExpectedValue": [
+          [
+            "status",
+            "error"
+          ],
+          [
+            "error",
+            "jzodTypeCheck failed to match value with string schema"
+          ]
+        ],
+        "transformer": {
+          "transformerType": "jzodTypeCheck",
+          "interpolation": "build",
+          "mlSchema": {
+            "type": "string"
+          },
+          "valueObject": true,
+          "currentValuePath": [],
+          "currentTypePath": [],
+          "relativeReferenceJzodContext": {}
+        },
+        "expectedValue": {
+          "status": "error",
+          "error": "jzodTypeCheck failed to match value with string schema",
+          "rawJzodSchemaType": "string",
+          "valuePath": [],
+          "typePath": [],
+          "value": true,
+          "rawSchema": {
+            "type": "string"
+          }
+        }
+      },
+      {
+        "transformerTestType": "transformerTest",
+        "transformerTestLabel": "test015",
+        "transformerTestDescription": "jzodTypeCheck fail case test015",
+        "transformerName": "jzodTypeCheck",
+        "runTestStep": "build",
+        "subExpectedValue": [
+          [
+            "status",
+            "error"
+          ],
+          [
+            "error",
+            "jzodTypeCheck expected a value but got null for non-optional schema"
+          ]
+        ],
+        "transformer": {
+          "transformerType": "jzodTypeCheck",
+          "interpolation": "build",
+          "mlSchema": {
+            "type": "number"
+          },
+          "valueObject": null,
+          "currentValuePath": [],
+          "currentTypePath": [],
+          "relativeReferenceJzodContext": {}
+        },
+        "expectedValue": {
+          "status": "error",
+          "error": "jzodTypeCheck expected a value but got null for non-optional schema",
+          "rawJzodSchemaType": "number",
+          "valuePath": [],
+          "typePath": [],
+          "value": null,
+          "rawSchema": {
+            "type": "number"
+          }
+        }
+      },
+      {
+        "transformerTestType": "transformerTest",
+        "transformerTestLabel": "test016",
+        "transformerTestDescription": "jzodTypeCheck fail case test016",
+        "transformerName": "jzodTypeCheck",
+        "runTestStep": "build",
+        "subExpectedValue": [
+          [
+            "status",
+            "error"
+          ],
+          [
+            "error",
+            "jzodTypeCheck failed to match value with bigint schema"
+          ]
+        ],
+        "transformer": {
+          "transformerType": "jzodTypeCheck",
+          "interpolation": "build",
+          "mlSchema": {
+            "type": "bigint"
+          },
+          "valueObject": "42n",
+          "currentValuePath": [],
+          "currentTypePath": [],
+          "relativeReferenceJzodContext": {}
+        },
+        "expectedValue": {
+          "status": "error",
+          "error": "jzodTypeCheck failed to match value with bigint schema",
+          "rawJzodSchemaType": "bigint",
+          "valuePath": [],
+          "typePath": [],
+          "value": "42n",
+          "rawSchema": {
+            "type": "bigint"
+          }
+        }
+      },
+      {
+        "transformerTestType": "transformerTest",
+        "transformerTestLabel": "test017",
+        "transformerTestDescription": "jzodTypeCheck fail case test017",
+        "transformerName": "jzodTypeCheck",
+        "runTestStep": "build",
+        "subExpectedValue": [
+          [
+            "status",
+            "error"
+          ],
+          [
+            "error",
+            "jzodTypeCheck failed to match value with boolean schema"
+          ]
+        ],
+        "transformer": {
+          "transformerType": "jzodTypeCheck",
+          "interpolation": "build",
+          "mlSchema": {
+            "type": "boolean"
+          },
+          "valueObject": 42,
+          "currentValuePath": [],
+          "currentTypePath": [],
+          "relativeReferenceJzodContext": {}
+        },
+        "expectedValue": {
+          "status": "error",
+          "error": "jzodTypeCheck failed to match value with boolean schema",
+          "rawJzodSchemaType": "boolean",
+          "valuePath": [],
+          "typePath": [],
+          "value": 42,
+          "rawSchema": {
+            "type": "boolean"
+          }
+        }
+      },
+      {
+        "transformerTestType": "transformerTest",
+        "transformerTestLabel": "test018",
+        "transformerTestDescription": "jzodTypeCheck fail case test018",
+        "transformerName": "jzodTypeCheck",
+        "runTestStep": "build",
+        "subExpectedValue": [
+          [
+            "status",
+            "error"
+          ],
+          [
+            "error",
+            "jzodTypeCheck failed to match value with boolean schema"
+          ]
+        ],
+        "transformer": {
+          "transformerType": "jzodTypeCheck",
+          "interpolation": "build",
+          "mlSchema": {
+            "type": "boolean"
+          },
+          "valueObject": "true",
+          "currentValuePath": [],
+          "currentTypePath": [],
+          "relativeReferenceJzodContext": {}
+        },
+        "expectedValue": {
+          "status": "error",
+          "error": "jzodTypeCheck failed to match value with boolean schema",
+          "rawJzodSchemaType": "boolean",
+          "valuePath": [],
+          "typePath": [],
+          "value": "true",
+          "rawSchema": {
+            "type": "boolean"
+          }
+        }
+      },
+      {
+        "transformerTestType": "transformerTest",
+        "transformerTestLabel": "test019",
+        "transformerTestDescription": "jzodTypeCheck fail case test019",
+        "transformerName": "jzodTypeCheck",
+        "runTestStep": "build",
+        "subExpectedValue": [
+          [
+            "status",
+            "error"
+          ],
+          [
+            "error",
+            "jzodTypeCheck expected a value but got null for non-optional schema"
+          ]
+        ],
+        "transformer": {
+          "transformerType": "jzodTypeCheck",
+          "interpolation": "build",
+          "mlSchema": {
+            "type": "boolean"
+          },
+          "valueObject": null,
+          "currentValuePath": [],
+          "currentTypePath": [],
+          "relativeReferenceJzodContext": {}
+        },
+        "expectedValue": {
+          "status": "error",
+          "error": "jzodTypeCheck expected a value but got null for non-optional schema",
+          "rawJzodSchemaType": "boolean",
+          "valuePath": [],
+          "typePath": [],
+          "value": null,
+          "rawSchema": {
+            "type": "boolean"
+          }
+        }
+      },
+      {
+        "transformerTestType": "transformerTest",
+        "transformerTestLabel": "test020",
+        "transformerTestDescription": "jzodTypeCheck fail case test020",
+        "transformerName": "jzodTypeCheck",
+        "runTestStep": "build",
+        "subExpectedValue": [
+          [
+            "status",
+            "error"
+          ],
+          [
+            "error",
+            "jzodTypeCheck failed to match value with uuid schema"
+          ]
+        ],
+        "transformer": {
+          "transformerType": "jzodTypeCheck",
+          "interpolation": "build",
+          "mlSchema": {
+            "type": "uuid"
+          },
+          "valueObject": "not-a-uuid",
+          "currentValuePath": [],
+          "currentTypePath": [],
+          "relativeReferenceJzodContext": {}
+        },
+        "expectedValue": {
+          "status": "error",
+          "error": "jzodTypeCheck failed to match value with uuid schema",
+          "rawJzodSchemaType": "uuid",
+          "valuePath": [],
+          "typePath": [],
+          "value": "not-a-uuid",
+          "rawSchema": {
+            "type": "uuid"
+          }
+        }
+      },
+      {
+        "transformerTestType": "transformerTest",
+        "transformerTestLabel": "test021",
+        "transformerTestDescription": "jzodTypeCheck fail case test021",
+        "transformerName": "jzodTypeCheck",
+        "runTestStep": "build",
+        "subExpectedValue": [
+          [
+            "status",
+            "error"
+          ],
+          [
+            "error",
+            "jzodTypeCheck failed to match value with uuid schema"
+          ]
+        ],
+        "transformer": {
+          "transformerType": "jzodTypeCheck",
+          "interpolation": "build",
+          "mlSchema": {
+            "type": "uuid"
+          },
+          "valueObject": 123,
+          "currentValuePath": [],
+          "currentTypePath": [],
+          "relativeReferenceJzodContext": {}
+        },
+        "expectedValue": {
+          "status": "error",
+          "error": "jzodTypeCheck failed to match value with uuid schema",
+          "rawJzodSchemaType": "uuid",
+          "valuePath": [],
+          "typePath": [],
+          "value": 123,
+          "rawSchema": {
+            "type": "uuid"
+          }
+        }
+      },
+      {
+        "transformerTestType": "transformerTest",
+        "transformerTestLabel": "test022",
+        "transformerTestDescription": "jzodTypeCheck fail case test022",
+        "transformerName": "jzodTypeCheck",
+        "runTestStep": "build",
+        "subExpectedValue": [
+          [
+            "status",
+            "error"
+          ],
+          [
+            "error",
+            "jzodTypeCheck failed to match value with date schema. string could not be converted to Date. Value: \"not-a-date\""
+          ]
+        ],
+        "transformer": {
+          "transformerType": "jzodTypeCheck",
+          "interpolation": "build",
+          "mlSchema": {
+            "type": "date"
+          },
+          "valueObject": "not-a-date",
+          "currentValuePath": [],
+          "currentTypePath": [],
+          "relativeReferenceJzodContext": {}
+        },
+        "expectedValue": {
+          "status": "error",
+          "error": "jzodTypeCheck failed to match value with date schema. string could not be converted to Date. Value: \"not-a-date\"",
+          "rawJzodSchemaType": "date",
+          "valuePath": [],
+          "typePath": [],
+          "value": "\"not-a-date\"",
+          "rawSchema": {
+            "type": "date"
+          }
+        }
+      },
+      {
+        "transformerTestType": "transformerTest",
+        "transformerTestLabel": "test024",
+        "transformerTestDescription": "jzodTypeCheck fail case test024",
+        "transformerName": "jzodTypeCheck",
+        "runTestStep": "build",
+        "subExpectedValue": [
+          [
+            "status",
+            "error"
+          ],
+          [
+            "error",
+            "jzodTypeCheck expected a value but got null for non-optional schema"
+          ]
+        ],
+        "transformer": {
+          "transformerType": "jzodTypeCheck",
+          "interpolation": "build",
+          "mlSchema": {
+            "type": "date"
+          },
+          "valueObject": null,
+          "currentValuePath": [],
+          "currentTypePath": [],
+          "relativeReferenceJzodContext": {}
+        },
+        "expectedValue": {
+          "status": "error",
+          "error": "jzodTypeCheck expected a value but got null for non-optional schema",
+          "rawJzodSchemaType": "date",
+          "valuePath": [],
+          "typePath": [],
+          "value": null,
+          "rawSchema": {
+            "type": "date"
+          }
+        }
+      },
+      {
+        "transformerTestType": "transformerTest",
+        "transformerTestLabel": "test025",
+        "transformerTestDescription": "jzodTypeCheck fail case test025",
+        "transformerName": "jzodTypeCheck",
+        "runTestStep": "build",
+        "subExpectedValue": [
+          [
+            "status",
+            "error"
+          ],
+          [
+            "error",
+            "jzodTypeCheck expected a value but got null for non-optional schema"
+          ]
+        ],
+        "transformer": {
+          "transformerType": "jzodTypeCheck",
+          "interpolation": "build",
+          "mlSchema": {
+            "type": "string"
+          },
+          "valueObject": null,
+          "currentValuePath": [],
+          "currentTypePath": [],
+          "relativeReferenceJzodContext": {}
+        },
+        "expectedValue": {
+          "status": "error",
+          "error": "jzodTypeCheck expected a value but got null for non-optional schema",
+          "rawJzodSchemaType": "string",
+          "valuePath": [],
+          "typePath": [],
+          "value": null,
+          "rawSchema": {
+            "type": "string"
+          }
+        }
+      },
+      {
+        "transformerTestType": "transformerTest",
+        "transformerTestLabel": "test026",
+        "transformerTestDescription": "jzodTypeCheck fail case test026",
+        "transformerName": "jzodTypeCheck",
+        "runTestStep": "build",
+        "subExpectedValue": [
+          [
+            "status",
+            "error"
+          ],
+          [
+            "error",
+            "jzodTypeCheck expected a value but got null for non-optional schema"
+          ]
+        ],
+        "transformer": {
+          "transformerType": "jzodTypeCheck",
+          "interpolation": "build",
+          "mlSchema": {
+            "type": "number"
+          },
+          "valueObject": null,
+          "currentValuePath": [],
+          "currentTypePath": [],
+          "relativeReferenceJzodContext": {}
+        },
+        "expectedValue": {
+          "status": "error",
+          "error": "jzodTypeCheck expected a value but got null for non-optional schema",
+          "rawJzodSchemaType": "number",
+          "valuePath": [],
+          "typePath": [],
+          "value": null,
+          "rawSchema": {
+            "type": "number"
+          }
+        }
+      },
+      {
+        "transformerTestType": "transformerTest",
+        "transformerTestLabel": "test027",
+        "transformerTestDescription": "jzodTypeCheck fail case test027",
+        "transformerName": "jzodTypeCheck",
+        "runTestStep": "build",
+        "subExpectedValue": [
+          [
+            "status",
+            "error"
+          ],
+          [
+            "error",
+            "jzodTypeCheck expected a value but got null for non-optional schema"
+          ]
+        ],
+        "transformer": {
+          "transformerType": "jzodTypeCheck",
+          "interpolation": "build",
+          "mlSchema": {
+            "type": "bigint"
+          },
+          "valueObject": null,
+          "currentValuePath": [],
+          "currentTypePath": [],
+          "relativeReferenceJzodContext": {}
+        },
+        "expectedValue": {
+          "status": "error",
+          "error": "jzodTypeCheck expected a value but got null for non-optional schema",
+          "rawJzodSchemaType": "bigint",
+          "valuePath": [],
+          "typePath": [],
+          "value": null,
+          "rawSchema": {
+            "type": "bigint"
+          }
+        }
+      },
+      {
+        "transformerTestType": "transformerTest",
+        "transformerTestLabel": "test028",
+        "transformerTestDescription": "jzodTypeCheck fail case test028",
+        "transformerName": "jzodTypeCheck",
+        "runTestStep": "build",
+        "subExpectedValue": [
+          [
+            "status",
+            "error"
+          ],
+          [
+            "error",
+            "jzodTypeCheck expected a value but got null for non-optional schema"
+          ]
+        ],
+        "transformer": {
+          "transformerType": "jzodTypeCheck",
+          "interpolation": "build",
+          "mlSchema": {
+            "type": "boolean"
+          },
+          "valueObject": null,
+          "currentValuePath": [],
+          "currentTypePath": [],
+          "relativeReferenceJzodContext": {}
+        },
+        "expectedValue": {
+          "status": "error",
+          "error": "jzodTypeCheck expected a value but got null for non-optional schema",
+          "rawJzodSchemaType": "boolean",
+          "valuePath": [],
+          "typePath": [],
+          "value": null,
+          "rawSchema": {
+            "type": "boolean"
+          }
+        }
+      },
+      {
+        "transformerTestType": "transformerTest",
+        "transformerTestLabel": "test029",
+        "transformerTestDescription": "jzodTypeCheck fail case test029",
+        "transformerName": "jzodTypeCheck",
+        "runTestStep": "build",
+        "subExpectedValue": [
+          [
+            "status",
+            "error"
+          ],
+          [
+            "error",
+            "jzodTypeCheck expected a value but got null for non-optional schema"
+          ]
+        ],
+        "transformer": {
+          "transformerType": "jzodTypeCheck",
+          "interpolation": "build",
+          "mlSchema": {
+            "type": "uuid"
+          },
+          "valueObject": null,
+          "currentValuePath": [],
+          "currentTypePath": [],
+          "relativeReferenceJzodContext": {}
+        },
+        "expectedValue": {
+          "status": "error",
+          "error": "jzodTypeCheck expected a value but got null for non-optional schema",
+          "rawJzodSchemaType": "uuid",
+          "valuePath": [],
+          "typePath": [],
+          "value": null,
+          "rawSchema": {
+            "type": "uuid"
+          }
+        }
+      },
+      {
+        "transformerTestType": "transformerTest",
+        "transformerTestLabel": "test030",
+        "transformerTestDescription": "jzodTypeCheck fail case test030",
+        "transformerName": "jzodTypeCheck",
+        "runTestStep": "build",
+        "subExpectedValue": [
+          [
+            "status",
+            "error"
+          ],
+          [
+            "error",
+            "jzodTypeCheck failed to match value with date schema. string could not be converted to Date. Value: \"not-a-date\""
+          ]
+        ],
+        "transformer": {
+          "transformerType": "jzodTypeCheck",
+          "interpolation": "build",
+          "mlSchema": {
+            "type": "date"
+          },
+          "valueObject": "not-a-date",
+          "currentValuePath": [],
+          "currentTypePath": [],
+          "relativeReferenceJzodContext": {}
+        },
+        "expectedValue": {
+          "status": "error",
+          "error": "jzodTypeCheck failed to match value with date schema. string could not be converted to Date. Value: \"not-a-date\"",
+          "rawJzodSchemaType": "date",
+          "valuePath": [],
+          "typePath": [],
+          "value": "\"not-a-date\"",
+          "rawSchema": {
+            "type": "date"
+          }
+        }
+      },
+      {
+        "transformerTestType": "transformerTest",
+        "transformerTestLabel": "test100",
+        "transformerTestDescription": "jzodTypeCheck fail case test100",
+        "transformerName": "jzodTypeCheck",
+        "runTestStep": "build",
+        "subExpectedValue": [
+          [
+            "status",
+            "error"
+          ],
+          [
+            "error",
+            "jzodTypeCheck failed to match some object value attribute(s) with the schema of that attribute(s)"
+          ]
+        ],
+        "transformer": {
+          "transformerType": "jzodTypeCheck",
+          "interpolation": "build",
+          "mlSchema": {
+            "type": "object",
+            "definition": {
+              "name": {
+                "type": "string"
+              },
+              "age": {
+                "type": "number"
+              }
+            }
+          },
+          "valueObject": {
+            "name": 30,
+            "age": "John"
+          },
+          "currentValuePath": [],
+          "currentTypePath": [],
+          "relativeReferenceJzodContext": {}
+        },
+        "expectedValue": {
+          "status": "error",
+          "error": "jzodTypeCheck failed to match some object value attribute(s) with the schema of that attribute(s)",
+          "rawJzodSchemaType": "object",
+          "valuePath": [],
+          "typePath": [],
+          "errorOnValueAttributes": [
+            "name",
+            "age"
+          ],
+          "innerError": {
+            "name": {
+              "status": "error",
+              "error": "jzodTypeCheck failed to match value with string schema",
+              "rawJzodSchemaType": "string",
+              "valuePath": [
+                "name"
+              ],
+              "typePath": [
+                "name"
+              ],
+              "value": 30,
+              "rawSchema": {
+                "type": "string"
+              }
+            },
+            "age": {
+              "status": "error",
+              "error": "jzodTypeCheck failed to match value with number schema",
+              "rawJzodSchemaType": "number",
+              "valuePath": [
+                "age"
+              ],
+              "typePath": [
+                "age"
+              ],
+              "value": "John",
+              "rawSchema": {
+                "type": "number"
+              }
+            }
+          },
+          "value": {
+            "name": 30,
+            "age": "John"
+          },
+          "rawSchema": {
+            "type": "object",
+            "definition": {
+              "name": {
+                "type": "string"
+              },
+              "age": {
+                "type": "number"
+              }
+            }
+          }
+        }
+      },
+      {
+        "transformerTestType": "transformerTest",
+        "transformerTestLabel": "test110",
+        "transformerTestDescription": "jzodTypeCheck fail case test110",
+        "transformerName": "jzodTypeCheck",
+        "runTestStep": "build",
+        "subExpectedValue": [
+          [
+            "status",
+            "error"
+          ],
+          [
+            "error",
+            "jzodTypeCheck failed to match some object value attribute(s) with the schema of that attribute(s)"
+          ]
+        ],
+        "transformer": {
+          "transformerType": "jzodTypeCheck",
+          "interpolation": "build",
+          "mlSchema": {
+            "type": "object",
+            "definition": {
+              "name": {
+                "type": "string"
+              },
+              "age": {
+                "type": "number"
+              }
+            }
+          },
+          "valueObject": {
+            "name": "John",
+            "age": 30,
+            "unknownAttribute": "error"
+          },
+          "currentValuePath": [],
+          "currentTypePath": [],
+          "relativeReferenceJzodContext": {}
+        },
+        "expectedValue": {
+          "status": "error",
+          "error": "jzodTypeCheck failed to match some object value attribute(s) with the schema of that attribute(s)",
+          "rawJzodSchemaType": "object",
+          "valuePath": [],
+          "typePath": [],
+          "errorOnValueAttributes": [
+            "unknownAttribute"
+          ],
+          "innerError": {
+            "unknownAttribute": {
+              "status": "error",
+              "error": "jzodTypeCheck value attribute 'unknownAttribute' not found in schema definition",
+              "errorOnSchemaAttributes": {
+                "definition": {
+                  "age": {
+                    "type": "number"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "rawJzodSchemaType": "object",
+              "valuePath": [
+                "unknownAttribute"
+              ],
+              "typePath": [],
+              "value": {
+                "name": "John",
+                "age": 30,
+                "unknownAttribute": "error"
+              },
+              "rawSchema": {
+                "type": "object",
+                "definition": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "age": {
+                    "type": "number"
+                  }
+                }
+              }
+            }
+          },
+          "value": {
+            "name": "John",
+            "age": 30,
+            "unknownAttribute": "error"
+          },
+          "rawSchema": {
+            "type": "object",
+            "definition": {
+              "name": {
+                "type": "string"
+              },
+              "age": {
+                "type": "number"
+              }
+            }
+          }
+        }
+      },
+      {
+        "transformerTestType": "transformerTest",
+        "transformerTestLabel": "test120",
+        "transformerTestDescription": "jzodTypeCheck fail case test120",
+        "transformerName": "jzodTypeCheck",
+        "runTestStep": "build",
+        "subExpectedValue": [
+          [
+            "status",
+            "error"
+          ],
+          [
+            "error",
+            "jzodTypeCheck failed to match some object value attribute(s) with the schema of that attribute(s)"
+          ]
+        ],
+        "transformer": {
+          "transformerType": "jzodTypeCheck",
+          "interpolation": "build",
+          "mlSchema": {
+            "type": "object",
+            "definition": {
+              "person": {
+                "type": "object",
+                "definition": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "age": {
+                    "type": "number"
+                  }
+                }
+              },
+              "address": {
+                "type": "object",
+                "definition": {
+                  "street": {
+                    "type": "string"
+                  },
+                  "city": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "valueObject": {
+            "person": {
+              "name": 30,
+              "age": 30
+            },
+            "address": {
+              "street": "Main St",
+              "city": "Springfield"
+            }
+          },
+          "currentValuePath": [],
+          "currentTypePath": [],
+          "relativeReferenceJzodContext": {}
+        },
+        "expectedValue": {
+          "status": "error",
+          "error": "jzodTypeCheck failed to match some object value attribute(s) with the schema of that attribute(s)",
+          "rawJzodSchemaType": "object",
+          "valuePath": [],
+          "typePath": [],
+          "errorOnValueAttributes": [
+            "person"
+          ],
+          "innerError": {
+            "person": {
+              "status": "error",
+              "error": "jzodTypeCheck failed to match some object value attribute(s) with the schema of that attribute(s)",
+              "rawJzodSchemaType": "object",
+              "valuePath": [
+                "person"
+              ],
+              "typePath": [
+                "person"
+              ],
+              "errorOnValueAttributes": [
+                "name"
+              ],
+              "innerError": {
+                "name": {
+                  "status": "error",
+                  "error": "jzodTypeCheck failed to match value with string schema",
+                  "rawJzodSchemaType": "string",
+                  "valuePath": [
+                    "person",
+                    "name"
+                  ],
+                  "typePath": [
+                    "person",
+                    "name"
+                  ],
+                  "value": 30,
+                  "rawSchema": {
+                    "type": "string"
+                  }
+                }
+              },
+              "value": {
+                "name": 30,
+                "age": 30
+              },
+              "rawSchema": {
+                "type": "object",
+                "definition": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "age": {
+                    "type": "number"
+                  }
+                }
+              }
+            }
+          },
+          "value": {
+            "person": {
+              "name": 30,
+              "age": 30
+            },
+            "address": {
+              "street": "Main St",
+              "city": "Springfield"
+            }
+          },
+          "rawSchema": {
+            "type": "object",
+            "definition": {
+              "person": {
+                "type": "object",
+                "definition": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "age": {
+                    "type": "number"
+                  }
+                }
+              },
+              "address": {
+                "type": "object",
+                "definition": {
+                  "street": {
+                    "type": "string"
+                  },
+                  "city": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      {
+        "transformerTestType": "transformerTest",
+        "transformerTestLabel": "test130",
+        "transformerTestDescription": "jzodTypeCheck fail case test130",
+        "transformerName": "jzodTypeCheck",
+        "runTestStep": "build",
+        "subExpectedValue": [
+          [
+            "status",
+            "error"
+          ],
+          [
+            "error",
+            "jzodTypeCheck failed to match some object value attribute(s) with the schema of that attribute(s)"
+          ]
+        ],
+        "transformer": {
+          "transformerType": "jzodTypeCheck",
+          "interpolation": "build",
+          "mlSchema": {
+            "type": "object",
+            "definition": {
+              "person": {
+                "type": "object",
+                "definition": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "age": {
+                    "type": "number"
+                  }
+                }
+              },
+              "address": {
+                "type": "object",
+                "definition": {
+                  "street": {
+                    "type": "string"
+                  },
+                  "city": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "valueObject": {
+            "person": {
+              "name": "John"
+            },
+            "address": {
+              "street": "Main St",
+              "city": "Springfield"
+            }
+          },
+          "currentValuePath": [],
+          "currentTypePath": [],
+          "relativeReferenceJzodContext": {}
+        },
+        "expectedValue": {
+          "status": "error",
+          "error": "jzodTypeCheck failed to match some object value attribute(s) with the schema of that attribute(s)",
+          "rawJzodSchemaType": "object",
+          "valuePath": [],
+          "typePath": [],
+          "errorOnValueAttributes": [
+            "person"
+          ],
+          "innerError": {
+            "person": {
+              "status": "error",
+              "error": "jzodTypeCheck failed to match some mandatory object value attribute(s) with the schema of that attribute(s)",
+              "rawJzodSchemaType": "object",
+              "valuePath": [
+                "person"
+              ],
+              "typePath": [
+                "person"
+              ],
+              "errorOnSchemaAttributes": [
+                "age"
+              ],
+              "value": {
+                "name": "John"
+              },
+              "rawSchema": {
+                "type": "object",
+                "definition": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "age": {
+                    "type": "number"
+                  }
+                }
+              }
+            }
+          },
+          "value": {
+            "person": {
+              "name": "John"
+            },
+            "address": {
+              "street": "Main St",
+              "city": "Springfield"
+            }
+          },
+          "rawSchema": {
+            "type": "object",
+            "definition": {
+              "person": {
+                "type": "object",
+                "definition": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "age": {
+                    "type": "number"
+                  }
+                }
+              },
+              "address": {
+                "type": "object",
+                "definition": {
+                  "street": {
+                    "type": "string"
+                  },
+                  "city": {
+                    "type": "string"
+                  }
+                }
+              }
             }
           }
         }

@@ -86,6 +86,14 @@ export const ANY_IMPLICIT_UNION_TYPE: JzodUnion = {
 };
 export const ANY_SCHEMA: JzodElement = { type: "any" };
 
+/** Schema used for record values when the record definition is an opt-in union fallback. */
+function jzodRecordElementSchema(definition: JzodElement): JzodElement {
+  if (definition?.type === "union") {
+    return ANY_SCHEMA;
+  }
+  return definition;
+}
+
 // ################################################################################################
 /**
  * Builds a keymap entry for an object value in an "any" descendant context:
@@ -797,7 +805,7 @@ export function jzodUnionResolvedTypeForObject<T extends MiroirModelEnvironment>
         status: "ok",
         resolvedJzodObjectSchema: {
           type: "record",
-          definition: effectiveRawSchema, // if no match is found with the discriminator and optInDiscriminator is true, we consider the current object to be a record of the current union.
+          definition: ANY_SCHEMA,
         },
         objectUnionChoices: objectUnionChoices,
         chosenDiscriminator: [{ discriminator: "optInDiscriminator", value: "optInDiscriminator" }],
@@ -903,19 +911,24 @@ export function jzodTypeCheck(
         rawSchema: mlSchema,
       };
     }
-    
-    // If schema is optional or nullable, we're good
+
+    const resolvedSchema =
+      mlSchema.type === "any"
+        ? (valueToJzod(valueObject) as JzodElement)
+        : mlSchema;
+
+    // If schema is optional, nullable, any, or undefined — accept null/undefined
     return {
       status: "ok",
       schemaReferenceName,
       valuePath: currentValuePath,
       typePath: currentTypePath,
       rawSchema: mlSchema,
-      resolvedSchema: mlSchema,
+      resolvedSchema,
       keyMap: {
         [currentValuePath.join(".")]: {
           rawSchema: mlSchema,
-          resolvedSchema: mlSchema,
+          resolvedSchema,
           valuePath: currentValuePath,
           typePath: currentTypePath,
         }, // map the current value path to the resolved schema
@@ -1629,7 +1642,7 @@ export function jzodTypeCheck(
         Object.fromEntries(
           Object.entries(valueObject).map((e: [string, any]) => {
             const resultSchemaTmp: ResolvedJzodSchemaReturnType = jzodTypeCheck(
-              effectiveRawSchema.definition,
+              jzodRecordElementSchema(effectiveRawSchema.definition),
               e[1],
               [...currentValuePath, e[0]],
               [...currentTypePath, e[0]],

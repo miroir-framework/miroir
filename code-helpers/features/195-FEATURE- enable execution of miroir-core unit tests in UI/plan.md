@@ -71,7 +71,7 @@ Tests are grouped by **how they can share a JSON representation and a single exe
 |-------------|--------------|-------|
 | `2_domain/transformers.unit.test.ts` | `transformerTest_miroirCoreTransformers` | Main core transformer suite; `RUN_TEST=transformers.unit.test` |
 | `2_domain/adminTransformers.unit.test.ts` | `transformerTest_adminTransformers` | Meta-model admin transformers |
-| `1_core/jzod/jzodTypeCheck.test.ts` | `transformerTestSuite_jzodTypeCheck` (deployment) | Large suite; uses `jzodTypeCheck` transformer |
+| `1_core/jzod/jzodTypeCheck.test.ts` | `transformerTestSuite_jzodTypeCheck` (deployment) | 39 cases (15 pass + 24 fail); uses `jzodTypeCheck` transformer |
 | `1_core/jzod/resolveConditionalSchema.test.ts` | `transformerTest_resolveConditionalSchema` | Also has dedicated UI report wiring |
 | `1_core/jzod/unfoldSchemaOnce.test.ts` | deployment JSON | |
 | `1_core/defaultValueForJzodSchema.unit.test.ts` | deployment JSON | |
@@ -213,13 +213,15 @@ If later support is needed, introduce `unitTestType: "vitestProxy"` with `{ file
 |------|-------|----------------|
 | `experiments/discriminatedOpt-inUnions.test.ts` | Exploratory, 53 cases | Exclude from UnitTest catalog |
 | `1_core/jzod/jzod.resolveReferenceInContext.OLD.unit.test.ts` | Superseded | Delete or archive; do not migrate |
-| `1_core/jzod/jzod.typeCheckToPass.unit.test.ts` | 12k lines, 25 cases, **migration in progress** to transformer suite (`jzodTypeCheck.test.ts` + deployment entity) | Finish migration; deprecate TS file |
-| `2_domain/menu.unit.test.ts` | Inline `TransformerTestSuite`, not in store | Move to `TransformerTestDefinition` instance |
+| `1_core/jzod/jzod.typeCheckToPass.unit.test.ts` | 12k lines, 25 cases — **migrated** to `transformerTestSuite_jzodTypeCheck` | Deprecated wrapper → `jzodTypeCheck.test.ts` |
+| `1_core/jzod/jzod.typeCheckToFail.unit.test.ts` | 24 fail cases — **migrated** to `transformerTestSuite_jzodTypeCheck` | Deprecated wrapper → `jzodTypeCheck.test.ts` |
+| `2_domain/menu.unit.test.ts` | Inline `TransformerTestSuite`, not in store | **done** — `unitTest_suite_menu` (Phase 5a) |
 | `1_core/zodParseActions.test.ts` | Compile-time only | Vitest-only catalog entry |
 | `1_core/blobUtils.unit.test.ts` | Node `FileReader` mock | Class E unless mock is embedded in runner |
-| `2_domain/queries.unit.test.ts` | 1.8k lines, 26 scenarios, embedded `domainState.json` | Class C; split into entity suite + fixture reference |
+| `2_domain/queries.unit.test.ts` | 1.8k lines, 26 scenarios, embedded `domainState.json` | **done** — `unitTest_suite_queries_library` (Phase 4) |
 | Dual entities `TransformerTest` vs `Test` | Naming confusion | `UnitTest` unifies vitest-migratable **unit** tests; `Test` entity stays for **integration** composite-action tests (standalone-app) |
-| `resolveCompositeActionTemplate.unit.test.ts` | Uses `TestCompositeActionTemplate` types as **function inputs**, not integration runner | Class B `functionCallTest` (`resolveTestCompositeActionTemplate`, `resolveTestCompositeActionTemplateSuite`) |
+| `resolveCompositeActionTemplate.unit.test.ts` | Large fixture payloads | **deferred** — vitest-only; `fixtureRef` migration not planned for now |
+| `domainStateToDeploymentEntityState.unit.test.ts` | Large domain-state fixture | **deferred** — vitest-only; `fixtureRef` migration not planned for now |
 
 ---
 
@@ -365,7 +367,7 @@ Phase 5 is split by migration pattern. **5a** is done; **5b–5e** track the res
 
 **Validation:** `RUN_TEST=JzodSchemaReferencesList.unit.test` (9/9); `JzodSchemaReferencesSet.unit.test` (9/9); `jzodTransitiveDependencySet.unit.test` (6/6); `jzodToJzod_Summary.unit.test` (26/26).
 
-#### Phase 5c — Class B extensions (minor runner/schema) *(in progress)*
+#### Phase 5c — Class B extensions (minor runner/schema) *(done)*
 
 Runner/schema extensions implemented:
 
@@ -375,26 +377,27 @@ Runner/schema extensions implemented:
 - [x] `environmentRef` + `environmentArgumentIndex` — inject `defaultMiroirModelEnvironment`.
 - [x] `FunctionCallTestFixtures.ts` + registry whitelist extensions.
 
-First migration batch:
+Migration batch:
 
-- [x] `EntityPrimaryKey.unit.test.ts` → `unitTest_suite_EntityPrimaryKey` (36 cases; split composite/uuid PK checks).
+- [x] `EntityPrimaryKey.unit.test.ts` → `unitTest_suite_EntityPrimaryKey` (36 cases; `expectedAction2ErrorType`).
 - [x] `jzodObjectFlatten.test.ts` → `unitTest_suite_jzodObjectFlatten` (8 cases; `environmentRef` + `expectedError`).
 - [x] `modelUpdates.unit.test.ts` → `unitTest_suite_modelUpdates` (6 cases; `expectedValue: null` + `expectedError`).
 - [x] `getAttributeTypesFromJzodSchema.unit.test.ts` → `unitTest_suite_getAttributeTypesFromJzodSchema` (4 cases; external package whitelist).
-- [x] `ansiColumnsToJzodSchema.unit.test.ts` → `unitTest_suite_ansiColumnsToJzodSchema` (10 cases; assertions, fixtureRef, round-trip split).
+- [x] `ansiColumnsToJzodSchema.unit.test.ts` → `unitTest_suite_ansiColumnsToJzodSchema` (10 cases; inline args + `assertions[]`; Author CSV no longer uses `fixtureRef`).
 - [x] `jzod.buildAnyKeyMap.unit.test.ts` → `unitTest_suite_buildAnyKeyMap` (11 cases; `assertions[]` + `resultAccessPath`).
 
-Remaining 5c migrations (extensions ready, suites pending):
+**Deferred (vitest-only, not migrating now):** `domainStateToDeploymentEntityState.unit.test.ts`, `resolveCompositeActionTemplate.unit.test.ts` — large fixtures; `fixtureRef` infrastructure remains available but these suites stay out of scope.
 
-| Extension | Files |
-|-----------|-------|
-| `fixtureRef` for large blobs | `domainStateToDeploymentEntityState`, `resolveCompositeActionTemplate` |
+**Validation:** `RUN_TEST=EntityPrimaryKey.unit.test` (36/36); `jzodObjectFlatten.test` (8/8); `modelUpdates.unit.test` (6/6); `getAttributeTypesFromJzodSchema.unit.test` (4/4); `ansiColumnsToJzodSchema.unit.test` (10/10); `jzod.buildAnyKeyMap.unit.test` (11/11).
 
-#### Phase 5d — jzodTypeCheck consolidation
+#### Phase 5d — jzodTypeCheck consolidation *(done)*
 
-- [ ] Merge `jzod.typeCheckToFail` cases into `transformerTestSuite_jzodTypeCheck` entity.
+- [x] Merge `jzod.typeCheckToFail` cases (24) into `transformerTestSuite_jzodTypeCheck` entity (39 total: 15 pass + 24 fail).
 - [x] Remove 12k-line `jzod.typeCheckToPass` inline suite (deprecated wrapper → entity loader).
-- [ ] Delete `jzod.typeCheckToFail.unit.test.ts` once entity coverage verified.
+- [x] Deprecate `jzod.typeCheckToFail.unit.test.ts` → forwards to `jzodTypeCheck.test.ts` (same pattern as pass wrapper).
+- [x] Regenerator: `tests/scripts/merge-jzodTypeCheck-fail-cases.mjs` (source: `jzodTypeCheck-fail-cases.source.ts`).
+
+**Validation:** `RUN_TEST=jzodTypeCheck npx vitest run tests/1_core/jzod/jzodTypeCheck.test.ts` (39/39).
 
 #### Phase 5e — Integration modes & CI conventions
 
@@ -407,11 +410,14 @@ Remaining 5c migrations (extensions ready, suites pending):
 # Single suite by env (existing pattern)
 RUN_TEST=alterObject.unit.test npx vitest run tests/1_core/alterObject.unit.test.ts
 
-# Entity-backed transformer suites
+# Entity-backed transformer suites (pass + fail cases)
 RUN_TEST=jzodTypeCheck npx vitest run tests/1_core/jzod/jzodTypeCheck.test.ts
 
 # Regenerate functionCallTest deployment JSON
 EXPORT_FUNCTION_CALL_SUITES=1 npx vitest run tests/export-function-call-suites.unit.test.ts
+
+# Re-merge jzodTypeCheck fail cases into transformer entity (idempotent)
+node packages/miroir-core/tests/scripts/merge-jzodTypeCheck-fail-cases.mjs
 ```
 
 **Out of scope (vitest-only):** Class E/F (`blobUtils`, controllers, `zodParse*`), meta tests (`unitTest.tools`, `export-function-call-suites`), `jzodToJzod.unit.test.ts` (callback harness → defer or transformerTest).
@@ -457,7 +463,7 @@ EXPORT_FUNCTION_CALL_SUITES=1 npx vitest run tests/export-function-call-suites.u
 2. **Fixture size:** `domainState.json` and jzod schemas make large entity instances — consider blob storage or `$ref` to deployment snapshots.
 3. **Entity proliferation:** `TransformerTest` + `Test` + `UnitTest` — **Recommendation:** `UnitTest` for miroir-core unit-test migration only; `Test` entity remains integration (composite-action) in standalone-app; no `compositeActionTest` `unitTestType`.
 4. **Class E coverage:** Accept that ~10% of tests remain Vitest-only; document in catalog.
-5. **jzod.typeCheckToPass:** Prioritize completing transformer migration before attempting function-call representation.
+5. **jzod.typeCheckToPass / jzod.typeCheckToFail:** **Done** — 39 cases in `transformerTestSuite_jzodTypeCheck`; vitest wrappers deprecated.
 
 ---
 
@@ -466,7 +472,8 @@ EXPORT_FUNCTION_CALL_SUITES=1 npx vitest run tests/export-function-call-suites.u
 - [x] All Class A transformer suites selectable and runnable from UI (including `menu` — Phase 5a).
 - [x] Class B pilot suites runnable from UI and Vitest with identical results (Phase 3 UI wiring; manual smoke-test OK).
 - [x] Class C query suite represented as store entities and runnable in memory (CLI; UI via existing `UnitTestDisplay`).
-- [ ] `resolveCompositeActionTemplate.unit.test.ts` migrated as Class B `functionCallTest` (future Phase 2-style batch).
+- [x] `jzodTypeCheck` pass + fail cases consolidated in `transformerTestSuite_jzodTypeCheck` (39 cases).
+- [ ] `domainStateToDeploymentEntityState` / `resolveCompositeActionTemplate` — **deferred** (vitest-only).
 - [ ] `npm test` / `RUN_TEST` in CI covers all entity-backed suites (non-regression).
 - [ ] Outliers documented; no false expectation of UI execution for Class E/F.
 
@@ -487,20 +494,24 @@ EXPORT_FUNCTION_CALL_SUITES=1 npx vitest run tests/export-function-call-suites.u
 | `4_services/transformers.integ.test.ts` | A+G | done (integration) |
 | `1_core/mustache.unit.test.ts` | B | pilot |
 | `1_core/jzod/jzodToJsonSchema.unit.test.ts` | B | pilot |
-| `1_core/EntityPrimaryKey.unit.test.ts` | B | high |
+| `1_core/EntityPrimaryKey.unit.test.ts` | B | done (Phase 5c) |
 | `1_core/alterObject.unit.test.ts` | B | done (Phase 5a) |
 | `1_core/jzod/jzodToCopilotKitParameter.unit.test.ts` | B | done (Phase 5a) |
 | `1_core/jzod/mergePositionBased.unit.test.ts` | B | done (Phase 5a) |
-| `1_core/jzod/jzod.typeCheckToFail.unit.test.ts` | B | medium (→ A migration possible via jzodTypeCheck transformer) |
-| `1_core/jzod/jzod.typeCheckToPass.unit.test.ts` | A (target) | deprecate file |
+| `1_core/jzod/jzod.typeCheckToFail.unit.test.ts` | A | done — deprecated wrapper; cases in entity |
+| `1_core/jzod/jzod.typeCheckToPass.unit.test.ts` | A | done — deprecated wrapper; cases in entity |
+| `1_core/jzod/jzod.buildAnyKeyMap.unit.test.ts` | B | done (Phase 5c) |
+| `1_core/ansiColumnsToJzodSchema.unit.test.ts` | B | done (Phase 5c) |
+| `1_core/jzod/jzodObjectFlatten.test.ts` | B | done (Phase 5c) |
+| `2_domain/modelUpdates.unit.test.ts` | B | done (Phase 5c) |
 | `1_core/jzod/*` (remaining 15 files) | B | medium |
 | `tools.test.ts` | B | medium |
 | `1_core/blobUtils.unit.test.ts` | E | vitest-only |
-| `2_domain/queries.unit.test.ts` | C | high |
+| `2_domain/queries.unit.test.ts` | C | done (Phase 4) |
 | `2_domain/resolveQueryTemplates.unit.test.ts` | B | medium |
-| `2_domain/domainStateToDeploymentEntityState.unit.test.ts` | B | medium |
-| `2_domain/modelUpdates.unit.test.ts` | B | low |
-| `2_domain/resolveCompositeActionTemplate.unit.test.ts` | B | medium (`resolveTestCompositeActionTemplate*`) |
+| `2_domain/domainStateToDeploymentEntityState.unit.test.ts` | B | **deferred** (vitest-only) |
+| `2_domain/modelUpdates.unit.test.ts` | B | done (Phase 5c) |
+| `2_domain/resolveCompositeActionTemplate.unit.test.ts` | B | **deferred** (vitest-only) |
 | `2_domain/transformer_tools.*.unit.test.ts` | B | low |
 | `3_controllers/*.unit.test.ts` | E | vitest-only |
 | `4_views/ViewParams.integ.test.ts` | E | vitest-only |
