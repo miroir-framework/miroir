@@ -1353,6 +1353,7 @@ export function getMiroirFundamentalJzodSchema(
               "runnerReportSection",
               "transformerRunnerReportSection",
               "unitTestReportSection",
+              "transformerTestReportSection",
               "storedReportDisplay",
               "reportSection",
               "rootReport",

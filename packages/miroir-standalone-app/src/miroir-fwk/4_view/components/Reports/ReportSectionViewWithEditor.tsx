@@ -33,6 +33,7 @@ import { ModelDiagramReportSectionView } from './ModelDiagramReportSectionView.j
 import { ReportSectionEntityInstance, type ValueObjectEditMode } from './ReportSectionEntityInstance.js';
 import { ReportSectionListDisplay } from './ReportSectionListDisplay.js';
 import { ReportSectionMarkdown } from './ReportSectionMarkdown.js';
+import { ReportSectionTransformerTest } from './ReportSectionTransformerTest.js';
 import { ReportSectionUnitTest } from './ReportSectionUnitTest.js';
 import { TypedValueObjectEditor } from './TypedValueObjectEditor.js';
 import { TransformerRunnerReportSectionView } from './TransformerRunner.js';
@@ -480,6 +481,13 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
         )}
         {reportSectionDefinitionFromFormik?.type == "unitTestReportSection" && (
           <ReportSectionUnitTest
+            reportName={props.reportName}
+            reportSectionPath={props.reportSectionPath}
+            showPerformanceDisplay={props.showPerformanceDisplay}
+          />
+        )}
+        {reportSectionDefinitionFromFormik?.type == "transformerTestReportSection" && (
+          <ReportSectionTransformerTest
             reportName={props.reportName}
             reportSectionPath={props.reportSectionPath}
             showPerformanceDisplay={props.showPerformanceDisplay}

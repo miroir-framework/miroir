@@ -413,7 +413,15 @@ Follow established report-section patterns (`markdownReportSection`, `objectInst
 - [x] Wire in `ReportSectionViewWithEditor`; remove hard-coded `UnitTestDisplay` from `ReportSectionEntityInstance`.
 - [x] Unit Test details report (`bb9e8b62-…`) — `unitTestReportSection` before instance editor.
 
-**Next (Phase 6b+):** `transformerTestReportSection` (same refactor for `TransformerTestDisplay`), kind-specific editors, unified run UX.
+#### Phase 6b — `transformerTestReportSection` *(done)*
+
+- [x] Add `transformerTestReportSection` to Report `EntityDefinition` + `reportSection` union.
+- [x] `getMiroirFundamentalJzodSchema.ts` filter + `npm run devBuild -w miroir-core` (after deployment rebuild).
+- [x] `ReportSectionTransformerTest.tsx` — renders `TransformerTestDisplay` from `fetchedDataReference`.
+- [x] Wire in `ReportSectionViewWithEditor`; remove hard-coded `TransformerTestDisplay` from `ReportSectionEntityInstance`.
+- [x] Transformer Test details report (`1c06268b-…`) — `transformerTestReportSection` before instance editor.
+
+**Next (Phase 6c+):** kind-specific editors, unified run UX.
 
 ### Phase 7 — Deferred migrations, integration modes & discovery
 
@@ -465,7 +473,7 @@ node packages/miroir-core/tests/scripts/merge-jzodTypeCheck-fail-cases.mjs
 |------|--------|--------|
 | Entity list | **Done (Phase 3)** | `reportUnitTestList` + menu “Miroir Unit Tests” |
 | Detail report | **Phase 6a** | `reportUnitTestDetails`; run via `unitTestReportSection` (was hard-coded in `ReportSectionEntityInstance`) |
-| Execution | **Done (Phase 3)** | `RunUnitTestSuiteButton` → `runUnitTests` (separate from transformer button) |
+| Execution | **Phase 6a/6b** | Run UI via `unitTestReportSection` / `transformerTestReportSection` (decoupled from `ReportSectionEntityInstance`) |
 | Results | **Done (Phase 3)** | `UnitTestExecutionSummary` + `UnitTestResults` table |
 | Editing | Phase 7 | JzodObjectEditor for each `unitTestType` branch; kind-specific diff display |
 | Discovery | Phase 7 | Browse by kind/tag/module; links from editors |

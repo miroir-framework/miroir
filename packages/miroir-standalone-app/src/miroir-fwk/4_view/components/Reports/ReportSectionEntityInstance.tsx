@@ -15,7 +15,6 @@ import {
   defaultSelfApplicationDeploymentMap,
   entityDefinitionMLSchema,
   entityQueryVersion,
-  entityTransformerTest,
   getQueryTemplateRunnerParamsForReduxDeploymentsState,
   interpolateExpression,
   resolvePathOnObject,
@@ -31,7 +30,6 @@ import {
   JsonDisplayHelper,
   ThemedOnScreenHelper,
   useMiroirContextService,
-  useViewParams,
   type DebugElements,
   type FoldedStateTree
 } from "miroir-react";
@@ -59,7 +57,6 @@ import {
 } from "../Themes/index";
 import { useDocumentOutlineContext } from '../ValueObjectEditor/InstanceEditorOutlineContext.js';
 import { useReportPageContext } from './ReportPageContext.js';
-import { TransformerTestDisplay } from './TransformerTestDisplay.js';
 import { TypedValueObjectEditor } from './TypedValueObjectEditor.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -181,7 +178,6 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
     );
   }
   const context = useMiroirContextService();
-  const viewParams = useViewParams();
   const showPerformanceDisplay = context.showPerformanceDisplay;
 
   const navigationKey = `${props.deploymentUuid}-${props.applicationSection}`;
@@ -330,12 +326,6 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   }
 
   // ##############################################################################################
-  // Check if this is a TransformerTest entity instance
-  const isTransformerTestEntity = currentReportTargetEntity?.uuid === entityTransformerTest.uuid;
-  const isTransformerTest =
-    isTransformerTestEntity && instance?.parentUuid === entityTransformerTest.uuid;
-
-  // ##############################################################################################
   // ##############################################################################################
   // ##############################################################################################
   // ##############################################################################################
@@ -425,12 +415,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   // ##############################################################################################
   // ##############################################################################################
   // ##############################################################################################
-  const testLabel =
-    instance?.transformerTestLabel ||
-    instance?.name ||
-    "TransformerTest";
-  
-  log.info("ReportSectionEntityInstance: rendering with instance:", instance, "testLabel:", testLabel);
+  log.info("ReportSectionEntityInstance: rendering with instance:", instance);
   if (instance) {
     return (
       // <ThemedContainer style={{ width: '100%' }}>
@@ -441,18 +426,6 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
           </ThemedText>
         )}
 
-        {/* Show test button if this is a TransformerTest entity */}
-        {isTransformerTest && (
-          <TransformerTestDisplay
-            transformerTest={instance}
-            testLabel={testLabel}
-            useSnackBar={true}
-            onTestComplete={(testSuiteKey, structuredResults) => {
-              log.info(`Test completed for ${testSuiteKey}:`, structuredResults);
-            }}
-            gridType={viewParams.gridType}
-          />
-        )}
         <ThemedHeaderSection>
           <ThemedTitle>
             {props.defaultLabel ??

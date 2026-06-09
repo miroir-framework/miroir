@@ -22,6 +22,13 @@
       "type": "list",
       "definition": [
         {
+          "type": "transformerTestReportSection",
+          "definition": {
+            "label": "Run transformer tests",
+            "fetchedDataReference": "elementToDisplay"
+          }
+        },
+        {
           "type": "objectInstanceReportSection",
           "definition": {
             "parentUuid": "681be9ca-c593-45f5-b45a-5f1d4969e91e",
