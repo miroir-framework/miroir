@@ -227,7 +227,7 @@ const unitTests = [
 ];
 
 const entity = {
-  uuid: "b5c6d7e8-f9a0-4b12-c345-d6e7f8a9b0c1",
+  uuid: "d41013e0-a6f8-4f4f-8c8e-036b77dc56d4",
   parentName: "UnitTest",
   parentUuid: "a1bc5288-c982-4ff3-8316-4a2400fe9323",
   selfApplication: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
@@ -243,7 +243,7 @@ const entity = {
 
 const outPath = path.resolve(
   __dirname,
-  "../../../miroir-test-app_deployment-miroir/assets/miroir_data/a1bc5288-c982-4ff3-8316-4a2400fe9323/b5c6d7e8-f9a0-4b12-c345-d6e7f8a9b0c1.json",
+  "../../../miroir-test-app_deployment-miroir/assets/miroir_data/a1bc5288-c982-4ff3-8316-4a2400fe9323/d41013e0-a6f8-4f4f-8c8e-036b77dc56d4.json",
 );
 fs.writeFileSync(outPath, JSON.stringify(entity, null, 2));
 console.log(`Wrote ${unitTests.length} cases to ${outPath}`);

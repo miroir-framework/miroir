@@ -378,12 +378,13 @@ Runner/schema extensions implemented:
 First migration batch:
 
 - [x] `EntityPrimaryKey.unit.test.ts` → `unitTest_suite_EntityPrimaryKey` (36 cases; split composite/uuid PK checks).
+- [x] `jzodObjectFlatten.test.ts` → `unitTest_suite_jzodObjectFlatten` (8 cases; `environmentRef` + `expectedError`).
 
 Remaining 5c migrations (extensions ready, suites pending):
 
 | Extension | Files |
 |-----------|-------|
-| `expectedError` / throws | `getAttributeTypesFromJzodSchema`, `jzodObjectFlatten`, `modelUpdates` |
+| `expectedError` / throws | `getAttributeTypesFromJzodSchema`, `modelUpdates` |
 | `fixtureRef` for large blobs | `domainStateToDeploymentEntityState`, `ansiColumnsToJzodSchema`, `resolveCompositeActionTemplate` |
 | Partial / multi-assert | `jzod.buildAnyKeyMap.unit.test.ts` |
 | External package whitelist | `getAttributeTypesFromJzodSchema`, `ansiColumnsToJzodSchema` |

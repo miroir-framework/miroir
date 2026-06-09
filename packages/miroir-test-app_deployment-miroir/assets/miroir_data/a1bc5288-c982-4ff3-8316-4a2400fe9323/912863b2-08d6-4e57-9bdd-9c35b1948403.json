@@ -1,0 +1,389 @@
+{
+  "uuid": "912863b2-08d6-4e57-9bdd-9c35b1948403",
+  "parentName": "UnitTest",
+  "parentUuid": "a1bc5288-c982-4ff3-8316-4a2400fe9323",
+  "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+  "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
+  "name": "jzodObjectFlatten",
+  "description": "Phase 5c — jzodObjectFlatten",
+  "definition": {
+    "unitTestType": "unitTestSuite",
+    "unitTestLabel": "jzod.jzodObjectFlatten",
+    "unitTests": [
+      {
+        "unitTestType": "functionCallTest",
+        "unitTestLabel": "returns the same object if there is no extend",
+        "functionRef": {
+          "module": "miroir-core/1_core/jzod/jzodObjectFlatten",
+          "export": "jzodObjectFlatten"
+        },
+        "arguments": [
+          {
+            "type": "object",
+            "definition": {
+              "foo": {
+                "type": "string"
+              }
+            }
+          }
+        ],
+        "environmentRef": "defaultMiroirModelEnvironment",
+        "environmentArgumentIndex": 1,
+        "expectedValue": {
+          "type": "object",
+          "definition": {
+            "foo": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      {
+        "unitTestType": "functionCallTest",
+        "unitTestLabel": "flattens a single-level extend",
+        "functionRef": {
+          "module": "miroir-core/1_core/jzod/jzodObjectFlatten",
+          "export": "jzodObjectFlatten"
+        },
+        "arguments": [
+          {
+            "type": "object",
+            "extend": {
+              "type": "object",
+              "definition": {
+                "a": {
+                  "type": "string"
+                },
+                "b": {
+                  "type": "number"
+                }
+              }
+            },
+            "definition": {
+              "b": {
+                "type": "boolean"
+              },
+              "c": {
+                "type": "bigint"
+              }
+            }
+          }
+        ],
+        "environmentRef": "defaultMiroirModelEnvironment",
+        "environmentArgumentIndex": 1,
+        "expectedValue": {
+          "type": "object",
+          "definition": {
+            "a": {
+              "type": "string"
+            },
+            "b": {
+              "type": "boolean"
+            },
+            "c": {
+              "type": "bigint"
+            }
+          }
+        }
+      },
+      {
+        "unitTestType": "functionCallTest",
+        "unitTestLabel": "flattens multi-level extends",
+        "functionRef": {
+          "module": "miroir-core/1_core/jzod/jzodObjectFlatten",
+          "export": "jzodObjectFlatten"
+        },
+        "arguments": [
+          {
+            "type": "object",
+            "extend": {
+              "type": "object",
+              "extend": {
+                "type": "object",
+                "definition": {
+                  "a": {
+                    "type": "string"
+                  }
+                }
+              },
+              "definition": {
+                "b": {
+                  "type": "number"
+                }
+              }
+            },
+            "definition": {
+              "c": {
+                "type": "boolean"
+              }
+            }
+          }
+        ],
+        "environmentRef": "defaultMiroirModelEnvironment",
+        "environmentArgumentIndex": 1,
+        "expectedValue": {
+          "type": "object",
+          "definition": {
+            "a": {
+              "type": "string"
+            },
+            "b": {
+              "type": "number"
+            },
+            "c": {
+              "type": "boolean"
+            }
+          }
+        }
+      },
+      {
+        "unitTestType": "functionCallTest",
+        "unitTestLabel": "flattens with array of extends",
+        "functionRef": {
+          "module": "miroir-core/1_core/jzod/jzodObjectFlatten",
+          "export": "jzodObjectFlatten"
+        },
+        "arguments": [
+          {
+            "type": "object",
+            "extend": [
+              {
+                "type": "object",
+                "definition": {
+                  "a": {
+                    "type": "string"
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "definition": {
+                  "b": {
+                    "type": "number"
+                  }
+                }
+              }
+            ],
+            "definition": {
+              "c": {
+                "type": "boolean"
+              }
+            }
+          }
+        ],
+        "environmentRef": "defaultMiroirModelEnvironment",
+        "environmentArgumentIndex": 1,
+        "expectedValue": {
+          "type": "object",
+          "definition": {
+            "a": {
+              "type": "string"
+            },
+            "b": {
+              "type": "number"
+            },
+            "c": {
+              "type": "boolean"
+            }
+          }
+        }
+      },
+      {
+        "unitTestType": "functionCallTest",
+        "unitTestLabel": "resolves schemaReferences and flatten recursively",
+        "functionRef": {
+          "module": "miroir-core/1_core/jzod/jzodObjectFlatten",
+          "export": "jzodObjectFlatten"
+        },
+        "arguments": [
+          {
+            "type": "object",
+            "extend": [
+              {
+                "type": "object",
+                "definition": {
+                  "a": {
+                    "type": "string"
+                  }
+                }
+              },
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "SomeRef"
+                }
+              }
+            ],
+            "definition": {
+              "b": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "SomeRef": {
+              "type": "object",
+              "definition": {
+                "a": {
+                  "type": "number"
+                }
+              }
+            }
+          }
+        ],
+        "environmentRef": "defaultMiroirModelEnvironment",
+        "environmentArgumentIndex": 1,
+        "expectedValue": {
+          "type": "object",
+          "definition": {
+            "a": {
+              "type": "number"
+            },
+            "b": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      {
+        "unitTestType": "functionCallTest",
+        "unitTestLabel": "copies optional, nullable, and tag properties",
+        "functionRef": {
+          "module": "miroir-core/1_core/jzod/jzodObjectFlatten",
+          "export": "jzodObjectFlatten"
+        },
+        "arguments": [
+          {
+            "type": "object",
+            "extend": {
+              "type": "object",
+              "definition": {
+                "a": {
+                  "type": "string"
+                }
+              }
+            },
+            "definition": {
+              "b": {
+                "type": "number"
+              }
+            },
+            "optional": true,
+            "nullable": true,
+            "tag": {}
+          }
+        ],
+        "environmentRef": "defaultMiroirModelEnvironment",
+        "environmentArgumentIndex": 1,
+        "expectedValue": {
+          "type": "object",
+          "definition": {
+            "a": {
+              "type": "string"
+            },
+            "b": {
+              "type": "number"
+            }
+          },
+          "optional": true,
+          "nullable": true,
+          "tag": {}
+        }
+      },
+      {
+        "unitTestType": "functionCallTest",
+        "unitTestLabel": "resolves reference chains (reference -> reference -> object)",
+        "functionRef": {
+          "module": "miroir-core/1_core/jzod/jzodObjectFlatten",
+          "export": "jzodObjectFlatten"
+        },
+        "arguments": [
+          {
+            "type": "object",
+            "extend": {
+              "type": "schemaReference",
+              "definition": {
+                "relativePath": "IntermediateRef"
+              }
+            },
+            "definition": {
+              "myProp": {
+                "type": "number"
+              }
+            }
+          },
+          {
+            "FinalObject": {
+              "type": "object",
+              "definition": {
+                "finalProp": {
+                  "type": "string"
+                }
+              }
+            },
+            "IntermediateRef": {
+              "type": "schemaReference",
+              "definition": {
+                "relativePath": "FinalObject"
+              }
+            }
+          }
+        ],
+        "environmentRef": "defaultMiroirModelEnvironment",
+        "environmentArgumentIndex": 1,
+        "expectedValue": {
+          "type": "object",
+          "definition": {
+            "finalProp": {
+              "type": "string"
+            },
+            "myProp": {
+              "type": "number"
+            }
+          }
+        }
+      },
+      {
+        "unitTestType": "functionCallTest",
+        "unitTestLabel": "detects circular references and throws an error",
+        "functionRef": {
+          "module": "miroir-core/1_core/jzod/jzodObjectFlatten",
+          "export": "jzodObjectFlatten"
+        },
+        "arguments": [
+          {
+            "type": "object",
+            "extend": {
+              "type": "schemaReference",
+              "definition": {
+                "relativePath": "Ref2"
+              }
+            },
+            "definition": {
+              "myProp": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "Ref1": {
+              "type": "schemaReference",
+              "definition": {
+                "relativePath": "Ref2"
+              }
+            },
+            "Ref2": {
+              "type": "schemaReference",
+              "definition": {
+                "relativePath": "Ref1"
+              }
+            }
+          }
+        ],
+        "environmentRef": "defaultMiroirModelEnvironment",
+        "environmentArgumentIndex": 1,
+        "expectedError": "Circular reference detected"
+      }
+    ]
+  }
+}

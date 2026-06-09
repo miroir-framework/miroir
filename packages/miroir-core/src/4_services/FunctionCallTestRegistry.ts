@@ -20,6 +20,7 @@ import { jzodToCopilotKitParameter } from "../1_core/jzod/JzodToCopilotKitParame
 import { mergePositionBased } from "../1_core/jzod/JzodToJzod_CarryOn";
 import { jzodToJzod_Summary } from "../1_core/jzod/JzodToJzod_Summary";
 import { jzodToJsonSchema } from "../1_core/jzod/JzodToJsonSchema";
+import { jzodObjectFlatten } from "../1_core/jzod/jzodObjectFlatten";
 import { alterObjectAtPath } from "../tools";
 
 export type FunctionCallRef = {
@@ -56,6 +57,9 @@ const FUNCTION_CALL_REGISTRY: Record<string, Record<string, WhitelistedFunction>
   },
   "miroir-core/1_core/jzod/JzodToJzod_Summary": {
     jzodToJzod_Summary: jzodToJzod_Summary as WhitelistedFunction,
+  },
+  "miroir-core/1_core/jzod/jzodObjectFlatten": {
+    jzodObjectFlatten: jzodObjectFlatten as WhitelistedFunction,
   },
   "miroir-core/1_core/EntityPrimaryKey": {
     resolveInstanceParentUuid: resolveInstanceParentUuid as WhitelistedFunction,
