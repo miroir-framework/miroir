@@ -113,6 +113,14 @@ function normalizeFunctionCallResult(rawResult: unknown, ignoreAttributes: strin
   return removeUndefinedProperties(jsonifiedResult);
 }
 
+function normalizeExpectedFunctionCallValue(expectedValue: unknown): unknown {
+  const deserialized = deserializeFunctionCallValue(expectedValue);
+  if (deserialized === null) {
+    return null;
+  }
+  return removeUndefinedProperties(unNullify(deserialized));
+}
+
 function assertFunctionCallResult(
   localVitest: typeof vitest,
   testSuiteNamePathAsString: string,
@@ -122,9 +130,7 @@ function assertFunctionCallResult(
   ignoreAttributes: string[] | undefined,
 ): boolean {
   const normalizedActual = normalizeFunctionCallResult(actualValue, ignoreAttributes);
-  const normalizedExpected = removeUndefinedProperties(
-    unNullify(deserializeFunctionCallValue(expectedValue)),
-  );
+  const normalizedExpected = normalizeExpectedFunctionCallValue(expectedValue);
   const testResult: any = localVitest
     .expect(normalizedActual, `${testSuiteNamePathAsString} > ${assertionName}`)
     .toEqual(normalizedExpected);
@@ -408,11 +414,7 @@ export async function runFunctionCallTestInMemory(
     } else {
       const rawResult = fn(...args);
       const normalizedResult = normalizeFunctionCallResult(rawResult, unitTest.ignoreAttributes);
-      const expectedValue = ignorePostgresExtraAttributes(
-        deserializeFunctionCallValue(unitTest.expectedValue),
-        unitTest.ignoreAttributes,
-      );
-      const normalizedExpected = removeUndefinedProperties(unNullify(expectedValue));
+      const normalizedExpected = normalizeExpectedFunctionCallValue(unitTest.expectedValue);
 
       const testResult: any = localVitest
         .expect(normalizedResult, `${testSuiteNamePathAsString} > ${assertionName}`)
