@@ -21,6 +21,10 @@ import { mergePositionBased } from "../1_core/jzod/JzodToJzod_CarryOn";
 import { jzodToJzod_Summary } from "../1_core/jzod/JzodToJzod_Summary";
 import { jzodToJsonSchema } from "../1_core/jzod/JzodToJsonSchema";
 import { jzodObjectFlatten } from "../1_core/jzod/jzodObjectFlatten";
+import {
+  buildAnyObjectEntry,
+  buildAnySubnodeKeyMap,
+} from "../1_core/jzod/jzodTypeCheck";
 import { getModelUpdate } from "../1_core/model/ModelUpdate";
 import { ansiColumnsToJzodSchema } from "../1_core/ansiColumnsToJzodSchema";
 import { alterObjectAtPath } from "../tools";
@@ -63,6 +67,10 @@ const FUNCTION_CALL_REGISTRY: Record<string, Record<string, WhitelistedFunction>
   },
   "miroir-core/1_core/jzod/jzodObjectFlatten": {
     jzodObjectFlatten: jzodObjectFlatten as WhitelistedFunction,
+  },
+  "miroir-core/1_core/jzod/jzodTypeCheck": {
+    buildAnyObjectEntry: buildAnyObjectEntry as WhitelistedFunction,
+    buildAnySubnodeKeyMap: buildAnySubnodeKeyMap as WhitelistedFunction,
   },
   "miroir-core/1_core/model/ModelUpdate": {
     getModelUpdate: getModelUpdate as WhitelistedFunction,

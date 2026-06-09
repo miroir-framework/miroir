@@ -361,7 +361,7 @@ Phase 5 is split by migration pattern. **5a** is done; **5b–5e** track the res
 - [x] `JzodSchemaReferencesList` (9), `JzodSchemaReferencesSet` (9), `jzodTransitiveDependencySet` (6), `jzodToJzod_Summary` (25 + 1 vitest-only comparative).
 - [x] Runner fix: `Set` return values normalized before `ignorePostgresExtraAttributes`.
 - [x] `functionCallTestSuites/*` data modules + `export-function-call-suites.unit.test.ts`.
-- [ ] Remaining ready batch: `jzod.buildAnyKeyMap` (partial asserts → **5c**), `jzodTransitiveDependencySet` duplicate Set smoke tests removed from vitest file.
+- [ ] Remaining ready batch: `jzodTransitiveDependencySet` duplicate Set smoke tests removed from vitest file.
 
 **Validation:** `RUN_TEST=JzodSchemaReferencesList.unit.test` (9/9); `JzodSchemaReferencesSet.unit.test` (9/9); `jzodTransitiveDependencySet.unit.test` (6/6); `jzodToJzod_Summary.unit.test` (26/26).
 
@@ -382,13 +382,13 @@ First migration batch:
 - [x] `modelUpdates.unit.test.ts` → `unitTest_suite_modelUpdates` (6 cases; `expectedValue: null` + `expectedError`).
 - [x] `getAttributeTypesFromJzodSchema.unit.test.ts` → `unitTest_suite_getAttributeTypesFromJzodSchema` (4 cases; external package whitelist).
 - [x] `ansiColumnsToJzodSchema.unit.test.ts` → `unitTest_suite_ansiColumnsToJzodSchema` (10 cases; assertions, fixtureRef, round-trip split).
+- [x] `jzod.buildAnyKeyMap.unit.test.ts` → `unitTest_suite_buildAnyKeyMap` (11 cases; `assertions[]` + `resultAccessPath`).
 
 Remaining 5c migrations (extensions ready, suites pending):
 
 | Extension | Files |
 |-----------|-------|
 | `fixtureRef` for large blobs | `domainStateToDeploymentEntityState`, `resolveCompositeActionTemplate` |
-| Partial / multi-assert | `jzod.buildAnyKeyMap.unit.test.ts` |
 
 #### Phase 5d — jzodTypeCheck consolidation
 
