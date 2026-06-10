@@ -100,6 +100,17 @@
           },
           {
             "miroirMenuItemType": "miroirMenuReportLink",
+            "label": "Miroir Tests",
+            "section": "data",
+            "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+            "reportUuid": "58dc6706-0473-468c-90ee-61b54b157140",
+            "icon": {
+              "iconType": "mui",
+              "name": "playlist_add_check"
+            }
+          },
+          {
+            "miroirMenuItemType": "miroirMenuReportLink",
             "label": "Miroir OLD Tests",
             "section": "data",
             "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",

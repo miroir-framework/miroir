@@ -174,12 +174,14 @@ Per pilot: hand JSON → export → schema test → switch loader → same pass/
 
 ---
 
-### Phase 4 — Parallel UI
+### Phase 4 — Parallel UI ✅
 
 - `reportMiroirTestList` + `reportMiroirTestDetails` + `miroirTestReportSection`
 - Menu “Miroir Tests”
 - `MiroirTestDisplay`, `RunMiroirTestSuiteButton`
 - Always `executionMode: "unit"`
+
+**Green (done):** Report section schema + list (`58dc6706`) / details (`0ad63f27`) assets. Menu entry. UI wired in `ReportSectionViewWithEditor`. Runner calls `runMiroirTests` with `executionMode: "unit"`.
 
 ---
 

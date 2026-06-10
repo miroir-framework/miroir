@@ -1121,6 +1121,8 @@ export {
   reportTransformerTestList,
   reportUnitTestDetails,
   reportUnitTestList,
+  reportMiroirTestList,
+  reportMiroirTestDetails,
   runnerDropApplication,
   runnerDropEntity,
   selfApplicationDeploymentMiroir,

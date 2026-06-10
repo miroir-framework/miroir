@@ -13,6 +13,8 @@ import {
   miroirTest_queries_library,
   miroirTest_pilot_transformer_plus,
   miroirTest_schema_pilot_empty,
+  reportMiroirTestDetails,
+  reportMiroirTestList,
 } from "../../src";
 import type {
   EntityDefinition,
@@ -158,6 +160,18 @@ describe("MiroirTestDefinition schema (Phase 0)", () => {
     expect(nestedSuite.miroirTests[0]).toMatchObject({
       miroirTestType: "transformerTest",
       transformerName: "duplicateApplicationModel_simplifiedLibrary",
+    });
+  });
+
+  it("validates MiroirTest list and details report assets (Phase 4)", () => {
+    expect(reportMiroirTestList.uuid).toBe("58dc6706-0473-468c-90ee-61b54b157140");
+    expect(reportMiroirTestDetails.uuid).toBe("0ad63f27-c4df-4fb8-9a79-cb257c7a2958");
+    expect(reportMiroirTestList.definition.section.type).toBe("objectListReportSection");
+    expect(
+      (reportMiroirTestDetails.definition.section as { definition: unknown[] }).definition[0],
+    ).toMatchObject({
+      type: "miroirTestReportSection",
+      definition: { fetchedDataReference: "elementToDisplay" },
     });
   });
 });

@@ -1,0 +1,27 @@
+{
+  "uuid": "58dc6706-0473-468c-90ee-61b54b157140",
+  "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+  "parentName": "Report",
+  "parentUuid": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+  "name": "MiroirTestList",
+  "defaultLabel": "Miroir Tests",
+  "definition": {
+    "reportParameters": {},
+    "extractorTemplates": {
+      "miroirTests": {
+        "extractorOrCombinerType": "extractorInstancesByEntity",
+        "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b"
+      }
+    },
+    "section": {
+      "type": "objectListReportSection",
+      "definition": {
+        "label": "Miroir Tests",
+        "parentName": "MiroirTest",
+        "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
+        "fetchedDataReference": "miroirTests",
+        "sortByAttribute": "name"
+      }
+    }
+  }
+}
