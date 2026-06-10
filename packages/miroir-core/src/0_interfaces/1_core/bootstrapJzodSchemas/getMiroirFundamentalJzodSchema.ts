@@ -204,7 +204,6 @@ export function getMiroirFundamentalJzodSchema(
   entityDefinitionTest: any,
   entityDefinitionTransformerTest: any,
   entityDefinitionUnitTest: any,
-  entityDefinitionMiroirTest: any,
   entityDefinitionTransformerDefinition: any,
   entityDefinitionEndpointDefinition: any,
 // ): JzodReference {
@@ -1245,13 +1244,12 @@ export function getMiroirFundamentalJzodSchema(
           miroirFundamentalJzodSchemaUuid,
           true,
         ).context,
-        unitTestDefinition: entityDefinitionUnitTest.mlSchema as any,
         ...makeReferencesAbsolute(
-          entityDefinitionMiroirTest.mlSchema.definition.definition,
+          entityDefinitionUnitTest.mlSchema.definition.definition,
           miroirFundamentalJzodSchemaUuid,
           true,
         ).context,
-        miroirTestDefinition: entityDefinitionMiroirTest.mlSchema as any,
+        unitTestDefinition: entityDefinitionUnitTest.mlSchema as any,
         // ########################################################################################
         // ########################################################################################
         // ########################################################################################

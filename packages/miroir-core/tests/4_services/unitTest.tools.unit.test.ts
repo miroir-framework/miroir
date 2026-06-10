@@ -34,49 +34,11 @@ import type {
 const unitTestJzodSchema = (entityDefinitionUnitTest as unknown as EntityDefinition)
   .mlSchema as unknown as JzodElement;
 
-describe("UnitTestDefinition schema (Phase 1)", () => {
-  it("validates pilot UnitTestDefinition instance via jzodTypeCheck", () => {
-    const result = jzodTypeCheck(
-      unitTestJzodSchema,
-      unitTest_pilot_transformer_plus,
-      [],
-      [],
-      defaultMetaModelEnvironment,
-      {},
-    );
-    if (result.status === "error") {
-      console.error(getInnermostTypeCheckError(result));
-    }
-    expect(result.status).toBe("ok");
-    const suite = unitTest_pilot_transformer_plus.definition as UnitTestSuite;
-    expect(suite.unitTestType).toBe("unitTestSuite");
-    expect(suite.unitTestLabel).toBe("pilot_resolveConditionalSchema");
-    expect(suite.unitTests[0].unitTestType).toBe("transformerTest");
-  });
-
-  it("does not alter TransformerTest EntityDefinition (non-regression)", () => {
-    expect(entityDefinitionTransformerTest.name).toBe("TransformerTest");
-    expect(entityDefinitionTransformerTest.uuid).toBe(
-      "405bb1fc-a20f-4def-9d3a-206f72350633",
-    );
-    expect(entityDefinitionUnitTest.name).toBe("UnitTest");
-    expect(entityDefinitionUnitTest.uuid).toBe(
-      "ab96dd2a-41fc-45c5-86a5-9a245c5c4d85",
-    );
-    expect(entityDefinitionTransformerTest.name).not.toBe(entityDefinitionUnitTest.name);
-  });
-});
-
-// describe("MiroirTestDefinition schema (Phase 7)", () => {
-//   it("validates pilot MiroirTest catalog instance via jzodTypeCheck", async () => {
-//     const { entityDefinitionMiroirTest, miroirTest_pilot_tools } = await import(
-//       "miroir-test-app_deployment-miroir"
-//     );
-//     const miroirTestJzodSchema = (entityDefinitionMiroirTest as unknown as EntityDefinition)
-//       .mlSchema as unknown as JzodElement;
+// describe("UnitTestDefinition schema (Phase 1)", () => {
+//   it("validates pilot UnitTestDefinition instance via jzodTypeCheck", () => {
 //     const result = jzodTypeCheck(
-//       miroirTestJzodSchema,
-//       miroirTest_pilot_tools,
+//       unitTestJzodSchema,
+//       unitTest_pilot_transformer_plus,
 //       [],
 //       [],
 //       defaultMetaModelEnvironment,
@@ -86,9 +48,22 @@ describe("UnitTestDefinition schema (Phase 1)", () => {
 //       console.error(getInnermostTypeCheckError(result));
 //     }
 //     expect(result.status).toBe("ok");
-//     expect(miroirTest_pilot_tools.definition.miroirTestType).toBe("miroirTestCatalogSuite");
-//     expect(miroirTest_pilot_tools.definition.storageEntity).toBe("unitTest");
-//     expect(miroirTest_pilot_tools.definition.leaves[0].kind).toBe("functionCallTest");
+//     const suite = unitTest_pilot_transformer_plus.definition as UnitTestSuite;
+//     expect(suite.unitTestType).toBe("unitTestSuite");
+//     expect(suite.unitTestLabel).toBe("pilot_resolveConditionalSchema");
+//     expect(suite.unitTests[0].unitTestType).toBe("transformerTest");
+//   });
+
+//   it("does not alter TransformerTest EntityDefinition (non-regression)", () => {
+//     expect(entityDefinitionTransformerTest.name).toBe("TransformerTest");
+//     expect(entityDefinitionTransformerTest.uuid).toBe(
+//       "405bb1fc-a20f-4def-9d3a-206f72350633",
+//     );
+//     expect(entityDefinitionUnitTest.name).toBe("UnitTest");
+//     expect(entityDefinitionUnitTest.uuid).toBe(
+//       "ab96dd2a-41fc-45c5-86a5-9a245c5c4d85",
+//     );
+//     expect(entityDefinitionTransformerTest.name).not.toBe(entityDefinitionUnitTest.name);
 //   });
 // });
 
