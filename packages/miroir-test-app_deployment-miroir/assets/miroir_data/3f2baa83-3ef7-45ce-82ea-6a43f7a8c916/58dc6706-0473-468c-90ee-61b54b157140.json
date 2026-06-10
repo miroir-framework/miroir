@@ -14,14 +14,26 @@
       }
     },
     "section": {
-      "type": "objectListReportSection",
-      "definition": {
-        "label": "Miroir Tests",
-        "parentName": "MiroirTest",
-        "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
-        "fetchedDataReference": "miroirTests",
-        "sortByAttribute": "name"
-      }
+      "type": "list",
+      "definition": [
+        {
+          "type": "miroirTestReportSection",
+          "definition": {
+            "label": "Run all Miroir Tests",
+            "fetchedDataReference": "miroirTests"
+          }
+        },
+        {
+          "type": "objectListReportSection",
+          "definition": {
+            "label": "Miroir Tests",
+            "parentName": "MiroirTest",
+            "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
+            "fetchedDataReference": "miroirTests",
+            "sortByAttribute": "name"
+          }
+        }
+      ]
     }
   }
 }

@@ -1,11 +1,10 @@
 import { afterAll } from "vitest";
-import * as vitest from "vitest";
 
 import { MiroirActivityTracker } from "../../src/3_controllers/MiroirActivityTracker";
 import { MiroirEventService } from "../../src/3_controllers/MiroirEventService";
 import { miroirTestsDisplayResults } from "../../src/4_services/MiroirTestTools";
 import type { MiroirTestSuite } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
-import { listMiroirTestSuiteKeys, loadMiroirTestSuiteExport } from "./miroirTestSuiteRegistry";
+import { loadMiroirTestSuiteExport } from "./miroirTestSuiteRegistry";
 import type { MiroirTestCliConfig } from "./parseMiroirTestCliConfig";
 import { runDeployedMiroirTestSuite } from "./runDeployedMiroirTestSuite";
 
@@ -17,14 +16,6 @@ export async function runMiroirTestsFromCliConfig(
   config: MiroirTestCliConfig,
   options: RunMiroirTestsFromCliConfigOptions = {},
 ): Promise<void> {
-  if (config.suiteKeys.length === 0) {
-    vitest.test.skip(
-      `No MiroirTest suites selected (set MIROIR_TEST_SUITES or --suites; available: ${listMiroirTestSuiteKeys().join(", ")})`,
-      () => {},
-    );
-    return;
-  }
-
   const miroirActivityTracker = new MiroirActivityTracker();
   new MiroirEventService(miroirActivityTracker);
   const executionOptions = {

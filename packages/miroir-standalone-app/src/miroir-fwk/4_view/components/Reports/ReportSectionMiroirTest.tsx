@@ -13,6 +13,7 @@ import { useViewParams } from "miroir-react";
 import { packageName } from "../../../../constants.js";
 import { cleanLevel } from "../../constants.js";
 import { MiroirTestDisplay } from "./MiroirTestDisplay.js";
+import { MiroirTestListDisplay } from "./MiroirTestListDisplay.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -46,21 +47,44 @@ export const ReportSectionMiroirTest = (props: ReportSectionMiroirTestProps) => 
     return undefined;
   }, [reportDefinitionFromFormik, props.reportSectionPath]);
 
-  const miroirTestInstance: MiroirTestDefinition | undefined = useMemo(() => {
+  const fetchedMiroirTests = useMemo(() => {
     const fetchedDataReference =
       reportSectionDefinitionFromFormik?.definition?.fetchedDataReference;
     if (!fetchedDataReference) {
       return undefined;
     }
-    return formikContext.values[fetchedDataReference] as MiroirTestDefinition | undefined;
+    return formikContext.values[fetchedDataReference] as
+      | MiroirTestDefinition
+      | MiroirTestDefinition[]
+      | undefined;
   }, [
     formikContext.values,
     reportSectionDefinitionFromFormik?.definition?.fetchedDataReference,
   ]);
 
-  if (!miroirTestInstance) {
+  if (!fetchedMiroirTests) {
     return null;
   }
+
+  if (Array.isArray(fetchedMiroirTests)) {
+    if (fetchedMiroirTests.length === 0) {
+      return null;
+    }
+
+    log.info("ReportSectionMiroirTest: rendering list", {
+      count: fetchedMiroirTests.length,
+    });
+
+    return (
+      <MiroirTestListDisplay
+        miroirTests={fetchedMiroirTests}
+        useSnackBar={true}
+        gridType={viewParams.gridType}
+      />
+    );
+  }
+
+  const miroirTestInstance = fetchedMiroirTests;
 
   const testLabel =
     miroirTestInstance.definition?.miroirTestLabel ||

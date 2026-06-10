@@ -2,6 +2,7 @@ import type {
   MiroirTestExecutionMode,
   MiroirTestRunFilter,
 } from "../../src/4_services/MiroirTestTools";
+import { listMiroirTestSuiteKeys } from "./miroirTestSuiteRegistry";
 
 export type MiroirTestCliConfig = {
   suiteKeys: string[];
@@ -14,6 +15,8 @@ export type MiroirTestCliParseResult = MiroirTestCliConfig & {
   vitestEntry: "miroir-tests.unit.test" | "miroir-tests.integ.test";
 };
 
+const ALL_SUITES_SENTINEL = "*";
+
 function splitSuiteKeys(raw: string | undefined): string[] {
   if (!raw?.trim()) {
     return [];
@@ -22,6 +25,14 @@ function splitSuiteKeys(raw: string | undefined): string[] {
     .split(",")
     .map((key) => key.trim())
     .filter(Boolean);
+}
+
+/** Empty list or `*` means every registered MiroirTest suite. */
+export function resolveMiroirTestSuiteKeys(rawKeys: string[]): string[] {
+  if (rawKeys.length === 0 || rawKeys.includes(ALL_SUITES_SENTINEL)) {
+    return listMiroirTestSuiteKeys();
+  }
+  return rawKeys;
 }
 
 function parseFilterJson(raw: string | undefined): MiroirTestRunFilter | undefined {
@@ -59,7 +70,7 @@ export function parseMiroirTestCliArgs(argv: string[]): Partial<MiroirTestCliCon
 
 /**
  * Resolve CLI config from npm args (highest priority) and env vars (CI).
- * When no suites are specified, returns an empty list (dynamic import gate — nothing loads).
+ * When no suites are specified, or `*` is given, all registered suites are selected.
  */
 export function parseMiroirTestCliConfig(
   env: NodeJS.ProcessEnv = process.env,
@@ -67,9 +78,10 @@ export function parseMiroirTestCliConfig(
 ): MiroirTestCliParseResult {
   const fromArgs = parseMiroirTestCliArgs(argv);
 
-  const suiteKeys =
+  const suiteKeys = resolveMiroirTestSuiteKeys(
     fromArgs.suiteKeys ??
-    splitSuiteKeys(env.MIROIR_TEST_SUITES ?? env.MIROIR_TEST_SUITE);
+      splitSuiteKeys(env.MIROIR_TEST_SUITES ?? env.MIROIR_TEST_SUITE),
+  );
 
   const executionMode: MiroirTestExecutionMode =
     fromArgs.executionMode ??
@@ -92,7 +104,13 @@ export function miroirTestCliConfigToEnv(config: MiroirTestCliConfig): NodeJS.Pr
   const env: NodeJS.ProcessEnv = {
     MIROIR_TEST_MODE: config.executionMode,
   };
-  if (config.suiteKeys.length) {
+  const allSuiteKeys = listMiroirTestSuiteKeys();
+  if (
+    config.suiteKeys.length === allSuiteKeys.length &&
+    allSuiteKeys.every((key) => config.suiteKeys.includes(key))
+  ) {
+    env.MIROIR_TEST_SUITES = ALL_SUITES_SENTINEL;
+  } else if (config.suiteKeys.length) {
     env.MIROIR_TEST_SUITES = config.suiteKeys.join(",");
   }
   if (config.filter !== undefined) {

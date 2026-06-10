@@ -1,9 +1,11 @@
 import { describe, expect, it } from "vitest";
 
+import { listMiroirTestSuiteKeys } from "./miroirTestSuiteRegistry";
 import {
   miroirTestCliConfigToEnv,
   parseMiroirTestCliArgs,
   parseMiroirTestCliConfig,
+  resolveMiroirTestSuiteKeys,
 } from "./parseMiroirTestCliConfig";
 
 describe("parseMiroirTestCliConfig (Phase 2)", () => {
@@ -49,9 +51,21 @@ describe("parseMiroirTestCliConfig (Phase 2)", () => {
     expect(fromArgv.filter).toEqual({ mustache: ["case 1"] });
   });
 
-  it("returns empty suite list when nothing is configured", () => {
+  it("selects all registered suites when nothing is configured", () => {
     const config = parseMiroirTestCliConfig({}, []);
-    expect(config.suiteKeys).toEqual([]);
+    expect(config.suiteKeys).toEqual(listMiroirTestSuiteKeys());
+  });
+
+  it("selects all registered suites for --suites '*'", () => {
+    const config = parseMiroirTestCliConfig({}, ["--suites", "*"]);
+    expect(config.suiteKeys).toEqual(listMiroirTestSuiteKeys());
+  });
+
+  it("resolveMiroirTestSuiteKeys treats empty and '*' as all suites", () => {
+    const all = listMiroirTestSuiteKeys();
+    expect(resolveMiroirTestSuiteKeys([])).toEqual(all);
+    expect(resolveMiroirTestSuiteKeys(["*"])).toEqual(all);
+    expect(resolveMiroirTestSuiteKeys(["mustache"])).toEqual(["mustache"]);
   });
 
   it("parseMiroirTestCliArgs supports short flags", () => {
@@ -73,5 +87,13 @@ describe("parseMiroirTestCliConfig (Phase 2)", () => {
     expect(env.MIROIR_TEST_SUITES).toBe("schema_pilot_empty");
     expect(env.MIROIR_TEST_MODE).toBe("integration");
     expect(env.MIROIR_TEST_FILTER).toBe('{"schema_pilot_empty":["leaf"]}');
+  });
+
+  it("miroirTestCliConfigToEnv uses '*' when all suites are selected", () => {
+    const env = miroirTestCliConfigToEnv({
+      suiteKeys: listMiroirTestSuiteKeys(),
+      executionMode: "unit",
+    });
+    expect(env.MIROIR_TEST_SUITES).toBe("*");
   });
 });
