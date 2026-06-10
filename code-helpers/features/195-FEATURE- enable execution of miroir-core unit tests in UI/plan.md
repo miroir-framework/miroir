@@ -513,17 +513,6 @@ cd packages/miroir-test-app_deployment-miroir && npm run build
 ```bash
 EXPORT_FUNCTION_CALL_SUITES=1 npx vitest run tests/export-function-call-suites.unit.test.ts
 ```
-
-### Phase 7 — MiroirTest Catalog, discovery & execution profiles
-
-**Detailed plan:** [`phase-7-plan.md`](./phase-7-plan.md)
-
-Phase 7 unifies discovery and execution across **UnitTest** (`a1bc5288-c982-4ff3-8316-4a2400fe9323`, 28 instances) and **TransformerTest** (`681be9ca-c593-45f5-b45a-5f1d4969e91e`, 8 instances) via the **MiroirTest Catalog** — a derived index for browse/filter/run without merging entities yet.
-
-**Batches:** 7a catalog builder → 7b CLI (`MIROIR_TEST_*`) → 7c browse report + unit/integration toggle → 7d editor links → 7e vitestProxy & deferred migrations.
-
-**Not in Phase 7:** `Test` entity composite-action integration tests (standalone-app).
-
 ---
 
 ## Vitest CLI non-regression strategy
