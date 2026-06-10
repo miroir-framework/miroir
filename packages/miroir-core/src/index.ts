@@ -951,10 +951,9 @@ export {
   runMiroirQueryRunnerTestInMemory,
 } from "./4_services/QueryRunnerTestTools.js";
 export {
-  // asFunctionCallTestFromMiroir,
-  // asQueryRunnerTestFromMiroir,
-  // asTransformerTestFromMiroirLeaf,
+  asTransformerTestFromMiroirLeaf,
   miroirTestsDisplayResults,
+  type TransformerTestRunnerInput,
   runMiroirTestInMemory,
   runMiroirTests,
   runMiroirTestSuite,

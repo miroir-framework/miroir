@@ -43,6 +43,35 @@ export type MiroirTestRunFilter = {
   match?: RegExp;
 };
 
+/** Input shape for TestTools transformer runners (`miroirTestLabel` → `transformerTestLabel`). */
+export type TransformerTestRunnerInput = Omit<
+  MiroirTestTransformerLeaf,
+  "miroirTestType" | "miroirTestLabel"
+> & {
+  transformerTestType: "transformerTest";
+  transformerTestLabel: string;
+  skip?: boolean;
+};
+
+export function asTransformerTestFromMiroirLeaf(
+  leaf: MiroirTestTransformerLeaf,
+  parentSkip?: boolean,
+): TransformerTestRunnerInput {
+  const effectiveSkip = !!(parentSkip || leaf.skip);
+  const {
+    miroirTestType: _miroirTestType,
+    miroirTestLabel,
+    skip: _skip,
+    ...payload
+  } = leaf;
+  return {
+    transformerTestType: "transformerTest",
+    transformerTestLabel: miroirTestLabel,
+    ...payload,
+    skip: effectiveSkip,
+  };
+}
+
 function miroirTestLeafLabel(leaf: MiroirTestLeaf): string {
   return leaf.miroirTestLabel;
 }
@@ -96,7 +125,7 @@ export async function runMiroirTestInMemory(
 
   switch (leaf.miroirTestType) {
     case "transformerTest": {
-      const transformerTest = leaf as MiroirTestTransformerLeaf;
+      const transformerTest = asTransformerTestFromMiroirLeaf(leaf, parentSkip);
       if (executionMode === "integration") {
         if (executionOptions.integrationStore === undefined) {
           throw new Error(

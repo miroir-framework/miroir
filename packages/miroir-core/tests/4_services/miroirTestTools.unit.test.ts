@@ -2,8 +2,6 @@ import { describe, expect, it, vi } from "vitest";
 import * as vitest from "vitest";
 
 import {
-  asFunctionCallTestFromMiroir,
-  asQueryRunnerTestFromMiroir,
   asTransformerTestFromMiroirLeaf,
   defaultMetaModelEnvironment,
   listQueryRunnerFixtureRefs,
@@ -65,35 +63,6 @@ describe("asTransformerTestFromMiroirLeaf", () => {
     };
     const result = asTransformerTestFromMiroirLeaf(leaf, false);
     expect(result.skip).toBe(true);
-  });
-});
-
-describe("asFunctionCallTestFromMiroir / asQueryRunnerTestFromMiroir", () => {
-  it("maps functionCallTest labels and fields", () => {
-    const leaf: MiroirFunctionCallTest = {
-      miroirTestType: "functionCallTest",
-      miroirTestLabel: "converts string type",
-      functionRef: {
-        module: "miroir-core/1_core/jzod/JzodToJsonSchema",
-        export: "jzodToJsonSchema",
-      },
-      arguments: [{ type: "string" }],
-      expectedValue: { type: "string" },
-    };
-    const converted = asFunctionCallTestFromMiroir(leaf);
-    expect(converted.unitTestType).toBe("functionCallTest");
-    expect(converted.unitTestLabel).toBe("converts string type");
-    expect(converted.functionRef.export).toBe("jzodToJsonSchema");
-  });
-
-  it("maps queryRunnerTest labels and fields", () => {
-    const miroirLeaf = (
-      (miroirTest_queries_library as MiroirTestDefinition).definition as MiroirTestSuite
-    ).miroirTests[0] as MiroirQueryRunnerTest;
-    const converted = asQueryRunnerTestFromMiroir(miroirLeaf);
-    expect(converted.unitTestType).toBe("queryRunnerTest");
-    expect(converted.unitTestLabel).toBe(miroirLeaf.miroirTestLabel);
-    expect(converted.fixtureRef).toBe("libraryDomainState");
   });
 });
 

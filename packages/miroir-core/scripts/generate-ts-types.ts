@@ -35,8 +35,6 @@ import {
   entityDefinitionSelfApplicationVersionV1,
   entityDefinitionTest,
   entityDefinitionTransformerDefinition,
-  entityDefinitionTransformerTest,
-  entityDefinitionUnitTest,
   entityDefinitionMiroirTest,
   instanceEndpointVersionV1,
   jzodSchemajzodMiroirBootstrapSchema,
@@ -49,6 +47,8 @@ import {
   transformerJzodSchema,
   undoRedoEndpointVersionV1,
 } from "miroir-test-app_deployment-miroir";
+// import entityDefinitionTransformerTest from "../src/0_interfaces/1_core/bootstrapJzodSchemas/fixtures/entityDefinitionTransformerTest.json" assert { type: "json" };
+// import entityDefinitionUnitTest from "../src/0_interfaces/1_core/bootstrapJzodSchemas/fixtures/entityDefinitionUnitTest.json" assert { type: "json" };
 import {
   entityDefinitionRoot,
   getMiroirFundamentalJzodSchema,
@@ -348,8 +348,8 @@ async function generateSchemas(generateFundamentalJzodSchema = true) {
         entityDefinitionReportV1,
         entityDefinitionRunner,
         entityDefinitionTest,
-        entityDefinitionTransformerTest,
-        entityDefinitionUnitTest,
+        // entityDefinitionTransformerTest,
+        // entityDefinitionUnitTest,
         entityDefinitionMiroirTest,
         entityDefinitionTransformerDefinition,
         entityDefinitionEndpoint,

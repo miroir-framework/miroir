@@ -2,20 +2,14 @@ import { describe, expect, it, vi } from "vitest";
 import * as vitest from "vitest";
 
 import {
-  asFunctionCallTestFromMiroir,
-  asQueryRunnerTestFromMiroir,
   asTransformerTestFromMiroirLeaf,
   defaultMetaModelEnvironment,
   runMiroirTestInMemory,
 } from "../../src";
-import type {
-  MiroirFunctionCallTest,
-  MiroirQueryRunnerTest,
-  MiroirTestTransformerLeaf,
-} from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import type { MiroirTestTransformerLeaf } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
-describe("MiroirTestTools adapters (Phase 1)", () => {
-  it("asTransformerTestFromMiroirLeaf maps unified leaf to TransformerTest", () => {
+describe("asTransformerTestFromMiroirLeaf", () => {
+  it("maps miroirTestLabel to transformerTestLabel for TestTools runners", () => {
     const leaf: MiroirTestTransformerLeaf = {
       miroirTestType: "transformerTest",
       miroirTestLabel: "returns string schema",
@@ -26,7 +20,7 @@ describe("MiroirTestTools adapters (Phase 1)", () => {
         valueObject: "test",
         context: "defaultValue",
         valuePath: [],
-      },
+      } as any,
       runTestStep: "build",
       transformerParams: {},
       expectedValue: { type: "string" },
@@ -36,34 +30,6 @@ describe("MiroirTestTools adapters (Phase 1)", () => {
     expect(transformerTest.transformerTestLabel).toBe("returns string schema");
     expect(transformerTest.transformerName).toBe("resolveConditionalSchema");
     expect(transformerTest.expectedValue).toEqual({ type: "string" });
-  });
-
-  it("asFunctionCallTestFromMiroir renames label discriminator", () => {
-    const leaf: MiroirFunctionCallTest = {
-      miroirTestType: "functionCallTest",
-      miroirTestLabel: "mustache case",
-      functionRef: {
-        module: "miroir-core/1_core/mustache",
-        export: "extractDoubleBracePatterns",
-      },
-      arguments: ["Hello {{ name }}!"],
-      expectedValue: [{ content: "name", start: 6, end: 15 }],
-    };
-    const unitTest = asFunctionCallTestFromMiroir(leaf);
-    expect(unitTest.unitTestType).toBe("functionCallTest");
-    expect(unitTest.unitTestLabel).toBe("mustache case");
-  });
-
-  it("asQueryRunnerTestFromMiroir renames label discriminator", () => {
-    const leaf: MiroirQueryRunnerTest = {
-      miroirTestType: "queryRunnerTest",
-      miroirTestLabel: "query case",
-      runner: "inMemory",
-      assertions: [{ label: "count", expectedValue: 1 }],
-    };
-    const unitTest = asQueryRunnerTestFromMiroir(leaf);
-    expect(unitTest.unitTestType).toBe("queryRunnerTest");
-    expect(unitTest.unitTestLabel).toBe("query case");
   });
 });
 
