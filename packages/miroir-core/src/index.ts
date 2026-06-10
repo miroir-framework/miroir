@@ -974,6 +974,20 @@ export {
   type RunUnitTest,
   type RunUnitTests,
 } from "./4_services/UnitTestTools.js";
+export {
+  asFunctionCallTestFromMiroir,
+  asQueryRunnerTestFromMiroir,
+  asTransformerTestFromMiroirLeaf,
+  miroirTestsDisplayResults,
+  runMiroirTestInMemory,
+  runMiroirTests,
+  runMiroirTestSuite,
+  type MiroirTestExecutionMode,
+  type MiroirTestExecutionOptions,
+  type MiroirTestRunFilter,
+  type RunMiroirTest,
+  type RunMiroirTests,
+} from "./4_services/MiroirTestTools.js";
 export { TransformerGlobalContext } from "./4_services/TransformerContext.js";
 export { defaultViewParamsFromAdminStorageFetchQueryParams } from "./4_views/viewParams";
 

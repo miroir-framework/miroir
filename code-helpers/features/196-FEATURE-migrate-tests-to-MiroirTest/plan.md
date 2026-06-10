@@ -139,11 +139,11 @@ flowchart LR
 
 ---
 
-### Phase 1 — `MiroirTestTools` skeleton
+### Phase 1 — `MiroirTestTools` skeleton ✅
 
 **Red:** `miroirTest.tools.unit.test.ts` — dispatch per leaf kind.
 
-**Green:** `MiroirTestTools.ts` with `runMiroirTests`, `runMiroirTestSuite`, `executionMode`, `filter`.
+**Green (done):** `MiroirTestTools.ts` with `runMiroirTests`, `runMiroirTestSuite`, `executionMode`, `filter`. Leaf adapters delegate to legacy runners without modifying `UnitTestTools` / `TestTools`.
 
 ---
 
