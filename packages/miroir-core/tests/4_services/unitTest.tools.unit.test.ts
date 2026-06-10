@@ -67,6 +67,31 @@ describe("UnitTestDefinition schema (Phase 1)", () => {
   });
 });
 
+// describe("MiroirTestDefinition schema (Phase 7)", () => {
+//   it("validates pilot MiroirTest catalog instance via jzodTypeCheck", async () => {
+//     const { entityDefinitionMiroirTest, miroirTest_pilot_tools } = await import(
+//       "miroir-test-app_deployment-miroir"
+//     );
+//     const miroirTestJzodSchema = (entityDefinitionMiroirTest as unknown as EntityDefinition)
+//       .mlSchema as unknown as JzodElement;
+//     const result = jzodTypeCheck(
+//       miroirTestJzodSchema,
+//       miroirTest_pilot_tools,
+//       [],
+//       [],
+//       defaultMetaModelEnvironment,
+//       {},
+//     );
+//     if (result.status === "error") {
+//       console.error(getInnermostTypeCheckError(result));
+//     }
+//     expect(result.status).toBe("ok");
+//     expect(miroirTest_pilot_tools.definition.miroirTestType).toBe("miroirTestCatalogSuite");
+//     expect(miroirTest_pilot_tools.definition.storageEntity).toBe("unitTest");
+//     expect(miroirTest_pilot_tools.definition.leaves[0].kind).toBe("functionCallTest");
+//   });
+// });
+
 describe("asTransformerTestFromUnitTest", () => {
   it("unwraps payload and preserves expected value", () => {
     const suite = unitTest_pilot_transformer_plus.definition as UnitTestSuite;

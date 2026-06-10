@@ -7518,6 +7518,391 @@ export const miroirFundamentalJzodSchema = {
           }
         }
       },
+      "miroirTestStorageEntity": {
+        "type": "enum",
+        "definition": [
+          "unitTest",
+          "transformerTest"
+        ]
+      },
+      "miroirTestLeafKind": {
+        "type": "enum",
+        "definition": [
+          "transformerTest",
+          "functionCallTest",
+          "queryRunnerTest"
+        ]
+      },
+      "miroirTestCatalogLeaf": {
+        "type": "object",
+        "tag": {
+          "value": {
+            "defaultLabel": "Catalog leaf",
+            "description": "Normalized index row for one executable test case",
+            "display": {
+              "displayedAttributeValueWhenFolded": "label"
+            }
+          }
+        },
+        "definition": {
+          "miroirTestType": {
+            "type": "literal",
+            "definition": "miroirTestCatalogLeaf"
+          },
+          "label": {
+            "type": "string"
+          },
+          "path": {
+            "type": "array",
+            "definition": {
+              "type": "string"
+            }
+          },
+          "kind": {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "miroirTestLeafKind",
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+            },
+            "context": {}
+          },
+          "testTags": {
+            "type": "array",
+            "optional": true,
+            "definition": {
+              "type": "string"
+            }
+          },
+          "module": {
+            "type": "string",
+            "optional": true
+          },
+          "export": {
+            "type": "string",
+            "optional": true
+          },
+          "skip": {
+            "type": "boolean",
+            "optional": true
+          },
+          "supportsIntegration": {
+            "type": "boolean",
+            "optional": true
+          },
+          "supportsUnit": {
+            "type": "boolean",
+            "optional": true
+          }
+        }
+      },
+      "miroirTestCatalogSuite": {
+        "type": "object",
+        "tag": {
+          "value": {
+            "defaultLabel": "MiroirTest catalog suite",
+            "description": "Index entry pointing at a UnitTest or TransformerTest instance",
+            "display": {
+              "editable": true,
+              "displayedAttributeValueWhenFolded": "miroirTestLabel"
+            }
+          }
+        },
+        "definition": {
+          "miroirTestType": {
+            "type": "literal",
+            "definition": "miroirTestCatalogSuite"
+          },
+          "miroirTestLabel": {
+            "type": "string"
+          },
+          "catalogId": {
+            "type": "string",
+            "optional": true
+          },
+          "storageEntity": {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "miroirTestStorageEntity",
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+            },
+            "context": {}
+          },
+          "sourceInstanceUuid": {
+            "type": "uuid"
+          },
+          "sourceParentEntityUuid": {
+            "type": "uuid"
+          },
+          "deploymentExport": {
+            "type": "string",
+            "optional": true
+          },
+          "vitestLoaderFile": {
+            "type": "string",
+            "optional": true
+          },
+          "vitestRunTestKey": {
+            "type": "string",
+            "optional": true
+          },
+          "detailReportUuid": {
+            "type": "uuid",
+            "optional": true
+          },
+          "leafCount": {
+            "type": "number",
+            "optional": true
+          },
+          "leaves": {
+            "type": "array",
+            "definition": {
+              "type": "schemaReference",
+              "definition": {
+                "relativePath": "miroirTestCatalogLeaf",
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+              },
+              "context": {}
+            }
+          }
+        }
+      },
+      "miroirTestDefinition": {
+        "type": "object",
+        "extend": {
+          "type": "schemaReference",
+          "definition": {
+            "eager": true,
+            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            "relativePath": "entityDefinitionRoot"
+          }
+        },
+        "definition": {
+          "selfApplication": {
+            "type": "uuid",
+            "tag": {
+              "value": {
+                "id": 9,
+                "defaultLabel": "SelfApplication",
+                "description": "The SelfApplication this MiroirTest catalog entry belongs to",
+                "display": {
+                  "editable": false
+                },
+                "foreignKeyParams": {
+                  "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
+                  "targetEntityOrderInstancesBy": "name"
+                }
+              }
+            }
+          },
+          "branch": {
+            "type": "uuid",
+            "tag": {
+              "value": {
+                "id": 10,
+                "defaultLabel": "Branch",
+                "description": "The Branch of the SelfApplication",
+                "display": {
+                  "editable": false
+                }
+              }
+            }
+          },
+          "name": {
+            "type": "string",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 1,
+                "defaultLabel": "Name",
+                "display": {
+                  "editable": true
+                }
+              }
+            }
+          },
+          "skip": {
+            "type": "boolean",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 1,
+                "defaultLabel": "Skip",
+                "display": {
+                  "editable": true
+                },
+                "description": "If true, this catalog entry is excluded from browse/run filters",
+                "initializeTo": {
+                  "initializeToType": "value",
+                  "value": true
+                }
+              }
+            }
+          },
+          "description": {
+            "type": "string",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 1,
+                "defaultLabel": "Description",
+                "display": {
+                  "editable": true
+                }
+              }
+            }
+          },
+          "definition": {
+            "type": "schemaReference",
+            "context": {
+              "miroirTestStorageEntity": {
+                "type": "enum",
+                "definition": [
+                  "unitTest",
+                  "transformerTest"
+                ]
+              },
+              "miroirTestLeafKind": {
+                "type": "enum",
+                "definition": [
+                  "transformerTest",
+                  "functionCallTest",
+                  "queryRunnerTest"
+                ]
+              },
+              "miroirTestCatalogLeaf": {
+                "type": "object",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Catalog leaf",
+                    "description": "Normalized index row for one executable test case",
+                    "display": {
+                      "displayedAttributeValueWhenFolded": "label"
+                    }
+                  }
+                },
+                "definition": {
+                  "miroirTestType": {
+                    "type": "literal",
+                    "definition": "miroirTestCatalogLeaf"
+                  },
+                  "label": {
+                    "type": "string"
+                  },
+                  "path": {
+                    "type": "array",
+                    "definition": {
+                      "type": "string"
+                    }
+                  },
+                  "kind": {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "miroirTestLeafKind"
+                    }
+                  },
+                  "testTags": {
+                    "type": "array",
+                    "optional": true,
+                    "definition": {
+                      "type": "string"
+                    }
+                  },
+                  "module": {
+                    "type": "string",
+                    "optional": true
+                  },
+                  "export": {
+                    "type": "string",
+                    "optional": true
+                  },
+                  "skip": {
+                    "type": "boolean",
+                    "optional": true
+                  },
+                  "supportsIntegration": {
+                    "type": "boolean",
+                    "optional": true
+                  },
+                  "supportsUnit": {
+                    "type": "boolean",
+                    "optional": true
+                  }
+                }
+              },
+              "miroirTestCatalogSuite": {
+                "type": "object",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "MiroirTest catalog suite",
+                    "description": "Index entry pointing at a UnitTest or TransformerTest instance",
+                    "display": {
+                      "editable": true,
+                      "displayedAttributeValueWhenFolded": "miroirTestLabel"
+                    }
+                  }
+                },
+                "definition": {
+                  "miroirTestType": {
+                    "type": "literal",
+                    "definition": "miroirTestCatalogSuite"
+                  },
+                  "miroirTestLabel": {
+                    "type": "string"
+                  },
+                  "catalogId": {
+                    "type": "string",
+                    "optional": true
+                  },
+                  "storageEntity": {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "miroirTestStorageEntity"
+                    }
+                  },
+                  "sourceInstanceUuid": {
+                    "type": "uuid"
+                  },
+                  "sourceParentEntityUuid": {
+                    "type": "uuid"
+                  },
+                  "deploymentExport": {
+                    "type": "string",
+                    "optional": true
+                  },
+                  "vitestLoaderFile": {
+                    "type": "string",
+                    "optional": true
+                  },
+                  "vitestRunTestKey": {
+                    "type": "string",
+                    "optional": true
+                  },
+                  "detailReportUuid": {
+                    "type": "uuid",
+                    "optional": true
+                  },
+                  "leafCount": {
+                    "type": "number",
+                    "optional": true
+                  },
+                  "leaves": {
+                    "type": "array",
+                    "definition": {
+                      "type": "schemaReference",
+                      "definition": {
+                        "relativePath": "miroirTestCatalogLeaf"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "definition": {
+              "relativePath": "miroirTestCatalogSuite"
+            }
+          }
+        }
+      },
       "______________________________________________entities_____________________________________________": {
         "type": "never"
       },

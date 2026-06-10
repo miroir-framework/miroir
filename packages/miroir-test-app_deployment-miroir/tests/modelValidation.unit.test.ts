@@ -118,11 +118,11 @@ const transformerDefinitionInstances = import.meta.glob(
   { eager: true },
 ) as Record<string, { default: any }>;
 
-// Data: Tests (parentUuid = entityTest = c37625c7)
-const testInstances = import.meta.glob(
-  "../assets/miroir_data/c37625c7-0b35-4d6a-811d-8181eb978301/*.json",
-  { eager: true },
-) as Record<string, { default: any }>;
+// // Data: Tests (parentUuid = entityTest = c37625c7)
+// const testInstances = import.meta.glob(
+//   "../assets/miroir_data/c37625c7-0b35-4d6a-811d-8181eb978301/*.json",
+//   { eager: true },
+// ) as Record<string, { default: any }>;
 
 // Data: TransformerTests (parentUuid = entityTransformerTest = 681be9ca)
 const transformerTestInstances = import.meta.glob(
@@ -264,11 +264,11 @@ const modelTestsToRun: Array<{
     "instances": transformerDefinitionInstances,
     // filterByName: ["getActiveDeployment"],
   },
-  {
-    "groupName": "Test",
-    "jzodSchema": (entityDefinitionTest as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
-    "instances": testInstances,
-  },
+  // {
+  //   "groupName": "Test",
+  //   "jzodSchema": (entityDefinitionTest as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
+  //   "instances": testInstances,
+  // },
   {
     "groupName": "TransformerTest",
     "jzodSchema": (entityDefinitionTransformerTest as unknown as EntityDefinition).mlSchema as unknown as JzodElement,

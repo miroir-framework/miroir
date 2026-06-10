@@ -514,34 +514,15 @@ cd packages/miroir-test-app_deployment-miroir && npm run build
 EXPORT_FUNCTION_CALL_SUITES=1 npx vitest run tests/export-function-call-suites.unit.test.ts
 ```
 
-### Phase 7 — Deferred migrations, integration modes & discovery
+### Phase 7 — MiroirTest Catalog, discovery & execution profiles
 
-Moved from Phase 5e and former Phase 6.
+**Detailed plan:** [`phase-7-plan.md`](./phase-7-plan.md)
 
-- [ ] UI toggle: unit vs integration for transformer tests (reuse `integrationTestExpectedValue`).
-- [ ] Document `RUN_TEST` / vitest filter conventions (see below).
-- [ ] Runner or report to browse all `UnitTestDefinition` instances by kind, tag, module.
-- [ ] Link from function/transformer/query editor to relevant test suites.
-- [ ] Optional: `vitestProxy` catalog entries for Class E tests (run via CLI only).
-- [ ] Kind-specific input viewers and assertion diff in detail report.
+Phase 7 unifies discovery and execution across **UnitTest** (`a1bc5288-c982-4ff3-8316-4a2400fe9323`, 28 instances) and **TransformerTest** (`681be9ca-c593-45f5-b45a-5f1d4969e91e`, 8 instances) via the **MiroirTest Catalog** — a derived index for browse/filter/run without merging entities yet.
 
-**Vitest selective runs (convention):**
+**Batches:** 7a catalog builder → 7b CLI (`MIROIR_TEST_*`) → 7c browse report + unit/integration toggle → 7d editor links → 7e vitestProxy & deferred migrations.
 
-```bash
-# Single suite by env (existing pattern)
-RUN_TEST=alterObject.unit.test npx vitest run tests/1_core/alterObject.unit.test.ts
-
-# Entity-backed transformer suites (pass + fail cases)
-RUN_TEST=jzodTypeCheck npx vitest run tests/1_core/jzod/jzodTypeCheck.test.ts
-
-# Regenerate functionCallTest deployment JSON
-EXPORT_FUNCTION_CALL_SUITES=1 npx vitest run tests/export-function-call-suites.unit.test.ts
-
-# Re-merge jzodTypeCheck fail cases into transformer entity (idempotent)
-node packages/miroir-core/tests/scripts/merge-jzodTypeCheck-fail-cases.mjs
-```
-
-**Out of scope (vitest-only):** Class E/F (`blobUtils`, controllers, `zodParse*`), meta tests (`unitTest.tools`, `export-function-call-suites`), `jzodToJzod.unit.test.ts` (callback harness → defer or transformerTest), `domainStateToDeploymentEntityState`, `resolveCompositeActionTemplate`.
+**Not in Phase 7:** `Test` entity composite-action integration tests (standalone-app).
 
 ---
 
@@ -565,8 +546,8 @@ node packages/miroir-core/tests/scripts/merge-jzodTypeCheck-fail-cases.mjs
 | Detail report | **Phase 6a** | `reportUnitTestDetails`; run via `unitTestReportSection` (was hard-coded in `ReportSectionEntityInstance`) |
 | Execution | **Phase 6a/6b** | Run UI via `unitTestReportSection` / `transformerTestReportSection` (decoupled from `ReportSectionEntityInstance`) |
 | Results | **Done (Phase 3)** | `UnitTestExecutionSummary` + `UnitTestResults` table |
-| Editing | Phase 7 | JzodObjectEditor for each `unitTestType` branch; kind-specific diff display |
-| Discovery | Phase 7 | Browse by kind/tag/module; links from editors |
+| Editing | Phase 7 | See [`phase-7-plan.md`](./phase-7-plan.md) — kind-specific diff; editor catalog links |
+| Discovery | Phase 7 | MiroirTest Catalog — browse by kind/tag/module; unified list report |
 
 ---
 
