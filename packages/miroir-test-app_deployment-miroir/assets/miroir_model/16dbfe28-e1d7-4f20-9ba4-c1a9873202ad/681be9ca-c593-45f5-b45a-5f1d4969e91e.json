@@ -1,7 +1,0 @@
-{
-  "uuid": "681be9ca-c593-45f5-b45a-5f1d4969e91e",
-  "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-  "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-  "description": "The tests for a Transformer",
-  "name": "TransformerTest"
-}

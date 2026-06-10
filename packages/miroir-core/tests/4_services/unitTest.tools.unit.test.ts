@@ -4,13 +4,13 @@ import * as vitest from "vitest";
 import {
   asTransformerTestFromUnitTest,
   defaultMetaModelEnvironment,
-  entityDefinitionTransformerTest,
   entityDefinitionUnitTest,
   functionCallTestJzodSchema,
   getInnermostTypeCheckError,
   jzodTypeCheck,
   listQueryRunnerFixtureRefs,
   listWhitelistedFunctionRefs,
+  miroirTest_queries_library,
   queryRunnerTestJzodSchema,
   resolveFunctionCallTarget,
   resolveQueryRunnerFixture,
@@ -18,18 +18,14 @@ import {
   runQueryRunnerTestInMemory,
   unitTestSuiteToTransformerTestSuite,
 } from "../../src";
-import {
-  unitTest_pilot_transformer_plus,
-  unitTest_suite_jzodToJsonSchema,
-  unitTest_suite_mustache,
-  unitTest_suite_queries_library,
-} from "miroir-test-app_deployment-miroir";
 import type {
   EntityDefinition,
   JzodElement,
+  QueryRunnerTest,
   UnitTestAsTransformerTest,
   UnitTestSuite,
 } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import { unitTestPilotTransformerPlus } from "../fixtures/unitTestPilotTransformerPlus";
 
 const unitTestJzodSchema = (entityDefinitionUnitTest as unknown as EntityDefinition)
   .mlSchema as unknown as JzodElement;
@@ -69,7 +65,7 @@ const unitTestJzodSchema = (entityDefinitionUnitTest as unknown as EntityDefinit
 
 describe("asTransformerTestFromUnitTest", () => {
   it("unwraps payload and preserves expected value", () => {
-    const suite = unitTest_pilot_transformer_plus.definition as UnitTestSuite;
+    const suite = unitTestPilotTransformerPlus.definition as UnitTestSuite;
     const leaf = suite.unitTests[0] as UnitTestAsTransformerTest;
     const transformerTest = asTransformerTestFromUnitTest(leaf);
     expect(transformerTest.transformerTestType).toBe("transformerTest");
@@ -103,7 +99,7 @@ describe("asTransformerTestFromUnitTest", () => {
 
 describe("unitTestSuiteToTransformerTestSuite", () => {
   it("converts pilot suite to TransformerTestSuite", () => {
-    const suite = unitTest_pilot_transformer_plus.definition as UnitTestSuite;
+    const suite = unitTestPilotTransformerPlus.definition as UnitTestSuite;
     const converted = unitTestSuiteToTransformerTestSuite(suite);
     expect(converted.transformerTestType).toBe("transformerTestSuite");
     expect(converted.transformerTests).toHaveLength(1);
@@ -141,25 +137,19 @@ describe("functionCallTest (Phase 2)", () => {
     expect(parsed.unitTestLabel).toBe("converts string type");
   });
 
-  it("validates mustache, jzodToJsonSchema, and queries_library suites via jzodTypeCheck", () => {
-    for (const instance of [
-      unitTest_suite_mustache,
-      unitTest_suite_jzodToJsonSchema,
-      unitTest_suite_queries_library,
-    ]) {
-      const result = jzodTypeCheck(
-        unitTestJzodSchema,
-        instance,
-        [],
-        [],
-        defaultMetaModelEnvironment,
-        {},
-      );
-      if (result.status === "error") {
-        console.error(getInnermostTypeCheckError(result));
-      }
-      expect(result.status).toBe("ok");
+  it("validates pilot UnitTestDefinition instance via jzodTypeCheck", () => {
+    const result = jzodTypeCheck(
+      unitTestJzodSchema,
+      unitTestPilotTransformerPlus,
+      [],
+      [],
+      defaultMetaModelEnvironment,
+      {},
+    );
+    if (result.status === "error") {
+      console.error(getInnermostTypeCheckError(result));
     }
+    expect(result.status).toBe("ok");
   });
 
   it("resolveFunctionCallTarget rejects non-whitelisted module/export", () => {
@@ -358,8 +348,20 @@ describe("queryRunnerTest (Phase 4)", () => {
   });
 
   it("runQueryRunnerTestInMemory executes first queries_library scenario", async () => {
-    const suite = unitTest_suite_queries_library.definition as UnitTestSuite;
-    const leaf = suite.unitTests[0] as import("../../src").QueryRunnerTest;
+    const miroirLeaf = (miroirTest_queries_library.definition as { miroirTests: unknown[] })
+      .miroirTests[0] as {
+      miroirTestLabel: string;
+      fixtureRef: string;
+      query: QueryRunnerTest["query"];
+      assertions: QueryRunnerTest["assertions"];
+    };
+    const leaf: QueryRunnerTest = {
+      unitTestType: "queryRunnerTest",
+      unitTestLabel: miroirLeaf.miroirTestLabel,
+      fixtureRef: miroirLeaf.fixtureRef,
+      query: miroirLeaf.query,
+      assertions: miroirLeaf.assertions,
+    };
     const tracker = {
       getCurrentTestAssertionPath: () => [{ test: "t" }, { testAssertion: "t" }],
       setTestAssertionResult: vi.fn(),

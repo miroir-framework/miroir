@@ -243,7 +243,7 @@ npm run renormalize-miroir-test-uuids -w miroir-core
 - [x] 3 pilots + `adminTransformers` same results as legacy
 - [x] Generator + manifest; all entity-backed vitest via `MiroirTest`
 - [x] `transformers.integ` via `MiroirTest` + integration mode
-- [x] Legacy code/JSON untouched
+- [x] Legacy runner code untouched; legacy TransformerTest **instances** removed after MiroirTest cutover
 - [x] All MiroirTest instance UUIDs are RFC 4122 v4
 - [~] `RUN_TEST` removed from migrated paths — **partial** (see follow-ups)
 
@@ -255,6 +255,7 @@ npm run renormalize-miroir-test-uuids -w miroir-core
 |------|--------|
 | **`RUN_TEST` on per-file loaders** | `runDeployedMiroirTestSuiteLoader` still honors `RUN_TEST` by default (`honorRunTest: true`). File-pattern loaders set `honorRunTest: false`. Preferred new path is `npm run testMiroir`. |
 | **Legacy UI** | `unitTestReportSection`, `transformerTestReportSection`, Transformer Test Details report — parallel to Miroir Tests menu; delete in cleanup issue. |
+| **Legacy TransformerTest JSON** | ✅ All 8 deployment instances removed (migrated to MiroirTest); `entityTransformerTest` definition retained. |
 | **Legacy runners frozen** | `UnitTestTools.ts`, `TestTools.ts` unchanged; `unitTest.tools.unit.test.ts` still validates legacy tool helpers intentionally. |
 | **Orphan loader** | `runDeployedUnitTestSuite.ts` has no callers; safe to delete in cleanup. |
 | **`miroir-core` index exports** | Only pilot instances + report assets re-exported from `src/index.ts`; full catalog available via deployment package / registry. |

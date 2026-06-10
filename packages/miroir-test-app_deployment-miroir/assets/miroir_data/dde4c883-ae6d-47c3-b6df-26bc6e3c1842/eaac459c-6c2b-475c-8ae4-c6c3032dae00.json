@@ -78,17 +78,6 @@
           },
           {
             "miroirMenuItemType": "miroirMenuReportLink",
-            "label": "Miroir Transformer Tests",
-            "section": "data",
-            "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-            "reportUuid": "963f9cfb-1f26-4e9a-8031-7627151630ae",
-            "icon": {
-              "iconType": "mui",
-              "name": "science"
-            }
-          },
-          {
-            "miroirMenuItemType": "miroirMenuReportLink",
             "label": "Miroir Unit Tests",
             "section": "data",
             "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",

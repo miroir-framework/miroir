@@ -24,8 +24,6 @@ import {
   entityDefinitionStoreBasedConfiguration,
   entityDefinitionTest,
   entityDefinitionTransformerDefinition,
-  entityDefinitionTransformerTest,
-  entityDefinitionUnitTest,
   getInnermostTypeCheckError,
   jzodTypeCheck,
 } from "miroir-core";
@@ -123,18 +121,6 @@ const transformerDefinitionInstances = import.meta.glob(
 //   "../assets/miroir_data/c37625c7-0b35-4d6a-811d-8181eb978301/*.json",
 //   { eager: true },
 // ) as Record<string, { default: any }>;
-
-// Data: TransformerTests (parentUuid = entityTransformerTest = 681be9ca)
-const transformerTestInstances = import.meta.glob(
-  "../assets/miroir_data/681be9ca-c593-45f5-b45a-5f1d4969e91e/*.json",
-  { eager: true },
-) as Record<string, { default: any }>;
-
-// Data: UnitTests (parentUuid = entityUnitTest = a1bc5288)
-const unitTestInstances = import.meta.glob(
-  "../assets/miroir_data/a1bc5288-c982-4ff3-8316-4a2400fe9323/*.json",
-  { eager: true },
-) as Record<string, { default: any }>;
 
 // ================================================================================================
 // Helpers
@@ -269,17 +255,6 @@ const modelTestsToRun: Array<{
   //   "jzodSchema": (entityDefinitionTest as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
   //   "instances": testInstances,
   // },
-  {
-    "groupName": "TransformerTest",
-    "jzodSchema": (entityDefinitionTransformerTest as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
-    "instances": transformerTestInstances,
-    // filterByName: ["unfoldSchemaOnce"],
-  },
-  {
-    "groupName": "UnitTest",
-    "jzodSchema": (entityDefinitionUnitTest as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
-    "instances": unitTestInstances,
-  }
 ]
 
 modelTestsToRun.forEach(({ groupName, jzodSchema, instances, filterByName }) => {

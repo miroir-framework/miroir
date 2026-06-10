@@ -27,7 +27,7 @@ const miroirTestJzodSchema = (entityDefinitionMiroirTest as unknown as EntityDef
   .mlSchema as unknown as JzodElement;
 
 describe("MiroirTestDefinition schema (Phase 0)", () => {
-  it("registers MiroirTest entity separate from UnitTest and TransformerTest", () => {
+  it("registers MiroirTest entity separate from UnitTest", () => {
     expect(entityMiroirTest.name).toBe("MiroirTest");
     expect(entityMiroirTest.uuid).toBe("a311f363-e238-4203-bdfc-29e8c160c26b");
     expect(entityDefinitionMiroirTest.name).toBe("MiroirTest");

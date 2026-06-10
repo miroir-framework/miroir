@@ -47,7 +47,7 @@ RUN_TEST=transformers.unit.test npm run testByFile -w miroir-core -- 'transforme
 
 ### Step 2: Write Test Cases First (TDD) 📝
 Add test cases to the test suite:
-- **File**: `packages/miroir-test-app_deployment-miroir/assets/miroir_data/681be9ca-c593-45f5-b45a-5f1d4969e91e/a5b4be38-78e3-4f31-9e9b-8ab0b71d4993.json`
+- **File**: `packages/miroir-test-app_deployment-miroir/assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/33f60ac8-6511-43b1-b153-6b86e3177532.json` (`miroirTest_miroirCoreTransformers`)
 - **Suite name**: `miroirCoreTransformers`
 - Use the test case template from `template-test-case.json`
 
@@ -243,7 +243,7 @@ Documentation is in folder `docs-OLD/transformers`
 | `2_domain/Transformers.ts` | Export/Registration | Import JSON, export constant, add to array |
 | `0_interfaces/1_core/bootstrapJzodSchemas/getMiroirFundamentalJzodSchema.ts` | Schema registration | 2 transformer entries + 1 dependency entry |
 | `scripts/generate-ts-types.ts` | Pre-generated types | 4 transformer entries |
-| `miroir_data/681be9ca-c593-45f5-b45a-5f1d4969e91e/a5b4be38-78e3-4f31-9e9b-8ab0b71d4993.json` | Test cases | New test case objects |
+| `miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/33f60ac8-6511-43b1-b153-6b86e3177532.json` | Test cases (`miroirTest_miroirCoreTransformers`) | New `miroirTest` leaf objects |
 | `miroir-store-postgres/src/1_core/SqlGenerator.ts` | SQL implementation (optional) | `sqlStringFor<Name>Transformer` function + registration in `sqlTransformerImplementations`, then rebuild with `npm run build -w miroir-store-postgres` |
 
 ---

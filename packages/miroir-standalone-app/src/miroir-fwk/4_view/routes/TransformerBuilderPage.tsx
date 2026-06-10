@@ -12,11 +12,11 @@ import {
   MiroirLoggerFactory,
   defaultMetaModelEnvironment,
   defaultSelfApplicationDeploymentMap,
-  entityTransformerTest,
+  entityMiroirTest,
   // selfApplicationDeploymentLibrary,
   // selfApplicationLibrary,
   selfApplicationMiroir,
-  transformerTest_resolveConditionalSchema,
+  miroirTest_resolveConditionalSchema,
   type Domain2QueryReturnType,
   type ReduxDeploymentsState,
   type SyncBoxedExtractorOrQueryRunnerMap
@@ -120,7 +120,7 @@ export const TransformerBuilderPage: React.FC<any> = (
       )
   );
   
-  const entityTransformerTestKey = deployment_Miroir.uuid + "_data_" + entityTransformerTest.uuid
+  const entityMiroirTestKey = deployment_Miroir.uuid + "_data_" + entityMiroirTest.uuid
   // log.info(
   //   "Tools.tsx deploymentEntityStateSelectorMap",
   //   deploymentEntityStateSelectorMap,
@@ -130,8 +130,8 @@ export const TransformerBuilderPage: React.FC<any> = (
   //   "deploymentEntityState",
   //   deploymentEntityState,
   // );
-  const transformerTestSuite_resolveConditionalSchema: Domain2QueryReturnType<any> | undefined =
-    Object.keys(deploymentEntityState).includes(entityTransformerTestKey)
+  const miroirTestSuite_resolveConditionalSchema: Domain2QueryReturnType<any> | undefined =
+    Object.keys(deploymentEntityState).includes(entityMiroirTestKey)
       ? deploymentEntityStateSelectorMap.extractEntityInstance(
           deploymentEntityState,
           currentApplicationDeploymentMap,
@@ -142,23 +142,23 @@ export const TransformerBuilderPage: React.FC<any> = (
               select: {
                 extractorOrCombinerType: "extractorByPrimaryKey",
                 applicationSection: "data",
-                parentUuid: entityTransformerTest.uuid,
-                instanceUuid: transformerTest_resolveConditionalSchema.uuid,
+                parentUuid: entityMiroirTest.uuid,
+                instanceUuid: miroirTest_resolveConditionalSchema.uuid,
               },
             },
           }, // as BoxedExtractorOrCombinerReturningObject,
           defaultMetaModelEnvironment
         )
-      : // ) as Domain2QueryReturnType<TransformerTestSuite>)
+      : // ) as Domain2QueryReturnType<MiroirTestSuite>)
         undefined;
   // log.info(
   //   "Tools.tsx transformerTestSuite_resolveConditionalSchema",
   //   transformerTestSuite_resolveConditionalSchema
   // );
-  if (transformerTestSuite_resolveConditionalSchema && transformerTestSuite_resolveConditionalSchema instanceof Domain2ElementFailed) {
+  if (miroirTestSuite_resolveConditionalSchema && miroirTestSuite_resolveConditionalSchema instanceof Domain2ElementFailed) {
     throw new Error(
-      `transformerTestSuite_resolveConditionalSchema not found in deploymentEntityState: ${JSON.stringify(
-        transformerTestSuite_resolveConditionalSchema
+      `miroirTestSuite_resolveConditionalSchema not found in deploymentEntityState: ${JSON.stringify(
+        miroirTestSuite_resolveConditionalSchema
       )}`
     );
   }

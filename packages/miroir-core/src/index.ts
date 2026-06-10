@@ -1039,6 +1039,9 @@ export {
   testSuitesResults
 } from "./0_interfaces/4-services/TestInterface.js";
 
+// Bootstrap-only schema fixture (TransformerTest entity removed from deployment)
+export { default as entityDefinitionTransformerTest } from "./0_interfaces/1_core/bootstrapJzodSchemas/fixtures/entityDefinitionTransformerTest.json" assert { type: "json" };
+
 // miroir model + data: re-exported from miroir-test-app_deployment-miroir
 export {
   applicationEndpointV1, storeManagementEndpoint as deploymentEndpointV1, domainEndpointVersionV1,
@@ -1060,7 +1063,6 @@ export {
   entityDefinitionTest,
   // entityDefinitionTheme,
   entityDefinitionTransformerDefinition,
-  entityDefinitionTransformerTest,
   entityDefinitionUnitTest,
   entityDefinitionMiroirTest,
   entityEndpointVersion,
@@ -1079,7 +1081,6 @@ export {
   entityTest,
   // entityTheme,
   entityTransformerDefinition,
-  entityTransformerTest,
   entityUnitTest,
   entityMiroirTest,
   miroirTest_schema_pilot_empty,
@@ -1117,8 +1118,6 @@ export {
   reportRunnerList,
   reportTestDetails,
   reportTestList,
-  reportTransformerTestDetails,
-  reportTransformerTestList,
   reportUnitTestDetails,
   reportUnitTestList,
   reportMiroirTestList,
@@ -1136,7 +1135,7 @@ export {
   testEndpointVersionV1,
   transformerJzodSchema,
   transformerMenuV1,
-  transformerTest_resolveConditionalSchema,
+  miroirTest_resolveConditionalSchema,
   undoRedoEndpointVersionV1
 } from "miroir-test-app_deployment-miroir";
 
