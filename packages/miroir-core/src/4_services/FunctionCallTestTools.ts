@@ -19,7 +19,7 @@ import {
   resolveFunctionCallFixture,
 } from "./FunctionCallTestFixtures";
 import { resolveFunctionCallTarget } from "./FunctionCallTestRegistry";
-import type { TestSuiteListFilter } from "./TestTools";
+import type { TestSuiteListFilter } from "./miroirTestTypes";
 
 const JSON_UNDEFINED_SENTINEL = "__miroirJsonUndefined";
 const JSON_FIXTURE_REF_SENTINEL = "__fixtureRef";

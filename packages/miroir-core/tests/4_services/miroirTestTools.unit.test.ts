@@ -2,7 +2,8 @@ import { describe, expect, it, vi } from "vitest";
 import * as vitest from "vitest";
 
 import {
-  asTransformerTestFromMiroirLeaf,
+  effectiveMiroirTransformerSkip,
+  miroirTransformerAssertionName,
   defaultMetaModelEnvironment,
   listQueryRunnerFixtureRefs,
   listWhitelistedFunctionRefs,
@@ -31,18 +32,15 @@ function mockTracker() {
   };
 }
 
-describe("asTransformerTestFromMiroirLeaf", () => {
-  it("maps miroir transformer leaf to legacy TransformerTest shape", () => {
+describe("Miroir transformer leaf helpers", () => {
+  it("uses miroirTestLabel for assertion naming on pilot leaf", () => {
     const suite = (miroirTest_pilot_transformer_plus as MiroirTestDefinition)
       .definition as MiroirTestSuite;
     const leaf = suite.miroirTests[0] as MiroirTestTransformerLeaf;
-    const transformerTest = asTransformerTestFromMiroirLeaf(leaf);
-    expect(transformerTest.transformerTestType).toBe("transformerTest");
-    expect(transformerTest.transformerName).toBe("resolveConditionalSchema");
-    expect(transformerTest.expectedValue).toEqual({ type: "string" });
-    expect(transformerTest.transformerTestLabel).toBe(
+    expect(miroirTransformerAssertionName(leaf)).toBe(
       "returns the original schema if no ifThenElseMMLS tag is present",
     );
+    expect(effectiveMiroirTransformerSkip(leaf).miroirTestLabel).toBe(leaf.miroirTestLabel);
   });
 
   it("merges skip flags from leaf and parent", () => {
@@ -61,7 +59,7 @@ describe("asTransformerTestFromMiroirLeaf", () => {
       },
       expectedValue: 3,
     };
-    const result = asTransformerTestFromMiroirLeaf(leaf, false);
+    const result = effectiveMiroirTransformerSkip(leaf, false);
     expect(result.skip).toBe(true);
   });
 });

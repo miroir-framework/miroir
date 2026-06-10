@@ -35,7 +35,7 @@ import { MiroirActivityTracker } from "../3_controllers/MiroirActivityTracker";
 import { ignorePostgresExtraAttributes, removeUndefinedProperties, unNullify } from "./otherTools";
 import { domainStateToReduxDeploymentsState, resolvePathOnObject } from "../tools";
 import domainStateImport from "../domainState.json";
-import type { TestSuiteListFilter } from "./TestTools";
+import type { TestSuiteListFilter } from "./miroirTestTypes";
 
 type VitestNamespace = typeof vitest;
 

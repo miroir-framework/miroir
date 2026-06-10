@@ -1,14 +1,11 @@
 import * as vitest from "vitest";
 
 import type {
-  // FunctionCallTest,
   MiroirFunctionCallTest,
   MiroirQueryRunnerTest,
   MiroirTestLeaf,
   MiroirTestSuite,
   MiroirTestTransformerLeaf,
-  // QueryRunnerTest,
-  // TransformerTest,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import type { MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
 import type {
@@ -17,18 +14,18 @@ import type {
 } from "../0_interfaces/3_controllers/MiroirActivityTrackerInterface";
 import { MiroirActivityTracker } from "../3_controllers/MiroirActivityTracker";
 import { runMiroirFunctionCallTestInMemory } from "./FunctionCallTestTools";
-import { runMiroirQueryRunnerTestInMemory } from "./QueryRunnerTestTools";
 import {
-  globalTimeOut,
-  runTransformerIntegrationTest,
-  runTransformerTestInMemory,
-  runUnitTransformerTests,
-  transformerTestsDisplayResults,
-  type RunTransformerTests,
-  type TestSuiteListFilter,
-} from "./TestTools";
+  displayMiroirTestResults,
+  miroirTestGlobalTimeOut,
+  runMiroirTransformerIntegrationTest,
+  runMiroirTransformerTestInMemory,
+} from "./MiroirTransformerTestTools";
+import { runMiroirQueryRunnerTestInMemory } from "./QueryRunnerTestTools";
+import type { MiroirTestRunFilter, TestSuiteListFilter } from "./miroirTestTypes";
 
 type VitestNamespace = typeof vitest;
+
+export type { MiroirTestRunFilter, TestSuiteListFilter };
 
 export type MiroirTestExecutionMode = "unit" | "integration";
 
@@ -38,39 +35,6 @@ export type MiroirTestExecutionOptions = {
   integrationStore?: unknown;
 };
 
-export type MiroirTestRunFilter = {
-  testList?: TestSuiteListFilter;
-  match?: RegExp;
-};
-
-/** Input shape for TestTools transformer runners (`miroirTestLabel` → `transformerTestLabel`). */
-export type TransformerTestRunnerInput = Omit<
-  MiroirTestTransformerLeaf,
-  "miroirTestType" | "miroirTestLabel"
-> & {
-  transformerTestType: "transformerTest";
-  transformerTestLabel: string;
-  skip?: boolean;
-};
-
-export function asTransformerTestFromMiroirLeaf(
-  leaf: MiroirTestTransformerLeaf,
-  parentSkip?: boolean,
-): TransformerTestRunnerInput {
-  const effectiveSkip = !!(parentSkip || leaf.skip);
-  const {
-    miroirTestType: _miroirTestType,
-    miroirTestLabel,
-    skip: _skip,
-    ...payload
-  } = leaf;
-  return {
-    transformerTestType: "transformerTest",
-    transformerTestLabel: miroirTestLabel,
-    ...payload,
-    skip: effectiveSkip,
-  };
-}
 
 function miroirTestLeafLabel(leaf: MiroirTestLeaf): string {
   return leaf.miroirTestLabel;
@@ -96,7 +60,6 @@ export type RunMiroirTest = (
   executionOptions: MiroirTestExecutionOptions,
   testAssertionPath?: TestAssertionPath,
   parentSkip?: boolean,
-  runTransformerTests?: RunTransformerTests,
 ) => Promise<void>;
 
 export interface RunMiroirTests {
@@ -113,50 +76,46 @@ export async function runMiroirTestInMemory(
   leaf: MiroirTestLeaf,
   modelEnvironment: MiroirModelEnvironment,
   miroirActivityTracker: MiroirActivityTrackerInterface,
-  parentTrackingId: string | undefined,
-  trackActionsBelow: boolean,
+  _parentTrackingId: string | undefined,
+  _trackActionsBelow: boolean,
   _runMiroirTests: RunMiroirTests,
   executionOptions: MiroirTestExecutionOptions,
   testAssertionPath?: TestAssertionPath,
   parentSkip?: boolean,
-  runTransformerTests: RunTransformerTests = runUnitTransformerTests,
 ): Promise<void> {
   const executionMode = executionOptions.executionMode ?? "unit";
 
   switch (leaf.miroirTestType) {
     case "transformerTest": {
-      const transformerTest = asTransformerTestFromMiroirLeaf(leaf, parentSkip);
       if (executionMode === "integration") {
         if (executionOptions.integrationStore === undefined) {
           throw new Error(
             "runMiroirTestInMemory: integrationStore is required when executionMode is integration",
           );
         }
-        const runIntegration = runTransformerIntegrationTest(executionOptions.integrationStore);
+        const runIntegration = runMiroirTransformerIntegrationTest(
+          executionOptions.integrationStore,
+        );
         return runIntegration(
           localVitest,
           testNamePath,
           filter,
-          transformerTest,
+          leaf,
           modelEnvironment,
           miroirActivityTracker,
-          parentTrackingId,
-          trackActionsBelow,
-          runTransformerTests,
           testAssertionPath,
+          parentSkip,
         );
       }
-      return runTransformerTestInMemory(
+      return runMiroirTransformerTestInMemory(
         localVitest,
         testNamePath,
         filter,
-        transformerTest,
+        leaf,
         modelEnvironment,
         miroirActivityTracker,
-        parentTrackingId,
-        trackActionsBelow,
-        runTransformerTests,
         testAssertionPath,
+        parentSkip,
       );
     }
     case "functionCallTest":
@@ -169,7 +128,7 @@ export async function runMiroirTestInMemory(
         localVitest,
         testNamePath,
         filter,
-        leaf,
+        leaf as MiroirFunctionCallTest,
         miroirActivityTracker,
         testAssertionPath,
         parentSkip,
@@ -184,7 +143,7 @@ export async function runMiroirTestInMemory(
         localVitest,
         testNamePath,
         filter,
-        leaf,
+        leaf as MiroirQueryRunnerTest,
         miroirActivityTracker,
         testAssertionPath,
         parentSkip,
@@ -240,7 +199,7 @@ export async function runMiroirTestSuite(
     await vitestTestFn(
       `${miroirTestSuite.miroirTestLabel} (empty suite)`,
       () => {},
-      globalTimeOut,
+      miroirTestGlobalTimeOut,
     );
     return;
   }
@@ -297,7 +256,7 @@ export async function runMiroirTestSuite(
             shouldSkipSuite,
           );
         },
-        globalTimeOut,
+        miroirTestGlobalTimeOut,
       );
     }
   }
@@ -378,14 +337,9 @@ export const runMiroirTests: RunMiroirTests = {
   },
 };
 
-export const miroirTestsDisplayResults = async (
-  _miroirTestSuite: MiroirTestSuite,
-  testSuiteName: string,
-  miroirActivityTracker: MiroirActivityTrackerInterface,
-) =>
-  transformerTestsDisplayResults(
-    _miroirTestSuite,
-    testSuiteName,
-    testSuiteName,
-    miroirActivityTracker,
-  );
+export const miroirTestsDisplayResults = displayMiroirTestResults;
+
+export {
+  effectiveMiroirTransformerSkip,
+  miroirTransformerAssertionName,
+} from "./MiroirTransformerTestTools";

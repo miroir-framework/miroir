@@ -2,14 +2,15 @@ import { describe, expect, it, vi } from "vitest";
 import * as vitest from "vitest";
 
 import {
-  asTransformerTestFromMiroirLeaf,
+  effectiveMiroirTransformerSkip,
+  miroirTransformerAssertionName,
   defaultMetaModelEnvironment,
   runMiroirTestInMemory,
 } from "../../src";
 import type { MiroirTestTransformerLeaf } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
-describe("asTransformerTestFromMiroirLeaf", () => {
-  it("maps miroirTestLabel to transformerTestLabel for TestTools runners", () => {
+describe("Miroir transformer leaf helpers", () => {
+  it("miroirTransformerAssertionName uses miroirTestLabel", () => {
     const leaf: MiroirTestTransformerLeaf = {
       miroirTestType: "transformerTest",
       miroirTestLabel: "returns string schema",
@@ -25,11 +26,8 @@ describe("asTransformerTestFromMiroirLeaf", () => {
       transformerParams: {},
       expectedValue: { type: "string" },
     };
-    const transformerTest = asTransformerTestFromMiroirLeaf(leaf);
-    expect(transformerTest.transformerTestType).toBe("transformerTest");
-    expect(transformerTest.transformerTestLabel).toBe("returns string schema");
-    expect(transformerTest.transformerName).toBe("resolveConditionalSchema");
-    expect(transformerTest.expectedValue).toEqual({ type: "string" });
+    expect(miroirTransformerAssertionName(leaf)).toBe("returns string schema");
+    expect(effectiveMiroirTransformerSkip(leaf).skip).toBeUndefined();
   });
 });
 
