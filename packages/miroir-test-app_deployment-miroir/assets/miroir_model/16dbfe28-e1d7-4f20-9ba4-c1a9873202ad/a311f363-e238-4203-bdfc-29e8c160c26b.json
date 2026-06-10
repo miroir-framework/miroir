@@ -1,0 +1,7 @@
+{
+  "uuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
+  "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+  "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+  "description": "Unified Miroir tests (transformer, function-call, query-runner)",
+  "name": "MiroirTest"
+}

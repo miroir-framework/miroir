@@ -7518,6 +7518,884 @@ export const miroirFundamentalJzodSchema = {
           }
         }
       },
+      "miroirTestTransformerLeaf": {
+        "type": "object",
+        "tag": {
+          "value": {
+            "defaultLabel": "Transformer test",
+            "description": "Runs a transformer in unit or integration mode",
+            "display": {
+              "displayedAttributeValueWhenFolded": "miroirTestLabel"
+            }
+          }
+        },
+        "definition": {
+          "miroirTestType": {
+            "type": "literal",
+            "definition": "transformerTest"
+          },
+          "miroirTestLabel": {
+            "type": "string"
+          },
+          "transformerTestDescription": {
+            "type": "string",
+            "optional": true
+          },
+          "transformerName": {
+            "type": "string"
+          },
+          "testTag": {
+            "type": "union",
+            "optional": true,
+            "definition": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "array",
+                "definition": {
+                  "type": "string"
+                }
+              }
+            ]
+          },
+          "skip": {
+            "type": "boolean",
+            "optional": true
+          },
+          "transformer": {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "coreTransformerForBuildPlusRuntime",
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+            },
+            "context": {}
+          },
+          "runTestStep": {
+            "type": "string",
+            "optional": true
+          },
+          "transformerParams": {
+            "type": "record",
+            "definition": {
+              "type": "any"
+            },
+            "optional": true
+          },
+          "transformerRuntimeContext": {
+            "type": "record",
+            "definition": {
+              "type": "any"
+            },
+            "optional": true
+          },
+          "expectedValue": {
+            "type": "any",
+            "optional": true
+          },
+          "subExpectedValue": {
+            "type": "array",
+            "optional": true,
+            "definition": {
+              "type": "tuple",
+              "definition": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "any"
+                }
+              ]
+            }
+          },
+          "integrationTestExpectedValue": {
+            "type": "any",
+            "optional": true
+          },
+          "unitTestExpectedValue": {
+            "type": "any",
+            "optional": true
+          },
+          "retainAttributes": {
+            "type": "array",
+            "definition": {
+              "type": "string"
+            },
+            "optional": true
+          },
+          "ignoreAttributes": {
+            "type": "array",
+            "definition": {
+              "type": "string"
+            },
+            "optional": true
+          }
+        }
+      },
+      "miroirTestLeaf": {
+        "type": "union",
+        "discriminator": "miroirTestType",
+        "definition": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "miroirTestTransformerLeaf",
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+            },
+            "context": {}
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "miroirFunctionCallTest",
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+            },
+            "context": {}
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "miroirQueryRunnerTest",
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+            },
+            "context": {}
+          }
+        ]
+      },
+      "miroirTestSuite": {
+        "type": "object",
+        "tag": {
+          "value": {
+            "defaultLabel": "MiroirTestSuite",
+            "description": "A suite of Miroir tests or nested suites",
+            "display": {
+              "editable": true,
+              "displayedAttributeValueWhenFolded": "miroirTestLabel"
+            }
+          }
+        },
+        "definition": {
+          "miroirTestType": {
+            "type": "literal",
+            "definition": "miroirTestSuite"
+          },
+          "miroirTestLabel": {
+            "type": "string"
+          },
+          "skip": {
+            "type": "boolean",
+            "optional": true
+          },
+          "miroirTests": {
+            "type": "array",
+            "definition": {
+              "type": "union",
+              "discriminator": "miroirTestType",
+              "definition": [
+                {
+                  "type": "schemaReference",
+                  "definition": {
+                    "relativePath": "miroirTestTransformerLeaf",
+                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+                  },
+                  "context": {}
+                },
+                {
+                  "type": "schemaReference",
+                  "definition": {
+                    "relativePath": "miroirFunctionCallTest",
+                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+                  },
+                  "context": {}
+                },
+                {
+                  "type": "schemaReference",
+                  "definition": {
+                    "relativePath": "miroirQueryRunnerTest",
+                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+                  },
+                  "context": {}
+                },
+                {
+                  "type": "schemaReference",
+                  "definition": {
+                    "relativePath": "miroirTestSuite",
+                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+                  },
+                  "context": {}
+                }
+              ]
+            }
+          }
+        }
+      },
+      "miroirFunctionCallTest": {
+        "type": "object",
+        "tag": {
+          "value": {
+            "defaultLabel": "Function-call unit test",
+            "description": "Pure function input/output test (Phase 2 runner)",
+            "display": {
+              "displayedAttributeValueWhenFolded": "miroirTestLabel"
+            }
+          }
+        },
+        "definition": {
+          "testTag": {
+            "type": "union",
+            "optional": true,
+            "definition": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "array",
+                "definition": {
+                  "type": "string"
+                }
+              }
+            ]
+          },
+          "skip": {
+            "type": "boolean",
+            "optional": true
+          },
+          "functionRef": {
+            "type": "object",
+            "definition": {
+              "module": {
+                "type": "string"
+              },
+              "export": {
+                "type": "string"
+              }
+            }
+          },
+          "arguments": {
+            "type": "array",
+            "definition": {
+              "type": "any"
+            },
+            "optional": true
+          },
+          "expectedValue": {
+            "type": "any",
+            "optional": true
+          },
+          "expectedError": {
+            "type": "string",
+            "optional": true
+          },
+          "expectedAction2ErrorType": {
+            "type": "string",
+            "optional": true
+          },
+          "expectUndefinedResult": {
+            "type": "boolean",
+            "optional": true
+          },
+          "environmentRef": {
+            "type": "string",
+            "optional": true
+          },
+          "environmentArgumentIndex": {
+            "type": "number",
+            "optional": true
+          },
+          "fixtureRef": {
+            "type": "string",
+            "optional": true
+          },
+          "fixtureProperty": {
+            "type": "string",
+            "optional": true
+          },
+          "fixtureArgumentIndex": {
+            "type": "number",
+            "optional": true
+          },
+          "assertions": {
+            "type": "array",
+            "optional": true,
+            "definition": {
+              "type": "object",
+              "definition": {
+                "label": {
+                  "type": "string"
+                },
+                "resultAccessPath": {
+                  "type": "array",
+                  "optional": true,
+                  "definition": {
+                    "type": "string"
+                  }
+                },
+                "expectedValue": {
+                  "type": "any",
+                  "optional": true
+                }
+              }
+            }
+          },
+          "ignoreAttributes": {
+            "type": "array",
+            "definition": {
+              "type": "string"
+            },
+            "optional": true
+          },
+          "miroirTestType": {
+            "type": "literal",
+            "definition": "functionCallTest"
+          },
+          "miroirTestLabel": {
+            "type": "string"
+          }
+        }
+      },
+      "miroirQueryRunnerTest": {
+        "type": "object",
+        "tag": {
+          "value": {
+            "defaultLabel": "Query-runner unit test",
+            "description": "In-memory query/template runner test (Phase 3 runner)",
+            "display": {
+              "displayedAttributeValueWhenFolded": "miroirTestLabel"
+            }
+          }
+        },
+        "definition": {
+          "skip": {
+            "type": "boolean",
+            "optional": true
+          },
+          "fixtureRef": {
+            "type": "string",
+            "optional": true
+          },
+          "runner": {
+            "type": "string",
+            "optional": true
+          },
+          "queryTemplate": {
+            "type": "any",
+            "optional": true
+          },
+          "query": {
+            "type": "any",
+            "optional": true
+          },
+          "assertions": {
+            "type": "array",
+            "optional": true,
+            "definition": {
+              "type": "object",
+              "definition": {
+                "label": {
+                  "type": "string"
+                },
+                "resultAccessPath": {
+                  "type": "array",
+                  "optional": true,
+                  "definition": {
+                    "type": "string"
+                  }
+                },
+                "expectedValue": {
+                  "type": "any",
+                  "optional": true
+                }
+              }
+            }
+          },
+          "miroirTestType": {
+            "type": "literal",
+            "definition": "queryRunnerTest"
+          },
+          "miroirTestLabel": {
+            "type": "string"
+          }
+        }
+      },
+      "miroirTestDefinition": {
+        "type": "object",
+        "extend": {
+          "type": "schemaReference",
+          "definition": {
+            "eager": true,
+            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            "relativePath": "entityDefinitionRoot"
+          }
+        },
+        "definition": {
+          "selfApplication": {
+            "type": "uuid",
+            "tag": {
+              "value": {
+                "id": 9,
+                "defaultLabel": "SelfApplication",
+                "description": "The SelfApplication this MiroirTest belongs to",
+                "display": {
+                  "editable": false
+                },
+                "foreignKeyParams": {
+                  "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
+                  "targetEntityOrderInstancesBy": "name"
+                }
+              }
+            }
+          },
+          "branch": {
+            "type": "uuid",
+            "tag": {
+              "value": {
+                "id": 10,
+                "defaultLabel": "Branch",
+                "description": "The Branch of the SelfApplication",
+                "display": {
+                  "editable": false
+                }
+              }
+            }
+          },
+          "name": {
+            "type": "string",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 1,
+                "defaultLabel": "Name",
+                "display": {
+                  "editable": true
+                }
+              }
+            }
+          },
+          "skip": {
+            "type": "boolean",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 1,
+                "defaultLabel": "Skip",
+                "display": {
+                  "editable": true
+                },
+                "description": "If true, this test suite will be skipped when running tests",
+                "initializeTo": {
+                  "initializeToType": "value",
+                  "value": true
+                }
+              }
+            }
+          },
+          "description": {
+            "type": "string",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 1,
+                "defaultLabel": "Description",
+                "display": {
+                  "editable": true
+                }
+              }
+            }
+          },
+          "definition": {
+            "type": "schemaReference",
+            "context": {
+              "miroirTestTransformerLeaf": {
+                "type": "object",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Transformer test",
+                    "description": "Runs a transformer in unit or integration mode",
+                    "display": {
+                      "displayedAttributeValueWhenFolded": "miroirTestLabel"
+                    }
+                  }
+                },
+                "definition": {
+                  "miroirTestType": {
+                    "type": "literal",
+                    "definition": "transformerTest"
+                  },
+                  "miroirTestLabel": {
+                    "type": "string"
+                  },
+                  "transformerTestDescription": {
+                    "type": "string",
+                    "optional": true
+                  },
+                  "transformerName": {
+                    "type": "string"
+                  },
+                  "testTag": {
+                    "type": "union",
+                    "optional": true,
+                    "definition": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "array",
+                        "definition": {
+                          "type": "string"
+                        }
+                      }
+                    ]
+                  },
+                  "skip": {
+                    "type": "boolean",
+                    "optional": true
+                  },
+                  "transformer": {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "coreTransformerForBuildPlusRuntime",
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+                    }
+                  },
+                  "runTestStep": {
+                    "type": "string",
+                    "optional": true
+                  },
+                  "transformerParams": {
+                    "type": "record",
+                    "definition": {
+                      "type": "any"
+                    },
+                    "optional": true
+                  },
+                  "transformerRuntimeContext": {
+                    "type": "record",
+                    "definition": {
+                      "type": "any"
+                    },
+                    "optional": true
+                  },
+                  "expectedValue": {
+                    "type": "any",
+                    "optional": true
+                  },
+                  "subExpectedValue": {
+                    "type": "array",
+                    "optional": true,
+                    "definition": {
+                      "type": "tuple",
+                      "definition": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "any"
+                        }
+                      ]
+                    }
+                  },
+                  "integrationTestExpectedValue": {
+                    "type": "any",
+                    "optional": true
+                  },
+                  "unitTestExpectedValue": {
+                    "type": "any",
+                    "optional": true
+                  },
+                  "retainAttributes": {
+                    "type": "array",
+                    "definition": {
+                      "type": "string"
+                    },
+                    "optional": true
+                  },
+                  "ignoreAttributes": {
+                    "type": "array",
+                    "definition": {
+                      "type": "string"
+                    },
+                    "optional": true
+                  }
+                }
+              },
+              "miroirTestLeaf": {
+                "type": "union",
+                "discriminator": "miroirTestType",
+                "definition": [
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "miroirTestTransformerLeaf"
+                    }
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "miroirFunctionCallTest"
+                    }
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "miroirQueryRunnerTest"
+                    }
+                  }
+                ]
+              },
+              "miroirTestSuite": {
+                "type": "object",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "MiroirTestSuite",
+                    "description": "A suite of Miroir tests or nested suites",
+                    "display": {
+                      "editable": true,
+                      "displayedAttributeValueWhenFolded": "miroirTestLabel"
+                    }
+                  }
+                },
+                "definition": {
+                  "miroirTestType": {
+                    "type": "literal",
+                    "definition": "miroirTestSuite"
+                  },
+                  "miroirTestLabel": {
+                    "type": "string"
+                  },
+                  "skip": {
+                    "type": "boolean",
+                    "optional": true
+                  },
+                  "miroirTests": {
+                    "type": "array",
+                    "definition": {
+                      "type": "union",
+                      "discriminator": "miroirTestType",
+                      "definition": [
+                        {
+                          "type": "schemaReference",
+                          "definition": {
+                            "relativePath": "miroirTestTransformerLeaf"
+                          }
+                        },
+                        {
+                          "type": "schemaReference",
+                          "definition": {
+                            "relativePath": "miroirFunctionCallTest"
+                          }
+                        },
+                        {
+                          "type": "schemaReference",
+                          "definition": {
+                            "relativePath": "miroirQueryRunnerTest"
+                          }
+                        },
+                        {
+                          "type": "schemaReference",
+                          "definition": {
+                            "relativePath": "miroirTestSuite"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              },
+              "miroirFunctionCallTest": {
+                "type": "object",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Function-call unit test",
+                    "description": "Pure function input/output test (Phase 2 runner)",
+                    "display": {
+                      "displayedAttributeValueWhenFolded": "miroirTestLabel"
+                    }
+                  }
+                },
+                "definition": {
+                  "testTag": {
+                    "type": "union",
+                    "optional": true,
+                    "definition": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "array",
+                        "definition": {
+                          "type": "string"
+                        }
+                      }
+                    ]
+                  },
+                  "skip": {
+                    "type": "boolean",
+                    "optional": true
+                  },
+                  "functionRef": {
+                    "type": "object",
+                    "definition": {
+                      "module": {
+                        "type": "string"
+                      },
+                      "export": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "arguments": {
+                    "type": "array",
+                    "definition": {
+                      "type": "any"
+                    },
+                    "optional": true
+                  },
+                  "expectedValue": {
+                    "type": "any",
+                    "optional": true
+                  },
+                  "expectedError": {
+                    "type": "string",
+                    "optional": true
+                  },
+                  "expectedAction2ErrorType": {
+                    "type": "string",
+                    "optional": true
+                  },
+                  "expectUndefinedResult": {
+                    "type": "boolean",
+                    "optional": true
+                  },
+                  "environmentRef": {
+                    "type": "string",
+                    "optional": true
+                  },
+                  "environmentArgumentIndex": {
+                    "type": "number",
+                    "optional": true
+                  },
+                  "fixtureRef": {
+                    "type": "string",
+                    "optional": true
+                  },
+                  "fixtureProperty": {
+                    "type": "string",
+                    "optional": true
+                  },
+                  "fixtureArgumentIndex": {
+                    "type": "number",
+                    "optional": true
+                  },
+                  "assertions": {
+                    "type": "array",
+                    "optional": true,
+                    "definition": {
+                      "type": "object",
+                      "definition": {
+                        "label": {
+                          "type": "string"
+                        },
+                        "resultAccessPath": {
+                          "type": "array",
+                          "optional": true,
+                          "definition": {
+                            "type": "string"
+                          }
+                        },
+                        "expectedValue": {
+                          "type": "any",
+                          "optional": true
+                        }
+                      }
+                    }
+                  },
+                  "ignoreAttributes": {
+                    "type": "array",
+                    "definition": {
+                      "type": "string"
+                    },
+                    "optional": true
+                  },
+                  "miroirTestType": {
+                    "type": "literal",
+                    "definition": "functionCallTest"
+                  },
+                  "miroirTestLabel": {
+                    "type": "string"
+                  }
+                }
+              },
+              "miroirQueryRunnerTest": {
+                "type": "object",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Query-runner unit test",
+                    "description": "In-memory query/template runner test (Phase 3 runner)",
+                    "display": {
+                      "displayedAttributeValueWhenFolded": "miroirTestLabel"
+                    }
+                  }
+                },
+                "definition": {
+                  "skip": {
+                    "type": "boolean",
+                    "optional": true
+                  },
+                  "fixtureRef": {
+                    "type": "string",
+                    "optional": true
+                  },
+                  "runner": {
+                    "type": "string",
+                    "optional": true
+                  },
+                  "queryTemplate": {
+                    "type": "any",
+                    "optional": true
+                  },
+                  "query": {
+                    "type": "any",
+                    "optional": true
+                  },
+                  "assertions": {
+                    "type": "array",
+                    "optional": true,
+                    "definition": {
+                      "type": "object",
+                      "definition": {
+                        "label": {
+                          "type": "string"
+                        },
+                        "resultAccessPath": {
+                          "type": "array",
+                          "optional": true,
+                          "definition": {
+                            "type": "string"
+                          }
+                        },
+                        "expectedValue": {
+                          "type": "any",
+                          "optional": true
+                        }
+                      }
+                    }
+                  },
+                  "miroirTestType": {
+                    "type": "literal",
+                    "definition": "queryRunnerTest"
+                  },
+                  "miroirTestLabel": {
+                    "type": "string"
+                  }
+                }
+              }
+            },
+            "definition": {
+              "relativePath": "miroirTestSuite"
+            }
+          }
+        }
+      },
       "______________________________________________entities_____________________________________________": {
         "type": "never"
       },
