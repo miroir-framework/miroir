@@ -9,6 +9,7 @@ import {
   getInnermostTypeCheckError,
   jzodTypeCheck,
   miroirTest_mustache,
+  miroirTest_adminTransformers,
   miroirTest_queries_library,
   miroirTest_pilot_transformer_plus,
   miroirTest_schema_pilot_empty,
@@ -127,6 +128,36 @@ describe("MiroirTestDefinition schema (Phase 0)", () => {
       miroirTestType: "queryRunnerTest",
       runner: "runQueryFromDomainState",
       fixtureRef: "libraryDomainState",
+    });
+  });
+
+  it("validates adminTransformers nested MiroirTest instance via jzodTypeCheck", () => {
+    const result = jzodTypeCheck(
+      miroirTestJzodSchema,
+      miroirTest_adminTransformers,
+      [],
+      [],
+      defaultMetaModelEnvironment,
+      {},
+    );
+    if (result.status === "error") {
+      console.error(getInnermostTypeCheckError(result));
+    }
+    expect(result.status).toBe("ok");
+
+    const suite = (miroirTest_adminTransformers as MiroirTestDefinition)
+      .definition as MiroirTestSuite;
+    expect(suite.miroirTestLabel).toBe("adminTransformers");
+    expect(suite.miroirTests).toHaveLength(1);
+    expect(suite.miroirTests[0]).toMatchObject({
+      miroirTestType: "miroirTestSuite",
+      miroirTestLabel: "duplicateApplicationModel",
+    });
+    const nestedSuite = suite.miroirTests[0] as MiroirTestSuite;
+    expect(nestedSuite.miroirTests).toHaveLength(1);
+    expect(nestedSuite.miroirTests[0]).toMatchObject({
+      miroirTestType: "transformerTest",
+      transformerName: "duplicateApplicationModel_simplifiedLibrary",
     });
   });
 });

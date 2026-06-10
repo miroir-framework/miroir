@@ -159,16 +159,18 @@ flowchart LR
 
 ---
 
-### Phase 3 — Pilots (hand-migrated)
+### Phase 3 — Pilots (hand-migrated) ✅
 
 | Order | Source | New instance | Validates |
 |-------|--------|--------------|-----------|
 | 3a ✅ | `unitTest_pilot_transformer_plus` | `miroirTest_pilot_transformer_plus` | `transformerTest` leaf |
 | 3b ✅ | `unitTest_suite_mustache` | `miroirTest_mustache` | `functionCallTest` |
 | 3c ✅ | `unitTest_suite_queries_library` | `miroirTest_queries_library` | `queryRunnerTest` |
-| 3d | `transformerTest_adminTransformers` | `miroirTest_adminTransformers` | Deep nested suites |
+| 3d ✅ | `transformerTest_adminTransformers` | `miroirTest_adminTransformers` | Deep nested suites |
 
 Per pilot: hand JSON → export → schema test → switch loader → same pass/fail → UI smoke.
+
+**Green (done):** All four pilots in registry. Nested `adminTransformers` requires `MiroirEventService` on tracker (wired in `runMiroirTestsFromCliConfig` + parallel loader).
 
 ---
 

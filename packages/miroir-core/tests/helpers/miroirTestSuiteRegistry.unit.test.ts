@@ -11,6 +11,7 @@ describe("miroirTestSuiteRegistry (Phase 2)", () => {
     expect(listMiroirTestSuiteKeys()).toContain("pilot_transformer_plus");
     expect(listMiroirTestSuiteKeys()).toContain("mustache");
     expect(listMiroirTestSuiteKeys()).toContain("queries_library");
+    expect(listMiroirTestSuiteKeys()).toContain("adminTransformers");
   });
 
   it("loads deployment export via dynamic import", async () => {

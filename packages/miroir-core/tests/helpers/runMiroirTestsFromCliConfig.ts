@@ -2,6 +2,7 @@ import { afterAll } from "vitest";
 import * as vitest from "vitest";
 
 import { MiroirActivityTracker } from "../../src/3_controllers/MiroirActivityTracker";
+import { MiroirEventService } from "../../src/3_controllers/MiroirEventService";
 import { miroirTestsDisplayResults } from "../../src/4_services/MiroirTestTools";
 import type { MiroirTestSuite } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { listMiroirTestSuiteKeys, loadMiroirTestSuiteExport } from "./miroirTestSuiteRegistry";
@@ -25,6 +26,7 @@ export async function runMiroirTestsFromCliConfig(
   }
 
   const miroirActivityTracker = new MiroirActivityTracker();
+  new MiroirEventService(miroirActivityTracker);
   const executionOptions = {
     executionMode: config.executionMode,
     integrationStore: options.integrationStore,
