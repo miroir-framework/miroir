@@ -65,7 +65,7 @@ A specialized skill for creating and updating **Composite** Miroir Transformers 
 |------|--------------|
 | `a557419d-a288-4fb8-8a1e-971c86c113b8/<uuid>.json` | TransformerDefinition with composition |
 | `Transformers.ts` | Import + export + array entry |
-| `a5b4be38-78e3-4f31-9e9b-8ab0b71d4993.json` | Test cases |
+| `33f60ac8-6511-43b1-b153-6b86e3177532.json` | Test cases (`miroirTest_miroirCoreTransformers`) |
 
 **Only 3 files!** Much simpler than library transformers.
 
@@ -113,7 +113,7 @@ edit-composite-transformers/
 |----------|---------|
 | `miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/*.json` | Transformer definitions |
 | `2_domain/Transformers.ts` | Exports and registration |
-| `miroir_data/681be9ca-c593-45f5-b45a-5f1d4969e91e/a5b4be38-78e3-4f31-9e9b-8ab0b71d4993.json` | Test suite |
+| `miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/33f60ac8-6511-43b1-b153-6b86e3177532.json` | Test suite (`miroirTest_miroirCoreTransformers`) |
 
 ## Common Patterns
 

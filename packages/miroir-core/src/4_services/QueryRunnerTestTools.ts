@@ -1,6 +1,9 @@
 import * as vitest from "vitest";
 
-import type { QueryRunnerTest, TestAssertionResult } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import type {
+  MiroirQueryRunnerTest,
+  TestAssertionResult,
+} from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import type { DomainState } from "../0_interfaces/2_domain/DomainControllerInterface";
 import type { Domain2QueryReturnType } from "../0_interfaces/2_domain/DomainElement";
 import type { ReduxDeploymentsState } from "../0_interfaces/2_domain/ReduxDeploymentsStateInterface";
@@ -105,18 +108,18 @@ type QueryRunnerExecution = {
 };
 
 function buildQueryRunnerExecutions(
-  unitTest: QueryRunnerTest,
+  miroirTest: MiroirQueryRunnerTest,
   fixture: QueryRunnerFixture,
   modelEnvironment: MiroirModelEnvironment,
 ): QueryRunnerExecution[] {
   const executions: QueryRunnerExecution[] = [];
-  const runners = unitTest.runner
-    ? [unitTest.runner]
+  const runners = miroirTest.runner
+    ? [miroirTest.runner]
     : [
-        ...(unitTest.query
+        ...(miroirTest.query
           ? ["runQueryFromDomainState", "runQueryFromReduxDeploymentsState"]
           : []),
-        ...(unitTest.queryTemplate
+        ...(miroirTest.queryTemplate
           ? ["runQueryTemplateFromDomainState", "runQueryTemplateFromReduxDeploymentsState"]
           : []),
       ];
@@ -124,46 +127,46 @@ function buildQueryRunnerExecutions(
   for (const runner of runners) {
     switch (runner) {
       case "runQueryFromDomainState":
-        if (!unitTest.query) break;
+        if (!miroirTest.query) break;
         executions.push({
           runnerLabel: runner,
           run: () =>
             runQueryFromDomainState(
               fixture.domainState,
               fixture.applicationDeploymentMap,
-              getQueryRunnerParamsForDomainState(unitTest.query!),
+              getQueryRunnerParamsForDomainState(miroirTest.query!),
               modelEnvironment,
             ),
         });
         break;
       case "runQueryFromReduxDeploymentsState":
-        if (!unitTest.query) break;
+        if (!miroirTest.query) break;
         executions.push({
           runnerLabel: runner,
           run: () =>
             runQueryFromReduxDeploymentsState(
               fixture.deploymentEntityState,
               fixture.applicationDeploymentMap,
-              getQueryRunnerParamsForReduxDeploymentsState(unitTest.query!),
+              getQueryRunnerParamsForReduxDeploymentsState(miroirTest.query!),
               modelEnvironment,
             ),
         });
         break;
       case "runQueryTemplateFromDomainState":
-        if (!unitTest.queryTemplate) break;
+        if (!miroirTest.queryTemplate) break;
         executions.push({
           runnerLabel: runner,
           run: () =>
             runQueryTemplateFromDomainState(
               fixture.domainState,
               fixture.applicationDeploymentMap,
-              getQueryTemplateRunnerParamsForDomainState(unitTest.queryTemplate!),
+              getQueryTemplateRunnerParamsForDomainState(miroirTest.queryTemplate!),
               modelEnvironment,
             ) as Domain2QueryReturnType<Record<string, unknown>>,
         });
         break;
       case "runQueryTemplateFromReduxDeploymentsState":
-        if (!unitTest.queryTemplate) break;
+        if (!miroirTest.queryTemplate) break;
         executions.push({
           runnerLabel: runner,
           run: () =>
@@ -171,7 +174,7 @@ function buildQueryRunnerExecutions(
               fixture.deploymentEntityState,
               fixture.applicationDeploymentMap,
               getQueryTemplateRunnerParamsForReduxDeploymentsState(
-                unitTest.queryTemplate!,
+                miroirTest.queryTemplate!,
                 fixture.applicationDeploymentMap,
               ),
               modelEnvironment,
@@ -185,32 +188,32 @@ function buildQueryRunnerExecutions(
 
   if (executions.length === 0) {
     throw new Error(
-      `queryRunnerTest "${unitTest.unitTestLabel}" has no runnable query or queryTemplate`,
+      `queryRunnerTest "${miroirTest.miroirTestLabel}" has no runnable query or queryTemplate`,
     );
   }
   return executions;
 }
 
-export { queryRunnerTest as queryRunnerTestJzodSchema } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+export { miroirQueryRunnerTest as queryRunnerTestJzodSchema } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
-export async function runQueryRunnerTestInMemory(
+export async function runMiroirQueryRunnerTestInMemory(
   localVitest: VitestNamespace,
   testNamePath: string[],
   filter: { testList?: TestSuiteListFilter; match?: RegExp } | undefined,
-  unitTest: QueryRunnerTest,
+  miroirTest: MiroirQueryRunnerTest,
   miroirActivityTracker: MiroirActivityTrackerInterface,
   testAssertionPath?: TestAssertionPath,
   parentSkip?: boolean,
   modelEnvironment: MiroirModelEnvironment = defaultMetaModelEnvironment,
 ): Promise<void> {
-  const assertionName = unitTest.unitTestLabel;
-  const effectiveSkip = !!(parentSkip || unitTest.skip);
+  const assertionName = miroirTest.miroirTestLabel;
+  const effectiveSkip = !!(parentSkip || miroirTest.skip);
 
   const currentTestAssertionPath =
     testAssertionPath || miroirActivityTracker.getCurrentTestAssertionPath();
   if (!currentTestAssertionPath) {
     throw new Error(
-      "runQueryRunnerTestInMemory called without testAssertionPath and no currentTestAssertionPath available",
+      "runMiroirQueryRunnerTestInMemory called without testAssertionPath and no currentTestAssertionPath available",
     );
   }
 
@@ -225,9 +228,9 @@ export async function runQueryRunnerTestInMemory(
     return;
   }
 
-  const fixture = resolveQueryRunnerFixture(unitTest.fixtureRef);
-  const executions = buildQueryRunnerExecutions(unitTest, fixture, modelEnvironment);
-  const assertions = unitTest.assertions ?? [];
+  const fixture = resolveQueryRunnerFixture(miroirTest.fixtureRef);
+  const executions = buildQueryRunnerExecutions(miroirTest, fixture, modelEnvironment);
+  const assertions = miroirTest.assertions ?? [];
   const testSuiteNamePathAsString = MiroirActivityTracker.testPathName(testNamePath);
 
   let testAssertionResult: TestAssertionResult = { assertionName, assertionResult: "ok" };

@@ -1,14 +1,14 @@
 import * as vitest from "vitest";
 
 import type {
-  FunctionCallTest,
+  // FunctionCallTest,
   MiroirFunctionCallTest,
   MiroirQueryRunnerTest,
   MiroirTestLeaf,
   MiroirTestSuite,
   MiroirTestTransformerLeaf,
-  QueryRunnerTest,
-  TransformerTest,
+  // QueryRunnerTest,
+  // TransformerTest,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import type { MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
 import type {
@@ -16,10 +16,8 @@ import type {
   TestAssertionPath,
 } from "../0_interfaces/3_controllers/MiroirActivityTrackerInterface";
 import { MiroirActivityTracker } from "../3_controllers/MiroirActivityTracker";
-import {
-  runFunctionCallTestInMemory,
-  runQueryRunnerTestInMemory,
-} from "./UnitTestTools";
+import { runMiroirFunctionCallTestInMemory } from "./FunctionCallTestTools";
+import { runMiroirQueryRunnerTestInMemory } from "./QueryRunnerTestTools";
 import {
   globalTimeOut,
   runTransformerIntegrationTest,
@@ -44,44 +42,6 @@ export type MiroirTestRunFilter = {
   testList?: TestSuiteListFilter;
   match?: RegExp;
 };
-
-/** Map unified transformer leaf to legacy `TransformerTest` for distilled runners. */
-export function asTransformerTestFromMiroirLeaf(
-  leaf: MiroirTestTransformerLeaf,
-  parentSkip?: boolean,
-): TransformerTest {
-  const effectiveSkip = !!(parentSkip || leaf.skip);
-  const {
-    miroirTestType: _miroirTestType,
-    miroirTestLabel,
-    skip: _skip,
-    ...payload
-  } = leaf;
-  return {
-    transformerTestType: "transformerTest",
-    transformerTestLabel: miroirTestLabel,
-    ...payload,
-    skip: effectiveSkip,
-  };
-}
-
-export function asFunctionCallTestFromMiroir(leaf: MiroirFunctionCallTest): FunctionCallTest {
-  const { miroirTestType: _miroirTestType, miroirTestLabel, ...rest } = leaf;
-  return {
-    unitTestType: "functionCallTest",
-    unitTestLabel: miroirTestLabel,
-    ...rest,
-  };
-}
-
-export function asQueryRunnerTestFromMiroir(leaf: MiroirQueryRunnerTest): QueryRunnerTest {
-  const { miroirTestType: _miroirTestType, miroirTestLabel, ...rest } = leaf;
-  return {
-    unitTestType: "queryRunnerTest",
-    unitTestLabel: miroirTestLabel,
-    ...rest,
-  };
-}
 
 function miroirTestLeafLabel(leaf: MiroirTestLeaf): string {
   return leaf.miroirTestLabel;
@@ -136,7 +96,7 @@ export async function runMiroirTestInMemory(
 
   switch (leaf.miroirTestType) {
     case "transformerTest": {
-      const transformerTest = asTransformerTestFromMiroirLeaf(leaf, parentSkip);
+      const transformerTest = leaf as MiroirTestTransformerLeaf;
       if (executionMode === "integration") {
         if (executionOptions.integrationStore === undefined) {
           throw new Error(
@@ -176,11 +136,11 @@ export async function runMiroirTestInMemory(
           "runMiroirTestInMemory: functionCallTest leaves cannot run in integration mode",
         );
       }
-      return runFunctionCallTestInMemory(
+      return runMiroirFunctionCallTestInMemory(
         localVitest,
         testNamePath,
         filter,
-        asFunctionCallTestFromMiroir(leaf),
+        leaf,
         miroirActivityTracker,
         testAssertionPath,
         parentSkip,
@@ -191,11 +151,11 @@ export async function runMiroirTestInMemory(
           "runMiroirTestInMemory: queryRunnerTest leaves cannot run in integration mode",
         );
       }
-      return runQueryRunnerTestInMemory(
+      return runMiroirQueryRunnerTestInMemory(
         localVitest,
         testNamePath,
         filter,
-        asQueryRunnerTestFromMiroir(leaf),
+        leaf,
         miroirActivityTracker,
         testAssertionPath,
         parentSkip,
@@ -395,7 +355,7 @@ export const miroirTestsDisplayResults = async (
   miroirActivityTracker: MiroirActivityTrackerInterface,
 ) =>
   transformerTestsDisplayResults(
-    _miroirTestSuite as unknown as import("../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType").TransformerTestSuite,
+    _miroirTestSuite,
     testSuiteName,
     testSuiteName,
     miroirActivityTracker,

@@ -78,17 +78,6 @@
           },
           {
             "miroirMenuItemType": "miroirMenuReportLink",
-            "label": "Miroir Unit Tests",
-            "section": "data",
-            "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-            "reportUuid": "cf1e1e7c-73eb-491d-a28d-e01e88c05c1d",
-            "icon": {
-              "iconType": "mui",
-              "name": "biotech"
-            }
-          },
-          {
-            "miroirMenuItemType": "miroirMenuReportLink",
             "label": "Miroir Tests",
             "section": "data",
             "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",

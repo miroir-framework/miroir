@@ -3,8 +3,6 @@ import { describe, expect, it } from "vitest";
 import {
   defaultMetaModelEnvironment,
   entityDefinitionMiroirTest,
-  entityDefinitionTransformerTest,
-  entityDefinitionUnitTest,
   entityMiroirTest,
   getInnermostTypeCheckError,
   jzodTypeCheck,
@@ -27,14 +25,11 @@ const miroirTestJzodSchema = (entityDefinitionMiroirTest as unknown as EntityDef
   .mlSchema as unknown as JzodElement;
 
 describe("MiroirTestDefinition schema (Phase 0)", () => {
-  it("registers MiroirTest entity separate from UnitTest", () => {
+  it("registers MiroirTest entity", () => {
     expect(entityMiroirTest.name).toBe("MiroirTest");
     expect(entityMiroirTest.uuid).toBe("a311f363-e238-4203-bdfc-29e8c160c26b");
     expect(entityDefinitionMiroirTest.name).toBe("MiroirTest");
     expect(entityDefinitionMiroirTest.uuid).toBe("51c647fe-07ec-411c-89cc-02689dc66d6a");
-    expect(entityDefinitionUnitTest.name).toBe("UnitTest");
-    expect(entityDefinitionTransformerTest.name).toBe("TransformerTest");
-    expect(entityDefinitionMiroirTest.name).not.toBe(entityDefinitionUnitTest.name);
   });
 
   it("validates empty pilot MiroirTest instance via jzodTypeCheck", () => {

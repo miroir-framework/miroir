@@ -438,24 +438,7 @@ export {
   transactionalInstanceAction,
   transformer_contextOrParameterReferenceTO_REMOVE,
   Transformer_inner_label,
-  transformer_inner_label, TransformerTest,
-  transformerTest,
-  TransformerTestDefinition,
-  transformerTestDefinition,
-  TransformerTestSuite,
-  transformerTestSuite,
-  UnitTestAsTransformerTest,
-  unitTestAsTransformerTest,
-  FunctionCallTest,
-  functionCallTest,
-  QueryRunnerTest,
-  queryRunnerTest,
-  UnitTestLeaf,
-  unitTestLeaf,
-  UnitTestSuite,
-  unitTestSuite,
-  UnitTestDefinition,
-  unitTestDefinition,
+  transformer_inner_label,
   MiroirTestTransformerLeaf,
   miroirTestTransformerLeaf,
   MiroirFunctionCallTest,
@@ -952,32 +935,25 @@ export {
   type TestSuiteListFilter
 } from "./4_services/TestTools.js";
 export {
-  asTransformerTestFromUnitTest,
   deserializeFunctionCallValue,
-  functionCallTestJzodSchema,
   listFunctionCallEnvironmentRefs,
   listFunctionCallFixtureRefs,
   listWhitelistedFunctionRefs,
   prepareFunctionCallArguments,
   resolveFunctionCallTarget,
-  runFunctionCallTestInMemory,
-  runQueryRunnerTestInMemory,
-  queryRunnerTestJzodSchema,
-  listQueryRunnerFixtureRefs,
-  resolveQueryRunnerFixture,
-  runUnitTestInMemory,
-  runUnitTestSuite,
-  runUnitTestSuiteAsTransformerTests,
-  runUnitTests,
-  unitTestSuiteToTransformerTestSuite,
+  runMiroirFunctionCallTestInMemory,
   type FunctionCallRef,
-  type RunUnitTest,
-  type RunUnitTests,
-} from "./4_services/UnitTestTools.js";
+} from "./4_services/FunctionCallTestTools.js";
 export {
-  asFunctionCallTestFromMiroir,
-  asQueryRunnerTestFromMiroir,
-  asTransformerTestFromMiroirLeaf,
+  listQueryRunnerFixtureRefs,
+  queryRunnerTestJzodSchema,
+  resolveQueryRunnerFixture,
+  runMiroirQueryRunnerTestInMemory,
+} from "./4_services/QueryRunnerTestTools.js";
+export {
+  // asFunctionCallTestFromMiroir,
+  // asQueryRunnerTestFromMiroir,
+  // asTransformerTestFromMiroirLeaf,
   miroirTestsDisplayResults,
   runMiroirTestInMemory,
   runMiroirTests,
@@ -1039,8 +1015,9 @@ export {
   testSuitesResults
 } from "./0_interfaces/4-services/TestInterface.js";
 
-// Bootstrap-only schema fixture (TransformerTest entity removed from deployment)
-export { default as entityDefinitionTransformerTest } from "./0_interfaces/1_core/bootstrapJzodSchemas/fixtures/entityDefinitionTransformerTest.json" assert { type: "json" };
+// // Bootstrap-only schema fixtures (legacy test entities removed from deployment)
+// export { default as entityDefinitionTransformerTest } from "./0_interfaces/1_core/bootstrapJzodSchemas/fixtures/entityDefinitionTransformerTest.json" assert { type: "json" };
+// export { default as entityDefinitionUnitTest } from "./0_interfaces/1_core/bootstrapJzodSchemas/fixtures/entityDefinitionUnitTest.json" assert { type: "json" };
 
 // miroir model + data: re-exported from miroir-test-app_deployment-miroir
 export {
@@ -1063,7 +1040,6 @@ export {
   entityDefinitionTest,
   // entityDefinitionTheme,
   entityDefinitionTransformerDefinition,
-  entityDefinitionUnitTest,
   entityDefinitionMiroirTest,
   entityEndpointVersion,
   entityEntity,
@@ -1081,7 +1057,6 @@ export {
   entityTest,
   // entityTheme,
   entityTransformerDefinition,
-  entityUnitTest,
   entityMiroirTest,
   miroirTest_schema_pilot_empty,
   miroirTest_pilot_transformer_plus,
@@ -1118,8 +1093,6 @@ export {
   reportRunnerList,
   reportTestDetails,
   reportTestList,
-  reportUnitTestDetails,
-  reportUnitTestList,
   reportMiroirTestList,
   reportMiroirTestDetails,
   runnerDropApplication,

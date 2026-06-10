@@ -69,7 +69,7 @@ A specialized skill for creating and updating **Library-Implemented** Miroir Tra
 | `Transformers.ts` | Import + export + array entry |
 | `getMiroirFundamentalJzodSchema.ts` | 2 schema entries + 1 dependency |
 | `generate-ts-types.ts` | 4 type generation entries |
-| `a5b4be38-78e3-4f31-9e9b-8ab0b71d4993.json` | Test cases |
+| `33f60ac8-6511-43b1-b153-6b86e3177532.json` | Test cases (`miroirTest_miroirCoreTransformers`) |
 
 ## Test Commands
 
@@ -104,7 +104,7 @@ edit-library-transformers/
 | `2_domain/Transformers.ts` | Exports and registration |
 | `0_interfaces/1_core/bootstrapJzodSchemas/getMiroirFundamentalJzodSchema.ts` | Schema registration |
 | `scripts/generate-ts-types.ts` | Type generation config |
-| `miroir_data/681be9ca-c593-45f5-b45a-5f1d4969e91e/a5b4be38-78e3-4f31-9e9b-8ab0b71d4993.json` | Test suite |
+| `miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/33f60ac8-6511-43b1-b153-6b86e3177532.json` | Test suite (`miroirTest_miroirCoreTransformers`) |
 
 ## Common Pitfalls
 

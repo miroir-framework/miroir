@@ -34,8 +34,6 @@ import { ReportSectionEntityInstance, type ValueObjectEditMode } from './ReportS
 import { ReportSectionListDisplay } from './ReportSectionListDisplay.js';
 import { ReportSectionMarkdown } from './ReportSectionMarkdown.js';
 import { ReportSectionMiroirTest } from './ReportSectionMiroirTest.js';
-import { ReportSectionTransformerTest } from './ReportSectionTransformerTest.js';
-import { ReportSectionUnitTest } from './ReportSectionUnitTest.js';
 import { TypedValueObjectEditor } from './TypedValueObjectEditor.js';
 import { TransformerRunnerReportSectionView } from './TransformerRunner.js';
 
@@ -479,20 +477,6 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
               </div>
             )}
           </>
-        )}
-        {reportSectionDefinitionFromFormik?.type == "unitTestReportSection" && (
-          <ReportSectionUnitTest
-            reportName={props.reportName}
-            reportSectionPath={props.reportSectionPath}
-            showPerformanceDisplay={props.showPerformanceDisplay}
-          />
-        )}
-        {reportSectionDefinitionFromFormik?.type == "transformerTestReportSection" && (
-          <ReportSectionTransformerTest
-            reportName={props.reportName}
-            reportSectionPath={props.reportSectionPath}
-            showPerformanceDisplay={props.showPerformanceDisplay}
-          />
         )}
         {reportSectionDefinitionFromFormik?.type == "miroirTestReportSection" && (
           <ReportSectionMiroirTest

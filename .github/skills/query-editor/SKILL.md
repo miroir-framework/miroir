@@ -58,8 +58,8 @@ Always run tests first to establish baseline.
 
 Add test case(s) to the appropriate test suite file:
 
-- File: `packages/miroir-core/src/assets/miroir_data/681be9ca-c593-45f5-b45a-5f1d4969e91e/a5b4be38-78e3-4f31-9e9b-8ab0b71d4993.json`
-- This is the `miroirCoreTransformers` test suite
+- File: `packages/miroir-test-app_deployment-miroir/assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/a7a74c51-f24e-43d6-bd62-ba3ebcded97d.json`
+- This is the `miroirTest_queries_library` suite (`queryRunnerTest` leaves)
 
 ### Step 3: Run the Test (Expect Failure)
 
@@ -104,7 +104,7 @@ RUN_TEST=transformers.unit.test npm run testByFile -w miroir-core -- 'transforme
 
 #### Step 2: Write Test Cases First (TDD)
 
-Add tests to `packages/miroir-core/src/assets/miroir_data/681be9ca-c593-45f5-b45a-5f1d4969e91e/a5b4be38-78e3-4f31-9e9b-8ab0b71d4993.json`
+Add tests to `packages/miroir-test-app_deployment-miroir/assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/33f60ac8-6511-43b1-b153-6b86e3177532.json`
 
 #### Step 3: Create TransformerDefinition JSON
 
@@ -178,7 +178,7 @@ documentation is in folder `docs-OLD\transformers`
    - Add to `domainActionDependencySet` array
 
 5. **Test Cases**
-   - Location: `packages/miroir-core/src/assets/miroir_data/681be9ca-c593-45f5-b45a-5f1d4969e91e/a5b4be38-78e3-4f31-9e9b-8ab0b71d4993.json`
+   - Location: `packages/miroir-test-app_deployment-miroir/assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/33f60ac8-6511-43b1-b153-6b86e3177532.json`
 
 ### TransformerDefinition Structure (Library)
 
@@ -255,7 +255,7 @@ export const handleTransformer_<name> = (
    - Location: `packages/miroir-core/src/2_domain/Transformers.ts`
 
 3. **Test Cases**
-   - Location: `packages/miroir-core/src/assets/miroir_data/681be9ca-c593-45f5-b45a-5f1d4969e91e/a5b4be38-78e3-4f31-9e9b-8ab0b71d4993.json`
+   - Location: `packages/miroir-test-app_deployment-miroir/assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/33f60ac8-6511-43b1-b153-6b86e3177532.json`
 
 ### TransformerDefinition Structure (Composite)
 
@@ -403,7 +403,7 @@ export const handleTransformer_<name> = (
 | Transformer tools | `packages/miroir-core/src/2_domain/Transformer_tools.ts` |
 | Test suite (unit) | `packages/miroir-core/tests/2_domain/transformers.unit.test.ts` |
 | Test suite (integ) | `packages/miroir-core/tests/4_services/transformers.integ.test.ts` |
-| Test data | `packages/miroir-core/src/assets/miroir_data/681be9ca-c593-45f5-b45a-5f1d4969e91e/a5b4be38-78e3-4f31-9e9b-8ab0b71d4993.json` |
+| Test data | `packages/miroir-test-app_deployment-miroir/assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/33f60ac8-6511-43b1-b153-6b86e3177532.json` |
 | Generated types | `packages/miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.ts` |
 
 ---

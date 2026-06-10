@@ -82,12 +82,12 @@ The workflows are **fundamentally different** enough that maintaining separate s
 3. `Transformers.ts` - Export + registration
 4. `getMiroirFundamentalJzodSchema.ts` - Schema registration (2 entries + dependency)
 5. `generate-ts-types.ts` - Type generation (4 entries)
-6. `a5b4be38-78e3-4f31-9e9b-8ab0b71d4993.json` - Tests
+6. `a311f363-e238-4203-bdfc-29e8c160c26b/33f60ac8-6511-43b1-b153-6b86e3177532.json` - Tests (`miroirTest_miroirCoreTransformers`)
 
 ### Composite Transformers (3 files)
 1. `a557419d-a288-4fb8-8a1e-971c86c113b8/<uuid>.json` - Definition with composition
 2. `Transformers.ts` - Export + registration
-3. `a5b4be38-78e3-4f31-9e9b-8ab0b71d4993.json` - Tests
+3. `a311f363-e238-4203-bdfc-29e8c160c26b/33f60ac8-6511-43b1-b153-6b86e3177532.json` - Tests (`miroirTest_miroirCoreTransformers`)
 
 ## Skill Invocation Examples
 

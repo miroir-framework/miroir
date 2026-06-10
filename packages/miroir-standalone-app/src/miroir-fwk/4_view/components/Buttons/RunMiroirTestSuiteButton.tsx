@@ -16,10 +16,7 @@ import { useMiroirContextService, useSnackbar } from "miroir-react";
 import { packageName } from "../../../../constants.js";
 import { ActionButtonWithSnackbar } from "../../components/Page/ActionButtonWithSnackbar.js";
 import { cleanLevel } from "../../constants.js";
-import {
-  generateTestReport,
-  type TransformerTestResultData,
-} from "./RunTransformerTestSuiteButton.js";
+import { generateTestReport, type TestResultData } from "./testResultReport.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -29,7 +26,7 @@ MiroirLoggerFactory.registerLoggerToStart(
   log = logger;
 });
 
-export type MiroirTestResultData = TransformerTestResultData;
+export type MiroirTestResultData = TestResultData;
 
 interface RunMiroirTestSuiteButtonProps {
   miroirTestSuite: MiroirTestDefinition | undefined;

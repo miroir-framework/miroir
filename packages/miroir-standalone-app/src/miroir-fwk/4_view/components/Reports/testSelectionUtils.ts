@@ -4,13 +4,13 @@ import {
   type TestSuiteListFilter,
 } from "miroir-core";
 
-import type { TransformerTestResultData } from "../Buttons/RunTransformerTestSuiteButton.js";
+import type { TestResultData } from "../Buttons/testResultReport.js";
 
 export type TestSelectionState = {
   [testPath: string]: boolean;
 };
 
-export type TestResultDataAndSelect = TransformerTestResultData & {
+export type TestResultDataAndSelect = TestResultData & {
   selected: boolean;
 };
 

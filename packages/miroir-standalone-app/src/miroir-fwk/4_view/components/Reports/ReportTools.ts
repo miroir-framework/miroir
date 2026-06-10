@@ -234,8 +234,6 @@ export const reportSectionsFormValue = (
       };
     }
     case "markdownReportSection":
-    case "unitTestReportSection":
-    case "transformerTestReportSection":
     case "miroirTestReportSection":
     case "modelDiagramReportSection":
     case "graphReportSection":
