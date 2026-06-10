@@ -1,0 +1,237 @@
+{
+  "uuid": "b0b14998-2203-417a-adb9-20492d5f04cf",
+  "parentName": "MiroirTest",
+  "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
+  "name": "jzodReferencesGraphConnectedComponents",
+  "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+  "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
+  "description": "Migrated from UnitTest c6d2a001-0001-4000-8000-000000000001 (Feature #196 Phase 5)",
+  "definition": {
+    "miroirTestType": "miroirTestSuite",
+    "miroirTestLabel": "jzodReferencesGraphConnectedComponents",
+    "miroirTests": [
+      {
+        "miroirTestType": "functionCallTest",
+        "miroirTestLabel": "returns the element for a single element",
+        "functionRef": {
+          "module": "miroir-core/1_core/jzod/jzodReferencesGraphConnectedComponents",
+          "export": "jzodReferencesGraphConnectedComponents"
+        },
+        "arguments": [
+          {
+            "literal": {
+              "type": "literal",
+              "definition": "testLiteral"
+            }
+          }
+        ],
+        "expectedValue": [
+          [
+            "literal"
+          ]
+        ]
+      },
+      {
+        "miroirTestType": "functionCallTest",
+        "miroirTestLabel": "returns the elements for a multiple unrelated elements",
+        "functionRef": {
+          "module": "miroir-core/1_core/jzod/jzodReferencesGraphConnectedComponents",
+          "export": "jzodReferencesGraphConnectedComponents"
+        },
+        "arguments": [
+          {
+            "literal": {
+              "type": "literal",
+              "definition": "testLiteral"
+            },
+            "string": {
+              "type": "string"
+            },
+            "number": {
+              "type": "number"
+            }
+          }
+        ],
+        "expectedValue": [
+          [
+            "literal"
+          ],
+          [
+            "string"
+          ],
+          [
+            "number"
+          ]
+        ]
+      },
+      {
+        "miroirTestType": "functionCallTest",
+        "miroirTestLabel": "return depending (extend) objects in the same component",
+        "functionRef": {
+          "module": "miroir-core/1_core/jzod/jzodReferencesGraphConnectedComponents",
+          "export": "jzodReferencesGraphConnectedComponents"
+        },
+        "arguments": [
+          {
+            "obj1": {
+              "type": "object",
+              "definition": {
+                "a": {
+                  "type": "string"
+                }
+              }
+            },
+            "obj2": {
+              "type": "object",
+              "definition": {
+                "b": {
+                  "type": "number"
+                }
+              }
+            },
+            "obj3": {
+              "type": "object",
+              "extend": {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "obj1"
+                }
+              },
+              "definition": {
+                "c": {
+                  "type": "bigint"
+                }
+              }
+            }
+          }
+        ],
+        "expectedValue": [
+          [
+            "obj1",
+            "obj3"
+          ],
+          [
+            "obj2"
+          ]
+        ]
+      },
+      {
+        "miroirTestType": "functionCallTest",
+        "miroirTestLabel": "return cascading depending (extend) objects in the same component, in the right order",
+        "functionRef": {
+          "module": "miroir-core/1_core/jzod/jzodReferencesGraphConnectedComponents",
+          "export": "jzodReferencesGraphConnectedComponents"
+        },
+        "arguments": [
+          {
+            "obj1": {
+              "type": "object",
+              "definition": {
+                "a": {
+                  "type": "string"
+                }
+              }
+            },
+            "obj2": {
+              "type": "object",
+              "definition": {
+                "b": {
+                  "type": "number"
+                }
+              }
+            },
+            "obj3": {
+              "type": "object",
+              "extend": {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "obj1"
+                }
+              },
+              "definition": {
+                "c": {
+                  "type": "bigint"
+                }
+              }
+            },
+            "obj4": {
+              "type": "object",
+              "extend": {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "obj3"
+                }
+              },
+              "definition": {
+                "d": {
+                  "type": "boolean"
+                }
+              }
+            }
+          }
+        ],
+        "expectedValue": [
+          [
+            "obj1",
+            "obj3",
+            "obj4"
+          ],
+          [
+            "obj2"
+          ]
+        ]
+      },
+      {
+        "miroirTestType": "functionCallTest",
+        "miroirTestLabel": "return depending (sub) objects in the same component",
+        "functionRef": {
+          "module": "miroir-core/1_core/jzod/jzodReferencesGraphConnectedComponents",
+          "export": "jzodReferencesGraphConnectedComponents"
+        },
+        "arguments": [
+          {
+            "obj1": {
+              "type": "object",
+              "definition": {
+                "a": {
+                  "type": "string"
+                }
+              }
+            },
+            "obj2": {
+              "type": "object",
+              "definition": {
+                "b": {
+                  "type": "number"
+                }
+              }
+            },
+            "obj3": {
+              "type": "object",
+              "definition": {
+                "c": {
+                  "type": "bigint"
+                },
+                "d": {
+                  "type": "schemaReference",
+                  "definition": {
+                    "relativePath": "obj1"
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "expectedValue": [
+          [
+            "obj1",
+            "obj3"
+          ],
+          [
+            "obj2"
+          ]
+        ]
+      }
+    ]
+  }
+}

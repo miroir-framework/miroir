@@ -1,11 +1,9 @@
-import { unitTest_suite_ansiColumnsToJzodSchema } from "miroir-test-app_deployment-miroir";
+import { miroirTest_ansiColumnsToJzodSchema } from "miroir-test-app_deployment-miroir";
 
-import {
-  runDeployedUnitTestSuite,
-  type DeployedUnitTestExport,
-} from "../helpers/runDeployedUnitTestSuite";
+import type { DeployedMiroirTestExport } from "../helpers/runDeployedMiroirTestSuite";
+import { runDeployedMiroirTestSuiteLoader } from "../helpers/runDeployedMiroirTestSuiteLoader";
 
-await runDeployedUnitTestSuite(
-  unitTest_suite_ansiColumnsToJzodSchema as DeployedUnitTestExport,
+await runDeployedMiroirTestSuiteLoader(
+  miroirTest_ansiColumnsToJzodSchema as DeployedMiroirTestExport,
   "ansiColumnsToJzodSchema.unit.test",
 );

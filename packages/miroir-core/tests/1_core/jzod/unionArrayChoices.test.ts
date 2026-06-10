@@ -1,11 +1,9 @@
-import { unitTest_suite_unionArrayChoices } from "miroir-test-app_deployment-miroir";
+import { miroirTest_unionArrayChoices } from "miroir-test-app_deployment-miroir";
 
-import {
-  runDeployedUnitTestSuite,
-  type DeployedUnitTestExport,
-} from "../../helpers/runDeployedUnitTestSuite";
+import type { DeployedMiroirTestExport } from "../../helpers/runDeployedMiroirTestSuite";
+import { runDeployedMiroirTestSuiteLoader } from "../../helpers/runDeployedMiroirTestSuiteLoader";
 
-await runDeployedUnitTestSuite(
-  unitTest_suite_unionArrayChoices as DeployedUnitTestExport,
+await runDeployedMiroirTestSuiteLoader(
+  miroirTest_unionArrayChoices as DeployedMiroirTestExport,
   "unionArrayChoices.test",
 );

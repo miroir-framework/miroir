@@ -1,5 +1,5 @@
 /**
- * @deprecated Cases live in transformerTestSuite_jzodTypeCheck (deployment entity).
+ * @deprecated Cases live in miroirTest_jzodTypeCheck (deployment entity).
  * Run: npx vitest run tests/1_core/jzod/jzodTypeCheck.test.ts
  * Kept so RUN_TEST=jzod.typeCheckToFail.unit.test still resolves for CI filters.
  */

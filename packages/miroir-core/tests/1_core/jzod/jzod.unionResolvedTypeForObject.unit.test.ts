@@ -1,11 +1,9 @@
-import { unitTest_suite_jzodUnionResolvedTypeForObject } from "miroir-test-app_deployment-miroir";
+import { miroirTest_jzodUnionResolvedTypeForObject } from "miroir-test-app_deployment-miroir";
 
-import {
-  runDeployedUnitTestSuite,
-  type DeployedUnitTestExport,
-} from "../../helpers/runDeployedUnitTestSuite";
+import type { DeployedMiroirTestExport } from "../../helpers/runDeployedMiroirTestSuite";
+import { runDeployedMiroirTestSuiteLoader } from "../../helpers/runDeployedMiroirTestSuiteLoader";
 
-await runDeployedUnitTestSuite(
-  unitTest_suite_jzodUnionResolvedTypeForObject as DeployedUnitTestExport,
+await runDeployedMiroirTestSuiteLoader(
+  miroirTest_jzodUnionResolvedTypeForObject as DeployedMiroirTestExport,
   "jzod.unionResolvedTypeForObject.unit.test",
 );

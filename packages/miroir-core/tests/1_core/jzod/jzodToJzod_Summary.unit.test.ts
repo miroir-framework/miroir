@@ -5,9 +5,10 @@ import type {
   MlSchema,
 } from "../../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { jzodToJzod_Summary } from "../../../src/1_core/jzod/JzodToJzod_Summary";
-import { unitTest_suite_jzodToJzod_Summary } from "miroir-test-app_deployment-miroir";
+import { miroirTest_jzodToJzod_Summary } from "miroir-test-app_deployment-miroir";
 
-import { runDeployedUnitTestSuite, type DeployedUnitTestExport } from "../../helpers/runDeployedUnitTestSuite";
+import type { DeployedMiroirTestExport } from "../../helpers/runDeployedMiroirTestSuite";
+import { runDeployedMiroirTestSuiteLoader } from "../../helpers/runDeployedMiroirTestSuiteLoader";
 
 const dummyMlSchema: MlSchema = {
   uuid: "00000000-0000-0000-0000-000000000000",
@@ -15,8 +16,8 @@ const dummyMlSchema: MlSchema = {
   name: "dummy",
 };
 
-await runDeployedUnitTestSuite(
-  unitTest_suite_jzodToJzod_Summary as DeployedUnitTestExport,
+await runDeployedMiroirTestSuiteLoader(
+  miroirTest_jzodToJzod_Summary as DeployedMiroirTestExport,
   "jzodToJzod_Summary.unit.test",
 );
 

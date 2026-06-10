@@ -1,0 +1,179 @@
+{
+  "uuid": "9e4db067-27ab-48c1-91f7-2a739824e674",
+  "parentName": "MiroirTest",
+  "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
+  "name": "unionArrayChoices",
+  "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+  "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
+  "description": "Migrated from UnitTest c6d1a006-0006-4000-8000-000000000006 (Feature #196 Phase 5)",
+  "definition": {
+    "miroirTestType": "miroirTestSuite",
+    "miroirTestLabel": "unionArrayChoices",
+    "miroirTests": [
+      {
+        "miroirTestType": "functionCallTest",
+        "miroirTestLabel": "should return array and tuple schemas directly from concreteUnrolledJzodSchemas",
+        "functionRef": {
+          "module": "miroir-core/1_core/jzod/jzodTypeCheck",
+          "export": "unionArrayChoices"
+        },
+        "arguments": [
+          [
+            {
+              "type": "array",
+              "definition": {
+                "type": "string"
+              }
+            },
+            {
+              "type": "tuple",
+              "definition": []
+            },
+            {
+              "type": "union",
+              "definition": [
+                {
+                  "type": "array",
+                  "definition": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "type": "tuple",
+                  "definition": []
+                }
+              ]
+            }
+          ],
+          {
+            "referenceToStringArray": {
+              "type": "array",
+              "definition": {
+                "type": "string"
+              }
+            },
+            "referenceToNumberArray": {
+              "type": "array",
+              "definition": {
+                "type": "number"
+              }
+            },
+            "referenceToTuple": {
+              "type": "tuple",
+              "definition": []
+            },
+            "referenceToUnion": {
+              "type": "union",
+              "definition": [
+                {
+                  "type": "array",
+                  "definition": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "type": "tuple",
+                  "definition": []
+                }
+              ]
+            }
+          }
+        ],
+        "environmentRef": "defaultMiroirModelEnvironment",
+        "environmentArgumentIndex": 1,
+        "expectedValue": [
+          {
+            "type": "array",
+            "definition": {
+              "type": "string"
+            }
+          },
+          {
+            "type": "tuple",
+            "definition": []
+          },
+          {
+            "type": "array",
+            "definition": {
+              "type": "string"
+            }
+          },
+          {
+            "type": "tuple",
+            "definition": []
+          }
+        ]
+      },
+      {
+        "miroirTestType": "functionCallTest",
+        "miroirTestLabel": "should handle schema references within unions",
+        "functionRef": {
+          "module": "miroir-core/1_core/jzod/jzodTypeCheck",
+          "export": "unionArrayChoices"
+        },
+        "arguments": [
+          [
+            {
+              "type": "union",
+              "definition": [
+                {
+                  "type": "schemaReference",
+                  "context": {},
+                  "definition": {
+                    "relativePath": "referenceToStringArray"
+                  }
+                },
+                {
+                  "type": "string"
+                }
+              ]
+            }
+          ],
+          {
+            "referenceToStringArray": {
+              "type": "array",
+              "definition": {
+                "type": "string"
+              }
+            },
+            "referenceToNumberArray": {
+              "type": "array",
+              "definition": {
+                "type": "number"
+              }
+            },
+            "referenceToTuple": {
+              "type": "tuple",
+              "definition": []
+            },
+            "referenceToUnion": {
+              "type": "union",
+              "definition": [
+                {
+                  "type": "array",
+                  "definition": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "type": "tuple",
+                  "definition": []
+                }
+              ]
+            }
+          }
+        ],
+        "environmentRef": "defaultMiroirModelEnvironment",
+        "environmentArgumentIndex": 1,
+        "expectedValue": [
+          {
+            "type": "array",
+            "definition": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

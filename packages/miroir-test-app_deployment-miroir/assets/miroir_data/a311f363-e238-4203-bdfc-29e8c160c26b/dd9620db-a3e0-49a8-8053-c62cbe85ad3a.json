@@ -1,0 +1,779 @@
+{
+  "uuid": "dd9620db-a3e0-49a8-8053-c62cbe85ad3a",
+  "parentName": "MiroirTest",
+  "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
+  "name": "buildAnyKeyMap",
+  "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+  "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
+  "description": "Migrated from UnitTest 37b822d5-b37a-42cb-9753-43d12ab5b9f0 (Feature #196 Phase 5)",
+  "definition": {
+    "miroirTestType": "miroirTestSuite",
+    "miroirTestLabel": "jzod.buildAnyKeyMap",
+    "miroirTests": [
+      {
+        "miroirTestType": "functionCallTest",
+        "miroirTestLabel": "flat object: sets rawSchema to ANY_SCHEMA, resolvedSchema to inferred object schema, valuePath/typePath, and embeds scalar children",
+        "functionRef": {
+          "module": "miroir-core/1_core/jzod/jzodTypeCheck",
+          "export": "buildAnyObjectEntry"
+        },
+        "arguments": [
+          {
+            "a": "hello",
+            "b": 42
+          },
+          [
+            "outer"
+          ],
+          [
+            "outer"
+          ]
+        ],
+        "assertions": [
+          {
+            "label": "rawSchema",
+            "resultAccessPath": [
+              "rawSchema"
+            ],
+            "expectedValue": {
+              "type": "any"
+            }
+          },
+          {
+            "label": "resolvedSchema",
+            "resultAccessPath": [
+              "resolvedSchema"
+            ],
+            "expectedValue": {
+              "type": "object",
+              "definition": {
+                "a": {
+                  "type": "string"
+                },
+                "b": {
+                  "type": "number"
+                }
+              }
+            }
+          },
+          {
+            "label": "valuePath",
+            "resultAccessPath": [
+              "valuePath"
+            ],
+            "expectedValue": [
+              "outer"
+            ]
+          },
+          {
+            "label": "typePath",
+            "resultAccessPath": [
+              "typePath"
+            ],
+            "expectedValue": [
+              "outer"
+            ]
+          },
+          {
+            "label": "a.rawSchema",
+            "resultAccessPath": [
+              "a",
+              "rawSchema"
+            ],
+            "expectedValue": {
+              "type": "any"
+            }
+          },
+          {
+            "label": "a.resolvedSchema",
+            "resultAccessPath": [
+              "a",
+              "resolvedSchema"
+            ],
+            "expectedValue": {
+              "type": "string"
+            }
+          },
+          {
+            "label": "a.valuePath",
+            "resultAccessPath": [
+              "a",
+              "valuePath"
+            ],
+            "expectedValue": [
+              "outer",
+              "a"
+            ]
+          },
+          {
+            "label": "a.typePath",
+            "resultAccessPath": [
+              "a",
+              "typePath"
+            ],
+            "expectedValue": [
+              "outer",
+              "a"
+            ]
+          },
+          {
+            "label": "b.rawSchema",
+            "resultAccessPath": [
+              "b",
+              "rawSchema"
+            ],
+            "expectedValue": {
+              "type": "any"
+            }
+          },
+          {
+            "label": "b.resolvedSchema",
+            "resultAccessPath": [
+              "b",
+              "resolvedSchema"
+            ],
+            "expectedValue": {
+              "type": "number"
+            }
+          },
+          {
+            "label": "b.valuePath",
+            "resultAccessPath": [
+              "b",
+              "valuePath"
+            ],
+            "expectedValue": [
+              "outer",
+              "b"
+            ]
+          }
+        ]
+      },
+      {
+        "miroirTestType": "functionCallTest",
+        "miroirTestLabel": "nested object: child object entries are recursively built with ANY_SCHEMA rawSchema",
+        "functionRef": {
+          "module": "miroir-core/1_core/jzod/jzodTypeCheck",
+          "export": "buildAnyObjectEntry"
+        },
+        "arguments": [
+          {
+            "inner": {
+              "x": true
+            }
+          },
+          [
+            "outer"
+          ],
+          [
+            "outer"
+          ]
+        ],
+        "assertions": [
+          {
+            "label": "rawSchema",
+            "resultAccessPath": [
+              "rawSchema"
+            ],
+            "expectedValue": {
+              "type": "any"
+            }
+          },
+          {
+            "label": "inner.rawSchema",
+            "resultAccessPath": [
+              "inner",
+              "rawSchema"
+            ],
+            "expectedValue": {
+              "type": "any"
+            }
+          },
+          {
+            "label": "inner.resolvedSchema",
+            "resultAccessPath": [
+              "inner",
+              "resolvedSchema"
+            ],
+            "expectedValue": {
+              "type": "object",
+              "definition": {
+                "x": {
+                  "type": "boolean"
+                }
+              }
+            }
+          },
+          {
+            "label": "inner.valuePath",
+            "resultAccessPath": [
+              "inner",
+              "valuePath"
+            ],
+            "expectedValue": [
+              "outer",
+              "inner"
+            ]
+          },
+          {
+            "label": "inner.x.rawSchema",
+            "resultAccessPath": [
+              "inner",
+              "x",
+              "rawSchema"
+            ],
+            "expectedValue": {
+              "type": "any"
+            }
+          },
+          {
+            "label": "inner.x.resolvedSchema",
+            "resultAccessPath": [
+              "inner",
+              "x",
+              "resolvedSchema"
+            ],
+            "expectedValue": {
+              "type": "boolean"
+            }
+          },
+          {
+            "label": "inner.x.valuePath",
+            "resultAccessPath": [
+              "inner",
+              "x",
+              "valuePath"
+            ],
+            "expectedValue": [
+              "outer",
+              "inner",
+              "x"
+            ]
+          }
+        ]
+      },
+      {
+        "miroirTestType": "functionCallTest",
+        "miroirTestLabel": "empty object: produces entry with empty definition resolvedSchema and no child keys beyond rawSchema/resolvedSchema/valuePath/typePath",
+        "functionRef": {
+          "module": "miroir-core/1_core/jzod/jzodTypeCheck",
+          "export": "buildAnyObjectEntry"
+        },
+        "arguments": [
+          {},
+          [
+            "p"
+          ],
+          [
+            "p"
+          ]
+        ],
+        "expectedValue": {
+          "rawSchema": {
+            "type": "any"
+          },
+          "resolvedSchema": {
+            "type": "object",
+            "definition": {}
+          },
+          "valuePath": [
+            "p"
+          ],
+          "typePath": [
+            "p"
+          ]
+        }
+      },
+      {
+        "miroirTestType": "functionCallTest",
+        "miroirTestLabel": "uses provided basePath/typePath in all descendant entries",
+        "functionRef": {
+          "module": "miroir-core/1_core/jzod/jzodTypeCheck",
+          "export": "buildAnyObjectEntry"
+        },
+        "arguments": [
+          {
+            "n": 1
+          },
+          [
+            "a",
+            "b"
+          ],
+          [
+            "ta",
+            "tb"
+          ]
+        ],
+        "assertions": [
+          {
+            "label": "valuePath",
+            "resultAccessPath": [
+              "valuePath"
+            ],
+            "expectedValue": [
+              "a",
+              "b"
+            ]
+          },
+          {
+            "label": "typePath",
+            "resultAccessPath": [
+              "typePath"
+            ],
+            "expectedValue": [
+              "ta",
+              "tb"
+            ]
+          },
+          {
+            "label": "n.valuePath",
+            "resultAccessPath": [
+              "n",
+              "valuePath"
+            ],
+            "expectedValue": [
+              "a",
+              "b",
+              "n"
+            ]
+          },
+          {
+            "label": "n.typePath",
+            "resultAccessPath": [
+              "n",
+              "typePath"
+            ],
+            "expectedValue": [
+              "ta",
+              "tb",
+              "n"
+            ]
+          }
+        ]
+      },
+      {
+        "miroirTestType": "functionCallTest",
+        "miroirTestLabel": "scalar value: key is full dotted path, rawSchema is ANY_SCHEMA",
+        "functionRef": {
+          "module": "miroir-core/1_core/jzod/jzodTypeCheck",
+          "export": "buildAnySubnodeKeyMap"
+        },
+        "arguments": [
+          {
+            "a": "hello"
+          },
+          [],
+          []
+        ],
+        "assertions": [
+          {
+            "label": "a.rawSchema",
+            "resultAccessPath": [
+              "a",
+              "rawSchema"
+            ],
+            "expectedValue": {
+              "type": "any"
+            }
+          },
+          {
+            "label": "a.resolvedSchema",
+            "resultAccessPath": [
+              "a",
+              "resolvedSchema"
+            ],
+            "expectedValue": {
+              "type": "string"
+            }
+          },
+          {
+            "label": "a.valuePath",
+            "resultAccessPath": [
+              "a",
+              "valuePath"
+            ],
+            "expectedValue": [
+              "a"
+            ]
+          },
+          {
+            "label": "a.typePath",
+            "resultAccessPath": [
+              "a",
+              "typePath"
+            ],
+            "expectedValue": [
+              "a"
+            ]
+          }
+        ]
+      },
+      {
+        "miroirTestType": "functionCallTest",
+        "miroirTestLabel": "scalar value with non-empty basePath: key uses full dotted path",
+        "functionRef": {
+          "module": "miroir-core/1_core/jzod/jzodTypeCheck",
+          "export": "buildAnySubnodeKeyMap"
+        },
+        "arguments": [
+          {
+            "a": 42
+          },
+          [
+            "root"
+          ],
+          [
+            "root"
+          ]
+        ],
+        "assertions": [
+          {
+            "label": "root.a.rawSchema",
+            "resultAccessPath": [
+              "root.a",
+              "rawSchema"
+            ],
+            "expectedValue": {
+              "type": "any"
+            }
+          },
+          {
+            "label": "root.a.resolvedSchema",
+            "resultAccessPath": [
+              "root.a",
+              "resolvedSchema"
+            ],
+            "expectedValue": {
+              "type": "number"
+            }
+          },
+          {
+            "label": "root.a.valuePath",
+            "resultAccessPath": [
+              "root.a",
+              "valuePath"
+            ],
+            "expectedValue": [
+              "root",
+              "a"
+            ]
+          }
+        ]
+      },
+      {
+        "miroirTestType": "functionCallTest",
+        "miroirTestLabel": "object value: key is full dotted path, entry has ANY_SCHEMA rawSchema and embedded child navigation",
+        "functionRef": {
+          "module": "miroir-core/1_core/jzod/jzodTypeCheck",
+          "export": "buildAnySubnodeKeyMap"
+        },
+        "arguments": [
+          {
+            "obj": {
+              "x": "hi"
+            }
+          },
+          [],
+          []
+        ],
+        "assertions": [
+          {
+            "label": "obj.rawSchema",
+            "resultAccessPath": [
+              "obj",
+              "rawSchema"
+            ],
+            "expectedValue": {
+              "type": "any"
+            }
+          },
+          {
+            "label": "obj.resolvedSchema",
+            "resultAccessPath": [
+              "obj",
+              "resolvedSchema"
+            ],
+            "expectedValue": {
+              "type": "object",
+              "definition": {
+                "x": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          {
+            "label": "obj.x.rawSchema",
+            "resultAccessPath": [
+              "obj",
+              "x",
+              "rawSchema"
+            ],
+            "expectedValue": {
+              "type": "any"
+            }
+          },
+          {
+            "label": "obj.x.resolvedSchema",
+            "resultAccessPath": [
+              "obj",
+              "x",
+              "resolvedSchema"
+            ],
+            "expectedValue": {
+              "type": "string"
+            }
+          },
+          {
+            "label": "obj.x.valuePath",
+            "resultAccessPath": [
+              "obj",
+              "x",
+              "valuePath"
+            ],
+            "expectedValue": [
+              "obj",
+              "x"
+            ]
+          }
+        ]
+      },
+      {
+        "miroirTestType": "functionCallTest",
+        "miroirTestLabel": "mixed flat and object children produce correct keys",
+        "functionRef": {
+          "module": "miroir-core/1_core/jzod/jzodTypeCheck",
+          "export": "buildAnySubnodeKeyMap"
+        },
+        "arguments": [
+          {
+            "s": "str",
+            "n": 1,
+            "o": {
+              "y": false
+            }
+          },
+          [],
+          []
+        ],
+        "assertions": [
+          {
+            "label": "s.rawSchema",
+            "resultAccessPath": [
+              "s",
+              "rawSchema"
+            ],
+            "expectedValue": {
+              "type": "any"
+            }
+          },
+          {
+            "label": "s.resolvedSchema",
+            "resultAccessPath": [
+              "s",
+              "resolvedSchema"
+            ],
+            "expectedValue": {
+              "type": "string"
+            }
+          },
+          {
+            "label": "n.rawSchema",
+            "resultAccessPath": [
+              "n",
+              "rawSchema"
+            ],
+            "expectedValue": {
+              "type": "any"
+            }
+          },
+          {
+            "label": "n.resolvedSchema",
+            "resultAccessPath": [
+              "n",
+              "resolvedSchema"
+            ],
+            "expectedValue": {
+              "type": "number"
+            }
+          },
+          {
+            "label": "o.rawSchema",
+            "resultAccessPath": [
+              "o",
+              "rawSchema"
+            ],
+            "expectedValue": {
+              "type": "any"
+            }
+          },
+          {
+            "label": "o.resolvedSchema",
+            "resultAccessPath": [
+              "o",
+              "resolvedSchema"
+            ],
+            "expectedValue": {
+              "type": "object",
+              "definition": {
+                "y": {
+                  "type": "boolean"
+                }
+              }
+            }
+          },
+          {
+            "label": "o.y.rawSchema",
+            "resultAccessPath": [
+              "o",
+              "y",
+              "rawSchema"
+            ],
+            "expectedValue": {
+              "type": "any"
+            }
+          },
+          {
+            "label": "o.y.resolvedSchema",
+            "resultAccessPath": [
+              "o",
+              "y",
+              "resolvedSchema"
+            ],
+            "expectedValue": {
+              "type": "boolean"
+            }
+          }
+        ]
+      },
+      {
+        "miroirTestType": "functionCallTest",
+        "miroirTestLabel": "deeply nested object: nested object child gets ANY_SCHEMA rawSchema, grandchildren are embedded",
+        "functionRef": {
+          "module": "miroir-core/1_core/jzod/jzodTypeCheck",
+          "export": "buildAnySubnodeKeyMap"
+        },
+        "arguments": [
+          {
+            "outer": {
+              "inner": 99
+            }
+          },
+          [],
+          []
+        ],
+        "assertions": [
+          {
+            "label": "outer.rawSchema",
+            "resultAccessPath": [
+              "outer",
+              "rawSchema"
+            ],
+            "expectedValue": {
+              "type": "any"
+            }
+          },
+          {
+            "label": "outer.inner.rawSchema",
+            "resultAccessPath": [
+              "outer",
+              "inner",
+              "rawSchema"
+            ],
+            "expectedValue": {
+              "type": "any"
+            }
+          },
+          {
+            "label": "outer.inner.resolvedSchema",
+            "resultAccessPath": [
+              "outer",
+              "inner",
+              "resolvedSchema"
+            ],
+            "expectedValue": {
+              "type": "number"
+            }
+          },
+          {
+            "label": "outer.inner.valuePath",
+            "resultAccessPath": [
+              "outer",
+              "inner",
+              "valuePath"
+            ],
+            "expectedValue": [
+              "outer",
+              "inner"
+            ]
+          }
+        ]
+      },
+      {
+        "miroirTestType": "functionCallTest",
+        "miroirTestLabel": "empty object produces empty result",
+        "functionRef": {
+          "module": "miroir-core/1_core/jzod/jzodTypeCheck",
+          "export": "buildAnySubnodeKeyMap"
+        },
+        "arguments": [
+          {},
+          [],
+          []
+        ],
+        "expectedValue": {}
+      },
+      {
+        "miroirTestType": "functionCallTest",
+        "miroirTestLabel": "ANY_IMPLICIT_UNION_TYPE is NOT used — all rawSchemas are ANY_SCHEMA",
+        "functionRef": {
+          "module": "miroir-core/1_core/jzod/jzodTypeCheck",
+          "export": "buildAnySubnodeKeyMap"
+        },
+        "arguments": [
+          {
+            "a": "x",
+            "b": {
+              "c": 1
+            }
+          },
+          [],
+          []
+        ],
+        "assertions": [
+          {
+            "label": "a.rawSchema",
+            "resultAccessPath": [
+              "a",
+              "rawSchema"
+            ],
+            "expectedValue": {
+              "type": "any"
+            }
+          },
+          {
+            "label": "b.rawSchema",
+            "resultAccessPath": [
+              "b",
+              "rawSchema"
+            ],
+            "expectedValue": {
+              "type": "any"
+            }
+          },
+          {
+            "label": "b.c.rawSchema",
+            "resultAccessPath": [
+              "b",
+              "c",
+              "rawSchema"
+            ],
+            "expectedValue": {
+              "type": "any"
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

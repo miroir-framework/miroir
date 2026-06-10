@@ -1,11 +1,9 @@
-import { unitTest_suite_localizeJzodSchemaReferenceContext } from "miroir-test-app_deployment-miroir";
+import { miroirTest_localizeJzodSchemaReferenceContext } from "miroir-test-app_deployment-miroir";
 
-import {
-  runDeployedUnitTestSuite,
-  type DeployedUnitTestExport,
-} from "../../helpers/runDeployedUnitTestSuite";
+import type { DeployedMiroirTestExport } from "../../helpers/runDeployedMiroirTestSuite";
+import { runDeployedMiroirTestSuiteLoader } from "../../helpers/runDeployedMiroirTestSuiteLoader";
 
-await runDeployedUnitTestSuite(
-  unitTest_suite_localizeJzodSchemaReferenceContext as DeployedUnitTestExport,
+await runDeployedMiroirTestSuiteLoader(
+  miroirTest_localizeJzodSchemaReferenceContext as DeployedMiroirTestExport,
   "jzod.localizeReferenceContext.unit.test",
 );

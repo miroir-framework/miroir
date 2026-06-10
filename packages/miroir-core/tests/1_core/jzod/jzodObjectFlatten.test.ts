@@ -1,11 +1,9 @@
-import { unitTest_suite_jzodObjectFlatten } from "miroir-test-app_deployment-miroir";
+import { miroirTest_jzodObjectFlatten } from "miroir-test-app_deployment-miroir";
 
-import {
-  runDeployedUnitTestSuite,
-  type DeployedUnitTestExport,
-} from "../../helpers/runDeployedUnitTestSuite";
+import type { DeployedMiroirTestExport } from "../../helpers/runDeployedMiroirTestSuite";
+import { runDeployedMiroirTestSuiteLoader } from "../../helpers/runDeployedMiroirTestSuiteLoader";
 
-await runDeployedUnitTestSuite(
-  unitTest_suite_jzodObjectFlatten as DeployedUnitTestExport,
+await runDeployedMiroirTestSuiteLoader(
+  miroirTest_jzodObjectFlatten as DeployedMiroirTestExport,
   "jzodObjectFlatten.test",
 );

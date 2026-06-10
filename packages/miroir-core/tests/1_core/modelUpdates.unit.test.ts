@@ -1,11 +1,9 @@
-import { unitTest_suite_modelUpdates } from "miroir-test-app_deployment-miroir";
+import { miroirTest_modelUpdates } from "miroir-test-app_deployment-miroir";
 
-import {
-  runDeployedUnitTestSuite,
-  type DeployedUnitTestExport,
-} from "../helpers/runDeployedUnitTestSuite";
+import type { DeployedMiroirTestExport } from "../helpers/runDeployedMiroirTestSuite";
+import { runDeployedMiroirTestSuiteLoader } from "../helpers/runDeployedMiroirTestSuiteLoader";
 
-await runDeployedUnitTestSuite(
-  unitTest_suite_modelUpdates as DeployedUnitTestExport,
+await runDeployedMiroirTestSuiteLoader(
+  miroirTest_modelUpdates as DeployedMiroirTestExport,
   "modelUpdates.unit.test",
 );

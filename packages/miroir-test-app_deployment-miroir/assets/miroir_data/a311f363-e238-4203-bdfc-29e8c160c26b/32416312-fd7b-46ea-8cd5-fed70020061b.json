@@ -1,0 +1,217 @@
+{
+  "uuid": "32416312-fd7b-46ea-8cd5-fed70020061b",
+  "parentName": "MiroirTest",
+  "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
+  "name": "jzodTransitiveDependencySet",
+  "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+  "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
+  "description": "Migrated from UnitTest eca25c60-7dfb-4e1d-a718-1e639695404b (Feature #196 Phase 5)",
+  "definition": {
+    "miroirTestType": "miroirTestSuite",
+    "miroirTestLabel": "jzod.jzodTransitiveDependencySet",
+    "miroirTests": [
+      {
+        "miroirTestType": "functionCallTest",
+        "miroirTestLabel": "finds direct dependency",
+        "functionRef": {
+          "module": "miroir-core/1_core/jzod/JzodSchemaReferences",
+          "export": "jzodTransitiveDependencySet"
+        },
+        "arguments": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "root"
+            },
+            "context": {
+              "root": {
+                "type": "object",
+                "definition": {
+                  "a": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "root"
+        ],
+        "expectedValue": [
+          "root"
+        ]
+      },
+      {
+        "miroirTestType": "functionCallTest",
+        "miroirTestLabel": "finds single level dependencies",
+        "functionRef": {
+          "module": "miroir-core/1_core/jzod/JzodSchemaReferences",
+          "export": "jzodTransitiveDependencySet"
+        },
+        "arguments": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "A"
+            },
+            "context": {
+              "A": {
+                "type": "object",
+                "definition": {
+                  "b": {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "B"
+                    }
+                  }
+                }
+              },
+              "B": {
+                "type": "string"
+              }
+            }
+          },
+          "A"
+        ],
+        "expectedValue": [
+          "A",
+          "B"
+        ]
+      },
+      {
+        "miroirTestType": "functionCallTest",
+        "miroirTestLabel": "finds transitive dependencies",
+        "functionRef": {
+          "module": "miroir-core/1_core/jzod/JzodSchemaReferences",
+          "export": "jzodTransitiveDependencySet"
+        },
+        "arguments": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "A"
+            },
+            "context": {
+              "A": {
+                "type": "object",
+                "definition": {
+                  "b": {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "B"
+                    }
+                  }
+                }
+              },
+              "B": {
+                "type": "object",
+                "definition": {
+                  "c": {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "C"
+                    }
+                  }
+                }
+              },
+              "C": {
+                "type": "string"
+              }
+            }
+          },
+          "A"
+        ],
+        "expectedValue": [
+          "A",
+          "B",
+          "C"
+        ]
+      },
+      {
+        "miroirTestType": "functionCallTest",
+        "miroirTestLabel": "handles circular dependencies",
+        "functionRef": {
+          "module": "miroir-core/1_core/jzod/JzodSchemaReferences",
+          "export": "jzodTransitiveDependencySet"
+        },
+        "arguments": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "A"
+            },
+            "context": {
+              "A": {
+                "type": "object",
+                "definition": {
+                  "b": {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "B"
+                    }
+                  }
+                }
+              },
+              "B": {
+                "type": "object",
+                "definition": {
+                  "a": {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "A"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "A"
+        ],
+        "expectedValue": [
+          "A",
+          "B"
+        ]
+      },
+      {
+        "miroirTestType": "functionCallTest",
+        "miroirTestLabel": "throws error when context is missing",
+        "functionRef": {
+          "module": "miroir-core/1_core/jzod/JzodSchemaReferences",
+          "export": "jzodTransitiveDependencySet"
+        },
+        "arguments": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "A"
+            }
+          },
+          "A"
+        ],
+        "expectedError": "miroirFundamentalJzodSchema.context is not defined"
+      },
+      {
+        "miroirTestType": "functionCallTest",
+        "miroirTestLabel": "throws error when element not found in context",
+        "functionRef": {
+          "module": "miroir-core/1_core/jzod/JzodSchemaReferences",
+          "export": "jzodTransitiveDependencySet"
+        },
+        "arguments": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "A"
+            },
+            "context": {
+              "B": {
+                "type": "string"
+              }
+            }
+          },
+          "A"
+        ],
+        "expectedError": "Element A not found in context"
+      }
+    ]
+  }
+}

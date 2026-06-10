@@ -1,11 +1,9 @@
-import { unitTest_suite_tools } from "miroir-test-app_deployment-miroir";
+import { miroirTest_tools } from "miroir-test-app_deployment-miroir";
 
-import {
-  runDeployedUnitTestSuite,
-  type DeployedUnitTestExport,
-} from "./helpers/runDeployedUnitTestSuite";
+import type { DeployedMiroirTestExport } from "./helpers/runDeployedMiroirTestSuite";
+import { runDeployedMiroirTestSuiteLoader } from "./helpers/runDeployedMiroirTestSuiteLoader";
 
-await runDeployedUnitTestSuite(
-  unitTest_suite_tools as DeployedUnitTestExport,
+await runDeployedMiroirTestSuiteLoader(
+  miroirTest_tools as DeployedMiroirTestExport,
   "tools.test",
 );

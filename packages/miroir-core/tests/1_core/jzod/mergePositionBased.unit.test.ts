@@ -1,8 +1,9 @@
-import { unitTest_suite_mergePositionBased } from "miroir-test-app_deployment-miroir";
+import { miroirTest_mergePositionBased } from "miroir-test-app_deployment-miroir";
 
-import { runDeployedUnitTestSuite, type DeployedUnitTestExport } from "../../helpers/runDeployedUnitTestSuite";
+import type { DeployedMiroirTestExport } from "../../helpers/runDeployedMiroirTestSuite";
+import { runDeployedMiroirTestSuiteLoader } from "../../helpers/runDeployedMiroirTestSuiteLoader";
 
-await runDeployedUnitTestSuite(
-  unitTest_suite_mergePositionBased as DeployedUnitTestExport,
+await runDeployedMiroirTestSuiteLoader(
+  miroirTest_mergePositionBased as DeployedMiroirTestExport,
   "mergePositionBased.unit.test",
 );

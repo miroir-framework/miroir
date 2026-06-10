@@ -16,5 +16,7 @@ RUN_TEST=JzodSchemaReferencesList.unit.test npm run testByFile -w miroir-core Jz
 RUN_TEST=jzodToJzod_Summary.unit.test npm run testByFile -w miroir-core jzodToJzod_Summary.unit.test
 
 RUN_TEST=resolveConditionalSchema.test npm run testByFile -w miroir-core -- 'resolveConditionalSchema.test'
+npm run testMiroir -w miroir-core -- --suites miroirCoreTransformers --mode integration
+RUN_TEST=transformers.integ.test npm run testByFile -w miroir-core -- 'transformers.integ'
 # go back to the original directory
 cd -

@@ -1,0 +1,197 @@
+{
+  "uuid": "e38c2224-2d46-4d9c-bf2c-782119ddc999",
+  "parentName": "MiroirTest",
+  "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
+  "name": "localizeJzodSchemaReferenceContext",
+  "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+  "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
+  "description": "Migrated from UnitTest c6d2a002-0002-4000-8000-000000000002 (Feature #196 Phase 5)",
+  "definition": {
+    "miroirTestType": "miroirTestSuite",
+    "miroirTestLabel": "localizeReferenceContext",
+    "miroirTests": [
+      {
+        "miroirTestType": "functionCallTest",
+        "miroirTestLabel": "test010 plain literal",
+        "functionRef": {
+          "module": "miroir-core/1_core/jzod/JzodUnfoldSchemaOnce",
+          "export": "localizeJzodSchemaReferenceContext"
+        },
+        "arguments": [
+          {
+            "type": "literal",
+            "definition": "myLiteral"
+          },
+          {
+            "__miroirEnvironmentRef": "defaultMiroirMetaModel"
+          },
+          {
+            "__miroirEnvironmentRef": "defaultMiroirMetaModel"
+          },
+          {}
+        ],
+        "fixtureRef": "miroirFundamentalJzodSchema",
+        "fixtureArgumentIndex": 0,
+        "expectedValue": {
+          "type": "literal",
+          "definition": "myLiteral"
+        }
+      },
+      {
+        "miroirTestType": "functionCallTest",
+        "miroirTestLabel": "test020 plain object",
+        "functionRef": {
+          "module": "miroir-core/1_core/jzod/JzodUnfoldSchemaOnce",
+          "export": "localizeJzodSchemaReferenceContext"
+        },
+        "arguments": [
+          {
+            "type": "object",
+            "definition": {
+              "a": {
+                "type": "string"
+              },
+              "b": {
+                "type": "number"
+              }
+            }
+          },
+          {
+            "__miroirEnvironmentRef": "defaultMiroirMetaModel"
+          },
+          {
+            "__miroirEnvironmentRef": "defaultMiroirMetaModel"
+          },
+          {}
+        ],
+        "fixtureRef": "miroirFundamentalJzodSchema",
+        "fixtureArgumentIndex": 0,
+        "expectedValue": {
+          "type": "object",
+          "definition": {
+            "a": {
+              "type": "string"
+            },
+            "b": {
+              "type": "number"
+            }
+          }
+        }
+      },
+      {
+        "miroirTestType": "functionCallTest",
+        "miroirTestLabel": "test040 schemaReference object recursive 1-level",
+        "functionRef": {
+          "module": "miroir-core/1_core/jzod/JzodUnfoldSchemaOnce",
+          "export": "localizeJzodSchemaReferenceContext"
+        },
+        "arguments": [
+          {
+            "type": "schemaReference",
+            "context": {
+              "myObject": {
+                "type": "object",
+                "definition": {
+                  "a": {
+                    "type": "union",
+                    "definition": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "schemaReference",
+                        "definition": {
+                          "relativePath": "myObject"
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            "definition": {
+              "relativePath": "myObject"
+            }
+          },
+          {
+            "__miroirEnvironmentRef": "defaultMiroirMetaModel"
+          },
+          {
+            "__miroirEnvironmentRef": "defaultMiroirMetaModel"
+          },
+          {
+            "myObject": {
+              "type": "object",
+              "definition": {
+                "a": {
+                  "type": "union",
+                  "definition": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "schemaReference",
+                      "definition": {
+                        "relativePath": "myObject"
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        ],
+        "fixtureRef": "miroirFundamentalJzodSchema",
+        "fixtureArgumentIndex": 0,
+        "expectedValue": {
+          "type": "schemaReference",
+          "context": {
+            "myObject": {
+              "type": "object",
+              "definition": {
+                "a": {
+                  "type": "union",
+                  "definition": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "schemaReference",
+                      "definition": {
+                        "relativePath": "myObject"
+                      },
+                      "context": {
+                        "myObject": {
+                          "type": "object",
+                          "definition": {
+                            "a": {
+                              "type": "union",
+                              "definition": [
+                                {
+                                  "type": "string"
+                                },
+                                {
+                                  "type": "schemaReference",
+                                  "definition": {
+                                    "relativePath": "myObject"
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "definition": {
+            "relativePath": "myObject"
+          }
+        }
+      }
+    ]
+  }
+}

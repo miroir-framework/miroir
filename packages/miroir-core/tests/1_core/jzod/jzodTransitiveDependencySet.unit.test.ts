@@ -1,8 +1,9 @@
-import { unitTest_suite_jzodTransitiveDependencySet } from "miroir-test-app_deployment-miroir";
+import { miroirTest_jzodTransitiveDependencySet } from "miroir-test-app_deployment-miroir";
 
-import { runDeployedUnitTestSuite, type DeployedUnitTestExport } from "../../helpers/runDeployedUnitTestSuite";
+import type { DeployedMiroirTestExport } from "../../helpers/runDeployedMiroirTestSuite";
+import { runDeployedMiroirTestSuiteLoader } from "../../helpers/runDeployedMiroirTestSuiteLoader";
 
-await runDeployedUnitTestSuite(
-  unitTest_suite_jzodTransitiveDependencySet as DeployedUnitTestExport,
+await runDeployedMiroirTestSuiteLoader(
+  miroirTest_jzodTransitiveDependencySet as DeployedMiroirTestExport,
   "jzodTransitiveDependencySet.unit.test",
 );

@@ -185,17 +185,24 @@ Per pilot: hand JSON → export → schema test → switch loader → same pass/
 
 ---
 
-### Phase 5 — Bulk migration
+### Phase 5 — Bulk migration ✅
 
 - `generate-miroir-test-instances.ts` + `miroir-test-migration-map.json`
 - Switch remaining vitest loaders; delete legacy wrappers
 
+**Green (done):** Generator migrated 36 legacy sources (+ schema pilot) → 37 registry keys. Vitest loaders use `runDeployedMiroirTestSuiteLoader` + `miroirTest_*` exports. Legacy UnitTest/TransformerTest JSON untouched. `resolveConditionalSchema` / `jzodTypeCheck` / `defaultValueForMLSchema` / `unfoldSchemaOnce` / `resolveSchemaReferenceInContext` keep file-pattern skip logic on legacy runners (Phase 6).
+
 ---
 
-### Phase 6 — Integration cutover
+### Phase 6 — Integration cutover ✅
 
-- `transformers.integ.test.ts` → `miroir-tests.integ.test.ts` + `miroirTest_miroirCoreTransformers`
-- `executionMode: "integration"`
+- `transformers.integ.test.ts` → thin shim → `miroir-tests.integ.test.ts` + `miroirCoreTransformers` registry key
+- `executionMode: "integration"` via `MIROIR_TEST_MODE` / `npm run testMiroir -- --mode integration`
+- Postgres bootstrap: `miroirTestIntegrationStore.ts` (distilled from legacy integ file)
+
+**Done:** All 5 file-pattern loaders migrated to `runDeployedMiroirTestSuiteLoader` + `miroirTest_*` (with `honorRunTest: false` where needed).
+
+**UUID v4:** All 37 MiroirTest instance filenames + inner `uuid` are RFC 4122 v4 (`deterministicMiroirTestUuidV4` / `renormalize-miroir-test-uuids.ts`).
 
 ---
 

@@ -1,0 +1,132 @@
+{
+  "uuid": "f39f9665-a5bf-43fc-929d-336b4046a440",
+  "parentName": "MiroirTest",
+  "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
+  "name": "jzodUnionResolvedTypeForArray",
+  "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+  "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
+  "description": "Migrated from UnitTest c6d1a005-0005-4000-8000-000000000005 (Feature #196 Phase 5)",
+  "definition": {
+    "miroirTestType": "miroirTestSuite",
+    "miroirTestLabel": "jzodUnionResolvedTypeForArray",
+    "miroirTests": [
+      {
+        "miroirTestType": "functionCallTest",
+        "miroirTestLabel": "should return error when no array choices are found",
+        "functionRef": {
+          "module": "miroir-core/1_core/jzod/jzodTypeCheck",
+          "export": "jzodUnionResolvedTypeForArray"
+        },
+        "arguments": [
+          [
+            {
+              "type": "string"
+            }
+          ],
+          {
+            "type": "union",
+            "definition": [
+              {
+                "type": "string"
+              }
+            ]
+          },
+          "type",
+          [
+            "test"
+          ],
+          [
+            "root"
+          ],
+          [
+            "typePath"
+          ],
+          {}
+        ],
+        "environmentRef": "defaultMiroirModelEnvironment",
+        "environmentArgumentIndex": 6,
+        "assertions": [
+          {
+            "label": "status",
+            "resultAccessPath": [
+              "status"
+            ],
+            "expectedValue": "error"
+          },
+          {
+            "label": "error",
+            "resultAccessPath": [
+              "error"
+            ],
+            "expectedValue": {
+              "__miroirMatchPattern": "could not find object type"
+            }
+          }
+        ]
+      },
+      {
+        "miroirTestType": "functionCallTest",
+        "miroirTestLabel": "should return the single array choice when there is only one option",
+        "functionRef": {
+          "module": "miroir-core/1_core/jzod/jzodTypeCheck",
+          "export": "jzodUnionResolvedTypeForArray"
+        },
+        "arguments": [
+          [
+            {
+              "type": "array",
+              "definition": {
+                "type": "string"
+              }
+            }
+          ],
+          {
+            "type": "union",
+            "definition": [
+              {
+                "type": "array",
+                "definition": {
+                  "type": "string"
+                }
+              }
+            ]
+          },
+          "type",
+          [
+            "test"
+          ],
+          [
+            "root"
+          ],
+          [
+            "typePath"
+          ],
+          {}
+        ],
+        "environmentRef": "defaultMiroirModelEnvironment",
+        "environmentArgumentIndex": 6,
+        "assertions": [
+          {
+            "label": "status",
+            "resultAccessPath": [
+              "status"
+            ],
+            "expectedValue": "ok"
+          },
+          {
+            "label": "resolvedJzodObjectSchema",
+            "resultAccessPath": [
+              "resolvedJzodObjectSchema"
+            ],
+            "expectedValue": {
+              "type": "array",
+              "definition": {
+                "type": "string"
+              }
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

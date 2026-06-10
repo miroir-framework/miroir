@@ -1,11 +1,9 @@
-import { unitTest_suite_selectUnionBranchFromDiscriminator } from "miroir-test-app_deployment-miroir";
+import { miroirTest_selectUnionBranchFromDiscriminator } from "miroir-test-app_deployment-miroir";
 
-import {
-  runDeployedUnitTestSuite,
-  type DeployedUnitTestExport,
-} from "../../helpers/runDeployedUnitTestSuite";
+import type { DeployedMiroirTestExport } from "../../helpers/runDeployedMiroirTestSuite";
+import { runDeployedMiroirTestSuiteLoader } from "../../helpers/runDeployedMiroirTestSuiteLoader";
 
-await runDeployedUnitTestSuite(
-  unitTest_suite_selectUnionBranchFromDiscriminator as DeployedUnitTestExport,
+await runDeployedMiroirTestSuiteLoader(
+  miroirTest_selectUnionBranchFromDiscriminator as DeployedMiroirTestExport,
   "jzod.selectUnionBranchFromDiscriminator.unit.test",
 );

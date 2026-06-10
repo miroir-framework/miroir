@@ -1,11 +1,9 @@
-import { unitTest_suite_buildAnyKeyMap } from "miroir-test-app_deployment-miroir";
+import { miroirTest_buildAnyKeyMap } from "miroir-test-app_deployment-miroir";
 
-import {
-  runDeployedUnitTestSuite,
-  type DeployedUnitTestExport,
-} from "../../helpers/runDeployedUnitTestSuite";
+import type { DeployedMiroirTestExport } from "../../helpers/runDeployedMiroirTestSuite";
+import { runDeployedMiroirTestSuiteLoader } from "../../helpers/runDeployedMiroirTestSuiteLoader";
 
-await runDeployedUnitTestSuite(
-  unitTest_suite_buildAnyKeyMap as DeployedUnitTestExport,
+await runDeployedMiroirTestSuiteLoader(
+  miroirTest_buildAnyKeyMap as DeployedMiroirTestExport,
   "jzod.buildAnyKeyMap.unit.test",
 );

@@ -1,70 +1,22 @@
-import * as vitest from 'vitest';
-import { describe, expect, it } from "vitest";
-// import {
-//   describe,
-//   expect,
-// } from "../../../src/1_core/test-expect";
+import * as vitest from "vitest";
 
-import {
-  type TransformerTestSuite,
-} from "../../../src//0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import { miroirTest_unfoldSchemaOnce } from "miroir-test-app_deployment-miroir";
 
-import {
-  runUnitTransformerTests,
-  transformerTestsDisplayResults,
-} from "../../../src/4_services/TestTools";
+import type { DeployedMiroirTestExport } from "../../helpers/runDeployedMiroirTestSuite";
+import { runDeployedMiroirTestSuiteLoader } from "../../helpers/runDeployedMiroirTestSuiteLoader";
 
-import { MiroirActivityTracker } from "../../../src/3_controllers/MiroirActivityTracker";
-import { defaultMetaModelEnvironment } from "../../../src/1_core/Model";
-
-import { transformerTestSuite_unfoldSchemaOnce } from "miroir-test-app_deployment-miroir";
-
-// Access the test file pattern from Vitest's process arguments
 const vitestArgs = process.argv.slice(2);
-const filePattern = vitestArgs.find(arg => !arg.startsWith('-')) || '';
-console.log("@@@@@@@@@@@@@@@@@@ File Pattern:", filePattern);
+const filePattern = vitestArgs.find((arg) => !arg.startsWith("-")) || "";
 
-const selectedTestNameDEFUNCT: string[] = [];
-
-// ################################################################################################
-const testSuiteName = transformerTestSuite_unfoldSchemaOnce.definition.transformerTestLabel;
-
-// Skip this test when running resolveConditionalSchema pattern  
-const shouldSkip = filePattern.includes('resolveConditionalSchema');
+const shouldSkip = filePattern.includes("resolveConditionalSchema");
 
 if (shouldSkip) {
-  console.log("################################ skipping test suite:", transformerTestSuite_unfoldSchemaOnce.definition.transformerTestLabel);
-  console.log("################################ File pattern:", filePattern);
-  describe.skip(testSuiteName, () => {});
+  console.log("skipping unfoldSchemaOnce.test (resolveConditionalSchema pattern)");
+  vitest.test.skip("unfoldSchemaOnce.test skipped (resolveConditionalSchema pattern)", () => {});
 } else {
-  const activityTracker = new MiroirActivityTracker();
-  
-  const testSuite: TransformerTestSuite = transformerTestSuite_unfoldSchemaOnce.definition as TransformerTestSuite;
-  if (!Object.hasOwn(testSuite, "transformerTestType") || testSuite.transformerTestType !== "transformerTestSuite" ) {
-    throw new Error("No transformerTests found in the test suite definition" +  JSON.stringify(testSuite));
-  }
-  const selectedTests = selectedTestNameDEFUNCT.length > 0? Object.fromEntries(Object.entries((testSuite as any).transformerTests).filter(
-    ([key, test]) => selectedTestNameDEFUNCT.includes((test as any).transformerTestLabel)
-  )): (testSuite as any).transformerTests;
-  const effectiveTests: TransformerTestSuite = {
-    ...testSuite,
-    transformerTests: selectedTests as any
-  } as any;
-  await runUnitTransformerTests._runTransformerTestSuite(
-    vitest,//{ describe, expect } as any, //vitest,
-    [],
-    effectiveTests,
-    undefined, // filter
-    defaultMetaModelEnvironment,
-    activityTracker,
-    undefined, // parentTrackingId,
-    true, // trackActionsBelow
-    runUnitTransformerTests,
-  );
-  transformerTestsDisplayResults(
-    effectiveTests,
-    filePattern || "",
-    transformerTestSuite_unfoldSchemaOnce.definition.transformerTestLabel,
-    activityTracker
+  await runDeployedMiroirTestSuiteLoader(
+    miroirTest_unfoldSchemaOnce as DeployedMiroirTestExport,
+    "unfoldSchemaOnce.test",
+    { honorRunTest: false },
   );
 }

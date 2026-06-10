@@ -1,0 +1,423 @@
+{
+  "uuid": "44fdc559-9981-495c-90eb-555a2eb59afe",
+  "parentName": "MiroirTest",
+  "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
+  "name": "mergePositionBased",
+  "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+  "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
+  "description": "Migrated from UnitTest eb3d1b00-a43d-4188-97ac-7d0f65706480 (Feature #196 Phase 5)",
+  "definition": {
+    "miroirTestType": "miroirTestSuite",
+    "miroirTestLabel": "jzod.mergePositionBased",
+    "miroirTests": [
+      {
+        "miroirTestType": "functionCallTest",
+        "miroirTestLabel": "merges two undefineds into undefined",
+        "functionRef": {
+          "module": "miroir-core/1_core/jzod/JzodToJzod_CarryOn",
+          "export": "mergePositionBased"
+        },
+        "arguments": [
+          {
+            "__miroirJsonUndefined": true
+          },
+          {
+            "__miroirJsonUndefined": true
+          }
+        ],
+        "expectUndefinedResult": true
+      },
+      {
+        "miroirTestType": "functionCallTest",
+        "miroirTestLabel": "merges undefined and string into single element array",
+        "functionRef": {
+          "module": "miroir-core/1_core/jzod/JzodToJzod_CarryOn",
+          "export": "mergePositionBased"
+        },
+        "arguments": [
+          {
+            "__miroirJsonUndefined": true
+          },
+          "test"
+        ],
+        "expectedValue": [
+          "test"
+        ]
+      },
+      {
+        "miroirTestType": "functionCallTest",
+        "miroirTestLabel": "merges string and undefined into single element array",
+        "functionRef": {
+          "module": "miroir-core/1_core/jzod/JzodToJzod_CarryOn",
+          "export": "mergePositionBased"
+        },
+        "arguments": [
+          "test",
+          {
+            "__miroirJsonUndefined": true
+          }
+        ],
+        "expectedValue": [
+          "test"
+        ]
+      },
+      {
+        "miroirTestType": "functionCallTest",
+        "miroirTestLabel": "merges two strings at same position into nested array",
+        "functionRef": {
+          "module": "miroir-core/1_core/jzod/JzodToJzod_CarryOn",
+          "export": "mergePositionBased"
+        },
+        "arguments": [
+          "a",
+          "b"
+        ],
+        "expectedValue": [
+          [
+            "a",
+            "b"
+          ]
+        ]
+      },
+      {
+        "miroirTestType": "functionCallTest",
+        "miroirTestLabel": "merges string and array with single element",
+        "functionRef": {
+          "module": "miroir-core/1_core/jzod/JzodToJzod_CarryOn",
+          "export": "mergePositionBased"
+        },
+        "arguments": [
+          "x",
+          [
+            "y",
+            "z"
+          ]
+        ],
+        "expectedValue": [
+          [
+            "x",
+            "y"
+          ],
+          "z"
+        ]
+      },
+      {
+        "miroirTestType": "functionCallTest",
+        "miroirTestLabel": "merges array and string at first position",
+        "functionRef": {
+          "module": "miroir-core/1_core/jzod/JzodToJzod_CarryOn",
+          "export": "mergePositionBased"
+        },
+        "arguments": [
+          [
+            "a",
+            "b"
+          ],
+          "c"
+        ],
+        "expectedValue": [
+          [
+            "a",
+            "c"
+          ],
+          "b"
+        ]
+      },
+      {
+        "miroirTestType": "functionCallTest",
+        "miroirTestLabel": "merges two arrays of same length with strings",
+        "functionRef": {
+          "module": "miroir-core/1_core/jzod/JzodToJzod_CarryOn",
+          "export": "mergePositionBased"
+        },
+        "arguments": [
+          [
+            "a",
+            "b"
+          ],
+          [
+            "c",
+            "d"
+          ]
+        ],
+        "expectedValue": [
+          [
+            "a",
+            "c"
+          ],
+          [
+            "b",
+            "d"
+          ]
+        ]
+      },
+      {
+        "miroirTestType": "functionCallTest",
+        "miroirTestLabel": "merges arrays with nested arrays at positions",
+        "functionRef": {
+          "module": "miroir-core/1_core/jzod/JzodToJzod_CarryOn",
+          "export": "mergePositionBased"
+        },
+        "arguments": [
+          [
+            "a",
+            [
+              "b",
+              "c"
+            ]
+          ],
+          [
+            "d",
+            [
+              "e",
+              "f"
+            ]
+          ]
+        ],
+        "expectedValue": [
+          [
+            "a",
+            "d"
+          ],
+          [
+            "b",
+            "c",
+            "e",
+            "f"
+          ]
+        ]
+      },
+      {
+        "miroirTestType": "functionCallTest",
+        "miroirTestLabel": "merges arrays of different lengths - first longer",
+        "functionRef": {
+          "module": "miroir-core/1_core/jzod/JzodToJzod_CarryOn",
+          "export": "mergePositionBased"
+        },
+        "arguments": [
+          [
+            "a",
+            "b",
+            "c"
+          ],
+          [
+            "x"
+          ]
+        ],
+        "expectedValue": [
+          [
+            "a",
+            "x"
+          ],
+          "b",
+          "c"
+        ]
+      },
+      {
+        "miroirTestType": "functionCallTest",
+        "miroirTestLabel": "merges arrays of different lengths - second longer",
+        "functionRef": {
+          "module": "miroir-core/1_core/jzod/JzodToJzod_CarryOn",
+          "export": "mergePositionBased"
+        },
+        "arguments": [
+          [
+            "a"
+          ],
+          [
+            "x",
+            "y",
+            "z"
+          ]
+        ],
+        "expectedValue": [
+          [
+            "a",
+            "x"
+          ],
+          "y",
+          "z"
+        ]
+      },
+      {
+        "miroirTestType": "functionCallTest",
+        "miroirTestLabel": "merges string with nested array",
+        "functionRef": {
+          "module": "miroir-core/1_core/jzod/JzodToJzod_CarryOn",
+          "export": "mergePositionBased"
+        },
+        "arguments": [
+          "single",
+          [
+            [
+              "nested1",
+              "nested2"
+            ]
+          ]
+        ],
+        "expectedValue": [
+          [
+            "single",
+            "nested1",
+            "nested2"
+          ]
+        ]
+      },
+      {
+        "miroirTestType": "functionCallTest",
+        "miroirTestLabel": "merges nested array with string",
+        "functionRef": {
+          "module": "miroir-core/1_core/jzod/JzodToJzod_CarryOn",
+          "export": "mergePositionBased"
+        },
+        "arguments": [
+          [
+            [
+              "nested1",
+              "nested2"
+            ]
+          ],
+          "single"
+        ],
+        "expectedValue": [
+          [
+            "nested1",
+            "nested2",
+            "single"
+          ]
+        ]
+      },
+      {
+        "miroirTestType": "functionCallTest",
+        "miroirTestLabel": "merges undefined with array",
+        "functionRef": {
+          "module": "miroir-core/1_core/jzod/JzodToJzod_CarryOn",
+          "export": "mergePositionBased"
+        },
+        "arguments": [
+          {
+            "__miroirJsonUndefined": true
+          },
+          [
+            "a",
+            "b"
+          ]
+        ],
+        "expectedValue": [
+          "a",
+          "b"
+        ]
+      },
+      {
+        "miroirTestType": "functionCallTest",
+        "miroirTestLabel": "merges array with undefined",
+        "functionRef": {
+          "module": "miroir-core/1_core/jzod/JzodToJzod_CarryOn",
+          "export": "mergePositionBased"
+        },
+        "arguments": [
+          [
+            "a",
+            "b"
+          ],
+          {
+            "__miroirJsonUndefined": true
+          }
+        ],
+        "expectedValue": [
+          "a",
+          "b"
+        ]
+      },
+      {
+        "miroirTestType": "functionCallTest",
+        "miroirTestLabel": "merges complex nested structure",
+        "functionRef": {
+          "module": "miroir-core/1_core/jzod/JzodToJzod_CarryOn",
+          "export": "mergePositionBased"
+        },
+        "arguments": [
+          [
+            "a",
+            [
+              "b",
+              "c"
+            ],
+            "d"
+          ],
+          [
+            [
+              "e",
+              "f"
+            ],
+            "g",
+            [
+              "h",
+              "i"
+            ]
+          ]
+        ],
+        "expectedValue": [
+          [
+            "a",
+            "e",
+            "f"
+          ],
+          [
+            "b",
+            "c",
+            "g"
+          ],
+          [
+            "d",
+            "h",
+            "i"
+          ]
+        ]
+      },
+      {
+        "miroirTestType": "functionCallTest",
+        "miroirTestLabel": "handles empty arrays correctly",
+        "functionRef": {
+          "module": "miroir-core/1_core/jzod/JzodToJzod_CarryOn",
+          "export": "mergePositionBased"
+        },
+        "arguments": [
+          [],
+          []
+        ],
+        "expectedValue": []
+      },
+      {
+        "miroirTestType": "functionCallTest",
+        "miroirTestLabel": "merges empty array with string",
+        "functionRef": {
+          "module": "miroir-core/1_core/jzod/JzodToJzod_CarryOn",
+          "export": "mergePositionBased"
+        },
+        "arguments": [
+          [],
+          "test"
+        ],
+        "expectedValue": [
+          "test"
+        ]
+      },
+      {
+        "miroirTestType": "functionCallTest",
+        "miroirTestLabel": "merges string with empty array",
+        "functionRef": {
+          "module": "miroir-core/1_core/jzod/JzodToJzod_CarryOn",
+          "export": "mergePositionBased"
+        },
+        "arguments": [
+          "test",
+          []
+        ],
+        "expectedValue": [
+          "test"
+        ]
+      }
+    ]
+  }
+}
