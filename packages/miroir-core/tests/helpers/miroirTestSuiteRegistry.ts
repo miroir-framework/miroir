@@ -19,6 +19,10 @@ export const MIROIR_TEST_SUITE_REGISTRY: Record<string, MiroirTestSuiteLoader> =
     const deployment = await import("miroir-test-app_deployment-miroir");
     return { default: deployment.miroirTest_mustache as DeployedMiroirTestExport };
   },
+  queries_library: async () => {
+    const deployment = await import("miroir-test-app_deployment-miroir");
+    return { default: deployment.miroirTest_queries_library as DeployedMiroirTestExport };
+  },
 };
 
 export function listMiroirTestSuiteKeys(): string[] {

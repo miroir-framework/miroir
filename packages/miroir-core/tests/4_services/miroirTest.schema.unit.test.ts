@@ -9,6 +9,7 @@ import {
   getInnermostTypeCheckError,
   jzodTypeCheck,
   miroirTest_mustache,
+  miroirTest_queries_library,
   miroirTest_pilot_transformer_plus,
   miroirTest_schema_pilot_empty,
 } from "../../src";
@@ -101,6 +102,31 @@ describe("MiroirTestDefinition schema (Phase 0)", () => {
         module: "miroir-core/1_core/mustache",
         export: "extractDoubleBracePatterns",
       },
+    });
+  });
+
+  it("validates queries_library MiroirTest instance via jzodTypeCheck", () => {
+    const result = jzodTypeCheck(
+      miroirTestJzodSchema,
+      miroirTest_queries_library,
+      [],
+      [],
+      defaultMetaModelEnvironment,
+      {},
+    );
+    if (result.status === "error") {
+      console.error(getInnermostTypeCheckError(result));
+    }
+    expect(result.status).toBe("ok");
+
+    const suite = (miroirTest_queries_library as MiroirTestDefinition)
+      .definition as MiroirTestSuite;
+    expect(suite.miroirTestLabel).toBe("queries.library");
+    expect(suite.miroirTests).toHaveLength(17);
+    expect(suite.miroirTests[0]).toMatchObject({
+      miroirTestType: "queryRunnerTest",
+      runner: "runQueryFromDomainState",
+      fixtureRef: "libraryDomainState",
     });
   });
 });

@@ -1085,6 +1085,7 @@ export {
   miroirTest_schema_pilot_empty,
   miroirTest_pilot_transformer_plus,
   miroirTest_mustache,
+  miroirTest_queries_library,
   instanceEndpointV1,
   instanceEndpointVersionV1,
   jzodSchemajzodMiroirBootstrapSchema,

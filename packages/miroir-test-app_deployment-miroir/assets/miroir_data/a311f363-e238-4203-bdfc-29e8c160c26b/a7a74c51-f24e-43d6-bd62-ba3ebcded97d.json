@@ -1,0 +1,1121 @@
+{
+  "uuid": "a7a74c51-f24e-43d6-bd62-ba3ebcded97d",
+  "parentName": "MiroirTest",
+  "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
+  "name": "queries_library",
+  "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+  "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
+  "description": "Phase 3c pilot — library query-runner tests migrated from unitTest_suite_queries_library",
+  "definition": {
+    "miroirTestType": "miroirTestSuite",
+    "miroirTestLabel": "queries.library",
+    "miroirTests": [
+      {
+        "miroirTestType": "queryRunnerTest",
+        "miroirTestLabel": "error on non-existing Entity: EntityNotFound",
+        "fixtureRef": "libraryDomainState",
+        "runner": "runQueryFromDomainState",
+        "query": {
+          "queryType": "boxedQueryWithExtractorCombinerTransformer",
+          "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+          "extractors": {
+            "book": {
+              "extractorOrCombinerType": "extractorByPrimaryKey",
+              "parentName": "Book",
+              "parentUuid": "XXXXXX",
+              "instanceUuid": "caef8a59-39eb-48b5-ad59-a7642d3a1e8f"
+            }
+          }
+        },
+        "assertions": [
+          {
+            "label": "test1",
+            "expectedValue": {
+              "queryFailure": "ReferenceNotFound",
+              "queryContext": "runQuery could not run extractor: book"
+            }
+          }
+        ]
+      },
+      {
+        "miroirTestType": "queryRunnerTest",
+        "miroirTestLabel": "error on non-existing object uuid: InstanceNotFound (extractorByPrimaryKey)",
+        "fixtureRef": "libraryDomainState",
+        "runner": "runQueryFromDomainState",
+        "query": {
+          "queryType": "boxedQueryWithExtractorCombinerTransformer",
+          "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+          "extractors": {
+            "book": {
+              "extractorOrCombinerType": "extractorByPrimaryKey",
+              "parentName": "Book",
+              "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+              "instanceUuid": "XXXXXXXXX"
+            }
+          }
+        },
+        "assertions": [
+          {
+            "label": "test1",
+            "expectedValue": {
+              "queryFailure": "ReferenceNotFound",
+              "queryContext": "runQuery could not run extractor: book"
+            }
+          }
+        ]
+      },
+      {
+        "miroirTestType": "queryRunnerTest",
+        "miroirTestLabel": "select 1 object from Domain State (extractorByPrimaryKey)",
+        "fixtureRef": "libraryDomainState",
+        "runner": "runQueryFromDomainState",
+        "query": {
+          "queryType": "boxedQueryWithExtractorCombinerTransformer",
+          "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+          "extractors": {
+            "book": {
+              "extractorOrCombinerType": "extractorByPrimaryKey",
+              "parentName": "Book",
+              "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+              "instanceUuid": "caef8a59-39eb-48b5-ad59-a7642d3a1e8f"
+            }
+          }
+        },
+        "assertions": [
+          {
+            "label": "test1",
+            "expectedValue": {
+              "book": {
+                "uuid": "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
+                "parentName": "Book",
+                "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                "conceptLevel": "Data",
+                "name": "Et dans l'éternité je ne m'ennuierai pas",
+                "author": "ce7b601d-be5f-4bc6-a5af-14091594046a",
+                "publisher": "516a7366-39e7-4998-82cb-80199a7fa667"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "miroirTestType": "queryRunnerTest",
+        "miroirTestLabel": "select 1 object from Domain State and apply transformer on foreign key (extractorByPrimaryKey with applyTransformer)",
+        "fixtureRef": "libraryDomainState",
+        "runner": "runQueryFromDomainState",
+        "query": {
+          "queryType": "boxedQueryWithExtractorCombinerTransformer",
+          "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+          "extractors": {
+            "book": {
+              "extractorOrCombinerType": "extractorByPrimaryKey",
+              "parentName": "Book",
+              "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+              "instanceUuid": "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
+              "foreignKeysForTransformer": [
+                "author"
+              ],
+              "applyTransformer": {
+                "transformerType": "createObject",
+                "interpolation": "runtime",
+                "definition": {
+                  "bookTitle": {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referencePath": [
+                      "referenceObject",
+                      "name"
+                    ]
+                  },
+                  "authorName": {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referencePath": [
+                      "foreignKeyObjects",
+                      "author",
+                      "name"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "assertions": [
+          {
+            "label": "test1",
+            "expectedValue": {
+              "book": {
+                "authorName": "Paul Veyne",
+                "bookTitle": "Et dans l'éternité je ne m'ennuierai pas"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "miroirTestType": "queryRunnerTest",
+        "miroirTestLabel": "select 1 object from Domain State using direct query parameter reference",
+        "fixtureRef": "libraryDomainState",
+        "runner": "runQueryFromDomainState",
+        "query": {
+          "queryType": "boxedQueryWithExtractorCombinerTransformer",
+          "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+          "queryParams": {
+            "wantedBookUuid": "caef8a59-39eb-48b5-ad59-a7642d3a1e8f"
+          },
+          "extractors": {
+            "book": {
+              "extractorOrCombinerType": "extractorByPrimaryKey",
+              "parentName": "Book",
+              "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+              "instanceUuid": "caef8a59-39eb-48b5-ad59-a7642d3a1e8f"
+            }
+          },
+          "runtimeTransformers": {}
+        },
+        "assertions": [
+          {
+            "label": "test1",
+            "resultAccessPath": [
+              "book"
+            ],
+            "expectedValue": {
+              "uuid": "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
+              "parentName": "Book",
+              "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+              "conceptLevel": "Data",
+              "name": "Et dans l'éternité je ne m'ennuierai pas",
+              "author": "ce7b601d-be5f-4bc6-a5af-14091594046a",
+              "publisher": "516a7366-39e7-4998-82cb-80199a7fa667"
+            }
+          }
+        ]
+      },
+      {
+        "miroirTestType": "queryRunnerTest",
+        "miroirTestLabel": "select 1 object from the uuid found in an attribute of another object from Domain State",
+        "fixtureRef": "libraryDomainState",
+        "runner": "runQueryFromDomainState",
+        "query": {
+          "queryType": "boxedQueryWithExtractorCombinerTransformer",
+          "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+          "extractors": {
+            "book": {
+              "extractorOrCombinerType": "extractorByPrimaryKey",
+              "parentName": "Book",
+              "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+              "instanceUuid": "caef8a59-39eb-48b5-ad59-a7642d3a1e8f"
+            }
+          },
+          "combiners": {
+            "publisher": {
+              "extractorOrCombinerType": "combinerOneToOne",
+              "parentName": "Publisher",
+              "parentUuid": "a027c379-8468-43a5-ba4d-bf618be25cab",
+              "objectReference": "book",
+              "AttributeOfObjectToCompareToReferenceUuid": "publisher"
+            }
+          },
+          "runtimeTransformers": {}
+        },
+        "assertions": [
+          {
+            "label": "test1",
+            "resultAccessPath": [
+              "publisher"
+            ],
+            "expectedValue": {
+              "uuid": "516a7366-39e7-4998-82cb-80199a7fa667",
+              "parentName": "Publisher",
+              "parentUuid": "a027c379-8468-43a5-ba4d-bf618be25cab",
+              "name": "Folio"
+            }
+          }
+        ]
+      },
+      {
+        "miroirTestType": "queryRunnerTest",
+        "miroirTestLabel": "select 1 object from the uuid found in an attribute of another object then use applyTransformer on it",
+        "fixtureRef": "libraryDomainState",
+        "runner": "runQueryFromDomainState",
+        "query": {
+          "queryType": "boxedQueryWithExtractorCombinerTransformer",
+          "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+          "extractors": {
+            "book": {
+              "extractorOrCombinerType": "extractorByPrimaryKey",
+              "parentName": "Book",
+              "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+              "instanceUuid": "caef8a59-39eb-48b5-ad59-a7642d3a1e8f"
+            }
+          },
+          "combiners": {
+            "publisher": {
+              "extractorOrCombinerType": "combinerOneToOne",
+              "parentName": "Publisher",
+              "parentUuid": "a027c379-8468-43a5-ba4d-bf618be25cab",
+              "objectReference": "book",
+              "AttributeOfObjectToCompareToReferenceUuid": "publisher",
+              "applyTransformer": {
+                "transformerType": "createObject",
+                "interpolation": "runtime",
+                "definition": {
+                  "bookTitle": {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referencePath": [
+                      "referenceObject",
+                      "name"
+                    ]
+                  },
+                  "publisherName": {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referencePath": [
+                      "foreignKeyObject",
+                      "name"
+                    ]
+                  },
+                  "publisherUuid": {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referencePath": [
+                      "foreignKeyObject",
+                      "uuid"
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "runtimeTransformers": {}
+        },
+        "assertions": [
+          {
+            "label": "test1",
+            "resultAccessPath": [
+              "publisher"
+            ],
+            "expectedValue": {
+              "bookTitle": "Et dans l'éternité je ne m'ennuierai pas",
+              "publisherName": "Folio",
+              "publisherUuid": "516a7366-39e7-4998-82cb-80199a7fa667"
+            }
+          }
+        ]
+      },
+      {
+        "miroirTestType": "queryRunnerTest",
+        "miroirTestLabel": "select Authors (extractorInstancesByEntity)",
+        "fixtureRef": "libraryDomainState",
+        "runner": "runQueryFromDomainState",
+        "query": {
+          "queryType": "boxedQueryWithExtractorCombinerTransformer",
+          "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+          "pageParams": {
+            "applicationSection": "data"
+          },
+          "extractors": {
+            "authors": {
+              "extractorOrCombinerType": "extractorInstancesByEntity",
+              "parentName": "Author",
+              "parentUuid": "d7a144ff-d1b9-4135-800c-a7cfc1f38733"
+            }
+          },
+          "runtimeTransformers": {}
+        },
+        "assertions": [
+          {
+            "label": "test1",
+            "resultAccessPath": [
+              "authors"
+            ],
+            "expectedValue": [
+              {
+                "uuid": "4441169e-0c22-4fbc-81b2-28c87cf48ab2",
+                "parentName": "Author",
+                "parentUuid": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+                "name": "Don Norman"
+              },
+              {
+                "uuid": "ce7b601d-be5f-4bc6-a5af-14091594046a",
+                "parentName": "Author",
+                "parentUuid": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+                "name": "Paul Veyne"
+              },
+              {
+                "uuid": "d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17",
+                "parentName": "Author",
+                "parentUuid": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+                "conceptLevel": "Data",
+                "name": "Cornell Woolrich"
+              },
+              {
+                "uuid": "e4376314-d197-457c-aa5e-d2da5f8d5977",
+                "parentName": "Author",
+                "parentUuid": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+                "conceptLevel": "Data",
+                "name": "Catherine Guérard"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "miroirTestType": "queryRunnerTest",
+        "miroirTestLabel": "select Authors with filter (extractorInstancesByEntity)",
+        "fixtureRef": "libraryDomainState",
+        "runner": "runQueryFromDomainState",
+        "query": {
+          "queryType": "boxedQueryWithExtractorCombinerTransformer",
+          "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+          "pageParams": {
+            "applicationSection": "data"
+          },
+          "extractors": {
+            "authors": {
+              "extractorOrCombinerType": "extractorInstancesByEntity",
+              "parentName": "Author",
+              "parentUuid": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+              "filter": {
+                "attributeName": "name",
+                "value": "or"
+              }
+            }
+          }
+        },
+        "assertions": [
+          {
+            "label": "test1",
+            "resultAccessPath": [
+              "authors"
+            ],
+            "expectedValue": [
+              {
+                "uuid": "4441169e-0c22-4fbc-81b2-28c87cf48ab2",
+                "parentName": "Author",
+                "parentUuid": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+                "name": "Don Norman"
+              },
+              {
+                "uuid": "d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17",
+                "parentName": "Author",
+                "parentUuid": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+                "conceptLevel": "Data",
+                "name": "Cornell Woolrich"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "miroirTestType": "queryRunnerTest",
+        "miroirTestLabel": "select Authors with values filter (multiple values) (extractorInstancesByEntity)",
+        "fixtureRef": "libraryDomainState",
+        "runner": "runQueryFromDomainState",
+        "query": {
+          "queryType": "boxedQueryWithExtractorCombinerTransformer",
+          "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+          "pageParams": {
+            "applicationSection": "data"
+          },
+          "extractors": {
+            "authors": {
+              "extractorOrCombinerType": "extractorInstancesByEntity",
+              "parentName": "Author",
+              "parentUuid": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+              "filter": {
+                "attributeName": "name",
+                "values": [
+                  "Norman",
+                  "Veyne"
+                ]
+              }
+            }
+          }
+        },
+        "assertions": [
+          {
+            "label": "test1",
+            "resultAccessPath": [
+              "authors"
+            ],
+            "expectedValue": [
+              {
+                "uuid": "4441169e-0c22-4fbc-81b2-28c87cf48ab2",
+                "parentName": "Author",
+                "parentUuid": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+                "name": "Don Norman"
+              },
+              {
+                "uuid": "ce7b601d-be5f-4bc6-a5af-14091594046a",
+                "parentName": "Author",
+                "parentUuid": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+                "name": "Paul Veyne"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "miroirTestType": "queryRunnerTest",
+        "miroirTestLabel": "select Authors with values filter and not flag (extractorInstancesByEntity)",
+        "fixtureRef": "libraryDomainState",
+        "runner": "runQueryFromDomainState",
+        "query": {
+          "queryType": "boxedQueryWithExtractorCombinerTransformer",
+          "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+          "pageParams": {
+            "applicationSection": "data"
+          },
+          "extractors": {
+            "authors": {
+              "extractorOrCombinerType": "extractorInstancesByEntity",
+              "parentName": "Author",
+              "parentUuid": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+              "filter": {
+                "attributeName": "name",
+                "not": true,
+                "values": [
+                  "Norman",
+                  "Veyne"
+                ]
+              }
+            }
+          }
+        },
+        "assertions": [
+          {
+            "label": "test1",
+            "resultAccessPath": [
+              "authors"
+            ],
+            "expectedValue": [
+              {
+                "uuid": "d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17",
+                "parentName": "Author",
+                "parentUuid": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+                "conceptLevel": "Data",
+                "name": "Cornell Woolrich"
+              },
+              {
+                "uuid": "e4376314-d197-457c-aa5e-d2da5f8d5977",
+                "parentName": "Author",
+                "parentUuid": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+                "conceptLevel": "Data",
+                "name": "Catherine Guérard"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "miroirTestType": "queryRunnerTest",
+        "miroirTestLabel": "select Books of Publisher of given Book from Domain State (extractorByPrimaryKey, combinerOneToOne, combinerOneToMany)",
+        "fixtureRef": "libraryDomainState",
+        "runner": "runQueryFromDomainState",
+        "query": {
+          "queryType": "boxedQueryWithExtractorCombinerTransformer",
+          "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+          "pageParams": {
+            "applicationSection": "data"
+          },
+          "extractors": {
+            "book": {
+              "extractorOrCombinerType": "extractorByPrimaryKey",
+              "parentName": "Book",
+              "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+              "instanceUuid": "caef8a59-39eb-48b5-ad59-a7642d3a1e8f"
+            }
+          },
+          "combiners": {
+            "publisher": {
+              "extractorOrCombinerType": "combinerOneToOne",
+              "parentName": "Publisher",
+              "parentUuid": "a027c379-8468-43a5-ba4d-bf618be25cab",
+              "objectReference": "book",
+              "AttributeOfObjectToCompareToReferenceUuid": "publisher"
+            },
+            "booksOfPublisher": {
+              "extractorOrCombinerType": "combinerOneToMany",
+              "parentName": "Book",
+              "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+              "objectReference": "publisher",
+              "AttributeOfListObjectToCompareToReferenceUuid": "publisher"
+            }
+          },
+          "runtimeTransformers": {}
+        },
+        "assertions": [
+          {
+            "label": "test1",
+            "resultAccessPath": [
+              "booksOfPublisher"
+            ],
+            "expectedValue": [
+              {
+                "uuid": "4cb917b3-3c53-4f9b-b000-b0e4c07a81f7",
+                "parentName": "Book",
+                "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                "name": "Renata n'importe quoi",
+                "author": "e4376314-d197-457c-aa5e-d2da5f8d5977",
+                "conceptLevel": "",
+                "publisher": "516a7366-39e7-4998-82cb-80199a7fa667"
+              },
+              {
+                "uuid": "c6852e89-3c3c-447f-b827-4b5b9d830975",
+                "parentName": "Book",
+                "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                "conceptLevel": "Data",
+                "name": "Le Pain et le Cirque",
+                "author": "ce7b601d-be5f-4bc6-a5af-14091594046a",
+                "publisher": "516a7366-39e7-4998-82cb-80199a7fa667"
+              },
+              {
+                "uuid": "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
+                "parentName": "Book",
+                "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                "conceptLevel": "Data",
+                "name": "Et dans l'éternité je ne m'ennuierai pas",
+                "author": "ce7b601d-be5f-4bc6-a5af-14091594046a",
+                "publisher": "516a7366-39e7-4998-82cb-80199a7fa667"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "miroirTestType": "queryRunnerTest",
+        "miroirTestLabel": "select custom-built result: Books of Publisher of given Book from Domain State (extractorByPrimaryKey, combinerOneToOne, combinerOneToMany)",
+        "fixtureRef": "libraryDomainState",
+        "runner": "runQueryFromDomainState",
+        "query": {
+          "queryType": "boxedQueryWithExtractorCombinerTransformer",
+          "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+          "pageParams": {
+            "applicationSection": "data"
+          },
+          "extractors": {
+            "book": {
+              "extractorOrCombinerType": "extractorByPrimaryKey",
+              "parentName": "Book",
+              "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+              "instanceUuid": "caef8a59-39eb-48b5-ad59-a7642d3a1e8f"
+            }
+          },
+          "combiners": {
+            "publisher": {
+              "extractorOrCombinerType": "combinerOneToOne",
+              "parentName": "Publisher",
+              "parentUuid": "a027c379-8468-43a5-ba4d-bf618be25cab",
+              "objectReference": "book",
+              "AttributeOfObjectToCompareToReferenceUuid": "publisher"
+            },
+            "booksOfPublisher": {
+              "extractorOrCombinerType": "combinerOneToMany",
+              "parentName": "Book",
+              "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+              "objectReference": "publisher",
+              "AttributeOfListObjectToCompareToReferenceUuid": "publisher"
+            },
+            "result1": {
+              "extractorOrCombinerType": "extractorWrapperReturningObject",
+              "definition": {
+                "caef8a59-39eb-48b5-ad59-a7642d3a1e8f": {
+                  "extractorOrCombinerType": "extractorOrCombinerContextReference",
+                  "extractorOrCombinerContextReference": "booksOfPublisher"
+                }
+              }
+            },
+            "result2": {
+              "extractorOrCombinerType": "extractorWrapperReturningList",
+              "definition": [
+                {
+                  "extractorOrCombinerType": "extractorOrCombinerContextReference",
+                  "extractorOrCombinerContextReference": "booksOfPublisher"
+                },
+                {
+                  "extractorOrCombinerType": "extractorOrCombinerContextReference",
+                  "extractorOrCombinerContextReference": "booksOfPublisher"
+                }
+              ]
+            }
+          }
+        },
+        "assertions": [
+          {
+            "label": "test1",
+            "resultAccessPath": [
+              "result1",
+              "caef8a59-39eb-48b5-ad59-a7642d3a1e8f"
+            ],
+            "expectedValue": [
+              {
+                "uuid": "4cb917b3-3c53-4f9b-b000-b0e4c07a81f7",
+                "parentName": "Book",
+                "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                "name": "Renata n'importe quoi",
+                "author": "e4376314-d197-457c-aa5e-d2da5f8d5977",
+                "conceptLevel": "",
+                "publisher": "516a7366-39e7-4998-82cb-80199a7fa667"
+              },
+              {
+                "uuid": "c6852e89-3c3c-447f-b827-4b5b9d830975",
+                "parentName": "Book",
+                "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                "conceptLevel": "Data",
+                "name": "Le Pain et le Cirque",
+                "author": "ce7b601d-be5f-4bc6-a5af-14091594046a",
+                "publisher": "516a7366-39e7-4998-82cb-80199a7fa667"
+              },
+              {
+                "uuid": "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
+                "parentName": "Book",
+                "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                "conceptLevel": "Data",
+                "name": "Et dans l'éternité je ne m'ennuierai pas",
+                "author": "ce7b601d-be5f-4bc6-a5af-14091594046a",
+                "publisher": "516a7366-39e7-4998-82cb-80199a7fa667"
+              }
+            ]
+          },
+          {
+            "label": "test2",
+            "resultAccessPath": [
+              "result2",
+              "0"
+            ],
+            "expectedValue": [
+              {
+                "uuid": "4cb917b3-3c53-4f9b-b000-b0e4c07a81f7",
+                "parentName": "Book",
+                "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                "name": "Renata n'importe quoi",
+                "author": "e4376314-d197-457c-aa5e-d2da5f8d5977",
+                "conceptLevel": "",
+                "publisher": "516a7366-39e7-4998-82cb-80199a7fa667"
+              },
+              {
+                "uuid": "c6852e89-3c3c-447f-b827-4b5b9d830975",
+                "parentName": "Book",
+                "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                "conceptLevel": "Data",
+                "name": "Le Pain et le Cirque",
+                "author": "ce7b601d-be5f-4bc6-a5af-14091594046a",
+                "publisher": "516a7366-39e7-4998-82cb-80199a7fa667"
+              },
+              {
+                "uuid": "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
+                "parentName": "Book",
+                "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                "conceptLevel": "Data",
+                "name": "Et dans l'éternité je ne m'ennuierai pas",
+                "author": "ce7b601d-be5f-4bc6-a5af-14091594046a",
+                "publisher": "516a7366-39e7-4998-82cb-80199a7fa667"
+              }
+            ]
+          },
+          {
+            "label": "test3",
+            "resultAccessPath": [
+              "result2",
+              "1"
+            ],
+            "expectedValue": [
+              {
+                "uuid": "4cb917b3-3c53-4f9b-b000-b0e4c07a81f7",
+                "parentName": "Book",
+                "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                "name": "Renata n'importe quoi",
+                "author": "e4376314-d197-457c-aa5e-d2da5f8d5977",
+                "conceptLevel": "",
+                "publisher": "516a7366-39e7-4998-82cb-80199a7fa667"
+              },
+              {
+                "uuid": "c6852e89-3c3c-447f-b827-4b5b9d830975",
+                "parentName": "Book",
+                "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                "conceptLevel": "Data",
+                "name": "Le Pain et le Cirque",
+                "author": "ce7b601d-be5f-4bc6-a5af-14091594046a",
+                "publisher": "516a7366-39e7-4998-82cb-80199a7fa667"
+              },
+              {
+                "uuid": "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
+                "parentName": "Book",
+                "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                "conceptLevel": "Data",
+                "name": "Et dans l'éternité je ne m'ennuierai pas",
+                "author": "ce7b601d-be5f-4bc6-a5af-14091594046a",
+                "publisher": "516a7366-39e7-4998-82cb-80199a7fa667"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "miroirTestType": "queryRunnerTest",
+        "miroirTestLabel": "select custom-built result: return Books of Author from Domain State (extractorByPrimaryKey, combinerOneToMany)",
+        "fixtureRef": "libraryDomainState",
+        "runner": "runQueryFromDomainState",
+        "query": {
+          "queryType": "boxedQueryWithExtractorCombinerTransformer",
+          "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+          "pageParams": {
+            "applicationSection": "data"
+          },
+          "extractors": {
+            "author": {
+              "extractorOrCombinerType": "extractorByPrimaryKey",
+              "parentName": "Author",
+              "parentUuid": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+              "instanceUuid": "ce7b601d-be5f-4bc6-a5af-14091594046a"
+            }
+          },
+          "combiners": {
+            "books": {
+              "extractorOrCombinerType": "combinerOneToMany",
+              "parentName": "Book",
+              "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+              "objectReference": "author",
+              "AttributeOfListObjectToCompareToReferenceUuid": "author"
+            }
+          }
+        },
+        "assertions": [
+          {
+            "label": "test1",
+            "resultAccessPath": [
+              "author"
+            ],
+            "expectedValue": {
+              "uuid": "ce7b601d-be5f-4bc6-a5af-14091594046a",
+              "parentName": "Author",
+              "parentUuid": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+              "name": "Paul Veyne"
+            }
+          },
+          {
+            "label": "test2",
+            "resultAccessPath": [
+              "books"
+            ],
+            "expectedValue": [
+              {
+                "author": "ce7b601d-be5f-4bc6-a5af-14091594046a",
+                "conceptLevel": "Data",
+                "name": "Le Pain et le Cirque",
+                "parentName": "Book",
+                "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                "publisher": "516a7366-39e7-4998-82cb-80199a7fa667",
+                "uuid": "c6852e89-3c3c-447f-b827-4b5b9d830975"
+              },
+              {
+                "author": "ce7b601d-be5f-4bc6-a5af-14091594046a",
+                "conceptLevel": "Data",
+                "name": "Et dans l'éternité je ne m'ennuierai pas",
+                "parentName": "Book",
+                "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                "publisher": "516a7366-39e7-4998-82cb-80199a7fa667",
+                "uuid": "caef8a59-39eb-48b5-ad59-a7642d3a1e8f"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "miroirTestType": "queryRunnerTest",
+        "miroirTestLabel": "select custom-built result: return couple Author name - Book title for Books of Author from Domain State (extractorByPrimaryKey, combinerOneToMany with applyTransformer)",
+        "fixtureRef": "libraryDomainState",
+        "runner": "runQueryFromDomainState",
+        "query": {
+          "queryType": "boxedQueryWithExtractorCombinerTransformer",
+          "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+          "pageParams": {
+            "applicationSection": "data"
+          },
+          "extractors": {
+            "author": {
+              "extractorOrCombinerType": "extractorByPrimaryKey",
+              "parentName": "Author",
+              "parentUuid": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+              "instanceUuid": "ce7b601d-be5f-4bc6-a5af-14091594046a"
+            }
+          },
+          "combiners": {
+            "books": {
+              "extractorOrCombinerType": "combinerOneToMany",
+              "parentName": "Book",
+              "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+              "objectReference": "author",
+              "AttributeOfListObjectToCompareToReferenceUuid": "author",
+              "applyTransformer": {
+                "transformerType": "createObject",
+                "interpolation": "runtime",
+                "definition": {
+                  "authorName": {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referencePath": [
+                      "referenceObject",
+                      "name"
+                    ]
+                  },
+                  "bookTitle": {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referencePath": [
+                      "foreignKeyObject",
+                      "name"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "assertions": [
+          {
+            "label": "test1",
+            "resultAccessPath": [
+              "author"
+            ],
+            "expectedValue": {
+              "uuid": "ce7b601d-be5f-4bc6-a5af-14091594046a",
+              "parentName": "Author",
+              "parentUuid": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+              "name": "Paul Veyne"
+            }
+          },
+          {
+            "label": "test2",
+            "resultAccessPath": [
+              "books"
+            ],
+            "expectedValue": [
+              {
+                "authorName": "Paul Veyne",
+                "bookTitle": "Le Pain et le Cirque"
+              },
+              {
+                "authorName": "Paul Veyne",
+                "bookTitle": "Et dans l'éternité je ne m'ennuierai pas"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "miroirTestType": "queryRunnerTest",
+        "miroirTestLabel": "select custom-built result with combinerByHeteronomousManyToMany: instances of all Entites from Domain State, indexed by Entity Uuid (extractorInstancesByEntity, combinerByHeteronomousManyToMany)",
+        "fixtureRef": "libraryDomainState",
+        "runner": "runQueryFromDomainState",
+        "query": {
+          "queryType": "boxedQueryWithExtractorCombinerTransformer",
+          "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+          "pageParams": {
+            "applicationSection": "data"
+          },
+          "extractors": {
+            "entities": {
+              "extractorOrCombinerType": "extractorInstancesByEntity",
+              "applicationSection": "model",
+              "parentName": "Entity",
+              "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad"
+            }
+          },
+          "combiners": {
+            "instancesOfEntities": {
+              "extractorOrCombinerType": "combinerByHeteronomousManyToMany",
+              "rootExtractorOrReference": "entities",
+              "subQueryTemplate": {
+                "query": {
+                  "extractorOrCombinerType": "extractorInstancesByEntity",
+                  "parentUuid": {
+                    "transformerType": "getFromContext",
+                    "referenceName": "rootQueryObject"
+                  }
+                },
+                "indexValueFromRootObject": "uuid",
+                "rootQueryObjectTransformer": {
+                  "transformerType": "getFromContext",
+                  "interpolation": "runtime",
+                  "referencePath": [
+                    "entry",
+                    "uuid"
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "assertions": [
+          {
+            "label": "test1",
+            "resultAccessPath": [
+              "instancesOfEntities"
+            ],
+            "expectedValue": {
+              "a027c379-8468-43a5-ba4d-bf618be25cab": [
+                {
+                  "uuid": "1f550a2a-33f5-4a56-83ee-302701039494",
+                  "parentName": "Publisher",
+                  "parentUuid": "a027c379-8468-43a5-ba4d-bf618be25cab",
+                  "name": "Penguin",
+                  "icon": ""
+                },
+                {
+                  "uuid": "516a7366-39e7-4998-82cb-80199a7fa667",
+                  "parentName": "Publisher",
+                  "parentUuid": "a027c379-8468-43a5-ba4d-bf618be25cab",
+                  "name": "Folio"
+                },
+                {
+                  "uuid": "c1c97d54-aba8-4599-883a-7fe8f3874095",
+                  "parentName": "Publisher",
+                  "parentUuid": "a027c379-8468-43a5-ba4d-bf618be25cab",
+                  "name": "Springer"
+                }
+              ],
+              "d7a144ff-d1b9-4135-800c-a7cfc1f38733": [
+                {
+                  "uuid": "4441169e-0c22-4fbc-81b2-28c87cf48ab2",
+                  "parentName": "Author",
+                  "parentUuid": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+                  "name": "Don Norman"
+                },
+                {
+                  "uuid": "ce7b601d-be5f-4bc6-a5af-14091594046a",
+                  "parentName": "Author",
+                  "parentUuid": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+                  "name": "Paul Veyne"
+                },
+                {
+                  "uuid": "d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17",
+                  "parentName": "Author",
+                  "parentUuid": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+                  "conceptLevel": "Data",
+                  "name": "Cornell Woolrich"
+                },
+                {
+                  "uuid": "e4376314-d197-457c-aa5e-d2da5f8d5977",
+                  "parentName": "Author",
+                  "parentUuid": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+                  "conceptLevel": "Data",
+                  "name": "Catherine Guérard"
+                }
+              ],
+              "e8ba151b-d68e-4cc3-9a83-3459d309ccf5": [
+                {
+                  "uuid": "4cb917b3-3c53-4f9b-b000-b0e4c07a81f7",
+                  "parentName": "Book",
+                  "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                  "name": "Renata n'importe quoi",
+                  "author": "e4376314-d197-457c-aa5e-d2da5f8d5977",
+                  "conceptLevel": "",
+                  "publisher": "516a7366-39e7-4998-82cb-80199a7fa667"
+                },
+                {
+                  "uuid": "6fefa647-7ecf-4f83-b617-69d7d5094c37",
+                  "parentName": "Book",
+                  "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                  "name": "The Bride Wore Black",
+                  "author": "d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17",
+                  "conceptLevel": "",
+                  "publisher": "c1c97d54-aba8-4599-883a-7fe8f3874095"
+                },
+                {
+                  "uuid": "c6852e89-3c3c-447f-b827-4b5b9d830975",
+                  "parentName": "Book",
+                  "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                  "conceptLevel": "Data",
+                  "name": "Le Pain et le Cirque",
+                  "author": "ce7b601d-be5f-4bc6-a5af-14091594046a",
+                  "publisher": "516a7366-39e7-4998-82cb-80199a7fa667"
+                },
+                {
+                  "uuid": "c97be567-bd70-449f-843e-cd1d64ac1ddd",
+                  "parentName": "Book",
+                  "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                  "name": "Rear Window",
+                  "author": "d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17",
+                  "conceptLevel": "",
+                  "publisher": "1f550a2a-33f5-4a56-83ee-302701039494"
+                },
+                {
+                  "uuid": "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
+                  "parentName": "Book",
+                  "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                  "conceptLevel": "Data",
+                  "name": "Et dans l'éternité je ne m'ennuierai pas",
+                  "author": "ce7b601d-be5f-4bc6-a5af-14091594046a",
+                  "publisher": "516a7366-39e7-4998-82cb-80199a7fa667"
+                },
+                {
+                  "uuid": "e20e276b-619d-4e16-8816-b7ec37b53439",
+                  "parentName": "Book",
+                  "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                  "name": "The Design of Everyday Things",
+                  "author": "4441169e-0c22-4fbc-81b2-28c87cf48ab2",
+                  "conceptLevel": "",
+                  "publisher": "c1c97d54-aba8-4599-883a-7fe8f3874095"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "miroirTestType": "queryRunnerTest",
+        "miroirTestLabel": "select Unique Publisher Uuids of Books (extractorInstancesByEntity, runtimeTransformer)",
+        "fixtureRef": "libraryDomainState",
+        "runner": "runQueryFromDomainState",
+        "query": {
+          "queryType": "boxedQueryWithExtractorCombinerTransformer",
+          "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+          "pageParams": {
+            "applicationSection": "data"
+          },
+          "extractors": {
+            "books": {
+              "extractorOrCombinerType": "extractorInstancesByEntity",
+              "parentName": "Book",
+              "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+            }
+          },
+          "runtimeTransformers": {
+            "publishers": {
+              "transformerType": "getUniqueValues",
+              "interpolation": "runtime",
+              "applyTo": {
+                "transformerType": "getFromContext",
+                "referenceName": "books"
+              },
+              "attribute": "publisher"
+            }
+          }
+        },
+        "assertions": [
+          {
+            "label": "test1",
+            "resultAccessPath": [
+              "publishers"
+            ],
+            "expectedValue": [
+              {
+                "publisher": "516a7366-39e7-4998-82cb-80199a7fa667"
+              },
+              {
+                "publisher": "c1c97d54-aba8-4599-883a-7fe8f3874095"
+              },
+              {
+                "publisher": "1f550a2a-33f5-4a56-83ee-302701039494"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
