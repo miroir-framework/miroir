@@ -9,6 +9,7 @@ describe("miroirTestSuiteRegistry (Phase 2)", () => {
   it("lists registered suite keys", () => {
     expect(listMiroirTestSuiteKeys()).toContain("schema_pilot_empty");
     expect(listMiroirTestSuiteKeys()).toContain("pilot_transformer_plus");
+    expect(listMiroirTestSuiteKeys()).toContain("mustache");
   });
 
   it("loads deployment export via dynamic import", async () => {

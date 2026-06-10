@@ -8,6 +8,7 @@ import {
   entityMiroirTest,
   getInnermostTypeCheckError,
   jzodTypeCheck,
+  miroirTest_mustache,
   miroirTest_pilot_transformer_plus,
   miroirTest_schema_pilot_empty,
 } from "../../src";
@@ -74,6 +75,32 @@ describe("MiroirTestDefinition schema (Phase 0)", () => {
     expect(suite.miroirTests[0]).toMatchObject({
       miroirTestType: "transformerTest",
       transformerName: "resolveConditionalSchema",
+    });
+  });
+
+  it("validates mustache MiroirTest instance via jzodTypeCheck", () => {
+    const result = jzodTypeCheck(
+      miroirTestJzodSchema,
+      miroirTest_mustache,
+      [],
+      [],
+      defaultMetaModelEnvironment,
+      {},
+    );
+    if (result.status === "error") {
+      console.error(getInnermostTypeCheckError(result));
+    }
+    expect(result.status).toBe("ok");
+
+    const suite = (miroirTest_mustache as MiroirTestDefinition).definition as MiroirTestSuite;
+    expect(suite.miroirTestLabel).toBe("mustache.extractDoubleBracePatterns");
+    expect(suite.miroirTests).toHaveLength(6);
+    expect(suite.miroirTests[0]).toMatchObject({
+      miroirTestType: "functionCallTest",
+      functionRef: {
+        module: "miroir-core/1_core/mustache",
+        export: "extractDoubleBracePatterns",
+      },
     });
   });
 });
