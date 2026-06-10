@@ -2,6 +2,8 @@
 
 GitHub issue: [miroir-framework/miroir#196](https://github.com/miroir-framework/miroir/issues/196)
 
+**Status: Implementation complete** (Phases 0–6). Legacy removal and `RUN_TEST` retirement are deferred follow-ups.
+
 ## Overview
 
 Introduce a unified **`MiroirTest`** entity that **replaces** `UnitTest` and `TransformerTest` as the single test concept. Legacy entities and runners remain in the codebase until a later cleanup issue; **new code does not use them**.
@@ -15,6 +17,8 @@ Constraints from the issue:
 - Vitest loaders migrate to `MiroirTest`; same pass/fail including known failures
 - `transformers.integ.test.ts` migrates with `executionMode: "integration"`
 
+Supersedes the execution-model direction of [Feature 195](../195-FEATURE-%20enable%20execution%20of%20miroir-core%20unit%20tests%20in%20UI/plan.md): UI and CLI now target `MiroirTest`, not `UnitTest`.
+
 ---
 
 ## Locked decisions (grill session)
@@ -25,11 +29,11 @@ Constraints from the issue:
 | 2 | **Schema** — Evolve `UnitTest` → `MiroirTest`; unified `miroirTestType` / `miroirTests` / `miroirTestLabel`; **no** `MiroirTestCatalogSuite` |
 | 3 | **Runner** — New distilled `MiroirTestTools.ts`; legacy `UnitTestTools.ts` / `TestTools.ts` frozen |
 | 4 | **Execution** — `executionMode: "unit" \| "integration"` param; UI always `"unit"` |
-| 5 | **CLI selection** — Dynamic import gate; **retire `RUN_TEST`** |
+| 5 | **CLI selection** — Dynamic import gate; **`RUN_TEST` retired on new CLI path** (see follow-ups for vitest loaders) |
 | 6 | **CLI interface** — Hybrid: env vars (CI) + npm args (local) |
 | 7 | **UI** — New parallel reports/menu/components; legacy UI untouched |
 | 8 | **Migration** — Pilots by hand → `adminTransformers` gate → generator + manifest |
-| 9 | **Vitest** — `miroir-tests.unit.test.ts` + `miroir-tests.integ.test.ts`; legacy wrappers until bulk cutover |
+| 9 | **Vitest** — `miroir-tests.unit.test.ts` + `miroir-tests.integ.test.ts`; per-file loaders use `runDeployedMiroirTestSuiteLoader` |
 | 10 | **Loader switch** — Incremental per pilot, then bulk |
 
 ---
@@ -76,12 +80,13 @@ flowchart LR
   subgraph cli [CLI]
     U[miroir-tests.unit.test.ts]
     I[miroir-tests.integ.test.ts]
-    P[Suite selection parser]
+    P[parseMiroirTestCliConfig]
   end
 
   subgraph core [miroir-core NEW]
     MT[MiroirTestTools.ts]
     H[runDeployedMiroirTestSuite]
+    L[runDeployedMiroirTestSuiteLoader]
   end
 
   subgraph legacy [miroir-core FROZEN]
@@ -90,7 +95,7 @@ flowchart LR
   end
 
   subgraph deploy [deployment-miroir NEW]
-    INST[MiroirTest instances]
+    INST[37 MiroirTest instances]
     MAN[miroir-test-migration-map.json]
   end
 
@@ -103,6 +108,7 @@ flowchart LR
   P --> I
   U --> H
   I --> H
+  L --> MT
   H --> MT
   MT --> INST
   DISP --> MT
@@ -110,112 +116,152 @@ flowchart LR
 
 ---
 
+## Developer quick reference
+
+| Area | Path |
+|------|------|
+| Runner | `packages/miroir-core/src/4_services/MiroirTestTools.ts` |
+| Migration logic | `packages/miroir-core/scripts/miroirTestMigrateDefinition.ts` |
+| Bulk generator | `packages/miroir-core/scripts/generate-miroir-test-instances.ts` |
+| UUID v4 renormalize | `packages/miroir-core/scripts/renormalize-miroir-test-uuids.ts` |
+| Manifest | `packages/miroir-core/scripts/miroir-test-migration-map.json` |
+| Suite registry (generated) | `packages/miroir-core/tests/helpers/miroirTestSuiteRegistry.ts` |
+| CLI parser | `packages/miroir-core/tests/helpers/parseMiroirTestCliConfig.ts` |
+| Per-file vitest loader | `packages/miroir-core/tests/helpers/runDeployedMiroirTestSuiteLoader.ts` |
+| Integration Postgres bootstrap | `packages/miroir-core/tests/helpers/miroirTestIntegrationStore.ts` |
+| MiroirTest JSON data | `packages/miroir-test-app_deployment-miroir/assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/` |
+| UI components | `packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Reports/MiroirTest*.tsx` |
+
+### Commands
+
+```bash
+# Rebuild deployment after JSON / index changes
+npm run build -w miroir-test-app_deployment-miroir
+
+# Preferred: run suites by registry key (dynamic import)
+npm run testMiroir -w miroir-core -- --suites mustache,alterObject --mode unit
+npm run testMiroir -w miroir-core -- --suites miroirCoreTransformers --mode integration
+
+# CI-style env vars
+MIROIR_TEST_SUITES=mustache MIROIR_TEST_MODE=unit npm run testMiroir -w miroir-core
+
+# Per-file vitest (still supports RUN_TEST for selective runs)
+RUN_TEST=transformers.unit.test npm run testByFile -w miroir-core -- transformers.unit.test
+
+# Regenerate instances from legacy sources (skips Phase 3 pilots)
+npm run generate-miroir-tests -w miroir-core
+
+# Fix non-v4 target UUIDs after generator changes
+npm run renormalize-miroir-test-uuids -w miroir-core
+```
+
+### UI
+
+- Menu: **Miroir Tests** (`eaac459c-…`)
+- Reports: `reportMiroirTestList` (`58dc6706-…`), `reportMiroirTestDetails` (`0ad63f27-…`)
+- Section type: `miroirTestReportSection` in Report ED `952d2c65-…`
+- Execution: always `executionMode: "unit"` via `RunMiroirTestSuiteButton`
+
+---
+
 ## Phases
 
 ### Phase 0 — Entity bootstrap ✅
-
-**Red:** `miroirTest.schema.unit.test.ts` — `jzodTypeCheck` on `entityDefinitionMiroirTest.mlSchema` + empty pilot instance.
 
 **Green (done):**
 
 - `entityMiroirTest` (`a311f363-e238-4203-bdfc-29e8c160c26b`) + `entityDefinitionMiroirTest` (`51c647fe-07ec-411c-89cc-02689dc66d6a`)
 - Wire `miroirTestDefinition` in `getMiroirFundamentalJzodSchema`
 - Export from deployment `index.ts` + `miroir-core/src/index.ts`
-- `npm run generate-ts-types`
-- Minimal `miroirTest_schema_pilot_empty` instance for schema validation
+- `miroirTest_schema_pilot_empty` (`cebb6dc8-65ea-482d-b17b-5655c927c1c1`)
 
-**Do not touch:** legacy entity JSON, `UnitTestTools`, `TestTools`.
-
-**Bootstrap note:** MiroirTest leaf schemas use distinct context keys (`miroirFunctionCallTest`, `miroirQueryRunnerTest`) so they do not overwrite UnitTest's `functionCallTest` / `queryRunnerTest` in the fundamental jzod context. Discriminator values remain `functionCallTest` / `queryRunnerTest`.
-
-**UUIDs (Phase 0):**
-
-| Asset | UUID |
-|-------|------|
-| `entityMiroirTest` | `a311f363-e238-4203-bdfc-29e8c160c26b` |
-| `entityDefinitionMiroirTest` | `51c647fe-07ec-411c-89cc-02689dc66d6a` |
-| `miroirTest_schema_pilot_empty` | `cebb6dc8-65ea-482d-b17b-5655c927c1c1` |
-| `reportMiroirTestDetails` (placeholder, Phase 4) | `0ad63f27-c4df-4fb8-9a79-cb257c7a2958` |
+**Bootstrap note:** MiroirTest leaf schemas use distinct context keys (`miroirFunctionCallTest`, `miroirQueryRunnerTest`) so they do not overwrite UnitTest's `functionCallTest` / `queryRunnerTest` in the fundamental jzod context.
 
 ---
 
 ### Phase 1 — `MiroirTestTools` skeleton ✅
 
-**Red:** `miroirTest.tools.unit.test.ts` — dispatch per leaf kind.
-
-**Green (done):** `MiroirTestTools.ts` with `runMiroirTests`, `runMiroirTestSuite`, `executionMode`, `filter`. Leaf adapters delegate to legacy runners without modifying `UnitTestTools` / `TestTools`.
+`MiroirTestTools.ts` with `runMiroirTests`, `runMiroirTestSuite`, `executionMode`, `filter`. Leaf adapters delegate to legacy runners without modifying `UnitTestTools` / `TestTools`.
 
 ---
 
 ### Phase 2 — CLI infrastructure ✅
 
-- `parseMiroirTestCliConfig.ts`
-- `runDeployedMiroirTestSuite.ts`
+- `parseMiroirTestCliConfig.ts`, `runDeployedMiroirTestSuite.ts`
 - `miroir-tests.unit.test.ts` / `miroir-tests.integ.test.ts`
-- `testMiroir` npm script (hybrid env + args)
-- Retire `RUN_TEST` on migrated loaders (per pilot in Phase 3)
-
-**Green (done):** Empty-suite Vitest registration fixed via wrapper `vitest.test` in `runDeployedMiroirTestSuite`. Skip when no suites selected. `npm run testMiroir -- --suites schema_pilot_empty --mode unit` passes.
+- `npm run testMiroir` (hybrid env + args)
+- `MiroirEventService` wired for nested suite tracking in CLI path
 
 ---
 
 ### Phase 3 — Pilots (hand-migrated) ✅
 
-| Order | Source | New instance | Validates |
-|-------|--------|--------------|-----------|
-| 3a ✅ | `unitTest_pilot_transformer_plus` | `miroirTest_pilot_transformer_plus` | `transformerTest` leaf |
-| 3b ✅ | `unitTest_suite_mustache` | `miroirTest_mustache` | `functionCallTest` |
-| 3c ✅ | `unitTest_suite_queries_library` | `miroirTest_queries_library` | `queryRunnerTest` |
-| 3d ✅ | `transformerTest_adminTransformers` | `miroirTest_adminTransformers` | Deep nested suites |
-
-Per pilot: hand JSON → export → schema test → switch loader → same pass/fail → UI smoke.
-
-**Green (done):** All four pilots in registry. Nested `adminTransformers` requires `MiroirEventService` on tracker (wired in `runMiroirTestsFromCliConfig` + parallel loader).
+| Registry key | Legacy source | Target UUID (v4) |
+|---|---|---|
+| `schema_pilot_empty` | (new) | `cebb6dc8-65ea-482d-b17b-5655c927c1c1` |
+| `pilot_transformer_plus` | `unitTest_pilot_transformer_plus` | `4b18adc6-5cec-4abf-bb60-7a7fa26e4dc4` |
+| `mustache` | `unitTest_suite_mustache` | `bdf83d4d-f4dd-42c9-b2d6-41311d979083` |
+| `queries_library` | `unitTest_suite_queries_library` | `a7a74c51-f24e-43d6-bd62-ba3ebcded97d` |
+| `adminTransformers` | `transformerTest_adminTransformers` | `8f07f7a2-d864-4600-bd3e-abda85a04061` |
 
 ---
 
 ### Phase 4 — Parallel UI ✅
 
-- `reportMiroirTestList` + `reportMiroirTestDetails` + `miroirTestReportSection`
-- Menu “Miroir Tests”
+- `miroirTestReportSection`, list/details reports, menu **Miroir Tests**
 - `MiroirTestDisplay`, `RunMiroirTestSuiteButton`
-- Always `executionMode: "unit"`
-
-**Green (done):** Report section schema + list (`58dc6706`) / details (`0ad63f27`) assets. Menu entry. UI wired in `ReportSectionViewWithEditor`. Runner calls `runMiroirTests` with `executionMode: "unit"`.
+- Manual smoke: list, details, run — verified
 
 ---
 
 ### Phase 5 — Bulk migration ✅
 
 - `generate-miroir-test-instances.ts` + `miroir-test-migration-map.json`
-- Switch remaining vitest loaders; delete legacy wrappers
-
-**Green (done):** Generator migrated 36 legacy sources (+ schema pilot) → 37 registry keys. Vitest loaders use `runDeployedMiroirTestSuiteLoader` + `miroirTest_*` exports. Legacy UnitTest/TransformerTest JSON untouched. `resolveConditionalSchema` / `jzodTypeCheck` / `defaultValueForMLSchema` / `unfoldSchemaOnce` / `resolveSchemaReferenceInContext` keep file-pattern skip logic on legacy runners (Phase 6).
+- 36 legacy sources migrated → **37 registry keys** (+ schema pilot)
+- All entity-backed vitest loaders use `runDeployedMiroirTestSuiteLoader` + `miroirTest_*` exports
+- Legacy UnitTest/TransformerTest deployment JSON **untouched**
 
 ---
 
-### Phase 6 — Integration cutover ✅
+### Phase 6 — Integration + file-pattern loaders ✅
 
-- `transformers.integ.test.ts` → thin shim → `miroir-tests.integ.test.ts` + `miroirCoreTransformers` registry key
-- `executionMode: "integration"` via `MIROIR_TEST_MODE` / `npm run testMiroir -- --mode integration`
-- Postgres bootstrap: `miroirTestIntegrationStore.ts` (distilled from legacy integ file)
+- `transformers.integ.test.ts` → thin shim → `miroir-tests.integ.test.ts` + registry key `miroirCoreTransformers`
+- `miroirTestIntegrationStore.ts` for Postgres bootstrap
+- File-pattern loaders migrated: `jzodTypeCheck`, `defaultValueForMLSchema`, `unfoldSchemaOnce`, `resolveSchemaReferenceInContext`, `resolveConditionalSchema` (use `honorRunTest: false` + preserved skip/filter logic)
 
-**Done:** All 5 file-pattern loaders migrated to `runDeployedMiroirTestSuiteLoader` + `miroirTest_*` (with `honorRunTest: false` where needed).
+### UUID v4 normalization ✅
 
-**UUID v4:** All 37 MiroirTest instance filenames + inner `uuid` are RFC 4122 v4 (`deterministicMiroirTestUuidV4` / `renormalize-miroir-test-uuids.ts`).
+26 bulk-generated instances had invalid RFC variant bits. Renamed via `renormalize-miroir-test-uuids.ts`. Generator now uses `deterministicMiroirTestUuidV4` / `targetUuidForLegacySource`. **All 37** instance filenames and inner `uuid` fields are valid UUID v4.
 
 ---
 
 ## Success criteria
 
-- [ ] `MiroirTest` entity + definition; types generated
-- [ ] `MiroirTestTools` runs all 4 leaf kinds; UI unit-only
-- [ ] Dynamic import CLI; multi-case via `filter`
-- [ ] 3 pilots + `adminTransformers` same results as legacy
-- [ ] Generator + manifest; all entity-backed vitest via `MiroirTest`
-- [ ] `transformers.integ` via `MiroirTest` + integration mode
-- [ ] Legacy code/JSON untouched
-- [ ] `RUN_TEST` removed from migrated paths
+- [x] `MiroirTest` entity + definition; types generated
+- [x] `MiroirTestTools` runs all 4 leaf kinds; UI unit-only
+- [x] Dynamic import CLI; multi-case via `filter`
+- [x] 3 pilots + `adminTransformers` same results as legacy
+- [x] Generator + manifest; all entity-backed vitest via `MiroirTest`
+- [x] `transformers.integ` via `MiroirTest` + integration mode
+- [x] Legacy code/JSON untouched
+- [x] All MiroirTest instance UUIDs are RFC 4122 v4
+- [~] `RUN_TEST` removed from migrated paths — **partial** (see follow-ups)
+
+---
+
+## Remaining / follow-up (not this issue)
+
+| Item | Notes |
+|------|--------|
+| **`RUN_TEST` on per-file loaders** | `runDeployedMiroirTestSuiteLoader` still honors `RUN_TEST` by default (`honorRunTest: true`). File-pattern loaders set `honorRunTest: false`. Preferred new path is `npm run testMiroir`. |
+| **Legacy UI** | `unitTestReportSection`, `transformerTestReportSection`, Transformer Test Details report — parallel to Miroir Tests menu; delete in cleanup issue. |
+| **Legacy runners frozen** | `UnitTestTools.ts`, `TestTools.ts` unchanged; `unitTest.tools.unit.test.ts` still validates legacy tool helpers intentionally. |
+| **Orphan loader** | `runDeployedUnitTestSuite.ts` has no callers; safe to delete in cleanup. |
+| **`miroir-core` index exports** | Only pilot instances + report assets re-exported from `src/index.ts`; full catalog available via deployment package / registry. |
+| **Known failures** | 2 `ansiColumnsToJzodSchema` nested cases fail in integration mode (pre-existing baseline). |
+| **Class E/F vitest-only** | Non-entity tests not migrated (by design). |
+| **Legacy entity deletion** | Separate issue: remove `UnitTest` / `TransformerTest` entities, JSON, reports, menus. |
+| **Skills / docs** | `.github/skills/*` still show `RUN_TEST` examples for transformer workflows; `testMiroir` added to copilot-instructions and testing guides. |
 
 ---
 
@@ -228,7 +274,7 @@ Per pilot: hand JSON → export → schema test → switch loader → same pass/
 
 ---
 
-## Suggested commits
+## Suggested commits (historical)
 
 1. `feat(miroir-test): add MiroirTest entity definition and generated types`
 2. `feat(miroir-core): add MiroirTestTools with leaf dispatch`
@@ -239,3 +285,5 @@ Per pilot: hand JSON → export → schema test → switch loader → same pass/
 7. `feat(miroir-core): generator + migration manifest + bulk instances`
 8. `refactor(miroir-core): migrate vitest loaders to MiroirTest`
 9. `refactor(miroir-core): migrate transformers.integ to MiroirTest`
+10. `fix(miroir-test): renormalize MiroirTest instance UUIDs to RFC 4122 v4`
+11. `docs: MiroirTest testing guide and plan completion`

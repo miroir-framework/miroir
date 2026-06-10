@@ -137,18 +137,22 @@ Comprehensive guide explaining:
 
 ## Testing Commands
 
-Both transformer skills use the same test infrastructure:
+Transformer skills use **MiroirTest** suites (registry key `miroirCoreTransformers` for the main transformer catalog):
 
 ```bash
-# Unit tests (in-memory execution)
-RUN_TEST=transformers.unit.test npm run testByFile -w miroir-core -- 'transformers.unit'
+# Preferred — MiroirTest CLI
+npm run testMiroir -w miroir-core -- --suites miroirCoreTransformers --mode unit
+npm run testMiroir -w miroir-core -- --suites miroirCoreTransformers --mode integration
 
-# Integration tests (database execution with PostgreSQL)
+# Per-file vitest (legacy selective gate)
+RUN_TEST=transformers.unit.test npm run testByFile -w miroir-core -- 'transformers.unit'
 RUN_TEST=transformers.integ.test npm run testByFile -w miroir-core -- 'transformers.integ'
 
 # devBuild (only for library transformers)
 npm run devBuild -w miroir-core
 ```
+
+See `docs/guides/developer/testing.md` and `docs/contributing/testing.md`.
 
 ---
 

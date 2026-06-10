@@ -1,4 +1,7 @@
 #!/bin/bash
+# MiroirTest migration spot-checks (Feature #196).
+# Prefer: npm run testMiroir -w miroir-core -- --suites <registryKey> --mode unit|integration
+# Registry keys: packages/miroir-core/tests/helpers/miroirTestSuiteRegistry.ts
 
 cd ~/Mes\ documents/devhome/miroir-app-dev/
  

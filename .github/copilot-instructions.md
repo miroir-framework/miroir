@@ -76,19 +76,32 @@ npx tsc --noEmit --skipLibCheck
 always favor integration tests to unit tests, avoid mocking when possible
 
 ### Core Testing Commands
+
+Entity-backed tests use the unified **`MiroirTest`** model (Feature #196). Prefer `testMiroir` for suite selection; `testByFile` + `RUN_TEST` remains for per-file selective runs.
+
 ```bash
-# Specific test with debug logging (miroir-core)
-VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_DomainController_debug npm run vitest -w miroir-core -- domainSelector
+# Rebuild deployment after MiroirTest JSON changes
+npm run build -w miroir-test-app_deployment-miroir
 
-# Unit tests for transformers (in-memory execution)
+# MiroirTest CLI — dynamic import by registry key (preferred)
+npm run testMiroir -w miroir-core -- --suites mustache,alterObject --mode unit
+npm run testMiroir -w miroir-core -- --suites miroirCoreTransformers --mode integration
+
+# Per-file vitest (RUN_TEST gate on most loaders)
 RUN_TEST=transformers.unit.test npm run testByFile -w miroir-core -- 'transformers.unit'
-
-# Integration tests for transformers (database execution)
 RUN_TEST=transformers.integ.test npm run testByFile -w miroir-core -- 'transformers.integ'
+
+# Schema / migration smoke
+npm run testByFile -w miroir-core -- miroirTest.migration
+
+# Specific test with debug logging
+VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_DomainController_debug npm run vitest -w miroir-core -- domainSelector
 
 # All miroir-core unit tests
 npm run test -w miroir-core -- ''
 ```
+
+**MiroirTest UI:** standalone app menu **Miroir Tests** (unit mode only). Plan: `code-helpers/features/196-FEATURE-migrate-tests-to-MiroirTest/plan.md`. Contributor guide: `docs/contributing/testing.md`.
 
 ### Integration Testing by Store Type
 ```bash

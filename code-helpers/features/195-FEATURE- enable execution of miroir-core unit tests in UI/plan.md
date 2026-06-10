@@ -2,6 +2,8 @@
 
 GitHub issue: [miroir-framework/miroir#195](https://github.com/miroir-framework/miroir/issues/195)
 
+> **Superseded by [Feature 196 — MiroirTest](../196-FEATURE-migrate-tests-to-MiroirTest/plan.md)** (implementation complete). The `UnitTest` entity path described here was exploratory; production UI and vitest loaders now use **`MiroirTest`**. Legacy `UnitTest` / `TransformerTest` JSON and reports remain until a cleanup issue.
+
 ## Overview
 
 Today only **transformer tests** can be executed through the Miroir UI, via the `TransformerTest` entity and the **Transformer Test Details** report (`reportUuid=1c06268b-2ddb-433c-ae4f-46546908125d`). Vitest covers a much wider surface in `packages/miroir-core/tests/` (52 files, ~400+ individual cases when table-driven suites are expanded).

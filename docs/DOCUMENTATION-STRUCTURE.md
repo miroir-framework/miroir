@@ -94,7 +94,7 @@ docs-new/
 │   │   ├── writing-transformers.md ⚠️⚠️⚠️
 │   │   ├── creating-actions.md ⚠️⚠️⚠️
 │   │   ├── designing-reports.md ⚠️⚠️⚠️
-│   │   ├── testing.md ⚠️⚠️⚠️
+│   │   ├── testing.md              # MiroirTest CLI, UI, vitest loaders
 │   │   ├── integration.md ⚠️⚠️⚠️
 │   │   └── migrations.md ⚠️⚠️⚠️
 │   │
@@ -135,7 +135,7 @@ docs-new/
 └── contributing/                    # Contribution guidelines
     ├── index.md                    # Contributing overview ⚠️⚠️⚠️
     ├── development-setup.md        # Developer environment ⚠️⚠️⚠️
-    ├── testing.md                  # Running and writing tests ⚠️⚠️⚠️
+    ├── testing.md                  # MiroirTest contributor commands
     ├── code-style.md               # Coding conventions ⚠️⚠️⚠️
     └── release-process.md          # Coming Soon ⚠️⚠️⚠️
 ```

@@ -20,10 +20,12 @@ This skill guides the creation and modification of **Composite** Miroir Transfor
 **BEFORE starting any transformer work, verify current test state:**
 
 ```bash
-# Run unit tests first (in-memory execution)
-RUN_TEST=transformers.unit.test npm run testByFile -w miroir-core -- 'transformers.unit'
+# MiroirTest CLI (preferred) — registry key miroirCoreTransformers
+npm run testMiroir -w miroir-core -- --suites miroirCoreTransformers --mode unit
+npm run testMiroir -w miroir-core -- --suites miroirCoreTransformers --mode integration
 
-# Then run integration tests (database execution - requires PostgreSQL)
+# Per-file vitest (equivalent selective gate)
+RUN_TEST=transformers.unit.test npm run testByFile -w miroir-core -- 'transformers.unit'
 RUN_TEST=transformers.integ.test npm run testByFile -w miroir-core -- 'transformers.integ'
 ```
 
