@@ -212,6 +212,7 @@ export { default as unitTest_suite_unionArrayChoices } from "./assets/miroir_dat
 export { default as unitTest_suite_jzodReferencesGraphConnectedComponents } from "./assets/miroir_data/a1bc5288-c982-4ff3-8316-4a2400fe9323/c6d2a001-0001-4000-8000-000000000001.json" assert { type: "json" };
 export { default as unitTest_suite_localizeJzodSchemaReferenceContext } from "./assets/miroir_data/a1bc5288-c982-4ff3-8316-4a2400fe9323/c6d2a002-0002-4000-8000-000000000002.json" assert { type: "json" };
 export { default as unitTest_suite_tools } from "./assets/miroir_data/a1bc5288-c982-4ff3-8316-4a2400fe9323/c6d3a001-0001-4000-8000-000000000001.json" assert { type: "json" };
+export { default as unitTest_suite_resolveQueryTemplates } from "./assets/miroir_data/a1bc5288-c982-4ff3-8316-4a2400fe9323/c6d3a002-0002-4000-8000-000000000002.json" assert { type: "json" };
 
 // ################################################################################################
 // Miroir Data - TransformerDefinition (parentUuid = entityTransformerDefinition = a557419d)

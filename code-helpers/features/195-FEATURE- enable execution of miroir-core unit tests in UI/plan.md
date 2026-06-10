@@ -474,18 +474,18 @@ Core union-matching utilities; complements the `jzodTypeCheck` transformer suite
 
 **Validation:** 8/8 assertions green.
 
-##### Batch 6d-3 — Non-jzod Class B stragglers (35 cases deployed)
+##### Batch 6d-3 — Non-jzod Class B stragglers (36 cases deployed)
 
 | Vitest file | Export | Cases | Notes |
 |-------------|--------|-------|-------|
 | `tools.test.ts` | various path/array helpers | **35** | single `unitTest_suite_tools` (`c6d3a001-…`) |
-| `2_domain/resolveQueryTemplates.unit.test.ts` | — | — | **deferred** — async / may need `queryRunnerTest` |
+| `2_domain/resolveQueryTemplates.unit.test.ts` | `resolveQueryTemplateWithExtractorCombinerTransformer` | 1 | `unitTest_suite_resolveQueryTemplates` (`c6d3a002-…`); sync `functionCallTest` |
 
 - [x] `unitTest_suite_tools`
-- [ ] `unitTest_suite_resolveQueryTemplates` — out of 6d scope (see below)
+- [x] `unitTest_suite_resolveQueryTemplates`
 - [x] Registry whitelist for tool helpers (`pushIfUniqueReturning`, etc.)
 
-**Validation:** `tools.test` 35/35 green.
+**Validation:** `tools.test` 35/35; `resolveQueryTemplates.unit.test` 1/1 green.
 
 **Runner fixes landed with 6d:**
 
