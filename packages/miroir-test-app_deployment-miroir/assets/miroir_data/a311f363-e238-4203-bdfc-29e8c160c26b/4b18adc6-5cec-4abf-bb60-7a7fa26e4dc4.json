@@ -1,0 +1,30 @@
+{
+  "uuid": "4b18adc6-5cec-4abf-bb60-7a7fa26e4dc4",
+  "parentName": "MiroirTest",
+  "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
+  "name": "pilot_transformer_plus",
+  "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+  "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
+  "description": "Phase 3a pilot — resolveConditionalSchema build test as miroirTestType transformerTest",
+  "definition": {
+    "miroirTestType": "miroirTestSuite",
+    "miroirTestLabel": "pilot_resolveConditionalSchema",
+    "miroirTests": [
+      {
+        "miroirTestType": "transformerTest",
+        "miroirTestLabel": "returns the original schema if no ifThenElseMMLS tag is present",
+        "transformerName": "resolveConditionalSchema",
+        "runTestStep": "build",
+        "transformer": {
+          "transformerType": "resolveConditionalSchema",
+          "schema": { "type": "string" },
+          "valueObject": "test",
+          "context": "defaultValue",
+          "valuePath": []
+        },
+        "transformerParams": {},
+        "expectedValue": { "type": "string" }
+      }
+    ]
+  }
+}

@@ -8,6 +8,7 @@ import {
   entityMiroirTest,
   getInnermostTypeCheckError,
   jzodTypeCheck,
+  miroirTest_pilot_transformer_plus,
   miroirTest_schema_pilot_empty,
 } from "../../src";
 import type {
@@ -50,5 +51,29 @@ describe("MiroirTestDefinition schema (Phase 0)", () => {
     expect(suite.miroirTestType).toBe("miroirTestSuite");
     expect(suite.miroirTestLabel).toBe("schema_pilot_empty");
     expect(suite.miroirTests).toEqual([]);
+  });
+
+  it("validates pilot_transformer_plus MiroirTest instance via jzodTypeCheck", () => {
+    const result = jzodTypeCheck(
+      miroirTestJzodSchema,
+      miroirTest_pilot_transformer_plus,
+      [],
+      [],
+      defaultMetaModelEnvironment,
+      {},
+    );
+    if (result.status === "error") {
+      console.error(getInnermostTypeCheckError(result));
+    }
+    expect(result.status).toBe("ok");
+
+    const suite = (miroirTest_pilot_transformer_plus as MiroirTestDefinition)
+      .definition as MiroirTestSuite;
+    expect(suite.miroirTestLabel).toBe("pilot_resolveConditionalSchema");
+    expect(suite.miroirTests).toHaveLength(1);
+    expect(suite.miroirTests[0]).toMatchObject({
+      miroirTestType: "transformerTest",
+      transformerName: "resolveConditionalSchema",
+    });
   });
 });

@@ -147,13 +147,15 @@ flowchart LR
 
 ---
 
-### Phase 2 — CLI infrastructure
+### Phase 2 — CLI infrastructure ✅
 
 - `parseMiroirTestCliConfig.ts`
 - `runDeployedMiroirTestSuite.ts`
 - `miroir-tests.unit.test.ts` / `miroir-tests.integ.test.ts`
 - `testMiroir` npm script (hybrid env + args)
-- Retire `RUN_TEST` on migrated loaders
+- Retire `RUN_TEST` on migrated loaders (per pilot in Phase 3)
+
+**Green (done):** Empty-suite Vitest registration fixed via wrapper `vitest.test` in `runDeployedMiroirTestSuite`. Skip when no suites selected. `npm run testMiroir -- --suites schema_pilot_empty --mode unit` passes.
 
 ---
 
@@ -161,7 +163,7 @@ flowchart LR
 
 | Order | Source | New instance | Validates |
 |-------|--------|--------------|-----------|
-| 3a | `unitTest_pilot_transformer_plus` | `miroirTest_pilot_transformer_plus` | `transformerTest` leaf |
+| 3a ✅ | `unitTest_pilot_transformer_plus` | `miroirTest_pilot_transformer_plus` | `transformerTest` leaf |
 | 3b | `unitTest_suite_mustache` | `miroirTest_mustache` | `functionCallTest` |
 | 3c | `unitTest_suite_queries_library` | `miroirTest_queries_library` | `queryRunnerTest` |
 | 3d | `transformerTest_adminTransformers` | `miroirTest_adminTransformers` | Deep nested suites |

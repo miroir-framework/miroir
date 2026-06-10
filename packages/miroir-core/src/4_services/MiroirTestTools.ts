@@ -246,6 +246,16 @@ export async function runMiroirTestSuite(
         Object.hasOwn(innerFilter.testList, miroirTestNodeLabel(entry))),
   );
 
+  if (allTests.length === 0) {
+    const vitestTestFn = shouldSkipSuite ? localVitest.test.skip : localVitest.test;
+    await vitestTestFn(
+      `${miroirTestSuite.miroirTestLabel} (empty suite)`,
+      () => {},
+      globalTimeOut,
+    );
+    return;
+  }
+
   for (const node of allTests) {
     const label = miroirTestNodeLabel(node);
     const isSkipped = !selectedTests.includes(node) || !!shouldSkipSuite;
