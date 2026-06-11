@@ -11,7 +11,7 @@
     "miroirTestLabel": "queries.library",
     "miroirTests": [
       {
-        "miroirTestType": "queryRunnerTest",
+        "miroirTestType": "queryTest",
         "miroirTestLabel": "error on non-existing Entity: EntityNotFound",
         "fixtureRef": "libraryDomainState",
         "runner": "runQueryFromDomainState",
@@ -38,7 +38,7 @@
         ]
       },
       {
-        "miroirTestType": "queryRunnerTest",
+        "miroirTestType": "queryTest",
         "miroirTestLabel": "error on non-existing object uuid: InstanceNotFound (extractorByPrimaryKey)",
         "fixtureRef": "libraryDomainState",
         "runner": "runQueryFromDomainState",
@@ -65,7 +65,7 @@
         ]
       },
       {
-        "miroirTestType": "queryRunnerTest",
+        "miroirTestType": "queryTest",
         "miroirTestLabel": "select 1 object from Domain State (extractorByPrimaryKey)",
         "fixtureRef": "libraryDomainState",
         "runner": "runQueryFromDomainState",
@@ -99,7 +99,7 @@
         ]
       },
       {
-        "miroirTestType": "queryRunnerTest",
+        "miroirTestType": "queryTest",
         "miroirTestLabel": "select 1 object from Domain State and apply transformer on foreign key (extractorByPrimaryKey with applyTransformer)",
         "fixtureRef": "libraryDomainState",
         "runner": "runQueryFromDomainState",
@@ -154,7 +154,7 @@
         ]
       },
       {
-        "miroirTestType": "queryRunnerTest",
+        "miroirTestType": "queryTest",
         "miroirTestLabel": "select 1 object from Domain State using direct query parameter reference",
         "fixtureRef": "libraryDomainState",
         "runner": "runQueryFromDomainState",
@@ -193,7 +193,7 @@
         ]
       },
       {
-        "miroirTestType": "queryRunnerTest",
+        "miroirTestType": "queryTest",
         "miroirTestLabel": "select 1 object from the uuid found in an attribute of another object from Domain State",
         "fixtureRef": "libraryDomainState",
         "runner": "runQueryFromDomainState",
@@ -235,7 +235,7 @@
         ]
       },
       {
-        "miroirTestType": "queryRunnerTest",
+        "miroirTestType": "queryTest",
         "miroirTestLabel": "select 1 object from the uuid found in an attribute of another object then use applyTransformer on it",
         "fixtureRef": "libraryDomainState",
         "runner": "runQueryFromDomainState",
@@ -306,7 +306,7 @@
         ]
       },
       {
-        "miroirTestType": "queryRunnerTest",
+        "miroirTestType": "queryTest",
         "miroirTestLabel": "select Authors (extractorInstancesByEntity)",
         "fixtureRef": "libraryDomainState",
         "runner": "runQueryFromDomainState",
@@ -363,7 +363,7 @@
         ]
       },
       {
-        "miroirTestType": "queryRunnerTest",
+        "miroirTestType": "queryTest",
         "miroirTestLabel": "select Authors with filter (extractorInstancesByEntity)",
         "fixtureRef": "libraryDomainState",
         "runner": "runQueryFromDomainState",
@@ -410,7 +410,7 @@
         ]
       },
       {
-        "miroirTestType": "queryRunnerTest",
+        "miroirTestType": "queryTest",
         "miroirTestLabel": "select Authors with values filter (multiple values) (extractorInstancesByEntity)",
         "fixtureRef": "libraryDomainState",
         "runner": "runQueryFromDomainState",
@@ -459,7 +459,7 @@
         ]
       },
       {
-        "miroirTestType": "queryRunnerTest",
+        "miroirTestType": "queryTest",
         "miroirTestLabel": "select Authors with values filter and not flag (extractorInstancesByEntity)",
         "fixtureRef": "libraryDomainState",
         "runner": "runQueryFromDomainState",
@@ -511,7 +511,7 @@
         ]
       },
       {
-        "miroirTestType": "queryRunnerTest",
+        "miroirTestType": "queryTest",
         "miroirTestLabel": "select Books of Publisher of given Book from Domain State (extractorByPrimaryKey, combinerOneToOne, combinerOneToMany)",
         "fixtureRef": "libraryDomainState",
         "runner": "runQueryFromDomainState",
@@ -586,7 +586,7 @@
         ]
       },
       {
-        "miroirTestType": "queryRunnerTest",
+        "miroirTestType": "queryTest",
         "miroirTestLabel": "select custom-built result: Books of Publisher of given Book from Domain State (extractorByPrimaryKey, combinerOneToOne, combinerOneToMany)",
         "fixtureRef": "libraryDomainState",
         "runner": "runQueryFromDomainState",
@@ -755,7 +755,7 @@
         ]
       },
       {
-        "miroirTestType": "queryRunnerTest",
+        "miroirTestType": "queryTest",
         "miroirTestLabel": "select custom-built result: return Books of Author from Domain State (extractorByPrimaryKey, combinerOneToMany)",
         "fixtureRef": "libraryDomainState",
         "runner": "runQueryFromDomainState",
@@ -825,7 +825,7 @@
         ]
       },
       {
-        "miroirTestType": "queryRunnerTest",
+        "miroirTestType": "queryTest",
         "miroirTestLabel": "select custom-built result: return couple Author name - Book title for Books of Author from Domain State (extractorByPrimaryKey, combinerOneToMany with applyTransformer)",
         "fixtureRef": "libraryDomainState",
         "runner": "runQueryFromDomainState",
@@ -907,7 +907,7 @@
         ]
       },
       {
-        "miroirTestType": "queryRunnerTest",
+        "miroirTestType": "queryTest",
         "miroirTestLabel": "select custom-built result with combinerByHeteronomousManyToMany: instances of all Entites from Domain State, indexed by Entity Uuid (extractorInstancesByEntity, combinerByHeteronomousManyToMany)",
         "fixtureRef": "libraryDomainState",
         "runner": "runQueryFromDomainState",
@@ -1067,7 +1067,7 @@
         ]
       },
       {
-        "miroirTestType": "queryRunnerTest",
+        "miroirTestType": "queryTest",
         "miroirTestLabel": "select Unique Publisher Uuids of Books (extractorInstancesByEntity, runtimeTransformer)",
         "fixtureRef": "libraryDomainState",
         "runner": "runQueryFromDomainState",

@@ -125,7 +125,7 @@ Tests are grouped by **how they can share a JSON representation and a single exe
 
 ---
 
-### Class C — `queryRunnerTest`
+### Class C — `queryTest`
 
 **Shape:** given a **fixture domain state** (or reference to a deployment snapshot) + a **query or query template** + runner selector → run synchronously in memory → assert on result paths.
 
@@ -141,7 +141,7 @@ This is **almost identical** to `TestAssertion` + composite-action tests, but us
 
 ```json
 {
-  "unitTestType": "queryRunnerTest",
+  "unitTestType": "queryTest",
   "unitTestLabel": "error on non-existing Entity: EntityNotFound",
   "fixtureRef": "libraryDomainState",
   "runner": "runQueryTemplateFromDomainState",
@@ -244,7 +244,7 @@ UnitTestSuite
 UnitTest (discriminated union on unitTestType)
   ├── transformerTest          // = current TransformerTest fields (alias)
   ├── functionCallTest         // Class B (includes resolveTestCompositeActionTemplate*)
-  └── queryRunnerTest          // Class C
+  └── queryTest          // Class C
 ```
 
 **Shared cross-cutting fields** (all kinds):
@@ -425,7 +425,7 @@ Follow established report-section patterns (`markdownReportSection`, `objectInst
 
 #### Phase 6c — Kind-specific editors & unified run UX *(done)*
 
-- [x] `UnitTestKindBadge` in `JzodObjectEditor` per `unitTestType` (`functionCallTest`, `queryRunnerTest`, `transformerTest`, `unitTestSuite`); union discriminator already drives branch-specific fields.
+- [x] `UnitTestKindBadge` in `JzodObjectEditor` per `unitTestType` (`functionCallTest`, `queryTest`, `transformerTest`, `unitTestSuite`); union discriminator already drives branch-specific fields.
 - [x] Shared `TestExecutionPanel` + `TestResultsGrid` + `testSelectionUtils` — used by `UnitTestDisplay` and `TransformerTestDisplay` (summary, grid, selection, assertion diff via `TestCellWithDetails`).
 - [x] `ReportPageContext.navigateToUnitTestInEditor` + anchor IDs on editor rows; failed-result **Edit** button scrolls/highlights matching `unitTestLabel`.
 

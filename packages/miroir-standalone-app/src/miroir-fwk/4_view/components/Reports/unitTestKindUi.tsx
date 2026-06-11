@@ -2,7 +2,7 @@ import React from "react";
 
 export type UnitTestKind =
   | "functionCallTest"
-  | "queryRunnerTest"
+  | "queryTest"
   | "transformerTest"
   | "unitTestSuite";
 
@@ -15,7 +15,7 @@ const KIND_STYLES: Record<
     backgroundColor: "#e3f2fd",
     color: "#1565c0",
   },
-  queryRunnerTest: {
+  queryTest: {
     label: "Query runner",
     backgroundColor: "#f3e5f5",
     color: "#6a1b9a",
@@ -39,7 +39,7 @@ export function getUnitTestKind(value: unknown): UnitTestKind | undefined {
   const kind = (value as { unitTestType?: string }).unitTestType;
   if (
     kind === "functionCallTest" ||
-    kind === "queryRunnerTest" ||
+    kind === "queryTest" ||
     kind === "transformerTest" ||
     kind === "unitTestSuite"
   ) {

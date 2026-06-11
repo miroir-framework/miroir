@@ -4,7 +4,7 @@ import * as vitest from "vitest";
 import type {
   CoreTransformerForBuildPlusRuntime,
   MiroirTestSuite,
-  MiroirTestTransformerLeaf,
+  MiroirTestForTransformer,
   TestAssertionResult,
   TestSuiteResult,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
@@ -57,14 +57,14 @@ function getValueByDottedPath(obj: unknown, path: string): unknown {
   return path.split(".").reduce((current: any, key) => current?.[key], obj);
 }
 
-function miroirTransformerAssertionName(leaf: MiroirTestTransformerLeaf): string {
+function miroirTransformerAssertionName(leaf: MiroirTestForTransformer): string {
   return leaf.miroirTestLabel;
 }
 
 function effectiveMiroirTransformerSkip(
-  leaf: MiroirTestTransformerLeaf,
+  leaf: MiroirTestForTransformer,
   parentSkip?: boolean,
-): MiroirTestTransformerLeaf {
+): MiroirTestForTransformer {
   const effectiveSkip = !!(parentSkip || leaf.skip);
   if (effectiveSkip === !!leaf.skip) {
     return leaf;
@@ -76,7 +76,7 @@ export async function runMiroirTransformerTestInMemory(
   localVitest: VitestNamespace,
   testNamePath: string[],
   filter: MiroirTestRunFilter | undefined,
-  leaf: MiroirTestTransformerLeaf,
+  leaf: MiroirTestForTransformer,
   modelEnvironment: MiroirModelEnvironment,
   miroirActivityTracker: MiroirActivityTrackerInterface,
   testAssertionPath?: TestAssertionPath,
@@ -241,7 +241,7 @@ export function runMiroirTransformerIntegrationTest(sqlDbDataStore: unknown) {
     localVitest: VitestNamespace,
     testPath: string[],
     filter: MiroirTestRunFilter | undefined,
-    leaf: MiroirTestTransformerLeaf,
+    leaf: MiroirTestForTransformer,
     modelEnvironment: MiroirModelEnvironment,
     miroirActivityTracker: MiroirActivityTrackerInterface,
     testAssertionPath?: TestAssertionPath,

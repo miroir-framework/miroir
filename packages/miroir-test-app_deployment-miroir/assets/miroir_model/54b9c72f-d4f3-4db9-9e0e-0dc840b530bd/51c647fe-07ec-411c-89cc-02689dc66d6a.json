@@ -102,7 +102,7 @@
       "definition": {
         "type": "schemaReference",
         "context": {
-          "miroirTestTransformerLeaf": {
+          "miroirTestForTransformer": {
             "type": "object",
             "tag": {
               "value": {
@@ -222,19 +222,19 @@
               {
                 "type": "schemaReference",
                 "definition": {
-                  "relativePath": "miroirTestTransformerLeaf"
+                  "relativePath": "miroirTestForTransformer"
                 }
               },
               {
                 "type": "schemaReference",
                 "definition": {
-                  "relativePath": "miroirFunctionCallTest"
+                  "relativePath": "miroirTestForFunctionCall"
                 }
               },
               {
                 "type": "schemaReference",
                 "definition": {
-                  "relativePath": "miroirQueryRunnerTest"
+                  "relativePath": "miroirTestForQuery"
                 }
               }
             ]
@@ -272,19 +272,7 @@
                     {
                       "type": "schemaReference",
                       "definition": {
-                        "relativePath": "miroirTestTransformerLeaf"
-                      }
-                    },
-                    {
-                      "type": "schemaReference",
-                      "definition": {
-                        "relativePath": "miroirFunctionCallTest"
-                      }
-                    },
-                    {
-                      "type": "schemaReference",
-                      "definition": {
-                        "relativePath": "miroirQueryRunnerTest"
+                        "relativePath": "miroirTestLeaf"
                       }
                     },
                     {
@@ -298,7 +286,7 @@
               }
             }
           },
-          "miroirFunctionCallTest": {
+          "miroirTestForFunctionCall": {
             "type": "object",
             "tag": {
               "value": {
@@ -422,7 +410,7 @@
               }
             }
           },
-          "miroirQueryRunnerTest": {
+          "miroirTestForQuery": {
             "type": "object",
             "tag": {
               "value": {
@@ -479,7 +467,7 @@
               },
               "miroirTestType": {
                 "type": "literal",
-                "definition": "queryRunnerTest"
+                "definition": "queryTest"
               },
               "miroirTestLabel": {
                 "type": "string"

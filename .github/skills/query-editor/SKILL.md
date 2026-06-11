@@ -59,7 +59,7 @@ Always run tests first to establish baseline.
 Add test case(s) to the appropriate test suite file:
 
 - File: `packages/miroir-test-app_deployment-miroir/assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/a7a74c51-f24e-43d6-bd62-ba3ebcded97d.json`
-- This is the `miroirTest_queries_library` suite (`queryRunnerTest` leaves)
+- This is the `miroirTest_queries_library` suite (`queryTest` leaves)
 
 ### Step 3: Run the Test (Expect Failure)
 

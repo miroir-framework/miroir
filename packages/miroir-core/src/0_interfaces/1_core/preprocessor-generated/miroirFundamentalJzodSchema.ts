@@ -6196,7 +6196,7 @@ export const miroirFundamentalJzodSchema = {
           "relativePath": "innerTestSuitesResults"
         }
       },
-      "miroirTestTransformerLeaf": {
+      "miroirTestForTransformer": {
         "type": "object",
         "tag": {
           "value": {
@@ -6317,7 +6317,7 @@ export const miroirFundamentalJzodSchema = {
           {
             "type": "schemaReference",
             "definition": {
-              "relativePath": "miroirTestTransformerLeaf",
+              "relativePath": "miroirTestForTransformer",
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
             },
             "context": {}
@@ -6325,7 +6325,7 @@ export const miroirFundamentalJzodSchema = {
           {
             "type": "schemaReference",
             "definition": {
-              "relativePath": "miroirFunctionCallTest",
+              "relativePath": "miroirTestForFunctionCall",
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
             },
             "context": {}
@@ -6333,7 +6333,7 @@ export const miroirFundamentalJzodSchema = {
           {
             "type": "schemaReference",
             "definition": {
-              "relativePath": "miroirQueryRunnerTest",
+              "relativePath": "miroirTestForQuery",
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
             },
             "context": {}
@@ -6373,23 +6373,7 @@ export const miroirFundamentalJzodSchema = {
                 {
                   "type": "schemaReference",
                   "definition": {
-                    "relativePath": "miroirTestTransformerLeaf",
-                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
-                  },
-                  "context": {}
-                },
-                {
-                  "type": "schemaReference",
-                  "definition": {
-                    "relativePath": "miroirFunctionCallTest",
-                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
-                  },
-                  "context": {}
-                },
-                {
-                  "type": "schemaReference",
-                  "definition": {
-                    "relativePath": "miroirQueryRunnerTest",
+                    "relativePath": "miroirTestLeaf",
                     "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
                   },
                   "context": {}
@@ -6407,7 +6391,7 @@ export const miroirFundamentalJzodSchema = {
           }
         }
       },
-      "miroirFunctionCallTest": {
+      "miroirTestForFunctionCall": {
         "type": "object",
         "tag": {
           "value": {
@@ -6531,7 +6515,7 @@ export const miroirFundamentalJzodSchema = {
           }
         }
       },
-      "miroirQueryRunnerTest": {
+      "miroirTestForQuery": {
         "type": "object",
         "tag": {
           "value": {
@@ -6588,7 +6572,7 @@ export const miroirFundamentalJzodSchema = {
           },
           "miroirTestType": {
             "type": "literal",
-            "definition": "queryRunnerTest"
+            "definition": "queryTest"
           },
           "miroirTestLabel": {
             "type": "string"
@@ -6683,7 +6667,7 @@ export const miroirFundamentalJzodSchema = {
           "definition": {
             "type": "schemaReference",
             "context": {
-              "miroirTestTransformerLeaf": {
+              "miroirTestForTransformer": {
                 "type": "object",
                 "tag": {
                   "value": {
@@ -6803,19 +6787,19 @@ export const miroirFundamentalJzodSchema = {
                   {
                     "type": "schemaReference",
                     "definition": {
-                      "relativePath": "miroirTestTransformerLeaf"
+                      "relativePath": "miroirTestForTransformer"
                     }
                   },
                   {
                     "type": "schemaReference",
                     "definition": {
-                      "relativePath": "miroirFunctionCallTest"
+                      "relativePath": "miroirTestForFunctionCall"
                     }
                   },
                   {
                     "type": "schemaReference",
                     "definition": {
-                      "relativePath": "miroirQueryRunnerTest"
+                      "relativePath": "miroirTestForQuery"
                     }
                   }
                 ]
@@ -6853,19 +6837,7 @@ export const miroirFundamentalJzodSchema = {
                         {
                           "type": "schemaReference",
                           "definition": {
-                            "relativePath": "miroirTestTransformerLeaf"
-                          }
-                        },
-                        {
-                          "type": "schemaReference",
-                          "definition": {
-                            "relativePath": "miroirFunctionCallTest"
-                          }
-                        },
-                        {
-                          "type": "schemaReference",
-                          "definition": {
-                            "relativePath": "miroirQueryRunnerTest"
+                            "relativePath": "miroirTestLeaf"
                           }
                         },
                         {
@@ -6879,7 +6851,7 @@ export const miroirFundamentalJzodSchema = {
                   }
                 }
               },
-              "miroirFunctionCallTest": {
+              "miroirTestForFunctionCall": {
                 "type": "object",
                 "tag": {
                   "value": {
@@ -7003,7 +6975,7 @@ export const miroirFundamentalJzodSchema = {
                   }
                 }
               },
-              "miroirQueryRunnerTest": {
+              "miroirTestForQuery": {
                 "type": "object",
                 "tag": {
                   "value": {
@@ -7060,7 +7032,7 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "miroirTestType": {
                     "type": "literal",
-                    "definition": "queryRunnerTest"
+                    "definition": "queryTest"
                   },
                   "miroirTestLabel": {
                     "type": "string"

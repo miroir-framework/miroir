@@ -7,8 +7,8 @@ import {
   defaultMetaModelEnvironment,
   listQueryRunnerFixtureRefs,
   listWhitelistedFunctionRefs,
-  miroirFunctionCallTest,
-  miroirQueryRunnerTest,
+  miroirTestForFunctionCall,
+  miroirTestForQuery,
   miroirTest_pilot_transformer_plus,
   miroirTest_queries_library,
   resolveFunctionCallTarget,
@@ -18,11 +18,11 @@ import {
   runMiroirTestSuite,
 } from "../../src";
 import type {
-  MiroirFunctionCallTest,
-  MiroirQueryRunnerTest,
+  MiroirTestForFunctionCall,
+  MiroirTestForQuery,
   MiroirTestDefinition,
   MiroirTestSuite,
-  MiroirTestTransformerLeaf,
+  MiroirTestForTransformer,
 } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
 function mockTracker() {
@@ -36,7 +36,7 @@ describe("Miroir transformer leaf helpers", () => {
   it("uses miroirTestLabel for assertion naming on pilot leaf", () => {
     const suite = (miroirTest_pilot_transformer_plus as MiroirTestDefinition)
       .definition as MiroirTestSuite;
-    const leaf = suite.miroirTests[0] as MiroirTestTransformerLeaf;
+    const leaf = suite.miroirTests[0] as MiroirTestForTransformer;
     expect(miroirTransformerAssertionName(leaf)).toBe(
       "returns the original schema if no ifThenElseMMLS tag is present",
     );
@@ -44,7 +44,7 @@ describe("Miroir transformer leaf helpers", () => {
   });
 
   it("merges skip flags from leaf and parent", () => {
-    const leaf: MiroirTestTransformerLeaf = {
+    const leaf: MiroirTestForTransformer = {
       miroirTestType: "transformerTest",
       miroirTestLabel: "x",
       skip: true,
@@ -65,8 +65,8 @@ describe("Miroir transformer leaf helpers", () => {
 });
 
 describe("miroir leaf zod schemas", () => {
-  it("miroirFunctionCallTest validates a minimal functionCallTest leaf", () => {
-    const parsed = miroirFunctionCallTest.parse({
+  it("miroirTestForFunctionCall validates a minimal functionCallTest leaf", () => {
+    const parsed = miroirTestForFunctionCall.parse({
       miroirTestType: "functionCallTest",
       miroirTestLabel: "converts string type",
       functionRef: {
@@ -79,9 +79,9 @@ describe("miroir leaf zod schemas", () => {
     expect(parsed.miroirTestLabel).toBe("converts string type");
   });
 
-  it("miroirQueryRunnerTest validates a minimal queryRunnerTest leaf", () => {
-    const parsed = miroirQueryRunnerTest.parse({
-      miroirTestType: "queryRunnerTest",
+  it("miroirTestForQuery validates a minimal queryTest leaf", () => {
+    const parsed = miroirTestForQuery.parse({
+      miroirTestType: "queryTest",
       miroirTestLabel: "error on non-existing Entity: EntityNotFound",
       fixtureRef: "libraryDomainState",
       query: {
@@ -127,7 +127,7 @@ describe("runMiroirTestInMemory — functionCallTest", () => {
 
   it("executes mustache happy path", async () => {
     const tracker = mockTracker();
-    const leaf: MiroirFunctionCallTest = {
+    const leaf: MiroirTestForFunctionCall = {
       miroirTestType: "functionCallTest",
       miroirTestLabel: "should extract patterns with double braces",
       functionRef: {
@@ -158,7 +158,7 @@ describe("runMiroirTestInMemory — functionCallTest", () => {
 
   it("executes expectedError path", async () => {
     const tracker = mockTracker();
-    const leaf: MiroirFunctionCallTest = {
+    const leaf: MiroirTestForFunctionCall = {
       miroirTestType: "functionCallTest",
       miroirTestLabel: "should throw an error for empty patterns",
       functionRef: {
@@ -189,7 +189,7 @@ describe("runMiroirTestInMemory — functionCallTest", () => {
 
   it("executes expectedAction2ErrorType path", async () => {
     const tracker = mockTracker();
-    const leaf: MiroirFunctionCallTest = {
+    const leaf: MiroirTestForFunctionCall = {
       miroirTestType: "functionCallTest",
       miroirTestLabel: "returns Action2Error when both parentUuid sources are absent",
       functionRef: {
@@ -222,7 +222,7 @@ describe("runMiroirTestInMemory — functionCallTest", () => {
   });
 
   it("rejects integration mode for functionCallTest leaves", async () => {
-    const leaf: MiroirFunctionCallTest = {
+    const leaf: MiroirTestForFunctionCall = {
       miroirTestType: "functionCallTest",
       miroirTestLabel: "x",
       functionRef: {
@@ -249,7 +249,7 @@ describe("runMiroirTestInMemory — functionCallTest", () => {
   });
 });
 
-describe("runMiroirTestInMemory — queryRunnerTest", () => {
+describe("runMiroirTestInMemory — queryTest", () => {
   it("resolveQueryRunnerFixture loads libraryDomainState", () => {
     const refs = listQueryRunnerFixtureRefs();
     expect(refs).toContain("libraryDomainState");
@@ -262,7 +262,7 @@ describe("runMiroirTestInMemory — queryRunnerTest", () => {
     const tracker = mockTracker();
     const leaf = (
       (miroirTest_queries_library as MiroirTestDefinition).definition as MiroirTestSuite
-    ).miroirTests[0] as MiroirQueryRunnerTest;
+    ).miroirTests[0] as MiroirTestForQuery;
     await runMiroirTestInMemory(
       vitest,
       ["queries"],
@@ -282,10 +282,10 @@ describe("runMiroirTestInMemory — queryRunnerTest", () => {
     );
   });
 
-  it("rejects integration mode for queryRunnerTest leaves", async () => {
+  it("rejects integration mode for queryTest leaves", async () => {
     const leaf = (
       (miroirTest_queries_library as MiroirTestDefinition).definition as MiroirTestSuite
-    ).miroirTests[0] as MiroirQueryRunnerTest;
+    ).miroirTests[0] as MiroirTestForQuery;
     await expect(
       runMiroirTestInMemory(
         vitest,
@@ -299,7 +299,7 @@ describe("runMiroirTestInMemory — queryRunnerTest", () => {
         runMiroirTests,
         { executionMode: "integration", integrationStore: {} },
       ),
-    ).rejects.toThrow(/queryRunnerTest leaves cannot run in integration mode/);
+    ).rejects.toThrow(/queryTest leaves cannot run in integration mode/);
   });
 });
 
@@ -308,7 +308,7 @@ describe("runMiroirTestInMemory — transformerTest", () => {
     const tracker = mockTracker();
     const leaf = (
       (miroirTest_pilot_transformer_plus as MiroirTestDefinition).definition as MiroirTestSuite
-    ).miroirTests[0] as MiroirTestTransformerLeaf;
+    ).miroirTests[0] as MiroirTestForTransformer;
     await runMiroirTestInMemory(
       vitest,
       ["pilot"],
@@ -331,7 +331,7 @@ describe("runMiroirTestInMemory — transformerTest", () => {
   it("requires integrationStore when executionMode is integration", async () => {
     const leaf = (
       (miroirTest_pilot_transformer_plus as MiroirTestDefinition).definition as MiroirTestSuite
-    ).miroirTests[0] as MiroirTestTransformerLeaf;
+    ).miroirTests[0] as MiroirTestForTransformer;
     await expect(
       runMiroirTestInMemory(
         vitest,

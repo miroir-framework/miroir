@@ -32,7 +32,7 @@ Each file is a `MiroirTestDefinition` with a nested `miroirTestSuite` tree. Leaf
 
 - `transformerTest` — transformer build/runtime assertions
 - `functionCallTest` — direct function invocation (e.g. mustache helpers)
-- `queryRunnerTest` — SQL/query template fixtures
+- `queryTest` — SQL/query template fixtures
 - `miroirTestSuite` — nested grouping (e.g. `adminTransformers`, `miroirCoreTransformers`)
 
 Field naming uses `miroirTestType`, `miroirTestLabel`, `miroirTests` (not legacy `unitTest*` / `transformerTest*`).

@@ -208,23 +208,28 @@ export function testApplicationStorageConfiguration(
         },
       };
     }
+    default: {
+      throw new Error("Unsupported emulatedServerType: " + libraryDeploymentStorageConfiguration.model.emulatedServerType);
+      break;
+    }
   }
   return testDeploymentStorageConfiguration;
 }
 
 // ################################################################################################
-export function getTestConfig(
-  miroirConfig: MiroirConfigClient,
-  testApplicationDeploymentUuid: Uuid, 
-  testApplicationName: string,
-  testApplicationUuid: Uuid
-):{
+export interface TestConfig {
   applicationDeploymentMap: ApplicationDeploymentMap;
   miroirDeploymentStorageConfiguration: StoreUnitConfiguration;
   adminDeploymentStorageConfiguration: StoreUnitConfiguration;
   adminDeployment: Deployment;
   libraryDeploymentStorageConfiguration: StoreUnitConfiguration;
-} {
+}
+export function getTestConfig(
+  miroirConfig: MiroirConfigClient,
+  testApplicationDeploymentUuid: Uuid, 
+  testApplicationName: string,
+  testApplicationUuid: Uuid
+):TestConfig {
   const applicationDeploymentMap: ApplicationDeploymentMap = {
     ...defaultSelfApplicationDeploymentMap,
     [testApplicationUuid]: testApplicationDeploymentUuid,

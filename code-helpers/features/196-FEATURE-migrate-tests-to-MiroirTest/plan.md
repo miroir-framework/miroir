@@ -58,7 +58,7 @@ MiroirTestNode =
   | MiroirTestSuite
   | { miroirTestType: "transformerTest", miroirTestLabel, ... }  // native transformer fields
   | { miroirTestType: "functionCallTest", miroirTestLabel, ... }
-  | { miroirTestType: "queryRunnerTest", miroirTestLabel, ... }
+  | { miroirTestType: "queryTest", miroirTestLabel, ... }
 ```
 
 ### Normalization rules (pilots + generator)
@@ -175,7 +175,7 @@ npm run renormalize-miroir-test-uuids -w miroir-core
 - Export from deployment `index.ts` + `miroir-core/src/index.ts`
 - `miroirTest_schema_pilot_empty` (`cebb6dc8-65ea-482d-b17b-5655c927c1c1`)
 
-**Bootstrap note:** MiroirTest leaf schemas use distinct context keys (`miroirFunctionCallTest`, `miroirQueryRunnerTest`) so they do not overwrite UnitTest's `functionCallTest` / `queryRunnerTest` in the fundamental jzod context.
+**Bootstrap note:** MiroirTest leaf schemas use distinct context keys (`miroirTestForFunctionCall`, `miroirTestForQuery`) so they do not overwrite UnitTest's `functionCallTest` / `queryTest` in the fundamental jzod context.
 
 ---
 

@@ -122,7 +122,7 @@ describe("MiroirTestDefinition schema (Phase 0)", () => {
     expect(suite.miroirTestLabel).toBe("queries.library");
     expect(suite.miroirTests).toHaveLength(17);
     expect(suite.miroirTests[0]).toMatchObject({
-      miroirTestType: "queryRunnerTest",
+      miroirTestType: "queryTest",
       runner: "runQueryFromDomainState",
       fixtureRef: "libraryDomainState",
     });

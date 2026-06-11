@@ -1,11 +1,11 @@
 import * as vitest from "vitest";
 
 import type {
-  MiroirFunctionCallTest,
-  MiroirQueryRunnerTest,
+  MiroirTestForFunctionCall,
+  MiroirTestForQuery,
   MiroirTestLeaf,
   MiroirTestSuite,
-  MiroirTestTransformerLeaf,
+  MiroirTestForTransformer,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import type { MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
 import type {
@@ -128,22 +128,22 @@ export async function runMiroirTestInMemory(
         localVitest,
         testNamePath,
         filter,
-        leaf as MiroirFunctionCallTest,
+        leaf as MiroirTestForFunctionCall,
         miroirActivityTracker,
         testAssertionPath,
         parentSkip,
       );
-    case "queryRunnerTest":
+    case "queryTest":
       if (executionMode === "integration") {
         throw new Error(
-          "runMiroirTestInMemory: queryRunnerTest leaves cannot run in integration mode",
+          "runMiroirTestInMemory: queryTest leaves cannot run in integration mode",
         );
       }
       return runMiroirQueryRunnerTestInMemory(
         localVitest,
         testNamePath,
         filter,
-        leaf as MiroirQueryRunnerTest,
+        leaf as MiroirTestForQuery,
         miroirActivityTracker,
         testAssertionPath,
         parentSkip,

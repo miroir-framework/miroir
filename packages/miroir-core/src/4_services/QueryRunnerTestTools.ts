@@ -1,7 +1,7 @@
 import * as vitest from "vitest";
 
 import type {
-  MiroirQueryRunnerTest,
+  MiroirTestForQuery,
   TestAssertionResult,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import type { DomainState } from "../0_interfaces/2_domain/DomainControllerInterface";
@@ -75,7 +75,7 @@ const QUERY_RUNNER_FIXTURES: Record<string, () => QueryRunnerFixture> = {
 
 export function resolveQueryRunnerFixture(fixtureRef: string | undefined): QueryRunnerFixture {
   if (!fixtureRef) {
-    throw new Error("queryRunnerTest requires fixtureRef");
+    throw new Error("queryTest requires fixtureRef");
   }
   const loader = QUERY_RUNNER_FIXTURES[fixtureRef];
   if (!loader) {
@@ -108,7 +108,7 @@ type QueryRunnerExecution = {
 };
 
 function buildQueryRunnerExecutions(
-  miroirTest: MiroirQueryRunnerTest,
+  miroirTest: MiroirTestForQuery,
   fixture: QueryRunnerFixture,
   modelEnvironment: MiroirModelEnvironment,
 ): QueryRunnerExecution[] {
@@ -188,19 +188,19 @@ function buildQueryRunnerExecutions(
 
   if (executions.length === 0) {
     throw new Error(
-      `queryRunnerTest "${miroirTest.miroirTestLabel}" has no runnable query or queryTemplate`,
+      `queryTest "${miroirTest.miroirTestLabel}" has no runnable query or queryTemplate`,
     );
   }
   return executions;
 }
 
-export { miroirQueryRunnerTest as queryRunnerTestJzodSchema } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+export { miroirTestForQuery as queryRunnerTestJzodSchema } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
 export async function runMiroirQueryRunnerTestInMemory(
   localVitest: VitestNamespace,
   testNamePath: string[],
   filter: { testList?: TestSuiteListFilter; match?: RegExp } | undefined,
-  miroirTest: MiroirQueryRunnerTest,
+  miroirTest: MiroirTestForQuery,
   miroirActivityTracker: MiroirActivityTrackerInterface,
   testAssertionPath?: TestAssertionPath,
   parentSkip?: boolean,

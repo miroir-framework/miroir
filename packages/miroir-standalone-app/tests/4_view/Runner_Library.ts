@@ -40,20 +40,14 @@ let miroirConfig: any;
 const { miroirConfig: miroirConfigParam, logConfig } = await loadTestConfigFiles(env);
 miroirConfig = miroirConfigParam;
 
-const {
-  applicationDeploymentMap,
-  miroirDeploymentStorageConfiguration,
-  adminDeploymentStorageConfiguration,
-  adminDeployment,
-  libraryDeploymentStorageConfiguration,
-} = getTestConfig(
+const testConfig = getTestConfig(
   miroirConfig,
   libraryTestIdentifiers.testApplicationDeploymentUuid,
   libraryTestIdentifiers.testApplicationName,
   libraryTestIdentifiers.testApplicationUuid,
 );
 const installTestDeploymentStorageConfiguration: StoreUnitConfiguration = testApplicationStorageConfiguration(
-  libraryDeploymentStorageConfiguration,
+  testConfig.libraryDeploymentStorageConfiguration,
   libraryTestIdentifiers.installTestApplicationName,
 );
 const installInternalMiroirConfig = getMiroirConfig(
@@ -69,13 +63,6 @@ export const libraryLendBookRunnerTest: RunnerTestParams = {
   testApplicationUuid: libraryTestIdentifiers.testApplicationUuid,
   testApplicationDeploymentUuid: libraryTestIdentifiers.testApplicationDeploymentUuid,
   testApplicationName: libraryTestIdentifiers.testApplicationName,
-  // testParams: {
-  //   [lendDocument.name]: {
-  //     user: user1.uuid,
-  //     book: book1.uuid,
-  //     startDate: new Date("2024-01-01"),
-  //   },
-  // }, // testParams
   testParams: {
     [lendDocument.name]: {
       actionType: "lendDocument",
@@ -164,7 +151,7 @@ export const libraryLendBookRunnerTest: RunnerTestParams = {
     // },
   ],
   internalMiroirConfig: installInternalMiroirConfig,
-  adminDeployment,
+  adminDeployment: testConfig.adminDeployment,
   testDeploymentStorageConfiguration: installTestDeploymentStorageConfiguration,
   initialModel: defaultLibraryAppModel,
 };
@@ -269,7 +256,7 @@ export const libraryReturnBookRunnerTest: RunnerTestParams = {
     // },
   ],
   internalMiroirConfig: installInternalMiroirConfig,
-  adminDeployment,
+  adminDeployment: testConfig.adminDeployment,
   testDeploymentStorageConfiguration: installTestDeploymentStorageConfiguration,
   initialModel: defaultLibraryAppModel,
 };

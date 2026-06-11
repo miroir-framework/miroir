@@ -1,7 +1,7 @@
 import * as vitest from "vitest";
 
 import type {
-  MiroirFunctionCallTest,
+  MiroirTestForFunctionCall,
   TestAssertionResult,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import type {
@@ -106,7 +106,7 @@ function injectAtIndex(args: unknown[], index: number, value: unknown): unknown[
   return next;
 }
 
-export function prepareFunctionCallArguments(miroirTest: MiroirFunctionCallTest): unknown[] {
+export function prepareFunctionCallArguments(miroirTest: MiroirTestForFunctionCall): unknown[] {
   let args = (miroirTest.arguments ?? []).map(deserializeFunctionCallValue);
 
   if (miroirTest.fixtureRef) {
@@ -199,7 +199,7 @@ export async function runMiroirFunctionCallTestInMemory(
   localVitest: VitestNamespace,
   testNamePath: string[],
   filter: { testList?: TestSuiteListFilter; match?: RegExp } | undefined,
-  miroirTest: MiroirFunctionCallTest,
+  miroirTest: MiroirTestForFunctionCall,
   miroirActivityTracker: MiroirActivityTrackerInterface,
   testAssertionPath?: TestAssertionPath,
   parentSkip?: boolean,

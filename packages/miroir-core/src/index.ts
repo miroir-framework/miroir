@@ -439,12 +439,12 @@ export {
   transformer_contextOrParameterReferenceTO_REMOVE,
   Transformer_inner_label,
   transformer_inner_label,
-  MiroirTestTransformerLeaf,
-  miroirTestTransformerLeaf,
-  MiroirFunctionCallTest,
-  miroirFunctionCallTest,
-  MiroirQueryRunnerTest,
-  miroirQueryRunnerTest,
+  MiroirTestForTransformer,
+  miroirTestForTransformer,
+  MiroirTestForFunctionCall,
+  miroirTestForFunctionCall,
+  MiroirTestForQuery,
+  miroirTestForQuery,
   MiroirTestLeaf,
   miroirTestLeaf,
   MiroirTestSuite,
@@ -951,9 +951,9 @@ export {
   runMiroirQueryRunnerTestInMemory,
 } from "./4_services/QueryRunnerTestTools.js";
 export {
-  asTransformerTestFromMiroirLeaf,
+  effectiveMiroirTransformerSkip,
+  miroirTransformerAssertionName,
   miroirTestsDisplayResults,
-  type TransformerTestRunnerInput,
   runMiroirTestInMemory,
   runMiroirTests,
   runMiroirTestSuite,
@@ -963,6 +963,12 @@ export {
   type RunMiroirTest,
   type RunMiroirTests,
 } from "./4_services/MiroirTestTools.js";
+export {
+  displayMiroirTestResults,
+  miroirTestGlobalTimeOut,
+  runMiroirTransformerIntegrationTest,
+  runMiroirTransformerTestInMemory,
+} from "./4_services/MiroirTransformerTestTools.js";
 export { TransformerGlobalContext } from "./4_services/TransformerContext.js";
 export { defaultViewParamsFromAdminStorageFetchQueryParams } from "./4_views/viewParams";
 

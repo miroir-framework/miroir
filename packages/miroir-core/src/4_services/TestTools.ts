@@ -12,7 +12,7 @@ import {
   // type TransformerTestSuite,
   // type UnitTestSuite,
   type MiroirTestLeaf,
-  type MiroirTestTransformerLeaf,
+  type MiroirTestForTransformer,
   type MiroirTestSuite,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { type MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
@@ -148,7 +148,7 @@ export type RunTransformerTest = (
     localVitest: typeof vitest,
     testNamePath: string[],
     filter: { testList?: TestSuiteListFilter, match?: RegExp } | undefined,
-    transformerTest: TransformerTest | MiroirTestTransformerLeaf,
+    transformerTest: TransformerTest | MiroirTestForTransformer,
     modelEnvironment: MiroirModelEnvironment,
     miroirActivityTracker: MiroirActivityTrackerInterface, // Optional unified tracker for test execution tracking
     parentTrackingId: string | undefined,
@@ -205,7 +205,7 @@ export const runUnitTransformerTests: RunTransformerTests = {
     localVitest: typeof vitest,
     testNamePath: string[],
     filter: { testList?: TestSuiteListFilter, match?: RegExp } | undefined,
-    transformerTest: TransformerTest | MiroirTestTransformerLeaf,
+    transformerTest: TransformerTest | MiroirTestForTransformer,
     modelEnvironment: MiroirModelEnvironment,
     miroirActivityTracker: MiroirActivityTrackerInterface, // Optional unified tracker for test execution tracking
     parentTrackingId: string | undefined = undefined,
@@ -263,7 +263,7 @@ export function getValueByDottedPath(obj: any, path: string): any {
 }
 
 function transformerTestAssertionName(
-  transformerTest: TransformerTest | MiroirTestTransformerLeaf,
+  transformerTest: TransformerTest | MiroirTestForTransformer,
 ): string {
   if ("miroirTestLabel" in transformerTest) {
     return transformerTest.miroirTestLabel;
@@ -276,7 +276,7 @@ export async function runTransformerTestInMemory(
   localVitest: typeof vitest,
   testNamePath: string[],
   filter: { testList?: TestSuiteListFilter, match?: RegExp } | undefined,
-  transformerTest: TransformerTest | MiroirTestTransformerLeaf,
+  transformerTest: TransformerTest | MiroirTestForTransformer,
   modelEnvironment: MiroirModelEnvironment,
   miroirActivityTracker: MiroirActivityTrackerInterface, // Optional unified tracker for test execution tracking
   parentTrackingId: string | undefined,
@@ -621,7 +621,7 @@ export async function runTransformerTestSuite(
           shouldSkipSuite,
         );
       } else if (transformerTestParam.miroirTestType === "transformerTest") {
-        const effectiveLeaf: MiroirTestTransformerLeaf = isSkipped
+        const effectiveLeaf: MiroirTestForTransformer = isSkipped
           ? { ...transformerTestParam, skip: true }
           : transformerTestParam;
 
@@ -676,7 +676,7 @@ export function runTransformerIntegrationTest(sqlDbDataStore: any) {
     vitest: any,
     testPath: string[],
     filter: { testList?: TestSuiteListFilter; match?: RegExp } | undefined,
-    transformerTest: MiroirTestTransformerLeaf,
+    transformerTest: MiroirTestForTransformer,
     modelEnvironment: MiroirModelEnvironment,
     miroirActivityTracker: MiroirActivityTrackerInterface,
     parentTrackingId: string | undefined,

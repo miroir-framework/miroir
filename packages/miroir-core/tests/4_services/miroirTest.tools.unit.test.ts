@@ -7,11 +7,11 @@ import {
   defaultMetaModelEnvironment,
   runMiroirTestInMemory,
 } from "../../src";
-import type { MiroirTestTransformerLeaf } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import type { MiroirTestForTransformer } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
 describe("Miroir transformer leaf helpers", () => {
   it("miroirTransformerAssertionName uses miroirTestLabel", () => {
-    const leaf: MiroirTestTransformerLeaf = {
+    const leaf: MiroirTestForTransformer = {
       miroirTestType: "transformerTest",
       miroirTestLabel: "returns string schema",
       transformerName: "resolveConditionalSchema",
@@ -126,7 +126,7 @@ describe("runMiroirTestInMemory (Phase 1)", () => {
   });
 
   it("requires integrationStore for transformer integration mode", async () => {
-    const leaf: MiroirTestTransformerLeaf = {
+    const leaf: MiroirTestForTransformer = {
       miroirTestType: "transformerTest",
       miroirTestLabel: "t",
       transformerName: "plus",
