@@ -6,12 +6,12 @@ import { defaultMetaModelEnvironment } from "../../src/1_core/Model";
 import { MiroirActivityTracker } from "../../src/3_controllers/MiroirActivityTracker";
 import { MiroirEventService } from "../../src/3_controllers/MiroirEventService";
 import {
-  miroirTestsDisplayResults,
   runMiroirTests,
   type MiroirTestRunFilter,
 } from "../../src/5_tests/MiroirTestTools";
+import { displayMiroirTestResults } from "../../src/5_tests/MiroirTransformerTestTools";
 
-export type RunDeployedMiroirTestSuiteLoaderOptions = {
+export type RunMiroirCoreTestSuiteOptions = {
   filter?: MiroirTestRunFilter;
   /** When false, ignore RUN_TEST (file-pattern loaders). Default true. */
   honorRunTest?: boolean;
@@ -21,10 +21,10 @@ export type RunDeployedMiroirTestSuiteLoaderOptions = {
  * Vitest entry loader for a single MiroirTest deployment export (replaces runDeployedUnitTestSuite).
  * Honors RUN_TEST filter; always wires MiroirEventService for nested suite tracking.
  */
-export async function runDeployedMiroirTestSuiteLoader(
+export async function runMiroirCoreTestSuite(
   suiteExport: MiroirTestSuite,
   testSuiteName: string,
-  options: RunDeployedMiroirTestSuiteLoaderOptions = {},
+  options: RunMiroirCoreTestSuiteOptions = {},
 ): Promise<void> {
   const { filter, honorRunTest = true } = options;
   const RUN_TEST = process.env.RUN_TEST;
@@ -37,7 +37,7 @@ export async function runDeployedMiroirTestSuiteLoader(
 
   afterAll(() => {
     if (!shouldSkip) {
-      miroirTestsDisplayResults(
+      displayMiroirTestResults(
         miroirTestSuite,
         RUN_TEST ?? testSuiteName,
         miroirTestSuite.miroirTestLabel ?? testSuiteName,

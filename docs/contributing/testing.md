@@ -65,7 +65,7 @@ npm run test -w miroir-core -- ''
 |------|------|
 | `src/4_services/MiroirTestTools.ts` | Unified runner |
 | `tests/helpers/miroirTestSuiteRegistry.ts` | Registry key → deployment export |
-| `tests/helpers/runDeployedMiroirTestSuiteLoader.ts` | Per-file vitest entry |
+| `tests/helpers/runMiroirCoreTestSuite.ts` | Per-file vitest entry |
 | `tests/miroir-tests.unit.test.ts` | Dynamic-import unit entry |
 | `tests/miroir-tests.integ.test.ts` | Dynamic-import integration entry |
 | `scripts/miroir-test-migration-map.json` | Legacy → MiroirTest manifest |
@@ -99,7 +99,7 @@ VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificL
   npm run testByFile -w miroir-core -- transformers.unit.test
 ```
 
-Activity tracking results are printed via `miroirTestsDisplayResults` after each suite.
+Activity tracking results are printed via `displayMiroirTestResults` after each suite.
 
 ---
 

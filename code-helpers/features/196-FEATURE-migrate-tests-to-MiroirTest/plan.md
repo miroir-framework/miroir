@@ -33,7 +33,7 @@ Supersedes the execution-model direction of [Feature 195](../195-FEATURE-%20enab
 | 6 | **CLI interface** — Hybrid: env vars (CI) + npm args (local) |
 | 7 | **UI** — New parallel reports/menu/components; legacy UI untouched |
 | 8 | **Migration** — Pilots by hand → `adminTransformers` gate → generator + manifest |
-| 9 | **Vitest** — `miroir-tests.unit.test.ts` + `miroir-tests.integ.test.ts`; per-file loaders use `runDeployedMiroirTestSuiteLoader` |
+| 9 | **Vitest** — `miroir-tests.unit.test.ts` + `miroir-tests.integ.test.ts`; per-file loaders use `runMiroirCoreTestSuite` |
 | 10 | **Loader switch** — Incremental per pilot, then bulk |
 
 ---
@@ -86,7 +86,7 @@ flowchart LR
   subgraph core [miroir-core NEW]
     MT[MiroirTestTools.ts]
     H[runDeployedMiroirTestSuite]
-    L[runDeployedMiroirTestSuiteLoader]
+    L[runMiroirCoreTestSuite]
   end
 
   subgraph legacy [miroir-core FROZEN]
@@ -127,7 +127,7 @@ flowchart LR
 | Manifest | `packages/miroir-core/scripts/miroir-test-migration-map.json` |
 | Suite registry (generated) | `packages/miroir-core/tests/helpers/miroirTestSuiteRegistry.ts` |
 | CLI parser | `packages/miroir-core/tests/helpers/parseMiroirTestCliConfig.ts` |
-| Per-file vitest loader | `packages/miroir-core/tests/helpers/runDeployedMiroirTestSuiteLoader.ts` |
+| Per-file vitest loader | `packages/miroir-core/tests/helpers/runMiroirCoreTestSuite.ts` |
 | Integration Postgres bootstrap | `packages/miroir-core/tests/helpers/miroirTestIntegrationStore.ts` |
 | MiroirTest JSON data | `packages/miroir-test-app_deployment-miroir/assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/` |
 | UI components | `packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Reports/MiroirTest*.tsx` |
@@ -218,7 +218,7 @@ npm run renormalize-miroir-test-uuids -w miroir-core
 
 - `generate-miroir-test-instances.ts` + `miroir-test-migration-map.json`
 - 36 legacy sources migrated → **37 registry keys** (+ schema pilot)
-- All entity-backed vitest loaders use `runDeployedMiroirTestSuiteLoader` + `miroirTest_*` exports
+- All entity-backed vitest loaders use `runMiroirCoreTestSuite` + `miroirTest_*` exports
 - Legacy UnitTest/TransformerTest deployment JSON **untouched**
 
 ---
@@ -253,7 +253,7 @@ npm run renormalize-miroir-test-uuids -w miroir-core
 
 | Item | Notes |
 |------|--------|
-| **`RUN_TEST` on per-file loaders** | `runDeployedMiroirTestSuiteLoader` still honors `RUN_TEST` by default (`honorRunTest: true`). File-pattern loaders set `honorRunTest: false`. Preferred new path is `npm run testMiroir`. |
+| **`RUN_TEST` on per-file loaders** | `runMiroirCoreTestSuite` still honors `RUN_TEST` by default (`honorRunTest: true`). File-pattern loaders set `honorRunTest: false`. Preferred new path is `npm run testMiroir`. |
 | **Legacy UI** | `unitTestReportSection`, `transformerTestReportSection`, Transformer Test Details report — parallel to Miroir Tests menu; delete in cleanup issue. |
 | **Legacy TransformerTest JSON** | ✅ All 8 deployment instances removed (migrated to MiroirTest); `entityTransformerTest` definition retained. |
 | **Legacy runners frozen** | `UnitTestTools.ts`, `TestTools.ts` unchanged; `unitTest.tools.unit.test.ts` still validates legacy tool helpers intentionally. |

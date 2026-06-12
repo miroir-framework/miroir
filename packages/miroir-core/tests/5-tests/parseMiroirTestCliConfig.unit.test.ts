@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { listMiroirTestSuiteKeys } from "./miroirTestSuiteRegistry";
+import { listMiroirTestSuiteKeys } from "../helpers/miroirCoreTestSuiteRegistry";
 import {
   miroirTestCliConfigToEnv,
   parseMiroirTestCliArgs,

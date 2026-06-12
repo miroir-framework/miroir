@@ -13,7 +13,7 @@ import {
   miroirTest_queries_library,
   resolveFunctionCallTarget,
   resolveQueryRunnerFixture,
-  runMiroirTestInMemory,
+  runMiroirTest,
   runMiroirTests,
   runMiroirTestSuite,
 } from "../../src";
@@ -138,7 +138,7 @@ describe("runMiroirTestInMemory — functionCallTest", () => {
       arguments: ["Hello {{ name }}!"],
       expectedValue: [{ content: "name", start: 6, end: 15 }],
     };
-    await runMiroirTestInMemory(
+    await runMiroirTest(
       vitest,
       ["mustache"],
       undefined,
@@ -169,7 +169,7 @@ describe("runMiroirTestInMemory — functionCallTest", () => {
       arguments: ["Hello {{  }}!"],
       expectedError: "Empty pattern found",
     };
-    await runMiroirTestInMemory(
+    await runMiroirTest(
       vitest,
       ["mustache"],
       undefined,
@@ -203,7 +203,7 @@ describe("runMiroirTestInMemory — functionCallTest", () => {
       ],
       expectedAction2ErrorType: "FailedToResolveParentUuid",
     };
-    await runMiroirTestInMemory(
+    await runMiroirTest(
       vitest,
       ["EntityPrimaryKey"],
       undefined,
@@ -234,7 +234,7 @@ describe("runMiroirTestInMemory — functionCallTest", () => {
       expectedValue: [],
     };
     await expect(
-      runMiroirTestInMemory(
+      runMiroirTest(
         vitest,
         ["mustache"],
         undefined,
@@ -264,7 +264,7 @@ describe("runMiroirTestInMemory — queryTest", () => {
     const leaf = (
       (miroirTest_queries_library as MiroirTestDefinition).definition as MiroirTestSuite
     ).miroirTests[0] as MiroirTestForQuery;
-    await runMiroirTestInMemory(
+    await runMiroirTest(
       vitest,
       ["queries"],
       undefined,
@@ -288,7 +288,7 @@ describe("runMiroirTestInMemory — queryTest", () => {
       (miroirTest_queries_library as MiroirTestDefinition).definition as MiroirTestSuite
     ).miroirTests[0] as MiroirTestForQuery;
     await expect(
-      runMiroirTestInMemory(
+      runMiroirTest(
         vitest,
         ["queries"],
         undefined,
@@ -313,7 +313,7 @@ describe("runMiroirTestInMemory — runnerTest", () => {
       fixtureRef: "libraryLendBookDefaults",
     };
     await expect(
-      runMiroirTestInMemory(
+      runMiroirTest(
         vitest,
         ["runner"],
         undefined,
@@ -336,7 +336,7 @@ describe("runMiroirTestInMemory — transformerTest", () => {
     const leaf = (
       (miroirTest_pilot_transformer_plus as MiroirTestDefinition).definition as MiroirTestSuite
     ).miroirTests[0] as MiroirTestForTransformer;
-    await runMiroirTestInMemory(
+    await runMiroirTest(
       vitest,
       ["pilot"],
       undefined,
@@ -360,7 +360,7 @@ describe("runMiroirTestInMemory — transformerTest", () => {
       (miroirTest_pilot_transformer_plus as MiroirTestDefinition).definition as MiroirTestSuite
     ).miroirTests[0] as MiroirTestForTransformer;
     await expect(
-      runMiroirTestInMemory(
+      runMiroirTest(
         vitest,
         ["pilot"],
         undefined,
@@ -405,7 +405,7 @@ describe("runMiroirTestSuite", () => {
 
   it("exposes tracking wrappers on runMiroirTests", () => {
     expect(runMiroirTests._runMiroirTestSuite).toBe(runMiroirTestSuite);
-    expect(runMiroirTests._runMiroirTest).toBe(runMiroirTestInMemory);
+    expect(runMiroirTests._runMiroirTest).toBe(runMiroirTest);
     expect(typeof runMiroirTests._runMiroirTestSuiteWithTracking).toBe("function");
     expect(typeof runMiroirTests._runMiroirTestWithTracking).toBe("function");
   });

@@ -59,7 +59,7 @@ export type MiroirTestIntegrationStoreOptions = {
  * @param options 
  * @returns 
  */
-export async function initMiroirTestIntegrationStore(
+export async function initMiroirCoreTestIntegrationStore(
   options: MiroirTestIntegrationStoreOptions = {},
 ): Promise<MiroirTestIntegrationStore> {
   const postgresHostName = options.postgresHostName ?? "192.168.1.160";

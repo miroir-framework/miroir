@@ -32,12 +32,9 @@ import {
 } from "miroir-core";
 import {
   deployment_Admin,
-  deployment_Miroir,
-  menuDefaultAdmin,
 } from "miroir-test-app_deployment-admin";
 import {
   deployment_Library_DO_NO_USE,
-  menuDefaultLibrary,
 } from "miroir-test-app_deployment-library";
 
 
@@ -98,16 +95,17 @@ import type {
 import { loglevelnext } from "../../src/loglevelnextImporter.js";
 import {
   createMiroirDeploymentGetPersistenceStoreController,
-  deleteAndCloseApplicationDeployments,
-  deploymentConfigurations,
-  resetApplicationDeployments,
+  // deleteAndCloseApplicationDeployments,
+  // deploymentConfigurations,
+  // resetApplicationDeployments,
   selfApplicationDeploymentConfigurations,
-  setupMiroirTest,
+  // setupMiroirTest,
 } from "../../src/miroir-fwk/4-tests/tests-utils.js";
 import { chainVitestSteps } from '../../src/miroir-fwk/4-tests/vitest-utils.js';
 import { miroirAppStartup } from '../../src/startup.js';
 import { cleanLevel, packageName } from '../3_controllers/constants.js';
 import { loadTestConfigFiles } from '../utils/fileTools.js';
+import { setupMiroirTest } from '../../src/miroir-fwk/4-tests/setupMiroirTest.js';
 
 let domainController: DomainControllerInterface;
 let localCache: LocalCacheInterface;

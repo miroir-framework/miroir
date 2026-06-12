@@ -1,8 +1,8 @@
 import { miroirTest_jzodToCopilotKitParameter } from "miroir-test-app_deployment-miroir";
 
-import { runDeployedMiroirTestSuiteLoader } from "../../helpers/runDeployedMiroirTestSuiteLoader";
+import { runMiroirCoreTestSuite } from "../../helpers/runMiroirCoreTestSuite";
 
-await runDeployedMiroirTestSuiteLoader(
+await runMiroirCoreTestSuite(
   miroirTest_jzodToCopilotKitParameter,
   "jzodToCopilotKitParameter.unit.test",
 );

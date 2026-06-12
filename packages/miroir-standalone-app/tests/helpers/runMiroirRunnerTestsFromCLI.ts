@@ -6,7 +6,7 @@ import {
   MiroirEventService,
   MiroirTestIntegrationOrchestrator,
   defaultMetaModelEnvironment,
-  miroirTestsDisplayResults,
+  displayMiroirTestResults,
   runMiroirTests,
   type MiroirTestRunFilter,
   type MiroirTestSuite,
@@ -19,7 +19,7 @@ import { miroirTest_runner_library } from "miroir-test-app_deployment-library";
 
 
 // ################################################################################################
-async function runDeployedRunnerTestSuite({
+async function runMiroirRunnerTestSuite({
   suiteExport,
   suiteKey,
   miroirActivityTracker,
@@ -48,15 +48,15 @@ async function runDeployedRunnerTestSuite({
 }
 
 // ################################################################################################
-export type RunMiroirRunnerTestsFromCliConfigOptions = {
+export type RunMiroirRunnerTestsFromCLIOptions = {
   miroirConfig: import("miroir-core").MiroirConfigClient;
   loggerOptions?: unknown;
 };
 
 // ################################################################################################
-export async function runMiroirRunnerTestsFromCliConfig(
+export async function runMiroirRunnerTestsFromCLI(
   config: MiroirRunnerTestCliParseResult,
-  options: RunMiroirRunnerTestsFromCliConfigOptions,
+  options: RunMiroirRunnerTestsFromCLIOptions,
 ): Promise<void> {
   const miroirActivityTracker = new MiroirActivityTracker();
   const miroirEventService = new MiroirEventService(miroirActivityTracker);
@@ -67,7 +67,8 @@ export async function runMiroirRunnerTestsFromCliConfig(
     miroirEventService,
   });
   const orchestrator = new MiroirTestIntegrationOrchestrator(adapter);
-  const executionEnvironment = await orchestrator.initSession();
+  
+  const executionEnvironment = await orchestrator.initSession(); // calls initMiroirCoreTestIntegrationStore
 
   const loadedSuites: { suiteKey: string; definition: MiroirTestSuite }[] = [];
 
@@ -81,7 +82,7 @@ export async function runMiroirRunnerTestsFromCliConfig(
       return;
     }
     const summaryLabel = loadedSuites.map(({ suiteKey }) => suiteKey).join(", ");
-    await miroirTestsDisplayResults(
+    await displayMiroirTestResults(
       loadedSuites[0].definition,
       summaryLabel,
       loadedSuites[0].suiteKey,
@@ -90,13 +91,12 @@ export async function runMiroirRunnerTestsFromCliConfig(
   });
 
   for (const suiteKey of config.suiteKeys) {
-    // const suiteExport = await loadMiroirRunnerTestSuiteExport(suiteKey);
     const suiteExport = miroirTest_runner_library.definition as MiroirTestSuite;
     loadedSuites.push({
       suiteKey,
       definition: suiteExport as MiroirTestSuite,
     });
-    await runDeployedRunnerTestSuite({
+    await runMiroirRunnerTestSuite({
       suiteExport,
       suiteKey,
       miroirActivityTracker,

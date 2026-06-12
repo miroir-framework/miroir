@@ -1,38 +1,26 @@
-import chalk from 'chalk';
+// DEV DEPENDENCY ONLY: only the type for vitest is needed here, not the actual implementation
 import * as vitest from 'vitest';
 type VitestNamespace = typeof vitest;
+
+import chalk from 'chalk';
 // chalk.enabled = true
 chalk.level = 3;
 
 import {
-  type TestAssertionResult,
-  type TestSuiteResult,
   type CoreTransformerForBuildPlusRuntime,
-  // type TransformerTest,
-  // type TransformerTestSuite,
-  // type UnitTestSuite,
-  type MiroirTestLeaf,
   type MiroirTestForTransformer,
   type MiroirTestSuite,
+  type TestAssertionResult,
+  type TestSuiteResult
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { type MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
-import {
-  Action2ReturnType,
-  Action2Success,
-  TransformerFailure,
-  type TransformerReturnType
-} from "../0_interfaces/2_domain/DomainElement";
 import type { MiroirActivityTrackerInterface, TestAssertionPath } from "../0_interfaces/3_controllers/MiroirActivityTrackerInterface";
 import type { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
-import { jsonify } from "../1_core/test-expect";
-import { transformer_extended_apply, transformer_extended_apply_wrapper } from "../2_domain/TransformersForRuntime";
-import { MiroirActivityTracker } from "../3_controllers/MiroirActivityTracker";
-import { packageName } from "../constants";
-import { circularReplacer } from '../tools';
+import type { TestSuiteListFilter } from "../0_interfaces/5-tests/miroirTestTypes";
 import { cleanLevel } from "../4_services/constants";
 import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory";
-import { ignorePostgresExtraAttributes, isJson, isJsonArray, removeUndefinedProperties, unNullify } from "../4_services/otherTools";
-import type { TestSuiteListFilter } from "../0_interfaces/5-tests/miroirTestTypes";
+import { packageName } from "../constants";
+import { circularReplacer } from '../tools';
 
 /** Legacy transformer test leaf shape (spreadsheet fixtures and deprecated runners). */
 export type TransformerTest = {
@@ -157,90 +145,103 @@ export type RunTransformerTest = (
     testAssertionPath?: TestAssertionPath, // Explicit test path passed down from the suite
   ) => Promise<void>;
 
+export type RunTransformerTestSuite = (
+  localVitest: typeof vitest,
+  testSuitePath: string[],
+  transformerTestSuite: MiroirTestSuite,
+  filter: { testList?: TestSuiteListFilter, match?: RegExp } | undefined,
+  modelEnvironment: MiroirModelEnvironment,
+  miroirActivityTracker: MiroirActivityTrackerInterface, // Optional unified tracker for test execution tracking
+  parentTrackingId: string | undefined,
+  trackActionsBelow: boolean,
+  runTransformerTests: RunTransformerTests,
+  testAssertionPath?: TestAssertionPath, // Explicit test path passed down from the suite
+) => Promise<void>;
+
 export interface RunTransformerTests {
-  _runTransformerTestSuite: typeof runTransformerTestSuite,
+  _runTransformerTestSuite: RunTransformerTestSuite,
   _runTransformerTest: RunTransformerTest,
-  _runTransformerTestSuiteWithTracking: typeof runTransformerTestSuite,
+  _runTransformerTestSuiteWithTracking: RunTransformerTestSuite,
   _runTransformerTestWithTracking: RunTransformerTest,
 }
 
 
-export const runUnitTransformerTests: RunTransformerTests = {
-  _runTransformerTestSuiteWithTracking: async (
-    localVitest: VitestNamespace,
-    testSuitePath: string[],
-    transformerTestSuite: MiroirTestSuite,
-    filter: { testList?: TestSuiteListFilter; match?: RegExp } | undefined,
-    modelEnvironment: MiroirModelEnvironment,
-    miroirActivityTracker: MiroirActivityTrackerInterface, // Optional unified tracker for test execution tracking
-    parentTrackingId: string | undefined = undefined,
-    trackActionsBelow: boolean = false,
-    runTransformerTests: RunTransformerTests,
-    parentSkip?: boolean // Skip flag inherited from parent test suite
-  ): Promise<void> => {
-    const testSuitePathAsString = MiroirActivityTracker.testPathName(testSuitePath);
-    const testSuiteName =
-      transformerTestSuite.miroirTestLabel ?? transformerTestSuite.miroirTestType;
-    await miroirActivityTracker.trackTestSuite(
-      testSuiteName,
-      testSuitePathAsString,
-      parentTrackingId,
-      async (parentTrackingId: string | undefined) => {
-        await runTransformerTests._runTransformerTestSuite(
-          localVitest,
-          testSuitePath,
-          transformerTestSuite,
-          filter,
-          modelEnvironment,
-          miroirActivityTracker,
-          parentTrackingId,
-          trackActionsBelow,
-          runTransformerTests,
-          parentSkip
-        );
-      }
-    );
-  },
-  _runTransformerTestWithTracking: async (
-    localVitest: typeof vitest,
-    testNamePath: string[],
-    filter: { testList?: TestSuiteListFilter, match?: RegExp } | undefined,
-    transformerTest: TransformerTest | MiroirTestForTransformer,
-    modelEnvironment: MiroirModelEnvironment,
-    miroirActivityTracker: MiroirActivityTrackerInterface, // Optional unified tracker for test execution tracking
-    parentTrackingId: string | undefined = undefined,
-    trackActionsBelow: boolean = false,
-    runTransformerTests: RunTransformerTests,
-    testAssertionPath?: TestAssertionPath, // Explicit test path passed down from the suite
-  ): Promise<void> => {
-    await miroirActivityTracker.trackTest(
-      transformerTestAssertionName(transformerTest),
-      parentTrackingId,
-      async (parentTrackingId: string | undefined) => {
-        await miroirActivityTracker.trackTestAssertion(
-          transformerTestAssertionName(transformerTest),
-          parentTrackingId,
-          async (parentTrackingId: string | undefined) => {
-            await runTransformerTests._runTransformerTest(
-              localVitest,
-              testNamePath,
-              filter,
-              transformerTest,
-              modelEnvironment,
-              miroirActivityTracker,
-              parentTrackingId,
-              trackActionsBelow,
-              runTransformerTests,
-              testAssertionPath
-            );
-          }
-        );
-      }
-    );
-  },
-  _runTransformerTestSuite: runTransformerTestSuite,
-  _runTransformerTest: runTransformerTestInMemory,
-};
+// export const runUnitTransformerTests: RunTransformerTests = {
+//   _runTransformerTestSuiteWithTracking: async (
+//     localVitest: VitestNamespace,
+//     testSuitePath: string[],
+//     transformerTestSuite: MiroirTestSuite,
+//     filter: { testList?: TestSuiteListFilter; match?: RegExp } | undefined,
+//     modelEnvironment: MiroirModelEnvironment,
+//     miroirActivityTracker: MiroirActivityTrackerInterface, // Optional unified tracker for test execution tracking
+//     parentTrackingId: string | undefined = undefined,
+//     trackActionsBelow: boolean = false,
+//     runTransformerTests: RunTransformerTests,
+//     parentSkip?: boolean // Skip flag inherited from parent test suite
+//   ): Promise<void> => {
+//     const testSuitePathAsString = MiroirActivityTracker.testPathName(testSuitePath);
+//     const testSuiteName =
+//       transformerTestSuite.miroirTestLabel ?? transformerTestSuite.miroirTestType;
+//     await miroirActivityTracker.trackTestSuite(
+//       testSuiteName,
+//       testSuitePathAsString,
+//       parentTrackingId,
+//       async (parentTrackingId: string | undefined) => {
+//         await runTransformerTests._runTransformerTestSuite(
+//           localVitest,
+//           testSuitePath,
+//           transformerTestSuite,
+//           filter,
+//           modelEnvironment,
+//           miroirActivityTracker,
+//           parentTrackingId,
+//           trackActionsBelow,
+//           runTransformerTests,
+//           parentSkip
+//         );
+//       }
+//     );
+//   },
+//   _runTransformerTestWithTracking: async (
+//     localVitest: typeof vitest,
+//     testNamePath: string[],
+//     filter: { testList?: TestSuiteListFilter, match?: RegExp } | undefined,
+//     transformerTest: TransformerTest | MiroirTestForTransformer,
+//     modelEnvironment: MiroirModelEnvironment,
+//     miroirActivityTracker: MiroirActivityTrackerInterface, // Optional unified tracker for test execution tracking
+//     parentTrackingId: string | undefined = undefined,
+//     trackActionsBelow: boolean = false,
+//     runTransformerTests: RunTransformerTests,
+//     testAssertionPath?: TestAssertionPath, // Explicit test path passed down from the suite
+//   ): Promise<void> => {
+//     await miroirActivityTracker.trackTest(
+//       transformerTestAssertionName(transformerTest),
+//       parentTrackingId,
+//       async (parentTrackingId: string | undefined) => {
+//         await miroirActivityTracker.trackTestAssertion(
+//           transformerTestAssertionName(transformerTest),
+//           parentTrackingId,
+//           async (parentTrackingId: string | undefined) => {
+//             await runTransformerTests._runTransformerTest(
+//               localVitest,
+//               testNamePath,
+//               filter,
+//               transformerTest,
+//               modelEnvironment,
+//               miroirActivityTracker,
+//               parentTrackingId,
+//               trackActionsBelow,
+//               runTransformerTests,
+//               testAssertionPath
+//             );
+//           }
+//         );
+//       }
+//     );
+//   },
+//   _runTransformerTestSuite: runTransformerTestSuite,
+//   _runTransformerTest: runTransformerTestInMemory,
+// };
 
 // ################################################################################################
 // ################################################################################################
@@ -262,695 +263,695 @@ export function getValueByDottedPath(obj: any, path: string): any {
   return path.split(".").reduce((current, key) => current?.[key], obj);
 }
 
-function transformerTestAssertionName(
-  transformerTest: TransformerTest | MiroirTestForTransformer,
-): string {
-  if ("miroirTestLabel" in transformerTest) {
-    return transformerTest.miroirTestLabel;
-  }
-  return transformerTest.transformerTestLabel ?? transformerTest.transformerName;
-}
+// function transformerTestAssertionName(
+//   transformerTest: TransformerTest | MiroirTestForTransformer,
+// ): string {
+//   if ("miroirTestLabel" in transformerTest) {
+//     return transformerTest.miroirTestLabel;
+//   }
+//   return transformerTest.transformerTestLabel ?? transformerTest.transformerName;
+// }
 
-// ################################################################################################
-export async function runTransformerTestInMemory(
-  localVitest: typeof vitest,
-  testNamePath: string[],
-  filter: { testList?: TestSuiteListFilter, match?: RegExp } | undefined,
-  transformerTest: TransformerTest | MiroirTestForTransformer,
-  modelEnvironment: MiroirModelEnvironment,
-  miroirActivityTracker: MiroirActivityTrackerInterface, // Optional unified tracker for test execution tracking
-  parentTrackingId: string | undefined,
-  trackActionsBelow: boolean = false,
-  runTransformerTests: RunTransformerTests,
-  testAssertionPath?: TestAssertionPath, // Explicit test path passed down from the suite
-): Promise<void> {
-  const assertionName = transformerTestAssertionName(transformerTest);
-  // log.info(
-  //   "#################################### runTransformerTestInMemory test",
-  //   assertionName,
-  //   "START"
-  // );
+// // ################################################################################################
+// export async function runTransformerTestInMemory(
+//   localVitest: typeof vitest,
+//   testNamePath: string[],
+//   filter: { testList?: TestSuiteListFilter, match?: RegExp } | undefined,
+//   transformerTest: TransformerTest | MiroirTestForTransformer,
+//   modelEnvironment: MiroirModelEnvironment,
+//   miroirActivityTracker: MiroirActivityTrackerInterface, // Optional unified tracker for test execution tracking
+//   parentTrackingId: string | undefined,
+//   trackActionsBelow: boolean = false,
+//   runTransformerTests: RunTransformerTests,
+//   testAssertionPath?: TestAssertionPath, // Explicit test path passed down from the suite
+// ): Promise<void> {
+//   const assertionName = transformerTestAssertionName(transformerTest);
+//   // log.info(
+//   //   "#################################### runTransformerTestInMemory test",
+//   //   assertionName,
+//   //   "START"
+//   // );
 
-  if (
-    filter?.testList &&
-    (typeof filter.testList != "object" || (!Array.isArray(filter.testList) && Object.keys(filter.testList).length > 0))
-  ) {
-    throw new Error(
-      "runTransformerTestInMemory called with non-array filter.testList, this is not supported: " +
-        JSON.stringify(filter)
-    );
-  }
-  // Check if test should be skipped
-  if (
-    transformerTest.skip ||
-    (filter?.testList &&
-      !(filter.testList as string[]).includes(transformerTestAssertionName(transformerTest)))
-  ) {
-    log.info(`⏭️  Skipping test: ${assertionName}`);
+//   if (
+//     filter?.testList &&
+//     (typeof filter.testList != "object" || (!Array.isArray(filter.testList) && Object.keys(filter.testList).length > 0))
+//   ) {
+//     throw new Error(
+//       "runTransformerTestInMemory called with non-array filter.testList, this is not supported: " +
+//         JSON.stringify(filter)
+//     );
+//   }
+//   // Check if test should be skipped
+//   if (
+//     transformerTest.skip ||
+//     (filter?.testList &&
+//       !(filter.testList as string[]).includes(transformerTestAssertionName(transformerTest)))
+//   ) {
+//     log.info(`⏭️  Skipping test: ${assertionName}`);
 
-    // Use the explicitly passed testAssertionPath or fall back to current tracker path
-    const currentTestAssertionPath =
-      testAssertionPath || miroirActivityTracker.getCurrentTestAssertionPath();
-    if (!currentTestAssertionPath) {
-      throw new Error(
-        "runTransformerTestInMemory called without testAssertionPath and no currentTestAssertionPath available, cannot set test assertion result"
-      );
-    }
+//     // Use the explicitly passed testAssertionPath or fall back to current tracker path
+//     const currentTestAssertionPath =
+//       testAssertionPath || miroirActivityTracker.getCurrentTestAssertionPath();
+//     if (!currentTestAssertionPath) {
+//       throw new Error(
+//         "runTransformerTestInMemory called without testAssertionPath and no currentTestAssertionPath available, cannot set test assertion result"
+//       );
+//     }
 
-    const testAssertionResult: TestAssertionResult = {
-      assertionName,
-      assertionResult: "skipped",
-    };
+//     const testAssertionResult: TestAssertionResult = {
+//       assertionName,
+//       assertionResult: "skipped",
+//     };
 
-    miroirActivityTracker.setTestAssertionResult(currentTestAssertionPath, testAssertionResult);
-    log.info("############################ test", assertionName, "SKIPPED");
-    return Promise.resolve();
-  }
+//     miroirActivityTracker.setTestAssertionResult(currentTestAssertionPath, testAssertionResult);
+//     log.info("############################ test", assertionName, "SKIPPED");
+//     return Promise.resolve();
+//   }
 
-  const transformer: CoreTransformerForBuildPlusRuntime = transformerTest.transformer;
-  const runtimeTransformer: CoreTransformerForBuildPlusRuntime = transformer as any;
-  // log.info(
-  //   "################################ runTransformerTestInMemory transformerTestParams",
-  //   JSON.stringify(transformerTest, null, 2)
-  // );
+//   const transformer: CoreTransformerForBuildPlusRuntime = transformerTest.transformer;
+//   const runtimeTransformer: CoreTransformerForBuildPlusRuntime = transformer as any;
+//   // log.info(
+//   //   "################################ runTransformerTestInMemory transformerTestParams",
+//   //   JSON.stringify(transformerTest, null, 2)
+//   // );
 
-  const interpolation = transformerTest.runTestStep ?? "runtime";
-  let rawResult: TransformerReturnType<any>;
+//   const interpolation = transformerTest.runTestStep ?? "runtime";
+//   let rawResult: TransformerReturnType<any>;
 
-  const convertedTransformer = transformer_extended_apply_wrapper(
-    undefined, // activityTracker
-    "build",
-    [], // transformerPath
-    undefined,
-    runtimeTransformer,
-    "value",
-    modelEnvironment,
-    transformerTest.transformerParams??{},
-    transformerTest.transformerRuntimeContext ?? {},
-  );
-  // log.info(
-  //   "################################ runTransformerTestInMemory convertedTransformer after applying build step",
-  //   JSON.stringify(convertedTransformer, null, 2),
-  //   "effective interpolation", interpolation
-  // );
+//   const convertedTransformer = transformer_extended_apply_wrapper(
+//     undefined, // activityTracker
+//     "build",
+//     [], // transformerPath
+//     undefined,
+//     runtimeTransformer,
+//     "value",
+//     modelEnvironment,
+//     transformerTest.transformerParams??{},
+//     transformerTest.transformerRuntimeContext ?? {},
+//   );
+//   // log.info(
+//   //   "################################ runTransformerTestInMemory convertedTransformer after applying build step",
+//   //   JSON.stringify(convertedTransformer, null, 2),
+//   //   "effective interpolation", interpolation
+//   // );
 
-  if (interpolation == "runtime" && !convertedTransformer["elementType"]) {
-    rawResult = transformer_extended_apply_wrapper(
-      undefined, // activityTracker
-      "runtime",
-      [], // transformerPath
-      undefined,
-      convertedTransformer,
-      "value",
-      modelEnvironment,
-      transformerTest.transformerParams??{},
-      transformerTest.transformerRuntimeContext ?? {}
-    );
-  } else {
-    rawResult = convertedTransformer;
-  }
+//   if (interpolation == "runtime" && !convertedTransformer["elementType"]) {
+//     rawResult = transformer_extended_apply_wrapper(
+//       undefined, // activityTracker
+//       "runtime",
+//       [], // transformerPath
+//       undefined,
+//       convertedTransformer,
+//       "value",
+//       modelEnvironment,
+//       transformerTest.transformerParams??{},
+//       transformerTest.transformerRuntimeContext ?? {}
+//     );
+//   } else {
+//     rawResult = convertedTransformer;
+//   }
 
-  log.info(
-    "################################ runTransformerTestInMemory raw result",
-    // JSON.stringify(rawResult, null, 2)
-    rawResult,
-    "ignoreAttributes",
-    transformerTest.ignoreAttributes,
-    "retainAttributes",
-    transformerTest.retainAttributes
-  );
-  // log.info(
-  //   "################################ runTransformerTestInMemory expectedResult",
-  //   JSON.stringify(transformerTest.expectedValue, null, 2)
-  // );
-  const resultWithIgnored = ignorePostgresExtraAttributes(rawResult, transformerTest.ignoreAttributes);
-  const resultWithRetain =
-    transformerTest.retainAttributes && typeof resultWithIgnored === "object" && !Array.isArray(resultWithIgnored)
-    // (rawResult instanceof TransformerFailure || (rawResult as any)?.elementType === "failure")
-    // (rawResult instanceof TransformerFailure)
-      ? Object.fromEntries(
-          Object.entries(resultWithIgnored).filter(([key]) =>
-            transformerTest.retainAttributes!.includes(key),
-          ),
-        )
-      : resultWithIgnored;
-  log.info(
-    "################################ runTransformerTestInMemory result",
-    // resultWithRetain
-    JSON.stringify(resultWithRetain, null, 2)
-  );
-  const testSuiteNamePathAsString = MiroirActivityTracker.testPathName(testNamePath);
-  const jsonifiedResult = jsonify(resultWithRetain);
+//   log.info(
+//     "################################ runTransformerTestInMemory raw result",
+//     // JSON.stringify(rawResult, null, 2)
+//     rawResult,
+//     "ignoreAttributes",
+//     transformerTest.ignoreAttributes,
+//     "retainAttributes",
+//     transformerTest.retainAttributes
+//   );
+//   // log.info(
+//   //   "################################ runTransformerTestInMemory expectedResult",
+//   //   JSON.stringify(transformerTest.expectedValue, null, 2)
+//   // );
+//   const resultWithIgnored = ignorePostgresExtraAttributes(rawResult, transformerTest.ignoreAttributes);
+//   const resultWithRetain =
+//     transformerTest.retainAttributes && typeof resultWithIgnored === "object" && !Array.isArray(resultWithIgnored)
+//     // (rawResult instanceof TransformerFailure || (rawResult as any)?.elementType === "failure")
+//     // (rawResult instanceof TransformerFailure)
+//       ? Object.fromEntries(
+//           Object.entries(resultWithIgnored).filter(([key]) =>
+//             transformerTest.retainAttributes!.includes(key),
+//           ),
+//         )
+//       : resultWithIgnored;
+//   log.info(
+//     "################################ runTransformerTestInMemory result",
+//     // resultWithRetain
+//     JSON.stringify(resultWithRetain, null, 2)
+//   );
+//   const testSuiteNamePathAsString = MiroirActivityTracker.testPathName(testNamePath);
+//   const jsonifiedResult = jsonify(resultWithRetain);
   
-  // Use the explicitly passed testAssertionPath or fall back to current tracker path
-  const currentTestAssertionPath = testAssertionPath || miroirActivityTracker.getCurrentTestAssertionPath();
-  if (!currentTestAssertionPath) {
-    throw new Error("runTransformerTestInMemory called without testAssertionPath and no currentTestAssertionPath available, cannot set test assertion result");
-  }
-  let testAssertionResult: TestAssertionResult;
-  try {
-    // real vitest throws an exception if the assertion fails, simulated vitest does not throw an exception
-    // log.info(
-      //   "################################ runTransformerTestInMemory calling localVitest.expect"
-      // );
+//   // Use the explicitly passed testAssertionPath or fall back to current tracker path
+//   const currentTestAssertionPath = testAssertionPath || miroirActivityTracker.getCurrentTestAssertionPath();
+//   if (!currentTestAssertionPath) {
+//     throw new Error("runTransformerTestInMemory called without testAssertionPath and no currentTestAssertionPath available, cannot set test assertion result");
+//   }
+//   let testAssertionResult: TestAssertionResult;
+//   try {
+//     // real vitest throws an exception if the assertion fails, simulated vitest does not throw an exception
+//     // log.info(
+//       //   "################################ runTransformerTestInMemory calling localVitest.expect"
+//       // );
     
-    const normalizedResult = removeUndefinedProperties(jsonifiedResult);
+//     const normalizedResult = removeUndefinedProperties(jsonifiedResult);
 
-    if (transformerTest.subExpectedValue && transformerTest.subExpectedValue.length > 0) {
-      // Compare each sub-path independently; first failure short-circuits
-      for (const [path, expectedSubValue] of transformerTest.subExpectedValue) {
-        const actualSubValue = getValueByDottedPath(normalizedResult, path);
-        const normalizedExpectedSub = removeUndefinedProperties(unNullify(expectedSubValue));
-        log.info(
-          "################################ runTransformerTestInMemory subExpectedValue path=",
-          path,
-          "actual=",
-          JSON.stringify(actualSubValue, null, 2),
-          "expected=",
-          JSON.stringify(normalizedExpectedSub, null, 2)
-        );
-        const subTestResult: any = localVitest
-          .expect(actualSubValue, `${testSuiteNamePathAsString} > ${assertionName} [${path}]`)
-          .toEqual(normalizedExpectedSub);
-        if (subTestResult && Object.hasOwn(subTestResult, "result") && !subTestResult.result) {
-          // simulated vitest failure
-          testAssertionResult = {
-            assertionName,
-            assertionResult: "error",
-            assertionExpectedValue: expectedSubValue,
-            assertionActualValue: actualSubValue,
-          };
-          miroirActivityTracker.setTestAssertionResult(currentTestAssertionPath, testAssertionResult);
-          log.info("############################ test", assertionName, "END (with error in subExpectedValue path=", path, ")");
-          return Promise.resolve();
-        }
-      }
-      testAssertionResult = { assertionName, assertionResult: "ok" };
-    } else {
-      // Normalize both actual and expected values to handle undefined properties consistently
-      const expectedValue = ignorePostgresExtraAttributes(
-        transformerTest.unitTestExpectedValue ?? transformerTest.expectedValue,
-        transformerTest.ignoreAttributes
-      );
+//     if (transformerTest.subExpectedValue && transformerTest.subExpectedValue.length > 0) {
+//       // Compare each sub-path independently; first failure short-circuits
+//       for (const [path, expectedSubValue] of transformerTest.subExpectedValue) {
+//         const actualSubValue = getValueByDottedPath(normalizedResult, path);
+//         const normalizedExpectedSub = removeUndefinedProperties(unNullify(expectedSubValue));
+//         log.info(
+//           "################################ runTransformerTestInMemory subExpectedValue path=",
+//           path,
+//           "actual=",
+//           JSON.stringify(actualSubValue, null, 2),
+//           "expected=",
+//           JSON.stringify(normalizedExpectedSub, null, 2)
+//         );
+//         const subTestResult: any = localVitest
+//           .expect(actualSubValue, `${testSuiteNamePathAsString} > ${assertionName} [${path}]`)
+//           .toEqual(normalizedExpectedSub);
+//         if (subTestResult && Object.hasOwn(subTestResult, "result") && !subTestResult.result) {
+//           // simulated vitest failure
+//           testAssertionResult = {
+//             assertionName,
+//             assertionResult: "error",
+//             assertionExpectedValue: expectedSubValue,
+//             assertionActualValue: actualSubValue,
+//           };
+//           miroirActivityTracker.setTestAssertionResult(currentTestAssertionPath, testAssertionResult);
+//           log.info("############################ test", assertionName, "END (with error in subExpectedValue path=", path, ")");
+//           return Promise.resolve();
+//         }
+//       }
+//       testAssertionResult = { assertionName, assertionResult: "ok" };
+//     } else {
+//       // Normalize both actual and expected values to handle undefined properties consistently
+//       const expectedValue = ignorePostgresExtraAttributes(
+//         transformerTest.unitTestExpectedValue ?? transformerTest.expectedValue,
+//         transformerTest.ignoreAttributes
+//       );
 
-      const normalizedExpected = removeUndefinedProperties(unNullify(expectedValue));
+//       const normalizedExpected = removeUndefinedProperties(unNullify(expectedValue));
 
-      log.info(
-        "################################ runTransformerTestInMemory result",
-        // resultWithRetain
-        "(ignoreAttributes=" + JSON.stringify(transformerTest.ignoreAttributes) + ")",
-        JSON.stringify(normalizedResult, null, 2),
-        "expected",
-        JSON.stringify(normalizedExpected, null, 2)
-      );
+//       log.info(
+//         "################################ runTransformerTestInMemory result",
+//         // resultWithRetain
+//         "(ignoreAttributes=" + JSON.stringify(transformerTest.ignoreAttributes) + ")",
+//         JSON.stringify(normalizedResult, null, 2),
+//         "expected",
+//         JSON.stringify(normalizedExpected, null, 2)
+//       );
 
-      const expectForm = localVitest
-        .expect(normalizedResult, `${testSuiteNamePathAsString} > ${assertionName}`)
-      // log.info(
-      //   "################################ runTransformerTestInMemory localVitest.expect called expectForm", expectForm
-      // );
-      // const testResult = expectForm.toEqual(transformerTest.expectedValue);
-      // vitest returns void, simulated vitest returns an object with a "result" boolean
-      const testResult: any = expectForm.toEqual(normalizedExpected);
-      log.info(
-        "################################ runTransformerTestInMemory testResult",
-        testResult
-        // JSON.stringify(testResult, circularReplacer, 2)
-      );
+//       const expectForm = localVitest
+//         .expect(normalizedResult, `${testSuiteNamePathAsString} > ${assertionName}`)
+//       // log.info(
+//       //   "################################ runTransformerTestInMemory localVitest.expect called expectForm", expectForm
+//       // );
+//       // const testResult = expectForm.toEqual(transformerTest.expectedValue);
+//       // vitest returns void, simulated vitest returns an object with a "result" boolean
+//       const testResult: any = expectForm.toEqual(normalizedExpected);
+//       log.info(
+//         "################################ runTransformerTestInMemory testResult",
+//         testResult
+//         // JSON.stringify(testResult, circularReplacer, 2)
+//       );
 
-      if (!testResult || !Object.hasOwn(testResult, "result")) {
-        // vitest case
-        testAssertionResult = {
-          assertionName,
-          assertionResult: "ok",
-        };
-      } else {
-        // simulated vitest case
-        // const testName = testNamePath[testNamePath.length - 1];
-        // as there can be only 1 assertion per test, we use the test name as the assertion name
-        if (testResult.result) {
-          testAssertionResult = {
-            assertionName,
-            assertionResult: "ok",
-          };
-        } else {
-          // TODO: use returned message from the testResult?
-          testAssertionResult = {
-            assertionName,
-            assertionResult: "error",
-            assertionExpectedValue: transformerTest.expectedValue,
-            assertionActualValue: jsonifiedResult,
-          };
-        };
-      }
-    }
-  } catch (error) {
-    log.error(
-      "################################ runTransformerTestInMemory caught error from localVitest.expect",
-      error
-    );
-    // vitest case
-    testAssertionResult = {
-      assertionName,
-      assertionResult: "error",
-      assertionExpectedValue: transformerTest.expectedValue,
-      assertionActualValue: jsonifiedResult,
-    };
-    // Set the result before re-throwing so it's tracked
-    miroirActivityTracker.setTestAssertionResult(currentTestAssertionPath, testAssertionResult);
-    log.info("############################ test", assertionName, "END (with error)");
-    // Re-throw the error so vitest marks the test as failed
-    throw error;
-  }
-  miroirActivityTracker.setTestAssertionResult(currentTestAssertionPath, testAssertionResult);
+//       if (!testResult || !Object.hasOwn(testResult, "result")) {
+//         // vitest case
+//         testAssertionResult = {
+//           assertionName,
+//           assertionResult: "ok",
+//         };
+//       } else {
+//         // simulated vitest case
+//         // const testName = testNamePath[testNamePath.length - 1];
+//         // as there can be only 1 assertion per test, we use the test name as the assertion name
+//         if (testResult.result) {
+//           testAssertionResult = {
+//             assertionName,
+//             assertionResult: "ok",
+//           };
+//         } else {
+//           // TODO: use returned message from the testResult?
+//           testAssertionResult = {
+//             assertionName,
+//             assertionResult: "error",
+//             assertionExpectedValue: transformerTest.expectedValue,
+//             assertionActualValue: jsonifiedResult,
+//           };
+//         };
+//       }
+//     }
+//   } catch (error) {
+//     log.error(
+//       "################################ runTransformerTestInMemory caught error from localVitest.expect",
+//       error
+//     );
+//     // vitest case
+//     testAssertionResult = {
+//       assertionName,
+//       assertionResult: "error",
+//       assertionExpectedValue: transformerTest.expectedValue,
+//       assertionActualValue: jsonifiedResult,
+//     };
+//     // Set the result before re-throwing so it's tracked
+//     miroirActivityTracker.setTestAssertionResult(currentTestAssertionPath, testAssertionResult);
+//     log.info("############################ test", assertionName, "END (with error)");
+//     // Re-throw the error so vitest marks the test as failed
+//     throw error;
+//   }
+//   miroirActivityTracker.setTestAssertionResult(currentTestAssertionPath, testAssertionResult);
 
-  log.info("############################ test", assertionName, "END");
-  // miroirActivityTracker.setTest(undefined);
-  // as there is only 1 assertion per test, we use the test name as the assertion name
-  return Promise.resolve();
-}
+//   log.info("############################ test", assertionName, "END");
+//   // miroirActivityTracker.setTest(undefined);
+//   // as there is only 1 assertion per test, we use the test name as the assertion name
+//   return Promise.resolve();
+// }
 
 export type { TestSuiteListFilter } from "../0_interfaces/5-tests/miroirTestTypes";
 
-// ################################################################################################
-export async function runTransformerTestSuite(
-  localVitest: VitestNamespace,
-  testSuitePath: string[],
-  miroirTestSuite: MiroirTestSuite,
-  filter: { testList?: TestSuiteListFilter, match?: RegExp } | undefined,
-  modelEnvironment: MiroirModelEnvironment,
-  miroirActivityTracker: MiroirActivityTrackerInterface, // Optional unified tracker for test execution tracking
-  parentTrackingId: string | undefined,
-  trackActionsBelow: boolean = false,
-  runTransformerTests: RunTransformerTests,
-  parentSkip?: boolean, // Skip flag inherited from parent test suite
-): Promise<void> {
-  const testSuitePathAsString = MiroirActivityTracker.testPathName(testSuitePath);
-  const testSuiteName =
-    miroirTestSuite.miroirTestLabel ?? miroirTestSuite.miroirTestType;
+// // ################################################################################################
+// export async function runTransformerTestSuite(
+//   localVitest: VitestNamespace,
+//   testSuitePath: string[],
+//   miroirTestSuite: MiroirTestSuite,
+//   filter: { testList?: TestSuiteListFilter, match?: RegExp } | undefined,
+//   modelEnvironment: MiroirModelEnvironment,
+//   miroirActivityTracker: MiroirActivityTrackerInterface, // Optional unified tracker for test execution tracking
+//   parentTrackingId: string | undefined,
+//   trackActionsBelow: boolean = false,
+//   runTransformerTests: RunTransformerTests,
+//   parentSkip?: boolean, // Skip flag inherited from parent test suite
+// ): Promise<void> {
+//   const testSuitePathAsString = MiroirActivityTracker.testPathName(testSuitePath);
+//   const testSuiteName =
+//     miroirTestSuite.miroirTestLabel ?? miroirTestSuite.miroirTestType;
     
-  // Determine if this suite should be skipped (either its own skip flag or inherited from parent)
-  const shouldSkipSuite = miroirTestSuite.skip || parentSkip;
+//   // Determine if this suite should be skipped (either its own skip flag or inherited from parent)
+//   const shouldSkipSuite = miroirTestSuite.skip || parentSkip;
     
-  if (!localVitest.expect) {
-    throw new Error(
-      "runTransformerTestSuite called without vitest.expect, this is not a test environment"
-    );
-  }
+//   if (!localVitest.expect) {
+//     throw new Error(
+//       "runTransformerTestSuite called without vitest.expect, this is not a test environment"
+//     );
+//   }
 
-  try {
-    // replace the describe.each(...) call body with this:
-    const innerFilter: { testList: TestSuiteListFilter | undefined} = filter?.testList
-      ? typeof filter.testList === "object" &&
-        !Array.isArray(filter.testList) &&
-        Object.hasOwn(filter.testList, miroirTestSuite.miroirTestLabel)
-        ? {testList: filter.testList[miroirTestSuite.miroirTestLabel]}
-        : { testList: [] }
-      : {testList: undefined};
+//   try {
+//     // replace the describe.each(...) call body with this:
+//     const innerFilter: { testList: TestSuiteListFilter | undefined} = filter?.testList
+//       ? typeof filter.testList === "object" &&
+//         !Array.isArray(filter.testList) &&
+//         Object.hasOwn(filter.testList, miroirTestSuite.miroirTestLabel)
+//         ? {testList: filter.testList[miroirTestSuite.miroirTestLabel]}
+//         : { testList: [] }
+//       : {testList: undefined};
 
-    const allTests = miroirTestSuite.miroirTests
-    const selectedTests = allTests.filter(
-      (e: MiroirTestLeaf | MiroirTestSuite) =>
-        !innerFilter?.testList ||
-        (Array.isArray(innerFilter?.testList) && innerFilter?.testList.includes(e.miroirTestLabel)) ||
-        (!Array.isArray(innerFilter?.testList) &&
-          typeof innerFilter?.testList === "object" &&
-          Object.hasOwn(innerFilter?.testList, e.miroirTestLabel))
-    );
-    log.info(
-      "runTransformerTestSuite for suite",
-      testSuitePathAsString,
-      "trackActionsBelow=",
-      trackActionsBelow,
-      "shouldSkipSuite=",
-      shouldSkipSuite,
-      "with",
-      // selectedTests.length,
-      // "selected tests out of",
-      // Object.values(transformerTestSuite.transformerTests).length,
-      // "total tests,",
-      "filter",
-      JSON.stringify(filter),
-      "innerFilter=",
-      JSON.stringify(innerFilter),
-      "allTests=",
-      allTests.map((t: MiroirTestLeaf | MiroirTestSuite) => t.miroirTestLabel),
-      // "selectedTests=",
-      // selectedTests
-    );
-    // localVitest.describe.each(selectedTests)(
-    // Sequentially run each selected test/suite instead of describe.each (which is parallel)
-    for (const transformerTestParam of allTests) {
-      const label = transformerTestParam.miroirTestLabel;
-      const isSkipped = !selectedTests.includes(transformerTestParam) || !!shouldSkipSuite;
+//     const allTests = miroirTestSuite.miroirTests
+//     const selectedTests = allTests.filter(
+//       (e: MiroirTestLeaf | MiroirTestSuite) =>
+//         !innerFilter?.testList ||
+//         (Array.isArray(innerFilter?.testList) && innerFilter?.testList.includes(e.miroirTestLabel)) ||
+//         (!Array.isArray(innerFilter?.testList) &&
+//           typeof innerFilter?.testList === "object" &&
+//           Object.hasOwn(innerFilter?.testList, e.miroirTestLabel))
+//     );
+//     log.info(
+//       "runTransformerTestSuite for suite",
+//       testSuitePathAsString,
+//       "trackActionsBelow=",
+//       trackActionsBelow,
+//       "shouldSkipSuite=",
+//       shouldSkipSuite,
+//       "with",
+//       // selectedTests.length,
+//       // "selected tests out of",
+//       // Object.values(transformerTestSuite.transformerTests).length,
+//       // "total tests,",
+//       "filter",
+//       JSON.stringify(filter),
+//       "innerFilter=",
+//       JSON.stringify(innerFilter),
+//       "allTests=",
+//       allTests.map((t: MiroirTestLeaf | MiroirTestSuite) => t.miroirTestLabel),
+//       // "selectedTests=",
+//       // selectedTests
+//     );
+//     // localVitest.describe.each(selectedTests)(
+//     // Sequentially run each selected test/suite instead of describe.each (which is parallel)
+//     for (const transformerTestParam of allTests) {
+//       const label = transformerTestParam.miroirTestLabel;
+//       const isSkipped = !selectedTests.includes(transformerTestParam) || !!shouldSkipSuite;
 
-      if (transformerTestParam.miroirTestType === "miroirTestSuite") {
-        const runNestedSuite = trackActionsBelow
-          ? runTransformerTests._runTransformerTestSuiteWithTracking
-          : runTransformerTests._runTransformerTestSuite;
-        await runNestedSuite(
-          localVitest,
-          [...testSuitePath, transformerTestParam.miroirTestLabel],
-          transformerTestParam,
-          innerFilter,
-          modelEnvironment,
-          miroirActivityTracker,
-          parentTrackingId,
-          trackActionsBelow,
-          runTransformerTests,
-          shouldSkipSuite,
-        );
-      } else if (transformerTestParam.miroirTestType === "transformerTest") {
-        const effectiveLeaf: MiroirTestForTransformer = isSkipped
-          ? { ...transformerTestParam, skip: true }
-          : transformerTestParam;
+//       if (transformerTestParam.miroirTestType === "miroirTestSuite") {
+//         const runNestedSuite = trackActionsBelow
+//           ? runTransformerTests._runTransformerTestSuiteWithTracking
+//           : runTransformerTests._runTransformerTestSuite;
+//         await runNestedSuite(
+//           localVitest,
+//           [...testSuitePath, transformerTestParam.miroirTestLabel],
+//           transformerTestParam,
+//           innerFilter,
+//           modelEnvironment,
+//           miroirActivityTracker,
+//           parentTrackingId,
+//           trackActionsBelow,
+//           runTransformerTests,
+//           shouldSkipSuite,
+//         );
+//       } else if (transformerTestParam.miroirTestType === "transformerTest") {
+//         const effectiveLeaf: MiroirTestForTransformer = isSkipped
+//           ? { ...transformerTestParam, skip: true }
+//           : transformerTestParam;
 
-        const runTransformerTest = trackActionsBelow
-          ? runTransformerTests._runTransformerTestWithTracking
-          : runTransformerTests._runTransformerTest;
+//         const runTransformerTest = trackActionsBelow
+//           ? runTransformerTests._runTransformerTestWithTracking
+//           : runTransformerTests._runTransformerTest;
 
-        const vitestTestFn = isSkipped ? localVitest.test.skip : localVitest.test;
-        await vitestTestFn(
-          label,
-          async () => {
-            const testAssertionPath: TestAssertionPath =
-              MiroirActivityTracker.stringArrayToTestAssertionPath(testSuitePath);
-            testAssertionPath.push({ test: label });
-            testAssertionPath.push({ testAssertion: label });
+//         const vitestTestFn = isSkipped ? localVitest.test.skip : localVitest.test;
+//         await vitestTestFn(
+//           label,
+//           async () => {
+//             const testAssertionPath: TestAssertionPath =
+//               MiroirActivityTracker.stringArrayToTestAssertionPath(testSuitePath);
+//             testAssertionPath.push({ test: label });
+//             testAssertionPath.push({ testAssertion: label });
 
-            await runTransformerTest(
-              localVitest,
-              [...testSuitePath, label],
-              innerFilter,
-              effectiveLeaf,
-              modelEnvironment,
-              miroirActivityTracker,
-              parentTrackingId,
-              trackActionsBelow,
-              runTransformerTests,
-              testAssertionPath,
-            );
-          },
-          globalTimeOut,
-        );
-      }
-    }
-    log.info(`finished registering transformer subtests for test suite ${testSuitePath}`);
-  } catch (error) {
-    throw error; // Re-throw the original error
-  }
-  log.info(
-    `@@@@@@@@@@@@@@@@@@@@ finished running transformer test suite ${JSON.stringify(testSuitePath)}`
-  );
-  // miroirActivityTracker.resetContext();
-}
+//             await runTransformerTest(
+//               localVitest,
+//               [...testSuitePath, label],
+//               innerFilter,
+//               effectiveLeaf,
+//               modelEnvironment,
+//               miroirActivityTracker,
+//               parentTrackingId,
+//               trackActionsBelow,
+//               runTransformerTests,
+//               testAssertionPath,
+//             );
+//           },
+//           globalTimeOut,
+//         );
+//       }
+//     }
+//     log.info(`finished registering transformer subtests for test suite ${testSuitePath}`);
+//   } catch (error) {
+//     throw error; // Re-throw the original error
+//   }
+//   log.info(
+//     `@@@@@@@@@@@@@@@@@@@@ finished running transformer test suite ${JSON.stringify(testSuitePath)}`
+//   );
+//   // miroirActivityTracker.resetContext();
+// }
 
-// ################################################################################################
-// ################################################################################################
-// ################################################################################################
-// ################################################################################################
-// ################################################################################################
-// ################################################################################################
-export function runTransformerIntegrationTest(sqlDbDataStore: any) {
-  return async (
-    vitest: any,
-    testPath: string[],
-    filter: { testList?: TestSuiteListFilter; match?: RegExp } | undefined,
-    transformerTest: MiroirTestForTransformer,
-    modelEnvironment: MiroirModelEnvironment,
-    miroirActivityTracker: MiroirActivityTrackerInterface,
-    parentTrackingId: string | undefined,
-    trackActionsBelow: boolean = false,
-    runTransformerTests: RunTransformerTests,
-    testAssertionPath?: TestAssertionPath,
-  ): Promise<void> => {
-    const assertionName = transformerTest.miroirTestLabel;
-    const testPathName = MiroirActivityTracker.testPathName(testPath);
-    const testRunStep = transformerTest.runTestStep ?? "runtime";
-    // const runAsSql = false;
-    const runAsSql = true;
+// // ################################################################################################
+// // ################################################################################################
+// // ################################################################################################
+// // ################################################################################################
+// // ################################################################################################
+// // ################################################################################################
+// export function runTransformerIntegrationTest(sqlDbDataStore: any) {
+//   return async (
+//     vitest: any,
+//     testPath: string[],
+//     filter: { testList?: TestSuiteListFilter; match?: RegExp } | undefined,
+//     transformerTest: MiroirTestForTransformer,
+//     modelEnvironment: MiroirModelEnvironment,
+//     miroirActivityTracker: MiroirActivityTrackerInterface,
+//     parentTrackingId: string | undefined,
+//     trackActionsBelow: boolean = false,
+//     runTransformerTests: RunTransformerTests,
+//     testAssertionPath?: TestAssertionPath,
+//   ): Promise<void> => {
+//     const assertionName = transformerTest.miroirTestLabel;
+//     const testPathName = MiroirActivityTracker.testPathName(testPath);
+//     const testRunStep = transformerTest.runTestStep ?? "runtime";
+//     // const runAsSql = false;
+//     const runAsSql = true;
 
-    log.info("runTransformerIntegrationTest called for", testPathName, "START");
+//     log.info("runTransformerIntegrationTest called for", testPathName, "START");
 
-    if (!vitest.expect) {
-      throw new Error(
-        "runTransformerIntegrationTest called without vitest.expect, this is not a test environment"
-      );
-    }
+//     if (!vitest.expect) {
+//       throw new Error(
+//         "runTransformerIntegrationTest called without vitest.expect, this is not a test environment"
+//       );
+//     }
 
-    // Use the explicitly passed testAssertionPath or fall back to current tracker path
-    const currentTestAssertionPath = testAssertionPath || miroirActivityTracker.getCurrentTestAssertionPath();
-    if (!currentTestAssertionPath) {
-      throw new Error(
-        "runTransformerIntegrationTest called without testAssertionPath and no currentTestAssertionPath available, cannot set test assertion result"
-      );
-    }
+//     // Use the explicitly passed testAssertionPath or fall back to current tracker path
+//     const currentTestAssertionPath = testAssertionPath || miroirActivityTracker.getCurrentTestAssertionPath();
+//     if (!currentTestAssertionPath) {
+//       throw new Error(
+//         "runTransformerIntegrationTest called without testAssertionPath and no currentTestAssertionPath available, cannot set test assertion result"
+//       );
+//     }
 
-    log.info(
-      "runTransformerIntegrationTest",
-      testPathName,
-      "running runtime on sql transformerTest",
-      transformerTest
-    );
+//     log.info(
+//       "runTransformerIntegrationTest",
+//       testPathName,
+//       "running runtime on sql transformerTest",
+//       transformerTest
+//     );
 
-      // Check if test should be skipped
-  if (
-    transformerTest.skip ||
-    (filter?.testList &&
-      !(filter.testList as string[]).includes(transformerTest.miroirTestLabel))
-  ) {
-    log.info(`⏭️  Skipping test: ${assertionName}`);
+//       // Check if test should be skipped
+//   if (
+//     transformerTest.skip ||
+//     (filter?.testList &&
+//       !(filter.testList as string[]).includes(transformerTest.miroirTestLabel))
+//   ) {
+//     log.info(`⏭️  Skipping test: ${assertionName}`);
 
-    // Use the explicitly passed testAssertionPath or fall back to current tracker path
-    const currentTestAssertionPath =
-      testAssertionPath || miroirActivityTracker.getCurrentTestAssertionPath();
-    if (!currentTestAssertionPath) {
-      throw new Error(
-        "runTransformerTestInMemory called without testAssertionPath and no currentTestAssertionPath available, cannot set test assertion result"
-      );
-    }
+//     // Use the explicitly passed testAssertionPath or fall back to current tracker path
+//     const currentTestAssertionPath =
+//       testAssertionPath || miroirActivityTracker.getCurrentTestAssertionPath();
+//     if (!currentTestAssertionPath) {
+//       throw new Error(
+//         "runTransformerTestInMemory called without testAssertionPath and no currentTestAssertionPath available, cannot set test assertion result"
+//       );
+//     }
 
-    const testAssertionResult: TestAssertionResult = {
-      assertionName,
-      assertionResult: "skipped",
-    };
+//     const testAssertionResult: TestAssertionResult = {
+//       assertionName,
+//       assertionResult: "skipped",
+//     };
 
-    miroirActivityTracker.setTestAssertionResult(currentTestAssertionPath, testAssertionResult);
+//     miroirActivityTracker.setTestAssertionResult(currentTestAssertionPath, testAssertionResult);
 
-    // miroirActivityTracker.setTestAssertion(undefined);
-    log.info("############################ test", assertionName, "SKIPPED");
-    miroirActivityTracker.setTest(undefined);
-    return Promise.resolve();
-  }
+//     // miroirActivityTracker.setTestAssertion(undefined);
+//     log.info("############################ test", assertionName, "SKIPPED");
+//     miroirActivityTracker.setTest(undefined);
+//     return Promise.resolve();
+//   }
 
-    // resolve the transformer to be used in the test
-    const resolvedTransformer: TransformerReturnType<CoreTransformerForBuildPlusRuntime> =
-      transformer_extended_apply_wrapper(
-        undefined, // activityTracker
-        "build",
-        [], // transformerPath
-        (transformerTest.transformer as any)?.label,
-        transformerTest.transformer,
-        "value", // resolveBuildTransformerTo
-        modelEnvironment,
-        transformerTest.transformerParams ?? {},
-        transformerTest.transformerRuntimeContext ?? {},
-      );
+//     // resolve the transformer to be used in the test
+//     const resolvedTransformer: TransformerReturnType<CoreTransformerForBuildPlusRuntime> =
+//       transformer_extended_apply_wrapper(
+//         undefined, // activityTracker
+//         "build",
+//         [], // transformerPath
+//         (transformerTest.transformer as any)?.label,
+//         transformerTest.transformer,
+//         "value", // resolveBuildTransformerTo
+//         modelEnvironment,
+//         transformerTest.transformerParams ?? {},
+//         transformerTest.transformerRuntimeContext ?? {},
+//       );
 
-    log.info(
-      "runTransformerIntegrationTest",
-      testPathName,
-      "#### resolvedTransformer",
-      JSON.stringify(resolvedTransformer, null, 2)
-    );
+//     log.info(
+//       "runTransformerIntegrationTest",
+//       testPathName,
+//       "#### resolvedTransformer",
+//       JSON.stringify(resolvedTransformer, null, 2)
+//     );
 
-    const expectedValue = transformerTest.integrationTestExpectedValue??transformerTest.expectedValue;
-    if (resolvedTransformer instanceof TransformerFailure) {
-      log.info(
-        "runTransformerIntegrationTest",
-        testPathName,
-        "build step found failed: resolvedTransformer",
-        resolvedTransformer
-      );
-      const resultWithIgnored = ignorePostgresExtraAttributes(
-        resolvedTransformer as any,
-        transformerTest.ignoreAttributes
-      );
-      const resultWithRetain =
-        transformerTest.retainAttributes &&
-        typeof resultWithIgnored === "object" &&
-        !Array.isArray(resultWithIgnored)
-          ? Object.fromEntries(
-              Object.entries(resultWithIgnored).filter(([key]) =>
-                transformerTest.retainAttributes!.includes(key),
-              ),
-            )
-          : resultWithIgnored;
-      try {
-        log.info(
-          "runTransformerIntegrationTest",
-          testPathName,
-          "WWWWWWWWWWWWWWWWWW queryResult instance of TransformerFailure:",
-          JSON.stringify(resultWithRetain, null, 2), 
-          "expected", expectedValue
-        );
-        vitest.expect(resultWithRetain, testPathName).toEqual(expectedValue);
-        miroirActivityTracker.setTestAssertionResult(currentTestAssertionPath, {
-          assertionName: testPathName,
-          assertionResult: "ok",
-        });
-      } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : String(error) || 'Test assertion failed: ' + error;
-        log.error(
-          "runTransformerIntegrationTest",
-          testPathName,
-          "caught error from vitest.expect",
-          error
-        );
-        miroirActivityTracker.setTestAssertionResult(currentTestAssertionPath, {
-          assertionName: testPathName,
-          assertionResult: "error",
-          assertionExpectedValue: expectedValue,
-          assertionActualValue: resultWithRetain,
-        });
-        // Re-throw the error so vitest marks the test as failed
-        throw error;
-      }
-      return;
-    }
+//     const expectedValue = transformerTest.integrationTestExpectedValue??transformerTest.expectedValue;
+//     if (resolvedTransformer instanceof TransformerFailure) {
+//       log.info(
+//         "runTransformerIntegrationTest",
+//         testPathName,
+//         "build step found failed: resolvedTransformer",
+//         resolvedTransformer
+//       );
+//       const resultWithIgnored = ignorePostgresExtraAttributes(
+//         resolvedTransformer as any,
+//         transformerTest.ignoreAttributes
+//       );
+//       const resultWithRetain =
+//         transformerTest.retainAttributes &&
+//         typeof resultWithIgnored === "object" &&
+//         !Array.isArray(resultWithIgnored)
+//           ? Object.fromEntries(
+//               Object.entries(resultWithIgnored).filter(([key]) =>
+//                 transformerTest.retainAttributes!.includes(key),
+//               ),
+//             )
+//           : resultWithIgnored;
+//       try {
+//         log.info(
+//           "runTransformerIntegrationTest",
+//           testPathName,
+//           "WWWWWWWWWWWWWWWWWW queryResult instance of TransformerFailure:",
+//           JSON.stringify(resultWithRetain, null, 2), 
+//           "expected", expectedValue
+//         );
+//         vitest.expect(resultWithRetain, testPathName).toEqual(expectedValue);
+//         miroirActivityTracker.setTestAssertionResult(currentTestAssertionPath, {
+//           assertionName: testPathName,
+//           assertionResult: "ok",
+//         });
+//       } catch (error) {
+//         const errorMessage = error instanceof Error ? error.message : String(error) || 'Test assertion failed: ' + error;
+//         log.error(
+//           "runTransformerIntegrationTest",
+//           testPathName,
+//           "caught error from vitest.expect",
+//           error
+//         );
+//         miroirActivityTracker.setTestAssertionResult(currentTestAssertionPath, {
+//           assertionName: testPathName,
+//           assertionResult: "error",
+//           assertionExpectedValue: expectedValue,
+//           assertionActualValue: resultWithRetain,
+//         });
+//         // Re-throw the error so vitest marks the test as failed
+//         throw error;
+//       }
+//       return;
+//     }
     
-    let queryResult: Action2ReturnType;
-    if (testRunStep == "build") {
-      queryResult = {
-        status: "ok",
-        returnedDomainElement: resolvedTransformer as any,
-      };
-    } else {
-      queryResult = await sqlDbDataStore.handleBoxedQueryAction({
-        actionType: "runBoxedQueryAction",
-        endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-        payload: {
-          deploymentUuid: "", // NO ACCESS TO STORED DATA DURING TRANSFORMER TESTS
-          applicationSection: "data",
-          query: {
-            queryType: "boxedQueryWithExtractorCombinerTransformer",
-            runAsSql,
-            queryParams: {
-              ...transformerTest.transformerParams,
-              ...transformerTest.transformerRuntimeContext,
-            },
-            contextResults: runAsSql
-              ? Object.fromEntries(
-                  // there's a trick for runAsSql in order to be able to test transformers taking context parameters
-                  Object.entries(transformerTest.transformerRuntimeContext ?? {}).map(
-                    (e: [string, any]) => [
-                      e[0],
-                      {
-                        type: isJsonArray(e[1])
-                          ? "json_array"
-                          : isJson(e[1])
-                          ? "json"
-                          : typeof e[1],
-                      },
-                    ]
-                  )
-                )
-              : transformerTest.transformerRuntimeContext ?? {},
-            deploymentUuid: "",
-            runtimeTransformers: {
-              // transformer: (transformerTest as any).transformer,
-              transformer: resolvedTransformer,
-            },
-          },
-        },
-      });
-    }
+//     let queryResult: Action2ReturnType;
+//     if (testRunStep == "build") {
+//       queryResult = {
+//         status: "ok",
+//         returnedDomainElement: resolvedTransformer as any,
+//       };
+//     } else {
+//       queryResult = await sqlDbDataStore.handleBoxedQueryAction({
+//         actionType: "runBoxedQueryAction",
+//         endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+//         payload: {
+//           deploymentUuid: "", // NO ACCESS TO STORED DATA DURING TRANSFORMER TESTS
+//           applicationSection: "data",
+//           query: {
+//             queryType: "boxedQueryWithExtractorCombinerTransformer",
+//             runAsSql,
+//             queryParams: {
+//               ...transformerTest.transformerParams,
+//               ...transformerTest.transformerRuntimeContext,
+//             },
+//             contextResults: runAsSql
+//               ? Object.fromEntries(
+//                   // there's a trick for runAsSql in order to be able to test transformers taking context parameters
+//                   Object.entries(transformerTest.transformerRuntimeContext ?? {}).map(
+//                     (e: [string, any]) => [
+//                       e[0],
+//                       {
+//                         type: isJsonArray(e[1])
+//                           ? "json_array"
+//                           : isJson(e[1])
+//                           ? "json"
+//                           : typeof e[1],
+//                       },
+//                     ]
+//                   )
+//                 )
+//               : transformerTest.transformerRuntimeContext ?? {},
+//             deploymentUuid: "",
+//             runtimeTransformers: {
+//               // transformer: (transformerTest as any).transformer,
+//               transformer: resolvedTransformer,
+//             },
+//           },
+//         },
+//       });
+//     }
 
-    // log.info(testSuitePathName, "WWWWWWWWWWWWWWWWWW queryResult", JSON.stringify(queryResult, null, 2));
-    log.info(
-      testPathName,
-      "WWWWWWWWWWWWWWWWWW queryResult",
-      JSON.stringify(queryResult, null, 2)
-    );
-    // log.info(testSuitePathName, "WWWWWWWWWWWWWWWWWW queryResult cannot use 'instanceof' to determine error", queryResult instanceof Action2Error, Object.hasOwn(queryResult,"errorType"));
-    let resultWithIgnored: any;
-    let resultWithRetain: any;
-    let testAssertionResult: TestAssertionResult;
-    try {
-      if (queryResult["status"] == "error") {
-        // cannot use 'instanceof' to determine error because we use the local version of the class, not the version of the class that is available in the miroir-core package
-        resultWithIgnored = ignorePostgresExtraAttributes(
-          (queryResult as any).innerError,
-          transformerTest.ignoreAttributes
-        );
-        resultWithRetain = transformerTest.retainAttributes
-          ? Object.fromEntries(
-              Object.entries(resultWithIgnored).filter(([key]) =>
-                transformerTest.retainAttributes!.includes(key)
-              )
-            )
-          : resultWithIgnored;
+//     // log.info(testSuitePathName, "WWWWWWWWWWWWWWWWWW queryResult", JSON.stringify(queryResult, null, 2));
+//     log.info(
+//       testPathName,
+//       "WWWWWWWWWWWWWWWWWW queryResult",
+//       JSON.stringify(queryResult, null, 2)
+//     );
+//     // log.info(testSuitePathName, "WWWWWWWWWWWWWWWWWW queryResult cannot use 'instanceof' to determine error", queryResult instanceof Action2Error, Object.hasOwn(queryResult,"errorType"));
+//     let resultWithIgnored: any;
+//     let resultWithRetain: any;
+//     let testAssertionResult: TestAssertionResult;
+//     try {
+//       if (queryResult["status"] == "error") {
+//         // cannot use 'instanceof' to determine error because we use the local version of the class, not the version of the class that is available in the miroir-core package
+//         resultWithIgnored = ignorePostgresExtraAttributes(
+//           (queryResult as any).innerError,
+//           transformerTest.ignoreAttributes
+//         );
+//         resultWithRetain = transformerTest.retainAttributes
+//           ? Object.fromEntries(
+//               Object.entries(resultWithIgnored).filter(([key]) =>
+//                 transformerTest.retainAttributes!.includes(key)
+//               )
+//             )
+//           : resultWithIgnored;
 
-        log.info(
-          testPathName,
-          "WWWWWWWWWWWWWWWWWW queryResult instance of Action2Error:",
-          JSON.stringify(resultWithRetain, null, 2)
-        );
+//         log.info(
+//           testPathName,
+//           "WWWWWWWWWWWWWWWWWW queryResult instance of Action2Error:",
+//           JSON.stringify(resultWithRetain, null, 2)
+//         );
 
-        vitest
-          .expect(
-            resultWithRetain,
-            testPathName + "comparing received query error to expected result"
-          )
-          .toEqual(expectedValue);
-      } else {
-        log.info(testPathName, "WWWWWWWWWWWWWWWWWW query Succeeded!");
-        resultWithIgnored =
-          testRunStep == "runtime"
-            ? ignorePostgresExtraAttributes(
-                (queryResult as Action2Success).returnedDomainElement.transformer,
-                transformerTest.ignoreAttributes
-              )
-            : (queryResult as Action2Success).returnedDomainElement;
-        resultWithRetain =
-          transformerTest.retainAttributes &&
-          typeof resultWithIgnored === "object" &&
-          resultWithIgnored !== null &&
-          !Array.isArray(resultWithIgnored)
-            ? Object.fromEntries(
-                Object.entries(resultWithIgnored).filter(([key]) =>
-                  transformerTest.retainAttributes!.includes(key)
-                )
-              )
-            : resultWithIgnored;
+//         vitest
+//           .expect(
+//             resultWithRetain,
+//             testPathName + "comparing received query error to expected result"
+//           )
+//           .toEqual(expectedValue);
+//       } else {
+//         log.info(testPathName, "WWWWWWWWWWWWWWWWWW query Succeeded!");
+//         resultWithIgnored =
+//           testRunStep == "runtime"
+//             ? ignorePostgresExtraAttributes(
+//                 (queryResult as Action2Success).returnedDomainElement.transformer,
+//                 transformerTest.ignoreAttributes
+//               )
+//             : (queryResult as Action2Success).returnedDomainElement;
+//         resultWithRetain =
+//           transformerTest.retainAttributes &&
+//           typeof resultWithIgnored === "object" &&
+//           resultWithIgnored !== null &&
+//           !Array.isArray(resultWithIgnored)
+//             ? Object.fromEntries(
+//                 Object.entries(resultWithIgnored).filter(([key]) =>
+//                   transformerTest.retainAttributes!.includes(key)
+//                 )
+//               )
+//             : resultWithIgnored;
 
-        log.info(testPathName, "testResult", JSON.stringify(resultWithRetain, null, 2));
-        log.info(testPathName, "expectedValue", expectedValue);
-        vitest.expect(resultWithRetain, testPathName).toEqual(expectedValue);
-      }
-      testAssertionResult = {
-        assertionName: testPathName,
-        assertionResult: "ok",
-      };
-      // miroirActivityTracker.setTestAssertionResult(currentTestAssertionPath,{
-      //   assertionName: testPathName,
-      //   assertionResult: "ok",
-      // });
-    } catch (error) {
-      testAssertionResult = {
-        assertionName: testPathName,
-        assertionResult: "error",
-        assertionExpectedValue: expectedValue,
-        assertionActualValue: resultWithRetain,
-      };
-      // Set the result before re-throwing so it's tracked
-      miroirActivityTracker.setTestAssertionResult(currentTestAssertionPath,testAssertionResult);
-      // Re-throw the error so vitest marks the test as failed
-      throw error;
-    }
-    miroirActivityTracker.setTestAssertionResult(currentTestAssertionPath,testAssertionResult);
-  };
-}
+//         log.info(testPathName, "testResult", JSON.stringify(resultWithRetain, null, 2));
+//         log.info(testPathName, "expectedValue", expectedValue);
+//         vitest.expect(resultWithRetain, testPathName).toEqual(expectedValue);
+//       }
+//       testAssertionResult = {
+//         assertionName: testPathName,
+//         assertionResult: "ok",
+//       };
+//       // miroirActivityTracker.setTestAssertionResult(currentTestAssertionPath,{
+//       //   assertionName: testPathName,
+//       //   assertionResult: "ok",
+//       // });
+//     } catch (error) {
+//       testAssertionResult = {
+//         assertionName: testPathName,
+//         assertionResult: "error",
+//         assertionExpectedValue: expectedValue,
+//         assertionActualValue: resultWithRetain,
+//       };
+//       // Set the result before re-throwing so it's tracked
+//       miroirActivityTracker.setTestAssertionResult(currentTestAssertionPath,testAssertionResult);
+//       // Re-throw the error so vitest marks the test as failed
+//       throw error;
+//     }
+//     miroirActivityTracker.setTestAssertionResult(currentTestAssertionPath,testAssertionResult);
+//   };
+// }
 
 // ################################################################################################
 // ################################################################################################

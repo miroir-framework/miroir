@@ -58,7 +58,7 @@ export function listMiroirTestSuiteKeys(): string[] {
   return ([...MIROIR_TEST_SUITE_REGISTRY_NAMES] as string[]).sort();
 }
 
-export async function loadMiroirTestSuiteExport(suiteKey: string): Promise<MiroirTestSuite> {
+export async function loadMiroirCoreTestSuite(suiteKey: string): Promise<MiroirTestSuite> {
   const loader = MIROIR_TEST_SUITE_REGISTRY[suiteKey];
   if (!loader) {
     throw new Error(

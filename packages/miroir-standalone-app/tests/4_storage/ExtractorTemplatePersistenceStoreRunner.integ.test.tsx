@@ -74,11 +74,11 @@ import {
   addEntitiesAndInstances,
   createMiroirDeploymentGetPersistenceStoreController,
   selfApplicationDeploymentConfigurations,
-  setupMiroirTest
 } from "../../src/miroir-fwk/4-tests/tests-utils.js";
 import { chainVitestSteps } from '../../src/miroir-fwk/4-tests/vitest-utils.js';
 import { miroirAppStartup } from '../../src/startup.js';
 import { loadTestConfigFiles } from '../utils/fileTools.js';
+import { setupMiroirTest } from '../../src/miroir-fwk/4-tests/setupMiroirTest.js';
 
 let domainController: DomainControllerInterface;
 let localCache: LocalCacheInterface;
@@ -186,7 +186,7 @@ beforeAll(
 
     const wrapped = await createMiroirDeploymentGetPersistenceStoreController(
       miroirConfig as MiroirConfigClient,
-      persistenceStoreControllerManager,
+      persistenceStoreControllerManager as PersistenceStoreControllerManagerInterface,
       domainController,
       applicationDeploymentMap,
       adminDeployment,

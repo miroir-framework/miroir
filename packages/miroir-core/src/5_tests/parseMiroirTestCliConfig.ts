@@ -2,7 +2,7 @@ import type {
   MiroirTestExecutionMode,
   MiroirTestRunFilter,
 } from "./MiroirTestTools";
-import { listMiroirTestSuiteKeys } from "../../tests/helpers/miroirTestSuiteRegistry";
+import { listMiroirTestSuiteKeys } from "../../tests/helpers/miroirCoreTestSuiteRegistry";
 
 export type MiroirTestCliConfig = {
   suiteKeys: string[];

@@ -106,7 +106,7 @@ Legacy **Unit Test** / **Transformer Test** reports still exist; prefer **Miroir
 1. Add or edit a `MiroirTest` JSON instance under the entity data directory (UUID v4 filename = inner `uuid`).
 2. Export from `packages/miroir-test-app_deployment-miroir/index.ts`.
 3. Add a registry entry (or run `npm run generate-miroir-tests -w miroir-core` when migrating from legacy).
-4. Add a vitest loader file that calls `runDeployedMiroirTestSuiteLoader(miroirTest_*, "mySuite.unit.test")`.
+4. Add a vitest loader file that calls `runMiroirCoreTestSuite(miroirTest_*, "mySuite.unit.test")`.
 5. Validate schema: `npm run testByFile -w miroir-core -- miroirTest.schema`.
 
 For migrations from legacy `UnitTest` / `TransformerTest`, use `migrateLegacyTestInstance` in `scripts/miroirTestMigrateDefinition.ts` and the manifest `miroir-test-migration-map.json`.
@@ -119,7 +119,7 @@ For migrations from legacy `UnitTest` / `TransformerTest`, use `migrateLegacyTes
 
 ```
 Vitest loader / UI button
-  → runDeployedMiroirTestSuiteLoader | runDeployedMiroirTestSuite
+  → runMiroirCoreTestSuite | runDeployedMiroirTestSuite
     → MiroirTestTools.runMiroirTests (executionMode: unit | integration)
       → leaf adapters → TestTools / UnitTestTools / QueryRunnerTestTools (frozen, not modified)
 ```

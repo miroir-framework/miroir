@@ -33,9 +33,11 @@ export type { MiroirTestRunFilter, TestSuiteListFilter };
 export type MiroirTestExecutionMode = "unit" | "integration";
 
 export type MiroirTestExecutionOptions = {
-  executionMode?: MiroirTestExecutionMode;
+  executionMode: "unit";
+} | {
+  executionMode: "integration";
   /** Required when `executionMode` is `"integration"` (Postgres store). */
-  integrationStore?: unknown;
+  integrationStore?: unknown; // TODO: remove, use the domainController from the executionEnvironment instead
   /** Populated by MiroirTestIntegrationOrchestrator (runner + shared integ context). */
   executionEnvironment?: MiroirTestExecutionEnvironment;
 };
@@ -63,7 +65,7 @@ export type RunMiroirTest = (
   parentTrackingId: string | undefined,
   trackActionsBelow: boolean,
   runMiroirTests: RunMiroirTests,
-  executionOptions: MiroirTestExecutionOptions,
+  executionOptions?: MiroirTestExecutionOptions,
   testAssertionPath?: TestAssertionPath,
   parentSkip?: boolean,
 ) => Promise<void>;
@@ -87,16 +89,16 @@ export async function runMiroirTest(
   _parentTrackingId: string | undefined,
   _trackActionsBelow: boolean,
   _runMiroirTests: RunMiroirTests,
-  executionOptions: MiroirTestExecutionOptions,
+  executionOptions?: MiroirTestExecutionOptions, // needed only for transformerTest and runnerTest
   testAssertionPath?: TestAssertionPath,
   parentSkip?: boolean,
 ): Promise<void> {
-  const executionMode = executionOptions.executionMode ?? "unit";
+  const executionMode = executionOptions?.executionMode ?? "unit";
 
   switch (leaf.miroirTestType) {
     case "transformerTest": {
-      if (executionMode === "integration") {
-        if (executionOptions.integrationStore === undefined) {
+      if (executionOptions?.executionMode === "integration") {
+        if (executionOptions?.integrationStore === undefined) {
           throw new Error(
             "runMiroirTestInMemory: integrationStore is required when executionMode is integration",
           );
@@ -115,6 +117,7 @@ export async function runMiroirTest(
           parentSkip,
         );
       }
+      // no executionOptions or executionMode is "unit"
       return runMiroirTransformerTest(
         localVitest,
         testNamePath,
@@ -158,9 +161,14 @@ export async function runMiroirTest(
         modelEnvironment,
       );
     case "runnerTest":
-      if (executionMode !== "integration") {
+      if (executionOptions?.executionMode !== "integration") {
         throw new Error(
           "runMiroirTestInMemory: runnerTest leaves require executionMode integration",
+        );
+      }
+      if (executionOptions?.executionEnvironment === undefined) {
+        throw new Error(
+          "runMiroirTestInMemory: executionEnvironment is required when executionMode is integration",
         );
       }
       return runMiroirRunnerTest(
@@ -191,7 +199,7 @@ export async function runMiroirTestSuite(
   parentTrackingId: string | undefined,
   trackActionsBelow: boolean = false,
   runMiroirTests: RunMiroirTests,
-  executionOptions: MiroirTestExecutionOptions = {},
+  executionOptions?: MiroirTestExecutionOptions,
   parentSkip?: boolean,
 ): Promise<void> {
   if (!localVitest.expect) {
@@ -301,7 +309,7 @@ export const runMiroirTests: RunMiroirTests = {
     parentTrackingId = undefined,
     trackActionsBelow = false,
     runMiroirTestsRef,
-    executionOptions = {},
+    executionOptions,
     parentSkip?,
   ) => {
     const testSuiteName = miroirTestSuite.miroirTestLabel ?? miroirTestSuite.miroirTestType;
@@ -337,7 +345,7 @@ export const runMiroirTests: RunMiroirTests = {
     parentTrackingId = undefined,
     trackActionsBelow = false,
     runMiroirTestsRef,
-    executionOptions = {},
+    executionOptions,
     testAssertionPath?,
     parentSkip?,
   ) => {
@@ -363,7 +371,7 @@ export const runMiroirTests: RunMiroirTests = {
   },
 };
 
-export const miroirTestsDisplayResults = displayMiroirTestResults;
+// export const displayMiroirTestResults = displayMiroirTestResults;
 
 export {
   effectiveMiroirTransformerSkip,

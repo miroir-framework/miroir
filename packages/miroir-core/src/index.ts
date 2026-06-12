@@ -931,10 +931,15 @@ export { generateRestServiceResponse } from "./4_services/RestTools.js";
 export {
   displayTestSuiteResultsDetails,
   // displayTestSuiteResults,
-  RunTransformerTest, runTransformerTestInMemory, RunTransformerTests, runTransformerTestSuite, runUnitTransformerTests, testSuites,
+  RunTransformerTest,
+  // runTransformerTestInMemory,
+  RunTransformerTests,
+  // runTransformerTestSuite,
+  // runUnitTransformerTests,
+  testSuites,
   transformerTestsDisplayResults,
   unitTestsDisplayResults,
-  type TestSuiteListFilter
+  type TestSuiteListFilter,
 } from "./5_tests/TestTools.js";
 export {
   deserializeFunctionCallValue,
@@ -967,8 +972,8 @@ export {
 export {
   effectiveMiroirTransformerSkip,
   miroirTransformerAssertionName,
-  miroirTestsDisplayResults,
-  runMiroirTest as runMiroirTestInMemory,
+  // displayMiroirTestResults,
+  runMiroirTest,
   runMiroirTests,
   runMiroirTestSuite,
   type MiroirTestExecutionMode,

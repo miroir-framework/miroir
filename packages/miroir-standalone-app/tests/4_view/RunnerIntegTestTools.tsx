@@ -1,6 +1,5 @@
-// import "@testing-library/jest-dom";
-
 import crossFetch from "cross-fetch";
+
 import {
   type ApplicationDeploymentMap,
   type CompositeAction,
@@ -30,7 +29,6 @@ import {
 } from "miroir-test-app_deployment-admin";
 import { deployment_Library_DO_NO_USE } from "miroir-test-app_deployment-library";
 import { setupMiroirTest } from "../../src/miroir-fwk/4-tests/setupMiroirTest";
-// import { setupMiroirTest } from "../../src/miroir-fwk/4-tests/tests-utils";
 
 export interface RunnerTestParams {
   pageLabel: string,
@@ -78,10 +76,6 @@ export async function beforeAllTests(
   const domainController = miroirConfig.client.emulateServer && domainControllerForServer
     ? domainControllerForServer
       : domainControllerForClient
-  // persistenceStoreControllerManager = localpersistenceStoreControllerManager;
-  // domainController = localdomainController;
-  // localCache = locallocalCache;
-  // miroirContext = localmiroirContext;
 
   // create the Miroir app deployment containing the meta-model
   const createMiroirDeploymentCompositeAction = createDeploymentCompositeAction(
@@ -224,6 +218,8 @@ export interface TestConfig {
   adminDeployment: Deployment;
   libraryDeploymentStorageConfiguration: StoreUnitConfiguration;
 }
+
+// ################################################################################################
 export function getTestConfig(
   miroirConfig: MiroirConfigClient,
   testApplicationDeploymentUuid: Uuid, 

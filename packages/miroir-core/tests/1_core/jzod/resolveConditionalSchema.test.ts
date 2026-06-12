@@ -3,7 +3,7 @@ import * as vitest from "vitest";
 import { miroirTest_resolveConditionalSchema } from "miroir-test-app_deployment-miroir";
 
 import type { MiroirTestSuite } from "../../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
-import { runDeployedMiroirTestSuiteLoader } from "../../helpers/runDeployedMiroirTestSuiteLoader";
+import { runMiroirCoreTestSuite } from "../../helpers/runMiroirCoreTestSuite";
 
 const VITEST_FILTER = process.env.VITEST_FILTER;
 const vitestArgs = process.argv.slice(2);
@@ -25,7 +25,7 @@ if (!shouldRun) {
   console.log("skipping resolveConditionalSchema.test");
   vitest.test.skip("resolveConditionalSchema.test skipped", () => {});
 } else {
-  await runDeployedMiroirTestSuiteLoader(
+  await runMiroirCoreTestSuite(
     miroirTest_resolveConditionalSchema.definition as MiroirTestSuite,
     testSuiteName,
     {

@@ -34,7 +34,7 @@ import {
 
 import {
   runTestOrTestSuite,
-} from "../../src/miroir-fwk/4-tests/tests-utils.js";
+} from "../../src/miroir-fwk/4-tests/runTestOrTestSuite.js";
 
 import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
 import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";

@@ -61,10 +61,10 @@ import {
   createMiroirDeploymentGetPersistenceStoreController,
   deleteAndCloseApplicationDeployments,
   selfApplicationDeploymentConfigurations,
-  setupMiroirTest,
 } from "../../src/miroir-fwk/4-tests/tests-utils.js";
 import { miroirAppStartup } from "../../src/startup.js";
 import { loadTestConfigFiles } from "../utils/fileTools.js";
+import { setupMiroirTest } from "../../src/miroir-fwk/4-tests/setupMiroirTest.js";
 
 let domainController: DomainControllerInterface;
 let localCache: LocalCacheInterface;
