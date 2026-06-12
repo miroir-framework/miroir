@@ -34,7 +34,6 @@ import {
 
 import {
   runTestOrTestSuite,
-  setupMiroirTestAndCreateMiroirDeployment,
 } from "../../src/miroir-fwk/4-tests/tests-utils.js";
 
 import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
@@ -82,6 +81,7 @@ import {
 } from "miroir-test-app_deployment-library";
 import { packageName } from "../../src/constants.js";
 import { cleanLevel } from "./constants.js";
+import { setupMiroirTestAndCreateMiroirDeployment } from "../../src/miroir-fwk/4-tests/setupMiroirTest.js";
 // import { entityBook } from "miroir-core";
 
 const env: any = process.env;

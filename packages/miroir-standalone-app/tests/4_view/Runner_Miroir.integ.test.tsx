@@ -39,7 +39,7 @@ import {
 } from "miroir-test-app_deployment-miroir";
 import { env } from "process";
 import { loglevelnext } from "../../src/loglevelnextImporter";
-import { runTestOrTestSuite } from "../../src/miroir-fwk/4-tests/tests-utils";
+import { runTestOrTestSuite } from "../../src/miroir-fwk/4-tests/runTestOrTestSuite.ts";
 import { miroirAppStartup } from "../../src/startup";
 import { loadTestConfigFiles } from "../utils/fileTools";
 

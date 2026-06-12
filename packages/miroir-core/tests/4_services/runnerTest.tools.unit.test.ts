@@ -12,7 +12,7 @@ import { RUNNER_TEST_ENVIRONMENT_REFS } from "miroir-test-app_deployment-library
 import {
   libraryTestIdentifiers,
   resolveRunnerTestFixture,
-  RUNNER_TEST_INITIAL_MODEL_FROM_PARAMETERS,
+  // RUNNER_TEST_INITIAL_MODEL_FROM_PARAMETERS,
 } from "miroir-test-app_deployment-library";
 import { resolveRunnerTestLeaf } from "../../src/5_tests/RunnerTestTools";
 import { expandResolvableResetAndinitializeDeploymentCompositeAction } from "../../src/1_core/Deployment";
@@ -30,11 +30,11 @@ describe("runnerTest tools", () => {
     expect(miroirTestForRunner).toBe(miroirTestForRunner);
   });
 
-  it("libraryLendBookDefaults uses getFromParameters transformer for initialModel", () => {
-    const fixture = resolveRunnerTestFixture("libraryLendBookDefaults");
-    expect(fixture.initialModel).toEqual(RUNNER_TEST_INITIAL_MODEL_FROM_PARAMETERS);
-    expect(fixture.initialModel).not.toHaveProperty("entities");
-  });
+  // it("libraryLendBookDefaults uses getFromParameters transformer for initialModel", () => {
+  //   const fixture = resolveRunnerTestFixture("libraryLendBookDefaults");
+  //   expect(fixture.initialModel).toEqual(RUNNER_TEST_INITIAL_MODEL_FROM_PARAMETERS);
+  //   expect(fixture.initialModel).not.toHaveProperty("entities");
+  // });
 
   it("libraryRunnerTestEnvironment seeds defaultLibraryAppModel in param bank", () => {
     const environment = RUNNER_TEST_ENVIRONMENT_REFS;

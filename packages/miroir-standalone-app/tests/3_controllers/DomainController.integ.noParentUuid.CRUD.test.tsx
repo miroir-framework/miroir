@@ -47,8 +47,7 @@ import { loadTestConfigFiles } from "../utils/fileTools.js";
 
 import {
   runTestOrTestSuite,
-  setupMiroirTestAndCreateMiroirDeployment,
-} from "../../src/miroir-fwk/4-tests/tests-utils.js";
+} from "../../src/miroir-fwk/4-tests/runTestOrTestSuite.js";
 
 import {
   adminApplication_Miroir,
@@ -68,6 +67,7 @@ import {
 
 import { packageName } from "../../src/constants.js";
 import { cleanLevel } from "./constants.js";
+import { setupMiroirTestAndCreateMiroirDeployment } from "../../src/miroir-fwk/4-tests/setupMiroirTest.js";
 
 // ##############################################################################################
 // Entity whose instances do NOT carry a parentUuid attribute.

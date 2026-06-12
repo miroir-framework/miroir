@@ -65,13 +65,6 @@ export async function runMiroirCoreTestsFromCLI(
       suiteKey,
       definition: miroirTestSuite as MiroirTestSuite,
     });
-    // await runDeployedMiroirTestSuite({
-    //   miroirTestSuite,
-    //   suiteKey,
-    //   miroirActivityTracker,
-    //   filter: config.filter,
-    //   executionOptions,
-    // });
     await runMiroirTests._runMiroirTestSuite(
       vitest,
       [suiteKey],

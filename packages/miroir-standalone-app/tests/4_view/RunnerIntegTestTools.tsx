@@ -1,4 +1,4 @@
-import "@testing-library/jest-dom";
+// import "@testing-library/jest-dom";
 
 import crossFetch from "cross-fetch";
 import {
@@ -29,7 +29,8 @@ import {
   deployment_Miroir
 } from "miroir-test-app_deployment-admin";
 import { deployment_Library_DO_NO_USE } from "miroir-test-app_deployment-library";
-import { setupMiroirTest } from "../../src/miroir-fwk/4-tests/tests-utils";
+import { setupMiroirTest } from "../../src/miroir-fwk/4-tests/setupMiroirTest";
+// import { setupMiroirTest } from "../../src/miroir-fwk/4-tests/tests-utils";
 
 export interface RunnerTestParams {
   pageLabel: string,

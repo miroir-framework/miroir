@@ -45,10 +45,6 @@ import { miroirAppStartup } from "../../src/startup.js";
 import { loglevelnext } from "../../src/loglevelnextImporter.js";
 import { loadTestConfigFiles } from "../utils/fileTools.js";
 
-import {
-  runTestOrTestSuite,
-  setupMiroirTestAndCreateMiroirDeployment,
-} from "../../src/miroir-fwk/4-tests/tests-utils.js";
 
 import { adminApplication_Miroir, deployment_Admin } from "miroir-test-app_deployment-admin";
 
@@ -65,6 +61,8 @@ import {
 
 import { packageName } from "../../src/constants.js";
 import { cleanLevel } from "./constants.js";
+import { setupMiroirTestAndCreateMiroirDeployment } from "../../src/miroir-fwk/4-tests/setupMiroirTest.js";
+import { runTestOrTestSuite } from "../../src/miroir-fwk/4-tests/runTestOrTestSuite.js";
 
 // ##############################################################################################
 // Composite-PK test entity definition

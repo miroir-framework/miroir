@@ -20,5 +20,5 @@
     "./src/**/*.jsx",
     "./src/**/*.ts",
     "./src/**/*.tsx"
-  ]
+, "src/miroir-fwk/4-tests/setupMiroirTest.ts"  ]
 }

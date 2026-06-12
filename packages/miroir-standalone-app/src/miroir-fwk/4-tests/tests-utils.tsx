@@ -1,10 +1,5 @@
 import type { RenderOptions } from '@testing-library/react';
 import { render } from '@testing-library/react';
-// import { expect } from 'vitest';
-
-
-// import { SetupWorkerApi } from 'msw/browser';
-// import { SetupServerApi } from 'msw/lib/node';
 import * as React from 'react';
 import { FC, PropsWithChildren, createContext, useState } from 'react';
 
@@ -12,46 +7,34 @@ import { FC, PropsWithChildren, createContext, useState } from 'react';
 import {
   Action2ReturnType,
   AdminApplicationDeploymentConfiguration,
-  ConfigurationService,
   DeploymentConfiguration,
   DomainAction,
   DomainControllerInterface,
+  Entity,
   EntityDefinition,
   EntityInstance,
   InstanceAction,
   LocalCacheInterface,
   LoggerInterface,
-  Entity,
-  MiroirActivityTracker,
   MiroirConfigClient,
   MiroirContext,
   MiroirContextInterface,
-  MiroirEventService,
   MiroirLoggerFactory,
   PersistenceStoreControllerInterface,
-  PersistenceStoreControllerManager,
   PersistenceStoreControllerManagerInterface,
-  RestClient,
-  RestClientInterface,
-  RestClientStub,
-  RestPersistenceClientAndRestClientInterface,
   // Deployment,
   StoreUnitConfiguration,
   Uuid,
   // deployment_Library_DO_NO_USE,
   createDeploymentCompositeAction,
   defaultMiroirModelEnvironment,
-  noValue,
   selfApplicationDeploymentMiroir,
   selfApplicationMiroir,
   type ApplicationDeploymentMap,
   type Deployment,
-  type MiroirActivityTrackerInterface,
-  defaultSelfApplicationDeploymentMap,
-  defaultMetaModelEnvironment
+  type MiroirActivityTrackerInterface
 } from "miroir-core";
 import {
-  deployment_Admin,
   deployment_Miroir
 } from "miroir-test-app_deployment-admin";
 
@@ -62,13 +45,12 @@ import {
 
 import {
   TestCompositeActionParams,
-  type StoreOrBundleAction
-} from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+} from "miroir-core";
 import {
   LocalCache,
-  LocalCacheProvider, MiroirContextReactProvider, ReduxStoreWithUndoRedo,
-  RestPersistenceClientAndRestClient,
-  setupMiroirDomainController
+  LocalCacheProvider,
+  MiroirContextReactProvider,
+  ReduxStoreWithUndoRedo,
 } from 'miroir-react';
 import { packageName } from '../../constants';
 import { cleanLevel } from '../4_view/constants';
@@ -172,6 +154,7 @@ export function renderWithProviders(
   return render(ui, { wrapper: Wrapper, ...renderOptions })
 }
 
+// ################################################################################################
 export function renderWithProvidersWithContextProvider(
   ui: React.ReactElement,
   {
@@ -200,7 +183,7 @@ export interface LoadingStateInterface {
   step: number;
 }
 
-const loadingStateContext = createContext<{loadingStateService:LoadingStateInterface}>({loadingStateService:{loaded:false,step:0}});
+// const loadingStateContext = createContext<{loadingStateService:LoadingStateInterface}>({loadingStateService:{loaded:false,step:0}});
 
 export const DisplayLoadingInfo:FC<{reportUuid?:string}> = (props:{reportUuid?:string}) => {
   const [step,setStep] = useState(0);
@@ -401,111 +384,6 @@ export interface MiroirIntegrationTestEnvironment {
 }
 
 // ################################################################################################
-/**
- * @param miroirConfig 
- * @returns 
- */
-export async function setupMiroirTest(
-  miroirConfig: MiroirConfigClient,
-  miroirActivityTracker?: MiroirActivityTracker,
-  miroirEventService?: MiroirEventService,
-  customfetch?: any,
-): Promise<{
-  domainControllerForClient: DomainControllerInterface;
-  domainControllerForServer?: DomainControllerInterface | undefined;
-  persistenceStoreControllerManagerForServer?: PersistenceStoreControllerManagerInterface;
-  persistenceStoreControllerManagerForClient: PersistenceStoreControllerManagerInterface;
-  localCache: LocalCacheInterface;
-  miroirContext: MiroirContext;
-}> {
-  const localMiroirActivityTracker = miroirActivityTracker??new MiroirActivityTracker();
-  const localMiroirEventService = miroirEventService??new MiroirEventService(localMiroirActivityTracker);
-  const miroirContext = new MiroirContext(
-    localMiroirActivityTracker,
-    localMiroirEventService,
-    miroirConfig
-  );
-  console.log("setupMiroirTest miroirConfig", JSON.stringify(miroirConfig, null, 2));
-  let client: RestClientInterface | undefined = undefined;
-  let remotePersistenceStoreRestClient: RestPersistenceClientAndRestClientInterface | undefined = undefined;
-  if (miroirConfig.client.emulateServer) {
-    client = new RestClientStub(miroirConfig.client.rootApiUrl);
-    remotePersistenceStoreRestClient = new RestPersistenceClientAndRestClient(
-      miroirConfig.client.rootApiUrl,
-      client,
-    );
-  } else {
-    client = new RestClient(customfetch ?? fetch);
-    remotePersistenceStoreRestClient = new RestPersistenceClientAndRestClient(
-      miroirConfig.client.serverConfig.rootApiUrl,
-      client,
-    );
-  }
-
-  if (!client) {
-    throw new Error("tests-utils setupMiroirTest could not create client");
-  }
-  if (!remotePersistenceStoreRestClient) {
-    throw new Error("tests-utils setupMiroirTest could not create remotePersistenceStoreRestClient");
-  }
-
-  const persistenceStoreControllerManagerForClient = new PersistenceStoreControllerManager(
-    ConfigurationService.configurationService.adminStoreFactoryRegister,
-    ConfigurationService.configurationService.StoreSectionFactoryRegister
-  );
-
-  const domainControllerForClient = await setupMiroirDomainController(
-    miroirContext, 
-    {
-      persistenceStoreAccessMode: "remote",
-      localPersistenceStoreControllerManager: persistenceStoreControllerManagerForClient,
-      remotePersistenceStoreRestClient,
-    }
-  ); // even when emulating server, we use remote persistence store, since MSW makes it appear as if we are using a remote server.
-
-  let persistenceStoreControllerManagerForServer: PersistenceStoreControllerManager | undefined = undefined;
-  if (miroirConfig.client.emulateServer) {
-
-    if (!miroirConfig.client.filesystemDeploymentRootDirectory) {
-      throw new Error("tests-utils setupMiroirTest: when emulateServer is true, filesystemDeploymentRootDirectory must be provided in miroirConfig.client");
-    }
-    persistenceStoreControllerManagerForServer = new PersistenceStoreControllerManager(
-      ConfigurationService.configurationService.adminStoreFactoryRegister,
-      ConfigurationService.configurationService.StoreSectionFactoryRegister,
-      miroirConfig.client.filesystemDeploymentRootDirectory,
-    );
-
-    const domainControllerForServer = await setupMiroirDomainController(
-      miroirContext, 
-      {
-        persistenceStoreAccessMode: "local",
-        localPersistenceStoreControllerManager: persistenceStoreControllerManagerForServer,
-      }
-    ); // even when emulating server, we use remote persistence store, since MSW makes it appear as if we are using a remote server.
-
-    (client as RestClientStub).setServerDomainController(domainControllerForServer);
-    (client as RestClientStub).setPersistenceStoreControllerManager(persistenceStoreControllerManagerForServer);
-    return {
-      persistenceStoreControllerManagerForClient,
-      persistenceStoreControllerManagerForServer,
-      domainControllerForServer,
-      domainControllerForClient,
-      localCache: domainControllerForClient.getLocalCache(),
-      miroirContext,
-    };
-  }
-  return {
-    persistenceStoreControllerManagerForClient,
-    persistenceStoreControllerManagerForServer: undefined,
-    domainControllerForClient,
-    domainControllerForServer: undefined,
-    localCache: domainControllerForClient.getLocalCache(),
-    miroirContext,
-  };
-}
-
-
-// ################################################################################################
 // ################################################################################################
 // ################################################################################################
 // ################################################################################################
@@ -619,84 +497,6 @@ export async function createMiroirDeploymentGetPersistenceStoreController(
 }
 
 
-// ################################################################################################
-/**
- * Common beforeAll setup: creates Miroir test environment and Miroir application deployment.
- * Reduces boilerplate in integration test beforeAll hooks.
- */
-export async function setupMiroirTestAndCreateMiroirDeployment(
-  miroirConfig: MiroirConfigClient,
-  miroirActivityTracker: MiroirActivityTracker,
-  miroirEventService: MiroirEventService,
-  miroirDeploymentUuid: string,
-  miroirSelfApplicationUuid: string,
-  adminDeployment: Deployment,
-  miroirDeploymentStorageConfiguration: StoreUnitConfiguration,
-  applicationDeploymentMap: ApplicationDeploymentMap,
-  customFetch?: any,
-): Promise<{
-  domainController: DomainControllerInterface;
-  // persistenceStoreControllerManagerForClient: PersistenceStoreControllerManagerInterface;
-}> {
-  // const { domainController, persistenceStoreControllerManagerForClient } = await setupMiroirTest(
-  const { domainControllerForClient, domainControllerForServer } = await setupMiroirTest(
-    miroirConfig, miroirActivityTracker, miroirEventService, customFetch,
-  );
-
-  if (miroirConfig.client.emulateServer && domainControllerForServer) {
-    log.info('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ setupMiroirTestAndCreateMiroirDeployment created server domain controller');
-    const configurations: Record<string, Deployment> = {
-      [deployment_Admin.uuid]: deployment_Admin as Deployment,
-      [deployment_Miroir.uuid]: deployment_Miroir as Deployment,
-    }
-    
-    // open all configured stores
-    for (const c of Object.entries(configurations)) {
-      const openStoreAction: StoreOrBundleAction = {
-        actionType: "storeManagementAction_openStore",
-        endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
-        payload: {
-          application: c[1].selfApplication,
-          deploymentUuid: c[0],
-          configuration: {
-            [c[0]]: c[1].configuration as StoreUnitConfiguration,
-          },
-        },
-      };
-      await domainControllerForServer.handleAction(
-        openStoreAction,
-        defaultSelfApplicationDeploymentMap,
-        defaultMetaModelEnvironment
-      );
-    }
-  }
-
-  
-
-  const createMiroirDeploymentCompositeAction = createDeploymentCompositeAction(
-    "miroir",
-    miroirDeploymentUuid,
-    miroirSelfApplicationUuid,
-    adminDeployment,
-    miroirDeploymentStorageConfiguration,
-  );
-  const domainController =
-    miroirConfig.client.emulateServer && domainControllerForServer
-      ? domainControllerForServer
-      : domainControllerForClient;
-  const createDeploymentResult = await domainController.handleCompositeAction(
-    createMiroirDeploymentCompositeAction,
-    applicationDeploymentMap,
-    defaultMiroirModelEnvironment,
-    {},
-  );
-  if (createDeploymentResult.status !== "ok") {
-    throw new Error("Failed to create Miroir deployment: " + JSON.stringify(createDeploymentResult));
-  }
-  return { domainController: domainControllerForClient, 
-    // persistenceStoreControllerManagerForClient
-   };
-}
 
 // #################################################################################################################
 export async function resetApplicationDeployments(
@@ -783,134 +583,5 @@ export async function deleteAndCloseApplicationDeployments(
   return Promise.resolve();
 }
 
-
-
-// ################################################################################################
-export async function runTestOrTestSuite(
-  domainController: DomainControllerInterface,
-  testAction: TestCompositeActionParams,
-  applicationDeploymentMap: ApplicationDeploymentMap,
-  miroirActivityTracker: MiroirActivityTrackerInterface, // Optional unified tracker for test execution tracking
-  testActionParamValues?: {[k:string]: any},
-) {
-  const fullTestName = testAction.testActionLabel??testAction.testActionType;
-  log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ STARTING test:", fullTestName, );
-
-  try {
-    const currentModelEnvironment = domainController.currentModelEnvironment(
-      testAction.application,
-      applicationDeploymentMap,
-    );
-
-    switch (testAction.testActionType) {
-      case 'testBuildPlusRuntimeCompositeActionSuite':
-      case "testCompositeActionSuite": {
-        const newParams = {
-          ...(testActionParamValues ?? {}),
-          ...(testAction.testActionType == "testBuildPlusRuntimeCompositeActionSuite"
-            ? (testAction.testParams ?? {})
-            : {}),
-        };
-        log.info(
-          "running test testCompositeActionSuite",
-          fullTestName,
-          "with params",
-          newParams,
-          // JSON.stringify(newParams, null, 2)
-        );
-        const queryResult: Action2ReturnType = await miroirActivityTracker.trackTestSuite(
-          fullTestName,
-          fullTestName,
-          undefined, // parentTrackId
-          async () =>
-            await domainController.handleTestCompositeActionSuite(
-              testAction.application,
-              testAction.testCompositeAction as any, // TODO: remove cast
-              applicationDeploymentMap,
-              currentModelEnvironment,
-              newParams
-            )
-        ); 
-        log.info(
-          "received results for test testCompositeActionSuite",
-          fullTestName,
-          ": queryResult=",
-          JSON.stringify(queryResult, null, 2),
-          "TestContextResults",
-          JSON.stringify(miroirActivityTracker.getTestAssertionsResults([]), null, 2)
-        );
-        // log.info(
-        //   "received results for test testCompositeActionSuite",
-        //   fullTestName,
-        //   ": queryResult=",
-        //   JSON.stringify(queryResult, null, 2)
-        // );
-        return queryResult;
-      }
-      case 'testBuildPlusRuntimeCompositeAction':
-      case "testCompositeAction": {
-        const queryResult: Action2ReturnType = await miroirActivityTracker.trackTest(
-          fullTestName,
-          miroirActivityTracker.getCurrentActivityId(),
-          async () =>
-            await domainController.handleTestCompositeAction(
-              testAction.testCompositeAction as any, // TODO: remove cast
-              applicationDeploymentMap,
-              currentModelEnvironment,
-              {},
-            )
-        );
-        // const queryResult: Action2ReturnType = await domainController.handleTestCompositeAction(
-        //   testAction.testCompositeAction as any, // TODO: remove cast
-        //   {},
-        //   domainController.currentModel(testAction.deploymentUuid)
-        // );
-        log.info(
-          "test testCompositeAction",
-          fullTestName,
-          ": queryResult=",
-          JSON.stringify(queryResult, null, 2)
-        );
-        return queryResult;
-      }
-      case "testCompositeActionTemplateSuite": {
-        log.info("testCompositeActionTemplateSuite", fullTestName, "running for testActionParamValues", testActionParamValues);
-        const queryResult: Action2ReturnType = await miroirActivityTracker.trackTest(
-          fullTestName,
-          miroirActivityTracker.getCurrentActivityId(),
-          async() => await domainController.handleTestCompositeActionTemplateSuite(
-            testAction.testCompositeActionSuite,
-            applicationDeploymentMap,
-            currentModelEnvironment,
-            testActionParamValues??{},
-          )
-        )
-        log.info(
-          "received results for test testCompositeActionSuite",
-          fullTestName,
-          ": queryResult=",
-          JSON.stringify(queryResult, null, 2),
-          "TestContextResults",
-          // JSON.stringify(miroirActivityTracker.getTestAssertionsResults([{testSuite: testAction.testActionLabel}]), null, 2)
-          JSON.stringify(miroirActivityTracker.getTestAssertionsResults([]), null, 2)
-        );
-        return queryResult;
-      }
-      case "testCompositeActionTemplate": {
-        throw new Error("testCompositeActionTemplate not implemented yet!");
-      }
-    }
-  } catch (error) {
-    log.error(
-      "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ ERROR test:",
-      fullTestName,
-      "error",
-      error
-    );
-  } finally {
-    log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DONE test:", fullTestName);
-    miroirActivityTracker.resetContext();
-  }
-}
 
 
