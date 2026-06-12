@@ -37,6 +37,8 @@ import { domainStateToReduxDeploymentsState, resolvePathOnObject } from "../tool
 import domainStateImport from "../domainState.json";
 import type { TestSuiteListFilter } from "../0_interfaces/5-tests/miroirTestTypes";
 
+export { miroirTestForQuery as queryRunnerTestJzodSchema } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+
 type VitestNamespace = typeof vitest;
 
 export type QueryRunnerFixture = {
@@ -107,6 +109,7 @@ type QueryRunnerExecution = {
   run: () => Domain2QueryReturnType<Record<string, unknown>>;
 };
 
+// ################################################################################################
 function buildQueryRunnerExecutions(
   miroirTest: MiroirTestForQuery,
   fixture: QueryRunnerFixture,
@@ -194,8 +197,7 @@ function buildQueryRunnerExecutions(
   return executions;
 }
 
-export { miroirTestForQuery as queryRunnerTestJzodSchema } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
-
+// ################################################################################################
 export async function runMiroirQueryRunnerTestInMemory(
   localVitest: VitestNamespace,
   testNamePath: string[],

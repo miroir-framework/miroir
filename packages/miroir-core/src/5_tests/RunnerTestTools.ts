@@ -1,4 +1,6 @@
+// ONLY A DEV DEPENDENCY! USED FOR THE TYPE ONLY, PRUNED BY THE TRANSPILER
 import * as vitest from "vitest";
+type VitestNamespace = typeof vitest;
 
 import type {
   MiroirTestForRunner,
@@ -15,7 +17,6 @@ import { testBuildPlusRuntimeCompositeActionSuiteForRunner } from "../1_core/Run
 import {
   resolveRunnerRef,
   resolveRunnerTestDeploymentRef,
-  // resolveRunnerTestEnvironmentSeed,
   resolveRunnerTestFixture,
   RUNNER_TEST_ENVIRONMENT_REFS,
 } from "miroir-test-app_deployment-library";
@@ -27,7 +28,6 @@ import type {
 import type { MiroirTestRunFilter } from "../0_interfaces/5-tests/miroirTestTypes";
 import type { MiroirTestExecutionEnvironment } from "./MiroirTestIntegrationOrchestrator.js";
 
-type VitestNamespace = typeof vitest;
 
 export { miroirTestForRunner as runnerTestJzodSchema } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
@@ -56,6 +56,14 @@ export function mergeRunnerTestParamBank(
   };
 }
 
+// ################################################################################################
+/**
+ * TODO: not justified, parameter handling for RunnerTest should be dealt with through Transformer resolution
+ * @param leaf - the runner test leaf
+ * @param pageLabel - the page label
+ * @param buildContext - the build context
+ * @returns 
+ */
 export function resolveRunnerTestLeaf({
   leaf,
   pageLabel,
@@ -87,6 +95,7 @@ export function resolveRunnerTestLeaf({
   );
 }
 
+// ################################################################################################
 export async function runRunnerTestCompositeAction(
   domainController: DomainControllerInterface,
   testAction: TestCompositeActionParams,
@@ -122,7 +131,8 @@ export async function runRunnerTestCompositeAction(
   );
 }
 
-export async function runMiroirRunnerTestInMemory(
+// ################################################################################################
+export async function runMiroirRunnerTest(
   localVitest: VitestNamespace,
   _testNamePath: string[],
   _filter: MiroirTestRunFilter | undefined,

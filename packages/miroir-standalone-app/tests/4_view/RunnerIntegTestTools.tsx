@@ -12,7 +12,6 @@ import {
   type MiroirActivityTracker,
   type MiroirConfigClient,
   type MiroirEventService,
-  type PersistenceStoreControllerManager,
   type PersistenceStoreControllerManagerInterface,
   type Runner,
   type StoreUnitConfiguration,

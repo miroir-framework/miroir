@@ -954,7 +954,7 @@ export {
 } from "./5_tests/QueryRunnerTestTools.js";
 export {
   resolveRunnerTestLeaf,
-  runMiroirRunnerTestInMemory,
+  runMiroirRunnerTest as runMiroirRunnerTestInMemory,
   runRunnerTestCompositeAction,
   runnerTestJzodSchema,
 } from "./5_tests/RunnerTestTools.js";
@@ -968,7 +968,7 @@ export {
   effectiveMiroirTransformerSkip,
   miroirTransformerAssertionName,
   miroirTestsDisplayResults,
-  runMiroirTestInMemory,
+  runMiroirTest as runMiroirTestInMemory,
   runMiroirTests,
   runMiroirTestSuite,
   type MiroirTestExecutionMode,
@@ -981,7 +981,7 @@ export {
   displayMiroirTestResults,
   miroirTestGlobalTimeOut,
   runMiroirTransformerIntegrationTest,
-  runMiroirTransformerTestInMemory,
+  runMiroirTransformerTest as runMiroirTransformerTestInMemory,
 } from "./5_tests/MiroirTransformerTestTools.js";
 export { TransformerGlobalContext } from "./4_services/TransformerContext.js";
 export { defaultViewParamsFromAdminStorageFetchQueryParams } from "./4_views/viewParams";

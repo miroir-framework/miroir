@@ -1,7 +1,7 @@
 import type {
   MiroirTestExecutionEnvironment,
   MiroirTestIntegrationPort,
-} from "../../src/4_services/MiroirTestIntegrationOrchestrator";
+} from "../../src/5_tests/MiroirTestIntegrationOrchestrator";
 import {
   initMiroirTestIntegrationStore,
   type MiroirTestIntegrationStoreOptions,

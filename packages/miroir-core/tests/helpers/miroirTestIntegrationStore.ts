@@ -52,6 +52,13 @@ export type MiroirTestIntegrationStoreOptions = {
   postgresHostName?: string;
 };
 
+// ################################################################################################
+/**
+ * 
+ * TODO: return a compositeActionSequence instead of running actions one by one
+ * @param options 
+ * @returns 
+ */
 export async function initMiroirTestIntegrationStore(
   options: MiroirTestIntegrationStoreOptions = {},
 ): Promise<MiroirTestIntegrationStore> {

@@ -2,7 +2,7 @@ import { parseMiroirTestCliConfig } from "../src/5_tests/parseMiroirTestCliConfi
 import { initMiroirTestIntegrationStore } from "./helpers/miroirTestIntegrationStore";
 import { runMiroirTestsFromCLI } from "./helpers/runMiroirTestsFromCLI";
 
-const config = parseMiroirTestCliConfig();
+const config = parseMiroirTestCliConfig(process.env, process.argv.slice(2));
 const postgresHostName = process.env.MIROIR_TEST_POSTGRES_HOST ?? "192.168.1.160";
 
 let integrationStore: Awaited<ReturnType<typeof initMiroirTestIntegrationStore>> | undefined;

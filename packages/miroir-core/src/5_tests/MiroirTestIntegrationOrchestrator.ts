@@ -19,7 +19,7 @@ export type RunnerTestContext = {
 
 export type MiroirTestExecutionEnvironment = {
   /** Transformer integration (direct Postgres). */
-  integrationStore?: unknown;
+  integrationStore?: unknown; // TODO: BAD! stores should only be accessed through the domainController
   /** Runner integration (full stack). */
   runnerTestContext?: RunnerTestContext;
 };

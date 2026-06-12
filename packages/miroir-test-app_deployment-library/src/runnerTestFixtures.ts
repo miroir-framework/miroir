@@ -38,11 +38,11 @@ export type RunnerTestEnvironmentSeed = {
   testParams: Record<string, unknown>;
 };
 
-export const RUNNER_TEST_INITIAL_MODEL_FROM_PARAMETERS: CoreTransformerForBuildPlusRuntime = {
-  transformerType: "getFromParameters",
-  interpolation: "build",
-  referenceName: "defaultLibraryAppModel",
-};
+// export const RUNNER_TEST_INITIAL_MODEL_FROM_PARAMETERS: CoreTransformerForBuildPlusRuntime = {
+//   transformerType: "getFromParameters",
+//   interpolation: "build",
+//   referenceName: "defaultLibraryAppModel",
+// };
 
 export type RunnerTestFixtureDefaults = {
   runner: Runner;
@@ -177,7 +177,11 @@ export const RUNNER_TEST_FIXTURE_REFS: Record<string, RunnerTestFixtureDefaults>
     },
     preTestCompositeActions: [fetchLendingHistoryPreTest],
     testCompositeActionAssertions: [checkNumberOfLendingHistoryItemsAssertion],
-    initialModel: RUNNER_TEST_INITIAL_MODEL_FROM_PARAMETERS,
+    initialModel: {
+      transformerType: "getFromParameters",
+      interpolation: "build",
+      referenceName: "defaultLibraryAppModel",
+    },
     preRunnerCompositeActions: [],
   },
   libraryReturnBookDefaults: {
@@ -197,7 +201,11 @@ export const RUNNER_TEST_FIXTURE_REFS: Record<string, RunnerTestFixtureDefaults>
     },
     preTestCompositeActions: [fetchLendingHistoryPreTest],
     testCompositeActionAssertions: [checkNumberOfLendingHistoryItemsAssertion],
-    initialModel: RUNNER_TEST_INITIAL_MODEL_FROM_PARAMETERS,
+    initialModel: {
+      transformerType: "getFromParameters",
+      interpolation: "build",
+      referenceName: "defaultLibraryAppModel",
+    },
     preRunnerCompositeActions: [lendBookPreRunner],
   },
 };

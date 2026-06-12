@@ -93,8 +93,8 @@ function parseProfileArg(argv: string[]): string | undefined {
 
 // ################################################################################################
 export function parseMiroirRunnerTestCliConfig(
-  env: NodeJS.ProcessEnv = process.env,
-  argv: string[] = process.argv.slice(2),
+  env: NodeJS.ProcessEnv,
+  argv: string[],
 ): MiroirRunnerTestCliParseResult {
   applyRunnerTestProfile(parseProfileArg(argv));
   const fromArgs = parseMiroirTestCliArgs(argv);

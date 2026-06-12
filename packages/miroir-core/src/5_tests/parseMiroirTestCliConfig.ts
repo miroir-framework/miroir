@@ -68,13 +68,14 @@ export function parseMiroirTestCliArgs(argv: string[]): Partial<MiroirTestCliCon
   return result;
 }
 
+// ################################################################################################
 /**
  * Resolve CLI config from npm args (highest priority) and env vars (CI).
  * When no suites are specified, or `*` is given, all registered suites are selected.
  */
 export function parseMiroirTestCliConfig(
-  env: NodeJS.ProcessEnv = process.env,
-  argv: string[] = process.argv.slice(2),
+  env: NodeJS.ProcessEnv,
+  argv: string[],
 ): MiroirTestCliParseResult {
   const fromArgs = parseMiroirTestCliArgs(argv);
 
@@ -99,7 +100,13 @@ export function parseMiroirTestCliConfig(
   };
 }
 
+// ################################################################################################
 /** Build env overrides for `scripts/test-miroir.ts` after parsing raw CLI args. */
+/**
+ * TODO: return a compositeActionSequence instead of running actions one by one
+ * @param config 
+ * @returns 
+ */
 export function miroirTestCliConfigToEnv(config: MiroirTestCliConfig): NodeJS.ProcessEnv {
   const env: NodeJS.ProcessEnv = {
     MIROIR_TEST_MODE: config.executionMode,

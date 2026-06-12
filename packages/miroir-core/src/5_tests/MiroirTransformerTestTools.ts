@@ -1,5 +1,9 @@
+// TODO: DO NOT DEPEND ON chalk HERE! isolate color use in displayMiroirTestResults
 import chalk from "chalk";
+
+// ONLY A DEV DEPENDENCY! USED FOR THE TYPE ONLY, PRUNED BY THE TRANSPILER
 import * as vitest from "vitest";
+type VitestNamespace = typeof vitest;
 
 import type {
   CoreTransformerForBuildPlusRuntime,
@@ -37,7 +41,6 @@ import {
 } from "../4_services/otherTools";
 import type { MiroirTestRunFilter } from "../0_interfaces/5-tests/miroirTestTypes";
 
-type VitestNamespace = typeof vitest;
 
 chalk.level = 3;
 
@@ -72,7 +75,8 @@ function effectiveMiroirTransformerSkip(
   return { ...leaf, skip: effectiveSkip };
 }
 
-export async function runMiroirTransformerTestInMemory(
+// ################################################################################################
+export async function runMiroirTransformerTest(
   localVitest: VitestNamespace,
   testNamePath: string[],
   filter: MiroirTestRunFilter | undefined,
@@ -235,7 +239,15 @@ export async function runMiroirTransformerTestInMemory(
 
   miroirActivityTracker.setTestAssertionResult(currentTestAssertionPath, testAssertionResult);
 }
-
+// ################################################################################################
+/**
+ * TODO: BAD! stores should only be accessed through the domainController
+ * @param sqlDbDataStore - the target integration store. WRONG! stores should only be accessed through the domainController. this leaves a direct dependency on postgres, not accepable
+ * @returns a function that runs a transformer integration test
+ * 
+ * TODO: this should be refactored to a common infra with Runner integ tests
+ * TODO: use domainController to access the store, not PersistenceStoreController
+ */
 export function runMiroirTransformerIntegrationTest(sqlDbDataStore: unknown) {
   return async (
     localVitest: VitestNamespace,
@@ -434,6 +446,7 @@ export function runMiroirTransformerIntegrationTest(sqlDbDataStore: unknown) {
   };
 }
 
+// ################################################################################################
 export const displayMiroirTestResults = async (
   _miroirTestSuite: MiroirTestSuite,
   runTestLabel: string,

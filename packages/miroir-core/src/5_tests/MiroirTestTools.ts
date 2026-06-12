@@ -1,4 +1,7 @@
+// ONLY A DEV DEPENDENCY! USED FOR THE TYPE ONLY, PRUNED BY THE TRANSPILER
 import * as vitest from "vitest";
+type VitestNamespace = typeof vitest;
+
 
 import type {
   MiroirTestForFunctionCall,
@@ -6,7 +9,6 @@ import type {
   MiroirTestForRunner,
   MiroirTestLeaf,
   MiroirTestSuite,
-  MiroirTestForTransformer,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import type { MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
 import type {
@@ -19,14 +21,12 @@ import {
   displayMiroirTestResults,
   miroirTestGlobalTimeOut,
   runMiroirTransformerIntegrationTest,
-  runMiroirTransformerTestInMemory,
+  runMiroirTransformerTest,
 } from "./MiroirTransformerTestTools";
 import { runMiroirQueryRunnerTestInMemory } from "./QueryRunnerTestTools";
-import { runMiroirRunnerTestInMemory } from "./RunnerTestTools";
+import { runMiroirRunnerTest } from "./RunnerTestTools";
 import type { MiroirTestExecutionEnvironment } from "./MiroirTestIntegrationOrchestrator";
 import type { MiroirTestRunFilter, TestSuiteListFilter } from "../0_interfaces/5-tests/miroirTestTypes";
-
-type VitestNamespace = typeof vitest;
 
 export type { MiroirTestRunFilter, TestSuiteListFilter };
 
@@ -52,6 +52,7 @@ function miroirTestNodeLabel(node: MiroirTestLeaf | MiroirTestSuite): string {
   return miroirTestLeafLabel(node);
 }
 
+// ################################################################################################
 export type RunMiroirTest = (
   localVitest: VitestNamespace,
   testNamePath: string[],
@@ -67,6 +68,7 @@ export type RunMiroirTest = (
   parentSkip?: boolean,
 ) => Promise<void>;
 
+// ################################################################################################
 export interface RunMiroirTests {
   _runMiroirTestSuite: typeof runMiroirTestSuite;
   _runMiroirTest: RunMiroirTest;
@@ -74,7 +76,8 @@ export interface RunMiroirTests {
   _runMiroirTestWithTracking: RunMiroirTest;
 }
 
-export async function runMiroirTestInMemory(
+// ################################################################################################
+export async function runMiroirTest(
   localVitest: VitestNamespace,
   testNamePath: string[],
   filter: MiroirTestRunFilter | undefined,
@@ -112,7 +115,7 @@ export async function runMiroirTestInMemory(
           parentSkip,
         );
       }
-      return runMiroirTransformerTestInMemory(
+      return runMiroirTransformerTest(
         localVitest,
         testNamePath,
         filter,
@@ -160,7 +163,7 @@ export async function runMiroirTestInMemory(
           "runMiroirTestInMemory: runnerTest leaves require executionMode integration",
         );
       }
-      return runMiroirRunnerTestInMemory(
+      return runMiroirRunnerTest(
         localVitest,
         testNamePath,
         filter,
@@ -177,6 +180,7 @@ export async function runMiroirTestInMemory(
   }
 }
 
+// ################################################################################################
 export async function runMiroirTestSuite(
   localVitest: VitestNamespace,
   testSuitePath: string[],
@@ -283,9 +287,10 @@ export async function runMiroirTestSuite(
   }
 }
 
+// ################################################################################################
 export const runMiroirTests: RunMiroirTests = {
   _runMiroirTestSuite: runMiroirTestSuite,
-  _runMiroirTest: runMiroirTestInMemory,
+  _runMiroirTest: runMiroirTest,
   _runMiroirTestSuiteWithTracking: async (
     localVitest,
     testSuitePath,

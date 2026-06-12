@@ -10,7 +10,6 @@ import {
   type LoggerInterface,
   type LoggerOptions,
   parseMiroirRunnerTestCliConfig,
-  // runMiroirRunnerTestsFromCliConfig,
 } from "miroir-core";
 import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
 import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
@@ -39,7 +38,7 @@ miroirMongoDbStoreSectionStartup(ConfigurationService.configurationService);
 miroirPostgresStoreSectionStartup(ConfigurationService.configurationService);
 ConfigurationService.configurationService.registerTestImplementation({ expect: expect as any });
 
-const config = parseMiroirRunnerTestCliConfig();
+const config = parseMiroirRunnerTestCliConfig(process.env, process.argv.slice(2));
 const { miroirConfig, logConfig } = await loadTestConfigFiles(env);
 const loggerOptions = logConfig as LoggerOptions;
 

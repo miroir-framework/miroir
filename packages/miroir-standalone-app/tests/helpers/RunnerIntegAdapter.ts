@@ -1,13 +1,13 @@
 import {
   getMiroirConfig,
-  type ApplicationDeploymentMap,
-  type DomainControllerInterface,
-  type MiroirActivityTracker,
-  type MiroirConfigClient,
-  type MiroirEventService,
-  type StoreUnitConfiguration,
 } from "miroir-core";
 import type {
+  ApplicationDeploymentMap,
+  DomainControllerInterface,
+  MiroirActivityTracker,
+  MiroirConfigClient,
+  MiroirEventService,
+  StoreUnitConfiguration,
   MiroirTestExecutionEnvironment,
   MiroirTestIntegrationPort,
   RunnerTestContext,
