@@ -12,12 +12,17 @@ export type MiroirTestCliConfig = {
 
 export type MiroirTestCliParseResult = MiroirTestCliConfig & {
   /** Vitest entry file to run for the selected execution mode. */
-  vitestEntry: "miroir-tests.unit.test" | "miroir-tests.integ.test";
+  vitestEntry: "miroir-core-tests.unit.test" | "miroir-core-tests.integ.test";
 };
 
-const ALL_SUITES_SENTINEL = "*";
+export const ALL_SUITES_JOKER = "*";
 
-function splitSuiteKeys(raw: string | undefined): string[] {
+export type ParseMiroirTestCliArgsOptions = {
+  /** Accept `integ` as alias for `integration` (--mode integ). */
+  integModeAlias?: boolean;
+};
+
+export function splitSuiteKeys(raw: string | undefined): string[] {
   if (!raw?.trim()) {
     return [];
   }
@@ -27,15 +32,24 @@ function splitSuiteKeys(raw: string | undefined): string[] {
     .filter(Boolean);
 }
 
-/** Empty list or `*` means every registered MiroirTest suite. */
-export function resolveMiroirTestSuiteKeys(rawKeys: string[]): string[] {
-  if (rawKeys.length === 0 || rawKeys.includes(ALL_SUITES_SENTINEL)) {
-    return listMiroirTestSuiteKeys();
+export function suiteKeysFromEnv(env: NodeJS.ProcessEnv): string[] {
+  return splitSuiteKeys(env.MIROIR_TEST_SUITES ?? env.MIROIR_TEST_SUITE);
+}
+
+/** Empty list or `*` means every key in `allKeys`. */
+export function resolveSuiteKeys(rawKeys: string[], allKeys: string[]): string[] {
+  if (rawKeys.length === 0 || rawKeys.includes(ALL_SUITES_JOKER)) {
+    return allKeys;
   }
   return rawKeys;
 }
 
-function parseFilterJson(raw: string | undefined): MiroirTestRunFilter | undefined {
+/** Empty list or `*` means every registered MiroirTest suite. */
+export function resolveMiroirTestSuiteKeys(rawKeys: string[]): string[] {
+  return resolveSuiteKeys(rawKeys, listMiroirTestSuiteKeys());
+}
+
+export function parseFilterJson(raw: string | undefined): MiroirTestRunFilter | undefined {
   if (!raw?.trim()) {
     return undefined;
   }
@@ -46,8 +60,39 @@ function parseFilterJson(raw: string | undefined): MiroirTestRunFilter | undefin
   return parsed as MiroirTestRunFilter;
 }
 
+function normalizeExecutionMode(
+  rawMode: string,
+  options: ParseMiroirTestCliArgsOptions,
+): MiroirTestExecutionMode {
+  const mode: MiroirTestExecutionMode =
+    options.integModeAlias && rawMode === "integ"
+      ? "integration"
+      : (rawMode as MiroirTestExecutionMode);
+  if (mode !== "unit" && mode !== "integration") {
+    const expected = options.integModeAlias
+      ? "unit, integ, or integration"
+      : "unit or integration";
+    throw new Error(`Invalid --mode "${rawMode}" (expected ${expected})`);
+  }
+  return mode;
+}
+
+/** Parse `--profile value` from argv (does not mutate env). */
+export function parseProfileArg(argv: string[]): string | undefined {
+  for (let index = 0; index < argv.length; index++) {
+    const arg = argv[index];
+    if (arg === "--profile" || arg === "-p") {
+      return argv[++index];
+    }
+  }
+  return undefined;
+}
+
 /** Parse `--flag value` pairs from argv (does not mutate env). */
-export function parseMiroirTestCliArgs(argv: string[]): Partial<MiroirTestCliConfig> {
+export function parseMiroirTestCliArgs(
+  argv: string[],
+  options: ParseMiroirTestCliArgsOptions = {},
+): Partial<MiroirTestCliConfig> {
   const result: Partial<MiroirTestCliConfig> = {};
 
   for (let index = 0; index < argv.length; index++) {
@@ -55,17 +100,30 @@ export function parseMiroirTestCliArgs(argv: string[]): Partial<MiroirTestCliCon
     if (arg === "--suites" || arg === "-s") {
       result.suiteKeys = splitSuiteKeys(argv[++index]);
     } else if (arg === "--mode" || arg === "-m") {
-      const mode = argv[++index] as MiroirTestExecutionMode;
-      if (mode !== "unit" && mode !== "integration") {
-        throw new Error(`Invalid --mode "${mode}" (expected unit or integration)`);
-      }
-      result.executionMode = mode;
+      result.executionMode = normalizeExecutionMode(argv[++index], options);
     } else if (arg === "--filter" || arg === "-f") {
       result.filter = parseFilterJson(argv[++index]);
     }
   }
 
   return result;
+}
+
+export function executionModeFromEnv(env: NodeJS.ProcessEnv): MiroirTestExecutionMode {
+  return env.MIROIR_TEST_MODE === "integration" ? "integration" : "unit";
+}
+
+/** Resolve suite keys, mode, and filter from partial argv parse + env fallbacks. */
+export function resolveMiroirTestCliConfigFromPartial(
+  env: NodeJS.ProcessEnv,
+  fromArgs: Partial<MiroirTestCliConfig>,
+  allSuiteKeys: string[],
+): MiroirTestCliConfig {
+  return {
+    suiteKeys: resolveSuiteKeys(fromArgs.suiteKeys ?? suiteKeysFromEnv(env), allSuiteKeys),
+    executionMode: fromArgs.executionMode ?? executionModeFromEnv(env),
+    filter: fromArgs.filter ?? parseFilterJson(env.MIROIR_TEST_FILTER),
+  };
 }
 
 // ################################################################################################
@@ -77,26 +135,16 @@ export function parseMiroirTestCliConfig(
   env: NodeJS.ProcessEnv,
   argv: string[],
 ): MiroirTestCliParseResult {
-  const fromArgs = parseMiroirTestCliArgs(argv);
-
-  const suiteKeys = resolveMiroirTestSuiteKeys(
-    fromArgs.suiteKeys ??
-      splitSuiteKeys(env.MIROIR_TEST_SUITES ?? env.MIROIR_TEST_SUITE),
+  const config = resolveMiroirTestCliConfigFromPartial(
+    env,
+    parseMiroirTestCliArgs(argv),
+    listMiroirTestSuiteKeys(),
   );
 
-  const executionMode: MiroirTestExecutionMode =
-    fromArgs.executionMode ??
-    (env.MIROIR_TEST_MODE === "integration" ? "integration" : "unit");
-
-  const filter =
-    fromArgs.filter ?? parseFilterJson(env.MIROIR_TEST_FILTER);
-
   return {
-    suiteKeys,
-    executionMode,
-    filter,
+    ...config,
     vitestEntry:
-      executionMode === "integration" ? "miroir-tests.integ.test" : "miroir-tests.unit.test",
+      config.executionMode === "integration" ? "miroir-core-tests.integ.test" : "miroir-core-tests.unit.test",
   };
 }
 
@@ -104,8 +152,8 @@ export function parseMiroirTestCliConfig(
 /** Build env overrides for `scripts/test-miroir.ts` after parsing raw CLI args. */
 /**
  * TODO: return a compositeActionSequence instead of running actions one by one
- * @param config 
- * @returns 
+ * @param config
+ * @returns
  */
 export function miroirTestCliConfigToEnv(config: MiroirTestCliConfig): NodeJS.ProcessEnv {
   const env: NodeJS.ProcessEnv = {
@@ -116,7 +164,7 @@ export function miroirTestCliConfigToEnv(config: MiroirTestCliConfig): NodeJS.Pr
     config.suiteKeys.length === allSuiteKeys.length &&
     allSuiteKeys.every((key) => config.suiteKeys.includes(key))
   ) {
-    env.MIROIR_TEST_SUITES = ALL_SUITES_SENTINEL;
+    env.MIROIR_TEST_SUITES = ALL_SUITES_JOKER;
   } else if (config.suiteKeys.length) {
     env.MIROIR_TEST_SUITES = config.suiteKeys.join(",");
   }

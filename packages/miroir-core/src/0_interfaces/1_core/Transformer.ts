@@ -21,11 +21,7 @@ export interface MiroirModelEnvironment {
 // ################################################################################################
 export type ITransformerHandler<
   T extends
-    // | TransformerForBuild
-    // | TransformerForRuntime,
     | CoreTransformerForBuildPlusRuntime,
-  // U extends MiroirModelEnvironment
-    // | TransformerForRuntime_innerFullObjectTemplate
 > = (
   step: Step,
   transformerPath: string[],
@@ -34,7 +30,6 @@ export type ITransformerHandler<
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
   modelEnvironment: MiroirModelEnvironment,
   transformerParams: Record<string, any>,
-  // queryParams: Record<string, any>,
   contextResults?: Record<string, any>,
   reduxDeploymentsState?: ReduxDeploymentsState | undefined, // used by getDefaultValueForJzodSchemaWithResolution only, somewhat redundant with modelEnvironment
   application?: Uuid,
@@ -43,5 +38,4 @@ export type ITransformerHandler<
 ) => Domain2QueryReturnType<any>;
 
 // ################################################################################################
-// export const defaultTransformerInput: string = "__defaultInput__";
 export const defaultTransformerInput: string = "defaultInput";

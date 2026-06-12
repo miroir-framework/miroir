@@ -19,7 +19,7 @@ describe("parseMiroirTestCliConfig (Phase 2)", () => {
     );
     expect(config.suiteKeys).toEqual(["schema_pilot_empty", "tools.test"]);
     expect(config.executionMode).toBe("unit");
-    expect(config.vitestEntry).toBe("miroir-tests.unit.test");
+    expect(config.vitestEntry).toBe("miroir-core-tests.unit.test");
   });
 
   it("argv overrides env", () => {
@@ -32,7 +32,7 @@ describe("parseMiroirTestCliConfig (Phase 2)", () => {
     );
     expect(config.suiteKeys).toEqual(["schema_pilot_empty"]);
     expect(config.executionMode).toBe("integration");
-    expect(config.vitestEntry).toBe("miroir-tests.integ.test");
+    expect(config.vitestEntry).toBe("miroir-core-tests.integ.test");
   });
 
   it("parses filter JSON from env and argv", () => {

@@ -27,7 +27,7 @@ const vitestArgs = [
   "run",
   "--poolOptions.forks.singleFork",
   "--reporter=verbose",
-  `tests/${config.vitestEntry}.ts`,
+  `tests/${config.vitestEntry}.ts`, // vitestEntry: "miroir-runner-tests.integ.test"
 ];
 
 const result = spawnSync("npx", vitestArgs, {

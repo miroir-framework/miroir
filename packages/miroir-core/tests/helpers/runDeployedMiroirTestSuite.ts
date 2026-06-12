@@ -11,7 +11,7 @@ import {
 } from "../../src/5_tests/MiroirTestTools";
 
 export type RunDeployedMiroirTestSuiteParams = {
-  suiteExport: MiroirTestSuite;
+  miroirTestSuite: MiroirTestSuite;
   suiteKey: string;
   miroirActivityTracker: MiroirActivityTrackerInterface;
   modelEnvironment?: MiroirModelEnvironment;
@@ -20,14 +20,13 @@ export type RunDeployedMiroirTestSuiteParams = {
 };
 
 export async function runDeployedMiroirTestSuite({
-  suiteExport,
+  miroirTestSuite,
   suiteKey,
   miroirActivityTracker,
   modelEnvironment = defaultMetaModelEnvironment,
   filter,
   executionOptions = { executionMode: "unit" },
 }: RunDeployedMiroirTestSuiteParams): Promise<void> {
-  const miroirTestSuite = suiteExport as MiroirTestSuite;
 
   await runMiroirTests._runMiroirTestSuite(
     vitest,
