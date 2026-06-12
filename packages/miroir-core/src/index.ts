@@ -935,7 +935,7 @@ export {
   transformerTestsDisplayResults,
   unitTestsDisplayResults,
   type TestSuiteListFilter
-} from "./4_services/TestTools.js";
+} from "./5_tests/TestTools.js";
 export {
   deserializeFunctionCallValue,
   listFunctionCallEnvironmentRefs,
@@ -945,25 +945,25 @@ export {
   resolveFunctionCallTarget,
   runMiroirFunctionCallTestInMemory,
   type FunctionCallRef,
-} from "./4_services/FunctionCallTestTools.js";
+} from "./5_tests/FunctionCallTestTools.js";
 export {
   listQueryRunnerFixtureRefs,
   queryRunnerTestJzodSchema,
   resolveQueryRunnerFixture,
   runMiroirQueryRunnerTestInMemory,
-} from "./4_services/QueryRunnerTestTools.js";
+} from "./5_tests/QueryRunnerTestTools.js";
 export {
   resolveRunnerTestLeaf,
   runMiroirRunnerTestInMemory,
   runRunnerTestCompositeAction,
   runnerTestJzodSchema,
-} from "./4_services/RunnerTestTools.js";
+} from "./5_tests/RunnerTestTools.js";
 export {
   MiroirTestIntegrationOrchestrator,
   type MiroirTestExecutionEnvironment,
   type MiroirTestIntegrationPort,
   type RunnerTestContext,
-} from "./4_services/MiroirTestIntegrationOrchestrator.js";
+} from "./5_tests/MiroirTestIntegrationOrchestrator.js";
 export {
   effectiveMiroirTransformerSkip,
   miroirTransformerAssertionName,
@@ -976,13 +976,13 @@ export {
   type MiroirTestRunFilter,
   type RunMiroirTest,
   type RunMiroirTests,
-} from "./4_services/MiroirTestTools.js";
+} from "./5_tests/MiroirTestTools.js";
 export {
   displayMiroirTestResults,
   miroirTestGlobalTimeOut,
   runMiroirTransformerIntegrationTest,
   runMiroirTransformerTestInMemory,
-} from "./4_services/MiroirTransformerTestTools.js";
+} from "./5_tests/MiroirTransformerTestTools.js";
 export { TransformerGlobalContext } from "./4_services/TransformerContext.js";
 export { defaultViewParamsFromAdminStorageFetchQueryParams } from "./4_views/viewParams";
 

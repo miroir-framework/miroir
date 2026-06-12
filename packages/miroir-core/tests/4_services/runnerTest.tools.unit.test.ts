@@ -19,7 +19,7 @@ import {
   resolveRunnerTestFixture,
   RUNNER_TEST_INITIAL_MODEL_FROM_PARAMETERS,
 } from "miroir-test-app_deployment-library";
-import { resolveRunnerTestLeaf } from "../../src/4_services/RunnerTestTools";
+import { resolveRunnerTestLeaf } from "../../src/5_tests/RunnerTestTools";
 import { expandResolvableResetAndinitializeDeploymentCompositeAction } from "../../src/1_core/Deployment";
 
 describe("runnerTest tools", () => {

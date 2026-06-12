@@ -24,7 +24,7 @@ import type {
   MiroirConfigClient,
   StoreUnitConfiguration,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
-import type { MiroirTestRunFilter } from "./miroirTestTypes";
+import type { MiroirTestRunFilter } from "../0_interfaces/5-tests/miroirTestTypes";
 import type { MiroirTestExecutionEnvironment } from "./MiroirTestIntegrationOrchestrator.js";
 
 type VitestNamespace = typeof vitest;

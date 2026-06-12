@@ -2,12 +2,12 @@ import { afterAll } from "vitest";
 
 import { MiroirActivityTracker } from "../../src/3_controllers/MiroirActivityTracker";
 import { MiroirEventService } from "../../src/3_controllers/MiroirEventService";
-import { miroirTestsDisplayResults } from "../../src/4_services/MiroirTestTools";
+import { miroirTestsDisplayResults } from "../../src/5_tests/MiroirTestTools";
 import type { MiroirTestSuite } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { loadMiroirTestSuiteExport } from "./miroirTestSuiteRegistry";
 import type { MiroirTestCliConfig } from "../../src/5_tests/parseMiroirTestCliConfig";
-import type { MiroirTestExecutionEnvironment } from "../../src/4_services/MiroirTestIntegrationOrchestrator";
-import type { MiroirTestIntegrationOrchestrator } from "../../src/4_services/MiroirTestIntegrationOrchestrator";
+import type { MiroirTestExecutionEnvironment } from "../../src/5_tests/MiroirTestIntegrationOrchestrator";
+import type { MiroirTestIntegrationOrchestrator } from "../../src/5_tests/MiroirTestIntegrationOrchestrator";
 import { runDeployedMiroirTestSuite } from "./runDeployedMiroirTestSuite";
 
 export type RunMiroirTestsFromCLIOptions = {
@@ -51,7 +51,7 @@ export async function runMiroirTestsFromCLI(
     const suiteExport = await loadMiroirTestSuiteExport(suiteKey);
     loadedSuites.push({
       suiteKey,
-      definition: suiteExport.definition as MiroirTestSuite,
+      definition: suiteExport as MiroirTestSuite,
     });
     await runDeployedMiroirTestSuite({
       suiteExport,

@@ -6,7 +6,7 @@ import {
   parseMiroirTestCliArgs,
   parseMiroirTestCliConfig,
   resolveMiroirTestSuiteKeys,
-} from "./parseMiroirTestCliConfig";
+} from "../../src/5_tests/parseMiroirTestCliConfig";
 
 describe("parseMiroirTestCliConfig (Phase 2)", () => {
   it("reads suite keys and mode from env", () => {
@@ -82,7 +82,7 @@ describe("parseMiroirTestCliConfig (Phase 2)", () => {
     const env = miroirTestCliConfigToEnv({
       suiteKeys: ["schema_pilot_empty"],
       executionMode: "integration",
-      filter: { schema_pilot_empty: ["leaf"] },
+      filter: { schema_pilot_empty: ["leaf"] } as any,
     });
     expect(env.MIROIR_TEST_SUITES).toBe("schema_pilot_empty");
     expect(env.MIROIR_TEST_MODE).toBe("integration");

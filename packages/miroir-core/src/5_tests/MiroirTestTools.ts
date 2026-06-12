@@ -24,7 +24,7 @@ import {
 import { runMiroirQueryRunnerTestInMemory } from "./QueryRunnerTestTools";
 import { runMiroirRunnerTestInMemory } from "./RunnerTestTools";
 import type { MiroirTestExecutionEnvironment } from "./MiroirTestIntegrationOrchestrator";
-import type { MiroirTestRunFilter, TestSuiteListFilter } from "./miroirTestTypes";
+import type { MiroirTestRunFilter, TestSuiteListFilter } from "../0_interfaces/5-tests/miroirTestTypes";
 
 type VitestNamespace = typeof vitest;
 

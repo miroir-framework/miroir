@@ -12,14 +12,14 @@ import { MiroirActivityTracker } from "../3_controllers/MiroirActivityTracker";
 import { jsonify } from "../1_core/test-expect";
 import { Action2Error, TransformerFailure } from "../0_interfaces/2_domain/DomainElement";
 import { resolvePathOnObject } from "../tools";
-import { ignorePostgresExtraAttributes, removeUndefinedProperties, unNullify } from "./otherTools";
+import { ignorePostgresExtraAttributes, removeUndefinedProperties, unNullify } from "../4_services/otherTools";
 import {
   resolveFixtureProperty,
   resolveFunctionCallEnvironment,
   resolveFunctionCallFixture,
 } from "./FunctionCallTestFixtures";
 import { resolveFunctionCallTarget } from "./FunctionCallTestRegistry";
-import type { TestSuiteListFilter } from "./miroirTestTypes";
+import type { TestSuiteListFilter } from "../0_interfaces/5-tests/miroirTestTypes";
 
 const JSON_UNDEFINED_SENTINEL = "__miroirJsonUndefined";
 const JSON_FIXTURE_REF_SENTINEL = "__fixtureRef";

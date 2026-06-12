@@ -29,10 +29,10 @@ import { transformer_extended_apply, transformer_extended_apply_wrapper } from "
 import { MiroirActivityTracker } from "../3_controllers/MiroirActivityTracker";
 import { packageName } from "../constants";
 import { circularReplacer } from '../tools';
-import { cleanLevel } from "./constants";
-import { MiroirLoggerFactory } from "./MiroirLoggerFactory";
-import { ignorePostgresExtraAttributes, isJson, isJsonArray, removeUndefinedProperties, unNullify } from "./otherTools";
-import type { TestSuiteListFilter } from "./miroirTestTypes";
+import { cleanLevel } from "../4_services/constants";
+import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory";
+import { ignorePostgresExtraAttributes, isJson, isJsonArray, removeUndefinedProperties, unNullify } from "../4_services/otherTools";
+import type { TestSuiteListFilter } from "../0_interfaces/5-tests/miroirTestTypes";
 
 /** Legacy transformer test leaf shape (spreadsheet fixtures and deprecated runners). */
 export type TransformerTest = {
@@ -530,7 +530,7 @@ export async function runTransformerTestInMemory(
   return Promise.resolve();
 }
 
-export type { TestSuiteListFilter } from "./miroirTestTypes";
+export type { TestSuiteListFilter } from "../0_interfaces/5-tests/miroirTestTypes";
 
 // ################################################################################################
 export async function runTransformerTestSuite(

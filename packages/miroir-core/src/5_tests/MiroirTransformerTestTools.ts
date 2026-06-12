@@ -26,16 +26,16 @@ import {
 } from "../2_domain/TransformersForRuntime";
 import { MiroirActivityTracker } from "../3_controllers/MiroirActivityTracker";
 import { packageName } from "../constants";
-import { cleanLevel } from "./constants";
-import { MiroirLoggerFactory } from "./MiroirLoggerFactory";
+import { cleanLevel } from "../4_services/constants";
+import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory";
 import {
   ignorePostgresExtraAttributes,
   isJson,
   isJsonArray,
   removeUndefinedProperties,
   unNullify,
-} from "./otherTools";
-import type { MiroirTestRunFilter } from "./miroirTestTypes";
+} from "../4_services/otherTools";
+import type { MiroirTestRunFilter } from "../0_interfaces/5-tests/miroirTestTypes";
 
 type VitestNamespace = typeof vitest;
 

@@ -32,10 +32,10 @@ import {
 } from "../2_domain/ReduxDeploymentsStateQueryTemplateSelectors";
 import { deployment_Library_DO_NO_USE, selfApplicationLibrary } from "miroir-test-app_deployment-library";
 import { MiroirActivityTracker } from "../3_controllers/MiroirActivityTracker";
-import { ignorePostgresExtraAttributes, removeUndefinedProperties, unNullify } from "./otherTools";
+import { ignorePostgresExtraAttributes, removeUndefinedProperties, unNullify } from "../4_services/otherTools";
 import { domainStateToReduxDeploymentsState, resolvePathOnObject } from "../tools";
 import domainStateImport from "../domainState.json";
-import type { TestSuiteListFilter } from "./miroirTestTypes";
+import type { TestSuiteListFilter } from "../0_interfaces/5-tests/miroirTestTypes";
 
 type VitestNamespace = typeof vitest;
 

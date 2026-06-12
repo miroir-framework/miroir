@@ -4,6 +4,8 @@ export type RunnerTestProfile = {
 };
 
 export const RUNNER_TEST_PROFILES: Record<string, RunnerTestProfile> = {
+  //  TODO: miroirConfigFilename in packages/miroir-standalone-app 
+  //  TODO: logConfigFilename in packages/miroir-standalone-app 
   "emulatedServer-sql": {
     miroirConfigFilename: "./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-sql.json",
     logConfigFilename:

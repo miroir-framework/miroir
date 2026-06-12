@@ -1,4 +1,4 @@
-import type { MiroirTestExecutionMode, MiroirTestRunFilter } from "../4_services/MiroirTestTools.js";
+import type { MiroirTestExecutionMode, MiroirTestRunFilter } from "./MiroirTestTools.js";
 import { applyRunnerTestProfile } from "./runnerTestProfiles.js";
 import type { MiroirTestCliConfig } from "./parseMiroirTestCliConfig.js";
 import { miroirTest_runner_library } from "miroir-test-app_deployment-library";

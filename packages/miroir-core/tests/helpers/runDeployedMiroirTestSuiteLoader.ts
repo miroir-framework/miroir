@@ -9,7 +9,7 @@ import {
   miroirTestsDisplayResults,
   runMiroirTests,
   type MiroirTestRunFilter,
-} from "../../src/4_services/MiroirTestTools";
+} from "../../src/5_tests/MiroirTestTools";
 
 export type RunDeployedMiroirTestSuiteLoaderOptions = {
   filter?: MiroirTestRunFilter;
