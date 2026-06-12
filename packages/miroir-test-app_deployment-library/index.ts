@@ -92,5 +92,16 @@ export { default as user1 } from "./assets/library_data/ca794e28-b2dc-45b3-8137-
 export { default as user2 } from "./assets/library_data/ca794e28-b2dc-45b3-8137-00151557eea8/054518f7-f626-4e76-8633-6b6ece7dcfc3.json" assert { type: "json" };
 export { default as user3 } from "./assets/library_data/ca794e28-b2dc-45b3-8137-00151557eea8/9b957235-1202-4c31-a33f-7eb3258b70bb.json" assert { type: "json" };
 
-// // RunnerTests
-// export { libraryLendBookRunnerTest } from "./tests/Runner_Library";
+// Library Model - MiroirTest instances (parentUuid = entityMiroirTest = a311f363-…)
+export { default as miroirTest_runner_library } from "./assets/library_model/a311f363-e238-4203-bdfc-29e8c160c26b/b7e4a901-2c3d-4f5a-b6c7-8d9e0f1a2b3c.json" assert { type: "json" };
+
+export {
+  libraryTestIdentifiers,
+  listRunnerTestFixtureRefs,
+  resolveRunnerRef,
+  resolveRunnerTestDeploymentRef,
+  // resolveRunnerTestEnvironmentSeed,
+  resolveRunnerTestFixture,
+  RUNNER_TEST_INITIAL_MODEL_FROM_PARAMETERS,
+  RUNNER_TEST_ENVIRONMENT_REFS,
+} from "./src/runnerTestFixtures.js";

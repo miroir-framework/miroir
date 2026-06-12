@@ -42,7 +42,6 @@
     "path": false
   },
   "dependencies": {
-    "@dagrejs/graphlib": "^2.2.4",
     "@miroir-framework/jzod": "0.8.3",
     "chalk": "^5.4.1",
     "diff": "^8.0.3",

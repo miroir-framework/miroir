@@ -3,6 +3,7 @@ import * as vitest from "vitest";
 import type {
   MiroirTestForFunctionCall,
   MiroirTestForQuery,
+  MiroirTestForRunner,
   MiroirTestLeaf,
   MiroirTestSuite,
   MiroirTestForTransformer,
@@ -21,6 +22,8 @@ import {
   runMiroirTransformerTestInMemory,
 } from "./MiroirTransformerTestTools";
 import { runMiroirQueryRunnerTestInMemory } from "./QueryRunnerTestTools";
+import { runMiroirRunnerTestInMemory } from "./RunnerTestTools";
+import type { MiroirTestExecutionEnvironment } from "./MiroirTestIntegrationOrchestrator";
 import type { MiroirTestRunFilter, TestSuiteListFilter } from "./miroirTestTypes";
 
 type VitestNamespace = typeof vitest;
@@ -33,6 +36,8 @@ export type MiroirTestExecutionOptions = {
   executionMode?: MiroirTestExecutionMode;
   /** Required when `executionMode` is `"integration"` (Postgres store). */
   integrationStore?: unknown;
+  /** Populated by MiroirTestIntegrationOrchestrator (runner + shared integ context). */
+  executionEnvironment?: MiroirTestExecutionEnvironment;
 };
 
 
@@ -148,6 +153,22 @@ export async function runMiroirTestInMemory(
         testAssertionPath,
         parentSkip,
         modelEnvironment,
+      );
+    case "runnerTest":
+      if (executionMode !== "integration") {
+        throw new Error(
+          "runMiroirTestInMemory: runnerTest leaves require executionMode integration",
+        );
+      }
+      return runMiroirRunnerTestInMemory(
+        localVitest,
+        testNamePath,
+        filter,
+        leaf as MiroirTestForRunner,
+        miroirActivityTracker,
+        testAssertionPath,
+        parentSkip,
+        executionOptions.executionEnvironment,
       );
     default: {
       const _exhaustive: never = leaf;

@@ -4,6 +4,6 @@ import type { DeployedMiroirTestExport } from "../helpers/runDeployedMiroirTestS
 import { runDeployedMiroirTestSuiteLoader } from "../helpers/runDeployedMiroirTestSuiteLoader";
 
 await runDeployedMiroirTestSuiteLoader(
-  miroirTest_ansiColumnsToJzodSchema as DeployedMiroirTestExport,
+  miroirTest_ansiColumnsToJzodSchema.definition as DeployedMiroirTestExport,
   "ansiColumnsToJzodSchema.unit.test",
 );

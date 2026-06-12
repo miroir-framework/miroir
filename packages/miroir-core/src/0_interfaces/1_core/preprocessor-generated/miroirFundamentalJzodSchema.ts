@@ -6337,6 +6337,14 @@ export const miroirFundamentalJzodSchema = {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
             },
             "context": {}
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "miroirTestForRunner",
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+            },
+            "context": {}
           }
         ]
       },
@@ -6579,6 +6587,80 @@ export const miroirFundamentalJzodSchema = {
           }
         }
       },
+      "miroirTestForRunner": {
+        "type": "object",
+        "tag": {
+          "value": {
+            "defaultLabel": "Runner integration test",
+            "description": "Full-stack runner test via testBuildPlusRuntimeCompositeActionSuite (Feature 197)",
+            "display": {
+              "displayedAttributeValueWhenFolded": "miroirTestLabel"
+            }
+          }
+        },
+        "definition": {
+          "testTag": {
+            "type": "union",
+            "optional": true,
+            "definition": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "array",
+                "definition": {
+                  "type": "string"
+                }
+              }
+            ]
+          },
+          "skip": {
+            "type": "boolean",
+            "optional": true
+          },
+          "environmentRef": {
+            "type": "string",
+            "optional": true
+          },
+          "runnerRef": {
+            "type": "string"
+          },
+          "fixtureRef": {
+            "type": "string",
+            "optional": true
+          },
+          "deploymentRef": {
+            "type": "string",
+            "optional": true
+          },
+          "testCompositeActionLabel": {
+            "type": "string",
+            "optional": true
+          },
+          "testParams": {
+            "type": "record",
+            "optional": true,
+            "definition": {
+              "type": "any"
+            }
+          },
+          "skipCreateDeployment": {
+            "type": "boolean",
+            "optional": true
+          },
+          "skipDropDeployment": {
+            "type": "boolean",
+            "optional": true
+          },
+          "miroirTestType": {
+            "type": "literal",
+            "definition": "runnerTest"
+          },
+          "miroirTestLabel": {
+            "type": "string"
+          }
+        }
+      },
       "miroirTestDefinition": {
         "type": "object",
         "extend": {
@@ -6800,6 +6882,12 @@ export const miroirFundamentalJzodSchema = {
                     "type": "schemaReference",
                     "definition": {
                       "relativePath": "miroirTestForQuery"
+                    }
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "miroirTestForRunner"
                     }
                   }
                 ]
@@ -7033,6 +7121,80 @@ export const miroirFundamentalJzodSchema = {
                   "miroirTestType": {
                     "type": "literal",
                     "definition": "queryTest"
+                  },
+                  "miroirTestLabel": {
+                    "type": "string"
+                  }
+                }
+              },
+              "miroirTestForRunner": {
+                "type": "object",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Runner integration test",
+                    "description": "Full-stack runner test via testBuildPlusRuntimeCompositeActionSuite (Feature 197)",
+                    "display": {
+                      "displayedAttributeValueWhenFolded": "miroirTestLabel"
+                    }
+                  }
+                },
+                "definition": {
+                  "testTag": {
+                    "type": "union",
+                    "optional": true,
+                    "definition": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "array",
+                        "definition": {
+                          "type": "string"
+                        }
+                      }
+                    ]
+                  },
+                  "skip": {
+                    "type": "boolean",
+                    "optional": true
+                  },
+                  "environmentRef": {
+                    "type": "string",
+                    "optional": true
+                  },
+                  "runnerRef": {
+                    "type": "string"
+                  },
+                  "fixtureRef": {
+                    "type": "string",
+                    "optional": true
+                  },
+                  "deploymentRef": {
+                    "type": "string",
+                    "optional": true
+                  },
+                  "testCompositeActionLabel": {
+                    "type": "string",
+                    "optional": true
+                  },
+                  "testParams": {
+                    "type": "record",
+                    "optional": true,
+                    "definition": {
+                      "type": "any"
+                    }
+                  },
+                  "skipCreateDeployment": {
+                    "type": "boolean",
+                    "optional": true
+                  },
+                  "skipDropDeployment": {
+                    "type": "boolean",
+                    "optional": true
+                  },
+                  "miroirTestType": {
+                    "type": "literal",
+                    "definition": "runnerTest"
                   },
                   "miroirTestLabel": {
                     "type": "string"

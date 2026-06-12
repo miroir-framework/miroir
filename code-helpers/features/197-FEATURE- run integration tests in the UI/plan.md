@@ -2,7 +2,7 @@
 
 GitHub issue: TBD (`miroir-framework/miroir#197`)
 
-**Status:** Planning complete (grill session locked)
+**Status:** Phase A complete; refactor phase (green) planned before Phase B
 
 **Depends on:** [Feature 196 — MiroirTest](../196-FEATURE-migrate-tests-to-MiroirTest/plan.md) (complete)
 
@@ -17,6 +17,8 @@ VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirCo
 VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_DomainController_debug.json \
 npm run testMiroir -w miroir-standalone-app -- --suites runner_library --mode integ
 ```
+
+**Refactor goal (Phase R, green):** Replace the Phase A **TypeScript fixture bridge** with **transformer-based indirection** (`getFromParameters`, `getFromContext`) and a **standard injected parameter bank** — same pattern as Reports / Transformers. No new failing tests; each slice keeps `runner_library` green.
 
 **Later goal (Phase B):** Run the same suites from the Miroir UI inside an **isolated test environment** (setup/teardown per run), with an exploratory troubleshooting view — without polluting the user's working UI session.
 
@@ -112,7 +114,9 @@ The `Test` entity (`d2842a84-…`) already models `testBuildPlusRuntimeComposite
 | 2 | `runnerTest` leaves run **only** in `executionMode: "integration"`; unit mode throws or skips |
 | 3 | `runnerTest` delegates to `testBuildPlusRuntimeCompositeActionSuiteForRunner` |
 | 5 | JSON uses `runnerRef`, `fixtureRef`, `environmentRef` resolved at runtime |
-| 10 | Phase A pilot: **one** leaf — `libraryLendBookRunnerTest`; `libraryReturnBookRunnerTest` as next slice |
+| 10 | Phase A pilot: `libraryLendBookRunnerTest` + `libraryReturnBookRunnerTest` in `runner_library` ✅ |
+| R0 | **Refactor first slice:** `initialModel` in fixtures → `getFromParameters` transformer; value from injected param bank |
+| R-end | **Refactor end state:** no hard-coded fixture payloads; declarative runner tests + environment param injection only |
 
 ---
 
@@ -277,7 +281,7 @@ flowchart TB
 | Layer | Package | Responsibility |
 |-------|---------|----------------|
 | **Port** | `miroir-core` | `MiroirTestIntegrationPort`: `initSession`, `beforeEach`, `teardown`, expose `executionEnvironment` |
-| **Orchestrator** | `miroir-core` | `runMiroirTestsFromCliConfig` calls port lifecycle; leaf runners consume injected environment |
+| **Orchestrator** | `miroir-core` | `runMiroirTestsFromCLI` calls port lifecycle; leaf runners consume injected environment |
 | **Transformer adapter** | `miroir-core` | `PostgresIntegrationAdapter` — wraps existing `miroirTestIntegrationStore` |
 | **Runner adapter** | `miroir-standalone-app` | `RunnerIntegAdapter` — brings `miroirAppStartup`, config files, `setupMiroirTest` wiring |
 | **Vitest script** | `miroir-standalone-app` | `test-miroir.ts` + entry file; passes adapter into orchestrator |
@@ -295,7 +299,8 @@ flowchart TB
 | Integration port + orchestrator | `packages/miroir-core/tests/helpers/MiroirTestIntegrationOrchestrator.ts` |
 | Postgres adapter (existing) | `packages/miroir-core/tests/helpers/miroirTestIntegrationStore.ts` |
 | Runner adapter (external layers) | `packages/miroir-standalone-app/tests/helpers/RunnerIntegAdapter.ts` |
-| Fixture catalog | `packages/miroir-test-app_deployment-library/tests/runnerTestFixtures.ts` |
+| Fixture catalog (Phase A bridge) | `packages/miroir-test-app_deployment-library/src/runnerTestFixtures.ts` |
+| Param bank / environment seeds | `RUNNER_TEST_ENVIRONMENT_REFS` in fixture catalog → `RunnerTestContext.testParams` |
 | Pilot instance | `miroir-test-app_deployment-library/assets/.../miroirTest_runner_library.json` |
 | Standalone registry | `packages/miroir-standalone-app/tests/helpers/miroirRunnerTestSuiteRegistry.ts` |
 | Vitest entry | `packages/miroir-standalone-app/tests/miroir-runner-tests.integ.test.ts` |
@@ -375,7 +380,7 @@ VITE_MIROIR_TEST_CONFIG_FILENAME=... npm run testByFile -w miroir-standalone-app
   }
   ```
 - `MiroirTestExecutionEnvironment` — union/superset for transformer + runner needs (`integrationStore?`, `domainController?`, `testParams`, `runtimeContext`, …)
-- `MiroirTestIntegrationOrchestrator` — owns lifecycle; used by `runMiroirTestsFromCliConfig`
+- `MiroirTestIntegrationOrchestrator` — owns lifecycle; used by `runMiroirTestsFromCLI`
 - `PostgresIntegrationAdapter` — thin wrap over `initMiroirTestIntegrationStore` (refactor existing integ entry, no behaviour change)
 
 **Green (standalone-app):**
@@ -411,8 +416,8 @@ VITE_MIROIR_TEST_CONFIG_FILENAME=... npm run testByFile -w miroir-standalone-app
 - `miroir-runner-tests.integ.test.ts`:
   - `miroirAppStartup()` + store section startups (same as `Runner_Miroir.integ`)
   - `initMiroirRunnerTestEnvironment()`
-  - `runMiroirTestsFromCliConfig(config, { runnerTestEnvironment })`
-- Vitest entry constructs `RunnerIntegAdapter` and passes to `MiroirTestIntegrationOrchestrator` / `runMiroirTestsFromCliConfig`
+  - `runMiroirTestsFromCLI(config, { runnerTestEnvironment })`
+- Vitest entry constructs `RunnerIntegAdapter` and passes to `MiroirTestIntegrationOrchestrator` / `runMiroirTestsFromCLI`
 - Extend `MiroirTestExecutionOptions` with `executionEnvironment` from orchestrator
 
 **Verify:**
@@ -428,6 +433,164 @@ npm run testMiroir -w miroir-standalone-app -- --suites runner_library --mode in
 - Update `docs/guides/developer/testing.md` with runner integ section
 - Legacy `Runner_Miroir.integ` **unchanged** (G8: deprecate only after full `Runner_*` migration)
 - Add parity comment in `Runner_Library.ts` pointing to `miroirTest_runner_library` (no `@deprecated` until cutover batch)
+
+#### Phase A — completion notes
+
+- `runnerTest` schema + `RunnerTestTools` + orchestrator + `testMiroir` in standalone-app ✅
+- `miroirTest_runner_library` with lend + return leaves ✅
+- Return fixture adds `preRunnerCompositeActions: [lendBookPreRunner]` (fix missing in legacy `Runner_Library.ts`)
+- Fixture catalog path: `miroir-test-app_deployment-library/src/runnerTestFixtures.ts` (not under `tests/`)
+
+---
+
+### Phase R — Transformer-based refactor (green, before Phase B)
+
+**Principle:** Every value that today is **copied literally** into `runnerTestFixtures.ts` becomes either:
+
+1. A **`getFromParameters`** reference (`referenceName` → key in the injected param bank), or  
+2. A **`getFromContext`** reference (`referencePath` → value produced by an earlier step in the composite sequence)
+
+The **param bank** is the standard execution environment (`RunnerTestContext.testParams`), seeded by `environmentRef` (e.g. `libraryRunnerTestEnvironment`) and merged into suite `testParams` at run time — same slot `handleTestCompositeActionSuite` already receives.
+
+**Not in scope for R:** Changing pass/fail behaviour; deleting legacy `Runner_*` files (G8).
+
+```mermaid
+flowchart LR
+  subgraph env [Injected param bank]
+    P[testParams.defaultLibraryAppModel]
+    P2[testParams.user1Uuid]
+    P3[testParams.book1Uuid]
+  end
+
+  subgraph fixture [Declarative fixture / JSON]
+    T1["initialModel: getFromParameters"]
+    T2["payload.user: getFromParameters"]
+    C1["assertion: getFromContext"]
+  end
+
+  subgraph run [Runtime]
+    ORCH[RunnerIntegAdapter.initSession]
+    RESOLVE[resolveRunnerTestLeaf / composite build]
+    SUITE[handleTestCompositeActionSuite]
+  end
+
+  ORCH --> env
+  env --> RESOLVE
+  fixture --> RESOLVE
+  RESOLVE --> SUITE
+```
+
+#### R0 — `initialModel` as `getFromParameters` (first task)
+
+**Current (Phase A bridge):**
+
+```typescript
+// runnerTestFixtures.ts
+initialModel: defaultLibraryAppModel,  // literal MetaModel import
+```
+
+**Target:**
+
+```typescript
+// RunnerTestFixtureDefaults
+initialModel: {
+  transformerType: "getFromParameters",
+  interpolation: "build",
+  referenceName: "defaultLibraryAppModel",
+} satisfies CoreTransformerForBuildPlusRuntime;
+
+// libraryRunnerTestEnvironment seeds param bank (RunnerIntegAdapter / environmentRef)
+testParams: {
+  defaultLibraryAppModel  // from Library.ts — injected, not embedded in fixture body
+}
+```
+
+**Type change:**
+
+```typescript
+export type RunnerTestFixtureDefaults = {
+  // ...
+  initialModel: CoreTransformerForBuildPlusRuntime;  // was MetaModel
+};
+```
+
+**Red (TDD):**
+
+- `runnerTest.tools.unit.test.ts`: fixture `libraryLendBookDefaults` has transformer `initialModel`, not literal model
+- `runnerTest.tools.unit.test.ts`: `resolveRunnerTestLeaf` with param bank containing `defaultLibraryAppModel` produces same `beforeEach` / init model as Phase A
+- `miroir-runner-tests.integ`: lend + return still pass
+
+**Green (minimal path — recommended for R0):**
+
+1. Change fixture `initialModel` to `getFromParameters` transformer (both lend + return fixtures).
+2. Move `defaultLibraryAppModel` from fixture body into `libraryRunnerTestEnvironment` `testParams`.
+3. In `resolveRunnerTestLeaf` (or thin helper `resolveRunnerTestInitialModel`):
+   - Merge `environmentSeed.testParams` + leaf overrides into param bank
+   - Run transformer at **`interpolation: "build"`** with that bank → concrete `MetaModel`
+   - Pass resolved model to `testBuildPlusRuntimeCompositeActionSuiteForRunner` (signature unchanged)
+4. Remove `defaultLibraryAppModel` import from fixture entries (keep only in environment provider).
+
+**Files touched:** `runnerTestFixtures.ts`, `RunnerTestTools.ts`, possibly `RunnerIntegAdapter.ts` (ensure merged params reach resolution).
+
+**Open decision R0-a (resolution site):** See [Refactor open decisions](#refactor-open-decisions).
+
+#### R1 — Runner `testParams` payloads via `getFromParameters`
+
+Replace literal UUIDs / dates in lend/return payloads:
+
+```typescript
+payload: {
+  user: { transformerType: "getFromParameters", interpolation: "build", referenceName: "user1Uuid" },
+  book: { transformerType: "getFromParameters", interpolation: "build", referenceName: "book1Uuid" },
+  startDate: { transformerType: "getFromParameters", interpolation: "build", referenceName: "lendStartDate" },
+}
+```
+
+Environment injects `lendStartDate` (ISO string) alongside entity UUIDs. Reuse existing transformer test utilities where possible.
+
+#### R2 — `preTestCompositeActions` / assertions
+
+- `fetchLendingHistoryPreTest`: application UUID, deployment UUID, entity parent UUID → `getFromParameters` (keys from `deploymentRef` / environment)
+- Assertions already use `getFromContext` for `LendingHistoryList` — keep; ensure context is populated by preTest steps (unchanged behaviour)
+
+#### R3 — Inline fixture catalog into `MiroirTest` JSON
+
+Move declarative transformer trees from `RUNNER_TEST_FIXTURE_REFS` into `miroirTest_runner_library` leaf fields (or new `runnerTestDefinition` sub-document on leaf). `fixtureRef` becomes optional; environment + JSON hold the full definition.
+
+`runnerRef` / `deploymentRef` may remain string refs (resolve to runner entity + identifier map) — not transformer material.
+
+#### R4 — Retire TypeScript fixture catalog
+
+- Delete or reduce `runnerTestFixtures.ts` to **environment param providers only** (`RUNNER_TEST_ENVIRONMENT_REFS`, `RUNNER_TEST_DEPLOYMENT_REFS`, `RUNNER_REF_MAP`)
+- `resolveRunnerTestFixture` → load from JSON leaf + environment; no per-test hard-coded composite actions in TS
+- Update plan mapping table; align `Runner_Library.ts` comment / optional parity sync
+
+#### Phase R — success criteria
+
+- [ ] `initialModel` is a `getFromParameters` transformer; `defaultLibraryAppModel` only in environment param bank
+- [ ] `npm run testMiroir -w miroir-standalone-app -- --suites runner_library --mode integ` stays green after each R slice
+- [ ] No new literals in fixture bodies for fields migrated in that slice
+- [ ] (R4) `runnerTestFixtures.ts` contains no composite-action / assertion literals
+
+#### Suggested commits (Phase R)
+
+1. `refactor(runner-test): R0 initialModel via getFromParameters + param bank`
+2. `refactor(runner-test): R1 runner payloads via getFromParameters`
+3. `refactor(runner-test): R2 preTest actions via getFromParameters`
+4. `refactor(runner-test): R3 move runner_test definitions to MiroirTest JSON`
+5. `refactor(runner-test): R4 shrink fixture catalog to environment providers only`
+
+---
+
+### Refactor open decisions
+
+| # | Question | Options | Decision |
+|---|----------|---------|----------------|
+| R0-a | **Where is `initialModel` transformer resolved?** | A) Eager in `resolveRunnerTestLeaf` using merged param bank B) Lazy in `beforeEach` inside composite runtime (extend `resetAndinitializeDeploymentCompositeAction` to accept transformer) C) let the `runTestOrTestSuite` pass a value to the domainController as params | **C** let the "normal" resolution flow proceed |
+| R0-b | **Param key naming** | A) `defaultLibraryAppModel` matches `Library.ts` export name B) prefixed keys e.g. `library.defaultLibraryAppModel` | **A** — direct `referenceName` ↔ param key |
+| R1-a | **Date params** | A) inject ISO strings in environment B) `returnValue` transformer in fixture | **A** for consistency with param bank |
+| R3-a | **JSON size** | A) full composite trees in leaf JSON B) shared sub-fixtures referenced by `fixtureRef` | **B** until generator exists; then **A** for UI editability |
+| R4-a | **Catalog fate** | A) delete `runnerTestFixtures.ts` B) keep as environment/runner ref registry only | **B** |
 
 ---
 
@@ -475,21 +638,26 @@ Design `MiroirRunnerTestSession`:
 | `internalMiroirConfig` | derived at runtime from env config + `getTestConfig` |
 | `adminDeployment` | derived from env config |
 | `testDeploymentStorageConfiguration` | derived from env profile + app name |
-| `initialModel` | fixture catalog (`defaultLibraryAppModel`) |
+| `initialModel` | Phase A: fixture literal → **Phase R0:** `getFromParameters` + `testParams.defaultLibraryAppModel` |
 | `testCompositeActionLabel` | leaf field or fixture default |
 
 ---
 
 ## Success criteria
 
-### Phase A
+### Phase A ✅
 
-- [ ] `miroirTestType: "runnerTest"` in schema; generated types compile
-- [ ] `RunnerTestTools` resolves pilot leaf to identical `TestCompositeActionParams` as `Runner_Library.ts`
-- [ ] `npm run testMiroir -w miroir-standalone-app -- --suites runner_library --mode integ` passes
-- [ ] `runnerTest` rejected in `executionMode: "unit"` with clear error
-- [ ] `miroirRunnerTestEnvironment` used by new entry; legacy `Runner_Miroir.integ` still passes unchanged
-- [ ] No secrets committed; config files remain gitignored or use localhost defaults
+- [x] `miroirTestType: "runnerTest"` in schema; generated types compile
+- [x] `RunnerTestTools` resolves pilot leaves via fixture catalog
+- [x] `npm run testMiroir -w miroir-standalone-app -- --suites runner_library --mode integ` passes (lend + return)
+- [x] `runnerTest` rejected in `executionMode: "unit"` with clear error
+- [x] Orchestrator + `RunnerIntegAdapter`; legacy `Runner_Miroir.integ` unchanged
+- [x] No secrets committed; config files use localhost defaults
+
+### Phase R
+
+- [ ] R0: `initialModel` → `getFromParameters` + injected `defaultLibraryAppModel`
+- [ ] R1–R4: incremental transformer migration; fixture catalog retired
 
 ### Phase B
 

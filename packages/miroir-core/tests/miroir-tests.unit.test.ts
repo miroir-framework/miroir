@@ -1,5 +1,5 @@
-import { parseMiroirTestCliConfig } from "./helpers/parseMiroirTestCliConfig";
-import { runMiroirTestsFromCliConfig } from "./helpers/runMiroirTestsFromCliConfig";
+import { parseMiroirTestCliConfig } from "../src/5_tests/parseMiroirTestCliConfig";
+import { runMiroirTestsFromCLI } from "./helpers/runMiroirTestsFromCLI";
 
 const config = parseMiroirTestCliConfig();
-await runMiroirTestsFromCliConfig(config);
+await runMiroirTestsFromCLI(config);

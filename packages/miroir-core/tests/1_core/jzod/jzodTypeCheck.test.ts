@@ -15,7 +15,7 @@ if (shouldSkip) {
   vitest.test.skip("jzodTypeCheck.test skipped (resolveConditionalSchema pattern)", () => {});
 } else {
   await runDeployedMiroirTestSuiteLoader(
-    miroirTest_jzodTypeCheck as DeployedMiroirTestExport,
+    miroirTest_jzodTypeCheck.definition as DeployedMiroirTestExport,
     "jzodTypeCheck.test",
     { honorRunTest: false },
   );

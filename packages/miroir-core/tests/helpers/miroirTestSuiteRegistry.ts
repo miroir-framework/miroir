@@ -9,151 +9,151 @@ export type MiroirTestSuiteLoader = () => Promise<{ default: DeployedMiroirTestE
 export const MIROIR_TEST_SUITE_REGISTRY: Record<string, MiroirTestSuiteLoader> = {
   adminTransformers: async () => {
     const deployment = await import("miroir-test-app_deployment-miroir");
-    return { default: deployment.miroirTest_adminTransformers as DeployedMiroirTestExport };
+    return { default: deployment.miroirTest_adminTransformers.definition as DeployedMiroirTestExport };
   },
   alterObject: async () => {
     const deployment = await import("miroir-test-app_deployment-miroir");
-    return { default: deployment.miroirTest_alterObject as DeployedMiroirTestExport };
+    return { default: deployment.miroirTest_alterObject.definition as DeployedMiroirTestExport };
   },
   ansiColumnsToJzodSchema: async () => {
     const deployment = await import("miroir-test-app_deployment-miroir");
-    return { default: deployment.miroirTest_ansiColumnsToJzodSchema as DeployedMiroirTestExport };
+    return { default: deployment.miroirTest_ansiColumnsToJzodSchema.definition as DeployedMiroirTestExport };
   },
   buildAnyKeyMap: async () => {
     const deployment = await import("miroir-test-app_deployment-miroir");
-    return { default: deployment.miroirTest_buildAnyKeyMap as DeployedMiroirTestExport };
+    return { default: deployment.miroirTest_buildAnyKeyMap.definition as DeployedMiroirTestExport };
   },
   defaultValueForMLSchema: async () => {
     const deployment = await import("miroir-test-app_deployment-miroir");
-    return { default: deployment.miroirTest_defaultValueForMLSchema as DeployedMiroirTestExport };
+    return { default: deployment.miroirTest_defaultValueForMLSchema.definition as DeployedMiroirTestExport };
   },
   EntityPrimaryKey: async () => {
     const deployment = await import("miroir-test-app_deployment-miroir");
-    return { default: deployment.miroirTest_EntityPrimaryKey as DeployedMiroirTestExport };
+    return { default: deployment.miroirTest_EntityPrimaryKey.definition as DeployedMiroirTestExport };
   },
   getAttributeTypesFromJzodSchema: async () => {
     const deployment = await import("miroir-test-app_deployment-miroir");
-    return { default: deployment.miroirTest_getAttributeTypesFromJzodSchema as DeployedMiroirTestExport };
+    return { default: deployment.miroirTest_getAttributeTypesFromJzodSchema.definition as DeployedMiroirTestExport };
   },
   jzodObjectFlatten: async () => {
     const deployment = await import("miroir-test-app_deployment-miroir");
-    return { default: deployment.miroirTest_jzodObjectFlatten as DeployedMiroirTestExport };
+    return { default: deployment.miroirTest_jzodObjectFlatten.definition as DeployedMiroirTestExport };
   },
-  jzodReferencesGraphConnectedComponents: async () => {
-    const deployment = await import("miroir-test-app_deployment-miroir");
-    return { default: deployment.miroirTest_jzodReferencesGraphConnectedComponents as DeployedMiroirTestExport };
-  },
+  // jzodReferencesGraphConnectedComponents: async () => {
+  //   const deployment = await import("miroir-test-app_deployment-miroir");
+  //   return { default: deployment.miroirTest_jzodReferencesGraphConnectedComponents as DeployedMiroirTestExport };
+  // },
   JzodSchemaReferencesList: async () => {
     const deployment = await import("miroir-test-app_deployment-miroir");
-    return { default: deployment.miroirTest_JzodSchemaReferencesList as DeployedMiroirTestExport };
+    return { default: deployment.miroirTest_JzodSchemaReferencesList.definition as DeployedMiroirTestExport };
   },
   JzodSchemaReferencesSet: async () => {
     const deployment = await import("miroir-test-app_deployment-miroir");
-    return { default: deployment.miroirTest_JzodSchemaReferencesSet as DeployedMiroirTestExport };
+    return { default: deployment.miroirTest_JzodSchemaReferencesSet.definition as DeployedMiroirTestExport };
   },
   jzodToCopilotKitParameter: async () => {
     const deployment = await import("miroir-test-app_deployment-miroir");
-    return { default: deployment.miroirTest_jzodToCopilotKitParameter as DeployedMiroirTestExport };
+    return { default: deployment.miroirTest_jzodToCopilotKitParameter.definition as DeployedMiroirTestExport };
   },
   jzodToJsonSchema: async () => {
     const deployment = await import("miroir-test-app_deployment-miroir");
-    return { default: deployment.miroirTest_jzodToJsonSchema as DeployedMiroirTestExport };
+    return { default: deployment.miroirTest_jzodToJsonSchema.definition as DeployedMiroirTestExport };
   },
   jzodToJzod_Summary: async () => {
     const deployment = await import("miroir-test-app_deployment-miroir");
-    return { default: deployment.miroirTest_jzodToJzod_Summary as DeployedMiroirTestExport };
+    return { default: deployment.miroirTest_jzodToJzod_Summary.definition as DeployedMiroirTestExport };
   },
   jzodTransitiveDependencySet: async () => {
     const deployment = await import("miroir-test-app_deployment-miroir");
-    return { default: deployment.miroirTest_jzodTransitiveDependencySet as DeployedMiroirTestExport };
+    return { default: deployment.miroirTest_jzodTransitiveDependencySet.definition as DeployedMiroirTestExport };
   },
   jzodTypeCheck: async () => {
     const deployment = await import("miroir-test-app_deployment-miroir");
-    return { default: deployment.miroirTest_jzodTypeCheck as DeployedMiroirTestExport };
+    return { default: deployment.miroirTest_jzodTypeCheck.definition as DeployedMiroirTestExport };
   },
   jzodUnion_RecursiveUnfold: async () => {
     const deployment = await import("miroir-test-app_deployment-miroir");
-    return { default: deployment.miroirTest_jzodUnion_RecursiveUnfold as DeployedMiroirTestExport };
+    return { default: deployment.miroirTest_jzodUnion_RecursiveUnfold.definition as DeployedMiroirTestExport };
   },
   jzodUnionResolvedTypeForArray: async () => {
     const deployment = await import("miroir-test-app_deployment-miroir");
-    return { default: deployment.miroirTest_jzodUnionResolvedTypeForArray as DeployedMiroirTestExport };
+    return { default: deployment.miroirTest_jzodUnionResolvedTypeForArray.definition as DeployedMiroirTestExport };
   },
   jzodUnionResolvedTypeForObject: async () => {
     const deployment = await import("miroir-test-app_deployment-miroir");
-    return { default: deployment.miroirTest_jzodUnionResolvedTypeForObject as DeployedMiroirTestExport };
+    return { default: deployment.miroirTest_jzodUnionResolvedTypeForObject.definition as DeployedMiroirTestExport };
   },
   localizeJzodSchemaReferenceContext: async () => {
     const deployment = await import("miroir-test-app_deployment-miroir");
-    return { default: deployment.miroirTest_localizeJzodSchemaReferenceContext as DeployedMiroirTestExport };
+    return { default: deployment.miroirTest_localizeJzodSchemaReferenceContext.definition as DeployedMiroirTestExport };
   },
   menu: async () => {
     const deployment = await import("miroir-test-app_deployment-miroir");
-    return { default: deployment.miroirTest_menu as DeployedMiroirTestExport };
+    return { default: deployment.miroirTest_menu.definition as DeployedMiroirTestExport };
   },
   mergePositionBased: async () => {
     const deployment = await import("miroir-test-app_deployment-miroir");
-    return { default: deployment.miroirTest_mergePositionBased as DeployedMiroirTestExport };
+    return { default: deployment.miroirTest_mergePositionBased.definition as DeployedMiroirTestExport };
   },
   metaModelTransformers: async () => {
     const deployment = await import("miroir-test-app_deployment-miroir");
-    return { default: deployment.miroirTest_metaModelTransformers as DeployedMiroirTestExport };
+    return { default: deployment.miroirTest_metaModelTransformers.definition as DeployedMiroirTestExport };
   },
   miroirCoreTransformers: async () => {
     const deployment = await import("miroir-test-app_deployment-miroir");
-    return { default: deployment.miroirTest_miroirCoreTransformers as DeployedMiroirTestExport };
+    return { default: deployment.miroirTest_miroirCoreTransformers.definition as DeployedMiroirTestExport };
   },
   modelUpdates: async () => {
     const deployment = await import("miroir-test-app_deployment-miroir");
-    return { default: deployment.miroirTest_modelUpdates as DeployedMiroirTestExport };
+    return { default: deployment.miroirTest_modelUpdates.definition as DeployedMiroirTestExport };
   },
   mustache: async () => {
     const deployment = await import("miroir-test-app_deployment-miroir");
-    return { default: deployment.miroirTest_mustache as DeployedMiroirTestExport };
+    return { default: deployment.miroirTest_mustache.definition as DeployedMiroirTestExport };
   },
   pilot_transformer_plus: async () => {
     const deployment = await import("miroir-test-app_deployment-miroir");
-    return { default: deployment.miroirTest_pilot_transformer_plus as DeployedMiroirTestExport };
+    return { default: deployment.miroirTest_pilot_transformer_plus.definition as DeployedMiroirTestExport };
   },
   queries_library: async () => {
     const deployment = await import("miroir-test-app_deployment-miroir");
-    return { default: deployment.miroirTest_queries_library as DeployedMiroirTestExport };
+    return { default: deployment.miroirTest_queries_library.definition as DeployedMiroirTestExport };
   },
   resolveConditionalSchema: async () => {
     const deployment = await import("miroir-test-app_deployment-miroir");
-    return { default: deployment.miroirTest_resolveConditionalSchema as DeployedMiroirTestExport };
+    return { default: deployment.miroirTest_resolveConditionalSchema.definition as DeployedMiroirTestExport };
   },
   resolveQueryTemplates: async () => {
     const deployment = await import("miroir-test-app_deployment-miroir");
-    return { default: deployment.miroirTest_resolveQueryTemplates as DeployedMiroirTestExport };
+    return { default: deployment.miroirTest_resolveQueryTemplates.definition as DeployedMiroirTestExport };
   },
   resolveSchemaReferenceInContext: async () => {
     const deployment = await import("miroir-test-app_deployment-miroir");
-    return { default: deployment.miroirTest_resolveSchemaReferenceInContext as DeployedMiroirTestExport };
+    return { default: deployment.miroirTest_resolveSchemaReferenceInContext.definition as DeployedMiroirTestExport };
   },
   schema_pilot_empty: async () => {
     const deployment = await import("miroir-test-app_deployment-miroir");
-    return { default: deployment.miroirTest_schema_pilot_empty as DeployedMiroirTestExport };
+    return { default: deployment.miroirTest_schema_pilot_empty.definition as DeployedMiroirTestExport };
   },
   selectUnionBranchFromDiscriminator: async () => {
     const deployment = await import("miroir-test-app_deployment-miroir");
-    return { default: deployment.miroirTest_selectUnionBranchFromDiscriminator as DeployedMiroirTestExport };
+    return { default: deployment.miroirTest_selectUnionBranchFromDiscriminator.definition as DeployedMiroirTestExport };
   },
   tools: async () => {
     const deployment = await import("miroir-test-app_deployment-miroir");
-    return { default: deployment.miroirTest_tools as DeployedMiroirTestExport };
+    return { default: deployment.miroirTest_tools.definition as DeployedMiroirTestExport };
   },
   unfoldSchemaOnce: async () => {
     const deployment = await import("miroir-test-app_deployment-miroir");
-    return { default: deployment.miroirTest_unfoldSchemaOnce as DeployedMiroirTestExport };
+    return { default: deployment.miroirTest_unfoldSchemaOnce.definition as DeployedMiroirTestExport };
   },
   unionArrayChoices: async () => {
     const deployment = await import("miroir-test-app_deployment-miroir");
-    return { default: deployment.miroirTest_unionArrayChoices as DeployedMiroirTestExport };
+    return { default: deployment.miroirTest_unionArrayChoices.definition as DeployedMiroirTestExport };
   },
   unionObjectChoices: async () => {
     const deployment = await import("miroir-test-app_deployment-miroir");
-    return { default: deployment.miroirTest_unionObjectChoices as DeployedMiroirTestExport };
+    return { default: deployment.miroirTest_unionObjectChoices.definition as DeployedMiroirTestExport };
   },
 };
 

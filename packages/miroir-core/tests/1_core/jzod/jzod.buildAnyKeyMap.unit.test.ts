@@ -4,6 +4,6 @@ import type { DeployedMiroirTestExport } from "../../helpers/runDeployedMiroirTe
 import { runDeployedMiroirTestSuiteLoader } from "../../helpers/runDeployedMiroirTestSuiteLoader";
 
 await runDeployedMiroirTestSuiteLoader(
-  miroirTest_buildAnyKeyMap as DeployedMiroirTestExport,
+  miroirTest_buildAnyKeyMap.definition as DeployedMiroirTestExport,
   "jzod.buildAnyKeyMap.unit.test",
 );

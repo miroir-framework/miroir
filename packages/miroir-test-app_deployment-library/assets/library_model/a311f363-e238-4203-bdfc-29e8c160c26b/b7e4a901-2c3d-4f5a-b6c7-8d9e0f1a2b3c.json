@@ -1,0 +1,31 @@
+{
+  "uuid": "b7e4a901-2c3d-4f5a-b6c7-8d9e0f1a2b3c",
+  "parentName": "MiroirTest",
+  "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
+  "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+  "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
+  "name": "runner_library",
+  "description": "Feature 197 pilot — library runner integration tests",
+  "definition": {
+    "miroirTestType": "miroirTestSuite",
+    "miroirTestLabel": "runner.library",
+    "miroirTests": [
+      {
+        "miroirTestType": "runnerTest",
+        "miroirTestLabel": "Lend Book Test Composite Action",
+        "environmentRef": "libraryRunnerTestEnvironment",
+        "runnerRef": "lendDocument",
+        "fixtureRef": "libraryLendBookDefaults",
+        "deploymentRef": "libraryTestIdentifiers"
+      },
+      {
+        "miroirTestType": "runnerTest",
+        "miroirTestLabel": "Return Book Test Composite Action",
+        "environmentRef": "libraryRunnerTestEnvironment",
+        "runnerRef": "returnDocument",
+        "fixtureRef": "libraryReturnBookDefaults",
+        "deploymentRef": "libraryTestIdentifiers"
+      }
+    ]
+  }
+}

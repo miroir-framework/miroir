@@ -68,6 +68,7 @@ import {
 import { type MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import { ACTION_OK } from "../1_core/constants";
+import { expandResolvableResetAndinitializeDeploymentCompositeAction } from "../1_core/Deployment.js";
 import {
   defaultMiroirMetaModel,
   defaultMiroirModelEnvironment,
@@ -2336,6 +2337,11 @@ export class DomainController implements DomainControllerInterface {
     const localActionParams = { ...actionParamValues };
     let localContext: Record<string, any> = { ...actionParamValues };
 
+    const sequenceToExecute = expandResolvableResetAndinitializeDeploymentCompositeAction(
+      compositeActionSequence,
+      localActionParams,
+    );
+
     // log.info(
     //   "handleCompositeAction compositeActionSequence",
     //   compositeActionSequence,
@@ -2344,7 +2350,7 @@ export class DomainController implements DomainControllerInterface {
     //   Object.keys(localActionParams),
     // );
 
-    for (const currentAction of compositeActionSequence.payload.actionSequence) {
+    for (const currentAction of sequenceToExecute.payload.actionSequence) {
       let actionResult: Action2ReturnType | undefined = undefined;
       try {
         log.info(

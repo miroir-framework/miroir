@@ -4,6 +4,6 @@ import type { DeployedMiroirTestExport } from "../helpers/runDeployedMiroirTestS
 import { runDeployedMiroirTestSuiteLoader } from "../helpers/runDeployedMiroirTestSuiteLoader";
 
 await runDeployedMiroirTestSuiteLoader(
-  miroirTest_EntityPrimaryKey as DeployedMiroirTestExport,
+  miroirTest_EntityPrimaryKey.definition as DeployedMiroirTestExport,
   "EntityPrimaryKey.unit.test",
 );

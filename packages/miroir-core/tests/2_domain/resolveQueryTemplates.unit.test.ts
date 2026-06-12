@@ -4,6 +4,6 @@ import type { DeployedMiroirTestExport } from "../helpers/runDeployedMiroirTestS
 import { runDeployedMiroirTestSuiteLoader } from "../helpers/runDeployedMiroirTestSuiteLoader";
 
 await runDeployedMiroirTestSuiteLoader(
-  miroirTest_resolveQueryTemplates as DeployedMiroirTestExport,
+  miroirTest_resolveQueryTemplates.definition as DeployedMiroirTestExport,
   "resolveQueryTemplates.unit.test",
 );

@@ -4,6 +4,6 @@ import type { DeployedMiroirTestExport } from "../../helpers/runDeployedMiroirTe
 import { runDeployedMiroirTestSuiteLoader } from "../../helpers/runDeployedMiroirTestSuiteLoader";
 
 await runDeployedMiroirTestSuiteLoader(
-  miroirTest_jzodUnion_RecursiveUnfold as DeployedMiroirTestExport,
+  miroirTest_jzodUnion_RecursiveUnfold.definition as DeployedMiroirTestExport,
   "jzodUnion_RecursiveUnfold.test",
 );

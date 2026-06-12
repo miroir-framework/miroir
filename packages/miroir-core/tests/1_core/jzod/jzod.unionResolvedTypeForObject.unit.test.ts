@@ -4,6 +4,6 @@ import type { DeployedMiroirTestExport } from "../../helpers/runDeployedMiroirTe
 import { runDeployedMiroirTestSuiteLoader } from "../../helpers/runDeployedMiroirTestSuiteLoader";
 
 await runDeployedMiroirTestSuiteLoader(
-  miroirTest_jzodUnionResolvedTypeForObject as DeployedMiroirTestExport,
+  miroirTest_jzodUnionResolvedTypeForObject.definition as DeployedMiroirTestExport,
   "jzod.unionResolvedTypeForObject.unit.test",
 );

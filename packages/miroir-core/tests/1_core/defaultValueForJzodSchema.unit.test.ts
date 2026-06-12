@@ -15,7 +15,7 @@ if (!shouldRun) {
   vitest.test.skip("defaultValueForJzodSchema.unit.test skipped", () => {});
 } else {
   await runDeployedMiroirTestSuiteLoader(
-    miroirTest_defaultValueForMLSchema as DeployedMiroirTestExport,
+    miroirTest_defaultValueForMLSchema.definition as DeployedMiroirTestExport,
     "defaultValueForJzodSchema.unit.test",
     { honorRunTest: false },
   );

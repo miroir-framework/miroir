@@ -20,6 +20,7 @@ import {
 import type {
   MiroirTestForFunctionCall,
   MiroirTestForQuery,
+  MiroirTestForRunner,
   MiroirTestDefinition,
   MiroirTestSuite,
   MiroirTestForTransformer,
@@ -300,6 +301,32 @@ describe("runMiroirTestInMemory — queryTest", () => {
         { executionMode: "integration", integrationStore: {} },
       ),
     ).rejects.toThrow(/queryTest leaves cannot run in integration mode/);
+  });
+});
+
+describe("runMiroirTestInMemory — runnerTest", () => {
+  it("requires executionMode integration", async () => {
+    const leaf: MiroirTestForRunner = {
+      miroirTestType: "runnerTest",
+      miroirTestLabel: "Lend Book Test Composite Action",
+      runnerRef: "lendDocument",
+      fixtureRef: "libraryLendBookDefaults",
+    };
+    await expect(
+      runMiroirTestInMemory(
+        vitest,
+        ["runner"],
+        undefined,
+        leaf,
+        defaultMetaModelEnvironment,
+        mockTracker() as any,
+        undefined,
+        false,
+        runMiroirTests,
+        { executionMode: "unit" },
+        [{ test: "t" }, { testAssertion: "t" }],
+      ),
+    ).rejects.toThrow(/runnerTest leaves require executionMode integration/);
   });
 });
 

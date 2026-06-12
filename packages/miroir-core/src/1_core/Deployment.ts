@@ -2,6 +2,8 @@ import type { Uuid } from "../0_interfaces/1_core/EntityDefinition";
 import type {
   AdminApplication,
   CompositeActionSequence,
+  CoreTransformerForBuildPlusRuntime,
+  CoreTransformerForBuildPlusRuntime_getFromParameters,
   Deployment,
   Entity,
   EntityDefinition,
@@ -281,8 +283,79 @@ export function metaModelFilterEntities(
     entityDefinitions: filteredEntityDefinitions,
   };
 }
+export type ResolvableAppMetaModel = MetaModel | CoreTransformerForBuildPlusRuntime_getFromParameters;
+
+export type RunnerTestResetAndinitializeInitConfig = {
+  applicationUuid: Uuid;
+  deploymentUuid: Uuid;
+  initApplicationParameters: InitApplicationParameters;
+  appEntitesAndInstances: ApplicationEntitiesDefinitionAndInstances[];
+  filterEntities?: Uuid[];
+};
+
+export type ResetAndinitializeDeploymentCompositeActionPayload = {
+  actionSequence: CompositeActionSequence["payload"]["actionSequence"];
+  _resolvableAppMetaModel?: CoreTransformerForBuildPlusRuntime_getFromParameters;
+  _runnerTestInitConfig?: RunnerTestResetAndinitializeInitConfig;
+};
+
+export function isResolvableAppMetaModelTransformer(
+  value: MetaModel | CoreTransformerForBuildPlusRuntime,
+): value is CoreTransformerForBuildPlusRuntime_getFromParameters {
+  return (
+    typeof value === "object" &&
+    value !== null &&
+    "transformerType" in value &&
+    (value as CoreTransformerForBuildPlusRuntime_getFromParameters).transformerType ===
+      "getFromParameters"
+  );
+}
+
+export function resolveAppMetaModelFromParamBank(
+  transformer: CoreTransformerForBuildPlusRuntime_getFromParameters,
+  actionParamValues: Record<string, unknown>,
+): MetaModel {
+  const key = transformer.referenceName ?? transformer.referencePath?.[0];
+  if (!key) {
+    throw new Error(
+      "resolveAppMetaModelFromParamBank: getFromParameters transformer requires referenceName",
+    );
+  }
+  const value = actionParamValues[key];
+  if (!value) {
+    throw new Error(
+      `resolveAppMetaModelFromParamBank: missing param bank key "${key}" for initialModel`,
+    );
+  }
+  return value as MetaModel;
+}
+
+export function expandResolvableResetAndinitializeDeploymentCompositeAction(
+  compositeActionSequence: CompositeActionSequence,
+  actionParamValues: Record<string, unknown>,
+): CompositeActionSequence {
+  const payload = compositeActionSequence.payload as ResetAndinitializeDeploymentCompositeActionPayload;
+  if (!payload._resolvableAppMetaModel || !payload._runnerTestInitConfig) {
+    return compositeActionSequence;
+  }
+
+  const resolvedMetaModel = resolveAppMetaModelFromParamBank(
+    payload._resolvableAppMetaModel,
+    actionParamValues,
+  );
+  const initConfig = payload._runnerTestInitConfig;
+  return buildResetAndinitializeDeploymentActionSequence(
+    initConfig.applicationUuid,
+    initConfig.deploymentUuid,
+    initConfig.initApplicationParameters,
+    initConfig.appEntitesAndInstances,
+    resolvedMetaModel,
+    initConfig.filterEntities,
+  );
+}
+
 // ################################################################################################
-export function resetAndinitializeDeploymentCompositeAction(
+export function buildResetAndinitializeDeploymentActionSequence(
   applicationUuid: Uuid,
   deploymentUuid: Uuid,
   initApplicationParameters: InitApplicationParameters,
@@ -290,7 +363,6 @@ export function resetAndinitializeDeploymentCompositeAction(
   appMetaModel: MetaModel,
   filterEntities?: Uuid[],
 ): CompositeActionSequence {
-
   const filteredEntitiesMetaModel = metaModelFilterEntities(appMetaModel, filterEntities);
 
   log.info(
@@ -431,6 +503,52 @@ export function resetAndinitializeDeploymentCompositeAction(
       ],
     },
   };
+}
+
+// ################################################################################################
+export function resetAndinitializeDeploymentCompositeAction(
+  applicationUuid: Uuid,
+  deploymentUuid: Uuid,
+  initApplicationParameters: InitApplicationParameters,
+  appEntitesAndInstances: ApplicationEntitiesDefinitionAndInstances[],
+  appMetaModel: MetaModel | CoreTransformerForBuildPlusRuntime,
+  filterEntities?: Uuid[],
+): CompositeActionSequence {
+  if (isResolvableAppMetaModelTransformer(appMetaModel)) {
+    const deferredPayload: ResetAndinitializeDeploymentCompositeActionPayload = {
+      _resolvableAppMetaModel: appMetaModel,
+      _runnerTestInitConfig: {
+        applicationUuid,
+        deploymentUuid,
+        initApplicationParameters,
+        appEntitesAndInstances,
+        filterEntities,
+      },
+      actionSequence: [],
+    };
+    return {
+      actionType: "compositeActionSequence",
+      actionLabel: "resetAndinitializeDeploymentCompositeAction",
+      endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+      payload: deferredPayload as CompositeActionSequence["payload"],
+    };
+  }
+
+  if (typeof appMetaModel === "object" && appMetaModel !== null && "transformerType" in appMetaModel) {
+    const transformerType = (appMetaModel as { transformerType?: string }).transformerType;
+    throw new Error(
+      `resetAndinitializeDeploymentCompositeAction: unsupported appMetaModel transformer ${transformerType}`,
+    );
+  }
+
+  return buildResetAndinitializeDeploymentActionSequence(
+    applicationUuid,
+    deploymentUuid,
+    initApplicationParameters,
+    appEntitesAndInstances,
+    appMetaModel as MetaModel,
+    filterEntities,
+  );
 }
 
 // ################################################################################################

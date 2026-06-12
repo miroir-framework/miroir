@@ -4,6 +4,6 @@ import type { DeployedMiroirTestExport } from "../../helpers/runDeployedMiroirTe
 import { runDeployedMiroirTestSuiteLoader } from "../../helpers/runDeployedMiroirTestSuiteLoader";
 
 await runDeployedMiroirTestSuiteLoader(
-  miroirTest_jzodObjectFlatten as DeployedMiroirTestExport,
+  miroirTest_jzodObjectFlatten.definition as DeployedMiroirTestExport,
   "jzodObjectFlatten.test",
 );

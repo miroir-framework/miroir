@@ -17,7 +17,7 @@ const dummyMlSchema: MlSchema = {
 };
 
 await runDeployedMiroirTestSuiteLoader(
-  miroirTest_jzodToJzod_Summary as DeployedMiroirTestExport,
+  miroirTest_jzodToJzod_Summary.definition as DeployedMiroirTestExport,
   "jzodToJzod_Summary.unit.test",
 );
 

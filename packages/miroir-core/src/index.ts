@@ -445,6 +445,8 @@ export {
   miroirTestForFunctionCall,
   MiroirTestForQuery,
   miroirTestForQuery,
+  MiroirTestForRunner,
+  miroirTestForRunner,
   MiroirTestLeaf,
   miroirTestLeaf,
   MiroirTestSuite,
@@ -951,6 +953,18 @@ export {
   runMiroirQueryRunnerTestInMemory,
 } from "./4_services/QueryRunnerTestTools.js";
 export {
+  resolveRunnerTestLeaf,
+  runMiroirRunnerTestInMemory,
+  runRunnerTestCompositeAction,
+  runnerTestJzodSchema,
+} from "./4_services/RunnerTestTools.js";
+export {
+  MiroirTestIntegrationOrchestrator,
+  type MiroirTestExecutionEnvironment,
+  type MiroirTestIntegrationPort,
+  type RunnerTestContext,
+} from "./4_services/MiroirTestIntegrationOrchestrator.js";
+export {
   effectiveMiroirTransformerSkip,
   miroirTransformerAssertionName,
   miroirTestsDisplayResults,
@@ -1020,6 +1034,14 @@ export {
   testSuitesResults
 } from "./0_interfaces/4-services/TestInterface.js";
 
+export {
+  DeployedMiroirTestExport,  
+} from "./5_tests/miroirRunnerTestSuiteRegistry";
+
+export {
+  MiroirRunnerTestCliParseResult,
+  parseMiroirRunnerTestCliConfig,
+} from "./5_tests/parseMiroirRunnerTestCLIConfig";
 // // Bootstrap-only schema fixtures (legacy test entities removed from deployment)
 // export { default as entityDefinitionTransformerTest } from "./0_interfaces/1_core/bootstrapJzodSchemas/fixtures/entityDefinitionTransformerTest.json" assert { type: "json" };
 // export { default as entityDefinitionUnitTest } from "./0_interfaces/1_core/bootstrapJzodSchemas/fixtures/entityDefinitionUnitTest.json" assert { type: "json" };

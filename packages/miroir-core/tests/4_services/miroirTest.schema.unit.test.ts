@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 
+import { miroirTest_runner_library } from "miroir-test-app_deployment-library";
 import {
   defaultMetaModelEnvironment,
   entityDefinitionMiroirTest,
@@ -125,6 +126,36 @@ describe("MiroirTestDefinition schema (Phase 0)", () => {
       miroirTestType: "queryTest",
       runner: "runQueryFromDomainState",
       fixtureRef: "libraryDomainState",
+    });
+  });
+
+  it("validates runner_library MiroirTest instance via jzodTypeCheck", () => {
+    const result = jzodTypeCheck(
+      miroirTestJzodSchema,
+      miroirTest_runner_library,
+      [],
+      [],
+      defaultMetaModelEnvironment,
+      {},
+    );
+    if (result.status === "error") {
+      console.error(getInnermostTypeCheckError(result));
+    }
+    expect(result.status).toBe("ok");
+
+    const suite = (miroirTest_runner_library as MiroirTestDefinition)
+      .definition as MiroirTestSuite;
+    expect(suite.miroirTestLabel).toBe("runner.library");
+    expect(suite.miroirTests).toHaveLength(2);
+    expect(suite.miroirTests[0]).toMatchObject({
+      miroirTestType: "runnerTest",
+      runnerRef: "lendDocument",
+      fixtureRef: "libraryLendBookDefaults",
+    });
+    expect(suite.miroirTests[1]).toMatchObject({
+      miroirTestType: "runnerTest",
+      runnerRef: "returnDocument",
+      fixtureRef: "libraryReturnBookDefaults",
     });
   });
 

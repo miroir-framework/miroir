@@ -18,7 +18,7 @@ if (shouldSkip) {
   );
 } else {
   await runDeployedMiroirTestSuiteLoader(
-    miroirTest_resolveSchemaReferenceInContext as DeployedMiroirTestExport,
+    miroirTest_resolveSchemaReferenceInContext.definition as DeployedMiroirTestExport,
     "resolveSchemaReferenceInContext.test",
     { honorRunTest: false },
   );

@@ -33,13 +33,15 @@ export async function runDeployedMiroirTestSuiteLoader(
 
   const miroirActivityTracker = new MiroirActivityTracker();
   new MiroirEventService(miroirActivityTracker);
-  const miroirTestSuite = suiteExport.definition as MiroirTestSuite;
+  const miroirTestSuite = suiteExport as MiroirTestSuite;
+  // const miroirTestSuite = suiteExport.definition as MiroirTestSuite;
 
   afterAll(() => {
     if (!shouldSkip) {
       miroirTestsDisplayResults(
         miroirTestSuite,
         RUN_TEST ?? testSuiteName,
+        miroirTestSuite.miroirTestLabel ?? testSuiteName,
         miroirActivityTracker,
       );
     }

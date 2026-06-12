@@ -31,7 +31,7 @@ import {
   unionObjectChoices,
 } from "../1_core/jzod/jzodTypeCheck";
 import { jzodUnion_recursivelyUnfold } from "../1_core/jzod/jzodUnion_RecursivelyUnfold";
-import { jzodReferencesGraphConnectedComponents } from "../1_core/jzod/jzodReferencesGraphConnectedComponents";
+// import { jzodReferencesGraphConnectedComponents } from "../1_core/jzod/jzodReferencesGraphConnectedComponents";
 import { localizeJzodSchemaReferenceContext } from "../1_core/jzod/JzodUnfoldSchemaOnce";
 import { resolveQueryTemplateWithExtractorCombinerTransformer } from "../2_domain/Templates";
 import { mergeIfUnique, pushIfUnique } from "../1_core/tools";
@@ -102,10 +102,10 @@ const FUNCTION_CALL_REGISTRY: Record<string, Record<string, WhitelistedFunction>
   "miroir-core/1_core/jzod/jzodUnion_RecursivelyUnfold": {
     jzodUnion_recursivelyUnfold: jzodUnion_recursivelyUnfold as WhitelistedFunction,
   },
-  "miroir-core/1_core/jzod/jzodReferencesGraphConnectedComponents": {
-    jzodReferencesGraphConnectedComponents:
-      jzodReferencesGraphConnectedComponents as WhitelistedFunction,
-  },
+  // "miroir-core/1_core/jzod/jzodReferencesGraphConnectedComponents": {
+  //   jzodReferencesGraphConnectedComponents:
+  //     jzodReferencesGraphConnectedComponents as WhitelistedFunction,
+  // },
   "miroir-core/1_core/jzod/JzodUnfoldSchemaOnce": {
     localizeJzodSchemaReferenceContext: localizeJzodSchemaReferenceContext as WhitelistedFunction,
   },

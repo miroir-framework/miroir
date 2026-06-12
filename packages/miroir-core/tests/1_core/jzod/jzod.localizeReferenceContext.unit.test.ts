@@ -4,6 +4,6 @@ import type { DeployedMiroirTestExport } from "../../helpers/runDeployedMiroirTe
 import { runDeployedMiroirTestSuiteLoader } from "../../helpers/runDeployedMiroirTestSuiteLoader";
 
 await runDeployedMiroirTestSuiteLoader(
-  miroirTest_localizeJzodSchemaReferenceContext as DeployedMiroirTestExport,
+  miroirTest_localizeJzodSchemaReferenceContext.definition as DeployedMiroirTestExport,
   "jzod.localizeReferenceContext.unit.test",
 );

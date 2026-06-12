@@ -26,7 +26,7 @@ if (!shouldRun) {
   vitest.test.skip("resolveConditionalSchema.test skipped", () => {});
 } else {
   await runDeployedMiroirTestSuiteLoader(
-    miroirTest_resolveConditionalSchema as DeployedMiroirTestExport,
+    miroirTest_resolveConditionalSchema.definition as DeployedMiroirTestExport,
     testSuiteName,
     {
       honorRunTest: false,

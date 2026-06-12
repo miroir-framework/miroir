@@ -4,6 +4,6 @@ import type { DeployedMiroirTestExport } from "../helpers/runDeployedMiroirTestS
 import { runDeployedMiroirTestSuiteLoader } from "../helpers/runDeployedMiroirTestSuiteLoader";
 
 await runDeployedMiroirTestSuiteLoader(
-  miroirTest_mustache as DeployedMiroirTestExport,
+  miroirTest_mustache.definition as DeployedMiroirTestExport,
   "mustache.unit.test",
 );

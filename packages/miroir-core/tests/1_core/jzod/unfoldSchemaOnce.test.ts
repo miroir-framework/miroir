@@ -15,7 +15,7 @@ if (shouldSkip) {
   vitest.test.skip("unfoldSchemaOnce.test skipped (resolveConditionalSchema pattern)", () => {});
 } else {
   await runDeployedMiroirTestSuiteLoader(
-    miroirTest_unfoldSchemaOnce as DeployedMiroirTestExport,
+    miroirTest_unfoldSchemaOnce.definition as DeployedMiroirTestExport,
     "unfoldSchemaOnce.test",
     { honorRunTest: false },
   );

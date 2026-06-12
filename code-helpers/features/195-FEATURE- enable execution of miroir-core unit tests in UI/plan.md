@@ -467,7 +467,6 @@ Core union-matching utilities; complements the `jzodTypeCheck` transformer suite
 
 | Vitest file | Export | Cases | Notes |
 |-------------|--------|-------|-------|
-| `jzodReferencesGraphConnectedComponents.unit.test.ts` | `jzodReferencesGraphConnectedComponents` | 5 | |
 | `jzod.localizeReferenceContext.unit.test.ts` | `localizeJzodSchemaReferenceContext` | 3 | 1 vitest `it` with 3 sub-cases; `miroirFundamentalJzodSchema` bare fixture |
 
 - [x] `unitTest_suite_jzodReferencesGraphConnectedComponents` (`c6d2a001-…`)

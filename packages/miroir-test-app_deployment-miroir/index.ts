@@ -177,7 +177,7 @@ export { default as miroirTest_defaultValueForMLSchema } from "./assets/miroir_d
 export { default as miroirTest_EntityPrimaryKey } from "./assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/7c11632c-e5c0-4aca-8f96-aca26da2efa6.json" assert { type: "json" };
 export { default as miroirTest_getAttributeTypesFromJzodSchema } from "./assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/b9eeba55-86f4-4aec-9488-6fb7a2747880.json" assert { type: "json" };
 export { default as miroirTest_jzodObjectFlatten } from "./assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/28463869-0408-48f0-b2fd-1aa9ead080ce.json" assert { type: "json" };
-export { default as miroirTest_jzodReferencesGraphConnectedComponents } from "./assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/b0b14998-2203-417a-adb9-20492d5f04cf.json" assert { type: "json" };
+// export { default as miroirTest_jzodReferencesGraphConnectedComponents } from "./assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/b0b14998-2203-417a-adb9-20492d5f04cf.json" assert { type: "json" };
 export { default as miroirTest_JzodSchemaReferencesList } from "./assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/c3fc18b5-b572-4505-bb29-1aa75188e9dc.json" assert { type: "json" };
 export { default as miroirTest_JzodSchemaReferencesSet } from "./assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/b1000bf2-4067-4881-9ac9-fa4911fb3a67.json" assert { type: "json" };
 export { default as miroirTest_jzodToCopilotKitParameter } from "./assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/1c086ab9-d6a3-4cb9-b0cd-720a09e2cd44.json" assert { type: "json" };

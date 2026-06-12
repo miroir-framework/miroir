@@ -4,6 +4,6 @@ import type { DeployedMiroirTestExport } from "../helpers/runDeployedMiroirTestS
 import { runDeployedMiroirTestSuiteLoader } from "../helpers/runDeployedMiroirTestSuiteLoader";
 
 await runDeployedMiroirTestSuiteLoader(
-  miroirTest_pilot_transformer_plus as DeployedMiroirTestExport,
+  miroirTest_pilot_transformer_plus.definition as DeployedMiroirTestExport,
   "unitTest.pilot.unit.test",
 );

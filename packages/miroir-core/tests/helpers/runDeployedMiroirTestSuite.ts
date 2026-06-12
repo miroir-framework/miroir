@@ -3,7 +3,7 @@ import * as vitest from "vitest";
 import type { MiroirTestSuite } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { defaultMetaModelEnvironment } from "../../src/1_core/Model";
 import type { MiroirModelEnvironment } from "../../src/0_interfaces/1_core/Transformer";
-import type { MiroirActivityTrackerInterface } from "../../src/3_controllers/MiroirActivityTrackerInterface";
+import type { MiroirActivityTrackerInterface } from "../../src/0_interfaces/3_controllers/MiroirActivityTrackerInterface";
 import {
   runMiroirTests,
   type MiroirTestExecutionOptions,
@@ -11,9 +11,11 @@ import {
 } from "../../src/4_services/MiroirTestTools";
 
 /** Deployment JSON entity instance (MiroirTest). */
-export type DeployedMiroirTestExport = {
-  definition: MiroirTestSuite;
-};
+export type DeployedMiroirTestExport = MiroirTestSuite;
+
+// export type DeployedMiroirTestExport = {
+//   definition: MiroirTestSuite;
+// };
 
 export type RunDeployedMiroirTestSuiteParams = {
   suiteExport: DeployedMiroirTestExport;
@@ -32,7 +34,7 @@ export async function runDeployedMiroirTestSuite({
   filter,
   executionOptions = { executionMode: "unit" },
 }: RunDeployedMiroirTestSuiteParams): Promise<void> {
-  const miroirTestSuite = suiteExport.definition as MiroirTestSuite;
+  const miroirTestSuite = suiteExport as MiroirTestSuite;
 
   await runMiroirTests._runMiroirTestSuite(
     vitest,

@@ -5,22 +5,31 @@ import { MiroirEventService } from "../../src/3_controllers/MiroirEventService";
 import { miroirTestsDisplayResults } from "../../src/4_services/MiroirTestTools";
 import type { MiroirTestSuite } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { loadMiroirTestSuiteExport } from "./miroirTestSuiteRegistry";
-import type { MiroirTestCliConfig } from "./parseMiroirTestCliConfig";
+import type { MiroirTestCliConfig } from "../../src/5_tests/parseMiroirTestCliConfig";
+import type { MiroirTestExecutionEnvironment } from "../../src/4_services/MiroirTestIntegrationOrchestrator";
+import type { MiroirTestIntegrationOrchestrator } from "../../src/4_services/MiroirTestIntegrationOrchestrator";
 import { runDeployedMiroirTestSuite } from "./runDeployedMiroirTestSuite";
 
-export type RunMiroirTestsFromCliConfigOptions = {
+export type RunMiroirTestsFromCLIOptions = {
   integrationStore?: unknown;
+  orchestrator?: MiroirTestIntegrationOrchestrator;
+  executionEnvironment?: MiroirTestExecutionEnvironment;
 };
 
-export async function runMiroirTestsFromCliConfig(
+// ################################################################################################
+export async function runMiroirTestsFromCLI(
   config: MiroirTestCliConfig,
-  options: RunMiroirTestsFromCliConfigOptions = {},
+  options: RunMiroirTestsFromCLIOptions = {},
 ): Promise<void> {
   const miroirActivityTracker = new MiroirActivityTracker();
   new MiroirEventService(miroirActivityTracker);
+  const executionEnvironment =
+    options.executionEnvironment ?? options.orchestrator?.getEnvironment();
+
   const executionOptions = {
     executionMode: config.executionMode,
-    integrationStore: options.integrationStore,
+    integrationStore: options.integrationStore ?? executionEnvironment?.integrationStore,
+    executionEnvironment,
   };
 
   const loadedSuites: { suiteKey: string; definition: MiroirTestSuite }[] = [];
@@ -33,6 +42,7 @@ export async function runMiroirTestsFromCliConfig(
     await miroirTestsDisplayResults(
       loadedSuites[0].definition,
       summaryLabel,
+      loadedSuites[0].suiteKey,
       miroirActivityTracker,
     );
   });
