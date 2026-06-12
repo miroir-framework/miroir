@@ -10,15 +10,8 @@ import {
   type MiroirTestRunFilter,
 } from "../../src/4_services/MiroirTestTools";
 
-/** Deployment JSON entity instance (MiroirTest). */
-export type DeployedMiroirTestExport = MiroirTestSuite;
-
-// export type DeployedMiroirTestExport = {
-//   definition: MiroirTestSuite;
-// };
-
 export type RunDeployedMiroirTestSuiteParams = {
-  suiteExport: DeployedMiroirTestExport;
+  suiteExport: MiroirTestSuite;
   suiteKey: string;
   miroirActivityTracker: MiroirActivityTrackerInterface;
   modelEnvironment?: MiroirModelEnvironment;

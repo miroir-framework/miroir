@@ -12,7 +12,6 @@ import {
   type MiroirTestSuite,
   type MiroirTestExecutionEnvironment,
   MiroirRunnerTestCliParseResult,
-  type DeployedMiroirTestExport,
 } from "miroir-core";
 import { RunnerIntegAdapter } from "./RunnerIntegAdapter.js";
 import { miroirTest_runner_library } from "miroir-test-app_deployment-library";
@@ -27,7 +26,7 @@ async function runDeployedRunnerTestSuite({
   filter,
   executionEnvironment,
 }: {
-  suiteExport: DeployedMiroirTestExport;
+  suiteExport: MiroirTestSuite;
   suiteKey: string;
   miroirActivityTracker: MiroirActivityTracker;
   filter?: MiroirTestRunFilter;
@@ -92,7 +91,7 @@ export async function runMiroirRunnerTestsFromCliConfig(
 
   for (const suiteKey of config.suiteKeys) {
     // const suiteExport = await loadMiroirRunnerTestSuiteExport(suiteKey);
-    const suiteExport = miroirTest_runner_library.definition as DeployedMiroirTestExport;
+    const suiteExport = miroirTest_runner_library.definition as MiroirTestSuite;
     loadedSuites.push({
       suiteKey,
       definition: suiteExport as MiroirTestSuite,

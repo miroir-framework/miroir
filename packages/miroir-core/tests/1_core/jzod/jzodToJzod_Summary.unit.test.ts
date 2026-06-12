@@ -7,7 +7,7 @@ import type {
 import { jzodToJzod_Summary } from "../../../src/1_core/jzod/JzodToJzod_Summary";
 import { miroirTest_jzodToJzod_Summary } from "miroir-test-app_deployment-miroir";
 
-import type { DeployedMiroirTestExport } from "../../helpers/runDeployedMiroirTestSuite";
+import type { MiroirTestSuite } from "../../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { runDeployedMiroirTestSuiteLoader } from "../../helpers/runDeployedMiroirTestSuiteLoader";
 
 const dummyMlSchema: MlSchema = {
@@ -17,7 +17,7 @@ const dummyMlSchema: MlSchema = {
 };
 
 await runDeployedMiroirTestSuiteLoader(
-  miroirTest_jzodToJzod_Summary.definition as DeployedMiroirTestExport,
+  miroirTest_jzodToJzod_Summary.definition as MiroirTestSuite,
   "jzodToJzod_Summary.unit.test",
 );
 

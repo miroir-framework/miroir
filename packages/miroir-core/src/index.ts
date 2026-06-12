@@ -1035,10 +1035,6 @@ export {
 } from "./0_interfaces/4-services/TestInterface.js";
 
 export {
-  DeployedMiroirTestExport,  
-} from "./5_tests/miroirRunnerTestSuiteRegistry";
-
-export {
   MiroirRunnerTestCliParseResult,
   parseMiroirRunnerTestCliConfig,
 } from "./5_tests/parseMiroirRunnerTestCLIConfig";

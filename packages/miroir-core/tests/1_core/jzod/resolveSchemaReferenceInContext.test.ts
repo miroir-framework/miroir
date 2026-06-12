@@ -2,7 +2,7 @@ import * as vitest from "vitest";
 
 import { miroirTest_resolveSchemaReferenceInContext } from "miroir-test-app_deployment-miroir";
 
-import type { DeployedMiroirTestExport } from "../../helpers/runDeployedMiroirTestSuite";
+import type { MiroirTestSuite } from "../../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { runDeployedMiroirTestSuiteLoader } from "../../helpers/runDeployedMiroirTestSuiteLoader";
 
 const vitestArgs = process.argv.slice(2);
@@ -18,7 +18,7 @@ if (shouldSkip) {
   );
 } else {
   await runDeployedMiroirTestSuiteLoader(
-    miroirTest_resolveSchemaReferenceInContext.definition as DeployedMiroirTestExport,
+    miroirTest_resolveSchemaReferenceInContext.definition as MiroirTestSuite,
     "resolveSchemaReferenceInContext.test",
     { honorRunTest: false },
   );

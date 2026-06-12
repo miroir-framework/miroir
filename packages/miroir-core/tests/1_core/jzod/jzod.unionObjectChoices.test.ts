@@ -1,9 +1,9 @@
 import { miroirTest_unionObjectChoices } from "miroir-test-app_deployment-miroir";
 
-import type { DeployedMiroirTestExport } from "../../helpers/runDeployedMiroirTestSuite";
+import type { MiroirTestSuite } from "../../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { runDeployedMiroirTestSuiteLoader } from "../../helpers/runDeployedMiroirTestSuiteLoader";
 
 await runDeployedMiroirTestSuiteLoader(
-  miroirTest_unionObjectChoices.definition as DeployedMiroirTestExport,
+  miroirTest_unionObjectChoices.definition as MiroirTestSuite,
   "jzod.unionObjectChoices.test",
 );

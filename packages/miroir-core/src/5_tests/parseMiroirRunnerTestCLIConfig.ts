@@ -1,8 +1,8 @@
 import type { MiroirTestExecutionMode, MiroirTestRunFilter } from "../4_services/MiroirTestTools.js";
-import { type DeployedMiroirTestExport } from "./miroirRunnerTestSuiteRegistry.js";
 import { applyRunnerTestProfile } from "./runnerTestProfiles.js";
 import type { MiroirTestCliConfig } from "./parseMiroirTestCliConfig.js";
 import { miroirTest_runner_library } from "miroir-test-app_deployment-library";
+import type { MiroirTestSuite } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 
 const ALL_SUITES_JOKER = "*";
 
@@ -101,7 +101,7 @@ export function parseMiroirRunnerTestCliConfig(
 
   const suiteKeys = resolveRunnerSuiteKeys(
     fromArgs.suiteKeys ?? splitSuiteKeys(env.MIROIR_TEST_SUITES ?? env.MIROIR_TEST_SUITE),
-    Object.keys(miroirTest_runner_library.definition as DeployedMiroirTestExport)
+    Object.keys(miroirTest_runner_library.definition as MiroirTestSuite)
   );
 
   const executionMode: MiroirTestExecutionMode =

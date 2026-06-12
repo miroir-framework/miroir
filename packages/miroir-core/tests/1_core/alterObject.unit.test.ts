@@ -1,6 +1,6 @@
 import { miroirTest_alterObject } from "miroir-test-app_deployment-miroir";
+import type { MiroirTestSuite } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 
-import type { DeployedMiroirTestExport } from "../helpers/runDeployedMiroirTestSuite";
 import { runDeployedMiroirTestSuiteLoader } from "../helpers/runDeployedMiroirTestSuiteLoader";
 
-await runDeployedMiroirTestSuiteLoader(miroirTest_alterObject.definition as DeployedMiroirTestExport, "alterObject.unit.test");
+await runDeployedMiroirTestSuiteLoader(miroirTest_alterObject.definition as MiroirTestSuite, "alterObject.unit.test");

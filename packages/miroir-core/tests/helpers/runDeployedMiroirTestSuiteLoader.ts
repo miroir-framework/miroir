@@ -10,7 +10,6 @@ import {
   runMiroirTests,
   type MiroirTestRunFilter,
 } from "../../src/4_services/MiroirTestTools";
-import type { DeployedMiroirTestExport } from "./runDeployedMiroirTestSuite";
 
 export type RunDeployedMiroirTestSuiteLoaderOptions = {
   filter?: MiroirTestRunFilter;
@@ -23,7 +22,7 @@ export type RunDeployedMiroirTestSuiteLoaderOptions = {
  * Honors RUN_TEST filter; always wires MiroirEventService for nested suite tracking.
  */
 export async function runDeployedMiroirTestSuiteLoader(
-  suiteExport: DeployedMiroirTestExport,
+  suiteExport: MiroirTestSuite,
   testSuiteName: string,
   options: RunDeployedMiroirTestSuiteLoaderOptions = {},
 ): Promise<void> {
