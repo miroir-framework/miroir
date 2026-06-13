@@ -6,12 +6,10 @@ import {
   type CompositeRunTestAssertion,
   type Deployment,
   type DomainControllerInterface,
-  type LocalCacheInterface,
   type MetaModel,
   type MiroirActivityTracker,
   type MiroirConfigClient,
   type MiroirEventService,
-  type PersistenceStoreControllerManagerInterface,
   type Runner,
   type StoreUnitConfiguration,
   type Uuid,
@@ -51,7 +49,7 @@ export interface RunnerTestParams {
 }
 
 // ################################################################################################
-export async function beforeAllTests(
+export async function beforeAllRunnerTests(
   miroirConfig: MiroirConfigClient,
   miroirActivityTracker: MiroirActivityTracker,
   miroirEventService: MiroirEventService,
@@ -59,18 +57,18 @@ export async function beforeAllTests(
   miroirDeploymentStorageConfiguration: StoreUnitConfiguration,
   applicationDeploymentMap: ApplicationDeploymentMap,
 ): Promise<{
-  localCache: LocalCacheInterface;
+  // localCache: LocalCacheInterface;
   domainController: DomainControllerInterface;
-  persistenceStoreControllerManager: PersistenceStoreControllerManagerInterface;
+  // persistenceStoreControllerManager: PersistenceStoreControllerManagerInterface;
 }> {
   // Establish requests interception layer before all tests.
   console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ beforeAll");
   const {
-    persistenceStoreControllerManagerForClient: localpersistenceStoreControllerManager,
+    // persistenceStoreControllerManagerForClient: localpersistenceStoreControllerManager,
     domainControllerForClient,
     domainControllerForServer,
-    localCache: locallocalCache,
-    miroirContext: localmiroirContext,
+    // localCache: locallocalCache,
+    // miroirContext: localmiroirContext,
   } = await setupMiroirTest(miroirConfig, miroirActivityTracker, miroirEventService, crossFetch);
 
   const domainController = miroirConfig.client.emulateServer && domainControllerForServer
@@ -101,9 +99,9 @@ export async function beforeAllTests(
   console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ beforeAll DONE");
 
   return Promise.resolve({
-    localCache: locallocalCache,
+    // localCache: locallocalCache,
     domainController: domainControllerForClient,
-    persistenceStoreControllerManager: localpersistenceStoreControllerManager,
+    // persistenceStoreControllerManager: localpersistenceStoreControllerManager,
   });
 }
 

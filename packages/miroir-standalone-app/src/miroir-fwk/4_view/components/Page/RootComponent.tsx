@@ -152,7 +152,7 @@ export const RootComponent = (props: RootComponentProps) => {
   const theme = useMiroirTheme();
   // Optimize transactions selector to avoid unnecessary re-renders during bulk operations
   // const transactions: ReduxStateChanges[] = useLocalCacheTransactions();
-  const miroirConfig = context.miroirContext.getMiroirConfig();
+  const miroirConfig = context.miroirContext.extendMiroirConfigWithExtraDeploymentConfiguration();
 
   // Configuration loading service for centralized configuration management
   const { fetchConfigurations } = usePageConfiguration();

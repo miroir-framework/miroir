@@ -19,7 +19,7 @@ Read via `(miroirConfig.server as any).filesystemDeploymentRootDirectory` — sa
 
 **1.3** In DomainController.ts constructor, mutate the module-level `templateEvaluationParams` object to add the field:
 ```typescript
-const serverCfg = (miroirContext.getMiroirConfig() as MiroirConfigServer)?.server as any;
+const serverCfg = (miroirContext.extendMiroirConfigWithExtraDeploymentConfiguration() as MiroirConfigServer)?.server as any;
 (templateEvaluationParams as any).filesystemDeploymentRootDirectory =
   serverCfg?.filesystemDeploymentRootDirectory
   ?? (process.env.NODE_ENV === "development" ? devRelativePathPrefix : prodRelativePathPrefix);

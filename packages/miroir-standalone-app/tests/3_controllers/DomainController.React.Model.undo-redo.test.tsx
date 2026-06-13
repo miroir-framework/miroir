@@ -18,7 +18,6 @@ import {
   PersistenceStoreControllerInterface,
   PersistenceStoreControllerManagerInterface,
   StoreUnitConfiguration,
-  configurationService,
   createDeploymentCompositeAction,
   defaultMiroirModelEnvironment,
   defaultSelfApplicationDeploymentMap,
@@ -45,7 +44,6 @@ import {
   DisplayLoadingInfo,
   renderWithProviders,
   selfApplicationDeploymentConfigurations,
-  setupMiroirTest
 } from "../../src/miroir-fwk/4-tests/tests-utils.js";
 import { TestUtilsTableComponent } from "../utils/TestUtilsTableComponent.js";
 
@@ -62,7 +60,7 @@ import {
 import { loglevelnext } from "../../src/loglevelnextImporter.js";
 import { loadTestConfigFiles } from "../utils/fileTools.js";
 import { cleanLevel, packageName } from "./constants.js";
-
+import { setupMiroirTest } from "../../src/miroir-fwk/4-tests/setupMiroirTest.js";
 
 
 const env:any = (import.meta as any).env
@@ -128,26 +126,26 @@ const libraryDeploymentStorageConfiguration: StoreUnitConfiguration = miroirConf
 
 console.log("@@@@@@@@@@@@@@@@@@ miroirConfig", miroirConfig);
 
-let localMiroirPersistenceStoreController: PersistenceStoreControllerInterface;
-let localAppPersistenceStoreController: PersistenceStoreControllerInterface;
+// let localMiroirPersistenceStoreController: PersistenceStoreControllerInterface;
+// let localAppPersistenceStoreController: PersistenceStoreControllerInterface;
 let persistenceStoreControllerManager: PersistenceStoreControllerManagerInterface;
 let domainController: DomainControllerInterface;
 let localCache: LocalCacheInterface;
-let miroirContext: MiroirContextInterface;
+// let miroirContext: MiroirContextInterface;
 
 beforeAll(
   async () => {
     const {
-      persistenceStoreControllerManagerForClient: localpersistenceStoreControllerManager,
-      domainController: localdomainController,
-      localCache: locallocalCache,
-      miroirContext: localmiroirContext,
+      // persistenceStoreControllerManagerForClient: localpersistenceStoreControllerManager,
+      domainControllerForClient: localdomainControllerForClient,
+      // localCache: locallocalCache,
+      // miroirContext: localmiroirContext,
     } = await setupMiroirTest(miroirConfig);
 
-    persistenceStoreControllerManager = localpersistenceStoreControllerManager;
-    domainController = localdomainController;
-    localCache = locallocalCache;
-    miroirContext = localmiroirContext;
+    // persistenceStoreControllerManager = localpersistenceStoreControllerManager;
+    domainController = localdomainControllerForClient;
+    // localCache = locallocalCache;
+    // miroirContext = localmiroirContext;
 
     const createMiroirDeploymentCompositeAction = createDeploymentCompositeAction(
       "miroir",
@@ -245,7 +243,7 @@ describe.sequential(
               applicationDeploymentMap={applicationDeploymentMap}
               instancesApplicationSection="model"
             />,
-            {store:localCache.getInnerStore(),}
+            {store:domainController.getLocalCache().getInnerStore(),}
           );
   
           // ##########################################################################################################

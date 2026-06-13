@@ -4,11 +4,14 @@ type VitestNamespace = typeof vitest;
 
 
 import type {
+  Deployment,
+  MiroirConfigClient,
   MiroirTestForFunctionCall,
   MiroirTestForQuery,
   MiroirTestForRunner,
   MiroirTestLeaf,
   MiroirTestSuite,
+  StoreUnitConfiguration,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import type { MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
 import type {
@@ -18,17 +21,42 @@ import type {
 import { MiroirActivityTracker } from "../3_controllers/MiroirActivityTracker";
 import { runMiroirFunctionCallTestInMemory } from "./FunctionCallTestTools";
 import {
-  displayMiroirTestResults,
   miroirTestGlobalTimeOut,
   runMiroirTransformerIntegrationTest,
   runMiroirTransformerTest,
 } from "./MiroirTransformerTestTools";
 import { runMiroirQueryRunnerTestInMemory } from "./QueryRunnerTestTools";
 import { runMiroirRunnerTest } from "./RunnerTestTools";
-import type { MiroirTestExecutionEnvironment } from "./MiroirTestIntegrationOrchestrator";
 import type { MiroirTestRunFilter, TestSuiteListFilter } from "../0_interfaces/5-tests/miroirTestTypes";
+import type { DomainControllerInterface } from "../0_interfaces/2_domain/DomainControllerInterface";
+import type { ApplicationDeploymentMap } from "../1_core/Deployment";
 
-export type { MiroirTestRunFilter, TestSuiteListFilter };
+// export type { MiroirTestRunFilter, TestSuiteListFilter };
+
+export type RunnerTestContext = {
+  domainController: DomainControllerInterface;
+  applicationDeploymentMap: ApplicationDeploymentMap;
+  internalMiroirConfig: MiroirConfigClient;
+  pageLabel: string;
+  adminDeployment: Deployment;
+  testDeploymentStorageConfiguration: StoreUnitConfiguration;
+  testParams: Record<string, unknown>;
+  runtimeContext: Record<string, unknown>;
+};
+
+export type MiroirTestExecutionEnvironment = {
+  /** Transformer integration (direct Postgres). */
+  integrationStore?: unknown; // TODO: BAD! stores should only be accessed through the domainController
+  /** Runner integration (full stack). */
+  runnerTestContext?: RunnerTestContext;
+};
+
+export interface RunnerTestSessionInterface {
+  initSession(): Promise<MiroirTestExecutionEnvironment>;
+  beforeEach(): Promise<void>;
+  teardown(): Promise<void>;
+}
+
 
 export type MiroirTestExecutionMode = "unit" | "integration";
 
@@ -370,8 +398,6 @@ export const runMiroirTests: RunMiroirTests = {
     });
   },
 };
-
-// export const displayMiroirTestResults = displayMiroirTestResults;
 
 export {
   effectiveMiroirTransformerSkip,

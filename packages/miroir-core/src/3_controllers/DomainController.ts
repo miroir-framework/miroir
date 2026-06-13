@@ -228,7 +228,7 @@ export class DomainController implements DomainControllerInterface {
     // Make the server-configured filesystem deployment root available to transformer evaluation.
     // Falls back to the NODE_ENV-based constants for backward compatibility.
     
-    // const serverCfg = ((miroirContext.getMiroirConfig() as MiroirConfigServer)?.server) as any;
+    // const serverCfg = ((miroirContext.extendMiroirConfigWithExtraDeploymentConfiguration() as MiroirConfigServer)?.server) as any;
   }
 
   getPersistenceStoreAccessMode(): "local" | "remote" {

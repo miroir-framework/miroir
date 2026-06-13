@@ -689,7 +689,7 @@ export {
   // createApplicationCompositeAction,
   createDeploymentCompositeAction, defaultAdminApplicationDeploymentMapNOTGOOD, defaultDeployments,
   defaultDeploymentUuids, defaultEndpointApplicationMap,
-  defaultSelfApplicationDeploymentMap, dropApplicationAndDeploymentCompositeAction, emptyMetaModel, EndpointApplicationMap, getMiroirConfig, metaModelFilterEntities, resetAndinitializeDeploymentCompositeAction, testUtils_deleteApplicationDeployment,
+  defaultSelfApplicationDeploymentMap, dropApplicationAndDeploymentCompositeAction, emptyMetaModel, EndpointApplicationMap, extendMiroirConfigWithExtraDeploymentConfiguration, metaModelFilterEntities, resetAndinitializeDeploymentCompositeAction, testUtils_deleteApplicationDeployment,
   testUtils_resetApplicationDeployment
 } from "./1_core/Deployment";
 export { DomainInstanceUuidIndexToArray } from "./1_core/DomainState.js";
@@ -964,24 +964,20 @@ export {
   runnerTestJzodSchema,
 } from "./5_tests/RunnerTestTools.js";
 export {
-  MiroirTestIntegrationOrchestrator,
-  type MiroirTestExecutionEnvironment,
-  type MiroirTestIntegrationPort,
-  type RunnerTestContext,
-} from "./5_tests/MiroirTestIntegrationOrchestrator.js";
-export {
   effectiveMiroirTransformerSkip,
   miroirTransformerAssertionName,
-  // displayMiroirTestResults,
   runMiroirTest,
   runMiroirTests,
   runMiroirTestSuite,
   type MiroirTestExecutionMode,
   type MiroirTestExecutionOptions,
-  type MiroirTestRunFilter,
   type RunMiroirTest,
   type RunMiroirTests,
+  type MiroirTestExecutionEnvironment,
+  type RunnerTestSessionInterface,
+  type RunnerTestContext,
 } from "./5_tests/MiroirTestTools.js";
+export type { MiroirTestRunFilter } from "./0_interfaces/5-tests/miroirTestTypes";
 export {
   displayMiroirTestResults,
   miroirTestGlobalTimeOut,

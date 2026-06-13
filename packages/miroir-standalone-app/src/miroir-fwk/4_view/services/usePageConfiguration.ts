@@ -80,7 +80,7 @@ export function usePageConfiguration(
   const hasFetchedRef = useRef(false);
 
   // Get the miroir configuration
-  const miroirConfig = context.miroirContext.getMiroirConfig() as MiroirConfigClient;
+  const miroirConfig = context.miroirContext.extendMiroirConfigWithExtraDeploymentConfiguration() as MiroirConfigClient;
 
   /**
    * Fetches configurations using the handleAsyncAction wrapper

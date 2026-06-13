@@ -242,7 +242,7 @@ flowchart TB
     SCRIPT[scripts/test-miroir.ts]
     ENTRY[miroir-runner-tests.integ.test.ts]
     REG[miroirRunnerTestSuiteRegistry]
-    ADAPT_RUN[RunnerIntegAdapter]
+    ADAPT_RUN[RunnerTestSession]
     STARTUP[miroirAppStartup + store sections + VITE configs]
   end
 
@@ -251,7 +251,7 @@ flowchart TB
     MT[MiroirTestTools.ts]
     RT[RunnerTestTools.ts]
     BLD[testBuildPlusRuntimeCompositeActionSuiteForRunner]
-    PORT[MiroirTestIntegrationPort interface]
+    PORT[RunnerTestSessionInterface interface]
   end
 
   subgraph core_adapters [miroir-core adapters today]
@@ -280,10 +280,10 @@ flowchart TB
 
 | Layer | Package | Responsibility |
 |-------|---------|----------------|
-| **Port** | `miroir-core` | `MiroirTestIntegrationPort`: `initSession`, `beforeEach`, `teardown`, expose `executionEnvironment` |
+| **Port** | `miroir-core` | `RunnerTestSessionInterface`: `initSession`, `beforeEach`, `teardown`, expose `executionEnvironment` |
 | **Orchestrator** | `miroir-core` | `runMiroirTestsFromCLI` calls port lifecycle; leaf runners consume injected environment |
 | **Transformer adapter** | `miroir-core` | `PostgresIntegrationAdapter` — wraps existing `miroirTestIntegrationStore` |
-| **Runner adapter** | `miroir-standalone-app` | `RunnerIntegAdapter` — brings `miroirAppStartup`, config files, `setupMiroirTest` wiring |
+| **Runner adapter** | `miroir-standalone-app` | `RunnerTestSession` — brings `miroirAppStartup`, config files, `setupMiroirTest` wiring |
 | **Vitest script** | `miroir-standalone-app` | `test-miroir.ts` + entry file; passes adapter into orchestrator |
 
 **Goal:** transformer integ (`miroir-core`) and runner integ (`standalone-app`) share the same orchestrator and teardown contract, forcing setup code to stay hexagonal and UI-ready (Phase B reuses the same port).
@@ -298,7 +298,7 @@ flowchart TB
 | Runner leaf dispatch | `packages/miroir-core/src/4_services/RunnerTestTools.ts` |
 | Integration port + orchestrator | `packages/miroir-core/tests/helpers/MiroirTestIntegrationOrchestrator.ts` |
 | Postgres adapter (existing) | `packages/miroir-core/tests/helpers/miroirTestIntegrationStore.ts` |
-| Runner adapter (external layers) | `packages/miroir-standalone-app/tests/helpers/RunnerIntegAdapter.ts` |
+| Runner adapter (external layers) | `packages/miroir-standalone-app/tests/helpers/RunnerTestSession.ts` |
 | Fixture catalog (Phase A bridge) | `packages/miroir-test-app_deployment-library/src/runnerTestFixtures.ts` |
 | Param bank / environment seeds | `RUNNER_TEST_ENVIRONMENT_REFS` in fixture catalog → `RunnerTestContext.testParams` |
 | Pilot instance | `miroir-test-app_deployment-library/assets/.../miroirTest_runner_library.json` |
@@ -371,9 +371,9 @@ VITE_MIROIR_TEST_CONFIG_FILENAME=... npm run testByFile -w miroir-standalone-app
 
 **Green (miroir-core):**
 
-- `MiroirTestIntegrationPort` interface:
+- `RunnerTestSessionInterface` interface:
   ```typescript
-  interface MiroirTestIntegrationPort {
+  interface RunnerTestSessionInterface {
     initSession(): Promise<MiroirTestExecutionEnvironment>;
     beforeEach(): Promise<void>;
     teardown(): Promise<void>;
@@ -385,7 +385,7 @@ VITE_MIROIR_TEST_CONFIG_FILENAME=... npm run testByFile -w miroir-standalone-app
 
 **Green (standalone-app):**
 
-- `RunnerIntegAdapter` implements `MiroirTestIntegrationPort`:
+- `RunnerTestSession` implements `RunnerTestSessionInterface`:
   - Injects external layers: `miroirAppStartup`, store section startups, `loadTestConfigFiles`, `setupMiroirTest`, Miroir deployment create, `resetAndInitApplicationDeployment`
   - Factors logic from `RunnerIntegTestTools.beforeAllTests` / `beforeEachTest`
 - `RunnerIntegTestTools.tsx` becomes thin wrapper over adapter (legacy tests unchanged)
@@ -417,7 +417,7 @@ VITE_MIROIR_TEST_CONFIG_FILENAME=... npm run testByFile -w miroir-standalone-app
   - `miroirAppStartup()` + store section startups (same as `Runner_Miroir.integ`)
   - `initMiroirRunnerTestEnvironment()`
   - `runMiroirTestsFromCLI(config, { runnerTestEnvironment })`
-- Vitest entry constructs `RunnerIntegAdapter` and passes to `MiroirTestIntegrationOrchestrator` / `runMiroirTestsFromCLI`
+- Vitest entry constructs `RunnerTestSession` and passes to `MiroirTestIntegrationOrchestrator` / `runMiroirTestsFromCLI`
 - Extend `MiroirTestExecutionOptions` with `executionEnvironment` from orchestrator
 
 **Verify:**
@@ -469,7 +469,7 @@ flowchart LR
   end
 
   subgraph run [Runtime]
-    ORCH[RunnerIntegAdapter.initSession]
+    ORCH[RunnerTestSession.initSession]
     RESOLVE[resolveRunnerTestLeaf / composite build]
     SUITE[handleTestCompositeActionSuite]
   end
@@ -499,7 +499,7 @@ initialModel: {
   referenceName: "defaultLibraryAppModel",
 } satisfies CoreTransformerForBuildPlusRuntime;
 
-// libraryRunnerTestEnvironment seeds param bank (RunnerIntegAdapter / environmentRef)
+// libraryRunnerTestEnvironment seeds param bank (RunnerTestSession / environmentRef)
 testParams: {
   defaultLibraryAppModel  // from Library.ts — injected, not embedded in fixture body
 }
@@ -530,7 +530,7 @@ export type RunnerTestFixtureDefaults = {
    - Pass resolved model to `testBuildPlusRuntimeCompositeActionSuiteForRunner` (signature unchanged)
 4. Remove `defaultLibraryAppModel` import from fixture entries (keep only in environment provider).
 
-**Files touched:** `runnerTestFixtures.ts`, `RunnerTestTools.ts`, possibly `RunnerIntegAdapter.ts` (ensure merged params reach resolution).
+**Files touched:** `runnerTestFixtures.ts`, `RunnerTestTools.ts`, possibly `RunnerTestSession.ts` (ensure merged params reach resolution).
 
 **Open decision R0-a (resolution site):** See [Refactor open decisions](#refactor-open-decisions).
 
@@ -651,7 +651,7 @@ Design `MiroirRunnerTestSession`:
 - [x] `RunnerTestTools` resolves pilot leaves via fixture catalog
 - [x] `npm run testMiroir -w miroir-standalone-app -- --suites runner_library --mode integ` passes (lend + return)
 - [x] `runnerTest` rejected in `executionMode: "unit"` with clear error
-- [x] Orchestrator + `RunnerIntegAdapter`; legacy `Runner_Miroir.integ` unchanged
+- [x] Orchestrator + `RunnerTestSession`; legacy `Runner_Miroir.integ` unchanged
 - [x] No secrets committed; config files use localhost defaults
 
 ### Phase R

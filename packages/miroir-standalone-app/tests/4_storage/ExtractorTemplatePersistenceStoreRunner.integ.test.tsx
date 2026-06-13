@@ -171,7 +171,7 @@ beforeAll(
       persistenceStoreControllerManagerForServer: localpersistenceStoreControllerManager,
       domainControllerForClient: localdomainController,
       localCache: locallocalCache,
-      miroirContext: localmiroirContext,
+      // miroirContext: localmiroirContext,
     } = await setupMiroirTest(miroirConfig);
 
     if (!localpersistenceStoreControllerManager) {

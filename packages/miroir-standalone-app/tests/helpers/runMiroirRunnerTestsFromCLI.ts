@@ -4,7 +4,6 @@ import * as vitest from "vitest";
 import {
   MiroirActivityTracker,
   MiroirEventService,
-  MiroirTestIntegrationOrchestrator,
   defaultMetaModelEnvironment,
   displayMiroirTestResults,
   runMiroirTests,
@@ -13,7 +12,7 @@ import {
   type MiroirTestExecutionEnvironment,
   MiroirRunnerTestCliParseResult,
 } from "miroir-core";
-import { RunnerIntegAdapter } from "./RunnerIntegAdapter.js";
+import { RunnerTestSession } from "./RunnerTestSession.js";
 import { miroirTest_runner_library } from "miroir-test-app_deployment-library";
 
 
@@ -61,23 +60,23 @@ export async function runMiroirRunnerTestsFromCLI(
   const miroirActivityTracker = new MiroirActivityTracker();
   const miroirEventService = new MiroirEventService(miroirActivityTracker);
 
-  const adapter = new RunnerIntegAdapter({
+  const testSession = new RunnerTestSession({
     miroirConfig: options.miroirConfig,
     miroirActivityTracker,
     miroirEventService,
   });
-  const orchestrator = new MiroirTestIntegrationOrchestrator(adapter);
-  
-  const executionEnvironment = await orchestrator.initSession(); // calls initMiroirCoreTestIntegrationStore
+  // const orchestrator = new MiroirTestIntegrationOrchestrator(adapter);
+
+  const executionEnvironment: MiroirTestExecutionEnvironment = await testSession.initSession(); // calls initMiroirCoreTestIntegrationStore
 
   const loadedSuites: { suiteKey: string; definition: MiroirTestSuite }[] = [];
 
   beforeEach(async () => {
-    await orchestrator.beforeEach();
+    await testSession.beforeEach();
   });
 
   afterAll(async () => {
-    await orchestrator.teardown();
+    await testSession.teardown();
     if (!loadedSuites.length) {
       return;
     }

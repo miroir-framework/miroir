@@ -305,11 +305,11 @@ export async function setupMiroirPlatform(
   }
 
   return {
-    persistenceStoreControllerManagerForClient: persistenceStoreControllerManagerForClient,
-    persistenceStoreControllerManagerForServer: persistenceStoreControllerManagerForServer,
+    // persistenceStoreControllerManagerForClient: persistenceStoreControllerManagerForClient,
+    // persistenceStoreControllerManagerForServer: persistenceStoreControllerManagerForServer,
     domainControllerForClient,
     domainControllerForServer,
-    localCache: domainControllerForClient.getLocalCache(),
+    // localCache: domainControllerForClient.getLocalCache(),
     miroirContext,
   };
 }
@@ -325,11 +325,11 @@ async function setupClient(
   ConfigurationService.configurationService.registerTestImplementation({ expect: expect as any });
 
   const {
-    persistenceStoreControllerManagerForClient,
-    persistenceStoreControllerManagerForServer,
+    // persistenceStoreControllerManagerForClient,
+    // persistenceStoreControllerManagerForServer,
     domainControllerForClient,
     domainControllerForServer,
-    localCache,
+    // localCache,
     miroirContext,
   } = await setupMiroirPlatform(
     currentMiroirConfig,

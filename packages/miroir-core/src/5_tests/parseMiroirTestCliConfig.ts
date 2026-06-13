@@ -1,8 +1,8 @@
 import type {
   MiroirTestExecutionMode,
-  MiroirTestRunFilter,
 } from "./MiroirTestTools";
 import { listMiroirTestSuiteKeys } from "../../tests/helpers/miroirCoreTestSuiteRegistry";
+import type { MiroirTestRunFilter } from "../0_interfaces/5-tests/miroirTestTypes";
 
 export type MiroirTestCliConfig = {
   suiteKeys: string[];

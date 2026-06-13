@@ -1,41 +1,87 @@
-import {
-  getMiroirConfig,
-} from "miroir-core";
 import type {
   ApplicationDeploymentMap,
   DomainControllerInterface,
   MiroirActivityTracker,
   MiroirConfigClient,
   MiroirEventService,
-  StoreUnitConfiguration,
   MiroirTestExecutionEnvironment,
-  MiroirTestIntegrationPort,
+  RunnerTestSessionInterface,
   RunnerTestContext,
+  StoreUnitConfiguration,
+  Deployment,
+} from "miroir-core";
+import {
+  extendMiroirConfigWithExtraDeploymentConfiguration,
 } from "miroir-core";
 import {
   libraryTestIdentifiers,
   RUNNER_TEST_ENVIRONMENT_REFS,
 } from "miroir-test-app_deployment-library";
 import {
-  beforeAllTests,
+  beforeAllRunnerTests,
   beforeEachTest,
   getTestConfig,
   testApplicationStorageConfiguration,
 } from "../4_view/RunnerIntegTestTools.js";
 
-export type RunnerIntegAdapterOptions = {
+export type RunnerTestSessionOptions = {
   miroirConfig: MiroirConfigClient;
   miroirActivityTracker: MiroirActivityTracker;
   miroirEventService: MiroirEventService;
   pageLabel?: string;
 };
 
-export class RunnerIntegAdapter implements MiroirTestIntegrationPort {
+export type RunnerTestSessionConfig = {
+  applicationDeploymentMap: ApplicationDeploymentMap;
+  internalMiroirConfig: MiroirConfigClient;
+  adminDeployment: Deployment;
+  miroirDeploymentStorageConfiguration: StoreUnitConfiguration;
+  testDeploymentStorageConfiguration: StoreUnitConfiguration;
+};
+
+// ################################################################################################
+function getTestSessionConfig(miroirConfig: MiroirConfigClient): RunnerTestSessionConfig {
+  const {
+    applicationDeploymentMap,
+    miroirDeploymentStorageConfiguration,
+    adminDeployment,
+    libraryDeploymentStorageConfiguration,
+  } = getTestConfig(
+    miroirConfig,
+    libraryTestIdentifiers.testApplicationDeploymentUuid,
+    libraryTestIdentifiers.testApplicationName,
+    libraryTestIdentifiers.testApplicationUuid,
+  );
+
+  const testDeploymentStorageConfiguration: StoreUnitConfiguration =
+    testApplicationStorageConfiguration(
+      libraryDeploymentStorageConfiguration,
+      libraryTestIdentifiers.installTestApplicationName,
+    );
+
+  const internalMiroirConfig = extendMiroirConfigWithExtraDeploymentConfiguration(
+    miroirConfig,
+    testDeploymentStorageConfiguration,
+    libraryTestIdentifiers.installTestApplicationDeploymentUuid,
+  );
+
+  return {
+    applicationDeploymentMap,
+    miroirDeploymentStorageConfiguration,
+    adminDeployment,
+    testDeploymentStorageConfiguration,
+    internalMiroirConfig,
+  };
+}
+
+// ################################################################################################
+export class RunnerTestSession implements RunnerTestSessionInterface {
   private domainController: DomainControllerInterface | undefined;
   private applicationDeploymentMap: ApplicationDeploymentMap | undefined;
   private runnerTestContext: RunnerTestContext | undefined;
 
-  constructor(private readonly options: RunnerIntegAdapterOptions) {}
+  constructor(private readonly options: RunnerTestSessionOptions) {}
+
 
   async initSession(): Promise<MiroirTestExecutionEnvironment> {
     const { miroirConfig, miroirActivityTracker, miroirEventService } = this.options;
@@ -45,27 +91,11 @@ export class RunnerIntegAdapter implements MiroirTestIntegrationPort {
       applicationDeploymentMap,
       miroirDeploymentStorageConfiguration,
       adminDeployment,
-      libraryDeploymentStorageConfiguration,
-    } = getTestConfig(
-      miroirConfig,
-      libraryTestIdentifiers.testApplicationDeploymentUuid,
-      libraryTestIdentifiers.testApplicationName,
-      libraryTestIdentifiers.testApplicationUuid,
-    );
+      testDeploymentStorageConfiguration, // not used in beforeAllRunnerTests!
+      internalMiroirConfig,
+    } = getTestSessionConfig(miroirConfig);
 
-    const testDeploymentStorageConfiguration: StoreUnitConfiguration =
-      testApplicationStorageConfiguration(
-        libraryDeploymentStorageConfiguration,
-        libraryTestIdentifiers.installTestApplicationName,
-      );
-
-    const internalMiroirConfig = getMiroirConfig(
-      miroirConfig,
-      testDeploymentStorageConfiguration,
-      libraryTestIdentifiers.installTestApplicationDeploymentUuid,
-    );
-
-    const { domainController } = await beforeAllTests(
+    const { domainController } = await beforeAllRunnerTests(
       internalMiroirConfig,
       miroirActivityTracker,
       miroirEventService,
@@ -98,7 +128,7 @@ export class RunnerIntegAdapter implements MiroirTestIntegrationPort {
 
   async beforeEach(): Promise<void> {
     if (!this.domainController || !this.applicationDeploymentMap) {
-      throw new Error("RunnerIntegAdapter.beforeEach: initSession not called");
+      throw new Error("RunnerTestSession.beforeEach: initSession not called");
     }
     await beforeEachTest(this.domainController, this.applicationDeploymentMap);
     if (this.runnerTestContext) {

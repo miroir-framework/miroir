@@ -64,10 +64,6 @@ export async function setupMiroirTest(
 ): Promise<{
   domainControllerForClient: DomainControllerInterface;
   domainControllerForServer?: DomainControllerInterface | undefined;
-  persistenceStoreControllerManagerForServer?: PersistenceStoreControllerManagerInterface;
-  persistenceStoreControllerManagerForClient: PersistenceStoreControllerManagerInterface;
-  localCache: LocalCacheInterface;
-  miroirContext: MiroirContext;
 }> {
   const localMiroirActivityTracker = miroirActivityTracker??new MiroirActivityTracker();
   const localMiroirEventService = miroirEventService??new MiroirEventService(localMiroirActivityTracker);
@@ -137,21 +133,13 @@ export async function setupMiroirTest(
     (client as RestClientStub).setServerDomainController(domainControllerForServer);
     (client as RestClientStub).setPersistenceStoreControllerManager(persistenceStoreControllerManagerForServer);
     return {
-      persistenceStoreControllerManagerForClient,
-      persistenceStoreControllerManagerForServer,
       domainControllerForServer,
       domainControllerForClient,
-      localCache: domainControllerForClient.getLocalCache(),
-      miroirContext,
     };
   }
   return {
-    persistenceStoreControllerManagerForClient,
-    persistenceStoreControllerManagerForServer: undefined,
     domainControllerForClient,
     domainControllerForServer: undefined,
-    localCache: domainControllerForClient.getLocalCache(),
-    miroirContext,
   };
 }
 

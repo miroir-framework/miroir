@@ -1,6 +1,6 @@
 
 import {
-  getMiroirConfig,
+  extendMiroirConfigWithExtraDeploymentConfiguration,
   type Runner,
   type StoreUnitConfiguration
 } from "miroir-core";
@@ -50,7 +50,7 @@ const installTestDeploymentStorageConfiguration: StoreUnitConfiguration = testAp
   testConfig.libraryDeploymentStorageConfiguration,
   libraryTestIdentifiers.installTestApplicationName,
 );
-const installInternalMiroirConfig = getMiroirConfig(
+const installInternalMiroirConfig = extendMiroirConfigWithExtraDeploymentConfiguration(
   miroirConfig,
   installTestDeploymentStorageConfiguration,
   libraryTestIdentifiers.installTestApplicationDeploymentUuid,

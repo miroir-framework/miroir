@@ -26,10 +26,6 @@ import {
   type ApplicationEntitiesAndInstances
 } from "miroir-core";
 
-import {
-  runTestOrTestSuite,
-  setupMiroirTestAndCreateMiroirDeployment,
-} from "../../src/miroir-fwk/4-tests/tests-utils.js";
 
 import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
 import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
@@ -38,7 +34,6 @@ import { miroirAppStartup } from "../../src/startup.js";
 
 
 import {
-  // defaultLibraryModelEnvironment,
   defaultMiroirMetaModel,
   defaultSelfApplicationDeploymentMap,
   selfApplicationMiroir,
@@ -79,6 +74,8 @@ import {
 import { loglevelnext } from "../../src/loglevelnextImporter.js";
 import { loadTestConfigFiles } from "../utils/fileTools.js";
 import { cleanLevel, packageName } from "./constants.js";
+import { setupMiroirTestAndCreateMiroirDeployment } from "../../src/miroir-fwk/4-tests/setupMiroirTest.js";
+import { runTestOrTestSuite } from "../../src/miroir-fwk/4-tests/runTestOrTestSuite.js";
 
 // const env: any = (import.meta as any).env;
 const env: any = process.env;
@@ -225,10 +222,6 @@ const testDeploymentStorageConfiguration = miroirConfig.client.emulateServer
 
   
 let domainController: DomainControllerInterface;
-// let localCache: LocalCacheInterface;
-// let miroirContext: MiroirContextInterface;
-// let persistenceStoreControllerManager: PersistenceStoreControllerManagerInterface;
-// let globalTestSuiteResults: TestSuiteResult = {};
 
 export const libraryEntitiesAndInstancesWithoutBook3: ApplicationEntitiesAndInstances = [
   {
@@ -288,12 +281,6 @@ beforeAll(async () => {
 // });
 
 afterAll(async () => {
-  // await deleteAndCloseApplicationDeployments(
-  //   miroirConfig,
-  //   domainController,
-  //   // deploymentConfigurations,
-  //   adminApplicationDeploymentConfigurations
-  // );
   displayTestSuiteResultsDetails(
     Object.keys(testActions)[0],
     // [{ testSuite: Object.keys(testActions)[0] }],

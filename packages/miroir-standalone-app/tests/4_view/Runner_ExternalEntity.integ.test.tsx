@@ -12,7 +12,7 @@ import {
   ConfigurationService,
   emptyApplicationModel,
   formatYYYYMMDD_HHMMSS,
-  getMiroirConfig,
+  extendMiroirConfigWithExtraDeploymentConfiguration,
   MiroirActivityTracker,
   miroirCoreStartup,
   MiroirEventService,
@@ -112,7 +112,7 @@ const testDeploymentStorageConfiguration: StoreUnitConfiguration = testApplicati
   testApplicationName,
 );
 
-const internalMiroirConfig: MiroirConfigClient = getMiroirConfig(
+const internalMiroirConfig: MiroirConfigClient = extendMiroirConfigWithExtraDeploymentConfiguration(
   miroirConfig,
   testDeploymentStorageConfiguration,
   testApplicationDeploymentUuid,

@@ -170,7 +170,7 @@ beforeAll(async () => {
     persistenceStoreControllerManagerForServer: localpersistenceStoreControllerManager,
     domainControllerForClient: localdomainController,
     localCache: locallocalCache,
-    miroirContext: localmiroirContext,
+    // miroirContext: localmiroirContext,
   } = await setupMiroirTest(miroirConfig);
 
   if (!localpersistenceStoreControllerManager) {
@@ -180,7 +180,7 @@ beforeAll(async () => {
   persistenceStoreControllerManager = localpersistenceStoreControllerManager;
   domainController = localdomainController;
   localCache = locallocalCache;
-  miroirContext = localmiroirContext;
+  // miroirContext = localmiroirContext;
 
   const wrapped = await createMiroirDeploymentGetPersistenceStoreController(
     miroirConfig as MiroirConfigClient,

@@ -674,7 +674,14 @@ export function testUtils_deleteApplicationDeployment(
 }
 
 // ################################################################################################
-export function getMiroirConfig(
+/**
+ * extend the miroirConfig with an additional deployment storage configuration
+ * @param miroirConfig 
+ * @param testDeploymentStorageConfiguration 
+ * @param testApplicationDeploymentUuid 
+ * @returns 
+ */
+export function extendMiroirConfigWithExtraDeploymentConfiguration(
   miroirConfig: MiroirConfigClient,
   testDeploymentStorageConfiguration: StoreUnitConfiguration,
   testApplicationDeploymentUuid: Uuid,

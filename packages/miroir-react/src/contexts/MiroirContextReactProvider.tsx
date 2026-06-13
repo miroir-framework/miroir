@@ -477,7 +477,7 @@ export function MiroirContextReactProvider(props: {
 
   // Extract serverBaseUrl from miroirConfig
   const serverBaseUrl = useMemo(() => {
-    const config = props.miroirContext.getMiroirConfig();
+    const config = props.miroirContext.extendMiroirConfigWithExtraDeploymentConfiguration();
     if (config && config.miroirConfigType === "client") {
       const clientConfig = config.client;
       if (clientConfig.emulateServer) {

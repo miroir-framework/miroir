@@ -13,7 +13,7 @@ export class MiroirContext implements MiroirContextInterface {
   ) {
   }
 
-  getMiroirConfig(): MiroirConfigClient | MiroirConfigServer | undefined {
+  extendMiroirConfigWithExtraDeploymentConfiguration(): MiroirConfigClient | MiroirConfigServer | undefined {
     return this.miroirConfig;
   }
 }

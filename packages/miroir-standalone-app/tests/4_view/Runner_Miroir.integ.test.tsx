@@ -9,7 +9,7 @@ import {
   ConfigurationService,
   emptyApplicationModel,
   formatYYYYMMDD_HHMMSS,
-  getMiroirConfig,
+  extendMiroirConfigWithExtraDeploymentConfiguration,
   MiroirActivityTracker,
   miroirCoreStartup,
   MiroirEventService,
@@ -49,7 +49,7 @@ import simplifiedLibraryData from "../assets/library_extract/simplified-library-
 import simplifiedLibraryModel from "../assets/library_extract/simplified-library-model.json";
 import {
   afterAllTests,
-  beforeAllTests,
+  beforeAllRunnerTests,
   beforeEachTest,
   getTestConfig,
   testApplicationStorageConfiguration,
@@ -104,14 +104,6 @@ myConsoleLog("started registered loggers DONE");
 // ################################################################################################
 const globalTimeOut = 30000;
 
-// const testIdentifiers: Record<string, any> = {
-//   testApplicationUuid: uuidv4(),
-//   testApplicationDeploymentUuid: uuidv4(),
-//   testApplicationName: "testApplication_" + formatYYYYMMDD_HHMMSS(new Date()),
-// }
-// testIdentifiers["installTestApplicationUuid"] = testIdentifiers.testApplicationUuid;
-// testIdentifiers["installTestApplicationDeploymentUuid"] = testIdentifiers.testApplicationDeploymentUuid;
-// testIdentifiers["installTestApplicationName"] = testIdentifiers.testApplicationName;
 
 const testIdentifiers = libraryTestIdentifiers;
 
@@ -137,7 +129,7 @@ let testDeploymentStorageConfiguration: StoreUnitConfiguration = testApplication
   testIdentifiers.testApplicationName,
 );
 
-const internalMiroirConfig: MiroirConfigClient = getMiroirConfig(
+const internalMiroirConfig: MiroirConfigClient = extendMiroirConfigWithExtraDeploymentConfiguration(
   miroirConfig,
   testDeploymentStorageConfiguration,
   testIdentifiers.testApplicationDeploymentUuid,
@@ -152,18 +144,18 @@ const installTestDeploymentStorageConfiguration: StoreUnitConfiguration = testAp
   libraryDeploymentStorageConfiguration,
   testIdentifiers.installTestApplicationName,
 );
-const installInternalMiroirConfig = getMiroirConfig(
-  miroirConfig,
-  installTestDeploymentStorageConfiguration,
-  testIdentifiers.installTestApplicationDeploymentUuid,
-);
+// const installInternalMiroirConfig = extendMiroirConfigWithExtraDeploymentConfiguration(
+//   miroirConfig,
+//   installTestDeploymentStorageConfiguration,
+//   testIdentifiers.installTestApplicationDeploymentUuid,
+// );
 
 let domainController: DomainControllerInterface;
 
 beforeAll(async () => {
   const {
     domainController: localdomainController,
-  } = await  beforeAllTests(
+  } = await beforeAllRunnerTests(
     internalMiroirConfig,
     miroirActivityTracker,
     miroirEventService,

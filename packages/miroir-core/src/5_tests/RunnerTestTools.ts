@@ -26,8 +26,7 @@ import type {
   StoreUnitConfiguration,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import type { MiroirTestRunFilter } from "../0_interfaces/5-tests/miroirTestTypes";
-import type { MiroirTestExecutionEnvironment } from "./MiroirTestIntegrationOrchestrator.js";
-
+import type { MiroirTestExecutionEnvironment } from "./MiroirTestTools";
 
 export { miroirTestForRunner as runnerTestJzodSchema } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
