@@ -31,7 +31,6 @@ import type { MiroirTestRunFilter, TestSuiteListFilter } from "../0_interfaces/5
 import type { DomainControllerInterface } from "../0_interfaces/2_domain/DomainControllerInterface";
 import type { ApplicationDeploymentMap } from "../1_core/Deployment";
 import type { PersistenceStoreDataSectionInterface } from "../0_interfaces/4-services/PersistenceStoreControllerInterface";
-import type { Uuid } from "../0_interfaces/1_core/EntityDefinition";
 
 export type RunnerTestContext = {
   domainController: DomainControllerInterface;
@@ -225,8 +224,6 @@ export async function runMiroirTestSuite(
   miroirTestSuite: MiroirTestSuite,
   filter: MiroirTestRunFilter | undefined,
   modelEnvironment: MiroirModelEnvironment,
-  applicationDeploymentMap: ApplicationDeploymentMap,
-  applicationUuid: Uuid,
   miroirActivityTracker: MiroirActivityTrackerInterface,
   parentTrackingId: string | undefined,
   trackActionsBelow: boolean = false,
@@ -283,8 +280,6 @@ export async function runMiroirTestSuite(
         node,
         innerFilter,
         modelEnvironment,
-        applicationDeploymentMap,
-        applicationUuid,
         miroirActivityTracker,
         parentTrackingId,
         trackActionsBelow,
@@ -339,8 +334,6 @@ export const runMiroirTests: RunMiroirTests = {
     miroirTestSuite,
     filter,
     modelEnvironment,
-    applicationDeploymentMap,
-    applicationUuid,
     miroirActivityTracker,
     parentTrackingId = undefined,
     trackActionsBelow = false,
@@ -361,8 +354,6 @@ export const runMiroirTests: RunMiroirTests = {
           miroirTestSuite,
           filter,
           modelEnvironment,
-          applicationDeploymentMap,
-          applicationUuid,
           miroirActivityTracker,
           nestedParentTrackingId,
           trackActionsBelow,
