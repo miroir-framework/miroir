@@ -9,6 +9,7 @@ import {
   type ApplicationDeploymentMap,
   type Deployment,
   type DomainControllerInterface,
+  type LocalCacheInterface,
   type MiroirConfigClient,
   type StoreUnitConfiguration
 } from "miroir-core";
@@ -66,6 +67,8 @@ export async function setupMiroirTest(
   domainControllerForClient: DomainControllerInterface;
   domainControllerForServer?: DomainControllerInterface | undefined;
   persistenceStoreControllerManagerForClient: PersistenceStoreControllerManager;
+  persistenceStoreControllerManagerForServer?: PersistenceStoreControllerManager | undefined;
+  localCache: LocalCacheInterface;
 }> {
   const localMiroirActivityTracker = miroirActivityTracker??new MiroirActivityTracker();
   const localMiroirEventService = miroirEventService??new MiroirEventService(localMiroirActivityTracker);
@@ -112,6 +115,8 @@ export async function setupMiroirTest(
     }
   ); // even when emulating server, we use remote persistence store, since MSW makes it appear as if we are using a remote server.
 
+  const localCache = domainControllerForClient.getLocalCache();
+
   let persistenceStoreControllerManagerForServer: PersistenceStoreControllerManager | undefined = undefined;
   if (miroirConfig.client.emulateServer) {
     if (!miroirConfig.client.filesystemDeploymentRootDirectory) {
@@ -136,13 +141,17 @@ export async function setupMiroirTest(
     return {
       domainControllerForServer,
       domainControllerForClient,
-      persistenceStoreControllerManagerForClient
+      persistenceStoreControllerManagerForClient,
+      persistenceStoreControllerManagerForServer,
+      localCache,
     };
   }
   return {
     domainControllerForClient,
     domainControllerForServer: undefined,
-    persistenceStoreControllerManagerForClient
+    persistenceStoreControllerManagerForClient,
+    persistenceStoreControllerManagerForServer: undefined,
+    localCache,
   };
 }
 

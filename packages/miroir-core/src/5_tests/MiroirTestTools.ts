@@ -63,11 +63,7 @@ export type MiroirTestExecutionOptions = {
   executionMode: "unit";
 } | {
   executionMode: "integration";
-  /** Required when `executionMode` is `"integration"` (Postgres store). */
-  // integrationStore?: unknown; // TODO: remove, use the domainController from the executionEnvironment instead
-  // integrationStore?: PersistenceStoreControllerInterface; // TODO: remove, use the domainController from the executionEnvironment instead
   integrationStore?: PersistenceStoreDataSectionInterface; // TODO: remove, use the domainController from the executionEnvironment instead
-  /** Populated by MiroirTestIntegrationOrchestrator (runner + shared integ context). */
   executionEnvironment?: MiroirTestExecutionEnvironment;
 };
 

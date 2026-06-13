@@ -6,17 +6,16 @@ import {
 } from "../../src/5_tests/MiroirTestTools";
 
 
+import type { MiroirTestSuite } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import type { PersistenceStoreDataSectionInterface } from "../../src/0_interfaces/4-services/PersistenceStoreControllerInterface";
+import { type ApplicationDeploymentMap } from "../../src/1_core/Deployment";
 import { MiroirActivityTracker } from "../../src/3_controllers/MiroirActivityTracker";
 import { MiroirEventService } from "../../src/3_controllers/MiroirEventService";
-import type { MiroirTestSuite } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
-import { loadMiroirCoreTestSuite } from "./miroirCoreTestSuiteRegistry";
-import type { MiroirTestCliConfig } from "../../src/5_tests/parseMiroirTestCliConfig";
 import { displayMiroirTestResults } from "../../src/5_tests/MiroirTransformerTestTools";
-import type { PersistenceStoreControllerInterface, PersistenceStoreDataSectionInterface } from "../../src/0_interfaces/4-services/PersistenceStoreControllerInterface";
-import { defaultSelfApplicationDeploymentMap, type ApplicationDeploymentMap } from "../../src/1_core/Deployment";
+import type { MiroirTestCliConfig } from "../../src/5_tests/parseMiroirTestCliConfig";
+import { loadMiroirCoreTestSuite } from "./miroirCoreTestSuiteRegistry";
 
 export type RunMiroirCoreTestsFromCLIOptions = {
-  // integrationStore: PersistenceStoreControllerInterface;
   integrationDataStore: PersistenceStoreDataSectionInterface;
   applicationDeploymentMap: ApplicationDeploymentMap;
 };

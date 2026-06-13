@@ -7,8 +7,8 @@ type VitestNamespace = typeof vitest;
 
 import type {
   CoreTransformerForBuildPlusRuntime,
-  MiroirTestSuite,
   MiroirTestForTransformer,
+  MiroirTestSuite,
   TestAssertionResult,
   TestSuiteResult,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
@@ -24,12 +24,13 @@ import type {
   TestAssertionPath,
 } from "../0_interfaces/3_controllers/MiroirActivityTrackerInterface";
 import type { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
+import type { PersistenceStoreDataSectionInterface } from "../0_interfaces/4-services/PersistenceStoreControllerInterface";
+import type { MiroirTestRunFilter } from "../0_interfaces/5-tests/miroirTestTypes";
 import { jsonify } from "../1_core/test-expect";
 import {
   transformer_extended_apply_wrapper,
 } from "../2_domain/TransformersForRuntime";
 import { MiroirActivityTracker } from "../3_controllers/MiroirActivityTracker";
-import { packageName } from "../constants";
 import { cleanLevel } from "../4_services/constants";
 import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory";
 import {
@@ -39,10 +40,7 @@ import {
   removeUndefinedProperties,
   unNullify,
 } from "../4_services/otherTools";
-import type { MiroirTestRunFilter } from "../0_interfaces/5-tests/miroirTestTypes";
-import type { PersistenceStoreControllerInterface, PersistenceStoreDataSectionInterface } from "../0_interfaces/4-services/PersistenceStoreControllerInterface";
-import type { ApplicationDeploymentMap } from "../1_core/Deployment";
-import type { Uuid } from "../0_interfaces/1_core/EntityDefinition";
+import { packageName } from "../constants";
 
 
 chalk.level = 3;
@@ -260,8 +258,6 @@ export function runMiroirTransformerIntegrationTest(sqlDbDataStore: PersistenceS
     filter: MiroirTestRunFilter | undefined,
     leaf: MiroirTestForTransformer,
     modelEnvironment: MiroirModelEnvironment,
-    // applicationUuid: Uuid,
-    // applicationDeploymentMap: ApplicationDeploymentMap,
     miroirActivityTracker: MiroirActivityTrackerInterface,
     testAssertionPath?: TestAssertionPath,
     parentSkip?: boolean,

@@ -7,9 +7,9 @@ import { MiroirActivityTracker } from "../../src/3_controllers/MiroirActivityTra
 import { MiroirEventService } from "../../src/3_controllers/MiroirEventService";
 import {
   runMiroirTests,
-  type MiroirTestRunFilter,
 } from "../../src/5_tests/MiroirTestTools";
 import { displayMiroirTestResults } from "../../src/5_tests/MiroirTransformerTestTools";
+import type { MiroirTestRunFilter } from "../../src/0_interfaces/5-tests/miroirTestTypes";
 
 export type RunMiroirCoreTestSuiteOptions = {
   filter?: MiroirTestRunFilter;
