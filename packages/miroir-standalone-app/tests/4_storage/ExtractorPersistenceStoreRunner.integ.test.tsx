@@ -108,7 +108,7 @@ import { loadTestConfigFiles } from '../utils/fileTools.js';
 import { setupMiroirTest } from '../../src/miroir-fwk/4-tests/setupMiroirTest.js';
 
 let domainController: DomainControllerInterface;
-let localCache: LocalCacheInterface;
+// let localCache: LocalCacheInterface;
 let localMiroirPersistenceStoreController: PersistenceStoreControllerInterface;
 let localAppPersistenceStoreController: PersistenceStoreControllerInterface;
 // let miroirContext: MiroirContext;
@@ -238,19 +238,20 @@ beforeAll(
     }
 
     const {
-      persistenceStoreControllerManagerForServer: localpersistenceStoreControllerManager,
+      // persistenceStoreControllerManagerForServer: localpersistenceStoreControllerManager,
+      persistenceStoreControllerManagerForClient: localpersistenceStoreControllerManagerForClient,
       domainControllerForClient: localdomainController,
-      localCache: locallocalCache,
+      // localCache: locallocalCache,
       // miroirContext: localmiroirContext,
     } = await setupMiroirTest(miroirConfig);
 
-    if (!localpersistenceStoreControllerManager) {
+    if (!localpersistenceStoreControllerManagerForClient) {
       throw new Error("localpersistenceStoreControllerManager not defined");
     }
 
-    persistenceStoreControllerManager = localpersistenceStoreControllerManager;
+    persistenceStoreControllerManager = localpersistenceStoreControllerManagerForClient;
     domainController = localdomainController;
-    localCache = locallocalCache;
+    // localCache = locallocalCache;
     // miroirContext = localmiroirContext;
 
 

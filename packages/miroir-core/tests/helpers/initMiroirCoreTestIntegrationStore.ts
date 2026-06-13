@@ -37,15 +37,20 @@ import type { Uuid } from "../../src/0_interfaces/1_core/EntityDefinition";
 import type {
   InitApplicationParameters,
   PersistenceStoreAdminSectionInterface,
+  PersistenceStoreControllerInterface,
+  PersistenceStoreDataSectionInterface,
+  PersistenceStoreModelSectionInterface,
 } from "../../src/0_interfaces/4-services/PersistenceStoreControllerInterface";
 import { defaultMiroirMetaModel } from "../../src/1_core/Model";
 import { getBasicApplicationConfiguration, getBasicStoreUnitConfiguration } from "../../src/2_domain/Deployment";
 import { PersistenceStoreController } from "../../src/4_services/PersistenceStoreController";
 import type { MetaEntity } from "../../src/0_interfaces/1_core/EntityDefinition";
+import { defaultSelfApplicationDeploymentMap, type ApplicationDeploymentMap } from "../../src/1_core/Deployment";
 
 export type MiroirTestIntegrationStore = {
-  sqlDbDataStore: SqlDbDataStoreSection;
-  persistenceStoreController: PersistenceStoreController;
+  sqlDbDataStore: PersistenceStoreDataSectionInterface;
+  persistenceStoreController: PersistenceStoreControllerInterface;
+  applicationDeploymentMap: ApplicationDeploymentMap;
 };
 
 export type MiroirTestIntegrationStoreOptions = {
@@ -78,8 +83,8 @@ export async function initMiroirCoreTestIntegrationStore(
     connectionString,
     schema,
   );
-  const sqlDbDataStore = new SqlDbDataStoreSection("data", sqlDbStoreName, connectionString, schema);
-  const sqlDbModelStore = new SqlDbModelStoreSection(
+  const sqlDbDataStore: PersistenceStoreDataSectionInterface = new SqlDbDataStoreSection("data", sqlDbStoreName, connectionString, schema);
+  const sqlDbModelStore: PersistenceStoreModelSectionInterface = new SqlDbModelStoreSection(
     "model",
     sqlDbStoreName,
     connectionString,
@@ -87,7 +92,7 @@ export async function initMiroirCoreTestIntegrationStore(
     sqlDbDataStore,
   );
 
-  const persistenceStoreController = new PersistenceStoreController(
+  const persistenceStoreController:PersistenceStoreControllerInterface = new PersistenceStoreController(
     sqlDbAdminStore,
     sqlDbModelStore,
     sqlDbDataStore,
@@ -106,6 +111,10 @@ export async function initMiroirCoreTestIntegrationStore(
     selfApplicationVersionUuid,
   );
 
+  const applicationDeploymentMap: ApplicationDeploymentMap = {
+    ...defaultSelfApplicationDeploymentMap,
+    [paramAdminConfigurationDeploymentUuid]: paramAdminConfigurationDeploymentUuid,
+  };
   const libraryEntitesAndInstances = [
     {
       entity: entityAuthor as MetaEntity,
@@ -147,7 +156,7 @@ export async function initMiroirCoreTestIntegrationStore(
     actionLabel: "resetTestStore",
     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
     payload: { application: paramSelfApplicationUuid },
-  });
+  }, applicationDeploymentMap);
 
   await persistenceStoreController.handleAction({
     actionType: "initModel",
@@ -162,7 +171,7 @@ export async function initMiroirCoreTestIntegrationStore(
         applicationVersion: testApplicationConfig.applicationVersion,
       },
     },
-  });
+  }, applicationDeploymentMap);
 
   await persistenceStoreController.handleAction({
     actionType: "createEntity",
@@ -175,7 +184,7 @@ export async function initMiroirCoreTestIntegrationStore(
         entityDefinition: entry.entityDefinition,
       })),
     },
-  });
+  }, applicationDeploymentMap);
 
   await persistenceStoreController.handleAction({
     actionType: "createInstance",
@@ -186,7 +195,7 @@ export async function initMiroirCoreTestIntegrationStore(
       applicationSection: "data",
       objects: libraryEntitesAndInstances.flatMap((entry) => entry.instances),
     },
-  });
+  }, applicationDeploymentMap);
 
-  return { sqlDbDataStore, persistenceStoreController };
+  return { sqlDbDataStore, persistenceStoreController, applicationDeploymentMap };
 }

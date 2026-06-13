@@ -12,9 +12,13 @@ import type { MiroirTestSuite } from "../../src/0_interfaces/1_core/preprocessor
 import { loadMiroirCoreTestSuite } from "./miroirCoreTestSuiteRegistry";
 import type { MiroirTestCliConfig } from "../../src/5_tests/parseMiroirTestCliConfig";
 import { displayMiroirTestResults } from "../../src/5_tests/MiroirTransformerTestTools";
+import type { PersistenceStoreControllerInterface, PersistenceStoreDataSectionInterface } from "../../src/0_interfaces/4-services/PersistenceStoreControllerInterface";
+import { defaultSelfApplicationDeploymentMap, type ApplicationDeploymentMap } from "../../src/1_core/Deployment";
 
 export type RunMiroirCoreTestsFromCLIOptions = {
-  integrationStore: unknown;
+  // integrationStore: PersistenceStoreControllerInterface;
+  integrationDataStore: PersistenceStoreDataSectionInterface;
+  applicationDeploymentMap: ApplicationDeploymentMap;
 };
 
 // ################################################################################################
@@ -25,13 +29,13 @@ export async function runMiroirCoreTestsFromCLI(
   const miroirActivityTracker = new MiroirActivityTracker();
   new MiroirEventService(miroirActivityTracker);
 
-  if (config.executionMode === "integration" && options?.integrationStore === undefined) {
+  if (config.executionMode === "integration" && options?.integrationDataStore === undefined) {
     throw new Error("runMiroirCoreTestsFromCLI: integrationStore is required when executionMode is integration");
   }
 
   const executionOptions = config.executionMode === "integration" ? {
     executionMode: config.executionMode,
-    integrationStore: options?.integrationStore,
+    integrationStore: options?.integrationDataStore,
   } : {
     executionMode: config.executionMode,
   };

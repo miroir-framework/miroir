@@ -30,8 +30,8 @@ import { runMiroirRunnerTest } from "./RunnerTestTools";
 import type { MiroirTestRunFilter, TestSuiteListFilter } from "../0_interfaces/5-tests/miroirTestTypes";
 import type { DomainControllerInterface } from "../0_interfaces/2_domain/DomainControllerInterface";
 import type { ApplicationDeploymentMap } from "../1_core/Deployment";
-
-// export type { MiroirTestRunFilter, TestSuiteListFilter };
+import type { PersistenceStoreDataSectionInterface } from "../0_interfaces/4-services/PersistenceStoreControllerInterface";
+import type { Uuid } from "../0_interfaces/1_core/EntityDefinition";
 
 export type RunnerTestContext = {
   domainController: DomainControllerInterface;
@@ -65,7 +65,9 @@ export type MiroirTestExecutionOptions = {
 } | {
   executionMode: "integration";
   /** Required when `executionMode` is `"integration"` (Postgres store). */
-  integrationStore?: unknown; // TODO: remove, use the domainController from the executionEnvironment instead
+  // integrationStore?: unknown; // TODO: remove, use the domainController from the executionEnvironment instead
+  // integrationStore?: PersistenceStoreControllerInterface; // TODO: remove, use the domainController from the executionEnvironment instead
+  integrationStore?: PersistenceStoreDataSectionInterface; // TODO: remove, use the domainController from the executionEnvironment instead
   /** Populated by MiroirTestIntegrationOrchestrator (runner + shared integ context). */
   executionEnvironment?: MiroirTestExecutionEnvironment;
 };
@@ -223,6 +225,8 @@ export async function runMiroirTestSuite(
   miroirTestSuite: MiroirTestSuite,
   filter: MiroirTestRunFilter | undefined,
   modelEnvironment: MiroirModelEnvironment,
+  applicationDeploymentMap: ApplicationDeploymentMap,
+  applicationUuid: Uuid,
   miroirActivityTracker: MiroirActivityTrackerInterface,
   parentTrackingId: string | undefined,
   trackActionsBelow: boolean = false,
@@ -279,6 +283,8 @@ export async function runMiroirTestSuite(
         node,
         innerFilter,
         modelEnvironment,
+        applicationDeploymentMap,
+        applicationUuid,
         miroirActivityTracker,
         parentTrackingId,
         trackActionsBelow,
@@ -333,6 +339,8 @@ export const runMiroirTests: RunMiroirTests = {
     miroirTestSuite,
     filter,
     modelEnvironment,
+    applicationDeploymentMap,
+    applicationUuid,
     miroirActivityTracker,
     parentTrackingId = undefined,
     trackActionsBelow = false,
@@ -353,6 +361,8 @@ export const runMiroirTests: RunMiroirTests = {
           miroirTestSuite,
           filter,
           modelEnvironment,
+          applicationDeploymentMap,
+          applicationUuid,
           miroirActivityTracker,
           nestedParentTrackingId,
           trackActionsBelow,

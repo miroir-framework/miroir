@@ -40,6 +40,9 @@ import {
   unNullify,
 } from "../4_services/otherTools";
 import type { MiroirTestRunFilter } from "../0_interfaces/5-tests/miroirTestTypes";
+import type { PersistenceStoreControllerInterface, PersistenceStoreDataSectionInterface } from "../0_interfaces/4-services/PersistenceStoreControllerInterface";
+import type { ApplicationDeploymentMap } from "../1_core/Deployment";
+import type { Uuid } from "../0_interfaces/1_core/EntityDefinition";
 
 
 chalk.level = 3;
@@ -248,13 +251,17 @@ export async function runMiroirTransformerTest(
  * TODO: this should be refactored to a common infra with Runner integ tests
  * TODO: use domainController to access the store, not PersistenceStoreController
  */
-export function runMiroirTransformerIntegrationTest(sqlDbDataStore: unknown) {
+// export function runMiroirTransformerIntegrationTest(sqlDbDataStore: unknown) {
+// export function runMiroirTransformerIntegrationTest(sqlDbDataStore: PersistenceStoreControllerInterface) {
+export function runMiroirTransformerIntegrationTest(sqlDbDataStore: PersistenceStoreDataSectionInterface) {
   return async (
     localVitest: VitestNamespace,
     testPath: string[],
     filter: MiroirTestRunFilter | undefined,
     leaf: MiroirTestForTransformer,
     modelEnvironment: MiroirModelEnvironment,
+    // applicationUuid: Uuid,
+    // applicationDeploymentMap: ApplicationDeploymentMap,
     miroirActivityTracker: MiroirActivityTrackerInterface,
     testAssertionPath?: TestAssertionPath,
     parentSkip?: boolean,
@@ -347,11 +354,11 @@ export function runMiroirTransformerIntegrationTest(sqlDbDataStore: unknown) {
         returnedDomainElement: resolvedTransformer as any,
       };
     } else {
-      queryResult = await (sqlDbDataStore as any).handleBoxedQueryAction({
+      queryResult = await sqlDbDataStore.handleBoxedQueryAction({
         actionType: "runBoxedQueryAction",
         endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
         payload: {
-          deploymentUuid: "",
+          application: "APPLICATION_NOT_USED_HERE",
           applicationSection: "data",
           query: {
             queryType: "boxedQueryWithExtractorCombinerTransformer",
@@ -376,13 +383,13 @@ export function runMiroirTransformerIntegrationTest(sqlDbDataStore: unknown) {
                   ),
                 )
               : (transformerTest.transformerRuntimeContext ?? {}),
-            deploymentUuid: "",
+            application: "APPLICATION_NOT_USED_HERE",
             runtimeTransformers: {
               transformer: resolvedTransformer,
             },
           },
         },
-      });
+      }, {} /* applicationDeploymentMap */);
     }
 
     let resultWithIgnored: any;

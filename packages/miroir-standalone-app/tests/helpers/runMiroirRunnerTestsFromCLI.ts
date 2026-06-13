@@ -1,50 +1,20 @@
 import { afterAll, beforeEach } from "vitest";
 
-import * as vitest from "vitest";
 import {
   MiroirActivityTracker,
   MiroirEventService,
+  MiroirRunnerTestCliParseResult,
   defaultMetaModelEnvironment,
   displayMiroirTestResults,
-  runMiroirTests,
-  type MiroirTestRunFilter,
-  type MiroirTestSuite,
   type MiroirTestExecutionEnvironment,
-  MiroirRunnerTestCliParseResult,
+  type MiroirTestSuite,
+  type RunMiroirTests
 } from "miroir-core";
-import { RunnerTestSession } from "./RunnerTestSession.js";
 import { miroirTest_runner_library } from "miroir-test-app_deployment-library";
+import * as vitest from "vitest";
+import { RunnerTestSession } from "./RunnerTestSession.js";
 
 
-
-// ################################################################################################
-async function runMiroirRunnerTestSuite({
-  suiteExport,
-  suiteKey,
-  miroirActivityTracker,
-  filter,
-  executionEnvironment,
-}: {
-  suiteExport: MiroirTestSuite;
-  suiteKey: string;
-  miroirActivityTracker: MiroirActivityTracker;
-  filter?: MiroirTestRunFilter;
-  executionEnvironment: MiroirTestExecutionEnvironment;
-}): Promise<void> {
-  await runMiroirTests._runMiroirTestSuite(
-    vitest,
-    [suiteKey],
-    suiteExport as MiroirTestSuite,
-    // suiteExport.definition as MiroirTestSuite,
-    filter,
-    defaultMetaModelEnvironment,
-    miroirActivityTracker,
-    undefined,
-    true,
-    runMiroirTests,
-    { executionMode: "integration", executionEnvironment },
-  );
-}
 
 // ################################################################################################
 export type RunMiroirRunnerTestsFromCLIOptions = {
@@ -54,6 +24,7 @@ export type RunMiroirRunnerTestsFromCLIOptions = {
 
 // ################################################################################################
 export async function runMiroirRunnerTestsFromCLI(
+  runMiroirTests: RunMiroirTests,
   config: MiroirRunnerTestCliParseResult,
   options: RunMiroirRunnerTestsFromCLIOptions,
 ): Promise<void> {
@@ -65,7 +36,6 @@ export async function runMiroirRunnerTestsFromCLI(
     miroirActivityTracker,
     miroirEventService,
   });
-  // const orchestrator = new MiroirTestIntegrationOrchestrator(adapter);
 
   const executionEnvironment: MiroirTestExecutionEnvironment = await testSession.initSession(); // calls initMiroirCoreTestIntegrationStore
 
@@ -95,12 +65,18 @@ export async function runMiroirRunnerTestsFromCLI(
       suiteKey,
       definition: suiteExport as MiroirTestSuite,
     });
-    await runMiroirRunnerTestSuite({
-      suiteExport,
-      suiteKey,
+    await runMiroirTests._runMiroirTestSuite(
+      vitest,
+      [suiteKey],
+      suiteExport as MiroirTestSuite,
+      config.filter,
+      defaultMetaModelEnvironment,
       miroirActivityTracker,
-      filter: config.filter,
-      executionEnvironment,
-    });
+      undefined,
+      true,
+      runMiroirTests,
+      { executionMode: "integration", executionEnvironment },
+    );
+  
   }
 }

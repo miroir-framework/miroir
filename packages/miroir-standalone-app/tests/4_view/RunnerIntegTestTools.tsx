@@ -48,62 +48,6 @@ export interface RunnerTestParams {
   skipDropDeployment?: boolean,
 }
 
-// ################################################################################################
-export async function beforeAllRunnerTests(
-  miroirConfig: MiroirConfigClient,
-  miroirActivityTracker: MiroirActivityTracker,
-  miroirEventService: MiroirEventService,
-  adminDeployment: Deployment,
-  miroirDeploymentStorageConfiguration: StoreUnitConfiguration,
-  applicationDeploymentMap: ApplicationDeploymentMap,
-): Promise<{
-  // localCache: LocalCacheInterface;
-  domainController: DomainControllerInterface;
-  // persistenceStoreControllerManager: PersistenceStoreControllerManagerInterface;
-}> {
-  // Establish requests interception layer before all tests.
-  console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ beforeAll");
-  const {
-    // persistenceStoreControllerManagerForClient: localpersistenceStoreControllerManager,
-    domainControllerForClient,
-    domainControllerForServer,
-    // localCache: locallocalCache,
-    // miroirContext: localmiroirContext,
-  } = await setupMiroirTest(miroirConfig, miroirActivityTracker, miroirEventService, crossFetch);
-
-  const domainController = miroirConfig.client.emulateServer && domainControllerForServer
-    ? domainControllerForServer
-      : domainControllerForClient
-
-  // create the Miroir app deployment containing the meta-model
-  const createMiroirDeploymentCompositeAction = createDeploymentCompositeAction(
-    "miroir",
-    deployment_Miroir.uuid,
-    adminApplication_Miroir.uuid,
-    adminDeployment,
-    miroirDeploymentStorageConfiguration,
-  );
-  const createDeploymentResult = await domainController.handleCompositeAction(
-    createMiroirDeploymentCompositeAction,
-    applicationDeploymentMap,
-    defaultMiroirModelEnvironment,
-    {},
-  );
-  if (createDeploymentResult.status !== "ok") {
-    console.error(
-      "Failed to create Miroir deployment, createMiroirDeploymentCompositeAction:",
-      JSON.stringify(createMiroirDeploymentCompositeAction, null, 2)
-    );
-    throw new Error("Failed to create Miroir deployment: " + JSON.stringify(createDeploymentResult));
-  }
-  console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ beforeAll DONE");
-
-  return Promise.resolve({
-    // localCache: locallocalCache,
-    domainController: domainControllerForClient,
-    // persistenceStoreControllerManager: localpersistenceStoreControllerManager,
-  });
-}
 
 // ################################################################################################
 export async function beforeEachTest(

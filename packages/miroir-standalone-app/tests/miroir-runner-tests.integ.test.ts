@@ -7,6 +7,7 @@ import {
   MiroirEventService,
   MiroirLoggerFactory,
   miroirCoreStartup,
+  runMiroirTests,
   type LoggerInterface,
   type LoggerOptions,
   parseMiroirRunnerTestCliConfig,
@@ -53,5 +54,5 @@ MiroirLoggerFactory.startRegisteredLoggers(
 log.info("miroir-runner-tests.integ started", JSON.stringify(config, null, 2));
 
 if (config.suiteKeys.length > 0) {
-  await runMiroirRunnerTestsFromCLI(config, { miroirConfig });
+  await runMiroirRunnerTestsFromCLI(runMiroirTests, config, { miroirConfig });
 }

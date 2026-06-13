@@ -9,6 +9,9 @@ let integrationStore: Awaited<ReturnType<typeof initMiroirCoreTestIntegrationSto
 
 if (config.suiteKeys.length > 0) {
   integrationStore = await initMiroirCoreTestIntegrationStore({ postgresHostName });
+  await runMiroirCoreTestsFromCLI(config, {
+    integrationDataStore: integrationStore.sqlDbDataStore,
+    applicationDeploymentMap: integrationStore.applicationDeploymentMap,
+  });
 }
 
-await runMiroirCoreTestsFromCLI(config, { integrationStore: integrationStore?.sqlDbDataStore });

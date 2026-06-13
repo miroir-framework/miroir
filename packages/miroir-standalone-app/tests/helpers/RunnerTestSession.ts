@@ -18,11 +18,11 @@ import {
   RUNNER_TEST_ENVIRONMENT_REFS,
 } from "miroir-test-app_deployment-library";
 import {
-  beforeAllRunnerTests,
   beforeEachTest,
   getTestConfig,
   testApplicationStorageConfiguration,
 } from "../4_view/RunnerIntegTestTools.js";
+import { setupMiroirTestAndDeployMiroirApp } from "../../src/miroir-fwk/4-tests/setupMiroirTest.js";
 
 export type RunnerTestSessionOptions = {
   miroirConfig: MiroirConfigClient;
@@ -91,11 +91,11 @@ export class RunnerTestSession implements RunnerTestSessionInterface {
       applicationDeploymentMap,
       miroirDeploymentStorageConfiguration,
       adminDeployment,
-      testDeploymentStorageConfiguration, // not used in beforeAllRunnerTests!
+      testDeploymentStorageConfiguration, // not used in setupMiroirTestAndDeployMiroirApp!
       internalMiroirConfig,
     } = getTestSessionConfig(miroirConfig);
 
-    const { domainController } = await beforeAllRunnerTests(
+    const { domainController } = await setupMiroirTestAndDeployMiroirApp(
       internalMiroirConfig,
       miroirActivityTracker,
       miroirEventService,

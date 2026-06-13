@@ -37,7 +37,7 @@ export class PersistenceStoreControllerManager implements PersistenceStoreContro
   } = {};
   private persistenceStoreLocalOrRemote: PersistenceStoreLocalOrRemoteInterface | undefined; // receives instance of PersistenceReduxSaga
   private localCache: LocalCacheInterface | undefined;
-  private domainController: DomainController | undefined;
+  // private domainController: DomainController | undefined;
 
   constructor(
     private adminStoreFactoryRegister: AdminStoreFactoryRegister,
@@ -127,9 +127,7 @@ export class PersistenceStoreControllerManager implements PersistenceStoreContro
         // JSON.stringify(Array.from(this.adminStoreFactoryRegister.keys()), undefined, 2)
       );
 
-      log.info("1");
       if (!adminStoreFactory) {
-        log.info("2");
         return Promise.resolve(new Action2Error(
           "FailedToOpenStore",
           "addPersistenceStoreController no admin store factory found for server type " +
@@ -146,9 +144,7 @@ export class PersistenceStoreControllerManager implements PersistenceStoreContro
         //     config.admin.emulatedServerType + " in " + JSON.stringify(Array.from(this.adminStoreFactoryRegister.keys()), undefined, 2)
         // );
       }
-      log.info("3");
       if (!this.filesystemDeploymentRootDirectory) {
-        log.info(4);
         log.error(
           "addPersistenceStoreController no filesystemDeploymentRootDirectory provided for deployment",
           deploymentUuid,
@@ -160,13 +156,11 @@ export class PersistenceStoreControllerManager implements PersistenceStoreContro
           "addPersistenceStoreController no filesystemDeploymentRootDirectory provided for deployment " +
             deploymentUuid + ", can not create admin store for server type " + config.admin.emulatedServerType,
         ));
-        log.info(5);
         throw new Error(
           "addPersistenceStoreController no filesystemDeploymentRootDirectory provided for deployment " +
             deploymentUuid + ", can not create admin store for server type " + config.admin.emulatedServerType,
         );
       }
-      log.info("6");
       log.info(
         "addPersistenceStoreController calling adminStoreFactory for deployment",
         deploymentUuid,

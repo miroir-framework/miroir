@@ -49,7 +49,6 @@ import simplifiedLibraryData from "../assets/library_extract/simplified-library-
 import simplifiedLibraryModel from "../assets/library_extract/simplified-library-model.json";
 import {
   afterAllTests,
-  beforeAllRunnerTests,
   beforeEachTest,
   getTestConfig,
   testApplicationStorageConfiguration,
@@ -61,6 +60,7 @@ import {
   libraryReturnBookRunnerTest,
   libraryTestIdentifiers
 } from "./Runner_Library.ts";
+import { setupMiroirTestAndDeployMiroirApp } from "../../src/miroir-fwk/4-tests/setupMiroirTest.ts";
 // ################################################################################################
 const pageLabel = "Runner_Miroir.integ.test";
 
@@ -155,7 +155,7 @@ let domainController: DomainControllerInterface;
 beforeAll(async () => {
   const {
     domainController: localdomainController,
-  } = await beforeAllRunnerTests(
+  } = await setupMiroirTestAndDeployMiroirApp(
     internalMiroirConfig,
     miroirActivityTracker,
     miroirEventService,
