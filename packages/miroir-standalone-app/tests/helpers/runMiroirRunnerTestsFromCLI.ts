@@ -37,7 +37,7 @@ export async function runMiroirRunnerTestsFromCLI(
     miroirEventService,
   });
 
-  const executionEnvironment: MiroirTestExecutionEnvironment = await testSession.initSession(); // calls initMiroirCoreTestIntegrationStore
+  const executionEnvironment: MiroirTestExecutionEnvironment = await testSession.initSession();
 
   const loadedSuites: { suiteKey: string; definition: MiroirTestSuite }[] = [];
 

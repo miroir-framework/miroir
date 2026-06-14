@@ -198,7 +198,6 @@ npm run renormalize-miroir-test-uuids -w miroir-core
 
 | Registry key | Legacy source | Target UUID (v4) |
 |---|---|---|
-| `schema_pilot_empty` | (new) | `cebb6dc8-65ea-482d-b17b-5655c927c1c1` |
 | `pilot_transformer_plus` | `unitTest_pilot_transformer_plus` | `4b18adc6-5cec-4abf-bb60-7a7fa26e4dc4` |
 | `mustache` | `unitTest_suite_mustache` | `bdf83d4d-f4dd-42c9-b2d6-41311d979083` |
 | `queries_library` | `unitTest_suite_queries_library` | `a7a74c51-f24e-43d6-bd62-ba3ebcded97d` |

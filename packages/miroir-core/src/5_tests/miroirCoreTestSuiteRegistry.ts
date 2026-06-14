@@ -1,4 +1,4 @@
-import type { MiroirTestSuite } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+import type { MiroirTestSuite } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 
 export type MiroirTestSuiteLoader = () => Promise<{ default: MiroirTestSuite }>;
 
@@ -33,7 +33,6 @@ const MIROIR_TEST_SUITE_REGISTRY_NAMES = [
   "resolveConditionalSchema",
   "resolveQueryTemplates",
   "resolveSchemaReferenceInContext",
-  // "schema_pilot_empty",
   "selectUnionBranchFromDiscriminator",
   "tools",
   "unfoldSchemaOnce",
@@ -43,16 +42,19 @@ const MIROIR_TEST_SUITE_REGISTRY_NAMES = [
 
 export type MiroirTestSuiteKey = (typeof MIROIR_TEST_SUITE_REGISTRY_NAMES)[number];
 
-export const MIROIR_TEST_SUITE_REGISTRY: Record<string, MiroirTestSuiteLoader> = await import("miroir-test-app_deployment-miroir")
-.then((deployment) => {
-  return MIROIR_TEST_SUITE_REGISTRY_NAMES.reduce((acc, name) => {
-    acc[name] = async () => {
-      return { default: deployment[`miroirTest_${name}`].definition as MiroirTestSuite };
-    };
-    return acc;
-  }, {} as Record<string, MiroirTestSuiteLoader>);
+export const MIROIR_TEST_SUITE_REGISTRY: Record<string, MiroirTestSuiteLoader> = await import(
+  "miroir-test-app_deployment-miroir",
+).then((deployment) => {
+  return MIROIR_TEST_SUITE_REGISTRY_NAMES.reduce(
+    (acc, name) => {
+      acc[name] = async () => {
+        return { default: deployment[`miroirTest_${name}`].definition as MiroirTestSuite };
+      };
+      return acc;
+    },
+    {} as Record<string, MiroirTestSuiteLoader>,
+  );
 });
-
 
 export function listMiroirTestSuiteKeys(): string[] {
   return ([...MIROIR_TEST_SUITE_REGISTRY_NAMES] as string[]).sort();

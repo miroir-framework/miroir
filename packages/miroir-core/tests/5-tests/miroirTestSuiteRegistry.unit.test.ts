@@ -3,11 +3,11 @@ import { describe, expect, it } from "vitest";
 import {
   listMiroirTestSuiteKeys,
   loadMiroirCoreTestSuite,
-} from "../helpers/miroirCoreTestSuiteRegistry";
+} from "../../src/5_tests/miroirCoreTestSuiteRegistry";
 
 describe("miroirTestSuiteRegistry (Phase 2)", () => {
   it("lists registered suite keys", () => {
-    expect(listMiroirTestSuiteKeys()).toContain("schema_pilot_empty");
+    expect(listMiroirTestSuiteKeys()).toContain("mergePositionBased");
     expect(listMiroirTestSuiteKeys()).toContain("pilot_transformer_plus");
     expect(listMiroirTestSuiteKeys()).toContain("mustache");
     expect(listMiroirTestSuiteKeys()).toContain("queries_library");
@@ -17,9 +17,9 @@ describe("miroirTestSuiteRegistry (Phase 2)", () => {
   });
 
   it("loads deployment export via dynamic import", async () => {
-    const suiteExport = await loadMiroirCoreTestSuite("schema_pilot_empty");
+    const suiteExport = await loadMiroirCoreTestSuite("mergePositionBased");
     expect(suiteExport.miroirTestType).toBe("miroirTestSuite");
-    expect(suiteExport.miroirTestLabel).toBe("schema_pilot_empty");
+    expect(suiteExport.miroirTestLabel).toBe("jzod.mergePositionBased");
   });
 
   it("throws for unknown suite keys", async () => {

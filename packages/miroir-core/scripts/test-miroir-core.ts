@@ -13,6 +13,15 @@ const packageRoot = path.resolve(scriptDir, "..");
 
 const argv = process.argv.slice(2);
 const config = parseMiroirTestCliConfig(process.env, argv);
+
+if (config.executionMode === "integration") {
+  console.error(
+    "miroir-core integration tests run from miroir-standalone-app:\n" +
+      "  MIROIR_TEST_SUITES=<suite> MIROIR_TEST_MODE=integ npm run testMiroir -w miroir-standalone-app",
+  );
+  process.exit(1);
+}
+
 const env = { ...process.env, ...miroirTestCliConfigToEnv(config) };
 
 const vitestArgs = [
@@ -20,7 +29,7 @@ const vitestArgs = [
   "run",
   "--poolOptions.forks.singleFork",
   "--reporter=verbose",
-  `tests/${config.vitestEntry}.ts`, //  config.vitestEntry: "miroir-core-tests.unit.test" | "miroir-core-tests.integ.test"
+  "tests/miroir-core-tests.unit.test.ts",
 ];
 
 const result = spawnSync("npx", vitestArgs, {

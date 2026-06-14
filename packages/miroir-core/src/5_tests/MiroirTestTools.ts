@@ -30,7 +30,6 @@ import { runMiroirRunnerTest } from "./RunnerTestTools";
 import type { MiroirTestRunFilter, TestSuiteListFilter } from "../0_interfaces/5-tests/miroirTestTypes";
 import type { DomainControllerInterface } from "../0_interfaces/2_domain/DomainControllerInterface";
 import type { ApplicationDeploymentMap } from "../1_core/Deployment";
-import type { PersistenceStoreDataSectionInterface } from "../0_interfaces/4-services/PersistenceStoreControllerInterface";
 
 export type RunnerTestContext = {
   domainController: DomainControllerInterface;
@@ -44,9 +43,9 @@ export type RunnerTestContext = {
 };
 
 export type MiroirTestExecutionEnvironment = {
-  /** Transformer integration (direct Postgres). */
-  integrationStore?: unknown; // TODO: BAD! stores should only be accessed through the domainController
-  /** Runner integration (full stack). */
+  domainController: DomainControllerInterface;
+  applicationDeploymentMap: ApplicationDeploymentMap;
+  testApplicationUuid: string;
   runnerTestContext?: RunnerTestContext;
 };
 
@@ -63,8 +62,7 @@ export type MiroirTestExecutionOptions = {
   executionMode: "unit";
 } | {
   executionMode: "integration";
-  integrationStore?: PersistenceStoreDataSectionInterface; // TODO: remove, use the domainController from the executionEnvironment instead
-  executionEnvironment?: MiroirTestExecutionEnvironment;
+  executionEnvironment: MiroirTestExecutionEnvironment;
 };
 
 
@@ -123,13 +121,26 @@ export async function runMiroirTest(
   switch (leaf.miroirTestType) {
     case "transformerTest": {
       if (executionOptions?.executionMode === "integration") {
-        if (executionOptions?.integrationStore === undefined) {
+        const env = executionOptions.executionEnvironment;
+        if (env?.domainController === undefined) {
           throw new Error(
-            "runMiroirTestInMemory: integrationStore is required when executionMode is integration",
+            "runMiroirTestInMemory: executionEnvironment.domainController is required when executionMode is integration",
+          );
+        }
+        if (env.applicationDeploymentMap === undefined) {
+          throw new Error(
+            "runMiroirTestInMemory: executionEnvironment.applicationDeploymentMap is required when executionMode is integration",
+          );
+        }
+        if (env.testApplicationUuid === undefined) {
+          throw new Error(
+            "runMiroirTestInMemory: executionEnvironment.testApplicationUuid is required when executionMode is integration",
           );
         }
         const runIntegration = runMiroirTransformerIntegrationTest(
-          executionOptions.integrationStore,
+          env.domainController,
+          env.applicationDeploymentMap,
+          env.testApplicationUuid,
         );
         return runIntegration(
           localVitest,
@@ -191,9 +202,9 @@ export async function runMiroirTest(
           "runMiroirTestInMemory: runnerTest leaves require executionMode integration",
         );
       }
-      if (executionOptions?.executionEnvironment === undefined) {
+      if (executionOptions.executionEnvironment.runnerTestContext === undefined) {
         throw new Error(
-          "runMiroirTestInMemory: executionEnvironment is required when executionMode is integration",
+          "runMiroirTestInMemory: executionEnvironment.runnerTestContext is required for runnerTest leaves",
         );
       }
       return runMiroirRunnerTest(

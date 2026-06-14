@@ -123,7 +123,12 @@ export class RunnerTestSession implements RunnerTestSessionInterface {
       runtimeContext: {},
     };
 
-    return { runnerTestContext: this.runnerTestContext };
+    return {
+      domainController,
+      applicationDeploymentMap: testApplicationDeploymentMap,
+      testApplicationUuid: libraryTestIdentifiers.testApplicationUuid,
+      runnerTestContext: this.runnerTestContext,
+    };
   }
 
   async beforeEach(): Promise<void> {

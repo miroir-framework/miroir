@@ -244,7 +244,7 @@ describe("runMiroirTestInMemory — functionCallTest", () => {
         undefined,
         false,
         runMiroirTests,
-        { executionMode: "integration", integrationStore: {} },
+        { executionMode: "integration", executionEnvironment: {} as any },
       ),
     ).rejects.toThrow(/functionCallTest leaves cannot run in integration mode/);
   });
@@ -298,7 +298,7 @@ describe("runMiroirTestInMemory — queryTest", () => {
         undefined,
         false,
         runMiroirTests,
-        { executionMode: "integration", integrationStore: {} },
+        { executionMode: "integration", executionEnvironment: {} as any },
       ),
     ).rejects.toThrow(/queryTest leaves cannot run in integration mode/);
   });
@@ -355,7 +355,7 @@ describe("runMiroirTestInMemory — transformerTest", () => {
     );
   });
 
-  it("requires integrationStore when executionMode is integration", async () => {
+  it("requires executionEnvironment.domainController when executionMode is integration", async () => {
     const leaf = (
       (miroirTest_pilot_transformer_plus as MiroirTestDefinition).definition as MiroirTestSuite
     ).miroirTests[0] as MiroirTestForTransformer;
@@ -370,9 +370,9 @@ describe("runMiroirTestInMemory — transformerTest", () => {
         undefined,
         false,
         runMiroirTests,
-        { executionMode: "integration" },
+        { executionMode: "integration", executionEnvironment: {} as any },
       ),
-    ).rejects.toThrow(/integrationStore is required/);
+    ).rejects.toThrow(/executionEnvironment\.domainController is required/);
   });
 });
 
@@ -380,7 +380,7 @@ describe("runMiroirTestSuite", () => {
   it("requires vitest.expect before registering suite tests", async () => {
     const emptySuite: MiroirTestSuite = {
       miroirTestType: "miroirTestSuite",
-      miroirTestLabel: "schema_pilot_empty",
+      miroirTestLabel: "jzod.mergePositionBased",
       miroirTests: [],
     };
     const vitestWithoutExpect = {

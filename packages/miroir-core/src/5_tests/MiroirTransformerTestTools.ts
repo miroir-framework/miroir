@@ -24,8 +24,10 @@ import type {
   TestAssertionPath,
 } from "../0_interfaces/3_controllers/MiroirActivityTrackerInterface";
 import type { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
-import type { PersistenceStoreDataSectionInterface } from "../0_interfaces/4-services/PersistenceStoreControllerInterface";
+import type { DomainControllerInterface } from "../0_interfaces/2_domain/DomainControllerInterface";
 import type { MiroirTestRunFilter } from "../0_interfaces/5-tests/miroirTestTypes";
+import type { ApplicationDeploymentMap } from "../1_core/Deployment";
+import type { Uuid } from "../0_interfaces/1_core/EntityDefinition";
 import { jsonify } from "../1_core/test-expect";
 import {
   transformer_extended_apply_wrapper,
@@ -242,16 +244,16 @@ export async function runMiroirTransformerTest(
 }
 // ################################################################################################
 /**
- * TODO: BAD! stores should only be accessed through the domainController
- * @param sqlDbDataStore - the target integration store. WRONG! stores should only be accessed through the domainController. this leaves a direct dependency on postgres, not accepable
+ * @param domainController - integration store access via domain layer (Gap C)
+ * @param applicationDeploymentMap - deployment routing for query actions
+ * @param testApplicationUuid - application uuid for query payload.application
  * @returns a function that runs a transformer integration test
- * 
- * TODO: this should be refactored to a common infra with Runner integ tests
- * TODO: use domainController to access the store, not PersistenceStoreController
  */
-// export function runMiroirTransformerIntegrationTest(sqlDbDataStore: unknown) {
-// export function runMiroirTransformerIntegrationTest(sqlDbDataStore: PersistenceStoreControllerInterface) {
-export function runMiroirTransformerIntegrationTest(sqlDbDataStore: PersistenceStoreDataSectionInterface) {
+export function runMiroirTransformerIntegrationTest(
+  domainController: DomainControllerInterface,
+  applicationDeploymentMap: ApplicationDeploymentMap,
+  testApplicationUuid: Uuid,
+) {
   return async (
     localVitest: VitestNamespace,
     testPath: string[],
@@ -266,7 +268,15 @@ export function runMiroirTransformerIntegrationTest(sqlDbDataStore: PersistenceS
     const assertionName = miroirTransformerAssertionName(transformerTest);
     const testPathName = MiroirActivityTracker.testPathName(testPath);
     const testRunStep = transformerTest.runTestStep ?? "runtime";
-    const runAsSql = true;
+    const transformerType = (transformerTest.transformer as { transformerType?: string })
+      ?.transformerType;
+    // Whitelisted function-call transformers are not SQL-translatable unless the test
+    // explicitly expects QueryNotExecutable on the SQL integration path.
+    const runAsSql =
+      transformerType === "ansiColumnsToJzodSchema"
+        ? (transformerTest.integrationTestExpectedValue as { queryFailure?: string } | undefined)
+            ?.queryFailure === "QueryNotExecutable"
+        : true;
 
     if (!localVitest.expect) {
       throw new Error(
@@ -350,11 +360,12 @@ export function runMiroirTransformerIntegrationTest(sqlDbDataStore: PersistenceS
         returnedDomainElement: resolvedTransformer as any,
       };
     } else {
-      queryResult = await sqlDbDataStore.handleBoxedQueryAction({
+      queryResult = await domainController.handleBoxedExtractorOrQueryAction(
+        {
         actionType: "runBoxedQueryAction",
         endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
         payload: {
-          application: "APPLICATION_NOT_USED_HERE",
+          application: testApplicationUuid,
           applicationSection: "data",
           query: {
             queryType: "boxedQueryWithExtractorCombinerTransformer",
@@ -379,13 +390,16 @@ export function runMiroirTransformerIntegrationTest(sqlDbDataStore: PersistenceS
                   ),
                 )
               : (transformerTest.transformerRuntimeContext ?? {}),
-            application: "APPLICATION_NOT_USED_HERE",
+            application: testApplicationUuid,
             runtimeTransformers: {
               transformer: resolvedTransformer,
             },
           },
         },
-      }, {} /* applicationDeploymentMap */);
+      },
+        applicationDeploymentMap,
+        modelEnvironment,
+      );
     }
 
     let resultWithIgnored: any;

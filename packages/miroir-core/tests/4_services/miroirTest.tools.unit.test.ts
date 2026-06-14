@@ -5,7 +5,7 @@ import {
   effectiveMiroirTransformerSkip,
   miroirTransformerAssertionName,
   defaultMetaModelEnvironment,
-  runMiroirTestInMemory,
+  runMiroirFunctionCallTestInMemory,
 } from "../../src";
 import type { MiroirTestForTransformer } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
@@ -37,7 +37,7 @@ describe("runMiroirTestInMemory (Phase 1)", () => {
       getCurrentTestAssertionPath: () => [{ test: "t" }, { testAssertion: "t" }],
       setTestAssertionResult: vi.fn(),
     };
-    await runMiroirTestInMemory(
+    await runMiroirFunctionCallTestInMemory(
       vitest,
       ["mustache"],
       undefined,
@@ -83,7 +83,7 @@ describe("runMiroirTestInMemory (Phase 1)", () => {
         undefined,
         false,
         {} as any,
-        { executionMode: "integration", integrationStore: {} },
+        { executionMode: "integration", executionEnvironment: {} as any },
       ),
     ).rejects.toThrow(/cannot run in integration mode/);
   });
@@ -125,7 +125,7 @@ describe("runMiroirTestInMemory (Phase 1)", () => {
     );
   });
 
-  it("requires integrationStore for transformer integration mode", async () => {
+  it("requires executionEnvironment.domainController for transformer integration mode", async () => {
     const leaf: MiroirTestForTransformer = {
       miroirTestType: "transformerTest",
       miroirTestLabel: "t",
@@ -151,8 +151,8 @@ describe("runMiroirTestInMemory (Phase 1)", () => {
         undefined,
         false,
         {} as any,
-        { executionMode: "integration" },
+        { executionMode: "integration", executionEnvironment: {} as any },
       ),
-    ).rejects.toThrow(/integrationStore is required/);
+    ).rejects.toThrow(/executionEnvironment\.domainController is required/);
   });
 });

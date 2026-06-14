@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { listMiroirTestSuiteKeys } from "../helpers/miroirCoreTestSuiteRegistry";
+import { listMiroirTestSuiteKeys } from "../../src/5_tests/miroirCoreTestSuiteRegistry";
 import {
   miroirTestCliConfigToEnv,
   parseMiroirTestCliArgs,
@@ -12,12 +12,12 @@ describe("parseMiroirTestCliConfig (Phase 2)", () => {
   it("reads suite keys and mode from env", () => {
     const config = parseMiroirTestCliConfig(
       {
-        MIROIR_TEST_SUITES: "schema_pilot_empty,tools.test",
+        MIROIR_TEST_SUITES: "mergePositionBased,tools",
         MIROIR_TEST_MODE: "unit",
       },
       [],
     );
-    expect(config.suiteKeys).toEqual(["schema_pilot_empty", "tools.test"]);
+    expect(config.suiteKeys).toEqual(["mergePositionBased", "tools"]);
     expect(config.executionMode).toBe("unit");
     expect(config.vitestEntry).toBe("miroir-core-tests.unit.test");
   });
@@ -28,9 +28,9 @@ describe("parseMiroirTestCliConfig (Phase 2)", () => {
         MIROIR_TEST_SUITES: "legacy_suite",
         MIROIR_TEST_MODE: "unit",
       },
-      ["--suites", "schema_pilot_empty", "--mode", "integration"],
+      ["--suites", "mergePositionBased", "--mode", "integration"],
     );
-    expect(config.suiteKeys).toEqual(["schema_pilot_empty"]);
+    expect(config.suiteKeys).toEqual(["mergePositionBased"]);
     expect(config.executionMode).toBe("integration");
     expect(config.vitestEntry).toBe("miroir-core-tests.integ.test");
   });
@@ -38,11 +38,13 @@ describe("parseMiroirTestCliConfig (Phase 2)", () => {
   it("parses filter JSON from env and argv", () => {
     const fromEnv = parseMiroirTestCliConfig(
       {
-        MIROIR_TEST_FILTER: '{"schema_pilot_empty":["leaf-a"]}',
+        MIROIR_TEST_FILTER: '{"mergePositionBased":["merges two undefineds into undefined"]}',
       },
       [],
     );
-    expect(fromEnv.filter).toEqual({ schema_pilot_empty: ["leaf-a"] });
+    expect(fromEnv.filter).toEqual({
+      mergePositionBased: ["merges two undefineds into undefined"],
+    });
 
     const fromArgv = parseMiroirTestCliConfig(
       {},
@@ -80,13 +82,15 @@ describe("parseMiroirTestCliConfig (Phase 2)", () => {
 
   it("miroirTestCliConfigToEnv round-trips core fields", () => {
     const env = miroirTestCliConfigToEnv({
-      suiteKeys: ["schema_pilot_empty"],
+      suiteKeys: ["mergePositionBased"],
       executionMode: "integration",
-      filter: { schema_pilot_empty: ["leaf"] } as any,
+      filter: { mergePositionBased: ["merges two undefineds into undefined"] } as any,
     });
-    expect(env.MIROIR_TEST_SUITES).toBe("schema_pilot_empty");
+    expect(env.MIROIR_TEST_SUITES).toBe("mergePositionBased");
     expect(env.MIROIR_TEST_MODE).toBe("integration");
-    expect(env.MIROIR_TEST_FILTER).toBe('{"schema_pilot_empty":["leaf"]}');
+    expect(env.MIROIR_TEST_FILTER).toBe(
+      '{"mergePositionBased":["merges two undefineds into undefined"]}',
+    );
   });
 
   it("miroirTestCliConfigToEnv uses '*' when all suites are selected", () => {

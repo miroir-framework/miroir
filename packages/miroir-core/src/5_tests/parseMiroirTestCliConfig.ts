@@ -1,7 +1,7 @@
 import type {
   MiroirTestExecutionMode,
 } from "./MiroirTestTools";
-import { listMiroirTestSuiteKeys } from "../../tests/helpers/miroirCoreTestSuiteRegistry";
+import { listMiroirTestSuiteKeys } from "./miroirCoreTestSuiteRegistry.js";
 import type { MiroirTestRunFilter } from "../0_interfaces/5-tests/miroirTestTypes";
 
 export type MiroirTestCliConfig = {
@@ -110,7 +110,8 @@ export function parseMiroirTestCliArgs(
 }
 
 export function executionModeFromEnv(env: NodeJS.ProcessEnv): MiroirTestExecutionMode {
-  return env.MIROIR_TEST_MODE === "integration" ? "integration" : "unit";
+  const mode = env.MIROIR_TEST_MODE;
+  return mode === "integration" || mode === "integ" ? "integration" : "unit";
 }
 
 /** Resolve suite keys, mode, and filter from partial argv parse + env fallbacks. */
