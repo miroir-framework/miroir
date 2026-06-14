@@ -38,12 +38,12 @@ import {
   POSTGRES_TEST_APPLICATION_NAME,
   POSTGRES_TEST_DEPLOYMENT_UUID,
   POSTGRES_TEST_SELF_APPLICATION_UUID,
-  PostgresIntegrationAdapter,
+  TestSessionForPostgres,
   buildAdminFilesystemStoreConfig,
   buildTestPostgresStoreConfig,
   resolveDefaultAdminAssetsRoot,
   resolveDefaultFilesystemDeploymentRoot,
-} from "./PostgresIntegrationAdapter.js";
+} from "./TestSessionForPostgres.js";
 
 function createMockDomainController(): DomainControllerInterface {
   return {
@@ -53,7 +53,7 @@ function createMockDomainController(): DomainControllerInterface {
   } as unknown as DomainControllerInterface;
 }
 
-describe("PostgresIntegrationAdapter", () => {
+describe("TestSessionForPostgres", () => {
   beforeEach(() => {
     setupMiroirDomainControllerMock.mockReset();
   });
@@ -62,7 +62,7 @@ describe("PostgresIntegrationAdapter", () => {
     const domainController = createMockDomainController();
     setupMiroirDomainControllerMock.mockReturnValue(domainController);
 
-    const adapter = new PostgresIntegrationAdapter({ postgresHostName: "127.0.0.1" });
+    const adapter = new TestSessionForPostgres({ postgresHostName: "127.0.0.1" });
     const env = await adapter.initSession();
 
     expect(setupMiroirDomainControllerMock).toHaveBeenCalledTimes(1);
@@ -79,7 +79,7 @@ describe("PostgresIntegrationAdapter", () => {
     const domainController = createMockDomainController();
     setupMiroirDomainControllerMock.mockReturnValue(domainController);
 
-    const adapter = new PostgresIntegrationAdapter({ postgresHostName: "127.0.0.1" });
+    const adapter = new TestSessionForPostgres({ postgresHostName: "127.0.0.1" });
     await adapter.initSession();
     vi.mocked(domainController.handleAction).mockClear();
 
@@ -92,7 +92,7 @@ describe("PostgresIntegrationAdapter", () => {
     const domainController = createMockDomainController();
     setupMiroirDomainControllerMock.mockReturnValue(domainController);
 
-    const adapter = new PostgresIntegrationAdapter({ postgresHostName: "127.0.0.1" });
+    const adapter = new TestSessionForPostgres({ postgresHostName: "127.0.0.1" });
     await adapter.initSession();
     vi.mocked(domainController.handleCompositeAction).mockClear();
 

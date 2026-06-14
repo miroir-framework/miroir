@@ -52,7 +52,7 @@ miroir-core-tests.integ.test.ts
 ```
 miroir-core-tests.integ.test.ts
   parseMiroirTestCliConfig (MIROIR_TEST_*)
-  new PostgresIntegrationAdapter(postgresHostName)           ← new connector
+  new TestSessionForPostgres(postgresHostName)           ← new connector
   adapter.initSession()
     buildMiroirConfigForPostgres(postgresHostName)           ← new helper
     setupMiroirTest(miroirConfig)                            ← existing, now used in core tests
@@ -216,9 +216,9 @@ deployment; no changes to setup helpers are needed in this migration.
 
 ## 3. Introduced connectors — feature and role descriptions
 
-### 3.1 `PostgresIntegrationAdapter`
+### 3.1 `TestSessionForPostgres`
 
-**Location:** `packages/miroir-core/tests/helpers/PostgresIntegrationAdapter.ts`
+**Location:** `packages/miroir-core/tests/helpers/TestSessionForPostgres.ts`
 
 **Implements:** `RunnerTestSessionInterface` (`initSession / beforeEach / teardown`)
 
@@ -243,7 +243,7 @@ what `miroir-core` can legitimately dev-depend on.
 **Internal structure:**
 
 ```typescript
-export class PostgresIntegrationAdapter implements RunnerTestSessionInterface {
+export class TestSessionForPostgres implements RunnerTestSessionInterface {
   constructor(private readonly postgresHostName: string) {}
 
   async initSession(): Promise<MiroirTestExecutionEnvironment> {
@@ -282,13 +282,13 @@ export class PostgresIntegrationAdapter implements RunnerTestSessionInterface {
 
 ### 3.2 `buildMiroirConfigForPostgres` (helper)
 
-**Location:** `packages/miroir-core/tests/helpers/PostgresIntegrationAdapter.ts` (same file)
+**Location:** `packages/miroir-core/tests/helpers/TestSessionForPostgres.ts` (same file)
 
 **Feature:** Constructs the minimal `MiroirConfigClient` that `setupMiroirDomainController` needs
 from a single Postgres hostname string — the same information that `initMiroirCoreTestIntegrationStore`
 hard-coded inline as a connection string.
 
-**Role:** Narrows the surface of `PostgresIntegrationAdapter` callers: they pass only
+**Role:** Narrows the surface of `TestSessionForPostgres` callers: they pass only
 `postgresHostName`, not a full config object. Ensures any future change to the config shape
 (e.g., adding TLS, schema prefix) is applied in one place.
 
@@ -389,7 +389,7 @@ this is a type cleanup that removes an existing escape hatch flagged with a TODO
 | A new `addEntitiesAndInstancesViaDomainController` helper | `resetAndinitializeDeploymentCompositeAction` already does this; adding a wrapper would duplicate its semantics under a different name |
 | A new `getInstancesViaDomainController` helper | `domainController.handleBoxedExtractorOrQueryAction` is the direct replacement; a wrapper would add a layer with no additional behaviour |
 | A new `PersistenceStoreController` unit test file | The CRUD behaviour is already covered by `DomainController.integ.Data.CRUD.test.tsx`; a separate unit test for PSC is a separate future concern, not part of this migration |
-| A `setupMiroirTest` port/copy in `miroir-core` | `setupMiroirDomainController` (from `miroir-localcache-redux`) is the lower-level primitive that `PostgresIntegrationAdapter` can use directly without pulling in `miroir-react` |
+| A `setupMiroirTest` port/copy in `miroir-core` | `setupMiroirDomainController` (from `miroir-localcache-redux`) is the lower-level primitive that `TestSessionForPostgres` can use directly without pulling in `miroir-react` |
 
 ---
 
@@ -402,9 +402,9 @@ step's "Red → Green" cycle is one commit.
 
 ### Slice T — Transformer integ (miroir-core)
 
-**T0 — Unit test for `PostgresIntegrationAdapter` contract (Red)**
+**T0 — Unit test for `TestSessionForPostgres` contract (Red)**
 
-File: `miroir-core/tests/helpers/PostgresIntegrationAdapter.unit.test.ts`
+File: `miroir-core/tests/helpers/TestSessionForPostgres.unit.test.ts`
 
 - Mock `setupMiroirDomainController` and `handleCompositeAction`.
 - Assert that `initSession()` calls `setupMiroirDomainController` once, then calls
@@ -412,16 +412,16 @@ File: `miroir-core/tests/helpers/PostgresIntegrationAdapter.unit.test.ts`
 - Assert that `teardown()` calls `handleCompositeAction` once (delete deployment).
 - Assert that `initSession()` returns `{ domainController: <mock> }`.
 
-All fail because `PostgresIntegrationAdapter` does not exist.
+All fail because `TestSessionForPostgres` does not exist.
 
-**T1 — Green: implement `PostgresIntegrationAdapter` + `buildMiroirConfigForPostgres`**
+**T1 — Green: implement `TestSessionForPostgres` + `buildMiroirConfigForPostgres`**
 
 - `buildMiroirConfigForPostgres(host)` → typed `MiroirConfigClient` for emulated-server-sql
   (schema `testApplication`, same UUIDs as current `initMiroirCoreTestIntegrationStore`).
-- `PostgresIntegrationAdapter.initSession()`: call `setupMiroirDomainController`, create + init
+- `TestSessionForPostgres.initSession()`: call `setupMiroirDomainController`, create + init
   deployment via composite actions.
-- `PostgresIntegrationAdapter.beforeEach()`: call `resetAndinitializeDeploymentCompositeAction`.
-- `PostgresIntegrationAdapter.teardown()`: call delete-deployment composite action.
+- `TestSessionForPostgres.beforeEach()`: call `resetAndinitializeDeploymentCompositeAction`.
+- `TestSessionForPostgres.teardown()`: call delete-deployment composite action.
 - T0 tests pass.
 
 **T2 — Unit test: `runMiroirTransformerIntegrationTest` accepts `DomainControllerInterface` (Red)**
@@ -451,7 +451,7 @@ Fails because the function still takes `sqlDbDataStore`.
   `{ integrationDataStore }`; pass through to `runMiroirTests._runMiroirTestSuite`.
 - T2 tests pass.
 
-**T4 — Green: wire `PostgresIntegrationAdapter` into `miroir-core-tests.integ.test.ts`**
+**T4 — Green: wire `TestSessionForPostgres` into `miroir-core-tests.integ.test.ts`**
 
 - Replace:
   ```typescript
@@ -460,7 +460,7 @@ Fails because the function still takes `sqlDbDataStore`.
   ```
   With:
   ```typescript
-  const adapter = new PostgresIntegrationAdapter(postgresHostName);
+  const adapter = new TestSessionForPostgres(postgresHostName);
   const executionEnvironment = await adapter.initSession();
   await runMiroirCoreTestsFromCLI(config, { executionEnvironment, applicationDeploymentMap: adapter.applicationDeploymentMap });
   ```

@@ -51,6 +51,7 @@ import {
   type MiroirConfigClient,
   type MiroirTestExecutionEnvironment,
   type RunnerTestSessionInterface,
+  type SqlDbStoreSectionConfiguration,
   type StoreUnitConfiguration,
   type Uuid,
 } from "miroir-core";
@@ -128,12 +129,12 @@ export const POSTGRES_TEST_VERSION_UUID: Uuid = "dddddddd-dddd-dddd-dddd-ddddddd
 
 export const POSTGRES_TEST_LIBRARY_ENTITIES_AND_INSTANCES: ApplicationEntitiesAndInstances = [
   {
-    entity: entityAuthor as MetaEntity,
+    entity: entityAuthor as Entity,
     entityDefinition: entityDefinitionAuthor as EntityDefinition,
     instances: [author1, author2, author3 as EntityInstance],
   },
   {
-    entity: entityBook as MetaEntity,
+    entity: entityBook as Entity,
     entityDefinition: entityDefinitionBook as EntityDefinition,
     instances: [
       book1 as EntityInstance,
@@ -144,7 +145,7 @@ export const POSTGRES_TEST_LIBRARY_ENTITIES_AND_INSTANCES: ApplicationEntitiesAn
     ],
   },
   {
-    entity: entityPublisher as MetaEntity,
+    entity: entityPublisher as Entity,
     entityDefinition: entityDefinitionPublisher as EntityDefinition,
     instances: [publisher1 as EntityInstance, publisher2 as EntityInstance, publisher3 as EntityInstance],
   },
@@ -211,7 +212,7 @@ export function buildTestPostgresStoreConfig(
   postgresHostName: string,
 ): StoreUnitConfiguration {
   const connectionString = `postgres://postgres:postgres@${postgresHostName}:5432/postgres`;
-  const storeConfig = getBasicStoreUnitConfiguration(applicationName, {
+  const storeConfig: StoreUnitConfiguration = getBasicStoreUnitConfiguration(applicationName, {
     emulatedServerType: "sql",
     connectionString,
   });
@@ -221,7 +222,7 @@ export function buildTestPostgresStoreConfig(
       ...storeConfig.admin,
       schema: applicationName,
     },
-  };
+  } as StoreUnitConfiguration;
 }
 
 // ################################################################################################
@@ -255,7 +256,7 @@ export function buildMiroirConfigForPostgres(
 }
 
 // ################################################################################################
-export class PostgresIntegrationAdapter implements RunnerTestSessionInterface {
+export class TestSessionForPostgres implements RunnerTestSessionInterface {
   private static storeSectionsRegistered = false;
 
   private domainController: DomainControllerInterface | undefined;
@@ -265,11 +266,11 @@ export class PostgresIntegrationAdapter implements RunnerTestSessionInterface {
   constructor(private readonly options: PostgresIntegrationAdapterOptions = {}) {}
 
   private ensureStoreSectionsRegistered(): void {
-    if (!PostgresIntegrationAdapter.storeSectionsRegistered) {
+    if (!TestSessionForPostgres.storeSectionsRegistered) {
       miroirCoreStartup();
       miroirFileSystemStoreSectionStartup(ConfigurationService.configurationService);
       miroirPostgresStoreSectionStartup(ConfigurationService.configurationService);
-      PostgresIntegrationAdapter.storeSectionsRegistered = true;
+      TestSessionForPostgres.storeSectionsRegistered = true;
     }
   }
 
@@ -305,7 +306,7 @@ export class PostgresIntegrationAdapter implements RunnerTestSessionInterface {
 
   // ##############################################################################################
   /** Mirrors legacy initMiroirCoreTestIntegrationStore data seeding via domainController. */
-  private async seedTestApplicationData(
+  private async initTestApplicationData(
     domainController: DomainControllerInterface,
     applicationDeploymentMap: ApplicationDeploymentMap,
   ): Promise<void> {
@@ -323,7 +324,7 @@ export class PostgresIntegrationAdapter implements RunnerTestSessionInterface {
     );
     if (resetResult instanceof Action2Error) {
       throw new Error(
-        "PostgresIntegrationAdapter.seedTestApplicationData: resetModel failed: " +
+        "TestSessionForPostgres.initTestApplicationData: resetModel failed: " +
           JSON.stringify(resetResult),
       );
     }
@@ -348,7 +349,7 @@ export class PostgresIntegrationAdapter implements RunnerTestSessionInterface {
     );
     if (initResult instanceof Action2Error) {
       throw new Error(
-        "PostgresIntegrationAdapter.seedTestApplicationData: initModel failed: " +
+        "TestSessionForPostgres.initTestApplicationData: initModel failed: " +
           JSON.stringify(initResult),
       );
     }
@@ -372,7 +373,7 @@ export class PostgresIntegrationAdapter implements RunnerTestSessionInterface {
     );
     if (createEntityResult instanceof Action2Error) {
       throw new Error(
-        "PostgresIntegrationAdapter.seedTestApplicationData: createEntity failed: " +
+        "TestSessionForPostgres.initTestApplicationData: createEntity failed: " +
           JSON.stringify(createEntityResult),
       );
     }
@@ -390,7 +391,7 @@ export class PostgresIntegrationAdapter implements RunnerTestSessionInterface {
     // );
     // if (commitResult instanceof Action2Error) {
     //   throw new Error(
-    //     "PostgresIntegrationAdapter.seedTestApplicationData: commit failed: " +
+    //     "TestSessionForPostgres.initTestApplicationData: commit failed: " +
     //       JSON.stringify(commitResult),
     //   );
     // }
@@ -411,7 +412,7 @@ export class PostgresIntegrationAdapter implements RunnerTestSessionInterface {
     );
     if (createInstanceResult instanceof Action2Error) {
       throw new Error(
-        "PostgresIntegrationAdapter.seedTestApplicationData: createInstance failed: " +
+        "TestSessionForPostgres.initTestApplicationData: createInstance failed: " +
           JSON.stringify(createInstanceResult),
       );
     }
@@ -467,7 +468,7 @@ export class PostgresIntegrationAdapter implements RunnerTestSessionInterface {
     );
     if (addAdminResult instanceof Action2Error) {
       throw new Error(
-        "PostgresIntegrationAdapter.initSession: addPersistenceStoreController(admin) failed: " +
+        "TestSessionForPostgres.initSession: addPersistenceStoreController(admin) failed: " +
           JSON.stringify(addAdminResult),
       );
     }
@@ -478,7 +479,7 @@ export class PostgresIntegrationAdapter implements RunnerTestSessionInterface {
     );
     if (addResult instanceof Action2Error) {
       throw new Error(
-        "PostgresIntegrationAdapter.initSession: addPersistenceStoreController failed: " +
+        "TestSessionForPostgres.initSession: addPersistenceStoreController failed: " +
           JSON.stringify(addResult),
       );
     }
@@ -487,7 +488,7 @@ export class PostgresIntegrationAdapter implements RunnerTestSessionInterface {
       POSTGRES_TEST_DEPLOYMENT_UUID,
     );
     if (!persistenceStoreController) {
-      throw new Error("PostgresIntegrationAdapter.initSession: persistence store controller missing");
+      throw new Error("TestSessionForPostgres.initSession: persistence store controller missing");
     }
 
     // createStore routes via adminStore; test admin.schema matches model/data (testApplication).
@@ -498,7 +499,7 @@ export class PostgresIntegrationAdapter implements RunnerTestSessionInterface {
       }
       if (createResult instanceof Action2Error) {
         throw new Error(
-          "PostgresIntegrationAdapter.initSession: createStore failed: " +
+          "TestSessionForPostgres.initSession: createStore failed: " +
             JSON.stringify(createResult),
         );
       }
@@ -507,7 +508,7 @@ export class PostgresIntegrationAdapter implements RunnerTestSessionInterface {
     const openResult = await persistenceStoreController.open();
     if (openResult instanceof Action2Error) {
       throw new Error(
-        "PostgresIntegrationAdapter.initSession: open store failed: " + JSON.stringify(openResult),
+        "TestSessionForPostgres.initSession: open store failed: " + JSON.stringify(openResult),
       );
     }
 
@@ -520,12 +521,12 @@ export class PostgresIntegrationAdapter implements RunnerTestSessionInterface {
     );
     if (initApplicationResult instanceof Action2Error) {
       throw new Error(
-        "PostgresIntegrationAdapter.initSession: initApplication failed: " +
+        "TestSessionForPostgres.initSession: initApplication failed: " +
           JSON.stringify(initApplicationResult),
       );
     }
 
-    await this.seedTestApplicationData(domainController, this.applicationDeploymentMap);
+    await this.initTestApplicationData(domainController, this.applicationDeploymentMap);
 
     this.domainController = domainController;
 
@@ -538,10 +539,10 @@ export class PostgresIntegrationAdapter implements RunnerTestSessionInterface {
 
   async beforeEach(): Promise<void> {
     if (!this.domainController || !this.applicationDeploymentMap) {
-      throw new Error("PostgresIntegrationAdapter.beforeEach: initSession not called");
+      throw new Error("TestSessionForPostgres.beforeEach: initSession not called");
     }
 
-    await this.seedTestApplicationData(this.domainController, this.applicationDeploymentMap);
+    await this.initTestApplicationData(this.domainController, this.applicationDeploymentMap);
   }
 
   async teardown(): Promise<void> {

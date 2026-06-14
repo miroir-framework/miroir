@@ -7,10 +7,10 @@ import {
   runMiroirCoreTestsFromCLI,
 } from "miroir-core";
 import {
-  PostgresIntegrationAdapter,
+  TestSessionForPostgres,
   resolveDefaultAdminAssetsRoot,
   resolveDefaultFilesystemDeploymentRoot,
-} from "./helpers/PostgresIntegrationAdapter.js";
+} from "./helpers/TestSessionForPostgres.js";
 
 ConfigurationService.configurationService.registerTestImplementation({ expect: expect as any });
 
@@ -26,7 +26,7 @@ const adminAssetsRootDirectory =
   process.env.MIROIR_TEST_ADMIN_ASSETS_ROOT ?? resolveDefaultAdminAssetsRoot();
 
 if (config.suiteKeys.length > 0) {
-  const testSession = new PostgresIntegrationAdapter({
+  const testSession = new TestSessionForPostgres({
     postgresHostName,
     adminAssetsRootDirectory,
     filesystemDeploymentRootDirectory,
