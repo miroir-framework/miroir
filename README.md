@@ -7,7 +7,7 @@
 
 ## Miroir in a few Words
 
-**Miroir** is a comprehensive development framework that **transforms how you create web applications** by:
+[Miroir](https://miroir-framework.github.io/miroir/) is a comprehensive development framework that **transforms how you create web applications** by:
 
 - **adopting a data-centric approach** - you start by **describing the concepts** manipulated by your application, **then create** your application around these concepts (**business logic**, **testing**, **scripting**, data manipulation, etc.)
 - **providing end-to-end support** - in Miroir, described **concepts and business logic become alive as** Graphical User Interfaces (**webapp GUI**), APIs (**Rest**), and **database schemas**, end-to-end!

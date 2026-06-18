@@ -1,5 +1,11 @@
 {
-  "name": "root",
+  "name": "Miroir Framework",
+  "version": "0.5.0-rc.1",
+  "description": "Miroir Framework is a framework for building web applications.",
+  "author": "Miroir Framework <miroir-framework@protonmail.com>",
+  "homepage": "https://miroir-framework.github.io/miroir/",
+  "bugs": "https://github.com/miroir-framework/miroir/issues",
+  "license": "MIT",
   "private": true,
   "type": "module",
   "workspaces": [
