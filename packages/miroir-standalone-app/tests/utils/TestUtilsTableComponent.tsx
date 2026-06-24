@@ -1,4 +1,5 @@
-import * as React from "react";
+import { useMemo } from 'react';
+// import * as React from "react";
 
 import {
   ApplicationSection,
@@ -12,7 +13,10 @@ import {
   MetaEntity,
   MiroirLoggerFactory,
   Uuid,
-  type ApplicationDeploymentMap
+  type ApplicationDeploymentMap,
+  type BoxedQueryTemplateWithExtractorCombinerTransformer,
+  type BoxedQueryWithExtractorCombinerTransformer,
+  type Domain2QueryReturnType
 } from 'miroir-core';
 import {
   ReduxStateWithUndoRedo,
@@ -22,13 +26,11 @@ import {
 
 import { packageName } from "../../src/constants";
 import { cleanLevel } from "../../src/miroir-fwk/4_view/constants";
+import { useQueryTemplateResults } from '../../src/miroir-fwk/4_view/components/Reports/ReportHooks';
 export interface MiroirReportComponentProps {
-  // entityName?: string;
-  // entityUuid: string;
   DisplayLoadingInfo:JSX.Element;
   application: Uuid;
   applicationDeploymentMap: ApplicationDeploymentMap;
-  // deploymentUuid: Uuid;
   instancesApplicationSection?: ApplicationSection;
   entity: Entity;
   entityDefinition: EntityDefinition;
@@ -50,41 +52,73 @@ export const TestUtilsTableComponent = (
   let instancesToDisplay:EntityInstance[];
 
 
-    const instancesToDisplaySelectorParams: LocalCacheExtractor = React.useMemo(
-      () =>
-        ({
-          queryType: "localCacheEntityInstancesExtractor",
-          definition: {
-            application: props.application,
-            applicationSection: props.instancesApplicationSection
-              ? props.instancesApplicationSection
-              : "data",
-            // entityUuid: currentMiroirEntity?.uuid,
-            entityUuid: props.entity?.uuid,
-          },
-        }) as LocalCacheExtractor,
-      [props.application, props.instancesApplicationSection, props.entity?.uuid],
-    );
+  // const instancesToDisplaySelectorParams: LocalCacheExtractor = useMemo(
+  //   () =>
+  //     ({
+  //       queryType: "localCacheEntityInstancesExtractor",
+  //       definition: {
+  //         application: props.application,
+  //         applicationSection: props.instancesApplicationSection
+  //           ? props.instancesApplicationSection
+  //           : "data",
+  //         entityUuid: props.entity?.uuid,
+  //       },
+  //     }) as LocalCacheExtractor,
+  //   [props.application, props.instancesApplicationSection, props.entity?.uuid],
+  // );
 
-    log.info("TestUtilsTableComponent instancesToDisplaySelectorParams",JSON.stringify(instancesToDisplaySelectorParams));
-    instancesToDisplay = useSelector((state: ReduxStateWithUndoRedo) =>
-      selectInstanceArrayForDeploymentSectionEntity(
-        state,
-        props.applicationDeploymentMap,
-        instancesToDisplaySelectorParams,
-      ),
-    ) as EntityInstanceWithName[];
-  // }
-  log.info("TestUtilsTableComponent currentMiroirEntity",JSON.stringify(props.entity));
+  // log.info("TestUtilsTableComponent instancesToDisplaySelectorParams",JSON.stringify(instancesToDisplaySelectorParams));
+  // instancesToDisplay = useSelector((state: ReduxStateWithUndoRedo) =>
+  //   selectInstanceArrayForDeploymentSectionEntity(
+  //     state,
+  //     props.applicationDeploymentMap,
+  //     instancesToDisplaySelectorParams,
+  //   ),
+  // ) as EntityInstanceWithName[];
+  const currentStoredQuery:
+  | BoxedQueryWithExtractorCombinerTransformer
+  | BoxedQueryTemplateWithExtractorCombinerTransformer
+  | undefined = useMemo(() => {
+    const result:
+    | BoxedQueryWithExtractorCombinerTransformer
+    | BoxedQueryTemplateWithExtractorCombinerTransformer
+    | undefined =
+    {
+      queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
+      application: props.application,
+      queryParams: {},
+      contextResults: {},
+      extractorTemplates: {
+        extractorByPrimaryKey: {
+          extractorOrCombinerType: "extractorInstancesByEntity",
+          applicationSection: props.instancesApplicationSection,
+          parentUuid: props.entity.uuid,
+        }
+      },
+    }
+      // : undefined;
+    log.info("TestUtilsTableComponent currentStoredQuery", result);
+    return result;
+  }, [props.application, props.entity?.uuid, props.instancesApplicationSection]);
+
+  const currentStoredQueryResults: Domain2QueryReturnType<
+  Domain2QueryReturnType<Record<string, any>>
+    > = useQueryTemplateResults({}, props.applicationDeploymentMap, currentStoredQuery);
+  log.info("TestUtilsTableComponent currentStoredQueryResults", JSON.stringify(currentStoredQueryResults));
   log.info("TestUtilsTableComponent currentMiroirEntityDefinition",JSON.stringify(props.entityDefinition));
-  
+
+  instancesToDisplay = (currentStoredQueryResults as any)?.reportData?.extractorByPrimaryKey;
+  log.info("TestUtilsTableComponent currentStoredQueryResults",JSON.stringify(currentStoredQueryResults, null, 2));
   log.info("TestUtilsTableComponent instancesToDisplay",instancesToDisplay);
   
-  const currentAttributes = props.entityDefinition?.mlSchema
+  const currentAttributes: [string, JzodElement][] = [["uuid", { type: "uuid" } as JzodElement]]
+  .concat(
+    props.entityDefinition?.mlSchema
     ? Object.entries(props.entityDefinition?.mlSchema.definition)?.filter(
         (a) => a[0] !== "parentUuid",
-      )
-    : [];
+      ) as [string, JzodElement][]
+    : [] as [string, JzodElement][]
+  ) as [string, JzodElement][];
   log.info("TestUtilsTableComponent currentAttributes",JSON.stringify(currentAttributes));
   return (
     <div>

@@ -151,7 +151,7 @@ export const RootComponent = (props: RootComponentProps) => {
   // Get theme for theming the outline highlight colors
   const theme = useMiroirTheme();
   // Optimize transactions selector to avoid unnecessary re-renders during bulk operations
-  // const transactions: ReduxStateChanges[] = useLocalCacheTransactions();
+  const transactions: ReduxStateChanges[] = useLocalCacheTransactions();
   const miroirConfig = context.miroirContext.extendMiroirConfigWithExtraDeploymentConfiguration();
 
   // Configuration loading service for centralized configuration management
@@ -852,9 +852,9 @@ export const RootComponent = (props: RootComponentProps) => {
               >
                 {context.viewParams.generalEditMode && <ThemedText>uuid: {uuidv4()}</ThemedText>}
                 <JsonDisplayHelper debug={true} componentName="RootComponent" elements={debugElements.elements} />
-                {/* {transactions && transactions.length > 0 && (
+                {transactions && transactions.length > 0 && (
                   <ThemedText> transactions: {JSON.stringify(transactions)}</ThemedText>
-                )} */}
+                )}
                 {context.showPerformanceDisplay && (
                   <div>
                     RootComponent renders: {navigationCount} (total: {totalCount})

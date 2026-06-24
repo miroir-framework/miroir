@@ -1055,6 +1055,7 @@ export {
   parseMiroirTestCliArgs,
   parseMiroirTestCliConfig,
   resolveMiroirTestSuiteKeys,
+  resolveMiroirTestCliConfigFromPartial,
   splitSuiteKeys,
   type MiroirTestCliConfig,
   type MiroirTestCliParseResult,

@@ -453,6 +453,8 @@ Fails because the function still takes `sqlDbDataStore`.
 
 **T4 — Green: wire `TestSessionForPostgres` into `miroir-core-tests.integ.test.ts`**
 
+move `miroir-core-tests.integ.test.ts` to `miroir-standalone-app`
+
 - Replace:
   ```typescript
   integrationStore = await initMiroirCoreTestIntegrationStore({ postgresHostName });
@@ -471,7 +473,7 @@ Fails because the function still takes `sqlDbDataStore`.
 Run:
 ```bash
 MIROIR_TEST_SUITES=miroirCoreTransformers MIROIR_TEST_MODE=integration \
-  npx vitest run tests/miroir-core-tests.integ.test.ts -w miroir-core
+  npx vitest run tests/miroir-core-tests.integ.test.ts -w miroir-standalone-app
 ```
 Same pass/fail profile as before. Old `transformers.integ.test.ts` shim still works (it redirects
 to `miroir-core-tests.integ.test`).

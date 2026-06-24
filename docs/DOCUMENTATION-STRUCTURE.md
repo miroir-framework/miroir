@@ -122,6 +122,7 @@ docs-new/
 │   ├── configuration.md            # Environment variables and settings
 │   ├── data-stores.md              # PostgreSQL, IndexedDB, Filesystem
 │   ├── logging.md                  # Logging configuration
+│   ├── testing.md                  # Full testing reference (env vars, backends, API) ✅
 │   │
 │   └── api/                        # API reference (auto-generated from Jzod)
 │       ├── index.md                # API overview ⚠️⚠️⚠️
@@ -335,6 +336,7 @@ Level 4: Reference & Deep Dive
 - [docs-new/reference/api/actions.md](reference/api/actions.md)
 - [docs-new/reference/api/reports.md](reference/api/reports.md)
 - [docs-new/reference/api/endpoints.md](reference/api/endpoints.md)
+- [docs-new/reference/testing.md](reference/testing.md) - Full testing reference (Features #196, #197)
 
 ### 🚧 To Be Created (Priority)
 - getting-started/what-is-miroir.md

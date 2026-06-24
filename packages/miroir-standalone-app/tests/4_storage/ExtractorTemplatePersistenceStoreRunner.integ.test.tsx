@@ -531,7 +531,6 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
               endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
               payload: {
                 application: selfApplicationLibrary.uuid,
-                // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
                 applicationSection: applicationSection,
                 query: {
                   application: selfApplicationLibrary.uuid,
@@ -539,7 +538,6 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
                   pageParams: {},
                   queryParams: {},
                   contextResults: {},
-                  // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
                   extractorTemplates: {
                     books: {
                       extractorOrCombinerType: "extractorInstancesByEntity",
@@ -654,7 +652,6 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
               endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
               payload: {
                 application: selfApplicationLibrary.uuid,
-                // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
                 applicationSection: applicationSection,
                 query: {
                   application: selfApplicationLibrary.uuid,
@@ -662,7 +659,6 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
                   pageParams: {},
                   queryParams: {},
                   contextResults: {},
-                  // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
                   extractorTemplates: {
                     books: {
                       extractorOrCombinerType: "extractorInstancesByEntity",
@@ -723,112 +719,120 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
     );
   });
   
-  // // ################################################################################################
-  // // TODO: migrate to new action format
-  // it("get country list with new uuids with actionRuntimeTransformer", async () => {
-  //   await chainVitestSteps(
-  //     "ExtractorTemplatePersistenceStoreRunner_selectUniqueEntityApplication",
-  //     {},
-  //     async () => {
-  //       const applicationSection: ApplicationSection = "data";
-  //       const queryResult = await localAppPersistenceStoreController.handleQueryTemplateActionForServerONLY({
-  //         actionType: "runBoxedQueryTemplateAction",
-  //         actionName: "runQuery",
-  //         deploymentUuid: deployment_Library_DO_NO_USE.uuid,
-  //         endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-  //         applicationSection: applicationSection,
-  //         query: {
-  //           queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
-  //           pageParams: {},
-  //           queryParams: {},
-  //           contextResults: {},
-  //           // pageParams: { elementType: "object", elementValue: {} },
-  //           // queryParams: { elementType: "object", elementValue: {} },
-  //           // contextResults: { elementType: "object", elementValue: {} },
-  //           deploymentUuid: deployment_Library_DO_NO_USE.uuid,
-  //           extractorTemplates: {
-  //             books: {
-  //               extractorOrCombinerType: "extractorInstancesByEntity",
-  //               applicationSection: applicationSection,
-  //               parentName: "Book",
-  //               parentUuid: {
-  //                 transformerType: "constantUuid",
-  //                 value: entityBook.uuid,
-  //               },
-  //             },
-  //           },
-  //           runtimeTransformers: {
-  //             countries: {
-  //               transformerType: "mapList",
-  //               interpolation: "runtime",
-  //               referencedTransformer: "books",
-  //               orderBy: "name",
-  //               elementTransformer: {
-  //                 transformerType: "innerFullObjectTemplate",
-  //                 interpolation: "runtime",
-  //                 referenceToOuterObject: "book",
-  //                 definition: [
-  //                   {
-  //                     attributeKey: {
-  //                       interpolation: "runtime",
-  //                       transformerType: "constantUuid",
-  //                       value: "uuid",
-  //                     },
-  //                     attributeValue: {
-  //                       interpolation: "runtime",
-  //                       transformerType: "generateUuid",
-  //                     },
-  //                   },
-  //                   {
-  //                     attributeKey: {
-  //                       interpolation: "runtime",
-  //                       transformerType: "constantUuid",
-  //                       value: "name",
-  //                     },
-  //                     attributeValue: {
-  //                       transformerType: "mustacheStringTemplate",
-  //                       interpolation: "runtime",
-  //                       definition: "{{book.name}}",
-  //                     },
-  //                   },
-  //                 ],
-  //               },
-  //             },
-  //           },
-  //         },
-  //       });
-  //       console.log("queryResult", JSON.stringify(queryResult, null, 2));
-  //       return queryResult;
-  //     },
-  //     (a) =>
-  //       ignorePostgresExtraAttributesOnList((a as any).returnedDomainElement.countries, [
-  //       // ignorePostgresExtraAttributesOnList((a as any).returnedDomainElement.countries, [
-  //         "uuid",
-  //       ]),
-  //     undefined, // name to give to result
-  //     undefined,
-  //     [
-  //       {
-  //         name: "Et dans l&#39;éternité je ne m&#39;ennuierai pas",
-  //       },
-  //       {
-  //         name: "Le Pain et le Cirque",
-  //       },
-  //       {
-  //         name: "Rear Window",
-  //       },
-  //       {
-  //         name: "Renata n&#39;importe quoi",
-  //       },
-  //       {
-  //         name: "The Bride Wore Black",
-  //       },
-  //       {
-  //         name: "The Design of Everyday Things",
-  //       },
-  //     ]
-  //   );
-  // });
+  // ################################################################################################
+  it("get country list with new uuids with actionRuntimeTransformer", async () => {
+    await chainVitestSteps(
+      "ExtractorTemplatePersistenceStoreRunner_selectUniqueEntityApplication",
+      {},
+      async () => {
+        const applicationSection: ApplicationSection = "data";
+        const queryResult = await localAppPersistenceStoreController.handleQueryTemplateActionForServerONLY({
+          actionType: "runBoxedQueryTemplateAction",
+          endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+          payload: {
+            application: selfApplicationLibrary.uuid,
+            applicationSection: applicationSection,
+            query: {
+              application: selfApplicationLibrary.uuid,
+              queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
+              pageParams: {},
+              queryParams: {},
+              contextResults: {},
+              extractorTemplates: {
+                books: {
+                  extractorOrCombinerType: "extractorInstancesByEntity",
+                  applicationSection: applicationSection,
+                  parentName: "Book",
+                  parentUuid: {
+                    transformerType: "returnValue",
+                    mlSchema: { type: "uuid" },
+                    interpolation: "build",
+                    value: entityBook.uuid,
+                  } as any,
+                },
+              },
+              runtimeTransformers: {
+                countries: {
+                  transformerType: "mapList",
+                  interpolation: "runtime",
+                  applyTo: {
+                    transformerType: "getFromContext",
+                    interpolation: "runtime",
+                    referenceName: "books",
+                  },
+                  // referencedTransformer: "books",
+                  referenceToOuterObject: "book",
+                  orderBy: "name",
+                  elementTransformer: {
+                    transformerType: "createObjectFromPairs",
+                    interpolation: "runtime",
+                    definition: [
+                      {
+                        attributeKey: {
+                          interpolation: "runtime",
+                          transformerType: "returnValue",
+                          mlSchema: { type: "string" },
+                          value: "uuid",
+                        },
+                        attributeValue: {
+                          interpolation: "runtime",
+                          transformerType: "generateUuid",
+                        },
+                      },
+                      {
+                        attributeKey: {
+                          interpolation: "runtime",
+                          transformerType: "returnValue",
+                          mlSchema: { type: "string" },
+                          value: "name",
+                        },
+                        attributeValue: {
+                          transformerType: "mustacheStringTemplate",
+                          interpolation: "runtime",
+                          definition: "{{book.name}}",
+                        },
+                      },
+                    ],
+                  },
+                },
+              },
+            },
+          }
+        },
+      applicationDeploymentMap
+    );
+        console.log("queryResult", JSON.stringify(queryResult, null, 2));
+        return queryResult;
+      },
+      (a) =>
+        ignorePostgresExtraAttributes((a as any).returnedDomainElement.countries, [
+        // ignorePostgresExtraAttributesOnList((a as any).returnedDomainElement.countries, [
+          "uuid",
+        ]),
+      undefined, // name to give to result
+      undefined,
+      [
+        {
+          name: "Et dans l&#39;éternité je ne m&#39;ennuierai pas",
+        },
+        {
+          name: "Le Pain et le Cirque",
+        },
+        {
+          name: "Rear Window",
+        },
+        {
+          name: "Renata n&#39;importe quoi",
+        },
+        {
+          name: "The Bride Wore Black",
+        },
+        {
+          name: "The Design of Everyday Things",
+        },
+      ]
+    );
+  });
 
   // ################################################################################################
   it("get books of an author with combiner", async () => {
@@ -844,7 +848,6 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
               endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
               payload: {
                 application: selfApplicationLibrary.uuid,
-                // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
                 applicationSection: applicationSection,
                 query: {
                   queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
@@ -854,7 +857,6 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
                     instanceUuid: "c6852e89-3c3c-447f-b827-4b5b9d830975",
                   },
                   contextResults: {},
-                  // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
                   extractorTemplates: {
                     book: {
                       extractorOrCombinerType: "extractorByPrimaryKey",
@@ -881,11 +883,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
                         interpolation: "build",
                         value: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
                       } as any,
-                      objectReference: {
-                        transformerType: "getFromContext",
-                        interpolation: "runtime",
-                        referenceName: "book",
-                      } as any, // TODO: correct type to accept transformer
+                      objectReference: "book",
                       AttributeOfObjectToCompareToReferenceUuid: "author",
                     },
                     booksOfAuthor: {
@@ -897,11 +895,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
                         interpolation: "build",
                         value: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
                       } as any,
-                      objectReference: {
-                        transformerType: "getFromContext",
-                        interpolation: "runtime",
-                        referenceName: "author",
-                      } as any, // TODO: correct type to accept transformer
+                      objectReference: "author",
                       AttributeOfListObjectToCompareToReferenceUuid: "author",
                     },
                   },

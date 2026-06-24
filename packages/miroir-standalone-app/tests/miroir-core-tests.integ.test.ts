@@ -3,34 +3,39 @@ import * as vitest from "vitest";
 
 import {
   ConfigurationService,
-  parseMiroirTestCliConfig,
+  listMiroirTestSuiteKeys,
+  parseMiroirTestCliArgs,
+  resolveMiroirTestCliConfigFromPartial,
   runMiroirCoreTestsFromCLI,
 } from "miroir-core";
+import { assertMiroirCoreIntegTestLaunchReady } from "./helpers/miroirCoreIntegTestLaunch.js";
 import {
-  TestSessionForPostgres,
-  resolveDefaultAdminAssetsRoot,
-  resolveDefaultFilesystemDeploymentRoot,
-} from "./helpers/TestSessionForPostgres.js";
+  TestSessionForInteg,
+  resolveTestSessionForIntegOptionsFromEnv,
+} from "./helpers/TestSessionForInteg.js";
 
 ConfigurationService.configurationService.registerTestImplementation({ expect: expect as any });
 
-// Admin deployment (filesystem) and Postgres test schema are configured independently:
-//   MIROIR_TEST_ADMIN_ASSETS_ROOT  — admin/, admin_model/, admin_data/ base dir (default: tests/assets)
-//   MIROIR_TEST_FILESYSTEM_ROOT    — package root for relative store paths (default: miroir-standalone-app)
-//   MIROIR_TEST_POSTGRES_HOST      — Postgres host for testApplication schema (default: 192.168.1.160)
-const config = parseMiroirTestCliConfig(process.env, process.argv.slice(2));
-const postgresHostName = process.env.MIROIR_TEST_POSTGRES_HOST ?? "192.168.1.160";
-const filesystemDeploymentRootDirectory =
-  process.env.MIROIR_TEST_FILESYSTEM_ROOT ?? resolveDefaultFilesystemDeploymentRoot();
-const adminAssetsRootDirectory =
-  process.env.MIROIR_TEST_ADMIN_ASSETS_ROOT ?? resolveDefaultAdminAssetsRoot();
+const argv = process.argv.slice(2);
+const config = {
+  ...resolveMiroirTestCliConfigFromPartial(
+    process.env,
+    parseMiroirTestCliArgs(argv, { integModeAlias: true }),
+    listMiroirTestSuiteKeys(),
+  ),
+  vitestEntry: "miroir-core-tests.integ.test" as const,
+};
+const testSessionOptions = resolveTestSessionForIntegOptionsFromEnv(process.env);
+
+assertMiroirCoreIntegTestLaunchReady({
+  env: process.env,
+  argv,
+  config,
+  testSessionOptions,
+});
 
 if (config.suiteKeys.length > 0) {
-  const testSession = new TestSessionForPostgres({
-    postgresHostName,
-    adminAssetsRootDirectory,
-    filesystemDeploymentRootDirectory,
-  });
+  const testSession = new TestSessionForInteg(testSessionOptions);
   const executionEnvironment = await testSession.initSession();
   await runMiroirCoreTestsFromCLI(vitest, config, {
     executionEnvironment,

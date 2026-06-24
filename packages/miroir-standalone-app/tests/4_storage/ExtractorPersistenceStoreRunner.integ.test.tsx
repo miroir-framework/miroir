@@ -1,4 +1,4 @@
-import { describe, beforeAll, afterAll, beforeEach, afterEach, it, expect } from 'vitest';
+import { describe, beforeAll, afterAll, beforeEach, afterEach, it, expect } from "vitest";
 
 import {
   type Action2ReturnType,
@@ -28,15 +28,10 @@ import {
   resetAndinitializeDeploymentCompositeAction,
   selfApplicationMiroir,
   // selfApplicationLibrary,
-  StoreUnitConfiguration
+  StoreUnitConfiguration,
 } from "miroir-core";
-import {
-  deployment_Admin,
-} from "miroir-test-app_deployment-admin";
-import {
-  deployment_Library_DO_NO_USE,
-} from "miroir-test-app_deployment-library";
-
+import { deployment_Admin } from "miroir-test-app_deployment-admin";
+import { deployment_Library_DO_NO_USE } from "miroir-test-app_deployment-library";
 
 import {
   author1,
@@ -75,12 +70,12 @@ import {
   LoggerOptions,
   MiroirContext,
   miroirCoreStartup,
-  PersistenceStoreControllerManagerInterface
+  PersistenceStoreControllerManagerInterface,
 } from "miroir-core";
-import { miroirFileSystemStoreSectionStartup } from 'miroir-store-filesystem';
-import { miroirIndexedDbStoreSectionStartup } from 'miroir-store-indexedDb';
-import { miroirMongoDbStoreSectionStartup } from 'miroir-store-mongodb';
-import { miroirPostgresStoreSectionStartup } from 'miroir-store-postgres';
+import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
+import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
+import { miroirMongoDbStoreSectionStartup } from "miroir-store-mongodb";
+import { miroirPostgresStoreSectionStartup } from "miroir-store-postgres";
 // import { miroirCoreStartup } from 'miroir-core/src/startup.js';
 import type {
   ApplicationDeploymentMap,
@@ -101,11 +96,11 @@ import {
   selfApplicationDeploymentConfigurations,
   // setupMiroirTest,
 } from "../../src/miroir-fwk/4-tests/tests-utils.js";
-import { chainVitestSteps } from '../../src/miroir-fwk/4-tests/vitest-utils.js';
-import { miroirAppStartup } from '../../src/startup.js';
-import { cleanLevel, packageName } from '../3_controllers/constants.js';
-import { loadTestConfigFiles } from '../utils/fileTools.js';
-import { setupMiroirTest } from '../../src/miroir-fwk/4-tests/setupMiroirTest.js';
+import { chainVitestSteps } from "../../src/miroir-fwk/4-tests/vitest-utils.js";
+import { miroirAppStartup } from "../../src/startup.js";
+import { cleanLevel, packageName } from "../3_controllers/constants.js";
+import { loadTestConfigFiles } from "../utils/fileTools.js";
+import { setupMiroirTest } from "../../src/miroir-fwk/4-tests/setupMiroirTest.js";
 
 let domainController: DomainControllerInterface;
 // let localCache: LocalCacheInterface;
@@ -115,12 +110,12 @@ let localAppPersistenceStoreController: PersistenceStoreControllerInterface;
 let persistenceStoreControllerManager: PersistenceStoreControllerManagerInterface;
 
 // const env:any = (import.meta as any).env
-const env:any = process.env
+const env: any = process.env;
 // console.log("@@@@@@@@@@@@@@@@@@ env", env);
 
-const {miroirConfig, logConfig:importedLoggerOptions} = await loadTestConfigFiles(env);
-const loggerOptions: LoggerOptions = importedLoggerOptions??{
-  defaultLevel: "INFO", 
+const { miroirConfig, logConfig: importedLoggerOptions } = await loadTestConfigFiles(env);
+const loggerOptions: LoggerOptions = importedLoggerOptions ?? {
+  defaultLevel: "INFO",
   defaultTemplate: "[{{time}}] {{level}} ({{name}}) -",
   specificLoggerOptions: {},
 };
@@ -133,10 +128,12 @@ myConsoleLog(fileName, "received env", JSON.stringify(env, null, 2));
 
 // let miroirConfig:any;
 // let loggerOptions:any;
-let log:LoggerInterface = console as any as LoggerInterface;
+let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, fileName)
-).then((logger: LoggerInterface) => {log = logger});
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, fileName),
+).then((logger: LoggerInterface) => {
+  log = logger;
+});
 
 miroirAppStartup();
 miroirCoreStartup();
@@ -144,14 +141,11 @@ miroirFileSystemStoreSectionStartup(ConfigurationService.configurationService);
 miroirIndexedDbStoreSectionStartup(ConfigurationService.configurationService);
 miroirMongoDbStoreSectionStartup(ConfigurationService.configurationService);
 miroirPostgresStoreSectionStartup(ConfigurationService.configurationService);
-ConfigurationService.configurationService.registerTestImplementation({expect: expect as any});
+ConfigurationService.configurationService.registerTestImplementation({ expect: expect as any });
 
 // const {miroirConfig: miroirConfigParam, logConfig:loggerOptionsParam} = await loadTestConfigFiles(env)
 myConsoleLog("received miroirConfig", JSON.stringify(miroirConfig, null, 2));
-myConsoleLog(
-  "received miroirConfig.client",
-  JSON.stringify(miroirConfig.client, null, 2)
-);
+myConsoleLog("received miroirConfig.client", JSON.stringify(miroirConfig.client, null, 2));
 myConsoleLog("received loggerOptions", JSON.stringify(loggerOptions, null, 2));
 const miroirActivityTracker = new MiroirActivityTracker();
 const miroirEventService = new MiroirEventService(miroirActivityTracker);
@@ -168,15 +162,16 @@ myConsoleLog("started registered loggers DONE");
 //   : miroirConfig.client.serverConfig.storeSectionConfiguration[deployment_Miroir.uuid];
 
 const testApplicationDeploymentUuid = deployment_Library_DO_NO_USE.uuid;
-const libraryDeploymentStorageConfiguration: StoreUnitConfiguration = miroirConfig.client.emulateServer
+const libraryDeploymentStorageConfiguration: StoreUnitConfiguration = miroirConfig.client
+  .emulateServer
   ? miroirConfig.client.deploymentStorageConfig[testApplicationDeploymentUuid]
   : miroirConfig.client.serverConfig.storeSectionConfiguration[testApplicationDeploymentUuid];
 
-const adminDeploymentStorageConfiguration: StoreUnitConfiguration = miroirConfig.client.emulateServer
-? miroirConfig.client.deploymentStorageConfig[deployment_Admin.uuid]
-: miroirConfig.client.serverConfig.storeSectionConfiguration[deployment_Admin.uuid];
+const adminDeploymentStorageConfiguration: StoreUnitConfiguration = miroirConfig.client
+  .emulateServer
+  ? miroirConfig.client.deploymentStorageConfig[deployment_Admin.uuid]
+  : miroirConfig.client.serverConfig.storeSectionConfiguration[deployment_Admin.uuid];
 
-  
 const adminDeployment: Deployment = {
   ...deployment_Admin,
   configuration: adminDeploymentStorageConfiguration,
@@ -228,115 +223,125 @@ const defaultLibraryModelEnvironment = getDefaultLibraryModelEnvironmentDEFUNCT(
 );
 
 // ################################################################################################
-beforeAll(
-  async () => {
-    // Establish requests interception layer before all tests.
-    if (!miroirConfig.client.emulateServer) {
-      throw new Error(
-        "LocalPersistenceStoreController state do not make sense for real server configurations! Please use only 'emulateServer: true' configurations for this test."
-      );
-    }
-
-    const {
-      // persistenceStoreControllerManagerForServer: localpersistenceStoreControllerManager,
-      persistenceStoreControllerManagerForClient: localpersistenceStoreControllerManagerForClient,
-      domainControllerForClient: localdomainController,
-      // localCache: locallocalCache,
-      // miroirContext: localmiroirContext,
-    } = await setupMiroirTest(miroirConfig);
-
-    if (!localpersistenceStoreControllerManagerForClient) {
-      throw new Error("localpersistenceStoreControllerManager not defined");
-    }
-
-    persistenceStoreControllerManager = localpersistenceStoreControllerManagerForClient;
-    domainController = localdomainController;
-    // localCache = locallocalCache;
-    // miroirContext = localmiroirContext;
-
-
-    const wrapped = await createMiroirDeploymentGetPersistenceStoreController(
-      miroirConfig as MiroirConfigClient,
-      persistenceStoreControllerManager,
-      domainController,
-      applicationDeploymentMap,
-      adminDeployment,
+beforeAll(async () => {
+  // Establish requests interception layer before all tests.
+  if (!miroirConfig.client.emulateServer) {
+    throw new Error(
+      "LocalPersistenceStoreController state do not make sense for real server configurations! Please use only 'emulateServer: true' configurations for this test.",
     );
-    if (wrapped) {
-      if (wrapped.localMiroirPersistenceStoreController) {
-        localMiroirPersistenceStoreController = wrapped.localMiroirPersistenceStoreController;
-      } else {
-        throw new Error("beforeAll failed localMiroirPersistenceStoreController initialization!");
-      }
-    } else {
-      throw new Error("beforeAll failed initialization!");
-    }
-    const createLibraryDeploymentAction = createDeploymentCompositeAction(
-      "library",
-      deployment_Library_DO_NO_USE.uuid,
-      selfApplicationLibrary.uuid,
-      adminDeployment,
-      libraryDeploymentStorageConfiguration);
-    const result = await domainController.handleCompositeAction(
-      createLibraryDeploymentAction,
-      applicationDeploymentMap,
-      defaultMiroirModelEnvironment,
-      {}
-    );
-
-    if (result.status !== "ok") {
-      throw new Error("beforeAll failed createLibraryDeploymentAction!");
-    }
-
-    const tmplocalAppPersistenceStoreController = persistenceStoreControllerManager.getPersistenceStoreController(
-      deployment_Library_DO_NO_USE.uuid
-    );
-    if (!tmplocalAppPersistenceStoreController) {
-      throw new Error("beforeAll failed localAppPersistenceStoreController initialization!");
-    }
-    localAppPersistenceStoreController = tmplocalAppPersistenceStoreController;
-
-    return Promise.resolve();
   }
-)
+
+  const {
+    persistenceStoreControllerManagerForServer: localpersistenceStoreControllerManagerForServer,
+    persistenceStoreControllerManagerForClient: localpersistenceStoreControllerManagerForClient,
+    domainControllerForClient: localdomainController,
+  } = await setupMiroirTest(miroirConfig);
+
+  if (!localpersistenceStoreControllerManagerForClient) {
+    throw new Error("localpersistenceStoreControllerManagerForClient not defined");
+  }
+  if (!localpersistenceStoreControllerManagerForServer) {
+    throw new Error("localpersistenceStoreControllerManagerForServer not defined");
+  }
+
+  persistenceStoreControllerManager = localpersistenceStoreControllerManagerForServer;
+  domainController = localdomainController;
+
+  const wrapped = await createMiroirDeploymentGetPersistenceStoreController(
+    miroirConfig as MiroirConfigClient,
+    persistenceStoreControllerManager,
+    domainController,
+    applicationDeploymentMap,
+    adminDeployment,
+  );
+  if (wrapped) {
+    if (wrapped.localMiroirPersistenceStoreController) {
+      localMiroirPersistenceStoreController = wrapped.localMiroirPersistenceStoreController;
+    } else {
+      throw new Error("beforeAll failed localMiroirPersistenceStoreController initialization!");
+    }
+  } else {
+    throw new Error("beforeAll failed initialization!");
+  }
+  const createLibraryDeploymentAction = createDeploymentCompositeAction(
+    "library",
+    deployment_Library_DO_NO_USE.uuid,
+    selfApplicationLibrary.uuid,
+    adminDeployment,
+    libraryDeploymentStorageConfiguration,
+  );
+  const result = await domainController.handleCompositeAction(
+    createLibraryDeploymentAction,
+    applicationDeploymentMap,
+    defaultMiroirModelEnvironment,
+    {},
+  );
+
+  if (result.status !== "ok") {
+    throw new Error("beforeAll failed createLibraryDeploymentAction!");
+  }
+
+  const tmplocalAppPersistenceStoreController =
+    persistenceStoreControllerManager.getPersistenceStoreController(
+      deployment_Library_DO_NO_USE.uuid,
+    );
+  if (!tmplocalAppPersistenceStoreController) {
+    throw new Error("beforeAll failed localAppPersistenceStoreController initialization!");
+  }
+  localAppPersistenceStoreController = tmplocalAppPersistenceStoreController;
+
+  return Promise.resolve();
+});
 
 let beforEachCount = 0;
 // ################################################################################################
-beforeEach(
-  async  () => {
-    beforEachCount++;
-    console.log("################################################### beforeEach start", beforEachCount);
-    await resetAndInitApplicationDeployment(
-      domainController,
-      applicationDeploymentMap,
-      selfApplicationDeploymentConfigurations
+beforeEach(async () => {
+  beforEachCount++;
+  console.log(
+    "################################################### beforeEach start",
+    beforEachCount,
+  );
+  await resetAndInitApplicationDeployment(
+    domainController,
+    applicationDeploymentMap,
+    selfApplicationDeploymentConfigurations,
+  );
+  console.log(
+    "################################################### beforeEach resetAndinitializeDeploymentCompositeAction",
+    beforEachCount,
+  );
+  const initResult: Action2ReturnType = await domainController.handleCompositeAction(
+    resetAndinitializeDeploymentCompositeAction(
+      selfApplicationLibrary.uuid,
+      deployment_Library_DO_NO_USE.uuid,
+      {
+        dataStoreType: "app", // TODO: comparison between deployment and selfAdminConfigurationDeployment
+        metaModel: defaultMiroirMetaModel,
+        selfApplication: selfApplicationLibrary as SelfApplication,
+        applicationModelBranch: selfApplicationModelBranchLibraryMasterBranch,
+        applicationVersion: selfApplicationVersionLibraryInitialVersion,
+      },
+      libraryEntitiesAndInstances,
+      defaultLibraryModelEnvironment.currentModel as any,
+    ),
+    applicationDeploymentMap,
+    defaultMiroirModelEnvironment,
+    {},
+  );
+  if (initResult.status !== "ok") {
+    throw new Error(
+      "beforeEach failed initialization! " +
+        beforEachCount +
+        " " +
+        JSON.stringify(initResult, null, 2),
     );
-    console.log("################################################### beforeEach resetAndinitializeDeploymentCompositeAction", beforEachCount);
-    const initResult:Action2ReturnType = await domainController.handleCompositeAction(
-      resetAndinitializeDeploymentCompositeAction(
-        selfApplicationLibrary.uuid,
-        deployment_Library_DO_NO_USE.uuid,
-        {
-          dataStoreType: "app", // TODO: comparison between deployment and selfAdminConfigurationDeployment
-          metaModel: defaultMiroirMetaModel,
-          selfApplication: selfApplicationLibrary as SelfApplication,
-          applicationModelBranch: selfApplicationModelBranchLibraryMasterBranch,
-          applicationVersion: selfApplicationVersionLibraryInitialVersion,
-        },
-        libraryEntitiesAndInstances,
-        defaultLibraryModelEnvironment.currentModel as any,
-      ),
-      applicationDeploymentMap,
-      defaultMiroirModelEnvironment,
-      {},
-    );
-    if (initResult.status !== "ok") {
-      throw new Error("beforeEach failed initialization! " + beforEachCount + " " + JSON.stringify(initResult, null, 2));
-    }
-    document.body.innerHTML = '';
-    console.log("################################################### beforeEach done", beforEachCount);
   }
-)
+  document.body.innerHTML = "";
+  console.log(
+    "################################################### beforeEach done",
+    beforEachCount,
+  );
+});
 
 // // ################################################################################################
 // afterEach(
@@ -367,8 +372,6 @@ beforeEach(
 //     console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Done deleteAndCloseApplicationDeployments")
 //   }
 // )
-
-
 
 // ##############################################################################################
 // ##############################################################################################
@@ -493,7 +496,6 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", async (
     );
   });
 
-  
   // ################################################################################################
   it("get Library Entities", async () => {
     await chainVitestSteps(
@@ -551,7 +553,7 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", async (
       ], ["author", "storageAccess", "conceptLevel"]).sort((a, b) => a.name.localeCompare(b.name)),
     );
   });
-  
+
   // // ################################################################################################
   // it("get Library Menus", async () => {
   //   await chainVitestSteps(
@@ -655,7 +657,7 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", async (
       ),
     );
   });
-  
+
   // ################################################################################################
   it("get Unique Authors from Books in Library with actionRuntimeTransformer", async () => {
     await chainVitestSteps(
@@ -714,7 +716,7 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", async (
       ]
     );
   });
-  
+
   // ################################################################################################
   it("get count books with actionRuntimeTransformer", async () => {
     await chainVitestSteps(
@@ -767,7 +769,7 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", async (
       // ["4441169e-0c22-4fbc-81b2-28c87cf48ab2","ce7b601d-be5f-4bc6-a5af-14091594046a","d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17"]
     );
   });
-  
+
   // ################################################################################################
   it("get count books by author uuid with actionRuntimeTransformer", async () => {
     await chainVitestSteps(
@@ -865,18 +867,26 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", async (
               },
             },
           },
-          applicationDeploymentMap
+          applicationDeploymentMap,
         );
-        console.log(expect.getState().currentTestName, "queryResult", JSON.stringify(queryResult, null, 2));
+        console.log(
+          expect.getState().currentTestName,
+          "queryResult",
+          JSON.stringify(queryResult, null, 2),
+        );
         return queryResult;
       },
       (a) =>
         ignorePostgresExtraAttributesOnObject((a as any).returnedDomainElement.publisher, [
-          "conceptLevel", "createdAt", "icon", "updatedAt",
+          "conceptLevel",
+          "createdAt",
+          "icon",
+          "updatedAt",
+          "parentDefinitionVersionUuid",
         ]),
       undefined, // name to give to result
       undefined,
-      publisher3
+      publisher3,
     );
   });
 
@@ -921,24 +931,44 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", async (
               },
             },
           },
-          applicationDeploymentMap
+          applicationDeploymentMap,
         );
-        console.log(expect.getState().currentTestName, "queryResult", JSON.stringify(queryResult, null, 2));
+        console.log(
+          expect.getState().currentTestName,
+          "queryResult",
+          JSON.stringify(queryResult, null, 2),
+        );
         return queryResult;
       },
       (a) =>
-        ignorePostgresExtraAttributesOnList((a as any).returnedDomainElement.booksOfAuthor.sort((a: any, b: any) => a.name.localeCompare(b.name)), [
-          "conceptLevel", "createdAt", "icon", "updatedAt", "year", "ISBN",
-        ]),
+        ignorePostgresExtraAttributesOnList(
+          (a as any).returnedDomainElement.booksOfAuthor.sort((a: any, b: any) =>
+            a.name.localeCompare(b.name),
+          ),
+          [
+            "conceptLevel",
+            "createdAt",
+            "icon",
+            "updatedAt",
+            "year",
+            "ISBN",
+            "parentDefinitionVersionUuid",
+          ],
+        ),
       undefined, // name to give to result
       undefined,
-      ignorePostgresExtraAttributesOnList([
-        book1,
-        book6,
-      ].sort((a, b) => a.name.localeCompare(b.name)) as any, [
-        "conceptLevel", "createdAt", "icon", "updatedAt", "year", "ISBN",
-      ])
-      
+      ignorePostgresExtraAttributesOnList(
+        [book1, book6].sort((a, b) => a.name.localeCompare(b.name)) as any,
+        [
+          "conceptLevel",
+          "createdAt",
+          "icon",
+          "updatedAt",
+          "year",
+          "ISBN",
+          "parentDefinitionVersionUuid",
+        ],
+      ),
     );
   });
 
@@ -1057,76 +1087,100 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", async (
       {},
       async () => {
         const applicationSection: ApplicationSection = "data";
-        const queryResult = await localAppPersistenceStoreController.handleBoxedQueryAction({
-          actionType: "runBoxedQueryAction",
-          endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-          payload: {
-            application: selfApplicationLibrary.uuid,
-            applicationSection: applicationSection,
-            query: {
-              queryType: "boxedQueryWithExtractorCombinerTransformer",
+        const queryResult = await localAppPersistenceStoreController.handleBoxedQueryAction(
+          {
+            actionType: "runBoxedQueryAction",
+            endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+            payload: {
               application: selfApplicationLibrary.uuid,
-              runAsSql,
-              extractors: {
-                book: {
-                  extractorOrCombinerType: "extractorByPrimaryKey",
-                  parentName: "Book",
-                  parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
-                  instanceUuid: "c6852e89-3c3c-447f-b827-4b5b9d830975",
+              applicationSection: applicationSection,
+              query: {
+                queryType: "boxedQueryWithExtractorCombinerTransformer",
+                application: selfApplicationLibrary.uuid,
+                runAsSql,
+                extractors: {
+                  book: {
+                    extractorOrCombinerType: "extractorByPrimaryKey",
+                    parentName: "Book",
+                    parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                    instanceUuid: "c6852e89-3c3c-447f-b827-4b5b9d830975",
+                  },
                 },
-              },
-              combiners: {
-                author: {
-                  extractorOrCombinerType: "combinerOneToOne",
-                  parentName: "Author",
-                  parentUuid: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
-                  objectReference: "book",
-                  AttributeOfObjectToCompareToReferenceUuid: "author",
-                },
-                booksOfAuthor: {
-                  extractorOrCombinerType: "combinerOneToMany",
-                  parentName: "Book",
-                  parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
-                  objectReference: "author",
-                  AttributeOfListObjectToCompareToReferenceUuid: "author",
+                combiners: {
+                  author: {
+                    extractorOrCombinerType: "combinerOneToOne",
+                    parentName: "Author",
+                    parentUuid: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+                    objectReference: "book",
+                    AttributeOfObjectToCompareToReferenceUuid: "author",
+                  },
+                  booksOfAuthor: {
+                    extractorOrCombinerType: "combinerOneToMany",
+                    parentName: "Book",
+                    parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                    objectReference: "author",
+                    AttributeOfListObjectToCompareToReferenceUuid: "author",
+                  },
                 },
               },
             },
-          }
-        }, applicationDeploymentMap);
+          },
+          applicationDeploymentMap,
+        );
         console.log("queryResult", JSON.stringify(queryResult, null, 2));
         return queryResult;
       },
       (a) => {
         const result = ignorePostgresExtraAttributesOnList(
-          (a as any).returnedDomainElement.booksOfAuthor.sort((a: any, b: any) => a.name.localeCompare(b.name)),
-          ["conceptLevel", "createdAt", "icon", "updatedAt", "year", "ISBN"],
+          (a as any).returnedDomainElement.booksOfAuthor.sort((a: any, b: any) =>
+            a.name.localeCompare(b.name),
+          ),
+          [
+            "conceptLevel",
+            "createdAt",
+            "icon",
+            "updatedAt",
+            "year",
+            "ISBN",
+            "parentDefinitionVersionUuid",
+          ],
         );
         return result;
       },
       undefined, // name to give to result
       undefined,
-      ignorePostgresExtraAttributesOnList([
-        {
-          author: "ce7b601d-be5f-4bc6-a5af-14091594046a",
-          conceptLevel: "Data",
-          name: "Le Pain et le Cirque",
-          parentName: "Book",
-          parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
-          publisher: "516a7366-39e7-4998-82cb-80199a7fa667",
-          uuid: "c6852e89-3c3c-447f-b827-4b5b9d830975",
-        },
-        {
-          author: "ce7b601d-be5f-4bc6-a5af-14091594046a",
-          conceptLevel: "Data",
-          name: "Et dans l'éternité je ne m'ennuierai pas",
-          parentName: "Book",
-          parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
-          publisher: "516a7366-39e7-4998-82cb-80199a7fa667",
-          uuid: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
-          year: 2014,
-        } as any,
-      ].sort((a, b) => a.name.localeCompare(b.name)), ["conceptLevel", "createdAt", "icon", "updatedAt", "year", "ISBN"])
+      ignorePostgresExtraAttributesOnList(
+        [
+          {
+            author: "ce7b601d-be5f-4bc6-a5af-14091594046a",
+            conceptLevel: "Data",
+            name: "Le Pain et le Cirque",
+            parentName: "Book",
+            parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+            publisher: "516a7366-39e7-4998-82cb-80199a7fa667",
+            uuid: "c6852e89-3c3c-447f-b827-4b5b9d830975",
+          },
+          {
+            author: "ce7b601d-be5f-4bc6-a5af-14091594046a",
+            conceptLevel: "Data",
+            name: "Et dans l'éternité je ne m'ennuierai pas",
+            parentName: "Book",
+            parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+            publisher: "516a7366-39e7-4998-82cb-80199a7fa667",
+            uuid: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
+            year: 2014,
+          } as any,
+        ].sort((a, b) => a.name.localeCompare(b.name)),
+        [
+          "conceptLevel",
+          "createdAt",
+          "icon",
+          "updatedAt",
+          "year",
+          "ISBN",
+          "parentDefinitionVersionUuid",
+        ],
+      ),
     );
   });
 
@@ -1172,7 +1226,7 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", async (
               },
             },
           },
-          applicationDeploymentMap
+          applicationDeploymentMap,
         );
         console.log("queryResult", JSON.stringify(queryResult, null, 2));
         return queryResult;
@@ -1185,6 +1239,7 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", async (
           "updatedAt",
           "year",
           "ISBN",
+          "parentDefinitionVersionUuid",
         ]),
       undefined, // name to give to result
       undefined,
@@ -1196,6 +1251,7 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", async (
         "updatedAt",
         "year",
         "ISBN",
+        "parentDefinitionVersionUuid",
       ]),
       // { author: "4441169e-0c22-4fbc-81b2-28c87cf48ab2" },
       // { author: "ce7b601d-be5f-4bc6-a5af-14091594046a" },
@@ -1268,7 +1324,6 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", async (
   //     // book1
   //   );
   // });
-
 
   // // ################################################################################################
   // TODO: fix template action types
@@ -1355,5 +1410,4 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", async (
   //       },
   //   );
   // });
-  
 });

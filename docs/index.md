@@ -120,6 +120,11 @@ Welcome to the Miroir Framework documentation. This guide will help you find the
 - [Deployment Guide](guides/deployment.md) - Production deployment
 - [Desktop Application](guides/desktop-app.md) - Electron-based deployment
 
+### Testing
+- [Testing Reference](reference/testing.md) - Full reference: all env vars, store backends, programmatic API
+- [Developer Testing Guide](guides/developer/testing.md) - Concepts, CLI, UI runner, writing tests
+- [Contributor Testing Guidelines](contributing/testing.md) - Commands for contributors
+
 ### API Reference
 - [API Overview](reference/api/) - Complete API documentation
 - [Entity & EntityDefinition](reference/api/entity.md) - Data model API
@@ -176,4 +181,4 @@ Welcome to the Miroir Framework documentation. This guide will help you find the
 
 ---
 
-*Last updated: January 2026*
+*Last updated: June 2026*

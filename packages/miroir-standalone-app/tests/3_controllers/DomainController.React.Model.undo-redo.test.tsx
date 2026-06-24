@@ -1,3 +1,4 @@
+import React from "react";
 import { act, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect } from 'vitest';
@@ -44,8 +45,8 @@ import {
   DisplayLoadingInfo,
   renderWithProviders,
   selfApplicationDeploymentConfigurations,
-} from "../../src/miroir-fwk/4-tests/tests-utils.js";
-import { TestUtilsTableComponent } from "../utils/TestUtilsTableComponent.js";
+} from "../../src/miroir-fwk/4-tests/tests-utils";
+import { TestUtilsTableComponent } from "../utils/TestUtilsTableComponent";
 
 import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
 import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
@@ -236,8 +237,8 @@ describe.sequential(
             container
           } = renderWithProviders(
             <TestUtilsTableComponent
-              entity={entityEntity}
-              entityDefinition={entityDefinitionEntity}
+              entity={entityEntity as Entity}
+              entityDefinition={entityDefinitionEntity as EntityDefinition}
               DisplayLoadingInfo={displayLoadingInfo}
               application={selfApplicationLibrary.uuid}
               applicationDeploymentMap={applicationDeploymentMap}
@@ -253,10 +254,10 @@ describe.sequential(
               async () => {
                 await domainController.handleAction(
                   {
-                    // actionType: "modelAction",
                     actionType: "rollback",
                     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                     payload: {
+                      application: selfApplicationMiroir.uuid,
                     },
                   },
                   applicationDeploymentMap,
@@ -264,12 +265,10 @@ describe.sequential(
                 );
                 await domainController.handleAction(
                   {
-                    // actionType: "modelAction",
                     actionType: "rollback",
                     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                     payload: {
                       application: selfApplicationLibrary.uuid,
-                      // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
                     },
                   },
                   applicationDeploymentMap,
@@ -297,37 +296,34 @@ describe.sequential(
   
           // ##########################################################################################################
           console.log('Add 2 entity definitions then undo one then commit step 2: adding entities, they must then be present in the local cache Entity list.')
-          {
+          const createAuthorAction: DomainAction = {
+            actionType: "createEntity",
+            endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+            payload: {
+              application: selfApplicationLibrary.uuid,
+              entities: [
+                {
+                  entity: entityAuthor as Entity,
+                  entityDefinition: entityDefinitionAuthor as EntityDefinition,
+                },
+              ],
+            },
+          };
+          const createBookAction: DomainAction = {
+            actionType: "createEntity",
+            endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+            payload: {
+              application: selfApplicationLibrary.uuid,
+              entities: [
+                {
+                  entity: entityBook as Entity,
+                  entityDefinition: entityDefinitionBook as EntityDefinition,
+                },
+              ],
+            },
+          };
 
-            const createAuthorAction: DomainAction = {
-              // actionType: "modelAction",
-              actionType: "createEntity",
-              endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-              payload: {
-                application: selfApplicationLibrary.uuid,
-                // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
-                entities: [
-                  {
-                    entity: entityAuthor as Entity,
-                    entityDefinition: entityDefinitionAuthor as EntityDefinition,
-                  },
-                ],
-              },
-            };
-            const createBookAction: DomainAction = {
-              actionType: "createEntity",
-              endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-              payload: {
-                application: selfApplicationLibrary.uuid,
-                entities: [
-                  {
-                    entity: entityBook as Entity,
-                    entityDefinition: entityDefinitionBook as EntityDefinition,
-                  },
-                ],
-              },
-            };
-    
+          {
             await act(
               async () => {
                 await domainController.handleAction(
@@ -345,11 +341,14 @@ describe.sequential(
     
             await act(()=>user.click(screen.getByRole('button')));
     
+            const transaction = domainController.currentTransaction();
             console.log(
               "domainController.currentTransaction()",
-              JSON.stringify(domainController.currentTransaction(), null, 2),
+              JSON.stringify(transaction, null, 2),
             );
-            expect(domainController.currentTransaction().length).toEqual(2);
+            expect(transaction.length).toEqual(2);
+            expect(transaction[0]).toEqual(createAuthorAction);
+            expect(transaction[1]).toEqual(createBookAction);
             // transaction contents comparison depends on implementation
             // expect(
             //   (domainController.currentTransaction()[0].update as WrappedTransactionalEntityUpdateWithCUDUpdate)
@@ -360,17 +359,16 @@ describe.sequential(
             //     .modelEntityUpdate
             // ).toEqual(createBookAction.update.modelEntityUpdate);
     
+            // do not use UI to determine transaction contents
             await waitFor(
               () => {
-                // getAllByRole("step:1")
-                // getAllByRole(/step:2/)
                 getAllByRole("step:2")
               },
             ).then(
               ()=> {
-                // screen.debug(undefined, Infinity); // Prints entire DOM with no size limit
-                expect(screen.queryByText(new RegExp(`${entityAuthor.uuid}`,'i'))).toBeTruthy();
-                expect(screen.queryByText(new RegExp(`${entityBook.uuid}`,'i'))).toBeTruthy();
+                screen.debug(undefined, Infinity); // Prints entire DOM with no size limit
+                expect(screen.queryByText(new RegExp(`"${entityAuthor.uuid}"`,'i'))).toBeTruthy();
+                expect(screen.queryByText(new RegExp(`"${entityBook.uuid}"`,'i'))).toBeTruthy();
               }
             );
           }
@@ -393,13 +391,11 @@ describe.sequential(
     
             await act(()=>user.click(screen.getByRole('button')));
     
+            const transaction = domainController.currentTransaction();
+            console.log("domainController.currentTransaction()", JSON.stringify(transaction, null, 2));
+            expect(transaction.length).toEqual(1);
+            expect(transaction[0]).toEqual(createAuthorAction);
             // console.log("domainController.currentTransaction()", domainController.currentTransaction());
-            expect(domainController.currentTransaction().length).toEqual(1);
-            // transaction contents comparison depends on implementation
-            // expect(
-            //   (domainController.currentTransaction()[0].update as WrappedTransactionalEntityUpdateWithCUDUpdate)
-            //     .modelEntityUpdate
-            // ).toEqual(createAuthorAction.update.modelEntityUpdate);
     
             await waitFor(
               () => {
@@ -408,8 +404,8 @@ describe.sequential(
               },
             ).then(
               ()=> {
-                expect(getByText(new RegExp(`${entityAuthor.uuid}`,'i'))).toBeTruthy() // Author Entity
-                expect(screen.queryByText(new RegExp(`${entityBook.uuid}`,'i'))).toBeNull() // Book entity
+                expect(getByText(new RegExp(`"${entityAuthor.uuid}"`,'i'))).toBeTruthy() // Author Entity
+                expect(screen.queryByText(new RegExp(`"${entityBook.uuid}"`,'i'))).toBeNull() // Book entity
               }
             );
           }
@@ -425,7 +421,6 @@ describe.sequential(
                     endpoint: "71c04f8e-c687-4ea7-9a19-bc98d796c389",
                     payload: {
                       application: selfApplicationLibrary.uuid,
-                      // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
                     }
                   },
                   applicationDeploymentMap,  defaultMiroirModelEnvironment
@@ -435,17 +430,11 @@ describe.sequential(
     
             await act(()=>user.click(screen.getByRole('button')));
     
-            console.log("domainController.currentTransaction()", domainController.currentTransaction());
-            expect(domainController.currentTransaction().length).toEqual(2);
-            // transaction contents comparison depends on implementation
-            // expect(
-            //   (domainController.currentTransaction()[0].update as WrappedTransactionalEntityUpdateWithCUDUpdate)
-            //     .modelEntityUpdate
-            // ).toEqual(createAuthorAction.update.modelEntityUpdate);
-            // expect(
-            //   (domainController.currentTransaction()[1].update as WrappedTransactionalEntityUpdateWithCUDUpdate)
-            //     .modelEntityUpdate
-            // ).toEqual(createBookAction.update.modelEntityUpdate);
+            const transaction = domainController.currentTransaction();
+            console.log("domainController.currentTransaction()", JSON.stringify(transaction, null, 2));
+            expect(transaction.length).toEqual(2);
+            expect(transaction[0]).toEqual(createAuthorAction);
+            expect(transaction[1]).toEqual(createBookAction);
     
             await waitFor(
               () => {
@@ -454,8 +443,8 @@ describe.sequential(
               },
             ).then(
               ()=> {
-                expect(getByText(new RegExp(`${entityAuthor.uuid}`,'i'))).toBeTruthy() // Author Entity
-                expect(getByText(new RegExp(`${entityBook.uuid}`,'i'))).toBeTruthy() // Book Entity
+                expect(getByText(new RegExp(`"${entityAuthor.uuid}"`,'i'))).toBeTruthy() // Author Entity
+                expect(getByText(new RegExp(`"${entityBook.uuid}"`,'i'))).toBeTruthy() // Book Entity
               }
             );
           }
@@ -471,7 +460,6 @@ describe.sequential(
                     endpoint: "71c04f8e-c687-4ea7-9a19-bc98d796c389",
                     payload: {
                       application: selfApplicationLibrary.uuid,
-                      // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
                     }
                   },
                   applicationDeploymentMap,  defaultMiroirModelEnvironment
@@ -481,7 +469,6 @@ describe.sequential(
                   endpoint: "71c04f8e-c687-4ea7-9a19-bc98d796c389",
                   payload: {
                     application: selfApplicationLibrary.uuid,
-                    // deploymentUuid:deployment_Library_DO_NO_USE.uuid,
                   }
                 }, applicationDeploymentMap, defaultMiroirModelEnvironment);
                 await domainController.handleAction({
@@ -489,7 +476,6 @@ describe.sequential(
                   endpoint: "71c04f8e-c687-4ea7-9a19-bc98d796c389",
                   payload: {
                     application: selfApplicationLibrary.uuid,
-                    // deploymentUuid:deployment_Library_DO_NO_USE.uuid,
                   }
                 }, applicationDeploymentMap, defaultMiroirModelEnvironment);
               }
@@ -498,7 +484,10 @@ describe.sequential(
             await act(()=>user.click(screen.getByRole('button')));
         
             // console.log("domainController.currentTransaction()", domainController.currentTransaction());
-            expect(domainController.currentTransaction().length).toEqual(1);
+            const transaction = domainController.currentTransaction();
+            console.log("domainController.currentTransaction()", JSON.stringify(transaction, null, 2));
+            expect(transaction.length).toEqual(1);
+            expect(transaction[0]).toEqual(createAuthorAction);
             // transaction contents comparison depends on implementation
             // expect((domainController.currentTransaction()[0].update as WrappedTransactionalEntityUpdateWithCUDUpdate).modelEntityUpdate).toEqual(createAuthorAction.update.modelEntityUpdate);
         
@@ -509,8 +498,8 @@ describe.sequential(
               },
             ).then(
               ()=> {
-                expect(getByText(new RegExp(`${entityAuthor.uuid}`,'i'))).toBeTruthy() // Author Entity
-                expect(screen.queryByText(new RegExp(`${entityBook.uuid}`,'i'))).toBeNull() // Book entity
+                expect(getByText(new RegExp(`"${entityAuthor.uuid}"`,'i'))).toBeTruthy() // Author Entity
+                expect(screen.queryByText(new RegExp(`"${entityBook.uuid}"`,'i'))).toBeNull() // Book entity
               }
             );
             // putting state back to where it was when test section started
@@ -586,10 +575,10 @@ describe.sequential(
         
             await act(()=>user.click(screen.getByRole('button')));
         
+            const transaction = domainController.currentTransaction();
             // console.log("domainController.currentTransaction()", domainController.currentTransaction());
-            expect(domainController.currentTransaction().length).toEqual(1);
-            // transaction contents comparison depends on implementation
-            // expect((domainController.currentTransaction()[0].update as WrappedTransactionalEntityUpdateWithCUDUpdate).modelEntityUpdate).toEqual(createAuthorAction.update.modelEntityUpdate);
+            expect(transaction.length).toEqual(1);
+            expect(transaction[0]).toEqual(createAuthorAction);
         
             await waitFor(
               () => {
@@ -642,23 +631,16 @@ describe.sequential(
             await act(()=>user.click(screen.getByRole('button')));
         
             // console.log("domainController.currentTransaction()", domainController.currentTransaction());
-            expect(domainController.currentTransaction().length).toEqual(2);
-            // transaction contents comparison depends on implementation
-            // expect(
-            //   (domainController.currentTransaction()[0].update as WrappedTransactionalEntityUpdateWithCUDUpdate)
-            //     .modelEntityUpdate
-            // ).toEqual(createAuthorAction.update.modelEntityUpdate);
-            // expect(
-            //   (domainController.currentTransaction()[1].update as WrappedTransactionalEntityUpdateWithCUDUpdate)
-            //     .modelEntityUpdate
-            // ).toEqual(createBookAction.update.modelEntityUpdate);
+            const transaction = domainController.currentTransaction();
+            expect(transaction.length).toEqual(2);
+            expect(transaction[0]).toEqual(createAuthorAction);
+            expect(transaction[1]).toEqual(createBookAction);
   
             await act(
               async () => {
                 await domainController.handleAction(
                   {
                     actionType: "commit",
-                    // actionType: "modelAction",
                     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                     payload: {
                       application: selfApplicationLibrary.uuid,
@@ -673,7 +655,6 @@ describe.sequential(
     
             await waitFor(
               () => {
-                // getAllByRole(/step:7/)
                 getAllByRole("step:7")
               },
             ).then(
