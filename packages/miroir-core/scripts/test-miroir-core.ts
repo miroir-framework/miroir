@@ -5,6 +5,7 @@ import { fileURLToPath } from "node:url";
 
 import {
   miroirTestCliConfigToEnv,
+  miroirCoreTestVitestEntry,
   parseMiroirTestCliConfig,
 } from "../src/5_tests/parseMiroirTestCliConfig";
 
@@ -29,7 +30,7 @@ const vitestArgs = [
   "run",
   "--poolOptions.forks.singleFork",
   "--reporter=verbose",
-  "tests/miroir-core-tests.unit.test.ts",
+  `tests/${miroirCoreTestVitestEntry(config.executionMode)}.ts`,
 ];
 
 const result = spawnSync("npx", vitestArgs, {

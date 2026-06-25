@@ -19,7 +19,6 @@ function baseContext(overrides: {
   config?: Partial<{
     suiteKeys: string[];
     executionMode: "unit" | "integration";
-    vitestEntry: "miroir-core-tests.integ.test";
     filter?: Record<string, string[]>;
   }>;
 }) {
@@ -33,7 +32,6 @@ function baseContext(overrides: {
     config: {
       suiteKeys: ["miroirCoreTransformers"],
       executionMode: "integration" as const,
-      vitestEntry: "miroir-core-tests.integ.test" as const,
       filter: undefined,
       ...overrides.config,
     },

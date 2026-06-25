@@ -64,7 +64,7 @@ import { cleanLevel, packageName } from "./constants.js";
 import { setupMiroirTest } from "../../src/miroir-fwk/4-tests/setupMiroirTest.js";
 
 
-const env:any = (import.meta as any).env
+const env:any = process.env
 
 const myConsoleLog = (...args: any[]) => console.log(fileName, ...args);
 const fileName = "DomainController.React.Model.test";

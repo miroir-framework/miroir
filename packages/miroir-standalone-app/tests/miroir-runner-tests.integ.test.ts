@@ -1,4 +1,5 @@
 import "@testing-library/jest-dom";
+import * as vitest from "vitest";
 import { expect } from "vitest";
 
 import {
@@ -54,5 +55,5 @@ MiroirLoggerFactory.startRegisteredLoggers(
 log.info("miroir-runner-tests.integ started", JSON.stringify(config, null, 2));
 
 if (config.suiteKeys.length > 0) {
-  await runMiroirRunnerTestsFromCLI(runMiroirTests, config, { miroirConfig });
+  await runMiroirRunnerTestsFromCLI(runMiroirTests, vitest, config, miroirConfig );
 }

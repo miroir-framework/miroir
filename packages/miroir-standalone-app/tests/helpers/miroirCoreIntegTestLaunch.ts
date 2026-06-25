@@ -4,7 +4,7 @@ import path from "node:path";
 import {
   listMiroirTestSuiteKeys,
   parseMiroirTestCliArgs,
-  type MiroirTestCliParseResult,
+  type MiroirTestCliConfig,
 } from "miroir-core";
 
 import type { TestSessionForIntegOptions } from "./TestSessionForInteg.js";
@@ -15,7 +15,7 @@ const VALID_ADMIN_STORE_TYPES = ["filesystem", "sql", "indexedDb", "mongodb", "b
 export type MiroirCoreIntegTestLaunchContext = {
   env: NodeJS.ProcessEnv;
   argv: string[];
-  config: MiroirTestCliParseResult;
+  config: MiroirTestCliConfig;
   testSessionOptions: TestSessionForIntegOptions;
 };
 

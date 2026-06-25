@@ -10,10 +10,18 @@ export type MiroirTestCliConfig = {
   filter?: MiroirTestRunFilter;
 };
 
-export type MiroirTestCliParseResult = MiroirTestCliConfig & {
-  /** Vitest entry file to run for the selected execution mode. */
-  vitestEntry: "miroir-core-tests.unit.test" | "miroir-core-tests.integ.test";
-};
+export type MiroirCoreTestVitestEntry =
+  | "miroir-core-tests.unit.test"
+  | "miroir-core-tests.integ.test";
+
+/** Vitest entry file basename (without `.ts`) for miroir-core tests. */
+export function miroirCoreTestVitestEntry(
+  executionMode: MiroirTestExecutionMode,
+): MiroirCoreTestVitestEntry {
+  return executionMode === "integration"
+    ? "miroir-core-tests.integ.test"
+    : "miroir-core-tests.unit.test";
+}
 
 export const ALL_SUITES_JOKER = "*";
 
@@ -135,18 +143,12 @@ export function resolveMiroirTestCliConfigFromPartial(
 export function parseMiroirTestCliConfig(
   env: NodeJS.ProcessEnv,
   argv: string[],
-): MiroirTestCliParseResult {
-  const config = resolveMiroirTestCliConfigFromPartial(
+): MiroirTestCliConfig {
+  return resolveMiroirTestCliConfigFromPartial(
     env,
     parseMiroirTestCliArgs(argv),
     listMiroirTestSuiteKeys(),
   );
-
-  return {
-    ...config,
-    vitestEntry:
-      config.executionMode === "integration" ? "miroir-core-tests.integ.test" : "miroir-core-tests.unit.test",
-  };
 }
 
 // ################################################################################################

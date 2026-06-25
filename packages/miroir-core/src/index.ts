@@ -1036,7 +1036,7 @@ export {
 } from "./0_interfaces/4-services/TestInterface.js";
 
 export {
-  MiroirRunnerTestCliParseResult,
+  MIROIR_RUNNER_TEST_VITEST_ENTRY,
   parseMiroirRunnerTestCliConfig,
 } from "./5_tests/parseMiroirRunnerTestCLIConfig";
 export {
@@ -1047,18 +1047,21 @@ export {
 } from "./5_tests/miroirCoreTestSuiteRegistry.js";
 export {
   runMiroirCoreTestsFromCLI,
-  type MiroirTestVitestHarness,
   type RunMiroirCoreTestsFromCLIOptions,
 } from "./5_tests/runMiroirCoreTestsFromCLI.js";
 export {
+  type VitestNamespace,
+} from "./5_tests/MiroirTestTools.js";
+export {
   miroirTestCliConfigToEnv,
+  miroirCoreTestVitestEntry,
   parseMiroirTestCliArgs,
   parseMiroirTestCliConfig,
   resolveMiroirTestSuiteKeys,
   resolveMiroirTestCliConfigFromPartial,
   splitSuiteKeys,
+  type MiroirCoreTestVitestEntry,
   type MiroirTestCliConfig,
-  type MiroirTestCliParseResult,
 } from "./5_tests/parseMiroirTestCliConfig.js";
 // // Bootstrap-only schema fixtures (legacy test entities removed from deployment)
 // export { default as entityDefinitionTransformerTest } from "./0_interfaces/1_core/bootstrapJzodSchemas/fixtures/entityDefinitionTransformerTest.json" assert { type: "json" };

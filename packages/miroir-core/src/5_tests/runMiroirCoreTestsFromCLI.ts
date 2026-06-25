@@ -1,19 +1,17 @@
-import { defaultMetaModelEnvironment } from "../1_core/Model.js";
 import type { MiroirTestSuite } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+import { defaultMetaModelEnvironment } from "../1_core/Model.js";
 import { MiroirActivityTracker } from "../3_controllers/MiroirActivityTracker.js";
 import { MiroirEventService } from "../3_controllers/MiroirEventService.js";
+import { loadMiroirCoreTestSuite } from "./miroirCoreTestSuiteRegistry.js";
 import {
-  runMiroirTests,
   type MiroirTestExecutionEnvironment,
   type MiroirTestExecutionOptions,
-  type RunnerTestSessionInterface,
   type RunMiroirTests,
+  type RunnerTestSessionInterface,
+  type VitestNamespace
 } from "./MiroirTestTools.js";
 import { displayMiroirTestResults } from "./MiroirTransformerTestTools.js";
 import type { MiroirTestCliConfig } from "./parseMiroirTestCliConfig.js";
-import { loadMiroirCoreTestSuite } from "./miroirCoreTestSuiteRegistry.js";
-
-export type MiroirTestVitestHarness = Parameters<RunMiroirTests["_runMiroirTestSuite"]>[0];
 
 export type RunMiroirCoreTestsFromCLIOptions = {
   executionEnvironment?: MiroirTestExecutionEnvironment;
@@ -22,14 +20,16 @@ export type RunMiroirCoreTestsFromCLIOptions = {
 
 // ################################################################################################
 export async function runMiroirCoreTestsFromCLI(
-  vitestHarness: MiroirTestVitestHarness,
+  runMiroirTests: RunMiroirTests,
+  vitest: VitestNamespace,
   config: MiroirTestCliConfig,
-  options: RunMiroirCoreTestsFromCLIOptions = {},
+  executionEnvironment?: MiroirTestExecutionEnvironment,
+  testSession?: RunnerTestSessionInterface,
 ): Promise<void> {
   const miroirActivityTracker = new MiroirActivityTracker();
   new MiroirEventService(miroirActivityTracker);
 
-  if (config.executionMode === "integration" && !options.executionEnvironment) {
+  if (config.executionMode === "integration" && !executionEnvironment) {
     throw new Error(
       "runMiroirCoreTestsFromCLI: executionEnvironment is required when executionMode is integration",
     );
@@ -39,7 +39,7 @@ export async function runMiroirCoreTestsFromCLI(
     config.executionMode === "integration"
       ? {
           executionMode: config.executionMode as "integration",
-          executionEnvironment: options.executionEnvironment as MiroirTestExecutionEnvironment,
+          executionEnvironment: executionEnvironment as MiroirTestExecutionEnvironment,
         }
       : {
           executionMode: config.executionMode as "unit",
@@ -47,15 +47,15 @@ export async function runMiroirCoreTestsFromCLI(
 
   const loadedSuites: { suiteKey: string; definition: MiroirTestSuite }[] = [];
 
-  if (options.testSession) {
-    vitestHarness.beforeEach(async () => {
-      await options.testSession!.beforeEach();
+  if (testSession) {
+    vitest.beforeEach(async () => {
+      await testSession!.beforeEach();
     });
   }
 
-  vitestHarness.afterAll(async () => {
-    if (options.testSession) {
-      await options.testSession.teardown();
+  vitest.afterAll(async () => {
+    if (testSession) {
+      await testSession.teardown();
     }
     if (!loadedSuites.length) {
       return;
@@ -76,7 +76,7 @@ export async function runMiroirCoreTestsFromCLI(
       definition: miroirTestSuite as MiroirTestSuite,
     });
     await runMiroirTests._runMiroirTestSuite(
-      vitestHarness,
+      vitest,
       [suiteKey],
       miroirTestSuite,
       config.filter,

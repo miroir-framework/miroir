@@ -8,9 +8,7 @@ import { applyRunnerTestProfile } from "./runnerTestProfiles.js";
 import { miroirTest_runner_library } from "miroir-test-app_deployment-library";
 import type { MiroirTestSuite } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 
-export type MiroirRunnerTestCliParseResult = MiroirTestCliConfig & {
-  vitestEntry: "miroir-runner-tests.integ.test";
-};
+export const MIROIR_RUNNER_TEST_VITEST_ENTRY = "miroir-runner-tests.integ.test" as const;
 
 function listRunnerTestSuiteKeys(): string[] {
   return Object.keys(miroirTest_runner_library.definition as MiroirTestSuite);
@@ -20,7 +18,7 @@ function listRunnerTestSuiteKeys(): string[] {
 export function parseMiroirRunnerTestCliConfig(
   env: NodeJS.ProcessEnv,
   argv: string[],
-): MiroirRunnerTestCliParseResult {
+): MiroirTestCliConfig {
   applyRunnerTestProfile(parseProfileArg(argv));
 
   const config = resolveMiroirTestCliConfigFromPartial(
@@ -33,8 +31,5 @@ export function parseMiroirRunnerTestCliConfig(
     throw new Error("miroir-standalone-app runner tests require --mode integ");
   }
 
-  return {
-    ...config,
-    vitestEntry: "miroir-runner-tests.integ.test",
-  };
+  return config;
 }

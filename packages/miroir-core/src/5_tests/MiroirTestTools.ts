@@ -1,6 +1,6 @@
 // ONLY A DEV DEPENDENCY! USED FOR THE TYPE ONLY, PRUNED BY THE TRANSPILER
 import * as vitest from "vitest";
-type VitestNamespace = typeof vitest;
+export type VitestNamespace = typeof vitest;
 
 
 import type {

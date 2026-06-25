@@ -3,12 +3,18 @@ import { describe, expect, it } from "vitest";
 import { listMiroirTestSuiteKeys } from "../../src/5_tests/miroirCoreTestSuiteRegistry";
 import {
   miroirTestCliConfigToEnv,
+  miroirCoreTestVitestEntry,
   parseMiroirTestCliArgs,
   parseMiroirTestCliConfig,
   resolveMiroirTestSuiteKeys,
 } from "../../src/5_tests/parseMiroirTestCliConfig";
 
 describe("parseMiroirTestCliConfig (Phase 2)", () => {
+  it("miroirCoreTestVitestEntry follows execution mode", () => {
+    expect(miroirCoreTestVitestEntry("unit")).toBe("miroir-core-tests.unit.test");
+    expect(miroirCoreTestVitestEntry("integration")).toBe("miroir-core-tests.integ.test");
+  });
+
   it("reads suite keys and mode from env", () => {
     const config = parseMiroirTestCliConfig(
       {
@@ -19,7 +25,7 @@ describe("parseMiroirTestCliConfig (Phase 2)", () => {
     );
     expect(config.suiteKeys).toEqual(["mergePositionBased", "tools"]);
     expect(config.executionMode).toBe("unit");
-    expect(config.vitestEntry).toBe("miroir-core-tests.unit.test");
+    expect(miroirCoreTestVitestEntry(config.executionMode)).toBe("miroir-core-tests.unit.test");
   });
 
   it("argv overrides env", () => {
@@ -32,7 +38,7 @@ describe("parseMiroirTestCliConfig (Phase 2)", () => {
     );
     expect(config.suiteKeys).toEqual(["mergePositionBased"]);
     expect(config.executionMode).toBe("integration");
-    expect(config.vitestEntry).toBe("miroir-core-tests.integ.test");
+    expect(miroirCoreTestVitestEntry(config.executionMode)).toBe("miroir-core-tests.integ.test");
   });
 
   it("parses filter JSON from env and argv", () => {

@@ -7,6 +7,7 @@ import {
   parseMiroirTestCliArgs,
   resolveMiroirTestCliConfigFromPartial,
   runMiroirCoreTestsFromCLI,
+  runMiroirTests,
 } from "miroir-core";
 import { assertMiroirCoreIntegTestLaunchReady } from "./helpers/miroirCoreIntegTestLaunch.js";
 import {
@@ -17,14 +18,11 @@ import {
 ConfigurationService.configurationService.registerTestImplementation({ expect: expect as any });
 
 const argv = process.argv.slice(2);
-const config = {
-  ...resolveMiroirTestCliConfigFromPartial(
-    process.env,
-    parseMiroirTestCliArgs(argv, { integModeAlias: true }),
-    listMiroirTestSuiteKeys(),
-  ),
-  vitestEntry: "miroir-core-tests.integ.test" as const,
-};
+const config = resolveMiroirTestCliConfigFromPartial(
+  process.env,
+  parseMiroirTestCliArgs(argv, { integModeAlias: true }),
+  listMiroirTestSuiteKeys(),
+);
 const testSessionOptions = resolveTestSessionForIntegOptionsFromEnv(process.env);
 
 assertMiroirCoreIntegTestLaunchReady({
@@ -37,8 +35,11 @@ assertMiroirCoreIntegTestLaunchReady({
 if (config.suiteKeys.length > 0) {
   const testSession = new TestSessionForInteg(testSessionOptions);
   const executionEnvironment = await testSession.initSession();
-  await runMiroirCoreTestsFromCLI(vitest, config, {
+  await runMiroirCoreTestsFromCLI(
+    runMiroirTests, 
+    vitest,
+    config,
     executionEnvironment,
     testSession,
-  });
+  );
 }

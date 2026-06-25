@@ -5,6 +5,8 @@ import { fileURLToPath } from "node:url";
 
 import {
   miroirTestCliConfigToEnv,
+  miroirCoreTestVitestEntry,
+  MIROIR_RUNNER_TEST_VITEST_ENTRY,
   parseMiroirRunnerTestCliConfig,
   parseMiroirTestCliArgs,
   parseMiroirTestCliConfig,
@@ -45,7 +47,7 @@ function resolveVitestEntry(): { vitestEntry: string; spawnEnv: NodeJS.ProcessEn
       );
     }
     return {
-      vitestEntry: "miroir-core-tests.integ.test",
+      vitestEntry: miroirCoreTestVitestEntry(coreConfig.executionMode),
       spawnEnv: { ...env, ...miroirTestCliConfigToEnv(coreConfig) },
     };
   }
@@ -62,7 +64,7 @@ function resolveVitestEntry(): { vitestEntry: string; spawnEnv: NodeJS.ProcessEn
     runnerEnv.MIROIR_TEST_FILTER = JSON.stringify(runnerConfig.filter);
   }
   return {
-    vitestEntry: runnerConfig.vitestEntry,
+    vitestEntry: MIROIR_RUNNER_TEST_VITEST_ENTRY,
     spawnEnv: runnerEnv,
   };
 }
