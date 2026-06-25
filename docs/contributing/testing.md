@@ -11,7 +11,10 @@ npm run build -w miroir-test-app_deployment-miroir
 npm run devBuild -w miroir-core   # includes generated types
 ```
 
-Integration tests need a reachable store. The default is Postgres at `192.168.1.160:5432`. Other backends (filesystem, IndexedDB, MongoDB) are supported via `MIROIR_TEST_APP_STORE_TYPE`.
+Integration tests need a reachable store when using SQL/ MongoDB configs:
+
+- **MiroirTest integ** (`testMiroir`): configure via `MIROIR_TEST_*` (default Postgres host `localhost`).
+- **App-stack integ** (`testByFile`): configure via `miroirConfig.test-*.json` files and `VITE_MIROIR_TEST_CONFIG_FILENAME`. Check `filesystemDeploymentRootDirectory` in the chosen config matches your machine.
 
 ---
 
@@ -33,14 +36,14 @@ npm run testMiroir -w miroir-core -- --suites mustache --mode unit
 MIROIR_TEST_MODE=unit npm run testMiroir -w miroir-core
 ```
 
-### Integration (requires a store)
+### MiroirTest integration (`testMiroir`)
 
-Integration runs in `miroir-standalone-app`, not `miroir-core`:
+Runs in `miroir-standalone-app`, not `miroir-core`:
 
 ```bash
 # Default: sql test application + filesystem admin
 MIROIR_TEST_SUITES=miroirCoreTransformers MIROIR_TEST_MODE=integ \
-  MIROIR_TEST_POSTGRES_HOST=192.168.1.160 \
+  MIROIR_TEST_POSTGRES_HOST=localhost \
   npm run testMiroir -w miroir-standalone-app
 
 # Filesystem test application (no Postgres)
@@ -50,7 +53,35 @@ MIROIR_TEST_SUITES=miroirCoreTransformers MIROIR_TEST_MODE=integ \
   npm run testMiroir -w miroir-standalone-app
 ```
 
-See [reference/testing.md](../reference/testing.md#running-integration-tests) for all store backend options.
+See [reference/testing.md](../reference/testing.md#running-miroirtest-integration-tests-testmiroir) for all `MIROIR_TEST_*` options.
+
+### App-stack integration (`testByFile`)
+
+DomainController, persistence-store, and extractor tests use JSON config files:
+
+```bash
+# DomainController data CRUD (emulated server + Postgres)
+VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-sql.json \
+VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_DomainController_debug.json \
+npm run testByFile -w miroir-standalone-app -- DomainController.integ.Data
+
+# All DomainController suites
+VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-sql.json \
+VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_warn.json \
+npm run testByFile -w miroir-standalone-app -- DomainController.integ
+
+# Persistence store controller
+VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-sql.json \
+VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_warn.json \
+npm run testByFile -w miroir-standalone-app -- PersistenceStoreController.integ
+
+# Extractor runner (IndexedDB example)
+VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-indexedDb.json \
+VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_warn.json \
+npm run testByFile -w miroir-standalone-app -- ExtractorPersistenceStoreRunner.integ
+```
+
+Full catalogue: [reference/testing.md](../reference/testing.md#running-app-stack-integration-tests-testbyfile).
 
 ### Per-file vitest
 
@@ -102,7 +133,7 @@ VITE_TEST_MODE=true npx vitest run tests/4_services/miroirTest.schema.unit.test.
 
 | File | Role |
 |------|------|
-| `src/5_tests/miroirCoreTestSuiteRegistry.ts` | Registry key → deployment export (41 suites) |
+| `src/5_tests/miroirCoreTestSuiteRegistry.ts` | Registry key → deployment export (35 suites) |
 | `src/5_tests/parseMiroirTestCliConfig.ts` | CLI/env parsing for `MIROIR_TEST_*` vars |
 | `src/5_tests/runMiroirCoreTestsFromCLI.ts` | Main entry for both vitest files |
 | `src/5_tests/MiroirTestTools.ts` | Unified runner dispatching by test type |
@@ -138,12 +169,13 @@ Do **not** modify `UnitTestTools.ts` or `TestTools.ts` for new features — exte
 ## Debugging
 
 ```bash
-# Verbose single file
+# MiroirTest unit — verbose
 npm run testByFile -w miroir-core -- miroir-core-tests.unit.test
 
-# With domain logging (when tests touch DomainController)
-VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_DomainController_debug \
-  npm run testByFile -w miroir-core -- miroir-core-tests.unit.test
+# DomainController integ — with debug logging
+VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-sql.json \
+VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_DomainController_debug.json \
+npm run testByFile -w miroir-standalone-app -- DomainController.integ.Data
 ```
 
 Activity tracking results are printed via `displayMiroirTestResults` after each suite.

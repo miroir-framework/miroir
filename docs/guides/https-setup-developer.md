@@ -131,17 +131,19 @@ Electron uses the OS trust store (same as Chrome), so the mkcert CA is trusted a
 These tests mock HTTP at the `fetch()` level and do not open real TCP connections. They work without any additional setup after the URL change to `https://localhost:3080`.
 
 ```bash
-VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-filesystem \
+VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-filesystem.json \
+VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_warn.json \
 npm run testByFile -w miroir-standalone-app -- DomainController.integ
 ```
 
 ### Real-server integration tests
 
-These tests open real HTTPS connections to `localhost:3080`.  Make sure `NODE_EXTRA_CA_CERTS` is set in your shell (see above) **or** export it inline:
+These tests open real HTTPS connections to `localhost:3080`. Make sure `NODE_EXTRA_CA_CERTS` is set in your shell (see above) **or** export it inline:
 
 ```bash
 NODE_EXTRA_CA_CERTS="$(mkcert -CAROOT)/rootCA.pem" \
-VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-realServer-filesystem \
+VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-realServer-filesystem.json \
+VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_warn.json \
 npm run testByFile -w miroir-standalone-app -- DomainController.integ
 ```
 

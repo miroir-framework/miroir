@@ -17,10 +17,12 @@ Legacy `UnitTest` and `TransformerTest` entities remain in the deployment for ba
 
 ## Test types
 
-| Mode | Vitest entry | Postgres | Typical suites |
-|------|-------------|----------|----------------|
-| **Unit** | `miroir-core/tests/miroir-core-tests.unit.test.ts` | No | All registered suites except `miroirCoreTransformers` |
-| **Integration** | `miroir-standalone-app/tests/miroir-core-tests.integ.test.ts` | Yes (or other store backend) | `miroirCoreTransformers` and other suites against a live store |
+| Mode | Launcher | Vitest entry | Typical suites |
+|------|----------|-------------|----------------|
+| **Unit** | `testMiroir` | `miroir-core-tests.unit.test.ts` | All miroir-core registry suites except `miroirCoreTransformers` |
+| **MiroirTest integ** | `testMiroir` | `miroir-core-tests.integ.test.ts` | `miroirCoreTransformers`, etc. via `MIROIR_TEST_*` |
+| **App-stack integ** | `testByFile` | Per-file (`DomainController.integ.*`, storage, view) | DomainController CRUD, PSC, extractors |
+| **Runner integ** | `testMiroir` + `VITE_MIROIR_*` | `miroir-runner-tests.integ.test.ts` | Composite-action runner tests |
 
 The UI always runs **unit** mode.
 
@@ -76,24 +78,42 @@ npm run testMiroir -w miroir-core -- --suites resolveConditionalSchema --mode un
 
 ---
 
-## Running integration tests (CLI)
+## Running MiroirTest integration tests (CLI)
 
-Integration tests run in `miroir-standalone-app`. The test application store and the admin store are configured **independently**:
+MiroirTest integration runs in `miroir-standalone-app` via `testMiroir`. The test application store and admin store are configured independently with `MIROIR_TEST_*`:
 
 ```bash
-# Default: sql test app + filesystem admin (most common setup)
+# Default: sql test app + filesystem admin
 MIROIR_TEST_SUITES=miroirCoreTransformers MIROIR_TEST_MODE=integ \
-  MIROIR_TEST_POSTGRES_HOST=192.168.1.160 \
+  MIROIR_TEST_POSTGRES_HOST=localhost \
   npm run testMiroir -w miroir-standalone-app
 
-# Filesystem app store (no Postgres needed)
+# Filesystem app store (no Postgres)
 MIROIR_TEST_SUITES=miroirCoreTransformers MIROIR_TEST_MODE=integ \
   MIROIR_TEST_APP_STORE_TYPE=filesystem \
   MIROIR_TEST_APP_FILESYSTEM_ROOT=/tmp/miroir-test \
   npm run testMiroir -w miroir-standalone-app
 ```
 
-If the configuration is invalid, the entry prints a full usage message and exits cleanly before running any tests. See [reference/testing.md](../../reference/testing.md#launch-validation) for the full list of checks and all available env vars.
+Invalid configuration prints a full usage message before any test runs. See [reference/testing.md](../../reference/testing.md#running-miroirtest-integration-tests-testmiroir).
+
+---
+
+## Running app-stack integration tests (CLI)
+
+DomainController, persistence-store, and extractor tests are **per-file Vitest suites** launched with `testByFile`. They require two env vars pointing at JSON config files:
+
+```bash
+VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-sql.json \
+VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_DomainController_debug.json \
+npm run testByFile -w miroir-standalone-app -- DomainController.integ.Data
+```
+
+Swap the config file to exercise filesystem, IndexedDB, or MongoDB backends (`miroirConfig.test-emulatedServer-filesystem.json`, etc.). The final argument is a Vitest filename filter.
+
+Common filters: `DomainController.integ`, `PersistenceStoreController.integ`, `ExtractorPersistenceStoreRunner.integ`, `ReportPage.integ`, `BlobEditorField.integ`.
+
+Full catalogue, config matrix, and architecture comparison with `testMiroir`: [reference/testing.md](../../reference/testing.md#running-app-stack-integration-tests-testbyfile).
 
 ---
 
@@ -121,24 +141,22 @@ For migrations from legacy `UnitTest` / `TransformerTest`, use `migrateLegacyTes
 
 ---
 
-## Architecture (execution path)
+## Architecture
+
+Two integration paths coexist in `miroir-standalone-app`:
+
+**MiroirTest path** (`testMiroir`): deployment JSON test cases → `TestSessionForInteg` → direct `domainController` (no HTTP). Suited to large transformer/query regression suites.
+
+**App-stack path** (`testByFile`): inline TypeScript test trees → `setupMiroirTest` / `setupMiroirTestAndCreateMiroirDeployment` → client + emulated server via `RestClientStub`. Suited to DomainController, PSC, and view integration.
 
 ```
-Vitest entry (unit or integ)
-  → runMiroirCoreTestsFromCLI(vitest, config, { executionEnvironment, testSession })
-    → loadMiroirCoreTestSuite(suiteKey)   ← dynamic import from deployment JSON
-    → runMiroirTests._runMiroirTestSuite(...)
-      → per-leaf adapters
-          transformerTest  → MiroirTransformerTestTools (in-memory or sql path)
-          functionCallTest → direct function call
-          queryTest        → QueryRunnerTestTools
-          runnerTest       → RunnerTestTools
+MiroirTest:  testMiroir → TestSessionForInteg → runMiroirCoreTestsFromCLI → deployment JSON leaves
+App-stack:   testByFile → loadTestConfigFiles → setupMiroirTest* → runTestOrTestSuite / it()
 ```
 
-For integration, `TestSessionForInteg` bootstraps the store before `runMiroirCoreTestsFromCLI` is called:
-- `initSession()` — creates schemas, opens PSC, seeds library entities (Author, Book, Publisher)
-- `beforeEach()` — re-seeds (`resetModel → initModel → createEntity → createInstance`)
-- `teardown()` — deletes test schemas and closes the store
+Side-by-side comparison: [reference/testing.md — Architecture](../../reference/testing.md#architecture-comparing-integration-paths).
+
+For MiroirTest integration lifecycle (`initSession` / `beforeEach` / `teardown`), see `TestSessionForInteg` in the reference doc.
 
 ---
 

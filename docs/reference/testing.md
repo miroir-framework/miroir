@@ -6,14 +6,15 @@ This page is the authoritative reference for how tests are structured, run, and 
 
 ## Overview
 
-Miroir tests live in two distinct layers:
+Miroir has three test layers:
 
-| Layer | Location | Execution | Postgres |
-|-------|----------|-----------|----------|
-| **Unit** | `miroir-core` | In-process, in-memory | No |
-| **Integration** | `miroir-standalone-app` | In-process, real store | Yes (or other backend) |
+| Layer | Location | Launcher | Store / runtime |
+|-------|----------|----------|-----------------|
+| **Unit** | `miroir-core` | `testMiroir` / `testByFile` | In-memory, no persistence |
+| **MiroirTest integration** | `miroir-standalone-app` | `testMiroir` (`MIROIR_TEST_*`) | `TestSessionForInteg` — direct PSC / domainController |
+| **App-stack integration** | `miroir-standalone-app` | `testByFile` (`VITE_MIROIR_*`) | `setupMiroirTest` — emulated or real HTTPS server |
 
-Both layers use the same test format (`MiroirTest` entity), the same runner (`runMiroirCoreTestsFromCLI`), and the same CLI (`testMiroir`). The difference is the vitest entry file and whether a `TestSessionForInteg` is wired.
+**MiroirTest** suites (transformer, function-call, query, runner) are defined as deployment JSON entities and share runners in `miroir-core`. **App-stack** tests are hand-written Vitest files that exercise `DomainController`, persistence stores, extractors, and React views against a full client/server stack configured via JSON files under `tests/miroirConfig.test-*.json`.
 
 ---
 
@@ -49,7 +50,7 @@ The registry maps short string keys → deployment exports:
 packages/miroir-core/src/5_tests/miroirCoreTestSuiteRegistry.ts
 ```
 
-Current registered suites (41 total, sorted):
+Current registered suites (35 total, sorted):
 
 ```
 adminTransformers, alterObject, ansiColumnsToJzodSchema, buildAnyKeyMap,
@@ -112,9 +113,9 @@ This runs `tests/miroir-core-tests.unit.test.ts` directly with vitest, inheritin
 
 ---
 
-## Running integration tests
+## Running MiroirTest integration tests (`testMiroir`)
 
-Integration tests run against a real persistence store. The test application schema and the admin deployment are configured **independently** via env vars.
+MiroirTest integration runs against a real persistence store. The test application schema and the admin deployment are configured **independently** via `MIROIR_TEST_*` env vars.
 
 ### Vitest entry
 
@@ -126,6 +127,8 @@ This file:
 3. Builds a `TestSessionForInteg` from env.
 4. Calls `testSession.initSession()` to bootstrap the store.
 5. Calls `runMiroirCoreTestsFromCLI` to run the requested suites.
+
+`scripts/test-miroir-runner.ts` routes to this entry when all requested suite keys are in the miroir-core registry (e.g. `miroirCoreTransformers`).
 
 ### Via `testMiroir` (preferred)
 
@@ -223,7 +226,7 @@ When the test application store is `sql`, the admin section of the test store us
 MIROIR_TEST_SUITES=miroirCoreTransformers MIROIR_TEST_MODE=integ \
   MIROIR_TEST_POSTGRES_HOST=localhost \
   npm run testMiroir -w miroir-standalone-app
-****
+
 # Filesystem app + filesystem admin (no Postgres)
 MIROIR_TEST_SUITES=miroirCoreTransformers MIROIR_TEST_MODE=integ \
   MIROIR_TEST_APP_STORE_TYPE=filesystem \
@@ -235,12 +238,229 @@ MIROIR_TEST_SUITES=miroirCoreTransformers MIROIR_TEST_MODE=integ \
   MIROIR_TEST_APP_STORE_TYPE=mongodb \
   MIROIR_TEST_MONGODB_CONNECTION_STRING=mongodb://localhost:27017 \
   npm run testMiroir -w miroir-standalone-app
+```
 
-# Alternate Postgres host + non-default admin assets
-MIROIR_TEST_SUITES=miroirCoreTransformers MIROIR_TEST_MODE=integ \
-  MIROIR_TEST_POSTGRES_HOST=10.0.0.5 \
-  MIROIR_TEST_ADMIN_ASSETS_ROOT=/opt/miroir/admin-assets \
-  npm run testMiroir -w miroir-standalone-app
+### Runner MiroirTest integration (`miroir-runner-tests.integ.test.ts`)
+
+Runner-type `MiroirTest` leaves (`runnerTest`) exercise composite actions end-to-end. They use `RunnerTestSession` (which calls `setupMiroirTestAndDeployMiroirApp`) and require the same `VITE_MIROIR_*` config files as app-stack tests.
+
+```bash
+VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-sql.json \
+VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_warn.json \
+MIROIR_TEST_MODE=integ \
+npm run testByFile -w miroir-standalone-app -- miroir-runner-tests.integ.test
+```
+
+Alternatively, `testMiroir` routes to this entry when the requested suite keys are **not** all in the miroir-core registry (and still needs `VITE_MIROIR_*` set).
+
+---
+
+## Running app-stack integration tests (`testByFile`)
+
+These are the original standalone-app integration tests: one Vitest file per concern, with test cases defined inline in TypeScript (composite-action trees or direct `it()` blocks). They configure the full Miroir client/server stack via JSON files and are launched with `npm run testByFile`.
+
+### Required environment variables
+
+Both variables are **mandatory** — `loadTestConfigFiles` throws if either is missing.
+
+| Variable | Purpose |
+|----------|---------|
+| `VITE_MIROIR_TEST_CONFIG_FILENAME` | Path to a `miroirConfig.test-*.json` file (must have `.json` extension) |
+| `VITE_MIROIR_LOG_CONFIG_FILENAME` | Path to a `specificLoggersConfig_*.json` file |
+
+`npm run testByFile` also sets `VITE_TEST_MODE=true` automatically.
+
+For **real-server** configs (`miroirConfig.test-realServer-*.json`), the dev server must be running at `https://localhost:3080` and Node must trust the mkcert CA:
+
+```bash
+export NODE_EXTRA_CA_CERTS="$(mkcert -CAROOT)/rootCA.pem"
+```
+
+See [HTTPS setup for developers](../guides/https-setup-developer.md).
+
+### Config file catalogue
+
+All configs live in `packages/miroir-standalone-app/tests/`.
+
+| Config file | Mode | Backends exercised |
+|-------------|------|-------------------|
+| `miroirConfig.test-emulatedServer-sql.json` | Emulated server (`RestClientStub`) | Admin: filesystem · Miroir + Library: Postgres |
+| `miroirConfig.test-emulatedServer-filesystem.json` | Emulated server | All sections: filesystem (writable under `tests/tmp/`) |
+| `miroirConfig.test-emulatedServer-indexedDb.json` | Emulated server | Miroir + Library: IndexedDB |
+| `miroirConfig.test-emulatedServer-mongodb.json` | Emulated server | Miroir + Library: MongoDB |
+| `miroirConfig.test-emulatedServer-mixed_*.json` | Emulated server | Mixed backends per deployment |
+| `miroirConfig.test-realServer-sql.json` | Real HTTPS server | Postgres via running `miroir-server` |
+| `miroirConfig.test-realServer-filesystem.json` | Real HTTPS server | Filesystem via running server |
+| `miroirConfig.test-realServer-indexedDb.json` | Real HTTPS server | IndexedDB via running server |
+| `miroirConfig.test-ci-emulatedServer-*.json` | CI presets | Host-specific connection strings |
+
+Before first run, check `filesystemDeploymentRootDirectory` inside the chosen config — it must point at your local `packages/` directory (paths in the checked-in files are developer-specific).
+
+### Logger config options
+
+| File | Use when |
+|------|----------|
+| `specificLoggersConfig_warn.json` | Default; minimal noise |
+| `specificLoggersConfig_DomainController_debug.json` | Debugging DomainController flows |
+| `specificLoggersConfig_info.json` | Broader INFO-level output |
+| `specificLoggersConfig_trace_filesystem.json` | Filesystem store tracing |
+
+### Launch pattern
+
+Vitest matches files by substring. Run from the **repository root** so relative config paths resolve correctly:
+
+```bash
+VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-sql.json \
+VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_DomainController_debug.json \
+npm run testByFile -w miroir-standalone-app -- DomainController.integ.Data
+```
+
+The final argument is a Vitest file-name filter (not a suite key). Examples:
+
+| Filter | Matches |
+|--------|---------|
+| `DomainController.integ` | All DomainController integration files |
+| `DomainController.integ.Data` | `DomainController.integ.Data.CRUD.test.tsx` only |
+| `DomainController.integ.Model` | Model CRUD suite |
+| `PersistenceStoreController.integ` | PSC low-level store tests |
+| `ExtractorPersistenceStoreRunner.integ` | Extractor runner against live store |
+| `ExtractorTemplatePersistenceStoreRunner.integ` | Extractor template runner |
+| `Runner_Miroir.integ` | Legacy runner integration (prefer `testMiroir` runner entry) |
+| `ReportPage.integ` | Report view React smoke tests |
+| `BlobEditorField.integ` | Blob editor component tests (no store required) |
+
+### Test catalogue
+
+#### DomainController (`tests/3_controllers/`)
+
+Full-stack CRUD through `domainController.handleCompositeAction`, using `setupMiroirTestAndCreateMiroirDeployment` in `beforeAll` and `runTestOrTestSuite` for composite-action test trees.
+
+| File | Focus |
+|------|-------|
+| `DomainController.integ.Data.CRUD.test.tsx` | Data-section entity/instance CRUD |
+| `DomainController.integ.Model.CRUD.test.tsx` | Model-section entity definition CRUD |
+| `DomainController.integ.compositePK.CRUD.test.tsx` | Composite primary keys |
+| `DomainController.integ.nonUuidPK.CRUD.test.tsx` | Non-UUID primary keys |
+| `DomainController.integ.noParentUuid.CRUD.test.tsx` | Entities without `parentUuid` |
+
+```bash
+# All DomainController integration tests, emulated server + Postgres
+VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-sql.json \
+VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_DomainController_debug.json \
+npm run testByFile -w miroir-standalone-app -- DomainController.integ
+
+# Filesystem backend (no Postgres)
+VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-filesystem.json \
+VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_warn.json \
+npm run testByFile -w miroir-standalone-app -- DomainController.integ
+
+# IndexedDB backend
+VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-indexedDb.json \
+VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_warn.json \
+npm run testByFile -w miroir-standalone-app -- DomainController.integ.Data
+```
+
+#### Storage layer (`tests/4_storage/`)
+
+Tests persistence below the domain layer — `PersistenceStoreController` directly or extractor runners.
+
+| File | Setup helper | Focus |
+|------|-------------|-------|
+| `PersistenceStoreController.integ.test.tsx` | `setupMiroirTest` | PSC open/create/read/write, model actions |
+| `ExtractorPersistenceStoreRunner.integ.test.tsx` | `setupMiroirTest` | `ExtractorPersistenceStoreRunner` end-to-end |
+| `ExtractorTemplatePersistenceStoreRunner.integ.test.tsx` | `setupMiroirTest` | Extractor templates against live store |
+
+```bash
+VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-sql.json \
+VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_warn.json \
+npm run testByFile -w miroir-standalone-app -- PersistenceStoreController.integ
+
+VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-indexedDb.json \
+VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_warn.json \
+npm run testByFile -w miroir-standalone-app -- ExtractorPersistenceStoreRunner.integ
+```
+
+#### View / React (`tests/4_view/`)
+
+| File | Store needed | Focus |
+|------|-------------|-------|
+| `ReportPage.integ.test.tsx` | Uses shared React test tools | Report rendering smoke tests |
+| `BlobEditorField.integ.test.tsx` | No | Blob field editor component |
+| `JzodObjectEditor.BlobIntegration.integ.test.tsx` | No | JzodObjectEditor blob integration |
+| `Runner_*.integ.test.tsx` | Yes (`VITE_MIROIR_*`) | Legacy runner tests — migrating to `miroir-runner-tests.integ.test.ts` |
+
+```bash
+npm run testByFile -w miroir-standalone-app -- BlobEditorField.integ
+npm run testByFile -w miroir-standalone-app -- ReportPage.integ
+```
+
+---
+
+## Architecture: comparing integration paths
+
+### MiroirTest path (`testMiroir` → `miroir-core-tests.integ.test.ts`)
+
+```
+npm run testMiroir -w miroir-standalone-app
+  scripts/test-miroir-runner.ts  [routes when suite keys ⊆ miroir-core registry]
+    vitest → miroir-core-tests.integ.test.ts
+      assertMiroirCoreIntegTestLaunchReady(MIROIR_TEST_*)
+      TestSessionForInteg.initSession()
+        register store startups from MIROIR_TEST_APP/ADMIN_STORE_TYPE
+        setupMiroirDomainController (local PSC, no HTTP)
+        seed library entities via domainController actions
+      runMiroirCoreTestsFromCLI
+        loadMiroirCoreTestSuite(key)  ← deployment JSON
+        runMiroirTests._runMiroirTestSuite
+          transformerTest / functionCallTest / queryTest leaves
+```
+
+**Characteristics:** env-var configuration; no emulated HTTP server; tests defined as `MiroirTest` JSON entities; `TestSessionForInteg` owns store lifecycle; pre-flight validation with usage output.
+
+### App-stack path (`testByFile` → `DomainController.integ.*.test.tsx`)
+
+```
+npm run testByFile -w miroir-standalone-app -- DomainController.integ.Data
+  vitest → DomainController.integ.Data.CRUD.test.tsx  [top-level module setup]
+    loadTestConfigFiles(VITE_MIROIR_TEST_CONFIG_FILENAME, VITE_MIROIR_LOG_CONFIG_FILENAME)
+    miroirAppStartup + store section startups
+    beforeAll:
+      setupMiroirTestAndCreateMiroirDeployment(miroirConfig, …)
+        setupMiroirTest → client domainController + RestClientStub
+        when emulateServer: server domainController (local PSC) wired into stub
+        createDeploymentCompositeAction for Miroir deployment
+      resetAndInitApplicationDeployment (library deployment)
+    describe/it:
+      runTestOrTestSuite(testActions, domainController, …)
+        composite-action tree executed step-by-step via domainController
+```
+
+**Characteristics:** JSON config files (`miroirConfig.test-*.json`); full client/server stack with optional `RestClientStub` emulated HTTPS; tests defined inline as `TestCompositeActionParams` records; per-file `beforeAll`/`afterAll`; no `MIROIR_TEST_*` validation layer.
+
+### Side-by-side comparison
+
+| | MiroirTest (`testMiroir`) | App-stack (`testByFile`) |
+|--|--------------------------|--------------------------|
+| **Vitest entry** | Single file per family (`miroir-core-tests.integ.test.ts`) | One file per test suite |
+| **Configuration** | `MIROIR_TEST_*` env vars | `VITE_MIROIR_TEST_CONFIG_FILENAME` + `VITE_MIROIR_LOG_CONFIG_FILENAME` |
+| **Test definition** | `MiroirTest` deployment JSON | Inline TypeScript (`testActions`, `it()`) |
+| **Bootstrap** | `TestSessionForInteg` | `setupMiroirTest` / `setupMiroirTestAndCreateMiroirDeployment` |
+| **HTTP layer** | None (direct PSC) | `RestClientStub` when `emulateServer: true` |
+| **Store layout** | Independent app + admin backends via env | Per-deployment `deploymentStorageConfig` in JSON |
+| **Reset between cases** | `testSession.beforeEach()` | Per-file `beforeEach` or composite-action `beforeEach` |
+| **Pre-flight checks** | `assertMiroirCoreIntegTestLaunchReady` | `loadTestConfigFiles` throws on missing env |
+| **Typical use** | Transformer/query regression at scale | DomainController, PSC, extractor, view integration |
+
+Both paths ultimately drive actions through `domainController`, but the MiroirTest path bypasses the HTTP/RestClient layer and reads test cases from deployment assets, while the app-stack path exercises the same code paths the standalone UI uses (including emulated server routing).
+
+### Unit tests (miroir-core)
+
+```
+npm run testMiroir -w miroir-core
+  scripts/test-miroir-core.ts
+    vitest → miroir-core-tests.unit.test.ts
+      runMiroirCoreTestsFromCLI (no testSession)
+        loadMiroirCoreTestSuite → runMiroirTests (in-memory)
 ```
 
 ---
@@ -263,10 +483,28 @@ MIROIR_TEST_SUITES=miroirCoreTransformers MIROIR_TEST_MODE=integ \
 
 | File | Role |
 |------|------|
-| `tests/miroir-core-tests.integ.test.ts` | Vitest integration entry |
-| `tests/helpers/TestSessionForInteg.ts` | Store bootstrap for all backends |
+| `tests/miroir-core-tests.integ.test.ts` | MiroirTest integration entry (`testMiroir`) |
+| `tests/miroir-runner-tests.integ.test.ts` | Runner MiroirTest integration entry |
+| `tests/helpers/TestSessionForInteg.ts` | Store bootstrap for MiroirTest integ (all backends) |
+| `tests/helpers/RunnerTestSession.ts` | Store bootstrap for runner MiroirTest integ |
 | `tests/helpers/miroirCoreIntegTestLaunch.ts` | Pre-flight validation + usage output |
-| `scripts/test-miroir-runner.ts` | `testMiroir` launcher — routes to unit or integ entry |
+| `tests/helpers/runMiroirRunnerTestsFromCLI.ts` | Runner test CLI orchestration |
+| `tests/utils/fileTools.ts` | `loadTestConfigFiles` for app-stack tests |
+| `src/miroir-fwk/4-tests/setupMiroirTest.ts` | `setupMiroirTest`, `setupMiroirTestAndCreateMiroirDeployment` |
+| `src/miroir-fwk/4-tests/runTestOrTestSuite.ts` | Composite-action test tree runner |
+| `tests/miroirConfig.test-*.json` | App-stack store/backend presets |
+| `scripts/test-miroir-runner.ts` | `testMiroir` launcher — routes core vs runner integ |
+
+### App-stack integration test files
+
+| Path | Role |
+|------|------|
+| `tests/3_controllers/DomainController.integ.*.test.tsx` | DomainController CRUD suites |
+| `tests/4_storage/PersistenceStoreController.integ.test.tsx` | PSC integration |
+| `tests/4_storage/ExtractorPersistenceStoreRunner.integ.test.tsx` | Extractor runner |
+| `tests/4_storage/ExtractorTemplatePersistenceStoreRunner.integ.test.tsx` | Extractor template runner |
+| `tests/4_view/ReportPage.integ.test.tsx` | Report view React tests |
+| `tests/4_view/BlobEditorField.integ.test.tsx` | Blob editor component tests |
 
 ### miroir-test-app_deployment-miroir
 
@@ -274,38 +512,6 @@ MIROIR_TEST_SUITES=miroirCoreTransformers MIROIR_TEST_MODE=integ \
 |------|------|
 | `assets/miroir_data/a311f363-…/<uuid>.json` | MiroirTest suite instances |
 | `index.ts` | Named exports (`miroirTest_<key>`) |
-
----
-
-## Architecture: execution path
-
-```
-npm run testMiroir -w miroir-core          npm run testMiroir -w miroir-standalone-app
-        │                                              │
-scripts/test-miroir-core.ts          scripts/test-miroir-runner.ts
-        │                                              │
-        └──── vitest run tests/                        └──── vitest run tests/
-              miroir-core-tests.unit.test.ts                  miroir-core-tests.integ.test.ts
-                        │                                              │
-                        │                                    TestSessionForInteg
-                        │                                      initSession()
-                        │                                    (create schema, open store,
-                        │                                     seed library entities)
-                        │                                              │
-                        └─────────────┬────────────────────────────────┘
-                                      │
-                             runMiroirCoreTestsFromCLI(vitest, config, options)
-                                      │
-                              loadMiroirCoreTestSuite(suiteKey)
-                              [from deployment JSON via dynamic import]
-                                      │
-                         runMiroirTests._runMiroirTestSuite(...)
-                                      │
-                       ┌──────────────┴───────────────┐
-                 transformerTest          functionCallTest / queryTest / runnerTest
-                       │                              │
-              in-memory resolve       sql path (integration) or in-memory (unit)
-```
 
 ---
 
