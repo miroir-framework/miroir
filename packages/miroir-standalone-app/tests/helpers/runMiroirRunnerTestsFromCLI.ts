@@ -2,18 +2,17 @@ import { afterAll, beforeEach } from "vitest";
 
 import {
   MiroirActivityTracker,
-  MiroirEventService,
   defaultMetaModelEnvironment,
   displayMiroirTestResults,
   type MiroirTestCliConfig,
   type MiroirTestExecutionEnvironment,
+  type MiroirTestExecutionOptions,
   type MiroirTestSuite,
   type RunMiroirTests,
-  type MiroirConfigClient,
+  type RunnerTestSessionInterface,
   type VitestNamespace
 } from "miroir-core";
 import { miroirTest_runner_library } from "miroir-test-app_deployment-library";
-import { RunnerTestSession } from "./RunnerTestSession.js";
 
 
 
@@ -22,19 +21,12 @@ export async function runMiroirRunnerTestsFromCLI(
   runMiroirTests: RunMiroirTests,
   vitest: VitestNamespace,
   config: MiroirTestCliConfig,
-  miroirConfig: MiroirConfigClient,
+  miroirActivityTracker: MiroirActivityTracker,
+  testSession: RunnerTestSessionInterface,
 ): Promise<void> {
-  const miroirActivityTracker = new MiroirActivityTracker();
-  const miroirEventService = new MiroirEventService(miroirActivityTracker);
-
-  const testSession = new RunnerTestSession({
-    miroirConfig,
-    miroirActivityTracker,
-    miroirEventService,
-  });
-
   const executionEnvironment: MiroirTestExecutionEnvironment = await testSession.initSession();
-
+  const executionOptions: MiroirTestExecutionOptions = { executionMode: "integration", executionEnvironment };
+  
   const loadedSuites: { suiteKey: string; definition: MiroirTestSuite }[] = [];
 
   beforeEach(async () => {
@@ -71,7 +63,7 @@ export async function runMiroirRunnerTestsFromCLI(
       undefined,
       true,
       runMiroirTests,
-      { executionMode: "integration", executionEnvironment },
+      executionOptions,
     );
   
   }

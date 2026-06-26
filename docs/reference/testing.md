@@ -11,7 +11,7 @@ Miroir has three test layers:
 | Layer | Location | Launcher | Store / runtime |
 |-------|----------|----------|-----------------|
 | **Unit** | `miroir-core` | `testMiroir` / `testByFile` | In-memory, no persistence |
-| **MiroirTest integration** | `miroir-standalone-app` | `testMiroir` (`MIROIR_TEST_*`) | `TestSessionForInteg` — direct PSC / domainController |
+| **MiroirTest integration** | `miroir-standalone-app` | `testMiroir` (`MIROIR_TEST_*`) | `IntegrationTestSession` — direct PSC / domainController |
 | **App-stack integration** | `miroir-standalone-app` | `testByFile` (`VITE_MIROIR_*`) | `setupMiroirTest` — emulated or real HTTPS server |
 
 **MiroirTest** suites (transformer, function-call, query, runner) are defined as deployment JSON entities and share runners in `miroir-core`. **App-stack** tests are hand-written Vitest files that exercise `DomainController`, persistence stores, extractors, and React views against a full client/server stack configured via JSON files under `tests/miroirConfig.test-*.json`.
@@ -124,7 +124,7 @@ MiroirTest integration runs against a real persistence store. The test applicati
 This file:
 1. Parses env/argv (accepting `--mode integ` as alias for `integration`).
 2. Calls `assertMiroirCoreIntegTestLaunchReady` — validates config and prints shell-style usage on any error.
-3. Builds a `TestSessionForInteg` from env.
+3. Builds a `IntegrationTestSession` from env.
 4. Calls `testSession.initSession()` to bootstrap the store.
 5. Calls `runMiroirCoreTestsFromCLI` to run the requested suites.
 
@@ -134,12 +134,12 @@ This file:
 
 ```bash
 # Default: sql test app + filesystem admin
-MIROIR_TEST_SUITES=miroirCoreTransformers MIROIR_TEST_MODE=integ \
+MIROIR_TEST_SUITES=miroirCoreTransformers MIROIR_TEST_MODE=integration \
   MIROIR_TEST_POSTGRES_HOST=localhost \
   npm run testMiroir -w miroir-standalone-app
 
 # Explicit argv form
-npm run testMiroir -w miroir-standalone-app -- --suites miroirCoreTransformers --mode integ
+npm run testMiroir -w miroir-standalone-app -- --suites miroirCoreTransformers --mode integration
 ```
 
 ### Store backend env vars
@@ -213,7 +213,7 @@ The admin store hosts `miroirAdmin` deployment metadata (entities, reports, menu
 | `MIROIR_TEST_ADMIN_MONGODB_DATABASE` | Database name | `miroirAdmin` |
 
 **When `bundled`:**  
-The admin deployment data must be passed programmatically via `TestSessionForInteg.bundledDeploymentData` (not settable via env alone). The `miroir-sandbox` package demonstrates this pattern with `demoBundledData`.
+The admin deployment data must be passed programmatically via `IntegrationTestSession.bundledDeploymentData` (not settable via env alone). The `miroir-sandbox` package demonstrates this pattern with `demoBundledData`.
 
 ### sql admin note
 
@@ -405,7 +405,7 @@ npm run testMiroir -w miroir-standalone-app
   scripts/test-miroir-runner.ts  [routes when suite keys ⊆ miroir-core registry]
     vitest → miroir-core-tests.integ.test.ts
       assertMiroirCoreIntegTestLaunchReady(MIROIR_TEST_*)
-      TestSessionForInteg.initSession()
+      IntegrationTestSession.initSession()
         register store startups from MIROIR_TEST_APP/ADMIN_STORE_TYPE
         setupMiroirDomainController (local PSC, no HTTP)
         seed library entities via domainController actions
@@ -415,7 +415,7 @@ npm run testMiroir -w miroir-standalone-app
           transformerTest / functionCallTest / queryTest leaves
 ```
 
-**Characteristics:** env-var configuration; no emulated HTTP server; tests defined as `MiroirTest` JSON entities; `TestSessionForInteg` owns store lifecycle; pre-flight validation with usage output.
+**Characteristics:** env-var configuration; no emulated HTTP server; tests defined as `MiroirTest` JSON entities; `IntegrationTestSession` owns store lifecycle; pre-flight validation with usage output.
 
 ### App-stack path (`testByFile` → `DomainController.integ.*.test.tsx`)
 
@@ -444,7 +444,7 @@ npm run testByFile -w miroir-standalone-app -- DomainController.integ.Data
 | **Vitest entry** | Single file per family (`miroir-core-tests.integ.test.ts`) | One file per test suite |
 | **Configuration** | `MIROIR_TEST_*` env vars | `VITE_MIROIR_TEST_CONFIG_FILENAME` + `VITE_MIROIR_LOG_CONFIG_FILENAME` |
 | **Test definition** | `MiroirTest` deployment JSON | Inline TypeScript (`testActions`, `it()`) |
-| **Bootstrap** | `TestSessionForInteg` | `setupMiroirTest` / `setupMiroirTestAndCreateMiroirDeployment` |
+| **Bootstrap** | `IntegrationTestSession` | `setupMiroirTest` / `setupMiroirTestAndCreateMiroirDeployment` |
 | **HTTP layer** | None (direct PSC) | `RestClientStub` when `emulateServer: true` |
 | **Store layout** | Independent app + admin backends via env | Per-deployment `deploymentStorageConfig` in JSON |
 | **Reset between cases** | `testSession.beforeEach()` | Per-file `beforeEach` or composite-action `beforeEach` |
@@ -485,7 +485,7 @@ npm run testMiroir -w miroir-core
 |------|------|
 | `tests/miroir-core-tests.integ.test.ts` | MiroirTest integration entry (`testMiroir`) |
 | `tests/miroir-runner-tests.integ.test.ts` | Runner MiroirTest integration entry |
-| `tests/helpers/TestSessionForInteg.ts` | Store bootstrap for MiroirTest integ (all backends) |
+| `tests/helpers/IntegrationTestSession.ts` | Store bootstrap for MiroirTest integ (all backends) |
 | `tests/helpers/RunnerTestSession.ts` | Store bootstrap for runner MiroirTest integ |
 | `tests/helpers/miroirCoreIntegTestLaunch.ts` | Pre-flight validation + usage output |
 | `tests/helpers/runMiroirRunnerTestsFromCLI.ts` | Runner test CLI orchestration |
@@ -515,21 +515,21 @@ npm run testMiroir -w miroir-core
 
 ---
 
-## `TestSessionForInteg`: programmatic API
+## `IntegrationTestSession`: programmatic API
 
 ```typescript
 import {
-  TestSessionForInteg,
+  IntegrationTestSession,
   buildTestApplicationStoreUnitConfiguration,
   buildAdminStoreUnitConfiguration,
   resolveTestSessionForIntegOptionsFromEnv,
-} from "tests/helpers/TestSessionForInteg.js";
+} from "tests/helpers/IntegrationTestSession.js";
 
 // From env (standard usage)
-const session = new TestSessionForInteg(resolveTestSessionForIntegOptionsFromEnv(process.env));
+const session = new IntegrationTestSession(resolveTestSessionForIntegOptionsFromEnv(process.env));
 
 // Explicit sql app + filesystem admin
-const session = new TestSessionForInteg({
+const session = new IntegrationTestSession({
   testApplicationStore: {
     emulatedServerType: "sql",
     postgresHostName: "localhost",
@@ -546,7 +546,7 @@ const executionEnvironment = await session.initSession();
 await session.teardown();
 ```
 
-### `TestSessionForInteg` lifecycle
+### `IntegrationTestSession` lifecycle
 
 | Method | Called by | Effect |
 |--------|-----------|--------|
@@ -556,7 +556,7 @@ await session.teardown();
 
 ### Deprecated aliases
 
-`TestSessionForPostgres` and `PostgresIntegrationAdapter` are kept as thin wrappers over `TestSessionForInteg` for backward compatibility and will be removed in a future release.
+`IntegrationTestSessionForPostgres` is kept as thin wrappers over `IntegrationTestSession` for backward compatibility and will be removed in a future release.
 
 ---
 

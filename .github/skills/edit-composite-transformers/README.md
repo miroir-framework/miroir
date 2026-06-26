@@ -76,7 +76,7 @@ A specialized skill for creating and updating **Composite** Miroir Transformers 
 RUN_TEST=transformers.unit.test npm run testByFile -w miroir-core -- 'transformers.unit'
 
 # Integration tests (PostgreSQL execution)
-RUN_TEST=transformers.integ.test npm run testByFile -w miroir-core -- 'transformers.integ'
+npm run testMiroir -w miroir-standalone-app -- --suites miroirCoreTransformers --mode integration
 ```
 
 **Note**: No devBuild command needed!

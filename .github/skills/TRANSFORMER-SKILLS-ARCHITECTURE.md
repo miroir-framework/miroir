@@ -163,7 +163,7 @@ Both skills share the same test infrastructure:
 RUN_TEST=transformers.unit.test npm run testByFile -w miroir-core -- 'transformers.unit'
 
 # Integration tests (database)
-RUN_TEST=transformers.integ.test npm run testByFile -w miroir-core -- 'transformers.integ'
+npm run testMiroir -w miroir-standalone-app -- --suites miroirCoreTransformers --mode integration
 ```
 
 **Key difference:**

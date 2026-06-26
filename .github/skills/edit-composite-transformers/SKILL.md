@@ -26,7 +26,7 @@ npm run testMiroir -w miroir-core -- --suites miroirCoreTransformers --mode inte
 
 # Per-file vitest (equivalent selective gate)
 RUN_TEST=transformers.unit.test npm run testByFile -w miroir-core -- 'transformers.unit'
-RUN_TEST=transformers.integ.test npm run testByFile -w miroir-core -- 'transformers.integ'
+npm run testMiroir -w miroir-standalone-app -- --suites miroirCoreTransformers --mode integration
 ```
 
 If tests are failing, inform the user of the baseline state before proceeding.
@@ -95,7 +95,7 @@ In `packages/miroir-core/src/2_domain/Transformers.ts`:
 Verify everything works:
 ```bash
 RUN_TEST=transformers.unit.test npm run testByFile -w miroir-core -- 'transformers.unit'
-RUN_TEST=transformers.integ.test npm run testByFile -w miroir-core -- 'transformers.integ'
+npm run testMiroir -w miroir-standalone-app -- --suites miroirCoreTransformers --mode integration
 ```
 
 **Note**: No devBuild needed! Composite transformers don't require type generation.

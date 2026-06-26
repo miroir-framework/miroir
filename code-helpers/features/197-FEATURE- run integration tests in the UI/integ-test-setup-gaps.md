@@ -192,7 +192,7 @@ directly — bypassing the domain layer.
   - This mirrors exactly what the `miroir-standalone-app` DomainController CRUD and runner tests
     already do.
 - **`initMiroirCoreTestIntegrationStore`** should be replaced by a call to
-  `setupMiroirTest` (or the common orchestrator's `TestSessionForPostgres`) that returns a
+  `setupMiroirTest` (or the common orchestrator's `IntegrationTestSessionForPostgres`) that returns a
   `domainController` instead of a raw data store.
 - **`4_storage` tests**: direct calls to `localMiroirPersistenceStoreController` / 
   `localAppPersistenceStoreController` should be replaced by equivalent
@@ -260,15 +260,15 @@ Five different public setup entry points exist across the test infrastructure:
 - `setupMiroirPlatform` is a separate lineage used only by CLI / MCP tests; it cannot easily
   be adapted for UI embedding.
 - The `RunnerTestSessionInterface` (already defined in `miroir-core`) is the right seam, but
-  only `RunnerTestSession` (standalone-app) currently implements it. `TestSessionForPostgres`
+  only `RunnerTestSession` (standalone-app) currently implements it. `IntegrationTestSessionForPostgres`
   (core) is planned but not wired to a common `MiroirTestIntegrationOrchestrator`.
 
 ### What needs to be filled
 
-- Implement `TestSessionForPostgres` in `miroir-core` as the adapter for transformer integ
+- Implement `IntegrationTestSessionForPostgres` in `miroir-core` as the adapter for transformer integ
   runs, replacing `initMiroirCoreTestIntegrationStore`. It should implement
   `RunnerTestSessionInterface` and return a `domainController` from `initSession`.
-- Wire both adapters (`TestSessionForPostgres` for core, `RunnerTestSession` for standalone)
+- Wire both adapters (`IntegrationTestSessionForPostgres` for core, `RunnerTestSession` for standalone)
   through the `MiroirTestIntegrationOrchestrator` so both test families share one lifecycle
   contract.
 - Deprecate / inline the `setupMiroirTest*` ladder into `RunnerTestSession.initSession` with
@@ -284,7 +284,7 @@ Five different public setup entry points exist across the test infrastructure:
 | **B** — Library playfield contract | Declarative `requiresLibraryDeployment`, idempotent setup helper, alignment of synthetic schema with real deployment UUIDs | Runner, DomainController CRUD, transformer integ | **Yes** (for runner tests) |
 | **C** — PersistenceStoreController as entry | Migrate to `domainController` in transformer integ and `4_storage` tests | `miroir-core` transformer integ, `4_storage` storage tests | **Yes** |
 | **D** — Env config fragmentation | Unified profile system across `miroir-core` and `miroir-standalone-app` | Transformer integ, all CLI-driven tests | Yes (after Gap C) |
-| **E** — Setup helper fragmentation | `TestSessionForPostgres`, wired `MiroirTestIntegrationOrchestrator`, deprecation of ad-hoc `setupMiroirTest*` ladder | All families | Yes (enables Phase B) |
+| **E** — Setup helper fragmentation | `IntegrationTestSessionForPostgres`, wired `MiroirTestIntegrationOrchestrator`, deprecation of ad-hoc `setupMiroirTest*` ladder | All families | Yes (enables Phase B) |
 
 Gaps A, B, and C are the most urgent: they are direct blockers for running any integration test
 family inside the Miroir UI without disrupting the live session. Gap C is also a prerequisite for

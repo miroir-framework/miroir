@@ -579,7 +579,7 @@ function registerStoreSectionStartups(
 }
 
 // ################################################################################################
-export class TestSessionForInteg implements RunnerTestSessionInterface {
+export class IntegrationTestSession implements RunnerTestSessionInterface {
   private static storeSectionsRegisteredFor = new Set<string>();
 
   private domainController: DomainControllerInterface | undefined;
@@ -632,7 +632,7 @@ export class TestSessionForInteg implements RunnerTestSessionInterface {
     const registrationKey = [...collectStoreUnitConfigurationServerTypes(testStoreConfig, adminStoreConfig)]
       .sort()
       .join(",");
-    if (TestSessionForInteg.storeSectionsRegisteredFor.has(registrationKey)) {
+    if (IntegrationTestSession.storeSectionsRegisteredFor.has(registrationKey)) {
       return;
     }
     miroirCoreStartup();
@@ -640,7 +640,7 @@ export class TestSessionForInteg implements RunnerTestSessionInterface {
       collectStoreUnitConfigurationServerTypes(testStoreConfig, adminStoreConfig),
       this.options.bundledDeploymentData ?? {},
     );
-    TestSessionForInteg.storeSectionsRegisteredFor.add(registrationKey);
+    IntegrationTestSession.storeSectionsRegisteredFor.add(registrationKey);
   }
 
   private async initTestApplicationData(
@@ -661,7 +661,7 @@ export class TestSessionForInteg implements RunnerTestSessionInterface {
     );
     if (resetResult instanceof Action2Error) {
       throw new Error(
-        "TestSessionForInteg.initTestApplicationData: resetModel failed: " +
+        "IntegrationTestSession.initTestApplicationData: resetModel failed: " +
           JSON.stringify(resetResult),
       );
     }
@@ -686,7 +686,7 @@ export class TestSessionForInteg implements RunnerTestSessionInterface {
     );
     if (initResult instanceof Action2Error) {
       throw new Error(
-        "TestSessionForInteg.initTestApplicationData: initModel failed: " + JSON.stringify(initResult),
+        "IntegrationTestSession.initTestApplicationData: initModel failed: " + JSON.stringify(initResult),
       );
     }
 
@@ -709,7 +709,7 @@ export class TestSessionForInteg implements RunnerTestSessionInterface {
     );
     if (createEntityResult instanceof Action2Error) {
       throw new Error(
-        "TestSessionForInteg.initTestApplicationData: createEntity failed: " +
+        "IntegrationTestSession.initTestApplicationData: createEntity failed: " +
           JSON.stringify(createEntityResult),
       );
     }
@@ -730,7 +730,7 @@ export class TestSessionForInteg implements RunnerTestSessionInterface {
     );
     if (createInstanceResult instanceof Action2Error) {
       throw new Error(
-        "TestSessionForInteg.initTestApplicationData: createInstance failed: " +
+        "IntegrationTestSession.initTestApplicationData: createInstance failed: " +
           JSON.stringify(createInstanceResult),
       );
     }
@@ -787,7 +787,7 @@ export class TestSessionForInteg implements RunnerTestSessionInterface {
     );
     if (addAdminResult instanceof Action2Error) {
       throw new Error(
-        "TestSessionForInteg.initSession: addPersistenceStoreController(admin) failed: " +
+        "IntegrationTestSession.initSession: addPersistenceStoreController(admin) failed: " +
           JSON.stringify(addAdminResult),
       );
     }
@@ -798,7 +798,7 @@ export class TestSessionForInteg implements RunnerTestSessionInterface {
     );
     if (addResult instanceof Action2Error) {
       throw new Error(
-        "TestSessionForInteg.initSession: addPersistenceStoreController failed: " +
+        "IntegrationTestSession.initSession: addPersistenceStoreController failed: " +
           JSON.stringify(addResult),
       );
     }
@@ -807,7 +807,7 @@ export class TestSessionForInteg implements RunnerTestSessionInterface {
       INTEG_TEST_DEPLOYMENT_UUID,
     );
     if (!persistenceStoreController) {
-      throw new Error("TestSessionForInteg.initSession: persistence store controller missing");
+      throw new Error("IntegrationTestSession.initSession: persistence store controller missing");
     }
 
     for (const sectionConfig of [testStoreConfig.admin, testStoreConfig.model, testStoreConfig.data]) {
@@ -820,7 +820,7 @@ export class TestSessionForInteg implements RunnerTestSessionInterface {
       }
       if (createResult instanceof Action2Error) {
         throw new Error(
-          "TestSessionForInteg.initSession: createStore failed: " + JSON.stringify(createResult),
+          "IntegrationTestSession.initSession: createStore failed: " + JSON.stringify(createResult),
         );
       }
     }
@@ -828,7 +828,7 @@ export class TestSessionForInteg implements RunnerTestSessionInterface {
     const openResult = await persistenceStoreController.open();
     if (openResult instanceof Action2Error) {
       throw new Error(
-        "TestSessionForInteg.initSession: open store failed: " + JSON.stringify(openResult),
+        "IntegrationTestSession.initSession: open store failed: " + JSON.stringify(openResult),
       );
     }
 
@@ -841,7 +841,7 @@ export class TestSessionForInteg implements RunnerTestSessionInterface {
     );
     if (initApplicationResult instanceof Action2Error) {
       throw new Error(
-        "TestSessionForInteg.initSession: initApplication failed: " + JSON.stringify(initApplicationResult),
+        "IntegrationTestSession.initSession: initApplication failed: " + JSON.stringify(initApplicationResult),
       );
     }
 
@@ -858,7 +858,7 @@ export class TestSessionForInteg implements RunnerTestSessionInterface {
 
   async beforeEach(): Promise<void> {
     if (!this.domainController || !this.applicationDeploymentMap) {
-      throw new Error("TestSessionForInteg.beforeEach: initSession not called");
+      throw new Error("IntegrationTestSession.beforeEach: initSession not called");
     }
 
     await this.initTestApplicationData(this.domainController, this.applicationDeploymentMap);
@@ -888,15 +888,15 @@ export class TestSessionForInteg implements RunnerTestSessionInterface {
   }
 }
 
-/** @deprecated use TestSessionForInteg */
+/** @deprecated use IntegrationTestSession */
 export type PostgresIntegrationAdapterOptions = {
   postgresHostName?: string;
   filesystemDeploymentRootDirectory?: string;
   adminAssetsRootDirectory?: string;
 };
 
-/** @deprecated use TestSessionForInteg */
-export class TestSessionForPostgres extends TestSessionForInteg {
+/** @deprecated use IntegrationTestSession */
+export class IntegrationTestSessionForPostgres extends IntegrationTestSession {
   constructor(options: PostgresIntegrationAdapterOptions = {}) {
     super({
       testApplicationStore: {
@@ -913,6 +913,3 @@ export class TestSessionForPostgres extends TestSessionForInteg {
     });
   }
 }
-
-/** @deprecated use TestSessionForInteg */
-export class PostgresIntegrationAdapter extends TestSessionForPostgres {}

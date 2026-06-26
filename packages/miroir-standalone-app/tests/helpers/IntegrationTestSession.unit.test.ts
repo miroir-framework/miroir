@@ -57,14 +57,14 @@ import {
   INTEG_TEST_APPLICATION_NAME,
   INTEG_TEST_DEPLOYMENT_UUID,
   INTEG_TEST_SELF_APPLICATION_UUID,
-  TestSessionForInteg,
+  IntegrationTestSession,
   buildAdminStoreUnitConfiguration,
   buildTestApplicationStoreUnitConfiguration,
   collectStoreUnitConfigurationServerTypes,
   resolveDefaultAdminAssetsRoot,
   resolveDefaultFilesystemDeploymentRoot,
   resolveTestSessionForIntegOptionsFromEnv,
-} from "./TestSessionForInteg.js";
+} from "./IntegrationTestSession.js";
 
 function createMockDomainController(): DomainControllerInterface {
   return {
@@ -74,7 +74,7 @@ function createMockDomainController(): DomainControllerInterface {
   } as unknown as DomainControllerInterface;
 }
 
-describe("TestSessionForInteg store configuration", () => {
+describe("IntegrationTestSession store configuration", () => {
   it("builds sql test application store with test schema on admin section", () => {
     const config = buildTestApplicationStoreUnitConfiguration(INTEG_TEST_APPLICATION_NAME, {
       emulatedServerType: "sql",
@@ -166,7 +166,7 @@ describe("TestSessionForInteg store configuration", () => {
   });
 });
 
-describe("TestSessionForInteg session lifecycle", () => {
+describe("IntegrationTestSession session lifecycle", () => {
   beforeEach(() => {
     setupMiroirDomainControllerMock.mockReset();
     vi.mocked(miroirPostgresStoreSectionStartup).mockClear();
@@ -180,7 +180,7 @@ describe("TestSessionForInteg session lifecycle", () => {
     const domainController = createMockDomainController();
     setupMiroirDomainControllerMock.mockReturnValue(domainController);
 
-    const session = new TestSessionForInteg({
+    const session = new IntegrationTestSession({
       testApplicationStore: { emulatedServerType: "sql", postgresHostName: "127.0.0.1" },
       adminStore: {
         emulatedServerType: "filesystem",
@@ -206,7 +206,7 @@ describe("TestSessionForInteg session lifecycle", () => {
     const domainController = createMockDomainController();
     setupMiroirDomainControllerMock.mockReturnValue(domainController);
 
-    const session = new TestSessionForInteg({
+    const session = new IntegrationTestSession({
       testApplicationStore: { emulatedServerType: "sql", postgresHostName: "127.0.0.1" },
       adminStore: { emulatedServerType: "bundled", deploymentUuid: deployment_Admin.uuid },
       bundledDeploymentData: {
@@ -222,7 +222,7 @@ describe("TestSessionForInteg session lifecycle", () => {
     const domainController = createMockDomainController();
     setupMiroirDomainControllerMock.mockReturnValue(domainController);
 
-    const session = new TestSessionForInteg({
+    const session = new IntegrationTestSession({
       testApplicationStore: { emulatedServerType: "sql", postgresHostName: "127.0.0.1" },
       adminStore: {
         emulatedServerType: "filesystem",
@@ -242,7 +242,7 @@ describe("TestSessionForInteg session lifecycle", () => {
     const domainController = createMockDomainController();
     setupMiroirDomainControllerMock.mockReturnValue(domainController);
 
-    const session = new TestSessionForInteg({
+    const session = new IntegrationTestSession({
       testApplicationStore: { emulatedServerType: "sql", postgresHostName: "127.0.0.1" },
       adminStore: {
         emulatedServerType: "filesystem",

@@ -99,8 +99,8 @@ MIROIR_TEST_SUITES=miroirCoreTransformers MIROIR_TEST_MODE=integ \
 These tests cover the test infrastructure itself and do not need a store:
 
 ```bash
-# TestSessionForInteg config builders
-VITE_TEST_MODE=true npx vitest run tests/helpers/TestSessionForInteg.unit.test.ts \
+# IntegrationTestSession config builders
+VITE_TEST_MODE=true npx vitest run tests/helpers/IntegrationTestSession.unit.test.ts \
   -w miroir-standalone-app
 
 # miroirCoreIntegTestLaunch validation logic
@@ -145,7 +145,7 @@ VITE_TEST_MODE=true npx vitest run tests/4_services/miroirTest.schema.unit.test.
 | File | Role |
 |------|------|
 | `tests/miroir-core-tests.integ.test.ts` | Vitest integration entry |
-| `tests/helpers/TestSessionForInteg.ts` | Store bootstrap (all backends) |
+| `tests/helpers/IntegrationTestSession.ts` | Store bootstrap (all backends) |
 | `tests/helpers/miroirCoreIntegTestLaunch.ts` | Pre-flight validation + usage output |
 | `scripts/test-miroir-runner.ts` | `testMiroir` launcher — routes unit/integ |
 

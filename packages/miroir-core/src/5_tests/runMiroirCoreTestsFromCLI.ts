@@ -23,11 +23,11 @@ export async function runMiroirCoreTestsFromCLI(
   runMiroirTests: RunMiroirTests,
   vitest: VitestNamespace,
   config: MiroirTestCliConfig,
-  executionEnvironment?: MiroirTestExecutionEnvironment,
+  miroirActivityTracker: MiroirActivityTracker,
   testSession?: RunnerTestSessionInterface,
 ): Promise<void> {
-  const miroirActivityTracker = new MiroirActivityTracker();
   new MiroirEventService(miroirActivityTracker);
+  const executionEnvironment = await testSession?.initSession();
 
   if (config.executionMode === "integration" && !executionEnvironment) {
     throw new Error(

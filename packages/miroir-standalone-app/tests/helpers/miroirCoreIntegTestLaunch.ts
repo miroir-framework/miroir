@@ -7,7 +7,7 @@ import {
   type MiroirTestCliConfig,
 } from "miroir-core";
 
-import type { TestSessionForIntegOptions } from "./TestSessionForInteg.js";
+import type { TestSessionForIntegOptions } from "./IntegrationTestSession.js";
 
 const VALID_APP_STORE_TYPES = ["sql", "filesystem", "indexedDb", "mongodb"] as const;
 const VALID_ADMIN_STORE_TYPES = ["filesystem", "sql", "indexedDb", "mongodb", "bundled"] as const;
@@ -55,7 +55,7 @@ export function formatMiroirCoreIntegTestUsage(): string {
     "  MIROIR_TEST_ADMIN_INDEXEDDB_NAME     IndexedDB name prefix (default: miroirAdmin)",
     "",
     "When MIROIR_TEST_ADMIN_STORE_TYPE=bundled:",
-    "  (programmatic) bundledDeploymentData   Required on TestSessionForInteg options; not settable via env alone",
+    "  (programmatic) bundledDeploymentData   Required on IntegrationTestSession options; not settable via env alone",
     "",
     "Optional:",
     "  MIROIR_TEST_FILTER='{\"suite\":[\"label\"]}'   JSON filter passed to runMiroirCoreTestsFromCLI",
@@ -120,7 +120,7 @@ export function validateMiroirCoreIntegTestLaunch(
     const bundledData = testSessionOptions.bundledDeploymentData;
     if (!bundledData || Object.keys(bundledData).length === 0) {
       errors.push(
-        "MIROIR_TEST_ADMIN_STORE_TYPE=bundled requires bundledDeploymentData on TestSessionForInteg (not available via env alone)",
+        "MIROIR_TEST_ADMIN_STORE_TYPE=bundled requires bundledDeploymentData on IntegrationTestSession (not available via env alone)",
       );
     }
   }

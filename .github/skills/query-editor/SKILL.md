@@ -19,7 +19,7 @@ npm run testMiroir -w miroir-core -- --suites miroirCoreTransformers --mode inte
 
 # Per-file vitest alternative
 RUN_TEST=transformers.unit.test npm run testByFile -w miroir-core -- 'transformers.unit'
-RUN_TEST=transformers.integ.test npm run testByFile -w miroir-core -- 'transformers.integ'
+npm run testMiroir -w miroir-standalone-app -- --suites miroirCoreTransformers --mode integration
 ```
 
 If tests are failing, inform the user of the baseline state before proceeding.
@@ -75,7 +75,7 @@ Create/modify the transformer definition and implementation.
 
 ```bash
 RUN_TEST=transformers.unit.test npm run testByFile -w miroir-core -- 'transformers.unit'
-RUN_TEST=transformers.integ.test npm run testByFile -w miroir-core -- 'transformers.integ'
+npm run testMiroir -w miroir-standalone-app -- --suites miroirCoreTransformers --mode integration
 ```
 
 ### Step 6: Rebuild if Needed
@@ -147,7 +147,7 @@ In `packages/miroir-core/scripts/generate-ts-types.ts`:
 #### Step 7: Run devBuild and Tests
 
 ```bash
-npm run devBuild -w miroir-core && RUN_TEST=transformers.unit.test npm run testByFile -w miroir-core -- 'transformers.unit' && && RUN_TEST=transformers.integ.test npm run testByFile -w miroir-core -- 'transformers.integ'
+npm run devBuild -w miroir-core && RUN_TEST=transformers.unit.test npm run testByFile -w miroir-core -- 'transformers.unit' && npm run testMiroir -w miroir-standalone-app -- --suites miroirCoreTransformers --mode integration
 ```
 
 #### Step 8: Create or Update documentation
@@ -402,7 +402,7 @@ export const handleTransformer_<name> = (
 | **Schema registration (CRITICAL)** | `packages/miroir-core/src/0_interfaces/1_core/bootstrapJzodSchemas/getMiroirFundamentalJzodSchema.ts` |
 | Transformer tools | `packages/miroir-core/src/2_domain/Transformer_tools.ts` |
 | Test suite (unit) | `packages/miroir-core/tests/2_domain/transformers.unit.test.ts` |
-| Test suite (integ) | `packages/miroir-core/tests/4_services/transformers.integ.test.ts` |
+| Test suite (integ) | `packages/miroir-standalone-app/tests/miroir-core-tests.integ.test.ts` (via `testMiroir`) |
 | Test data | `packages/miroir-test-app_deployment-miroir/assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/33f60ac8-6511-43b1-b153-6b86e3177532.json` |
 | Generated types | `packages/miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.ts` |
 
@@ -496,7 +496,7 @@ export const sqlTransformerImplementations: Record<string, ITransformerHandler> 
 npm run build -w miroir-store-postgres
 
 # Run integration tests
-RUN_TEST=transformers.integ.test npm run testByFile -w miroir-core -- 'transformers.integ'
+npm run testMiroir -w miroir-standalone-app -- --suites miroirCoreTransformers --mode integration
 ```
 
 ### SQL Result Types

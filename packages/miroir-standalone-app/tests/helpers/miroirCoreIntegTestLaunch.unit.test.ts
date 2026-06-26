@@ -11,7 +11,7 @@ import {
   resolveDefaultAdminAssetsRoot,
   resolveDefaultFilesystemDeploymentRoot,
   resolveTestSessionForIntegOptionsFromEnv,
-} from "./TestSessionForInteg.js";
+} from "./IntegrationTestSession.js";
 
 function baseContext(overrides: {
   env?: NodeJS.ProcessEnv;

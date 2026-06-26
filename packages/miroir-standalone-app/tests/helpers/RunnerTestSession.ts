@@ -82,7 +82,7 @@ export class RunnerTestSession implements RunnerTestSessionInterface {
 
   constructor(private readonly options: RunnerTestSessionOptions) {}
 
-
+  // ##############################################################################################
   async initSession(): Promise<MiroirTestExecutionEnvironment> {
     const { miroirConfig, miroirActivityTracker, miroirEventService } = this.options;
     const pageLabel = this.options.pageLabel ?? "miroir-runner-tests.integ";
@@ -131,6 +131,7 @@ export class RunnerTestSession implements RunnerTestSessionInterface {
     };
   }
 
+  // ##############################################################################################
   async beforeEach(): Promise<void> {
     if (!this.domainController || !this.applicationDeploymentMap) {
       throw new Error("RunnerTestSession.beforeEach: initSession not called");
@@ -141,6 +142,7 @@ export class RunnerTestSession implements RunnerTestSessionInterface {
     }
   }
 
+  // ##############################################################################################
   async teardown(): Promise<void> {
     this.domainController = undefined;
     this.applicationDeploymentMap = undefined;

@@ -255,7 +255,7 @@ flowchart TB
   end
 
   subgraph core_adapters [miroir-core adapters today]
-    ADAPT_XFORM[TestSessionForPostgres]
+    ADAPT_XFORM[IntegrationTestSessionForPostgres]
     STORE[miroirTestIntegrationStore.ts]
   end
 
@@ -282,7 +282,7 @@ flowchart TB
 |-------|---------|----------------|
 | **Port** | `miroir-core` | `RunnerTestSessionInterface`: `initSession`, `beforeEach`, `teardown`, expose `executionEnvironment` |
 | **Orchestrator** | `miroir-core` | `runMiroirTestsFromCLI` calls port lifecycle; leaf runners consume injected environment |
-| **Transformer adapter** | `miroir-core` | `TestSessionForPostgres` — wraps existing `miroirTestIntegrationStore` |
+| **Transformer adapter** | `miroir-core` | `IntegrationTestSessionForPostgres` — wraps existing `miroirTestIntegrationStore` |
 | **Runner adapter** | `miroir-standalone-app` | `RunnerTestSession` — brings `miroirAppStartup`, config files, `setupMiroirTest` wiring |
 | **Vitest script** | `miroir-standalone-app` | `test-miroir.ts` + entry file; passes adapter into orchestrator |
 
@@ -381,7 +381,7 @@ VITE_MIROIR_TEST_CONFIG_FILENAME=... npm run testByFile -w miroir-standalone-app
   ```
 - `MiroirTestExecutionEnvironment` — union/superset for transformer + runner needs (`integrationStore?`, `domainController?`, `testParams`, `runtimeContext`, …)
 - `MiroirTestIntegrationOrchestrator` — owns lifecycle; used by `runMiroirTestsFromCLI`
-- `TestSessionForPostgres` — thin wrap over `initMiroirTestIntegrationStore` (refactor existing integ entry, no behaviour change)
+- `IntegrationTestSessionForPostgres` — thin wrap over `initMiroirTestIntegrationStore` (refactor existing integ entry, no behaviour change)
 
 **Green (standalone-app):**
 
@@ -396,7 +396,7 @@ VITE_MIROIR_TEST_CONFIG_FILENAME=... npm run testByFile -w miroir-standalone-app
 
 **Follow-up (same feature, later slice):**
 
-- Refactor `miroir-tests.integ.test.ts` (miroir-core) to use orchestrator + `TestSessionForPostgres` explicitly
+- Refactor `miroir-tests.integ.test.ts` (miroir-core) to use orchestrator + `IntegrationTestSessionForPostgres` explicitly
 
 #### A3 — Pilot instance + fixture catalog
 

@@ -36,8 +36,6 @@ import { zodErrorDeepestIssueLeaves } from "../../src/1_core/zodParseErrorHandle
 import { Uuid } from '../../src/0_interfaces/1_core/EntityDefinition.js';
 import { getBasicApplicationConfiguration } from '../../src/2_domain/Deployment.js';
 
-const testSuiteName = "transformers.integ.test";
-
 const testApplicationName = "testApplication"
 const sqlDbStoreName = "testStoreName"
 const connectionString = "postgres://postgres:postgres@localhost:5432/postgres"

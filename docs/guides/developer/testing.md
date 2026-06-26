@@ -145,18 +145,18 @@ For migrations from legacy `UnitTest` / `TransformerTest`, use `migrateLegacyTes
 
 Two integration paths coexist in `miroir-standalone-app`:
 
-**MiroirTest path** (`testMiroir`): deployment JSON test cases → `TestSessionForInteg` → direct `domainController` (no HTTP). Suited to large transformer/query regression suites.
+**MiroirTest path** (`testMiroir`): deployment JSON test cases → `IntegrationTestSession` → direct `domainController` (no HTTP). Suited to large transformer/query regression suites.
 
 **App-stack path** (`testByFile`): inline TypeScript test trees → `setupMiroirTest` / `setupMiroirTestAndCreateMiroirDeployment` → client + emulated server via `RestClientStub`. Suited to DomainController, PSC, and view integration.
 
 ```
-MiroirTest:  testMiroir → TestSessionForInteg → runMiroirCoreTestsFromCLI → deployment JSON leaves
+MiroirTest:  testMiroir → IntegrationTestSession → runMiroirCoreTestsFromCLI → deployment JSON leaves
 App-stack:   testByFile → loadTestConfigFiles → setupMiroirTest* → runTestOrTestSuite / it()
 ```
 
 Side-by-side comparison: [reference/testing.md — Architecture](../../reference/testing.md#architecture-comparing-integration-paths).
 
-For MiroirTest integration lifecycle (`initSession` / `beforeEach` / `teardown`), see `TestSessionForInteg` in the reference doc.
+For MiroirTest integration lifecycle (`initSession` / `beforeEach` / `teardown`), see `IntegrationTestSession` in the reference doc.
 
 ---
 

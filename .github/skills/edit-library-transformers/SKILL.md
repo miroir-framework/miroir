@@ -26,7 +26,7 @@ npm run testMiroir -w miroir-core -- --suites miroirCoreTransformers --mode inte
 
 # Per-file vitest (equivalent selective gate)
 RUN_TEST=transformers.unit.test npm run testByFile -w miroir-core -- 'transformers.unit'
-RUN_TEST=transformers.integ.test npm run testByFile -w miroir-core -- 'transformers.integ'
+npm run testMiroir -w miroir-standalone-app -- --suites miroirCoreTransformers --mode integration
 ```
 
 If tests are failing, inform the user of the baseline state before proceeding.
@@ -226,7 +226,7 @@ File: `packages/miroir-core/scripts/generate-ts-types.ts`
 Generate types and verify everything works:
 ```bash
 npm run build -w miroir-test-app_deployment-library
-npm run devBuild -w miroir-core && RUN_TEST=transformers.unit.test npm run testByFile -w miroir-core -- 'transformers.unit' && RUN_TEST=transformers.integ.test npm run testByFile -w miroir-core -- 'transformers.integ'
+npm run devBuild -w miroir-core && RUN_TEST=transformers.unit.test npm run testByFile -w miroir-core -- 'transformers.unit' && npm run testMiroir -w miroir-standalone-app -- --suites miroirCoreTransformers --mode integration
 ```
 
 ### Step 9: Create or Update Documentation 📚

@@ -4,6 +4,7 @@ import * as vitest from "vitest";
 import {
   ConfigurationService,
   listMiroirTestSuiteKeys,
+  MiroirActivityTracker,
   parseMiroirTestCliArgs,
   resolveMiroirTestCliConfigFromPartial,
   runMiroirCoreTestsFromCLI,
@@ -11,9 +12,9 @@ import {
 } from "miroir-core";
 import { assertMiroirCoreIntegTestLaunchReady } from "./helpers/miroirCoreIntegTestLaunch.js";
 import {
-  TestSessionForInteg,
+  IntegrationTestSession,
   resolveTestSessionForIntegOptionsFromEnv,
-} from "./helpers/TestSessionForInteg.js";
+} from "./helpers/IntegrationTestSession.js";
 
 ConfigurationService.configurationService.registerTestImplementation({ expect: expect as any });
 
@@ -24,7 +25,7 @@ const config = resolveMiroirTestCliConfigFromPartial(
   listMiroirTestSuiteKeys(),
 );
 const testSessionOptions = resolveTestSessionForIntegOptionsFromEnv(process.env);
-
+const miroirActivityTracker = new MiroirActivityTracker();
 assertMiroirCoreIntegTestLaunchReady({
   env: process.env,
   argv,
@@ -33,13 +34,12 @@ assertMiroirCoreIntegTestLaunchReady({
 });
 
 if (config.suiteKeys.length > 0) {
-  const testSession = new TestSessionForInteg(testSessionOptions);
-  const executionEnvironment = await testSession.initSession();
+  const testSession = new IntegrationTestSession(testSessionOptions);
   await runMiroirCoreTestsFromCLI(
     runMiroirTests, 
     vitest,
     config,
-    executionEnvironment,
+    miroirActivityTracker,
     testSession,
   );
 }
