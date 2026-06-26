@@ -1,7 +1,10 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { DomainControllerInterface, MiroirConfigClient } from "miroir-core";
-import { getBootstrapPhasesForDomainControllerProfile } from "miroir-core";
+import {
+  getBootstrapPhasesForDomainControllerProfile,
+  getPlayfieldForDomainControllerProfile,
+} from "miroir-core";
 import { selfApplicationLibrary } from "miroir-test-app_deployment-library";
 import {
   selfApplicationDeploymentMiroir,
@@ -37,6 +40,19 @@ describe("DomainControllerIntegrationTestSession (Gap E DC)", () => {
       testApplicationUuid: selfApplicationLibrary.uuid,
       persistenceStoreControllerManager: {},
     });
+  });
+
+  it("miroirPlatform descriptor playfield is none", () => {
+    const session = new DomainControllerIntegrationTestSession(
+      miroirConfig,
+      sessionOptions,
+      "miroirPlatform",
+    );
+
+    expect(session.descriptor.playfield).toBe(
+      getPlayfieldForDomainControllerProfile("miroirPlatform"),
+    );
+    expect(session.descriptor.playfield).toBe("none");
   });
 
   it("miroirPlatform requests bootstrap phases including resetMiroirModel", async () => {
@@ -76,6 +92,16 @@ describe("DomainControllerIntegrationTestSession (Gap E DC)", () => {
     );
   });
 
+  it("miroirAndLibrary descriptor playfield is libraryDeployment", () => {
+    const session = new DomainControllerIntegrationTestSession(
+      miroirConfig,
+      sessionOptions,
+      "miroirAndLibrary",
+    );
+
+    expect(session.descriptor.playfield).toBe("libraryDeployment");
+  });
+
   it("miroirAndLibrary deploys library without resetMiroirModel", async () => {
     const session = new DomainControllerIntegrationTestSession(
       miroirConfig,
@@ -93,5 +119,22 @@ describe("DomainControllerIntegrationTestSession (Gap E DC)", () => {
     const phases =
       runAppStackIntegrationBootstrapMock.mock.calls[0][0].phases as string[];
     expect(phases).not.toContain("resetMiroirModel");
+    expect(phases).toContain("deployLibrary");
+  });
+
+  it("miroirAndLibrary forwards libraryPlayfieldEnsureMode to bootstrap", async () => {
+    const session = new DomainControllerIntegrationTestSession(
+      miroirConfig,
+      { ...sessionOptions, libraryPlayfieldEnsureMode: "requireExisting" },
+      "miroirAndLibrary",
+    );
+
+    await session.initSession();
+
+    expect(runAppStackIntegrationBootstrapMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        libraryPlayfieldEnsureMode: "requireExisting",
+      }),
+    );
   });
 });

@@ -17,15 +17,21 @@ import {
   defaultMiroirModelEnvironment,
   defaultSelfApplicationDeploymentMap,
   displayTestSuiteResultsDetails,
-  resetAndInitApplicationDeployment,
-  selfApplicationDeploymentMiroir
+  resetLibraryPlayfield,
 } from "miroir-core";
 import {
   adminApplication_Miroir,
   deployment_Admin,
   deployment_Miroir
 } from "miroir-test-app_deployment-admin";
-import { deployment_Library_DO_NO_USE } from "miroir-test-app_deployment-library";
+import {
+  deployment_Library_DO_NO_USE,
+  selfApplicationLibrary,
+} from "miroir-test-app_deployment-library";
+import {
+  selfApplicationDeploymentMiroir,
+  selfApplicationMiroir,
+} from "miroir-test-app_deployment-miroir";
 import { setupMiroirTest } from "../../src/miroir-fwk/4-tests/setupMiroirTest";
 
 export interface RunnerTestParams {
@@ -54,9 +60,15 @@ export async function beforeEachTest(
   domainController: DomainControllerInterface,
   applicationDeploymentMap: ApplicationDeploymentMap,
 ): Promise<void>  {
-  await resetAndInitApplicationDeployment(domainController, applicationDeploymentMap, [
-    selfApplicationDeploymentMiroir as Deployment,
-  ]);
+  await resetLibraryPlayfield({
+    domainController,
+    applicationDeploymentMap,
+    libraryDeploymentUuid: deployment_Library_DO_NO_USE.uuid,
+    librarySelfApplicationUuid: selfApplicationLibrary.uuid,
+    miroirDeploymentUuid: selfApplicationDeploymentMiroir.uuid,
+    miroirSelfApplicationUuid: selfApplicationMiroir.uuid,
+    resetMiroirPlatform: true,
+  });
   document.body.innerHTML = "";
 };
 

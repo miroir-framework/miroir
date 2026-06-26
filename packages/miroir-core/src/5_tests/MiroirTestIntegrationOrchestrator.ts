@@ -6,12 +6,18 @@ import {
   type IntegrationTestSessionDescriptor,
   type IntegrationTestSessionKind,
 } from "./IntegrationTestBootstrap.js";
+import type { LibraryPlayfieldEnsureMode } from "./LibraryPlayfield.js";
 import type { RunnerTestSessionInterface } from "./MiroirTestTools.js";
 
 export type IntegrationTestOrchestratorContext = {
   miroirConfig: MiroirConfigClient;
   miroirActivityTracker?: MiroirActivityTracker;
   miroirEventService?: MiroirEventService;
+  /**
+   * Gap B / Gap A: when the host already deployed the library playfield, pass `requireExisting`
+   * so bootstrap skips create. Defaults to `createIfAbsent` in session bootstrap wiring.
+   */
+  playfieldMode?: LibraryPlayfieldEnsureMode;
   /** Gap A will add: hostDomainController?, skipPhases?: ... */
 };
 

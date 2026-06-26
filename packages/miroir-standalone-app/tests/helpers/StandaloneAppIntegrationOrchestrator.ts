@@ -3,6 +3,7 @@ import type {
   IntegrationTestSessionFactory,
   IntegrationTestSessionKind,
   IntegrationTestOrchestratorContext,
+  LibraryPlayfieldEnsureMode,
   MiroirTestIntegrationOrchestrator,
 } from "miroir-core";
 import { createDefaultMiroirTestIntegrationOrchestrator } from "miroir-core";
@@ -24,6 +25,13 @@ export type DomainControllerOrchestratorSessionOptions =
     profile: DomainControllerSessionProfile;
   };
 
+function resolveLibraryPlayfieldEnsureMode(
+  sessionSpecificMode: LibraryPlayfieldEnsureMode | undefined,
+  context: IntegrationTestOrchestratorContext,
+): LibraryPlayfieldEnsureMode | undefined {
+  return sessionSpecificMode ?? context.playfieldMode;
+}
+
 function createStandaloneAppSession(
   kind: IntegrationTestSessionKind,
   context: IntegrationTestOrchestratorContext,
@@ -32,17 +40,28 @@ function createStandaloneAppSession(
   switch (kind) {
     case "transformer":
       return new IntegrationTestSession(sessionSpecificOptions as TestSessionForIntegOptions);
-    case "appStackPsc":
-      return new AppStackIntegrationTestSession(
-        context.miroirConfig,
-        sessionSpecificOptions as AppStackSessionOptions,
-      );
+    case "appStackPsc": {
+      const appStackOptions = sessionSpecificOptions as AppStackSessionOptions;
+      return new AppStackIntegrationTestSession(context.miroirConfig, {
+        ...appStackOptions,
+        libraryPlayfieldEnsureMode: resolveLibraryPlayfieldEnsureMode(
+          appStackOptions.libraryPlayfieldEnsureMode,
+          context,
+        ),
+      });
+    }
     case "domainController": {
       const { profile, ...sessionOptions } =
         sessionSpecificOptions as DomainControllerOrchestratorSessionOptions;
       return new DomainControllerIntegrationTestSession(
         context.miroirConfig,
-        sessionOptions,
+        {
+          ...sessionOptions,
+          libraryPlayfieldEnsureMode: resolveLibraryPlayfieldEnsureMode(
+            sessionOptions.libraryPlayfieldEnsureMode,
+            context,
+          ),
+        },
         profile,
       );
     }

@@ -6,7 +6,7 @@
 **Scope:** Pure refactoring. Standardise **when** the library deployment is created, reset, and
 seeded — **not** what tests assert. PSC-direct `4_storage` test bodies remain unchanged (Gap C).
 
-**Status:** L0–L4 done. Next: Slice L5 (`RunnerTestSession` / `beforeEachTest`).
+**Status:** L0–L7 done. Next: Slice L8 (docs + gap analysis update).
 
 ---
 
@@ -323,7 +323,7 @@ If not equivalent to `resetAndinitializeDeploymentCompositeAction`, add optional
 
 ---
 
-### Slice L5 — `RunnerTestSession` / `RunnerIntegTestTools`
+### Slice L5 — `RunnerTestSession` / `RunnerIntegTestTools` — ✅ **DONE**
 
 **L5-Green:** Replace `beforeEachTest` body with:
 
@@ -350,7 +350,7 @@ MIROIR_TEST_SUITES=runner_library MIROIR_TEST_MODE=integ \
 
 ---
 
-### Slice L6 — `DomainControllerIntegrationTestSession` playfield metadata
+### Slice L6 — `DomainControllerIntegrationTestSession` playfield metadata — ✅ **DONE**
 
 **L6-Green:**
 
@@ -372,7 +372,7 @@ npm run testByFile -w miroir-standalone-app -- DomainController.React.Model.undo
 
 ---
 
-### Slice L7 — Orchestrator + descriptor surfacing
+### Slice L7 — Orchestrator + descriptor surfacing — ✅ **DONE**
 
 **L7-Green:** `MiroirTestIntegrationOrchestrator.describeSession(kind)` returns `playfield`.
 `StandaloneAppIntegrationOrchestrator` passes `playfieldMode` through to bootstrap (default
@@ -436,8 +436,8 @@ Only if `setupMiroirPlatform` duplicates library reset inline:
 - [x] `ensureLibraryPlayfield` + `resetLibraryPlayfield` unit-tested without standalone-app imports
 - [x] `runAppStackIntegrationBootstrap` uses `ensureLibraryPlayfield` for library phase
 - [x] All `4_storage` `beforeEach` hooks use shared playfield helpers (behaviour-preserving)
-- [ ] `RunnerTestSession` / `beforeEachTest` uses `resetLibraryPlayfield`
-- [ ] Session descriptors expose `playfield` for orchestrator / future UI
+- [x] `RunnerTestSession` / `beforeEachTest` uses `resetLibraryPlayfield`
+- [x] Session descriptors expose `playfield` for orchestrator / future UI
 - [ ] `RunnerTestSessionInterface` method signatures unchanged
 - [ ] No `it()` body edits
 - [ ] Transformer integ still uses `testApplication` playfield — documented, not merged with library

@@ -7,6 +7,7 @@ import type {
   DomainControllerSessionProfile,
   IntegrationTestBootstrapPhase,
   IntegrationTestSessionDescriptor,
+  LibraryPlayfieldEnsureMode,
   MiroirActivityTracker,
   MiroirConfigClient,
   MiroirEventService,
@@ -37,6 +38,7 @@ export type DomainControllerIntegrationTestSessionOptions = AppStackSessionOptio
    * When true, `miroirPlatform` omits the `resetMiroirModel` bootstrap phase.
    */
   skipResetMiroirModelInInit?: boolean;
+  libraryPlayfieldEnsureMode?: LibraryPlayfieldEnsureMode;
 };
 
 function resolveBootstrapPhases(
@@ -83,6 +85,7 @@ export class DomainControllerIntegrationTestSession implements RunnerTestSession
       openAdminAndMiroirStoresOnServer: true,
       miroirDeploymentUuid: selfApplicationDeploymentMiroir.uuid,
       miroirSelfApplicationUuid: selfApplicationMiroir.uuid,
+      libraryPlayfieldEnsureMode: this.sessionOptions.libraryPlayfieldEnsureMode,
     });
 
     this.domainController = executionEnvironment.domainController;

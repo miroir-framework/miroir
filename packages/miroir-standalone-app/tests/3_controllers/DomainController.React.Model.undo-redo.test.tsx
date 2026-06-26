@@ -25,7 +25,7 @@ import {
   entityEntity,
   entityReport,
   miroirCoreStartup,
-  resetAndInitApplicationDeployment,
+  resetLibraryPlayfield,
   selfApplicationMiroir,
   type ApplicationDeploymentMap,
   type Deployment
@@ -151,10 +151,13 @@ beforeAll(
 
 beforeEach(
   async () => {
-    await resetAndInitApplicationDeployment(domainController,
+    await resetLibraryPlayfield({
+      domainController,
       applicationDeploymentMap,
-      selfApplicationDeploymentConfigurations,
-    );
+      libraryDeploymentUuid: deployment_Library_DO_NO_USE.uuid,
+      librarySelfApplicationUuid: selfApplicationLibrary.uuid,
+      deploymentsToReset: selfApplicationDeploymentConfigurations,
+    });
     document.body.innerHTML = '';
   }
 )

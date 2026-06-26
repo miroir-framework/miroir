@@ -62,6 +62,7 @@ import {
   type StoreSectionConfiguration,
   type StoreUnitConfiguration,
   type Uuid,
+  type LibraryPlayfieldEnsureMode,
   getBootstrapPhasesForSessionKind,
 } from "miroir-core";
 import { selfApplicationLibrary } from "miroir-test-app_deployment-library";
@@ -112,6 +113,7 @@ export type AppStackSessionOptions = {
   applicationDeploymentMap: ApplicationDeploymentMap;
   adminDeployment: Deployment;
   libraryDeploymentStorageConfiguration: StoreUnitConfiguration;
+  libraryPlayfieldEnsureMode?: LibraryPlayfieldEnsureMode;
 };
 
 export const INTEG_TEST_APPLICATION_NAME = "testApplication";
@@ -613,6 +615,7 @@ export class AppStackIntegrationTestSession implements RunnerTestSessionInterfac
       deployMiroirStrategy: "pscHelper",
       openAdminAndMiroirStoresOnServer: false,
       customFetch: crossFetch,
+      libraryPlayfieldEnsureMode: this.appStackOptions.libraryPlayfieldEnsureMode,
     });
 
     this.domainController = executionEnvironment.domainController;
