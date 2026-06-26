@@ -20,7 +20,7 @@ import {
   resetAndInitApplicationDeployment,
   type StoreOrBundleAction,
 } from "miroir-core";
-import { deployment_Admin } from "miroir-test-app_deployment-admin";
+import { deployment_Miroir } from "miroir-test-app_deployment-admin";
 import {
   deployment_Library_DO_NO_USE,
   selfApplicationLibrary,
@@ -55,10 +55,18 @@ export type AppStackBootstrapOptions = {
 
 async function openAdminAndMiroirStores(
   domainControllerForServer: DomainControllerInterface,
+  adminDeployment: Deployment,
+  miroirDeploymentStorageConfiguration: StoreUnitConfiguration,
 ): Promise<void> {
+  const miroirDeploymentForOpenStore: Deployment = {
+    ...(deployment_Miroir as Deployment),
+    uuid: selfApplicationDeploymentMiroir.uuid,
+    configuration: miroirDeploymentStorageConfiguration,
+  };
+
   const configurations: Record<string, Deployment> = {
-    [deployment_Admin.uuid]: deployment_Admin as Deployment,
-    [selfApplicationDeploymentMiroir.uuid]: selfApplicationDeploymentMiroir as Deployment,
+    [adminDeployment.uuid]: adminDeployment,
+    [selfApplicationDeploymentMiroir.uuid]: miroirDeploymentForOpenStore,
   };
 
   for (const c of Object.entries(configurations)) {
@@ -139,7 +147,16 @@ export async function runAppStackIntegrationBootstrap(
         "runAppStackIntegrationBootstrap: domainControllerForServer missing for openAdminAndMiroirStoresOnServer",
       );
     }
-    await openAdminAndMiroirStores(domainControllerForServer);
+    if (!miroirDeploymentStorageConfiguration) {
+      throw new Error(
+        "runAppStackIntegrationBootstrap: miroirDeploymentStorageConfiguration required for openAdminAndMiroirStoresOnServer",
+      );
+    }
+    await openAdminAndMiroirStores(
+      domainControllerForServer,
+      adminDeployment,
+      miroirDeploymentStorageConfiguration,
+    );
   }
 
   if (phases.includes("deployMiroir")) {

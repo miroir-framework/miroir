@@ -59,7 +59,7 @@ import {
   resetAndinitializeDeploymentCompositeAction,
   selfApplicationMiroir,
 } from "miroir-core";
-import { adminApplication_Miroir, deployment_Admin } from "miroir-test-app_deployment-admin";
+import { deployment_Admin } from "miroir-test-app_deployment-admin";
 import {
   Country1,
   Country2,
@@ -81,7 +81,7 @@ import {
 } from "miroir-test-app_deployment-library";
 import { packageName } from "../../src/constants.js";
 import { cleanLevel } from "./constants.js";
-import { setupMiroirTestAndCreateMiroirDeployment } from "../../src/miroir-fwk/4-tests/setupMiroirTest.js";
+import { DomainControllerIntegrationTestSession } from "../helpers/DomainControllerIntegrationTestSession.js";
 // import { entityBook } from "miroir-core";
 
 const env: any = process.env;
@@ -264,21 +264,22 @@ export const libraryEntitiesAndInstancesWithoutBook3: ApplicationEntitiesAndInst
 beforeAll(async () => {
   // Establish requests interception layer before all tests.
   console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ beforeAll");
-  const {
-    // persistenceStoreControllerManagerForClient: localpersistenceStoreControllerManager,
-    domainController: localdomainController,
-  } = await setupMiroirTestAndCreateMiroirDeployment(
-    miroirConfig, miroirActivityTracker, miroirEventService,
-    deployment_Miroir.uuid,
-    adminApplication_Miroir.uuid,
-    adminDeployment,
-    miroirDeploymentStorageConfiguration,
-    applicationDeploymentMap,
-    crossFetch,
+  const session = new DomainControllerIntegrationTestSession(
+    miroirConfig,
+    {
+      applicationDeploymentMap,
+      adminDeployment,
+      miroirDeploymentStorageConfiguration,
+      libraryDeploymentStorageConfiguration: testDeploymentStorageConfiguration,
+      miroirActivityTracker,
+      miroirEventService,
+      customFetch: crossFetch,
+      skipResetMiroirModelInInit: true,
+    },
+    "miroirPlatform",
   );
-
-  // persistenceStoreControllerManager = localpersistenceStoreControllerManager;
-  domainController = localdomainController;
+  const executionEnvironment = await session.initSession();
+  domainController = executionEnvironment.domainController;
   console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ beforeAll DONE");
 
   return Promise.resolve();

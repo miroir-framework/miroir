@@ -67,6 +67,11 @@ function baseMiroirConfig(): MiroirConfigClient {
 const applicationDeploymentMap = {} as ApplicationDeploymentMap;
 const adminDeployment = { uuid: "admin-uuid", selfApplication: "admin-app" } as any;
 const libraryDeploymentStorageConfiguration = { model: {}, data: {}, admin: {} } as any;
+const miroirDeploymentStorageConfiguration = {
+  model: { emulatedServerType: "sql" },
+  data: { emulatedServerType: "sql" },
+  admin: { emulatedServerType: "sql" },
+} as any;
 
 function explicitBootstrapOptions(
   overrides: Partial<AppStackBootstrapOptions> = {},
@@ -174,5 +179,37 @@ describe("runAppStackIntegrationBootstrap (Gap E B1)", () => {
         }),
       ),
     ).rejects.toThrow(/miroirDeploymentStorageConfiguration required/);
+  });
+
+  it("openAdminAndMiroirStoresOnServer passes test storage config for miroir openStore", async () => {
+    const domainController = createMockDomainController();
+    setupMiroirTestMock.mockResolvedValue({
+      domainControllerForClient: domainController,
+      domainControllerForServer: domainController,
+      persistenceStoreControllerManagerForServer: createMockManager(),
+    });
+
+    await runAppStackIntegrationBootstrap(
+      explicitBootstrapOptions({
+        phases: ["wireEmulatedStack"],
+        openAdminAndMiroirStoresOnServer: true,
+        miroirDeploymentStorageConfiguration,
+      }),
+    );
+
+    const openStoreCalls = vi
+      .mocked(domainController.handleAction)
+      .mock.calls.filter(
+        ([action]) =>
+          (action as { actionType?: string }).actionType ===
+          "storeManagementAction_openStore",
+      );
+    expect(openStoreCalls).toHaveLength(2);
+    const miroirOpenStorePayload = openStoreCalls[1]?.[0] as {
+      payload?: { configuration?: Record<string, unknown> };
+    };
+    expect(
+      Object.values(miroirOpenStorePayload.payload?.configuration ?? {})[0],
+    ).toEqual(miroirDeploymentStorageConfiguration);
   });
 });

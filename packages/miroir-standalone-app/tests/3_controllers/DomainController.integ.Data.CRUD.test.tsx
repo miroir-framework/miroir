@@ -17,9 +17,7 @@ import {
   MiroirEventService,
   miroirFundamentalJzodSchema,
   MiroirLoggerFactory,
-  resetAndInitApplicationDeployment,
   resetAndinitializeDeploymentCompositeAction,
-  selfApplicationDeploymentMiroir,
   StoreUnitConfiguration,
   testUtils_deleteApplicationDeployment,
   testUtils_resetApplicationDeployment,
@@ -40,7 +38,6 @@ import {
   TestCompositeActionParams
 } from "miroir-core";
 import {
-  adminApplication_Miroir,
   deployment_Admin
 } from "miroir-test-app_deployment-admin";
 
@@ -74,7 +71,7 @@ import {
 import { loglevelnext } from "../../src/loglevelnextImporter.js";
 import { loadTestConfigFiles } from "../utils/fileTools.js";
 import { cleanLevel, packageName } from "./constants.js";
-import { setupMiroirTestAndCreateMiroirDeployment } from "../../src/miroir-fwk/4-tests/setupMiroirTest.js";
+import { DomainControllerIntegrationTestSession } from "../helpers/DomainControllerIntegrationTestSession.js";
 import { runTestOrTestSuite } from "../../src/miroir-fwk/4-tests/runTestOrTestSuite.js";
 
 // const env: any = (import.meta as any).env;
@@ -254,19 +251,20 @@ export const libraryEntitiesAndInstancesWithoutBook3: ApplicationEntitiesAndInst
 
 beforeAll(async () => {
   myConsoleLog("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ beforeAll");
-  const { domainController: localdomainController } = await setupMiroirTestAndCreateMiroirDeployment(
-    miroirConfig, miroirActivityTracker, miroirEventService,
-    deployment_Miroir.uuid,
-    adminApplication_Miroir.uuid,
-    adminDeployment,
-    miroirDeploymentStorageConfiguration,
-    applicationDeploymentMap,
+  const session = new DomainControllerIntegrationTestSession(
+    miroirConfig,
+    {
+      applicationDeploymentMap,
+      adminDeployment,
+      miroirDeploymentStorageConfiguration,
+      libraryDeploymentStorageConfiguration: testDeploymentStorageConfiguration,
+      miroirActivityTracker,
+      miroirEventService,
+    },
+    "miroirPlatform",
   );
-  domainController = localdomainController;
-
-  await resetAndInitApplicationDeployment(domainController, applicationDeploymentMap, [
-    selfApplicationDeploymentMiroir as Deployment,
-  ]);
+  const executionEnvironment = await session.initSession();
+  domainController = executionEnvironment.domainController;
   document.body.innerHTML = "";
   myConsoleLog("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ beforeAll DONE");
   return Promise.resolve();

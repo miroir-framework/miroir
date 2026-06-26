@@ -46,7 +46,7 @@ import { loglevelnext } from "../../src/loglevelnextImporter.js";
 import { loadTestConfigFiles } from "../utils/fileTools.js";
 
 
-import { adminApplication_Miroir, deployment_Admin } from "miroir-test-app_deployment-admin";
+import { deployment_Admin } from "miroir-test-app_deployment-admin";
 
 import {
   entityDefinitionPublisher,
@@ -61,7 +61,7 @@ import {
 
 import { packageName } from "../../src/constants.js";
 import { cleanLevel } from "./constants.js";
-import { setupMiroirTestAndCreateMiroirDeployment } from "../../src/miroir-fwk/4-tests/setupMiroirTest.js";
+import { DomainControllerIntegrationTestSession } from "../helpers/DomainControllerIntegrationTestSession.js";
 import { runTestOrTestSuite } from "../../src/miroir-fwk/4-tests/runTestOrTestSuite.js";
 
 // ##############################################################################################
@@ -358,22 +358,20 @@ const checkCount = (n: number) => ({
 // ##############################################################################################
 beforeAll(async () => {
   myConsoleLog("@@@@@@@@@@@@@@@@@@ beforeAll");
-  const { domainController: localDomainController } =
-    await setupMiroirTestAndCreateMiroirDeployment(
-      miroirConfig,
-      miroirActivityTracker,
-      miroirEventService,
-      deployment_Miroir.uuid,
-      adminApplication_Miroir.uuid,
+  const session = new DomainControllerIntegrationTestSession(
+    miroirConfig,
+    {
+      applicationDeploymentMap,
       adminDeployment,
       miroirDeploymentStorageConfiguration,
-      applicationDeploymentMap,
-    );
-  domainController = localDomainController;
-
-  await resetAndInitApplicationDeployment(domainController, applicationDeploymentMap, [
-    selfApplicationDeploymentMiroir as Deployment,
-  ]);
+      libraryDeploymentStorageConfiguration: testDeploymentStorageConfiguration,
+      miroirActivityTracker,
+      miroirEventService,
+    },
+    "miroirPlatform",
+  );
+  const executionEnvironment = await session.initSession();
+  domainController = executionEnvironment.domainController;
   document.body.innerHTML = "";
   myConsoleLog("@@@@@@@@@@@@@@@@@@ beforeAll DONE");
   return Promise.resolve();

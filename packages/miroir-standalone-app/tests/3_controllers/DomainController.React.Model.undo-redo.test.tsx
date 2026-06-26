@@ -19,7 +19,6 @@ import {
   PersistenceStoreControllerInterface,
   PersistenceStoreControllerManagerInterface,
   StoreUnitConfiguration,
-  createDeploymentCompositeAction,
   defaultMiroirModelEnvironment,
   defaultSelfApplicationDeploymentMap,
   entityDefinitionEntity,
@@ -54,14 +53,13 @@ import { miroirPostgresStoreSectionStartup } from "miroir-store-postgres";
 import { miroirAppStartup } from "../../src/startup.js";
 
 import {
-  adminApplication_Miroir,
   deployment_Admin,
   deployment_Miroir,
 } from "miroir-test-app_deployment-admin";
 import { loglevelnext } from "../../src/loglevelnextImporter.js";
 import { loadTestConfigFiles } from "../utils/fileTools.js";
 import { cleanLevel, packageName } from "./constants.js";
-import { setupMiroirTest } from "../../src/miroir-fwk/4-tests/setupMiroirTest.js";
+import { DomainControllerIntegrationTestSession } from "../helpers/DomainControllerIntegrationTestSession.js";
 
 
 const env:any = process.env
@@ -136,49 +134,18 @@ let localCache: LocalCacheInterface;
 
 beforeAll(
   async () => {
-    const {
-      // persistenceStoreControllerManagerForClient: localpersistenceStoreControllerManager,
-      domainControllerForClient: localdomainControllerForClient,
-      // localCache: locallocalCache,
-      // miroirContext: localmiroirContext,
-    } = await setupMiroirTest(miroirConfig);
-
-    // persistenceStoreControllerManager = localpersistenceStoreControllerManager;
-    domainController = localdomainControllerForClient;
-    // localCache = locallocalCache;
-    // miroirContext = localmiroirContext;
-
-    const createMiroirDeploymentCompositeAction = createDeploymentCompositeAction(
-      "miroir",
-      deployment_Miroir.uuid,
-      adminApplication_Miroir.uuid,
-      adminDeployment,
-      miroirtDeploymentStorageConfiguration,
+    const session = new DomainControllerIntegrationTestSession(
+      miroirConfig,
+      {
+        applicationDeploymentMap,
+        adminDeployment,
+        miroirDeploymentStorageConfiguration: miroirtDeploymentStorageConfiguration,
+        libraryDeploymentStorageConfiguration,
+      },
+      "miroirAndLibrary",
     );
-    const createDeploymentResult = await domainController.handleCompositeAction(
-      createMiroirDeploymentCompositeAction,
-      applicationDeploymentMap,
-      defaultMiroirModelEnvironment,
-      {}
-    );
-    if (createDeploymentResult.status !== "ok") {
-      throw new Error("Failed to create Miroir deployment: " + JSON.stringify(createDeploymentResult));
-    }
-
-    const action = createDeploymentCompositeAction(
-      "library",
-      deployment_Library_DO_NO_USE.uuid, 
-      selfApplicationLibrary.uuid, 
-      adminDeployment,
-      libraryDeploymentStorageConfiguration
-    );
-    const result = await domainController.handleCompositeAction(
-      action,
-      applicationDeploymentMap,
-      defaultMiroirModelEnvironment,
-      {}
-    );
-
+    const executionEnvironment = await session.initSession();
+    domainController = executionEnvironment.domainController;
   }
 )
 

@@ -6,7 +6,7 @@
 **Scope:** Pure refactoring. **No test assertion changes.** Every migrated suite must pass with the same
 `it()` bodies and the same env vars / profiles as before.
 
-**Status:** Slices B0 / B1 / B2 — done. Next: Slice DC (`DomainControllerIntegrationTestSession`).
+**Status:** Slices B0 / B1 / B2 / DC — done. Next: Slice R (`RunnerTestSession` bootstrap migration).
 
 ---
 
@@ -304,17 +304,22 @@ wrappers around `runAppStackIntegrationBootstrap` (`compositeAction` + optional 
 
 ---
 
-### Slice DC — `DomainControllerIntegrationTestSession`
+### Slice DC — `DomainControllerIntegrationTestSession` — ✅ **DONE**
 
-**DC0-Red:** `DomainControllerIntegrationTestSession.unit.test.ts`
+**DC0-Red:** `DomainControllerIntegrationTestSession.unit.test.ts` — ✅ **PASS** (3/3)
 
 - Profile `miroirPlatform`: bootstrap phases + `resetAndInitApplicationDeployment` called once in
   `initSession`.
 - Profile `miroirAndLibrary`: `deployLibrary` phase invoked; no reset in `initSession`.
+- Profile `miroirPlatform` + `skipResetMiroirModelInInit: true` omits `resetMiroirModel` (Model.CRUD).
 
-**DC1-Green:** Implement session class.
+**DC1-Green:** Implement session class — ✅
 
-**DC2 — Migrate `DomainController.integ.Data.CRUD.test.tsx` (`beforeAll` only)**
+`DomainControllerIntegrationTestSession.ts` delegates to `runAppStackIntegrationBootstrap` with
+`deployMiroirStrategy: "compositeAction"`, canonical Miroir UUIDs from `miroir-test-app_deployment-miroir`,
+and `openAdminAndMiroirStoresOnServer: true`.
+
+**DC2 — Migrate `DomainController.integ.Data.CRUD.test.tsx` (`beforeAll` only)** — ✅
 
 Replace:
 
@@ -330,7 +335,10 @@ With:
 const session = new DomainControllerIntegrationTestSession(miroirConfig, {
   applicationDeploymentMap,
   adminDeployment,
-  libraryDeploymentStorageConfiguration: /* from config, same as today */,
+  miroirDeploymentStorageConfiguration,
+  libraryDeploymentStorageConfiguration: testDeploymentStorageConfiguration,
+  miroirActivityTracker,
+  miroirEventService,
 }, "miroirPlatform");
 const env = await session.initSession();
 domainController = env.domainController;
@@ -338,18 +346,27 @@ domainController = env.domainController;
 
 - `beforeEach` / `it()` / `afterAll`: **unchanged**.
 
-**DC3 — Migrate remaining CRUD files** (same pattern):
+**DC3 — Migrate remaining CRUD files** (same pattern) — ✅
 
-- `DomainController.integ.Model.CRUD.test.tsx`
+- `DomainController.integ.Model.CRUD.test.tsx` (`skipResetMiroirModelInInit: true`, `customFetch: crossFetch`)
 - `DomainController.integ.compositePK.CRUD.test.tsx`
 - `DomainController.integ.nonUuidPK.CRUD.test.tsx`
 - `DomainController.integ.noParentUuid.CRUD.test.tsx`
 
-**DC4 — Migrate `DomainController.React.Model.undo-redo.test.tsx`**
+**DC4 — Migrate `DomainController.React.Model.undo-redo.test.tsx`** — ✅
 
 Profile `"miroirAndLibrary"`. Remove manual `createDeploymentCompositeAction` blocks from
 `beforeAll`. Keep `beforeEach` (`resetAndInitApplicationDeployment` with
 `selfApplicationDeploymentConfigurations`) **unchanged**.
+
+**DC implementation notes (discovered during slice):**
+
+- **Bootstrap fix:** `openAdminAndMiroirStores` must use `adminDeployment` +
+  `miroirDeploymentStorageConfiguration` from test config — canonical `selfApplicationDeploymentMiroir`
+  JSON has no `configuration` field.
+- **Postgres / #172:** `SqlDbInstanceStoreSectionMixin.upsertInstance` now uses
+  `instance.parentUuid ?? parentUuid` (aligned with IndexedDb/MongoDb); required for
+  `noParentUuid.Data.CRUD` on SQL configs.
 
 **Verify per file:**
 

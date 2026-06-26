@@ -508,50 +508,49 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
       parentUuid: string,
       instance: EntityInstance
     ): Promise<Action2VoidReturnType> {
+      const effectiveParentUuid = instance.parentUuid ?? parentUuid;
       log.info(
         "######################################################### upsertInstance #####################################################"
       );
       if (
         !this.sqlSchemaTableAccess ||
-        !instance.parentUuid ||
-        !this.sqlSchemaTableAccess[instance.parentUuid]
+        !effectiveParentUuid ||
+        !this.sqlSchemaTableAccess[effectiveParentUuid]
       ) {
         console.warn(
           this.logHeader,
           "upsertInstance",
           "could not find entity in database: entityUuid",
-          // instance.parentUuid
-          `could not find entity ${instance.parentUuid} in database schema ${this.schema}, available entities: ${Object.keys(this.sqlSchemaTableAccess ? this.sqlSchemaTableAccess : {})}`
+          `could not find entity ${effectiveParentUuid} in database schema ${this.schema}, available entities: ${Object.keys(this.sqlSchemaTableAccess ? this.sqlSchemaTableAccess : {})}`
         );
         return Promise.resolve(
           new Action2Error(
             "FailedToUpdateInstance",
-            `failed to upsert instance ${instance.uuid} of entity ${instance.parentUuid} in database schema ${this.schema}, available entities: ${Object.keys(this.sqlSchemaTableAccess ? this.sqlSchemaTableAccess : {})}`
+            `failed to upsert instance ${instance.uuid} of entity ${effectiveParentUuid} in database schema ${this.schema}, available entities: ${Object.keys(this.sqlSchemaTableAccess ? this.sqlSchemaTableAccess : {})}`
           )
         );
       }
-      if (this.sqlSchemaTableAccess[instance.parentUuid]?.isExternal) {
-        log.warn(this.logHeader, "upsertInstance", "rejected: entity is external (read-only)", instance.parentUuid);
+      if (this.sqlSchemaTableAccess[effectiveParentUuid]?.isExternal) {
+        log.warn(this.logHeader, "upsertInstance", "rejected: entity is external (read-only)", effectiveParentUuid);
         return Promise.resolve(
           new Action2Error(
             "FailedToUpdateInstance",
-            `cannot upsert instance into external (read-only) entity ${instance.parentUuid}`
+            `cannot upsert instance into external (read-only) entity ${effectiveParentUuid}`
           )
         );
       }
       try {
         log.info("upsertInstance for instance:", JSON.stringify(instance, null, 2));
-        const sequelizeModel = this.sqlSchemaTableAccess[instance.parentUuid].sequelizeModel;
+        const sequelizeModel = this.sqlSchemaTableAccess[effectiveParentUuid].sequelizeModel;
         const tmp = await sequelizeModel.upsert(instance as any);
         log.info("upsertInstance sequelizeModel.upsert done:", JSON.stringify(instance, null, 2));
       } catch (error: any) {
         const errorText: string = error.toString();
-        // log.error(
         log.info(
           this.logHeader,
           "upsertInstance error",
           "FAILED upserting into Parent",
-          instance["parentUuid"],
+          effectiveParentUuid,
           "named",
           instance["parentName"],
           "existing data schema entities",
@@ -561,12 +560,11 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
           "error",
           errorText
         );
-        // throw new Error("upsertInstance error: " + errorText);
 
         return Promise.resolve(
           new Action2Error(
             "FailedToUpdateInstance",
-            `failed to upsert instance ${instance.uuid} of entity ${instance.parentUuid}`
+            `failed to upsert instance ${instance.uuid} of entity ${effectiveParentUuid}`
           )
         );
       }
