@@ -1,3 +1,5 @@
+import crossFetch from "cross-fetch";
+
 import type {
   ApplicationDeploymentMap,
   DomainControllerInterface,
@@ -12,17 +14,22 @@ import type {
 } from "miroir-core";
 import {
   extendMiroirConfigWithExtraDeploymentConfiguration,
+  getBootstrapPhasesForSessionKind,
 } from "miroir-core";
 import {
   libraryTestIdentifiers,
   RUNNER_TEST_ENVIRONMENT_REFS,
 } from "miroir-test-app_deployment-library";
 import {
+  selfApplicationDeploymentMiroir,
+  selfApplicationMiroir,
+} from "miroir-test-app_deployment-miroir";
+import {
   beforeEachTest,
   getTestConfig,
   testApplicationStorageConfiguration,
 } from "../4_view/RunnerIntegTestTools.js";
-import { setupMiroirTestAndDeployMiroirApp } from "../../src/miroir-fwk/4-tests/setupMiroirTest.js";
+import { runAppStackIntegrationBootstrap } from "./appStackIntegrationBootstrap.js";
 
 export type RunnerTestSessionOptions = {
   miroirConfig: MiroirConfigClient;
@@ -91,19 +98,26 @@ export class RunnerTestSession implements RunnerTestSessionInterface {
       applicationDeploymentMap,
       miroirDeploymentStorageConfiguration,
       adminDeployment,
-      testDeploymentStorageConfiguration, // not used in setupMiroirTestAndDeployMiroirApp!
+      testDeploymentStorageConfiguration,
       internalMiroirConfig,
     } = getTestSessionConfig(miroirConfig);
 
     const { domainController, persistenceStoreControllerManager } =
-      await setupMiroirTestAndDeployMiroirApp(
-      internalMiroirConfig,
-      miroirActivityTracker,
-      miroirEventService,
-      adminDeployment,
-      miroirDeploymentStorageConfiguration,
-      applicationDeploymentMap,
-    );
+      await runAppStackIntegrationBootstrap({
+        miroirConfig: internalMiroirConfig,
+        applicationDeploymentMap,
+        adminDeployment,
+        miroirDeploymentStorageConfiguration,
+        phases: getBootstrapPhasesForSessionKind("runner"),
+        miroirActivityTracker,
+        miroirEventService,
+        customFetch: crossFetch,
+        testApplicationUuid: libraryTestIdentifiers.testApplicationUuid,
+        deployMiroirStrategy: "compositeAction",
+        openAdminAndMiroirStoresOnServer: false,
+        miroirDeploymentUuid: selfApplicationDeploymentMiroir.uuid,
+        miroirSelfApplicationUuid: selfApplicationMiroir.uuid,
+      });
 
     const testApplicationDeploymentMap = {
       ...applicationDeploymentMap,

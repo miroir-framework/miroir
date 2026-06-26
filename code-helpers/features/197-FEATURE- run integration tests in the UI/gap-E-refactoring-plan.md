@@ -6,7 +6,7 @@
 **Scope:** Pure refactoring. **No test assertion changes.** Every migrated suite must pass with the same
 `it()` bodies and the same env vars / profiles as before.
 
-**Status:** Slices B0 / B1 / B2 / DC — done. Next: Slice R (`RunnerTestSession` bootstrap migration).
+**Status:** Slices B0 / B1 / B2 / DC / R — done. Next: Slice O (`MiroirTestIntegrationOrchestrator`).
 
 ---
 
@@ -379,16 +379,28 @@ npm run testByFile -w miroir-standalone-app -- DomainController.integ.Data.CRUD
 
 ---
 
-### Slice R — `RunnerTestSession` internal consolidation
+### Slice R — `RunnerTestSession` internal consolidation — ✅ **DONE**
 
 **R1-Green:** Refactor `RunnerTestSession.initSession()` to call `runAppStackIntegrationBootstrap`
 with phases `[wireEmulatedStack, deployMiroir]` (library creation remains in `beforeEachTest` /
-Gap B). **No change** to public return value or `runnerTestContext` shape.
+Gap B). **No change** to public return value or `runnerTestContext` shape. — ✅
 
-**R2 — Migrate `Runner_Miroir.integ.test.tsx`**
+`RunnerTestSession.ts` now calls `runAppStackIntegrationBootstrap` directly with
+`getBootstrapPhasesForSessionKind("runner")`, `deployMiroirStrategy: "compositeAction"`,
+`openAdminAndMiroirStoresOnServer: false`, and canonical Miroir UUIDs from
+`miroir-test-app_deployment-miroir`. `RunnerTestSession.unit.test.ts` — ✅ **PASS** (2/2).
+
+**R2 — Migrate `Runner_Miroir.integ.test.tsx`** — ✅
 
 Replace `setupMiroirTestAndDeployMiroirApp` in `beforeAll` with `RunnerTestSession` (mirror
-`miroir-runner-tests.integ.test.ts` pattern). Keep `beforeEachTest` import **unchanged** in Gap E.
+`miroir-runner-tests.integ.test.ts` pattern). `beforeEach` delegates to `session.beforeEach()`
+(which still calls `beforeEachTest` internally). `it()` bodies **unchanged**.
+
+**R implementation notes:**
+
+- Removed duplicate `getTestConfig` / `internalMiroirConfig` setup from `Runner_Miroir.integ.test.tsx`;
+  session `getTestSessionConfig()` is the single source for bootstrap config.
+- `afterAll` calls `runnerTestSession.teardown()` before `afterAllTests`.
 
 **Verify:**
 
