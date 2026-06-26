@@ -2,6 +2,7 @@
 
 **Parent:** [integ-test-setup-gaps.md](./integ-test-setup-gaps.md) — Gap B  
 **Prerequisite:** [gap-E-refactoring-plan.md](./gap-E-refactoring-plan.md) (**must be complete first**)  
+**Follow-up:** [gap-A-refactoring-plan.md](./gap-A-refactoring-plan.md) (platform skip / host injection — implement **after** Gap B)  
 **Related:** Gap A (skip deployment when UI host is live) plugs into the same bootstrap phases  
 **Scope:** Pure refactoring. Standardise **when** the library deployment is created, reset, and
 seeded — **not** what tests assert. PSC-direct `4_storage` test bodies remain unchanged (Gap C).

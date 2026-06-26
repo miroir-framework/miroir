@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 
 import {
+  describeIntegrationTestSession,
   getBootstrapPhasesForSessionKind,
   getPlayfieldForSessionKind,
 } from "../../src/5_tests/IntegrationTestBootstrap";
@@ -59,11 +60,9 @@ describe("MiroirTestIntegrationOrchestrator (Gap E O)", () => {
     };
     const orchestrator = createDefaultMiroirTestIntegrationOrchestrator(factory);
 
-    expect(orchestrator.describeSession("appStackPsc")).toEqual({
-      kind: "appStackPsc",
-      bootstrapPhases: getBootstrapPhasesForSessionKind("appStackPsc"),
-      playfield: "libraryDeployment",
-    });
+    expect(orchestrator.describeSession("appStackPsc")).toEqual(
+      describeIntegrationTestSession("appStackPsc"),
+    );
   });
 
   it("describeSession exposes playfield metadata for UI catalog (#197)", () => {

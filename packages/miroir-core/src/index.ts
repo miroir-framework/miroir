@@ -961,10 +961,13 @@ export {
   describeIntegrationTestSession,
   getBootstrapPhasesForDomainControllerProfile,
   getBootstrapPhasesForSessionKind,
+  getDefaultHostModeForSessionKind,
+  getEmbeddedCapableForSessionKind,
   getPlayfieldForDomainControllerProfile,
   getPlayfieldForSessionKind,
   type DomainControllerSessionProfile,
   type IntegrationTestBootstrapPhase,
+  type IntegrationTestHostMode,
   type IntegrationTestPlayfield,
   type IntegrationTestSessionDescriptor,
   type IntegrationTestSessionKind,
@@ -976,6 +979,12 @@ export {
   type LibraryPlayfieldEnsureMode,
   type ResetLibraryPlayfieldParams,
 } from "./5_tests/LibraryPlayfield.js";
+export {
+  ensureMiroirPlatform,
+  type DeployMiroirStrategy,
+  type EnsureMiroirPlatformParams,
+  type MiroirPlatformEnsureMode,
+} from "./5_tests/MiroirPlatformPlayfield.js";
 export {
   createDefaultMiroirTestIntegrationOrchestrator,
   createUnconfiguredMiroirTestIntegrationOrchestrator,

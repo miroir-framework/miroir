@@ -18,10 +18,17 @@ export type IntegrationTestPlayfield =
   | "testApplication"
   | "libraryDeployment";
 
+/** Gap A: CLI/Vitest runs isolated by default; embedded attaches to a live UI host. */
+export type IntegrationTestHostMode = "isolated" | "embedded";
+
 export type IntegrationTestSessionDescriptor = {
   kind: IntegrationTestSessionKind;
   bootstrapPhases: readonly IntegrationTestBootstrapPhase[];
   playfield: IntegrationTestPlayfield;
+  /** Recommended host mode for this session kind (always `isolated` today). */
+  defaultHostMode: IntegrationTestHostMode;
+  /** Whether #197 UI may offer embedded execution against a live host stack. */
+  embeddedCapable: boolean;
 };
 
 export function getPlayfieldForSessionKind(
@@ -48,6 +55,25 @@ export function getPlayfieldForDomainControllerProfile(
       return "none";
     case "miroirAndLibrary":
       return "libraryDeployment";
+  }
+}
+
+export function getDefaultHostModeForSessionKind(
+  _kind: IntegrationTestSessionKind,
+): IntegrationTestHostMode {
+  return "isolated";
+}
+
+export function getEmbeddedCapableForSessionKind(
+  kind: IntegrationTestSessionKind,
+): boolean {
+  switch (kind) {
+    case "transformer":
+      return false;
+    case "appStackPsc":
+    case "domainController":
+    case "runner":
+      return true;
   }
 }
 
@@ -93,11 +119,15 @@ export function describeIntegrationTestSession(
       kind,
       bootstrapPhases: getBootstrapPhasesForDomainControllerProfile(domainControllerProfile),
       playfield: getPlayfieldForDomainControllerProfile(domainControllerProfile),
+      defaultHostMode: getDefaultHostModeForSessionKind(kind),
+      embeddedCapable: getEmbeddedCapableForSessionKind(kind),
     };
   }
   return {
     kind,
     bootstrapPhases: getBootstrapPhasesForSessionKind(kind),
     playfield: getPlayfieldForSessionKind(kind),
+    defaultHostMode: getDefaultHostModeForSessionKind(kind),
+    embeddedCapable: getEmbeddedCapableForSessionKind(kind),
   };
 }
