@@ -326,6 +326,7 @@ The final argument is a Vitest file-name filter (not a suite key). Examples:
 | `ExtractorPersistenceStoreRunner.integ` | Extractor runner against live store |
 | `ExtractorTemplatePersistenceStoreRunner.integ` | Extractor template runner |
 | `Runner_Miroir.integ` | Legacy runner integration (prefer `testMiroir` runner entry) |
+| `Runner_Library.integ` | ??? TODO ???? Legacy runner integration (prefer `testMiroir` runner entry) |
 | `ReportPage.integ` | Report view React smoke tests |
 | `BlobEditorField.integ` | Blob editor component tests (no store required) |
 

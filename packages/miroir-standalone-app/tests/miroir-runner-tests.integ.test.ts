@@ -22,7 +22,7 @@ import { loglevelnext } from "../src/loglevelnextImporter.js";
 import { miroirAppStartup } from "../src/startup.js";
 import { loadTestConfigFiles } from "./utils/fileTools.js";
 import { runMiroirRunnerTestsFromCLI } from "./helpers/runMiroirRunnerTestsFromCLI.js";
-import { RunnerTestSession } from "./helpers/RunnerTestSession.js";
+import { createStandaloneAppIntegrationOrchestrator } from "./helpers/StandaloneAppIntegrationOrchestrator.js";
 
 const pageLabel = "miroir-runner-tests.integ";
 
@@ -56,11 +56,12 @@ MiroirLoggerFactory.startRegisteredLoggers(
 log.info("miroir-runner-tests.integ started", JSON.stringify(config, null, 2));
 
 if (config.suiteKeys.length > 0) {
-  const testSession = new RunnerTestSession({
+  const orchestrator = createStandaloneAppIntegrationOrchestrator();
+  const testSession = orchestrator.createSession("runner", {
     miroirConfig,
     miroirActivityTracker,
     miroirEventService,
-  });
+  }, { pageLabel });
 
   await runMiroirRunnerTestsFromCLI(
     runMiroirTests,

@@ -967,6 +967,14 @@ export {
   type IntegrationTestSessionKind,
 } from "./5_tests/IntegrationTestBootstrap.js";
 export {
+  createDefaultMiroirTestIntegrationOrchestrator,
+  createUnconfiguredMiroirTestIntegrationOrchestrator,
+  type IntegrationTestOrchestratorContext,
+  type IntegrationTestSessionFactory,
+  type IntegrationTestSessionFactoryCreateParams,
+  type MiroirTestIntegrationOrchestrator,
+} from "./5_tests/MiroirTestIntegrationOrchestrator.js";
+export {
   resolveRunnerTestLeaf,
   runMiroirRunnerTest as runMiroirRunnerTestInMemory,
   runRunnerTestCompositeAction,

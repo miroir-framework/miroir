@@ -6,7 +6,7 @@
 **Scope:** Pure refactoring. **No test assertion changes.** Every migrated suite must pass with the same
 `it()` bodies and the same env vars / profiles as before.
 
-**Status:** Slices B0 / B1 / B2 / DC / R — done. Next: Slice O (`MiroirTestIntegrationOrchestrator`).
+**Status:** Slices B0 / B1 / B2 / DC / R / O — done. Next: Slice S (store startup helper, optional) or Slice F (deprecation + docs).
 
 ---
 
@@ -412,25 +412,25 @@ MIROIR_TEST_SUITES=runner_library MIROIR_TEST_MODE=integ \
 
 ---
 
-### Slice O — `MiroirTestIntegrationOrchestrator`
+### Slice O — `MiroirTestIntegrationOrchestrator` — ✅ **DONE**
 
-**O0-Red:** `packages/miroir-core/tests/5_tests/MiroirTestIntegrationOrchestrator.unit.test.ts`
+**O0-Red:** `packages/miroir-core/tests/5-tests/MiroirTestIntegrationOrchestrator.unit.test.ts` — ✅ **PASS** (3/3)
 
 - Mock `IntegrationTestSessionFactory` injected into orchestrator.
 - `createSession("transformer", ctx)` delegates to factory with correct kind.
 - `describeSession("appStackPsc")` returns descriptor from `getBootstrapPhasesForSessionKind`.
 
-**O1-Green:**
+**O1-Green:** — ✅
 
-- `MiroirTestIntegrationOrchestrator.ts` in miroir-core (default impl throws unless factory registered).
-- `createDefaultMiroirTestIntegrationOrchestrator(factory)` helper.
-- `StandaloneAppIntegrationOrchestrator.ts` in standalone-app.
+- `MiroirTestIntegrationOrchestrator.ts` in miroir-core (`createDefaultMiroirTestIntegrationOrchestrator`,
+  `createUnconfiguredMiroirTestIntegrationOrchestrator`).
+- `StandaloneAppIntegrationOrchestrator.ts` in standalone-app — registers transformer / appStackPsc /
+  domainController / runner session constructors.
 
-**O2 — Wire entries (optional call-site cleanup)**
+**O2 — Wire entries (optional call-site cleanup)** — ✅
 
-- `miroir-core-tests.integ.test.ts`: may use orchestrator → `IntegrationTestSession` (behaviour
-  unchanged).
-- `miroir-runner-tests.integ.test.ts`: orchestrator → `RunnerTestSession`.
+- `miroir-core-tests.integ.test.ts`: orchestrator → `IntegrationTestSession` via kind `"transformer"`.
+- `miroir-runner-tests.integ.test.ts`: orchestrator → `RunnerTestSession` via kind `"runner"`.
 
 Per-file Vitest (`testByFile`) **may** keep direct session construction until Gap B; orchestrator
 is not mandatory for DC migrations.
@@ -514,7 +514,7 @@ can instrument.
 - [ ] All 5 `DomainController.integ.*.CRUD` files use session in `beforeAll` only
 - [ ] `DomainController.React.Model.undo-redo` uses session in `beforeAll` only
 - [ ] `RunnerTestSession` uses shared bootstrap; `Runner_Miroir.integ` uses `RunnerTestSession`
-- [ ] `MiroirTestIntegrationOrchestrator` port exists in `miroir-core` with unit tests
+- [x] `MiroirTestIntegrationOrchestrator` port exists in `miroir-core` with unit tests
 - [ ] `RunnerTestSessionInterface` method signatures unchanged; existing miroir-core unit mocks still valid
 - [ ] No `it()` body edits across migrated suites
 - [ ] All verification commands in §6 pass with same counts as pre-Gap-E baseline

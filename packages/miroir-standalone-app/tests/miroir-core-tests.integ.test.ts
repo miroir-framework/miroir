@@ -9,12 +9,11 @@ import {
   resolveMiroirTestCliConfigFromPartial,
   runMiroirCoreTestsFromCLI,
   runMiroirTests,
+  type MiroirConfigClient,
 } from "miroir-core";
 import { assertMiroirCoreIntegTestLaunchReady } from "./helpers/miroirCoreIntegTestLaunch.js";
-import {
-  IntegrationTestSession,
-  resolveTestSessionForIntegOptionsFromEnv,
-} from "./helpers/IntegrationTestSession.js";
+import { resolveTestSessionForIntegOptionsFromEnv } from "./helpers/IntegrationTestSession.js";
+import { createStandaloneAppIntegrationOrchestrator } from "./helpers/StandaloneAppIntegrationOrchestrator.js";
 
 ConfigurationService.configurationService.registerTestImplementation({ expect: expect as any });
 
@@ -34,7 +33,12 @@ assertMiroirCoreIntegTestLaunchReady({
 });
 
 if (config.suiteKeys.length > 0) {
-  const testSession = new IntegrationTestSession(testSessionOptions);
+  const orchestrator = createStandaloneAppIntegrationOrchestrator();
+  const testSession = orchestrator.createSession(
+    "transformer",
+    { miroirConfig: { client: { emulateServer: true } } as MiroirConfigClient },
+    testSessionOptions,
+  );
   await runMiroirCoreTestsFromCLI(
     runMiroirTests, 
     vitest,
