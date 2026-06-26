@@ -11,13 +11,9 @@ import {
   DomainElementType,
   EntityDefinition,
   EntityInstance,
-  JzodElement,
-  LocalCacheInterface,
   LoggerInterface,
   MetaEntity,
   MiroirActivityTracker,
-  MiroirConfigClient,
-  MiroirContext,
   MiroirEventService,
   MiroirLoggerFactory,
   ModelAction,
@@ -27,16 +23,13 @@ import {
   PersistenceStoreControllerManagerInterface,
   StoreUnitConfiguration,
   ConfigurationService,
-  createDeploymentCompositeAction,
   defaultLevels,
-  defaultMiroirModelEnvironment,
   defaultSelfApplicationDeploymentMap,
   entityEntity,
   entityEntityDefinition,
   ignorePostgresExtraAttributesOnList,
   miroirCoreStartup,
   resetAndInitApplicationDeployment,
-  type AdminApplicationDeploymentConfiguration,
   type ApplicationDeploymentMap,
   type Deployment,
   type Entity,
@@ -58,20 +51,17 @@ import { cleanLevel, packageName } from "../../src/constants.js";
 import { loglevelnext } from "../../src/loglevelnextImporter.js";
 import {
   adminApplicationDeploymentConfigurations,
-  createMiroirDeploymentGetPersistenceStoreController,
   deleteAndCloseApplicationDeployments,
   selfApplicationDeploymentConfigurations,
 } from "../../src/miroir-fwk/4-tests/tests-utils.js";
 import { miroirAppStartup } from "../../src/startup.js";
 import { loadTestConfigFiles } from "../utils/fileTools.js";
-import { setupMiroirTest } from "../../src/miroir-fwk/4-tests/setupMiroirTest.js";
+import { AppStackIntegrationTestSession } from "../helpers/IntegrationTestSession.js";
 
 let domainController: DomainControllerInterface;
-let localCache: LocalCacheInterface;
 let localMiroirPersistenceStoreController: PersistenceStoreControllerInterface;
 let localAppPersistenceStoreController: PersistenceStoreControllerInterface;
-let miroirContext: MiroirContext;
-let persistenceStoreControllerManager: PersistenceStoreControllerManagerInterface | undefined;
+let persistenceStoreControllerManager: PersistenceStoreControllerManagerInterface;
 
 // const env:any = (import.meta as any).env
 const env: any = process.env;
@@ -119,11 +109,6 @@ const applicationDeploymentMap: ApplicationDeploymentMap = {
   [selfApplicationLibrary.uuid]: deployment_Library_DO_NO_USE.uuid,
 };
 
-const miroirtDeploymentStorageConfiguration: StoreUnitConfiguration = miroirConfig.client
-  .emulateServer
-  ? miroirConfig.client.deploymentStorageConfig[deployment_Miroir.uuid]
-  : miroirConfig.client.serverConfig.storeSectionConfiguration[deployment_Miroir.uuid];
-
 const testApplicationDeploymentUuid = deployment_Library_DO_NO_USE.uuid;
 const libraryDeploymentStorageConfiguration: StoreUnitConfiguration = miroirConfig.client
   .emulateServer
@@ -140,90 +125,39 @@ const adminDeployment: Deployment = {
   configuration: adminDeploymentStorageConfiguration,
 };
 
-const typedAdminConfigurationDeploymentLibrary: AdminApplicationDeploymentConfiguration =
-  deployment_Library_DO_NO_USE as any;
-
-// const applicationDeploymentMap: ApplicationDeploymentMap = {
-//   ...defaultSelfApplicationDeploymentMap,
-//   [selfApplicationLibrary.uuid]: deployment_Library_DO_NO_USE.uuid,
-// };
-
-// const miroirtDeploymentStorageConfiguration: StoreUnitConfiguration = miroirConfig.client.emulateServer
-//   ? miroirConfig.client.deploymentStorageConfig[deployment_Miroir.uuid]
-//   : miroirConfig.client.serverConfig.storeSectionConfiguration[deployment_Miroir.uuid];
-
-// const testApplicationDeploymentUuid = deployment_Library_DO_NO_USE.uuid;
-// const libraryDeploymentStorageConfiguration: StoreUnitConfiguration = miroirConfig.client.emulateServer
-//   ? miroirConfig.client.deploymentStorageConfig[testApplicationDeploymentUuid]
-//   : miroirConfig.client.serverConfig.storeSectionConfiguration[testApplicationDeploymentUuid];
-
 // ################################################################################################
 beforeAll(async () => {
-  // Establish requests interception layer before all tests.
   if (!miroirConfig.client.emulateServer) {
     throw new Error(
       "LocalPersistenceStoreController state do not make sense for real server configurations! Please use only 'emulateServer: true' configurations for this test.",
     );
   }
 
-  const {
-    persistenceStoreControllerManagerForServer: localpersistenceStoreControllerManager,
-    domainControllerForClient: localdomainController,
-    localCache: locallocalCache,
-    // miroirContext: localmiroirContext,
-  } = await setupMiroirTest(miroirConfig);
-
-  if (!localpersistenceStoreControllerManager) {
-    throw new Error("localpersistenceStoreControllerManager not defined");
-  }
-
-  persistenceStoreControllerManager = localpersistenceStoreControllerManager;
-  domainController = localdomainController;
-  localCache = locallocalCache;
-  // miroirContext = localmiroirContext;
-
-  const wrapped = await createMiroirDeploymentGetPersistenceStoreController(
-    miroirConfig as MiroirConfigClient,
-    persistenceStoreControllerManager,
-    domainController,
+  const session = new AppStackIntegrationTestSession(miroirConfig, {
     applicationDeploymentMap,
-    adminDeployment,
-  );
-  if (wrapped) {
-    if (wrapped.localMiroirPersistenceStoreController) {
-      localMiroirPersistenceStoreController = wrapped.localMiroirPersistenceStoreController;
-    } else {
-      throw new Error("beforeAll failed localMiroirPersistenceStoreController initialization!");
-    }
-  } else {
-    throw new Error("beforeAll failed initialization!");
-  }
-  const createLibraryDeploymentAction = createDeploymentCompositeAction(
-    "library",
-    deployment_Library_DO_NO_USE.uuid,
-    selfApplicationLibrary.uuid,
     adminDeployment,
     libraryDeploymentStorageConfiguration,
-  );
-  const result = await domainController.handleCompositeAction(
-    createLibraryDeploymentAction,
-    applicationDeploymentMap,
-    defaultMiroirModelEnvironment,
-    {},
-  );
+  });
+  const executionEnvironment = await session.initSession();
 
-  if (result.status !== "ok") {
-    throw new Error("beforeAll failed createLibraryDeploymentAction!");
+  domainController = executionEnvironment.domainController;
+  persistenceStoreControllerManager = executionEnvironment.persistenceStoreControllerManager;
+
+  const localMiroirPsc = persistenceStoreControllerManager.getPersistenceStoreController(
+    deployment_Miroir.uuid,
+  );
+  if (!localMiroirPsc) {
+    throw new Error("beforeAll failed localMiroirPersistenceStoreController initialization!");
   }
+  localMiroirPersistenceStoreController = localMiroirPsc;
 
-  const tmplocalAppPersistenceStoreController =
-    persistenceStoreControllerManager.getPersistenceStoreController(
-      deployment_Library_DO_NO_USE.uuid,
-    );
-  if (!tmplocalAppPersistenceStoreController) {
+  const localAppPsc = persistenceStoreControllerManager.getPersistenceStoreController(
+    deployment_Library_DO_NO_USE.uuid,
+  );
+  if (!localAppPsc) {
     throw new Error("beforeAll failed localAppPersistenceStoreController initialization!");
   }
-  localAppPersistenceStoreController = tmplocalAppPersistenceStoreController;
+  localAppPersistenceStoreController = localAppPsc;
 
   return Promise.resolve();
 });

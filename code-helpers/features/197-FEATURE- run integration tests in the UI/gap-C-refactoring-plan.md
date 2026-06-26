@@ -1,11 +1,14 @@
-# Gap C — Refactoring plan: replace PersistenceStoreController as test entry with domainController
+# Gap C — Refactoring plan: unify `4_storage` integ setup via `AppStackIntegrationTestSession`
 
 **Parent:** [integ-test-setup-gaps.md](./integ-test-setup-gaps.md) — Gap C  
 **Scope:** Three integration test families in `miroir-standalone-app/tests/4_storage` plus the
-`miroir-core` transformer integ entry. The runner tests (`3_controllers`, `4_view`) and CLI/MCP
-tests are already on `domainController` and are **not touched** here.
+`miroir-core` transformer integ entry. Slices **E / ET / P** refactor **`beforeAll` setup** only;
+test bodies keep using `localAppPersistenceStoreController` / `localMiroirPersistenceStoreController`
+(unchanged). Optional PSC→`domainController` migration in tests is
+[deferred](#appendix-a--deferred-psc-assertion-migration). Runner tests (`3_controllers`, `4_view`)
+and CLI/MCP tests are already on `domainController` and are **not touched** here.
 
-**Status:** **Slice T (transformer integ) — done.** **Slice E (Extractor setup) — done** (`AppStackIntegrationTestSession`, `persistenceStoreControllerManager` on env). Slices ET, P, F — pending.
+**Status:** **Slice T — done.** **Slice E — done.** **Slice ET — done.** **Slice P — done** (`AppStackIntegrationTestSession`, PSC CRUD setup). Slice F — pending.
 
 ---
 
@@ -15,8 +18,8 @@ tests are already on `domainController` and are **not touched** here.
 |--------|-------|--------------------------|
 | **Transformer** | `miroir-standalone-app/tests/miroir-core-tests.integ.test.ts` + `MiroirTransformerTestTools.ts` | ~~`PersistenceStoreDataSectionInterface.handleBoxedQueryAction`~~ → `domainController.handleBoxedExtractorOrQueryAction` ✅ |
 | **Extractor** | `4_storage/ExtractorPersistenceStoreRunner.integ.test.tsx` | Setup → `AppStackIntegrationTestSession` (Slice E ✅). Assertions: `PersistenceStoreControllerInterface.handleBoxedQueryAction` (unchanged) |
-| **ExtractorTemplate** | `4_storage/ExtractorTemplatePersistenceStoreRunner.integ.test.tsx` | `PersistenceStoreControllerInterface.handleQueryTemplateActionForServerONLY` |
-| **PSC CRUD** | `4_storage/PersistenceStoreController.integ.test.tsx` | `PersistenceStoreControllerInterface.{createEntity, getInstances, renameEntityClean, dropEntity, upsertInstance}` |
+| **ExtractorTemplate** | `4_storage/ExtractorTemplatePersistenceStoreRunner.integ.test.tsx` | Setup → `AppStackIntegrationTestSession` (Slice ET ✅). Assertions: `handleQueryTemplateActionForServerONLY` on PSC (unchanged) |
+| **PSC CRUD** | `4_storage/PersistenceStoreController.integ.test.tsx` | Setup → `AppStackIntegrationTestSession` (Slice P ✅). Assertions: `localAppPersistenceStoreController` / `localMiroirPersistenceStoreController` (unchanged) |
 
 ---
 
@@ -142,83 +145,140 @@ localAppPersistenceStoreController =
 
 ---
 
-### 2.3 ExtractorTemplate and PSC CRUD — Slices ET / P (unchanged target)
+### 2.3 ExtractorTemplate tests — Slice ET (`ExtractorTemplatePersistenceStoreRunner.integ.test.tsx`) — ✅ done
 
-ExtractorTemplate and `PersistenceStoreController.integ.test.tsx` still aim to route assertions
-through `domainController` (see Slices ET and P below). Slice E does **not** apply to them.
+**Goal (revised, mirrors Slice E):** unify **`beforeAll` setup** through `AppStackIntegrationTestSession`;
+**test bodies stay on PSC** (`handleQueryTemplateActionForServerONLY`). No migration of assertion
+calls to `domainController` in this slice.
 
-**ExtractorTemplate — before (test bodies)**
+**Before (setup — beforeAll)**
+
+```
+loadTestConfigFiles(VITE_MIROIR_*)
+setupMiroirTest(miroirConfig)
+  → { domainControllerForClient, persistenceStoreControllerManagerForServer, localCache }
+createMiroirDeploymentGetPersistenceStoreController(...)
+  → localMiroirPersistenceStoreController
+domainController.handleCompositeAction(createDeploymentCompositeAction("library"))
+localAppPersistenceStoreController =
+  manager.getPersistenceStoreController(deployment_Library_DO_NO_USE.uuid)
+```
+
+**Before (setup — beforeEach)** — unchanged in Slice ET
+
+```
+resetAndInitApplicationDeployment(...)
+addEntitiesAndInstances(localAppPersistenceStoreController, domainController, localCache, ...)
+```
+
+**Before (test bodies)** — unchanged in Slice ET
 
 ```
 localAppPersistenceStoreController.handleQueryTemplateActionForServerONLY(q)
 localMiroirPersistenceStoreController.handleQueryTemplateActionForServerONLY(q)
 ```
 
-**ExtractorTemplate / PSC — after (test bodies, ET / P)**
+**After (setup — beforeAll)** — as implemented (same as Slice E)
 
 ```
-domainController.handleBoxedExtractorOrQueryAction(q, applicationDeploymentMap, modelEnv)
-domainController.handleQueryTemplateActionForServerONLY(q, applicationDeploymentMap, modelEnv)
+loadTestConfigFiles(VITE_MIROIR_*)
+new AppStackIntegrationTestSession(miroirConfig, {
+  applicationDeploymentMap,
+  adminDeployment,
+  libraryDeploymentStorageConfiguration,
+}).initSession()
+  → { domainController, persistenceStoreControllerManager, ... }
+localCache = domainController.getLocalCache()
+localMiroirPersistenceStoreController =
+  persistenceStoreControllerManager.getPersistenceStoreController(deployment_Miroir.uuid)
+localAppPersistenceStoreController =
+  persistenceStoreControllerManager.getPersistenceStoreController(deployment_Library_DO_NO_USE.uuid)
 ```
 
-Variables `localMiroirPersistenceStoreController` and `localAppPersistenceStoreController` are
-removed from ET and P when those slices complete. `addEntitiesAndInstances` /
-`addEntitiesAndInstancesForEmulatedServer` is removed from ExtractorTemplate when ET completes.
+**After (setup — beforeEach)** — unchanged (`addEntitiesAndInstances` stays)
+
+**After (test bodies)** — unchanged (still PSC direct calls)
+
+`setupMiroirTest`, `createMiroirDeploymentGetPersistenceStoreController`, and library
+`createDeploymentCompositeAction` removed from `beforeAll`. Dead duplicate constants removed
+(`typedAdminConfigurationDeploymentLibrary`, shadow `ApplicationDeploymentMap`). Module-level store
+startups remain (ET3 optional cleanup).
+
+**Non-goal (deferred):** migrating `handleQueryTemplateActionForServerONLY` to
+`domainController.handleQueryTemplateActionForServerONLY` — same deferral pattern as Slice E for
+`handleBoxedQueryAction`.
 
 ---
 
-### 2.4 PSC CRUD tests (PersistenceStoreController.integ.test.tsx) — Slice P
+### 2.4 PSC CRUD tests — Slice P (`PersistenceStoreController.integ.test.tsx`) — ✅ done
 
-**Before (test bodies)**
+**Goal (same contract as Slices E / ET):** only **`beforeAll` setup** moves to
+`AppStackIntegrationTestSession`. **`it()` blocks are not edited** — they keep calling
+`localAppPersistenceStoreController` and `localMiroirPersistenceStoreController` directly
+(`getInstances`, `createEntity`, `renameEntityClean`, `dropEntity`, `upsertInstance`, …).
+
+**Before (setup — beforeAll)**
+
+```
+loadTestConfigFiles(VITE_MIROIR_*)
+setupMiroirTest(miroirConfig)
+  → { domainControllerForClient, persistenceStoreControllerManagerForServer, localCache }
+createMiroirDeploymentGetPersistenceStoreController(...)
+  → localMiroirPersistenceStoreController
+domainController.handleCompositeAction(createDeploymentCompositeAction("library"))
+localAppPersistenceStoreController =
+  manager.getPersistenceStoreController(deployment_Library_DO_NO_USE.uuid)
+```
+
+**Before (setup — beforeEach)** — unchanged in Slice P
+
+```
+resetAndInitApplicationDeployment(domainController, applicationDeploymentMap, ...)
+```
+
+**Before (setup — afterAll)** — unchanged in Slice P
+
+```
+deleteAndCloseApplicationDeployments(miroirConfig, domainController, applicationDeploymentMap, ...)
+```
+
+**Before (test bodies)** — unchanged in Slice P
 
 ```typescript
-// query
 localMiroirPersistenceStoreController.getInstances("model", entityEntity.uuid)
 localAppPersistenceStoreController.getInstances("model", entityEntity.uuid)
 localAppPersistenceStoreController.getInstances("data", entityAuthor.uuid)
-
-// model DDL
 localAppPersistenceStoreController.createEntity(entity, entityDefinition)
 localAppPersistenceStoreController.renameEntityClean(modelActionRenameEntity)
 localAppPersistenceStoreController.dropEntity(entityUuid, entityDefinitionUuid)
+// upsertInstance via chainVitestSteps where used
 ```
 
-**After (test bodies)**
+**After (setup — beforeAll)** — as implemented (same as Slices E / ET)
 
-```typescript
-// query — boxed extractor action
-domainController.handleBoxedExtractorOrQueryAction(
-  {
-    actionType: "runBoxedQueryAction",
-    endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-    payload: {
-      application: selfApplicationLibrary.uuid,  // or selfApplicationMiroir.uuid
-      applicationSection: "model",               // or "data"
-      query: { queryType: "getEntityInstances", parentUuid: entityEntity.uuid, ... },
-    },
-  },
+```
+loadTestConfigFiles(VITE_MIROIR_*)
+new AppStackIntegrationTestSession(miroirConfig, {
   applicationDeploymentMap,
-  defaultMiroirModelEnvironment,
-)
-
-// model DDL — wrapped in handleCompositeAction
-domainController.handleCompositeAction(
-  {
-    actionType: "compositeAction",
-    actions: [
-      { actionType: "modelAction", actionName: "createEntity",
-        payload: { entities: [{ entity, entityDefinition }] } },
-    ],
-  },
-  applicationDeploymentMap,
-  defaultMiroirModelEnvironment,
-  {},
-)
+  adminDeployment,
+  libraryDeploymentStorageConfiguration,
+}).initSession()
+  → { domainController, persistenceStoreControllerManager, ... }
+localMiroirPersistenceStoreController =
+  persistenceStoreControllerManager.getPersistenceStoreController(deployment_Miroir.uuid)
+localAppPersistenceStoreController =
+  persistenceStoreControllerManager.getPersistenceStoreController(deployment_Library_DO_NO_USE.uuid)
+// localCache = domainController.getLocalCache() if still referenced (currently unused in this file)
 ```
 
-Setup becomes identical to the Extractor family: no PSC variables extracted, only `domainController`
-used. `createMiroirDeploymentGetPersistenceStoreController` is still called for the Miroir
-deployment; no changes to setup helpers are needed in this migration.
+**After (setup — beforeEach / afterAll)** — unchanged
+
+**After (test bodies)** — unchanged (still `localAppPersistenceStoreController` / `localMiroirPersistenceStoreController`)
+
+No new session code required — reuse `AppStackIntegrationTestSession` from Slice E.
+
+**Non-goal (out of scope for Slice P):** replacing PSC calls in tests with `domainController` — see
+[Appendix A](#appendix-a--deferred-psc-assertion-migration) for optional future work only.
 
 ---
 
@@ -274,7 +334,7 @@ export class IntegrationTestSession implements RunnerTestSessionInterface {
 }
 ```
 
-**`AppStackIntegrationTestSession`** (Slice E — app-stack / `VITE_MIROIR_*` integ tests):
+**`AppStackIntegrationTestSession`** (Slices E ✅ / ET ✅ / P ✅ — app-stack / `VITE_MIROIR_*` integ tests):
 
 **Location:** same file — `packages/miroir-standalone-app/tests/helpers/IntegrationTestSession.ts`
 
@@ -515,7 +575,7 @@ library `createDeploymentCompositeAction` bootstrap in `beforeAll` with
 `localMiroirPersistenceStoreController.handleBoxedQueryAction` /
 `localAppPersistenceStoreController.handleBoxedQueryAction`).
 
-**Non-goals for Slice E:** migrating assertion calls to `domainController` (deferred to ET/P if ever needed).
+**Non-goals for Slice E:** migrating assertion calls to `domainController` (deferred indefinitely).
 
 **Implementation notes (deviations from this plan's original wording):**
 
@@ -605,134 +665,183 @@ npm run testByFile -w miroir-standalone-app -- ExtractorPersistenceStoreRunner.i
 
 ---
 
-### Slice ET — ExtractorTemplate tests (ExtractorTemplatePersistenceStoreRunner.integ.test.tsx)
+### Slice ET — ExtractorTemplate tests (`ExtractorTemplatePersistenceStoreRunner.integ.test.tsx`) — ✅ done
 
-**ET0 — Red: parity test for one `handleQueryTemplateActionForServerONLY` call**
+**Goal:** Replace ad-hoc `setupMiroirTest` / `createMiroirDeploymentGetPersistenceStoreController` /
+library `createDeploymentCompositeAction` bootstrap in `beforeAll` with
+`AppStackIntegrationTestSession` — **same connector and pattern as Slice E** — while keeping every
+`it()` block unchanged (still
+`localAppPersistenceStoreController.handleQueryTemplateActionForServerONLY` /
+`localMiroirPersistenceStoreController.handleQueryTemplateActionForServerONLY`).
 
-```typescript
-domainController.handleQueryTemplateActionForServerONLY(q, applicationDeploymentMap, defaultMiroirModelEnvironment)
-```
-vs existing `localAppPersistenceStoreController.handleQueryTemplateActionForServerONLY(q)`.
+**Non-goals for Slice ET:**
 
-**ET1 — Green: migrate all `handleQueryTemplateActionForServerONLY` calls**
+- Migrating assertion calls to `domainController` (deferred indefinitely, as for Slice E).
+- Changing `beforeEach` (`addEntitiesAndInstances` stays).
+- New session / env types (reuse `AppStackIntegrationTestSession` from Slice E).
 
-Same substitution pattern as E1.
+**Prerequisite:** Slice E ✅ — `AppStackIntegrationTestSession` already bootstraps Miroir + Library
+deployments and returns `persistenceStoreControllerManager`.
 
-**ET2 — Migrate `beforeEach`: replace `addEntitiesAndInstances` with `resetAndinitializeDeploymentCompositeAction`**
+**Implementation notes:**
 
-Current:
-```typescript
-await addEntitiesAndInstances(
-  localAppPersistenceStoreController, domainController, localCache, miroirConfig,
-  deployment_Library_DO_NO_USE, applicationDeploymentMap,
-  libraryEntitiesAndInstances, reportBookList,
-)
-```
-
-Replacement (already used by `ExtractorPersistenceStoreRunner.integ.test.tsx`):
-```typescript
-await domainController.handleCompositeAction(
-  resetAndinitializeDeploymentCompositeAction(
-    selfApplicationLibrary.uuid,
-    deployment_Library_DO_NO_USE.uuid,
-    {
-      dataStoreType: "app",
-      metaModel: defaultMiroirMetaModel,
-      selfApplication: selfApplicationLibrary,
-      applicationModelBranch: selfApplicationModelBranchLibraryMasterBranch,
-      applicationVersion: selfApplicationVersionLibraryInitialVersion,
-    },
-    libraryEntitiesAndInstances,
-    defaultLibraryModelEnvironment.currentModel,
-  ),
-  applicationDeploymentMap,
-  defaultMiroirModelEnvironment,
-  {},
-)
-```
-
-Verify: all `ExtractorTemplatePersistenceStoreRunner` tests pass with the new `beforeEach`.
-
-**ET3 — Clean up**
-
-Remove `localAppPersistenceStoreController`, `localMiroirPersistenceStoreController`,
-`localCache` (if only used by `addEntitiesAndInstances`), `addEntitiesAndInstances` import.
+| Area | As implemented |
+|------|----------------|
+| Session | `new AppStackIntegrationTestSession(...)` — direct construction (same as Slice E) |
+| `localCache` | `domainController.getLocalCache()` after `initSession()` (for unchanged `beforeEach`) |
+| Dead code | Removed unused `typedAdminConfigurationDeploymentLibrary`, shadow `ApplicationDeploymentMap` const |
+| Imports removed | `setupMiroirTest`, `createMiroirDeploymentGetPersistenceStoreController`, `createDeploymentCompositeAction` |
 
 ---
 
-### Slice P — PSC CRUD tests (PersistenceStoreController.integ.test.tsx)
+**ET1 — Refactor `ExtractorTemplatePersistenceStoreRunner.integ.test.tsx` `beforeAll` only** — ✅ **PASS**
 
-This slice is the most invasive. The test body calls are more varied (DDL + queries).
+Replace:
 
-**P0 — Red: parity test for `getInstances` via `domainController`**
-
-Add a parallel `it` asserting that:
 ```typescript
-domainController.handleBoxedExtractorOrQueryAction(
-  buildGetInstancesQuery("model", entityEntity.uuid, selfApplicationMiroir.uuid),
+const {
+  persistenceStoreControllerManagerForServer,
+  domainControllerForClient,
+  localCache: locallocalCache,
+} = await setupMiroirTest(miroirConfig);
+// createMiroirDeploymentGetPersistenceStoreController(...)
+// createLibraryDeploymentCompositeAction(...)
+```
+
+With (mirror `ExtractorPersistenceStoreRunner.integ.test.tsx` Slice E):
+
+```typescript
+const session = new AppStackIntegrationTestSession(miroirConfig, {
   applicationDeploymentMap,
-  defaultMiroirModelEnvironment,
-)
+  adminDeployment,
+  libraryDeploymentStorageConfiguration,
+});
+const executionEnvironment = await session.initSession();
+domainController = executionEnvironment.domainController;
+persistenceStoreControllerManager = executionEnvironment.persistenceStoreControllerManager;
+localCache = domainController.getLocalCache();
+localMiroirPersistenceStoreController =
+  persistenceStoreControllerManager.getPersistenceStoreController(deployment_Miroir.uuid)!;
+localAppPersistenceStoreController =
+  persistenceStoreControllerManager.getPersistenceStoreController(deployment_Library_DO_NO_USE.uuid)!;
 ```
-returns the same instances as:
-```typescript
-localMiroirPersistenceStoreController.getInstances("model", entityEntity.uuid)
+
+- `beforeEach` hooks: **unchanged** (`resetAndInitApplicationDeployment` + `addEntitiesAndInstances`)
+- All `it()` blocks: **unchanged**
+- Remove unused imports: `setupMiroirTest`, `createMiroirDeploymentGetPersistenceStoreController`,
+  `createDeploymentCompositeAction` (from `beforeAll` only)
+
+**ET2 — Integration verification (no regressions)** — ✅ **PASS**
+
+```bash
+VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-sql.json \
+VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_warn.json \
+npm run testByFile -w miroir-standalone-app -- ExtractorTemplatePersistenceStoreRunner.integ
 ```
 
-Introduce `buildGetInstancesQuery` as a local test helper (3-line function returning the
-correct `RunBoxedQueryAction` payload). **Do not introduce a public helper** — inline the call or
-keep the builder private to the test file.
+7/7 passed (sql config). IndexedDb config not re-run in this slice.
 
-**P1 — Green: migrate all `getInstances` calls**
+**ET3 — Cleanup (optional, not done)**
 
-Replace every `localXxxPersistenceStoreController.getInstances(section, entityUuid)` with
-`domainController.handleBoxedExtractorOrQueryAction(buildGetInstancesQuery(section, entityUuid, applicationUuid), ...)`.
+- Remove duplicate `beforeAll` boilerplate comments / dead imports.
+- Align module-level startup with Extractor test file if desired (E4-style; not blocking).
 
-**P2 — Red: parity test for `createEntity` via composite action**
+---
 
-Add a parallel `it` that creates an entity via:
+### Slice P — PSC CRUD tests (`PersistenceStoreController.integ.test.tsx`) — ✅ done
+
+**Goal:** Replace ad-hoc `beforeAll` bootstrap with `AppStackIntegrationTestSession` — **same
+connector and pattern as Slices E / ET** — while keeping every `it()` block unchanged. Tests
+continue to call:
+
+- `localAppPersistenceStoreController.getInstances` / `.createEntity` / `.renameEntityClean` /
+  `.dropEntity` / …
+- `localMiroirPersistenceStoreController.getInstances` / … where used today
+
+**Only `beforeAll` is modified.** No changes inside `describe` / `it()` / `chainVitestSteps` callbacks.
+
+**Non-goals for Slice P (same as E / ET):**
+
+- Migrating test calls from `localAppPersistenceStoreController` / `localMiroirPersistenceStoreController` to `domainController` (deferred indefinitely — [Appendix A](#appendix-a--deferred-psc-assertion-migration)).
+- Changing `beforeEach` (`resetAndInitApplicationDeployment` stays).
+- Changing `afterAll` (`deleteAndCloseApplicationDeployments` stays).
+- New session / env types (reuse `AppStackIntegrationTestSession` from Slice E).
+
+**Prerequisite:** Slices E ✅ / ET ✅ — `AppStackIntegrationTestSession` proven on both sibling test files.
+
+---
+
+**P1 — Refactor `PersistenceStoreController.integ.test.tsx` `beforeAll` only** — ✅ **PASS**
+
+Replace:
+
 ```typescript
-domainController.handleCompositeAction(
-  {
-    actionType: "compositeAction",
-    actions: [
-      {
-        actionType: "modelAction",
-        actionName: "createEntity",
-        deploymentUuid: deployment_Library_DO_NO_USE.uuid,
-        endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-        payload: {
-          entities: [{ entity, entityDefinition }],
-        },
-      },
-    ],
-  },
+const {
+  persistenceStoreControllerManagerForServer,
+  domainControllerForClient,
+  localCache: locallocalCache,
+} = await setupMiroirTest(miroirConfig);
+// createMiroirDeploymentGetPersistenceStoreController(...)
+// createLibraryDeploymentCompositeAction(...)
+```
+
+With (mirror Slices E / ET):
+
+```typescript
+const session = new AppStackIntegrationTestSession(miroirConfig, {
   applicationDeploymentMap,
-  defaultMiroirModelEnvironment,
-  {},
-)
+  adminDeployment,
+  libraryDeploymentStorageConfiguration,
+});
+const executionEnvironment = await session.initSession();
+domainController = executionEnvironment.domainController;
+persistenceStoreControllerManager = executionEnvironment.persistenceStoreControllerManager;
+localMiroirPersistenceStoreController =
+  persistenceStoreControllerManager.getPersistenceStoreController(deployment_Miroir.uuid)!;
+localAppPersistenceStoreController =
+  persistenceStoreControllerManager.getPersistenceStoreController(deployment_Library_DO_NO_USE.uuid)!;
 ```
-and then reads it back via the migrated `getInstances` call to assert it exists.
 
-**P3 — Green: migrate all `createEntity` / `upsertInstance` / `renameEntityClean` / `dropEntity` calls**
+- `beforeEach` hooks: **unchanged**
+- `afterAll` hooks: **unchanged**
+- All `it()` blocks: **unchanged** — still `localAppPersistenceStoreController` / `localMiroirPersistenceStoreController`
+- Remove unused imports: `setupMiroirTest`, `createMiroirDeploymentGetPersistenceStoreController`,
+  `createDeploymentCompositeAction` (from `beforeAll` only)
 
-Each PSC DDL call maps to a `modelAction` wrapped in `handleCompositeAction`:
+**P2 — Integration verification (no regressions)** — ✅ **PASS**
 
-| PSC call | Composite action name |
-|----------|-----------------------|
-| `createEntity(entity, entityDefinition)` | `"createEntity"` |
-| `renameEntityClean(modelActionRenameEntity)` | `"renameEntity"` |
-| `dropEntity(entityUuid, entityDefinitionUuid)` | `"dropEntity"` |
-| `upsertInstance("model", instance)` | `"updateEntity"` or instance action |
+```bash
+VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-sql.json \
+VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_warn.json \
+npm run testByFile -w miroir-standalone-app -- PersistenceStoreController.integ
+```
 
-**P4 — Clean up**
+10/10 passed (sql config). IndexedDb config not re-run in this slice.
 
-Remove `localMiroirPersistenceStoreController`, `localAppPersistenceStoreController`,
-`persistenceStoreControllerManager` (if only used to obtain PSC references after this migration).
-Remove `PersistenceStoreControllerInterface`, `PersistenceStoreControllerManagerInterface`
-from imports. Remove `createMiroirDeploymentGetPersistenceStoreController` import if the PSC
-extraction it provides is no longer needed (the Miroir deployment creation composite action is
-enough).
+**P3 — Cleanup (optional, partial)**
+
+- Removed unused `localCache`, `miroirContext`, `miroirtDeploymentStorageConfiguration`, `typedAdminConfigurationDeploymentLibrary`, commented duplicate config blocks.
+- Module-level startup alignment with sibling tests still optional.
+
+---
+
+## Appendix A — deferred PSC assertion migration
+
+*Not part of Slices E / ET / P. Optional future work if Gap C assertion migration is pursued.*
+
+Migrate `PersistenceStoreController.integ.test.tsx` (and eventually all `4_storage` families)
+from direct PSC calls to `domainController`:
+
+| PSC call | `domainController` equivalent |
+|----------|-------------------------------|
+| `getInstances(section, entityUuid)` | `handleBoxedExtractorOrQueryAction(buildGetInstancesQuery(...), ...)` |
+| `createEntity(entity, entityDefinition)` | `handleCompositeAction` with `modelAction` / `"createEntity"` |
+| `renameEntityClean(...)` | `handleCompositeAction` with `"renameEntity"` |
+| `dropEntity(...)` | `handleCompositeAction` with `"dropEntity"` |
+| `upsertInstance(...)` | `handleCompositeAction` with instance / `"updateEntity"` action |
+
+Introduce `buildGetInstancesQuery` as a **private** test-file helper only. Remove PSC variables
+from test files only after all assertion calls are migrated.
 
 ---
 
@@ -740,9 +849,10 @@ enough).
 
 **F1 — Remove `addEntitiesAndInstancesForEmulatedServer` from `tests-utils.tsx`**
 
-After Slices ET and P no longer call it, the emulated-server branch of `addEntitiesAndInstances`
-is dead. Remove `addEntitiesAndInstancesForEmulatedServer`. The real-server branch
-(`addEntitiesAndInstancesForRealServer`) may still be used elsewhere; check before removing.
+After ExtractorTemplate `beforeEach` no longer calls `addEntitiesAndInstances` (future slice, not
+ET), the emulated-server branch may be dead. Remove `addEntitiesAndInstancesForEmulatedServer` if
+unused. The real-server branch (`addEntitiesAndInstancesForRealServer`) may still be used
+elsewhere; check before removing.
 
 **F2 — Remove or narrow `addEntitiesAndInstances`**
 
@@ -778,15 +888,30 @@ to clarify: `addEntitiesAndInstancesForRealServer` becomes the canonical form.
 - [x] `npm run testByFile -w miroir-standalone-app -- ExtractorPersistenceStoreRunner.integ` — 11/11, no regressions
 - [x] Slice T regression: `MIROIR_TEST_SUITES=miroirCoreTransformers MIROIR_TEST_MODE=integ` — 243/243
 
-### Slices ET / P / F — not started
+### Slice ET (ExtractorTemplate setup via `AppStackIntegrationTestSession`) — done
 
-**Slices ET / P (assertions via domainController — later):**
+- [x] `ExtractorTemplatePersistenceStoreRunner.integ.test.tsx` uses `AppStackIntegrationTestSession` in `beforeAll`; PSC variables wired from manager
+- [x] `localCache` obtained from `domainController.getLocalCache()` after session init (for unchanged `beforeEach`)
+- [x] ExtractorTemplate `it()` bodies still call `handleQueryTemplateActionForServerONLY` on PSC (unchanged)
+- [x] `beforeEach` unchanged (`addEntitiesAndInstances` retained)
+- [x] `npm run testByFile -w miroir-standalone-app -- ExtractorTemplatePersistenceStoreRunner.integ` — 7/7, no regressions
 
-- [ ] `ExtractorTemplatePersistenceStoreRunner.integ.test.tsx` routes assertions through `domainController`
-- [ ] `PersistenceStoreController.integ.test.tsx` routes assertions through `domainController`
-- [ ] `4_storage/*.integ.test.tsx` eventually contain no direct PSC assertion calls (ET/P only)
+### Slice P (PSC CRUD setup via `AppStackIntegrationTestSession`) — done
 
-**General:**
+- [x] `PersistenceStoreController.integ.test.tsx` uses `AppStackIntegrationTestSession` in `beforeAll`; `localAppPersistenceStoreController` / `localMiroirPersistenceStoreController` wired from manager
+- [x] All `it()` blocks still call `localAppPersistenceStoreController` / `localMiroirPersistenceStoreController` (unchanged — no `domainController` in test bodies)
+- [x] `beforeEach` unchanged (`resetAndInitApplicationDeployment`)
+- [x] `afterAll` unchanged (`deleteAndCloseApplicationDeployments`)
+- [x] `npm run testByFile -w miroir-standalone-app -- PersistenceStoreController.integ` — 10/10, no regressions
+
+### Slice F (final cleanup) — not started
+
+See [§4 Slice F](#slice-f--final-cleanup) for steps. Checklist:
+
+- [ ] `addEntitiesAndInstancesForEmulatedServer` removed from `tests-utils.tsx` when unused
+- [ ] Gap-C TODO comments resolved in `MiroirTestTools.ts` / `MiroirTransformerTestTools.ts`
+
+**General (all remaining slices):**
 
 - [ ] All tests that passed before pass after each slice
 - [ ] `npm run testMiroir -w miroir-standalone-app -- --suites runner_library --mode integ` stays green throughout (runner tests untouched)
