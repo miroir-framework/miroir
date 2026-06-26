@@ -194,6 +194,10 @@ describe("IntegrationTestSession session lifecycle", () => {
     expect(domainController.handleAction).toHaveBeenCalledTimes(4);
     expect(env.domainController).toBe(domainController);
     expect(env.testApplicationUuid).toBe(INTEG_TEST_SELF_APPLICATION_UUID);
+    expect(env.persistenceStoreControllerManager).toBeDefined();
+    expect(
+      env.persistenceStoreControllerManager.getPersistenceStoreController(INTEG_TEST_DEPLOYMENT_UUID),
+    ).toBeDefined();
     expect(env.applicationDeploymentMap).toEqual({
       ...defaultSelfApplicationDeploymentMap,
       [INTEG_TEST_SELF_APPLICATION_UUID]: INTEG_TEST_DEPLOYMENT_UUID,

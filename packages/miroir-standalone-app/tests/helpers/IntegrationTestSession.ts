@@ -47,6 +47,8 @@ import {
   type ApplicationDeploymentMap,
   type ApplicationEntitiesAndInstances,
   type CompositeActionSequence,
+  createDeploymentCompositeAction,
+  type Deployment,
   type DomainControllerInterface,
   type Entity,
   type EntityDefinition,
@@ -54,11 +56,15 @@ import {
   type MetaEntity,
   type MiroirConfigClient,
   type MiroirTestExecutionEnvironment,
+  type PersistenceStoreControllerManagerInterface,
   type RunnerTestSessionInterface,
   type StoreSectionConfiguration,
   type StoreUnitConfiguration,
   type Uuid,
 } from "miroir-core";
+import { deployment_Library_DO_NO_USE, selfApplicationLibrary } from "miroir-test-app_deployment-library";
+import { createMiroirDeploymentGetPersistenceStoreController } from "../../src/miroir-fwk/4-tests/tests-utils.js";
+import { setupMiroirTest } from "../../src/miroir-fwk/4-tests/setupMiroirTest.js";
 
 export type TestApplicationStoreOptions =
   | { emulatedServerType: "sql"; postgresHostName?: string; connectionString?: string }
@@ -99,6 +105,12 @@ export type TestSessionForIntegOptions = {
   adminStore: AdminStoreOptions;
   filesystemDeploymentRootDirectory?: string;
   bundledDeploymentData?: Record<string, BundledDeploymentData>;
+};
+
+export type AppStackSessionOptions = {
+  applicationDeploymentMap: ApplicationDeploymentMap;
+  adminDeployment: Deployment;
+  libraryDeploymentStorageConfiguration: StoreUnitConfiguration;
 };
 
 export const INTEG_TEST_APPLICATION_NAME = "testApplication";
@@ -579,15 +591,115 @@ function registerStoreSectionStartups(
 }
 
 // ################################################################################################
+export class AppStackIntegrationTestSession implements RunnerTestSessionInterface {
+  private domainController: DomainControllerInterface | undefined;
+  private persistenceStoreControllerManager: PersistenceStoreControllerManagerInterface | undefined;
+
+  constructor(
+    private readonly miroirConfig: MiroirConfigClient,
+    private readonly appStackOptions: AppStackSessionOptions,
+  ) {}
+
+  async initSession(): Promise<MiroirTestExecutionEnvironment> {
+    if (!this.miroirConfig.client.emulateServer) {
+      throw new Error(
+        "AppStackIntegrationTestSession requires emulateServer: true in miroirConfig.client",
+      );
+    }
+
+    const { domainControllerForClient, persistenceStoreControllerManagerForServer } =
+      await setupMiroirTest(this.miroirConfig);
+
+    if (!persistenceStoreControllerManagerForServer) {
+      throw new Error(
+        "AppStackIntegrationTestSession.initSession: persistenceStoreControllerManagerForServer missing",
+      );
+    }
+
+    const domainController = domainControllerForClient;
+    const persistenceStoreControllerManager = persistenceStoreControllerManagerForServer;
+
+    const wrapped = await createMiroirDeploymentGetPersistenceStoreController(
+      this.miroirConfig,
+      persistenceStoreControllerManager,
+      domainController,
+      this.appStackOptions.applicationDeploymentMap,
+      this.appStackOptions.adminDeployment,
+    );
+    if (!wrapped?.localMiroirPersistenceStoreController) {
+      throw new Error(
+        "AppStackIntegrationTestSession.initSession: Miroir deployment PSC missing",
+      );
+    }
+
+    const createLibraryDeploymentAction = createDeploymentCompositeAction(
+      "library",
+      deployment_Library_DO_NO_USE.uuid,
+      selfApplicationLibrary.uuid,
+      this.appStackOptions.adminDeployment,
+      this.appStackOptions.libraryDeploymentStorageConfiguration,
+    );
+    const createLibraryResult = await domainController.handleCompositeAction(
+      createLibraryDeploymentAction,
+      this.appStackOptions.applicationDeploymentMap,
+      defaultMiroirModelEnvironment,
+      {},
+    );
+    if (createLibraryResult.status !== "ok") {
+      throw new Error(
+        "AppStackIntegrationTestSession.initSession: library deployment failed: " +
+          JSON.stringify(createLibraryResult),
+      );
+    }
+
+    const libraryPersistenceStoreController =
+      persistenceStoreControllerManager.getPersistenceStoreController(
+        deployment_Library_DO_NO_USE.uuid,
+      );
+    if (!libraryPersistenceStoreController) {
+      throw new Error(
+        "AppStackIntegrationTestSession.initSession: library PSC missing",
+      );
+    }
+
+    this.domainController = domainController;
+    this.persistenceStoreControllerManager = persistenceStoreControllerManager;
+
+    return {
+      domainController,
+      applicationDeploymentMap: this.appStackOptions.applicationDeploymentMap,
+      testApplicationUuid: selfApplicationLibrary.uuid,
+      persistenceStoreControllerManager,
+    };
+  }
+
+  async beforeEach(): Promise<void> {
+    // App-stack integ tests manage per-test seeding in their own beforeEach hooks.
+  }
+
+  async teardown(): Promise<void> {
+    this.domainController = undefined;
+    this.persistenceStoreControllerManager = undefined;
+  }
+}
+
 export class IntegrationTestSession implements RunnerTestSessionInterface {
   private static storeSectionsRegisteredFor = new Set<string>();
 
   private domainController: DomainControllerInterface | undefined;
+  private persistenceStoreControllerManager: PersistenceStoreControllerManagerInterface | undefined;
   private miroirConfig: MiroirConfigClient | undefined;
   private applicationDeploymentMap: ApplicationDeploymentMap | undefined;
   private testStoreConfig: StoreUnitConfiguration | undefined;
 
   constructor(private readonly options: TestSessionForIntegOptions) {}
+
+  // static forAppStackConfig(
+  //   miroirConfig: MiroirConfigClient,
+  //   appStackOptions: AppStackSessionOptions,
+  // ): AppStackIntegrationTestSession {
+  //   return new AppStackIntegrationTestSession(miroirConfig, appStackOptions);
+  // }
 
   private getApplicationName(): string {
     return this.options.applicationName ?? INTEG_TEST_APPLICATION_NAME;
@@ -848,11 +960,13 @@ export class IntegrationTestSession implements RunnerTestSessionInterface {
     await this.initTestApplicationData(domainController, this.applicationDeploymentMap);
 
     this.domainController = domainController;
+    this.persistenceStoreControllerManager = persistenceStoreControllerManager;
 
     return {
       domainController,
       applicationDeploymentMap: this.applicationDeploymentMap,
       testApplicationUuid: INTEG_TEST_SELF_APPLICATION_UUID,
+      persistenceStoreControllerManager,
     };
   }
 
@@ -882,6 +996,7 @@ export class IntegrationTestSession implements RunnerTestSessionInterface {
     );
 
     this.domainController = undefined;
+    this.persistenceStoreControllerManager = undefined;
     this.miroirConfig = undefined;
     this.applicationDeploymentMap = undefined;
     this.testStoreConfig = undefined;

@@ -95,7 +95,8 @@ export class RunnerTestSession implements RunnerTestSessionInterface {
       internalMiroirConfig,
     } = getTestSessionConfig(miroirConfig);
 
-    const { domainController } = await setupMiroirTestAndDeployMiroirApp(
+    const { domainController, persistenceStoreControllerManager } =
+      await setupMiroirTestAndDeployMiroirApp(
       internalMiroirConfig,
       miroirActivityTracker,
       miroirEventService,
@@ -127,6 +128,7 @@ export class RunnerTestSession implements RunnerTestSessionInterface {
       domainController,
       applicationDeploymentMap: testApplicationDeploymentMap,
       testApplicationUuid: libraryTestIdentifiers.testApplicationUuid,
+      persistenceStoreControllerManager,
       runnerTestContext: this.runnerTestContext,
     };
   }

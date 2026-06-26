@@ -237,17 +237,23 @@ export async function setupMiroirTestAndDeployMiroirApp(
   applicationDeploymentMap: ApplicationDeploymentMap,
 ): Promise<{
   domainController: DomainControllerInterface;
+  persistenceStoreControllerManager: PersistenceStoreControllerManager;
 }> {
   // Establish requests interception layer before all tests.
   console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ beforeAll");
   const {
     domainControllerForClient,
     domainControllerForServer,
+    persistenceStoreControllerManagerForServer,
+    persistenceStoreControllerManagerForClient,
   } = await setupMiroirTest(miroirConfig, miroirActivityTracker, miroirEventService, crossFetch);
 
   const domainController = miroirConfig.client.emulateServer && domainControllerForServer
     ? domainControllerForServer
       : domainControllerForClient
+
+  const persistenceStoreControllerManager =
+    persistenceStoreControllerManagerForServer ?? persistenceStoreControllerManagerForClient;
 
   // create the Miroir app deployment containing the meta-model
   const createMiroirDeploymentCompositeAction = createDeploymentCompositeAction(
@@ -274,5 +280,6 @@ export async function setupMiroirTestAndDeployMiroirApp(
 
   return Promise.resolve({
     domainController: domainControllerForClient,
+    persistenceStoreControllerManager,
   });
 }

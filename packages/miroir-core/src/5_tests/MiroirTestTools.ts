@@ -29,6 +29,7 @@ import { runMiroirQueryRunnerTestInMemory } from "./QueryRunnerTestTools";
 import { runMiroirRunnerTest } from "./RunnerTestTools";
 import type { MiroirTestRunFilter, TestSuiteListFilter } from "../0_interfaces/5-tests/miroirTestTypes";
 import type { DomainControllerInterface } from "../0_interfaces/2_domain/DomainControllerInterface";
+import type { PersistenceStoreControllerManagerInterface } from "../0_interfaces/4-services/PersistenceStoreControllerManagerInterface";
 import type { ApplicationDeploymentMap } from "../1_core/Deployment";
 
 export type RunnerTestContext = {
@@ -46,6 +47,7 @@ export type MiroirTestExecutionEnvironment = {
   domainController: DomainControllerInterface;
   applicationDeploymentMap: ApplicationDeploymentMap;
   testApplicationUuid: string;
+  persistenceStoreControllerManager: PersistenceStoreControllerManagerInterface;
   runnerTestContext?: RunnerTestContext;
 };
 
