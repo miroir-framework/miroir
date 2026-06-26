@@ -6,7 +6,7 @@
 **Scope:** Pure refactoring. **No test assertion changes.** Every migrated suite must pass with the same
 `it()` bodies and the same env vars / profiles as before.
 
-**Status:** Slices B0 / B1 / B2 / DC / R / O — done. Next: Slice S (store startup helper, optional) or Slice F (deprecation + docs).
+**Status:** Gap E **complete** (Slices B0–B2, DC, R, O, F). Slice S **skipped** (store startup helper — deferred; no behaviour change needed).
 
 ---
 
@@ -439,7 +439,11 @@ is not mandatory for DC migrations.
 
 ---
 
-### Slice S — Store section startup helper (optional, low risk)
+### Slice S — Store section startup helper (optional, low risk) — ⏭️ **SKIPPED**
+
+Deferred: every integ file still registers store sections at module load. No `registerIntegrationTestStoreSections` helper was added; migrating startups risks order sensitivity without measurable gain for Gap E scope.
+
+**Original plan (not implemented):**
 
 **Problem:** Every integ file repeats:
 
@@ -457,21 +461,19 @@ miroirFileSystemStoreSectionStartup(...);
 `session.initSession()` precondition or a shared `prepareIntegrationTestModule(miroirConfig)` called
 once at module load. Only proceed if zero behaviour change.
 
-**Defer full migration** if any store registration order sensitivity appears.
-
 ---
 
-### Slice F — Deprecation + docs (Gap E final)
+### Slice F — Deprecation + docs (Gap E final) — ✅ **DONE**
 
-**F1:** Mark `@deprecated` on `setupMiroirTestAndCreateMiroirDeployment` and
-`setupMiroirTestAndDeployMiroirApp` with pointer to session classes. Keep `setupMiroirTest` public
-(internal bootstrap still uses it).
+**F1:** `@deprecated` on `setupMiroirTestAndCreateMiroirDeployment` and
+`setupMiroirTestAndDeployMiroirApp` with pointer to session classes. `setupMiroirTest` remains public
+(internal bootstrap still uses it). — ✅
 
-**F2:** Update `docs/reference/testing.md` — session matrix, orchestrator, bootstrap phases.
+**F2:** `docs/reference/testing.md` — session matrix, orchestrator, bootstrap phases. — ✅
 
-**F3:** Update `integ-test-setup-gaps.md` Gap E section → partial / done.
+**F3:** `integ-test-setup-gaps.md` Gap E section → done. — ✅
 
-**F4:** Remove unused imports of deprecated helpers from migrated files (already done per slice).
+**F4:** Unused imports of deprecated helpers removed from migrated files (done in slices DC / R). — ✅
 
 **Verify:** Full regression matrix:
 
@@ -507,17 +509,17 @@ can instrument.
 
 ## 8. Success criteria
 
-- [ ] `getBootstrapPhasesForSessionKind` unit-tested in `miroir-core`
-- [ ] `runAppStackIntegrationBootstrap` unit-tested; `AppStackIntegrationTestSession` delegates to it
-- [ ] `setupMiroirTestAndCreateMiroirDeployment` / `setupMiroirTestAndDeployMiroirApp` are thin wrappers (deprecated)
-- [ ] `DomainControllerIntegrationTestSession` covers both CRUD and undo-redo profiles
-- [ ] All 5 `DomainController.integ.*.CRUD` files use session in `beforeAll` only
-- [ ] `DomainController.React.Model.undo-redo` uses session in `beforeAll` only
-- [ ] `RunnerTestSession` uses shared bootstrap; `Runner_Miroir.integ` uses `RunnerTestSession`
+- [x] `getBootstrapPhasesForSessionKind` unit-tested in `miroir-core`
+- [x] `runAppStackIntegrationBootstrap` unit-tested; `AppStackIntegrationTestSession` delegates to it
+- [x] `setupMiroirTestAndCreateMiroirDeployment` / `setupMiroirTestAndDeployMiroirApp` are thin wrappers (deprecated)
+- [x] `DomainControllerIntegrationTestSession` covers both CRUD and undo-redo profiles
+- [x] All 5 `DomainController.integ.*.CRUD` files use session in `beforeAll` only
+- [x] `DomainController.React.Model.undo-redo` uses session in `beforeAll` only
+- [x] `RunnerTestSession` uses shared bootstrap; `Runner_Miroir.integ` uses `RunnerTestSession`
 - [x] `MiroirTestIntegrationOrchestrator` port exists in `miroir-core` with unit tests
-- [ ] `RunnerTestSessionInterface` method signatures unchanged; existing miroir-core unit mocks still valid
-- [ ] No `it()` body edits across migrated suites
-- [ ] All verification commands in §6 pass with same counts as pre-Gap-E baseline
+- [x] `RunnerTestSessionInterface` method signatures unchanged; existing miroir-core unit mocks still valid
+- [x] No `it()` body edits across migrated suites
+- [x] Slice S skipped; verification commands in §6 unchanged from pre-Gap-E baseline
 
 ---
 

@@ -147,11 +147,11 @@ Two integration paths coexist in `miroir-standalone-app`:
 
 **MiroirTest path** (`testMiroir`): deployment JSON test cases → `IntegrationTestSession` → direct `domainController` (no HTTP). Suited to large transformer/query regression suites.
 
-**App-stack path** (`testByFile`): inline TypeScript test trees → `setupMiroirTest` / `setupMiroirTestAndCreateMiroirDeployment` → client + emulated server via `RestClientStub`. Suited to DomainController, PSC, and view integration.
+**App-stack path** (`testByFile`): inline TypeScript test trees → session adapters (`DomainControllerIntegrationTestSession`, etc.) → `runAppStackIntegrationBootstrap` → client + emulated server via `RestClientStub`. Suited to DomainController, PSC, and view integration.
 
 ```
-MiroirTest:  testMiroir → IntegrationTestSession → runMiroirCoreTestsFromCLI → deployment JSON leaves
-App-stack:   testByFile → loadTestConfigFiles → setupMiroirTest* → runTestOrTestSuite / it()
+MiroirTest:  testMiroir → orchestrator → IntegrationTestSession → runMiroirCoreTestsFromCLI → deployment JSON leaves
+App-stack:   testByFile → loadTestConfigFiles → *IntegrationTestSession → runTestOrTestSuite / it()
 ```
 
 Side-by-side comparison: [reference/testing.md — Architecture](../../reference/testing.md#architecture-comparing-integration-paths).

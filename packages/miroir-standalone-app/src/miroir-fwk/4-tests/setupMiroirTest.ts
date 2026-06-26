@@ -153,7 +153,8 @@ export async function setupMiroirTest(
  * Reduces boilerplate in integration test beforeAll hooks.
  *
  * @deprecated Prefer `DomainControllerIntegrationTestSession` (Gap E). Thin wrapper around
- * `runAppStackIntegrationBootstrap`.
+ * `runAppStackIntegrationBootstrap` with phases `[wireEmulatedStack, deployMiroir]`.
+ * @see packages/miroir-standalone-app/tests/helpers/DomainControllerIntegrationTestSession.ts
  */
 export async function setupMiroirTestAndCreateMiroirDeployment(
   miroirConfig: MiroirConfigClient,
@@ -188,7 +189,9 @@ export async function setupMiroirTestAndCreateMiroirDeployment(
 
 // ################################################################################################
 /**
- * @deprecated Prefer `RunnerTestSession` (Gap E). Thin wrapper around `runAppStackIntegrationBootstrap`.
+ * @deprecated Prefer `RunnerTestSession` (Gap E). Thin wrapper around
+ * `runAppStackIntegrationBootstrap` with `getBootstrapPhasesForSessionKind("runner")`.
+ * @see packages/miroir-standalone-app/tests/helpers/RunnerTestSession.ts
  */
 export async function setupMiroirTestAndDeployMiroirApp(
   miroirConfig: MiroirConfigClient,

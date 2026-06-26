@@ -323,45 +323,63 @@ Direct PSC calls in tests remain intentional (persistence-layer coverage).
 
 ---
 
-## 6. Gap E — Setup helper fragmentation
+## 6. Gap E — Setup helper fragmentation — ✅ **Done**
 
-### Current state
+**TDD plan:** [gap-E-refactoring-plan.md](./gap-E-refactoring-plan.md) (complete).  
+Gap B builds on the shared bootstrap from Gap E: [gap-B-refactoring-plan.md](./gap-B-refactoring-plan.md).
 
-Five different public setup entry points exist across the test infrastructure:
+### Outcome
+
+Integration test bootstrap is consolidated behind `RunnerTestSessionInterface` adapters and a shared
+`runAppStackIntegrationBootstrap` module. A `MiroirTestIntegrationOrchestrator` port in `miroir-core`
+delegates session construction to `StandaloneAppIntegrationOrchestrator` in standalone-app.
+
+| Session class | `IntegrationTestSessionKind` | Bootstrap phases (summary) |
+|---------------|------------------------------|----------------------------|
+| `IntegrationTestSession` | `transformer` | Local PSC path (no emulated HTTP) |
+| `AppStackIntegrationTestSession` | `appStackPsc` | wire + deployMiroir + deployLibrary |
+| `DomainControllerIntegrationTestSession` | `domainController` | profile `miroirPlatform` or `miroirAndLibrary` |
+| `RunnerTestSession` | `runner` | wire + deployMiroir |
+
+Phase descriptors live in `miroir-core` (`IntegrationTestBootstrap.ts`):
+`getBootstrapPhasesForSessionKind`, `getBootstrapPhasesForDomainControllerProfile`,
+`describeIntegrationTestSession`.
+
+### Migrated call sites
+
+| Family | Session |
+|--------|---------|
+| `3_controllers/DomainController.integ.*.CRUD` (5 files) | `DomainControllerIntegrationTestSession` (`miroirPlatform`) |
+| `DomainController.React.Model.undo-redo` | `DomainControllerIntegrationTestSession` (`miroirAndLibrary`) |
+| `4_view/Runner_Miroir.integ.test.tsx` | `RunnerTestSession` |
+| `miroir-core-tests.integ.test.ts` | orchestrator → `transformer` |
+| `miroir-runner-tests.integ.test.ts` | orchestrator → `runner` |
+| `4_storage/*.integ` | `AppStackIntegrationTestSession` (Gap C; delegates to shared bootstrap) |
+
+### Deprecated helpers (thin wrappers retained for B2 characterization tests)
+
+| Helper | Replacement |
+|--------|-------------|
+| `setupMiroirTestAndCreateMiroirDeployment` | `DomainControllerIntegrationTestSession` |
+| `setupMiroirTestAndDeployMiroirApp` | `RunnerTestSession` |
+| `setupMiroirTest` | **Still public** — used inside `runAppStackIntegrationBootstrap` |
+
+### Deferred
+
+- **Slice S** (module-level store startup deduplication) — skipped in Gap E.
+- **`setupMiroirPlatform`** (CLI / MCP) — out of Gap E scope.
+
+### Historical context (pre–Gap E)
+
+Five different public setup entry points existed across the test infrastructure:
 
 | Helper | Package | What it creates |
 |--------|---------|----------------|
 | `setupMiroirTest` | `miroir-standalone-app` | `DomainController`, REST client, store manager — no deployments |
-| `setupMiroirTestAndCreateMiroirDeployment` | `miroir-standalone-app` | above + miroir deployment |
-| `setupMiroirTestAndDeployMiroirApp` | `miroir-standalone-app` | above + miroir + admin + library deployments |
+| `setupMiroirTestAndCreateMiroirDeployment` | `miroir-standalone-app` | above + miroir deployment (**deprecated**) |
+| `setupMiroirTestAndDeployMiroirApp` | `miroir-standalone-app` | above + miroir deployment for runner (**deprecated**) |
 | `setupMiroirPlatform` | `miroir-cli` / `miroir-mcp` | own orchestration via `PersistenceStoreControllerManager` |
 | `initMiroirCoreTestIntegrationStore` | ~~`miroir-core`~~ | **Removed** — use `IntegrationTestSession` |
-| `AppStackIntegrationTestSession` | `miroir-standalone-app` | `4_storage` emulated-server bootstrap ✅ |
-| `IntegrationTestSession` | `miroir-standalone-app` | Transformer integ (`MIROIR_TEST_*`) ✅ |
-
-### Gap
-
-- The hexagonal split intended by #197 places orchestration in `miroir-core` and adapters in
-  packages. But `setupMiroirTest*` helpers currently live in `miroir-standalone-app` and are
-  not accessible to `miroir-core` tests.
-- `setupMiroirPlatform` is a separate lineage used only by CLI / MCP tests; it cannot easily
-  be adapted for UI embedding.
-- The `RunnerTestSessionInterface` seam in `miroir-core` is now implemented by
-  **`IntegrationTestSession`**, **`AppStackIntegrationTestSession`**, and **`RunnerTestSession`**
-  (standalone-app). A common **`MiroirTestIntegrationOrchestrator`** for UI Phase B is still
-  not wired.
-
-### What needs to be filled
-
-- Wire **`3_controllers`** / legacy runner files to shared adapters (optional; still use
-  `setupMiroirTest*` ladder).
-- Deprecate / inline remaining **`setupMiroirTest*`** calls into session `initSession` options
-  (addressing Gap A and Gap B simultaneously).
-- **`MiroirTestIntegrationOrchestrator`** for UI Phase B — still planned; not replaced by Gap C
-  slices alone.
-
-**TDD plan:** [gap-E-refactoring-plan.md](./gap-E-refactoring-plan.md) (implement **first**).
-Gap B builds on the shared bootstrap from Gap E: [gap-B-refactoring-plan.md](./gap-B-refactoring-plan.md).
 
 ---
 
@@ -374,7 +392,7 @@ Gap B builds on the shared bootstrap from Gap E: [gap-B-refactoring-plan.md](./g
 | **C-setup** — Common integ bootstrap | ~~Unified session adapters~~ | Transformer + `4_storage` | **Done** ✅ — reduces setup chaos; UI still needs isolation (A/B) |
 | **C-assertions** — PSC vs domainController in test bodies | `4_storage` keeps PSC (intentional); UI launcher for PSC Vitest suites not built | `4_storage` only | **Partial** — blocks *in-browser* PSC access; **not** a blocker if UI spawns isolated Vitest (defer to follow-up) |
 | **D** — Env config fragmentation | Unified profile system (`MIROIR_TEST_*` vs `VITE_MIROIR_*`) | Transformer integ, all CLI-driven tests | Medium — no longer blocked on C-assertions |
-| **E** — Setup helper fragmentation | Consolidate remaining `setupMiroirTest*` in `3_controllers` / legacy runners; `MiroirTestIntegrationOrchestrator` for UI | DomainController CRUD, legacy runners | Yes (enables Phase B) |
+| **E** — Setup helper fragmentation | ~~Consolidate `setupMiroirTest*`; orchestrator for UI~~ | DomainController CRUD, legacy runners | **Done** ✅ — enables Gap B / UI Phase B |
 
 Gaps **A** and **B** remain the main blockers for running integration tests **inside** the live
 Miroir UI without disrupting the session. **Gap C-setup** is largely solved: one common bootstrap

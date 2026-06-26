@@ -124,7 +124,7 @@ MiroirTest integration runs against a real persistence store. The test applicati
 This file:
 1. Parses env/argv (accepting `--mode integ` as alias for `integration`).
 2. Calls `assertMiroirCoreIntegTestLaunchReady` — validates config and prints shell-style usage on any error.
-3. Builds a `IntegrationTestSession` from env.
+3. Builds a session via `MiroirTestIntegrationOrchestrator` (`createStandaloneAppIntegrationOrchestrator` → kind `"transformer"` → `IntegrationTestSession`).
 4. Calls `testSession.initSession()` to bootstrap the store.
 5. Calls `runMiroirCoreTestsFromCLI` to run the requested suites.
 
@@ -242,7 +242,7 @@ MIROIR_TEST_SUITES=miroirCoreTransformers MIROIR_TEST_MODE=integ \
 
 ### Runner MiroirTest integration (`miroir-runner-tests.integ.test.ts`)
 
-Runner-type `MiroirTest` leaves (`runnerTest`) exercise composite actions end-to-end. They use `RunnerTestSession` (which calls `setupMiroirTestAndDeployMiroirApp`) and require the same `VITE_MIROIR_*` config files as app-stack tests.
+Runner-type `MiroirTest` leaves (`runnerTest`) exercise composite actions end-to-end. The Vitest entry uses `MiroirTestIntegrationOrchestrator` with kind `"runner"` → `RunnerTestSession` → `runAppStackIntegrationBootstrap`. The same `VITE_MIROIR_*` config files as app-stack tests are required.
 
 ```bash
 VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-sql.json \
@@ -334,7 +334,7 @@ The final argument is a Vitest file-name filter (not a suite key). Examples:
 
 #### DomainController (`tests/3_controllers/`)
 
-Full-stack CRUD through `domainController.handleCompositeAction`, using `setupMiroirTestAndCreateMiroirDeployment` in `beforeAll` and `runTestOrTestSuite` for composite-action test trees.
+Full-stack CRUD through `domainController.handleCompositeAction`, using `DomainControllerIntegrationTestSession` in `beforeAll` and `runTestOrTestSuite` for composite-action test trees.
 
 | File | Focus |
 |------|-------|
@@ -398,6 +398,65 @@ npm run testByFile -w miroir-standalone-app -- ReportPage.integ
 
 ---
 
+## Integration test sessions and bootstrap
+
+All MiroirTest and app-stack integration paths that share the emulated client/server stack delegate
+to **`runAppStackIntegrationBootstrap`** (`tests/helpers/appStackIntegrationBootstrap.ts`) with an
+explicit phase list. Phase names are defined in `miroir-core` (`IntegrationTestBootstrap.ts`).
+
+| Phase | Effect |
+|-------|--------|
+| `wireEmulatedStack` | `setupMiroirTest` — client `domainController`, optional emulated server |
+| `deployMiroir` | Create Miroir meta-application deployment |
+| `deployLibrary` | Create library application deployment |
+| `resetMiroirModel` | `resetAndInitApplicationDeployment` for Miroir only |
+
+### Session matrix
+
+| Session class | Kind | Typical bootstrap phases | Entry points |
+|---------------|------|--------------------------|--------------|
+| `IntegrationTestSession` | `transformer` | (local PSC — no HTTP phases) | `miroir-core-tests.integ.test.ts` |
+| `AppStackIntegrationTestSession` | `appStackPsc` | wire + deployMiroir + deployLibrary | `4_storage/*.integ.test.tsx` |
+| `DomainControllerIntegrationTestSession` | `domainController` | profile-dependent (see below) | `3_controllers/DomainController.integ.*` |
+| `RunnerTestSession` | `runner` | wire + deployMiroir | `miroir-runner-tests.integ`, `Runner_Miroir.integ` |
+
+**DomainController profiles** (`getBootstrapPhasesForDomainControllerProfile`):
+
+| Profile | Phases | Used by |
+|---------|--------|---------|
+| `miroirPlatform` | wire + deployMiroir + resetMiroirModel | CRUD suites (`beforeEach` resets miroir model) |
+| `miroirAndLibrary` | wire + deployMiroir + deployLibrary | `DomainController.React.Model.undo-redo` |
+
+Model.CRUD may pass `skipResetMiroirModelInInit: true` so reset runs only in `beforeEach`.
+
+### `MiroirTestIntegrationOrchestrator`
+
+Port in `miroir-core` (`MiroirTestIntegrationOrchestrator.ts`). Standalone-app registers concrete
+session classes via `createStandaloneAppIntegrationOrchestrator()`:
+
+```typescript
+import { createStandaloneAppIntegrationOrchestrator } from "./helpers/StandaloneAppIntegrationOrchestrator.js";
+
+const orchestrator = createStandaloneAppIntegrationOrchestrator();
+const session = orchestrator.createSession("runner", {
+  miroirConfig,
+  miroirActivityTracker,
+  miroirEventService,
+});
+await session.initSession();
+```
+
+`describeSession(kind)` returns `{ kind, bootstrapPhases }` from `describeIntegrationTestSession`.
+For `domainController`, pass the profile to `describeIntegrationTestSession(kind, profile)` directly.
+
+### Deprecated setup helpers
+
+`setupMiroirTestAndCreateMiroirDeployment` and `setupMiroirTestAndDeployMiroirApp` remain as thin
+wrappers (used by characterization unit tests) but are **deprecated** — prefer session classes above.
+`setupMiroirTest` is still the public primitive for wiring client/server stack inside the bootstrap.
+
+---
+
 ## Architecture: comparing integration paths
 
 ### MiroirTest path (`testMiroir` → `miroir-core-tests.integ.test.ts`)
@@ -407,7 +466,8 @@ npm run testMiroir -w miroir-standalone-app
   scripts/test-miroir-runner.ts  [routes when suite keys ⊆ miroir-core registry]
     vitest → miroir-core-tests.integ.test.ts
       assertMiroirCoreIntegTestLaunchReady(MIROIR_TEST_*)
-      IntegrationTestSession.initSession()
+      createStandaloneAppIntegrationOrchestrator().createSession("transformer", …)
+        IntegrationTestSession.initSession()
         register store startups from MIROIR_TEST_APP/ADMIN_STORE_TYPE
         setupMiroirDomainController (local PSC, no HTTP)
         seed library entities via domainController actions
@@ -427,11 +487,12 @@ npm run testByFile -w miroir-standalone-app -- DomainController.integ.Data
     loadTestConfigFiles(VITE_MIROIR_TEST_CONFIG_FILENAME, VITE_MIROIR_LOG_CONFIG_FILENAME)
     miroirAppStartup + store section startups
     beforeAll:
-      setupMiroirTestAndCreateMiroirDeployment(miroirConfig, …)
-        setupMiroirTest → client domainController + RestClientStub
-        when emulateServer: server domainController (local PSC) wired into stub
-        createDeploymentCompositeAction for Miroir deployment
-      resetAndInitApplicationDeployment (library deployment)
+      DomainControllerIntegrationTestSession.initSession()
+        runAppStackIntegrationBootstrap(phases from miroirPlatform profile)
+        setupMiroirTest → client domainController + RestClientStub (wire phase)
+        deployMiroir + resetMiroirModel phases
+    beforeEach:
+      resetAndInitApplicationDeployment (library deployment) — unchanged per suite
     describe/it:
       runTestOrTestSuite(testActions, domainController, …)
         composite-action tree executed step-by-step via domainController
@@ -446,7 +507,7 @@ npm run testByFile -w miroir-standalone-app -- DomainController.integ.Data
 | **Vitest entry** | Single file per family (`miroir-core-tests.integ.test.ts`) | One file per test suite |
 | **Configuration** | `MIROIR_TEST_*` env vars | `VITE_MIROIR_TEST_CONFIG_FILENAME` + `VITE_MIROIR_LOG_CONFIG_FILENAME` |
 | **Test definition** | `MiroirTest` deployment JSON | Inline TypeScript (`testActions`, `it()`) |
-| **Bootstrap** | `IntegrationTestSession` | `setupMiroirTest` / `setupMiroirTestAndCreateMiroirDeployment` |
+| **Bootstrap** | `IntegrationTestSession` via orchestrator | `DomainControllerIntegrationTestSession` / `AppStackIntegrationTestSession` / `RunnerTestSession` |
 | **HTTP layer** | None (direct PSC) | `RestClientStub` when `emulateServer: true` |
 | **Store layout** | Independent app + admin backends via env | Per-deployment `deploymentStorageConfig` in JSON |
 | **Reset between cases** | `testSession.beforeEach()` | Per-file `beforeEach` or composite-action `beforeEach` |
@@ -478,6 +539,8 @@ npm run testMiroir -w miroir-core
 | `src/5_tests/runMiroirCoreTestsFromCLI.ts` | Main entry called by both vitest entries |
 | `src/5_tests/MiroirTestTools.ts` | Unified runner dispatching by test type |
 | `src/5_tests/MiroirTransformerTestTools.ts` | Transformer/function-call execution and SQL path |
+| `src/5_tests/IntegrationTestBootstrap.ts` | Bootstrap phase descriptors per session kind |
+| `src/5_tests/MiroirTestIntegrationOrchestrator.ts` | Orchestrator port + factory injection |
 | `tests/miroir-core-tests.unit.test.ts` | Vitest unit entry |
 | `scripts/test-miroir-core.ts` | `testMiroir` launcher for unit tests |
 
@@ -487,12 +550,15 @@ npm run testMiroir -w miroir-core
 |------|------|
 | `tests/miroir-core-tests.integ.test.ts` | MiroirTest integration entry (`testMiroir`) |
 | `tests/miroir-runner-tests.integ.test.ts` | Runner MiroirTest integration entry |
-| `tests/helpers/IntegrationTestSession.ts` | Store bootstrap for MiroirTest integ (all backends) |
-| `tests/helpers/RunnerTestSession.ts` | Store bootstrap for runner MiroirTest integ |
+| `tests/helpers/IntegrationTestSession.ts` | Transformer + app-stack PSC sessions |
+| `tests/helpers/DomainControllerIntegrationTestSession.ts` | DomainController CRUD / undo-redo bootstrap |
+| `tests/helpers/appStackIntegrationBootstrap.ts` | Shared `runAppStackIntegrationBootstrap` |
+| `tests/helpers/StandaloneAppIntegrationOrchestrator.ts` | Orchestrator implementation (all session kinds) |
+| `tests/helpers/RunnerTestSession.ts` | Runner MiroirTest + legacy runner integ bootstrap |
 | `tests/helpers/miroirCoreIntegTestLaunch.ts` | Pre-flight validation + usage output |
 | `tests/helpers/runMiroirRunnerTestsFromCLI.ts` | Runner test CLI orchestration |
 | `tests/utils/fileTools.ts` | `loadTestConfigFiles` for app-stack tests |
-| `src/miroir-fwk/4-tests/setupMiroirTest.ts` | `setupMiroirTest`, `setupMiroirTestAndCreateMiroirDeployment` |
+| `src/miroir-fwk/4-tests/setupMiroirTest.ts` | `setupMiroirTest` (public); deprecated `setupMiroirTestAnd*` wrappers |
 | `src/miroir-fwk/4-tests/runTestOrTestSuite.ts` | Composite-action test tree runner |
 | `tests/miroirConfig.test-*.json` | App-stack store/backend presets |
 | `scripts/test-miroir-runner.ts` | `testMiroir` launcher — routes core vs runner integ |
