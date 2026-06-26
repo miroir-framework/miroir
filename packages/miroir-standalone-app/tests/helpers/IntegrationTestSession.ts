@@ -2,6 +2,7 @@
  * Integration test session for MiroirTest runs.
  * Bootstraps testApplication + admin deployments with configurable store backends.
  */
+import crossFetch from "cross-fetch";
 import {
   author1,
   author2,
@@ -61,10 +62,10 @@ import {
   type StoreSectionConfiguration,
   type StoreUnitConfiguration,
   type Uuid,
+  getBootstrapPhasesForSessionKind,
 } from "miroir-core";
-import { deployment_Library_DO_NO_USE, selfApplicationLibrary } from "miroir-test-app_deployment-library";
-import { createMiroirDeploymentGetPersistenceStoreController } from "../../src/miroir-fwk/4-tests/tests-utils.js";
-import { setupMiroirTest } from "../../src/miroir-fwk/4-tests/setupMiroirTest.js";
+import { selfApplicationLibrary } from "miroir-test-app_deployment-library";
+import { runAppStackIntegrationBootstrap } from "./appStackIntegrationBootstrap.js";
 
 export type TestApplicationStoreOptions =
   | { emulatedServerType: "sql"; postgresHostName?: string; connectionString?: string }
@@ -601,76 +602,24 @@ export class AppStackIntegrationTestSession implements RunnerTestSessionInterfac
   ) {}
 
   async initSession(): Promise<MiroirTestExecutionEnvironment> {
-    if (!this.miroirConfig.client.emulateServer) {
-      throw new Error(
-        "AppStackIntegrationTestSession requires emulateServer: true in miroirConfig.client",
-      );
-    }
-
-    const { domainControllerForClient, persistenceStoreControllerManagerForServer } =
-      await setupMiroirTest(this.miroirConfig);
-
-    if (!persistenceStoreControllerManagerForServer) {
-      throw new Error(
-        "AppStackIntegrationTestSession.initSession: persistenceStoreControllerManagerForServer missing",
-      );
-    }
-
-    const domainController = domainControllerForClient;
-    const persistenceStoreControllerManager = persistenceStoreControllerManagerForServer;
-
-    const wrapped = await createMiroirDeploymentGetPersistenceStoreController(
-      this.miroirConfig,
-      persistenceStoreControllerManager,
-      domainController,
-      this.appStackOptions.applicationDeploymentMap,
-      this.appStackOptions.adminDeployment,
-    );
-    if (!wrapped?.localMiroirPersistenceStoreController) {
-      throw new Error(
-        "AppStackIntegrationTestSession.initSession: Miroir deployment PSC missing",
-      );
-    }
-
-    const createLibraryDeploymentAction = createDeploymentCompositeAction(
-      "library",
-      deployment_Library_DO_NO_USE.uuid,
-      selfApplicationLibrary.uuid,
-      this.appStackOptions.adminDeployment,
-      this.appStackOptions.libraryDeploymentStorageConfiguration,
-    );
-    const createLibraryResult = await domainController.handleCompositeAction(
-      createLibraryDeploymentAction,
-      this.appStackOptions.applicationDeploymentMap,
-      defaultMiroirModelEnvironment,
-      {},
-    );
-    if (createLibraryResult.status !== "ok") {
-      throw new Error(
-        "AppStackIntegrationTestSession.initSession: library deployment failed: " +
-          JSON.stringify(createLibraryResult),
-      );
-    }
-
-    const libraryPersistenceStoreController =
-      persistenceStoreControllerManager.getPersistenceStoreController(
-        deployment_Library_DO_NO_USE.uuid,
-      );
-    if (!libraryPersistenceStoreController) {
-      throw new Error(
-        "AppStackIntegrationTestSession.initSession: library PSC missing",
-      );
-    }
-
-    this.domainController = domainController;
-    this.persistenceStoreControllerManager = persistenceStoreControllerManager;
-
-    return {
-      domainController,
+    const executionEnvironment = await runAppStackIntegrationBootstrap({
+      miroirConfig: this.miroirConfig,
       applicationDeploymentMap: this.appStackOptions.applicationDeploymentMap,
+      adminDeployment: this.appStackOptions.adminDeployment,
+      libraryDeploymentStorageConfiguration:
+        this.appStackOptions.libraryDeploymentStorageConfiguration,
+      phases: getBootstrapPhasesForSessionKind("appStackPsc"),
       testApplicationUuid: selfApplicationLibrary.uuid,
-      persistenceStoreControllerManager,
-    };
+      deployMiroirStrategy: "pscHelper",
+      openAdminAndMiroirStoresOnServer: false,
+      customFetch: crossFetch,
+    });
+
+    this.domainController = executionEnvironment.domainController;
+    this.persistenceStoreControllerManager =
+      executionEnvironment.persistenceStoreControllerManager;
+
+    return executionEnvironment;
   }
 
   async beforeEach(): Promise<void> {

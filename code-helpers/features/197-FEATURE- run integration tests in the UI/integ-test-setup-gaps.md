@@ -2,21 +2,28 @@
 
 **Context:** On the way to solving issue #197 (run integration tests in the UI), the different
 ways integration tests start up and configure themselves must be unified. This document maps the
-current state and names the gaps that need to be filled before UI execution becomes viable.
+current state and names the gaps that still need to be filled before UI execution becomes viable.
+
+**Last updated:** Gap C setup refactor complete (see [gap-C-refactoring-plan.md](./gap-C-refactoring-plan.md)).
 
 ---
 
 ## 1. Catalogue of integration test families
 
-| Family | Package | Entry point / runner | Primary API |
-|--------|---------|----------------------|-------------|
-| **Transformer integ** | `miroir-core` | `miroir-core-tests.integ.test.ts` → `initMiroirCoreTestIntegrationStore` | `PersistenceStoreController` (direct) |
-| **Storage-layer integ** | `miroir-standalone-app` / `4_storage` | per-file Vitest (`testByFile`) | `PersistenceStoreController` (direct) + `domainController` for deployment create |
-| **DomainController CRUD** | `miroir-standalone-app` / `3_controllers` | per-file Vitest | `domainController` exclusively |
-| **Runner integ (legacy)** | `miroir-standalone-app` / `4_view` | per-file Vitest (`Runner_Miroir.integ`, …) | `domainController` |
-| **Runner integ (MiroirTest / #197)** | `miroir-standalone-app` | `miroir-runner-tests.integ.test.ts` / `testMiroir` | `domainController` via `RunnerTestSession` |
-| **CLI / MCP** | `miroir-cli`, `miroir-mcp` | per-file Vitest | `domainController` via `setupMiroirPlatform` |
-| **Component integ** | `miroir-core`, `miroir-standalone-app` | per-file Vitest | no `domainController` / no stores |
+| Family | Package | Entry point / runner | Setup (bootstrap) | Assertion / execution API |
+|--------|---------|----------------------|-------------------|---------------------------|
+| **Transformer integ** | `miroir-standalone-app` | `miroir-core-tests.integ.test.ts` → `testMiroir` | `IntegrationTestSession` (`MIROIR_TEST_*`) | `domainController.handleBoxedExtractorOrQueryAction` ✅ |
+| **Storage-layer integ** | `miroir-standalone-app` / `4_storage` | per-file Vitest (`testByFile`) | `AppStackIntegrationTestSession` (`VITE_MIROIR_*`) ✅ | **`PersistenceStoreController` direct** (intentional) |
+| **DomainController CRUD** | `miroir-standalone-app` / `3_controllers` | per-file Vitest | `setupMiroirTestAndCreateMiroirDeployment` | `domainController` exclusively |
+| **Runner integ (legacy)** | `miroir-standalone-app` / `4_view` | per-file Vitest | `setupMiroirTest` ladder | `domainController` |
+| **Runner integ (MiroirTest / #197)** | `miroir-standalone-app` | `miroir-runner-tests.integ.test.ts` / `testMiroir` | `RunnerTestSession` | `domainController` via `RunnerTestSession` |
+| **CLI / MCP** | `miroir-cli`, `miroir-mcp` | per-file Vitest | `setupMiroirPlatform` | `domainController` |
+| **Component integ** | `miroir-core`, `miroir-standalone-app` | per-file Vitest | none | no `domainController` / no stores |
+
+**Takeaway:** Setup is converging on two adapters implementing `RunnerTestSessionInterface`:
+`IntegrationTestSession` (transformer / `MIROIR_TEST_*`) and `AppStackIntegrationTestSession`
+(`4_storage` / `VITE_MIROIR_*`). Assertion style still splits: most families use
+`domainController`; `4_storage` deliberately keeps PSC-direct calls.
 
 ---
 
@@ -84,16 +91,14 @@ Integration tests split into two groups with respect to the library application:
   deployment via `RunnerTestSession.initSession` / `setupMiroirTestAndDeployMiroirApp`.
 - `cli.integ` and `mcpTools.integ` reset and re-init the library deployment in `beforeEach`.
 
-**Tests that do NOT deploy the library app:**
+**Tests that use library deployment via shared session (updated after Gap C-setup):**
 
-- The `4_storage` tests (`PersistenceStoreController.integ`,
-  `ExtractorPersistenceStoreRunner.integ`, `ExtractorTemplatePersistenceStoreRunner.integ`)
-  create and destroy a library deployment for assertion purposes but do so **within individual
-  test cases**, not as a shared `beforeAll` fixture.
-- The `miroir-core` transformer integ tests seed library *data* (author, book, publisher
-  entities and instances) into a **synthetic, ephemeral Postgres schema** (`testApplication`)
-  created directly via `PersistenceStoreController`, bypassing the real library deployment
-  altogether.
+- All `4_storage` tests now create Miroir + **Library** deployments in `AppStackIntegrationTestSession.initSession()` (`beforeAll`), then reset library data in `beforeEach` — same deployment UUIDs as other app-stack tests.
+- Transformer integ seeds library-like data into **`testApplication`** via `IntegrationTestSession` (synthetic UUIDs) — still a separate playfield from deployment `library`.
+
+**Tests that do NOT use the real library deployment UUIDs:**
+
+- Transformer integ (`MIROIR_TEST_*` / `testApplication` schema) — intentional isolated playfield for MiroirTest scale runs.
 - Component integ tests have no store at all.
 
 ### Problem
@@ -101,11 +106,11 @@ Integration tests split into two groups with respect to the library application:
 There is no shared contract that declares "this test suite requires a library deployment to exist
 before it runs" vs "this test suite manages its own playfield". As a result:
 
-- Tests that need the library app contain the creation / reset logic inline in their `beforeAll`
-  / `beforeEach` hooks, duplicated across files.
-- Tests that rely on the synthetic miroir-core schema cannot share setup helpers with tests that
-  use the real library deployment — they operate on different database artefacts with different
-  UUIDs and lifecycle.
+- Tests that need the library app still scatter creation / reset logic across `beforeAll` /
+  `beforeEach` hooks in `3_controllers`, legacy runners, CLI/MCP — **not** in `4_storage` anymore
+  (shared `AppStackIntegrationTestSession`).
+- Transformer integ (`testApplication`) and deployment-`library` tests still use different
+  database artefacts and UUIDs.
 - When running in the UI, the library app may or may not already be deployed (depends on the
   user's working context). The test runner needs to know which mode applies.
 
@@ -115,10 +120,9 @@ before it runs" vs "this test suite manages its own playfield". As a result:
   `RunnerTestSession` configuration.
 - No shared helper that creates the library deployment if absent and skips creation if already
   present (idempotent playfield setup).
-- The `miroir-core` transformer integ store (`initMiroirCoreTestIntegrationStore`) uses an
-  entirely different schema (`testApplication`) with synthetic UUIDs, making it incompatible with
-  the real library deployment UUIDs used by all `miroir-standalone-app` integ tests. There is no
-  bridge between these two data environments.
+- The transformer integ playfield (`IntegrationTestSession` / `testApplication`) still uses
+  synthetic UUIDs, separate from the real library deployment used by `VITE_MIROIR_*` tests.
+  Documented and intentional unless we later align schemas.
 
 ### What needs to be filled
 
@@ -130,79 +134,160 @@ before it runs" vs "this test suite manages its own playfield". As a result:
   idempotent so it is safe to call both from a fresh CLI session and from the UI where the
   library deployment may already be live.
 - Alignment of the miroir-core transformer integ store with the real library deployment: the
-  synthetic `testApplication` schema should either be replaced by a deployment named
-  consistently with the rest of the suite, or the transformer tests should declare that they
-  create their own isolated playfield so the gap is documented and intentional.
+  synthetic `testApplication` schema remains the transformer playfield unless we explicitly
+  converge profiles (optional; not required after Gap C-setup).
+
+**TDD plan:** [gap-B-refactoring-plan.md](./gap-B-refactoring-plan.md) (implement **after** Gap E).
 
 ---
 
-## 4. Gap C — PersistenceStoreController as main entry instead of domainController
+## 4. Gap C — Setup unification vs persistence-layer assertion style
 
-### Current state
+Gap C was originally framed as “replace `PersistenceStoreController` as the main test entry with
+`domainController` everywhere.” That conflated two separate concerns:
 
-#### `miroir-core` transformer integ (`initMiroirCoreTestIntegrationStore`)
+| Sub-gap | Topic | Status |
+|---------|--------|--------|
+| **C-setup** | One common **bootstrap** for integ tests (stores, deployments, session lifecycle) | **Largely solved** ✅ |
+| **C-assertions** | Whether **test bodies** must call `domainController` instead of PSC | **Intentionally split** — see below |
 
-Setup is entirely done through direct `PersistenceStoreController` calls:
+Refactoring plan and slices: [gap-C-refactoring-plan.md](./gap-C-refactoring-plan.md).
 
-```typescript
-const persistenceStoreController = new PersistenceStoreController(adminStore, modelStore, dataStore);
-await persistenceStoreController.createStore(config.admin);
-await persistenceStoreController.createStore(config.model);
-await persistenceStoreController.createStore(config.data);
-await persistenceStoreController.open();
-await persistenceStoreController.initApplication(…);
-await persistenceStoreController.handleAction({ actionType: "resetModel", … }, deploymentMap);
-await persistenceStoreController.handleAction({ actionType: "initModel",   … }, deploymentMap);
-await persistenceStoreController.handleAction({ actionType: "createEntity",… }, deploymentMap);
-await persistenceStoreController.handleAction({ actionType: "createInstance",…}, deploymentMap);
+### 4.1 C-setup — accomplished (Slices T, E, ET, P, F)
+
+**Problem (before):** Each `4_storage` file and transformer integ duplicated
+`setupMiroirTest` → `createMiroirDeploymentGetPersistenceStoreController` → library deployment
+composite action. Transformer integ used a separate `initMiroirCoreTestIntegrationStore` path with
+direct PSC assembly and a synthetic `testApplication` schema. Different setups made the overall
+testing operation hard to control (profiles, store backends, deployment UUIDs, teardown).
+
+**Solution (now):**
+
+```
+VITE_MIROIR_* (4_storage)                    MIROIR_TEST_* (transformer integ)
+        │                                              │
+        ▼                                              ▼
+AppStackIntegrationTestSession              IntegrationTestSession
+  setupMiroirTest (emulated HTTP)               setupMiroirDomainController (local PSC)
+  Miroir + Library deployments                  testApplication + admin deployments
+  returns persistenceStoreControllerManager     returns persistenceStoreControllerManager
+        │                                              │
+        └──────────────────┬───────────────────────────┘
+                           ▼
+              RunnerTestSessionInterface.initSession()
+              → MiroirTestExecutionEnvironment {
+                  domainController,
+                  applicationDeploymentMap,
+                  testApplicationUuid,
+                  persistenceStoreControllerManager,
+                }
 ```
 
-The `domainController` is never instantiated in this setup path. The returned
-`integrationDataStore` (a raw `PersistenceStoreDataSectionInterface`) is passed directly to
-`runMiroirCoreTestsFromCLI`, which then calls `MiroirTestTools.runMiroirTests`.
+**Files migrated to `AppStackIntegrationTestSession` in `beforeAll` only:**
 
-#### `4_storage` tests
+- `ExtractorPersistenceStoreRunner.integ.test.tsx`
+- `ExtractorTemplatePersistenceStoreRunner.integ.test.tsx`
+- `PersistenceStoreController.integ.test.tsx`
 
-These tests also hold direct references to `localMiroirPersistenceStoreController` and
-`localAppPersistenceStoreController` and call methods like `getInstances`, `createEntity`,
-`upsertInstance`, `handleBoxedQueryAction`, and `handleQueryTemplateActionForServerONLY` on them
-directly — bypassing the domain layer.
+**Transformer integ:** `initMiroirCoreTestIntegrationStore` removed; entry is
+`miroir-standalone-app/tests/miroir-core-tests.integ.test.ts` with `IntegrationTestSession`.
+Assertions use `domainController.handleBoxedExtractorOrQueryAction`.
 
-### Problem
+**Helpers location:** `packages/miroir-standalone-app/tests/helpers/IntegrationTestSession.ts`
+(`AppStackIntegrationTestSession` + `IntegrationTestSession`).
 
-- `PersistenceStoreController` is a **server-side infrastructure** component. In a live UI
-  session there is no direct access to it: all interactions go through `DomainController` →
-  REST/emulated REST → `PersistenceStore`. Bypassing this path makes transformer and storage
-  tests fundamentally incompatible with UI execution.
-- Changes to `DomainController` dispatch or middleware (e.g. activity tracking, access control,
-  event hooks) are invisible to tests that call `PersistenceStoreController` directly, leaving a
-  coverage gap.
-- `initMiroirCoreTestIntegrationStore` calls `PersistenceStoreController.handleAction` with raw
-  action objects that include hard-coded endpoint UUIDs. Any refactoring of the action routing
-  layer that happens at the `DomainController` level will not be exercised by these tests.
+**Remaining setup fragmentation (not Gap C):** `3_controllers` and legacy `4_view` runner files
+still use the `setupMiroirTest*` ladder directly — candidates for a future adapter or
+`RunnerTestSession`-style consolidation (overlaps Gap E).
 
-### What needs to be filled
+### 4.2 C-assertions — persistence tests keep PSC (by design)
 
-- **Transformer integ tests** should be migrated to instantiate a `domainController` (via
-  `setupMiroirTest` or the future `MiroirTestIntegrationOrchestrator`) and call:
-  - `domainController.handleCompositeAction` with a `createDeploymentCompositeAction(…)` for
-    setup, and
-  - `domainController.handleCompositeAction` / `handleQueryAction` for the assertion queries
-    currently done via `integrationDataStore`.
-  - This mirrors exactly what the `miroir-standalone-app` DomainController CRUD and runner tests
-    already do.
-- **`initMiroirCoreTestIntegrationStore`** should be replaced by a call to
-  `setupMiroirTest` (or the common orchestrator's `IntegrationTestSessionForPostgres`) that returns a
-  `domainController` instead of a raw data store.
-- **`4_storage` tests**: direct calls to `localMiroirPersistenceStoreController` / 
-  `localAppPersistenceStoreController` should be replaced by equivalent
-  `domainController.handleCompositeAction` or query actions. If the test intent is specifically
-  to exercise the persistence layer below the domain controller, that intent should be
-  **explicitly stated and scoped** (e.g. a dedicated `PersistenceStoreController` unit test),
-  rather than being the default pattern for integration tests.
-- The `MiroirTestExecutionEnvironment` type (already sketched in the plan) must expose
-  `domainController` as its primary store-access surface, with no `persistenceStoreController`
-  field at the public level.
+**Decision:** `4_storage` integration tests **continue to call**
+`localAppPersistenceStoreController` / `localMiroirPersistenceStoreController` in `it()` blocks
+(`getInstances`, `createEntity`, `handleBoxedQueryAction`, `handleQueryTemplateActionForServerONLY`,
+etc.). Only **`beforeAll`** was unified.
+
+**Rationale:**
+
+- These suites **are** persistence-layer integration tests: they validate store behaviour below
+  the domain dispatch path (routing, composite actions, activity tracking are out of scope).
+- Migrating them to `domainController` would change what is under test (see deferred
+  [Appendix A in gap-C-refactoring-plan.md](./gap-C-refactoring-plan.md)), not just setup.
+- Transformer integ already exercises the domain path at scale (243 tests via `domainController`).
+
+**Contrast with “general” integ tests:**
+
+| Style | Families | Test body calls |
+|-------|----------|-----------------|
+| **Domain-layer integ** | DomainController CRUD, runner, CLI/MCP, transformer integ | `domainController.handleCompositeAction` / `handleBoxedExtractorOrQueryAction` |
+| **Persistence-layer integ** | `4_storage` | PSC methods on handles obtained from `persistenceStoreControllerManager` after common setup |
+
+Both styles now share **the same deployment bootstrap** (`AppStackIntegrationTestSession`); they
+differ only in the **assertion surface**.
+
+### 4.3 UI execution of PSC-direct tests — open question (#197 scope?)
+
+**Problem:** In a live UI session, application code has no direct handle to
+`PersistenceStoreController`. The emulated-server Vitest path works today because `beforeAll` grabs
+the **server-side** `PersistenceStoreControllerManager` while the client uses remote
+`domainController` through `RestClientStub`. That only works when tests run in a **Node/Vitest
+process** with the emulated stack wired up — not when test code is naïvely “embedded” in the
+browser UI thread.
+
+**How UI-triggered PSC tests *could* work (infra not built yet):**
+
+| Approach | Idea | Fits #197 Phase B? |
+|----------|------|-------------------|
+| **A — Isolated Vitest subprocess (recommended near-term)** | UI spawns the same `testByFile` / `testMiroir` command in an isolated environment (separate schema / indexedDb, mutex). No change to PSC test bodies; same as CLI. | **Yes** — aligns with Phase B “never reuse live `MiroirContext`”; UI is a launcher + reporter |
+| **B — Server-hosted test runner** | UI calls a backend endpoint that runs a test suite with access to the server `PersistenceStoreControllerManager` (emulated or real server). Tests still Node-side; UI shows progress via activity tracker / SSE. | **Possible** — needs runner API + session isolation (Feature 157 overlap) |
+| **C — New MiroirTest execution variant** | e.g. `executionSurface: "persistenceStore"` on a suite leaf, with orchestrator wiring PSC from `executionEnvironment.persistenceStoreControllerManager`. | **Later** — schema + orchestrator work; still runs outside live UI stores if isolated |
+| **D — Migrate PSC tests to domainController** | Makes UI path uniform but **changes test meaning** (C-assertions). | **Deferred** — not required for setup unification |
+
+**Recommendation for feature #197:**
+
+- **In scope for Phase B:** domainController-based MiroirTest integ (`runnerTest`, transformer
+  integ via `testMiroir`) using approach **A** or **B** with session isolation.
+- **Defer to a follow-up issue (or #197 Phase B+):** “Run `4_storage` PSC suites from UI” — document
+  as launcher-only (A) first; only invest in **B/C** if product requires in-process server
+  execution without a Vitest child process.
+
+No `Test` entity variant exists today for PSC-direct suites; they are not `MiroirTest` JSON leaves
+—they are Vitest files. UI surfacing would likely be a **test catalog entry** pointing at
+`testByFile` filters, not a new `miroirTestType`, unless we later promote storage suites into
+MiroirTest with a dedicated runner adapter.
+
+### 4.4 Gap C — revised “what still needs to be filled”
+
+| Item | Status |
+|------|--------|
+| Common setup adapter for `4_storage` (`AppStackIntegrationTestSession`) | ✅ Done |
+| Common setup adapter for transformer integ (`IntegrationTestSession`) | ✅ Done |
+| `MiroirTestExecutionEnvironment.persistenceStoreControllerManager` | ✅ Done |
+| Migrate `4_storage` **assertions** to `domainController` | ❌ Out of scope / deferred (Appendix A) |
+| UI launcher for PSC-direct Vitest suites | ❌ Not started — defer from core #197 Phase B unless explicitly scoped |
+| Align `3_controllers` bootstrap with `AppStackIntegrationTestSession` | Optional follow-up (setup only) |
+
+---
+
+## 4 (legacy note). Original Gap C wording (superseded)
+
+The text below described the **pre-refactor** state and an all-in `domainController` migration.
+**C-setup** is done; **C-assertions** for `4_storage` was rejected in favour of PSC-direct test
+bodies. Kept for historical context only.
+
+<details>
+<summary>Original Gap C problem statement (collapsed)</summary>
+
+#### `miroir-core` transformer integ (`initMiroirCoreTestIntegrationStore`) — removed
+
+Was entirely PSC-direct; replaced by `IntegrationTestSession` + `domainController` assertions.
+
+#### `4_storage` tests — setup migrated; assertions unchanged
+
+Previously duplicated `setupMiroirTest` in every file; now `AppStackIntegrationTestSession`.
+Direct PSC calls in tests remain intentional (persistence-layer coverage).
+
+</details>
 
 ---
 
@@ -212,29 +297,29 @@ directly — bypassing the domain layer.
 
 | Family | Config mechanism | Env var names |
 |--------|-----------------|---------------|
-| `miroir-core` transformer integ | `parseMiroirTestCliConfig` + hardcoded host default | `MIROIR_TEST_SUITES`, `MIROIR_TEST_MODE`, `MIROIR_TEST_POSTGRES_HOST` |
+| `miroir-core` transformer integ | `parseMiroirTestCliConfig` + `resolveTestSessionForIntegOptionsFromEnv` | `MIROIR_TEST_SUITES`, `MIROIR_TEST_MODE`, `MIROIR_TEST_POSTGRES_HOST`, … |
 | `miroir-standalone-app` per-file integ | `loadTestConfigFiles(process.env)` | `VITE_MIROIR_TEST_CONFIG_FILENAME`, `VITE_MIROIR_LOG_CONFIG_FILENAME` |
 | `miroir-standalone-app` `testMiroir` CLI | same `loadTestConfigFiles` + `--profile` preset | same `VITE_MIROIR_*` |
 | `miroir-cli` / `miroir-mcp` | `loadMiroirCliConfig` / `loadMiroirMcpConfig` | package-local config files |
 
 ### Gap
 
-- `miroir-core` tests use a **flat Postgres connection string** assembled inside
-  `initMiroirCoreTestIntegrationStore`, independent of the `miroirConfig.test-*.json` profiles
-  that govern all `miroir-standalone-app` tests.
-- There is no single profile system that covers both `miroir-core` transformer integ and
-  `miroir-standalone-app` integ under one `--profile` flag.
-- When transformer tests migrate to `domainController` (Gap C), they will need access to a
-  `miroirConfig` JSON profile — this is the natural forcing function to align on `VITE_MIROIR_*`
-  / `--profile` across packages.
+- Transformer integ and `4_storage` integ still use **two config surfaces**:
+  `MIROIR_TEST_*` (CLI / `parseMiroirTestCliConfig`) vs `VITE_MIROIR_*` + `miroirConfig.test-*.json`
+  (`loadTestConfigFiles`). Both implement `RunnerTestSessionInterface`, but profiles are not
+  interchangeable without mapping.
+- There is no single `--profile` flag that drives transformer integ and per-file app-stack integ
+  from one CI matrix entry.
+- Transformer integ still builds its Postgres playfield from `MIROIR_TEST_POSTGRES_*` env vars
+  rather than reusing the same JSON profile files as emulated-server tests (optional convergence).
 
 ### What needs to be filled
 
-- After migrating transformer tests to use `domainController`, replace the hard-coded Postgres
-  string in `initMiroirCoreTestIntegrationStore` with a `miroirConfig` profile loaded via
-  `loadTestConfigFiles` or the `MiroirTestIntegrationOrchestrator`.
-- Align `miroir-core` CLI env var names with `VITE_MIROIR_*` (or add a compatibility shim)
-  so a single CI matrix entry covers both packages.
+- Optional: load transformer integ store config from the same `miroirConfig.test-*.json` profiles
+  as `4_storage` (today `MIROIR_TEST_*` vs `VITE_MIROIR_*` remain separate but both use
+  `RunnerTestSessionInterface`).
+- Align env var / `--profile` UX so one CI matrix entry can drive both transformer and app-stack
+  integ without duplicate host defaults.
 
 ---
 
@@ -250,7 +335,9 @@ Five different public setup entry points exist across the test infrastructure:
 | `setupMiroirTestAndCreateMiroirDeployment` | `miroir-standalone-app` | above + miroir deployment |
 | `setupMiroirTestAndDeployMiroirApp` | `miroir-standalone-app` | above + miroir + admin + library deployments |
 | `setupMiroirPlatform` | `miroir-cli` / `miroir-mcp` | own orchestration via `PersistenceStoreControllerManager` |
-| `initMiroirCoreTestIntegrationStore` | `miroir-core` | raw `PersistenceStoreController` + synthetic schema |
+| `initMiroirCoreTestIntegrationStore` | ~~`miroir-core`~~ | **Removed** — use `IntegrationTestSession` |
+| `AppStackIntegrationTestSession` | `miroir-standalone-app` | `4_storage` emulated-server bootstrap ✅ |
+| `IntegrationTestSession` | `miroir-standalone-app` | Transformer integ (`MIROIR_TEST_*`) ✅ |
 
 ### Gap
 
@@ -259,20 +346,22 @@ Five different public setup entry points exist across the test infrastructure:
   not accessible to `miroir-core` tests.
 - `setupMiroirPlatform` is a separate lineage used only by CLI / MCP tests; it cannot easily
   be adapted for UI embedding.
-- The `RunnerTestSessionInterface` (already defined in `miroir-core`) is the right seam, but
-  only `RunnerTestSession` (standalone-app) currently implements it. `IntegrationTestSessionForPostgres`
-  (core) is planned but not wired to a common `MiroirTestIntegrationOrchestrator`.
+- The `RunnerTestSessionInterface` seam in `miroir-core` is now implemented by
+  **`IntegrationTestSession`**, **`AppStackIntegrationTestSession`**, and **`RunnerTestSession`**
+  (standalone-app). A common **`MiroirTestIntegrationOrchestrator`** for UI Phase B is still
+  not wired.
 
 ### What needs to be filled
 
-- Implement `IntegrationTestSessionForPostgres` in `miroir-core` as the adapter for transformer integ
-  runs, replacing `initMiroirCoreTestIntegrationStore`. It should implement
-  `RunnerTestSessionInterface` and return a `domainController` from `initSession`.
-- Wire both adapters (`IntegrationTestSessionForPostgres` for core, `RunnerTestSession` for standalone)
-  through the `MiroirTestIntegrationOrchestrator` so both test families share one lifecycle
-  contract.
-- Deprecate / inline the `setupMiroirTest*` ladder into `RunnerTestSession.initSession` with
-  options controlling which deployments to create (addressing Gap A and Gap B simultaneously).
+- Wire **`3_controllers`** / legacy runner files to shared adapters (optional; still use
+  `setupMiroirTest*` ladder).
+- Deprecate / inline remaining **`setupMiroirTest*`** calls into session `initSession` options
+  (addressing Gap A and Gap B simultaneously).
+- **`MiroirTestIntegrationOrchestrator`** for UI Phase B — still planned; not replaced by Gap C
+  slices alone.
+
+**TDD plan:** [gap-E-refactoring-plan.md](./gap-E-refactoring-plan.md) (implement **first**).
+Gap B builds on the shared bootstrap from Gap E: [gap-B-refactoring-plan.md](./gap-B-refactoring-plan.md).
 
 ---
 
@@ -282,12 +371,18 @@ Five different public setup entry points exist across the test infrastructure:
 |-----|----------------|----------------------|---------------------------|
 | **A** — Miroir + Admin init | Flag to skip deployment creation when host app is already running | All `miroir-standalone-app` integ, CLI/MCP | **Yes** |
 | **B** — Library playfield contract | Declarative `requiresLibraryDeployment`, idempotent setup helper, alignment of synthetic schema with real deployment UUIDs | Runner, DomainController CRUD, transformer integ | **Yes** (for runner tests) |
-| **C** — PersistenceStoreController as entry | Migrate to `domainController` in transformer integ and `4_storage` tests | `miroir-core` transformer integ, `4_storage` storage tests | **Yes** |
-| **D** — Env config fragmentation | Unified profile system across `miroir-core` and `miroir-standalone-app` | Transformer integ, all CLI-driven tests | Yes (after Gap C) |
-| **E** — Setup helper fragmentation | `IntegrationTestSessionForPostgres`, wired `MiroirTestIntegrationOrchestrator`, deprecation of ad-hoc `setupMiroirTest*` ladder | All families | Yes (enables Phase B) |
+| **C-setup** — Common integ bootstrap | ~~Unified session adapters~~ | Transformer + `4_storage` | **Done** ✅ — reduces setup chaos; UI still needs isolation (A/B) |
+| **C-assertions** — PSC vs domainController in test bodies | `4_storage` keeps PSC (intentional); UI launcher for PSC Vitest suites not built | `4_storage` only | **Partial** — blocks *in-browser* PSC access; **not** a blocker if UI spawns isolated Vitest (defer to follow-up) |
+| **D** — Env config fragmentation | Unified profile system (`MIROIR_TEST_*` vs `VITE_MIROIR_*`) | Transformer integ, all CLI-driven tests | Medium — no longer blocked on C-assertions |
+| **E** — Setup helper fragmentation | Consolidate remaining `setupMiroirTest*` in `3_controllers` / legacy runners; `MiroirTestIntegrationOrchestrator` for UI | DomainController CRUD, legacy runners | Yes (enables Phase B) |
 
-Gaps A, B, and C are the most urgent: they are direct blockers for running any integration test
-family inside the Miroir UI without disrupting the live session. Gap C is also a prerequisite for
-Gap D because migrating transformer tests to `domainController` is what forces alignment with the
-`miroirConfig` profile system. Gap E is the architectural consolidation that ties everything
-together for Phase B.
+Gaps **A** and **B** remain the main blockers for running integration tests **inside** the live
+Miroir UI without disrupting the session. **Gap C-setup** is largely solved: one common bootstrap
+pattern (`RunnerTestSessionInterface` + `AppStackIntegrationTestSession` / `IntegrationTestSession`)
+is available across transformer and storage families, which makes CLI testing much easier to
+control even though assertion style still differs.
+
+**Gap C-assertions** (PSC-direct `4_storage` tests) is a **product/architecture choice**, not a
+setup bug. For feature **#197 Phase B**, prefer launching **domainController-based** MiroirTest
+suites first; surfacing `4_storage` PSC suites from the UI can be a **follow-up** (Vitest
+subprocess launcher) unless explicitly added to #197 scope.

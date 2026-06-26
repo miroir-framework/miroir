@@ -1,9 +1,7 @@
 import crossFetch from "cross-fetch";
 
 import {
-  createDeploymentCompositeAction,
-  defaultMiroirModelEnvironment,
-  defaultSelfApplicationDeploymentMap,
+  getBootstrapPhasesForSessionKind,
   MiroirActivityTracker,
   MiroirEventService,
   type ApplicationDeploymentMap,
@@ -14,11 +12,10 @@ import {
   type StoreUnitConfiguration
 } from "miroir-core";
 import {
-  adminApplication_Miroir,
-  deployment_Admin,
-  deployment_Miroir
-} from "miroir-test-app_deployment-admin";
-
+  selfApplicationDeploymentMiroir,
+  selfApplicationMiroir,
+} from "miroir-test-app_deployment-miroir";
+import { selfApplicationLibrary } from "miroir-test-app_deployment-library";
 import {
   ConfigurationService,
   LoggerInterface,
@@ -31,11 +28,6 @@ import {
   RestPersistenceClientAndRestClientInterface
 } from "miroir-core";
 
-// As a basic setup, import your same slice reducers
-import {
-  defaultMetaModelEnvironment
-} from "miroir-core";
-
 
 // TODO: depends on miroir-localcache-redux / miroir-localcache-zustand by way of miroir-react
 import {
@@ -43,9 +35,9 @@ import {
   setupMiroirDomainController
 } from 'miroir-react';
 
-import type { StoreOrBundleAction } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { packageName } from "../../constants";
 import { cleanLevel } from "../4_view/constants";
+import { runAppStackIntegrationBootstrap } from "../../../tests/helpers/appStackIntegrationBootstrap.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -159,6 +151,9 @@ export async function setupMiroirTest(
 /**
  * Common beforeAll setup: creates Miroir test environment and Miroir application deployment.
  * Reduces boilerplate in integration test beforeAll hooks.
+ *
+ * @deprecated Prefer `DomainControllerIntegrationTestSession` (Gap E). Thin wrapper around
+ * `runAppStackIntegrationBootstrap`.
  */
 export async function setupMiroirTestAndCreateMiroirDeployment(
   miroirConfig: MiroirConfigClient,
@@ -173,61 +168,28 @@ export async function setupMiroirTestAndCreateMiroirDeployment(
 ): Promise<{
   domainController: DomainControllerInterface;
 }> {
-  const { domainControllerForClient, domainControllerForServer } = await setupMiroirTest(
-    miroirConfig, miroirActivityTracker, miroirEventService, customFetch,
-  );
-
-  if (miroirConfig.client.emulateServer && domainControllerForServer) {
-    log.info('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ setupMiroirTestAndCreateMiroirDeployment created server domain controller');
-    const configurations: Record<string, Deployment> = {
-      [deployment_Admin.uuid]: deployment_Admin as Deployment,
-      [deployment_Miroir.uuid]: deployment_Miroir as Deployment,
-    }
-    
-    // open all configured stores
-    for (const c of Object.entries(configurations)) {
-      const openStoreAction: StoreOrBundleAction = {
-        actionType: "storeManagementAction_openStore",
-        endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
-        payload: {
-          application: c[1].selfApplication,
-          deploymentUuid: c[0],
-          configuration: {
-            [c[0]]: c[1].configuration as StoreUnitConfiguration,
-          },
-        },
-      };
-      await domainControllerForServer.handleAction(
-        openStoreAction,
-        defaultSelfApplicationDeploymentMap,
-        defaultMetaModelEnvironment
-      );
-    }
-  }
-  const createMiroirDeploymentCompositeAction = createDeploymentCompositeAction(
-    "miroir",
-    miroirDeploymentUuid,
-    miroirSelfApplicationUuid,
+  const { domainController } = await runAppStackIntegrationBootstrap({
+    miroirConfig,
+    applicationDeploymentMap,
     adminDeployment,
     miroirDeploymentStorageConfiguration,
-  );
-  const domainController =
-    miroirConfig.client.emulateServer && domainControllerForServer
-      ? domainControllerForServer
-      : domainControllerForClient;
-  const createDeploymentResult = await domainController.handleCompositeAction(
-    createMiroirDeploymentCompositeAction,
-    applicationDeploymentMap,
-    defaultMiroirModelEnvironment,
-    {},
-  );
-  if (createDeploymentResult.status !== "ok") {
-    throw new Error("Failed to create Miroir deployment: " + JSON.stringify(createDeploymentResult));
-  }
-  return { domainController: domainControllerForClient };
+    miroirDeploymentUuid,
+    miroirSelfApplicationUuid,
+    phases: ["wireEmulatedStack", "deployMiroir"],
+    miroirActivityTracker,
+    miroirEventService,
+    customFetch: customFetch ?? crossFetch,
+    testApplicationUuid: selfApplicationLibrary.uuid,
+    deployMiroirStrategy: "compositeAction",
+    openAdminAndMiroirStoresOnServer: true,
+  });
+  return { domainController };
 }
 
 // ################################################################################################
+/**
+ * @deprecated Prefer `RunnerTestSession` (Gap E). Thin wrapper around `runAppStackIntegrationBootstrap`.
+ */
 export async function setupMiroirTestAndDeployMiroirApp(
   miroirConfig: MiroirConfigClient,
   miroirActivityTracker: MiroirActivityTracker,
@@ -239,47 +201,27 @@ export async function setupMiroirTestAndDeployMiroirApp(
   domainController: DomainControllerInterface;
   persistenceStoreControllerManager: PersistenceStoreControllerManager;
 }> {
-  // Establish requests interception layer before all tests.
   console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ beforeAll");
-  const {
-    domainControllerForClient,
-    domainControllerForServer,
-    persistenceStoreControllerManagerForServer,
-    persistenceStoreControllerManagerForClient,
-  } = await setupMiroirTest(miroirConfig, miroirActivityTracker, miroirEventService, crossFetch);
-
-  const domainController = miroirConfig.client.emulateServer && domainControllerForServer
-    ? domainControllerForServer
-      : domainControllerForClient
-
-  const persistenceStoreControllerManager =
-    persistenceStoreControllerManagerForServer ?? persistenceStoreControllerManagerForClient;
-
-  // create the Miroir app deployment containing the meta-model
-  const createMiroirDeploymentCompositeAction = createDeploymentCompositeAction(
-    "miroir",
-    deployment_Miroir.uuid,
-    adminApplication_Miroir.uuid,
+  const executionEnvironment = await runAppStackIntegrationBootstrap({
+    miroirConfig,
+    applicationDeploymentMap,
     adminDeployment,
     miroirDeploymentStorageConfiguration,
-  );
-  const createDeploymentResult = await domainController.handleCompositeAction(
-    createMiroirDeploymentCompositeAction,
-    applicationDeploymentMap,
-    defaultMiroirModelEnvironment,
-    {},
-  );
-  if (createDeploymentResult.status !== "ok") {
-    console.error(
-      "Failed to create Miroir deployment, createMiroirDeploymentCompositeAction:",
-      JSON.stringify(createMiroirDeploymentCompositeAction, null, 2)
-    );
-    throw new Error("Failed to create Miroir deployment: " + JSON.stringify(createDeploymentResult));
-  }
+    miroirDeploymentUuid: selfApplicationDeploymentMiroir.uuid,
+    miroirSelfApplicationUuid: selfApplicationMiroir.uuid,
+    phases: getBootstrapPhasesForSessionKind("runner"),
+    miroirActivityTracker,
+    miroirEventService,
+    customFetch: crossFetch,
+    testApplicationUuid: selfApplicationLibrary.uuid,
+    deployMiroirStrategy: "compositeAction",
+    openAdminAndMiroirStoresOnServer: false,
+  });
   console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ beforeAll DONE");
 
-  return Promise.resolve({
-    domainController: domainControllerForClient,
-    persistenceStoreControllerManager,
-  });
+  return {
+    domainController: executionEnvironment.domainController,
+    persistenceStoreControllerManager:
+      executionEnvironment.persistenceStoreControllerManager as PersistenceStoreControllerManager,
+  };
 }

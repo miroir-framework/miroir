@@ -958,6 +958,15 @@ export {
   runMiroirQueryRunnerTestInMemory,
 } from "./5_tests/QueryRunnerTestTools.js";
 export {
+  describeIntegrationTestSession,
+  getBootstrapPhasesForDomainControllerProfile,
+  getBootstrapPhasesForSessionKind,
+  type DomainControllerSessionProfile,
+  type IntegrationTestBootstrapPhase,
+  type IntegrationTestSessionDescriptor,
+  type IntegrationTestSessionKind,
+} from "./5_tests/IntegrationTestBootstrap.js";
+export {
   resolveRunnerTestLeaf,
   runMiroirRunnerTest as runMiroirRunnerTestInMemory,
   runRunnerTestCompositeAction,
