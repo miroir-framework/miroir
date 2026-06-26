@@ -13,10 +13,43 @@ export type IntegrationTestSessionKind =
 
 export type DomainControllerSessionProfile = "miroirPlatform" | "miroirAndLibrary";
 
+export type IntegrationTestPlayfield =
+  | "none"
+  | "testApplication"
+  | "libraryDeployment";
+
 export type IntegrationTestSessionDescriptor = {
   kind: IntegrationTestSessionKind;
   bootstrapPhases: readonly IntegrationTestBootstrapPhase[];
+  playfield: IntegrationTestPlayfield;
 };
+
+export function getPlayfieldForSessionKind(
+  kind: IntegrationTestSessionKind,
+): IntegrationTestPlayfield {
+  switch (kind) {
+    case "transformer":
+      return "testApplication";
+    case "appStackPsc":
+    case "runner":
+      return "libraryDeployment";
+    case "domainController":
+      throw new Error(
+        "getPlayfieldForSessionKind: use getPlayfieldForDomainControllerProfile for kind domainController",
+      );
+  }
+}
+
+export function getPlayfieldForDomainControllerProfile(
+  profile: DomainControllerSessionProfile,
+): IntegrationTestPlayfield {
+  switch (profile) {
+    case "miroirPlatform":
+      return "none";
+    case "miroirAndLibrary":
+      return "libraryDeployment";
+  }
+}
 
 export function getBootstrapPhasesForSessionKind(
   kind: IntegrationTestSessionKind,
@@ -59,10 +92,12 @@ export function describeIntegrationTestSession(
     return {
       kind,
       bootstrapPhases: getBootstrapPhasesForDomainControllerProfile(domainControllerProfile),
+      playfield: getPlayfieldForDomainControllerProfile(domainControllerProfile),
     };
   }
   return {
     kind,
     bootstrapPhases: getBootstrapPhasesForSessionKind(kind),
+    playfield: getPlayfieldForSessionKind(kind),
   };
 }

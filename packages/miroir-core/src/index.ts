@@ -961,11 +961,21 @@ export {
   describeIntegrationTestSession,
   getBootstrapPhasesForDomainControllerProfile,
   getBootstrapPhasesForSessionKind,
+  getPlayfieldForDomainControllerProfile,
+  getPlayfieldForSessionKind,
   type DomainControllerSessionProfile,
   type IntegrationTestBootstrapPhase,
+  type IntegrationTestPlayfield,
   type IntegrationTestSessionDescriptor,
   type IntegrationTestSessionKind,
 } from "./5_tests/IntegrationTestBootstrap.js";
+export {
+  ensureLibraryPlayfield,
+  resetLibraryPlayfield,
+  type EnsureLibraryPlayfieldParams,
+  type LibraryPlayfieldEnsureMode,
+  type ResetLibraryPlayfieldParams,
+} from "./5_tests/LibraryPlayfield.js";
 export {
   createDefaultMiroirTestIntegrationOrchestrator,
   createUnconfiguredMiroirTestIntegrationOrchestrator,

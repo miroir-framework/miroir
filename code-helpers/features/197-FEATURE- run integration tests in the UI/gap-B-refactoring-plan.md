@@ -6,7 +6,7 @@
 **Scope:** Pure refactoring. Standardise **when** the library deployment is created, reset, and
 seeded — **not** what tests assert. PSC-direct `4_storage` test bodies remain unchanged (Gap C).
 
-**Status:** Not started.
+**Status:** L0–L2 done. Next: Slice L3 (wire `deployLibrary` in bootstrap).
 
 ---
 
@@ -233,7 +233,7 @@ npm run testByFile -w miroir-core -- IntegrationTestBootstrap.unit
 
 ---
 
-### Slice L0 — Playfield types + descriptors
+### Slice L0 — Playfield types + descriptors — ✅ **DONE**
 
 **L0-Red:** Extend `IntegrationTestBootstrap.unit.test.ts`
 
@@ -246,9 +246,9 @@ npm run testByFile -w miroir-core -- IntegrationTestBootstrap.unit
 
 ---
 
-### Slice L1 — `ensureLibraryPlayfield` (unit + implementation)
+### Slice L1 — `ensureLibraryPlayfield` (unit + implementation) — ✅ **DONE**
 
-**L1-Red:** `packages/miroir-core/tests/5_tests/LibraryPlayfield.unit.test.ts`
+**L1-Red:** `packages/miroir-core/tests/5-tests/LibraryPlayfield.unit.test.ts`
 
 | Case | Expectation |
 |------|-------------|
@@ -265,7 +265,7 @@ Mock `DomainControllerInterface.handleCompositeAction` only — no real stores.
 
 ---
 
-### Slice L2 — `resetLibraryPlayfield` (unit + implementation)
+### Slice L2 — `resetLibraryPlayfield` (unit + implementation) — ✅ **DONE**
 
 **L2-Red:** Same unit file — `resetLibraryPlayfield`
 
@@ -432,8 +432,8 @@ Only if `setupMiroirPlatform` duplicates library reset inline:
 
 ## 9. Success criteria
 
-- [ ] `IntegrationTestPlayfield` type exported from `miroir-core`
-- [ ] `ensureLibraryPlayfield` + `resetLibraryPlayfield` unit-tested without standalone-app imports
+- [x] `IntegrationTestPlayfield` type exported from `miroir-core`
+- [x] `ensureLibraryPlayfield` + `resetLibraryPlayfield` unit-tested without standalone-app imports
 - [ ] `runAppStackIntegrationBootstrap` uses `ensureLibraryPlayfield` for library phase
 - [ ] All `4_storage` `beforeEach` hooks use shared playfield helpers (behaviour-preserving)
 - [ ] `RunnerTestSession` / `beforeEachTest` uses `resetLibraryPlayfield`

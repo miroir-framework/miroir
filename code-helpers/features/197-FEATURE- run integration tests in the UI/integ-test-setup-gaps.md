@@ -79,6 +79,10 @@ unconditionally create both deployments.
 
 ## 3. Gap B — Library app setup as playfield
 
+**Status:** In progress — L0–L2 done (`IntegrationTestPlayfield`, `ensureLibraryPlayfield`, `resetLibraryPlayfield` in `miroir-core`). Next: L3 wire bootstrap.
+
+**TDD plan:** [gap-B-refactoring-plan.md](./gap-B-refactoring-plan.md)
+
 ### Current state
 
 Integration tests split into two groups with respect to the library application:
@@ -388,7 +392,7 @@ Five different public setup entry points existed across the test infrastructure:
 | Gap | What is missing | Affected test families | Blocking for UI execution? |
 |-----|----------------|----------------------|---------------------------|
 | **A** — Miroir + Admin init | Flag to skip deployment creation when host app is already running | All `miroir-standalone-app` integ, CLI/MCP | **Yes** |
-| **B** — Library playfield contract | Declarative `requiresLibraryDeployment`, idempotent setup helper, alignment of synthetic schema with real deployment UUIDs | Runner, DomainController CRUD, transformer integ | **Yes** (for runner tests) |
+| **B** — Library playfield contract | `ensureLibraryPlayfield` / `resetLibraryPlayfield` — L0–L2 done; bootstrap wiring next | Runner, DomainController, 4_storage | **In progress** |
 | **C-setup** — Common integ bootstrap | ~~Unified session adapters~~ | Transformer + `4_storage` | **Done** ✅ — reduces setup chaos; UI still needs isolation (A/B) |
 | **C-assertions** — PSC vs domainController in test bodies | `4_storage` keeps PSC (intentional); UI launcher for PSC Vitest suites not built | `4_storage` only | **Partial** — blocks *in-browser* PSC access; **not** a blocker if UI spawns isolated Vitest (defer to follow-up) |
 | **D** — Env config fragmentation | Unified profile system (`MIROIR_TEST_*` vs `VITE_MIROIR_*`) | Transformer integ, all CLI-driven tests | Medium — no longer blocked on C-assertions |

@@ -58,6 +58,7 @@ describe("MiroirTestIntegrationOrchestrator (Gap E O)", () => {
     expect(orchestrator.describeSession("appStackPsc")).toEqual({
       kind: "appStackPsc",
       bootstrapPhases: getBootstrapPhasesForSessionKind("appStackPsc"),
+      playfield: "libraryDeployment",
     });
   });
 
