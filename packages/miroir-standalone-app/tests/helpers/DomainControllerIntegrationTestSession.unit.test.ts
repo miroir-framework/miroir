@@ -13,10 +13,14 @@ import {
 
 const runAppStackIntegrationBootstrapMock = vi.fn();
 
-vi.mock("./appStackIntegrationBootstrap.js", () => ({
-  runAppStackIntegrationBootstrap: (...args: unknown[]) =>
-    runAppStackIntegrationBootstrapMock(...args),
-}));
+vi.mock("./appStackIntegrationBootstrap.js", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("./appStackIntegrationBootstrap.js")>();
+  return {
+    ...actual,
+    runAppStackIntegrationBootstrap: (...args: unknown[]) =>
+      runAppStackIntegrationBootstrapMock(...args),
+  };
+});
 
 import { DomainControllerIntegrationTestSession } from "./DomainControllerIntegrationTestSession.js";
 
@@ -134,6 +138,35 @@ describe("DomainControllerIntegrationTestSession (Gap E DC)", () => {
     expect(runAppStackIntegrationBootstrapMock).toHaveBeenCalledWith(
       expect.objectContaining({
         libraryPlayfieldEnsureMode: "requireExisting",
+      }),
+    );
+  });
+
+  it("forwards bootstrap host options to runAppStackIntegrationBootstrap", async () => {
+    const session = new DomainControllerIntegrationTestSession(
+      miroirConfig,
+      {
+        ...sessionOptions,
+        hostMode: "embedded",
+        platformEnsureMode: "requireExisting",
+        skipBootstrapPhases: ["deployLibrary"],
+        hostExecutionEnvironment: {
+          domainController: {} as DomainControllerInterface,
+          persistenceStoreControllerManager: {},
+          applicationDeploymentMap: sessionOptions.applicationDeploymentMap,
+          testApplicationUuid: selfApplicationLibrary.uuid,
+        },
+      },
+      "miroirAndLibrary",
+    );
+
+    await session.initSession();
+
+    expect(runAppStackIntegrationBootstrapMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        hostMode: "embedded",
+        platformEnsureMode: "requireExisting",
+        skipBootstrapPhases: ["deployLibrary"],
       }),
     );
   });

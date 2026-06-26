@@ -63,10 +63,19 @@ import {
   type StoreUnitConfiguration,
   type Uuid,
   type LibraryPlayfieldEnsureMode,
+  type IntegrationTestBootstrapPhase,
+  type IntegrationTestHostMode,
+  type MiroirPlatformEnsureMode,
   getBootstrapPhasesForSessionKind,
 } from "miroir-core";
 import { selfApplicationLibrary } from "miroir-test-app_deployment-library";
-import { runAppStackIntegrationBootstrap } from "./appStackIntegrationBootstrap.js";
+import {
+  bootstrapHostOptionsFrom,
+  runAppStackIntegrationBootstrap,
+  type AppStackBootstrapHostOptions,
+} from "./appStackIntegrationBootstrap.js";
+
+export type { AppStackBootstrapHostOptions };
 
 export type TestApplicationStoreOptions =
   | { emulatedServerType: "sql"; postgresHostName?: string; connectionString?: string }
@@ -109,7 +118,7 @@ export type TestSessionForIntegOptions = {
   bundledDeploymentData?: Record<string, BundledDeploymentData>;
 };
 
-export type AppStackSessionOptions = {
+export type AppStackSessionOptions = AppStackBootstrapHostOptions & {
   applicationDeploymentMap: ApplicationDeploymentMap;
   adminDeployment: Deployment;
   libraryDeploymentStorageConfiguration: StoreUnitConfiguration;
@@ -616,6 +625,7 @@ export class AppStackIntegrationTestSession implements RunnerTestSessionInterfac
       openAdminAndMiroirStoresOnServer: false,
       customFetch: crossFetch,
       libraryPlayfieldEnsureMode: this.appStackOptions.libraryPlayfieldEnsureMode,
+      ...bootstrapHostOptionsFrom(this.appStackOptions),
     });
 
     this.domainController = executionEnvironment.domainController;

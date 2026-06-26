@@ -3,11 +3,15 @@ import type { MiroirActivityTracker } from "../3_controllers/MiroirActivityTrack
 import type { MiroirEventService } from "../3_controllers/MiroirEventService";
 import {
   describeIntegrationTestSession,
+  type IntegrationTestBootstrapPhase,
+  type IntegrationTestHostMode,
   type IntegrationTestSessionDescriptor,
   type IntegrationTestSessionKind,
 } from "./IntegrationTestBootstrap.js";
 import type { LibraryPlayfieldEnsureMode } from "./LibraryPlayfield.js";
-import type { RunnerTestSessionInterface } from "./MiroirTestTools.js";
+import type { MiroirPlatformEnsureMode } from "./MiroirPlatformPlayfield.js";
+import type { MiroirTestExecutionEnvironment, RunnerTestSessionInterface } from "./MiroirTestTools.js";
+import type { ApplicationDeploymentMap } from "../1_core/Deployment.js";
 
 export type IntegrationTestOrchestratorContext = {
   miroirConfig: MiroirConfigClient;
@@ -18,7 +22,13 @@ export type IntegrationTestOrchestratorContext = {
    * so bootstrap skips create. Defaults to `createIfAbsent` in session bootstrap wiring.
    */
   playfieldMode?: LibraryPlayfieldEnsureMode;
-  /** Gap A will add: hostDomainController?, skipPhases?: ... */
+  /** Gap A: isolated CLI run (default) vs embedded live UI host. */
+  hostMode?: IntegrationTestHostMode;
+  hostExecutionEnvironment?: Partial<MiroirTestExecutionEnvironment>;
+  skipBootstrapPhases?: readonly IntegrationTestBootstrapPhase[];
+  platformEnsureMode?: MiroirPlatformEnsureMode;
+  /** When set, overrides session `applicationDeploymentMap` for embedded host runs. */
+  hostApplicationDeploymentMap?: ApplicationDeploymentMap;
 };
 
 export type IntegrationTestSessionFactoryCreateParams = {

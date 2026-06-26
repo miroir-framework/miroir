@@ -97,7 +97,13 @@ describe("MiroirTestIntegrationOrchestrator (Gap E O)", () => {
       } satisfies RunnerTestSessionInterface),
     };
     const orchestrator = createDefaultMiroirTestIntegrationOrchestrator(factory);
-    const context = { ...baseContext(), playfieldMode: "requireExisting" as const };
+    const context = {
+      ...baseContext(),
+      playfieldMode: "requireExisting" as const,
+      hostMode: "embedded" as const,
+      platformEnsureMode: "requireExisting" as const,
+      skipBootstrapPhases: ["deployMiroir"] as const,
+    };
 
     orchestrator.createSession("appStackPsc", context, { adminDeployment: {} });
 

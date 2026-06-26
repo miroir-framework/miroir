@@ -6,10 +6,14 @@ import { selfApplicationLibrary } from "miroir-test-app_deployment-library";
 
 const runAppStackIntegrationBootstrapMock = vi.fn();
 
-vi.mock("./appStackIntegrationBootstrap.js", () => ({
-  runAppStackIntegrationBootstrap: (...args: unknown[]) =>
-    runAppStackIntegrationBootstrapMock(...args),
-}));
+vi.mock("./appStackIntegrationBootstrap.js", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("./appStackIntegrationBootstrap.js")>();
+  return {
+    ...actual,
+    runAppStackIntegrationBootstrap: (...args: unknown[]) =>
+      runAppStackIntegrationBootstrapMock(...args),
+  };
+});
 
 import { createStandaloneAppIntegrationOrchestrator } from "./StandaloneAppIntegrationOrchestrator.js";
 
@@ -74,6 +78,95 @@ describe("StandaloneAppIntegrationOrchestrator (Gap B L7)", () => {
     expect(runAppStackIntegrationBootstrapMock).toHaveBeenCalledWith(
       expect.objectContaining({
         libraryPlayfieldEnsureMode: "createIfAbsent",
+      }),
+    );
+  });
+});
+
+describe("StandaloneAppIntegrationOrchestrator (Gap A A3)", () => {
+  const hostDomainController = { uuid: "host-dc" } as any;
+  const hostManager = { uuid: "host-psc" } as any;
+  const hostDeploymentMap = { "host-app": "host-deploy" } as any;
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    runAppStackIntegrationBootstrapMock.mockResolvedValue({
+      domainController: hostDomainController,
+      applicationDeploymentMap: appStackSessionOptions.applicationDeploymentMap,
+      testApplicationUuid: selfApplicationLibrary.uuid,
+      persistenceStoreControllerManager: hostManager,
+    });
+  });
+
+  it("forwards hostMode and hostExecutionEnvironment to appStackPsc bootstrap", async () => {
+    const orchestrator = createStandaloneAppIntegrationOrchestrator();
+    const session = orchestrator.createSession(
+      "appStackPsc",
+      {
+        miroirConfig,
+        hostMode: "embedded",
+        hostExecutionEnvironment: {
+          domainController: hostDomainController,
+          persistenceStoreControllerManager: hostManager,
+          applicationDeploymentMap: {},
+          testApplicationUuid: selfApplicationLibrary.uuid,
+        },
+      },
+      appStackSessionOptions,
+    );
+
+    await session.initSession();
+
+    expect(runAppStackIntegrationBootstrapMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        hostMode: "embedded",
+        hostExecutionEnvironment: expect.objectContaining({
+          domainController: hostDomainController,
+          persistenceStoreControllerManager: hostManager,
+        }),
+      }),
+    );
+  });
+
+  it("forwards platformEnsureMode and skipBootstrapPhases to domainController bootstrap", async () => {
+    const orchestrator = createStandaloneAppIntegrationOrchestrator();
+    const session = orchestrator.createSession(
+      "domainController",
+      {
+        miroirConfig,
+        platformEnsureMode: "requireExisting",
+        skipBootstrapPhases: ["deployLibrary"],
+      },
+      {
+        ...appStackSessionOptions,
+        miroirDeploymentStorageConfiguration: { model: {}, data: {}, admin: {} },
+        profile: "miroirPlatform",
+      },
+    );
+
+    await session.initSession();
+
+    expect(runAppStackIntegrationBootstrapMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        platformEnsureMode: "requireExisting",
+        skipBootstrapPhases: ["deployLibrary"],
+      }),
+    );
+  });
+
+  it("hostApplicationDeploymentMap overrides session applicationDeploymentMap", async () => {
+    const orchestrator = createStandaloneAppIntegrationOrchestrator();
+    const session = orchestrator.createSession(
+      "appStackPsc",
+      { miroirConfig, hostApplicationDeploymentMap: hostDeploymentMap },
+      appStackSessionOptions,
+    );
+
+    await session.initSession();
+
+    expect(runAppStackIntegrationBootstrapMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        applicationDeploymentMap: hostDeploymentMap,
       }),
     );
   });

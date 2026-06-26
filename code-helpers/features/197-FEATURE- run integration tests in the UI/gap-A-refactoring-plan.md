@@ -6,7 +6,7 @@
 **Scope:** Pure refactoring of **bootstrap wiring** — when to call `setupMiroirTest`, when to run
 `deployMiroir`, and when to accept an injected host `domainController`. **No `it()` body changes.**
 
-**Status:** A1 done. Next: Slice A2 (bootstrap host injection + phase filter).
+**Status:** A3–A4 done. Next: Slice A5 (embedded characterization unit).
 
 ---
 
@@ -306,7 +306,7 @@ no `it()` body edits.
 
 ---
 
-### Slice A2 — Bootstrap host injection + phase filter (unit)
+### Slice A2 — Bootstrap host injection + phase filter (unit) — ✅ **DONE**
 
 **A2-Red:** `appStackIntegrationBootstrap.unit.test.ts`
 
@@ -320,18 +320,19 @@ no `it()` body edits.
 
 ---
 
-### Slice A3 — Orchestrator context forwarding
+### Slice A3 — Orchestrator context forwarding — ✅ **DONE**
 
 **A3-Green:** `StandaloneAppIntegrationOrchestrator` passes `hostMode`, `platformEnsureMode`,
-`hostExecutionEnvironment`, `skipBootstrapPhases` into session constructors.
+`hostExecutionEnvironment`, `skipBootstrapPhases`, `hostApplicationDeploymentMap` into session
+constructors.
 
-**A3-Red:** `StandaloneAppIntegrationOrchestrator.unit.test.ts` — embedded context reaches bootstrap mock.
+**A3-Red:** orchestrator + `DomainControllerIntegrationTestSession` unit tests assert host context
+reaches bootstrap.
 
-**Verify:** orchestrator unit + `DomainControllerIntegrationTestSession.unit` (no regression).
+**Verify:** `StandaloneAppIntegrationOrchestrator.unit`, `DomainControllerIntegrationTestSession.unit`,
+`MiroirTestIntegrationOrchestrator.unit`.
 
----
-
-### Slice A4 — Session adapter wiring
+### Slice A4 — Session adapter wiring — ✅ **DONE** (wired in A3)
 
 **A4-Green:** `AppStackIntegrationTestSession`, `DomainControllerIntegrationTestSession`,
 `RunnerTestSession` accept optional host fields (from orchestrator or direct construction for
@@ -454,8 +455,8 @@ Wraps `createStandaloneAppIntegrationOrchestrator().createSession(kind, {
 
 - [x] `IntegrationTestHostMode` + `MiroirPlatformEnsureMode` exported from `miroir-core`
 - [x] `ensureMiroirPlatform` unit-tested without standalone-app imports
-- [ ] `runAppStackIntegrationBootstrap` supports embedded injection + phase skip + `ensureMiroirPlatform`
-- [ ] Orchestrator context documents and forwards host fields
+- [x] `runAppStackIntegrationBootstrap` supports embedded injection + phase skip + `ensureMiroirPlatform`
+- [x] Orchestrator context documents and forwards host fields
 - [ ] `describeSession` exposes `embeddedCapable` for UI catalog
 - [ ] CLI default (`isolated`) — full regression matrix §8 green
 - [ ] Embedded characterization unit proves no `setupMiroirTest` / deploy on host path

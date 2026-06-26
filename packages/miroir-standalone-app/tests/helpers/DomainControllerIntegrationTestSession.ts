@@ -26,7 +26,10 @@ import {
 } from "miroir-test-app_deployment-miroir";
 
 import type { AppStackSessionOptions } from "./IntegrationTestSession.js";
-import { runAppStackIntegrationBootstrap } from "./appStackIntegrationBootstrap.js";
+import {
+  bootstrapHostOptionsFrom,
+  runAppStackIntegrationBootstrap,
+} from "./appStackIntegrationBootstrap.js";
 
 export type DomainControllerIntegrationTestSessionOptions = AppStackSessionOptions & {
   miroirDeploymentStorageConfiguration: StoreUnitConfiguration;
@@ -86,6 +89,7 @@ export class DomainControllerIntegrationTestSession implements RunnerTestSession
       miroirDeploymentUuid: selfApplicationDeploymentMiroir.uuid,
       miroirSelfApplicationUuid: selfApplicationMiroir.uuid,
       libraryPlayfieldEnsureMode: this.sessionOptions.libraryPlayfieldEnsureMode,
+      ...bootstrapHostOptionsFrom(this.sessionOptions),
     });
 
     this.domainController = executionEnvironment.domainController;

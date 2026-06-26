@@ -17,6 +17,7 @@ const setupMiroirTestMock = vi.fn();
 const createMiroirDeploymentGetPersistenceStoreControllerMock = vi.fn();
 const createDeploymentCompositeActionMock = vi.fn();
 const ensureLibraryPlayfieldMock = vi.fn();
+const ensureMiroirPlatformMock = vi.fn();
 
 vi.mock("../../src/miroir-fwk/4-tests/setupMiroirTest.js", () => ({
   setupMiroirTest: (...args: unknown[]) => setupMiroirTestMock(...args),
@@ -34,6 +35,7 @@ vi.mock("miroir-core", async (importOriginal) => {
     createDeploymentCompositeAction: (...args: unknown[]) =>
       createDeploymentCompositeActionMock(...args),
     ensureLibraryPlayfield: (...args: unknown[]) => ensureLibraryPlayfieldMock(...args),
+    ensureMiroirPlatform: (...args: unknown[]) => ensureMiroirPlatformMock(...args),
     resetAndInitApplicationDeployment: vi.fn().mockResolvedValue({ status: "ok" }),
   };
 });
@@ -113,12 +115,34 @@ describe("runAppStackIntegrationBootstrap (Gap E B1)", () => {
       }),
     );
     ensureLibraryPlayfieldMock.mockResolvedValue({ created: true });
+    ensureMiroirPlatformMock.mockResolvedValue({ created: true });
   });
 
   it("wireEmulatedStack calls setupMiroirTest once", async () => {
     await runAppStackIntegrationBootstrap(explicitBootstrapOptions());
 
     expect(setupMiroirTestMock).toHaveBeenCalledTimes(1);
+  });
+
+  it("deployMiroir calls ensureMiroirPlatform with pscHelper strategy", async () => {
+    const manager = createMockManager();
+    setupMiroirTestMock.mockResolvedValue({
+      domainControllerForClient: createMockDomainController(),
+      domainControllerForServer: createMockDomainController(),
+      persistenceStoreControllerManagerForServer: manager,
+    });
+
+    await runAppStackIntegrationBootstrap(explicitBootstrapOptions());
+
+    expect(ensureMiroirPlatformMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        deployStrategy: "pscHelper",
+        mode: "createIfAbsent",
+        persistenceStoreControllerManager: manager,
+        deployViaPscHelper: expect.any(Function),
+      }),
+    );
+    expect(createMiroirDeploymentGetPersistenceStoreControllerMock).not.toHaveBeenCalled();
   });
 
   it("deployLibrary calls ensureLibraryPlayfield for library deployment", async () => {
@@ -158,6 +182,7 @@ describe("runAppStackIntegrationBootstrap (Gap E B1)", () => {
     );
 
     expect(createMiroirDeploymentGetPersistenceStoreControllerMock).not.toHaveBeenCalled();
+    expect(ensureMiroirPlatformMock).not.toHaveBeenCalled();
     expect(ensureLibraryPlayfieldMock).toHaveBeenCalledTimes(1);
   });
 
@@ -231,5 +256,79 @@ describe("runAppStackIntegrationBootstrap (Gap E B1)", () => {
     expect(
       Object.values(miroirOpenStorePayload.payload?.configuration ?? {})[0],
     ).toEqual(miroirDeploymentStorageConfiguration);
+  });
+});
+
+describe("runAppStackIntegrationBootstrap (Gap A A2)", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    const domainController = createMockDomainController();
+    const manager = createMockManager();
+    setupMiroirTestMock.mockResolvedValue({
+      domainControllerForClient: domainController,
+      domainControllerForServer: domainController,
+      persistenceStoreControllerManagerForServer: manager,
+    });
+    createMiroirDeploymentGetPersistenceStoreControllerMock.mockResolvedValue({
+      localMiroirPersistenceStoreController: {},
+    });
+    ensureLibraryPlayfieldMock.mockResolvedValue({ created: true });
+    ensureMiroirPlatformMock.mockResolvedValue({ created: true });
+  });
+
+  it("embedded hostMode with hostExecutionEnvironment skips setupMiroirTest", async () => {
+    const hostDomainController = createMockDomainController();
+    const hostManager = createMockManager();
+
+    const env = await runAppStackIntegrationBootstrap(
+      explicitBootstrapOptions({
+        hostMode: "embedded",
+        hostExecutionEnvironment: {
+          domainController: hostDomainController,
+          persistenceStoreControllerManager: hostManager,
+          applicationDeploymentMap,
+          testApplicationUuid: selfApplicationLibrary.uuid,
+        },
+        phases: ["wireEmulatedStack", "deployMiroir", "deployLibrary"],
+      }),
+    );
+
+    expect(setupMiroirTestMock).not.toHaveBeenCalled();
+    expect(env.domainController).toBe(hostDomainController);
+    expect(env.persistenceStoreControllerManager).toBe(hostManager);
+    expect(ensureMiroirPlatformMock).toHaveBeenCalled();
+  });
+
+  it("skipBootstrapPhases deployMiroir skips ensureMiroirPlatform but keeps wire", async () => {
+    await runAppStackIntegrationBootstrap(
+      explicitBootstrapOptions({
+        skipBootstrapPhases: ["deployMiroir"],
+      }),
+    );
+
+    expect(setupMiroirTestMock).toHaveBeenCalledTimes(1);
+    expect(ensureMiroirPlatformMock).not.toHaveBeenCalled();
+    expect(ensureLibraryPlayfieldMock).toHaveBeenCalledTimes(1);
+  });
+
+  it("platformEnsureMode requireExisting propagates to ensureMiroirPlatform", async () => {
+    ensureMiroirPlatformMock.mockRejectedValue(
+      new Error(
+        "ensureMiroirPlatform: miroir deployment required but absent (mode=requireExisting)",
+      ),
+    );
+
+    await expect(
+      runAppStackIntegrationBootstrap(
+        explicitBootstrapOptions({
+          phases: ["wireEmulatedStack", "deployMiroir"],
+          platformEnsureMode: "requireExisting",
+        }),
+      ),
+    ).rejects.toThrow(/requireExisting/);
+
+    expect(ensureMiroirPlatformMock).toHaveBeenCalledWith(
+      expect.objectContaining({ mode: "requireExisting" }),
+    );
   });
 });

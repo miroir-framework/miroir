@@ -1,13 +1,15 @@
 import type {
+  ApplicationDeploymentMap,
   DomainControllerSessionProfile,
+  IntegrationTestOrchestratorContext,
   IntegrationTestSessionFactory,
   IntegrationTestSessionKind,
-  IntegrationTestOrchestratorContext,
   LibraryPlayfieldEnsureMode,
   MiroirTestIntegrationOrchestrator,
 } from "miroir-core";
 import { createDefaultMiroirTestIntegrationOrchestrator } from "miroir-core";
 
+import type { AppStackBootstrapHostOptions } from "./appStackIntegrationBootstrap.js";
 import {
   AppStackIntegrationTestSession,
   IntegrationTestSession,
@@ -32,6 +34,39 @@ function resolveLibraryPlayfieldEnsureMode(
   return sessionSpecificMode ?? context.playfieldMode;
 }
 
+function resolveBootstrapHostOptions(
+  context: IntegrationTestOrchestratorContext,
+  sessionOptions: AppStackBootstrapHostOptions = {},
+): AppStackBootstrapHostOptions {
+  return {
+    hostMode: sessionOptions.hostMode ?? context.hostMode,
+    hostExecutionEnvironment:
+      sessionOptions.hostExecutionEnvironment ?? context.hostExecutionEnvironment,
+    skipBootstrapPhases: sessionOptions.skipBootstrapPhases ?? context.skipBootstrapPhases,
+    platformEnsureMode: sessionOptions.platformEnsureMode ?? context.platformEnsureMode,
+  };
+}
+
+function resolveApplicationDeploymentMap(
+  context: IntegrationTestOrchestratorContext,
+  sessionMap: ApplicationDeploymentMap,
+): ApplicationDeploymentMap {
+  return context.hostApplicationDeploymentMap ?? sessionMap;
+}
+
+function resolveHostExecutionEnvironment(
+  context: IntegrationTestOrchestratorContext,
+  hostBootstrap: AppStackBootstrapHostOptions,
+): AppStackBootstrapHostOptions["hostExecutionEnvironment"] {
+  if (context.hostApplicationDeploymentMap === undefined) {
+    return hostBootstrap.hostExecutionEnvironment;
+  }
+  return {
+    ...hostBootstrap.hostExecutionEnvironment,
+    applicationDeploymentMap: context.hostApplicationDeploymentMap,
+  };
+}
+
 function createStandaloneAppSession(
   kind: IntegrationTestSessionKind,
   context: IntegrationTestOrchestratorContext,
@@ -44,10 +79,15 @@ function createStandaloneAppSession(
       const appStackOptions = sessionSpecificOptions as AppStackSessionOptions;
       return new AppStackIntegrationTestSession(context.miroirConfig, {
         ...appStackOptions,
+        applicationDeploymentMap: resolveApplicationDeploymentMap(
+          context,
+          appStackOptions.applicationDeploymentMap,
+        ),
         libraryPlayfieldEnsureMode: resolveLibraryPlayfieldEnsureMode(
           appStackOptions.libraryPlayfieldEnsureMode,
           context,
         ),
+        ...resolveBootstrapHostOptions(context, appStackOptions),
       });
     }
     case "domainController": {
@@ -57,10 +97,15 @@ function createStandaloneAppSession(
         context.miroirConfig,
         {
           ...sessionOptions,
+          applicationDeploymentMap: resolveApplicationDeploymentMap(
+            context,
+            sessionOptions.applicationDeploymentMap,
+          ),
           libraryPlayfieldEnsureMode: resolveLibraryPlayfieldEnsureMode(
             sessionOptions.libraryPlayfieldEnsureMode,
             context,
           ),
+          ...resolveBootstrapHostOptions(context, sessionOptions),
         },
         profile,
       );
@@ -74,11 +119,14 @@ function createStandaloneAppSession(
       const runnerOptions = (sessionSpecificOptions ?? {}) as Partial<
         Pick<RunnerTestSessionOptions, "pageLabel">
       >;
+      const hostBootstrap = resolveBootstrapHostOptions(context, runnerOptions);
       return new RunnerTestSession({
         miroirConfig: context.miroirConfig,
         miroirActivityTracker: context.miroirActivityTracker,
         miroirEventService: context.miroirEventService,
         ...runnerOptions,
+        ...hostBootstrap,
+        hostExecutionEnvironment: resolveHostExecutionEnvironment(context, hostBootstrap),
       });
     }
     default: {

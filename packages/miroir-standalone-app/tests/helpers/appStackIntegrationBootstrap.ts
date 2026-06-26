@@ -1,24 +1,24 @@
-import crossFetch from "cross-fetch";
-
 import type {
   ApplicationDeploymentMap,
+  DeployMiroirStrategy,
   Deployment,
   DomainControllerInterface,
   IntegrationTestBootstrapPhase,
+  IntegrationTestHostMode,
   LibraryPlayfieldEnsureMode,
   MiroirActivityTracker,
   MiroirConfigClient,
   MiroirEventService,
+  MiroirPlatformEnsureMode,
   MiroirTestExecutionEnvironment,
   PersistenceStoreControllerManagerInterface,
   StoreUnitConfiguration,
 } from "miroir-core";
 import {
-  createDeploymentCompositeAction,
-  defaultMiroirModelEnvironment,
   defaultMetaModelEnvironment,
   defaultSelfApplicationDeploymentMap,
   ensureLibraryPlayfield,
+  ensureMiroirPlatform,
   resetAndInitApplicationDeployment,
   type StoreOrBundleAction,
 } from "miroir-core";
@@ -29,12 +29,29 @@ import {
 } from "miroir-test-app_deployment-library";
 import {
   selfApplicationDeploymentMiroir,
+  selfApplicationMiroir,
 } from "miroir-test-app_deployment-miroir";
 
 import { setupMiroirTest } from "../../src/miroir-fwk/4-tests/setupMiroirTest.js";
 import { createMiroirDeploymentGetPersistenceStoreController } from "../../src/miroir-fwk/4-tests/tests-utils.js";
 
-export type DeployMiroirStrategy = "pscHelper" | "compositeAction";
+export type { DeployMiroirStrategy };
+
+export type AppStackBootstrapHostOptions = Pick<
+  AppStackBootstrapOptions,
+  "hostMode" | "hostExecutionEnvironment" | "skipBootstrapPhases" | "platformEnsureMode"
+>;
+
+export function bootstrapHostOptionsFrom(
+  source: AppStackBootstrapHostOptions,
+): AppStackBootstrapHostOptions {
+  return {
+    hostMode: source.hostMode,
+    hostExecutionEnvironment: source.hostExecutionEnvironment,
+    skipBootstrapPhases: source.skipBootstrapPhases,
+    platformEnsureMode: source.platformEnsureMode,
+  };
+}
 
 export type AppStackBootstrapOptions = {
   miroirConfig: MiroirConfigClient;
@@ -54,7 +71,25 @@ export type AppStackBootstrapOptions = {
   /** Required when `deployMiroir` runs with `deployMiroirStrategy: "compositeAction"`. */
   miroirSelfApplicationUuid?: string;
   libraryPlayfieldEnsureMode?: LibraryPlayfieldEnsureMode;
+  hostMode?: IntegrationTestHostMode;
+  hostExecutionEnvironment?: Partial<MiroirTestExecutionEnvironment>;
+  skipBootstrapPhases?: readonly IntegrationTestBootstrapPhase[];
+  platformEnsureMode?: MiroirPlatformEnsureMode;
 };
+
+function isPhaseSkipped(
+  phase: IntegrationTestBootstrapPhase,
+  skipBootstrapPhases: readonly IntegrationTestBootstrapPhase[] | undefined,
+): boolean {
+  return skipBootstrapPhases?.includes(phase) ?? false;
+}
+
+function usesEmbeddedHost(options: AppStackBootstrapOptions): boolean {
+  return (
+    options.hostMode === "embedded" &&
+    !!options.hostExecutionEnvironment?.domainController
+  );
+}
 
 async function openAdminAndMiroirStores(
   domainControllerForServer: DomainControllerInterface,
@@ -111,6 +146,10 @@ export async function runAppStackIntegrationBootstrap(
     miroirDeploymentUuid,
     miroirSelfApplicationUuid,
     libraryPlayfieldEnsureMode = "createIfAbsent",
+    hostMode,
+    hostExecutionEnvironment,
+    skipBootstrapPhases,
+    platformEnsureMode = "createIfAbsent",
   } = options;
 
   if (!phases.includes("wireEmulatedStack")) {
@@ -125,27 +164,54 @@ export async function runAppStackIntegrationBootstrap(
     );
   }
 
-  const {
-    domainControllerForClient,
-    domainControllerForServer,
-    persistenceStoreControllerManagerForServer,
-  } = await setupMiroirTest(
-    miroirConfig,
-    miroirActivityTracker,
-    miroirEventService,
-    customFetch,
-  );
+  let domainControllerForClient: DomainControllerInterface;
+  let domainControllerForServer: DomainControllerInterface | undefined;
+  let persistenceStoreControllerManager: PersistenceStoreControllerManagerInterface;
 
-  if (!persistenceStoreControllerManagerForServer) {
+  if (usesEmbeddedHost(options)) {
+    domainControllerForClient = hostExecutionEnvironment!.domainController!;
+    persistenceStoreControllerManager =
+      hostExecutionEnvironment!.persistenceStoreControllerManager!;
+    if (!persistenceStoreControllerManager) {
+      throw new Error(
+        "runAppStackIntegrationBootstrap: hostExecutionEnvironment.persistenceStoreControllerManager is required when hostMode is embedded",
+      );
+    }
+    domainControllerForServer = domainControllerForClient;
+  } else if (!isPhaseSkipped("wireEmulatedStack", skipBootstrapPhases)) {
+    const {
+      domainControllerForClient: wiredClient,
+      domainControllerForServer: wiredServer,
+      persistenceStoreControllerManagerForServer,
+    } = await setupMiroirTest(
+      miroirConfig,
+      miroirActivityTracker,
+      miroirEventService,
+      customFetch,
+    );
+
+    if (!persistenceStoreControllerManagerForServer) {
+      throw new Error(
+        "runAppStackIntegrationBootstrap: persistenceStoreControllerManagerForServer missing",
+      );
+    }
+
+    domainControllerForClient = wiredClient;
+    domainControllerForServer = wiredServer;
+    persistenceStoreControllerManager = persistenceStoreControllerManagerForServer;
+  } else {
     throw new Error(
-      "runAppStackIntegrationBootstrap: persistenceStoreControllerManagerForServer missing",
+      "runAppStackIntegrationBootstrap: wireEmulatedStack skipped without embedded hostExecutionEnvironment",
     );
   }
 
   const domainController = domainControllerForClient;
-  const persistenceStoreControllerManager = persistenceStoreControllerManagerForServer;
 
-  if (openAdminAndMiroirStoresOnServer) {
+  if (
+    openAdminAndMiroirStoresOnServer &&
+    !usesEmbeddedHost(options) &&
+    !isPhaseSkipped("wireEmulatedStack", skipBootstrapPhases)
+  ) {
     if (!domainControllerForServer) {
       throw new Error(
         "runAppStackIntegrationBootstrap: domainControllerForServer missing for openAdminAndMiroirStoresOnServer",
@@ -163,21 +229,11 @@ export async function runAppStackIntegrationBootstrap(
     );
   }
 
-  if (phases.includes("deployMiroir")) {
-    if (deployMiroirStrategy === "pscHelper") {
-      const wrapped = await createMiroirDeploymentGetPersistenceStoreController(
-        miroirConfig,
-        persistenceStoreControllerManager,
-        domainController,
-        applicationDeploymentMap,
-        adminDeployment,
-      );
-      if (!wrapped?.localMiroirPersistenceStoreController) {
-        throw new Error(
-          "runAppStackIntegrationBootstrap: Miroir deployment PSC missing after deployMiroir",
-        );
-      }
-    } else {
+  if (
+    phases.includes("deployMiroir") &&
+    !isPhaseSkipped("deployMiroir", skipBootstrapPhases)
+  ) {
+    if (deployMiroirStrategy === "compositeAction") {
       if (!miroirDeploymentStorageConfiguration) {
         throw new Error(
           "runAppStackIntegrationBootstrap: miroirDeploymentStorageConfiguration required for deployMiroir with compositeAction",
@@ -193,35 +249,53 @@ export async function runAppStackIntegrationBootstrap(
           "runAppStackIntegrationBootstrap: miroirSelfApplicationUuid required for deployMiroir with compositeAction",
         );
       }
-
-      const deployDomainController =
-        miroirConfig.client.emulateServer && domainControllerForServer
-          ? domainControllerForServer
-          : domainControllerForClient;
-
-      const createMiroirDeploymentCompositeAction = createDeploymentCompositeAction(
-        "miroir",
-        miroirDeploymentUuid,
-        miroirSelfApplicationUuid,
-        adminDeployment,
-        miroirDeploymentStorageConfiguration,
-      );
-      const createDeploymentResult = await deployDomainController.handleCompositeAction(
-        createMiroirDeploymentCompositeAction,
-        applicationDeploymentMap,
-        defaultMiroirModelEnvironment,
-        {},
-      );
-      if (createDeploymentResult.status !== "ok") {
-        throw new Error(
-          "runAppStackIntegrationBootstrap: Miroir deployment failed: " +
-            JSON.stringify(createDeploymentResult),
-        );
-      }
     }
+
+    const deployDomainController =
+      miroirConfig.client.emulateServer && domainControllerForServer
+        ? domainControllerForServer
+        : domainControllerForClient;
+
+    const resolvedMiroirDeploymentUuid =
+      miroirDeploymentUuid ?? selfApplicationDeploymentMiroir.uuid;
+    const resolvedMiroirSelfApplicationUuid =
+      miroirSelfApplicationUuid ?? selfApplicationMiroir.uuid;
+
+    await ensureMiroirPlatform({
+      domainController: deployDomainController,
+      applicationDeploymentMap,
+      adminDeployment,
+      miroirDeploymentStorageConfiguration:
+        miroirDeploymentStorageConfiguration ?? ({} as StoreUnitConfiguration),
+      miroirDeploymentUuid: resolvedMiroirDeploymentUuid,
+      miroirSelfApplicationUuid: resolvedMiroirSelfApplicationUuid,
+      mode: platformEnsureMode,
+      deployStrategy: deployMiroirStrategy,
+      persistenceStoreControllerManager,
+      deployViaPscHelper:
+        deployMiroirStrategy === "pscHelper"
+          ? async () => {
+              const wrapped = await createMiroirDeploymentGetPersistenceStoreController(
+                miroirConfig,
+                persistenceStoreControllerManager,
+                domainController,
+                applicationDeploymentMap,
+                adminDeployment,
+              );
+              if (!wrapped?.localMiroirPersistenceStoreController) {
+                throw new Error(
+                  "runAppStackIntegrationBootstrap: Miroir deployment PSC missing after deployMiroir",
+                );
+              }
+            }
+          : undefined,
+    });
   }
 
-  if (phases.includes("deployLibrary")) {
+  if (
+    phases.includes("deployLibrary") &&
+    !isPhaseSkipped("deployLibrary", skipBootstrapPhases)
+  ) {
     if (!libraryDeploymentStorageConfiguration) {
       throw new Error(
         "runAppStackIntegrationBootstrap: libraryDeploymentStorageConfiguration required for deployLibrary phase",
@@ -250,7 +324,10 @@ export async function runAppStackIntegrationBootstrap(
     }
   }
 
-  if (phases.includes("resetMiroirModel")) {
+  if (
+    phases.includes("resetMiroirModel") &&
+    !isPhaseSkipped("resetMiroirModel", skipBootstrapPhases)
+  ) {
     await resetAndInitApplicationDeployment(domainController, applicationDeploymentMap, [
       selfApplicationDeploymentMiroir as Deployment,
     ]);
@@ -258,7 +335,8 @@ export async function runAppStackIntegrationBootstrap(
 
   return {
     domainController,
-    applicationDeploymentMap,
+    applicationDeploymentMap:
+      hostExecutionEnvironment?.applicationDeploymentMap ?? applicationDeploymentMap,
     testApplicationUuid,
     persistenceStoreControllerManager,
   };

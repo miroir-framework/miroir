@@ -29,9 +29,13 @@ import {
   getTestConfig,
   testApplicationStorageConfiguration,
 } from "../4_view/RunnerIntegTestTools.js";
-import { runAppStackIntegrationBootstrap } from "./appStackIntegrationBootstrap.js";
+import {
+  bootstrapHostOptionsFrom,
+  runAppStackIntegrationBootstrap,
+  type AppStackBootstrapHostOptions,
+} from "./appStackIntegrationBootstrap.js";
 
-export type RunnerTestSessionOptions = {
+export type RunnerTestSessionOptions = AppStackBootstrapHostOptions & {
   miroirConfig: MiroirConfigClient;
   miroirActivityTracker: MiroirActivityTracker;
   miroirEventService: MiroirEventService;
@@ -117,6 +121,7 @@ export class RunnerTestSession implements RunnerTestSessionInterface {
         openAdminAndMiroirStoresOnServer: false,
         miroirDeploymentUuid: selfApplicationDeploymentMiroir.uuid,
         miroirSelfApplicationUuid: selfApplicationMiroir.uuid,
+        ...bootstrapHostOptionsFrom(this.options),
       });
 
     const testApplicationDeploymentMap = {
