@@ -6,7 +6,7 @@
 **Scope:** Pure refactoring of **bootstrap wiring** — when to call `setupMiroirTest`, when to run
 `deployMiroir`, and when to accept an injected host `domainController`. **No `it()` body changes.**
 
-**Status:** A3–A4 done. Next: Slice A5 (embedded characterization unit).
+**Status:** A5 done. Next: Slice A6 (optional store startup dedup) or A8 (docs).
 
 ---
 
@@ -350,7 +350,7 @@ npm run testByFile -w miroir-standalone-app -- DomainControllerIntegrationTestSe
 
 ---
 
-### Slice A5 — Embedded mode characterization test (new unit)
+### Slice A5 — Embedded mode characterization test (new unit) — ✅ **DONE**
 
 **A5-Red:** `embeddedIntegrationBootstrap.unit.test.ts` (standalone-app)
 
@@ -459,7 +459,7 @@ Wraps `createStandaloneAppIntegrationOrchestrator().createSession(kind, {
 - [x] Orchestrator context documents and forwards host fields
 - [ ] `describeSession` exposes `embeddedCapable` for UI catalog
 - [ ] CLI default (`isolated`) — full regression matrix §8 green
-- [ ] Embedded characterization unit proves no `setupMiroirTest` / deploy on host path
+- [x] Embedded characterization unit proves no `setupMiroirTest` / deploy on host path
 - [ ] `RunnerTestSessionInterface` method signatures unchanged
 - [ ] No `it()` body edits
 - [ ] Gap A docs + `integ-test-setup-gaps.md` updated
