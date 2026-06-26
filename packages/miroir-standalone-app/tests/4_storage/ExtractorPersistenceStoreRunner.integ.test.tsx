@@ -1,23 +1,23 @@
-import { describe, beforeAll, afterAll, beforeEach, afterEach, it, expect } from "vitest";
+import { beforeAll, beforeEach, describe, expect, it } from "vitest";
 
 import {
   type Action2ReturnType,
   ApplicationSection,
   ConfigurationService,
-  defaultMiroirModelEnvironment,
+  defaultMiroirMetaModel,
   defaultSelfApplicationDeploymentMap,
   DomainControllerInterface,
-  EntityDefinition,
   entityEndpointVersion,
   entityEntity,
   entityEntityDefinition,
   EntityInstance,
   entityMenu,
+  ignorePostgresExtraAttributesOnList,
   ignorePostgresExtraAttributesOnObject,
   LoggerInterface,
-  MetaEntity,
+  LoggerOptions,
   MiroirActivityTracker,
-  MiroirConfigClient,
+  miroirCoreStartup,
   MiroirEventService,
   miroirFundamentalJzodSchema,
   MiroirLoggerFactory,
@@ -25,54 +25,38 @@ import {
   PersistenceStoreControllerManagerInterface,
   resetLibraryPlayfield,
   selfApplicationMiroir,
-  StoreUnitConfiguration,
-  defaultMiroirMetaModel,
-  ignorePostgresExtraAttributesOnList,
-  LoggerOptions,
-  miroirCoreStartup,
+  StoreUnitConfiguration
 } from "miroir-core";
 import { deployment_Admin, deployment_Miroir } from "miroir-test-app_deployment-admin";
 import { deployment_Library_DO_NO_USE } from "miroir-test-app_deployment-library";
 
+import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
+import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
+import { miroirMongoDbStoreSectionStartup } from "miroir-store-mongodb";
+import { miroirPostgresStoreSectionStartup } from "miroir-store-postgres";
 import {
-  author1,
   author2,
-  author3,
   book1,
   book2,
-  book3,
-  book4,
-  book5,
   book6,
   endpointDocument,
   entityAuthor,
   entityBook,
   entityCountry,
-  entityDefinitionAuthor,
-  entityDefinitionBook,
-  entityDefinitionPublisher,
   entityLendingHistoryItem,
   entityPublisher,
   entityUser,
   getDefaultLibraryModelEnvironmentDEFUNCT,
-  folio as publisher1,
-  penguin as publisher2,
   springer as publisher3,
-  selfApplicationLibrary,
+  selfApplicationLibrary
 } from "miroir-test-app_deployment-library";
-import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
-import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
-import { miroirMongoDbStoreSectionStartup } from "miroir-store-mongodb";
-import { miroirPostgresStoreSectionStartup } from "miroir-store-postgres";
 // import { miroirCoreStartup } from 'miroir-core/src/startup.js';
 import type {
   ApplicationDeploymentMap,
-  ApplicationEntitiesAndInstances,
   Deployment,
   EndpointDefinition,
   Entity,
-  Menu,
-  MlSchema,
+  MlSchema
 } from "miroir-core";
 import { loglevelnext } from "../../src/loglevelnextImporter.js";
 import {
@@ -81,9 +65,9 @@ import {
 import { chainVitestSteps } from "../../src/miroir-fwk/4-tests/vitest-utils.js";
 import { miroirAppStartup } from "../../src/startup.js";
 import { cleanLevel, packageName } from "../3_controllers/constants.js";
-import { loadTestConfigFiles } from "../utils/fileTools.js";
 import { AppStackIntegrationTestSession } from "../helpers/IntegrationTestSession.js";
-import { libraryPlayfieldSeedInitParams } from "../helpers/libraryPlayfieldSeeds.js";
+import { libraryEntitiesAndInstances, libraryPlayfieldSeedInitParams } from "../helpers/libraryPlayfieldSeeds.js";
+import { loadTestConfigFiles } from "../utils/fileTools.js";
 
 let domainController: DomainControllerInterface;
 // let localCache: LocalCacheInterface;
@@ -168,35 +152,6 @@ const applicationDeploymentMap: ApplicationDeploymentMap = {
 };
 
 console.log("@@@@@@@@@@@@@@@@@@ miroirConfig", miroirConfig);
-
-export const libraryEntitiesAndInstances: ApplicationEntitiesAndInstances = [
-  {
-    entity: entityAuthor as Entity,
-    entityDefinition: entityDefinitionAuthor as EntityDefinition,
-    instances: [author1, author2, author3 as EntityInstance],
-  },
-  {
-    entity: entityBook as Entity,
-    entityDefinition: entityDefinitionBook as EntityDefinition,
-    instances: [
-      book1 as EntityInstance,
-      book2 as EntityInstance,
-      book3 as EntityInstance,
-      book4 as EntityInstance,
-      book5 as EntityInstance,
-      book6 as EntityInstance,
-    ],
-  },
-  {
-    entity: entityPublisher as Entity,
-    entityDefinition: entityDefinitionPublisher as EntityDefinition,
-    instances: [
-      publisher1 as EntityInstance,
-      publisher2 as EntityInstance,
-      publisher3 as EntityInstance,
-    ],
-  },
-];
 
 const defaultLibraryModelEnvironment = getDefaultLibraryModelEnvironmentDEFUNCT(
   miroirFundamentalJzodSchema as MlSchema,

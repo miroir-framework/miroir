@@ -4,7 +4,7 @@
 ways integration tests start up and configure themselves must be unified. This document maps the
 current state and names the gaps that still need to be filled before UI execution becomes viable.
 
-**Last updated:** Gap C setup refactor complete (see [gap-C-refactoring-plan.md](./gap-C-refactoring-plan.md)).
+**Last updated:** Gap B complete (library playfield contract — see [gap-B-refactoring-plan.md](./gap-B-refactoring-plan.md)).
 
 ---
 
@@ -77,13 +77,50 @@ unconditionally create both deployments.
 
 ---
 
-## 3. Gap B — Library app setup as playfield
+## 3. Gap B — Library app setup as playfield — ✅ **Done**
 
-**Status:** In progress — L0–L2 done (`IntegrationTestPlayfield`, `ensureLibraryPlayfield`, `resetLibraryPlayfield` in `miroir-core`). Next: L3 wire bootstrap.
+**Status:** Complete — L0–L8 ([gap-B-refactoring-plan.md](./gap-B-refactoring-plan.md)).
 
-**TDD plan:** [gap-B-refactoring-plan.md](./gap-B-refactoring-plan.md)
+### Outcome
 
-### Current state
+Every integration session declares its **playfield** via `IntegrationTestSessionDescriptor.playfield`
+(`IntegrationTestPlayfield`: `"none"` | `"testApplication"` | `"libraryDeployment"`).
+
+| Kind / profile | Playfield |
+|----------------|-----------|
+| `transformer` | `testApplication` (synthetic UUIDs — unchanged) |
+| `appStackPsc`, `runner` | `libraryDeployment` |
+| `domainController` + `miroirPlatform` | `none` (library lifecycle in test JSON) |
+| `domainController` + `miroirAndLibrary` | `libraryDeployment` |
+
+**Helpers in `miroir-core` (`LibraryPlayfield.ts`):**
+
+- `ensureLibraryPlayfield` — idempotent create; wired into `runAppStackIntegrationBootstrap`
+  `deployLibrary` phase.
+- `resetLibraryPlayfield` — per-test reset + optional seed; adopted in `4_storage` `beforeEach`,
+  runner `beforeEachTest`, undo-redo.
+
+**Orchestrator:** `describeSession(kind)` surfaces playfield for UI catalog (#197).
+`IntegrationTestOrchestratorContext.playfieldMode` (`LibraryPlayfieldEnsureMode`) forwards to
+bootstrap as `libraryPlayfieldEnsureMode` — Gap A will use `requireExisting` when the host already
+deployed the library.
+
+**Seed constants:** `packages/miroir-standalone-app/tests/helpers/libraryPlayfieldSeeds.ts`.
+
+### What was filled
+
+- [x] `IntegrationTestPlayfield` on session descriptors (`describeIntegrationTestSession`).
+- [x] `ensureLibraryPlayfield` + `resetLibraryPlayfield` in `miroir-core` (unit-tested).
+- [x] `runAppStackIntegrationBootstrap` uses `ensureLibraryPlayfield` for `deployLibrary`.
+- [x] `4_storage` / runner / undo-redo `beforeEach` hooks use `resetLibraryPlayfield`.
+- [x] Orchestrator `describeSession` + `playfieldMode` for future UI launcher.
+- [ ] CLI/MCP inline library reset → shared helpers (optional [L9](./gap-B-refactoring-plan.md)).
+
+Transformer `testApplication` playfield remains separate from deployment `library` UUIDs
+(documented in `docs/reference/testing.md`).
+
+<details>
+<summary>Historical context (pre–Gap B, collapsed)</summary>
 
 Integration tests split into two groups with respect to the library application:
 
@@ -105,22 +142,9 @@ Integration tests split into two groups with respect to the library application:
 - Transformer integ (`MIROIR_TEST_*` / `testApplication` schema) — intentional isolated playfield for MiroirTest scale runs.
 - Component integ tests have no store at all.
 
-### Problem
+### Gap (before Gap B)
 
-There is no shared contract that declares "this test suite requires a library deployment to exist
-before it runs" vs "this test suite manages its own playfield". As a result:
-
-- Tests that need the library app still scatter creation / reset logic across `beforeAll` /
-  `beforeEach` hooks in `3_controllers`, legacy runners, CLI/MCP — **not** in `4_storage` anymore
-  (shared `AppStackIntegrationTestSession`).
-- Transformer integ (`testApplication`) and deployment-`library` tests still use different
-  database artefacts and UUIDs.
-- When running in the UI, the library app may or may not already be deployed (depends on the
-  user's working context). The test runner needs to know which mode applies.
-
-### Gap
-
-- No standard `requiresLibraryDeployment: boolean` declaration on a test suite or
+- No standard `requiresLibraryDeployment` declaration on a test suite or
   `RunnerTestSession` configuration.
 - No shared helper that creates the library deployment if absent and skips creation if already
   present (idempotent playfield setup).
@@ -128,7 +152,7 @@ before it runs" vs "this test suite manages its own playfield". As a result:
   synthetic UUIDs, separate from the real library deployment used by `VITE_MIROIR_*` tests.
   Documented and intentional unless we later align schemas.
 
-### What needs to be filled
+### What needed to be filled (original)
 
 - A **`playfield`** concept in `RunnerTestSessionInterface`: either an enum
   (`"none" | "libraryDeployment" | "customDeployment"`) or a flag
@@ -141,7 +165,7 @@ before it runs" vs "this test suite manages its own playfield". As a result:
   synthetic `testApplication` schema remains the transformer playfield unless we explicitly
   converge profiles (optional; not required after Gap C-setup).
 
-**TDD plan:** [gap-B-refactoring-plan.md](./gap-B-refactoring-plan.md) (implement **after** Gap E).
+</details>
 
 ---
 
@@ -392,14 +416,16 @@ Five different public setup entry points existed across the test infrastructure:
 | Gap | What is missing | Affected test families | Blocking for UI execution? |
 |-----|----------------|----------------------|---------------------------|
 | **A** — Miroir + Admin init | Flag to skip deployment creation when host app is already running | All `miroir-standalone-app` integ, CLI/MCP | **Yes** |
-| **B** — Library playfield contract | `ensureLibraryPlayfield` / `resetLibraryPlayfield` — L0–L2 done; bootstrap wiring next | Runner, DomainController, 4_storage | **In progress** |
+| **B** — Library playfield contract | ~~`ensureLibraryPlayfield` / `resetLibraryPlayfield`~~ | Runner, DomainController, 4_storage | **Done** ✅ — enables Gap A `playfieldMode` |
 | **C-setup** — Common integ bootstrap | ~~Unified session adapters~~ | Transformer + `4_storage` | **Done** ✅ — reduces setup chaos; UI still needs isolation (A/B) |
 | **C-assertions** — PSC vs domainController in test bodies | `4_storage` keeps PSC (intentional); UI launcher for PSC Vitest suites not built | `4_storage` only | **Partial** — blocks *in-browser* PSC access; **not** a blocker if UI spawns isolated Vitest (defer to follow-up) |
 | **D** — Env config fragmentation | Unified profile system (`MIROIR_TEST_*` vs `VITE_MIROIR_*`) | Transformer integ, all CLI-driven tests | Medium — no longer blocked on C-assertions |
 | **E** — Setup helper fragmentation | ~~Consolidate `setupMiroirTest*`; orchestrator for UI~~ | DomainController CRUD, legacy runners | **Done** ✅ — enables Gap B / UI Phase B |
 
-Gaps **A** and **B** remain the main blockers for running integration tests **inside** the live
-Miroir UI without disrupting the session. **Gap C-setup** is largely solved: one common bootstrap
+Gaps **A** remain the main blocker for running integration tests **inside** the live
+Miroir UI without disrupting the session. **Gap B** (playfield contract) is done — the UI launcher
+can read `describeSession().playfield` and pass `playfieldMode: "requireExisting"` when embedding.
+**Gap C-setup** is largely solved: one common bootstrap
 pattern (`RunnerTestSessionInterface` + `AppStackIntegrationTestSession` / `IntegrationTestSession`)
 is available across transformer and storage families, which makes CLI testing much easier to
 control even though assertion style still differs.

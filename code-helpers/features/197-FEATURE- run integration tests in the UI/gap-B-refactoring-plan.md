@@ -6,7 +6,7 @@
 **Scope:** Pure refactoring. Standardise **when** the library deployment is created, reset, and
 seeded — **not** what tests assert. PSC-direct `4_storage` test bodies remain unchanged (Gap C).
 
-**Status:** L0–L7 done. Next: Slice L8 (docs + gap analysis update).
+**Status:** L0–L8 done. Next: Slice L9 (CLI/MCP optional).
 
 ---
 
@@ -384,7 +384,7 @@ npm run testByFile -w miroir-standalone-app -- DomainController.React.Model.undo
 
 ---
 
-### Slice L8 — Docs + gap analysis update
+### Slice L8 — Docs + gap analysis update — ✅ **DONE**
 
 **L8:** Update `docs/reference/testing.md` with playfield table. Update
 `integ-test-setup-gaps.md` Gap B → done. Cross-link Gap A flags to `LibraryPlayfieldEnsureMode`.
@@ -438,9 +438,9 @@ Only if `setupMiroirPlatform` duplicates library reset inline:
 - [x] All `4_storage` `beforeEach` hooks use shared playfield helpers (behaviour-preserving)
 - [x] `RunnerTestSession` / `beforeEachTest` uses `resetLibraryPlayfield`
 - [x] Session descriptors expose `playfield` for orchestrator / future UI
-- [ ] `RunnerTestSessionInterface` method signatures unchanged
-- [ ] No `it()` body edits
-- [ ] Transformer integ still uses `testApplication` playfield — documented, not merged with library
+- [x] `RunnerTestSessionInterface` method signatures unchanged
+- [x] No `it()` body edits
+- [x] Transformer integ still uses `testApplication` playfield — documented, not merged with library
 - [ ] Full regression matrix §8 green
 
 ---

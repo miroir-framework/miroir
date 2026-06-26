@@ -1,15 +1,14 @@
-import { describe, expect, beforeAll, afterAll, it } from "vitest";
+import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
 import process from "process";
 
-import type { ApplicationDeploymentMap, EndpointDefinition, Entity, MlSchema, SelfApplication } from "miroir-core";
+import type { ApplicationDeploymentMap, EndpointDefinition, MlSchema, SelfApplication } from "miroir-core";
 import {
   ConfigurationService,
   createDeploymentCompositeAction,
   Deployment,
   displayTestSuiteResultsDetails,
   DomainControllerInterface,
-  EntityDefinition,
   EntityInstance,
   LoggerInterface,
   MiroirActivityTracker,
@@ -20,8 +19,7 @@ import {
   resetAndinitializeDeploymentCompositeAction,
   StoreUnitConfiguration,
   testUtils_deleteApplicationDeployment,
-  testUtils_resetApplicationDeployment,
-  type ApplicationEntitiesAndInstances
+  testUtils_resetApplicationDeployment
 } from "miroir-core";
 
 
@@ -44,9 +42,6 @@ import {
 import { LoggerOptions } from "miroir-core";
 import { miroirMongoDbStoreSectionStartup } from "miroir-store-mongodb";
 import {
-  author1,
-  author2,
-  author3,
   book1,
   book2,
   book3,
@@ -56,23 +51,18 @@ import {
   endpointDocument,
   entityAuthor,
   entityBook,
-  entityDefinitionAuthor,
-  entityDefinitionBook,
-  entityDefinitionPublisher,
   entityPublisher,
   getDefaultLibraryModelEnvironmentDEFUNCT,
-  folio as publisher1,
-  penguin as publisher2,
-  springer as publisher3,
   selfApplicationLibrary,
   selfApplicationModelBranchLibraryMasterBranch,
   selfApplicationVersionLibraryInitialVersion,
 } from "miroir-test-app_deployment-library";
 import { loglevelnext } from "../../src/loglevelnextImporter.js";
+import { runTestOrTestSuite } from "../../src/miroir-fwk/4-tests/runTestOrTestSuite.js";
+import { DomainControllerIntegrationTestSession } from "../helpers/DomainControllerIntegrationTestSession.js";
+import { libraryEntitiesAndInstancesWithoutBook3 } from "../helpers/libraryPlayfieldSeeds.js";
 import { loadTestConfigFiles } from "../utils/fileTools.js";
 import { cleanLevel, packageName } from "./constants.js";
-import { DomainControllerIntegrationTestSession } from "../helpers/DomainControllerIntegrationTestSession.js";
-import { runTestOrTestSuite } from "../../src/miroir-fwk/4-tests/runTestOrTestSuite.js";
 
 // const env: any = (import.meta as any).env;
 const env: any = process.env;
@@ -219,35 +209,6 @@ const testDeploymentStorageConfiguration = miroirConfig.client.emulateServer
 
   
 let domainController: DomainControllerInterface;
-
-export const libraryEntitiesAndInstancesWithoutBook3: ApplicationEntitiesAndInstances = [
-  {
-    entity: entityAuthor as Entity,
-    entityDefinition: entityDefinitionAuthor as EntityDefinition,
-    instances: [author1, author2, author3 as EntityInstance],
-  },
-  {
-    entity: entityBook as Entity,
-    entityDefinition: entityDefinitionBook as EntityDefinition,
-    instances: [
-      book1 as EntityInstance,
-      book2 as EntityInstance,
-      // // book3 as EntityInstance,
-      book4 as EntityInstance,
-      book5 as EntityInstance,
-      book6 as EntityInstance,
-    ],
-  },
-  {
-    entity: entityPublisher as Entity,
-    entityDefinition: entityDefinitionPublisher as EntityDefinition,
-    instances: [
-      publisher1 as EntityInstance,
-      publisher2 as EntityInstance,
-      publisher3 as EntityInstance,
-    ],
-  },
-];
 
 beforeAll(async () => {
   myConsoleLog("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ beforeAll");

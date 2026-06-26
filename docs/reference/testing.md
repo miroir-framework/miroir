@@ -413,21 +413,49 @@ explicit phase list. Phase names are defined in `miroir-core` (`IntegrationTestB
 
 ### Session matrix
 
-| Session class | Kind | Typical bootstrap phases | Entry points |
-|---------------|------|--------------------------|--------------|
-| `IntegrationTestSession` | `transformer` | (local PSC — no HTTP phases) | `miroir-core-tests.integ.test.ts` |
-| `AppStackIntegrationTestSession` | `appStackPsc` | wire + deployMiroir + deployLibrary | `4_storage/*.integ.test.tsx` |
-| `DomainControllerIntegrationTestSession` | `domainController` | profile-dependent (see below) | `3_controllers/DomainController.integ.*` |
-| `RunnerTestSession` | `runner` | wire + deployMiroir | `miroir-runner-tests.integ`, `Runner_Miroir.integ` |
+| Session class | Kind | Playfield | Typical bootstrap phases | Entry points |
+|---------------|------|-----------|--------------------------|--------------|
+| `IntegrationTestSession` | `transformer` | `testApplication` | (local PSC — no HTTP phases) | `miroir-core-tests.integ.test.ts` |
+| `AppStackIntegrationTestSession` | `appStackPsc` | `libraryDeployment` | wire + deployMiroir + deployLibrary | `4_storage/*.integ.test.tsx` |
+| `DomainControllerIntegrationTestSession` | `domainController` | profile-dependent (see below) | profile-dependent | `3_controllers/DomainController.integ.*` |
+| `RunnerTestSession` | `runner` | `libraryDeployment` | wire + deployMiroir | `miroir-runner-tests.integ`, `Runner_Miroir.integ` |
 
-**DomainController profiles** (`getBootstrapPhasesForDomainControllerProfile`):
+`describeSession(kind)` (or `describeIntegrationTestSession(kind, profile)` for
+`domainController`) returns `{ kind, bootstrapPhases, playfield }`. The UI test launcher (#197)
+uses this metadata to decide whether a subprocess needs an isolated library deployment or can reuse
+the host playfield.
 
-| Profile | Phases | Used by |
-|---------|--------|---------|
-| `miroirPlatform` | wire + deployMiroir + resetMiroirModel | CRUD suites (`beforeEach` resets miroir model) |
-| `miroirAndLibrary` | wire + deployMiroir + deployLibrary | `DomainController.React.Model.undo-redo` |
+**DomainController profiles** (`getBootstrapPhasesForDomainControllerProfile` / `getPlayfieldForDomainControllerProfile`):
+
+| Profile | Phases | Playfield | Used by |
+|---------|--------|-----------|---------|
+| `miroirPlatform` | wire + deployMiroir + resetMiroirModel | `none` | CRUD suites (`beforeEach` resets miroir model; library lifecycle in test JSON) |
+| `miroirAndLibrary` | wire + deployMiroir + deployLibrary | `libraryDeployment` | `DomainController.React.Model.undo-redo` |
 
 Model.CRUD may pass `skipResetMiroirModelInInit: true` so reset runs only in `beforeEach`.
+
+### Library playfield helpers
+
+`miroir-core` exports idempotent helpers for the real **library** deployment UUIDs
+(`deployment_Library_DO_NO_USE` / `selfApplicationLibrary`):
+
+| Helper | Role |
+|--------|------|
+| `ensureLibraryPlayfield` | Called from `deployLibrary` bootstrap phase — create library deployment if absent (`createIfAbsent`) or assert it exists (`requireExisting`) |
+| `resetLibraryPlayfield` | Per-test reset + optional seed — used in `4_storage` `beforeEach`, runner `beforeEachTest`, undo-redo |
+
+`LibraryPlayfieldEnsureMode`: `"createIfAbsent"` (CLI default) | `"requireExisting"` | `"skip"`.
+
+Orchestrator context (`IntegrationTestOrchestratorContext.playfieldMode`) forwards to session
+bootstrap as `libraryPlayfieldEnsureMode`. Gap A (UI embedding) will use `requireExisting` when
+the host already deployed the library; see [integ-test-setup-gaps.md](../../code-helpers/features/197-FEATURE-%20run%20integration%20tests%20in%20the%20UI/integ-test-setup-gaps.md).
+
+Shared seed constants for standalone-app tests:
+`packages/miroir-standalone-app/tests/helpers/libraryPlayfieldSeeds.ts`
+(`libraryPlayfieldSeedInitParams`, `libraryEntitiesAndInstances`, `libraryEntitiesAndInstancesWithoutBook3`).
+
+Transformer integ intentionally keeps the synthetic `testApplication` playfield — it does **not**
+share library deployment UUIDs with app-stack tests.
 
 ### `MiroirTestIntegrationOrchestrator`
 
@@ -442,12 +470,14 @@ const session = orchestrator.createSession("runner", {
   miroirConfig,
   miroirActivityTracker,
   miroirEventService,
+  playfieldMode: "createIfAbsent", // Gap A UI: "requireExisting" when host already deployed library
 });
 await session.initSession();
 ```
 
-`describeSession(kind)` returns `{ kind, bootstrapPhases }` from `describeIntegrationTestSession`.
-For `domainController`, pass the profile to `describeIntegrationTestSession(kind, profile)` directly.
+`describeSession(kind)` returns `{ kind, bootstrapPhases, playfield }` from
+`describeIntegrationTestSession`. For `domainController`, pass the profile to
+`describeIntegrationTestSession(kind, profile)` directly.
 
 ### Deprecated setup helpers
 
@@ -539,7 +569,8 @@ npm run testMiroir -w miroir-core
 | `src/5_tests/runMiroirCoreTestsFromCLI.ts` | Main entry called by both vitest entries |
 | `src/5_tests/MiroirTestTools.ts` | Unified runner dispatching by test type |
 | `src/5_tests/MiroirTransformerTestTools.ts` | Transformer/function-call execution and SQL path |
-| `src/5_tests/IntegrationTestBootstrap.ts` | Bootstrap phase descriptors per session kind |
+| `src/5_tests/IntegrationTestBootstrap.ts` | Bootstrap phase descriptors + `IntegrationTestPlayfield` per session kind |
+| `src/5_tests/LibraryPlayfield.ts` | `ensureLibraryPlayfield`, `resetLibraryPlayfield`, `LibraryPlayfieldEnsureMode` |
 | `src/5_tests/MiroirTestIntegrationOrchestrator.ts` | Orchestrator port + factory injection |
 | `tests/miroir-core-tests.unit.test.ts` | Vitest unit entry |
 | `scripts/test-miroir-core.ts` | `testMiroir` launcher for unit tests |
@@ -554,6 +585,7 @@ npm run testMiroir -w miroir-core
 | `tests/helpers/DomainControllerIntegrationTestSession.ts` | DomainController CRUD / undo-redo bootstrap |
 | `tests/helpers/appStackIntegrationBootstrap.ts` | Shared `runAppStackIntegrationBootstrap` |
 | `tests/helpers/StandaloneAppIntegrationOrchestrator.ts` | Orchestrator implementation (all session kinds) |
+| `tests/helpers/libraryPlayfieldSeeds.ts` | Shared library seed data for playfield resets |
 | `tests/helpers/RunnerTestSession.ts` | Runner MiroirTest + legacy runner integ bootstrap |
 | `tests/helpers/miroirCoreIntegTestLaunch.ts` | Pre-flight validation + usage output |
 | `tests/helpers/runMiroirRunnerTestsFromCLI.ts` | Runner test CLI orchestration |
