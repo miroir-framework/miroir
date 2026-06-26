@@ -407,8 +407,8 @@ explicit phase list. Phase names are defined in `miroir-core` (`IntegrationTestB
 | Phase | Effect |
 |-------|--------|
 | `wireEmulatedStack` | `setupMiroirTest` — client `domainController`, optional emulated server |
-| `deployMiroir` | Create Miroir meta-application deployment |
-| `deployLibrary` | Create library application deployment |
+| `deployMiroir` | Create Miroir meta-application deployment (`ensureMiroirPlatform`) |
+| `deployLibrary` | Create library application deployment (`ensureLibraryPlayfield`) |
 | `resetMiroirModel` | `resetAndInitApplicationDeployment` for Miroir only |
 
 ### Session matrix
@@ -421,9 +421,9 @@ explicit phase list. Phase names are defined in `miroir-core` (`IntegrationTestB
 | `RunnerTestSession` | `runner` | `libraryDeployment` | wire + deployMiroir | `miroir-runner-tests.integ`, `Runner_Miroir.integ` |
 
 `describeSession(kind)` (or `describeIntegrationTestSession(kind, profile)` for
-`domainController`) returns `{ kind, bootstrapPhases, playfield }`. The UI test launcher (#197)
-uses this metadata to decide whether a subprocess needs an isolated library deployment or can reuse
-the host playfield.
+`domainController`) returns `{ kind, bootstrapPhases, playfield, defaultHostMode, embeddedCapable }`.
+The UI test launcher (#197) uses this metadata to decide subprocess vs embedded execution and
+whether library/platform deployments can be reused from the host.
 
 **DomainController profiles** (`getBootstrapPhasesForDomainControllerProfile` / `getPlayfieldForDomainControllerProfile`):
 
@@ -433,6 +433,34 @@ the host playfield.
 | `miroirAndLibrary` | wire + deployMiroir + deployLibrary | `libraryDeployment` | `DomainController.React.Model.undo-redo` |
 
 Model.CRUD may pass `skipResetMiroirModelInInit: true` so reset runs only in `beforeEach`.
+
+### Host modes (Gap A)
+
+| `IntegrationTestHostMode` | When | Bootstrap behaviour |
+|---------------------------|------|---------------------|
+| **`isolated`** | CLI / Vitest (default) | Full `wireEmulatedStack` + phased deploy via `ensureMiroirPlatform` / `ensureLibraryPlayfield` |
+| **`embedded`** | Live UI host (advanced) | Inject `hostExecutionEnvironment`; skip `setupMiroirTest` and destructive deploy when `requireExisting` |
+
+#197 Phase B ([plan.md](../../code-helpers/features/197-FEATURE-%20run%20integration%20tests%20in%20the%20UI/plan.md) **B0**) recommends **isolated Vitest subprocess** first (fresh schema, never reuse live `MiroirContext`). Embedded mode attaches to a running host without re-deploying meta-model stores.
+
+| Session kind | `embeddedCapable` | Notes |
+|--------------|-------------------|-------|
+| `transformer` | `false` | Local PSC / synthetic `testApplication` — always isolated |
+| `appStackPsc`, `domainController`, `runner` | `true` | App-stack sessions accept embedded host injection |
+
+### Platform playfield helpers
+
+`miroir-core` (`MiroirPlatformPlayfield.ts`) exports idempotent helpers for the **Miroir**
+meta-application deployment:
+
+| Helper | Role |
+|--------|------|
+| `ensureMiroirPlatform` | Called from `deployMiroir` bootstrap phase — create miroir deployment if absent or assert it exists |
+
+`MiroirPlatformEnsureMode`: `"createIfAbsent"` (CLI default) | `"requireExisting"` | `"skip"`.
+
+Orchestrator context (`IntegrationTestOrchestratorContext.platformEnsureMode`) forwards to session
+bootstrap. Use `requireExisting` with `hostMode: "embedded"` when the UI host already deployed Miroir.
 
 ### Library playfield helpers
 
@@ -447,8 +475,9 @@ Model.CRUD may pass `skipResetMiroirModelInInit: true` so reset runs only in `be
 `LibraryPlayfieldEnsureMode`: `"createIfAbsent"` (CLI default) | `"requireExisting"` | `"skip"`.
 
 Orchestrator context (`IntegrationTestOrchestratorContext.playfieldMode`) forwards to session
-bootstrap as `libraryPlayfieldEnsureMode`. Gap A (UI embedding) will use `requireExisting` when
-the host already deployed the library; see [integ-test-setup-gaps.md](../../code-helpers/features/197-FEATURE-%20run%20integration%20tests%20in%20the%20UI/integ-test-setup-gaps.md).
+bootstrap as `libraryPlayfieldEnsureMode`. Use `requireExisting` with embedded host mode when the
+host already deployed the library. See
+[integ-test-setup-gaps.md](../../code-helpers/features/197-FEATURE-%20run%20integration%20tests%20in%20the%20UI/integ-test-setup-gaps.md).
 
 Shared seed constants for standalone-app tests:
 `packages/miroir-standalone-app/tests/helpers/libraryPlayfieldSeeds.ts`
@@ -466,18 +495,45 @@ session classes via `createStandaloneAppIntegrationOrchestrator()`:
 import { createStandaloneAppIntegrationOrchestrator } from "./helpers/StandaloneAppIntegrationOrchestrator.js";
 
 const orchestrator = createStandaloneAppIntegrationOrchestrator();
+
+// CLI / isolated (default)
 const session = orchestrator.createSession("runner", {
   miroirConfig,
   miroirActivityTracker,
   miroirEventService,
-  playfieldMode: "createIfAbsent", // Gap A UI: "requireExisting" when host already deployed library
+  hostMode: "isolated",
+  platformEnsureMode: "createIfAbsent",
+  playfieldMode: "createIfAbsent",
 });
+
+// Embedded live UI host (advanced — #197 Phase B)
+const embeddedSession = orchestrator.createSession("appStackPsc", {
+  miroirConfig,
+  hostMode: "embedded",
+  platformEnsureMode: "requireExisting",
+  playfieldMode: "requireExisting",
+  hostExecutionEnvironment: hostEnv, // domainController + PSC manager from live app
+  skipBootstrapPhases: ["wireEmulatedStack", "deployMiroir"], // optional explicit filter
+  hostApplicationDeploymentMap: hostEnv.applicationDeploymentMap,
+}, appStackSessionOptions);
+
 await session.initSession();
 ```
 
-`describeSession(kind)` returns `{ kind, bootstrapPhases, playfield }` from
+`describeSession(kind)` returns `{ kind, bootstrapPhases, playfield, defaultHostMode, embeddedCapable }` from
 `describeIntegrationTestSession`. For `domainController`, pass the profile to
 `describeIntegrationTestSession(kind, profile)` directly.
+
+**Orchestrator context fields (Gap A + Gap B):**
+
+| Field | Purpose |
+|-------|---------|
+| `hostMode` | `"isolated"` (default) or `"embedded"` |
+| `hostExecutionEnvironment` | Injected `domainController` + `persistenceStoreControllerManager` for embedded runs |
+| `platformEnsureMode` | `ensureMiroirPlatform` mode for `deployMiroir` phase |
+| `playfieldMode` | `ensureLibraryPlayfield` mode for `deployLibrary` phase |
+| `skipBootstrapPhases` | Explicit phase filter (e.g. skip `deployMiroir` when host is live) |
+| `hostApplicationDeploymentMap` | Override session deployment map from live UI |
 
 ### Deprecated setup helpers
 
@@ -569,9 +625,10 @@ npm run testMiroir -w miroir-core
 | `src/5_tests/runMiroirCoreTestsFromCLI.ts` | Main entry called by both vitest entries |
 | `src/5_tests/MiroirTestTools.ts` | Unified runner dispatching by test type |
 | `src/5_tests/MiroirTransformerTestTools.ts` | Transformer/function-call execution and SQL path |
-| `src/5_tests/IntegrationTestBootstrap.ts` | Bootstrap phase descriptors + `IntegrationTestPlayfield` per session kind |
+| `src/5_tests/IntegrationTestBootstrap.ts` | Bootstrap phase descriptors + `IntegrationTestPlayfield` + host mode metadata |
 | `src/5_tests/LibraryPlayfield.ts` | `ensureLibraryPlayfield`, `resetLibraryPlayfield`, `LibraryPlayfieldEnsureMode` |
-| `src/5_tests/MiroirTestIntegrationOrchestrator.ts` | Orchestrator port + factory injection |
+| `src/5_tests/MiroirPlatformPlayfield.ts` | `ensureMiroirPlatform`, `MiroirPlatformEnsureMode` |
+| `src/5_tests/MiroirTestIntegrationOrchestrator.ts` | Orchestrator port + host/playfield context |
 | `tests/miroir-core-tests.unit.test.ts` | Vitest unit entry |
 | `scripts/test-miroir-core.ts` | `testMiroir` launcher for unit tests |
 

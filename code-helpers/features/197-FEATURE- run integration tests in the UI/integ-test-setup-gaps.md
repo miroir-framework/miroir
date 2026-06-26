@@ -4,7 +4,7 @@
 ways integration tests start up and configure themselves must be unified. This document maps the
 current state and names the gaps that still need to be filled before UI execution becomes viable.
 
-**Last updated:** Gap B complete (library playfield contract — see [gap-B-refactoring-plan.md](./gap-B-refactoring-plan.md)).
+**Last updated:** Gap A complete (platform host modes — see [gap-A-refactoring-plan.md](./gap-A-refactoring-plan.md)).
 
 ---
 
@@ -27,11 +27,51 @@ current state and names the gaps that still need to be filled before UI executio
 
 ---
 
-## 2. Gap A — Miroir + Admin app initialization
+## 2. Gap A — Miroir + Admin app initialization — ✅ **Done**
 
-**Status:** Not started — [gap-A-refactoring-plan.md](./gap-A-refactoring-plan.md) (implement **after** Gap B ✅).
+**Status:** Complete — A0–A5, A8 ([gap-A-refactoring-plan.md](./gap-A-refactoring-plan.md)). A6/A7 skipped; A9 deferred to #197 Phase B.
 
-### Current state
+### Outcome
+
+Integration tests declare **host mode** and can skip destructive platform bootstrap when the live UI
+already provisioned Miroir + admin:
+
+| Mode | Use case | Bootstrap |
+|------|----------|-----------|
+| **`isolated`** | CLI / Vitest (default) | Full `wireEmulatedStack` + `deployMiroir` via `ensureMiroirPlatform` |
+| **`embedded`** | Live UI host (advanced) | Inject `hostExecutionEnvironment`; skip `setupMiroirTest` |
+
+**Helpers in `miroir-core` (`MiroirPlatformPlayfield.ts`):**
+
+- `ensureMiroirPlatform` — idempotent `deployMiroir` (`createIfAbsent` | `requireExisting` | `skip`).
+
+**Orchestrator context** (`IntegrationTestOrchestratorContext`):
+
+- `hostMode`, `hostExecutionEnvironment`, `platformEnsureMode`, `skipBootstrapPhases`,
+  `hostApplicationDeploymentMap` — forwarded by `StandaloneAppIntegrationOrchestrator` to session
+  bootstrap.
+- Works with Gap B `playfieldMode` / `ensureLibraryPlayfield` for library deployment.
+
+**Session descriptors** include `defaultHostMode: "isolated"` and `embeddedCapable` (false for
+`transformer`; true for app-stack kinds) for #197 UI catalog.
+
+**#197 Phase B:** [plan.md](./plan.md) B0 still recommends **isolated Vitest subprocess** first
+(fresh schema, never touch live `MiroirContext`). Embedded mode is the advanced path for attaching
+to a running host without re-deploying meta-model stores.
+
+### What was filled
+
+- [x] `IntegrationTestHostMode` + `MiroirPlatformEnsureMode` on descriptors and orchestrator context.
+- [x] `ensureMiroirPlatform` + bootstrap `deployMiroir` delegation.
+- [x] Embedded host injection in `runAppStackIntegrationBootstrap`.
+- [x] Orchestrator + session adapter forwarding (A3–A4).
+- [ ] CLI/MCP `setupMiroirPlatform` alignment (A7 skipped).
+- [ ] Module-level `miroirAppStartup` dedup (A6 skipped).
+
+<details>
+<summary>Historical context (pre–Gap A, collapsed)</summary>
+
+### Current state (before Gap A)
 
 Every non-component integration test that lives in `miroir-standalone-app` (DomainController
 CRUD, storage-layer, runner) runs the following full initialization in `beforeAll`:
@@ -47,24 +87,6 @@ createDeploymentCompositeAction("admin")  ← deploys Admin application
 ```
 
 The CLI / MCP tests do the same through `setupMiroirPlatform`.
-
-### What needs to be filled
-
-See [gap-A-refactoring-plan.md](./gap-A-refactoring-plan.md). Summary:
-
-- **`IntegrationTestHostMode`**: `"isolated"` (CLI default) vs `"embedded"` (live UI host).
-- **`hostExecutionEnvironment`** on orchestrator context — inject host `domainController`; skip
-  `wireEmulatedStack`.
-- **`ensureMiroirPlatform`** + **`platformEnsureMode`** — idempotent `deployMiroir` (mirrors Gap B
-  `ensureLibraryPlayfield`).
-- **`skipBootstrapPhases`** — explicit phase filter for UI catalog / advanced embedding.
-- Session contract split between adapter setup and platform deployment (see plan §1).
-
-#197 Phase B **B0** still recommends **isolated Vitest subprocess** first; embedded mode is the
-advanced path Gap A enables without duplicating bootstrap code.
-
-<details>
-<summary>Original Gap A problem statement (collapsed)</summary>
 
 ### Problem (before Gap A)
 
@@ -124,8 +146,8 @@ Every integration session declares its **playfield** via `IntegrationTestSession
 
 **Orchestrator:** `describeSession(kind)` surfaces playfield for UI catalog (#197).
 `IntegrationTestOrchestratorContext.playfieldMode` (`LibraryPlayfieldEnsureMode`) forwards to
-bootstrap as `libraryPlayfieldEnsureMode` — Gap A will use `requireExisting` when the host already
-deployed the library.
+bootstrap as `libraryPlayfieldEnsureMode`. Embedded UI runs use `requireExisting` for both
+`platformEnsureMode` and `playfieldMode` when the host already deployed platform + library.
 
 **Seed constants:** `packages/miroir-standalone-app/tests/helpers/libraryPlayfieldSeeds.ts`.
 
@@ -437,17 +459,17 @@ Five different public setup entry points existed across the test infrastructure:
 
 | Gap | What is missing | Affected test families | Blocking for UI execution? |
 |-----|----------------|----------------------|---------------------------|
-| **A** — Miroir + Admin init | `hostMode`, `ensureMiroirPlatform`, host `domainController` injection | All `miroir-standalone-app` integ, CLI/MCP | **Yes** — [gap-A-refactoring-plan.md](./gap-A-refactoring-plan.md) |
+| **A** — Miroir + Admin init | ~~`hostMode`, `ensureMiroirPlatform`, host injection~~ | All `miroir-standalone-app` integ | **Done** ✅ — #197 Phase B launcher next |
 | **B** — Library playfield contract | ~~`ensureLibraryPlayfield` / `resetLibraryPlayfield`~~ | Runner, DomainController, 4_storage | **Done** ✅ — enables Gap A `playfieldMode` |
 | **C-setup** — Common integ bootstrap | ~~Unified session adapters~~ | Transformer + `4_storage` | **Done** ✅ — reduces setup chaos; UI still needs isolation (A/B) |
 | **C-assertions** — PSC vs domainController in test bodies | `4_storage` keeps PSC (intentional); UI launcher for PSC Vitest suites not built | `4_storage` only | **Partial** — blocks *in-browser* PSC access; **not** a blocker if UI spawns isolated Vitest (defer to follow-up) |
 | **D** — Env config fragmentation | Unified profile system (`MIROIR_TEST_*` vs `VITE_MIROIR_*`) | Transformer integ, all CLI-driven tests | Medium — no longer blocked on C-assertions |
 | **E** — Setup helper fragmentation | ~~Consolidate `setupMiroirTest*`; orchestrator for UI~~ | DomainController CRUD, legacy runners | **Done** ✅ — enables Gap B / UI Phase B |
 
-Gaps **A** remain the main blocker for running integration tests **inside** the live
-Miroir UI without disrupting the session ([gap-A-refactoring-plan.md](./gap-A-refactoring-plan.md)).
-**Gap B** (playfield contract) is done — the UI launcher can read `describeSession().playfield` and
-pass `playfieldMode: "requireExisting"` when embedding.
+Gaps **A** and **B** (bootstrap + playfield contracts) are done. The remaining work for running
+integration tests from the UI is **#197 Phase B** (launcher, session isolation, UI wiring) — see
+[plan.md](./plan.md) B0–B3. Prefer **isolated Vitest subprocess** first; use **embedded** host mode
+only when deliberately attaching to a live session.
 **Gap C-setup** is largely solved: one common bootstrap
 pattern (`RunnerTestSessionInterface` + `AppStackIntegrationTestSession` / `IntegrationTestSession`)
 is available across transformer and storage families, which makes CLI testing much easier to

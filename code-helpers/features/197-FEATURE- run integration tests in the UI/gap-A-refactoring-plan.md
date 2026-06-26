@@ -6,7 +6,7 @@
 **Scope:** Pure refactoring of **bootstrap wiring** — when to call `setupMiroirTest`, when to run
 `deployMiroir`, and when to accept an injected host `domainController`. **No `it()` body changes.**
 
-**Status:** A5 done. Next: Slice A6 (optional store startup dedup) or A8 (docs).
+**Status:** Gap A **complete** (A0–A5, A8). A6 skipped (store startup dedup). A7 skipped (CLI/MCP). A9 deferred (#197 Phase B).
 
 ---
 
@@ -363,7 +363,7 @@ npm run testByFile -w miroir-standalone-app -- DomainControllerIntegrationTestSe
 
 ---
 
-### Slice A6 — Optional: module-level startup deduplication
+### Slice A6 — Optional: module-level startup deduplication — **SKIPPED**
 
 **Scope:** Many integ files duplicate:
 
@@ -380,16 +380,16 @@ miroir*StoreSectionStartup(…);
 
 ---
 
-### Slice A7 — CLI / MCP alignment (optional)
+### Slice A7 — CLI / MCP alignment (optional) — **SKIPPED**
 
 If `setupMiroirPlatform` duplicates `deployMiroir` logic inline:
 
 - Route through `ensureMiroirPlatform` + shared types.
-- **Skip** if high conflict (separate packages, duplicate `setupMiroirPlatform` copies).
+- **Skipped:** high conflict — separate packages, duplicate `setupMiroirPlatform` copies.
 
 ---
 
-### Slice A8 — Docs + gap analysis
+### Slice A8 — Docs + gap analysis — ✅ **DONE**
 
 - Update `docs/reference/testing.md` — host modes table, orchestrator context fields.
 - Update `integ-test-setup-gaps.md` Gap A → done.
@@ -400,7 +400,7 @@ If `setupMiroirPlatform` duplicates `deployMiroir` logic inline:
 
 ---
 
-### Slice A9 — #197 Phase B launcher hook (thin, optional in Gap A)
+### Slice A9 — #197 Phase B launcher hook (thin, optional in Gap A) — **DEFERRED**
 
 **Not full UI** — only the adapter port:
 
@@ -457,12 +457,12 @@ Wraps `createStandaloneAppIntegrationOrchestrator().createSession(kind, {
 - [x] `ensureMiroirPlatform` unit-tested without standalone-app imports
 - [x] `runAppStackIntegrationBootstrap` supports embedded injection + phase skip + `ensureMiroirPlatform`
 - [x] Orchestrator context documents and forwards host fields
-- [ ] `describeSession` exposes `embeddedCapable` for UI catalog
+- [x] `describeSession` exposes `embeddedCapable` for UI catalog
 - [ ] CLI default (`isolated`) — full regression matrix §8 green
 - [x] Embedded characterization unit proves no `setupMiroirTest` / deploy on host path
-- [ ] `RunnerTestSessionInterface` method signatures unchanged
-- [ ] No `it()` body edits
-- [ ] Gap A docs + `integ-test-setup-gaps.md` updated
+- [x] `RunnerTestSessionInterface` method signatures unchanged
+- [x] No `it()` body edits
+- [x] Gap A docs + `integ-test-setup-gaps.md` updated
 
 ---
 

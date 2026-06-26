@@ -190,15 +190,22 @@ export async function resetLibraryPlayfield(
 only when test files currently duplicate the same 3–5 lines. Otherwise keep hooks in test files but
 call `resetLibraryPlayfield` (one-liner replacement — still no `it()` changes).
 
-### 4.4 Gap A extension point (document only — not implemented in Gap B)
+### 4.4 Gap A extension point (implemented in Gap A)
+
+`IntegrationTestOrchestratorContext` now includes host-mode fields alongside Gap B `playfieldMode`:
 
 ```typescript
 export type IntegrationTestOrchestratorContext = {
-  // ... Gap E fields
   playfieldMode?: LibraryPlayfieldEnsureMode;
+  hostMode?: IntegrationTestHostMode;
+  hostExecutionEnvironment?: Partial<MiroirTestExecutionEnvironment>;
+  skipBootstrapPhases?: readonly IntegrationTestBootstrapPhase[];
+  platformEnsureMode?: MiroirPlatformEnsureMode;
   hostApplicationDeploymentMap?: ApplicationDeploymentMap;
 };
 ```
+
+See [gap-A-refactoring-plan.md](./gap-A-refactoring-plan.md).
 
 ---
 
