@@ -8,12 +8,10 @@ import {
   Action2ReturnType,
   AdminApplicationDeploymentConfiguration,
   DeploymentConfiguration,
-  DomainAction,
   DomainControllerInterface,
   Entity,
   EntityDefinition,
   EntityInstance,
-  InstanceAction,
   LocalCacheInterface,
   LoggerInterface,
   MiroirConfigClient,
@@ -40,7 +38,6 @@ import {
 
 import {
   selfApplicationDeploymentLibrary,
-  selfApplicationLibrary,
 } from "miroir-test-app_deployment-library";
 
 import {
@@ -214,130 +211,22 @@ export const DisplayLoadingInfo:FC<{reportUuid?:string}> = (props:{reportUuid?:s
 
 
 // ################################################################################################
-export async function addEntitiesAndInstancesForEmulatedServer(
+async function seedEntitiesAndInstancesOnEmulatedServer(
   localAppPersistenceStoreController: PersistenceStoreControllerInterface,
-  entities: { entity: Entity, entityDefinition: EntityDefinition, instances: EntityInstance[] }[],
+  entities: { entity: Entity; entityDefinition: EntityDefinition; instances: EntityInstance[] }[],
   reportBookList: EntityInstance,
 ) {
   for (const entity of entities) {
-    await localAppPersistenceStoreController.createEntity(entity.entity as Entity, entity.entityDefinition as EntityDefinition);
+    await localAppPersistenceStoreController.createEntity(
+      entity.entity as Entity,
+      entity.entityDefinition as EntityDefinition,
+    );
   }
-  await localAppPersistenceStoreController?.upsertInstance('model', reportBookList as EntityInstance);
+  await localAppPersistenceStoreController.upsertInstance("model", reportBookList as EntityInstance);
   for (const entityInstances of entities) {
     for (const instance of entityInstances.instances) {
-      await localAppPersistenceStoreController?.upsertInstance('data', instance as EntityInstance);
+      await localAppPersistenceStoreController.upsertInstance("data", instance as EntityInstance);
     }
-  }
-}
-
-// ################################################################################################
-export async function addEntitiesAndInstancesForRealServer(
-  domainController: DomainControllerInterface,
-  localCache: LocalCacheInterface,
-  deployment_Library_DO_NO_USE: EntityInstance,
-  applicationDeploymentMap: ApplicationDeploymentMap,
-  entities: { entity: Entity, entityDefinition: EntityDefinition, instances: EntityInstance[] }[],
-  act?: unknown,
-) {
-  const createAction: DomainAction = {
-    actionType: "createEntity",
-    endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-    payload: {
-      application: selfApplicationDeploymentLibrary.selfApplication,
-      // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
-      entities: entities
-    }
-  };
-
-  if (act) {
-    await (act as any)(async () => {
-      await domainController.handleAction(
-        createAction,
-        applicationDeploymentMap,
-        localCache.currentModelEnvironment(
-          selfApplicationLibrary.uuid,
-          applicationDeploymentMap,
-          // deployment_Library_DO_NO_USE.uuid
-        )
-      );
-      await domainController.handleAction(
-        {
-          actionType: "commit",
-          endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-          payload: {
-            application: selfApplicationDeploymentLibrary.selfApplication,
-            // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
-          },
-        },
-        applicationDeploymentMap,
-        localCache.currentModelEnvironment(
-          selfApplicationLibrary.uuid,
-          applicationDeploymentMap,
-          // deployment_Library_DO_NO_USE.uuid
-        )
-      );
-    });
-  } else {
-    await domainController.handleAction(
-      createAction,
-      applicationDeploymentMap,
-      localCache.currentModelEnvironment(
-        selfApplicationLibrary.uuid,
-        applicationDeploymentMap,
-        // deployment_Library_DO_NO_USE.uuid
-      )
-    );
-    await domainController.handleAction(
-      {
-        actionType: "commit",
-        endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-        payload: {
-          application: selfApplicationDeploymentLibrary.selfApplication,
-          // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
-        },
-      },
-      applicationDeploymentMap,
-      localCache.currentModelEnvironment(
-        selfApplicationLibrary.uuid,
-        applicationDeploymentMap,
-        // deployment_Library_DO_NO_USE.uuid
-      )
-    );
-  }
-
-  const createInstancesAction: InstanceAction = {
-    // actionType: "instanceAction",
-    actionType: "createInstance",
-    endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-    payload: {
-      application: selfApplicationDeploymentLibrary.selfApplication,
-      applicationSection: "data",
-      objects: entities.flatMap(e => e.instances),
-    },
-  };
-
-  if (act) {
-    await (act as any)(async () => {
-      await domainController.handleAction(
-        createInstancesAction,
-        applicationDeploymentMap,
-        localCache.currentModelEnvironment(
-          selfApplicationLibrary.uuid,
-          applicationDeploymentMap,
-          // deployment_Library_DO_NO_USE.uuid
-        )
-      );
-    });
-  } else {
-    await domainController.handleAction(
-      createInstancesAction,
-      applicationDeploymentMap,
-      localCache.currentModelEnvironment(
-        selfApplicationLibrary.uuid,
-        applicationDeploymentMap,
-        // deployment_Library_DO_NO_USE.uuid
-      )
-    );
   }
 }
 
@@ -349,26 +238,20 @@ export async function addEntitiesAndInstances(
   miroirConfig: MiroirConfigClient,
   deployment_Library_DO_NO_USE: EntityInstance,
   applicationDeploymentMap: ApplicationDeploymentMap,
-  entities: { entity: Entity, entityDefinition: EntityDefinition, instances: EntityInstance[] }[],
+  entities: { entity: Entity; entityDefinition: EntityDefinition; instances: EntityInstance[] }[],
   reportBookList: EntityInstance,
   act?: unknown,
 ) {
-  if (miroirConfig.client.emulateServer) {
-    await addEntitiesAndInstancesForEmulatedServer(
-      localAppPersistenceStoreController,
-      entities,
-      reportBookList,
-    );
-  } else {
-    await addEntitiesAndInstancesForRealServer(
-      domainController,
-      localCache,
-      deployment_Library_DO_NO_USE,
-      applicationDeploymentMap,
-      entities,
-      act,
+  if (!miroirConfig.client.emulateServer) {
+    throw new Error(
+      "addEntitiesAndInstances: real-server seeding was removed; use emulateServer: true",
     );
   }
+  await seedEntitiesAndInstancesOnEmulatedServer(
+    localAppPersistenceStoreController,
+    entities,
+    reportBookList,
+  );
 }
 
 // ################################################################################################

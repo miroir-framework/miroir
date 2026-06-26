@@ -363,12 +363,13 @@ npm run testByFile -w miroir-standalone-app -- DomainController.integ.Data
 #### Storage layer (`tests/4_storage/`)
 
 Tests persistence below the domain layer — `PersistenceStoreController` directly or extractor runners.
+All three families use **`AppStackIntegrationTestSession`** in `beforeAll` (Gap C slices E / ET / P).
 
-| File | Setup helper | Focus |
-|------|-------------|-------|
-| `PersistenceStoreController.integ.test.tsx` | `setupMiroirTest` | PSC open/create/read/write, model actions |
-| `ExtractorPersistenceStoreRunner.integ.test.tsx` | `setupMiroirTest` | `ExtractorPersistenceStoreRunner` end-to-end |
-| `ExtractorTemplatePersistenceStoreRunner.integ.test.tsx` | `setupMiroirTest` | Extractor templates against live store |
+| File | Setup | Focus |
+|------|-------|-------|
+| `PersistenceStoreController.integ.test.tsx` | `AppStackIntegrationTestSession` | PSC open/create/read/write, model actions |
+| `ExtractorPersistenceStoreRunner.integ.test.tsx` | `AppStackIntegrationTestSession` | `ExtractorPersistenceStoreRunner` end-to-end |
+| `ExtractorTemplatePersistenceStoreRunner.integ.test.tsx` | `AppStackIntegrationTestSession` | Extractor templates against live store |
 
 ```bash
 VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-sql.json \

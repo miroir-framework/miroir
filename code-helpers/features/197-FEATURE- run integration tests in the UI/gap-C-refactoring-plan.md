@@ -8,7 +8,7 @@ test bodies keep using `localAppPersistenceStoreController` / `localMiroirPersis
 [deferred](#appendix-a--deferred-psc-assertion-migration). Runner tests (`3_controllers`, `4_view`)
 and CLI/MCP tests are already on `domainController` and are **not touched** here.
 
-**Status:** **Slice T — done.** **Slice E — done.** **Slice ET — done.** **Slice P — done** (`AppStackIntegrationTestSession`, PSC CRUD setup). Slice F — pending.
+**Status:** **Slices T / E / ET / P / F — done.** Gap C setup unification complete for all `4_storage` integ tests.
 
 ---
 
@@ -845,26 +845,39 @@ from test files only after all assertion calls are migrated.
 
 ---
 
-### Slice F — Final cleanup
+### Slice F — Final cleanup — ✅ done
 
-**F1 — Remove `addEntitiesAndInstancesForEmulatedServer` from `tests-utils.tsx`**
+**F1 — Remove `addEntitiesAndInstancesForEmulatedServer`** — ✅ **PASS**
 
-After ExtractorTemplate `beforeEach` no longer calls `addEntitiesAndInstances` (future slice, not
-ET), the emulated-server branch may be dead. Remove `addEntitiesAndInstancesForEmulatedServer` if
-unused. The real-server branch (`addEntitiesAndInstancesForRealServer`) may still be used
-elsewhere; check before removing.
+- Removed exported `addEntitiesAndInstancesForEmulatedServer`; logic inlined as private
+  `seedEntitiesAndInstancesOnEmulatedServer` inside `tests-utils.tsx`.
+- `addEntitiesAndInstances` (still used by ExtractorTemplate `beforeEach`) unchanged at call site.
 
-**F2 — Remove or narrow `addEntitiesAndInstances`**
+**F2 — Narrow `addEntitiesAndInstances`** — ✅ **PASS**
 
-If both branches are gone, delete the function. If only the real-server branch remains, rename
-to clarify: `addEntitiesAndInstancesForRealServer` becomes the canonical form.
+- Removed dead `addEntitiesAndInstancesForRealServer` (no callers outside the old dispatcher).
+- `addEntitiesAndInstances` now requires `emulateServer: true`; throws otherwise.
+- Signature unchanged for ExtractorTemplate compatibility.
 
-**F3 — Resolve TODO comments**
+**F3 — Resolve Gap-C TODO comments** — ✅ **PASS** (already resolved in Slice T)
 
-- `MiroirTransformerTestTools.ts` line "TODO: BAD! stores should only be accessed through the
-  domainController" — delete (resolved).
-- `MiroirTestTools.ts` line "TODO: remove, use the domainController from the executionEnvironment
-  instead" — delete (resolved).
+- `integrationStore` / `TODO: BAD! stores…` / `TODO: remove, use domainController…` — absent from
+  `MiroirTestTools.ts` / `MiroirTransformerTestTools.ts`.
+
+**F4 — Docs and dead code (E4 / ET3 / P3 follow-up)** — ✅ **PASS**
+
+- `docs/reference/testing.md` — `4_storage` table updated to `AppStackIntegrationTestSession`.
+- Removed unused `IntegrationTestSession` import from `ExtractorPersistenceStoreRunner.integ.test.tsx`.
+- Removed commented `forAppStackConfig` stub from `IntegrationTestSession.ts`.
+- Pruned unused imports in `tests-utils.tsx` (`DomainAction`, `InstanceAction`, `selfApplicationLibrary`).
+
+**F5 — Regression (all `4_storage` families)** — ✅ **PASS**
+
+| File | Result |
+|------|--------|
+| `PersistenceStoreController.integ` | 10/10 |
+| `ExtractorPersistenceStoreRunner.integ` | 11/11 |
+| `ExtractorTemplatePersistenceStoreRunner.integ` | 7/7 |
 
 ---
 
@@ -904,14 +917,14 @@ to clarify: `addEntitiesAndInstancesForRealServer` becomes the canonical form.
 - [x] `afterAll` unchanged (`deleteAndCloseApplicationDeployments`)
 - [x] `npm run testByFile -w miroir-standalone-app -- PersistenceStoreController.integ` — 10/10, no regressions
 
-### Slice F (final cleanup) — not started
+### Slice F (final cleanup) — done
 
-See [§4 Slice F](#slice-f--final-cleanup) for steps. Checklist:
+- [x] `addEntitiesAndInstancesForEmulatedServer` removed (inlined); `addEntitiesAndInstancesForRealServer` removed (dead)
+- [x] Gap-C TODO comments already absent from `MiroirTestTools` / `MiroirTransformerTestTools`
+- [x] `docs/reference/testing.md` documents `AppStackIntegrationTestSession` for `4_storage`
+- [x] All `4_storage` integ suites green after cleanup (10 + 11 + 7 tests)
 
-- [ ] `addEntitiesAndInstancesForEmulatedServer` removed from `tests-utils.tsx` when unused
-- [ ] Gap-C TODO comments resolved in `MiroirTestTools.ts` / `MiroirTransformerTestTools.ts`
+**General (Gap C complete):**
 
-**General (all remaining slices):**
-
-- [ ] All tests that passed before pass after each slice
-- [ ] `npm run testMiroir -w miroir-standalone-app -- --suites runner_library --mode integ` stays green throughout (runner tests untouched)
+- [x] All `4_storage` tests that passed before pass after slices E / ET / P / F
+- [ ] `npm run testMiroir -w miroir-standalone-app -- --suites runner_library --mode integ` stays green throughout (runner tests untouched — not re-run in F)

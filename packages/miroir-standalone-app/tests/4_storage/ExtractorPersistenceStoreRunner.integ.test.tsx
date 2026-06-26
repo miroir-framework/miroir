@@ -87,17 +87,13 @@ import type {
 } from "miroir-core";
 import { loglevelnext } from "../../src/loglevelnextImporter.js";
 import {
-  // deleteAndCloseApplicationDeployments,
-  // deploymentConfigurations,
-  // resetApplicationDeployments,
   selfApplicationDeploymentConfigurations,
-  // setupMiroirTest,
 } from "../../src/miroir-fwk/4-tests/tests-utils.js";
 import { chainVitestSteps } from "../../src/miroir-fwk/4-tests/vitest-utils.js";
 import { miroirAppStartup } from "../../src/startup.js";
 import { cleanLevel, packageName } from "../3_controllers/constants.js";
 import { loadTestConfigFiles } from "../utils/fileTools.js";
-import { AppStackIntegrationTestSession, IntegrationTestSession } from "../helpers/IntegrationTestSession.js";
+import { AppStackIntegrationTestSession } from "../helpers/IntegrationTestSession.js";
 
 let domainController: DomainControllerInterface;
 // let localCache: LocalCacheInterface;

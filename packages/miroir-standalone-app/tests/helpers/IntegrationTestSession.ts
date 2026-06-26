@@ -694,13 +694,6 @@ export class IntegrationTestSession implements RunnerTestSessionInterface {
 
   constructor(private readonly options: TestSessionForIntegOptions) {}
 
-  // static forAppStackConfig(
-  //   miroirConfig: MiroirConfigClient,
-  //   appStackOptions: AppStackSessionOptions,
-  // ): AppStackIntegrationTestSession {
-  //   return new AppStackIntegrationTestSession(miroirConfig, appStackOptions);
-  // }
-
   private getApplicationName(): string {
     return this.options.applicationName ?? INTEG_TEST_APPLICATION_NAME;
   }
