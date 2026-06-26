@@ -22,11 +22,14 @@ import {
   miroirFundamentalJzodSchema,
   MiroirLoggerFactory,
   PersistenceStoreControllerInterface,
-  resetAndInitApplicationDeployment,
-  resetAndinitializeDeploymentCompositeAction,
+  PersistenceStoreControllerManagerInterface,
+  resetLibraryPlayfield,
   selfApplicationMiroir,
-  // selfApplicationLibrary,
   StoreUnitConfiguration,
+  defaultMiroirMetaModel,
+  ignorePostgresExtraAttributesOnList,
+  LoggerOptions,
+  miroirCoreStartup,
 } from "miroir-core";
 import { deployment_Admin, deployment_Miroir } from "miroir-test-app_deployment-admin";
 import { deployment_Library_DO_NO_USE } from "miroir-test-app_deployment-library";
@@ -56,20 +59,7 @@ import {
   penguin as publisher2,
   springer as publisher3,
   selfApplicationLibrary,
-  selfApplicationModelBranchLibraryMasterBranch,
-  selfApplicationVersionLibraryInitialVersion,
 } from "miroir-test-app_deployment-library";
-
-import {
-  AdminApplicationDeploymentConfiguration,
-  defaultMiroirMetaModel,
-  ignorePostgresExtraAttributesOnList,
-  LocalCacheInterface,
-  LoggerOptions,
-  MiroirContext,
-  miroirCoreStartup,
-  PersistenceStoreControllerManagerInterface,
-} from "miroir-core";
 import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
 import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
 import { miroirMongoDbStoreSectionStartup } from "miroir-store-mongodb";
@@ -83,7 +73,6 @@ import type {
   Entity,
   Menu,
   MlSchema,
-  SelfApplication,
 } from "miroir-core";
 import { loglevelnext } from "../../src/loglevelnextImporter.js";
 import {
@@ -94,6 +83,7 @@ import { miroirAppStartup } from "../../src/startup.js";
 import { cleanLevel, packageName } from "../3_controllers/constants.js";
 import { loadTestConfigFiles } from "../utils/fileTools.js";
 import { AppStackIntegrationTestSession } from "../helpers/IntegrationTestSession.js";
+import { libraryPlayfieldSeedInitParams } from "../helpers/libraryPlayfieldSeeds.js";
 
 let domainController: DomainControllerInterface;
 // let localCache: LocalCacheInterface;
@@ -260,41 +250,16 @@ beforeEach(async () => {
     "################################################### beforeEach start",
     beforEachCount,
   );
-  await resetAndInitApplicationDeployment(
+  await resetLibraryPlayfield({
     domainController,
     applicationDeploymentMap,
-    selfApplicationDeploymentConfigurations,
-  );
-  console.log(
-    "################################################### beforeEach resetAndinitializeDeploymentCompositeAction",
-    beforEachCount,
-  );
-  const initResult: Action2ReturnType = await domainController.handleCompositeAction(
-    resetAndinitializeDeploymentCompositeAction(
-      selfApplicationLibrary.uuid,
-      deployment_Library_DO_NO_USE.uuid,
-      {
-        dataStoreType: "app", // TODO: comparison between deployment and selfAdminConfigurationDeployment
-        metaModel: defaultMiroirMetaModel,
-        selfApplication: selfApplicationLibrary as SelfApplication,
-        applicationModelBranch: selfApplicationModelBranchLibraryMasterBranch,
-        applicationVersion: selfApplicationVersionLibraryInitialVersion,
-      },
-      libraryEntitiesAndInstances,
-      defaultLibraryModelEnvironment.currentModel as any,
-    ),
-    applicationDeploymentMap,
-    defaultMiroirModelEnvironment,
-    {},
-  );
-  if (initResult.status !== "ok") {
-    throw new Error(
-      "beforeEach failed initialization! " +
-        beforEachCount +
-        " " +
-        JSON.stringify(initResult, null, 2),
-    );
-  }
+    libraryDeploymentUuid: deployment_Library_DO_NO_USE.uuid,
+    librarySelfApplicationUuid: selfApplicationLibrary.uuid,
+    deploymentsToReset: selfApplicationDeploymentConfigurations,
+    libraryEntitiesAndInstances,
+    librarySeedInitParams: libraryPlayfieldSeedInitParams,
+    librarySeedMetaModel: defaultLibraryModelEnvironment.currentModel as any,
+  });
   document.body.innerHTML = "";
   console.log(
     "################################################### beforeEach done",

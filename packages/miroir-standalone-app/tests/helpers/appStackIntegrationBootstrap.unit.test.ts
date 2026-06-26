@@ -16,6 +16,7 @@ import {
 const setupMiroirTestMock = vi.fn();
 const createMiroirDeploymentGetPersistenceStoreControllerMock = vi.fn();
 const createDeploymentCompositeActionMock = vi.fn();
+const ensureLibraryPlayfieldMock = vi.fn();
 
 vi.mock("../../src/miroir-fwk/4-tests/setupMiroirTest.js", () => ({
   setupMiroirTest: (...args: unknown[]) => setupMiroirTestMock(...args),
@@ -32,6 +33,7 @@ vi.mock("miroir-core", async (importOriginal) => {
     ...actual,
     createDeploymentCompositeAction: (...args: unknown[]) =>
       createDeploymentCompositeActionMock(...args),
+    ensureLibraryPlayfield: (...args: unknown[]) => ensureLibraryPlayfieldMock(...args),
     resetAndInitApplicationDeployment: vi.fn().mockResolvedValue({ status: "ok" }),
   };
 });
@@ -110,6 +112,7 @@ describe("runAppStackIntegrationBootstrap (Gap E B1)", () => {
         deploymentUuid,
       }),
     );
+    ensureLibraryPlayfieldMock.mockResolvedValue({ created: true });
   });
 
   it("wireEmulatedStack calls setupMiroirTest once", async () => {
@@ -118,15 +121,32 @@ describe("runAppStackIntegrationBootstrap (Gap E B1)", () => {
     expect(setupMiroirTestMock).toHaveBeenCalledTimes(1);
   });
 
-  it("deployLibrary calls createDeploymentCompositeAction for library deployment", async () => {
+  it("deployLibrary calls ensureLibraryPlayfield for library deployment", async () => {
+    const manager = createMockManager();
+    setupMiroirTestMock.mockResolvedValue({
+      domainControllerForClient: createMockDomainController(),
+      domainControllerForServer: createMockDomainController(),
+      persistenceStoreControllerManagerForServer: manager,
+    });
+
     await runAppStackIntegrationBootstrap(explicitBootstrapOptions());
 
-    expect(createDeploymentCompositeActionMock).toHaveBeenCalledWith(
+    expect(ensureLibraryPlayfieldMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        libraryDeploymentUuid: deployment_Library_DO_NO_USE.uuid,
+        librarySelfApplicationUuid: selfApplicationLibrary.uuid,
+        adminDeployment,
+        libraryDeploymentStorageConfiguration,
+        mode: "createIfAbsent",
+        persistenceStoreControllerManager: manager,
+      }),
+    );
+    expect(createDeploymentCompositeActionMock).not.toHaveBeenCalledWith(
       "library",
-      deployment_Library_DO_NO_USE.uuid,
-      selfApplicationLibrary.uuid,
-      adminDeployment,
-      libraryDeploymentStorageConfiguration,
+      expect.anything(),
+      expect.anything(),
+      expect.anything(),
+      expect.anything(),
     );
   });
 
@@ -138,7 +158,7 @@ describe("runAppStackIntegrationBootstrap (Gap E B1)", () => {
     );
 
     expect(createMiroirDeploymentGetPersistenceStoreControllerMock).not.toHaveBeenCalled();
-    expect(createDeploymentCompositeActionMock).toHaveBeenCalledTimes(1);
+    expect(ensureLibraryPlayfieldMock).toHaveBeenCalledTimes(1);
   });
 
   it("resetMiroirModel phase calls resetAndInitApplicationDeployment", async () => {

@@ -26,7 +26,7 @@ import {
   PersistenceStoreControllerManagerInterface,
   removeUndefinedProperties,
   Report,
-  resetAndInitApplicationDeployment,
+  resetLibraryPlayfield,
   StoreUnitConfiguration,
   unNullify,
   type ApplicationDeploymentMap,
@@ -189,56 +189,60 @@ beforeAll(async () => {
 // ################################################################################################
 beforeEach(
   async  () => {
-    await resetAndInitApplicationDeployment(
+    await resetLibraryPlayfield({
       domainController,
       applicationDeploymentMap,
-      selfApplicationDeploymentConfigurations
-    );
-    document.body.innerHTML = '';
-    await addEntitiesAndInstances(
-      localAppPersistenceStoreController,
-      domainController,
-      localCache,
-      miroirConfig,
-      deployment_Library_DO_NO_USE,
-      applicationDeploymentMap,
-      [
-        // authors
-        {
-          entity: entityAuthor as Entity,
-          entityDefinition: entityDefinitionAuthor as EntityDefinition,
-          instances: [
-            author1,
-            author2,
-            author3 as EntityInstance,
+      libraryDeploymentUuid: deployment_Library_DO_NO_USE.uuid,
+      librarySelfApplicationUuid: selfApplicationLibrary.uuid,
+      deploymentsToReset: selfApplicationDeploymentConfigurations,
+      postResetHook: async () => {
+        document.body.innerHTML = '';
+        await addEntitiesAndInstances(
+          localAppPersistenceStoreController,
+          domainController,
+          localCache,
+          miroirConfig,
+          deployment_Library_DO_NO_USE,
+          applicationDeploymentMap,
+          [
+            // authors
+            {
+              entity: entityAuthor as Entity,
+              entityDefinition: entityDefinitionAuthor as EntityDefinition,
+              instances: [
+                author1,
+                author2,
+                author3 as EntityInstance,
+              ],
+            },
+            // books
+            {
+              entity: entityBook as Entity,
+              entityDefinition: entityDefinitionBook as EntityDefinition,
+              instances: [
+                book1 as EntityInstance,
+                book2 as EntityInstance,
+                book3 as EntityInstance,
+                book4 as EntityInstance,
+                book5 as EntityInstance,
+                book6 as EntityInstance,
+              ]
+            },
+            // publishers
+            {
+              entity: entityPublisher as Entity,
+              entityDefinition: entityDefinitionPublisher as EntityDefinition,
+              instances: [
+                publisher1,
+                publisher2,
+                publisher3 as EntityInstance,
+              ]
+            }
           ],
-        },
-        // books
-        {
-          entity: entityBook as Entity,
-          entityDefinition: entityDefinitionBook as EntityDefinition,
-          instances: [
-            book1 as EntityInstance,
-            book2 as EntityInstance,
-            book3 as EntityInstance,
-            book4 as EntityInstance,
-            book5 as EntityInstance,
-            book6 as EntityInstance,
-          ]
-        },
-        // publishers
-        {
-          entity: entityPublisher as Entity,
-          entityDefinition: entityDefinitionPublisher as EntityDefinition,
-          instances: [
-            publisher1,
-            publisher2,
-            publisher3 as EntityInstance,
-          ]
-        }
-      ],
-      reportBookList as Report,
-    )
+          reportBookList as Report,
+        );
+      },
+    });
   }
 )
 

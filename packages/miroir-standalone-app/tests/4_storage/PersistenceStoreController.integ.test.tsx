@@ -29,7 +29,7 @@ import {
   entityEntityDefinition,
   ignorePostgresExtraAttributesOnList,
   miroirCoreStartup,
-  resetAndInitApplicationDeployment,
+  resetLibraryPlayfield,
   type ApplicationDeploymentMap,
   type Deployment,
   type Entity,
@@ -164,11 +164,13 @@ beforeAll(async () => {
 
 // ################################################################################################
 beforeEach(async () => {
-  await resetAndInitApplicationDeployment(
+  await resetLibraryPlayfield({
     domainController,
     applicationDeploymentMap,
-    selfApplicationDeploymentConfigurations,
-  );
+    libraryDeploymentUuid: deployment_Library_DO_NO_USE.uuid,
+    librarySelfApplicationUuid: selfApplicationLibrary.uuid,
+    deploymentsToReset: selfApplicationDeploymentConfigurations,
+  });
 });
 
 // // // ################################################################################################

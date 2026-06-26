@@ -5,6 +5,7 @@ import type {
   Deployment,
   DomainControllerInterface,
   IntegrationTestBootstrapPhase,
+  LibraryPlayfieldEnsureMode,
   MiroirActivityTracker,
   MiroirConfigClient,
   MiroirEventService,
@@ -17,6 +18,7 @@ import {
   defaultMiroirModelEnvironment,
   defaultMetaModelEnvironment,
   defaultSelfApplicationDeploymentMap,
+  ensureLibraryPlayfield,
   resetAndInitApplicationDeployment,
   type StoreOrBundleAction,
 } from "miroir-core";
@@ -51,6 +53,7 @@ export type AppStackBootstrapOptions = {
   miroirDeploymentUuid?: string;
   /** Required when `deployMiroir` runs with `deployMiroirStrategy: "compositeAction"`. */
   miroirSelfApplicationUuid?: string;
+  libraryPlayfieldEnsureMode?: LibraryPlayfieldEnsureMode;
 };
 
 async function openAdminAndMiroirStores(
@@ -107,6 +110,7 @@ export async function runAppStackIntegrationBootstrap(
     openAdminAndMiroirStoresOnServer,
     miroirDeploymentUuid,
     miroirSelfApplicationUuid,
+    libraryPlayfieldEnsureMode = "createIfAbsent",
   } = options;
 
   if (!phases.includes("wireEmulatedStack")) {
@@ -224,25 +228,16 @@ export async function runAppStackIntegrationBootstrap(
       );
     }
 
-    const createLibraryDeploymentAction = createDeploymentCompositeAction(
-      "library",
-      deployment_Library_DO_NO_USE.uuid,
-      selfApplicationLibrary.uuid,
+    await ensureLibraryPlayfield({
+      domainController,
+      applicationDeploymentMap,
       adminDeployment,
       libraryDeploymentStorageConfiguration,
-    );
-    const createLibraryResult = await domainController.handleCompositeAction(
-      createLibraryDeploymentAction,
-      applicationDeploymentMap,
-      defaultMiroirModelEnvironment,
-      {},
-    );
-    if (createLibraryResult.status !== "ok") {
-      throw new Error(
-        "runAppStackIntegrationBootstrap: library deployment failed: " +
-          JSON.stringify(createLibraryResult),
-      );
-    }
+      libraryDeploymentUuid: deployment_Library_DO_NO_USE.uuid,
+      librarySelfApplicationUuid: selfApplicationLibrary.uuid,
+      mode: libraryPlayfieldEnsureMode,
+      persistenceStoreControllerManager,
+    });
 
     const libraryPersistenceStoreController =
       persistenceStoreControllerManager.getPersistenceStoreController(

@@ -45,6 +45,9 @@ export type ResetLibraryPlayfieldParams = {
   librarySeedInitParams?: InitApplicationParameters;
   librarySeedMetaModel?: MetaModel;
   resetMiroirPlatform?: boolean;
+  /** When set, used for resetAndInitApplicationDeployment instead of library/miroir defaults */
+  deploymentsToReset?: Deployment[];
+  postResetHook?: () => Promise<void>;
 };
 
 function libraryDeploymentExists(
@@ -123,23 +126,29 @@ export async function resetLibraryPlayfield(
     resetMiroirPlatform,
     miroirDeploymentUuid,
     miroirSelfApplicationUuid,
+    deploymentsToReset: explicitDeploymentsToReset,
+    postResetHook,
   } = params;
 
-  const deploymentsToReset: Deployment[] = [];
+  let deploymentsToReset: Deployment[] = [];
 
-  if (resetMiroirPlatform) {
-    if (!miroirDeploymentUuid || !miroirSelfApplicationUuid) {
-      throw new Error(
-        "resetLibraryPlayfield: miroirDeploymentUuid and miroirSelfApplicationUuid required when resetMiroirPlatform is true",
+  if (explicitDeploymentsToReset?.length) {
+    deploymentsToReset = explicitDeploymentsToReset;
+  } else {
+    if (resetMiroirPlatform) {
+      if (!miroirDeploymentUuid || !miroirSelfApplicationUuid) {
+        throw new Error(
+          "resetLibraryPlayfield: miroirDeploymentUuid and miroirSelfApplicationUuid required when resetMiroirPlatform is true",
+        );
+      }
+      deploymentsToReset.push(asDeployment(miroirDeploymentUuid, miroirSelfApplicationUuid));
+    }
+
+    if (libraryEntitiesAndInstances || !resetMiroirPlatform) {
+      deploymentsToReset.push(
+        asDeployment(libraryDeploymentUuid, librarySelfApplicationUuid),
       );
     }
-    deploymentsToReset.push(asDeployment(miroirDeploymentUuid, miroirSelfApplicationUuid));
-  }
-
-  if (libraryEntitiesAndInstances || !resetMiroirPlatform) {
-    deploymentsToReset.push(
-      asDeployment(libraryDeploymentUuid, librarySelfApplicationUuid),
-    );
   }
 
   if (deploymentsToReset.length > 0) {
@@ -174,5 +183,9 @@ export async function resetLibraryPlayfield(
         "resetLibraryPlayfield: library seed failed: " + JSON.stringify(initResult),
       );
     }
+  }
+
+  if (postResetHook) {
+    await postResetHook();
   }
 }

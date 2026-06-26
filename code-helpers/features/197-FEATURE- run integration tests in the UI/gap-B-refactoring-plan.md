@@ -6,7 +6,7 @@
 **Scope:** Pure refactoring. Standardise **when** the library deployment is created, reset, and
 seeded — **not** what tests assert. PSC-direct `4_storage` test bodies remain unchanged (Gap C).
 
-**Status:** L0–L2 done. Next: Slice L3 (wire `deployLibrary` in bootstrap).
+**Status:** L0–L4 done. Next: Slice L5 (`RunnerTestSession` / `beforeEachTest`).
 
 ---
 
@@ -282,7 +282,7 @@ builders. **Do not** fork reset logic.
 
 ---
 
-### Slice L3 — Wire bootstrap `deployLibrary` phase
+### Slice L3 — Wire bootstrap `deployLibrary` phase — ✅ **DONE**
 
 **L3-Green:** In `runAppStackIntegrationBootstrap`, replace raw
 `createDeploymentCompositeAction("library")` with `ensureLibraryPlayfield`.
@@ -304,7 +304,7 @@ npm run testByFile -w miroir-standalone-app -- PersistenceStoreController.integ
 
 ---
 
-### Slice L4 — `4_storage` `beforeEach` consolidation
+### Slice L4 — `4_storage` `beforeEach` consolidation — ✅ **DONE**
 
 **L4 — Refactor `beforeEach` only** in each file to call `resetLibraryPlayfield` with the same
 seed data as today:
@@ -434,8 +434,8 @@ Only if `setupMiroirPlatform` duplicates library reset inline:
 
 - [x] `IntegrationTestPlayfield` type exported from `miroir-core`
 - [x] `ensureLibraryPlayfield` + `resetLibraryPlayfield` unit-tested without standalone-app imports
-- [ ] `runAppStackIntegrationBootstrap` uses `ensureLibraryPlayfield` for library phase
-- [ ] All `4_storage` `beforeEach` hooks use shared playfield helpers (behaviour-preserving)
+- [x] `runAppStackIntegrationBootstrap` uses `ensureLibraryPlayfield` for library phase
+- [x] All `4_storage` `beforeEach` hooks use shared playfield helpers (behaviour-preserving)
 - [ ] `RunnerTestSession` / `beforeEachTest` uses `resetLibraryPlayfield`
 - [ ] Session descriptors expose `playfield` for orchestrator / future UI
 - [ ] `RunnerTestSessionInterface` method signatures unchanged
