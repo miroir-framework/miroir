@@ -6372,6 +6372,13 @@ export const miroirFundamentalJzodSchema = {
             "type": "boolean",
             "optional": true
           },
+          "testParams": {
+            "type": "record",
+            "optional": true,
+            "definition": {
+              "type": "any"
+            }
+          },
           "miroirTests": {
             "type": "array",
             "definition": {
@@ -6960,6 +6967,13 @@ export const miroirFundamentalJzodSchema = {
                   "skip": {
                     "type": "boolean",
                     "optional": true
+                  },
+                  "testParams": {
+                    "type": "record",
+                    "optional": true,
+                    "definition": {
+                      "type": "any"
+                    }
                   },
                   "miroirTests": {
                     "type": "array",

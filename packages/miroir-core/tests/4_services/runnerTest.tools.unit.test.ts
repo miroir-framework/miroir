@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import { defaultLibraryAppModel, miroirTest_runner_library } from "miroir-test-app_deployment-library";
 import {
   miroirTestForRunner,
+  miroirTestSuite,
   type MiroirTestDefinition,
   type MiroirTestForRunner,
   type MiroirTestSuite,
@@ -25,6 +26,15 @@ function runnerLibrarySuite(): MiroirTestSuite {
 function runnerLibraryLeaf(index: number): MiroirTestForRunner {
   return runnerLibrarySuite().miroirTests[index] as MiroirTestForRunner;
 }
+
+const RUNNER_LIBRARY_SUITE_STATIC_TEST_PARAM_KEYS = [
+  "user1Uuid",
+  "book1Uuid",
+  "lendStartDate",
+  "lendEndDate",
+  "lendingHistoryItemEntityUuid",
+  "lendingHistoryItemEntityName",
+] as const;
 
 const buildContext = {
   internalMiroirConfig: {
@@ -82,6 +92,27 @@ describe("runnerTest tools", () => {
     expect(RUNNER_TEST_ENVIRONMENT_REFS?.testParams.defaultLibraryAppModel).toBe(
       defaultLibraryAppModel,
     );
+  });
+
+  it("runner_library suite exposes suite-level testParams (R6-A)", () => {
+    const suite = runnerLibrarySuite();
+    expect(suite.testParams).toBeDefined();
+
+    const parsedShell = miroirTestSuite.parse({
+      miroirTestType: "miroirTestSuite",
+      miroirTestLabel: suite.miroirTestLabel,
+      testParams: suite.testParams,
+      miroirTests: [],
+    });
+    expect(parsedShell.testParams).toBeDefined();
+
+    for (const key of RUNNER_LIBRARY_SUITE_STATIC_TEST_PARAM_KEYS) {
+      expect(parsedShell.testParams![key]).toEqual(RUNNER_TEST_ENVIRONMENT_REFS.testParams[key]);
+    }
+
+    expect(parsedShell.testParams).not.toHaveProperty("testApplicationUuid");
+    expect(parsedShell.testParams).not.toHaveProperty("testApplicationDeploymentUuid");
+    expect(parsedShell.testParams).not.toHaveProperty("defaultLibraryAppModel");
   });
 
   it.each([

@@ -269,6 +269,13 @@
                 "type": "boolean",
                 "optional": true
               },
+              "testParams": {
+                "type": "record",
+                "optional": true,
+                "definition": {
+                  "type": "any"
+                }
+              },
               "miroirTests": {
                 "type": "array",
                 "definition": {

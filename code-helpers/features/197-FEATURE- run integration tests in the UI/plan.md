@@ -89,7 +89,7 @@ sequenceDiagram
 | Pilot instance | `miroirTest_runner_library` in deployment-library | lend + return `runnerTest` leaves (**inline JSON**, no `fixtureRef`) |
 | Ref registry (interim) | `miroir-test-app_deployment-library/src/runnerTestFixtures.ts` | env seed + deployment/runner ref resolvers — **R5** trims dead code; **R6** deletes file |
 
-**Still open for #197:** Phase R slices **R5–R6** (collapse resolver indirection; suite-scoped context + delete `runnerTestFixtures.ts`), then Phase B (UI launcher + reporting). UI runs **domainController-based** MiroirTest integ first; PSC-direct `4_storage` suites deferred (see [Out of scope](#out-of-scope)).
+**Still open for #197:** Phase R slice **R6** ([r6-suite-scoped-context-plan.md](./r6-suite-scoped-context-plan.md)), then Phase B (UI launcher + reporting). UI runs **domainController-based** MiroirTest integ first; PSC-direct `4_storage` suites deferred (see [Out of scope](#out-of-scope)).
 
 ### Legacy imperative runner files (not yet on MiroirTest JSON)
 
@@ -706,185 +706,31 @@ Move declarative transformer trees from `RUNNER_TEST_FIXTURE_REFS` into `miroirT
 - `runnerTest.tools.unit.test.ts`: **11 passed** (fixtureRef resolves same as inline JSON leaf)
 - `runner_library` integ: **2 passed**
 
-#### R5 — Collapse resolver indirection (keep `runnerTestFixtures.ts`)
+#### R5 — Collapse resolver indirection (keep `runnerTestFixtures.ts`) ✅ **Done**
 
 **Scope:** Remove disposable fixture/resolver layers only. **`runnerTestFixtures.ts` stays** until R6 relocates suite-scoped context.
 
-**Pre-check (2026-06-27):** `resolveRunnerTestLeaf` is a thin adapter (~30 lines): `resolveRunnerTestDefinition` → merge param bank → `testBuildPlusRuntimeCompositeActionSuiteForRunner`. Same pattern as `Runner_Miroir.integ.test.tsx` calling the suite builder directly. After R3/R4, the leaf JSON **is** the definition.
+**Removed:** `resolveRunnerTestDefinition`, `resolveRunnerTestFixture`, `runnerTestLeafToFixtureDefaults`, `findRunnerLibraryLeafByMiroirTestLabel`, `RUNNER_LIBRARY_FIXTURE_REF_ALIASES`, `listRunnerTestFixtureRefs`, `RunnerTestFixtureDefaults`, `ResolvedRunnerTestBuildContext`, all `RUNNER_TEST_*_FROM_PARAMETERS` constants.
 
-**Remove in R5 (file may shrink but is not deleted):**
+**Retained in `runnerTestFixtures.ts`:** `RUNNER_TEST_ENVIRONMENT_REFS`, `libraryTestIdentifiers`, `RUNNER_TEST_DEPLOYMENT_REFS`, `resolveRunnerRef`, `resolveRunnerTestDeploymentRef`.
 
-| Symbol | Reason |
-|--------|--------|
-| `resolveRunnerTestDefinition` | Read `MiroirTestForRunner` leaf fields directly |
-| `resolveRunnerTestFixture`, `runnerTestLeafToFixtureDefaults`, `findRunnerLibraryLeafByMiroirTestLabel` | Legacy `fixtureRef` path; unused in pilot JSON |
-| `RUNNER_LIBRARY_FIXTURE_REF_ALIASES`, `listRunnerTestFixtureRefs` | No production callers |
-| `RunnerTestFixtureDefaults` type | Intermediate shape |
-| `RUNNER_TEST_*_FROM_PARAMETERS` constants | Test-only; assert against inline JSON instead |
+**`resolveRunnerTestLeaf`:** reads leaf fields directly → merges param bank → `testBuildPlusRuntimeCompositeActionSuiteForRunner`.
 
-**Keep in `runnerTestFixtures.ts` until R6:**
+**Verify:** ✅ (2026-06-27)
 
-| Symbol | Why deferred |
-|--------|----------------|
-| `RUNNER_TEST_ENVIRONMENT_REFS` | Suite-scoped param bank — not context-independent (R6) |
-| `libraryTestIdentifiers`, `RUNNER_TEST_DEPLOYMENT_REFS`, `resolveRunnerTestDeploymentRef` | Session bootstrap + leaf `deploymentRef` — suite-scoped (R6) |
-| `RUNNER_REF_MAP`, `resolveRunnerRef` | Leaf `runnerRef` lookup — should come from suite (R6) |
-
-**Target runtime flow (R5 — still uses interim refs from `runnerTestFixtures.ts`):**
-
-```typescript
-const deployment = resolveRunnerTestDeploymentRef(leaf.deploymentRef);
-const mergedTestParams = {
-  ...RUNNER_TEST_ENVIRONMENT_REFS.testParams,
-  ...leaf.testParams,
-};
-return testBuildPlusRuntimeCompositeActionSuiteForRunner(
-  pageLabel,
-  resolveRunnerRef(leaf.runnerRef),
-  deployment.testApplicationUuid,
-  deployment.testApplicationDeploymentUuid,
-  deployment.testApplicationName,
-  mergedTestParams,
-  leaf.preTestCompositeActions ?? [],
-  leaf.testCompositeActionAssertions ?? [],
-  buildContext.internalMiroirConfig,
-  buildContext.adminDeployment,
-  buildContext.testDeploymentStorageConfiguration,
-  leaf.initialModel!,
-  leaf.preRunnerCompositeActions,
-  leaf.testCompositeActionLabel,
-  leaf.skipCreateDeployment,
-  leaf.skipDropDeployment,
-);
-```
-
-Optional: keep exported name `resolveRunnerTestLeaf` as thin alias, then remove in R6.
-
-**Test cleanup:**
-
-| Fixture alias | Usage | R5 action |
-|---------------|-------|-----------|
-| `libraryLendBookDefaults` | `runnerTest.tools.unit.test.ts` (6 tests), `miroirTestTools.unit.test.ts` (mode guard) | Replace with `miroirTest_runner_library` leaves |
-| `libraryReturnBookDefaults` | `runnerTest.tools.unit.test.ts` (1 test) | Same |
-
-Slim `runnerTest.tools.unit.test.ts`: drop transformer-shape tests that duplicate JSON; keep schema smoke + one end-to-end suite-builder test.
-
-**Red / Green / Verify:**
-
-- Resolver indirection removed; `runnerTestFixtures.ts` still present (smaller)
-- No `libraryLendBookDefaults` / `libraryReturnBookDefaults` in tests
-- `runner_library` integ **2 passed**
+- `runnerTest.tools.unit.test.ts`: **6 passed** (slimmed; no `libraryLendBookDefaults` / fixtureRef)
+- `miroirTestTools.unit.test.ts`: uses `miroirTest_runner_library` leaf for mode guard
+- `runner_library` integ: **2 passed**
 
 #### R6 — Suite-scoped context; delete `runnerTestFixtures.ts`
 
-**Problem:** Remaining `runnerTestFixtures.ts` exports are **not context-independent**. They encode assumptions about the **`runner.library`** suite instance only (`uuid`: `b7e4a901-2c3d-4f5a-b6c7-8d9e0f1a2b3c`, `name`: `runner_library`). A second runner suite would need its own param bank, deployment targets, and runner map — not a global TS module.
+**Moved to dedicated plan:** [r6-suite-scoped-context-plan.md](./r6-suite-scoped-context-plan.md)
 
-**1. `RUNNER_TEST_ENVIRONMENT_REFS.testParams` → suite-level `testParams`**
+R6 is split into five TDD slices (R6-A … R6-E): suite `testParams`, `RunnerTestRunTarget` as test-run input (UUID v4 if unpinned), session wiring, context-only `RunnerTestTools`, then delete `runnerTestFixtures.ts`. Each issue in that doc has present-state diagrams, target architecture, and Red/Green/Verify steps.
 
-Today the environment seed (`defaultLibraryAppModel`, `user1Uuid`, `book1Uuid`, dates, entity ids, …) is merged globally in `RunnerTestTools` and copied into `RunnerTestSession.runnerTestContext.testParams`.
+**Progress:** R6-A ✅ (suite `testParams` on schema + `runner_library` JSON; runtime still uses global bank until R6-D)
 
-**Target:** Add **`testParams` on the `miroirTestSuite` definition** (schema extension on `MiroirTestSuite` / entity `MiroirTest`), populated on `runner_library`:
-
-```json
-{
-  "definition": {
-    "miroirTestType": "miroirTestSuite",
-    "miroirTestLabel": "runner.library",
-    "testParams": {
-      "defaultLibraryAppModel": { "...": "..." },
-      "user1Uuid": "04c371ed-…",
-      "book1Uuid": "caef8a59-…",
-      "lendStartDate": "2024-01-01T00:00:00.000Z",
-      "lendEndDate": "2024-01-01T00:00:00.000Z",
-      "testApplicationUuid": "…",
-      "testApplicationDeploymentUuid": "…",
-      "lendingHistoryItemEntityUuid": "…",
-      "lendingHistoryItemEntityName": "LendingHistoryItem"
-    },
-    "miroirTests": [ … ]
-  }
-}
-```
-
-Merge order at run time: **suite `testParams` → leaf `testParams`** (leaf overrides). Drop `environmentRef` stub / `RUNNER_TEST_ENVIRONMENT_REFS` for the pilot once suite params exist.
-
-Leaves already carry per-test `testParams` (e.g. `lendDocument` payload); suite params hold shared bank keys referenced by `getFromParameters` transformers.
-
-**2. Two `libraryTestIdentifiers` objects — same shape, different homes**
-
-| Location | Role today |
-|----------|------------|
-| `deployment-library/src/runnerTestFixtures.ts` | Canonical export; feeds `RUNNER_TEST_DEPLOYMENT_REFS`, env param bank, `resolveRunnerTestDeploymentRef` |
-| `standalone-app/tests/4_view/Runner_Library.ts` | Duplicate for legacy imperative harness |
-
-Both use `LibraryTestIdentifiers` shape:
-
-```typescript
-{
-  testApplicationUuid, testApplicationDeploymentUuid, testApplicationName,
-  installTestApplicationUuid, installTestApplicationDeploymentUuid, installTestApplicationName,
-}
-```
-
-**Pilot redundancy:** `test*` and `install*` fields currently hold **identical values** (same Library self-application + same deployment JSON). They were intended for divergent roles:
-
-| Field group | Intended role | Used in |
-|-------------|---------------|---------|
-| `testApplication*` | Runtime target for composite suite (`application`, deployment map, bootstrap `testApplicationUuid`) | `RunnerTestSession.initSession`, `testBuildPlusRuntimeCompositeActionSuiteForRunner` |
-| `installApplication*` | Storage/config registration (`extendMiroirConfigWithExtraDeploymentConfiguration`, `testApplicationStorageConfiguration`) | `getTestSessionConfig` only |
-
-**R6 decision (open R6-a):** If pilot always uses one Library deployment for both, collapse to a single `{ applicationUuid, applicationName, deploymentUuid }` on the suite; split again only when a suite genuinely installs vs tests different apps.
-
-**3. `getTestSessionConfig` sits too high**
-
-`RunnerTestSession.getTestSessionConfig(miroirConfig)` hard-imports global `libraryTestIdentifiers` — it runs **before** any `MiroirTest` suite is selected. CLI already knows `--suites runner_library`; session init should receive **suite-derived deployment targets**, not a package-level constant.
-
-**Target flow:**
-
-1. Load `miroirTest_runner_library` (or registry entry for `--suites` key)
-2. Read suite-level deployment identifiers (new JSON fields or generated uuids — see R6-b)
-3. Pass identifiers into session factory / `getTestSessionConfig(suiteContext, miroirConfig)`
-4. `RunnerTestContext.testParams` seeded from suite `testParams`, not `RUNNER_TEST_ENVIRONMENT_REFS`
-
-**4. Resolver functions to delete**
-
-| Function | Verdict |
-|----------|---------|
-| `resolveRunnerTestDeploymentRef` | **Redundant** — thin indirection over `libraryTestIdentifiers` / `RUNNER_TEST_DEPLOYMENT_REFS`; read deployment fields from suite JSON |
-| `resolveRunnerRef` | **Wrong level** — `runnerRef` on the leaf names a runner **within the suite being executed**; resolve from suite-local runner map (JSON `runners` record or import map keyed by leaf `runnerRef`), not a global `RUNNER_REF_MAP` in TS |
-
-**5. Identifier generation (R6-b)**
-
-Application uuid, deployment uuid, and application name should be:
-
-- **Chosen systematically** at session start (e.g. fresh uuid v4 pair) when the suite does not pin them, **or**
-- **Pinned** in suite JSON / passed by caller (CLI profile, UI launcher)
-
-Today values are fixed to Library asset uuids (`5af03c98-…`, `f714bb2f-…`). R6 should make that explicit suite metadata rather than hidden in `runnerTestFixtures.ts`.
-
-**6. Delete `runnerTestFixtures.ts`**
-
-After suite JSON + session refactor:
-
-- Remove file and all exports from `deployment-library/index.ts`
-- `RunnerTestSession` / orchestrator take suite context from loaded `MiroirTest` instance
-- Legacy `Runner_Library.ts` reads same suite fields or stays deprecated
-
-**Schema / entity work (R6):**
-
-- `miroirTestSuite`: optional `testParams`, optional `deployment` (or `testApplication` / `installApplication` blocks)
-- Optional suite-level `runners: Record<string, Runner>` or document convention: `runnerRef` → import from deployment-library assets by name
-- Regenerate fundamental types
-
-**Red (TDD):**
-
-- `runner_library` integ passes with zero imports from `runnerTestFixtures.ts`
-- `grep runnerTestFixtures` → plan/history only
-- Session unit tests pass with suite-scoped identifiers injected
-
-**Verify:**
-
-- `npm run testMiroir -w miroir-standalone-app -- --suites runner_library --mode integ` — 2 passed
+**Locked principle:** One `{ applicationUuid, applicationName, deploymentUuid }` per test run, passed into the session — not a global `libraryTestIdentifiers` module export.
 
 #### Phase R — success criteria
 
@@ -895,8 +741,8 @@ After suite JSON + session refactor:
 - [x] `npm run testMiroir -w miroir-standalone-app -- --suites runner_library --mode integ` stays green after each R slice
 - [x] No new literals in fixture bodies for fields migrated in R0–R2
 - [x] (R4) `runnerTestFixtures.ts` contains no composite-action / assertion literals
-- [ ] (R5) Resolver indirection removed; legacy fixture aliases + test constants gone; **`runnerTestFixtures.ts` retained** (trimmed)
-- [ ] (R6) Suite-scoped `testParams` + deployment targets on `runner_library`; `getTestSessionConfig` suite-aware; **`runnerTestFixtures.ts` deleted**
+- [x] (R5) Resolver indirection removed; legacy fixture aliases + test constants gone; **`runnerTestFixtures.ts` retained** (trimmed)
+- [ ] (R6) See [r6-suite-scoped-context-plan.md](./r6-suite-scoped-context-plan.md) success criteria
 
 #### Suggested commits (Phase R)
 
@@ -906,7 +752,7 @@ After suite JSON + session refactor:
 4. `refactor(runner-test): R3 move runner_test definitions to MiroirTest JSON`
 5. `refactor(runner-test): R4 shrink fixture catalog to environment providers only`
 6. `refactor(runner-test): R5 collapse resolveRunnerTestLeaf; remove fixtureRef layer`
-7. `refactor(runner-test): R6 suite-scoped context; delete runnerTestFixtures.ts`
+7. `refactor(runner-test): R6 suite-scoped context` (sub-commits R6-A … R6-E in [r6-suite-scoped-context-plan.md](./r6-suite-scoped-context-plan.md))
 
 ---
 
@@ -921,9 +767,7 @@ After suite JSON + session refactor:
 | R4-a | **Catalog fate** | A) delete `runnerTestFixtures.ts` B) keep as environment/runner ref registry only | **B** for R4 → **R6 completes A** |
 | R5-a | **`resolveRunnerTestLeaf` name** | A) inline into `runMiroirRunnerTest` B) keep as thin alias one release | TBD |
 | R5-b | **`fixtureRef` on runnerTest** | A) leave optional in schema (unused) B) remove from `miroirTestForRunner` | **A** for R5 |
-| R6-a | **`test*` vs `install*` identifier pairs** | A) collapse to single deployment block on suite (pilot) B) keep two blocks for divergent install vs test apps | **A** unless second suite needs split |
-| R6-b | **Uuid / deployment assignment** | A) pinned in suite JSON (current Library uuids) B) generated uuid v4 at session start when omitted C) caller override (CLI/UI) | **C** with **A** defaults in pilot JSON |
-| R6-c | **Runner lookup** | A) suite JSON `runners` map B) convention: import deployment-library asset by `runnerRef` string | TBD |
+| R6 | **Suite-scoped context** | Full plan | [r6-suite-scoped-context-plan.md](./r6-suite-scoped-context-plan.md) |
 
 ---
 
@@ -1014,15 +858,15 @@ flowchart LR
 - [x] Orchestrator + four session adapters (Gaps A/B/C-setup/E); legacy `Runner_Miroir.integ` harness on `RunnerTestSession` (still imperative — G8)
 - [x] No secrets committed; config files use localhost defaults
 
-### Phase R (R0–R4 ✅, R5–R6 open)
+### Phase R (R0–R5 ✅, R6 open)
 
 - [x] R0: `initialModel` → `getFromParameters` + injected `defaultLibraryAppModel`
 - [x] R1: runner payload fields → `getFromParameters` + param bank dates/UUIDs
 - [x] R2: preTest/preRunner → `getFromParameters` + deployment/entity param bank keys
-- [x] R3: fixture definitions inlined in `miroirTest_runner_library` JSON; `resolveRunnerTestDefinition`; `handleAction` param-bank pass-through
+- [x] R3: fixture definitions inlined in `miroirTest_runner_library` JSON; `handleAction` param-bank pass-through
 - [x] R4: composite literals removed from TS catalog; JSON source of truth
-- [ ] R5: collapse resolver indirection; remove fixtureRef layer; **keep** trimmed `runnerTestFixtures.ts`
-- [ ] R6: suite-scoped `testParams` + deployment on `runner_library`; refactor `getTestSessionConfig`; delete `runnerTestFixtures.ts`
+- [x] R5: collapse resolver indirection; remove fixtureRef layer; trimmed `runnerTestFixtures.ts` retained
+- [ ] R6: suite-scoped run context — [r6-suite-scoped-context-plan.md](./r6-suite-scoped-context-plan.md)
 
 ### Phase B
 
