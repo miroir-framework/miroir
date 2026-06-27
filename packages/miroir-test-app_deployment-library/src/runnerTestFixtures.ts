@@ -38,11 +38,61 @@ export type RunnerTestEnvironmentSeed = {
   testParams: Record<string, unknown>;
 };
 
-// export const RUNNER_TEST_INITIAL_MODEL_FROM_PARAMETERS: CoreTransformerForBuildPlusRuntime = {
-//   transformerType: "getFromParameters",
-//   interpolation: "build",
-//   referenceName: "defaultLibraryAppModel",
-// };
+export const RUNNER_TEST_INITIAL_MODEL_FROM_PARAMETERS: CoreTransformerForBuildPlusRuntime = {
+  transformerType: "getFromParameters",
+  interpolation: "build",
+  referenceName: "defaultLibraryAppModel",
+};
+
+const LEND_START_DATE = new Date("2024-01-01").toISOString();
+
+export const RUNNER_TEST_PAYLOAD_USER_FROM_PARAMETERS: CoreTransformerForBuildPlusRuntime = {
+  transformerType: "getFromParameters",
+  interpolation: "build",
+  referenceName: "user1Uuid",
+};
+
+export const RUNNER_TEST_PAYLOAD_BOOK_FROM_PARAMETERS: CoreTransformerForBuildPlusRuntime = {
+  transformerType: "getFromParameters",
+  interpolation: "build",
+  referenceName: "book1Uuid",
+};
+
+export const RUNNER_TEST_PAYLOAD_LEND_START_DATE_FROM_PARAMETERS: CoreTransformerForBuildPlusRuntime = {
+  transformerType: "getFromParameters",
+  interpolation: "build",
+  referenceName: "lendStartDate",
+};
+
+export const RUNNER_TEST_PAYLOAD_LEND_END_DATE_FROM_PARAMETERS: CoreTransformerForBuildPlusRuntime = {
+  transformerType: "getFromParameters",
+  interpolation: "build",
+  referenceName: "lendEndDate",
+};
+
+export const RUNNER_TEST_APPLICATION_UUID_FROM_PARAMETERS: CoreTransformerForBuildPlusRuntime = {
+  transformerType: "getFromParameters",
+  interpolation: "build",
+  referenceName: "testApplicationUuid",
+};
+
+export const RUNNER_TEST_DEPLOYMENT_UUID_FROM_PARAMETERS: CoreTransformerForBuildPlusRuntime = {
+  transformerType: "getFromParameters",
+  interpolation: "build",
+  referenceName: "testApplicationDeploymentUuid",
+};
+
+export const RUNNER_TEST_LENDING_HISTORY_ENTITY_UUID_FROM_PARAMETERS: CoreTransformerForBuildPlusRuntime = {
+  transformerType: "getFromParameters",
+  interpolation: "build",
+  referenceName: "lendingHistoryItemEntityUuid",
+};
+
+export const RUNNER_TEST_LENDING_HISTORY_ENTITY_NAME_FROM_PARAMETERS: CoreTransformerForBuildPlusRuntime = {
+  transformerType: "getFromParameters",
+  interpolation: "build",
+  referenceName: "lendingHistoryItemEntityName",
+};
 
 export type RunnerTestFixtureDefaults = {
   runner: Runner;
@@ -85,6 +135,12 @@ export const RUNNER_TEST_ENVIRONMENT_REFS: RunnerTestEnvironmentSeed = {
       defaultLibraryAppModel,
       user1Uuid: user1.uuid,
       book1Uuid: book1.uuid,
+      lendStartDate: LEND_START_DATE,
+      lendEndDate: LEND_START_DATE,
+      testApplicationUuid: libraryTestIdentifiers.testApplicationUuid,
+      testApplicationDeploymentUuid: libraryTestIdentifiers.testApplicationDeploymentUuid,
+      lendingHistoryItemEntityUuid: entityLendingHistoryItem.uuid,
+      lendingHistoryItemEntityName: entityLendingHistoryItem.name,
     },
 };
 
@@ -101,20 +157,20 @@ const fetchLendingHistoryPreTest: CompositeAction = {
     actionType: "runBoxedQueryAction",
     endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
     payload: {
-      application: libraryTestIdentifiers.testApplicationUuid,
+      application: RUNNER_TEST_APPLICATION_UUID_FROM_PARAMETERS,
       applicationSection: "data",
       query: {
         queryType: "boxedQueryWithExtractorCombinerTransformer",
-        application: libraryTestIdentifiers.testApplicationUuid,
+        application: RUNNER_TEST_APPLICATION_UUID_FROM_PARAMETERS,
         pageParams: {
-          currentDeploymentUuid: libraryTestIdentifiers.testApplicationDeploymentUuid,
+          currentDeploymentUuid: RUNNER_TEST_DEPLOYMENT_UUID_FROM_PARAMETERS,
         },
         extractors: {
           items: {
             extractorOrCombinerType: "extractorInstancesByEntity",
             applicationSection: "data",
-            parentName: entityLendingHistoryItem.name,
-            parentUuid: entityLendingHistoryItem.uuid,
+            parentName: RUNNER_TEST_LENDING_HISTORY_ENTITY_NAME_FROM_PARAMETERS,
+            parentUuid: RUNNER_TEST_LENDING_HISTORY_ENTITY_UUID_FROM_PARAMETERS,
             orderBy: {
               attributeName: "name",
               direction: "ASC",
@@ -131,9 +187,9 @@ const lendBookPreRunner: CompositeAction = {
   endpoint: "212f2784-5b68-43b2-8ee0-89b1c6fdd0de",
   actionLabel: "preLendBookForReturn",
   payload: {
-    user: user1.uuid,
-    book: book1.uuid,
-    startDate: new Date("2024-01-01").toISOString(),
+    user: RUNNER_TEST_PAYLOAD_USER_FROM_PARAMETERS,
+    book: RUNNER_TEST_PAYLOAD_BOOK_FROM_PARAMETERS,
+    startDate: RUNNER_TEST_PAYLOAD_LEND_START_DATE_FROM_PARAMETERS,
   },
 } as any; // lendDocument is a library action, not included in CompositeAction type
 
@@ -169,19 +225,15 @@ export const RUNNER_TEST_FIXTURE_REFS: Record<string, RunnerTestFixtureDefaults>
         actionType: "lendDocument",
         endpoint: "212f2784-5b68-43b2-8ee0-89b1c6fdd0de",
         payload: {
-          user: user1.uuid,
-          book: book1.uuid,
-          startDate: new Date("2024-01-01").toISOString(),
+          user: RUNNER_TEST_PAYLOAD_USER_FROM_PARAMETERS,
+          book: RUNNER_TEST_PAYLOAD_BOOK_FROM_PARAMETERS,
+          startDate: RUNNER_TEST_PAYLOAD_LEND_START_DATE_FROM_PARAMETERS,
         },
       },
     },
     preTestCompositeActions: [fetchLendingHistoryPreTest],
     testCompositeActionAssertions: [checkNumberOfLendingHistoryItemsAssertion],
-    initialModel: {
-      transformerType: "getFromParameters",
-      interpolation: "build",
-      referenceName: "defaultLibraryAppModel",
-    },
+    initialModel: RUNNER_TEST_INITIAL_MODEL_FROM_PARAMETERS,
     preRunnerCompositeActions: [],
   },
   libraryReturnBookDefaults: {
@@ -192,20 +244,16 @@ export const RUNNER_TEST_FIXTURE_REFS: Record<string, RunnerTestFixtureDefaults>
         actionType: "returnDocument",
         endpoint: "212f2784-5b68-43b2-8ee0-89b1c6fdd0de",
         payload: {
-          user: user1.uuid,
-          book: book1.uuid,
-          startDate: new Date("2024-01-01").toISOString(),
-          endDate: new Date("2024-01-01").toISOString(),
+          user: RUNNER_TEST_PAYLOAD_USER_FROM_PARAMETERS,
+          book: RUNNER_TEST_PAYLOAD_BOOK_FROM_PARAMETERS,
+          startDate: RUNNER_TEST_PAYLOAD_LEND_START_DATE_FROM_PARAMETERS,
+          endDate: RUNNER_TEST_PAYLOAD_LEND_END_DATE_FROM_PARAMETERS,
         },
       },
     },
     preTestCompositeActions: [fetchLendingHistoryPreTest],
     testCompositeActionAssertions: [checkNumberOfLendingHistoryItemsAssertion],
-    initialModel: {
-      transformerType: "getFromParameters",
-      interpolation: "build",
-      referenceName: "defaultLibraryAppModel",
-    },
+    initialModel: RUNNER_TEST_INITIAL_MODEL_FROM_PARAMETERS,
     preRunnerCompositeActions: [lendBookPreRunner],
   },
 };

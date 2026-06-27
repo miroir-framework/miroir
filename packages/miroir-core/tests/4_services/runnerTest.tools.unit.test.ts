@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import { miroirTest_runner_library } from "miroir-test-app_deployment-library";
 import {
   miroirTestForRunner,
+  type CoreTransformerForBuildPlusRuntime,
   type MiroirTestDefinition,
   type MiroirTestForRunner,
   type MiroirTestSuite,
@@ -12,7 +13,14 @@ import { RUNNER_TEST_ENVIRONMENT_REFS } from "miroir-test-app_deployment-library
 import {
   libraryTestIdentifiers,
   resolveRunnerTestFixture,
-  // RUNNER_TEST_INITIAL_MODEL_FROM_PARAMETERS,
+  RUNNER_TEST_APPLICATION_UUID_FROM_PARAMETERS,
+  RUNNER_TEST_DEPLOYMENT_UUID_FROM_PARAMETERS,
+  RUNNER_TEST_INITIAL_MODEL_FROM_PARAMETERS,
+  RUNNER_TEST_LENDING_HISTORY_ENTITY_NAME_FROM_PARAMETERS,
+  RUNNER_TEST_LENDING_HISTORY_ENTITY_UUID_FROM_PARAMETERS,
+  RUNNER_TEST_PAYLOAD_BOOK_FROM_PARAMETERS,
+  RUNNER_TEST_PAYLOAD_LEND_START_DATE_FROM_PARAMETERS,
+  RUNNER_TEST_PAYLOAD_USER_FROM_PARAMETERS,
 } from "miroir-test-app_deployment-library";
 import { resolveRunnerTestLeaf } from "../../src/5_tests/RunnerTestTools";
 import { expandResolvableResetAndinitializeDeploymentCompositeAction } from "../../src/1_core/Deployment";
@@ -30,11 +38,64 @@ describe("runnerTest tools", () => {
     expect(miroirTestForRunner).toBe(miroirTestForRunner);
   });
 
-  // it("libraryLendBookDefaults uses getFromParameters transformer for initialModel", () => {
-  //   const fixture = resolveRunnerTestFixture("libraryLendBookDefaults");
-  //   expect(fixture.initialModel).toEqual(RUNNER_TEST_INITIAL_MODEL_FROM_PARAMETERS);
-  //   expect(fixture.initialModel).not.toHaveProperty("entities");
-  // });
+  it("libraryLendBookDefaults uses getFromParameters transformer for initialModel", () => {
+    const fixture = resolveRunnerTestFixture("libraryLendBookDefaults");
+    expect(fixture.initialModel).toEqual(RUNNER_TEST_INITIAL_MODEL_FROM_PARAMETERS);
+    expect(fixture.initialModel).not.toHaveProperty("entities");
+  });
+
+  it("libraryLendBookDefaults uses getFromParameters transformers for runner payload", () => {
+    const fixture = resolveRunnerTestFixture("libraryLendBookDefaults");
+    const lendParams = fixture.testParams.lendDocument as {
+      payload: Record<string, CoreTransformerForBuildPlusRuntime>;
+    };
+    expect(lendParams.payload.user).toEqual(RUNNER_TEST_PAYLOAD_USER_FROM_PARAMETERS);
+    expect(lendParams.payload.book).toEqual(RUNNER_TEST_PAYLOAD_BOOK_FROM_PARAMETERS);
+    expect(lendParams.payload.startDate).toEqual(RUNNER_TEST_PAYLOAD_LEND_START_DATE_FROM_PARAMETERS);
+  });
+
+  it("libraryLendBookDefaults preTest uses getFromParameters for deployment identifiers", () => {
+    const fixture = resolveRunnerTestFixture("libraryLendBookDefaults");
+    const preTest = fixture.preTestCompositeActions[0] as {
+      payload: {
+        payload: {
+          application: CoreTransformerForBuildPlusRuntime;
+          query: {
+            application: CoreTransformerForBuildPlusRuntime;
+            pageParams: { currentDeploymentUuid: CoreTransformerForBuildPlusRuntime };
+            extractors: {
+              items: {
+                parentName: CoreTransformerForBuildPlusRuntime;
+                parentUuid: CoreTransformerForBuildPlusRuntime;
+              };
+            };
+          };
+        };
+      };
+    };
+    const inner = preTest.payload.payload;
+    expect(inner.application).toEqual(RUNNER_TEST_APPLICATION_UUID_FROM_PARAMETERS);
+    expect(inner.query.application).toEqual(RUNNER_TEST_APPLICATION_UUID_FROM_PARAMETERS);
+    expect(inner.query.pageParams.currentDeploymentUuid).toEqual(
+      RUNNER_TEST_DEPLOYMENT_UUID_FROM_PARAMETERS,
+    );
+    expect(inner.query.extractors.items.parentUuid).toEqual(
+      RUNNER_TEST_LENDING_HISTORY_ENTITY_UUID_FROM_PARAMETERS,
+    );
+    expect(inner.query.extractors.items.parentName).toEqual(
+      RUNNER_TEST_LENDING_HISTORY_ENTITY_NAME_FROM_PARAMETERS,
+    );
+  });
+
+  it("libraryReturnBookDefaults preRunner uses getFromParameters for lend payload", () => {
+    const fixture = resolveRunnerTestFixture("libraryReturnBookDefaults");
+    const preRunner = fixture.preRunnerCompositeActions?.[0] as {
+      payload: Record<string, CoreTransformerForBuildPlusRuntime>;
+    };
+    expect(preRunner.payload.user).toEqual(RUNNER_TEST_PAYLOAD_USER_FROM_PARAMETERS);
+    expect(preRunner.payload.book).toEqual(RUNNER_TEST_PAYLOAD_BOOK_FROM_PARAMETERS);
+    expect(preRunner.payload.startDate).toEqual(RUNNER_TEST_PAYLOAD_LEND_START_DATE_FROM_PARAMETERS);
+  });
 
   it("libraryRunnerTestEnvironment seeds defaultLibraryAppModel in param bank", () => {
     const environment = RUNNER_TEST_ENVIRONMENT_REFS;
@@ -92,6 +153,7 @@ describe("runnerTest tools", () => {
         (action) => action.actionLabel === "resetAndinitializeDeploymentCompositeAction_createEntities",
       ),
     ).toBe(true);
+    expect(environment?.testParams.defaultLibraryAppModel).toBe(defaultLibraryAppModel);
     expect(
       resolved.testCompositeAction.testCompositeActions?.["Lend Book Test Composite Action"]
         ?.testCompositeActionAssertions,

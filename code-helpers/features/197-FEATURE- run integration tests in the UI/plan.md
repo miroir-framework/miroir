@@ -89,7 +89,7 @@ sequenceDiagram
 | Pilot instance | `miroirTest_runner_library` in deployment-library | lend + return `runnerTest` leaves |
 | Fixture catalog | `miroir-test-app_deployment-library/src/runnerTestFixtures.ts` | interim bridge (Phase R retires literals) |
 
-**Still open for #197:** Phase R (transformer-based param indirection), Phase B (UI launcher + reporting). UI runs **domainController-based** MiroirTest integ first; PSC-direct `4_storage` suites deferred (see [Out of scope](#out-of-scope)).
+**Still open for #197:** Phase R slices R3–R4 (JSON inline, retire fixture catalog), Phase B (UI launcher + reporting). UI runs **domainController-based** MiroirTest integ first; PSC-direct `4_storage` suites deferred (see [Out of scope](#out-of-scope)).
 
 ### Legacy imperative runner files (not yet on MiroirTest JSON)
 
@@ -539,7 +539,7 @@ flowchart LR
   RESOLVE --> SUITE
 ```
 
-#### R0 — `initialModel` as `getFromParameters` (first task)
+#### R0 — `initialModel` as `getFromParameters` (first task) ✅ **Done**
 
 **Current (Phase A bridge):**
 
@@ -591,9 +591,14 @@ export type RunnerTestFixtureDefaults = {
 
 **Files touched:** `runnerTestFixtures.ts`, `RunnerTestTools.ts`, possibly `RunnerTestSession.ts` (ensure merged params reach resolution).
 
-**Open decision R0-a (resolution site):** See [Refactor open decisions](#refactor-open-decisions).
+**Open decision R0-a (resolution site):** See [Refactor open decisions](#refactor-open-decisions). Implemented as **R0-a = C**: deferred resolution via `_resolvableAppMetaModel` in `resetAndinitializeDeploymentCompositeAction`, expanded at runtime in `DomainController.handleTestCompositeActionSuite` through `expandResolvableResetAndinitializeDeploymentCompositeAction` with merged param bank from `runRunnerTestCompositeAction`.
 
-#### R1 — Runner `testParams` payloads via `getFromParameters`
+**Verify:** ✅
+
+- `runnerTest.tools.unit.test.ts`: 6 tests pass (fixture transformer shape, param bank seed, `resolveRunnerTestLeaf` + `expandResolvableResetAndinitializeDeploymentCompositeAction`)
+- `npm run testMiroir -w miroir-standalone-app -- --profile emulatedServer-sql --suites runner_library --mode integ` — 2 passed (lend + return)
+
+#### R1 — Runner `testParams` payloads via `getFromParameters` ✅ **Done**
 
 Replace literal UUIDs / dates in lend/return payloads:
 
@@ -605,12 +610,47 @@ payload: {
 }
 ```
 
-Environment injects `lendStartDate` (ISO string) alongside entity UUIDs. Reuse existing transformer test utilities where possible.
+Environment injects `lendStartDate` / `lendEndDate` (ISO string) alongside entity UUIDs. Reuse existing transformer test utilities where possible.
 
-#### R2 — `preTestCompositeActions` / assertions
+**Red (TDD):**
+
+- `runnerTest.tools.unit.test.ts`: lend fixture payload fields are `getFromParameters` transformers, not literal UUIDs/dates
+- `miroir-runner-tests.integ`: lend + return still pass with nested payload transformers resolved at runtime
+
+**Green:**
+
+- `RUNNER_TEST_PAYLOAD_*_FROM_PARAMETERS` constants in `runnerTestFixtures.ts`
+- `RUNNER_TEST_ENVIRONMENT_REFS.testParams` seeds `user1Uuid`, `book1Uuid`, `lendStartDate`, `lendEndDate`
+- Lend + return fixture `testParams` payloads use transformers for `user`, `book`, `startDate`, `endDate`
+
+**Verify:** ✅
+
+- `runnerTest.tools.unit.test.ts`: payload transformer test passes
+- `npm run testMiroir -w miroir-standalone-app -- --profile emulatedServer-sql --suites runner_library --mode integ` — 2 passed
+
+**Still literal (deferred R2):** ~~`lendBookPreRunner` preRunner payload; `fetchLendingHistoryPreTest` application/deployment UUIDs~~ → migrated in R2
+
+#### R2 — `preTestCompositeActions` / assertions ✅ **Done**
 
 - `fetchLendingHistoryPreTest`: application UUID, deployment UUID, entity parent UUID → `getFromParameters` (keys from `deploymentRef` / environment)
 - Assertions already use `getFromContext` for `LendingHistoryList` — keep; ensure context is populated by preTest steps (unchanged behaviour)
+
+**Red (TDD):**
+
+- `runnerTest.tools.unit.test.ts`: preTest query uses `getFromParameters` for application, deployment, entity parent name/uuid
+- `runnerTest.tools.unit.test.ts`: return fixture `preRunnerCompositeActions` payload uses shared payload transformers
+- `miroir-runner-tests.integ`: lend + return still pass (assertions on `LendingHistoryList` unchanged)
+
+**Green:**
+
+- `RUNNER_TEST_APPLICATION_UUID_FROM_PARAMETERS`, `RUNNER_TEST_DEPLOYMENT_UUID_FROM_PARAMETERS`, `RUNNER_TEST_LENDING_HISTORY_ENTITY_*_FROM_PARAMETERS` constants
+- Param bank seeds `testApplicationUuid`, `testApplicationDeploymentUuid`, `lendingHistoryItemEntityUuid`, `lendingHistoryItemEntityName`
+- `fetchLendingHistoryPreTest` + `lendBookPreRunner` use transformers; no literal UUIDs in fixture action bodies
+
+**Verify:** ✅
+
+- `runnerTest.tools.unit.test.ts`: 8 tests pass
+- `npm run testMiroir -w miroir-standalone-app -- --profile emulatedServer-sql --suites runner_library --mode integ` — 2 passed
 
 #### R3 — Inline fixture catalog into `MiroirTest` JSON
 
@@ -626,9 +666,11 @@ Move declarative transformer trees from `RUNNER_TEST_FIXTURE_REFS` into `miroirT
 
 #### Phase R — success criteria
 
-- [ ] `initialModel` is a `getFromParameters` transformer; `defaultLibraryAppModel` only in environment param bank
-- [ ] `npm run testMiroir -w miroir-standalone-app -- --suites runner_library --mode integ` stays green after each R slice
-- [ ] No new literals in fixture bodies for fields migrated in that slice
+- [x] R0: `initialModel` is a `getFromParameters` transformer; `defaultLibraryAppModel` only in environment param bank
+- [x] R1: runner `testParams` payload fields (`user`, `book`, `startDate`, `endDate`) via `getFromParameters`
+- [x] R2: preTest/preRunner composite actions use `getFromParameters`; assertions unchanged (`getFromContext`)
+- [x] `npm run testMiroir -w miroir-standalone-app -- --suites runner_library --mode integ` stays green after each R slice
+- [x] No new literals in fixture bodies for fields migrated in R0–R2
 - [ ] (R4) `runnerTestFixtures.ts` contains no composite-action / assertion literals
 
 #### Suggested commits (Phase R)
@@ -741,8 +783,10 @@ flowchart LR
 
 ### Phase R
 
-- [ ] R0: `initialModel` → `getFromParameters` + injected `defaultLibraryAppModel`
-- [ ] R1–R4: incremental transformer migration; fixture catalog retired
+- [x] R0: `initialModel` → `getFromParameters` + injected `defaultLibraryAppModel`
+- [x] R1: runner payload fields → `getFromParameters` + param bank dates/UUIDs
+- [x] R2: preTest/preRunner → `getFromParameters` + deployment/entity param bank keys
+- [ ] R3–R4: JSON inline + retire fixture catalog
 
 ### Phase B
 
