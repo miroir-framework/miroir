@@ -42,6 +42,31 @@ export type ResolveRunnerTestLeafParams = {
   buildContext: ResolveRunnerTestLeafBuildContext;
 };
 
+export type ResolvedRunnerTestDefinition = ReturnType<typeof resolveRunnerTestFixture>;
+
+/** fixtureRef → catalog entry (same object reference); else inline fields from JSON leaf. */
+export function resolveRunnerTestDefinition(leaf: MiroirTestForRunner): ResolvedRunnerTestDefinition {
+  if (leaf.fixtureRef) {
+    return resolveRunnerTestFixture(leaf.fixtureRef);
+  }
+  if (leaf.initialModel === undefined) {
+    throw new Error(
+      `runnerTest leaf "${leaf.miroirTestLabel}" requires fixtureRef or inline initialModel`,
+    );
+  }
+  return {
+    runner: resolveRunnerRef(leaf.runnerRef),
+    testParams: leaf.testParams ?? {},
+    preTestCompositeActions: leaf.preTestCompositeActions ?? [],
+    testCompositeActionAssertions: leaf.testCompositeActionAssertions ?? [],
+    initialModel: leaf.initialModel,
+    preRunnerCompositeActions: leaf.preRunnerCompositeActions,
+    testCompositeActionLabel: leaf.testCompositeActionLabel,
+    skipCreateDeployment: leaf.skipCreateDeployment,
+    skipDropDeployment: leaf.skipDropDeployment,
+  };
+}
+
 export function mergeRunnerTestParamBank(
   // environmentSeed: ReturnType<typeof resolveRunnerTestEnvironmentSeed>,
   environmentSeed: typeof RUNNER_TEST_ENVIRONMENT_REFS,
@@ -68,7 +93,7 @@ export function resolveRunnerTestLeaf({
   pageLabel,
   buildContext,
 }: ResolveRunnerTestLeafParams): TestCompositeActionParams {
-  const fixture = resolveRunnerTestFixture(leaf.fixtureRef);
+  const fixture = resolveRunnerTestDefinition(leaf);
   const deployment = resolveRunnerTestDeploymentRef(leaf.deploymentRef);
   const environmentSeed = RUNNER_TEST_ENVIRONMENT_REFS;
   const runner = resolveRunnerRef(leaf.runnerRef);

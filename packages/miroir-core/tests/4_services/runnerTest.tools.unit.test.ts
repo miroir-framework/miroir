@@ -22,7 +22,7 @@ import {
   RUNNER_TEST_PAYLOAD_LEND_START_DATE_FROM_PARAMETERS,
   RUNNER_TEST_PAYLOAD_USER_FROM_PARAMETERS,
 } from "miroir-test-app_deployment-library";
-import { resolveRunnerTestLeaf } from "../../src/5_tests/RunnerTestTools";
+import { resolveRunnerTestLeaf, resolveRunnerTestDefinition } from "../../src/5_tests/RunnerTestTools";
 import { expandResolvableResetAndinitializeDeploymentCompositeAction } from "../../src/1_core/Deployment";
 
 describe("runnerTest tools", () => {
@@ -97,17 +97,48 @@ describe("runnerTest tools", () => {
     expect(preRunner.payload.startDate).toEqual(RUNNER_TEST_PAYLOAD_LEND_START_DATE_FROM_PARAMETERS);
   });
 
+  it("resolveRunnerTestDefinition returns catalog entry for fixtureRef leaves", () => {
+    const catalog = resolveRunnerTestFixture("libraryLendBookDefaults");
+    const definition = resolveRunnerTestDefinition({
+      miroirTestType: "runnerTest",
+      miroirTestLabel: "Lend Book Test Composite Action",
+      runnerRef: "lendDocument",
+      fixtureRef: "libraryLendBookDefaults",
+    });
+    expect(definition).toBe(catalog);
+  });
+
+  it("runner_library leaves define inline runnerTest without fixtureRef", () => {
+    const suite = (miroirTest_runner_library as MiroirTestDefinition)
+      .definition as MiroirTestSuite;
+    for (const test of suite.miroirTests) {
+      const leaf = test as MiroirTestForRunner;
+      expect(leaf.fixtureRef).toBeUndefined();
+      expect(leaf.initialModel).toEqual(RUNNER_TEST_INITIAL_MODEL_FROM_PARAMETERS);
+    }
+  });
+
+  it("resolveRunnerTestDefinition reads inline fields from runner_library leaf", () => {
+    const suite = (miroirTest_runner_library as MiroirTestDefinition)
+      .definition as MiroirTestSuite;
+    const leaf = suite.miroirTests[0] as MiroirTestForRunner;
+    const definition = resolveRunnerTestDefinition(leaf);
+    expect(definition.initialModel).toEqual(RUNNER_TEST_INITIAL_MODEL_FROM_PARAMETERS);
+    expect(definition.preTestCompositeActions).toHaveLength(1);
+    expect(definition.testCompositeActionAssertions).toHaveLength(1);
+  });
+
   it("libraryRunnerTestEnvironment seeds defaultLibraryAppModel in param bank", () => {
     const environment = RUNNER_TEST_ENVIRONMENT_REFS;
     expect(environment?.testParams.defaultLibraryAppModel).toBe(defaultLibraryAppModel);
     expect(environment).not.toHaveProperty("initialModel");
   });
 
-  it("resolveRunnerTestLeaf builds testBuildPlusRuntimeCompositeActionSuite from fixture refs", () => {
+  it("resolveRunnerTestLeaf builds testBuildPlusRuntimeCompositeActionSuite from inline JSON", () => {
     const suite = (miroirTest_runner_library as MiroirTestDefinition)
       .definition as MiroirTestSuite;
     const leaf = suite.miroirTests[0] as MiroirTestForRunner;
-    const fixture = resolveRunnerTestFixture(leaf.fixtureRef);
+    const definition = resolveRunnerTestDefinition(leaf);
     const environment = RUNNER_TEST_ENVIRONMENT_REFS;
 
     const resolved = resolveRunnerTestLeaf({
@@ -139,7 +170,7 @@ describe("runnerTest tools", () => {
     expect(resolved.application).toBe(libraryTestIdentifiers.testApplicationUuid);
     expect(resolved.testParams).toEqual({
       ...environment?.testParams,
-      ...fixture.testParams,
+      ...definition.testParams,
     });
     expect(
       resolved.testCompositeAction.beforeEach?.payload._resolvableAppMetaModel,
@@ -157,19 +188,14 @@ describe("runnerTest tools", () => {
     expect(
       resolved.testCompositeAction.testCompositeActions?.["Lend Book Test Composite Action"]
         ?.testCompositeActionAssertions,
-    ).toEqual(fixture.testCompositeActionAssertions);
+    ).toEqual(definition.testCompositeActionAssertions);
   });
 
-  it("resolveRunnerTestLeaf builds return book suite from fixture refs", () => {
-    const leaf: MiroirTestForRunner = {
-      miroirTestType: "runnerTest",
-      miroirTestLabel: "Return Book Test Composite Action",
-      environmentRef: "libraryRunnerTestEnvironment",
-      runnerRef: "returnDocument",
-      fixtureRef: "libraryReturnBookDefaults",
-      deploymentRef: "libraryTestIdentifiers",
-    };
-    const fixture = resolveRunnerTestFixture(leaf.fixtureRef);
+  it("resolveRunnerTestLeaf builds return book suite from inline JSON definition", () => {
+    const suite = (miroirTest_runner_library as MiroirTestDefinition)
+      .definition as MiroirTestSuite;
+    const leaf = suite.miroirTests[1] as MiroirTestForRunner;
+    const definition = resolveRunnerTestDefinition(leaf);
     const environment = RUNNER_TEST_ENVIRONMENT_REFS;
 
     const resolved = resolveRunnerTestLeaf({
@@ -199,11 +225,12 @@ describe("runnerTest tools", () => {
 
     expect(resolved.testParams).toEqual({
       ...environment?.testParams,
-      ...fixture.testParams,
+      ...definition.testParams,
     });
+    expect(definition.preRunnerCompositeActions).toHaveLength(1);
     expect(
       resolved.testCompositeAction.testCompositeActions?.["Return Book Test Composite Action"]
         ?.testCompositeActionAssertions,
-    ).toEqual(fixture.testCompositeActionAssertions);
+    ).toEqual(definition.testCompositeActionAssertions);
   });
 });

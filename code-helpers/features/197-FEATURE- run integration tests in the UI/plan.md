@@ -86,10 +86,10 @@ sequenceDiagram
 | Transformer integ CLI | same script → `miroir-core-tests.integ.test.ts` | `MIROIR_TEST_*` or `--profile` |
 | Runner integ CLI | same script → `miroir-runner-tests.integ.test.ts` | `VITE_MIROIR_*` or `--profile` |
 | App-stack integ | `test-by-file.ts` | `VITE_MIROIR_*` or `--profile` |
-| Pilot instance | `miroirTest_runner_library` in deployment-library | lend + return `runnerTest` leaves |
-| Fixture catalog | `miroir-test-app_deployment-library/src/runnerTestFixtures.ts` | interim bridge (Phase R retires literals) |
+| Pilot instance | `miroirTest_runner_library` in deployment-library | lend + return `runnerTest` leaves (**inline JSON**, no `fixtureRef`) |
+| Fixture catalog | `miroir-test-app_deployment-library/src/runnerTestFixtures.ts` | interim bridge — **R4** retires composite literals; export script syncs catalog → JSON |
 
-**Still open for #197:** Phase R slices R3–R4 (JSON inline, retire fixture catalog), Phase B (UI launcher + reporting). UI runs **domainController-based** MiroirTest integ first; PSC-direct `4_storage` suites deferred (see [Out of scope](#out-of-scope)).
+**Still open for #197:** Phase R slice **R4** (retire fixture catalog literals), Phase B (UI launcher + reporting). UI runs **domainController-based** MiroirTest integ first; PSC-direct `4_storage` suites deferred (see [Out of scope](#out-of-scope)).
 
 ### Legacy imperative runner files (not yet on MiroirTest JSON)
 
@@ -652,11 +652,46 @@ Environment injects `lendStartDate` / `lendEndDate` (ISO string) alongside entit
 - `runnerTest.tools.unit.test.ts`: 8 tests pass
 - `npm run testMiroir -w miroir-standalone-app -- --profile emulatedServer-sql --suites runner_library --mode integ` — 2 passed
 
-#### R3 — Inline fixture catalog into `MiroirTest` JSON
+#### R3 — Inline fixture catalog into `MiroirTest` JSON ✅ **Done**
 
 Move declarative transformer trees from `RUNNER_TEST_FIXTURE_REFS` into `miroirTest_runner_library` leaf fields (or new `runnerTestDefinition` sub-document on leaf). `fixtureRef` becomes optional; environment + JSON hold the full definition.
 
 `runnerRef` / `deploymentRef` may remain string refs (resolve to runner entity + identifier map) — not transformer material.
+
+**Implemented:**
+
+- Extended `miroirTestForRunner` schema with optional `initialModel`, `preTestCompositeActions`, `preRunnerCompositeActions`, `testCompositeActionAssertions`
+- `resolveRunnerTestDefinition(leaf)` — `fixtureRef` returns catalog object by reference; inline leaves build from JSON fields
+- `export-runner-library-inline-json.ts` serializes catalog into `b7e4a901-…json` (no `fixtureRef` on leaves)
+- **Fix (R1 regression):** `DomainController.handleAction` accepts optional `actionParamValues` and passes them through `handleApplicationAction` → `handleCompositeActionTemplate`, so nested `getFromParameters` in runner payloads resolve against the merged test param bank during composite test execution
+
+**Red (TDD):**
+
+- `runnerTest.tools.unit.test.ts`: inline leaf tests, catalog identity test, inline JSON resolution tests (11 passed)
+
+**Green:**
+
+- `npm run testMiroir -w miroir-standalone-app -- --profile emulatedServer-sql --suites runner_library --mode integ` — 2 passed (lend + return) with inline JSON
+
+**Verify:** ✅ (re-checked 2026-06-27)
+
+- `runnerTest.tools.unit.test.ts`: **11 passed** (inline leaves without `fixtureRef`, catalog identity, `resolveRunnerTestLeaf` from JSON)
+- `npm run testMiroir -w miroir-standalone-app -- --profile emulatedServer-sql --suites runner_library --mode integ` — **2 passed** (lend + return, inline JSON)
+- Operational: fresh postgres schemas if integ fails with `SelfApplication` NULL or stale `ReferenceNotFound` after partial runs; rebuild `devBuild -w miroir-test-app_deployment-library` then `devBuild -w miroir-core` before integ
+
+**Files touched (R3):**
+
+| Area | Path |
+|------|------|
+| Schema | `deployment-miroir/…/51c647fe-…json` → generated `miroirFundamentalType.ts` / `miroirFundamentalJzodSchema.ts` |
+| Inline JSON | `deployment-library/…/b7e4a901-…json` |
+| Export script | `deployment-library/scripts/export-runner-library-inline-json.ts` |
+| Resolver | `miroir-core/src/5_tests/RunnerTestTools.ts` (`resolveRunnerTestDefinition`) |
+| Param pass-through | `miroir-core/src/3_controllers/DomainController.ts`, `DomainControllerInterface.ts` |
+| Unit tests | `miroir-core/tests/4_services/runnerTest.tools.unit.test.ts` |
+| Export | `miroir-core/src/index.ts` |
+
+**Note (R3-a):** Pilot uses **full inline trees** (option A) generated from catalog via export script; `fixtureRef` remains supported for transitional leaves.
 
 #### R4 — Retire TypeScript fixture catalog
 
@@ -669,6 +704,7 @@ Move declarative transformer trees from `RUNNER_TEST_FIXTURE_REFS` into `miroirT
 - [x] R0: `initialModel` is a `getFromParameters` transformer; `defaultLibraryAppModel` only in environment param bank
 - [x] R1: runner `testParams` payload fields (`user`, `book`, `startDate`, `endDate`) via `getFromParameters`
 - [x] R2: preTest/preRunner composite actions use `getFromParameters`; assertions unchanged (`getFromContext`)
+- [x] R3: runner_test definitions inlined in `miroirTest_runner_library` JSON; `resolveRunnerTestDefinition` + param bank pass-through in `handleAction`
 - [x] `npm run testMiroir -w miroir-standalone-app -- --suites runner_library --mode integ` stays green after each R slice
 - [x] No new literals in fixture bodies for fields migrated in R0–R2
 - [ ] (R4) `runnerTestFixtures.ts` contains no composite-action / assertion literals
@@ -690,7 +726,7 @@ Move declarative transformer trees from `RUNNER_TEST_FIXTURE_REFS` into `miroirT
 | R0-a | **Where is `initialModel` transformer resolved?** | A) Eager in `resolveRunnerTestLeaf` using merged param bank B) Lazy in `beforeEach` inside composite runtime (extend `resetAndinitializeDeploymentCompositeAction` to accept transformer) C) let the `runTestOrTestSuite` pass a value to the domainController as params | **C** let the "normal" resolution flow proceed |
 | R0-b | **Param key naming** | A) `defaultLibraryAppModel` matches `Library.ts` export name B) prefixed keys e.g. `library.defaultLibraryAppModel` | **A** — direct `referenceName` ↔ param key |
 | R1-a | **Date params** | A) inject ISO strings in environment B) `returnValue` transformer in fixture | **A** for consistency with param bank |
-| R3-a | **JSON size** | A) full composite trees in leaf JSON B) shared sub-fixtures referenced by `fixtureRef` | **B** until generator exists; then **A** for UI editability |
+| R3-a | **JSON size** | A) full composite trees in leaf JSON B) shared sub-fixtures referenced by `fixtureRef` | **A** for pilot (export script from catalog); **B** still supported via optional `fixtureRef` |
 | R4-a | **Catalog fate** | A) delete `runnerTestFixtures.ts` B) keep as environment/runner ref registry only | **B** |
 
 ---
@@ -759,9 +795,10 @@ flowchart LR
 | `pageLabel` | Vitest entry / suite key label (not in leaf) |
 | `runner` | `runnerRef: "lendDocument"` → fixture catalog |
 | `testApplicationUuid/Name/DeploymentUuid` | `deploymentRef: "libraryTestIdentifiers"` |
-| `testParams` | Injected via `environmentRef` → `testParams` namespace; runner payload uses `getFromParams` (pilot: partial; fixture bridge for rest) |
-| `preTestCompositeActions` | fixture catalog |
-| `testCompositeActionAssertions` | fixture catalog |
+| `testParams` | Injected via `environmentRef` → `testParams` namespace; runner payload uses `getFromParameters` (**R3:** also on leaf JSON) |
+| `preTestCompositeActions` | **R3:** inline on leaf JSON (was fixture catalog) |
+| `testCompositeActionAssertions` | **R3:** inline on leaf JSON (was fixture catalog) |
+| `preRunnerCompositeActions` | **R3:** inline on leaf JSON (return leaf only) |
 | `internalMiroirConfig` | derived at runtime from env config + `getTestConfig` |
 | `adminDeployment` | derived from env config |
 | `testDeploymentStorageConfiguration` | derived from env profile + app name |
@@ -781,12 +818,13 @@ flowchart LR
 - [x] Orchestrator + four session adapters (Gaps A/B/C-setup/E); legacy `Runner_Miroir.integ` harness on `RunnerTestSession` (still imperative — G8)
 - [x] No secrets committed; config files use localhost defaults
 
-### Phase R
+### Phase R (in progress — R0–R3 ✅, R4 open)
 
 - [x] R0: `initialModel` → `getFromParameters` + injected `defaultLibraryAppModel`
 - [x] R1: runner payload fields → `getFromParameters` + param bank dates/UUIDs
 - [x] R2: preTest/preRunner → `getFromParameters` + deployment/entity param bank keys
-- [ ] R3–R4: JSON inline + retire fixture catalog
+- [x] R3: fixture definitions inlined in `miroirTest_runner_library` JSON; `resolveRunnerTestDefinition`; `handleAction` param-bank pass-through
+- [ ] R4: retire composite literals from `runnerTestFixtures.ts` (environment providers only)
 
 ### Phase B
 

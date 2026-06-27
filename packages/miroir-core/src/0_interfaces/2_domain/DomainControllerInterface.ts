@@ -149,7 +149,8 @@ export interface DomainControllerInterface {
     action: DomainAction,
     applicationDeploymentMap: ApplicationDeploymentMap,
     currentModel?: MiroirModelEnvironment,
-    endpointApplicationMap?: EndpointApplicationMap
+    endpointApplicationMap?: EndpointApplicationMap,
+    actionParamValues?: Record<string, unknown>,
   ): Promise<Action2VoidReturnType>;
   /**
    * data access must accomodate different styles of access

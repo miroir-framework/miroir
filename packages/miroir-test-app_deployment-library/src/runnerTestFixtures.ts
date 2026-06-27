@@ -157,11 +157,11 @@ const fetchLendingHistoryPreTest: CompositeAction = {
     actionType: "runBoxedQueryAction",
     endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
     payload: {
-      application: RUNNER_TEST_APPLICATION_UUID_FROM_PARAMETERS,
+      application: RUNNER_TEST_APPLICATION_UUID_FROM_PARAMETERS as any, // TODO: RUNNER_TEST_APPLICATION_UUID_FROM_PARAMETERS is now a getFromParameters transformer, fetchLendingHistoryPreTest should be CompositeActionTemplate
       applicationSection: "data",
       query: {
         queryType: "boxedQueryWithExtractorCombinerTransformer",
-        application: RUNNER_TEST_APPLICATION_UUID_FROM_PARAMETERS,
+        application: RUNNER_TEST_APPLICATION_UUID_FROM_PARAMETERS as any,
         pageParams: {
           currentDeploymentUuid: RUNNER_TEST_DEPLOYMENT_UUID_FROM_PARAMETERS,
         },
@@ -169,8 +169,8 @@ const fetchLendingHistoryPreTest: CompositeAction = {
           items: {
             extractorOrCombinerType: "extractorInstancesByEntity",
             applicationSection: "data",
-            parentName: RUNNER_TEST_LENDING_HISTORY_ENTITY_NAME_FROM_PARAMETERS,
-            parentUuid: RUNNER_TEST_LENDING_HISTORY_ENTITY_UUID_FROM_PARAMETERS,
+            parentName: RUNNER_TEST_LENDING_HISTORY_ENTITY_NAME_FROM_PARAMETERS as any,
+            parentUuid: RUNNER_TEST_LENDING_HISTORY_ENTITY_UUID_FROM_PARAMETERS as any,
             orderBy: {
               attributeName: "name",
               direction: "ASC",

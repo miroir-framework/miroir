@@ -1866,6 +1866,7 @@ export class DomainController implements DomainControllerInterface {
     applicationDeploymentMap: ApplicationDeploymentMap,
     currentModelEnvironment?: MiroirModelEnvironment,
     endpointApplicationMap?: EndpointApplicationMap,
+    actionParamValues?: Record<string, unknown>,
   ): Promise<Action2VoidReturnType> {
     log.info("DomainController handleAction START actionType=", domainAction["actionType"]);
     return this.miroirContext.miroirActivityTracker.trackAction(
@@ -1899,6 +1900,7 @@ export class DomainController implements DomainControllerInterface {
             domainAction,
             applicationDeploymentMap,
             currentModelEnvironment,
+            actionParamValues,
           );
         } else {
           return this.handleActionInternal(
@@ -1918,6 +1920,7 @@ export class DomainController implements DomainControllerInterface {
     domainAction: DomainAction,
     applicationDeploymentMap: ApplicationDeploymentMap,
     currentModelEnvironment?: MiroirModelEnvironment,
+    actionParamValues?: Record<string, unknown>,
   ): Promise<Action2VoidReturnType> {
     log.info(
       "DomainController handleApplicationAction",
@@ -2032,6 +2035,7 @@ export class DomainController implements DomainControllerInterface {
       applicationDeploymentMap,
       currentModelEnvironment,
       {
+        ...(actionParamValues ?? {}),
         ...domainAction,
         deploymentUuid: applicationDeploymentMap[currentEndpointDefinition.application],
       },
@@ -2468,6 +2472,8 @@ export class DomainController implements DomainControllerInterface {
               currentAction,
               applicationDeploymentMap,
               modelEnvironment,
+              undefined,
+              localActionParams,
             );
             if (actionResult instanceof Action2Error) {
               log.error(
@@ -2653,6 +2659,8 @@ export class DomainController implements DomainControllerInterface {
               resolvedAction,
               applicationDeploymentMap,
               modelEnvironment,
+              undefined,
+              actionParamValues,
             );
             // actionResult = await this.handleAction(currentAction, currentModel);
             if (actionResult instanceof Action2Error) {
@@ -3555,6 +3563,8 @@ export class DomainController implements DomainControllerInterface {
             resolvedActionTemplate,
             applicationDeploymentMap,
             modelEnvironment,
+            undefined,
+            localActionParams,
           );
           log.info(
             "handleCompositeActionTemplate",

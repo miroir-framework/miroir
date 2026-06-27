@@ -102,6 +102,7 @@ export {
   resolveRunnerTestDeploymentRef,
   // resolveRunnerTestEnvironmentSeed,
   resolveRunnerTestFixture,
+  type RunnerTestFixtureDefaults,
   RUNNER_TEST_APPLICATION_UUID_FROM_PARAMETERS,
   RUNNER_TEST_DEPLOYMENT_UUID_FROM_PARAMETERS,
   RUNNER_TEST_INITIAL_MODEL_FROM_PARAMETERS,

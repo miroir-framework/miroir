@@ -6644,6 +6644,51 @@ export const miroirFundamentalJzodSchema = {
               "type": "any"
             }
           },
+          "initialModel": {
+            "type": "schemaReference",
+            "optional": true,
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "coreTransformerForBuildPlusRuntime"
+            },
+            "context": {}
+          },
+          "preTestCompositeActions": {
+            "type": "array",
+            "optional": true,
+            "definition": {
+              "type": "schemaReference",
+              "definition": {
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                "relativePath": "compositeAction"
+              },
+              "context": {}
+            }
+          },
+          "preRunnerCompositeActions": {
+            "type": "array",
+            "optional": true,
+            "definition": {
+              "type": "schemaReference",
+              "definition": {
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                "relativePath": "compositeAction"
+              },
+              "context": {}
+            }
+          },
+          "testCompositeActionAssertions": {
+            "type": "array",
+            "optional": true,
+            "definition": {
+              "type": "schemaReference",
+              "definition": {
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                "relativePath": "compositeRunTestAssertion"
+              },
+              "context": {}
+            }
+          },
           "skipCreateDeployment": {
             "type": "boolean",
             "optional": true
@@ -7182,6 +7227,47 @@ export const miroirFundamentalJzodSchema = {
                     "optional": true,
                     "definition": {
                       "type": "any"
+                    }
+                  },
+                  "initialModel": {
+                    "type": "schemaReference",
+                    "optional": true,
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "coreTransformerForBuildPlusRuntime"
+                    }
+                  },
+                  "preTestCompositeActions": {
+                    "type": "array",
+                    "optional": true,
+                    "definition": {
+                      "type": "schemaReference",
+                      "definition": {
+                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        "relativePath": "compositeAction"
+                      }
+                    }
+                  },
+                  "preRunnerCompositeActions": {
+                    "type": "array",
+                    "optional": true,
+                    "definition": {
+                      "type": "schemaReference",
+                      "definition": {
+                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        "relativePath": "compositeAction"
+                      }
+                    }
+                  },
+                  "testCompositeActionAssertions": {
+                    "type": "array",
+                    "optional": true,
+                    "definition": {
+                      "type": "schemaReference",
+                      "definition": {
+                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        "relativePath": "compositeRunTestAssertion"
+                      }
                     }
                   },
                   "skipCreateDeployment": {
