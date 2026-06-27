@@ -744,10 +744,14 @@ flowchart LR
 - [ ] Teardown leaves no test schemas / indexedDb databases behind
 - [ ] (Optional) embedded host path documented and gated — not default
 
-### Gap D (optional — not blocking Phase B)
+### Gap D (optional — reduces CI friction, not blocking Phase B)
 
-- [ ] Unified profile / env var UX across `MIROIR_TEST_*` (transformer) and `VITE_MIROIR_*` (app-stack/runner)
-- [ ] Optional: transformer integ loads store config from same `miroirConfig.test-*.json` profiles as emulated-server tests
+Plan: [gap-D-refactoring-plan.md](./gap-D-refactoring-plan.md)
+
+- [ ] Unified `--profile` for transformer + runner `testMiroir` integ
+- [ ] Profile catalog in standalone-app; remove path table from miroir-core
+- [ ] CI matrix doc with one profile driving multiple suite kinds
+- [ ] (Optional) `testByFile --profile` convenience
 
 ---
 
@@ -793,7 +797,8 @@ flowchart LR
 
 ## Related
 
-- [Integration test setup — gap analysis](./integ-test-setup-gaps.md) (bootstrap state; source of truth for Gaps A–E)
+- [Integration test setup — gap analysis](./integ-test-setup-gaps.md) (bootstrap gaps A–E)
+- [Gap D — unified integration test profiles](./gap-D-refactoring-plan.md)
 - [Feature 196 — MiroirTest](../196-FEATURE-migrate-tests-to-MiroirTest/plan.md)
 - [Feature 195 — Unit tests in UI](../195-FEATURE-%20enable%20execution%20of%20miroir-core%20unit%20tests%20in%20UI/plan.md) (superseded for unit tests; still relevant for `Test` entity distinction)
 - [Feature 157 — Startup sequence](../157-FEATURE-%20harden%20startup%20sequence%20%26%20enable%20admin%20deployment%20choice%20on%20client%20-%20server/PLAN.md) (shared setup/teardown alignment)

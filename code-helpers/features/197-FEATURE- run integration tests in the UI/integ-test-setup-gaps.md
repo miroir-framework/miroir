@@ -365,6 +365,8 @@ Direct PSC calls in tests remain intentional (persistence-layer coverage).
 
 ## 5. Gap D — Environment configuration fragmentation
 
+**TDD plan:** [gap-D-refactoring-plan.md](./gap-D-refactoring-plan.md) (not started).
+
 ### Current state
 
 | Family | Config mechanism | Env var names |
@@ -387,11 +389,12 @@ Direct PSC calls in tests remain intentional (persistence-layer coverage).
 
 ### What needs to be filled
 
-- Optional: load transformer integ store config from the same `miroirConfig.test-*.json` profiles
-  as `4_storage` (today `MIROIR_TEST_*` vs `VITE_MIROIR_*` remain separate but both use
-  `RunnerTestSessionInterface`).
-- Align env var / `--profile` UX so one CI matrix entry can drive both transformer and app-stack
-  integ without duplicate host defaults.
+See [gap-D-refactoring-plan.md](./gap-D-refactoring-plan.md) slices D0–D8:
+
+- Unified `IntegrationTestProfile` registry in standalone-app (`--profile` for transformer + runner + optional `testByFile`)
+- Optional JSON → `MIROIR_TEST_*` derivation for transformer session defaults (same Postgres host as app-stack JSON)
+- CI matrix documentation with one profile column
+- Deprecate `RUNNER_TEST_PROFILES` in miroir-core (move to standalone-app)
 
 ---
 
@@ -463,7 +466,7 @@ Five different public setup entry points existed across the test infrastructure:
 | **B** — Library playfield contract | ~~`ensureLibraryPlayfield` / `resetLibraryPlayfield`~~ | Runner, DomainController, 4_storage | **Done** ✅ — enables Gap A `playfieldMode` |
 | **C-setup** — Common integ bootstrap | ~~Unified session adapters~~ | Transformer + `4_storage` | **Done** ✅ — reduces setup chaos; UI still needs isolation (A/B) |
 | **C-assertions** — PSC vs domainController in test bodies | `4_storage` keeps PSC (intentional); UI launcher for PSC Vitest suites not built | `4_storage` only | **Partial** — blocks *in-browser* PSC access; **not** a blocker if UI spawns isolated Vitest (defer to follow-up) |
-| **D** — Env config fragmentation | Unified profile system (`MIROIR_TEST_*` vs `VITE_MIROIR_*`) | Transformer integ, all CLI-driven tests | Medium — no longer blocked on C-assertions |
+| **D** — Env config fragmentation | Unified profile system (`MIROIR_TEST_*` vs `VITE_MIROIR_*`) | Transformer integ, all CLI-driven tests | Medium — [gap-D-refactoring-plan.md](./gap-D-refactoring-plan.md); not blocking Phase B launcher |
 | **E** — Setup helper fragmentation | ~~Consolidate `setupMiroirTest*`; orchestrator for UI~~ | DomainController CRUD, legacy runners | **Done** ✅ — enables Gap B / UI Phase B |
 
 Gaps **A** and **B** (bootstrap + playfield contracts) are done. The remaining work for running
