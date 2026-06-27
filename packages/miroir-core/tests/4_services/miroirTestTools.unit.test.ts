@@ -17,6 +17,7 @@ import {
   runMiroirTests,
   runMiroirTestSuite,
 } from "../../src";
+import { miroirTest_runner_library } from "miroir-test-app_deployment-library";
 import type {
   MiroirTestForFunctionCall,
   MiroirTestForQuery,
@@ -306,12 +307,9 @@ describe("runMiroirTestInMemory — queryTest", () => {
 
 describe("runMiroirTestInMemory — runnerTest", () => {
   it("requires executionMode integration", async () => {
-    const leaf: MiroirTestForRunner = {
-      miroirTestType: "runnerTest",
-      miroirTestLabel: "Lend Book Test Composite Action",
-      runnerRef: "lendDocument",
-      fixtureRef: "libraryLendBookDefaults",
-    };
+    const leaf = (
+      (miroirTest_runner_library as MiroirTestDefinition).definition as MiroirTestSuite
+    ).miroirTests[0] as MiroirTestForRunner;
     await expect(
       runMiroirTest(
         vitest,

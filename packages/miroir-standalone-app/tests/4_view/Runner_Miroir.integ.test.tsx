@@ -21,9 +21,6 @@ import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
 import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
 import { miroirMongoDbStoreSectionStartup } from "miroir-store-mongodb";
 import { miroirPostgresStoreSectionStartup } from "miroir-store-postgres";
-import {
-  runnerDeployApplication
-} from "miroir-test-app_deployment-miroir";
 import { env } from "process";
 import { loglevelnext } from "../../src/loglevelnextImporter";
 import { runTestOrTestSuite } from "../../src/miroir-fwk/4-tests/runTestOrTestSuite.ts";
@@ -124,7 +121,7 @@ afterAll(async () => {
 //   emptyApplicationModel,
 // )
 
-const localRunnerInstallApplication = runnerDeployApplication as Runner;
+// const localRunnerInstallApplication = runnerDeployApplication as Runner;
   
 const runnerTestParams: Record<string, RunnerTestParams> = {
   libraryLendBookRunnerTest: libraryLendBookRunnerTest,
@@ -137,12 +134,6 @@ const filteredRunnerTestParams: Record<string, RunnerTestParams> = Object.fromEn
     [
       "libraryLendBookRunnerTest",
       "libraryReturnBookRunnerTest",
-      // // localRunnerCreateApplication.name,
-      // localRunnerInstallApplication.name,
-      // runnerCreateEntity.name,
-      // runnerCreateEntity.name + "_withReports",
-      // runnerDropEntity.name,
-      // runnerDropApplication.name,
     ].includes(testName)
   )
 );

@@ -995,7 +995,6 @@ export {
 } from "./5_tests/MiroirTestIntegrationOrchestrator.js";
 export {
   resolveRunnerTestLeaf,
-  resolveRunnerTestDefinition,
   runMiroirRunnerTest as runMiroirRunnerTestInMemory,
   runRunnerTestCompositeAction,
   runnerTestJzodSchema,

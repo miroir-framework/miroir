@@ -17,8 +17,6 @@ import { testBuildPlusRuntimeCompositeActionSuiteForRunner } from "../1_core/Run
 import {
   resolveRunnerRef,
   resolveRunnerTestDeploymentRef,
-  resolveRunnerTestFixture,
-  runnerTestLeafToFixtureDefaults,
   RUNNER_TEST_ENVIRONMENT_REFS,
 } from "miroir-test-app_deployment-library";
 import type {
@@ -43,65 +41,48 @@ export type ResolveRunnerTestLeafParams = {
   buildContext: ResolveRunnerTestLeafBuildContext;
 };
 
-export type ResolvedRunnerTestDefinition = ReturnType<typeof resolveRunnerTestFixture>;
-
-/** fixtureRef → JSON leaf via alias; else inline fields from JSON leaf. */
-export function resolveRunnerTestDefinition(leaf: MiroirTestForRunner): ResolvedRunnerTestDefinition {
-  if (leaf.fixtureRef) {
-    return resolveRunnerTestFixture(leaf.fixtureRef);
-  }
-  return runnerTestLeafToFixtureDefaults(leaf);
-}
-
 export function mergeRunnerTestParamBank(
-  // environmentSeed: ReturnType<typeof resolveRunnerTestEnvironmentSeed>,
   environmentSeed: typeof RUNNER_TEST_ENVIRONMENT_REFS,
-  fixture: ReturnType<typeof resolveRunnerTestFixture>,
   leaf: MiroirTestForRunner,
 ): Record<string, unknown> {
   return {
     ...(environmentSeed?.testParams ?? {}),
-    ...(fixture.testParams ?? {}),
     ...(leaf.testParams ?? {}),
   };
 }
 
 // ################################################################################################
-/**
- * TODO: not justified, parameter handling for RunnerTest should be dealt with through Transformer resolution
- * @param leaf - the runner test leaf
- * @param pageLabel - the page label
- * @param buildContext - the build context
- * @returns 
- */
 export function resolveRunnerTestLeaf({
   leaf,
   pageLabel,
   buildContext,
 }: ResolveRunnerTestLeafParams): TestCompositeActionParams {
-  const fixture = resolveRunnerTestDefinition(leaf);
+  if (leaf.initialModel === undefined) {
+    throw new Error(
+      `runnerTest leaf "${leaf.miroirTestLabel}" requires inline initialModel`,
+    );
+  }
+
   const deployment = resolveRunnerTestDeploymentRef(leaf.deploymentRef);
-  const environmentSeed = RUNNER_TEST_ENVIRONMENT_REFS;
-  const runner = resolveRunnerRef(leaf.runnerRef);
-  const mergedTestParams = mergeRunnerTestParamBank(environmentSeed, fixture, leaf);
+  const mergedTestParams = mergeRunnerTestParamBank(RUNNER_TEST_ENVIRONMENT_REFS, leaf);
 
   return testBuildPlusRuntimeCompositeActionSuiteForRunner(
     pageLabel,
-    runner,
+    resolveRunnerRef(leaf.runnerRef),
     deployment.testApplicationUuid,
     deployment.testApplicationDeploymentUuid,
     deployment.testApplicationName,
     mergedTestParams,
-    fixture.preTestCompositeActions,
-    fixture.testCompositeActionAssertions,
+    leaf.preTestCompositeActions ?? [],
+    leaf.testCompositeActionAssertions ?? [],
     buildContext.internalMiroirConfig,
     buildContext.adminDeployment,
     buildContext.testDeploymentStorageConfiguration,
-    fixture.initialModel,
-    fixture.preRunnerCompositeActions,
-    leaf.testCompositeActionLabel ?? fixture.testCompositeActionLabel,
-    leaf.skipCreateDeployment ?? fixture.skipCreateDeployment,
-    leaf.skipDropDeployment ?? fixture.skipDropDeployment,
+    leaf.initialModel,
+    leaf.preRunnerCompositeActions,
+    leaf.testCompositeActionLabel,
+    leaf.skipCreateDeployment,
+    leaf.skipDropDeployment,
   );
 }
 
