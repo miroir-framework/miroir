@@ -2,13 +2,13 @@
 
 GitHub issue: TBD (`miroir-framework/miroir#197`)
 
-**Status:** Phase A complete; refactor phase (green) planned before Phase B
+**Status:** Phase A complete; integration bootstrap gaps A/B/C-setup/E complete ([integ-test-setup-gaps.md](./integ-test-setup-gaps.md)); refactor phase (green) planned before Phase B
 
 **Depends on:** [Feature 196 — MiroirTest](../196-FEATURE-migrate-tests-to-MiroirTest/plan.md) (complete)
 
 ## Overview
 
-Runner integration tests today live in `miroir-standalone-app` as imperative Vitest files (`Runner_Miroir.integ.test.tsx`, `Runner_Library.ts`, `RunnerIntegTestTools.tsx`). They exercise full stack behaviour — emulated server, `DomainController`, deployment create/reset, `testBuildPlusRuntimeCompositeActionSuite` — but are **not** part of the unified `MiroirTest` model introduced in Feature 196.
+Runner integration tests live in `miroir-standalone-app` as imperative Vitest files (`Runner_Miroir.integ.test.tsx`, `Runner_Library.ts`, `RunnerIntegTestTools.tsx`) and as MiroirTest JSON suites (`miroirTest_runner_library`). Legacy files still use `RunnerTestParams` + `it.each`; the MiroirTest pilot uses `runnerTest` leaves via `testMiroir`. Both paths share `RunnerTestSession` bootstrap (Gap E).
 
 **Near-term goal (Phase A):** Extend `MiroirTest` with a `runnerTest` leaf, encode a minimal `libraryLendBookRunnerTest`, and run it via:
 
@@ -27,56 +27,81 @@ Constraints:
 - UUID v4 only for new deployment instances
 - TDD throughout
 - Keep execution logic **centralized in `miroir-core`**; `miroir-standalone-app` owns vitest entry, config files, and UI wiring
-- Reuse existing primitives: `testBuildPlusRuntimeCompositeActionSuiteForRunner`, `CompositeRunTestAssertion`, `setupMiroirTest` patterns
+- Reuse existing primitives: `testBuildPlusRuntimeCompositeActionSuiteForRunner`, `CompositeRunTestAssertion`, session adapters (`RunnerTestSession`, …) built on `runAppStackIntegrationBootstrap`
 - Do **not** delete legacy `Test` entity / `Runner_*.integ.test.tsx` files until cutover is proven
 
 ---
 
 ## Current state
 
-### Runner test stack (standalone-app)
+Bootstrap/orchestrator state is documented in [integ-test-setup-gaps.md](./integ-test-setup-gaps.md). Summary below reflects post–Gap A/B/C-setup/E reality.
 
-| Piece | Location | Role |
-|-------|----------|------|
-| Test definitions | `tests/4_view/Runner_Library.ts` | `RunnerTestParams` objects (`libraryLendBookRunnerTest`, …) |
-| Vitest harness | `tests/4_view/Runner_Miroir.integ.test.tsx` | Startup, `beforeAll`/`beforeEach`/`afterAll`, `it.each` over params |
-| Setup helpers | `tests/4_view/RunnerIntegTestTools.tsx` | `beforeAllTests`, `beforeEachTest`, `getTestConfig`, storage config |
-| Runtime setup | `src/miroir-fwk/4-tests/tests-utils.tsx` | `setupMiroirTest`, `runTestOrTestSuite` |
-| Suite builder | `miroir-core/src/1_core/Runner.ts` | `testBuildPlusRuntimeCompositeActionSuiteForRunner` |
-| Config | `tests/miroirConfig.test-emulatedServer-sql.json` | `emulateServer`, postgres schemas, filesystem roots |
-| Log config | `tests/specificLoggersConfig_DomainController_debug.json` | Per-logger levels for debugging |
+### Integration test infrastructure (shared)
 
-**Execution flow today:**
+All non-component integration tests in `miroir-standalone-app` converge on `RunnerTestSessionInterface` adapters created by `StandaloneAppIntegrationOrchestrator` (`MiroirTestIntegrationOrchestrator` port in `miroir-core`).
+
+| Session class | Kind | Entry point | Config surface | Playfield |
+|---------------|------|-------------|----------------|-----------|
+| `IntegrationTestSession` | `transformer` | `miroir-core-tests.integ.test.ts` | `MIROIR_TEST_*` | `testApplication` (synthetic UUIDs) |
+| `AppStackIntegrationTestSession` | `appStackPsc` | per-file `4_storage` integ | `VITE_MIROIR_*` | `libraryDeployment` |
+| `DomainControllerIntegrationTestSession` | `domainController` | `3_controllers` CRUD, undo-redo | `VITE_MIROIR_*` | profile-dependent |
+| `RunnerTestSession` | `runner` | `Runner_Miroir.integ`, `miroir-runner-tests.integ.test.ts` | `VITE_MIROIR_*` + `--profile` | `libraryDeployment` |
+
+**Orchestrator context** (Gap A/B — ready for Phase B UI launcher):
+
+- `hostMode`: `"isolated"` (CLI/Vitest default) | `"embedded"` (inject live host env)
+- `hostExecutionEnvironment`, `platformEnsureMode`, `playfieldMode`, `skipBootstrapPhases`
+- Helpers: `ensureMiroirPlatform`, `ensureLibraryPlayfield`, `resetLibraryPlayfield`
+
+**Execution flow (MiroirTest runner path):**
 
 ```mermaid
 sequenceDiagram
   participant V as Vitest entry
-  participant H as Runner_Miroir.integ
-  participant S as setupMiroirTest
-  participant B as testBuildPlusRuntimeCompositeActionSuiteForRunner
+  participant O as StandaloneAppIntegrationOrchestrator
+  participant S as RunnerTestSession
+  participant MT as MiroirTestTools
+  participant RT as RunnerTestTools
   participant DC as DomainController
-  participant R as runTestOrTestSuite
 
-  V->>H: load env configs, miroirAppStartup
-  H->>S: beforeAll → setupMiroirTest + create Miroir deployment
-  H->>H: beforeEach → resetAndInitApplicationDeployment
-  H->>B: libraryLendBookRunnerTest → TestCompositeActionParams
-  H->>R: runTestOrTestSuite(domainController, action)
-  R->>DC: handle testBuildPlusRuntimeCompositeActionSuite
+  V->>O: createSession("runner", context)
+  O->>S: initSession → MiroirTestExecutionEnvironment
+  S->>S: beforeEach → resetLibraryPlayfield
+  V->>MT: runMiroirTestsFromCLI (runner_library)
+  MT->>RT: resolveRunnerTestLeaf + runRunnerTestCompositeAction
+  RT->>DC: testBuildPlusRuntimeCompositeActionSuite
 ```
 
-### MiroirTest stack (miroir-core, Feature 196)
+**Remaining bootstrap gap (not blocking Phase B launcher):**
+
+- **Gap D** — env config fragmentation: transformer integ uses `MIROIR_TEST_*`; app-stack/runner integ uses `VITE_MIROIR_*` + JSON profiles. Unified `--profile` across both surfaces is optional follow-up.
+
+### MiroirTest runner track (Phase A — complete)
 
 | Piece | Location | Role |
 |-------|----------|------|
-| Entity | `entityMiroirTest` (`a311f363-…`) | Unified test concept |
-| Runner | `MiroirTestTools.ts` | `runMiroirTests`, leaf dispatch, `executionMode` |
-| Leaf kinds | schema | `transformerTest`, `functionCallTest`, `queryTest`, `miroirTestSuite` |
-| CLI | `scripts/test-miroir.ts` | `--suites`, `--mode`, `--filter` |
-| Registry | `miroirTestSuiteRegistry.ts` | Dynamic import of deployment JSON |
-| Integ bootstrap | `miroirTestIntegrationStore.ts` | Direct Postgres for **transformer** integ only |
+| Entity + `runnerTest` leaf | `entityMiroirTest` schema | Unified test concept with runner dispatch |
+| Runner dispatch | `miroir-core/src/5_tests/RunnerTestTools.ts` | `resolveRunnerTestLeaf`, `runRunnerTestCompositeAction` |
+| Orchestrator | `miroir-core/src/5_tests/MiroirTestIntegrationOrchestrator.ts` | Port + `IntegrationTestOrchestratorContext` |
+| Factory | `standalone-app/.../StandaloneAppIntegrationOrchestrator.ts` | Session kind → adapter |
+| CLI | `standalone-app/scripts/test-miroir.ts` | `--suites`, `--mode`, `--filter`, `--profile` |
+| Transformer integ CLI | same script → `miroir-core-tests.integ.test.ts` | `MIROIR_TEST_*` env |
+| Runner integ CLI | same script → `miroir-runner-tests.integ.test.ts` | `VITE_MIROIR_*` / `--profile` |
+| Pilot instance | `miroirTest_runner_library` in deployment-library | lend + return `runnerTest` leaves |
+| Fixture catalog | `miroir-test-app_deployment-library/src/runnerTestFixtures.ts` | interim bridge (Phase R retires literals) |
 
-**Gap:** No `runnerTest` leaf. No `testMiroir` in `miroir-standalone-app`. Runner integ uses a **different** environment model (emulated server + `VITE_MIROIR_*` configs) than transformer integ (direct `SqlDbDataStoreSection`).
+**Still open for #197:** Phase R (transformer-based param indirection), Phase B (UI launcher + reporting). UI runs **domainController-based** MiroirTest integ first; PSC-direct `4_storage` suites deferred (see [Out of scope](#out-of-scope)).
+
+### Legacy imperative runner files (not yet on MiroirTest JSON)
+
+| Piece | Location | Role |
+|-------|----------|------|
+| Test definitions | `tests/4_view/Runner_Library.ts` | `RunnerTestParams` objects — parity reference for Phase R |
+| Vitest harness | `tests/4_view/Runner_Miroir.integ.test.tsx` | `RunnerTestSession` + `it.each` over params (harness migrated, G8) |
+| Setup helpers | `tests/4_view/RunnerIntegTestTools.tsx` | thin wrappers; `beforeEach` → `resetLibraryPlayfield` |
+| Suite builder | `miroir-core/src/1_core/Runner.ts` | `testBuildPlusRuntimeCompositeActionSuiteForRunner` |
+
+Per G8: deprecate per-file as MiroirTest equivalents land; delete harness only after **all** `Runner_*` integ files migrate.
 
 ### Legacy parallel: `Test` entity (Feature 195 note)
 
@@ -86,10 +111,10 @@ The `Test` entity (`d2842a84-…`) already models `testBuildPlusRuntimeComposite
 
 ## Problem statement
 
-1. **Representation:** `RunnerTestParams` is TypeScript-only; not selectable via `testMiroir`, not visible in Miroir Test reports.
-2. **Duplication:** Every `Runner_*.integ.test.tsx` repeats ~150 lines of startup, config loading, and lifecycle hooks.
-3. **Environment coupling:** Test environment setup (`setupMiroirTest`, storage schemas, admin deployment) is embedded in standalone-app test files, not shared with UI startup.
-4. **Mode split:** Feature 196 UI runs MiroirTest in `executionMode: "unit"` only. Runner tests are inherently **integration** and will need a guarded UI path in Phase B.
+1. **Representation:** Most `RunnerTestParams` coverage is still TypeScript-only; pilot `runner_library` is on MiroirTest JSON — remaining `Runner_*` files not yet migrated (G8).
+2. **Duplication:** Startup/lifecycle duplication **reduced** (Gap E) via shared session adapters; legacy files still repeat vitest entry boilerplate until full MiroirTest cutover.
+3. **Environment coupling:** Bootstrap is hexagonal and UI-ready (Gaps A/B/E); Phase B still needs a **UI launcher** wired to the orchestrator with session isolation.
+4. **Mode split:** Feature 196 UI runs MiroirTest in `executionMode: "unit"` only. Runner tests are inherently **integration** and need a guarded UI path in Phase B.
 
 ---
 
@@ -102,7 +127,7 @@ The `Test` entity (`d2842a84-…`) already models `testBuildPlusRuntimeComposite
 | G3 | **JSON vs fixtures (pilot)** | **A** — minimal refs in JSON; heavy payloads in fixture catalog **as interim bridge** |
 | G3b | **Param/context resolution (direction)** | Prefer general-purpose `getFromParams` / `getFromContext` transformers over test-specific hard-coded values; tests/queries/runners share a **standard injected execution environment** they reference; intermediate values built during run via `getFromContext` (same as Transformers/Reports). Phase A: ground prep + pilot on fixture bridge; no big-bang unless one-step is simpler |
 | G4 | **`testMiroir` script home** | **A** — `miroir-standalone-app` owns the vitest entry script and external layers; **orchestration + shared setup/teardown infrastructure in `miroir-core`** (hexagonal: core orchestrates, packages inject adapters) |
-| G5 | **Environment profile selection** | **C** — env vars for CI/explicit override (`VITE_MIROIR_*`, `MIROIR_TEST_POSTGRES_HOST`); optional `--profile` CLI flag for local presets (overrides when present) |
+| G5 | **Environment profile selection** | **C** — env vars for CI/explicit override (`VITE_MIROIR_*`, `MIROIR_TEST_POSTGRES_HOST`); optional `--profile` CLI flag for local presets (overrides when present). **Note:** runner/app-stack `--profile` implemented; cross-family unification with `MIROIR_TEST_*` is Gap D (optional) |
 | G6 | **Phase B UI placement** | **A** — extend existing Miroir Tests menu/reports; mode badge (`unit` / `integ`); integ run behind session guard on `RunMiroirTestSuiteButton` |
 | G7 | **Headless runner execution** | **A** — extract `runRunnerTestCompositeAction` to `miroir-core`; `RunnerTestTools` + orchestrator call it; `tests-utils` thin re-export for legacy |
 | G8 | **Legacy `Runner_*` deprecation** | **B** — deprecate per-file as suites migrate; delete harness only after **all** `Runner_*` integ files have `MiroirTest` equivalents |
@@ -124,18 +149,30 @@ The `Test` entity (`d2842a84-…`) already models `testBuildPlusRuntimeComposite
 
 ### Standard execution environment (target direction)
 
-Tests, queries, and runners should share one **injected execution environment** per run — analogous to `functionCallTest.environmentRef` and `queryTest.fixtureRef` today, but extended for full-stack integration:
+Tests, queries, and runners should share one **injected execution environment** per run — analogous to `functionCallTest.environmentRef` and `queryTest.fixtureRef` today, but extended for full-stack integration.
+
+**Implemented today** (`MiroirTestExecutionEnvironment` in `MiroirTestTools.ts`):
 
 ```typescript
-// Target: MiroirRunnerTestExecutionEnvironment (injected once per vitest session / UI session)
+{
+  domainController: DomainControllerInterface,
+  applicationDeploymentMap: ApplicationDeploymentMap,
+  testApplicationUuid: string,
+  persistenceStoreControllerManager: PersistenceStoreControllerManagerInterface,
+  runnerTestContext?: RunnerTestContext,  // testParams + runtimeContext for runner leaves
+}
+```
+
+**Target direction** (Phase R — extend runner context / orchestrator injection):
+
+```typescript
+// Target: fuller injected environment per vitest session / UI session
 {
   miroirConfig: MiroirConfigClient,
   domainController: DomainControllerInterface,
   applicationDeploymentMap: ApplicationDeploymentMap,
   modelEnvironment: MiroirModelEnvironment,
-  // Standard param namespace — leaves reference via getFromParams, not hard-coded UUIDs
   testParams: Record<string, unknown>,   // e.g. user1, book1, deployment uuids
-  // Runtime context — preTest steps write here; assertions read via getFromContext
   runtimeContext: Record<string, unknown>,
 }
 ```
@@ -179,7 +216,7 @@ Existing `libraryLendBookRunnerTest` already uses `getFromContext` in assertions
 
 ### Fixture catalog — interim bridge (Phase A)
 
-New `miroir-test-app_deployment-library/tests/runnerTestFixtures.ts`:
+New `miroir-test-app_deployment-library/src/runnerTestFixtures.ts`:
 
 ```typescript
 export const runnerTestFixtureCatalog = {
@@ -232,7 +269,7 @@ export const runnerTestFixtureCatalog = {
 
 ---
 
-## Architecture (target)
+## Architecture (current + Phase B target)
 
 ### Hexagonal split: orchestration in core, adapters in packages
 
@@ -240,73 +277,83 @@ export const runnerTestFixtureCatalog = {
 flowchart TB
   subgraph standalone [miroir-standalone-app — external layers]
     SCRIPT[scripts/test-miroir.ts]
-    ENTRY[miroir-runner-tests.integ.test.ts]
-    REG[miroirRunnerTestSuiteRegistry]
+    ENTRY_X[miroir-core-tests.integ.test.ts]
+    ENTRY_R[miroir-runner-tests.integ.test.ts]
+    ORCH_SA[StandaloneAppIntegrationOrchestrator]
+    ADAPT_XFORM[IntegrationTestSession]
+    ADAPT_PSC[AppStackIntegrationTestSession]
+    ADAPT_DC[DomainControllerIntegrationTestSession]
     ADAPT_RUN[RunnerTestSession]
-    STARTUP[miroirAppStartup + store sections + VITE configs]
+    STARTUP[miroirAppStartup + store sections + configs]
   end
 
   subgraph core [miroir-core — orchestration]
-    ORCH[MiroirTestIntegrationOrchestrator]
+    ORCH[MiroirTestIntegrationOrchestrator port]
+    BOOT[IntegrationTestBootstrap + runAppStackIntegrationBootstrap]
+    PLAT[MiroirPlatformPlayfield / LibraryPlayfield]
     MT[MiroirTestTools.ts]
     RT[RunnerTestTools.ts]
-    BLD[testBuildPlusRuntimeCompositeActionSuiteForRunner]
-    PORT[RunnerTestSessionInterface interface]
-  end
-
-  subgraph core_adapters [miroir-core adapters today]
-    ADAPT_XFORM[IntegrationTestSessionForPostgres]
-    STORE[miroirTestIntegrationStore.ts]
+    PORT[RunnerTestSessionInterface]
   end
 
   subgraph deploy [deployment-library]
     INST[miroirTest_runner_library]
-    FIX[runnerTestFixtureCatalog]
+    FIX[runnerTestFixtures.ts]
   end
 
-  SCRIPT --> ENTRY
-  ENTRY --> STARTUP
-  ENTRY --> ORCH
-  REG --> MT
+  SCRIPT --> ENTRY_X
+  SCRIPT --> ENTRY_R
+  ENTRY_X --> ORCH_SA
+  ENTRY_R --> ORCH_SA
+  ORCH_SA --> ORCH
   ORCH --> PORT
   ADAPT_XFORM --> PORT
+  ADAPT_PSC --> PORT
+  ADAPT_DC --> PORT
   ADAPT_RUN --> PORT
-  STORE --> ADAPT_XFORM
+  BOOT --> ADAPT_PSC
+  BOOT --> ADAPT_RUN
+  PLAT --> BOOT
   STARTUP --> ADAPT_RUN
+  ENTRY_R --> MT
   MT --> RT
   RT --> FIX
-  RT --> BLD
 ```
 
 | Layer | Package | Responsibility |
 |-------|---------|----------------|
-| **Port** | `miroir-core` | `RunnerTestSessionInterface`: `initSession`, `beforeEach`, `teardown`, expose `executionEnvironment` |
-| **Orchestrator** | `miroir-core` | `runMiroirTestsFromCLI` calls port lifecycle; leaf runners consume injected environment |
-| **Transformer adapter** | `miroir-core` | `IntegrationTestSessionForPostgres` — wraps existing `miroirTestIntegrationStore` |
-| **Runner adapter** | `miroir-standalone-app` | `RunnerTestSession` — brings `miroirAppStartup`, config files, `setupMiroirTest` wiring |
-| **Vitest script** | `miroir-standalone-app` | `test-miroir.ts` + entry file; passes adapter into orchestrator |
+| **Port** | `miroir-core` | `RunnerTestSessionInterface`: `initSession`, `beforeEach`, `teardown` → `MiroirTestExecutionEnvironment` |
+| **Orchestrator** | `miroir-core` | `MiroirTestIntegrationOrchestrator` + `IntegrationTestOrchestratorContext` (`hostMode`, `playfieldMode`, …) |
+| **Factory** | `miroir-standalone-app` | `StandaloneAppIntegrationOrchestrator` — maps session kind → adapter |
+| **Session adapters** | `miroir-standalone-app` | `IntegrationTestSession`, `AppStackIntegrationTestSession`, `DomainControllerIntegrationTestSession`, `RunnerTestSession` |
+| **Bootstrap** | `miroir-core` | `runAppStackIntegrationBootstrap`, `ensureMiroirPlatform`, `ensureLibraryPlayfield`, `resetLibraryPlayfield` |
+| **Vitest script** | `miroir-standalone-app` | `test-miroir.ts` + entry files; passes orchestrator context into session adapters |
 
-**Goal:** transformer integ (`miroir-core`) and runner integ (`standalone-app`) share the same orchestrator and teardown contract, forcing setup code to stay hexagonal and UI-ready (Phase B reuses the same port).
+**Goal (met for CLI):** transformer, storage, domain-controller, and runner integ share the same orchestrator port and teardown contract. **Phase B** adds a UI launcher that reuses this stack — default `hostMode: "isolated"` (Vitest subprocess), optional `embedded` for advanced host attachment ([Gap A](./integ-test-setup-gaps.md#2-gap-a--miroir--admin-app-initialization--done)).
 
 ---
 
-## Developer quick reference (target)
+## Developer quick reference
 
 | Area | Path |
 |------|------|
 | Schema evolution | `entityDefinitionMiroirTest` + `getMiroirFundamentalJzodSchema` |
-| Runner leaf dispatch | `packages/miroir-core/src/4_services/RunnerTestTools.ts` |
-| Integration port + orchestrator | `packages/miroir-core/tests/helpers/MiroirTestIntegrationOrchestrator.ts` |
-| Postgres adapter (existing) | `packages/miroir-core/tests/helpers/miroirTestIntegrationStore.ts` |
-| Runner adapter (external layers) | `packages/miroir-standalone-app/tests/helpers/RunnerTestSession.ts` |
+| Runner leaf dispatch | `packages/miroir-core/src/5_tests/RunnerTestTools.ts` |
+| Integration port + orchestrator | `packages/miroir-core/src/5_tests/MiroirTestIntegrationOrchestrator.ts` |
+| Bootstrap phases + session descriptors | `packages/miroir-core/src/5_tests/IntegrationTestBootstrap.ts` |
+| Platform / library playfield | `MiroirPlatformPlayfield.ts`, `LibraryPlayfield.ts` |
+| Standalone factory | `packages/miroir-standalone-app/tests/helpers/StandaloneAppIntegrationOrchestrator.ts` |
+| Session adapters | `packages/miroir-standalone-app/tests/helpers/IntegrationTestSession.ts` |
+| Runner adapter | `packages/miroir-standalone-app/tests/helpers/RunnerTestSession.ts` |
 | Fixture catalog (Phase A bridge) | `packages/miroir-test-app_deployment-library/src/runnerTestFixtures.ts` |
 | Param bank / environment seeds | `RUNNER_TEST_ENVIRONMENT_REFS` in fixture catalog → `RunnerTestContext.testParams` |
 | Pilot instance | `miroir-test-app_deployment-library/assets/.../miroirTest_runner_library.json` |
 | Standalone registry | `packages/miroir-standalone-app/tests/helpers/miroirRunnerTestSuiteRegistry.ts` |
-| Vitest entry | `packages/miroir-standalone-app/tests/miroir-runner-tests.integ.test.ts` |
+| Vitest entries | `miroir-core-tests.integ.test.ts` (transformer), `miroir-runner-tests.integ.test.ts` (runner) |
+| Gap analysis (bootstrap state) | [integ-test-setup-gaps.md](./integ-test-setup-gaps.md) |
 | Config files | `tests/miroirConfig.test-emulatedServer-sql.json`, `tests/specificLoggersConfig_*.json` |
 
-### Commands (target)
+### Commands
 
 ```bash
 # Phase A — runner library pilot (explicit env — CI / debugging)
@@ -317,15 +364,23 @@ npm run testMiroir -w miroir-standalone-app -- --suites runner_library --mode in
 # Local convenience — bundled preset (overrides default paths when no VITE_* set)
 npm run testMiroir -w miroir-standalone-app -- --suites runner_library --mode integ --profile emulatedServer-sql
 
-# Filter single leaf
-npm run testMiroir -w miroir-standalone-app -- --suites runner_library --mode integ --profile emulatedServer-sql \
-  --filter '{"testList":{"runner.library":["Lend Book Test Composite Action"]}}'
+# Transformer integ (same script; MIROIR_TEST_* env — separate from VITE_MIROIR_* until Gap D)
+MIROIR_TEST_SUITES=miroirCoreTransformers MIROIR_TEST_MODE=integ \
+  npm run testMiroir -w miroir-standalone-app
 
-# Legacy path (unchanged until deprecation)
+# Filter single leaf (suite label runner.library — not registry key runner_library)
+npm run testMiroir -w miroir-standalone-app -- --suites runner_library --mode integ --profile emulatedServer-sql \
+  --filter '{"runner.library":["Return Book Test Composite Action"]}'
+
+# Shorthand: leaf label as sole key (values ignored) when suite has flat leaves
+npm run testMiroir -w miroir-standalone-app -- --suites runner_library --mode integ --profile emulatedServer-sql \
+  --filter '{"Return Book Test Composite Action":["*"]}'
+
+# Legacy imperative path (harness on RunnerTestSession; not MiroirTest JSON — G8)
 VITE_MIROIR_TEST_CONFIG_FILENAME=... npm run testByFile -w miroir-standalone-app -- Runner_Miroir.integ
 ```
 
-**Profile resolution order:** explicit `VITE_MIROIR_*` env vars win → else `--profile` maps to preset table → else error (no implicit default in CI).
+**Profile resolution order (runner / app-stack):** explicit `VITE_MIROIR_*` env vars win → else `--profile` maps to preset table → else error (no implicit default in CI).
 
 ---
 
@@ -362,41 +417,36 @@ VITE_MIROIR_TEST_CONFIG_FILENAME=... npm run testByFile -w miroir-standalone-app
 - Wire `case "runnerTest"` in `MiroirTestTools.runMiroirTestInMemory` (integration only)
 - Export `runRunnerTestCompositeAction` from `miroir-core`; `tests-utils.tsx` re-exports for legacy integ files
 
-#### A2 — Shared integration orchestrator (TDD)
+#### A2 — Shared integration orchestrator (TDD) ✅
 
 **Red:**
 
 - `miroirTestIntegrationOrchestrator.unit.test.ts`: mock port → `initSession` / `beforeEach` / `teardown` called in order
 - `runnerIntegAdapter.unit.test.ts` (standalone-app): adapter implements port contract
 
-**Green (miroir-core):**
+**Green (miroir-core):** ✅
 
-- `RunnerTestSessionInterface` interface:
-  ```typescript
-  interface RunnerTestSessionInterface {
-    initSession(): Promise<MiroirTestExecutionEnvironment>;
-    beforeEach(): Promise<void>;
-    teardown(): Promise<void>;
-  }
-  ```
-- `MiroirTestExecutionEnvironment` — union/superset for transformer + runner needs (`integrationStore?`, `domainController?`, `testParams`, `runtimeContext`, …)
-- `MiroirTestIntegrationOrchestrator` — owns lifecycle; used by `runMiroirTestsFromCLI`
-- `IntegrationTestSessionForPostgres` — thin wrap over `initMiroirTestIntegrationStore` (refactor existing integ entry, no behaviour change)
+- `RunnerTestSessionInterface` — `initSession` → `MiroirTestExecutionEnvironment`; `beforeEach`; `teardown`
+- `MiroirTestExecutionEnvironment` — shared shape for transformer + runner (`domainController`, `applicationDeploymentMap`, `testApplicationUuid`, `persistenceStoreControllerManager`, optional `runnerTestContext`)
+- `MiroirTestIntegrationOrchestrator` port + `IntegrationTestOrchestratorContext` (`hostMode`, `playfieldMode`, `platformEnsureMode`, …)
+- `IntegrationTestBootstrap.ts` — session kinds, phase descriptors, `describeIntegrationTestSession`
 
-**Green (standalone-app):**
+**Green (standalone-app):** ✅
 
-- `RunnerTestSession` implements `RunnerTestSessionInterface`:
-  - Injects external layers: `miroirAppStartup`, store section startups, `loadTestConfigFiles`, `setupMiroirTest`, Miroir deployment create, `resetAndInitApplicationDeployment`
-  - Factors logic from `RunnerIntegTestTools.beforeAllTests` / `beforeEachTest`
-- `RunnerIntegTestTools.tsx` becomes thin wrapper over adapter (legacy tests unchanged)
+- `StandaloneAppIntegrationOrchestrator` — factory for all session kinds
+- `IntegrationTestSession` (transformer), `AppStackIntegrationTestSession`, `DomainControllerIntegrationTestSession`, `RunnerTestSession`
+- `RunnerTestSession`: shared bootstrap via `runAppStackIntegrationBootstrap`; per-test `resetLibraryPlayfield` (Gap B)
+- `RunnerIntegTestTools.tsx` — thin wrapper; legacy `Runner_Miroir.integ` uses `RunnerTestSession` directly
+- Transformer integ entry: `miroir-core-tests.integ.test.ts` (moved from miroir-core; `initMiroirCoreTestIntegrationStore` removed — Gap C)
+
+**Also completed (Gap A/B/E — see [integ-test-setup-gaps.md](./integ-test-setup-gaps.md)):**
+
+- `ensureMiroirPlatform`, `ensureLibraryPlayfield`, `resetLibraryPlayfield`
+- Legacy `Runner_Miroir.integ`, `3_controllers` CRUD, `4_storage` migrated to session adapters
 
 **Ground prep (optional stretch):**
 
-- One pilot `testParams` field via `getFromParams`; `resolveRunnerTestEnvironment(environmentRef)` seeds `testParams` namespace
-
-**Follow-up (same feature, later slice):**
-
-- Refactor `miroir-tests.integ.test.ts` (miroir-core) to use orchestrator + `IntegrationTestSessionForPostgres` explicitly
+- One pilot `testParams` field via `getFromParams`; `resolveRunnerTestEnvironment(environmentRef)` seeds `testParams` namespace → deferred to Phase R
 
 #### A3 — Pilot instance + fixture catalog
 
@@ -431,15 +481,16 @@ npm run testMiroir -w miroir-standalone-app -- --suites runner_library --mode in
 
 - Side-by-side run: legacy `Runner_Miroir.integ` vs new `testMiroir` — same pass/fail
 - Update `docs/guides/developer/testing.md` with runner integ section
-- Legacy `Runner_Miroir.integ` **unchanged** (G8: deprecate only after full `Runner_*` migration)
+- Legacy `Runner_Miroir.integ`: harness on `RunnerTestSession` (Gap E); **still imperative** — not migrated to MiroirTest JSON (G8)
 - Add parity comment in `Runner_Library.ts` pointing to `miroirTest_runner_library` (no `@deprecated` until cutover batch)
 
 #### Phase A — completion notes
 
 - `runnerTest` schema + `RunnerTestTools` + orchestrator + `testMiroir` in standalone-app ✅
 - `miroirTest_runner_library` with lend + return leaves ✅
+- Shared bootstrap: Gaps A/B/C-setup/E — four session kinds, orchestrator port, playfield helpers ✅
 - Return fixture adds `preRunnerCompositeActions: [lendBookPreRunner]` (fix missing in legacy `Runner_Library.ts`)
-- Fixture catalog path: `miroir-test-app_deployment-library/src/runnerTestFixtures.ts` (not under `tests/`)
+- Fixture catalog path: `miroir-test-app_deployment-library/src/runnerTestFixtures.ts`
 
 ---
 
@@ -596,22 +647,46 @@ Move declarative transformer trees from `RUNNER_TEST_FIXTURE_REFS` into `miroirT
 
 ### Phase B — UI integration test execution (later)
 
-#### B0 — Session isolation model
+**Prerequisite:** Gaps A/B/C-setup/E complete ✅ — Phase B wires the **UI launcher** to existing infrastructure; it does not redesign bootstrap from scratch.
 
-Design `MiroirRunnerTestSession`:
+**In scope:** domainController-based MiroirTest integ (`runnerTest`, transformer integ via `testMiroir`).
+
+**Deferred:** PSC-direct `4_storage` Vitest suites from UI (see [Out of scope](#out-of-scope)); unified config across `MIROIR_TEST_*` and `VITE_MIROIR_*` (Gap D).
+
+#### B0 — UI launcher + session isolation
+
+Wire UI to `StandaloneAppIntegrationOrchestrator` with explicit host/playfield modes ([Gap A](./integ-test-setup-gaps.md#2-gap-a--miroir--admin-app-initialization--done)).
 
 | Concern | Approach |
 |---------|----------|
-| Working UI pollution | Never reuse live `MiroirContext` domain controller; spawn isolated session |
-| Config | User picks environment profile (sql / indexedDb) or inherits from dev config |
-| Setup | `initMiroirRunnerTestEnvironment` with session-scoped schema / indexedDb name (`test_<timestamp>`) |
-| Teardown | Drop test schemas, clear indexedDb, reset activity tracker |
-| Concurrency | One runner test session at a time (mutex); queue additional runs |
+| **Default (recommended)** | **Isolated Vitest subprocess** — UI spawns `testMiroir` / filtered Vitest with `hostMode: "isolated"`, fresh schema / indexedDb (`test_<timestamp>`), never touches live `MiroirContext` |
+| Working UI pollution | Never reuse live domain controller for isolated runs; mutex — one integ session at a time, queue additional runs |
+| Config | User picks environment profile (sql / indexedDb) or inherits dev config; runner `--profile` for app-stack; transformer `MIROIR_TEST_*` until Gap D |
+| Setup | Reuse `RunnerTestSession` / `IntegrationTestSession` via orchestrator — not a new parallel bootstrap |
+| Teardown | Session adapter `teardown()` — drop test schemas, clear indexedDb, reset activity tracker |
+| **Advanced (optional)** | `hostMode: "embedded"` + `hostExecutionEnvironment` — inject live host `domainController`; `platformEnsureMode` / `playfieldMode: "requireExisting"` when host already deployed platform + library |
+
+**UI catalog:** use `orchestrator.describeSession(kind)` for mode badges, playfield, `defaultHostMode`, `embeddedCapable` per suite kind.
+
+```mermaid
+flowchart LR
+  UI[Miroir Tests UI]
+  LAUNCH[Integ launcher]
+  VIT[Vitest subprocess]
+  ORCH[StandaloneAppIntegrationOrchestrator]
+  SESS[Session adapter]
+
+  UI --> LAUNCH
+  LAUNCH -->|hostMode isolated| VIT
+  VIT --> ORCH
+  ORCH --> SESS
+  SESS -->|results + activity| UI
+```
 
 #### B1 — UI components (extend existing Miroir Tests)
 
-- `RunMiroirTestSuiteButton` — detect suite leaf kinds; pass `executionMode: "integration"` for `runnerTest` suites; disabled when integ session active
-- `MiroirTestDisplay` / list — **mode badge** (`unit` | `integ`) per suite based on leaf types
+- `RunMiroirTestSuiteButton` — detect suite leaf kinds via `describeSession`; pass `executionMode: "integration"` for integ suites; spawn subprocess or call embedded path; disabled when integ session active
+- `MiroirTestDisplay` / list — **mode badge** (`unit` | `integ`) per suite from leaf types + session descriptor
 - `RunnerTestEnvironmentInspector` (new panel section) — resolved profile, deployment map, store endpoints, last composite actions from activity tracker
 
 #### B2 — Menu & reports
@@ -619,9 +694,11 @@ Design `MiroirRunnerTestSession`:
 - Reuse **Miroir Tests** menu (`eaac459c-…`) and `reportMiroirTestList` / `reportMiroirTestDetails`
 - Extend `miroirTestReportSection` to surface integ-only suites and inspector slot (no separate menu)
 
-#### B3 — Align with server/UI startup (Feature 157)
+#### B3 — Startup alignment (Feature 157)
 
-- Extract shared "deployment bootstrap" steps used by `miroirAppStartup`, emulated server, and test environment so troubleshooting view reflects real startup
+- Gap A/B already extracted shared bootstrap (`ensureMiroirPlatform`, `ensureLibraryPlayfield`, `runAppStackIntegrationBootstrap`)
+- Phase B: ensure troubleshooting inspector reflects orchestrator phase descriptors and activity tracker output from the launched session
+- Optional: embedded path for dev troubleshooting against live host (explicit opt-in, not default)
 
 ---
 
@@ -651,7 +728,7 @@ Design `MiroirRunnerTestSession`:
 - [x] `RunnerTestTools` resolves pilot leaves via fixture catalog
 - [x] `npm run testMiroir -w miroir-standalone-app -- --suites runner_library --mode integ` passes (lend + return)
 - [x] `runnerTest` rejected in `executionMode: "unit"` with clear error
-- [x] Orchestrator + `RunnerTestSession`; legacy `Runner_Miroir.integ` unchanged
+- [x] Orchestrator + four session adapters (Gaps A/B/C-setup/E); legacy `Runner_Miroir.integ` harness on `RunnerTestSession` (still imperative — G8)
 - [x] No secrets committed; config files use localhost defaults
 
 ### Phase R
@@ -661,9 +738,16 @@ Design `MiroirRunnerTestSession`:
 
 ### Phase B
 
-- [ ] Run `runner_library` from UI without affecting working session stores
+- [ ] UI launcher spawns isolated Vitest subprocess for integ MiroirTest suites (`hostMode: "isolated"`)
+- [ ] Run `runner_library` (and transformer integ suites) from UI without affecting working session stores
 - [ ] Environment inspector shows config + last run context
 - [ ] Teardown leaves no test schemas / indexedDb databases behind
+- [ ] (Optional) embedded host path documented and gated — not default
+
+### Gap D (optional — not blocking Phase B)
+
+- [ ] Unified profile / env var UX across `MIROIR_TEST_*` (transformer) and `VITE_MIROIR_*` (app-stack/runner)
+- [ ] Optional: transformer integ loads store config from same `miroirConfig.test-*.json` profiles as emulated-server tests
 
 ---
 
@@ -684,11 +768,14 @@ Design `MiroirRunnerTestSession`:
 
 ## Out of scope
 
-- Migrating all `Runner_*.integ.test.tsx` files (pilot only in Phase A)
+- Migrating all `Runner_*.integ.test.tsx` files to MiroirTest JSON (pilot only in Phase A; G8 governs cutover)
 - Deleting legacy `Test` entity
 - Fixing pre-existing type `as any` in lendDocument payload
 - CI matrix for every storage backend (pilot: emulatedServer-sql only)
 - Running transformer + runner suites in a single `testMiroir` invocation across packages (future)
+- **UI launcher for PSC-direct `4_storage` suites** — persistence-layer tests keep PSC assertions by design ([Gap C-assertions](./integ-test-setup-gaps.md#42-c-assertions--persistence-tests-keep-psc-by-design)); defer to follow-up issue or Phase B+ (Vitest subprocess catalog entry only)
+- **Migrating `4_storage` assertions to `domainController`** — changes test meaning; not required for setup unification
+- **Gap D config unification** — optional; runner `--profile` exists; full cross-family profile matrix deferred
 
 ---
 
@@ -706,6 +793,7 @@ Design `MiroirRunnerTestSession`:
 
 ## Related
 
+- [Integration test setup — gap analysis](./integ-test-setup-gaps.md) (bootstrap state; source of truth for Gaps A–E)
 - [Feature 196 — MiroirTest](../196-FEATURE-migrate-tests-to-MiroirTest/plan.md)
 - [Feature 195 — Unit tests in UI](../195-FEATURE-%20enable%20execution%20of%20miroir-core%20unit%20tests%20in%20UI/plan.md) (superseded for unit tests; still relevant for `Test` entity distinction)
 - [Feature 157 — Startup sequence](../157-FEATURE-%20harden%20startup%20sequence%20%26%20enable%20admin%20deployment%20choice%20on%20client%20-%20server/PLAN.md) (shared setup/teardown alignment)

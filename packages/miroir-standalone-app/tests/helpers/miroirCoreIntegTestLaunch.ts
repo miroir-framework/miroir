@@ -58,7 +58,7 @@ export function formatMiroirCoreIntegTestUsage(): string {
     "  (programmatic) bundledDeploymentData   Required on IntegrationTestSession options; not settable via env alone",
     "",
     "Optional:",
-    "  MIROIR_TEST_FILTER='{\"suite\":[\"label\"]}'   JSON filter passed to runMiroirCoreTestsFromCLI",
+    "  MIROIR_TEST_FILTER='{\"<miroirTestLabel>\":[\"<leaf miroirTestLabel>\"]}'   JSON filter (see testing.md#filtering-miroirtest-cases)",
     "",
     "Example (default: sql test app + filesystem admin):",
     "  MIROIR_TEST_SUITES=miroirCoreTransformers MIROIR_TEST_MODE=integ \\",
@@ -140,16 +140,6 @@ export function validateMiroirCoreIntegTestLaunch(
     const parentDir = path.dirname(appRoot);
     if (!fs.existsSync(parentDir)) {
       errors.push(`Parent directory for test app filesystem root does not exist: ${parentDir}`);
-    }
-  }
-
-  if (config.filter) {
-    const filterSuiteKeys = Object.keys(config.filter);
-    const unknownFilterKeys = filterSuiteKeys.filter((key) => !config.suiteKeys.includes(key));
-    if (unknownFilterKeys.length > 0) {
-      errors.push(
-        `MIROIR_TEST_FILTER references suite(s) not in the current run: ${unknownFilterKeys.join(", ")}`,
-      );
     }
   }
 

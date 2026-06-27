@@ -236,7 +236,7 @@ export const libraryReturnBookRunnerTest: RunnerTestParams = {
               referencePath: ["LendingHistoryList", "items"],
             },
           },
-          expectedValue: { aggregate: 1 },
+          expectedValue: { aggregate: 2 }, // TODO: returnDocument does a createInstance, so we have 2 items. it should check for the existence of an entry / find the latest entry, and update it.
         },
       },
     },

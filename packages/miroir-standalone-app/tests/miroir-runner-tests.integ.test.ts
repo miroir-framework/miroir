@@ -54,6 +54,12 @@ MiroirLoggerFactory.startRegisteredLoggers(
   loggerOptions,
 );
 log.info("miroir-runner-tests.integ started", JSON.stringify(config, null, 2));
+if (config.filter?.testList) {
+  log.info(
+    "miroir-runner-tests.integ filter active",
+    JSON.stringify(config.filter.testList),
+  );
+}
 
 if (config.suiteKeys.length > 0) {
   const orchestrator = createStandaloneAppIntegrationOrchestrator();

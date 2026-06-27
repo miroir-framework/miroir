@@ -63,10 +63,12 @@ MIROIR_TEST_MODE=unit npm run testMiroir -w miroir-core
 # Argv form
 npm run testMiroir -w miroir-core -- --suites mustache --mode unit
 
-# Label filter (JSON)
-npm run testMiroir -w miroir-core -- --suites resolveConditionalSchema --mode unit \
-  --filter '{"resolveConditionalSchema":["fails when wrong parentUuid is given"]}'
+# Filter to specific test labels
+npm run testMiroir -w miroir-core -- --suites mustache --mode unit \
+  --filter '{"mustache.extractDoubleBracePatterns":["should extract patterns with double braces"]}'
 ```
+
+See [Filtering MiroirTest cases](../../reference/testing.md#filtering-miroirtest-cases) for the full filter model (registry key vs `miroirTestLabel`, runner examples).
 
 **Environment variables:**
 
@@ -74,7 +76,7 @@ npm run testMiroir -w miroir-core -- --suites resolveConditionalSchema --mode un
 |----------|---------|---------|
 | `MIROIR_TEST_SUITES` | Comma-separated registry keys, or `*` for all | `*` |
 | `MIROIR_TEST_MODE` | `unit` or `integration` (`integ` accepted) | `unit` |
-| `MIROIR_TEST_FILTER` | JSON filter object | (none) |
+| `MIROIR_TEST_FILTER` | JSON filter object — see [Filtering MiroirTest cases](../../reference/testing.md#filtering-miroirtest-cases) | (none) |
 
 ---
 
@@ -96,6 +98,20 @@ MIROIR_TEST_SUITES=miroirCoreTransformers MIROIR_TEST_MODE=integ \
 ```
 
 Invalid configuration prints a full usage message before any test runs. See [reference/testing.md](../../reference/testing.md#running-miroirtest-integration-tests-testmiroir).
+
+### Runner integ (`runner_library`)
+
+Same `testMiroir` launcher with `VITE_MIROIR_*` config and `--mode integ`. Filter by **suite** `miroirTestLabel` `runner.library`, not registry key `runner_library`:
+
+```bash
+VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-sql.json \
+VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_DomainController_debug.json \
+npm run testMiroir -w miroir-standalone-app -- \
+  --suites runner_library --mode integ --profile emulatedServer-sql \
+  --filter '{"runner.library":["Return Book Test Composite Action"]}'
+```
+
+Details: [Filtering MiroirTest cases](../../reference/testing.md#filtering-miroirtest-cases).
 
 ---
 

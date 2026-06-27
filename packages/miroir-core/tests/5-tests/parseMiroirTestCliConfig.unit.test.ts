@@ -4,6 +4,7 @@ import { listMiroirTestSuiteKeys } from "../../src/5_tests/miroirCoreTestSuiteRe
 import {
   miroirTestCliConfigToEnv,
   miroirCoreTestVitestEntry,
+  normalizeMiroirTestRunFilter,
   parseMiroirTestCliArgs,
   parseMiroirTestCliConfig,
   resolveMiroirTestSuiteKeys,
@@ -41,7 +42,7 @@ describe("parseMiroirTestCliConfig (Phase 2)", () => {
     expect(miroirCoreTestVitestEntry(config.executionMode)).toBe("miroir-core-tests.integ.test");
   });
 
-  it("parses filter JSON from env and argv", () => {
+  it("parses filter JSON from env and argv (normalizes shorthand to testList)", () => {
     const fromEnv = parseMiroirTestCliConfig(
       {
         MIROIR_TEST_FILTER: '{"mergePositionBased":["merges two undefineds into undefined"]}',
@@ -49,14 +50,38 @@ describe("parseMiroirTestCliConfig (Phase 2)", () => {
       [],
     );
     expect(fromEnv.filter).toEqual({
-      mergePositionBased: ["merges two undefineds into undefined"],
+      testList: {
+        mergePositionBased: ["merges two undefineds into undefined"],
+      },
     });
 
     const fromArgv = parseMiroirTestCliConfig(
       {},
       ["--filter", '{"mustache":["case 1"]}'],
     );
-    expect(fromArgv.filter).toEqual({ mustache: ["case 1"] });
+    expect(fromArgv.filter).toEqual({
+      testList: { mustache: ["case 1"] },
+    });
+  });
+
+  it("normalizeMiroirTestRunFilter preserves explicit testList", () => {
+    expect(
+      normalizeMiroirTestRunFilter({
+        testList: { "runner.library": ["Return Book Test Composite Action"] },
+      }),
+    ).toEqual({
+      testList: { "runner.library": ["Return Book Test Composite Action"] },
+    });
+  });
+
+  it("normalizeMiroirTestRunFilter accepts leaf labels as keys for single-suite runs", () => {
+    expect(
+      normalizeMiroirTestRunFilter({
+        "Return Book Test Composite Action": "*",
+      }),
+    ).toEqual({
+      testList: { "Return Book Test Composite Action": "*" },
+    });
   });
 
   it("selects all registered suites when nothing is configured", () => {
@@ -82,7 +107,7 @@ describe("parseMiroirTestCliConfig (Phase 2)", () => {
     ).toEqual({
       suiteKeys: ["a", "b"],
       executionMode: "unit",
-      filter: { a: ["x"] },
+      filter: { testList: { a: ["x"] } },
     });
   });
 
@@ -90,12 +115,16 @@ describe("parseMiroirTestCliConfig (Phase 2)", () => {
     const env = miroirTestCliConfigToEnv({
       suiteKeys: ["mergePositionBased"],
       executionMode: "integration",
-      filter: { mergePositionBased: ["merges two undefineds into undefined"] } as any,
+      filter: {
+        testList: {
+          mergePositionBased: ["merges two undefineds into undefined"],
+        },
+      },
     });
     expect(env.MIROIR_TEST_SUITES).toBe("mergePositionBased");
     expect(env.MIROIR_TEST_MODE).toBe("integration");
     expect(env.MIROIR_TEST_FILTER).toBe(
-      '{"mergePositionBased":["merges two undefineds into undefined"]}',
+      '{"testList":{"mergePositionBased":["merges two undefineds into undefined"]}}',
     );
   });
 

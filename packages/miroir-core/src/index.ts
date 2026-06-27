@@ -1073,6 +1073,7 @@ export {
 
 export {
   MIROIR_RUNNER_TEST_VITEST_ENTRY,
+  MIROIR_RUNNER_TEST_SUITE_REGISTRY_NAMES,
   parseMiroirRunnerTestCliConfig,
 } from "./5_tests/parseMiroirRunnerTestCLIConfig";
 export {
@@ -1093,6 +1094,7 @@ export {
   miroirCoreTestVitestEntry,
   parseMiroirTestCliArgs,
   parseMiroirTestCliConfig,
+  normalizeMiroirTestRunFilter,
   resolveMiroirTestSuiteKeys,
   resolveMiroirTestCliConfigFromPartial,
   splitSuiteKeys,

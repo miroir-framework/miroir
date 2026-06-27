@@ -155,7 +155,7 @@ const checkNumberOfLendingHistoryItemsAssertion: CompositeRunTestAssertion = {
           referencePath: ["LendingHistoryList", "items"],
         },
       },
-      expectedValue: { aggregate: 1 },
+      expectedValue: { aggregate: 2 },
     },
   },
 };

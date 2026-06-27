@@ -102,6 +102,6 @@ export {
   resolveRunnerTestDeploymentRef,
   // resolveRunnerTestEnvironmentSeed,
   resolveRunnerTestFixture,
-  RUNNER_TEST_INITIAL_MODEL_FROM_PARAMETERS,
+  // RUNNER_TEST_INITIAL_MODEL_FROM_PARAMETERS,
   RUNNER_TEST_ENVIRONMENT_REFS,
 } from "./src/runnerTestFixtures.js";

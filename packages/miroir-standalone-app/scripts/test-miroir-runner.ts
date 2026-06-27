@@ -7,14 +7,13 @@ import {
   miroirTestCliConfigToEnv,
   miroirCoreTestVitestEntry,
   MIROIR_RUNNER_TEST_VITEST_ENTRY,
+  MIROIR_RUNNER_TEST_SUITE_REGISTRY_NAMES,
   parseMiroirRunnerTestCliConfig,
   parseMiroirTestCliArgs,
   parseMiroirTestCliConfig,
   splitSuiteKeys,
   listMiroirTestSuiteKeys,
 } from "miroir-core";
-import { miroirTest_runner_library } from "miroir-test-app_deployment-library";
-import type { MiroirTestSuite } from "miroir-core";
 
 const scriptDir = path.dirname(fileURLToPath(import.meta.url));
 const packageRoot = path.resolve(scriptDir, "..");
@@ -23,7 +22,7 @@ const argv = process.argv.slice(2);
 const env = process.env;
 
 function listRunnerTestSuiteKeys(): string[] {
-  return Object.keys(miroirTest_runner_library.definition as MiroirTestSuite);
+  return [...MIROIR_RUNNER_TEST_SUITE_REGISTRY_NAMES];
 }
 
 function resolveRequestedSuiteKeys(): string[] {
@@ -53,19 +52,9 @@ function resolveVitestEntry(): { vitestEntry: string; spawnEnv: NodeJS.ProcessEn
   }
 
   const runnerConfig = parseMiroirRunnerTestCliConfig(env, argv);
-  const runnerEnv: NodeJS.ProcessEnv = {
-    ...env,
-    MIROIR_TEST_MODE: runnerConfig.executionMode,
-  };
-  if (runnerConfig.suiteKeys.length) {
-    runnerEnv.MIROIR_TEST_SUITES = runnerConfig.suiteKeys.join(",");
-  }
-  if (runnerConfig.filter !== undefined) {
-    runnerEnv.MIROIR_TEST_FILTER = JSON.stringify(runnerConfig.filter);
-  }
   return {
     vitestEntry: MIROIR_RUNNER_TEST_VITEST_ENTRY,
-    spawnEnv: runnerEnv,
+    spawnEnv: { ...env, ...miroirTestCliConfigToEnv(runnerConfig) },
   };
 }
 

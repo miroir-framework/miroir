@@ -102,16 +102,18 @@ describe("miroirCoreIntegTestLaunch", () => {
     expect(errors.some((error) => error.includes("bundledDeploymentData"))).toBe(true);
   });
 
-  it("reports filter keys outside selected suites", () => {
+  it("does not reject filter keys that differ from registry suite keys", () => {
     const errors = validateMiroirCoreIntegTestLaunch(
       baseContext({
         config: {
           suiteKeys: ["mustache"],
-          filter: { miroirCoreTransformers: ["x"] },
+          filter: {
+            testList: { "mustache.extractDoubleBracePatterns": ["should extract patterns with double braces"] },
+          },
         },
       }),
     );
-    expect(errors.some((error) => error.includes("MIROIR_TEST_FILTER"))).toBe(true);
+    expect(errors.some((error) => error.includes("MIROIR_TEST_FILTER"))).toBe(false);
   });
 
   it("throws with usage when assert fails", () => {

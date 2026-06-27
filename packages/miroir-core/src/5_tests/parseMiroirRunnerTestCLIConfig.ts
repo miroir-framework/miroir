@@ -5,13 +5,14 @@ import {
   resolveMiroirTestCliConfigFromPartial,
 } from "./parseMiroirTestCliConfig.js";
 import { applyRunnerTestProfile } from "./runnerTestProfiles.js";
-import { miroirTest_runner_library } from "miroir-test-app_deployment-library";
-import type { MiroirTestSuite } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 
 export const MIROIR_RUNNER_TEST_VITEST_ENTRY = "miroir-runner-tests.integ.test" as const;
 
+/** Registry keys for runner MiroirTest suites (not `Object.keys` on suite JSON). */
+export const MIROIR_RUNNER_TEST_SUITE_REGISTRY_NAMES = ["runner_library"] as const;
+
 function listRunnerTestSuiteKeys(): string[] {
-  return Object.keys(miroirTest_runner_library.definition as MiroirTestSuite);
+  return [...MIROIR_RUNNER_TEST_SUITE_REGISTRY_NAMES];
 }
 
 // ################################################################################################

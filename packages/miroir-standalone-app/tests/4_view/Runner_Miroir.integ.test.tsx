@@ -37,7 +37,8 @@ import {
 
 import { RunnerTestSession } from "../helpers/RunnerTestSession.js";
 import {
-  libraryLendBookRunnerTest
+  libraryLendBookRunnerTest,
+  libraryReturnBookRunnerTest
 } from "./Runner_Library.ts";
 // ################################################################################################
 const pageLabel = "Runner_Miroir.integ.test";
@@ -126,7 +127,8 @@ afterAll(async () => {
 const localRunnerInstallApplication = runnerDeployApplication as Runner;
   
 const runnerTestParams: Record<string, RunnerTestParams> = {
-  ["libraryLendBookRunnerTest"]: libraryLendBookRunnerTest,
+  libraryLendBookRunnerTest: libraryLendBookRunnerTest,
+  libraryReturnBookRunnerTest: libraryReturnBookRunnerTest,
 };
 
 // filter to run only specific tests

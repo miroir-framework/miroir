@@ -2,7 +2,12 @@ import type {
   MiroirTestExecutionMode,
 } from "./MiroirTestTools";
 import { listMiroirTestSuiteKeys } from "./miroirCoreTestSuiteRegistry.js";
-import type { MiroirTestRunFilter } from "../0_interfaces/5-tests/miroirTestTypes";
+import type {
+  MiroirTestRunFilter,
+  TestSuiteListFilter,
+} from "../0_interfaces/5-tests/miroirTestTypes";
+
+const FILTER_META_KEYS = new Set(["testList", "match"]);
 
 export type MiroirTestCliConfig = {
   suiteKeys: string[];
@@ -57,6 +62,51 @@ export function resolveMiroirTestSuiteKeys(rawKeys: string[]): string[] {
   return resolveSuiteKeys(rawKeys, listMiroirTestSuiteKeys());
 }
 
+/**
+ * Accepts either canonical `{ testList: { "<miroirTestLabel>": ["<leaf>", …] } }`
+ * or shorthand `{ "<miroirTestLabel>": ["<leaf>", …] }` (documented CLI form).
+ */
+export function normalizeMiroirTestRunFilter(
+  parsed: Record<string, unknown>,
+): MiroirTestRunFilter {
+  const hasTestList = Object.hasOwn(parsed, "testList");
+  const hasMatch = Object.hasOwn(parsed, "match");
+  const shorthandKeys = Object.keys(parsed).filter((key) => !FILTER_META_KEYS.has(key));
+
+  if (hasTestList || hasMatch) {
+    const result: MiroirTestRunFilter = {};
+    if (hasTestList) {
+      result.testList = parsed.testList as TestSuiteListFilter;
+    }
+    if (hasMatch) {
+      result.match = parsed.match as RegExp;
+    }
+    if (shorthandKeys.length > 0) {
+      const merged: Record<string, TestSuiteListFilter> =
+        result.testList &&
+        typeof result.testList === "object" &&
+        !Array.isArray(result.testList)
+          ? { ...(result.testList as Record<string, TestSuiteListFilter>) }
+          : {};
+      for (const key of shorthandKeys) {
+        merged[key] = parsed[key] as TestSuiteListFilter;
+      }
+      result.testList = merged;
+    }
+    return result;
+  }
+
+  if (shorthandKeys.length > 0) {
+    const testList: Record<string, TestSuiteListFilter> = {};
+    for (const key of shorthandKeys) {
+      testList[key] = parsed[key] as TestSuiteListFilter;
+    }
+    return { testList };
+  }
+
+  return parsed as MiroirTestRunFilter;
+}
+
 export function parseFilterJson(raw: string | undefined): MiroirTestRunFilter | undefined {
   if (!raw?.trim()) {
     return undefined;
@@ -65,7 +115,7 @@ export function parseFilterJson(raw: string | undefined): MiroirTestRunFilter | 
   if (parsed === null || typeof parsed !== "object" || Array.isArray(parsed)) {
     throw new Error("MIROIR_TEST_FILTER / --filter must be a JSON object");
   }
-  return parsed as MiroirTestRunFilter;
+  return normalizeMiroirTestRunFilter(parsed as Record<string, unknown>);
 }
 
 function normalizeExecutionMode(
