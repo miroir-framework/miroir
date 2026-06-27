@@ -4,6 +4,7 @@ import {
   applyIntegrationTestProfile,
   INTEGRATION_TEST_PROFILES,
   listIntegrationTestProfileNames,
+  resolveTransformerDefaultsForProfile,
 } from "./integrationTestProfiles.js";
 
 const ENV_KEYS = [
@@ -65,6 +66,16 @@ describe("integrationTestProfiles (Gap D0)", () => {
 
     expect(process.env.VITE_MIROIR_TEST_CONFIG_FILENAME).toBe("/custom/config.json");
     expect(process.env.VITE_MIROIR_LOG_CONFIG_FILENAME).toContain("specificLoggersConfig");
+  });
+
+  it("resolveTransformerDefaultsForProfile derives emulatedServer-sql from JSON", () => {
+    const defaults = resolveTransformerDefaultsForProfile(
+      INTEGRATION_TEST_PROFILES["emulatedServer-sql"],
+    );
+
+    expect(defaults.appStoreType).toBe("sql");
+    expect(defaults.adminStoreType).toBe("filesystem");
+    expect(defaults.postgresHost).toBe("localhost");
   });
 
   it("applyIntegrationTestProfile sets VITE and transformer defaults when env is empty", () => {

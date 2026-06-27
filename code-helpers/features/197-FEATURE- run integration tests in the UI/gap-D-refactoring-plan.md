@@ -7,7 +7,7 @@
 phases (Gap E), not playfield contracts (Gap B), not host injection (Gap A). **No `it()` body
 changes.**
 
-**Status:** D0–D1 complete; D2–D8 not started
+**Status:** D0–D3 complete; D4–D8 not started
 
 ---
 
@@ -317,31 +317,49 @@ npm run testByFile -w miroir-standalone-app -- integrationTestProfiles.unit
 
 ---
 
-### Slice D2 — Derive transformer defaults from `miroirConfig` JSON (unit)
+### Slice D2 — Derive transformer defaults from `miroirConfig` JSON (unit) — ✅ **DONE**
 
-**D2-Red:** `deriveTestSessionDefaultsFromMiroirConfig.unit.test.ts`
+**D2-Red:** `tests/helpers/deriveTestSessionDefaultsFromMiroirConfig.unit.test.ts`
 
-- Given `miroirConfig.test-emulatedServer-sql.json` fixture → `postgresHost`, `adminStoreType: filesystem`
+- Given `miroirConfig.test-emulatedServer-sql.json` fixture → `postgresHost: localhost`, `adminStoreType: filesystem`, `appStoreType: sql`
 - Missing deployment sections → partial result, no throw
+- CI host-sql fixture (no admin deployment) → `appStoreType: sql`, `postgresHost: host.docker.internal`, no `adminStoreType`
+- `parsePostgresHostFromConnectionString` handles `postgres://` and `postgresql://`
+- Profile path loading via `resolveTransformerDefaultsForProfile` reads repo-relative JSON
 
-**D2-Green:** implement pure mapper; wire into `applyIntegrationTestProfile` when `transformerDefaults` omitted
+**D2-Green:**
 
-**Verify:** D0 + D2 unit; transformer integ still green with `--profile` only (no manual `MIROIR_TEST_POSTGRES_HOST`)
+- `tests/helpers/deriveTestSessionDefaultsFromMiroirConfig.ts` — pure mapper (admin deployment → admin store; miroir deployment model/data → app store + postgres host)
+- `integrationTestProfiles.ts` — removed hardcoded `transformerDefaults` from catalog; `resolveTransformerDefaultsForProfile` loads JSON + merges optional profile overrides; repo root resolution via `import.meta.url` fallback
+- `integrationTestProfiles.unit.test.ts` — added derivation test
+
+**Verify:**
+
+- `npx vitest run tests/helpers/deriveTestSessionDefaultsFromMiroirConfig.unit.test.ts tests/helpers/integrationTestProfiles.unit.test.ts -w miroir-standalone-app` — ✅ **PASS** (13/13)
+- `npx vitest run tests/helpers/test-miroir-runner.profile.unit.test.ts -w miroir-standalone-app` — ✅ **PASS** (4/4)
+- Runner: `npm run testMiroir -w miroir-standalone-app -- --profile emulatedServer-sql --suites runner_library --mode integ --filter '…'` — ✅ **PASS** (profile-only, no manual `MIROIR_TEST_POSTGRES_HOST`)
 
 **Commit:** `refactor(integ-test): D2 derive transformer session defaults from miroir config`
 
 ---
 
-### Slice D3 — Profile-aware launch validation
+### Slice D3 — Profile-aware launch validation — ✅ **DONE**
 
-**D3-Red:** extend `miroirCoreIntegTestLaunch.unit.test.ts`
+**D3-Red:** extend `tests/helpers/miroirCoreIntegTestLaunch.unit.test.ts`
 
 - Usage text mentions `--profile emulatedServer-sql`
-- When profile applied, validation passes without explicit `MIROIR_TEST_POSTGRES_HOST`
+- `applyIntegrationTestProfile("emulatedServer-sql")` → validation passes without manually setting `MIROIR_TEST_POSTGRES_HOST`
+- CI + sql backends without profile/postgres host → error mentions `--profile emulatedServer-sql`
+- CI with `VITE_MIROIR_TEST_CONFIG_FILENAME` (profile env) → no CI sql error
+- `assertMiroirCoreIntegTestLaunchReady` failure includes profile hint
 
-**D3-Green:** update `formatMiroirCoreIntegTestUsage` + optional profile hint in error messages
+**D3-Green:** `tests/helpers/miroirCoreIntegTestLaunch.ts`
 
-**Verify:** launch unit tests
+- `formatMiroirCoreIntegTestUsage`: `--profile` usage line, profile catalog, profile-first example
+- `formatProfileLaunchHint()`: appended to launch failure messages
+- `validateCiSqlBackendConfiguration`: CI fail-fast when sql stores lack `MIROIR_TEST_POSTGRES_HOST` and profile config
+
+**Verify:** `npx vitest run tests/helpers/miroirCoreIntegTestLaunch.unit.test.ts -w miroir-standalone-app` — ✅ **PASS** (12/12)
 
 **Commit:** `docs(integ-test): D3 profile in launch validation and usage`
 

@@ -8,9 +8,11 @@ import {
 } from "miroir-core";
 
 import type { TestSessionForIntegOptions } from "./IntegrationTestSession.js";
+import { listIntegrationTestProfileNames } from "./integrationTestProfiles.js";
 
 const VALID_APP_STORE_TYPES = ["sql", "filesystem", "indexedDb", "mongodb"] as const;
 const VALID_ADMIN_STORE_TYPES = ["filesystem", "sql", "indexedDb", "mongodb", "bundled"] as const;
+const DEFAULT_PROFILE_KEY = "emulatedServer-sql";
 
 export type MiroirCoreIntegTestLaunchContext = {
   env: NodeJS.ProcessEnv;
@@ -19,21 +21,34 @@ export type MiroirCoreIntegTestLaunchContext = {
   testSessionOptions: TestSessionForIntegOptions;
 };
 
+export function formatProfileLaunchHint(): string {
+  return (
+    `Tip: run via testMiroir with --profile ${DEFAULT_PROFILE_KEY} to set ` +
+    `VITE_MIROIR_* and MIROIR_TEST_* from one preset (profiles: ` +
+    `${listIntegrationTestProfileNames().join(", ")}).`
+  );
+}
+
 export function formatMiroirCoreIntegTestUsage(): string {
   return [
     "Usage: MIROIR_TEST_SUITES=<suite>[,<suite>...] MIROIR_TEST_MODE=integ npm run testMiroir -w miroir-standalone-app",
     "   or: npm run testMiroir -w miroir-standalone-app -- --suites <suite> --mode integ",
+    "   or: npm run testMiroir -w miroir-standalone-app -- --profile <profile> --suites <suite> --mode integ",
     "",
     "Required when running suites:",
     "  MIROIR_TEST_MODE=integ|integration     Integration mode (unit is invalid for this entry)",
     "  MIROIR_TEST_SUITES=<keys>              Comma-separated suite keys, or * for all",
     "",
-    "Store backends (independent):",
+    "Profile (recommended — launcher sets VITE_MIROIR_* + MIROIR_TEST_* when unset):",
+    `  --profile ${DEFAULT_PROFILE_KEY}                   Local default (admin filesystem, miroir + library Postgres)`,
+    `  --profile <name>                         ${listIntegrationTestProfileNames().join(" | ")}`,
+    "",
+    "Store backends (independent; profile supplies defaults, explicit env overrides):",
     "  MIROIR_TEST_APP_STORE_TYPE             sql | filesystem | indexedDb | mongodb  (default: sql)",
     "  MIROIR_TEST_ADMIN_STORE_TYPE           filesystem | sql | indexedDb | mongodb | bundled  (default: filesystem)",
     "",
     "When MIROIR_TEST_APP_STORE_TYPE=sql or MIROIR_TEST_ADMIN_STORE_TYPE=sql:",
-    "  MIROIR_TEST_POSTGRES_HOST              Postgres host (default: 192.168.1.160)",
+    "  MIROIR_TEST_POSTGRES_HOST              Postgres host (default: 192.168.1.160; profile sets from JSON)",
     "  MIROIR_TEST_ADMIN_SQL_SCHEMA           Admin schema when admin is sql (default: miroirAdmin)",
     "",
     "When either store uses mongodb:",
@@ -60,10 +75,40 @@ export function formatMiroirCoreIntegTestUsage(): string {
     "Optional:",
     "  MIROIR_TEST_FILTER='{\"<miroirTestLabel>\":[\"<leaf miroirTestLabel>\"]}'   JSON filter (see testing.md#filtering-miroirtest-cases)",
     "",
-    "Example (default: sql test app + filesystem admin):",
+    "Example with profile (no manual MIROIR_TEST_POSTGRES_HOST):",
+    `  npm run testMiroir -w miroir-standalone-app -- --profile ${DEFAULT_PROFILE_KEY} --suites miroirCoreTransformers --mode integ`,
+    "",
+    "Example (explicit env — sql test app + filesystem admin):",
     "  MIROIR_TEST_SUITES=miroirCoreTransformers MIROIR_TEST_MODE=integ \\",
     "    MIROIR_TEST_POSTGRES_HOST=192.168.1.160 npm run testMiroir -w miroir-standalone-app",
   ].join("\n");
+}
+
+function validateCiSqlBackendConfiguration(
+  env: NodeJS.ProcessEnv,
+  testSessionOptions: TestSessionForIntegOptions,
+): string | undefined {
+  if (!env.CI) {
+    return undefined;
+  }
+
+  const usesSql =
+    testSessionOptions.testApplicationStore.emulatedServerType === "sql" ||
+    testSessionOptions.adminStore.emulatedServerType === "sql";
+  if (!usesSql) {
+    return undefined;
+  }
+
+  const hasPostgresHost = Boolean(env.MIROIR_TEST_POSTGRES_HOST?.trim());
+  const hasProfileConfig = Boolean(env.VITE_MIROIR_TEST_CONFIG_FILENAME?.trim());
+  if (!hasPostgresHost && !hasProfileConfig) {
+    return (
+      `CI requires MIROIR_TEST_POSTGRES_HOST or testMiroir --profile ${DEFAULT_PROFILE_KEY} ` +
+      "when using sql store backends"
+    );
+  }
+
+  return undefined;
 }
 
 export function validateMiroirCoreIntegTestLaunch(
@@ -143,6 +188,11 @@ export function validateMiroirCoreIntegTestLaunch(
     }
   }
 
+  const ciSqlError = validateCiSqlBackendConfiguration(env, testSessionOptions);
+  if (ciSqlError) {
+    errors.push(ciSqlError);
+  }
+
   return errors;
 }
 
@@ -152,6 +202,8 @@ export function formatMiroirCoreIntegTestLaunchFailure(errors: string[]): string
     "",
     "Configuration error(s):",
     ...errors.map((error) => `  - ${error}`),
+    "",
+    formatProfileLaunchHint(),
   ].join("\n");
 }
 
