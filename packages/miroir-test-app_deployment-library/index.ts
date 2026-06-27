@@ -96,12 +96,15 @@ export { default as user3 } from "./assets/library_data/ca794e28-b2dc-45b3-8137-
 export { default as miroirTest_runner_library } from "./assets/library_model/a311f363-e238-4203-bdfc-29e8c160c26b/b7e4a901-2c3d-4f5a-b6c7-8d9e0f1a2b3c.json" assert { type: "json" };
 
 export {
+  findRunnerLibraryLeafByMiroirTestLabel,
   libraryTestIdentifiers,
   listRunnerTestFixtureRefs,
   resolveRunnerRef,
   resolveRunnerTestDeploymentRef,
   // resolveRunnerTestEnvironmentSeed,
   resolveRunnerTestFixture,
+  runnerTestLeafToFixtureDefaults,
+  RUNNER_LIBRARY_FIXTURE_REF_ALIASES,
   type RunnerTestFixtureDefaults,
   RUNNER_TEST_APPLICATION_UUID_FROM_PARAMETERS,
   RUNNER_TEST_DEPLOYMENT_UUID_FROM_PARAMETERS,

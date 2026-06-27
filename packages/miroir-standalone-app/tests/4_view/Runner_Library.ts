@@ -1,4 +1,5 @@
 
+/** @deprecated Imperative parity reference — canonical definitions live in `miroirTest_runner_library` (deployment-library). */
 import {
   extendMiroirConfigWithExtraDeploymentConfiguration,
   type Runner,

@@ -18,6 +18,7 @@ import {
   resolveRunnerRef,
   resolveRunnerTestDeploymentRef,
   resolveRunnerTestFixture,
+  runnerTestLeafToFixtureDefaults,
   RUNNER_TEST_ENVIRONMENT_REFS,
 } from "miroir-test-app_deployment-library";
 import type {
@@ -44,27 +45,12 @@ export type ResolveRunnerTestLeafParams = {
 
 export type ResolvedRunnerTestDefinition = ReturnType<typeof resolveRunnerTestFixture>;
 
-/** fixtureRef → catalog entry (same object reference); else inline fields from JSON leaf. */
+/** fixtureRef → JSON leaf via alias; else inline fields from JSON leaf. */
 export function resolveRunnerTestDefinition(leaf: MiroirTestForRunner): ResolvedRunnerTestDefinition {
   if (leaf.fixtureRef) {
     return resolveRunnerTestFixture(leaf.fixtureRef);
   }
-  if (leaf.initialModel === undefined) {
-    throw new Error(
-      `runnerTest leaf "${leaf.miroirTestLabel}" requires fixtureRef or inline initialModel`,
-    );
-  }
-  return {
-    runner: resolveRunnerRef(leaf.runnerRef),
-    testParams: leaf.testParams ?? {},
-    preTestCompositeActions: leaf.preTestCompositeActions ?? [],
-    testCompositeActionAssertions: leaf.testCompositeActionAssertions ?? [],
-    initialModel: leaf.initialModel,
-    preRunnerCompositeActions: leaf.preRunnerCompositeActions,
-    testCompositeActionLabel: leaf.testCompositeActionLabel,
-    skipCreateDeployment: leaf.skipCreateDeployment,
-    skipDropDeployment: leaf.skipDropDeployment,
-  };
+  return runnerTestLeafToFixtureDefaults(leaf);
 }
 
 export function mergeRunnerTestParamBank(

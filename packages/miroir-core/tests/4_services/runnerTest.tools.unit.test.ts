@@ -97,15 +97,18 @@ describe("runnerTest tools", () => {
     expect(preRunner.payload.startDate).toEqual(RUNNER_TEST_PAYLOAD_LEND_START_DATE_FROM_PARAMETERS);
   });
 
-  it("resolveRunnerTestDefinition returns catalog entry for fixtureRef leaves", () => {
-    const catalog = resolveRunnerTestFixture("libraryLendBookDefaults");
-    const definition = resolveRunnerTestDefinition({
+  it("resolveRunnerTestDefinition resolves fixtureRef from runner_library JSON", () => {
+    const suite = (miroirTest_runner_library as MiroirTestDefinition)
+      .definition as MiroirTestSuite;
+    const inlineLeaf = suite.miroirTests[0] as MiroirTestForRunner;
+    const fromFixtureRef = resolveRunnerTestDefinition({
       miroirTestType: "runnerTest",
       miroirTestLabel: "Lend Book Test Composite Action",
       runnerRef: "lendDocument",
       fixtureRef: "libraryLendBookDefaults",
     });
-    expect(definition).toBe(catalog);
+    const fromInline = resolveRunnerTestDefinition(inlineLeaf);
+    expect(fromFixtureRef).toEqual(fromInline);
   });
 
   it("runner_library leaves define inline runnerTest without fixtureRef", () => {
