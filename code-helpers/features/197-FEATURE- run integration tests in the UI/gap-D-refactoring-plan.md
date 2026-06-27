@@ -7,7 +7,7 @@
 phases (Gap E), not playfield contracts (Gap B), not host injection (Gap A). **No `it()` body
 changes.**
 
-**Status:** D0–D3 complete; D4–D8 not started
+**Status:** D0–D8 complete (Gap D closed)
 
 ---
 
@@ -365,65 +365,74 @@ npm run testByFile -w miroir-standalone-app -- integrationTestProfiles.unit
 
 ---
 
-### Slice D4 — CI preset profiles + matrix doc
+### Slice D4 — CI preset profiles + matrix doc — ✅ **DONE**
 
 **D4-Green:**
 
-- Add `ci-emulatedServer-host-sql`, `ci-emulatedServer-dockerized-sql` to catalog
-- Document single GitHub Actions matrix row in `docs/reference/testing.md`:
+- `ci-emulatedServer-host-sql`, `ci-emulatedServer-dockerized-sql` already in `INTEGRATION_TEST_PROFILES` (D0)
+- `docs/reference/testing.md`:
+  - [Integration test profiles](#integration-test-profiles) — catalog, resolution order, JSON derivation note
+  - CI matrix YAML example (one `matrix.profile` column → transformer + runner integ)
+  - Profile-first `testMiroir` examples; launch validation section updated for `--profile` + CI sql check
 
-```yaml
-# Example CI row (illustrative)
-profile: emulatedServer-sql
-run: |
-  npm run testMiroir -w miroir-standalone-app -- --profile ${{ matrix.profile }} \
-    --suites miroirCoreTransformers --mode integ
-  npm run testMiroir -w miroir-standalone-app -- --profile ${{ matrix.profile }} \
-    --suites runner_library --mode integ
-```
+**Verify:**
 
-**Verify:** manual or CI dry-run
+- Catalog keys present: `npx vitest run tests/helpers/integrationTestProfiles.unit.test.ts -w miroir-standalone-app` — ✅ **PASS** (lists `ci-emulatedServer-host-sql`, `ci-emulatedServer-dockerized-sql`)
+- Docs review: profile section + CI matrix in `docs/reference/testing.md`
 
 **Commit:** `chore(ci): D4 integration test profile matrix documentation`
 
 ---
 
-### Slice D5 — Optional `testByFile --profile` convenience (standalone-app)
+### Slice D5 — Optional `testByFile --profile` convenience (standalone-app) — ✅ **DONE**
 
-**D5-Red:** unit test for wrapper script or npm pre-step
+**D5-Red:** `tests/helpers/test-by-file.profile.unit.test.ts`
 
-**D5-Green:** either:
+- `stripProfileArgs` removes `--profile` / `-p` and value before vitest argv
+- `--profile emulatedServer-sql` sets `VITE_MIROIR_*` + `VITE_TEST_MODE=true` on spawn env
+- Without profile, `VITE_MIROIR_*` unset (manual env still supported)
+- `respectExistingEnv`: pre-set `VITE_MIROIR_TEST_CONFIG_FILENAME` not overwritten
 
-- `scripts/test-by-file-with-profile.ts` sets env then spawns vitest, or
-- document `npm run testByFile -- --profile X` if implemented in existing script
+**D5-Green:**
 
-**Scope:** convenience only; manual `VITE_MIROIR_*` remains supported
+- `scripts/testByFileLauncher.ts`: `stripProfileArgs`, `prepareTestByFileLaunch`
+- `scripts/test-by-file.ts`: applies profile, spawns vitest with remaining args
+- `package.json`: `testByFile` → `tsx ./scripts/test-by-file.ts`
+- `docs/reference/testing.md`: app-stack section documents `--profile`
+
+**Verify:** `npx vitest run tests/helpers/test-by-file.profile.unit.test.ts -w miroir-standalone-app` — ✅ **PASS** (4/4)
 
 **Commit:** `feat(integ-test): D5 testByFile profile convenience`
 
 ---
 
-### Slice D6 — Remove `runnerTestProfiles` from miroir-core (D7)
+### Slice D6 / D7 — Remove `runnerTestProfiles` from miroir-core — ✅ **DONE**
 
 **D6-Green:**
 
-- Delete or thin-forward `miroir-core/src/5_tests/runnerTestProfiles.ts`
-- Update exports in `miroir-core/index.ts`
-- Fix any imports (launcher uses standalone-app catalog)
+- Deleted `packages/miroir-core/src/5_tests/runnerTestProfiles.ts` (`RUNNER_TEST_PROFILES`, `applyRunnerTestProfile`)
+- No exports from `miroir-core/index.ts` (file was already unused after D1)
+- Profile catalog remains in `standalone-app/tests/helpers/integrationTestProfiles.ts` only
 
-**Verify:** full regression anchors + `npm run devBuild -w miroir-core`
+**Verify:**
+
+- `npm run devBuild -w miroir-core` — ✅ **PASS**
+- Profile unit tests (launcher, testByFile, launch validation, catalog) — ✅ **PASS** (28/28)
+- Runner: `npm run testMiroir -w miroir-standalone-app -- --profile emulatedServer-sql --suites runner_library --mode integ --filter '…'` — ✅ **PASS**
 
 **Commit:** `refactor(integ-test): D7 remove runner profile table from miroir-core`
 
 ---
 
-### Slice D8 — Documentation + gap closure
+### Slice D8 — Documentation + gap closure — ✅ **DONE**
 
 **D8-Green:**
 
-- [docs/reference/testing.md](../../../docs/reference/testing.md) — “Integration profiles” section
-- [integ-test-setup-gaps.md](./integ-test-setup-gaps.md) §5 → **Done** with link here
-- [plan.md](./plan.md) Gap D success criteria checked off
+- [docs/reference/testing.md](../../../docs/reference/testing.md) — Integration test profiles section (D4), launch validation (D3), `testByFile --profile` (D5)
+- [integ-test-setup-gaps.md](./integ-test-setup-gaps.md) §5 → **Done** with outcome + link here
+- [plan.md](./plan.md) — Gap D checklist checked off; G5, commands, session table, Phase B config updated
+
+**Verify:** docs review (no code changes)
 
 **Commit:** `docs(integ-test): D8 unified profile documentation`
 
@@ -440,12 +449,12 @@ Adopt `INTEGRATION_TEST_PROFILES` in `setupMiroirPlatform` or document explicit 
 ## 8. Success criteria
 
 - [x] D0: `integrationTestProfiles.ts` catalog + unit tests in standalone-app
-- [ ] One `--profile emulatedServer-sql` runs **both** `miroirCoreTransformers` and `runner_library` without duplicate env vars
-- [ ] Explicit `VITE_MIROIR_*` / `MIROIR_TEST_*` still override profile (unit-tested)
-- [ ] Profile catalog lives in **standalone-app**; miroir-core has no filesystem path constants for profiles
-- [ ] CI matrix documented with one profile column driving transformer + runner
-- [ ] `docs/reference/testing.md` describes resolution order and profile catalogue
-- [ ] (Optional D5) `testByFile` can use `--profile` for app-stack tests
+- [x] One `--profile emulatedServer-sql` runs **both** `miroirCoreTransformers` and `runner_library` without duplicate env vars
+- [x] Explicit `VITE_MIROIR_*` / `MIROIR_TEST_*` still override profile (unit-tested)
+- [x] Profile catalog lives in **standalone-app**; miroir-core has no filesystem path constants for profiles
+- [x] CI matrix documented with one profile column driving transformer + runner
+- [x] `docs/reference/testing.md` describes resolution order and profile catalogue
+- [x] (Optional D5) `testByFile` can use `--profile` for app-stack tests
 
 ---
 

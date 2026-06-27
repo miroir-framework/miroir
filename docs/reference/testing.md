@@ -134,15 +134,89 @@ This file:
 
 ### Via `testMiroir` (preferred)
 
+Use **`--profile`** so one preset sets both `VITE_MIROIR_*` (app-stack / runner) and `MIROIR_TEST_*` (transformer integ). Explicit env vars still override profile defaults.
+
 ```bash
-# Default: sql test app + filesystem admin
+# Recommended — transformer integ (no manual MIROIR_TEST_POSTGRES_HOST)
+npm run testMiroir -w miroir-standalone-app -- \
+  --profile emulatedServer-sql --suites miroirCoreTransformers --mode integ
+
+# Same profile — runner integ
+npm run testMiroir -w miroir-standalone-app -- \
+  --profile emulatedServer-sql --suites runner_library --mode integ
+```
+
+Legacy explicit-env form (still supported):
+
+```bash
 MIROIR_TEST_SUITES=miroirCoreTransformers MIROIR_TEST_MODE=integration \
   MIROIR_TEST_POSTGRES_HOST=localhost \
   npm run testMiroir -w miroir-standalone-app
 
-# Explicit argv form
 npm run testMiroir -w miroir-standalone-app -- --suites miroirCoreTransformers --mode integration
 ```
+
+See [Integration test profiles](#integration-test-profiles) for the full catalog and CI matrix.
+
+### Integration test profiles
+
+Registry: `packages/miroir-standalone-app/tests/helpers/integrationTestProfiles.ts`  
+Applied by `scripts/test-miroir-runner.ts` and `scripts/test-by-file.ts` via `applyIntegrationTestProfile` **before** Vitest spawn.
+
+Gap D plan (complete): `code-helpers/features/197-FEATURE- run integration tests in the UI/gap-D-refactoring-plan.md`
+
+**Resolution order** (highest wins):
+
+1. Explicit `VITE_MIROIR_*` / `MIROIR_TEST_*` in the environment
+2. `--profile` / `-p` on the `testMiroir` CLI
+3. Built-in defaults inside `IntegrationTestSession` (local dev only; CI should use a profile or explicit env)
+
+| Profile key | Config JSON | Typical use |
+|-------------|-------------|-------------|
+| `emulatedServer-sql` | `miroirConfig.test-emulatedServer-sql.json` | Local default — admin filesystem, miroir + library Postgres |
+| `emulatedServer-filesystem` | `miroirConfig.test-emulatedServer-filesystem.json` | All store sections on filesystem (no Postgres) |
+| `emulatedServer-indexedDb` | `miroirConfig.test-emulatedServer-indexedDb.json` | Miroir + library IndexedDB |
+| `emulatedServer-mongodb` | `miroirConfig.test-emulatedServer-mongodb.json` | Miroir + library MongoDB |
+| `ci-emulatedServer-host-sql` | `miroirConfig.test-ci-emulatedServer-host-sql.json` | CI — Postgres on host (`host.docker.internal`) |
+| `ci-emulatedServer-dockerized-sql` | `miroirConfig.test-ci-emulatedServer-dockerized-sql.json` | CI — Postgres in Docker network |
+
+Transformer session defaults (`MIROIR_TEST_APP_STORE_TYPE`, `MIROIR_TEST_POSTGRES_HOST`, …) are **derived from the profile JSON** (`deriveTestSessionDefaultsFromMiroirConfig`).
+
+#### CI matrix example
+
+One matrix column can drive both transformer and runner integ with the same profile — no duplicate `MIROIR_TEST_POSTGRES_HOST` beside connection strings in JSON:
+
+```yaml
+# .github/workflows/integration-tests.yml (illustrative)
+jobs:
+  integration:
+    strategy:
+      matrix:
+        profile:
+          - emulatedServer-sql              # local-style smoke on CI runner with host Postgres
+          - ci-emulatedServer-host-sql      # connection strings → host.docker.internal
+          - ci-emulatedServer-dockerized-sql # connection strings → docker network IP
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - run: npm ci
+      - run: npm run devBuild -w miroir-core
+      - name: Transformer MiroirTest integ
+        run: |
+          npm run testMiroir -w miroir-standalone-app -- \
+            --profile ${{ matrix.profile }} \
+            --suites miroirCoreTransformers --mode integ
+      - name: Runner MiroirTest integ
+        run: |
+          npm run testMiroir -w miroir-standalone-app -- \
+            --profile ${{ matrix.profile }} \
+            --suites runner_library --mode integ
+```
+
+Pick the profile that matches how Postgres is reachable in that job (host vs Docker). Paths inside JSON are repo-root relative (`PWD` at monorepo root when `npm run testMiroir` runs from the workspace).
 
 ### Store backend env vars
 
@@ -253,21 +327,30 @@ MIROIR_TEST_MODE=integ \
 npm run testByFile -w miroir-standalone-app -- miroir-runner-tests.integ.test
 ```
 
-Alternatively, `testMiroir` routes to this entry when the requested suite keys are **not** all in the miroir-core registry (and still needs `VITE_MIROIR_*` set).
+Alternatively, `testMiroir` routes to this entry when the requested suite keys are **not** all in the miroir-core registry. With `--profile`, manual `VITE_MIROIR_*` is not required.
 
 ```bash
-# All runner_library leaves (registry key runner_library → suite label runner.library)
-VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-sql.json \
-VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_DomainController_debug.json \
-npm run testMiroir -w miroir-standalone-app -- --suites runner_library --mode integ --profile emulatedServer-sql
+# All runner_library leaves — profile sets VITE_MIROIR_* + MIROIR_TEST_*
+npm run testMiroir -w miroir-standalone-app -- \
+  --suites runner_library --mode integ --profile emulatedServer-sql
 
 # Return leaf only — preferred form (suite miroirTestLabel → leaf miroirTestLabel)
-npm run testMiroir -w miroir-standalone-app -- --suites runner_library --mode integ --profile emulatedServer-sql \
+npm run testMiroir -w miroir-standalone-app -- \
+  --suites runner_library --mode integ --profile emulatedServer-sql \
   --filter '{"runner.library":["Return Book Test Composite Action"]}'
 
 # Same run — shorthand when the suite has a single level of leaves (leaf key only; value ignored)
-npm run testMiroir -w miroir-standalone-app -- --suites runner_library --mode integ --profile emulatedServer-sql \
+npm run testMiroir -w miroir-standalone-app -- \
+  --suites runner_library --mode integ --profile emulatedServer-sql \
   --filter '{"Return Book Test Composite Action":["*"]}'
+```
+
+Legacy form (manual `VITE_MIROIR_*` without `--profile`):
+
+```bash
+VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-sql.json \
+VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_DomainController_debug.json \
+npm run testMiroir -w miroir-standalone-app -- --suites runner_library --mode integ
 ```
 
 Filter rules and common mistakes: [Filtering MiroirTest cases](#filtering-miroirtest-cases).
@@ -280,14 +363,19 @@ These are the original standalone-app integration tests: one Vitest file per con
 
 ### Required environment variables
 
-Both variables are **mandatory** — `loadTestConfigFiles` throws if either is missing.
+Both variables are **mandatory** — `loadTestConfigFiles` throws if either is missing — unless you pass **`--profile`** on `testByFile` (same catalog as `testMiroir`):
+
+```bash
+npm run testByFile -w miroir-standalone-app -- \
+  --profile emulatedServer-sql PersistenceStoreController.integ
+```
 
 | Variable | Purpose |
 |----------|---------|
 | `VITE_MIROIR_TEST_CONFIG_FILENAME` | Path to a `miroirConfig.test-*.json` file (must have `.json` extension) |
 | `VITE_MIROIR_LOG_CONFIG_FILENAME` | Path to a `specificLoggersConfig_*.json` file |
 
-`npm run testByFile` also sets `VITE_TEST_MODE=true` automatically.
+`npm run testByFile` sets `VITE_TEST_MODE=true` automatically. Explicit `VITE_MIROIR_*` still override `--profile` defaults.
 
 For **real-server** configs (`miroirConfig.test-realServer-*.json`), the dev server must be running at `https://localhost:3080` and Node must trust the mkcert CA:
 
@@ -799,8 +887,6 @@ Find labels in the MiroirTest JSON under `definition.miroirTestLabel` (suite) an
 #### 1. One runner integ leaf (library return)
 
 ```bash
-VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-sql.json \
-VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_DomainController_debug.json \
 npm run testMiroir -w miroir-standalone-app -- \
   --suites runner_library --mode integ --profile emulatedServer-sql \
   --filter '{"runner.library":["Return Book Test Composite Action"]}'
@@ -815,9 +901,8 @@ npm run testMiroir -w miroir-standalone-app -- \
 #### 3. One transformer integ leaf inside a large suite
 
 ```bash
-MIROIR_TEST_SUITES=miroirCoreTransformers MIROIR_TEST_MODE=integ \
-  MIROIR_TEST_POSTGRES_HOST=localhost \
-  npm run testMiroir -w miroir-standalone-app -- \
+npm run testMiroir -w miroir-standalone-app -- \
+  --profile emulatedServer-sql --suites miroirCoreTransformers --mode integ \
   --filter '{"miroirCoreTransformers":["some transformer case label"]}'
 ```
 
@@ -834,8 +919,8 @@ npm run testMiroir -w miroir-core -- --suites mustache --mode unit \
 
 ```bash
 MIROIR_TEST_FILTER='{"runner.library":["Return Book Test Composite Action"]}' \
-  MIROIR_TEST_SUITES=runner_library MIROIR_TEST_MODE=integ \
-  npm run testMiroir -w miroir-standalone-app
+  npm run testMiroir -w miroir-standalone-app -- \
+  --profile emulatedServer-sql --suites runner_library --mode integ
 ```
 
 ### Common mistakes
@@ -859,14 +944,17 @@ npm run devBuild -w miroir-core
 
 ## Launch validation
 
-When the integration entry is invoked with inconsistent or missing configuration, `assertMiroirCoreIntegTestLaunchReady` prints a full shell-style usage message before failing:
+When the integration entry is invoked with inconsistent or missing configuration, `assertMiroirCoreIntegTestLaunchReady` prints a full shell-style usage message (including `--profile emulatedServer-sql`) and a profile tip before failing:
 
 ```
 Usage: MIROIR_TEST_SUITES=<suite>[,<suite>...] MIROIR_TEST_MODE=integ npm run testMiroir -w miroir-standalone-app
    or: npm run testMiroir -w miroir-standalone-app -- --suites <suite> --mode integ
+   or: npm run testMiroir -w miroir-standalone-app -- --profile <profile> --suites <suite> --mode integ
 ...
 Configuration error(s):
   - MIROIR_TEST_MODE must be integ or integration for miroir-core-tests.integ.test (got "unit")
+
+Tip: run via testMiroir with --profile emulatedServer-sql to set VITE_MIROIR_* and MIROIR_TEST_* from one preset ...
 ```
 
 Checks performed:
@@ -875,6 +963,7 @@ Checks performed:
 - All suite keys exist in the registry
 - `--mode unit` on argv is inconsistent with the integration entry
 - Store type env vars are valid values
+- **CI:** when sql store backends are used, `MIROIR_TEST_POSTGRES_HOST` or profile config (`VITE_MIROIR_TEST_CONFIG_FILENAME`) must be set
 - MongoDB connection string present when any store uses mongodb
 - `bundledDeploymentData` supplied when admin store is `bundled`
 - Admin asset subdirectories (`admin/`, `admin_model/`, `admin_data/`) exist on disk when admin is filesystem

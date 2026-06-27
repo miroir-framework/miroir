@@ -13,7 +13,7 @@
     "build": "node --max-old-space-size=4096 ../../node_modules/vite/bin/vite.js build --emptyOutDir",
     "devBuild": "npm run build",
     "test": "cross-env VITE_TEST_MODE='true' vitest run --poolOptions.threads.singleThread --bail=1 -t",
-    "testByFile": "cross-env VITE_TEST_MODE='true' vitest run --reporter=verbose --poolOptions.forks.singleFork --bail=1",
+    "testByFile": "tsx ./scripts/test-by-file.ts",
     "testMiroir": "cross-env VITE_TEST_MODE='true' tsx ./scripts/test-miroir-runner.ts",
     "testByFileWithFullLog": "cross-env VITE_TEST_MODE='true' DEBUG='vite-node:*' vitest run --reporter=verbose --poolOptions.threads.singleThread --disable-console-intercept --bail=1"
   },

@@ -4,7 +4,7 @@
 ways integration tests start up and configure themselves must be unified. This document maps the
 current state and names the gaps that still need to be filled before UI execution becomes viable.
 
-**Last updated:** Gap A complete (platform host modes — see [gap-A-refactoring-plan.md](./gap-A-refactoring-plan.md)).
+**Last updated:** Gap D complete (unified integration profiles — see [gap-D-refactoring-plan.md](./gap-D-refactoring-plan.md)).
 
 ---
 
@@ -12,8 +12,8 @@ current state and names the gaps that still need to be filled before UI executio
 
 | Family | Package | Entry point / runner | Setup (bootstrap) | Assertion / execution API |
 |--------|---------|----------------------|-------------------|---------------------------|
-| **Transformer integ** | `miroir-standalone-app` | `miroir-core-tests.integ.test.ts` → `testMiroir` | `IntegrationTestSession` (`MIROIR_TEST_*`) | `domainController.handleBoxedExtractorOrQueryAction` ✅ |
-| **Storage-layer integ** | `miroir-standalone-app` / `4_storage` | per-file Vitest (`testByFile`) | `AppStackIntegrationTestSession` (`VITE_MIROIR_*`) ✅ | **`PersistenceStoreController` direct** (intentional) |
+| **Transformer integ** | `miroir-standalone-app` | `miroir-core-tests.integ.test.ts` → `testMiroir` | `IntegrationTestSession` (`MIROIR_TEST_*` or `--profile`) | `domainController.handleBoxedExtractorOrQueryAction` ✅ |
+| **Storage-layer integ** | `miroir-standalone-app` / `4_storage` | per-file Vitest (`testByFile`) | `AppStackIntegrationTestSession` (`VITE_MIROIR_*` or `--profile`) ✅ | **`PersistenceStoreController` direct** (intentional) |
 | **DomainController CRUD** | `miroir-standalone-app` / `3_controllers` | per-file Vitest | `setupMiroirTestAndCreateMiroirDeployment` | `domainController` exclusively |
 | **Runner integ (legacy)** | `miroir-standalone-app` / `4_view` | per-file Vitest | `setupMiroirTest` ladder | `domainController` |
 | **Runner integ (MiroirTest / #197)** | `miroir-standalone-app` | `miroir-runner-tests.integ.test.ts` / `testMiroir` | `RunnerTestSession` | `domainController` via `RunnerTestSession` |
@@ -363,38 +363,75 @@ Direct PSC calls in tests remain intentional (persistence-layer coverage).
 
 ---
 
-## 5. Gap D — Environment configuration fragmentation
+## 5. Gap D — Environment configuration fragmentation — ✅ **Done**
 
-**TDD plan:** [gap-D-refactoring-plan.md](./gap-D-refactoring-plan.md) (not started).
+**Status:** Complete — D0–D8 ([gap-D-refactoring-plan.md](./gap-D-refactoring-plan.md)).
 
-### Current state
+### Outcome
+
+One **`--profile`** on `testMiroir` and **`testByFile`** drives both config surfaces from a single
+catalog in standalone-app:
+
+| Surface | Mechanism |
+|---------|-----------|
+| Transformer integ | `--profile` → `MIROIR_TEST_*` defaults (derived from profile JSON) |
+| Runner / app-stack integ | `--profile` → `VITE_MIROIR_*` + same JSON paths |
+| Explicit env | `VITE_MIROIR_*` / `MIROIR_TEST_*` still override profile (G5) |
+
+**Resolution order:** explicit env → `--profile` → built-in defaults (local only; CI fail-fast via
+`assertMiroirCoreIntegTestLaunchReady`).
+
+**Registry:** `packages/miroir-standalone-app/tests/helpers/integrationTestProfiles.ts`  
+**Launchers:** `scripts/test-miroir-runner.ts`, `scripts/test-by-file.ts`  
+**Operator reference:** [docs/reference/testing.md](../../../docs/reference/testing.md#integration-test-profiles)
+
+Transformer `testApplication` playfield UUIDs remain separate from deployment-library UUIDs
+(intentional — Gap D aligns **store backend parameters**, not playfield identity).
+
+### What was filled
+
+- [x] `IntegrationTestProfile` catalog in standalone-app (local + CI presets).
+- [x] `applyIntegrationTestProfile` — sets `VITE_MIROIR_*` and `MIROIR_TEST_*` when unset (G5).
+- [x] Unified `--profile` on `testMiroir` before routing (transformer + runner entries).
+- [x] `deriveTestSessionDefaultsFromMiroirConfig` — Postgres host / store types from JSON.
+- [x] Profile-aware launch validation + usage (`miroirCoreIntegTestLaunch.ts`).
+- [x] CI matrix documentation (one profile column → transformer + runner).
+- [x] `testByFile --profile` convenience wrapper.
+- [x] Removed `miroir-core/src/5_tests/runnerTestProfiles.ts`.
+- [ ] CLI/MCP profile alignment (`setupMiroirPlatform`) — optional [D9](./gap-D-refactoring-plan.md).
+
+<details>
+<summary>Historical context (pre–Gap D, collapsed)</summary>
+
+### Current state (before Gap D)
 
 | Family | Config mechanism | Env var names |
 |--------|-----------------|---------------|
 | `miroir-core` transformer integ | `parseMiroirTestCliConfig` + `resolveTestSessionForIntegOptionsFromEnv` | `MIROIR_TEST_SUITES`, `MIROIR_TEST_MODE`, `MIROIR_TEST_POSTGRES_HOST`, … |
 | `miroir-standalone-app` per-file integ | `loadTestConfigFiles(process.env)` | `VITE_MIROIR_TEST_CONFIG_FILENAME`, `VITE_MIROIR_LOG_CONFIG_FILENAME` |
-| `miroir-standalone-app` `testMiroir` CLI | same `loadTestConfigFiles` + `--profile` preset | same `VITE_MIROIR_*` |
+| `miroir-standalone-app` `testMiroir` CLI | same `loadTestConfigFiles` + `--profile` preset | same `VITE_MIROIR_*` (runner path only) |
 | `miroir-cli` / `miroir-mcp` | `loadMiroirCliConfig` / `loadMiroirMcpConfig` | package-local config files |
 
-### Gap
+### Gap (before Gap D)
 
-- Transformer integ and `4_storage` integ still use **two config surfaces**:
+- Transformer integ and `4_storage` integ used **two config surfaces**:
   `MIROIR_TEST_*` (CLI / `parseMiroirTestCliConfig`) vs `VITE_MIROIR_*` + `miroirConfig.test-*.json`
-  (`loadTestConfigFiles`). Both implement `RunnerTestSessionInterface`, but profiles are not
-  interchangeable without mapping.
-- There is no single `--profile` flag that drives transformer integ and per-file app-stack integ
+  (`loadTestConfigFiles`). Both implement `RunnerTestSessionInterface`, but profiles were not
+  interchangeable without manual mapping.
+- There was no single `--profile` flag that drove transformer integ and per-file app-stack integ
   from one CI matrix entry.
-- Transformer integ still builds its Postgres playfield from `MIROIR_TEST_POSTGRES_*` env vars
-  rather than reusing the same JSON profile files as emulated-server tests (optional convergence).
+- Transformer integ built its Postgres playfield from `MIROIR_TEST_POSTGRES_*` env vars rather than
+  reusing the same JSON profile files as emulated-server tests.
+- `RUNNER_TEST_PROFILES` lived in `miroir-core` with path constants in the wrong package.
 
-### What needs to be filled
+### What needed to be filled (original)
 
-See [gap-D-refactoring-plan.md](./gap-D-refactoring-plan.md) slices D0–D8:
+- Unified `IntegrationTestProfile` registry in standalone-app (`--profile` for transformer + runner + `testByFile`).
+- JSON → `MIROIR_TEST_*` derivation for transformer session defaults (same Postgres host as app-stack JSON).
+- CI matrix documentation with one profile column.
+- Deprecate / remove `RUNNER_TEST_PROFILES` in miroir-core.
 
-- Unified `IntegrationTestProfile` registry in standalone-app (`--profile` for transformer + runner + optional `testByFile`)
-- Optional JSON → `MIROIR_TEST_*` derivation for transformer session defaults (same Postgres host as app-stack JSON)
-- CI matrix documentation with one profile column
-- Deprecate `RUNNER_TEST_PROFILES` in miroir-core (move to standalone-app)
+</details>
 
 ---
 
@@ -466,10 +503,10 @@ Five different public setup entry points existed across the test infrastructure:
 | **B** — Library playfield contract | ~~`ensureLibraryPlayfield` / `resetLibraryPlayfield`~~ | Runner, DomainController, 4_storage | **Done** ✅ — enables Gap A `playfieldMode` |
 | **C-setup** — Common integ bootstrap | ~~Unified session adapters~~ | Transformer + `4_storage` | **Done** ✅ — reduces setup chaos; UI still needs isolation (A/B) |
 | **C-assertions** — PSC vs domainController in test bodies | `4_storage` keeps PSC (intentional); UI launcher for PSC Vitest suites not built | `4_storage` only | **Partial** — blocks *in-browser* PSC access; **not** a blocker if UI spawns isolated Vitest (defer to follow-up) |
-| **D** — Env config fragmentation | Unified profile system (`MIROIR_TEST_*` vs `VITE_MIROIR_*`) | Transformer integ, all CLI-driven tests | Medium — [gap-D-refactoring-plan.md](./gap-D-refactoring-plan.md); not blocking Phase B launcher |
+| **D** — Env config fragmentation | ~~Unified profile system (`MIROIR_TEST_*` + `VITE_MIROIR_*`)~~ | Transformer, runner, `testByFile` | **Done** ✅ — [gap-D-refactoring-plan.md](./gap-D-refactoring-plan.md) |
 | **E** — Setup helper fragmentation | ~~Consolidate `setupMiroirTest*`; orchestrator for UI~~ | DomainController CRUD, legacy runners | **Done** ✅ — enables Gap B / UI Phase B |
 
-Gaps **A** and **B** (bootstrap + playfield contracts) are done. The remaining work for running
+Gaps **A**, **B**, **D**, and **E** (bootstrap, playfield, profiles, setup consolidation) are done. The remaining work for running
 integration tests from the UI is **#197 Phase B** (launcher, session isolation, UI wiring) — see
 [plan.md](./plan.md) B0–B3. Prefer **isolated Vitest subprocess** first; use **embedded** host mode
 only when deliberately attaching to a live session.
