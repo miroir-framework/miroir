@@ -1,10 +1,8 @@
 import type { MiroirTestCliConfig } from "./parseMiroirTestCliConfig.js";
 import {
   parseMiroirTestCliArgs,
-  parseProfileArg,
   resolveMiroirTestCliConfigFromPartial,
 } from "./parseMiroirTestCliConfig.js";
-import { applyRunnerTestProfile } from "./runnerTestProfiles.js";
 
 export const MIROIR_RUNNER_TEST_VITEST_ENTRY = "miroir-runner-tests.integ.test" as const;
 
@@ -20,8 +18,6 @@ export function parseMiroirRunnerTestCliConfig(
   env: NodeJS.ProcessEnv,
   argv: string[],
 ): MiroirTestCliConfig {
-  applyRunnerTestProfile(parseProfileArg(argv));
-
   const config = resolveMiroirTestCliConfigFromPartial(
     env,
     parseMiroirTestCliArgs(argv, { integModeAlias: true }),

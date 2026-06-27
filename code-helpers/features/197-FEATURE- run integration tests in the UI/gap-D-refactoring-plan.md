@@ -7,7 +7,7 @@
 phases (Gap E), not playfield contracts (Gap B), not host injection (Gap A). **No `it()` body
 changes.**
 
-**Status:** Not started
+**Status:** D0–D1 complete; D2–D8 not started
 
 ---
 
@@ -239,6 +239,10 @@ standalone-app or thin forwarder for one release; remove in D7.
 
 Each slice: **Red → Green → verify regression → one commit**.
 
+When marking a slice **done**, keep the full Red / Green / Verify / Commit detail below the
+heading (see Gap B L0 pattern) — add `— ✅ **DONE**` to the title and `— ✅ **PASS**` on verify
+lines; do not replace the spec with a one-line summary.
+
 **Global regression anchors** (after slices touching shared code):
 
 ```bash
@@ -262,35 +266,52 @@ npm run testByFile -w miroir-standalone-app -- integrationTestProfiles.unit
 
 ---
 
-### Slice D0 — Profile types + catalog (standalone-app, unit only)
+### Slice D0 — Profile types + catalog (standalone-app, unit only) — ✅ **DONE**
 
-**D0-Red:** `integrationTestProfiles.unit.test.ts`
+**D0-Red:** `packages/miroir-standalone-app/tests/helpers/integrationTestProfiles.unit.test.ts`
 
 - `INTEGRATION_TEST_PROFILES.emulatedServer-sql` paths exist and end in `.json`
 - Unknown profile throws from `applyIntegrationTestProfile("nope")`
 - `respectExistingEnv: true` does not overwrite pre-set `VITE_MIROIR_TEST_CONFIG_FILENAME`
+- `applyIntegrationTestProfile` sets `VITE_MIROIR_*` and `MIROIR_TEST_*` transformer defaults when env empty
+- `listIntegrationTestProfileNames()` returns all six catalog keys sorted
 
-**D0-Green:** `integrationTestProfiles.ts` with catalog migrated from `RUNNER_TEST_PROFILES`
+**D0-Green:** `packages/miroir-standalone-app/tests/helpers/integrationTestProfiles.ts`
 
-**Verify:** unit only
+- Migrated `RUNNER_TEST_PROFILES.emulatedServer-sql` paths (repo-root relative, unchanged)
+- Expanded catalog: `emulatedServer-filesystem`, `emulatedServer-indexedDb`, `emulatedServer-mongodb`, `ci-emulatedServer-host-sql`, `ci-emulatedServer-dockerized-sql`
+- `IntegrationTestProfile`, `applyIntegrationTestProfile`, `listIntegrationTestProfileNames`
+- Explicit `transformerDefaults` per profile (D2 JSON derivation deferred)
+- `miroir-core/runnerTestProfiles.ts` **unchanged** until D1/D7
+
+**Verify:** `npx vitest run tests/helpers/integrationTestProfiles.unit.test.ts -w miroir-standalone-app` — ✅ **PASS** (7/7)
 
 **Commit:** `refactor(integ-test): D0 integration test profile catalog`
 
 ---
 
-### Slice D1 — Unified `--profile` on `testMiroir` launcher
+### Slice D1 — Unified `--profile` on `testMiroir` launcher — ✅ **DONE**
 
-**D1-Red:** `test-miroir-runner.profile.unit.test.ts` (extract `resolveVitestEntry` helpers or test via spawn mock)
+**D1-Red:** `tests/helpers/test-miroir-runner.profile.unit.test.ts`
 
 - `--profile emulatedServer-sql` sets both `VITE_MIROIR_*` and `MIROIR_TEST_POSTGRES_HOST` (or derived default) on spawn env when unset
 - Transformer route (`--suites miroirCoreTransformers`) receives same env as runner route
+- `respectExistingEnv`: pre-set `MIROIR_TEST_POSTGRES_HOST` not overwritten
+- `resolveVitestEntry` without profile does not inject `VITE_*` (profile applied only via `prepareTestMiroirLaunch`)
 
 **D1-Green:**
 
-- `test-miroir-runner.ts`: call `applyIntegrationTestProfile` before routing
-- Remove duplicate `applyRunnerTestProfile` call from `parseMiroirRunnerTestCliConfig` (profile applied at launcher only)
+- `scripts/testMiroirLauncher.ts`: `resolveVitestEntry`, `prepareTestMiroirLaunch` (calls `applyIntegrationTestProfile(parseProfileArg(argv))` before routing)
+- `scripts/test-miroir-runner.ts`: thin spawn wrapper using `prepareTestMiroirLaunch`
+- `parseMiroirRunnerTestCliConfig`: removed `applyRunnerTestProfile` (profile applied at launcher only)
+- `miroir-core/index.ts`: export `parseProfileArg`
+- Core route: `integModeAlias: true` so `--mode integ` works on transformer path
 
-**Verify:** regression anchors (transformer + runner)
+**Verify:**
+
+- `npx vitest run tests/helpers/test-miroir-runner.profile.unit.test.ts -w miroir-standalone-app` — ✅ **PASS** (4/4)
+- Runner: `npm run testMiroir -w miroir-standalone-app -- --profile emulatedServer-sql --suites runner_library --mode integ --filter '{"runner.library":["Return Book Test Composite Action"]}'` — ✅ **PASS** (1 passed | 1 skipped)
+- Transformer: `npm run testMiroir -w miroir-standalone-app -- --profile emulatedServer-sql --suites miroirCoreTransformers --mode integ` — ✅ **PASS** (launch + env; no `MIROIR_TEST_POSTGRES_HOST` error)
 
 **Commit:** `refactor(integ-test): D1 apply profile for all testMiroir integ routes`
 
@@ -400,6 +421,7 @@ Adopt `INTEGRATION_TEST_PROFILES` in `setupMiroirPlatform` or document explicit 
 
 ## 8. Success criteria
 
+- [x] D0: `integrationTestProfiles.ts` catalog + unit tests in standalone-app
 - [ ] One `--profile emulatedServer-sql` runs **both** `miroirCoreTransformers` and `runner_library` without duplicate env vars
 - [ ] Explicit `VITE_MIROIR_*` / `MIROIR_TEST_*` still override profile (unit-tested)
 - [ ] Profile catalog lives in **standalone-app**; miroir-core has no filesystem path constants for profiles

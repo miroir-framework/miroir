@@ -1094,6 +1094,7 @@ export {
   miroirCoreTestVitestEntry,
   parseMiroirTestCliArgs,
   parseMiroirTestCliConfig,
+  parseProfileArg,
   normalizeMiroirTestRunFilter,
   resolveMiroirTestSuiteKeys,
   resolveMiroirTestCliConfigFromPartial,
