@@ -20,7 +20,7 @@ npm run testMiroir -w miroir-standalone-app -- --suites runner_library --mode in
 
 **Refactor goal (Phase R, green):** Replace the Phase A **TypeScript fixture bridge** with **transformer-based indirection** (`getFromParameters`, `getFromContext`) and a **standard injected parameter bank** — same pattern as Reports / Transformers. No new failing tests; each slice keeps `runner_library` green.
 
-**Later goal (Phase B):** Run the same suites from the Miroir UI inside an **isolated test environment** (setup/teardown per run), with an exploratory troubleshooting view — without polluting the user's working UI session.
+**Later goal (Phase B):** Run the same suites from the Miroir UI inside a **data-isolated test run** (ephemeral application + temp stores, setup/teardown per run — not a separate OS process), with an exploratory troubleshooting view — without polluting the user's working UI session. Full plan: [phase-b-ui-launcher-plan.md](./phase-b-ui-launcher-plan.md).
 
 Constraints:
 
@@ -49,7 +49,7 @@ All non-component integration tests in `miroir-standalone-app` converge on `Runn
 
 **Orchestrator context** (Gap A/B — ready for Phase B UI launcher):
 
-- `hostMode`: `"isolated"` (CLI/Vitest default) | `"embedded"` (inject live host env)
+- `hostMode`: `"isolated"` (fresh bootstrap stack — data isolation; CLI default) | `"embedded"` (inject live host env)
 - `hostExecutionEnvironment`, `platformEnsureMode`, `playfieldMode`, `skipBootstrapPhases`
 - Helpers: `ensureMiroirPlatform`, `ensureLibraryPlayfield`, `resetLibraryPlayfield`
 
@@ -328,7 +328,7 @@ flowchart TB
 | **Bootstrap** | `miroir-core` | `runAppStackIntegrationBootstrap`, `ensureMiroirPlatform`, `ensureLibraryPlayfield`, `resetLibraryPlayfield` |
 | **Vitest script** | `miroir-standalone-app` | `test-miroir.ts` + entry files; passes orchestrator context into session adapters |
 
-**Goal (met for CLI):** transformer, storage, domain-controller, and runner integ share the same orchestrator port and teardown contract. **Phase B** adds a UI launcher that reuses this stack — default `hostMode: "isolated"` (Vitest subprocess), optional `embedded` for advanced host attachment ([Gap A](./integ-test-setup-gaps.md#2-gap-a--miroir--admin-app-initialization--done)).
+**Goal (met for CLI):** transformer, storage, domain-controller, and runner integ share the same orchestrator port and teardown contract. **Phase B** adds an **in-browser async UI launcher** that reuses this stack with **data-isolated** runs (`hostMode: "isolated"`), optional `embedded` for advanced host attachment — see [phase-b-ui-launcher-plan.md](./phase-b-ui-launcher-plan.md) ([Gap A](./integ-test-setup-gaps.md#2-gap-a--miroir--admin-app-initialization--done)).
 
 ---
 
@@ -771,60 +771,25 @@ R6 is split into five TDD slices (R6-A … R6-E): suite `testParams`, `RunnerTes
 
 ---
 
-### Phase B — UI integration test execution (later)
+### Phase B — UI integration test execution
 
-**Prerequisite:** Gaps A/B/C-setup/D/E complete ✅ — Phase B wires the **UI launcher** to existing infrastructure; it does not redesign bootstrap from scratch.
+**Full plan:** [phase-b-ui-launcher-plan.md](./phase-b-ui-launcher-plan.md) (TDD slices B0–B9, architectural impact, locked decisions).
 
-**In scope:** domainController-based MiroirTest integ (`runnerTest`, transformer integ via `testMiroir`).
+**Prerequisite:** Gaps A/B/C-setup/D/E ✅ · Phase R ✅ — Phase B wires an **in-browser async launcher** to existing orchestrator infrastructure.
 
-**Deferred:** PSC-direct `4_storage` Vitest suites from UI (see [Out of scope](#out-of-scope)).
+**In scope:** domainController-based MiroirTest integ — `runner_library` + transformer integ (`runnerTest`, `transformerTest` leaves).
 
-#### B0 — UI launcher + session isolation
+**Deferred:** PSC-direct `4_storage` Vitest suites from UI (optional subprocess catalog B9).
 
-Wire UI to `StandaloneAppIntegrationOrchestrator` with explicit host/playfield modes ([Gap A](./integ-test-setup-gaps.md#2-gap-a--miroir--admin-app-initialization--done)).
+**Isolation model (corrected):** **Data / dataflow isolation** — ephemeral `runTarget`, temp stores, dedicated integ activity tracker, session `teardown()`; **not** Vitest subprocess spawn in the browser. `hostMode: "isolated"` = fresh bootstrap stack in-process.
 
-| Concern | Approach |
-|---------|----------|
-| **Default (recommended)** | **Isolated Vitest subprocess** — UI spawns `testMiroir` / filtered Vitest with `hostMode: "isolated"`, fresh schema / indexedDb (`test_<timestamp>`), never touches live `MiroirContext` |
-| Working UI pollution | Never reuse live domain controller for isolated runs; mutex — one integ session at a time, queue additional runs |
-| Config | User picks `--profile` from `INTEGRATION_TEST_PROFILES` (Phase B UI catalog); explicit env overrides |
-| Setup | Reuse `RunnerTestSession` / `IntegrationTestSession` via orchestrator — not a new parallel bootstrap |
-| Teardown | Session adapter `teardown()` — drop test schemas, clear indexedDb, reset activity tracker |
-| **Advanced (optional)** | `hostMode: "embedded"` + `hostExecutionEnvironment` — inject live host `domainController`; `platformEnsureMode` / `playfieldMode: "requireExisting"` when host already deployed platform + library |
-
-**UI catalog:** use `orchestrator.describeSession(kind)` for mode badges, playfield, `defaultHostMode`, `embeddedCapable` per suite kind.
-
-```mermaid
-flowchart LR
-  UI[Miroir Tests UI]
-  LAUNCH[Integ launcher]
-  VIT[Vitest subprocess]
-  ORCH[StandaloneAppIntegrationOrchestrator]
-  SESS[Session adapter]
-
-  UI --> LAUNCH
-  LAUNCH -->|hostMode isolated| VIT
-  VIT --> ORCH
-  ORCH --> SESS
-  SESS -->|results + activity| UI
-```
-
-#### B1 — UI components (extend existing Miroir Tests)
-
-- `RunMiroirTestSuiteButton` — detect suite leaf kinds via `describeSession`; pass `executionMode: "integration"` for integ suites; spawn subprocess or call embedded path; disabled when integ session active
-- `MiroirTestDisplay` / list — **mode badge** (`unit` | `integ`) per suite from leaf types + session descriptor
-- `RunnerTestEnvironmentInspector` (new panel section) — resolved profile, deployment map, store endpoints, last composite actions from activity tracker
-
-#### B2 — Menu & reports
-
-- Reuse **Miroir Tests** menu (`eaac459c-…`) and `reportMiroirTestList` / `reportMiroirTestDetails`
-- Extend `miroirTestReportSection` to surface integ-only suites and inspector slot (no separate menu)
-
-#### B3 — Startup alignment (Feature 157)
-
-- Gap A/B already extracted shared bootstrap (`ensureMiroirPlatform`, `ensureLibraryPlayfield`, `runAppStackIntegrationBootstrap`)
-- Phase B: ensure troubleshooting inspector reflects orchestrator phase descriptors and activity tracker output from the launched session
-- Optional: embedded path for dev troubleshooting against live host (explicit opt-in, not default)
+| Slice | Summary |
+|-------|---------|
+| B0–B2 | Types, mutex, Vitest-free in-process suite runner |
+| B3–B4 | `UiIntegrationTestLauncher` + real `RunnerTestSession.teardown` |
+| B5–B6 | UI button, badges, profile picker, ephemeral/pinned toggle, inspector |
+| B7 | Transformer integ in same launcher |
+| B8–B9 | Optional embedded troubleshooting; optional PSC subprocess catalog |
 
 ---
 
@@ -870,8 +835,11 @@ flowchart LR
 
 ### Phase B
 
-- [ ] UI launcher spawns isolated Vitest subprocess for integ MiroirTest suites (`hostMode: "isolated"`)
-- [ ] Run `runner_library` (and transformer integ suites) from UI without affecting working session stores
+See [phase-b-ui-launcher-plan.md](./phase-b-ui-launcher-plan.md) §7 for granular checkboxes.
+
+- [ ] In-browser data-isolated integ launcher (`hostMode: "isolated"`, dedicated tracker, mutex)
+- [ ] Run `runner_library` + transformer integ from UI without affecting working session stores
+- [ ] Ephemeral vs pinned run-target toggle; profile picker from `INTEGRATION_TEST_PROFILES`
 - [ ] Environment inspector shows config + last run context
 - [ ] Teardown leaves no test schemas / indexedDb databases behind
 - [ ] (Optional) embedded host path documented and gated — not default
