@@ -32,6 +32,7 @@ import { isMiroirTestLeafSelected, resolveSuiteInnerFilter } from "./miroirTestF
 import type { DomainControllerInterface } from "../0_interfaces/2_domain/DomainControllerInterface";
 import type { PersistenceStoreControllerManagerInterface } from "../0_interfaces/4-services/PersistenceStoreControllerManagerInterface";
 import type { ApplicationDeploymentMap } from "../1_core/Deployment";
+import type { RunnerTestRunTarget } from "./RunnerTestRunTarget.js";
 
 export type RunnerTestContext = {
   domainController: DomainControllerInterface;
@@ -40,6 +41,7 @@ export type RunnerTestContext = {
   pageLabel: string;
   adminDeployment: Deployment;
   testDeploymentStorageConfiguration: StoreUnitConfiguration;
+  runTarget: RunnerTestRunTarget;
   testParams: Record<string, unknown>;
   runtimeContext: Record<string, unknown>;
 };

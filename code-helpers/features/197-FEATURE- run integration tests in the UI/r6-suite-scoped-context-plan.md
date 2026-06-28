@@ -4,7 +4,7 @@
 
 **Prerequisite:** R0–R5 complete ✅ (`runner_library` integ green; `runnerTestFixtures.ts` trimmed but still present)
 
-**Status:** R6-A complete ✅
+**Status:** R6-A ✅ · R6-B ✅ · R6-C ✅ · R6-D ✅
 
 **Goal:** Remove the global `runnerTestFixtures.ts` module. All context that today is hard-coded for `runner.library` becomes **input to the test run**, derived from the loaded `MiroirTest` suite instance (`uuid` `b7e4a901-2c3d-4f5a-b6c7-8d9e0f1a2b3c`) plus optional caller overrides.
 
@@ -177,7 +177,7 @@ type RunnerTestRunTarget = {
 - Suite JSON may **pin** these (optional block on suite definition) or omit them → session generates UUID v4 at run start
 - `getTestSessionConfig` uses the **same** triple for bootstrap, deployment map, storage config, and param-bank injection — no separate `install*` fields unless a future suite truly needs them (out of pilot scope)
 
-### Slice R6-B — Introduce `RunnerTestRunTarget` + resolver
+### Slice R6-B — Introduce `RunnerTestRunTarget` + resolver ✅ **Done**
 
 **Red:**
 
@@ -191,9 +191,12 @@ type RunnerTestRunTarget = {
 
 - No wiring yet; keep globals
 
-**Verify:**
+**Verify:** ✅ (2026-06-27)
 
-- Unit tests only
+- `runnerTestRunTarget.unit.test.ts`: **5 passed**
+- Schema: optional `runTarget` on `miroirTestSuite` (`51c647fe-…`)
+- Resolver: `packages/miroir-core/src/5_tests/RunnerTestRunTarget.ts` (exported from `miroir-core`)
+- Precedence: `callerOverride` → `suite.runTarget` → generated uuid v4 + default name `"Library"`
 
 ---
 
@@ -254,7 +257,7 @@ sequenceDiagram
 
 **Principle (locked):** The triple chosen at session start is the **only** application/deployment identity for that run. Every leaf, `beforeEach` reset, and param-bank `getFromParameters` reference uses these values.
 
-### Slice R6-C — Wire run target into `RunnerTestSession`
+### Slice R6-C — Wire run target into `RunnerTestSession` ✅ **Done**
 
 **Red:**
 
@@ -268,12 +271,13 @@ sequenceDiagram
 - `getTestSessionConfig` signature takes `runTarget`; remove direct import of `libraryTestIdentifiers` from session file
 - Still export `libraryTestIdentifiers` from fixtures for legacy harness until R6-E
 
-**Verify:**
+**Verify:** ✅ (2026-06-27)
 
-- `RunnerTestSession.unit.test.ts` updated
-- [Global non-regression criteria](#global-non-regression-criteria): **2 passed** (may pin uuids in suite JSON for CI stability — see R6-B override)
+- `RunnerTestSession.unit.test.ts`: **4 passed**
+- Pinned `runTarget` on `runner_library` suite JSON
+- [Global non-regression criteria](#global-non-regression-criteria): **2 passed**
 
-### Slice R6-D — `RunnerTestTools` uses session context, not globals
+### Slice R6-D — `RunnerTestTools` uses session context, not globals ✅ **Done**
 
 **Red:**
 
@@ -287,9 +291,9 @@ sequenceDiagram
 - Remove `resolveRunnerTestDeploymentRef` usage from leaf resolution
 - Stop importing `RUNNER_TEST_ENVIRONMENT_REFS` in `RunnerTestTools`
 
-**Verify:**
+**Verify:** ✅ (2026-06-27)
 
-- `runnerTest.tools.unit.test.ts` updated
+- `runnerTest.tools.unit.test.ts`: **7 passed**
 - [Global non-regression criteria](#global-non-regression-criteria): **2 passed**
 
 ---
@@ -366,9 +370,9 @@ flowchart LR
 | Slice | Issue | Delivers |
 |-------|-------|----------|
 | **R6-A** | 1 | Suite `testParams` on schema + JSON |
-| **R6-B** | 2 | `RunnerTestRunTarget` type + resolver (unit only) |
-| **R6-C** | 3 | Session init takes run target + suite params as **input** |
-| **R6-D** | 1+3 | `RunnerTestTools` uses context; drop global param bank import |
+| **R6-B** | 2 | `RunnerTestRunTarget` type + resolver (unit only) ✅ |
+| **R6-C** | 3 | Session init takes run target + suite params as **input** ✅ |
+| **R6-D** | 1+3 | `RunnerTestTools` uses context; drop global param bank import ✅ |
 | **R6-E** | 4 | Suite-local runners; **delete `runnerTestFixtures.ts`** |
 
 After each slice (except R6-B): [Global non-regression criteria](#global-non-regression-criteria).

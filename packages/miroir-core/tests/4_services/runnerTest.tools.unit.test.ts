@@ -10,7 +10,12 @@ import {
 } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { RUNNER_TEST_ENVIRONMENT_REFS } from "miroir-test-app_deployment-library";
 import { libraryTestIdentifiers } from "miroir-test-app_deployment-library";
-import { mergeRunnerTestParamBank, resolveRunnerTestLeaf } from "../../src/5_tests/RunnerTestTools";
+import {
+  buildRunnerTestSessionParamBank,
+  mergeRunnerTestParamBank,
+  resolveRunnerTestLeaf,
+} from "../../src/5_tests/RunnerTestTools";
+import { resolveRunnerTestRunTarget } from "../../src/5_tests/RunnerTestRunTarget";
 import { expandResolvableResetAndinitializeDeploymentCompositeAction } from "../../src/1_core/Deployment";
 
 const getFromParameters = (referenceName: string) => ({
@@ -25,6 +30,15 @@ function runnerLibrarySuite(): MiroirTestSuite {
 
 function runnerLibraryLeaf(index: number): MiroirTestForRunner {
   return runnerLibrarySuite().miroirTests[index] as MiroirTestForRunner;
+}
+
+function runnerLibrarySessionContext() {
+  const suite = runnerLibrarySuite();
+  const runTarget = resolveRunnerTestRunTarget({ suite });
+  const sessionTestParams = buildRunnerTestSessionParamBank(suite.testParams, runTarget, {
+    defaultLibraryAppModel,
+  });
+  return { suite, runTarget, sessionTestParams };
 }
 
 const RUNNER_LIBRARY_SUITE_STATIC_TEST_PARAM_KEYS = [
@@ -118,17 +132,20 @@ describe("runnerTest tools", () => {
   it.each([
     ["Lend Book Test Composite Action", 0],
     ["Return Book Test Composite Action", 1],
-  ])("resolveRunnerTestLeaf builds suite from inline JSON — %s", (_label, index) => {
+  ])("resolveRunnerTestLeaf builds suite from session context — %s (R6-D)", (_label, index) => {
     const leaf = runnerLibraryLeaf(index);
+    const { runTarget, sessionTestParams } = runnerLibrarySessionContext();
     const resolved = resolveRunnerTestLeaf({
       leaf,
       pageLabel: "Runner_Miroir.integ.test",
       buildContext,
+      runTarget,
+      sessionTestParams,
     });
 
     expect(resolved.testActionType).toBe("testBuildPlusRuntimeCompositeActionSuite");
-    expect(resolved.application).toBe(libraryTestIdentifiers.testApplicationUuid);
-    expect(resolved.testParams).toEqual(mergeRunnerTestParamBank(RUNNER_TEST_ENVIRONMENT_REFS, leaf));
+    expect(resolved.application).toBe(runTarget.applicationUuid);
+    expect(resolved.testParams).toEqual(mergeRunnerTestParamBank(sessionTestParams, leaf));
     expect(
       resolved.testCompositeAction.beforeEach?.payload._resolvableAppMetaModel,
     ).toEqual(getFromParameters("defaultLibraryAppModel"));

@@ -117,13 +117,20 @@ function createStandaloneAppSession(
         );
       }
       const runnerOptions = (sessionSpecificOptions ?? {}) as Partial<
-        Pick<RunnerTestSessionOptions, "pageLabel">
+        Pick<RunnerTestSessionOptions, "pageLabel" | "runTarget" | "suiteTestParams">
       >;
+      if (!runnerOptions.runTarget) {
+        throw new Error(
+          "StandaloneAppIntegrationOrchestrator: runner session requires runTarget in sessionSpecificOptions",
+        );
+      }
       const hostBootstrap = resolveBootstrapHostOptions(context, runnerOptions);
       return new RunnerTestSession({
         miroirConfig: context.miroirConfig,
         miroirActivityTracker: context.miroirActivityTracker,
         miroirEventService: context.miroirEventService,
+        runTarget: runnerOptions.runTarget,
+        suiteTestParams: runnerOptions.suiteTestParams,
         ...runnerOptions,
         ...hostBootstrap,
         hostExecutionEnvironment: resolveHostExecutionEnvironment(context, hostBootstrap),

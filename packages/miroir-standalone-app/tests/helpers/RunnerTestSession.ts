@@ -11,15 +11,14 @@ import type {
   RunnerTestContext,
   StoreUnitConfiguration,
   Deployment,
+  RunnerTestRunTarget,
 } from "miroir-core";
 import {
+  buildRunnerTestSessionParamBank,
   extendMiroirConfigWithExtraDeploymentConfiguration,
   getBootstrapPhasesForSessionKind,
 } from "miroir-core";
-import {
-  libraryTestIdentifiers,
-  RUNNER_TEST_ENVIRONMENT_REFS,
-} from "miroir-test-app_deployment-library";
+import { defaultLibraryAppModel } from "miroir-test-app_deployment-library";
 import {
   selfApplicationDeploymentMiroir,
   selfApplicationMiroir,
@@ -40,6 +39,8 @@ export type RunnerTestSessionOptions = AppStackBootstrapHostOptions & {
   miroirActivityTracker: MiroirActivityTracker;
   miroirEventService: MiroirEventService;
   pageLabel?: string;
+  runTarget: RunnerTestRunTarget;
+  suiteTestParams?: Record<string, unknown>;
 };
 
 export type RunnerTestSessionConfig = {
@@ -51,7 +52,10 @@ export type RunnerTestSessionConfig = {
 };
 
 // ################################################################################################
-function getTestSessionConfig(miroirConfig: MiroirConfigClient): RunnerTestSessionConfig {
+export function getTestSessionConfig(
+  miroirConfig: MiroirConfigClient,
+  runTarget: RunnerTestRunTarget,
+): RunnerTestSessionConfig {
   const {
     applicationDeploymentMap,
     miroirDeploymentStorageConfiguration,
@@ -59,21 +63,21 @@ function getTestSessionConfig(miroirConfig: MiroirConfigClient): RunnerTestSessi
     libraryDeploymentStorageConfiguration,
   } = getTestConfig(
     miroirConfig,
-    libraryTestIdentifiers.testApplicationDeploymentUuid,
-    libraryTestIdentifiers.testApplicationName,
-    libraryTestIdentifiers.testApplicationUuid,
+    runTarget.deploymentUuid,
+    runTarget.applicationName,
+    runTarget.applicationUuid,
   );
 
   const testDeploymentStorageConfiguration: StoreUnitConfiguration =
     testApplicationStorageConfiguration(
       libraryDeploymentStorageConfiguration,
-      libraryTestIdentifiers.installTestApplicationName,
+      runTarget.applicationName,
     );
 
   const internalMiroirConfig = extendMiroirConfigWithExtraDeploymentConfiguration(
     miroirConfig,
     testDeploymentStorageConfiguration,
-    libraryTestIdentifiers.installTestApplicationDeploymentUuid,
+    runTarget.deploymentUuid,
   );
 
   return {
@@ -95,7 +99,7 @@ export class RunnerTestSession implements RunnerTestSessionInterface {
 
   // ##############################################################################################
   async initSession(): Promise<MiroirTestExecutionEnvironment> {
-    const { miroirConfig, miroirActivityTracker, miroirEventService } = this.options;
+    const { miroirConfig, miroirActivityTracker, miroirEventService, runTarget } = this.options;
     const pageLabel = this.options.pageLabel ?? "miroir-runner-tests.integ";
 
     const {
@@ -104,7 +108,7 @@ export class RunnerTestSession implements RunnerTestSessionInterface {
       adminDeployment,
       testDeploymentStorageConfiguration,
       internalMiroirConfig,
-    } = getTestSessionConfig(miroirConfig);
+    } = getTestSessionConfig(miroirConfig, runTarget);
 
     const { domainController, persistenceStoreControllerManager } =
       await runAppStackIntegrationBootstrap({
@@ -116,7 +120,7 @@ export class RunnerTestSession implements RunnerTestSessionInterface {
         miroirActivityTracker,
         miroirEventService,
         customFetch: crossFetch,
-        testApplicationUuid: libraryTestIdentifiers.testApplicationUuid,
+        testApplicationUuid: runTarget.applicationUuid,
         deployMiroirStrategy: "compositeAction",
         openAdminAndMiroirStoresOnServer: false,
         miroirDeploymentUuid: selfApplicationDeploymentMiroir.uuid,
@@ -126,9 +130,14 @@ export class RunnerTestSession implements RunnerTestSessionInterface {
 
     const testApplicationDeploymentMap = {
       ...applicationDeploymentMap,
-      [libraryTestIdentifiers.testApplicationUuid]:
-        libraryTestIdentifiers.testApplicationDeploymentUuid,
+      [runTarget.applicationUuid]: runTarget.deploymentUuid,
     };
+
+    const sessionTestParams = buildRunnerTestSessionParamBank(
+      this.options.suiteTestParams,
+      runTarget,
+      { defaultLibraryAppModel },
+    );
 
     this.domainController = domainController;
     this.applicationDeploymentMap = testApplicationDeploymentMap;
@@ -139,14 +148,15 @@ export class RunnerTestSession implements RunnerTestSessionInterface {
       internalMiroirConfig,
       adminDeployment,
       testDeploymentStorageConfiguration,
-      testParams: RUNNER_TEST_ENVIRONMENT_REFS?.testParams ?? {},
+      runTarget,
+      testParams: sessionTestParams,
       runtimeContext: {},
     };
 
     return {
       domainController,
       applicationDeploymentMap: testApplicationDeploymentMap,
-      testApplicationUuid: libraryTestIdentifiers.testApplicationUuid,
+      testApplicationUuid: runTarget.applicationUuid,
       persistenceStoreControllerManager,
       runnerTestContext: this.runnerTestContext,
     };

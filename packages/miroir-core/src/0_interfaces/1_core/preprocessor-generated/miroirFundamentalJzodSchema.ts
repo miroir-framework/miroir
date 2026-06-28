@@ -6379,6 +6379,24 @@ export const miroirFundamentalJzodSchema = {
               "type": "any"
             }
           },
+          "runTarget": {
+            "type": "object",
+            "optional": true,
+            "definition": {
+              "applicationUuid": {
+                "type": "string",
+                "optional": true
+              },
+              "applicationName": {
+                "type": "string",
+                "optional": true
+              },
+              "deploymentUuid": {
+                "type": "string",
+                "optional": true
+              }
+            }
+          },
           "miroirTests": {
             "type": "array",
             "definition": {
@@ -6973,6 +6991,24 @@ export const miroirFundamentalJzodSchema = {
                     "optional": true,
                     "definition": {
                       "type": "any"
+                    }
+                  },
+                  "runTarget": {
+                    "type": "object",
+                    "optional": true,
+                    "definition": {
+                      "applicationUuid": {
+                        "type": "string",
+                        "optional": true
+                      },
+                      "applicationName": {
+                        "type": "string",
+                        "optional": true
+                      },
+                      "deploymentUuid": {
+                        "type": "string",
+                        "optional": true
+                      }
                     }
                   },
                   "miroirTests": {

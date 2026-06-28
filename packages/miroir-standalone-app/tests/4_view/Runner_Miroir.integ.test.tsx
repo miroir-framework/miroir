@@ -10,13 +10,16 @@ import {
   miroirCoreStartup,
   MiroirEventService,
   MiroirLoggerFactory,
+  resolveRunnerTestRunTarget,
   testBuildPlusRuntimeCompositeActionSuiteForRunner,
   type ApplicationDeploymentMap,
   type DomainControllerInterface,
   type LoggerInterface,
   type LoggerOptions,
+  type MiroirTestSuite,
   type Runner
 } from "miroir-core";
+import { miroirTest_runner_library } from "miroir-test-app_deployment-library";
 import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
 import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
 import { miroirMongoDbStoreSectionStartup } from "miroir-store-mongodb";
@@ -84,11 +87,16 @@ const globalTimeOut = 30000;
 // Fixed UUID for the test menu used in the withReports test
 const testMenuUuid = "a1b2c3d4-e5f6-7890-abcd-ef1234567890";
 
+const runnerLibrarySuite = miroirTest_runner_library.definition as MiroirTestSuite;
+const runnerTestRunTarget = resolveRunnerTestRunTarget({ suite: runnerLibrarySuite });
+
 const runnerTestSession = new RunnerTestSession({
   miroirConfig,
   miroirActivityTracker,
   miroirEventService,
   pageLabel,
+  runTarget: runnerTestRunTarget,
+  suiteTestParams: runnerLibrarySuite.testParams,
 });
 
 let domainController: DomainControllerInterface;

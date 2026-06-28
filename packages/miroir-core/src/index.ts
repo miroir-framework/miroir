@@ -1000,6 +1000,15 @@ export {
   runnerTestJzodSchema,
 } from "./5_tests/RunnerTestTools.js";
 export {
+  isRunnerTestRunTargetUuid,
+  resolveRunnerTestRunTarget,
+  buildRunnerTestSessionParamBank,
+  mergeRunnerTestParamBank,
+  type ResolveRunnerTestRunTargetParams,
+  type RunnerTestRunTarget,
+  type RunnerTestRunTargetOverride,
+} from "./5_tests/RunnerTestRunTarget.js";
+export {
   effectiveMiroirTransformerSkip,
   miroirTransformerAssertionName,
   runMiroirTest,

@@ -728,7 +728,7 @@ Move declarative transformer trees from `RUNNER_TEST_FIXTURE_REFS` into `miroirT
 
 R6 is split into five TDD slices (R6-A … R6-E): suite `testParams`, `RunnerTestRunTarget` as test-run input (UUID v4 if unpinned), session wiring, context-only `RunnerTestTools`, then delete `runnerTestFixtures.ts`. Each issue in that doc has present-state diagrams, target architecture, and Red/Green/Verify steps.
 
-**Progress:** R6-A ✅ (suite `testParams` on schema + `runner_library` JSON; runtime still uses global bank until R6-D)
+**Progress:** R6-A–D ✅ (session + tools use run target; `runnerTestFixtures.ts` remains until R6-E)
 
 **Locked principle:** One `{ applicationUuid, applicationName, deploymentUuid }` per test run, passed into the session — not a global `libraryTestIdentifiers` module export.
 

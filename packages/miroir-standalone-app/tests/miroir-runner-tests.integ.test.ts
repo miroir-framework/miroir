@@ -9,10 +9,13 @@ import {
   MiroirLoggerFactory,
   miroirCoreStartup,
   runMiroirTests,
+  resolveRunnerTestRunTarget,
   type LoggerInterface,
   type LoggerOptions,
+  type MiroirTestSuite,
   parseMiroirRunnerTestCliConfig,
 } from "miroir-core";
+import { miroirTest_runner_library } from "miroir-test-app_deployment-library";
 import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
 import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
 import { miroirMongoDbStoreSectionStartup } from "miroir-store-mongodb";
@@ -63,11 +66,17 @@ if (config.filter?.testList) {
 
 if (config.suiteKeys.length > 0) {
   const orchestrator = createStandaloneAppIntegrationOrchestrator();
+  const runnerLibrarySuite = miroirTest_runner_library.definition as MiroirTestSuite;
+  const runTarget = resolveRunnerTestRunTarget({ suite: runnerLibrarySuite });
   const testSession = orchestrator.createSession("runner", {
     miroirConfig,
     miroirActivityTracker,
     miroirEventService,
-  }, { pageLabel });
+  }, {
+    pageLabel,
+    runTarget,
+    suiteTestParams: runnerLibrarySuite.testParams,
+  });
 
   await runMiroirRunnerTestsFromCLI(
     runMiroirTests,

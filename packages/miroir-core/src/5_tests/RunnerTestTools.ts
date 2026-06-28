@@ -14,11 +14,7 @@ import type {
 } from "../0_interfaces/3_controllers/MiroirActivityTrackerInterface";
 import type { ApplicationDeploymentMap } from "../1_core/Deployment";
 import { testBuildPlusRuntimeCompositeActionSuiteForRunner } from "../1_core/Runner";
-import {
-  resolveRunnerRef,
-  resolveRunnerTestDeploymentRef,
-  RUNNER_TEST_ENVIRONMENT_REFS,
-} from "miroir-test-app_deployment-library";
+import { resolveRunnerRef } from "miroir-test-app_deployment-library";
 import type {
   Deployment,
   MiroirConfigClient,
@@ -26,8 +22,14 @@ import type {
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import type { MiroirTestRunFilter } from "../0_interfaces/5-tests/miroirTestTypes";
 import type { MiroirTestExecutionEnvironment } from "./MiroirTestTools";
+import type { RunnerTestRunTarget } from "./RunnerTestRunTarget";
+import { mergeRunnerTestParamBank } from "./RunnerTestRunTarget.js";
 
 export { miroirTestForRunner as runnerTestJzodSchema } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+export {
+  buildRunnerTestSessionParamBank,
+  mergeRunnerTestParamBank,
+} from "./RunnerTestRunTarget.js";
 
 export type ResolveRunnerTestLeafBuildContext = {
   internalMiroirConfig: MiroirConfigClient;
@@ -39,23 +41,17 @@ export type ResolveRunnerTestLeafParams = {
   leaf: MiroirTestForRunner;
   pageLabel: string;
   buildContext: ResolveRunnerTestLeafBuildContext;
+  runTarget: RunnerTestRunTarget;
+  sessionTestParams: Record<string, unknown>;
 };
-
-export function mergeRunnerTestParamBank(
-  environmentSeed: typeof RUNNER_TEST_ENVIRONMENT_REFS,
-  leaf: MiroirTestForRunner,
-): Record<string, unknown> {
-  return {
-    ...(environmentSeed?.testParams ?? {}),
-    ...(leaf.testParams ?? {}),
-  };
-}
 
 // ################################################################################################
 export function resolveRunnerTestLeaf({
   leaf,
   pageLabel,
   buildContext,
+  runTarget,
+  sessionTestParams,
 }: ResolveRunnerTestLeafParams): TestCompositeActionParams {
   if (leaf.initialModel === undefined) {
     throw new Error(
@@ -63,15 +59,14 @@ export function resolveRunnerTestLeaf({
     );
   }
 
-  const deployment = resolveRunnerTestDeploymentRef(leaf.deploymentRef);
-  const mergedTestParams = mergeRunnerTestParamBank(RUNNER_TEST_ENVIRONMENT_REFS, leaf);
+  const mergedTestParams = mergeRunnerTestParamBank(sessionTestParams, leaf);
 
   return testBuildPlusRuntimeCompositeActionSuiteForRunner(
     pageLabel,
     resolveRunnerRef(leaf.runnerRef),
-    deployment.testApplicationUuid,
-    deployment.testApplicationDeploymentUuid,
-    deployment.testApplicationName,
+    runTarget.applicationUuid,
+    runTarget.deploymentUuid,
+    runTarget.applicationName,
     mergedTestParams,
     leaf.preTestCompositeActions ?? [],
     leaf.testCompositeActionAssertions ?? [],
@@ -158,6 +153,8 @@ export async function runMiroirRunnerTest(
       adminDeployment: runnerContext.adminDeployment,
       testDeploymentStorageConfiguration: runnerContext.testDeploymentStorageConfiguration,
     },
+    runTarget: runnerContext.runTarget,
+    sessionTestParams: runnerContext.testParams,
   });
 
   const result = await runRunnerTestCompositeAction(
