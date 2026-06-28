@@ -4,7 +4,7 @@
 
 **Prerequisites:** Phase A ✅ · Gaps A/B/C-setup/D/E ✅ · Phase R (R0–R6) ✅
 
-**Status:** Not started
+**Status:** B0 complete ✅ · B1+ not started
 
 **Goal:** Run the same domainController-based MiroirTest integration suites from the Miroir UI that CLI runs today — with **data-isolated** test runs that do not pollute the user's working session — plus reporting and a troubleshooting inspector.
 
@@ -185,16 +185,21 @@ flowchart LR
 
 Each slice: **Red → Green → Verify**. After every slice that touches runner path, run [Global non-regression](#global-non-regression-criteria).
 
-### B0 — Terminology + launcher contract (docs + types)
+### B0 — Terminology + launcher contract (docs + types) ✅
 
 **Deliverables**
 
 - This plan ✅
-- Update parent [plan.md](./plan.md) Phase B pointer + isolation wording
-- Export `UiIntegrationTestRunRequest` / `UiIntegrationTestRunResult` types (standalone-app)
-- `inferIntegrationSessionKind(suite): IntegrationTestSessionKind | undefined` — returns `"runner"` if any `runnerTest` leaf, `"transformer"` if any `transformerTest` integ leaf, else `undefined`
+- Update parent [plan.md](./plan.md) Phase B pointer + isolation wording ✅
+- Export `UiIntegrationTestRunRequest` / `UiIntegrationTestRunResult` types (standalone-app) ✅ — [`uiIntegrationTestLauncherTypes.ts`](../../../packages/miroir-standalone-app/src/miroir-fwk/4-tests/uiIntegrationTestLauncherTypes.ts)
+- `inferIntegrationSessionKind(suite)` + `classifyMiroirTestSuiteExecutionCapabilities(suite)` ✅ — [`inferIntegrationSessionKind.ts`](../../../packages/miroir-core/src/5_tests/inferIntegrationSessionKind.ts)
 
-**Verify:** unit tests for kind inference on `miroirTest_runner_library` shell + transformer suite fixture.
+**Verify:** unit tests for kind inference on `miroirTest_runner_library` + `miroirCoreTransformers` ✅
+
+```bash
+cd packages/miroir-core && npx vitest run tests/4_services/inferIntegrationSessionKind.unit.test.ts
+cd packages/miroir-standalone-app && npx vitest run tests/helpers/uiIntegrationTestLauncherTypes.unit.test.ts
+```
 
 ---
 

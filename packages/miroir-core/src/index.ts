@@ -958,6 +958,14 @@ export {
   runMiroirQueryRunnerTestInMemory,
 } from "./5_tests/QueryRunnerTestTools.js";
 export {
+  classifyMiroirTestSuiteExecutionCapabilities,
+  inferIntegrationSessionKind,
+  transformerTestLeafRequiresIntegration,
+  walkMiroirTestLeaves,
+  type MiroirTestSuiteExecutionCapabilities,
+  type MiroirTestSuiteUiExecutionMode,
+} from "./5_tests/inferIntegrationSessionKind.js";
+export {
   describeIntegrationTestSession,
   getBootstrapPhasesForDomainControllerProfile,
   getBootstrapPhasesForSessionKind,
