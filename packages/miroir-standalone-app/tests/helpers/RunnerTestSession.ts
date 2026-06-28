@@ -1,22 +1,21 @@
 import crossFetch from "cross-fetch";
 
-import type {
-  ApplicationDeploymentMap,
-  DomainControllerInterface,
-  MiroirActivityTracker,
-  MiroirConfigClient,
-  MiroirEventService,
-  MiroirTestExecutionEnvironment,
-  RunnerTestSessionInterface,
-  RunnerTestContext,
-  StoreUnitConfiguration,
-  Deployment,
-  RunnerTestRunTarget,
-} from "miroir-core";
 import {
   buildRunnerTestSessionParamBank,
   extendMiroirConfigWithExtraDeploymentConfiguration,
   getBootstrapPhasesForSessionKind,
+  type ApplicationDeploymentMap,
+  type Deployment,
+  type DomainControllerInterface,
+  type MiroirActivityTracker,
+  type MiroirConfigClient,
+  type MiroirEventService,
+  type MiroirTestExecutionEnvironment,
+  type Runner,
+  type RunnerTestContext,
+  type RunnerTestRunTarget,
+  type RunnerTestSessionInterface,
+  type StoreUnitConfiguration,
 } from "miroir-core";
 import { defaultLibraryAppModel } from "miroir-test-app_deployment-library";
 import {
@@ -41,6 +40,7 @@ export type RunnerTestSessionOptions = AppStackBootstrapHostOptions & {
   pageLabel?: string;
   runTarget: RunnerTestRunTarget;
   suiteTestParams?: Record<string, unknown>;
+  runnerRegistry: Record<string, Runner>;
 };
 
 export type RunnerTestSessionConfig = {
@@ -99,7 +99,8 @@ export class RunnerTestSession implements RunnerTestSessionInterface {
 
   // ##############################################################################################
   async initSession(): Promise<MiroirTestExecutionEnvironment> {
-    const { miroirConfig, miroirActivityTracker, miroirEventService, runTarget } = this.options;
+    const { miroirConfig, miroirActivityTracker, miroirEventService, runTarget, runnerRegistry } =
+      this.options;
     const pageLabel = this.options.pageLabel ?? "miroir-runner-tests.integ";
 
     const {
@@ -149,6 +150,7 @@ export class RunnerTestSession implements RunnerTestSessionInterface {
       adminDeployment,
       testDeploymentStorageConfiguration,
       runTarget,
+      runnerRegistry,
       testParams: sessionTestParams,
       runtimeContext: {},
     };

@@ -19,7 +19,7 @@ import {
   type MiroirTestSuite,
   type Runner
 } from "miroir-core";
-import { miroirTest_runner_library } from "miroir-test-app_deployment-library";
+import { miroirTest_runner_library, RUNNER_LIBRARY_RUNNER_REGISTRY } from "miroir-test-app_deployment-library";
 import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
 import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
 import { miroirMongoDbStoreSectionStartup } from "miroir-store-mongodb";
@@ -97,6 +97,7 @@ const runnerTestSession = new RunnerTestSession({
   pageLabel,
   runTarget: runnerTestRunTarget,
   suiteTestParams: runnerLibrarySuite.testParams,
+  runnerRegistry: RUNNER_LIBRARY_RUNNER_REGISTRY,
 });
 
 let domainController: DomainControllerInterface;

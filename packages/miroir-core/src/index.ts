@@ -1000,6 +1000,9 @@ export {
   runnerTestJzodSchema,
 } from "./5_tests/RunnerTestTools.js";
 export {
+  resolveRunnerFromRegistry,
+} from "./5_tests/resolveRunnerFromRegistry.js";
+export {
   isRunnerTestRunTargetUuid,
   resolveRunnerTestRunTarget,
   buildRunnerTestSessionParamBank,

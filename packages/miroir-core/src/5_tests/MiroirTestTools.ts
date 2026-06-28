@@ -11,6 +11,7 @@ import type {
   MiroirTestForRunner,
   MiroirTestLeaf,
   MiroirTestSuite,
+  Runner,
   StoreUnitConfiguration,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import type { MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
@@ -42,6 +43,7 @@ export type RunnerTestContext = {
   adminDeployment: Deployment;
   testDeploymentStorageConfiguration: StoreUnitConfiguration;
   runTarget: RunnerTestRunTarget;
+  runnerRegistry: Record<string, Runner>;
   testParams: Record<string, unknown>;
   runtimeContext: Record<string, unknown>;
 };

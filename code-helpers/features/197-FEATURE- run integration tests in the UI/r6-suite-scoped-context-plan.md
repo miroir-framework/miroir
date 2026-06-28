@@ -4,7 +4,7 @@
 
 **Prerequisite:** R0–R5 complete ✅ (`runner_library` integ green; `runnerTestFixtures.ts` trimmed but still present)
 
-**Status:** R6-A ✅ · R6-B ✅ · R6-C ✅ · R6-D ✅
+**Status:** R6 complete ✅ (R6-A … R6-E)
 
 **Goal:** Remove the global `runnerTestFixtures.ts` module. All context that today is hard-coded for `runner.library` becomes **input to the test run**, derived from the loaded `MiroirTest` suite instance (`uuid` `b7e4a901-2c3d-4f5a-b6c7-8d9e0f1a2b3c`) plus optional caller overrides.
 
@@ -325,11 +325,11 @@ flowchart LR
 - **Deployment:** use `runTarget` from context (Issue 3) — delete `deploymentRef` resolution for pilot or keep field as documentation-only until schema cleanup
 - **Runners:** suite-level `runners` record on JSON **or** convention: resolve `runnerRef` string against imports registered when the suite is loaded (e.g. `{ lendDocument, returnDocument }` built next to suite loader in deployment-library)
 
-### Slice R6-E — Suite-local runners; delete `runnerTestFixtures.ts`
+### Slice R6-E — Suite-local runners; delete `runnerTestFixtures.ts` ✅ **Done**
 
 **Red:**
 
-- Unit test: given suite definition + runner registry map, `resolveRunnerFromSuite(suite, "lendDocument")` returns runner entity
+- Unit test: given suite definition + runner registry map, `resolveRunnerFromRegistry(suite, "lendDocument")` returns runner entity
 - Grep test / lint rule: no imports from `runnerTestFixtures.ts` in production paths
 
 **Green:**
@@ -338,11 +338,14 @@ flowchart LR
 - Delete `runnerTestFixtures.ts`; trim `deployment-library/index.ts` exports
 - Delete or repoint `Runner_Library.ts` duplicate `libraryTestIdentifiers` (deprecated file — read run target from suite or remove)
 
-**Verify:**
+**Verify:** ✅ (2026-06-27)
 
-- `grep runnerTestFixtures` → plan/history only
+- `runnerLibraryTestRegistry.unit.test.ts`: **3 passed**
+- `grep runnerTestFixtures` in `*.ts`/`*.tsx` → **no matches**
+- `runnerTestFixtures.ts` **deleted**; replaced by `runnerLibraryTestRegistry.ts`
+- `RunnerTestContext.runnerRegistry` wired through session → `resolveRunnerTestLeaf`
+- Legacy `Runner_Library.ts`: collapsed to local `runTarget` triple
 - [Global non-regression criteria](#global-non-regression-criteria): **2 passed**
-- `RunnerTestSession.unit.test.ts`, `runnerTest.tools.unit.test.ts` green
 
 ---
 
@@ -373,20 +376,20 @@ flowchart LR
 | **R6-B** | 2 | `RunnerTestRunTarget` type + resolver (unit only) ✅ |
 | **R6-C** | 3 | Session init takes run target + suite params as **input** ✅ |
 | **R6-D** | 1+3 | `RunnerTestTools` uses context; drop global param bank import ✅ |
-| **R6-E** | 4 | Suite-local runners; **delete `runnerTestFixtures.ts`** |
+| **R6-E** | 4 | Suite-local runners; **delete `runnerTestFixtures.ts`** ✅ |
 
 After each slice (except R6-B): [Global non-regression criteria](#global-non-regression-criteria).
 
 ---
 
-## Success criteria (R6 complete)
+## Success criteria (R6 complete) ✅
 
-- [ ] Single `RunnerTestRunTarget` per test run; generated UUID v4 when suite does not pin
-- [ ] No global `libraryTestIdentifiers` or `RUNNER_TEST_ENVIRONMENT_REFS`
-- [ ] `getTestSessionConfig` receives run target from suite/caller, not module import
-- [ ] `runnerTestFixtures.ts` deleted
-- [ ] [Global non-regression criteria](#global-non-regression-criteria): **2 passed**
-- [ ] Main [plan.md](./plan.md) Phase R marked complete → Phase B unblocked
+- [x] Single `RunnerTestRunTarget` per test run; generated UUID v4 when suite does not pin
+- [x] No global `libraryTestIdentifiers` or `RUNNER_TEST_ENVIRONMENT_REFS`
+- [x] `getTestSessionConfig` receives run target from suite/caller, not module import
+- [x] `runnerTestFixtures.ts` deleted
+- [x] [Global non-regression criteria](#global-non-regression-criteria): **2 passed**
+- [x] Main [plan.md](./plan.md) Phase R marked complete → Phase B unblocked
 
 ---
 

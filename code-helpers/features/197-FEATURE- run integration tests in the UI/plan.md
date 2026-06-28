@@ -87,9 +87,9 @@ sequenceDiagram
 | Runner integ CLI | same script → `miroir-runner-tests.integ.test.ts` | `VITE_MIROIR_*` or `--profile` |
 | App-stack integ | `test-by-file.ts` | `VITE_MIROIR_*` or `--profile` |
 | Pilot instance | `miroirTest_runner_library` in deployment-library | lend + return `runnerTest` leaves (**inline JSON**, no `fixtureRef`) |
-| Ref registry (interim) | `miroir-test-app_deployment-library/src/runnerTestFixtures.ts` | env seed + deployment/runner ref resolvers — **R5** trims dead code; **R6** deletes file |
+| Ref registry (interim) | ~~`runnerTestFixtures.ts`~~ **deleted R6** → `runnerLibraryTestRegistry.ts` |
 
-**Still open for #197:** Phase R slice **R6** ([r6-suite-scoped-context-plan.md](./r6-suite-scoped-context-plan.md)), then Phase B (UI launcher + reporting). UI runs **domainController-based** MiroirTest integ first; PSC-direct `4_storage` suites deferred (see [Out of scope](#out-of-scope)).
+**Still open for #197:** Phase B (UI launcher + reporting). Phase R complete ✅ ([r6-suite-scoped-context-plan.md](./r6-suite-scoped-context-plan.md)). UI runs **domainController-based** MiroirTest integ first; PSC-direct `4_storage` suites deferred (see [Out of scope](#out-of-scope)).
 
 ### Legacy imperative runner files (not yet on MiroirTest JSON)
 
@@ -722,13 +722,13 @@ Move declarative transformer trees from `RUNNER_TEST_FIXTURE_REFS` into `miroirT
 - `miroirTestTools.unit.test.ts`: uses `miroirTest_runner_library` leaf for mode guard
 - `runner_library` integ: **2 passed**
 
-#### R6 — Suite-scoped context; delete `runnerTestFixtures.ts`
+#### R6 — Suite-scoped context; delete `runnerTestFixtures.ts` ✅ **Done**
 
 **Moved to dedicated plan:** [r6-suite-scoped-context-plan.md](./r6-suite-scoped-context-plan.md)
 
 R6 is split into five TDD slices (R6-A … R6-E): suite `testParams`, `RunnerTestRunTarget` as test-run input (UUID v4 if unpinned), session wiring, context-only `RunnerTestTools`, then delete `runnerTestFixtures.ts`. Each issue in that doc has present-state diagrams, target architecture, and Red/Green/Verify steps.
 
-**Progress:** R6-A–D ✅ (session + tools use run target; `runnerTestFixtures.ts` remains until R6-E)
+**Progress:** R6 complete ✅ — [r6-suite-scoped-context-plan.md](./r6-suite-scoped-context-plan.md)
 
 **Locked principle:** One `{ applicationUuid, applicationName, deploymentUuid }` per test run, passed into the session — not a global `libraryTestIdentifiers` module export.
 
@@ -742,7 +742,7 @@ R6 is split into five TDD slices (R6-A … R6-E): suite `testParams`, `RunnerTes
 - [x] No new literals in fixture bodies for fields migrated in R0–R2
 - [x] (R4) `runnerTestFixtures.ts` contains no composite-action / assertion literals
 - [x] (R5) Resolver indirection removed; legacy fixture aliases + test constants gone; **`runnerTestFixtures.ts` retained** (trimmed)
-- [ ] (R6) See [r6-suite-scoped-context-plan.md](./r6-suite-scoped-context-plan.md) success criteria
+- [x] (R6) Suite-scoped run context; **`runnerTestFixtures.ts` deleted** — [r6-suite-scoped-context-plan.md](./r6-suite-scoped-context-plan.md) ✅
 
 #### Suggested commits (Phase R)
 
@@ -858,15 +858,15 @@ flowchart LR
 - [x] Orchestrator + four session adapters (Gaps A/B/C-setup/E); legacy `Runner_Miroir.integ` harness on `RunnerTestSession` (still imperative — G8)
 - [x] No secrets committed; config files use localhost defaults
 
-### Phase R (R0–R5 ✅, R6 open)
+### Phase R (R0–R6 ✅)
 
 - [x] R0: `initialModel` → `getFromParameters` + injected `defaultLibraryAppModel`
 - [x] R1: runner payload fields → `getFromParameters` + param bank dates/UUIDs
 - [x] R2: preTest/preRunner → `getFromParameters` + deployment/entity param bank keys
 - [x] R3: fixture definitions inlined in `miroirTest_runner_library` JSON; `handleAction` param-bank pass-through
 - [x] R4: composite literals removed from TS catalog; JSON source of truth
-- [x] R5: collapse resolver indirection; remove fixtureRef layer; trimmed `runnerTestFixtures.ts` retained
-- [ ] R6: suite-scoped run context — [r6-suite-scoped-context-plan.md](./r6-suite-scoped-context-plan.md)
+- [x] R5: collapse resolver indirection; remove fixtureRef layer
+- [x] R6: suite-scoped run context; delete `runnerTestFixtures.ts` — [r6-suite-scoped-context-plan.md](./r6-suite-scoped-context-plan.md)
 
 ### Phase B
 

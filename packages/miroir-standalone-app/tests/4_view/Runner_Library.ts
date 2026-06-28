@@ -27,14 +27,12 @@ import {
 // ################################################################################################
 const pageLabel = "Runner_Miroir.integ.test";
 
-export const libraryTestIdentifiers = {
-  testApplicationUuid: selfApplicationLibrary.uuid,
-  testApplicationDeploymentUuid: deployment_Library_DO_NO_USE.uuid,
-  testApplicationName: selfApplicationLibrary.name,
-  installTestApplicationUuid: selfApplicationLibrary.uuid,
-  installTestApplicationDeploymentUuid: deployment_Library_DO_NO_USE.uuid,
-  installTestApplicationName: selfApplicationLibrary.name,
-}
+/** @deprecated Use `miroirTest_runner_library.definition.runTarget` — single triple for legacy harness. */
+const runTarget = {
+  applicationUuid: selfApplicationLibrary.uuid,
+  applicationName: selfApplicationLibrary.name,
+  deploymentUuid: deployment_Library_DO_NO_USE.uuid,
+};
 
 let miroirConfig: any;
 
@@ -43,27 +41,27 @@ miroirConfig = miroirConfigParam;
 
 const testConfig = getTestConfig(
   miroirConfig,
-  libraryTestIdentifiers.testApplicationDeploymentUuid,
-  libraryTestIdentifiers.testApplicationName,
-  libraryTestIdentifiers.testApplicationUuid,
+  runTarget.deploymentUuid,
+  runTarget.applicationName,
+  runTarget.applicationUuid,
 );
 const installTestDeploymentStorageConfiguration: StoreUnitConfiguration = testApplicationStorageConfiguration(
   testConfig.libraryDeploymentStorageConfiguration,
-  libraryTestIdentifiers.installTestApplicationName,
+  runTarget.applicationName,
 );
 const installInternalMiroirConfig = extendMiroirConfigWithExtraDeploymentConfiguration(
   miroirConfig,
   installTestDeploymentStorageConfiguration,
-  libraryTestIdentifiers.installTestApplicationDeploymentUuid,
+  runTarget.deploymentUuid,
 );
 
 export const libraryLendBookRunnerTest: RunnerTestParams = {
   pageLabel,
   testCompositeActionLabel: "Lend Book Test Composite Action",
   runner: lendDocument as unknown as Runner,
-  testApplicationUuid: libraryTestIdentifiers.testApplicationUuid,
-  testApplicationDeploymentUuid: libraryTestIdentifiers.testApplicationDeploymentUuid,
-  testApplicationName: libraryTestIdentifiers.testApplicationName,
+  testApplicationUuid: runTarget.applicationUuid,
+  testApplicationDeploymentUuid: runTarget.deploymentUuid,
+  testApplicationName: runTarget.applicationName,
   testParams: {
     [lendDocument.name]: {
       actionType: "lendDocument",
@@ -88,13 +86,13 @@ export const libraryLendBookRunnerTest: RunnerTestParams = {
         actionType: "runBoxedQueryAction",
         endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
         payload: {
-          application: libraryTestIdentifiers.testApplicationUuid,
+          application: runTarget.applicationUuid,
           applicationSection: "data",
           query: {
             queryType: "boxedQueryWithExtractorCombinerTransformer",
-            application: libraryTestIdentifiers.testApplicationUuid,
+            application: runTarget.applicationUuid,
             pageParams: {
-              currentDeploymentUuid: libraryTestIdentifiers.testApplicationDeploymentUuid,
+              currentDeploymentUuid: runTarget.deploymentUuid,
             },
             extractors: {
               items: {
@@ -161,9 +159,9 @@ export const libraryReturnBookRunnerTest: RunnerTestParams = {
   pageLabel,
   testCompositeActionLabel: "Return Book Test Composite Action",
   runner: returnDocument as unknown as Runner,
-  testApplicationUuid: libraryTestIdentifiers.testApplicationUuid,
-  testApplicationDeploymentUuid: libraryTestIdentifiers.testApplicationDeploymentUuid,
-  testApplicationName: libraryTestIdentifiers.testApplicationName,
+  testApplicationUuid: runTarget.applicationUuid,
+  testApplicationDeploymentUuid: runTarget.deploymentUuid,
+  testApplicationName: runTarget.applicationName,
   testParams: {
     [returnDocument.name]: {
       actionType: "returnDocument",
@@ -193,13 +191,13 @@ export const libraryReturnBookRunnerTest: RunnerTestParams = {
         actionType: "runBoxedQueryAction",
         endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
         payload: {
-          application: libraryTestIdentifiers.testApplicationUuid,
+          application: runTarget.applicationUuid,
           applicationSection: "data",
           query: {
             queryType: "boxedQueryWithExtractorCombinerTransformer",
-            application: libraryTestIdentifiers.testApplicationUuid,
+            application: runTarget.applicationUuid,
             pageParams: {
-              currentDeploymentUuid: libraryTestIdentifiers.testApplicationDeploymentUuid,
+              currentDeploymentUuid: runTarget.deploymentUuid,
             },
             extractors: {
               items: {

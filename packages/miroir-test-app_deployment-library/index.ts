@@ -96,10 +96,6 @@ export { default as user3 } from "./assets/library_data/ca794e28-b2dc-45b3-8137-
 export { default as miroirTest_runner_library } from "./assets/library_model/a311f363-e238-4203-bdfc-29e8c160c26b/b7e4a901-2c3d-4f5a-b6c7-8d9e0f1a2b3c.json" assert { type: "json" };
 
 export {
-  libraryTestIdentifiers,
-  resolveRunnerRef,
-  resolveRunnerTestDeploymentRef,
-  RUNNER_TEST_ENVIRONMENT_REFS,
-  type LibraryTestIdentifiers,
-  type RunnerTestEnvironmentSeed,
-} from "./src/runnerTestFixtures.js";
+  RUNNER_LIBRARY_RUNNER_REGISTRY,
+  resolveRunnerLibraryRunnerRef,
+} from "./src/runnerLibraryTestRegistry.js";

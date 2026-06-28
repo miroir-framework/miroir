@@ -1,19 +1,22 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import type {
-  ApplicationDeploymentMap,
-  DomainControllerInterface,
-  MiroirConfigClient,
-} from "miroir-core";
 import {
   buildRunnerTestSessionParamBank,
   getBootstrapPhasesForSessionKind,
   MiroirActivityTracker,
   MiroirEventService,
   resolveRunnerTestRunTarget,
+  type ApplicationDeploymentMap,
+  type DomainControllerInterface,
+  type MiroirConfigClient,
+  type MiroirTestDefinition,
+  type MiroirTestSuite,
 } from "miroir-core";
-import { defaultLibraryAppModel, miroirTest_runner_library } from "miroir-test-app_deployment-library";
-import type { MiroirTestDefinition, MiroirTestSuite } from "miroir-core";
+import {
+  defaultLibraryAppModel,
+  miroirTest_runner_library,
+  RUNNER_LIBRARY_RUNNER_REGISTRY,
+} from "miroir-test-app_deployment-library";
 import {
   selfApplicationDeploymentMiroir,
   selfApplicationMiroir,
@@ -87,7 +90,11 @@ describe("RunnerTestSession (Gap E R)", () => {
     const runTarget = runnerLibraryRunTarget();
     const config = getTestSessionConfig(baseMiroirConfig(runTarget), runTarget);
 
-    expect(config.internalMiroirConfig.client?.deploymentStorageConfig?.[runTarget.deploymentUuid]).toBeDefined();
+    const client = config.internalMiroirConfig.client;
+    expect(client.emulateServer).toBe(true);
+    if (client.emulateServer) {
+      expect(client.deploymentStorageConfig[runTarget.deploymentUuid]).toBeDefined();
+    }
     expect(config.testDeploymentStorageConfiguration).toBeDefined();
   });
 
@@ -102,11 +109,13 @@ describe("RunnerTestSession (Gap E R)", () => {
       miroirEventService: eventService,
       runTarget,
       suiteTestParams: suite.testParams,
+      runnerRegistry: RUNNER_LIBRARY_RUNNER_REGISTRY,
     });
 
     const env = await session.initSession();
 
     expect(env.runnerTestContext?.runTarget).toEqual(runTarget);
+    expect(env.runnerTestContext?.runnerRegistry).toBe(RUNNER_LIBRARY_RUNNER_REGISTRY);
     expect(env.runnerTestContext?.testParams).toEqual(
       buildRunnerTestSessionParamBank(suite.testParams, runTarget, {
         defaultLibraryAppModel,
@@ -124,6 +133,7 @@ describe("RunnerTestSession (Gap E R)", () => {
       miroirEventService: eventService,
       runTarget,
       suiteTestParams: runnerLibrarySuite().testParams,
+      runnerRegistry: RUNNER_LIBRARY_RUNNER_REGISTRY,
     });
 
     await session.initSession();
@@ -151,6 +161,7 @@ describe("RunnerTestSession (Gap E R)", () => {
       miroirEventService: eventService,
       runTarget,
       suiteTestParams: runnerLibrarySuite().testParams,
+      runnerRegistry: RUNNER_LIBRARY_RUNNER_REGISTRY,
     });
 
     await session.initSession();

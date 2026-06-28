@@ -3,7 +3,11 @@ import * as vitest from "vitest";
 type VitestNamespace = typeof vitest;
 
 import type {
+  Deployment,
+  MiroirConfigClient,
   MiroirTestForRunner,
+  Runner,
+  StoreUnitConfiguration,
   TestCompositeActionParams,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import type { Action2ReturnType } from "../0_interfaces/2_domain/DomainElement";
@@ -14,12 +18,7 @@ import type {
 } from "../0_interfaces/3_controllers/MiroirActivityTrackerInterface";
 import type { ApplicationDeploymentMap } from "../1_core/Deployment";
 import { testBuildPlusRuntimeCompositeActionSuiteForRunner } from "../1_core/Runner";
-import { resolveRunnerRef } from "miroir-test-app_deployment-library";
-import type {
-  Deployment,
-  MiroirConfigClient,
-  StoreUnitConfiguration,
-} from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import { resolveRunnerFromRegistry } from "./resolveRunnerFromRegistry.js";
 import type { MiroirTestRunFilter } from "../0_interfaces/5-tests/miroirTestTypes";
 import type { MiroirTestExecutionEnvironment } from "./MiroirTestTools";
 import type { RunnerTestRunTarget } from "./RunnerTestRunTarget";
@@ -43,6 +42,7 @@ export type ResolveRunnerTestLeafParams = {
   buildContext: ResolveRunnerTestLeafBuildContext;
   runTarget: RunnerTestRunTarget;
   sessionTestParams: Record<string, unknown>;
+  runnerRegistry: Record<string, Runner>;
 };
 
 // ################################################################################################
@@ -52,6 +52,7 @@ export function resolveRunnerTestLeaf({
   buildContext,
   runTarget,
   sessionTestParams,
+  runnerRegistry,
 }: ResolveRunnerTestLeafParams): TestCompositeActionParams {
   if (leaf.initialModel === undefined) {
     throw new Error(
@@ -63,7 +64,7 @@ export function resolveRunnerTestLeaf({
 
   return testBuildPlusRuntimeCompositeActionSuiteForRunner(
     pageLabel,
-    resolveRunnerRef(leaf.runnerRef),
+    resolveRunnerFromRegistry(runnerRegistry, leaf.runnerRef),
     runTarget.applicationUuid,
     runTarget.deploymentUuid,
     runTarget.applicationName,
@@ -155,6 +156,7 @@ export async function runMiroirRunnerTest(
     },
     runTarget: runnerContext.runTarget,
     sessionTestParams: runnerContext.testParams,
+    runnerRegistry: runnerContext.runnerRegistry,
   });
 
   const result = await runRunnerTestCompositeAction(
