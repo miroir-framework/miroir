@@ -22,14 +22,13 @@ import type {
 import { MiroirActivityTracker } from "../3_controllers/MiroirActivityTracker";
 import { runMiroirFunctionCallTestInMemory } from "./FunctionCallTestTools";
 import {
-  miroirTestGlobalTimeOut,
   runMiroirTransformerIntegrationTest,
   runMiroirTransformerTest,
 } from "./MiroirTransformerTestTools";
 import { runMiroirQueryRunnerTestInMemory } from "./QueryRunnerTestTools";
 import { runMiroirRunnerTest } from "./RunnerTestTools";
-import type { MiroirTestRunFilter, TestSuiteListFilter } from "../0_interfaces/5-tests/miroirTestTypes";
-import { isMiroirTestLeafSelected, resolveSuiteInnerFilter } from "./miroirTestFilter.js";
+import type { MiroirTestRunFilter } from "../0_interfaces/5-tests/miroirTestTypes";
+import { runMiroirTestSuiteWalk } from "./miroirTestSuiteWalk.js";
 import type { DomainControllerInterface } from "../0_interfaces/2_domain/DomainControllerInterface";
 import type { PersistenceStoreControllerManagerInterface } from "../0_interfaces/4-services/PersistenceStoreControllerManagerInterface";
 import type { ApplicationDeploymentMap } from "../1_core/Deployment";
@@ -75,13 +74,6 @@ export type MiroirTestExecutionOptions = {
 
 function miroirTestLeafLabel(leaf: MiroirTestLeaf): string {
   return leaf.miroirTestLabel;
-}
-
-function miroirTestNodeLabel(node: MiroirTestLeaf | MiroirTestSuite): string {
-  if (node.miroirTestType === "miroirTestSuite") {
-    return node.miroirTestLabel;
-  }
-  return miroirTestLeafLabel(node);
 }
 
 // ################################################################################################
@@ -245,99 +237,20 @@ export async function runMiroirTestSuite(
   executionOptions?: MiroirTestExecutionOptions,
   parentSkip?: boolean,
 ): Promise<void> {
-  if (!localVitest.expect) {
-    throw new Error("runMiroirTestSuite called without vitest.expect");
-  }
-
-  const shouldSkipSuite = miroirTestSuite.skip || parentSkip;
-
-  const allTests = miroirTestSuite.miroirTests;
-  const availableLeafLabels = allTests.map(miroirTestNodeLabel);
-  const { testList: innerTestList, filterProvidedButEmpty } = resolveSuiteInnerFilter(
+  await runMiroirTestSuiteWalk({
+    localVitest,
+    testSuitePath,
+    miroirTestSuite,
     filter,
-    miroirTestSuite.miroirTestLabel,
-    availableLeafLabels,
-  );
-  const innerFilter: { testList: TestSuiteListFilter | undefined } = { testList: innerTestList };
-
-  if (filterProvidedButEmpty) {
-    console.warn(
-      `MiroirTest filter matched no tests in suite "${miroirTestSuite.miroirTestLabel}". ` +
-        `Filter keys must be the suite miroirTestLabel (e.g. "runner.library" for --suites runner_library), ` +
-        `not the registry key or a bare leaf label at the wrong level. ` +
-        `Available leaves: ${availableLeafLabels.join(", ")}`,
-    );
-  }
-  const selectedTests = allTests.filter((entry) =>
-    isMiroirTestLeafSelected(miroirTestNodeLabel(entry), innerFilter?.testList),
-  );
-
-  if (allTests.length === 0) {
-    const vitestTestFn = shouldSkipSuite ? localVitest.test.skip : localVitest.test;
-    await vitestTestFn(
-      `${miroirTestSuite.miroirTestLabel} (empty suite)`,
-      () => {},
-      miroirTestGlobalTimeOut,
-    );
-    return;
-  }
-
-  for (const node of allTests) {
-    const label = miroirTestNodeLabel(node);
-    const isSkipped = !selectedTests.includes(node) || !!shouldSkipSuite;
-
-    if (node.miroirTestType === "miroirTestSuite") {
-      const runNested = trackActionsBelow
-        ? runMiroirTests._runMiroirTestSuiteWithTracking
-        : runMiroirTests._runMiroirTestSuite;
-      await runNested(
-        localVitest,
-        [...testSuitePath, node.miroirTestLabel],
-        node,
-        innerFilter,
-        modelEnvironment,
-        miroirActivityTracker,
-        parentTrackingId,
-        trackActionsBelow,
-        runMiroirTests,
-        executionOptions,
-        shouldSkipSuite,
-      );
-    } else {
-      const effectiveLeaf: MiroirTestLeaf = isSkipped ? { ...node, skip: true } : node;
-
-      const runMiroirTest = trackActionsBelow
-        ? runMiroirTests._runMiroirTestWithTracking
-        : runMiroirTests._runMiroirTest;
-
-      const vitestTestFn = isSkipped ? localVitest.test.skip : localVitest.test;
-      await vitestTestFn(
-        label,
-        async () => {
-          const assertionPath: TestAssertionPath =
-            MiroirActivityTracker.stringArrayToTestAssertionPath(testSuitePath);
-          assertionPath.push({ test: label });
-          assertionPath.push({ testAssertion: label });
-
-          await runMiroirTest(
-            localVitest,
-            [...testSuitePath, label],
-            innerFilter,
-            effectiveLeaf,
-            modelEnvironment,
-            miroirActivityTracker,
-            parentTrackingId,
-            trackActionsBelow,
-            runMiroirTests,
-            executionOptions,
-            assertionPath,
-            isSkipped || shouldSkipSuite,
-          );
-        },
-        miroirTestGlobalTimeOut,
-      );
-    }
-  }
+    modelEnvironment,
+    miroirActivityTracker,
+    parentTrackingId,
+    trackActionsBelow,
+    runMiroirTests,
+    executionOptions,
+    parentSkip,
+    inProcess: false,
+  });
 }
 
 // ################################################################################################

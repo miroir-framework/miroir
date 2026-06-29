@@ -4,7 +4,7 @@
 
 **Prerequisites:** Phase A ✅ · Gaps A/B/C-setup/D/E ✅ · Phase R (R0–R6) ✅
 
-**Status:** B0 complete ✅ · B1+ not started
+**Status:** B0 complete ✅ · B1 complete ✅ · B2 complete ✅ · B3+ not started
 
 **Goal:** Run the same domainController-based MiroirTest integration suites from the Miroir UI that CLI runs today — with **data-isolated** test runs that do not pollute the user's working session — plus reporting and a troubleshooting inspector.
 
@@ -203,36 +203,36 @@ cd packages/miroir-standalone-app && npx vitest run tests/helpers/uiIntegrationT
 
 ---
 
-### B1 — Integ run mutex + separate tracker
-
-**Problem:** Live UI and integ run must not share tracker or concurrent bootstrap.
+### B1 — Integ run mutex + separate tracker ✅
 
 **Deliverables**
 
-- `IntegTestRunCoordinator`: `acquire()` / `release()`, exposes `isRunning`, optional queue
-- Factory: `createIntegActivityTracker()` — new `MiroirActivityTracker` + `MiroirEventService` per run (wired to loggers like CLI entry)
+- `IntegTestRunCoordinator`: `acquire()` / `release()` / `runExclusive()`, `isRunning` ✅ — [`integTestRunCoordinator.ts`](../../../packages/miroir-standalone-app/src/miroir-fwk/4-tests/integTestRunCoordinator.ts)
+- `getIntegTestRunCoordinator()` singleton for UI ✅
+- `createIntegActivityTracker()` (async, optional logger wiring) + `createIntegActivityTrackerSync()` ✅
+- D5 policy: second `acquire` throws `IntegTestRunAlreadyActiveError` (no queue) ✅
 
-**Tests**
+**Verify:**
 
-- Unit: second `acquire` while held returns queued/rejected per policy
-- Unit: `release` in `finally` after thrown bootstrap
+```bash
+cd packages/miroir-standalone-app && npx vitest run tests/helpers/integTestRunCoordinator.unit.test.ts
+```
 
 ---
 
-### B2 — Vitest-free suite execution path
-
-**Problem:** `_runMiroirTestSuite` today expects Vitest for `it()` registration in CLI. UI needs direct leaf execution.
+### B2 — Vitest-free suite execution path ✅
 
 **Deliverables**
 
-- `runMiroirTestSuiteInProcess(runMiroirTests, suite, filter, tracker, executionOptions)` in `miroir-core` (or extract from existing suite runner)
-- UI launcher calls it after `session.initSession()` / `beforeEach` per leaf group
+- Shared `runMiroirTestSuiteWalk` — vitest vs in-process leaf execution ✅ — [`miroirTestSuiteWalk.ts`](../../../packages/miroir-core/src/5_tests/miroirTestSuiteWalk.ts)
+- `runMiroirTestSuiteInProcess` + `createInProcessVitestStub` ✅ — [`runMiroirTestSuiteInProcess.ts`](../../../packages/miroir-core/src/5_tests/runMiroirTestSuiteInProcess.ts)
+- `runMiroirTestSuite` (CLI) delegates to walk with `inProcess: false` — unchanged Vitest registration ✅
 
-**Tests**
+**Verify:**
 
-- Unit: runs a mock suite with 2 leaves, populates tracker, no Vitest import
-
-**Note:** Keep CLI Vitest path unchanged — dual entry, shared core loop.
+```bash
+cd packages/miroir-core && npx vitest run tests/4_services/runMiroirTestSuiteInProcess.unit.test.ts
+```
 
 ---
 

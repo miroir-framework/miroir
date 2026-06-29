@@ -1033,6 +1033,12 @@ export {
   type RunnerTestSessionInterface,
   type RunnerTestContext,
 } from "./5_tests/MiroirTestTools.js";
+export {
+  createInProcessVitestStub,
+  runMiroirTestSuiteInProcess,
+  type InProcessExpectFn,
+  type RunMiroirTestSuiteInProcessParams,
+} from "./5_tests/runMiroirTestSuiteInProcess.js";
 export type { MiroirTestRunFilter } from "./0_interfaces/5-tests/miroirTestTypes";
 export {
   displayMiroirTestResults,
