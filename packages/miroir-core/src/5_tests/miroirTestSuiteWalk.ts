@@ -42,6 +42,8 @@ export type RunMiroirTestSuiteWalkParams = {
   parentSkip?: boolean;
   /** When true, run leaves directly without vitest.test registration. */
   inProcess: boolean;
+  /** When set, invoked before each non-skipped leaf in in-process mode (e.g. RunnerTestSession.beforeEach). */
+  beforeEachLeaf?: () => Promise<void>;
 };
 
 export async function runMiroirTestSuiteWalk(
@@ -60,6 +62,7 @@ export async function runMiroirTestSuiteWalk(
     executionOptions,
     parentSkip,
     inProcess,
+    beforeEachLeaf,
   } = params;
 
   if (!localVitest.expect) {
@@ -169,6 +172,10 @@ export async function runMiroirTestSuiteWalk(
         MiroirActivityTracker.stringArrayToTestAssertionPath(testSuitePath);
       assertionPath.push({ test: label });
       assertionPath.push({ testAssertion: label });
+
+      if (beforeEachLeaf) {
+        await beforeEachLeaf();
+      }
 
       await runMiroirTestFn(
         localVitest,

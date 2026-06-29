@@ -29,6 +29,8 @@ export type RunMiroirTestSuiteInProcessParams = {
   trackActionsBelow?: boolean;
   parentTrackingId?: string;
   parentSkip?: boolean;
+  /** Invoked before each non-skipped leaf (runner integ playfield reset). */
+  beforeEachLeaf?: () => Promise<void>;
 };
 
 export async function runMiroirTestSuiteInProcess(
@@ -49,5 +51,6 @@ export async function runMiroirTestSuiteInProcess(
     executionOptions: params.executionOptions,
     parentSkip: params.parentSkip,
     inProcess: true,
+    beforeEachLeaf: params.beforeEachLeaf,
   });
 }

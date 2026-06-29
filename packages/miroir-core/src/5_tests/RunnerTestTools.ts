@@ -168,4 +168,8 @@ export async function runMiroirRunnerTest(
   );
 
   localVitest.expect(result?.status, `${leaf.miroirTestLabel} failed`).toBe("ok");
+  miroirActivityTracker.setTestAssertionResult(testAssertionPath, {
+    assertionName: leaf.miroirTestLabel,
+    assertionResult: result?.status === "ok" ? "ok" : "error",
+  });
 }

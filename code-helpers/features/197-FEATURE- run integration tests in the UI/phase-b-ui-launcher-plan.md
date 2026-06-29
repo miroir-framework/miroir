@@ -4,7 +4,7 @@
 
 **Prerequisites:** Phase A ✅ · Gaps A/B/C-setup/D/E ✅ · Phase R (R0–R6) ✅
 
-**Status:** B0 complete ✅ · B1 complete ✅ · B2 complete ✅ · B3+ not started
+**Status:** B0 complete ✅ · B1 complete ✅ · B2 complete ✅ · B3 complete ✅ · B4+ not started
 
 **Goal:** Run the same domainController-based MiroirTest integration suites from the Miroir UI that CLI runs today — with **data-isolated** test runs that do not pollute the user's working session — plus reporting and a troubleshooting inspector.
 
@@ -236,24 +236,28 @@ cd packages/miroir-core && npx vitest run tests/4_services/runMiroirTestSuiteInP
 
 ---
 
-### B3 — `UiIntegrationTestLauncher` (runner pilot)
+### B3 — `UiIntegrationTestLauncher` (runner pilot) ✅
 
 **Deliverables**
 
-- `runUiIntegrationTestSuite({ suiteDefinition, suiteKey, profileName, filter, runTargetOverride? })`
-- Flow:
-  1. `applyIntegrationTestProfile(profileName)` → load config (browser-safe config loader — may need `fetch` of deployed test JSON or embedded profile map)
-  2. `resolveRunnerTestRunTarget({ suite, override: runTargetOverride })`
-  3. `orchestrator.createSession("runner", { miroirConfig, hostMode: "isolated", … }, { runTarget, suiteTestParams, runnerRegistry })`
-  4. `initSession` → `runMiroirTestSuiteInProcess` with `executionMode: "integration"`
-  5. `teardown` in `finally`
-- Map suite registry key → deployment export (reuse `miroirRunnerTestSuiteRegistry`)
+- `runUiIntegrationTestSuite(request, environment)` ✅ — [`uiIntegrationTestLauncher.ts`](../../../packages/miroir-standalone-app/src/miroir-fwk/4-tests/uiIntegrationTestLauncher.ts)
+- `UI_INTEGRATION_RUNNER_SUITE_REGISTRY` + `resolveUiIntegrationRunnerSuite` ✅ — [`uiIntegrationTestRunnerSuiteRegistry.ts`](../../../packages/miroir-standalone-app/src/miroir-fwk/4-tests/uiIntegrationTestRunnerSuiteRegistry.ts)
+- Node wiring: `runUiIntegrationTestSuiteInNode` ✅ — [`runUiIntegrationTestSuiteInNode.ts`](../../../packages/miroir-standalone-app/tests/helpers/runUiIntegrationTestSuiteInNode.ts)
+- Flow: profile → orchestrator session (`hostMode: isolated`) → `initSession` → `runMiroirTestSuiteInProcess` + `beforeEachLeaf` → `teardown` in `finally` ✅
+- D2: `resolveUiIntegrationTestRunTarget` (`ephemeral` \| `pinned`) ✅
+- B1 mutex via `getIntegTestRunCoordinator().runExclusive` ✅
+- `runMiroirRunnerTest` records `setTestAssertionResult` for UI success checks ✅
 
-**Tests**
+**Verify:**
 
-- Integration test in standalone-app (Vitest): launcher against emulatedServer profile matches CLI result shape for `runner_library` filter single leaf
-
-**Global non-reg:** unchanged 2 passed.
+```bash
+cd packages/miroir-standalone-app && npx vitest run tests/helpers/uiIntegrationTestLauncher.unit.test.ts
+cd packages/miroir-standalone-app && npx vitest run tests/helpers/uiIntegrationTestLauncher.integ.test.ts
+# Global non-reg (2 passed)
+VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-sql.json \
+VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_DomainController_debug.json \
+npm run testMiroir -w miroir-standalone-app -- --suites runner_library --mode integ
+```
 
 ---
 
