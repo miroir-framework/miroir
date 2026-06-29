@@ -4,7 +4,7 @@
 
 **Prerequisites:** Phase A ✅ · Gaps A/B/C-setup/D/E ✅ · Phase R (R0–R6) ✅
 
-**Status:** B0 complete ✅ · B1 complete ✅ · B2 complete ✅ · B3 complete ✅ · B4+ not started
+**Status:** B0 complete ✅ · B1 complete ✅ · B2 complete ✅ · B3 complete ✅ · B4 complete ✅ · B5+ not started
 
 **Goal:** Run the same domainController-based MiroirTest integration suites from the Miroir UI that CLI runs today — with **data-isolated** test runs that do not pollute the user's working session — plus reporting and a troubleshooting inspector.
 
@@ -261,20 +261,20 @@ npm run testMiroir -w miroir-standalone-app -- --suites runner_library --mode in
 
 ---
 
-### B4 — `RunnerTestSession.teardown` — real store cleanup
+### B4 — `RunnerTestSession.teardown` — real store cleanup ✅
 
-**Problem:** Current teardown only nulls fields ([`RunnerTestSession.ts`](../../../packages/miroir-standalone-app/tests/helpers/RunnerTestSession.ts) L179–183). Data isolation requires drop deployment composite action for `runTarget.deploymentUuid`.
+**Problem:** Teardown only nulled fields ([`RunnerTestSession.ts`](../../../packages/miroir-standalone-app/tests/helpers/RunnerTestSession.ts)). Data isolation requires drop deployment composite action for `runTarget.deploymentUuid`.
 
-**Deliverables**
+**Delivered**
 
-- Persist teardown inputs on session (domainController, maps, store config) during `initSession`
-- `teardown()` calls same pattern as `IntegrationTestSession`: `buildTeardownTestApplicationStoresAction` for **runTarget** uuids
-- Optional: `resetLibraryPlayfield` if playfield was created for this run (`playfieldMode: createIfAbsent`)
+- Teardown inputs read from `runnerTestContext` set during `initSession` (`runTarget`, `testDeploymentStorageConfiguration`, plus session-held `domainController` / `applicationDeploymentMap`)
+- `teardown()` calls `buildTeardownTestApplicationStoresAction` with **runTarget** uuids (same pattern as `IntegrationTestSession`)
+- `resetLibraryPlayfield` deferred (optional; teardown deleteStore sufficient for ephemeral runTarget)
 
 **Tests**
 
-- Unit: mock `domainController.handleCompositeAction` receives drop action with runTarget uuids
-- Integ: after CLI `runner_library` run, assert test schema/db not listed (profile-dependent assertion)
+- Unit: `RunnerTestSession.unit.test.ts` — mock `handleCompositeAction` receives drop action with runTarget uuids ✅
+- Integ: covered by existing B3 launcher integ (session teardown on walk completion) + global `runner_library` non-reg
 
 ---
 

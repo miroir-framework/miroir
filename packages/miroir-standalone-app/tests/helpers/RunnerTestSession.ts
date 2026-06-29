@@ -2,6 +2,7 @@ import crossFetch from "cross-fetch";
 
 import {
   buildRunnerTestSessionParamBank,
+  defaultMiroirModelEnvironment,
   extendMiroirConfigWithExtraDeploymentConfiguration,
   getBootstrapPhasesForSessionKind,
   type ApplicationDeploymentMap,
@@ -32,6 +33,7 @@ import {
   runAppStackIntegrationBootstrap,
   type AppStackBootstrapHostOptions,
 } from "./appStackIntegrationBootstrap.js";
+import { buildTeardownTestApplicationStoresAction } from "./IntegrationTestSession.js";
 
 export type RunnerTestSessionOptions = AppStackBootstrapHostOptions & {
   miroirConfig: MiroirConfigClient;
@@ -177,6 +179,26 @@ export class RunnerTestSession implements RunnerTestSessionInterface {
 
   // ##############################################################################################
   async teardown(): Promise<void> {
+    if (!this.domainController || !this.applicationDeploymentMap || !this.runnerTestContext) {
+      this.domainController = undefined;
+      this.applicationDeploymentMap = undefined;
+      this.runnerTestContext = undefined;
+      return;
+    }
+
+    const { runTarget, testDeploymentStorageConfiguration } = this.runnerTestContext;
+
+    await this.domainController.handleCompositeAction(
+      buildTeardownTestApplicationStoresAction(
+        runTarget.deploymentUuid,
+        runTarget.applicationUuid,
+        testDeploymentStorageConfiguration,
+      ),
+      this.applicationDeploymentMap,
+      defaultMiroirModelEnvironment,
+      {},
+    );
+
     this.domainController = undefined;
     this.applicationDeploymentMap = undefined;
     this.runnerTestContext = undefined;

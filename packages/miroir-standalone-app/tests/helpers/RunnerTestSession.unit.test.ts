@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import {
   buildRunnerTestSessionParamBank,
+  defaultMiroirModelEnvironment,
   getBootstrapPhasesForSessionKind,
   MiroirActivityTracker,
   MiroirEventService,
@@ -168,5 +169,47 @@ describe("RunnerTestSession (Gap E R)", () => {
     await session.beforeEach();
 
     expect(beforeEachTestMock).toHaveBeenCalledTimes(1);
+  });
+
+  it("teardown drops runTarget deployment stores via composite action (B4)", async () => {
+    const tracker = new MiroirActivityTracker();
+    const eventService = new MiroirEventService(tracker);
+    const runTarget = runnerLibraryRunTarget();
+    const domainController = {
+      handleCompositeAction: vi.fn().mockResolvedValue({}),
+    } as unknown as DomainControllerInterface;
+    runAppStackIntegrationBootstrapMock.mockResolvedValueOnce({
+      domainController,
+      applicationDeploymentMap: {} as ApplicationDeploymentMap,
+      testApplicationUuid: runTarget.applicationUuid,
+      persistenceStoreControllerManager: {},
+    });
+
+    const session = new RunnerTestSession({
+      miroirConfig: baseMiroirConfig(runTarget),
+      miroirActivityTracker: tracker,
+      miroirEventService: eventService,
+      runTarget,
+      suiteTestParams: runnerLibrarySuite().testParams,
+      runnerRegistry: RUNNER_LIBRARY_RUNNER_REGISTRY,
+    });
+
+    await session.initSession();
+    vi.mocked(domainController.handleCompositeAction).mockClear();
+
+    await session.teardown();
+
+    expect(domainController.handleCompositeAction).toHaveBeenCalledTimes(1);
+    const [action, applicationDeploymentMapArg, modelEnvironmentArg, optionsArg] = vi.mocked(
+      domainController.handleCompositeAction,
+    ).mock.calls[0]!;
+    expect(action.actionLabel).toBe("teardownTestApplicationStores");
+    expect(action.payload.actionSequence[0]?.payload).toMatchObject({
+      deploymentUuid: runTarget.deploymentUuid,
+      application: runTarget.applicationUuid,
+    });
+    expect(applicationDeploymentMapArg[runTarget.applicationUuid]).toBe(runTarget.deploymentUuid);
+    expect(modelEnvironmentArg).toBe(defaultMiroirModelEnvironment);
+    expect(optionsArg).toEqual({});
   });
 });
