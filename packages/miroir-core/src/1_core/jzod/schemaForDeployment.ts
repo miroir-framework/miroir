@@ -52,6 +52,9 @@ function buildAppActionBranches(
       const actionParameters = action.actionParameters;
       const actionTypeKey = actionTypeKeyFromLiteral(actionParameters.actionType);
       if (actionTypeKey && existingActionTypes.has(actionTypeKey)) {
+        console.warn(
+          `[getSchemaForDeployment] Skipping duplicate domainAction branch for actionType "${actionTypeKey}" (endpoint ${endpoint.uuid})`,
+        );
         continue;
       }
       if (actionTypeKey) {

@@ -49,7 +49,7 @@ Phase 1 — Infrastructure refactor (non-regression)     ← slices 1.1–1.7 DO
   Goal : introduce getSchemaForDeployment; migrate all MiroirModelEnvironment
          construction sites; all tests stay green; schema content unchanged.
 
-Phase 2 — Solution 2: app-aware domainAction + actionTemplate   ← not started
+Phase 2 — Solution 2: app-aware domainAction + actionTemplate   ← slices 2.1–2.3 DONE; 2.4+
   Goal : getSchemaForDeployment returns an extended schema for app deployments;
          runner_library MiroirTest validates cleanly.
 ```
@@ -523,6 +523,19 @@ npm run testByFile -w miroir-standalone-app -- tests/4_view/JzodElementEditor.te
 From here on, every cycle modifies `getSchemaForDeployment` from the inside (the function
 signature and the `MiroirModelEnvironment` shape never change — consumers are already migrated).
 
+### Phase 2 progress (plan vs code, 2026-06-30)
+
+| Slice | Status | Code | Tests |
+|---|---|---|---|
+| **2.1** | **DONE** | `hasAppSpecificEndpoints` → shallow spread when app-owned endpoints exist | `schemaForDeployment.unit.test.ts` Phase 2.1 (3 cases) |
+| **2.2** | **DONE** | `buildExtendedSchema` + `buildAppActionBranches`; H3 skip-if-present guard (typed `actionTypeKeyFromLiteral`) | Phase 2.2 describe (5 cases — 3 planned + 2 dedup/uniqueness) |
+| **2.3** | **DONE** | No core change (2.2 wiring sufficient) | `modelValidation.unit.test.ts` → `App-action validation (Feature 198)` (1 case) |
+| **2.4+** | pending | — | — |
+
+Gate runner: `./code-helpers/features/198-FEATURE- composing tests using application-defined Actions/run-step-tests.sh <step> all`
+
+Verified green: `./run-step-tests.sh 2.2 all`, `./run-step-tests.sh 2.3 all`.
+
 ---
 
 ### 2.1  Detect app-specific actions in `getSchemaForDeployment`
@@ -572,6 +585,8 @@ return { ...miroirFundamentalJzodSchema as any };
 ---
 
 ### 2.2  Extended `domainAction` union contains app action types
+
+**Status: DONE**
 
 **Behavior**: For the Library deployment, `getSchemaForDeployment` returns a schema whose
 `definition.context.domainAction` union includes an object branch for `lendDocument` (with
@@ -637,15 +652,26 @@ return {
 | When | Command | Expect |
 |---|---|---|
 | **Progress (RED)** | `packages/miroir-core`: `npm test -- lendDocument` | FAIL |
-| **Progress (GREEN)** | `packages/miroir-core`: `npm run testByFile -- tests/1_core/schemaForDeployment.unit.test.ts` | PASS (`lendDocument` present; `instanceAction` preserved; Miroir deployment clean) |
-| **Non-regression** | `packages/miroir-core`: `npm run testByFile -- tests/1_core/jzod/jzodTypeCheck.test.ts` | PASS (Miroir-only typecheck cases unchanged) |
-| **Non-regression** | `packages/miroir-test-app_deployment-library`: `npm run testByFile -- tests/modelValidation.unit.test.ts` | PASS (existing instance validation — no `domainAction` tests yet) |
+| **Progress (GREEN)** | `./run-step-tests.sh 2.2 progress` → `testByFile … schemaForDeployment.unit.test.ts -t "Phase 2.2"` | PASS |
+| **Non-regression** | `./run-step-tests.sh 2.2 all` → full `schemaForDeployment.unit.test.ts`, `jzodTypeCheck.test.ts`, `run_library_gate` | PASS |
+
+**Completion notes (2026-06-30)**
+
+| Area | Planned | Delivered |
+|---|---|---|
+| Core | Flat-map `actionParameters` into union branches | `buildExtendedSchema` in `packages/miroir-core/src/1_core/jzod/schemaForDeployment.ts` |
+| H3 guard | Skip duplicate `actionType` before append | Implemented via `buildAppActionBranches` + `actionTypeKeyFromLiteral`; **warns** on skip (endpoint uuid in message) |
+| Tests (planned) | `lendDocument` present; `instanceAction` preserved; Miroir clean | All three in Phase 2.2 describe |
+| Tests (extra) | — | `returnDocument` counted once; dedup when Lending endpoint cloned on a second endpoint |
+| Gate | — | `./run-step-tests.sh 2.2 all` verified green |
 
 **Commit**: `feat: getSchemaForDeployment extends domainAction with app endpoint actions`
 
 ---
 
 ### 2.3  `jzodTypeCheck` against `domainAction` succeeds for a `lendDocument` instance
+
+**Status: DONE**
 
 **Behavior**: With the Library model environment, `jzodTypeCheck` of a canonical
 `lendDocument` action payload against the `domainAction` jzod schema returns `status: "ok"`.
@@ -708,11 +734,20 @@ end-to-end wiring.
 
 | When | Command | Expect |
 |---|---|---|
-| **Progress (RED)** | `packages/miroir-test-app_deployment-library`: `npm test -- lendDocument action validates` | FAIL |
-| **Progress (GREEN)** | same | PASS |
-| **Non-regression** | `packages/miroir-core`: `npm run testByFile -- tests/1_core/schemaForDeployment.unit.test.ts` | PASS |
-| **Non-regression** | `packages/miroir-core`: `npm run testByFile -- tests/1_core/jzod/resolveSchemaReferenceInContext.test.ts` | PASS |
-| **Non-regression** | `packages/miroir-test-app_deployment-library`: `npm run testByFile -- tests/modelValidation.unit.test.ts` | PASS (full file — existing groups must not break) |
+| **Progress (RED)** | `packages/miroir-test-app_deployment-library`: `npm test -- lendDocument action validates` | FAIL (before 2.2) |
+| **Progress (GREEN)** | `./run-step-tests.sh 2.3 progress` → same filter | PASS |
+| **Non-regression** | `./run-step-tests.sh 2.3 all` → `schemaForDeployment.unit.test.ts`, `resolveSchemaReferenceInContext.test.ts`, `run_library_gate` | PASS |
+
+**Completion notes (2026-06-30)**
+
+| Area | Planned | Delivered |
+|---|---|---|
+| Core | No change if 2.2 correct | Confirmed — no `miroir-core` edits for 2.3 |
+| Test file | New `App-action validation (Feature 198)` describe | Added at end of `packages/miroir-test-app_deployment-library/tests/modelValidation.unit.test.ts` |
+| Model env | Inline `libraryModelEnv` with `endpointsByUuid` reduce | Reuses module-level `libraryModelEnvironment` (L52 — already calls `getSchemaForDeployment`); `endpointsByUuid: {}` is sufficient for this test |
+| E2E scope | `lendDocument` → `domainAction` via `schemaReference` | PASS — first end-to-end app-action validation path |
+| Out of scope | — | `returnDocument` e2e via `jzodTypeCheck` not added (union branch exists from 2.2; can add in a later slice if needed) |
+| Gate | Full `modelValidation.unit.test.ts` | `run_library_gate` excludes pre-existing `AuthorList` / `LibraryHome` report failures (same as 1.8 / 2.2) |
 
 **Commit**: `test: jzodTypeCheck validates lendDocument against extended domainAction`
 
@@ -1089,9 +1124,9 @@ Phase 2 (Solution 2)
 | 1.6 | MCP + CLI `npm test` (before/after) | `mcpTools.integ.test.ts`, `cli.integ.test.ts` |
 | 1.7 | 4× `modelValidation.unit.test.ts` (deployment apps) | `RunnerTestSession` |
 | 1.8 | — | §1.8 gate table + `run-step-tests.sh 1.8` (**PARTIAL** — see completion delta) |
-| 2.1 | `schemaForDeployment` → app-specific endpoints | Library `modelValidation` (baseline) |
-| 2.2 | `schemaForDeployment` → `lendDocument` branch | `jzodTypeCheck.test.ts` |
-| 2.3 | Library → `lendDocument action validates` | Library full `modelValidation` |
+| 2.1 | `schemaForDeployment` → app-specific endpoints (**DONE**) | Library `modelValidation` / `run_library_gate` |
+| 2.2 | `schemaForDeployment` → `lendDocument` branch (**DONE**) | `jzodTypeCheck.test.ts` + `run_library_gate` |
+| 2.3 | Library → `lendDocument action validates` (**DONE**) | `run_library_gate` + core schema/ref tests |
 | 2.4 | `schemaForDeployment` → carry-on branch | `applicative.Library.BuildPlusRuntimeCompositeAction` |
 | 2.5 | Library → `template-form lendDocument` | `App-action validation` describe |
 | 2.6 | Library → `runner_library MiroirTest` | `runnerLibraryTestRegistry.unit.test.ts` |
@@ -1124,6 +1159,10 @@ If any app endpoint defines an `actionType` that already exists in the static `d
 union resolver may pick the wrong one. Mitigation: before appending, check that the action
 type is not already present; log a warning if it is (do not silently swallow it). Add this
 guard in cycle 2.2.
+
+**Implementation status (2.2)**: skip-if-present guard is in `buildAppActionBranches`
+(covered by duplicate-Lending-endpoint test + static-union collision test). Logs
+`console.warn` with actionType and endpoint uuid when skipping.
 
 ### H4 — MetaModel freshness in `currentModelEnvironment` (non-React)
 The Redux/Zustand `currentModelEnvironment` is called synchronously from `DomainController`.

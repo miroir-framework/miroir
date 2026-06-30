@@ -251,7 +251,7 @@ case "$step" in
     want_regression && section "2.3 non-regression" && {
       run_core_file tests/1_core/schemaForDeployment.unit.test.ts
       run_core_file tests/1_core/jzod/resolveSchemaReferenceInContext.test.ts
-      run_library_file tests/modelValidation.unit.test.ts
+      run_library_gate
     }
     ;;
   2.4)

@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 import { deployment_Miroir } from "miroir-test-app_deployment-admin";
 import {
@@ -89,9 +89,69 @@ describe("getSchemaForDeployment (Phase 2.2 — extended domainAction)", () => {
       endpoints: [...defaultLibraryAppModel.endpoints, duplicateLendingEndpoint],
     } as MetaModel;
 
+    const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+
     const schema = getSchemaForDeployment(libraryDeploymentUuid, modelWithDuplicateEndpoint);
     expect(countDomainActionBranchesByType(schema, "lendDocument")).toBe(1);
     expect(countDomainActionBranchesByType(schema, "returnDocument")).toBe(1);
+
+    expect(warnSpy).toHaveBeenCalledWith(
+      expect.stringContaining('actionType "lendDocument"'),
+    );
+    expect(warnSpy).toHaveBeenCalledWith(
+      expect.stringContaining('actionType "returnDocument"'),
+    );
+    expect(warnSpy).toHaveBeenCalledWith(
+      expect.stringContaining("endpoint aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"),
+    );
+
+    warnSpy.mockRestore();
+  });
+
+  it("warns and skips app actionTypes that collide with the static domainAction union", () => {
+    const lendingEndpoint = defaultLibraryAppModel.endpoints.find(
+      (endpoint) => endpoint.uuid === "212f2784-5b68-43b2-8ee0-89b1c6fdd0de",
+    );
+    expect(lendingEndpoint).toBeDefined();
+
+    const firstAction = lendingEndpoint!.definition!.actions![0];
+    const collisionEndpoint = {
+      ...lendingEndpoint!,
+      uuid: "bbbbbbbb-cccc-dddd-eeee-ffffffffffff",
+      name: "Lending collision",
+      definition: {
+        ...lendingEndpoint!.definition!,
+        actions: [
+          {
+            ...firstAction,
+            actionParameters: {
+              ...firstAction.actionParameters,
+              actionType: {
+                type: "literal" as const,
+                definition: "transactionalInstanceAction",
+              },
+            },
+          },
+        ],
+      },
+    };
+    const modelWithCollision = {
+      ...defaultLibraryAppModel,
+      endpoints: [...defaultLibraryAppModel.endpoints, collisionEndpoint],
+    } as MetaModel;
+
+    const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+
+    getSchemaForDeployment(libraryDeploymentUuid, modelWithCollision);
+
+    expect(warnSpy).toHaveBeenCalledWith(
+      expect.stringContaining('actionType "transactionalInstanceAction"'),
+    );
+    expect(warnSpy).toHaveBeenCalledWith(
+      expect.stringContaining("endpoint bbbbbbbb-cccc-dddd-eeee-ffffffffffff"),
+    );
+
+    warnSpy.mockRestore();
   });
 
   it("domainAction union still contains instanceAction for Library deployment", () => {

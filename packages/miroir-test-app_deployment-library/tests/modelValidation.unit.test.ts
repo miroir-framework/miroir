@@ -362,3 +362,40 @@ modelTestsToRun.forEach(({ groupName, jzodSchema, instances, filterByName }) => 
   );
 });
 
+// ================================================================================================
+// Feature 198 — app-action validation against extended domainAction
+// ================================================================================================
+
+describe("App-action validation (Feature 198)", () => {
+  const domainActionSchema: JzodElement = {
+    type: "schemaReference",
+    definition: {
+      absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+      relativePath: "domainAction",
+    },
+  };
+
+  it("lendDocument action validates against domainAction", () => {
+    const lendDocumentAction = {
+      actionType: "lendDocument",
+      endpoint: "212f2784-5b68-43b2-8ee0-89b1c6fdd0de",
+      payload: {
+        user: "04c371ed-702d-4dd9-a06d-8a04eda5d24f",
+        book: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
+        startDate: "2024-01-01T00:00:00.000Z",
+      },
+    };
+
+    const result = jzodTypeCheck(
+      domainActionSchema,
+      lendDocumentAction,
+      [],
+      [],
+      libraryModelEnvironment,
+      {},
+    );
+
+    expect(result.status).toBe("ok");
+  });
+});
+
