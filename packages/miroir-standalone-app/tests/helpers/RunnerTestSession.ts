@@ -2,7 +2,7 @@ import crossFetch from "cross-fetch";
 
 import {
   buildRunnerTestSessionParamBank,
-  defaultMiroirModelEnvironment,
+  defaultMiroirMetaModel,
   extendMiroirConfigWithExtraDeploymentConfiguration,
   getBootstrapPhasesForSessionKind,
   type ApplicationDeploymentMap,
@@ -36,6 +36,7 @@ import {
 import {
   buildTeardownTestApplicationStoresAction,
 } from "../../src/miroir-fwk/4-tests/testApplicationStoreTeardown.js";
+import { buildTestSessionModelEnvironment } from "./testSessionModelEnvironment.js";
 
 export type RunnerTestSessionOptions = AppStackBootstrapHostOptions & {
   miroirConfig: MiroirConfigClient;
@@ -190,6 +191,15 @@ export class RunnerTestSession implements RunnerTestSessionInterface {
 
     const { runTarget, testDeploymentStorageConfiguration } = this.runnerTestContext;
 
+    const currentModel =
+      runTarget.applicationUuid === selfApplicationMiroir.uuid
+        ? defaultMiroirMetaModel
+        : defaultLibraryAppModel;
+    const modelEnvironment = buildTestSessionModelEnvironment(
+      runTarget.deploymentUuid,
+      currentModel,
+    );
+
     await this.domainController.handleCompositeAction(
       buildTeardownTestApplicationStoresAction(
         runTarget.deploymentUuid,
@@ -197,7 +207,7 @@ export class RunnerTestSession implements RunnerTestSessionInterface {
         testDeploymentStorageConfiguration,
       ),
       this.applicationDeploymentMap,
-      defaultMiroirModelEnvironment,
+      modelEnvironment,
       {},
     );
 

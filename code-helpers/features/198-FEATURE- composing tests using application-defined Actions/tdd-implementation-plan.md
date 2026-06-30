@@ -482,17 +482,28 @@ Code migrates both `defaultMiroirModelEnvironment` and `defaultMetaModelEnvironm
 
 **Action**: Document CI profile for CLI/MCP integ; re-enable `run_cli` in gate once local/CI config is standardised. For manual full gate: start persistence server, set CLI config, then run MCP/CLI integ explicitly.
 
-### D5 — Session helpers use indirect migration (1.7)
+### D5 — Session helpers use indirect migration (1.7) — **DONE**
 
-`RunnerTestSession.ts` / `IntegrationTestSession.ts` pass `defaultMiroirModelEnvironment` rather than calling `getSchemaForDeployment` inline. Phase 1 sameness holds because `defaultMiroirModelEnvironment` is migrated in 1.5.
+`RunnerTestSession.ts` / `IntegrationTestSession.ts` now use `buildTestSessionModelEnvironment` / `buildIntegrationTestModelEnvironment` (explicit `getSchemaForDeployment`) instead of importing `defaultMiroirModelEnvironment`.
 
-**Action**: None required for Phase 1; optional explicit `getSchemaForDeployment` at call sites if clarity is preferred.
+| File | Change |
+|---|---|
+| `tests/helpers/testSessionModelEnvironment.ts` | Shared helper: `buildTestSessionModelEnvironment(deploymentUuid, currentModel)` |
+| `RunnerTestSession.ts` | Teardown uses model for `runTarget.deploymentUuid` + library/Miroir `currentModel` |
+| `IntegrationTestSession.ts` | All `handleAction` / teardown paths use `buildIntegrationTestModelEnvironment()` |
+| Unit tests | `testSessionModelEnvironment.unit.test.ts`, updated `RunnerTestSession.unit.test.ts` + `IntegrationTestSession.unit.test.ts` |
 
-### D6 — `getDefaultLibraryModelEnvironmentDEFUNCT` signature change (1.6 collateral)
+### D6 — `getDefaultLibraryModelEnvironmentDEFUNCT` signature change (1.6 collateral) — **DONE**
 
-First parameter (`miroirFundamentalJzodSchema`) removed; schema resolved inside `Library.ts` via `getSchemaForDeployment(deploymentUuid, defaultLibraryAppModel)`. Runtime guard rejects non-string `libraryDeploymentUuid` (catches mistaken `ApplicationDeploymentMap` passed as 4th arg). Covered by `getDefaultLibraryModelEnvironmentDEFUNCT.unit.test.ts`.
+Audit complete: all production call sites use the 3-arg `(metaModel, endpoint, deploymentUuid)` signature. Fixes applied:
 
-**Action**: Audit remaining call sites when touching those files; no open migration work.
+| Issue | Fix |
+|---|---|
+| CLI/MCP used `applicationDeploymentMap.libraryDeploymentUuid` (non-standard map property) | New `resolveLibraryDeploymentUuid(map)` in library package; used in `commandsFromEndpoint.ts`, `mcpHandlersForEndpoint.ts`, `cli.integ.test.ts` |
+| Stray `defaultLibraryAppModel` line in `cli.integ.test.ts` | Removed |
+| Map-as-uuid mistake | Runtime guard + existing unit test retained |
+
+Tests: `resolveLibraryDeploymentUuid.unit.test.ts`, extended `getDefaultLibraryModelEnvironmentDEFUNCT.unit.test.ts` (MCP/CLI call-site pattern).
 
 ### D7 — Align plan test commands with `docs/reference/testing.md`
 

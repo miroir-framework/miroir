@@ -3,6 +3,7 @@ export {
   defaultLibraryAppModel,
   getDefaultLibraryModelEnvironmentDEFUNCT,
 } from "./src/Library";
+export { resolveLibraryDeploymentUuid } from "./src/resolveLibraryDeploymentUuid";
 export { libraryApplicationInstances } from "./src/uploadBooksAndReports";
 
 export { default as adminApplication_Library_DO_NOT_USE } from "./assets/deployment/5af03c98-fe5e-490b-b08f-e1230971c57f.json" assert { type: "json" };

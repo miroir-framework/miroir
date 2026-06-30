@@ -23,6 +23,7 @@ import { deployment_Miroir } from "miroir-test-app_deployment-admin";
 import {
   getDefaultLibraryModelEnvironmentDEFUNCT,
   defaultLibraryAppModel,
+  resolveLibraryDeploymentUuid,
 } from "miroir-test-app_deployment-library";
 
 const packageName = "miroir-cli";
@@ -240,7 +241,7 @@ export async function handleCliAction(
     const defaultLibraryModelEnvironment = getDefaultLibraryModelEnvironmentDEFUNCT(
       defaultMiroirMetaModel,
       instanceEndpointV1,
-      applicationDeploymentMap.libraryDeploymentUuid,
+      resolveLibraryDeploymentUuid(applicationDeploymentMap),
     );
     // Execute via DomainController
     const result: Action2VoidReturnType = await domainController.handleAction(

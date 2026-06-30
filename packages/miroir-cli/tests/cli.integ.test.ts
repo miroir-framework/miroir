@@ -61,6 +61,8 @@ import {
   user2,
   user3,
   deployment_Library_DO_NO_USE,
+  getDefaultLibraryModelEnvironmentDEFUNCT,
+  resolveLibraryDeploymentUuid,
 } from "miroir-test-app_deployment-library";
 import { beforeAll, beforeEach, describe, expect, it } from "vitest";
 
@@ -437,12 +439,11 @@ describe("CLI Commands Integration Tests", () => {
     await resetAndInitApplicationDeployment(domainController, applicationDeploymentMap, [
       selfApplicationDeploymentMiroir as Deployment,
     ]);
-defaultLibraryAppModel
     const defaultLibraryAppModelDEFUNCT = getDefaultLibraryModelEnvironmentDEFUNCT(
       defaultMiroirMetaModel,
       instanceEndpointV1,
-      applicationDeploymentMap.libraryDeploymentUuid,
-    )
+      resolveLibraryDeploymentUuid(applicationDeploymentMap),
+    );
     
     const createLibraryAction = resetAndinitializeDeploymentCompositeAction(
       selfApplicationLibrary.uuid,

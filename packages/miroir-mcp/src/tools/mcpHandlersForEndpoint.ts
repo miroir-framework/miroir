@@ -23,7 +23,7 @@ import { deployment_Miroir } from "miroir-test-app_deployment-admin";
 import { jzodElementToJsonSchema } from "./jzodElementToJsonSchema.js";
 import {
   getDefaultLibraryModelEnvironmentDEFUNCT,
-  selfApplicationLibrary,
+  resolveLibraryDeploymentUuid,
 } from "miroir-test-app_deployment-library";
 
 
@@ -170,10 +170,11 @@ export async function handleMcpAction(
     const action = actionBuilder(validatedParams);
     log.info(`${toolName} - constructed action:`, JSON.stringify(action, null, 2));
 
+    const libraryDeploymentUuid = resolveLibraryDeploymentUuid(applicationDeploymentMap);
     const defaultLibraryModelEnvironment = getDefaultLibraryModelEnvironmentDEFUNCT(
       defaultMiroirMetaModel,
       undefined, // not used
-      applicationDeploymentMap[selfApplicationLibrary.uuid],
+      libraryDeploymentUuid,
     );
     // log.info(`${toolName} - constructed defaultLibraryModelEnvironment:`, JSON.stringify(defaultLibraryModelEnvironment, null, 2));
     log.info(

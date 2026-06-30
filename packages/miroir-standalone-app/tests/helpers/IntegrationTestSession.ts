@@ -33,6 +33,7 @@ import { deployment_Admin } from "miroir-test-app_deployment-admin";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { buildTeardownTestApplicationStoresAction } from "../../src/miroir-fwk/4-tests/testApplicationStoreTeardown.js";
+import { buildTestSessionModelEnvironment } from "./testSessionModelEnvironment.js";
 import {
   Action2Error,
   ConfigurationService,
@@ -41,7 +42,6 @@ import {
   MiroirEventService,
   PersistenceStoreControllerManager,
   defaultMiroirMetaModel,
-  defaultMiroirModelEnvironment,
   defaultSelfApplicationDeploymentMap,
   getBasicApplicationConfiguration,
   getBasicStoreUnitConfiguration,
@@ -57,6 +57,7 @@ import {
   type EntityInstance,
   type MetaEntity,
   type MiroirConfigClient,
+  type MiroirModelEnvironment,
   type MiroirTestExecutionEnvironment,
   type PersistenceStoreControllerManagerInterface,
   type RunnerTestSessionInterface,
@@ -131,6 +132,10 @@ export const INTEG_TEST_SELF_APPLICATION_UUID: Uuid = "aaaaaaaa-aaaa-aaaa-aaaa-a
 export const INTEG_TEST_DEPLOYMENT_UUID: Uuid = "bbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb";
 export const INTEG_TEST_MODEL_BRANCH_UUID: Uuid = "cccccccc-cccc-cccc-cccc-cccccccccccc";
 export const INTEG_TEST_VERSION_UUID: Uuid = "dddddddd-dddd-dddd-dddd-dddddddddddd";
+
+export function buildIntegrationTestModelEnvironment(): MiroirModelEnvironment {
+  return buildTestSessionModelEnvironment(INTEG_TEST_DEPLOYMENT_UUID, defaultMiroirMetaModel);
+}
 
 /** @deprecated use INTEG_TEST_* */
 export const POSTGRES_TEST_APPLICATION_NAME = INTEG_TEST_APPLICATION_NAME;
@@ -693,7 +698,7 @@ export class IntegrationTestSession implements RunnerTestSessionInterface {
         payload: { application: INTEG_TEST_SELF_APPLICATION_UUID },
       },
       applicationDeploymentMap,
-      defaultMiroirModelEnvironment,
+      buildIntegrationTestModelEnvironment(),
     );
     if (resetResult instanceof Action2Error) {
       throw new Error(
@@ -718,7 +723,7 @@ export class IntegrationTestSession implements RunnerTestSessionInterface {
         },
       },
       applicationDeploymentMap,
-      defaultMiroirModelEnvironment,
+      buildIntegrationTestModelEnvironment(),
     );
     if (initResult instanceof Action2Error) {
       throw new Error(
@@ -741,7 +746,7 @@ export class IntegrationTestSession implements RunnerTestSessionInterface {
         },
       },
       applicationDeploymentMap,
-      defaultMiroirModelEnvironment,
+      buildIntegrationTestModelEnvironment(),
     );
     if (createEntityResult instanceof Action2Error) {
       throw new Error(
@@ -762,7 +767,7 @@ export class IntegrationTestSession implements RunnerTestSessionInterface {
         },
       },
       applicationDeploymentMap,
-      defaultMiroirModelEnvironment,
+      buildIntegrationTestModelEnvironment(),
     );
     if (createInstanceResult instanceof Action2Error) {
       throw new Error(
@@ -915,7 +920,7 @@ export class IntegrationTestSession implements RunnerTestSessionInterface {
         storeConfig,
       ),
       this.applicationDeploymentMap,
-      defaultMiroirModelEnvironment,
+      buildIntegrationTestModelEnvironment(),
       {},
     );
 

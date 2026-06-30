@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import {
   buildRunnerTestSessionParamBank,
-  defaultMiroirModelEnvironment,
+  defaultMiroirMetaModel,
   getBootstrapPhasesForSessionKind,
   MiroirActivityTracker,
   MiroirEventService,
@@ -44,6 +44,7 @@ vi.mock("../4_view/RunnerIntegTestTools.js", async (importOriginal) => {
 });
 
 import { getTestSessionConfig, RunnerTestSession } from "./RunnerTestSession.js";
+import { buildTestSessionModelEnvironment } from "./testSessionModelEnvironment.js";
 
 function runnerLibrarySuite(): MiroirTestSuite {
   return (miroirTest_runner_library as MiroirTestDefinition).definition as MiroirTestSuite;
@@ -209,7 +210,9 @@ describe("RunnerTestSession (Gap E R)", () => {
       application: runTarget.applicationUuid,
     });
     expect(applicationDeploymentMapArg[runTarget.applicationUuid]).toBe(runTarget.deploymentUuid);
-    expect(modelEnvironmentArg).toBe(defaultMiroirModelEnvironment);
+    expect(modelEnvironmentArg).toEqual(
+      buildTestSessionModelEnvironment(runTarget.deploymentUuid, defaultLibraryAppModel),
+    );
     expect(optionsArg).toEqual({});
   });
 });

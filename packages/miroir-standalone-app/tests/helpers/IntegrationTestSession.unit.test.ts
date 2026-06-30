@@ -59,6 +59,7 @@ import {
   INTEG_TEST_SELF_APPLICATION_UUID,
   IntegrationTestSession,
   buildAdminStoreUnitConfiguration,
+  buildIntegrationTestModelEnvironment,
   buildTestApplicationStoreUnitConfiguration,
   collectStoreUnitConfigurationServerTypes,
   resolveDefaultAdminAssetsRoot,
@@ -260,5 +261,7 @@ describe("IntegrationTestSession session lifecycle", () => {
     await session.teardown();
 
     expect(domainController.handleCompositeAction).toHaveBeenCalledTimes(1);
+    const [, , modelEnvironmentArg] = vi.mocked(domainController.handleCompositeAction).mock.calls[0]!;
+    expect(modelEnvironmentArg).toEqual(buildIntegrationTestModelEnvironment());
   });
 });

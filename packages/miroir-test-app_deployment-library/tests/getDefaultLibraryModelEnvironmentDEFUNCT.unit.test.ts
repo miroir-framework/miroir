@@ -9,10 +9,12 @@ import {
 } from "miroir-core";
 
 import deployment_Library_DO_NO_USE from "../assets/deployment/f714bb2f-a12d-4e71-a03b-74dcedea6eb4.json";
+import selfApplicationLibrary from "../assets/library_model/a659d350-dd97-4da9-91de-524fa01745dc/5af03c98-fe5e-490b-b08f-e1230971c57f.json";
 import {
   defaultLibraryAppModel,
   getDefaultLibraryModelEnvironmentDEFUNCT,
 } from "../src/Library";
+import { resolveLibraryDeploymentUuid } from "../src/resolveLibraryDeploymentUuid.js";
 
 describe("getDefaultLibraryModelEnvironmentDEFUNCT (Phase 1)", () => {
   it("resolves miroirFundamentalJzodSchema via getSchemaForDeployment, not a caller-supplied schema", () => {
@@ -43,5 +45,22 @@ describe("getDefaultLibraryModelEnvironmentDEFUNCT (Phase 1)", () => {
         bogusDeploymentUuid as unknown as string,
       ),
     ).toThrow(/libraryDeploymentUuid must be a deployment uuid string/);
+  });
+
+  it("MCP/CLI call-site pattern: resolveLibraryDeploymentUuid(map) then 3-arg helper", () => {
+    const applicationDeploymentMap = {
+      [selfApplicationLibrary.uuid]: deployment_Library_DO_NO_USE.uuid,
+    };
+
+    const env = getDefaultLibraryModelEnvironmentDEFUNCT(
+      defaultMiroirMetaModel,
+      undefined as unknown as EndpointDefinition,
+      resolveLibraryDeploymentUuid(applicationDeploymentMap),
+    );
+
+    expect(env.deploymentUuid).toBe(deployment_Library_DO_NO_USE.uuid);
+    expect(env.miroirFundamentalJzodSchema).toBe(
+      getSchemaForDeployment(deployment_Library_DO_NO_USE.uuid, defaultLibraryAppModel),
+    );
   });
 });
