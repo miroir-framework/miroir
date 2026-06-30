@@ -527,6 +527,8 @@ signature and the `MiroirModelEnvironment` shape never change — consumers are 
 
 ### 2.1  Detect app-specific actions in `getSchemaForDeployment`
 
+**Status: DONE**
+
 **Behavior**: For a deployment whose `model.applicationUuid` is NOT the Miroir application
 UUID, and whose `model.endpoints` contain at least one endpoint with
 `endpoint.application === model.applicationUuid`, the function returns a schema that is

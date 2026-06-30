@@ -1,9 +1,13 @@
 /// <reference types="vitest" />
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import commonjs from '@rollup/plugin-commonjs';
 import { nodePolyfills } from 'vite-plugin-node-polyfills'
 // import * as path from "path";
+
+const packageRoot = path.dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
   root: 'src',
@@ -42,6 +46,11 @@ export default defineConfig({
   //   //   include: '../src/**/*.{jsx,tsx}',
   //   // }),
   // ],
+  resolve: {
+    alias: {
+      "miroir-core": path.resolve(packageRoot, "src/index.ts"),
+    },
+  },
   test: {
     root: "./tests",
     globals: true,

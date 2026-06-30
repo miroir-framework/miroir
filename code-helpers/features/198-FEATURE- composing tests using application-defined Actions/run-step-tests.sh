@@ -228,8 +228,13 @@ case "$step" in
     }
     ;;
   2.1)
-    want_green && section "2.1 progress" && run_core_pattern "app-specific endpoints"
-    want_regression && section "2.1 non-regression" && run_core_file tests/1_core/schemaForDeployment.unit.test.ts
+    want_green && section "2.1 progress" && {
+      (cd "$PACKAGES/miroir-core" && npm run testByFile -- tests/1_core/schemaForDeployment.unit.test.ts -t "Phase 2.1")
+    }
+    want_regression && section "2.1 non-regression" && {
+      run_core_file tests/1_core/schemaForDeployment.unit.test.ts
+      run_library_gate
+    }
     ;;
   2.2)
     want_green && section "2.2 progress" && run_core_pattern lendDocument

@@ -2,7 +2,6 @@ import { describe, expect, it } from "vitest";
 
 import {
   defaultMiroirMetaModel,
-  getSchemaForDeployment,
   instanceEndpointV1,
   miroirFundamentalJzodSchema,
   type EndpointDefinition,
@@ -24,10 +23,8 @@ describe("getDefaultLibraryModelEnvironmentDEFUNCT (Phase 1)", () => {
       deployment_Library_DO_NO_USE.uuid,
     );
 
-    expect(env.miroirFundamentalJzodSchema).toBe(
-      getSchemaForDeployment(deployment_Library_DO_NO_USE.uuid, defaultLibraryAppModel),
-    );
-    expect(env.miroirFundamentalJzodSchema).toBe(miroirFundamentalJzodSchema);
+    expect(env.miroirFundamentalJzodSchema).not.toBe(miroirFundamentalJzodSchema);
+    expect(env.miroirFundamentalJzodSchema.uuid).toBe(miroirFundamentalJzodSchema.uuid);
     expect(env.deploymentUuid).toBe(deployment_Library_DO_NO_USE.uuid);
     expect(env.currentModel).toBe(defaultLibraryAppModel);
     expect(env.miroirMetaModel).toBe(defaultMiroirMetaModel);
@@ -59,8 +56,7 @@ describe("getDefaultLibraryModelEnvironmentDEFUNCT (Phase 1)", () => {
     );
 
     expect(env.deploymentUuid).toBe(deployment_Library_DO_NO_USE.uuid);
-    expect(env.miroirFundamentalJzodSchema).toBe(
-      getSchemaForDeployment(deployment_Library_DO_NO_USE.uuid, defaultLibraryAppModel),
-    );
+    expect(env.miroirFundamentalJzodSchema).not.toBe(miroirFundamentalJzodSchema);
+    expect(env.miroirFundamentalJzodSchema.uuid).toBe(miroirFundamentalJzodSchema.uuid);
   });
 });
