@@ -9,6 +9,7 @@ import {
   entityDefinitionEntityDefinition,
   entityDefinitionJzodSchema,
   entityDefinitionMenu,
+  entityDefinitionMiroirTest,
   entityDefinitionQuery,
   entityDefinitionReport,
   entityDefinitionRunner,
@@ -21,6 +22,7 @@ import {
   entityEntityDefinition,
   entityJzodSchema,
   entityMenu,
+  entityMiroirTest,
   entityQueryVersion,
   entityReport,
   entityRunner,
@@ -404,6 +406,21 @@ export async function modelInitialize(
     log.info(
       logHeader,
       "app initialized entity Runner",
+      persistenceStoreController.getEntityUuids(),
+    );
+
+    log.info(
+      logHeader,
+      "app initializing entity MiroirTest",
+      persistenceStoreController.getEntityUuids(),
+    );
+    await persistenceStoreController.createModelStorageSpaceForInstancesOfEntity(
+      entityMiroirTest as Entity,
+      entityDefinitionWithResolvedMLSchema(entityDefinitionMiroirTest as EntityDefinition),
+    );
+    log.info(
+      logHeader,
+      "app initialized entity MiroirTest",
       persistenceStoreController.getEntityUuids(),
     );
 
