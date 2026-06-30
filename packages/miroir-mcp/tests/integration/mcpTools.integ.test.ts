@@ -200,7 +200,6 @@ export async function runMcpTestsViaHandler(
 }
 
 const defaultLibraryModelEnvironment = getDefaultLibraryModelEnvironmentDEFUNCT(
-  miroirFundamentalJzodSchema as MlSchema,
   defaultMiroirMetaModel,
   endpointDocument as EndpointDefinition,
   deployment_Library_DO_NO_USE.uuid,

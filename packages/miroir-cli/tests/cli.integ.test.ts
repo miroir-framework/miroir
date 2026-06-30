@@ -438,7 +438,6 @@ describe("CLI Commands Integration Tests", () => {
     ]);
 defaultLibraryAppModel
     const defaultLibraryAppModelDEFUNCT = getDefaultLibraryModelEnvironmentDEFUNCT(
-      miroirFundamentalJzodSchema as MlSchema,
       defaultMiroirMetaModel,
       instanceEndpointV1,
       applicationDeploymentMap.libraryDeploymentUuid,

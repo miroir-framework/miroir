@@ -10,17 +10,16 @@ import {
   JzodReference,
   LoggerInterface,
   MiroirLoggerFactory,
-  MlSchema,
   // defaultLibraryAppModel,
   // defaultLibraryModelEnvironment,
   defaultMiroirMetaModel,
-  // getDefaultLibraryModelEnvironmentDEFUNCT,
+  getSchemaForDeployment,
   instanceEndpointV1,
-  miroirFundamentalJzodSchema,
   resolveJzodSchemaReferenceInContext,
   type EndpointDefinition,
   type JzodObject
 } from "miroir-core";
+import { deployment_Miroir } from "miroir-test-app_deployment-admin";
 import {
   getDefaultLibraryModelEnvironmentDEFUNCT,
   defaultLibraryAppModel,
@@ -124,7 +123,10 @@ function resolveAllReferences(element: JzodElement): JzodElement {
       element as JzodReference,
       element.context || {},
       {
-        miroirFundamentalJzodSchema: miroirFundamentalJzodSchema as MlSchema,
+        miroirFundamentalJzodSchema: getSchemaForDeployment(
+          deployment_Miroir.uuid,
+          defaultMiroirMetaModel,
+        ),
         endpointsByUuid: {},
         currentModel: defaultMiroirMetaModel,
       }
@@ -236,7 +238,6 @@ export async function handleCliAction(
     log.info(`${commandName} - constructed action:`, JSON.stringify(action, null, 2));
 
     const defaultLibraryModelEnvironment = getDefaultLibraryModelEnvironmentDEFUNCT(
-      miroirFundamentalJzodSchema as MlSchema,
       defaultMiroirMetaModel,
       instanceEndpointV1,
       applicationDeploymentMap.libraryDeploymentUuid,
@@ -347,9 +348,9 @@ function cliCommandEntry(endpoint: EndpointDefinition, actionType: string): CliC
     commandDescription: {
       name: commandName,
       description: actionDescription,
-      options: extractCommandOptions(jzodPayload),
+      options: extractCommandOptions(jzodPayload as JzodObject),
     },
-    payloadZodSchema: jzodPayloadToZodSchema(jzodPayload),
+    payloadZodSchema: jzodPayloadToZodSchema(jzodPayload as JzodObject),
     actionEnvelope: {
       actionType: actionType,
       actionLabel: `CLI: ${actionType.replace(/([A-Z])/g, " $1").trim()}`,

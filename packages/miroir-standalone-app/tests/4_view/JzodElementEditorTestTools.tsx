@@ -498,7 +498,7 @@ export const getJzodElementEditorForTest: (pageLabel: string) => React.FC<JzodEl
               let result: ResolvedJzodSchemaReturnType | undefined = undefined;
               try {
                 result =
-                  context.miroirFundamentalJzodSchema &&
+                  currentMiroirModelEnvironment.miroirFundamentalJzodSchema &&
                   effectiveRawJzodSchema &&
                   formik.values &&
                   currentModel

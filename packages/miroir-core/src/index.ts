@@ -737,6 +737,7 @@ export {
   ANY_IMPLICIT_UNION_TYPE, jzodTypeCheck,
   jzodUnionResolvedTypeForObject, selectUnionBranchFromDiscriminator, unionObjectChoices
 } from "./1_core/jzod/jzodTypeCheck.js";
+export { getSchemaForDeployment } from "./1_core/jzod/schemaForDeployment.js";
 export {
   localizeJzodSchemaReferenceContext,
   unfoldJzodSchemaOnce, UnfoldJzodSchemaOnceReturnType,

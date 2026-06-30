@@ -1,30 +1,35 @@
 import type { MiroirModelEnvironment } from "miroir-core";
+import { deployment_Miroir } from "miroir-test-app_deployment-admin";
 import {
   getObjectUniondiscriminatorValuesFromResolvedSchema,
+  getSchemaForDeployment,
   JzodElement,
-  MlSchema,
-  jzodTypeCheck,
   JzodUnion,
   jzodUnion_recursivelyUnfold,
   JzodUnion_RecursivelyUnfold_ReturnType,
+  jzodUnionResolvedTypeForObject,
   MetaModel,
-  miroirFundamentalJzodSchema,
-  ResolvedJzodSchemaReturnType,
+  MlSchema,
   unfoldJzodSchemaOnce,
   UnfoldJzodSchemaOnceReturnType,
 } from "miroir-core";
 import { describe, expect, it } from "vitest";
 import currentMiroirModel from "./currentMiroirModel.json";
 import currentModel from "./currentModel.json";
-import { jzodUnionResolvedTypeForObject } from "miroir-core";
+
+const schemaForTest = getSchemaForDeployment(
+  deployment_Miroir.uuid,
+  currentModel as any as MetaModel,
+);
 
 // function local_test(schema: JzodElement, instance: any): string[][] {
 function local_test(schema: JzodUnion, instance: any): string[][] {
-  const modelEnvironment: MiroirModelEnvironment =     {
-      miroirFundamentalJzodSchema: miroirFundamentalJzodSchema as MlSchema,
-      currentModel: currentModel as any as MetaModel,
-      miroirMetaModel: currentMiroirModel as any as MetaModel
-    };
+  const modelEnvironment: MiroirModelEnvironment = {
+    miroirFundamentalJzodSchema: schemaForTest,
+    currentModel: currentModel as any as MetaModel,
+    miroirMetaModel: currentMiroirModel as any as MetaModel,
+    endpointsByUuid: {},
+  };
 
   // const resolvedElementJzodSchema: ResolvedJzodSchemaReturnType | undefined = jzodTypeCheck(
   //   schema,
@@ -41,7 +46,7 @@ function local_test(schema: JzodUnion, instance: any): string[][] {
 
 
   const unfoldedRawSchema: UnfoldJzodSchemaOnceReturnType = unfoldJzodSchemaOnce(
-    miroirFundamentalJzodSchema as MlSchema, // context.miroirFundamentalJzodSchema,
+    schemaForTest,
     schema,
     [], // path
     [], // unfodingReference,

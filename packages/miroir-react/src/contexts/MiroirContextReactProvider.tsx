@@ -2,6 +2,7 @@ import {
   ReactNode,
   createContext,
   startTransition,
+  useCallback,
   useContext,
   useEffect,
   useMemo,
@@ -24,7 +25,6 @@ import {
   Uuid,
   ViewParams,
   getClientEnvironment,
-  miroirFundamentalJzodSchema as globalMiroirFundamentalJzodSchema,
   type ApplicationDeploymentMap,
   type ClientEnvironment,
   type CoreTransformerForBuildPlusRuntime,
@@ -136,10 +136,9 @@ export interface MiroirReactContext {
   // session information
   viewParams: ViewParams;
   // ###################################################################################################
-  // Miroir meta-model
-  miroirFundamentalJzodSchema: MlSchema | undefined;
-  // setMiroirFundamentalJzodSchema: React.Dispatch<React.SetStateAction<JzodElement | undefined>>;
-  setMiroirFundamentalJzodSchema: React.Dispatch<React.SetStateAction<MlSchema | undefined>>;
+  // Miroir meta-model — per-deployment jzod schemas (Feature 198)
+  schemasPerDeployment: Record<Uuid, MlSchema>;
+  setSchemaForDeployment: (deploymentUuid: Uuid, schema: MlSchema) => void;
   // ###################################################################################################
   // Form state management
   innerFormOutput: any;
@@ -228,10 +227,15 @@ export function MiroirContextReactProvider(props: {
     deploymentUuidToReportsEntitiesDefinitionsMapping,
     setDeploymentUuidToReportsEntitiesDefinitionsMapping,
   ] = useState<DeploymentUuidToReportsEntitiesDefinitionsMapping>({});
-  const [miroirFundamentalJzodSchema, setMiroirFundamentalJzodSchema] = useState<
-    MlSchema | undefined
-  >(globalMiroirFundamentalJzodSchema as MlSchema);
-  // useState<MlSchema>({name: "dummyJzodSchema", parentName: "MlSchema", parentUuid:"", uuid: ""});
+  const [schemasPerDeployment, setSchemasPerDeployment] = useState<Record<Uuid, MlSchema>>({});
+  const setSchemaForDeployment = useCallback((deploymentUuid: Uuid, schema: MlSchema) => {
+    setSchemasPerDeployment((prev) => {
+      if (prev[deploymentUuid] === schema) {
+        return prev;
+      }
+      return { ...prev, [deploymentUuid]: schema };
+    });
+  }, []);
 
   // Create ViewParams instance to track UI state with reactive state
   const [sidebarIsopen, setSidebarIsOpen] = useState(true);
@@ -520,8 +524,8 @@ export function MiroirContextReactProvider(props: {
       setformHelperState,
       deploymentUuidToReportsEntitiesDefinitionsMapping,
       setDeploymentUuidToReportsEntitiesDefinitionsMapping,
-      miroirFundamentalJzodSchema,
-      setMiroirFundamentalJzodSchema,
+      schemasPerDeployment,
+      setSchemaForDeployment,
       viewParams,
       toolsPageState,
       updateToolsPageStateDEFUNCT,
@@ -593,7 +597,8 @@ export function MiroirContextReactProvider(props: {
       applicationSection,
       reportUuid,
       deploymentUuidToReportsEntitiesDefinitionsMapping,
-      miroirFundamentalJzodSchema,
+      schemasPerDeployment,
+      setSchemaForDeployment,
       innerFormOutput,
       props.miroirContext,
       props.domainController,

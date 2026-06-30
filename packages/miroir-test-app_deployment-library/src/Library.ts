@@ -1,14 +1,15 @@
-import type {
-  EndpointDefinition,
-  Entity,
-  EntityDefinition,
-  Menu,
-  MetaModel,
-  MiroirModelEnvironment,
-  MlSchema,
-  Report,
-  Runner,
-  SelfApplication,
+import {
+  defaultMiroirMetaModel,
+  getSchemaForDeployment,
+  type EndpointDefinition,
+  type Entity,
+  type EntityDefinition,
+  type Menu,
+  type MetaModel,
+  type MiroirModelEnvironment,
+  type Report,
+  type Runner,
+  type SelfApplication,
 } from "miroir-core";
 // Library Model - Entities
 import entityPublisher from "../assets/library_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/a027c379-8468-43a5-ba4d-bf618be25cab.json" assert { type: "json" };
@@ -201,14 +202,22 @@ export const defaultLibraryAppModel: MetaModel = {
 // console.log("###################################################################################")
 
 export function getDefaultLibraryModelEnvironmentDEFUNCT(
-  miroirFundamentalJzodSchema: MlSchema,
-  defaultMiroirMetaModel: MetaModel,
+  defaultMiroirMetaModelParam: MetaModel,
   endpointDocumentNOTUSED: EndpointDefinition,
   libraryDeploymentUuid: string,
 ): MiroirModelEnvironment {
+  if (typeof libraryDeploymentUuid !== "string" || libraryDeploymentUuid.length === 0) {
+    throw new Error(
+      `getDefaultLibraryModelEnvironmentDEFUNCT: libraryDeploymentUuid must be a deployment uuid string, got ${typeof libraryDeploymentUuid}`,
+    );
+  }
+
   return {
-    miroirFundamentalJzodSchema: miroirFundamentalJzodSchema as MlSchema,
-    miroirMetaModel: defaultMiroirMetaModel,
+    miroirFundamentalJzodSchema: getSchemaForDeployment(
+      libraryDeploymentUuid,
+      defaultLibraryAppModel,
+    ),
+    miroirMetaModel: defaultMiroirMetaModelParam,
     // endpointsByUuid: {[endpointDocument.uuid]: endpointDocument},
     endpointsByUuid: defaultLibraryAppModel.endpoints.reduce(
       (acc, endpoint) => {

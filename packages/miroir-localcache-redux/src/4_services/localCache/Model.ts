@@ -29,7 +29,7 @@ import {
   type Report,
   type Query,
   type MiroirModelEnvironment,
-  miroirFundamentalJzodSchema,
+  getSchemaForDeployment,
   defaultMiroirMetaModel,
   entityEndpointVersion,
   type Uuid,
@@ -160,7 +160,7 @@ export function currentModelEnvironment(
   const model = currentModel(application, appliationDeploymentMap, state);
   return {
     deploymentUuid: deploymentUuid,
-    miroirFundamentalJzodSchema: miroirFundamentalJzodSchema as MlSchema,
+    miroirFundamentalJzodSchema: getSchemaForDeployment(deploymentUuid, model),
     miroirMetaModel: defaultMiroirMetaModel,
     currentModel: model,
     endpointsByUuid: model.endpoints.reduce((acc, endpoint) => {

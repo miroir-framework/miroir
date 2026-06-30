@@ -3,16 +3,12 @@
 
 import {
   defaultMiroirMetaModel,
-  defaultSelfApplicationDeploymentMap,
   instanceEndpointV1,
-  miroirFundamentalJzodSchema,
-  type ApplicationDeploymentMap,
   type EndpointDefinition,
 } from "miroir-core";
 import {
   deployment_Library_DO_NO_USE,
   getDefaultLibraryModelEnvironmentDEFUNCT,
-  selfApplicationLibrary,
 } from "miroir-test-app_deployment-library";
 import { type McpRequestHandlers } from "./mcpHandlersForEndpoint.js";
 import {
@@ -21,13 +17,9 @@ import {
 } from "./ToolsForApplication_Miroir.js";
 
 const defaultLibraryAppModel = getDefaultLibraryModelEnvironmentDEFUNCT(
-  miroirFundamentalJzodSchema as any,
   defaultMiroirMetaModel,
   instanceEndpointV1 as any as EndpointDefinition,
-  {
-    ...defaultSelfApplicationDeploymentMap,
-    [selfApplicationLibrary.uuid]: deployment_Library_DO_NO_USE.uuid,
-  } as ApplicationDeploymentMap,
+  deployment_Library_DO_NO_USE.uuid,
 );
 
 

@@ -1,9 +1,8 @@
 import { 
-  miroirFundamentalJzodSchema, 
   type JzodElement,
   resolveJzodSchemaReferenceInContext,
   type JzodReference,
-  type MlSchema,
+  defaultMiroirModelEnvironment,
 } from "miroir-core";
 
 /**
@@ -54,10 +53,7 @@ export function jzodElementToTS(
       const resolvedSchema = resolveJzodSchemaReferenceInContext(
         jzodElement as JzodReference,
         (jzodElement as JzodReference).context || {},
-        { 
-          miroirFundamentalJzodSchema: miroirFundamentalJzodSchema as MlSchema,
-          endpointsByUuid: {}
-        }
+        defaultMiroirModelEnvironment,
       );
       
       // Recursively convert the resolved schema

@@ -9,11 +9,9 @@ import type { Action, Parameter } from "@copilotkit/shared";
 import {
   Action2Error,
   defaultMiroirMetaModel,
-  defaultSelfApplicationDeploymentMap,
   instanceEndpointV1,
   jzodToCopilotKitParameter,
   jzodToJsonSchema,
-  miroirFundamentalJzodSchema,
   type ApplicationDeploymentMap,
   type DomainControllerInterface,
   type EndpointDefinition,
@@ -29,13 +27,9 @@ import {
 type MiroirAction = Action<Parameter[]>;
 
 const defaultLibraryAppModel = getDefaultLibraryModelEnvironmentDEFUNCT(
-  miroirFundamentalJzodSchema as any,
   defaultMiroirMetaModel,
   instanceEndpointV1 as any as EndpointDefinition,
-  {
-    ...defaultSelfApplicationDeploymentMap,
-    [selfApplicationLibrary.uuid]: deployment_Library_DO_NO_USE.uuid,
-  } as ApplicationDeploymentMap,
+  deployment_Library_DO_NO_USE.uuid,
 );
 
 
@@ -92,7 +86,6 @@ export function createLendDocumentExecutor(
   };
 
   const libraryModelEnvironment = getDefaultLibraryModelEnvironmentDEFUNCT(
-    miroirFundamentalJzodSchema as any,
     defaultMiroirMetaModel,
     undefined as any,
     deployment_Library_DO_NO_USE.uuid,

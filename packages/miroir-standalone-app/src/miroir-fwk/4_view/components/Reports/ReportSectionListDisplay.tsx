@@ -648,7 +648,8 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
         currentReportTargetEntity &&
         currentReportTargetEntityDefinition &&
         currentReportTargetEntityDefinition?.mlSchema &&
-        context.miroirFundamentalJzodSchema
+          (context.schemasPerDeployment[props.deploymentUuid] ??
+            currentMiroirModelEnvironment.miroirFundamentalJzodSchema)
           ? getDefaultValueForJzodSchemaWithResolutionNonHook(
               "build",
               currentReportTargetEntityDefinition?.mlSchema,

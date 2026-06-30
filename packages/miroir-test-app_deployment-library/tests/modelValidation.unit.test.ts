@@ -23,8 +23,8 @@ import {
   entityDefinitionSelfApplicationModelBranch,
   entityDefinitionSelfApplicationVersion,
   entityDefinitionStoreBasedConfiguration,
+  getSchemaForDeployment,
   jzodTypeCheck,
-  miroirFundamentalJzodSchema,
 } from "miroir-core";
 
 // Library-specific entity definitions (imported directly from assets)
@@ -50,7 +50,10 @@ import { defaultLibraryAppModel } from "../src/Library";
  * so that currentModel reflects the library application model.
  */
 const libraryModelEnvironment: MiroirModelEnvironment = {
-  miroirFundamentalJzodSchema: miroirFundamentalJzodSchema as MlSchema,
+  miroirFundamentalJzodSchema: getSchemaForDeployment(
+    deployment_Library_DO_NO_USE.uuid,
+    defaultLibraryAppModel,
+  ),
   miroirMetaModel: defaultMiroirMetaModel,
   endpointsByUuid: {},
   deploymentUuid: deployment_Library_DO_NO_USE.uuid,

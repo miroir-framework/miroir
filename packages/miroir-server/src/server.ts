@@ -29,7 +29,6 @@ import {
   MiroirContext,
   miroirCoreStartup,
   MiroirEventService,
-  miroirFundamentalJzodSchema,
   MiroirLoggerFactory,
   PersistenceStoreControllerManager,
   restServerDefaultHandlers,
@@ -52,7 +51,6 @@ import {
 import {
   deployment_Library_DO_NO_USE,
   getDefaultLibraryModelEnvironmentDEFUNCT,
-  selfApplicationLibrary,
 } from "miroir-test-app_deployment-library";
 
 import { setupMiroirDomainController } from 'miroir-localcache-redux';
@@ -505,13 +503,9 @@ for (const op of restServerDefaultHandlers) {
 }
 
 const defaultLibraryAppModel = getDefaultLibraryModelEnvironmentDEFUNCT(
-  miroirFundamentalJzodSchema as any,
   defaultMiroirMetaModel,
   instanceEndpointV1 as any as EndpointDefinition,
-  {
-    ...defaultSelfApplicationDeploymentMap,
-    [selfApplicationLibrary.uuid]: deployment_Library_DO_NO_USE.uuid,
-  } as ApplicationDeploymentMap,
+  deployment_Library_DO_NO_USE.uuid,
 );
 
 

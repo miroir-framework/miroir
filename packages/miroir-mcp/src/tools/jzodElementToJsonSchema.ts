@@ -1,9 +1,7 @@
 import { 
-  miroirFundamentalJzodSchema, 
   type JzodElement,
   resolveJzodSchemaReferenceInContext,
   type JzodReference,
-  type MlSchema,
   defaultMiroirModelEnvironment,
 } from "miroir-core";
 import type { McpToolDescriptionProperty } from "./mcpHandlersForEndpoint.js";

@@ -11,21 +11,17 @@ import {
   JzodReference,
   LoggerInterface,
   MiroirLoggerFactory,
-  MlSchema,
   // defaultLibraryAppModel,
   defaultMiroirMetaModel,
-  defaultSelfApplicationDeploymentMap,
-  // getDefaultLibraryModelEnvironmentDEFUNCT,
-  instanceEndpointV1,
-  miroirFundamentalJzodSchema,
+  getSchemaForDeployment,
   resolveJzodSchemaReferenceInContext,
   type EndpointDefinition,
   type JzodObject,
   type MiroirModelEnvironment
 } from "miroir-core";
+import { deployment_Miroir } from "miroir-test-app_deployment-admin";
 import { jzodElementToJsonSchema } from "./jzodElementToJsonSchema.js";
 import {
-  deployment_Library_DO_NO_USE,
   getDefaultLibraryModelEnvironmentDEFUNCT,
   selfApplicationLibrary,
 } from "miroir-test-app_deployment-library";
@@ -91,7 +87,10 @@ function resolveAllReferences(element: JzodElement): JzodElement {
       element as JzodReference,
       element.context || {},
       {
-        miroirFundamentalJzodSchema: miroirFundamentalJzodSchema as MlSchema,
+        miroirFundamentalJzodSchema: getSchemaForDeployment(
+          deployment_Miroir.uuid,
+          defaultMiroirMetaModel,
+        ),
         endpointsByUuid: {},
         currentModel: defaultMiroirMetaModel,
       }
@@ -172,7 +171,6 @@ export async function handleMcpAction(
     log.info(`${toolName} - constructed action:`, JSON.stringify(action, null, 2));
 
     const defaultLibraryModelEnvironment = getDefaultLibraryModelEnvironmentDEFUNCT(
-      miroirFundamentalJzodSchema as any,
       defaultMiroirMetaModel,
       undefined, // not used
       applicationDeploymentMap[selfApplicationLibrary.uuid],

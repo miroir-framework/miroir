@@ -415,7 +415,7 @@ export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
           useEffect(() => {
             const initialFormState: Record<string, any> =
               !currentAction?.actionParameters ||
-              !context.miroirFundamentalJzodSchema ||
+              !currentMiroirModelEnvironment.miroirFundamentalJzodSchema ||
               !selectedApplicationUuid
                 ? {}
                 : getDefaultValueForJzodSchemaWithResolutionNonHook(

@@ -801,9 +801,13 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
     const isContainerType = ["object", "array"].includes(currentType);
 
     const unionTooltip = (() => {
-      if (!context.miroirFundamentalJzodSchema) return `${unionOptions.length} types`;
+      if (!currentApplicationModelEnvironment.miroirFundamentalJzodSchema) return `${unionOptions.length} types`;
       const summaries = branches.map((branch: JzodElement) => {
-        const s = jzodToJzod_Summary(branch, context.miroirFundamentalJzodSchema!, 1);
+        const s = jzodToJzod_Summary(
+          branch,
+          currentApplicationModelEnvironment.miroirFundamentalJzodSchema!,
+          1,
+        );
         return jzodElementToTooltipText(s, 1);
       });
       const unique = summaries.filter((v: string, i: number, a: string[]) => a.indexOf(v) === i);
@@ -821,7 +825,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
       isContainerType,
       unionTooltip,
     };
-  }, [currentKeyMap, currentValueObjectAtKey, context.miroirFundamentalJzodSchema, innerInsideAny]);
+  }, [currentKeyMap, currentValueObjectAtKey, currentApplicationModelEnvironment.miroirFundamentalJzodSchema, innerInsideAny]);
 
   const unionStarButton = useMemo((): JSX.Element | null => {
     if (!unionTypeDataForControls) return null;

@@ -127,7 +127,7 @@ export function JsonObjectDeleteFormDialog(props: JsonObjectEditFormDialogProps)
 
   const resolvedJzodSchema = useMemo(
     () =>
-      context.miroirFundamentalJzodSchema &&
+      currentModelEnvironment.miroirFundamentalJzodSchema &&
       props.entityDefinitionJzodSchema &&
       props.defaultFormValuesObject &&
       props.currentAppModel
@@ -140,7 +140,7 @@ export function JsonObjectDeleteFormDialog(props: JsonObjectEditFormDialogProps)
             {}
           )
         : undefined,
-    [props, context.miroirFundamentalJzodSchema]
+    [props, currentModelEnvironment.miroirFundamentalJzodSchema]
   );
   // log.info(
   //   "JsonObjectDeleteFormDialog called jzodTypeCheck for valueObject",

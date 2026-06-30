@@ -32,7 +32,6 @@ import {
   getReportsAndEntitiesDefinitionsForDeploymentUuid,
   LoggerInterface,
   MetaModel,
-  miroirFundamentalJzodSchema,
   MiroirLoggerFactory,
   ReduxDeploymentsState,
   selfApplicationMiroir,
@@ -344,8 +343,7 @@ export const RootComponent = (props: RootComponentProps) => {
   //   [context.setApplicationSection]
   // );
 
-  // ###############################################################################################
-  useEffect(() => context.setMiroirFundamentalJzodSchema(miroirFundamentalJzodSchema as any), [miroirFundamentalJzodSchema]);
+
   // ###############################################################################################
 
   const openSidebarCloseOutline = useMemo( // TODO: simplify the sidebar open / close logic

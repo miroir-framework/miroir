@@ -1,7 +1,8 @@
 import type { MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
-import { miroirFundamentalJzodSchema } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalJzodSchema";
+import { getSchemaForDeployment } from "../1_core/jzod/schemaForDeployment";
 import type { MlSchema } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { defaultMetaModelEnvironment, defaultMiroirMetaModel, defaultMiroirModelEnvironment } from "../1_core/Model";
+import { deployment_Miroir } from "miroir-test-app_deployment-admin";
 import {
   listQueryRunnerFixtureRefs,
   resolveQueryRunnerFixture,
@@ -22,7 +23,8 @@ const FUNCTION_CALL_META_MODEL_ENVIRONMENTS: Record<string, () => typeof default
 };
 
 const FUNCTION_CALL_ONLY_FIXTURES: Record<string, () => FunctionCallOnlyFixture> = {
-  miroirFundamentalJzodSchema: () => miroirFundamentalJzodSchema as MlSchema,
+  miroirFundamentalJzodSchema: () =>
+    getSchemaForDeployment(deployment_Miroir.uuid, defaultMiroirMetaModel),
 };
 
 export function listFunctionCallFixtureRefs(): string[] {

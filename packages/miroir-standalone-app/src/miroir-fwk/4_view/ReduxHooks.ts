@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 
 import {
   ApplicationSection,
@@ -27,7 +27,7 @@ import {
   entityMenu,
   getApplicationSection,
   getReduxDeploymentsStateIndex,
-  miroirFundamentalJzodSchema,
+  getSchemaForDeployment,
   selectEntityUuidFromJzodAttribute,
   selfApplicationMiroir,
   type ApplicationDeploymentMap,
@@ -276,16 +276,52 @@ export function useCurrentModelEnvironment(
     applicationDeploymentMap
   );
 
+  useEffect(() => {
+    if (currentModel && deploymentUuid) {
+      const schema = getSchemaForDeployment(deploymentUuid, currentModel);
+      context.setSchemaForDeployment(deploymentUuid, schema);
+    }
+  }, [currentModel, deploymentUuid, context.setSchemaForDeployment]);
+
   return useMemo(() => {
     return {
       miroirFundamentalJzodSchema:
-        context.miroirFundamentalJzodSchema ?? (miroirFundamentalJzodSchema as MlSchema),
+        context.schemasPerDeployment[deploymentUuid] ??
+        getSchemaForDeployment(deploymentUuid, currentModel),
       miroirMetaModel: miroirMetaModel,
       endpointsByUuid,
       currentModel: currentModel,
       deploymentUuid,
     };
-  }, [miroirMetaModel, currentModel, context.miroirFundamentalJzodSchema, endpointsByUuid, deploymentUuid]);
+  }, [
+    miroirMetaModel,
+    currentModel,
+    context.schemasPerDeployment,
+    endpointsByUuid,
+    deploymentUuid,
+  ]);
+}
+
+// ################################################################################################
+/**
+ * Resolves the fundamental jzod schema for a deployment from context cache or getSchemaForDeployment.
+ */
+export function useMiroirFundamentalJzodSchemaForDeployment(
+  deploymentUuid?: Uuid,
+): MlSchema | undefined {
+  const context = useMiroirContextService();
+  const resolvedDeploymentUuid = deploymentUuid ?? context.deploymentUuid;
+  const application = context.application;
+  const applicationDeploymentMap = context.applicationDeploymentMap ?? {};
+  const currentModel = useCurrentModel(application, applicationDeploymentMap);
+  const cached = context.schemasPerDeployment[resolvedDeploymentUuid];
+  if (cached) {
+    return cached;
+  }
+  if (resolvedDeploymentUuid && currentModel) {
+    return getSchemaForDeployment(resolvedDeploymentUuid, currentModel);
+  }
+  return undefined;
 }
 
 // ################################################################################################

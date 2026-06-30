@@ -33,7 +33,9 @@ import {
   runAppStackIntegrationBootstrap,
   type AppStackBootstrapHostOptions,
 } from "./appStackIntegrationBootstrap.js";
-import { buildTeardownTestApplicationStoresAction } from "./IntegrationTestSession.js";
+import {
+  buildTeardownTestApplicationStoresAction,
+} from "../../src/miroir-fwk/4-tests/testApplicationStoreTeardown.js";
 
 export type RunnerTestSessionOptions = AppStackBootstrapHostOptions & {
   miroirConfig: MiroirConfigClient;

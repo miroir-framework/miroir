@@ -22,15 +22,16 @@ export function resolveBrowserInProcessExpect(): InProcessExpectFn {
 
 /**
  * Loads the browser integration launcher environment on demand.
- * Must not statically import `tests/helpers/*` — that pulls Node-only stores into the Vite bundle.
+ * Uses a runner-only orchestrator in src — must not import tests/helpers/IntegrationTestSession
+ * (Node-only stores and node:path would break the Vite production bundle).
  */
 export async function loadBrowserUiIntegrationTestLauncherEnvironment(): Promise<UiIntegrationTestLauncherEnvironment> {
-  const { createStandaloneAppIntegrationOrchestrator } = await import(
-    "../../../tests/helpers/StandaloneAppIntegrationOrchestrator.js"
+  const { createStandaloneAppBrowserIntegrationOrchestrator } = await import(
+    "./standaloneAppBrowserIntegrationOrchestrator.js"
   );
 
   return {
-    createOrchestrator: createStandaloneAppIntegrationOrchestrator,
+    createOrchestrator: createStandaloneAppBrowserIntegrationOrchestrator,
     loadConfigForProfile: loadBrowserIntegrationTestProfileConfig,
     createActivityTracker: async () => createIntegActivityTrackerSync(),
     expect: resolveBrowserInProcessExpect(),

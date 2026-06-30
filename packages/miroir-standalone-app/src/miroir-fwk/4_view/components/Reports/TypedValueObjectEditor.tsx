@@ -344,7 +344,7 @@ const TypedValueObjectEditorInner: React.FC<TypedValueObjectEditorProps> = ({
     try {
       result =
         // context.miroirFundamentalJzodSchema && zoomedInDisplaySchema && formik.values && currentModel
-        context.miroirFundamentalJzodSchema && formik.values && currentModel
+        currentMiroirModelEnvironment.miroirFundamentalJzodSchema && formik.values && currentModel
           ? jzodTypeCheck( // TODO: typecheck only the value for the currently edited instance / object, not the whole formik.values
               // formValueMLSchema.definition[formikValuePathAsString], 
               formValueMLSchema, 
@@ -372,7 +372,7 @@ const TypedValueObjectEditorInner: React.FC<TypedValueObjectEditorProps> = ({
   }, [
     currentModel,
     currentMiroirModelEnvironment,
-    context.miroirFundamentalJzodSchema,
+    currentMiroirModelEnvironment.miroirFundamentalJzodSchema,
     deploymentUuid,
     // zoomedInDisplaySchema,
     formik.values,

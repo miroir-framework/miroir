@@ -686,7 +686,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
     };
   }, [isBlob, currentValueObjectAtKey, rootLessListKeyArray, currentValueObjectAtKey]);
 
-  const currentMiroirFundamentalJzodSchema = context.miroirFundamentalJzodSchema;
+  const currentMiroirFundamentalJzodSchema = currentApplicationModelEnvironment.miroirFundamentalJzodSchema;
   const usedIndentLevel: number = indentLevel ? indentLevel : 0;
 
   // Early return if component can't be rendered properly

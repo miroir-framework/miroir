@@ -479,10 +479,10 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
         );
       }
 
-      if (!context.miroirFundamentalJzodSchema) {
+      if (!currentMiroirModelEnvironment.miroirFundamentalJzodSchema) {
         throw new Error(
           "JzodArrayEditor addNewArrayItem called without miroirFundamentalJzodSchema: " +
-            JSON.stringify(context.miroirFundamentalJzodSchema, null, 2)
+            JSON.stringify(currentMiroirModelEnvironment.miroirFundamentalJzodSchema, null, 2)
         );
       }
 

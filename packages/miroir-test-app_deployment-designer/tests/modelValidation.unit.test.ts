@@ -21,8 +21,8 @@ import {
   entityDefinitionSelfApplicationModelBranch,
   entityDefinitionSelfApplicationVersion,
   entityDefinitionStoreBasedConfiguration,
+  getSchemaForDeployment,
   jzodTypeCheck,
-  miroirFundamentalJzodSchema,
 } from "miroir-core";
 
 // Admin-specific entity definitions (from admin model assets)
@@ -111,7 +111,7 @@ const adminMetaModel: MetaModel = {
  * so that currentModel reflects the admin application model.
  */
 const adminModelEnvironment: MiroirModelEnvironment = {
-  miroirFundamentalJzodSchema: miroirFundamentalJzodSchema as MlSchema,
+  miroirFundamentalJzodSchema: getSchemaForDeployment(deployment_Admin.uuid, adminMetaModel),
   miroirMetaModel: defaultMiroirMetaModel,
   endpointsByUuid: {},
   deploymentUuid: deployment_Admin.uuid,

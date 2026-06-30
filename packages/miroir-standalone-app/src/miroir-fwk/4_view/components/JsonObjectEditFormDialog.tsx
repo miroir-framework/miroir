@@ -29,6 +29,7 @@ import {
   useMiroirContextService
 } from "miroir-react";
 import { packageName } from "../../../constants.js";
+import { useMiroirFundamentalJzodSchemaForDeployment } from "../ReduxHooks.js";
 import { cleanLevel } from "../constants.js";
 import { ErrorFallbackComponent } from "./ErrorFallbackComponent.js";
 import type { ValueObjectEditMode } from "./Reports/ReportSectionEntityInstance.js";
@@ -423,6 +424,9 @@ export function JsonObjectEditFormDialog(props: JsonObjectEditFormDialogProps) {
   //   entityDefinitionJzodSchema
   // );
   const context = useMiroirContextService();
+  const miroirFundamentalJzodSchema = useMiroirFundamentalJzodSchemaForDeployment(
+    currentDeploymentUuid,
+  );
   const domainController: DomainControllerInterface = useDomainControllerService();
 
   const [dialogOuterFormObject, setdialogOuterFormObject] = useMiroirContextInnerFormOutput();
@@ -432,7 +436,7 @@ export function JsonObjectEditFormDialog(props: JsonObjectEditFormDialogProps) {
   // We'll pass a simple validation that the dialog is ready, actual resolution happens in Formik
   const resolvedJzodSchema = useMemo(() => {
     if (
-      context.miroirFundamentalJzodSchema &&
+      miroirFundamentalJzodSchema &&
       entityDefinitionJzodSchema &&
       defaultFormValuesObject &&
       dialogOuterFormObject &&
@@ -442,7 +446,7 @@ export function JsonObjectEditFormDialog(props: JsonObjectEditFormDialogProps) {
     }
     return undefined;
   }, [
-    context.miroirFundamentalJzodSchema,
+    miroirFundamentalJzodSchema,
     entityDefinitionJzodSchema,
     defaultFormValuesObject,
     dialogOuterFormObject,
@@ -460,7 +464,7 @@ export function JsonObjectEditFormDialog(props: JsonObjectEditFormDialogProps) {
       <div>
         Prerequisites not met for JsonObjectEditFormDialog:
         <ul>
-          <li>miroirFundamentalJzodSchema: {context.miroirFundamentalJzodSchema ? "✓" : "✗"}</li>
+          <li>miroirFundamentalJzodSchema: {miroirFundamentalJzodSchema ? "✓" : "✗"}</li>
           <li>entityDefinitionJzodSchema: {entityDefinitionJzodSchema ? "✓" : "✗"}</li>
           <li>defaultFormValuesObject: {defaultFormValuesObject ? "✓" : "✗"}</li>
           <li>dialogOuterFormObject: {dialogOuterFormObject ? "✓" : "✗"}</li>
@@ -573,7 +577,7 @@ export function JsonObjectEditFormDialog(props: JsonObjectEditFormDialogProps) {
           foreignKeyObjects={foreignKeyObjects}
           currentAppModel={currentAppModel}
           currentMiroirModel={currentMiroirModel}
-          miroirFundamentalJzodSchema={context.miroirFundamentalJzodSchema}
+          miroirFundamentalJzodSchema={miroirFundamentalJzodSchema}
           count={count}
           formIsOpen={formIsOpen}
           setAddObjectdialogFormIsOpen={setAddObjectdialogFormIsOpen}
