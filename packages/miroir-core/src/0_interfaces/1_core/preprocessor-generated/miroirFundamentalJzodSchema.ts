@@ -6685,7 +6685,7 @@ export const miroirFundamentalJzodSchema = {
               "type": "schemaReference",
               "definition": {
                 "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                "relativePath": "compositeAction"
+                "relativePath": "actionTemplate"
               },
               "context": {}
             }
@@ -6697,7 +6697,7 @@ export const miroirFundamentalJzodSchema = {
               "type": "schemaReference",
               "definition": {
                 "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                "relativePath": "compositeAction"
+                "relativePath": "actionTemplate"
               },
               "context": {}
             }
@@ -7294,7 +7294,7 @@ export const miroirFundamentalJzodSchema = {
                       "type": "schemaReference",
                       "definition": {
                         "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                        "relativePath": "compositeAction"
+                        "relativePath": "actionTemplate"
                       }
                     }
                   },
@@ -7305,7 +7305,7 @@ export const miroirFundamentalJzodSchema = {
                       "type": "schemaReference",
                       "definition": {
                         "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                        "relativePath": "compositeAction"
+                        "relativePath": "actionTemplate"
                       }
                     }
                   },
@@ -14330,7 +14330,7 @@ export const miroirFundamentalJzodSchema = {
                       }
                     ]
                   },
-                  "actionTemplate": {
+                  "compositeActionSequence": {
                     "type": "schemaReference",
                     "definition": {
                       "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
@@ -43598,6 +43598,13 @@ export const miroirFundamentalJzodSchema = {
         "definition": {
           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
           "relativePath": "buildPlusRuntimeCompositeAction"
+        }
+      },
+      "actionTemplate": {
+        "type": "schemaReference",
+        "definition": {
+          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction"
         }
       },
       "mlSchemaTemplate": {

@@ -143,6 +143,16 @@ async function runRunnerIntegrationSuite(
     await testSession.teardown();
   }
 
+  let testSuiteResults: TestSuiteResult | undefined;
+  try {
+    testSuiteResults = readUiIntegrationSuiteTestResults(
+      trackerBundle.miroirActivityTracker,
+      request.suiteKey,
+    );
+  } catch {
+    testSuiteResults = undefined;
+  }
+
   return {
     suiteKey: request.suiteKey,
     sessionKind: "runner",
@@ -152,6 +162,7 @@ async function runRunnerIntegrationSuite(
     hostMode,
     success,
     inspector: buildInspectorSnapshot(request, "runner", runTarget),
+    testSuiteResults,
   };
 }
 

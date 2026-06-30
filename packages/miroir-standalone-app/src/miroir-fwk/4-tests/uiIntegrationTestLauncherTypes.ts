@@ -4,7 +4,7 @@ import type {
   MiroirTestRunFilter,
   MiroirTestSuite,
   RunnerTestRunTarget,
-  TestSuiteListFilter,
+  TestSuiteResult,
 } from "miroir-core";
 
 /** D2 — user toggle for runTarget resolution in the UI launcher. */
@@ -14,7 +14,7 @@ export type UiIntegrationTestRunRequest = {
   suiteKey: string;
   suiteDefinition: MiroirTestSuite;
   profileName: string;
-  filter?: MiroirTestRunFilter | TestSuiteListFilter;
+  filter?: MiroirTestRunFilter;
   runTargetMode: UiIntegrationTestRunTargetMode;
   /** Default `isolated` — data-isolated bootstrap (Gap A). */
   hostMode?: IntegrationTestHostMode;
@@ -38,4 +38,6 @@ export type UiIntegrationTestRunResult = {
   hostMode: IntegrationTestHostMode;
   success: boolean;
   inspector: UiIntegrationTestRunInspectorSnapshot;
+  /** Dedicated integ tracker results for UI report panels (B5). */
+  testSuiteResults?: TestSuiteResult;
 };

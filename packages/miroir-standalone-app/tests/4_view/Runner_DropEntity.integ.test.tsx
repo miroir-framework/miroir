@@ -248,7 +248,7 @@ const runnerTestParams: Record<string, RunnerTestParams> = {
     adminDeployment,
     testDeploymentStorageConfiguration,
     initialModel: emptyApplicationModel,
-    preRunnerCompositeActions: [runnerCreateEntity.definition.actionTemplate as any], // preRunnerCompositeActions: create the entity before dropping it
+    preRunnerCompositeActions: [runnerCreateEntity.definition.compositeActionSequence as any], // preRunnerCompositeActions: create the entity before dropping it
     testCompositeActionLabel: "Create and Drop Entity Author",
   },
 };

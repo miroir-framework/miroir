@@ -4,7 +4,7 @@
 
 **Prerequisites:** Phase A ✅ · Gaps A/B/C-setup/D/E ✅ · Phase R (R0–R6) ✅
 
-**Status:** B0 complete ✅ · B1 complete ✅ · B2 complete ✅ · B3 complete ✅ · B4 complete ✅ · B5+ not started
+**Status:** B0 complete ✅ · B1 complete ✅ · B2 complete ✅ · B3 complete ✅ · B4 complete ✅ · B5 complete ✅ · B6+ not started
 
 **Goal:** Run the same domainController-based MiroirTest integration suites from the Miroir UI that CLI runs today — with **data-isolated** test runs that do not pollute the user's working session — plus reporting and a troubleshooting inspector.
 
@@ -278,19 +278,20 @@ npm run testMiroir -w miroir-standalone-app -- --suites runner_library --mode in
 
 ---
 
-### B5 — UI wiring (G6)
+### B5 — UI wiring (G6) ✅
 
-**Deliverables**
+**Delivered**
 
-- `RunMiroirTestSuiteButton`:
-  - If suite has only unit leaves → current path (`executionMode: "unit"`, live context)
-  - If suite has integ leaves (`runnerTest`, transformer integ) → call `UiIntegrationTestLauncher` under mutex; disabled when integ running
-- `MiroirTestDisplay`: mode badge `unit` | `integ` | `mixed` from `inferIntegrationSessionKind` + leaf scan
-- Snackbar / progress: running → success/fail with link to inspector
+- `RunMiroirTestSuiteButton`: `runMode` prop — unit path unchanged; integration path calls `runUiIntegrationTestSuite` via `createBrowserUiIntegrationTestLauncherEnvironment`; disabled while coordinator held or suite unsupported ✅
+- `MiroirTestDisplay`: execution mode badge (`unit` | `integration` | `mixed`); D6 split buttons for mixed suites ✅
+- Snackbar success/fail via existing `handleAsyncAction`; integration success message points to `#integration-test-inspector` ✅
+- Browser profile pilot: bundled `emulatedServer-sql` JSON in [`integrationTestProfileAssets.ts`](../../../packages/miroir-standalone-app/src/miroir-fwk/4-tests/integrationTestProfileAssets.ts) ✅
+- Minimal [`UiIntegrationTestRunInspectorSummary`](../../../packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Reports/UiIntegrationTestRunInspectorSummary.tsx) (full picker in B6) ✅
+- Coordinator `subscribe()` + `useIntegTestRunCoordinator` hook ✅
 
 **Tests**
 
-- Component test (optional): integ suite renders badge + disables second click while coordinator held
+- Unit: `miroirTestSuiteUiExecution.unit.test.ts`, `integrationTestProfileAssets.unit.test.ts`, coordinator subscribe in `integTestRunCoordinator.unit.test.ts` ✅
 
 ---
 

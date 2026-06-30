@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import {
+  classifyMiroirTestSuiteExecutionCapabilities,
   MiroirLoggerFactory,
   type LoggerInterface,
   type MiroirTestDefinition,
@@ -7,12 +8,18 @@ import {
 } from "miroir-core";
 
 import { packageName } from "../../../../constants.js";
+import {
+  isUiIntegrationRunnerSuiteSupported,
+  resolveMiroirTestSuiteUiExecutionMode,
+  uiExecutionModeBadgeColors,
+} from "../../../4-tests/miroirTestSuiteUiExecution.js";
 import { cleanLevel } from "../../constants.js";
 import {
   RunMiroirTestSuiteButton,
   type MiroirTestResultData,
 } from "../Buttons/RunMiroirTestSuiteButton.js";
 import { TestExecutionPanel } from "./TestExecutionPanel.js";
+import { UiIntegrationTestRunInspectorSummary } from "./UiIntegrationTestRunInspectorSummary.js";
 import { buildTestFilter, type TestResultDataAndSelect, type TestSelectionState } from "./testSelectionUtils.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -32,12 +39,30 @@ export interface MiroirTestSectionProps {
   onTestComplete?: (testSuiteKey: string, structuredResults: TestResultDataAndSelect[]) => void;
 }
 
+const runButtonStyle: React.CSSProperties = {
+  backgroundColor: "#4527a0",
+  color: "white",
+  border: "none",
+  borderRadius: "6px",
+  padding: "8px 16px",
+  fontWeight: "bold",
+  marginRight: "8px",
+};
+
 export const MiroirTestDisplay = (props: MiroirTestSectionProps) => {
   const { miroirTest: instance, testLabel, style, useSnackBar = true, onTestComplete } = props;
   const [miroirTestResultsData, setMiroirTestResultsData] = useState<TestResultDataAndSelect[]>([]);
   const [testSelectionState, setTestSelectionsState] = useState<TestSelectionState | undefined>(
     undefined,
   );
+
+  const executionCapabilities = useMemo(
+    () => classifyMiroirTestSuiteExecutionCapabilities(instance.definition),
+    [instance.definition],
+  );
+  const uiExecutionMode = resolveMiroirTestSuiteUiExecutionMode(instance.definition);
+  const badgeColors = uiExecutionModeBadgeColors(uiExecutionMode);
+  const integrationUiSupported = isUiIntegrationRunnerSuiteSupported(testLabel);
 
   const currentTestFilter = useMemo(() => {
     return buildTestFilter(testSelectionState, miroirTestResultsData);
@@ -69,27 +94,60 @@ export const MiroirTestDisplay = (props: MiroirTestSectionProps) => {
 
   return (
     <div style={defaultStyle}>
-      <div style={{ marginBottom: "8px", fontWeight: "bold", color: "#4527a0" }}>
-        Miroir Test Available
+      <div
+        style={{
+          marginBottom: "8px",
+          display: "flex",
+          alignItems: "center",
+          gap: "8px",
+          flexWrap: "wrap",
+        }}
+      >
+        <span style={{ fontWeight: "bold", color: "#4527a0" }}>Miroir Test Available</span>
+        <span
+          style={{
+            fontSize: "12px",
+            fontWeight: "bold",
+            textTransform: "uppercase",
+            padding: "2px 8px",
+            borderRadius: "999px",
+            ...badgeColors,
+          }}
+        >
+          {uiExecutionMode}
+        </span>
       </div>
 
-      <RunMiroirTestSuiteButton
-        miroirTestSuite={instance}
-        testSuiteKey={testLabel}
-        useSnackBar={useSnackBar}
-        testFilter={currentTestFilter}
-        onTestComplete={handleTestComplete}
-        label={`Run All ${testLabel} Miroir Tests`}
-        style={{
-          backgroundColor: "#4527a0",
-          color: "white",
-          border: "none",
-          borderRadius: "6px",
-          padding: "8px 16px",
-          fontWeight: "bold",
-          marginRight: "8px",
-        }}
-      />
+      {executionCapabilities.hasUnitLeaves && (
+        <RunMiroirTestSuiteButton
+          miroirTestSuite={instance}
+          testSuiteKey={testLabel}
+          useSnackBar={useSnackBar}
+          testFilter={currentTestFilter}
+          onTestComplete={handleTestComplete}
+          runMode="unit"
+          label={`Run ${testLabel} Unit Tests`}
+          style={runButtonStyle}
+        />
+      )}
+
+      {executionCapabilities.hasIntegrationLeaves && (
+        <RunMiroirTestSuiteButton
+          miroirTestSuite={instance}
+          testSuiteKey={testLabel}
+          useSnackBar={useSnackBar}
+          testFilter={currentTestFilter}
+          onTestComplete={handleTestComplete}
+          runMode="integration"
+          label={`Run ${testLabel} Integration Tests`}
+          style={{
+            ...runButtonStyle,
+            backgroundColor: integrationUiSupported ? "#ef6c00" : "#9e9e9e",
+          }}
+        />
+      )}
+
+      <UiIntegrationTestRunInspectorSummary />
 
       <TestExecutionPanel
         testLabel={testLabel}

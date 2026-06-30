@@ -86,6 +86,17 @@
             "menuItemScope": "model"
           },
           {
+            "miroirMenuItemType": "miroirMenuReportLink",
+            "label": "Library Tests",
+            "section": "model",
+            "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+            "reportUuid": "58dc6706-0473-468c-90ee-61b54b157140",
+            "icon": {
+              "iconType": "mui",
+              "name": "playlist_add_check"
+            }
+          },
+          {
             "miroirMenuItemType": "miroirMenuItemDivider",
             "label": "Library Model-Data Divider",
             "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",

@@ -52,7 +52,6 @@ import {
 } from "miroir-test-app_deployment-miroir";
 
 // ################################################################################################
-export type ActionTemplate = any;
 export type Step = "build" | "runtime";
 export type ResolveBuildTransformersTo = "value" | "constantTransformer";
 

@@ -2,8 +2,10 @@ import { selfApplicationMiroir } from "miroir-test-app_deployment-miroir";
 
 
 import type {
+  ActionTemplate,
   ApplicationModelBranch,
   ApplicationVersion,
+  BuildPlusRuntimeCompositeAction,
   CompositeAction,
   CompositeRunTestAssertion,
   CoreTransformerForBuildPlusRuntime,
@@ -30,14 +32,14 @@ export function testBuildPlusRuntimeCompositeActionSuiteForRunner(
   testApplicationDeploymentUuid: string,
   testApplicationName: string,
   testParams: Record<string, any>,
-  preTestCompositeActions: CompositeAction[],
+  preTestCompositeActions: ActionTemplate[],
   testCompositeActionAssertions: CompositeRunTestAssertion[],
   //
   internalMiroirConfig: MiroirConfigClient,
   adminDeployment: Deployment,
   testDeploymentStorageConfiguration: StoreUnitConfiguration,
   initialModel: MetaModel | CoreTransformerForBuildPlusRuntime,
-  preRunnerCompositeActions?: CompositeAction[],
+  preRunnerCompositeActions?: ActionTemplate[],
   testCompositeActionLabel?: string,
   skipCreateDeployment?: boolean,
   skipDropDeployment?: boolean,
@@ -50,8 +52,8 @@ export function testBuildPlusRuntimeCompositeActionSuiteForRunner(
   const actionTemplateWithoutTemplates =
     runner.definition.runnerType === "customRunner"
       ? {
-          ...runner.definition.actionTemplate,
-          payload: { ...runner.definition.actionTemplate.payload },
+          ...runner.definition.compositeActionSequence,
+          payload: { ...runner.definition.compositeActionSequence.payload },
         }
       : {
           // actionType: "lendDocument",
@@ -151,9 +153,9 @@ export function testBuildPlusRuntimeCompositeActionSuiteForRunner(
             endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             payload: {
               ...(runner.definition.runnerType === "customRunner" &&
-              runner.definition.actionTemplate.payload.templates
+              runner.definition.compositeActionSequence.payload.templates
                 ? {
-                    templates: runner.definition.actionTemplate.payload.templates,
+                    templates: runner.definition.compositeActionSequence.payload.templates,
                   }
                 : {}),
               actionSequence: [

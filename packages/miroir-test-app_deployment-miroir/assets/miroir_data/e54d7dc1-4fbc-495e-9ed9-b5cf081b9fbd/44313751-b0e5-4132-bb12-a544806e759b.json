@@ -91,7 +91,7 @@
         }
       }
     },
-    "actionTemplate": {
+    "compositeActionSequence": {
       "actionType": "compositeActionSequence",
       "actionLabel": "Drop Entity",
       "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",

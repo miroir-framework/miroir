@@ -383,7 +383,7 @@ export function StoredRunnerView(props: {
               initialFormValue={initialFormValue}
               action={{
                 actionType: "compositeActionTemplate",
-                compositeActionTemplate: runnerDefinitionFromLocalCache.definition.actionTemplate,
+                compositeActionTemplate: runnerDefinitionFromLocalCache.definition.compositeActionSequence,
               }}
               formLabel={runnerDefinitionFromLocalCache.defaultLabel}
               formikValuePathAsString={runnerName}

@@ -89,6 +89,18 @@ describe("IntegTestRunCoordinator (B1)", () => {
 
     coordinator.release();
   });
+
+  it("notifies subscribers when acquire and release change running state (B5)", () => {
+    const coordinator = new IntegTestRunCoordinator();
+    const states: boolean[] = [];
+    const unsubscribe = coordinator.subscribe(() => states.push(coordinator.isRunning));
+
+    coordinator.acquire();
+    coordinator.release();
+    unsubscribe();
+
+    expect(states).toEqual([true, false]);
+  });
 });
 
 describe("createIntegActivityTracker (B1)", () => {

@@ -15,9 +15,23 @@ export class IntegTestRunAlreadyActiveError extends Error {
 
 export class IntegTestRunCoordinator {
   private held = false;
+  private readonly listeners = new Set<() => void>();
 
   get isRunning(): boolean {
     return this.held;
+  }
+
+  subscribe(listener: () => void): () => void {
+    this.listeners.add(listener);
+    return () => {
+      this.listeners.delete(listener);
+    };
+  }
+
+  private notifyListeners(): void {
+    for (const listener of this.listeners) {
+      listener();
+    }
   }
 
   acquire(): void {
@@ -25,10 +39,12 @@ export class IntegTestRunCoordinator {
       throw new IntegTestRunAlreadyActiveError();
     }
     this.held = true;
+    this.notifyListeners();
   }
 
   release(): void {
     this.held = false;
+    this.notifyListeners();
   }
 
   async runExclusive<T>(fn: () => Promise<T>): Promise<T> {

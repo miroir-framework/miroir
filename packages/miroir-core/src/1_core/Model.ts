@@ -68,6 +68,7 @@ import {
   materialStoredMiroirTheme,
   entityTheme,
   entityDefinitionTheme,
+  entityMiroirTest,
 } from "miroir-test-app_deployment-miroir";
 
 import { Transform } from "stream";
@@ -99,6 +100,15 @@ import type { PersistenceStoreControllerInterface } from "../0_interfaces/4-serv
 import { Action2Error, Domain2ElementFailed } from "../0_interfaces/2_domain/DomainElement";
 // import { Endpoint } from "../3_controllers/Endpoint";
 
+
+const genType = { // <X> -> X[]
+  type: "schemaReference",
+  context: {
+    x: { type: "var" },
+    res: { type: "array", definition: { type: "schemaReference", relativePath: "x" } },
+    relativePath: "x",
+  }
+}
 /**
  * TODO: REMOVE THIS, IDEALLY!!! (WAIT, NO, THIS IS OK AS LONG AS IT ALLOWS TO MANAGE DISCREPANCIES BETWEEN 
  * META-APPLICATION AND OTHER APPLICATIONS, AND THIS CONCERNS MAINLY THE META-APPLICATION ITSELF)
@@ -123,6 +133,7 @@ export const metaModelEntities: Entity[] = [
   entitySelfApplicationModelBranch,
   entitySelfApplicationVersion,
   entityTheme,
+  entityMiroirTest,
   // entityStoreBasedConfiguration,
 ] as Entity[];
 

@@ -1640,7 +1640,7 @@ export function getRunner_CreateApplication(
     definition: {
       runnerType: "customRunner",
       formMLSchema: Runner_CreateApplication_formMLSchema,
-      actionTemplate: getCreateApplicationActionTemplate(
+      compositeActionSequence: getCreateApplicationActionTemplate(
         testSelfApplicationUuid,
         testDeploymentUuid,
         testApplicationName,
@@ -1774,7 +1774,7 @@ export const Runner_CreateApplication: React.FC<CreateApplicationToolProps> = ({
   // ##############################################################################################
   const createApplicationActionTemplate = useMemo(
     (): CompositeActionTemplate =>
-      (runner.definition as any).actionTemplate as CompositeActionTemplate,
+      (runner.definition as any).compositeActionSequence as CompositeActionTemplate,
     [runner],
   );
 
