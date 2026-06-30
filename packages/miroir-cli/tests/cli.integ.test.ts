@@ -355,7 +355,8 @@ describe("CLI Commands Integration Tests", () => {
     await initializeStoreStartup(miroirConfig);
     
     // Register test implementation
-    configurationService.registerTestImplementation({ expect: expect as any });
+    // configurationService.registerTestImplementation({ expect: expect as any });
+    ConfigurationService.configurationService.registerTestImplementation({ expect: expect as any });
 
     // Setup MiroirContext
     const miroirActivityTracker = new MiroirActivityTracker();

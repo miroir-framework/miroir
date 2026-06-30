@@ -14,6 +14,9 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)"
 PACKAGES="$ROOT/packages"
 
+# App-stack integ tests need VITE_MIROIR_* — see docs/reference/testing.md (--profile on testByFile).
+MIROIR_STANDALONE_INTeg_PROFILE="${MIROIR_STANDALONE_INTeg_PROFILE:-emulatedServer-sql}"
+
 step="${1:-}"
 mode="${2:-all}"
 
@@ -58,12 +61,30 @@ run_core_pattern() {
   (cd "$PACKAGES/miroir-core" && npm test -- "$1")
 }
 
-run_standalone_file() {
-  (cd "$PACKAGES/miroir-standalone-app" && npm run testByFile -- "$1")
+run_standalone_unit() {
+  (cd "$PACKAGES/miroir-standalone-app" && npm run testByFile -- "$@")
 }
 
+# Vitest file-name filter (substring), with integration profile for VITE_MIROIR_TEST_CONFIG_FILENAME.
+run_standalone_integ() {
+  local pattern="$1"
+  echo "standalone integ (profile=${MIROIR_STANDALONE_INTeg_PROFILE}): ${pattern}"
+  (cd "$PACKAGES/miroir-standalone-app" && npm run testByFile -- --profile "$MIROIR_STANDALONE_INTeg_PROFILE" "$pattern")
+}
+
+run_standalone_file() {
+  run_standalone_unit "$@"
+}
+
+# Prefer run_standalone_integ / run_standalone_unit — npm test -t loads all vitest entries and breaks integ stubs.
 run_standalone_pattern() {
-  (cd "$PACKAGES/miroir-standalone-app" && npm test -- "$1")
+  run_standalone_integ "$1"
+}
+
+run_standalone_testmiroir_integ() {
+  local suites="$1"
+  shift || true
+  (cd "$PACKAGES/miroir-standalone-app" && npm run testMiroir -- --profile "$MIROIR_STANDALONE_INTeg_PROFILE" --suites "$suites" --mode integ "$@")
 }
 
 run_library_file() {
@@ -103,6 +124,14 @@ run_mcp() {
   fi
 }
 
+# MCP HTTP integ needs persistence server on :4080 — gate runs unit tests only (Phase 1 schema paths).
+run_mcp_gate() {
+  (cd "$PACKAGES/miroir-mcp" && npm run testByFile -- \
+    tests/unit/jzodElementToJsonSchema.unit.test.ts \
+    tests/unit/jzodElementToTS.unit.test.ts \
+    tests/unit/mcpToolDescriptionFromActionDefinition.unit.test.ts)
+}
+
 run_cli() {
   if [[ -n "${1:-}" ]]; then
     (cd "$PACKAGES/miroir-cli" && npm test -- "$1")
@@ -133,24 +162,24 @@ case "$step" in
     want_regression && section "1.2 non-regression" && {
       run_localcache_redux
       run_core_file tests/1_core/schemaForDeployment.unit.test.ts
-      run_standalone_pattern DomainController.integ
+      run_standalone_integ DomainController.integ
     }
     ;;
   1.3)
     want_green && section "1.3 progress" && run_localcache_zustand currentModelEnvironment
     want_regression && section "1.3 non-regression" && {
-      run_standalone_pattern "DomainController.integ.Model"
-      run_standalone_pattern "DomainController.React.Model.undo-redo"
+      run_standalone_integ "DomainController.integ.Model"
+      run_standalone_unit tests/3_controllers/DomainController.React.Model.undo-redo.test.tsx
       run_core_file tests/1_core/schemaForDeployment.unit.test.ts
     }
     ;;
   1.4)
     want_green && section "1.4 progress" && run_standalone_file tests/4_view/useCurrentModelEnvironment.unit.test.tsx
     want_regression && section "1.4 non-regression" && {
-      run_standalone_file tests/4_view/JzodElementEditor.test.tsx
-      run_standalone_pattern ReportPage.integ
-      run_standalone_pattern RunnerTestSession
-      run_standalone_pattern IntegrationTestSession
+      run_standalone_unit tests/4_view/JzodElementEditor.test.tsx
+      run_standalone_integ ReportPage.integ
+      run_standalone_unit tests/helpers/RunnerTestSession.unit.test.ts
+      run_standalone_unit tests/helpers/IntegrationTestSession.unit.test.ts
     }
     ;;
   1.5)
@@ -179,8 +208,8 @@ case "$step" in
       run_deployment_validation miroir-test-app_deployment-admin
     }
     want_regression && section "1.7 non-regression" && {
-      run_standalone_pattern RunnerTestSession
-      run_standalone_pattern IntegrationTestSession
+      run_standalone_unit tests/helpers/RunnerTestSession.unit.test.ts
+      run_standalone_unit tests/helpers/IntegrationTestSession.unit.test.ts
     }
     ;;
   1.8)
@@ -192,10 +221,10 @@ case "$step" in
       run_library_gate
       # run_deployment_validation miroir-test-app_deployment-miroir
       run_deployment_validation miroir-test-app_deployment-admin
-      run_standalone_pattern JzodElementEditor
-      run_standalone_pattern applicative.Library
-      run_mcp
-      run_cli
+      run_standalone_unit tests/4_view/JzodElementEditor.test.tsx
+      # applicative.Library.*.integ.test.tsx are empty shells — excluded from gate
+      run_mcp_gate
+      # run_cli
     }
     ;;
   2.1)
@@ -222,7 +251,7 @@ case "$step" in
     want_regression && section "2.4 non-regression" && {
       run_library_pattern "lendDocument action validates"
       run_core_pattern jzodTransitiveDependencySet
-      run_standalone_pattern applicative.Library.BuildPlusRuntimeCompositeAction
+      # applicative.Library.BuildPlusRuntimeCompositeAction.integ.test.tsx excluded (empty shell)
     }
     ;;
   2.5)
@@ -235,7 +264,7 @@ case "$step" in
       run_library_pattern "App-action validation"
       run_library_file tests/modelValidation.unit.test.ts
       run_core_file tests/4_services/runnerLibraryTestRegistry.unit.test.ts
-      run_standalone_pattern RunnerTestSession
+      run_standalone_unit tests/helpers/RunnerTestSession.unit.test.ts
     }
     ;;
   2.7)
@@ -248,8 +277,8 @@ case "$step" in
   2.8)
     want_green && section "2.8 progress" && run_standalone_pattern "does not recompute schema"
     want_regression && section "2.8 non-regression" && {
-      run_standalone_file tests/4_view/useCurrentModelEnvironment.unit.test.tsx
-      run_standalone_pattern ReportPage.integ
+      run_standalone_unit tests/4_view/useCurrentModelEnvironment.unit.test.tsx
+      run_standalone_integ ReportPage.integ
     }
     ;;
   2.9)
@@ -263,10 +292,10 @@ case "$step" in
       run_library_file tests/modelValidation.unit.test.ts
       run_deployment_validation miroir-test-app_deployment-miroir
       run_core_gate
-      run_standalone_pattern useCurrentModelEnvironment
-      run_standalone_pattern applicative.Library
-      run_standalone_pattern RunnerTestSession
-      run_mcp
+      run_standalone_unit tests/4_view/useCurrentModelEnvironment.unit.test.tsx
+      # applicative.Library.*.integ.test.tsx excluded (empty shells)
+      run_standalone_unit tests/helpers/RunnerTestSession.unit.test.ts
+      run_mcp_gate
       run_cli
     }
     ;;
