@@ -46,3 +46,72 @@ describe("getSchemaForDeployment (Phase 2.1 — app-specific endpoints)", () => 
     expect(schema).toBe(miroirFundamentalJzodSchema);
   });
 });
+
+describe("getSchemaForDeployment (Phase 2.2 — extended domainAction)", () => {
+  const libraryDeploymentUuid = deployment_Library_DO_NO_USE.uuid;
+
+  function countDomainActionBranchesByType(schema: ReturnType<typeof getSchemaForDeployment>, actionType: string) {
+    const domainAction = (schema as any).definition.context.domainAction;
+    return domainAction.definition.filter(
+      (branch: any) => branch.definition?.actionType?.definition === actionType,
+    ).length;
+  }
+
+  it("domainAction union includes lendDocument for the Library deployment", () => {
+    const schema = getSchemaForDeployment(libraryDeploymentUuid, defaultLibraryAppModel as MetaModel);
+    const domainAction = (schema as any).definition.context.domainAction;
+    expect(domainAction.type).toBe("union");
+    const lendBranch = domainAction.definition.find(
+      (branch: any) => branch.definition?.actionType?.definition === "lendDocument",
+    );
+    expect(lendBranch).toBeDefined();
+  });
+
+  it("adds each app actionType exactly once for the Library deployment", () => {
+    const schema = getSchemaForDeployment(libraryDeploymentUuid, defaultLibraryAppModel as MetaModel);
+    expect(countDomainActionBranchesByType(schema, "lendDocument")).toBe(1);
+    expect(countDomainActionBranchesByType(schema, "returnDocument")).toBe(1);
+  });
+
+  it("deduplicates app actionTypes when the same action appears on multiple endpoints", () => {
+    const lendingEndpoint = defaultLibraryAppModel.endpoints.find(
+      (endpoint) => endpoint.uuid === "212f2784-5b68-43b2-8ee0-89b1c6fdd0de",
+    );
+    expect(lendingEndpoint).toBeDefined();
+
+    const duplicateLendingEndpoint = {
+      ...lendingEndpoint!,
+      uuid: "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee",
+      name: "Lending duplicate",
+    };
+    const modelWithDuplicateEndpoint = {
+      ...defaultLibraryAppModel,
+      endpoints: [...defaultLibraryAppModel.endpoints, duplicateLendingEndpoint],
+    } as MetaModel;
+
+    const schema = getSchemaForDeployment(libraryDeploymentUuid, modelWithDuplicateEndpoint);
+    expect(countDomainActionBranchesByType(schema, "lendDocument")).toBe(1);
+    expect(countDomainActionBranchesByType(schema, "returnDocument")).toBe(1);
+  });
+
+  it("domainAction union still contains instanceAction for Library deployment", () => {
+    const schema = getSchemaForDeployment(libraryDeploymentUuid, defaultLibraryAppModel as MetaModel);
+    const domainAction = (schema as any).definition.context.domainAction;
+    expect(
+      domainAction.definition.some(
+        (branch: any) =>
+          branch.definition?.relativePath === "instanceAction" ||
+          (branch.type === "schemaReference" && branch.definition?.relativePath === "instanceAction"),
+      ),
+    ).toBe(true);
+  });
+
+  it("domainAction union does NOT include lendDocument for the Miroir deployment", () => {
+    const schema = getSchemaForDeployment(deployment_Miroir.uuid, defaultMiroirMetaModel);
+    const domainAction = (schema as any).definition.context.domainAction;
+    const lendBranch = domainAction.definition.find(
+      (branch: any) => branch.definition?.actionType?.definition === "lendDocument",
+    );
+    expect(lendBranch).toBeUndefined();
+  });
+});
