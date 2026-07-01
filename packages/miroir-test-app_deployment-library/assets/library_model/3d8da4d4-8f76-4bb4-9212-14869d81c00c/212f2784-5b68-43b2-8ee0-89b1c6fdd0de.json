@@ -29,6 +29,7 @@
                 "tag": {
                   "value": {
                     "defaultLabel": "User",
+                    "canBeTemplate": true,
                     "initializeTo": {
                       "initializeToType": "value",
                       "value": "31f3a03a-f150-416d-9315-d3a752cb4eb4"
@@ -45,6 +46,7 @@
                 "tag": {
                   "value": {
                     "defaultLabel": "Book",
+                    "canBeTemplate": true,
                     "initializeTo": {
                       "initializeToType": "value",
                       "value": "31f3a03a-f150-416d-9315-d3a752cb4eb4"
@@ -60,7 +62,8 @@
                 "type": "date",
                 "tag": {
                   "value": {
-                    "defaultLabel": "Start Date"
+                    "defaultLabel": "Start Date",
+                    "canBeTemplate": true
                   }
                 }
               },
@@ -161,6 +164,7 @@
                 "tag": {
                   "value": {
                     "defaultLabel": "User",
+                    "canBeTemplate": true,
                     "initializeTo": {
                       "initializeToType": "value",
                       "value": "31f3a03a-f150-416d-9315-d3a752cb4eb4"
@@ -177,6 +181,7 @@
                 "tag": {
                   "value": {
                     "defaultLabel": "Book",
+                    "canBeTemplate": true,
                     "initializeTo": {
                       "initializeToType": "value",
                       "value": "31f3a03a-f150-416d-9315-d3a752cb4eb4"
@@ -196,7 +201,8 @@
                 "type": "date",
                 "tag": {
                   "value": {
-                    "defaultLabel": "End Date"
+                    "defaultLabel": "End Date",
+                    "canBeTemplate": true
                   }
                 }
               }
