@@ -6,21 +6,21 @@ import {
   defaultMetaModelEnvironment,
   defaultMiroirMetaModel,
   defaultMiroirModelEnvironment,
-  getSchemaForDeployment,
+  getMiroirFundamentalSchemaForDeployment,
 } from "miroir-core";
 
 describe("defaultMiroirModelEnvironment (Phase 1)", () => {
-  it("miroirFundamentalJzodSchema equals getSchemaForDeployment output", () => {
+  it("miroirFundamentalJzodSchema equals getMiroirFundamentalSchemaForDeployment output", () => {
     expect(defaultMiroirModelEnvironment.miroirFundamentalJzodSchema).toBe(
-      getSchemaForDeployment(deployment_Miroir.uuid, defaultMiroirMetaModel),
+      getMiroirFundamentalSchemaForDeployment(deployment_Miroir.uuid, defaultMiroirMetaModel),
     );
   });
 });
 
 describe("defaultMetaModelEnvironment (Phase 1)", () => {
-  it("miroirFundamentalJzodSchema equals getSchemaForDeployment output", () => {
+  it("miroirFundamentalJzodSchema equals getMiroirFundamentalSchemaForDeployment output", () => {
     expect(defaultMetaModelEnvironment.miroirFundamentalJzodSchema).toBe(
-      getSchemaForDeployment(deployment_Miroir.uuid, defaultMiroirMetaModel),
+      getMiroirFundamentalSchemaForDeployment(deployment_Miroir.uuid, defaultMiroirMetaModel),
     );
   });
 });

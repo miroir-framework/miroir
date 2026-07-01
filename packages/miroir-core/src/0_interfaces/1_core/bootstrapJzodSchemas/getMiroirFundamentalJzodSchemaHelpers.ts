@@ -12,6 +12,7 @@ import { packageName } from "../../../constants";
 import { LoggerInterface } from "../../4-services/LoggerInterface";
 import type { JzodReference, JzodElement } from "@miroir-framework/jzod-ts";
 import { jzodTransitiveDependencySet } from "../../../1_core/jzod/JzodSchemaReferences";
+import type { JzodElement as MlJzodElement, JzodUnion, MlSchema } from "../preprocessor-generated/miroirFundamentalType";
 // import { JzodElement, JzodReference } from "../preprocessor-generated/miroirFundamentalType";
 
 // const customChalk = new Chalk({level: 1})
@@ -24,6 +25,22 @@ MiroirLoggerFactory.registerLoggerToStart(
 });
 
 export const miroirFundamentalJzodSchemaUuid = "fe9b7d99-f216-44de-bb6e-60e1a1ebb739";
+
+export const coreTransformerForBuildPlusRuntimeCarryOnSchemaReference: JzodReference = {
+  type: "schemaReference",
+  definition: {
+    absolutePath: miroirFundamentalJzodSchemaUuid,
+    relativePath: "coreTransformerForBuildPlusRuntime",
+  },
+};
+
+export const coreTransformerForBuildPlusRuntimeForArrayCarryOnSchemaReference: JzodReference = {
+  type: "schemaReference",
+  definition: {
+    absolutePath: miroirFundamentalJzodSchemaUuid,
+    relativePath: "coreTransformerForBuildPlusRuntimeWithoutArray",
+  },
+};
 
 export const testCompositeActionParams: JzodElement = {
   type: "union",
@@ -774,4 +791,85 @@ export const getJzodElementWithCarryOnContextDEFUNCT = (
   );
   return jzodElementWithCarryOnContext;
 };
+
+const deploymentDomainActionTemplateKey = forgeCarryOnReferenceName(
+  miroirFundamentalJzodSchemaUuid,
+  "domainAction",
+  undefined,
+  "miroirTemplate_",
+);
+
+/**
+ * Applies carry-on templates for an extended domainAction union (deployment-specific schema).
+ */
+export function applyDeploymentDomainActionCarryOn(
+  baseSchema: MlSchema & { definition: any },
+  extendedDomainAction: JzodUnion,
+): MlSchema {
+  const absoluteContext = Object.fromEntries(
+    Object.entries(baseSchema.definition.context).map(([key, value]) => [
+      key,
+      makeReferencesAbsolute(value, miroirFundamentalJzodSchemaUuid, true),
+    ]),
+  ) as Record<string, MlJzodElement>;
+
+  const extendedDomainActionAbsolute = makeReferencesAbsolute(
+    extendedDomainAction,
+    miroirFundamentalJzodSchemaUuid,
+    true,
+  ) as MlJzodElement;
+
+  const extendedBaseForCarryOn = {
+    ...baseSchema,
+    definition: {
+      ...baseSchema.definition,
+      context: {
+        ...absoluteContext,
+        domainAction: extendedDomainActionAbsolute,
+      },
+    },
+  };
+
+  const alreadyConverted = Object.fromEntries(
+    Object.entries(absoluteContext).filter(([key]) => key.startsWith("miroirTemplate_")),
+  ) as Record<string, MlJzodElement>;
+
+  const domainActionDependencySet = jzodTransitiveDependencySet(
+    extendedBaseForCarryOn.definition,
+    "domainAction",
+    true,
+  );
+
+  const {
+    localizedInnerResolutionStorePlainReferences,
+    carryOnDomainActionSchemaBuilder,
+  } = getCarryOnSchemaBuilder(
+    extendedDomainActionAbsolute as any,
+    domainActionDependencySet,
+    extendedBaseForCarryOn,
+    coreTransformerForBuildPlusRuntimeCarryOnSchemaReference,
+    coreTransformerForBuildPlusRuntimeForArrayCarryOnSchemaReference,
+    ["transformerType", "interpolation"],
+    "miroirTemplate_",
+    false,
+    alreadyConverted as any,
+  );
+
+  const carryOnDomainActionTemplate = carryOnDomainActionSchemaBuilder.hasBeenApplied
+    ? carryOnDomainActionSchemaBuilder.resultSchema
+    : baseSchema.definition.context[deploymentDomainActionTemplateKey];
+
+  return {
+    ...baseSchema,
+    definition: {
+      ...baseSchema.definition,
+      context: {
+        ...baseSchema.definition.context,
+        domainAction: extendedDomainAction,
+        ...localizedInnerResolutionStorePlainReferences,
+        [deploymentDomainActionTemplateKey]: carryOnDomainActionTemplate,
+      },
+    },
+  } as MlSchema;
+}
   

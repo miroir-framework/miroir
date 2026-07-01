@@ -42,11 +42,12 @@ import {
   adminApplication_Admin,
   adminApplication_Miroir
 } from "miroir-test-app_deployment-admin";
-import {
-  lendingEndpoint,
-  selfApplicationLibrary
-} from "miroir-test-app_deployment-library";
+// import {
+//   lendingEndpoint,
+//   selfApplicationLibrary
+// } from "miroir-test-app_deployment-library";
 import { noValue } from "./Instance";
+import { LIBRARY_TMP } from "../0_interfaces/1_core/LIBRARY_TMP";
 
 export const defaultDeployments: Deployment[] = [
   deployment_Miroir as Deployment,
@@ -95,7 +96,7 @@ export const defaultEndpointApplicationMap: EndpointApplicationMap = {
   [queryEndpointVersionV1.uuid]: selfApplicationMiroir.uuid,
   [persistenceEndpointVersionV1.uuid]: selfApplicationMiroir.uuid,
   [menuEndpointV1.uuid]: selfApplicationMiroir.uuid,
-  [lendingEndpoint.uuid]: selfApplicationLibrary.uuid,
+  [LIBRARY_TMP.lendingEndpointUuid]: LIBRARY_TMP.selfApplicationLibraryUuid,
 };
 
 let log: LoggerInterface = console as any as LoggerInterface;

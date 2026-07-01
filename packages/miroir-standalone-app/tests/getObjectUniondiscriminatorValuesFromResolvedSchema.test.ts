@@ -2,7 +2,7 @@ import type { MiroirModelEnvironment } from "miroir-core";
 import { deployment_Miroir } from "miroir-test-app_deployment-admin";
 import {
   getObjectUniondiscriminatorValuesFromResolvedSchema,
-  getSchemaForDeployment,
+  getMiroirFundamentalSchemaForDeployment,
   JzodElement,
   JzodUnion,
   jzodUnion_recursivelyUnfold,
@@ -17,7 +17,7 @@ import { describe, expect, it } from "vitest";
 import currentMiroirModel from "./currentMiroirModel.json";
 import currentModel from "./currentModel.json";
 
-const schemaForTest = getSchemaForDeployment(
+const schemaForTest = getMiroirFundamentalSchemaForDeployment(
   deployment_Miroir.uuid,
   currentModel as any as MetaModel,
 );

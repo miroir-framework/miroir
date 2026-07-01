@@ -1,9 +1,7 @@
 export {
-  getMiroirFundamentalJzodSchema
-} from "../src/0_interfaces/1_core/bootstrapJzodSchemas/getMiroirFundamentalJzodSchema";
-export {
-  miroirFundamentalJzodSchemaUuid
-} from "../src/0_interfaces/1_core/bootstrapJzodSchemas/getMiroirFundamentalJzodSchemaHelpers";
+  getMiroirFundamentalJzodSchema,
+  miroirFundamentalJzodSchemaUuid,
+} from "./0_interfaces/1_core/bootstrapJzodSchemas/getMiroirFundamentalJzodSchema";
 
 export {
   ClientEnvironment,
@@ -737,7 +735,7 @@ export {
   ANY_IMPLICIT_UNION_TYPE, jzodTypeCheck,
   jzodUnionResolvedTypeForObject, selectUnionBranchFromDiscriminator, unionObjectChoices
 } from "./1_core/jzod/jzodTypeCheck.js";
-export { getSchemaForDeployment } from "./1_core/jzod/schemaForDeployment.js";
+export { getMiroirFundamentalSchemaForDeployment } from "./1_core/jzod/schemaForDeployment.js";
 export {
   localizeJzodSchemaReferenceContext,
   unfoldJzodSchemaOnce, UnfoldJzodSchemaOnceReturnType,

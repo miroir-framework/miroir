@@ -16,7 +16,7 @@ import {
   entitySelfApplicationVersion,
   entityStoreBasedConfiguration,
   getReduxDeploymentsStateIndex,
-  getSchemaForDeployment,
+  getMiroirFundamentalSchemaForDeployment,
   type ApplicationDeploymentMap,
   type ApplicationVersion,
   type EntityDefinition,
@@ -158,7 +158,7 @@ export function currentModelEnvironment(
   const model = currentModel(application, applicationDeploymentMap, state);
   return {
     deploymentUuid: deploymentUuid,
-    miroirFundamentalJzodSchema: getSchemaForDeployment(deploymentUuid, model),
+    miroirFundamentalJzodSchema: getMiroirFundamentalSchemaForDeployment(deploymentUuid, model),
     miroirMetaModel: defaultMiroirMetaModel,
     currentModel: model,
     endpointsByUuid: model.endpoints.reduce((acc, endpoint) => {

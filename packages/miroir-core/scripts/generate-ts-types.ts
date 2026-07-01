@@ -57,7 +57,7 @@ import {
   getExtendedSchemas,
   getExtendedSchemasWithCarryOn,
   miroirFundamentalJzodSchemaUuid,
-} from "../src/0_interfaces/1_core/bootstrapJzodSchemas/getMiroirFundamentalJzodSchemaHelpers";
+} from "../src/0_interfaces/1_core/bootstrapJzodSchemas/getMiroirFundamentalJzodSchemaHelpers.js";
 import { miroirTransformersForBuildPlusRuntime } from '../src/2_domain/Transformers';
 
 async function build() {

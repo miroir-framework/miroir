@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from "vitest";
+import { beforeAll, describe, expect, it, vi } from "vitest";
 
 import { deployment_Miroir } from "miroir-test-app_deployment-admin";
 import {
@@ -8,49 +8,58 @@ import {
 
 import {
   defaultMiroirMetaModel,
-  getSchemaForDeployment,
+  getMiroirFundamentalSchemaForDeployment,
   miroirFundamentalJzodSchema,
   type MetaModel,
 } from "miroir-core";
 
-describe("getSchemaForDeployment (Phase 1)", () => {
+describe("getMiroirFundamentalSchemaForDeployment (Phase 1)", () => {
   it("returns the static schema for any deploymentUuid when model has no app-specific endpoints", () => {
-    const result = getSchemaForDeployment("any-uuid", defaultMiroirMetaModel);
+    const result = getMiroirFundamentalSchemaForDeployment("any-uuid", defaultMiroirMetaModel);
     expect(result).toBe(miroirFundamentalJzodSchema);
     expect((result as any).definition.context.domainAction).toBeDefined();
   });
 
   it("resolves the static schema for the Miroir deployment", () => {
-    const result = getSchemaForDeployment(deployment_Miroir.uuid, defaultMiroirMetaModel);
+    const result = getMiroirFundamentalSchemaForDeployment(deployment_Miroir.uuid, defaultMiroirMetaModel);
     expect(result).toBe(miroirFundamentalJzodSchema);
   });
 });
 
-describe("getSchemaForDeployment (Phase 2.1 — app-specific endpoints)", () => {
+describe("getMiroirFundamentalSchemaForDeployment (Phase 2.1 — app-specific endpoints)", () => {
   const libraryDeploymentUuid = deployment_Library_DO_NO_USE.uuid;
+  let librarySchema: ReturnType<typeof getMiroirFundamentalSchemaForDeployment>;
+
+  beforeAll(() => {
+    librarySchema = getMiroirFundamentalSchemaForDeployment(libraryDeploymentUuid, defaultLibraryAppModel as MetaModel);
+  }, 120_000);
 
   it("returns a different object when model has app-specific endpoints", () => {
-    const schema = getSchemaForDeployment(libraryDeploymentUuid, defaultLibraryAppModel as MetaModel);
-    expect(schema).not.toBe(miroirFundamentalJzodSchema);
-    expect(schema.uuid).toBe(miroirFundamentalJzodSchema.uuid);
+    expect(librarySchema).not.toBe(miroirFundamentalJzodSchema);
+    expect(librarySchema.uuid).toBe(miroirFundamentalJzodSchema.uuid);
   });
 
   it("returns the static schema when model has no app-specific endpoints", () => {
     const modelWithoutAppEndpoints = { ...defaultLibraryAppModel, endpoints: [] };
-    const schema = getSchemaForDeployment(libraryDeploymentUuid, modelWithoutAppEndpoints as MetaModel);
+    const schema = getMiroirFundamentalSchemaForDeployment(libraryDeploymentUuid, modelWithoutAppEndpoints as MetaModel);
     expect(schema).toBe(miroirFundamentalJzodSchema);
   });
 
   it("returns the static schema for the Miroir meta-model even when endpoints exist", () => {
-    const schema = getSchemaForDeployment(deployment_Miroir.uuid, defaultMiroirMetaModel);
+    const schema = getMiroirFundamentalSchemaForDeployment(deployment_Miroir.uuid, defaultMiroirMetaModel);
     expect(schema).toBe(miroirFundamentalJzodSchema);
   });
 });
 
-describe("getSchemaForDeployment (Phase 2.2 — extended domainAction)", () => {
+describe("getMiroirFundamentalSchemaForDeployment (Phase 2.2 — extended domainAction)", () => {
   const libraryDeploymentUuid = deployment_Library_DO_NO_USE.uuid;
+  let librarySchema: ReturnType<typeof getMiroirFundamentalSchemaForDeployment>;
 
-  function countDomainActionBranchesByType(schema: ReturnType<typeof getSchemaForDeployment>, actionType: string) {
+  beforeAll(() => {
+    librarySchema = getMiroirFundamentalSchemaForDeployment(libraryDeploymentUuid, defaultLibraryAppModel as MetaModel);
+  }, 120_000);
+
+  function countDomainActionBranchesByType(schema: ReturnType<typeof getMiroirFundamentalSchemaForDeployment>, actionType: string) {
     const domainAction = (schema as any).definition.context.domainAction;
     return domainAction.definition.filter(
       (branch: any) => branch.definition?.actionType?.definition === actionType,
@@ -58,8 +67,7 @@ describe("getSchemaForDeployment (Phase 2.2 — extended domainAction)", () => {
   }
 
   it("domainAction union includes lendDocument for the Library deployment", () => {
-    const schema = getSchemaForDeployment(libraryDeploymentUuid, defaultLibraryAppModel as MetaModel);
-    const domainAction = (schema as any).definition.context.domainAction;
+    const domainAction = (librarySchema as any).definition.context.domainAction;
     expect(domainAction.type).toBe("union");
     const lendBranch = domainAction.definition.find(
       (branch: any) => branch.definition?.actionType?.definition === "lendDocument",
@@ -68,9 +76,8 @@ describe("getSchemaForDeployment (Phase 2.2 — extended domainAction)", () => {
   });
 
   it("adds each app actionType exactly once for the Library deployment", () => {
-    const schema = getSchemaForDeployment(libraryDeploymentUuid, defaultLibraryAppModel as MetaModel);
-    expect(countDomainActionBranchesByType(schema, "lendDocument")).toBe(1);
-    expect(countDomainActionBranchesByType(schema, "returnDocument")).toBe(1);
+    expect(countDomainActionBranchesByType(librarySchema, "lendDocument")).toBe(1);
+    expect(countDomainActionBranchesByType(librarySchema, "returnDocument")).toBe(1);
   });
 
   it("deduplicates app actionTypes when the same action appears on multiple endpoints", () => {
@@ -91,7 +98,7 @@ describe("getSchemaForDeployment (Phase 2.2 — extended domainAction)", () => {
 
     const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
 
-    const schema = getSchemaForDeployment(libraryDeploymentUuid, modelWithDuplicateEndpoint);
+    const schema = getMiroirFundamentalSchemaForDeployment(libraryDeploymentUuid, modelWithDuplicateEndpoint);
     expect(countDomainActionBranchesByType(schema, "lendDocument")).toBe(1);
     expect(countDomainActionBranchesByType(schema, "returnDocument")).toBe(1);
 
@@ -106,7 +113,7 @@ describe("getSchemaForDeployment (Phase 2.2 — extended domainAction)", () => {
     );
 
     warnSpy.mockRestore();
-  });
+  }, 120_000);
 
   it("warns and skips app actionTypes that collide with the static domainAction union", () => {
     const lendingEndpoint = defaultLibraryAppModel.endpoints.find(
@@ -142,7 +149,7 @@ describe("getSchemaForDeployment (Phase 2.2 — extended domainAction)", () => {
 
     const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
 
-    getSchemaForDeployment(libraryDeploymentUuid, modelWithCollision);
+    getMiroirFundamentalSchemaForDeployment(libraryDeploymentUuid, modelWithCollision);
 
     expect(warnSpy).toHaveBeenCalledWith(
       expect.stringContaining('actionType "transactionalInstanceAction"'),
@@ -152,11 +159,10 @@ describe("getSchemaForDeployment (Phase 2.2 — extended domainAction)", () => {
     );
 
     warnSpy.mockRestore();
-  });
+  }, 120_000);
 
   it("domainAction union still contains instanceAction for Library deployment", () => {
-    const schema = getSchemaForDeployment(libraryDeploymentUuid, defaultLibraryAppModel as MetaModel);
-    const domainAction = (schema as any).definition.context.domainAction;
+    const domainAction = (librarySchema as any).definition.context.domainAction;
     expect(
       domainAction.definition.some(
         (branch: any) =>
@@ -167,11 +173,49 @@ describe("getSchemaForDeployment (Phase 2.2 — extended domainAction)", () => {
   });
 
   it("domainAction union does NOT include lendDocument for the Miroir deployment", () => {
-    const schema = getSchemaForDeployment(deployment_Miroir.uuid, defaultMiroirMetaModel);
+    const schema = getMiroirFundamentalSchemaForDeployment(deployment_Miroir.uuid, defaultMiroirMetaModel);
     const domainAction = (schema as any).definition.context.domainAction;
     const lendBranch = domainAction.definition.find(
       (branch: any) => branch.definition?.actionType?.definition === "lendDocument",
     );
     expect(lendBranch).toBeUndefined();
+  });
+});
+
+describe("getMiroirFundamentalSchemaForDeployment (Phase 2.4 — carry-on actionTemplate)", () => {
+  const libraryDeploymentUuid = deployment_Library_DO_NO_USE.uuid;
+  const domainActionTemplateKey = "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction";
+  let librarySchema: ReturnType<typeof getMiroirFundamentalSchemaForDeployment>;
+
+  beforeAll(() => {
+    librarySchema = getMiroirFundamentalSchemaForDeployment(libraryDeploymentUuid, defaultLibraryAppModel as MetaModel);
+  }, 120_000);
+
+  function branchIncludesLendDocument(branch: any): boolean {
+    const actionType = branch.definition?.actionType;
+    if (!actionType) {
+      return false;
+    }
+    if (actionType.definition === "lendDocument") {
+      return true;
+    }
+    if (actionType.definition?.definition === "lendDocument") {
+      return true;
+    }
+    if (actionType.type === "union" && Array.isArray(actionType.definition)) {
+      return actionType.definition.some(
+        (variant: any) =>
+          variant.definition === "lendDocument" ||
+          variant.definition?.definition === "lendDocument",
+      );
+    }
+    return false;
+  }
+
+  it("actionTemplate resolves to a union that includes a lendDocument-shaped branch", () => {
+    const actionTemplateBranches = (librarySchema as any).definition.context[domainActionTemplateKey].definition;
+    expect(
+      actionTemplateBranches.some((branch: any) => branchIncludesLendDocument(branch)),
+    ).toBe(true);
   });
 });

@@ -11,7 +11,7 @@ Related: [impact-analysis-and-solutions.md](./impact-analysis-and-solutions.md)
 
 | Decision | Choice |
 |---|---|
-| Schema accessor API | `getSchemaForDeployment(deploymentUuid: Uuid, model: MetaModel): MlSchema` — pure function in `miroir-core` |
+| Schema accessor API | `getMiroirFundamentalSchemaForDeployment(deploymentUuid: Uuid, model: MetaModel): MlSchema` — pure function in `miroir-core` |
 | Caching owner | React context (`MiroirContextReactProvider`): `schemasPerDeployment: Record<Uuid, MlSchema>`, populated via `useEffect` in `useCurrentModelEnvironment`; non-React callers receive the cost of a direct call |
 | App-action filtering | Endpoints whose `endpoint.application === model.applicationUuid` (non-Miroir apps only) |
 | Phase 1 scope | ALL construction sites — production + test files — migrated together so Phase 1 proves the API drop-in safe |
@@ -46,11 +46,11 @@ Phase 1 steps should leave **all** non-regression suites green. Phase 2 steps ad
 
 ```
 Phase 1 — Infrastructure refactor (non-regression)     ← slices 1.1–1.7 DONE; 1.8 gate PARTIAL
-  Goal : introduce getSchemaForDeployment; migrate all MiroirModelEnvironment
+  Goal : introduce getMiroirFundamentalSchemaForDeployment; migrate all MiroirModelEnvironment
          construction sites; all tests stay green; schema content unchanged.
 
 Phase 2 — Solution 2: app-aware domainAction + actionTemplate   ← slices 2.1–2.3 DONE; 2.4+
-  Goal : getSchemaForDeployment returns an extended schema for app deployments;
+  Goal : getMiroirFundamentalSchemaForDeployment returns an extended schema for app deployments;
          runner_library MiroirTest validates cleanly.
 ```
 
@@ -62,7 +62,7 @@ Phase 2 — Solution 2: app-aware domainAction + actionTemplate   ← slices 2.1
 
 | Slice | Status | Code | Tests |
 |---|---|---|---|
-| **1.1** | **DONE** | `getSchemaForDeployment` stub + export | `schemaForDeployment.unit.test.ts` (3 cases) |
+| **1.1** | **DONE** | `getMiroirFundamentalSchemaForDeployment` stub + export | `schemaForDeployment.unit.test.ts` (3 cases) |
 | **1.2** | **DONE** | `localcache-redux` `currentModelEnvironment` | `currentModelEnvironment.unit.test.ts` + `minimalLocalCacheStateForModel` helper |
 | **1.3** | **DONE** | `localcache-zustand` `currentModelEnvironment` + `vite.config.js` | same pattern as 1.2 |
 | **1.4** | **DONE** | `schemasPerDeployment` / `setSchemaForDeployment`, hooks, guards | `useCurrentModelEnvironment.unit.test.tsx` (Provider + Redux; schema match, cache on mount, model change) |
@@ -77,7 +77,7 @@ Gate runner: `./code-helpers/features/198-FEATURE- composing tests using applica
 
 ---
 
-### 1.1  `getSchemaForDeployment` — stub that returns the static schema
+### 1.1  `getMiroirFundamentalSchemaForDeployment` — stub that returns the static schema
 
 **Status: DONE**
 
@@ -91,13 +91,13 @@ to the current import, but accessed via an API that takes a deployment identity.
 RED  — new test file: packages/miroir-core/tests/1_core/schemaForDeployment.unit.test.ts
 
   it("returns the static schema for any deploymentUuid in Phase 1")
-    const result = getSchemaForDeployment("any-uuid", defaultMiroirMetaModel);
+    const result = getMiroirFundamentalSchemaForDeployment("any-uuid", defaultMiroirMetaModel);
     expect(result).toBe(miroirFundamentalJzodSchema);   // reference equality
     // also verify it resolves "domainAction" from its context
     expect(result.definition.context.domainAction).toBeDefined();
 
   it("resolves the static schema for the Miroir deployment")
-    const result = getSchemaForDeployment(deployment_Miroir.uuid, defaultMiroirMetaModel);
+    const result = getMiroirFundamentalSchemaForDeployment(deployment_Miroir.uuid, defaultMiroirMetaModel);
     expect(result).toBe(miroirFundamentalJzodSchema);
 ```
 
@@ -110,7 +110,7 @@ import type { Uuid } from "../0_interfaces/1_core/EntityDefinition";
 import type { MetaModel, MlSchema } from
   "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
-export function getSchemaForDeployment(
+export function getMiroirFundamentalSchemaForDeployment(
   _deploymentUuid: Uuid,
   _model: MetaModel,
 ): MlSchema {
@@ -131,7 +131,7 @@ Export from `packages/miroir-core/src/index.ts`.
 | **Non-regression** | `npm test -- jzodTransitiveDependencySet` | PASS (carry-on helper still sound) |
 | **Build** | `npm run devBuild` | PASS (new export compiles) |
 
-**Commit**: `feat: add getSchemaForDeployment stub — Phase 1 API`
+**Commit**: `feat: add getMiroirFundamentalSchemaForDeployment stub — Phase 1 API`
 
 ---
 
@@ -140,22 +140,22 @@ Export from `packages/miroir-core/src/index.ts`.
 **Status: DONE**
 
 **Behavior**: `currentModelEnvironment(app, map, state).miroirFundamentalJzodSchema` is
-produced by `getSchemaForDeployment(deploymentUuid, model)`, not the direct static import.
+produced by `getMiroirFundamentalSchemaForDeployment(deploymentUuid, model)`, not the direct static import.
 
 ```
 RED  — add to packages/miroir-localcache-redux/tests/ (or adapt existing)
 
-  it("currentModelEnvironment uses getSchemaForDeployment")
+  it("currentModelEnvironment uses getMiroirFundamentalSchemaForDeployment")
     const env = currentModelEnvironment(miroir_uuid, map, state);
     // schema object should match static schema (Phase 1 sameness)
     expect(env.miroirFundamentalJzodSchema).toBe(miroirFundamentalJzodSchema);
-    // contract: if we swap getSchemaForDeployment for a spy later (Phase 2)
+    // contract: if we swap getMiroirFundamentalSchemaForDeployment for a spy later (Phase 2)
     //           this test would catch it — proving call delegation is in place
 ```
 
 **GREEN**: Replace `miroirFundamentalJzodSchema: miroirFundamentalJzodSchema as MlSchema` in
 `packages/miroir-localcache-redux/src/4_services/localCache/Model.ts::currentModelEnvironment`
-with `miroirFundamentalJzodSchema: getSchemaForDeployment(deploymentUuid, model)`.
+with `miroirFundamentalJzodSchema: getMiroirFundamentalSchemaForDeployment(deploymentUuid, model)`.
 Remove the now-unused direct import of the static schema from that file.
 
 **Tests to run**
@@ -163,13 +163,13 @@ Remove the now-unused direct import of the static schema from that file.
 | When | Command | Expect |
 |---|---|---|
 | **Baseline** | `packages/miroir-localcache-redux`: `npm test` | PASS (full package) |
-| **Progress (RED)** | `npm test -- getSchemaForDeployment` (new test in `tests/LocalCache.unit.test.ts` or `tests/currentModelEnvironment.unit.test.ts`) | FAIL |
+| **Progress (RED)** | `npm test -- getMiroirFundamentalSchemaForDeployment` (new test in `tests/LocalCache.unit.test.ts` or `tests/currentModelEnvironment.unit.test.ts`) | FAIL |
 | **Progress (GREEN)** | same | PASS |
 | **Non-regression** | `npm test` | PASS (entire `miroir-localcache-redux`) |
 | **Non-regression** | `packages/miroir-core`: `npm run testByFile -- tests/1_core/schemaForDeployment.unit.test.ts` | PASS |
 | **Non-regression** | `packages/miroir-standalone-app`: `npm test -- DomainController.integ` | PASS (DomainController uses localcache `currentModelEnvironment`) |
 
-**Commit**: `refactor: localcache-redux currentModelEnvironment → getSchemaForDeployment`
+**Commit**: `refactor: localcache-redux currentModelEnvironment → getMiroirFundamentalSchemaForDeployment`
 
 ---
 
@@ -190,7 +190,7 @@ Same pattern as 1.2 for `packages/miroir-localcache-zustand/src/4_services/local
 | **Non-regression** | `packages/miroir-standalone-app`: `npm test -- DomainController.React.Model.undo-redo` | PASS |
 | **Non-regression** | `packages/miroir-core`: `npm run testByFile -- tests/1_core/schemaForDeployment.unit.test.ts` | PASS |
 
-**Commit**: `refactor: localcache-zustand currentModelEnvironment → getSchemaForDeployment`
+**Commit**: `refactor: localcache-zustand currentModelEnvironment → getMiroirFundamentalSchemaForDeployment`
 
 ---
 
@@ -202,14 +202,14 @@ This cycle is the largest in Phase 1. It changes how the React context holds sch
 the hook computes the environment.
 
 **Behavior A**: `useCurrentModelEnvironment` populates `MiroirModelEnvironment.miroirFundamentalJzodSchema`
-by calling `getSchemaForDeployment` and caching the result in the React context.
+by calling `getMiroirFundamentalSchemaForDeployment` and caching the result in the React context.
 
 **Behavior B**: When `currentModel` changes for a deployment, the cached schema in context
 is recomputed.
 
 **Behavior C**: Components that previously guarded on `context.miroirFundamentalJzodSchema`
 should instead use `currentApplicationModelEnvironment.miroirFundamentalJzodSchema`, which
-is always defined (never undefined) because `getSchemaForDeployment` always returns a value.
+is always defined (never undefined) because `getMiroirFundamentalSchemaForDeployment` always returns a value.
 
 **Context interface change** (`MiroirContextReactProvider.tsx`):
 ```ts
@@ -225,10 +225,10 @@ setSchemaForDeployment: (deploymentUuid: Uuid, schema: MlSchema) => void;
 ```
 RED  — packages/miroir-standalone-app/tests/4_view/useCurrentModelEnvironment.unit.test.tsx
 
-  it("returns an environment whose schema matches getSchemaForDeployment output for a given deployment")
+  it("returns an environment whose schema matches getMiroirFundamentalSchemaForDeployment output for a given deployment")
     render with a provider that has libraryModel in state;
     const env = result.current;   // via renderHook(useCurrentModelEnvironment, ...)
-    const expected = getSchemaForDeployment(libraryDeploymentUuid, libraryModel);
+    const expected = getMiroirFundamentalSchemaForDeployment(libraryDeploymentUuid, libraryModel);
     expect(env.miroirFundamentalJzodSchema).toEqual(expected);
 
   it("updates the schema in context when the model changes")
@@ -247,7 +247,7 @@ const context = useMiroirContextService();
 // Populate context cache whenever the model changes
 useEffect(() => {
   if (currentModel && deploymentUuid) {
-    const schema = getSchemaForDeployment(deploymentUuid, currentModel);
+    const schema = getMiroirFundamentalSchemaForDeployment(deploymentUuid, currentModel);
     context.setSchemaForDeployment(deploymentUuid, schema);
   }
 }, [currentModel, deploymentUuid]);
@@ -255,7 +255,7 @@ useEffect(() => {
 return useMemo(() => ({
   miroirFundamentalJzodSchema:
     context.schemasPerDeployment[deploymentUuid]
-    ?? getSchemaForDeployment(deploymentUuid, currentModel),  // sync fallback
+    ?? getMiroirFundamentalSchemaForDeployment(deploymentUuid, currentModel),  // sync fallback
   currentModel,
   deploymentUuid,
   miroirMetaModel,
@@ -289,21 +289,21 @@ return useMemo(() => ({
 **Status: DONE**
 
 **Behavior**: The two static defaults in `packages/miroir-core/src/1_core/Model.ts` use
-`getSchemaForDeployment`. Since they are computed once at module load, a direct call is fine.
+`getMiroirFundamentalSchemaForDeployment`. Since they are computed once at module load, a direct call is fine.
 
 ```
 RED — add assertions to existing Model.ts unit tests (or a new test file)
 
-  it("defaultMiroirModelEnvironment.miroirFundamentalJzodSchema equals getSchemaForDeployment output")
+  it("defaultMiroirModelEnvironment.miroirFundamentalJzodSchema equals getMiroirFundamentalSchemaForDeployment output")
     expect(defaultMiroirModelEnvironment.miroirFundamentalJzodSchema)
-      .toBe(getSchemaForDeployment(deployment_Miroir.uuid, defaultMiroirMetaModel));
+      .toBe(getMiroirFundamentalSchemaForDeployment(deployment_Miroir.uuid, defaultMiroirMetaModel));
 ```
 
 **GREEN**:
 ```ts
 // Model.ts
 export const defaultMiroirModelEnvironment: MiroirModelEnvironment = {
-  miroirFundamentalJzodSchema: getSchemaForDeployment(deployment_Miroir.uuid, defaultMiroirMetaModel),
+  miroirFundamentalJzodSchema: getMiroirFundamentalSchemaForDeployment(deployment_Miroir.uuid, defaultMiroirMetaModel),
   ...
 };
 ```
@@ -319,7 +319,7 @@ export const defaultMiroirModelEnvironment: MiroirModelEnvironment = {
 | **Non-regression** | `npm run testByFile -- tests/2_domain/resolveCompositeActionTemplate.unit.test.ts` | PASS |
 | **Non-regression** | `npm run testByFile -- tests/1_core/schemaForDeployment.unit.test.ts` | PASS |
 
-**Commit**: `refactor: Model.ts defaults → getSchemaForDeployment`
+**Commit**: `refactor: Model.ts defaults → getMiroirFundamentalSchemaForDeployment`
 
 ---
 
@@ -331,7 +331,7 @@ Each site currently does one of:
 - `miroirFundamentalJzodSchema: miroirFundamentalJzodSchema as MlSchema`
 - `getDefaultLibraryModelEnvironmentDEFUNCT(miroirFundamentalJzodSchema, ...)`
 
-Replace with a `getSchemaForDeployment` call using the available `deploymentUuid` and model.
+Replace with a `getMiroirFundamentalSchemaForDeployment` call using the available `deploymentUuid` and model.
 
 Sites to migrate:
 - `packages/miroir-mcp/src/tools/mcpHandlersForEndpoint.ts`
@@ -365,7 +365,7 @@ RED — no new tests needed here; existing integration tests of MCP / CLI tools 
 | **Non-regression** | `packages/miroir-cli`: `npm run testByFile -- tests/cli.integ.test.ts` | PASS |
 | **Non-regression** | `packages/miroir-test-app_deployment-library`: `npm test -- Library` (import/build of `Library.ts`) | PASS |
 
-**Commit**: `refactor: non-React construction sites → getSchemaForDeployment`
+**Commit**: `refactor: non-React construction sites → getMiroirFundamentalSchemaForDeployment`
 
 ---
 
@@ -375,7 +375,7 @@ RED — no new tests needed here; existing integration tests of MCP / CLI tools 
 
 **Behavior**: Test files that manually inline
 `{ miroirFundamentalJzodSchema: miroirFundamentalJzodSchema as MlSchema, ... }` should call
-`getSchemaForDeployment` instead.
+`getMiroirFundamentalSchemaForDeployment` instead.
 
 Files:
 - `packages/miroir-test-app_deployment-library/tests/modelValidation.unit.test.ts`
@@ -396,7 +396,7 @@ RED — The existing tests in modelValidation.unit.test.ts ARE the regression su
 ```
 
 **GREEN**: Replace each `miroirFundamentalJzodSchema as MlSchema` literal with
-`getSchemaForDeployment(deploymentUuid, model)` using the appropriate variables.
+`getMiroirFundamentalSchemaForDeployment(deploymentUuid, model)` using the appropriate variables.
 
 **Tests to run**
 
@@ -410,7 +410,7 @@ RED — The existing tests in modelValidation.unit.test.ts ARE the regression su
 | **Non-regression** | `packages/miroir-standalone-app`: `npm test -- RunnerTestSession` | PASS |
 | **Non-regression** | `packages/miroir-standalone-app`: `npm test -- IntegrationTestSession` | PASS |
 
-**Commit**: `refactor: test-file MiroirModelEnvironment constructions → getSchemaForDeployment`
+**Commit**: `refactor: test-file MiroirModelEnvironment constructions → getMiroirFundamentalSchemaForDeployment`
 
 ---
 
@@ -454,7 +454,7 @@ Items below are **not blockers for starting Phase 2** (schema content is unchang
 
 | Planned | Actual |
 |---|---|
-| `currentModelEnvironment` test proves schema comes from `getSchemaForDeployment` via a populated localcache state | `tests/helpers/minimalLocalCacheStateForModel.ts` + `currentModelEnvironment.unit.test.ts` in redux and zustand drive `currentModelEnvironment` with minimal `state.current` |
+| `currentModelEnvironment` test proves schema comes from `getMiroirFundamentalSchemaForDeployment` via a populated localcache state | `tests/helpers/minimalLocalCacheStateForModel.ts` + `currentModelEnvironment.unit.test.ts` in redux and zustand drive `currentModelEnvironment` with minimal `state.current` |
 | `useCurrentModelEnvironment` `renderHook` tests (schema match, context update on model change) | `useCurrentModelEnvironment.unit.test.tsx`: Provider + Redux test store; schema match, `schemasPerDeployment` on mount, recompute when endpoints change (same deployment) |
 
 **Action**: ~~Add integration-style unit tests…~~ Done. Defer `does not recompute schema` spy test to Phase 2 cycle **2.8** (already planned there).
@@ -469,7 +469,7 @@ Code migrates both `defaultMiroirModelEnvironment` and `defaultMetaModelEnvironm
 
 `packages/miroir-test-app_deployment-postgres/tests/modelValidation.unit.test.ts` is entirely commented out (legacy library copy). No migration was needed; gate row should stay **SKIP** until the file is restored.
 
-**Action**: When postgres deployment validation is re-enabled, migrate `libraryModelEnvironment` construction to `getSchemaForDeployment` and add back to gate.
+**Action**: When postgres deployment validation is re-enabled, migrate `libraryModelEnvironment` construction to `getMiroirFundamentalSchemaForDeployment` and add back to gate.
 
 ### D4 — Phase 1 regression gate environment dependencies (1.8)
 
@@ -484,7 +484,7 @@ Code migrates both `defaultMiroirModelEnvironment` and `defaultMetaModelEnvironm
 
 ### D5 — Session helpers use indirect migration (1.7) — **DONE**
 
-`RunnerTestSession.ts` / `IntegrationTestSession.ts` now use `buildTestSessionModelEnvironment` / `buildIntegrationTestModelEnvironment` (explicit `getSchemaForDeployment`) instead of importing `defaultMiroirModelEnvironment`.
+`RunnerTestSession.ts` / `IntegrationTestSession.ts` now use `buildTestSessionModelEnvironment` / `buildIntegrationTestModelEnvironment` (explicit `getMiroirFundamentalSchemaForDeployment`) instead of importing `defaultMiroirModelEnvironment`.
 
 | File | Change |
 |---|---|
@@ -520,7 +520,7 @@ npm run testByFile -w miroir-standalone-app -- tests/4_view/JzodElementEditor.te
 
 ## Phase 2 — App-aware `domainAction` + `actionTemplate`
 
-From here on, every cycle modifies `getSchemaForDeployment` from the inside (the function
+From here on, every cycle modifies `getMiroirFundamentalSchemaForDeployment` from the inside (the function
 signature and the `MiroirModelEnvironment` shape never change — consumers are already migrated).
 
 ### Phase 2 progress (plan vs code, 2026-06-30)
@@ -538,7 +538,7 @@ Verified green: `./run-step-tests.sh 2.2 all`, `./run-step-tests.sh 2.3 all`.
 
 ---
 
-### 2.1  Detect app-specific actions in `getSchemaForDeployment`
+### 2.1  Detect app-specific actions in `getMiroirFundamentalSchemaForDeployment`
 
 **Status: DONE**
 
@@ -551,17 +551,17 @@ UUID, and whose `model.endpoints` contain at least one endpoint with
 RED — packages/miroir-core/tests/1_core/schemaForDeployment.unit.test.ts (extend existing file)
 
   it("returns a different object when model has app-specific endpoints")
-    const schema = getSchemaForDeployment(libraryDeploymentUuid, defaultLibraryAppModel);
+    const schema = getMiroirFundamentalSchemaForDeployment(libraryDeploymentUuid, defaultLibraryAppModel);
     expect(schema).not.toBe(miroirFundamentalJzodSchema);   // different object
     expect(schema.uuid).toBe(miroirFundamentalJzodSchema.uuid); // but same UUID
 
   it("returns the static schema when model has no app-specific endpoints")
     const modelWithoutAppEndpoints = { ...defaultLibraryAppModel, endpoints: [] };
-    const schema = getSchemaForDeployment(libraryDeploymentUuid, modelWithoutAppEndpoints);
+    const schema = getMiroirFundamentalSchemaForDeployment(libraryDeploymentUuid, modelWithoutAppEndpoints);
     expect(schema).toBe(miroirFundamentalJzodSchema);
 ```
 
-**GREEN**: Inside `getSchemaForDeployment`, detect app endpoints:
+**GREEN**: Inside `getMiroirFundamentalSchemaForDeployment`, detect app endpoints:
 ```ts
 const appEndpoints = model.endpoints.filter(
   ep => ep.application === model.applicationUuid
@@ -580,7 +580,7 @@ return { ...miroirFundamentalJzodSchema as any };
 | **Non-regression** | `npm run testByFile -- tests/1_core/schemaForDeployment.unit.test.ts` — Miroir deployment cases | PASS (still returns static ref when no app endpoints) |
 | **Non-regression** | `packages/miroir-test-app_deployment-library`: `npm run testByFile -- tests/modelValidation.unit.test.ts` | PASS (schema content unchanged for existing instances until 2.2) |
 
-**Commit**: `feat: getSchemaForDeployment detects app-specific endpoints`
+**Commit**: `feat: getMiroirFundamentalSchemaForDeployment detects app-specific endpoints`
 
 ---
 
@@ -588,7 +588,7 @@ return { ...miroirFundamentalJzodSchema as any };
 
 **Status: DONE**
 
-**Behavior**: For the Library deployment, `getSchemaForDeployment` returns a schema whose
+**Behavior**: For the Library deployment, `getMiroirFundamentalSchemaForDeployment` returns a schema whose
 `definition.context.domainAction` union includes an object branch for `lendDocument` (with
 `actionType.definition === "lendDocument"`).
 
@@ -596,7 +596,7 @@ return { ...miroirFundamentalJzodSchema as any };
 RED — schemaForDeployment.unit.test.ts
 
   it("domainAction union includes lendDocument for the Library deployment")
-    const schema = getSchemaForDeployment(libraryDeploymentUuid, defaultLibraryAppModel);
+    const schema = getMiroirFundamentalSchemaForDeployment(libraryDeploymentUuid, defaultLibraryAppModel);
     const domainAction = schema.definition.context.domainAction;
     expect(domainAction.type).toBe("union");
     const lendBranch = domainAction.definition.find(
@@ -606,7 +606,7 @@ RED — schemaForDeployment.unit.test.ts
 
   it("domainAction union still contains instanceAction for Library deployment")
     // non-regression: Miroir actions must not disappear
-    const schema = getSchemaForDeployment(libraryDeploymentUuid, defaultLibraryAppModel);
+    const schema = getMiroirFundamentalSchemaForDeployment(libraryDeploymentUuid, defaultLibraryAppModel);
     const domainAction = schema.definition.context.domainAction;
     expect(domainAction.definition.some(
       (b: any) => b.definition?.relativePath === "instanceAction"
@@ -614,7 +614,7 @@ RED — schemaForDeployment.unit.test.ts
     )).toBe(true);
 
   it("domainAction union does NOT include lendDocument for the Miroir deployment")
-    const schema = getSchemaForDeployment(deployment_Miroir.uuid, defaultMiroirMetaModel);
+    const schema = getMiroirFundamentalSchemaForDeployment(deployment_Miroir.uuid, defaultMiroirMetaModel);
     const domainAction = schema.definition.context.domainAction;
     const lendBranch = domainAction.definition.find(
       (b: any) => b.definition?.actionType?.definition === "lendDocument"
@@ -622,7 +622,7 @@ RED — schemaForDeployment.unit.test.ts
     expect(lendBranch).toBeUndefined();
 ```
 
-**GREEN**: Build the extended union inside `getSchemaForDeployment`:
+**GREEN**: Build the extended union inside `getMiroirFundamentalSchemaForDeployment`:
 ```ts
 const appActionBranches = appEndpoints.flatMap((ep) =>
   (ep.definition?.actions ?? []).map((action: any) => ({
@@ -665,7 +665,7 @@ return {
 | Tests (extra) | — | `returnDocument` counted once; dedup when Lending endpoint cloned on a second endpoint |
 | Gate | — | `./run-step-tests.sh 2.2 all` verified green |
 
-**Commit**: `feat: getSchemaForDeployment extends domainAction with app endpoint actions`
+**Commit**: `feat: getMiroirFundamentalSchemaForDeployment extends domainAction with app endpoint actions`
 
 ---
 
@@ -684,7 +684,7 @@ RED — packages/miroir-test-app_deployment-library/tests/modelValidation.unit.t
 
   describe("App-action validation (Feature 198)", () => {
     const libraryModelEnv: MiroirModelEnvironment = {
-      miroirFundamentalJzodSchema: getSchemaForDeployment(
+      miroirFundamentalJzodSchema: getMiroirFundamentalSchemaForDeployment(
         deployment_Library.uuid, defaultLibraryAppModel
       ),
       deploymentUuid: deployment_Library.uuid,
@@ -744,7 +744,7 @@ end-to-end wiring.
 |---|---|---|
 | Core | No change if 2.2 correct | Confirmed — no `miroir-core` edits for 2.3 |
 | Test file | New `App-action validation (Feature 198)` describe | Added at end of `packages/miroir-test-app_deployment-library/tests/modelValidation.unit.test.ts` |
-| Model env | Inline `libraryModelEnv` with `endpointsByUuid` reduce | Reuses module-level `libraryModelEnvironment` (L52 — already calls `getSchemaForDeployment`); `endpointsByUuid: {}` is sufficient for this test |
+| Model env | Inline `libraryModelEnv` with `endpointsByUuid` reduce | Reuses module-level `libraryModelEnvironment` (L52 — already calls `getMiroirFundamentalSchemaForDeployment`); `endpointsByUuid: {}` is sufficient for this test |
 | E2E scope | `lendDocument` → `domainAction` via `schemaReference` | PASS — first end-to-end app-action validation path |
 | Out of scope | — | `returnDocument` e2e via `jzodTypeCheck` not added (union branch exists from 2.2; can add in a later slice if needed) |
 | Gate | Full `modelValidation.unit.test.ts` | `run_library_gate` excludes pre-existing `AuthorList` / `LibraryHome` report failures (same as 1.8 / 2.2) |
@@ -767,7 +767,7 @@ and the existing carry-on dependency set.
 RED — schemaForDeployment.unit.test.ts
 
   it("actionTemplate resolves to a union that includes a lendDocument-shaped branch")
-    const schema = getSchemaForDeployment(libraryDeploymentUuid, defaultLibraryAppModel);
+    const schema = getMiroirFundamentalSchemaForDeployment(libraryDeploymentUuid, defaultLibraryAppModel);
     // actionTemplate is a reference to miroirTemplate_…_domainAction
     const actionTemplateBranches =
       schema.definition.context[
@@ -782,7 +782,7 @@ RED — schemaForDeployment.unit.test.ts
     ).toBe(true);
 ```
 
-**GREEN**: Extend `getSchemaForDeployment` to run `getCarryOnSchemaBuilder`:
+**GREEN**: Extend `getMiroirFundamentalSchemaForDeployment` to run `getCarryOnSchemaBuilder`:
 
 ```ts
 import {
@@ -793,7 +793,7 @@ import {
   coreTransformerForBuildPlusRuntimeNames,
 } from "../../2_domain/Transformers";
 
-// (inside getSchemaForDeployment, after building extendedDomainAction)
+// (inside getMiroirFundamentalSchemaForDeployment, after building extendedDomainAction)
 
 const baseSchema = miroirFundamentalJzodSchema as any;
 
@@ -865,7 +865,7 @@ This is a pure extraction refactor (no behaviour change).
 | **Non-regression** | `packages/miroir-core`: `npm run testByFile -- tests/1_core/jzod/jzodTransitiveDependencySet.unit.test.ts` | PASS |
 | **Non-regression** | `packages/miroir-standalone-app`: `npm test -- applicative.Library.BuildPlusRuntimeCompositeAction` | PASS (carry-on runtime path) |
 
-**Commit**: `feat: getSchemaForDeployment builds carry-on for extended domainAction`
+**Commit**: `feat: getMiroirFundamentalSchemaForDeployment builds carry-on for extended domainAction`
 
 ---
 
@@ -968,14 +968,14 @@ This is the **acceptance test** for the whole feature. GREEN means the issue is 
 
 ### 2.7  Miroir deployment is not affected (non-regression)
 
-**Behavior**: `getSchemaForDeployment(miroirDeploymentUuid, miroirMetaModel)` returns a
+**Behavior**: `getMiroirFundamentalSchemaForDeployment(miroirDeploymentUuid, miroirMetaModel)` returns a
 schema where `domainAction` does NOT contain `lendDocument` or any other Library action.
 
 ```
 RED — schemaForDeployment.unit.test.ts
 
   it("Miroir deployment schema does not include Library actions")
-    const schema = getSchemaForDeployment(deployment_Miroir.uuid, defaultMiroirMetaModel);
+    const schema = getMiroirFundamentalSchemaForDeployment(deployment_Miroir.uuid, defaultMiroirMetaModel);
     const domainAction = schema.definition.context.domainAction;
     const lendBranch = domainAction.definition.find(
       (b: any) => b.definition?.actionType?.definition === "lendDocument"
@@ -1009,7 +1009,7 @@ cycle 2.1; it is written here explicitly as documentation.
 RED — useCurrentModelEnvironment.unit.test.tsx
 
   it("does not recompute schema when model reference is stable")
-    const spy = vi.spyOn(schemaForDeploymentModule, "getSchemaForDeployment");
+    const spy = vi.spyOn(schemaForDeploymentModule, "getMiroirFundamentalSchemaForDeployment");
     const { rerender } = renderHook(() => useCurrentModelEnvironment(app, map), { wrapper });
     const callCountAfterMount = spy.mock.calls.length;
     rerender();   // re-render without model change
@@ -1036,7 +1036,7 @@ stable references) and that `useEffect`'s dependency array is not using derived 
 
 ---
 
-### 2.9  Performance guard — `getSchemaForDeployment` execution time
+### 2.9  Performance guard — `getMiroirFundamentalSchemaForDeployment` execution time
 
 Not strictly a TDD cycle but important for Phase 2 acceptance. Add a timing assertion or
 a benchmarking note to the test file:
@@ -1044,7 +1044,7 @@ a benchmarking note to the test file:
 ```
 it("completes within 500ms for the Library model")
   const start = Date.now();
-  getSchemaForDeployment(libraryDeploymentUuid, defaultLibraryAppModel);
+  getMiroirFundamentalSchemaForDeployment(libraryDeploymentUuid, defaultLibraryAppModel);
   expect(Date.now() - start).toBeLessThan(500);
 ```
 
@@ -1061,7 +1061,7 @@ If this fails, profile `getCarryOnSchemaBuilder` and consider:
 | **Non-regression** | `packages/miroir-core`: `npm run testByFile -- tests/1_core/schemaForDeployment.unit.test.ts` | PASS (all functional tests) |
 | **Smoke (manual)** | Open `runner_library` MiroirTest in standalone app UI | No type error on `lendDocument` / `actionTemplate` fields |
 
-If timing fails: profile with `console.time` inside `getSchemaForDeployment`; consider caching at React-context layer (already planned) before optimizing carry-on scope.
+If timing fails: profile with `console.time` inside `getMiroirFundamentalSchemaForDeployment`; consider caching at React-context layer (already planned) before optimizing carry-on scope.
 
 ---
 
@@ -1090,25 +1090,25 @@ Optional: `packages/miroir-standalone-app`: `npm test` (full app suite).
 
 ```
 Phase 1 (infrastructure / non-regression) — **slices 1.1–1.7 DONE; 1.8 gate PARTIAL**
-  1.1  feat: add getSchemaForDeployment stub — Phase 1 API          [DONE]
+  1.1  feat: add getMiroirFundamentalSchemaForDeployment stub — Phase 1 API          [DONE]
   1.2  refactor: localcache-redux currentModelEnvironment → …       [DONE]
   1.3  refactor: localcache-zustand currentModelEnvironment → …     [DONE]
   1.4  refactor: useCurrentModelEnvironment → context.schemasPerDeployment [DONE]
-  1.5  refactor: Model.ts defaults → getSchemaForDeployment       [DONE]
-  1.6  refactor: non-React construction sites → getSchemaForDeployment [DONE]
+  1.5  refactor: Model.ts defaults → getMiroirFundamentalSchemaForDeployment       [DONE]
+  1.6  refactor: non-React construction sites → getMiroirFundamentalSchemaForDeployment [DONE]
   1.7  refactor: test-file MiroirModelEnvironment constructions → … [DONE]
   (1.8) [no commit — Phase 1 regression gate; see §1.8 + completion delta] [PARTIAL]
 
 Phase 2 (Solution 2)
-  2.1  feat: getSchemaForDeployment detects app-specific endpoints
-  2.2  feat: getSchemaForDeployment extends domainAction with app endpoint actions
+  2.1  feat: getMiroirFundamentalSchemaForDeployment detects app-specific endpoints
+  2.2  feat: getMiroirFundamentalSchemaForDeployment extends domainAction with app endpoint actions
   2.3  test: jzodTypeCheck validates lendDocument against extended domainAction
-  2.4  feat: getSchemaForDeployment builds carry-on for extended domainAction
+  2.4  feat: getMiroirFundamentalSchemaForDeployment builds carry-on for extended domainAction
   2.5  test: jzodTypeCheck validates template-form lendDocument against actionTemplate
   2.6  test: runner_library MiroirTest validates with extended schema (acceptance)
   2.7  test: Miroir deployment schema unaffected (regression guard)
   2.8  test: schema not recomputed when model reference is stable
-  2.9  test: getSchemaForDeployment completes within 500ms
+  2.9  test: getMiroirFundamentalSchemaForDeployment completes within 500ms
   (2.10) [no commit — Phase 2 regression gate, see §2.10 table]
 ```
 
@@ -1175,6 +1175,6 @@ the 2.9 cycle. If it is too slow for the execution path, a separate lightweight 
 `useCurrentModelEnvironment` builds `endpointsByUuid` from ALL apps in
 `applicationDeploymentMap`. In Phase 2, the schema extension uses only
 `model.endpoints` (the *current* app's model). These are consistent as long as the
-`currentModel` passed to `getSchemaForDeployment` is the model for the deployment being
+`currentModel` passed to `getMiroirFundamentalSchemaForDeployment` is the model for the deployment being
 accessed, not an aggregate of all models. This is already the case in `currentModelEnvironment`
 in both localcache implementations.

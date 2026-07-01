@@ -28,6 +28,8 @@ import {
 import { zodParseErrorJzodSchema } from "../zodParseError";
 import {
   createLocalizedInnerResolutionStoreForExtendedSchemas,
+  coreTransformerForBuildPlusRuntimeCarryOnSchemaReference,
+  coreTransformerForBuildPlusRuntimeForArrayCarryOnSchemaReference,
   getCarryOnSchemaBuilder,
   getExtendedSchemas,
   makeReferencesAbsolute,
@@ -3321,23 +3323,7 @@ export function getMiroirFundamentalJzodSchema(
   // ##############################################################################
   // ##############################################################################
   // ##############################################################################
-  // coreTransformerForBuildPlusRuntime + JZOD ELEMENTS
-  const coreTransformerForBuildPlusRuntimeCarryOnSchemaReference: JzodReference = {
-    type: "schemaReference",
-    definition: {
-      absolutePath: miroirFundamentalJzodSchemaUuid,
-      relativePath: "coreTransformerForBuildPlusRuntime",
-    },
-  };
-  const coreTransformerForBuildPlusRuntimeForArrayCarryOnSchemaReference: JzodReference = {
-    type: "schemaReference",
-    definition: {
-      absolutePath: miroirFundamentalJzodSchemaUuid,
-      relativePath: "coreTransformerForBuildPlusRuntimeWithoutArray",
-    },
-  };
-
-  
+  // coreTransformerForBuildPlusRuntime + JZOD ELEMENTS (shared refs in getMiroirFundamentalJzodSchemaHelpers)
 
   // ##############################################################################################
   // ##############################################################################################
@@ -3727,3 +3713,5 @@ export function getMiroirFundamentalJzodSchema(
 
   
 }
+
+export { miroirFundamentalJzodSchemaUuid } from "./getMiroirFundamentalJzodSchemaHelpers";

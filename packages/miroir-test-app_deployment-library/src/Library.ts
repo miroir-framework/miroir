@@ -1,6 +1,6 @@
 import {
   defaultMiroirMetaModel,
-  getSchemaForDeployment,
+  getMiroirFundamentalSchemaForDeployment,
   type EndpointDefinition,
   type Entity,
   type EntityDefinition,
@@ -213,7 +213,7 @@ export function getDefaultLibraryModelEnvironmentDEFUNCT(
   }
 
   return {
-    miroirFundamentalJzodSchema: getSchemaForDeployment(
+    miroirFundamentalJzodSchema: getMiroirFundamentalSchemaForDeployment(
       libraryDeploymentUuid,
       defaultLibraryAppModel,
     ),

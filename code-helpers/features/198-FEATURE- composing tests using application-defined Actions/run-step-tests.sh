@@ -255,11 +255,13 @@ case "$step" in
     }
     ;;
   2.4)
-    want_green && section "2.4 progress" && run_core_pattern "actionTemplate resolves"
+    want_green && section "2.4 progress" && {
+      (cd "$PACKAGES/miroir-core" && npm run testByFile -- tests/1_core/schemaForDeployment.unit.test.ts -t "Phase 2.4")
+    }
     want_regression && section "2.4 non-regression" && {
       run_library_pattern "lendDocument action validates"
-      run_core_pattern jzodTransitiveDependencySet
-      # applicative.Library.BuildPlusRuntimeCompositeAction.integ.test.tsx excluded (empty shell)
+      run_core_file tests/1_core/jzod/jzodTransitiveDependencySet.unit.test.ts
+      run_core_file tests/1_core/schemaForDeployment.unit.test.ts
     }
     ;;
   2.5)

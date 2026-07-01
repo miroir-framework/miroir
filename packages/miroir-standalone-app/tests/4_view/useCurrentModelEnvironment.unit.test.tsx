@@ -10,7 +10,7 @@ import {
   deployment_Library_DO_NO_USE,
 } from "miroir-test-app_deployment-library";
 import {
-  getSchemaForDeployment,
+  getMiroirFundamentalSchemaForDeployment,
   instanceEndpointV1,
   MiroirActivityTracker,
   MiroirEventService,
@@ -126,7 +126,7 @@ describe("useCurrentModelEnvironment (Phase 1)", () => {
     vi.restoreAllMocks();
   });
 
-  it("returns an environment whose schema matches getSchemaForDeployment for the Miroir deployment", async () => {
+  it("returns an environment whose schema matches getMiroirFundamentalSchemaForDeployment for the Miroir deployment", async () => {
     const store = createTestStore(
       buildMinimalLocalCacheStateForDeployment(deployment_Miroir.uuid, "data"),
     );
@@ -148,7 +148,7 @@ describe("useCurrentModelEnvironment (Phase 1)", () => {
     await waitFor(() => {
       expect(capturedEnv).toBeDefined();
       expect(capturedEnv!.miroirFundamentalJzodSchema).toBe(
-        getSchemaForDeployment(deployment_Miroir.uuid, capturedEnv!.currentModel),
+        getMiroirFundamentalSchemaForDeployment(deployment_Miroir.uuid, capturedEnv!.currentModel),
       );
       expect(capturedEnv!.miroirFundamentalJzodSchema).toBe(miroirFundamentalJzodSchema);
     });
@@ -183,7 +183,7 @@ describe("useCurrentModelEnvironment (Phase 1)", () => {
   it("updates context cache when currentModel changes for the same deployment", async () => {
     const schemaSpy = vi.spyOn(
       await import("miroir-core"),
-      "getSchemaForDeployment",
+      "getMiroirFundamentalSchemaForDeployment",
     );
 
     const emptySlice = buildMinimalLocalCacheStateForDeployment(deployment_Miroir.uuid, "data");

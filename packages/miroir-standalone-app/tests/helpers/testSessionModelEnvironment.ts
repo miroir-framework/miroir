@@ -1,13 +1,13 @@
 import {
   defaultMiroirMetaModel,
-  getSchemaForDeployment,
+  getMiroirFundamentalSchemaForDeployment,
   type MetaModel,
   type MiroirModelEnvironment,
   type Uuid,
 } from "miroir-core";
 
 /**
- * Builds a MiroirModelEnvironment for test sessions using getSchemaForDeployment explicitly
+ * Builds a MiroirModelEnvironment for test sessions using getMiroirFundamentalSchemaForDeployment explicitly
  * (Feature 198 Phase 1 — avoids opaque defaultMiroirModelEnvironment import at call sites).
  */
 export function buildTestSessionModelEnvironment(
@@ -15,7 +15,7 @@ export function buildTestSessionModelEnvironment(
   currentModel: MetaModel,
 ): MiroirModelEnvironment {
   return {
-    miroirFundamentalJzodSchema: getSchemaForDeployment(deploymentUuid, currentModel),
+    miroirFundamentalJzodSchema: getMiroirFundamentalSchemaForDeployment(deploymentUuid, currentModel),
     miroirMetaModel: defaultMiroirMetaModel,
     endpointsByUuid: Object.fromEntries(currentModel.endpoints.map((endpoint) => [endpoint.uuid, endpoint])),
     deploymentUuid,

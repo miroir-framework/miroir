@@ -27,7 +27,7 @@ import {
   entityMenu,
   getApplicationSection,
   getReduxDeploymentsStateIndex,
-  getSchemaForDeployment,
+  getMiroirFundamentalSchemaForDeployment,
   selectEntityUuidFromJzodAttribute,
   selfApplicationMiroir,
   type ApplicationDeploymentMap,
@@ -278,7 +278,7 @@ export function useCurrentModelEnvironment(
 
   useEffect(() => {
     if (currentModel && deploymentUuid) {
-      const schema = getSchemaForDeployment(deploymentUuid, currentModel);
+      const schema = getMiroirFundamentalSchemaForDeployment(deploymentUuid, currentModel);
       context.setSchemaForDeployment(deploymentUuid, schema);
     }
   }, [currentModel, deploymentUuid, context.setSchemaForDeployment]);
@@ -287,7 +287,7 @@ export function useCurrentModelEnvironment(
     return {
       miroirFundamentalJzodSchema:
         context.schemasPerDeployment[deploymentUuid] ??
-        getSchemaForDeployment(deploymentUuid, currentModel),
+        getMiroirFundamentalSchemaForDeployment(deploymentUuid, currentModel),
       miroirMetaModel: miroirMetaModel,
       endpointsByUuid,
       currentModel: currentModel,
@@ -304,7 +304,7 @@ export function useCurrentModelEnvironment(
 
 // ################################################################################################
 /**
- * Resolves the fundamental jzod schema for a deployment from context cache or getSchemaForDeployment.
+ * Resolves the fundamental jzod schema for a deployment from context cache or getMiroirFundamentalSchemaForDeployment.
  */
 export function useMiroirFundamentalJzodSchemaForDeployment(
   deploymentUuid?: Uuid,
@@ -319,7 +319,7 @@ export function useMiroirFundamentalJzodSchemaForDeployment(
     return cached;
   }
   if (resolvedDeploymentUuid && currentModel) {
-    return getSchemaForDeployment(resolvedDeploymentUuid, currentModel);
+    return getMiroirFundamentalSchemaForDeployment(resolvedDeploymentUuid, currentModel);
   }
   return undefined;
 }

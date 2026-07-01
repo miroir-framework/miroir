@@ -30,12 +30,13 @@ import {
   getQueryTemplateRunnerParamsForReduxDeploymentsState,
   runQueryTemplateFromReduxDeploymentsState,
 } from "../2_domain/ReduxDeploymentsStateQueryTemplateSelectors";
-import { deployment_Library_DO_NO_USE, selfApplicationLibrary } from "miroir-test-app_deployment-library";
+// import { deployment_Library_DO_NO_USE, selfApplicationLibrary } from "miroir-test-app_deployment-library";
 import { MiroirActivityTracker } from "../3_controllers/MiroirActivityTracker";
 import { ignorePostgresExtraAttributes, removeUndefinedProperties, unNullify } from "../4_services/otherTools";
 import { domainStateToReduxDeploymentsState, resolvePathOnObject } from "../tools";
 import domainStateImport from "../domainState.json";
 import type { TestSuiteListFilter } from "../0_interfaces/5-tests/miroirTestTypes";
+import { LIBRARY_TMP } from "../0_interfaces/1_core/LIBRARY_TMP";
 
 export { miroirTestForQuery as queryRunnerTestJzodSchema } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
@@ -69,7 +70,7 @@ const QUERY_RUNNER_FIXTURES: Record<string, () => QueryRunnerFixture> = {
       deploymentEntityState: domainStateToReduxDeploymentsState(domainState),
       applicationDeploymentMap: {
         ...defaultSelfApplicationDeploymentMap,
-        [selfApplicationLibrary.uuid]: deployment_Library_DO_NO_USE.uuid,
+        [LIBRARY_TMP.selfApplicationLibraryUuid]: LIBRARY_TMP.deployment_Library_DO_NO_USE.uuid,
       },
     };
   },

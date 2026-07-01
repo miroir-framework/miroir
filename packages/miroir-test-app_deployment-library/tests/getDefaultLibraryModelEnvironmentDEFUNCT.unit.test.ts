@@ -16,7 +16,7 @@ import {
 import { resolveLibraryDeploymentUuid } from "../src/resolveLibraryDeploymentUuid.js";
 
 describe("getDefaultLibraryModelEnvironmentDEFUNCT (Phase 1)", () => {
-  it("resolves miroirFundamentalJzodSchema via getSchemaForDeployment, not a caller-supplied schema", () => {
+  it("resolves miroirFundamentalJzodSchema via getMiroirFundamentalSchemaForDeployment, not a caller-supplied schema", () => {
     const env = getDefaultLibraryModelEnvironmentDEFUNCT(
       defaultMiroirMetaModel,
       instanceEndpointV1 as EndpointDefinition,
