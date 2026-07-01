@@ -219,3 +219,30 @@ describe("getMiroirFundamentalSchemaForDeployment (Phase 2.4 — carry-on action
     ).toBe(true);
   });
 });
+
+describe("getMiroirFundamentalSchemaForDeployment (Phase 2.7 — Miroir deployment unaffected)", () => {
+  const domainActionTemplateKey = "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction";
+
+  it("Miroir deployment schema does not include Library actions", () => {
+    const schema = getMiroirFundamentalSchemaForDeployment(deployment_Miroir.uuid, defaultMiroirMetaModel);
+    expect(schema).toBe(miroirFundamentalJzodSchema);
+
+    const domainAction = (schema as any).definition.context.domainAction;
+    for (const actionType of ["lendDocument", "returnDocument"] as const) {
+      const branch = domainAction.definition.find(
+        (b: any) => b.definition?.actionType?.definition === actionType,
+      );
+      expect(branch, `domainAction should not include ${actionType}`).toBeUndefined();
+    }
+
+    const actionTemplateBranches = (schema as any).definition.context[domainActionTemplateKey]?.definition;
+    if (Array.isArray(actionTemplateBranches)) {
+      for (const actionType of ["lendDocument", "returnDocument"] as const) {
+        const branch = actionTemplateBranches.find(
+          (b: any) => b.definition?.actionType?.definition === actionType,
+        );
+        expect(branch, `actionTemplate should not include ${actionType}`).toBeUndefined();
+      }
+    }
+  });
+});

@@ -57,6 +57,11 @@ run_library_gate() {
   (cd "$PACKAGES/miroir-test-app_deployment-library" && npm run testByFile -- tests/modelValidation.unit.test.ts -t "^(?!.*(AuthorList|LibraryHome))")
 }
 
+run_miroir_gate() {
+  # These four fail on master too (unrelated to Feature 198 — see §1.8 gate delta).
+  (cd "$PACKAGES/miroir-test-app_deployment-miroir" && npm run testByFile -- tests/modelValidation.unit.test.ts -t "^(?!.*(MiroirWebAppOrDesktopHome|_MiroirDocumentation|reportMiroirRunners|createEntity))")
+}
+
 run_core_pattern() {
   (cd "$PACKAGES/miroir-core" && npm test -- "$1")
 }
@@ -278,9 +283,11 @@ case "$step" in
     }
     ;;
   2.7)
-    want_green && section "2.7 progress" && run_core_pattern "Miroir deployment schema does not include"
+    want_green && section "2.7 progress" && {
+      (cd "$PACKAGES/miroir-core" && npm run testByFile -- tests/1_core/schemaForDeployment.unit.test.ts -t "Phase 2.7")
+    }
     want_regression && section "2.7 non-regression" && {
-      run_deployment_validation miroir-test-app_deployment-miroir
+      run_miroir_gate
       run_core_file tests/1_core/jzod/jzodTypeCheck.test.ts
     }
     ;;

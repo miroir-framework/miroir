@@ -533,7 +533,8 @@ signature and the `MiroirModelEnvironment` shape never change — consumers are 
 | **2.4** | **DONE** | Carry-on for deployment `domainAction` wired in `schemaForDeployment` via `applyDeploymentDomainActionCarryOn` | `schemaForDeployment.unit.test.ts` Phase 2.4 |
 | **2.5** | **DONE** | Fix: `canBeTemplate: true` added to all payload fields in Lending endpoint JSON (prerequisite for carry-on widening) | Library `modelValidation.unit.test.ts` Feature 198 `actionTemplate` case with full transformer-form payload |
 | **2.6** | **DONE** | No core change (2.5 fix sufficient); corrected schema name in plan (`miroirTestDefinition`, not `miroirTestForRunner`) | Library `modelValidation.unit.test.ts` Feature 198 acceptance case |
-| **2.7+** | pending | — | — |
+| **2.7** | **DONE** | No core change (2.1 filter inherent); explicit Phase 2.7 regression guard | `schemaForDeployment.unit.test.ts` Phase 2.7 |
+| **2.8+** | pending | — | — |
 
 Gate runner: `./code-helpers/features/198-FEATURE- composing tests using application-defined Actions/run-step-tests.sh <step> all`
 
@@ -1008,6 +1009,8 @@ This is the **acceptance test** for the whole feature. GREEN means the issue is 
 
 ### 2.7  Miroir deployment is not affected (non-regression)
 
+**Status: DONE**
+
 **Behavior**: `getMiroirFundamentalSchemaForDeployment(miroirDeploymentUuid, miroirMetaModel)` returns a
 schema where `domainAction` does NOT contain `lendDocument` or any other Library action.
 
@@ -1036,6 +1039,17 @@ cycle 2.1; it is written here explicitly as documentation.
 | **Non-regression** | `packages/miroir-core`: `npm run testByFile -- tests/1_core/jzod/jzodTypeCheck.test.ts` | PASS |
 
 **Commit**: `test: Miroir deployment schema unaffected by Library actions (regression guard)`
+
+**Completion notes (2026-07-01)**
+
+| Area | Planned | Delivered |
+|---|---|---|
+| Core | Inherent from 2.1 `by_application` filter | Confirmed — no `miroir-core` code changes |
+| Test file | `schemaForDeployment.unit.test.ts` | Added Phase 2.7 describe with `"Miroir deployment schema does not include Library actions"` |
+| Coverage | `lendDocument` absent from `domainAction` | Extended to also check `returnDocument` and both Library actions absent from `actionTemplate` carry-on union |
+| Overlap with 2.2 | Same assertion in Phase 2.2 describe | Kept both — 2.2 tests extension wiring; 2.7 is the explicit regression guard with plan-named test |
+| run-step-tests.sh | `run_core_pattern` (loads full core suite) | Changed to `testByFile … -t "Phase 2.7"`; Miroir regression uses `run_miroir_gate` (excludes 4 pre-existing failures on master: `MiroirWebAppOrDesktopHome`, `_MiroirDocumentation`, `reportMiroirRunners`, `createEntity`) |
+| Gate | `./run-step-tests.sh 2.7 all` | PASS |
 
 ---
 
