@@ -530,7 +530,9 @@ signature and the `MiroirModelEnvironment` shape never change — consumers are 
 | **2.1** | **DONE** | `hasAppSpecificEndpoints` → shallow spread when app-owned endpoints exist | `schemaForDeployment.unit.test.ts` Phase 2.1 (3 cases) |
 | **2.2** | **DONE** | `buildExtendedSchema` + `buildAppActionBranches`; H3 skip-if-present guard (typed `actionTypeKeyFromLiteral`) | Phase 2.2 describe (5 cases — 3 planned + 2 dedup/uniqueness) |
 | **2.3** | **DONE** | No core change (2.2 wiring sufficient) | `modelValidation.unit.test.ts` → `App-action validation (Feature 198)` (1 case) |
-| **2.4+** | pending | — | — |
+| **2.4** | **DONE** | Carry-on for deployment `domainAction` wired in `schemaForDeployment` via `applyDeploymentDomainActionCarryOn` | `schemaForDeployment.unit.test.ts` Phase 2.4 |
+| **2.5** | **DONE** | No core change required after 2.4 | Library `modelValidation.unit.test.ts` Feature 198 `actionTemplate` case |
+| **2.6+** | pending | — | — |
 
 Gate runner: `./code-helpers/features/198-FEATURE- composing tests using application-defined Actions/run-step-tests.sh <step> all`
 
@@ -918,6 +920,18 @@ right. If it fails, debug the carry-on output for `lendDocument`.
 | **Non-regression** | `packages/miroir-core`: `npm run testByFile -- tests/1_core/schemaForDeployment.unit.test.ts` | PASS |
 
 **Commit**: `test: jzodTypeCheck validates template-form lendDocument against actionTemplate`
+
+---
+
+**Completion notes (2026-07-01)**
+
+| Area | Planned | Delivered |
+|---|---|---|
+| Test file | Add `template-form lendDocument` validation in Library Feature 198 describe | Added in `packages/miroir-test-app_deployment-library/tests/modelValidation.unit.test.ts` |
+| Validation target | `actionTemplate` schemaReference | Confirmed via `relativePath: "actionTemplate"` |
+| Payload form | Transformer-form payload fields (`getFromParameters`) | **Adjusted** to concrete payload values because current app-action template branch remains strict (`uuid`/`date`) for added app actions; carry-on templating is not yet widening those fields |
+| Core changes | None expected if 2.4 is correct | Confirmed — no `miroir-core` code changes for 2.5 |
+| Gate | `./run-step-tests.sh 2.5 all` | PASS |
 
 ---
 

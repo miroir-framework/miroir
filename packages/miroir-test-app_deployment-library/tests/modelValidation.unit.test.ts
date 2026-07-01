@@ -60,6 +60,15 @@ const libraryModelEnvironment: MiroirModelEnvironment = {
   currentModel: defaultLibraryAppModel,
 };
 
+// console.log(
+//   "libraryModelEnvironment.miroirFundamentalJzodSchema.definition.context.domainAction",
+//   JSON.stringify((libraryModelEnvironment.miroirFundamentalJzodSchema as any).definition?.context?.domainAction, null, 2),
+// );
+// console.log(
+//   "libraryModelEnvironment.miroirFundamentalJzodSchema.definition.context.miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction",
+//   JSON.stringify((libraryModelEnvironment.miroirFundamentalJzodSchema as any).definition?.context?.miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction, null, 2),
+// );
+
 // ================================================================================================
 // Eagerly load all instances via import.meta.glob
 // ================================================================================================
@@ -374,6 +383,13 @@ describe("App-action validation (Feature 198)", () => {
       relativePath: "domainAction",
     },
   };
+  const actionTemplateSchema: JzodElement = {
+    type: "schemaReference",
+    definition: {
+      absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+      relativePath: "actionTemplate",
+    },
+  };
 
   it("lendDocument action validates against domainAction", () => {
     const lendDocumentAction = {
@@ -389,6 +405,30 @@ describe("App-action validation (Feature 198)", () => {
     const result = jzodTypeCheck(
       domainActionSchema,
       lendDocumentAction,
+      [],
+      [],
+      libraryModelEnvironment,
+      {},
+    );
+
+    expect(result.status).toBe("ok");
+  });
+
+  it("template-form lendDocument validates against actionTemplate", () => {
+    const templateFormAction = {
+      // Keep discriminator literal so union branch selection remains deterministic.
+      actionType: "lendDocument",
+      endpoint: "212f2784-5b68-43b2-8ee0-89b1c6fdd0de",
+      payload: {
+        user: { transformerType: "getFromParameters", interpolation: "build", referenceName: "user1Uuid" },
+        book: { transformerType: "getFromParameters", interpolation: "build", referenceName: "book1Uuid" },
+        startDate: { transformerType: "getFromParameters", interpolation: "build", referenceName: "lendStartDate" },
+      },
+    };
+
+    const result = jzodTypeCheck(
+      actionTemplateSchema,
+      templateFormAction,
       [],
       [],
       libraryModelEnvironment,
