@@ -272,7 +272,7 @@ case "$step" in
     want_green && section "2.6 acceptance" && run_library_pattern "runner_library MiroirTest"
     want_regression && section "2.6 non-regression" && {
       run_library_pattern "App-action validation"
-      run_library_file tests/modelValidation.unit.test.ts
+      run_library_gate
       run_core_file tests/4_services/runnerLibraryTestRegistry.unit.test.ts
       run_standalone_unit tests/helpers/RunnerTestSession.unit.test.ts
     }

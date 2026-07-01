@@ -27,6 +27,9 @@ import {
   jzodTypeCheck,
 } from "miroir-core";
 
+// Feature 198 — runner_library MiroirTest instance
+import runnerLibraryTestJSON from "../assets/library_model/a311f363-e238-4203-bdfc-29e8c160c26b/b7e4a901-2c3d-4f5a-b6c7-8d9e0f1a2b3c.json";
+
 // Library-specific entity definitions (imported directly from assets)
 import entityDefinitionAuthor from "../assets/library_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/b30b7180-f7dc-4cca-b4e8-e476b77fe61d.json";
 import entityDefinitionBook from "../assets/library_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/797dd185-0155-43fd-b23f-f6d0af8cae06.json";
@@ -435,6 +438,33 @@ describe("App-action validation (Feature 198)", () => {
       {},
     );
 
+    expect(result.status).toBe("ok");
+  });
+
+  it("runner_library MiroirTest validates against miroirTestDefinition schema", () => {
+    // The runner_library MiroirTest entity has definition.miroirTestType === "miroirTestSuite",
+    // whose miroirTests[] items are miroirTestForRunner entries that carry
+    // preRunnerCompositeActions typed as actionTemplate[].
+    // Those actions include lendDocument with transformer-form payload fields
+    // (getFromParameters). Validation succeeds only when:
+    //   (a) the extended actionTemplate (from libraryModelEnvironment) includes the
+    //       lendDocument carry-on branch, AND
+    //   (b) the Lending endpoint definition has canBeTemplate: true on user/book/startDate.
+    const miroirTestDefinitionSchema: JzodElement = {
+      type: "schemaReference",
+      definition: {
+        absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+        relativePath: "miroirTestDefinition",
+      },
+    };
+    const result = jzodTypeCheck(
+      miroirTestDefinitionSchema,
+      runnerLibraryTestJSON,
+      [],
+      [],
+      libraryModelEnvironment,
+      {},
+    );
     expect(result.status).toBe("ok");
   });
 });

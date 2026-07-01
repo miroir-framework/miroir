@@ -531,8 +531,9 @@ signature and the `MiroirModelEnvironment` shape never change — consumers are 
 | **2.2** | **DONE** | `buildExtendedSchema` + `buildAppActionBranches`; H3 skip-if-present guard (typed `actionTypeKeyFromLiteral`) | Phase 2.2 describe (5 cases — 3 planned + 2 dedup/uniqueness) |
 | **2.3** | **DONE** | No core change (2.2 wiring sufficient) | `modelValidation.unit.test.ts` → `App-action validation (Feature 198)` (1 case) |
 | **2.4** | **DONE** | Carry-on for deployment `domainAction` wired in `schemaForDeployment` via `applyDeploymentDomainActionCarryOn` | `schemaForDeployment.unit.test.ts` Phase 2.4 |
-| **2.5** | **DONE** | No core change required after 2.4 | Library `modelValidation.unit.test.ts` Feature 198 `actionTemplate` case |
-| **2.6+** | pending | — | — |
+| **2.5** | **DONE** | Fix: `canBeTemplate: true` added to all payload fields in Lending endpoint JSON (prerequisite for carry-on widening) | Library `modelValidation.unit.test.ts` Feature 198 `actionTemplate` case with full transformer-form payload |
+| **2.6** | **DONE** | No core change (2.5 fix sufficient); corrected schema name in plan (`miroirTestDefinition`, not `miroirTestForRunner`) | Library `modelValidation.unit.test.ts` Feature 198 acceptance case |
+| **2.7+** | pending | — | — |
 
 Gate runner: `./code-helpers/features/198-FEATURE- composing tests using application-defined Actions/run-step-tests.sh <step> all`
 
@@ -929,9 +930,10 @@ right. If it fails, debug the carry-on output for `lendDocument`.
 |---|---|---|
 | Test file | Add `template-form lendDocument` validation in Library Feature 198 describe | Added in `packages/miroir-test-app_deployment-library/tests/modelValidation.unit.test.ts` |
 | Validation target | `actionTemplate` schemaReference | Confirmed via `relativePath: "actionTemplate"` |
-| Payload form | Transformer-form payload fields (`getFromParameters`) | **Adjusted** to concrete payload values because current app-action template branch remains strict (`uuid`/`date`) for added app actions; carry-on templating is not yet widening those fields |
+| Payload form | Transformer-form payload fields (`getFromParameters`) for `user`, `book`, `startDate` | Validated with transformer-form payload — **root cause of initial failure**: the Lending endpoint definition (`212f2784-5b68-43b2-8ee0-89b1c6fdd0de`) was missing `canBeTemplate: true` on `user`, `book`, and `startDate`. Without this flag, the carry-on mechanism cannot widen those fields to accept transformer objects; they remain strict `uuid`/`date` and reject transformers. Fix: add `tag.value.canBeTemplate: true` to each field in the Lending endpoint JSON. |
 | Core changes | None expected if 2.4 is correct | Confirmed — no `miroir-core` code changes for 2.5 |
-| Gate | `./run-step-tests.sh 2.5 all` | PASS |
+| Model fix | — | Lending endpoint JSON updated: `user`, `book`, `startDate` all now carry `canBeTemplate: true` |
+| Gate | `./run-step-tests.sh 2.5 all` | PASS (with transformer-form payload) |
 
 ---
 
@@ -940,6 +942,19 @@ right. If it fails, debug the carry-on output for `lendDocument`.
 **Behavior**: The exact failing case from the issue — validating the `runner_library` test
 instance (`b7e4a901-2c3d-4f5a-b6c7-8d9e0f1a2b3c`) against the `miroirTestForRunner` jzod
 schema — passes.
+
+**`canBeTemplate` dependency (discovered in 2.5)**: The `miroirTestForRunner` schema types
+`preRunnerCompositeActions` as `actionTemplate[]` (see
+`miroirFundamentalJzodSchema.ts` line 6693). The `runner_library` asset uses this field with
+a `lendDocument` action whose `payload.user`, `payload.book`, and `payload.startDate` are
+transformer objects (`getFromParameters`). For `jzodTypeCheck` to accept these, the carry-on
+must have widened those fields to `uuid | coreTransformerForBuildPlusRuntime` etc. — which
+only happens when the Lending endpoint definition carries `canBeTemplate: true` on each
+field. This was fixed in 2.5; no further model change is needed for 2.6.
+
+Similarly, `testParams` is typed as `Record<string, any>` (line 6666), so transformer
+objects nested there (in `testParams.lendDocument.payload.*`) are not schema-checked and
+require no `canBeTemplate` flag.
 
 ```
 RED — modelValidation.unit.test.ts (Library, Feature 198 describe block)
@@ -975,6 +990,17 @@ This is the **acceptance test** for the whole feature. GREEN means the issue is 
 | **Non-regression** | `packages/miroir-test-app_deployment-library`: `npm run testByFile -- tests/modelValidation.unit.test.ts` | PASS (entire file) |
 | **Non-regression** | `packages/miroir-core`: `npm run testByFile -- tests/4_services/runnerLibraryTestRegistry.unit.test.ts` | PASS |
 | **Non-regression** | `packages/miroir-standalone-app`: `npm test -- RunnerTestSession` | PASS |
+
+**Completion notes (2026-07-01)**
+
+| Area | Planned | Delivered |
+|---|---|---|
+| Test file | Add `runner_library MiroirTest` case in Library Feature 198 describe | Added in `packages/miroir-test-app_deployment-library/tests/modelValidation.unit.test.ts` |
+| Schema used | Plan said `miroirTestForRunner` | **Corrected** to `miroirTestDefinition` — the plan's schema name was wrong. `runner_library.definition` is `miroirTestType: "miroirTestSuite"`, not a `runnerTest`. The correct entry point is `miroirTestDefinition` (full entity schema that extends `entityDefinitionRoot` and types `definition` as `miroirTestSuite` via inline context). The chain then cascades through `miroirTestSuite → miroirTests[] → miroirTestForRunner → preRunnerCompositeActions: actionTemplate[]` — which is where the carry-on validation of lendDocument's transformer-form payload happens. |
+| Value validated | Plan said `runnerLibraryTest.definition` | **Corrected** to the full `runnerLibraryTestJSON` object (including `uuid`, `parentName`, `selfApplication`, `branch`, `name`, `definition`) |
+| No core change | Confirmed | The 2.5 fix (`canBeTemplate: true` on Lending endpoint payload fields) was sufficient |
+| run-step-tests.sh | `run_library_file` in regression (no exclusions) | Changed to `run_library_gate` (excludes pre-existing `AuthorList`/`LibraryHome` failures) |
+| Gate | `./run-step-tests.sh 2.6 all` | PASS (acceptance + regression) |
 
 **Commit**: `test: runner_library MiroirTest validates with extended schema (Feature 198 acceptance)`
 
