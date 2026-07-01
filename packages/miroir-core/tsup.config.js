@@ -18,5 +18,7 @@ export default defineConfig({
     'miroir-test-app_deployment-admin',
     'miroir-test-app_deployment-miroir',
     // 'miroir-test-app_deployment-library', // no runtime/package dependency on miroir-test-app_deployment-library
+    // json-diff → @ewoudenberg/difflib uses dynamic require('assert'); must stay external for ncc/ESM consumers
+    'json-diff',
   ],
 });
