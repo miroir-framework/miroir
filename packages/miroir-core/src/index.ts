@@ -500,12 +500,14 @@ export {
   jzodUnion_RecursivelyUnfold_ReturnTypeOK
 } from "./0_interfaces/1_core/jzodUnion_RecursivelyUnfoldInterface";
 export { DeploymentMode } from "./0_interfaces/1_core/MiroirConfig.js";
+export { LIBRARY_TMP } from "./0_interfaces/1_core/LIBRARY_TMP";
 export {
   defaultApplicationSection,
   DeploymentUuidToReportsEntitiesDefinitions,
   DeploymentUuidToReportsEntitiesDefinitionsMapping,
   foldableElementTypes
 } from "./0_interfaces/1_core/Model.js";
+
 export {
   // SelfApplicationDeploymentConfigurationSchema,
   // Deployment,

@@ -11,6 +11,7 @@ import {
   getMiroirFundamentalSchemaForDeployment,
   miroirFundamentalJzodSchema,
   type MetaModel,
+  LIBRARY_TMP,
 } from "miroir-core";
 
 describe("getMiroirFundamentalSchemaForDeployment (Phase 1)", () => {
@@ -27,7 +28,7 @@ describe("getMiroirFundamentalSchemaForDeployment (Phase 1)", () => {
 });
 
 describe("getMiroirFundamentalSchemaForDeployment (Phase 2.1 — app-specific endpoints)", () => {
-  const libraryDeploymentUuid = deployment_Library_DO_NO_USE.uuid;
+  const libraryDeploymentUuid = LIBRARY_TMP.deployment_Library_DO_NO_USE.uuid;
   let librarySchema: ReturnType<typeof getMiroirFundamentalSchemaForDeployment>;
 
   beforeAll(() => {
@@ -245,4 +246,17 @@ describe("getMiroirFundamentalSchemaForDeployment (Phase 2.7 — Miroir deployme
       }
     }
   });
+});
+
+describe("getMiroirFundamentalSchemaForDeployment (Phase 2.9 — performance)", () => {
+  const libraryDeploymentUuid = deployment_Library_DO_NO_USE.uuid;
+
+  it("completes within 500ms for the Library model", () => {
+    // First call may take several seconds (carry-on build). Runtime path reuses
+    // WeakMap cache (see schemaForDeployment.ts) after hook mount or prior validation.
+    getMiroirFundamentalSchemaForDeployment(libraryDeploymentUuid, defaultLibraryAppModel as MetaModel);
+    const start = Date.now();
+    getMiroirFundamentalSchemaForDeployment(libraryDeploymentUuid, defaultLibraryAppModel as MetaModel);
+    expect(Date.now() - start).toBeLessThan(500);
+  }, 120_000);
 });

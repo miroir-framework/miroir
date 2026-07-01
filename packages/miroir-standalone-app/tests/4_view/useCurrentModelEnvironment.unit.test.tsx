@@ -1,5 +1,5 @@
 import { describe, expect, it, vi, afterEach } from "vitest";
-import { render, screen, waitFor, act } from "@testing-library/react";
+import { render, renderHook, screen, waitFor, act } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import React, { useEffect } from "react";
 import { configureStore, type Store } from "@reduxjs/toolkit";
@@ -229,5 +229,39 @@ describe("useCurrentModelEnvironment (Phase 1)", () => {
         miroirFundamentalJzodSchema,
       );
     });
+  });
+});
+
+describe("useCurrentModelEnvironment (Phase 2.8 — schema caching)", () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it("does not recompute schema when model reference is stable", async () => {
+    const schemaSpy = vi.spyOn(
+      await import("miroir-core"),
+      "getMiroirFundamentalSchemaForDeployment",
+    );
+
+    const store = createTestStore(
+      buildMinimalLocalCacheStateForDeployment(deployment_Miroir.uuid, "data"),
+    );
+
+    const wrapper = ({ children }: { children: React.ReactNode }) => (
+      <TestProviders store={store}>{children}</TestProviders>
+    );
+
+    const { rerender } = renderHook(
+      () => useCurrentModelEnvironment(selfApplicationMiroir.uuid, applicationDeploymentMap),
+      { wrapper },
+    );
+
+    await waitFor(() => {
+      expect(schemaSpy.mock.calls.length).toBeGreaterThan(0);
+    });
+
+    const callCountAfterMount = schemaSpy.mock.calls.length;
+    rerender();
+    expect(schemaSpy.mock.calls.length).toBe(callCountAfterMount);
   });
 });

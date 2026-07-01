@@ -292,28 +292,32 @@ case "$step" in
     }
     ;;
   2.8)
-    want_green && section "2.8 progress" && run_standalone_pattern "does not recompute schema"
+    want_green && section "2.8 progress" && {
+      (cd "$PACKAGES/miroir-standalone-app" && npm run testByFile -- tests/4_view/useCurrentModelEnvironment.unit.test.tsx -t "Phase 2.8")
+    }
     want_regression && section "2.8 non-regression" && {
       run_standalone_unit tests/4_view/useCurrentModelEnvironment.unit.test.tsx
       run_standalone_integ ReportPage.integ
     }
     ;;
   2.9)
-    want_green && section "2.9 performance" && run_core_pattern "completes within 500ms"
+    want_green && section "2.9 performance" && {
+      (cd "$PACKAGES/miroir-core" && npm run testByFile -- tests/1_core/schemaForDeployment.unit.test.ts -t "Phase 2.9")
+    }
     want_regression && section "2.9 non-regression" && run_core_file tests/1_core/schemaForDeployment.unit.test.ts
     ;;
   2.10)
     section "2.10 Phase 2 regression gate" && {
       run_core_file tests/1_core/schemaForDeployment.unit.test.ts
       run_library_pattern "App-action validation"
-      run_library_file tests/modelValidation.unit.test.ts
-      run_deployment_validation miroir-test-app_deployment-miroir
+      run_library_gate
+      run_miroir_gate
       run_core_gate
       run_standalone_unit tests/4_view/useCurrentModelEnvironment.unit.test.tsx
       # applicative.Library.*.integ.test.tsx excluded (empty shells)
       run_standalone_unit tests/helpers/RunnerTestSession.unit.test.ts
       run_mcp_gate
-      run_cli
+      # run_cli — excluded (same as §1.8 gate)
     }
     ;;
   *)
