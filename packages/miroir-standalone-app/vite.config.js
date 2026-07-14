@@ -36,6 +36,11 @@ export default defineConfig({
         // Pin heavy vendor libraries to stable named chunks so the browser
         // can cache them independently of app code changes.
         manualChunks(id) {
+          // React must live in its own chunk so lazy-loaded modules (e.g. ReportHooks)
+          // never pick up a second copy re-exported from vendor-mui / vendor-copilotkit.
+          if (id.includes("node_modules/react-dom") || id.includes("node_modules/react/")) {
+            return "vendor-react";
+          }
           if (id.includes("node_modules/@copilotkit")) return "vendor-copilotkit";
           if (id.includes("node_modules/d3") || id.includes("node_modules/miroir-diagram-class")) return "vendor-d3";
           if (id.includes("node_modules/ag-grid")) return "vendor-ag-grid";
@@ -49,6 +54,9 @@ export default defineConfig({
   },
   optimizeDeps: {
     include: [
+      'react',
+      'react-dom',
+      'react/jsx-runtime',
       '@emotion/react', 
       '@emotion/styled', 
       '@mui/material/Tooltip'

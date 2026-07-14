@@ -35,6 +35,7 @@ import {
 import {
   CodeBlock_ReadOnly,
   getMemoizedReduxDeploymentsStateSelectorMap,
+  JsonDisplayHelper,
   ReduxStateWithUndoRedo,
   ThemedOnScreenHelper,
   useSelector,
@@ -223,8 +224,21 @@ const TypedValueObjectEditorInner: React.FC<TypedValueObjectEditorProps> = ({
   // }
 
   // ##############################################################################################
-  const currentApplication: Uuid = applicationSection == "data" ? application : selfApplicationMiroir.uuid;
-  const currentModel: MetaModel = useCurrentModel(currentApplication, applicationDeploymentMap);
+  // Use the report's application for schema resolution (getMiroirFundamentalSchemaForDeployment).
+  // Model-section instances (e.g. runner_library MiroirTest) need the deployment-extended schema
+  // (lendDocument / returnDocument on actionTemplate), not the static Miroir-only schema.
+  const currentApplication: Uuid = application;
+  // const currentApplication: Uuid = applicationSection == "data" ? application : selfApplicationMiroir.uuid;
+  // const currentModel: MetaModel = useCurrentModel(currentApplication, applicationDeploymentMap);
+  if (!currentApplication || !applicationDeploymentMap) {
+    log.error("TypedValueObjectEditorInner currentApplication or applicationDeploymentMap is undefined", currentApplication, applicationDeploymentMap);
+    return null;
+  }
+  const currentMiroirModelEnvironment: MiroirModelEnvironment = useCurrentModelEnvironment(
+    currentApplication,
+    applicationDeploymentMap
+  );
+  const currentModel: MetaModel = currentMiroirModelEnvironment.currentModel;
 
   // Get the deployment entity state from Redux store for ifThenElse schema resolution
   const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState> =
@@ -240,10 +254,6 @@ const TypedValueObjectEditorInner: React.FC<TypedValueObjectEditorProps> = ({
       )
   );
 
-  const currentMiroirModelEnvironment: MiroirModelEnvironment = useCurrentModelEnvironment(
-    currentApplication,
-    applicationDeploymentMap
-  );
 
   // ##############################################################################################
   // Validation transformer: runs on every form value change, returns true | string (error message)
@@ -596,6 +606,20 @@ const TypedValueObjectEditorInner: React.FC<TypedValueObjectEditorProps> = ({
           id={"form." + formLabel}
           onSubmit={onSubmit}
         >
+          <JsonDisplayHelper debug={true}
+            componentName="TypedValueObjectEditor form"
+            elements={[
+              {
+                label: `rendering TypedValueObjectEditor for 'any' type at ${formikValuePathAsString || "ROOT"}`,
+                data: {
+                  // miroirFundamentalJzodSchema: (currentMiroirModelEnvironment as any).miroirFundamentalJzodSchema.definition.context,
+                  // mlSchemaTemplate: (currentMiroirModelEnvironment as any).miroirFundamentalJzodSchema.definition.context["mlSchemaTemplate"],
+                  domainAction: (currentMiroirModelEnvironment as any).miroirFundamentalJzodSchema.definition.context["domainAction"],
+                  // miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction: (currentMiroirModelEnvironment as any).miroirFundamentalJzodSchema.definition.context["miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction"]
+                },
+              },
+            ]}
+          />
           <ErrorBoundary
             FallbackComponent={({ error, resetErrorBoundary }) => (
               <ErrorFallbackComponent

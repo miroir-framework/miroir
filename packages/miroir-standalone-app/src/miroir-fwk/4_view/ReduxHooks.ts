@@ -277,6 +277,7 @@ export function useCurrentModelEnvironment(
   );
 
   useEffect(() => {
+    log.info("useCurrentModelEnvironment calling getMiroirFundamentalSchemaForDeployment", application, deploymentUuid, applicationDeploymentMap);
     if (currentModel && deploymentUuid) {
       const schema = getMiroirFundamentalSchemaForDeployment(deploymentUuid, currentModel);
       context.setSchemaForDeployment(deploymentUuid, schema);

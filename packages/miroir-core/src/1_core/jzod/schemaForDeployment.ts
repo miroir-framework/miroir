@@ -117,6 +117,7 @@ export function getMiroirFundamentalSchemaForDeployment(
   model: MetaModel,
 ): MlSchema {
   const cached = getCachedSchema(deploymentUuid, model);
+  console.log("getMiroirFundamentalSchemaForDeployment", deploymentUuid, model, cached);
   if (cached) {
     return cached;
   }

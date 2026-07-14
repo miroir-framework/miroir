@@ -438,12 +438,12 @@ export const selectModelForDeploymentFromReduxState: () => (
       themes: EntityInstancesUuidIndex,
       // params: MiroirQueryTemplate
     ) => {
-      const applicationVersion = applicationVersions && Object.values(applicationVersions).length > 0
-        ? (Object.values(applicationVersions)[0] as any)
+      const application = applications && Object.values(applications).length > 0
+        ? (Object.values(applications)[0] as any)
         : null;
       const result: MetaModel = {
-        applicationUuid: applicationVersion ? applicationVersion.application : "",
-        applicationName: applicationVersion ? applicationVersion.application : "",
+        applicationUuid: application ? application.uuid : "",
+        applicationName: application ? application.name : "",
         applicationVersions: (applicationVersions
           ? Object.values(applicationVersions)
           : []) as ApplicationVersion[],
