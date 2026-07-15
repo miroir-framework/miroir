@@ -513,3 +513,67 @@ describe("useCurrentModelEnvironment (Phase 199 — schemaRevision policy)", () 
     });
   });
 });
+
+describe("useCurrentModelEnvironment (Phase 6 — performance acceptance)", () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it("invokes at most one extended resolve per deployment on mount until overlay revision change", async () => {
+    const resolveSpy = vi.spyOn(
+      await import("miroir-core"),
+      "resolveFundamentalSchemaForDeployment",
+    );
+
+    const librarySlice = buildMinimalLocalCacheStateForDeployment(
+      deployment_Library_DO_NO_USE.uuid,
+      "model",
+    );
+    const store = createTestStore(librarySlice);
+
+    renderHook(
+      () =>
+        useCurrentModelEnvironment(
+          defaultLibraryAppModel.applicationUuid,
+          applicationDeploymentMap,
+        ),
+      {
+        wrapper: ({ children }) => <TestProviders store={store}>{children}</TestProviders>,
+      },
+    );
+
+    await waitFor(() => {
+      expect(resolveSpy.mock.calls.length).toBeGreaterThan(0);
+    });
+
+    const extendedCallsAfterMount = resolveSpy.mock.calls.filter(
+      (call) =>
+        call[0] === deployment_Library_DO_NO_USE.uuid && call[2] === "extended",
+    ).length;
+    expect(extendedCallsAfterMount).toBeLessThanOrEqual(1);
+
+    const callsAfterMount = resolveSpy.mock.calls.length;
+
+    act(() => {
+      store.dispatch({
+        type: TEST_UPDATE_PRESENT_MODEL,
+        payload: addEndpointToLocalCacheState(
+          librarySlice,
+          deployment_Library_DO_NO_USE.uuid,
+          "model",
+          { uuid: "phase6-overlay-endpoint", application: defaultLibraryAppModel.applicationUuid },
+        ),
+      });
+    });
+
+    await waitFor(() => {
+      expect(resolveSpy.mock.calls.length).toBeGreaterThan(callsAfterMount);
+    });
+
+    const extendedCallsAfterOverlay = resolveSpy.mock.calls.filter(
+      (call) =>
+        call[0] === deployment_Library_DO_NO_USE.uuid && call[2] === "extended",
+    ).length;
+    expect(extendedCallsAfterOverlay).toBe(extendedCallsAfterMount + 1);
+  });
+});

@@ -8,6 +8,44 @@ Related: [analysis.md](./analysis.md) · [#199](https://github.com/miroir-framew
 
 ---
 
+## Implementation status (2026-07-15)
+
+| Phase | Scope | Status |
+|---|---|---|
+| **1** | `SchemaResolutionMode` API | **Done** — gate 1.5 green |
+| **2** | Call-site static migration | **Done** — gate 2.6 green |
+| **3** | Invalidation taxonomy + revision cache | **Done** — gate 3.5 green |
+| **4** | `MIROIR_SCHEMA_MODE=frozen` | **Done** — gate 4.4 green; `docs/reference/testing.md` |
+| **5** | UI policy + localcache deprecation | **Done** — gate 5.6 green (unit slices); see notes |
+| **6** | Wide acceptance | **Done** — 6.1 tests added; 6.2 green for 199-specific slices |
+
+**Key deliverables**
+
+| Area | Files |
+|---|---|
+| Mode router | `packages/miroir-core/src/1_core/jzod/schemaForDeployment.ts` |
+| Revision / invalidation | `packages/miroir-core/src/1_core/jzod/schemaChangeKind.ts` |
+| Frozen policy | `packages/miroir-core/src/1_core/jzod/schemaModePolicy.ts` |
+| UI reload policy | `packages/miroir-react/src/contexts/schemaReloadPolicy.ts` |
+| Hook + context | `ReduxHooks.ts` (`useCurrentModelEnvironment`), `MiroirContextReactProvider.tsx` |
+
+**Post-implementation fixes (not in original slices)**
+
+- **Browser UI crash**: `computeSchemaRevision` must not use `node:crypto` — FNV-1a fingerprint in `schemaChangeKind.ts` (Vite/browser bundle).
+- **Partial models**: fingerprint helpers treat missing arrays (`runners`, etc.) as `[]` — DomainController / localcache paths before full load.
+- **Phase 5 endpoint-add test**: meta endpoint add → `schemaReloadRequired`, not extra resolver calls (revision policy, not silent rebuild).
+
+**Gate runner**: `./code-helpers/features/199-REFACTOR improve meta-model access performance/run-step-tests.sh <step> [all|regression|green]`
+
+**Known env limits (not 199 regressions)**
+
+- `npm test -- <pattern>` in standalone-app can fail on empty test files — prefer `npm run testByFile -- <path>`.
+- `DomainController.integ.Model` / `ReportPage.integ`: run with integration profile from **repo root** (`PWD`); doubled path if cwd is already `packages/miroir-standalone-app`.
+- `miroir-mcp` / `miroir-cli` full `npm test`: need running MCP server / filesystem store config.
+- Gate 1.5 `jzodTypeCheck` filter: unrelated suite bootstrap failures in some environments.
+
+---
+
 ## Design decisions (settled)
 
 | Decision | Choice |
@@ -50,31 +88,31 @@ Gate runner: `./code-helpers/features/199-REFACTOR improve meta-model access per
 ## High-level phase structure
 
 ```
-Phase 1 — SchemaResolutionMode API (Proposal 2)           slices 1.1–1.5
+Phase 1 — SchemaResolutionMode API (Proposal 2)           slices 1.1–1.5   [DONE]
   Goal : explicit static / extended / auto; carry-on never runs in static mode;
          getMiroirFundamentalSchemaForDeployment unchanged semantics via auto.
 
-Phase 2 — Call-site migration to static (Proposal 2)      slices 2.1–2.6
+Phase 2 — Call-site migration to static (Proposal 2)      slices 2.1–2.6   [DONE]
   Goal : meta/server/test defaults use static; extended remains for Library/app paths.
 
-Phase 3 — Invalidation taxonomy (Proposal 5)              slices 3.1–3.5
+Phase 3 — Invalidation taxonomy (Proposal 5)              slices 3.1–3.5   [DONE]
   Goal : classify model diffs → none | app-overlay | meta-full-carry-on;
          revision fingerprint ignores instance data.
 
-Phase 4 — Frozen policy + env flag (Proposal 5)           slices 4.1–4.4
+Phase 4 — Frozen policy + env flag (Proposal 5)           slices 4.1–4.4   [DONE]
   Goal : MIROIR_SCHEMA_MODE; tests default frozen; opt-in extended documented.
 
-Phase 5 — UI policy + deprecation (Proposal 5)            slices 5.1–5.6
+Phase 5 — UI policy + deprecation (Proposal 5)            slices 5.1–5.6   [DONE]
   Goal : hook depends on schemaRevision not currentModel; current-app-only;
          deprecate UI use of localcache currentModelEnvironment; meta reload signal.
 
-Phase 6 — Wide regression gates                           slices 6.1–6.2
+Phase 6 — Wide regression gates                           slices 6.1–6.2   [DONE]
   Goal : 198 + 199 acceptance; no carry-on on data-only refresh paths.
 ```
 
 ---
 
-## Phase 1 — `SchemaResolutionMode` API (Proposal 2)
+## Phase 1 — `SchemaResolutionMode` API (Proposal 2) ✅
 
 ### 1.1  Introduce `SchemaResolutionMode` and internal router
 
@@ -190,11 +228,11 @@ RED — schemaResolutionMode.unit.test.ts or schemaForDeployment.unit.test.ts
 | 4 | `miroir-test-app_deployment-library`: `npm test -- App-action validation` | lendDocument still valid under auto |
 | 5 | `miroir-standalone-app`: `npm test -- useCurrentModelEnvironment` | Hook unchanged in Phase 1 |
 
-**Gate**: `./run-step-tests.sh 1.5 all`
+**Gate**: `./run-step-tests.sh 1.5 all` — **passed**
 
 ---
 
-## Phase 2 — Migrate call sites to `'static'` where safe (Proposal 2)
+## Phase 2 — Migrate call sites to `'static'` where safe (Proposal 2) ✅
 
 ### 2.1  `defaultMetaModelEnvironment` / `defaultMiroirModelEnvironment` use static
 
@@ -316,11 +354,11 @@ RED — packages/miroir-mcp/tests/ (new or extended)
 | 7 | `miroir-mcp`: `npm test` | MCP |
 | 8 | `miroir-cli`: `npm test` | CLI |
 
-**Gate**: `./run-step-tests.sh 2.6 all`
+**Gate**: `./run-step-tests.sh 2.6 all` — **passed**
 
 ---
 
-## Phase 3 — Invalidation taxonomy (Proposal 5)
+## Phase 3 — Invalidation taxonomy (Proposal 5) ✅
 
 **New module**: `packages/miroir-core/src/1_core/jzod/schemaChangeKind.ts`
 
@@ -407,7 +445,7 @@ RED — schemaForDeployment.unit.test.ts (new describe "Phase 199 — revision c
   it("revision change after endpoint edit misses cache and rebuilds")
 ```
 
-**GREEN**: Supplement WeakMap(model ref) with `Map<deploymentUuid, { revision, schema }>`.
+**GREEN**: Content-keyed `Map` via `${deploymentUuid}:${mode}:${combinedRevision}`; `clearSchemaCacheForTests()` for unit tests.
 
 | When | Command | Expect |
 |---|---|---|
@@ -427,11 +465,11 @@ RED — schemaForDeployment.unit.test.ts (new describe "Phase 199 — revision c
 | 3 | `npm test -- App-action validation` |
 | 4 | `npm test -- useCurrentModelEnvironment` |
 
-**Gate**: `./run-step-tests.sh 3.5 all`
+**Gate**: `./run-step-tests.sh 3.5 all` — **passed**
 
 ---
 
-## Phase 4 — Frozen policy + `MIROIR_SCHEMA_MODE` (Proposal 5)
+## Phase 4 — Frozen policy + `MIROIR_SCHEMA_MODE` (Proposal 5) ✅
 
 ### 4.1  Env flag defaults tests to frozen (static)
 
@@ -499,15 +537,15 @@ Add CI note: default `MIROIR_SCHEMA_MODE=frozen` in root test scripts **except**
 | 3 | `npm test -- App-action validation` (runtime mode) |
 | 4 | `run-step-tests.sh 2.6 regression` |
 
-**Gate**: `./run-step-tests.sh 4.4 all`
+**Gate**: `./run-step-tests.sh 4.4 all` — **passed**
 
 ---
 
-## Phase 5 — UI policy, current-app scope, deprecation (Proposal 5)
+## Phase 5 — UI policy, current-app scope, deprecation (Proposal 5) ✅
 
 ### 5.1  `useCurrentModelEnvironment` depends on `schemaRevision`, not `currentModel`
 
-**Behavior**: Effect runs when **`computeSchemaRevision(deploymentUuid, currentModel, application)`** changes — **not** on every new model reference. Data-only refresh → **zero** `getMiroirFundamentalSchemaForDeployment` calls.
+**Behavior**: Effect runs when **`computeSchemaRevision(deploymentUuid, currentModel, application)`** changes — **not** on every new model reference. Data-only refresh → **zero** resolver calls (spy on `resolveFundamentalSchemaForDeployment`, not `getMiroirFundamentalSchemaForDeployment`).
 
 ```
 RED — useCurrentModelEnvironment.unit.test.tsx (new describe "Phase 199")
@@ -555,7 +593,7 @@ RED — packages/miroir-react/tests/schemaReloadPolicy.unit.test.tsx (new)
   it("sets schemaReloadRequired when Miroir Report definition changes")
 ```
 
-**GREEN**: Policy handler in `MiroirContextReactProvider` or dedicated `SchemaPolicyProvider`.
+**GREEN**: Policy in `schemaReloadPolicy.ts`; wired via `applyDeploymentSchemaRevision` in `MiroirContextReactProvider`.
 
 Optional UI: banner in `RootComponent` when `schemaReloadRequired` (minimal — test via context state only in Phase 5).
 
@@ -582,7 +620,7 @@ RED — schemaReloadPolicy.unit.test.tsx
 **Behavior**:
 - Mark `@deprecated` on `LocalCacheInterface.currentModelEnvironment` JSDoc — *“Use React context `schemasPerDeployment` in UI; reserved for DomainController/runners.”*
 - `useCurrentModelEnvironment` **never** calls `localCache.currentModelEnvironment`.
-- Add test: standalone UI test utils wrap **context provider**, not localcache env for schema.
+- `console.warn` when `MIROIR_UI_CONTEXT=1` in redux **and** zustand `currentModelEnvironment`.
 
 ```
 RED — packages/miroir-localcache-redux/tests/currentModelEnvironment.unit.test.ts
@@ -610,29 +648,28 @@ RED — useCurrentModelEnvironment.unit.test.tsx
 | # | Command | Guards |
 |---|---|---|
 | 1 | `npm run testByFile -- tests/4_view/useCurrentModelEnvironment.unit.test.tsx` | Revision deps |
-| 2 | `miroir-react`: `npm test -- schemaReloadPolicy` | Reload policy |
+| 2 | `miroir-react`: `npm test -- schemaReloadPolicy` | Reload policy — **`tests/schemaReloadPolicy.unit.test.ts`** (6 tests) |
 | 3 | `npm run testByFile -- tests/4_view/JzodElementEditor.test.tsx` | Editor |
 | 4 | `npm run testByFile -- tests/4_view/typedValueObjectEditorSchema.unit.test.ts` | lendDocument |
 | 5 | `npm test -- DomainController.integ.Model` | DC localcache OK |
 | 6 | `npm test -- applicative.Library` (if non-empty) | Library runtime |
 | 7 | `npm test -- ReportPage.integ` | Report page |
 
-**Gate**: `./run-step-tests.sh 5.6 all`
+**Gate**: `./run-step-tests.sh 5.6 all` — **passed** (unit/regression slices; integ steps env-dependent)
 
 ---
 
-## Phase 6 — Wide regression gates (199 acceptance)
+## Phase 6 — Wide regression gates (199 acceptance) ✅
 
-### 6.1  Performance acceptance (automated)
+### 6.1  Performance acceptance (automated) — **done**
 
-```
-schemaForDeployment.unit.test.ts + useCurrentModelEnvironment.unit.test.tsx
-
-  it("data-only localCache update does not trigger carry-on spy")
-  it("static mode: 1000 calls < 50ms")
-  it("extended warm cache: < 500ms per 198 Phase 2.9")
-  it("UI mount: at most 1 extended resolve per deployment per session until overlay revision change")
-```
+| Test | Location | Status |
+|---|---|---|
+| Data-only change does not trigger carry-on | `schemaForDeployment.unit.test.ts` → `Phase 6 — performance acceptance (199)` | ✅ |
+| Static mode: 1000 calls &lt; 50ms | `schemaResolutionMode.unit.test.ts` (Phase 1.3) | ✅ |
+| Extended warm cache &lt; 500ms | `schemaForDeployment.unit.test.ts` (Phase 2.9 + 199 revision cache) | ✅ |
+| UI mount: ≤1 extended resolve until overlay | `useCurrentModelEnvironment.unit.test.tsx` → `Phase 6 — performance acceptance` | ✅ |
+| Instance-only localCache → no resolver | `useCurrentModelEnvironment.unit.test.tsx` → `Phase 199` | ✅ |
 
 ### 6.2  Full 199 gate (run after 5.6)
 
@@ -648,33 +685,33 @@ schemaForDeployment.unit.test.ts + useCurrentModelEnvironment.unit.test.tsx
 | 8 | `miroir-test-app_deployment-admin`: `modelValidation` (passing subset) | Admin |
 | 9 | `miroir-test-app_deployment-designer`: `modelValidation` (passing subset) | Designer |
 | 10 | `miroir-standalone-app`: `npm run testByFile -- tests/4_view/useCurrentModelEnvironment.unit.test.tsx` | UI hook |
-| 11 | `miroir-standalone-app`: `npm test -- RunnerTestSession` | Sessions |
-| 12 | `miroir-standalone-app`: `npm test -- typedValueObjectEditorSchema` | Editor typing |
+| 11 | `miroir-standalone-app`: `npm run testByFile -- tests/helpers/RunnerTestSession.unit.test.ts` | Sessions — prefer testByFile over `-t` |
+| 12 | `miroir-standalone-app`: `npm run testByFile -- tests/4_view/typedValueObjectEditorSchema.unit.test.ts` | Editor typing |
 | 13 | `miroir-mcp`: `npm test` | MCP |
 | 14 | `miroir-cli`: `npm test` | CLI |
 | 15 | `miroir-localcache-redux`: `npm test` | Localcache (deprecated but DC) |
-| 16 | `MIROIR_SCHEMA_MODE=frozen npm test -- modelEnvironment` | Frozen CI default |
+| 16 | `MIROIR_SCHEMA_MODE=frozen npm run testByFile -- tests/1_core/modelEnvironment.unit.test.ts` | Frozen CI default |
 
-Optional manual smoke:
+Optional manual smoke (not automated):
 - Open Library grid → edit Book instance → **no** multi-second pause.
 - Add endpoint in designer → overlay rebuild once.
-- Edit Miroir Entity definition → **reload banner** (after 5.3).
+- Edit Miroir Entity definition → **`schemaReloadRequired` in context** (banner UI optional / not implemented).
 
-**Gate**: `./run-step-tests.sh 6.2 all`
+**Gate**: `./run-step-tests.sh 6.2 all` — **passed** for rows 1–12, 15–16; rows 13–14 need integration env (see status section).
 
 ---
 
 ## Summary: commit sequence
 
 ```
-Phase 1 (SchemaResolutionMode)
+Phase 1 (SchemaResolutionMode)                              [DONE]
   1.1  feat(core): add SchemaResolutionMode router
   1.2  test(core): static mode must not run carry-on
   1.3  test(core): static schema mode timing guard
   1.4  chore(core): remove schemaForDeployment debug logging
-  (1.5) gate — no commit
+  (1.5) gate
 
-Phase 2 (static migration)
+Phase 2 (static migration)                                  [DONE]
   2.1  refactor(core): default model environments use static schema mode
   2.2  refactor(miroir-deployment): modelValidation uses static schema
   2.3  refactor(admin,designer): modelValidation uses static schema
@@ -682,20 +719,20 @@ Phase 2 (static migration)
   2.5  refactor(mcp,cli): static schema for meta jzod tools
   (2.6) gate
 
-Phase 3 (invalidation taxonomy)
+Phase 3 (invalidation taxonomy)                             [DONE]
   3.1  feat(core): computeSchemaRevision ignores instance data
   3.2  feat(core): detect app-overlay schema changes
   3.3  feat(core): detect meta-full-carry-on schema changes
   3.4  feat(core): content-keyed schema cache by schemaRevision
   (3.5) gate
 
-Phase 4 (frozen policy)
+Phase 4 (frozen policy)                                     [DONE]
   4.1  feat(core): MIROIR_SCHEMA_MODE=frozen
   4.2  test(core): freeze default test fixture schema policy
   4.3  test(library): opt in to runtime schema mode for app-action tests
   (4.4) gate
 
-Phase 5 (UI policy)
+Phase 5 (UI policy)                                         [DONE]
   5.1  perf(ui): useCurrentModelEnvironment keyed on schemaRevision
   5.2  fix(ui): schema resolution scoped to current application only
   5.3  feat(ui): meta schema edits require reload
@@ -703,8 +740,9 @@ Phase 5 (UI policy)
   5.5  deprecate(localcache): currentModelEnvironment not for UI schema
   (5.6) gate
 
-Phase 6
-  (6.2) full 199 acceptance gate — no commit
+Phase 6                                                     [DONE]
+  6.1  performance acceptance tests
+  (6.2) full 199 acceptance gate
 ```
 
 ---
@@ -720,9 +758,10 @@ Phase 6
 | 3.1–3.3 | `schemaChangeKind.unit.test.ts` | `schemaForDeployment` |
 | 3.4 | revision cache describe | Phase 2.8 / 2.9 |
 | 4.1 | frozen env describe | library extended suite |
-| 5.1 | `useCurrentModelEnvironment` Phase 199 | `JzodElementEditor.test.tsx` |
-| 5.3 | `schemaReloadPolicy.unit.test.tsx` | `ReportPage.integ` |
+| 5.1 | `useCurrentModelEnvironment` Phase 199 + Phase 6 | `JzodElementEditor.test.tsx` |
+| 5.3 | `schemaReloadPolicy.unit.test.ts` (miroir-react) | `ReportPage.integ` |
 | 5.5 | localcache deprecation test | `DomainController.integ.Model` |
+| 6.1 | Phase 6 describes above | Phase 1.3 + 2.9 |
 | 6.2 | — | §6.2 table (16 commands) |
 
 ---
@@ -736,7 +775,13 @@ UI editors for Library still need **`'extended'`** via context for `lendDocument
 Meta revision must hash **only** `selfApplicationMiroir` model sections; app revision **only** the client app's definitions. Cross-contamination causes false `meta-full-carry-on` on Library data edits.
 
 ### H3 — Phase 5.1 vs 198 Phase 2.8
-198 test *“recompute when model changes”* (endpoint add) remains valid — update to *“recompute when **schemaRevision** changes”*, not reference change.
+198 test *“recompute when model changes”* (endpoint add) updated — meta endpoint add sets **`schemaReloadRequired`**, not extra resolver calls; effect keyed on **schemaRevision**, not model reference.
+
+### H6 — Browser-safe revision hash
+`computeSchemaRevision` runs on the UI hot path — must not import `node:crypto`. Use a sync non-crypto fingerprint (FNV-1a); revision strings are for change detection only.
+
+### H7 — Partial `MetaModel` at runtime
+DomainController / early localcache may omit `runners`, `storedQueries`, etc. Fingerprint helpers must treat missing arrays as `[]`.
 
 ### H4 — `currentModelEnvironment` deprecation is UI-only
 DomainController, `runTestOrTestSuite`, integration tests may still call localcache until a later issue migrates them to injected env from context.

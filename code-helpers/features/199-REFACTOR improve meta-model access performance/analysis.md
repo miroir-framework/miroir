@@ -6,6 +6,8 @@
 Related issue: https://github.com/miroir-framework/miroir/issues/199  
 Builds on: [198 impact analysis](../198-FEATURE-%20composing%20tests%20using%20application-defined%20Actions/impact-analysis-and-solutions.md) (runtime schema extension, carry-on, caching).
 
+**Implementation (2026-07-15):** [Proposals 2 + 5](#proposal-2--split-api-getfundamentalschemafordeployment-full-vs-getruntimeschemafordeployment-light) and [Proposal 5](#proposal-5--policy-layer-constant-meta-model--explicit-reload-on-meta-change) are **done** (TDD phases 1–6). [Proposal 1](#proposal-1--schema-fingerprint-cache-content-keyed-not-reference-keyed) content-keyed cache is **done** (Phase 3). [Proposal 3](#proposal-3--central-modelenvironmentprovider-in-miroir-context-single-owner-per-deployment) and [Proposal 4](#proposal-4--two-tier-schema-frozen-meta-baseline--incremental-app-overlay-dry-with-build) remain **follow-up**. See [§8 Current architecture](#8-current-architecture-after-199--orientation) and [tdd-implementation-plan.md](./tdd-implementation-plan.md).
+
 ---
 
 ## 1. Problem restatement
@@ -31,25 +33,21 @@ UI/server assumptions).
 
 ---
 
-## 2. Present situation
+## 2. Present situation *(historical baseline — pre-199)*
 
-### 2.1 What `getMiroirFundamentalSchemaForDeployment` does
+> **After #199:** caching, mode routing, UI revision policy, and test defaults are described in
+> [§8](#8-current-architecture-after-199--orientation). This section records the problem as originally analysed.
 
-```115:131:packages/miroir-core/src/1_core/jzod/schemaForDeployment.ts
-export function getMiroirFundamentalSchemaForDeployment(
-  deploymentUuid: Uuid,
-  model: MetaModel,
-): MlSchema {
-  const cached = getCachedSchema(deploymentUuid, model);
-  console.log("getMiroirFundamentalSchemaForDeployment", deploymentUuid, model, cached);
-  if (cached) {
-    return cached;
-  }
+### 2.1 What `getMiroirFundamentalSchemaForDeployment` did *(before 199)*
 
+```typescript
+// Pre-199 (removed): WeakMap<MetaModel>, console.log on hot path, reference-keyed cache
+export function getMiroirFundamentalSchemaForDeployment(deploymentUuid, model) {
+  const cached = getCachedSchema(deploymentUuid, model); // WeakMap hit only on same model ref
+  if (cached) return cached;
   const schema = !hasAppSpecificEndpoints(model)
-    ? (miroirFundamentalJzodSchema as MlSchema)
-    : buildExtendedSchema(model);
-
+    ? miroirFundamentalJzodSchema
+    : buildExtendedSchema(model); // ~4s carry-on cold path
   setCachedSchema(deploymentUuid, model, schema);
   return schema;
 }
@@ -63,9 +61,9 @@ export function getMiroirFundamentalSchemaForDeployment(
 `getCarryOnSchemaBuilder` (same machinery as build-time `generateSchemas`) and dominates
 latency (~seconds on first call).
 
-Caching: `WeakMap<MetaModel, Map<Uuid, MlSchema>>` — hit only when the **same `MetaModel`
+Caching *(pre-199)*: `WeakMap<MetaModel, Map<Uuid, MlSchema>>` — hit only when the **same `MetaModel`
 object reference** is reused. A new model object from Redux/localCache (common on every data
-refresh) **misses cache** even if content is unchanged.
+refresh) **missed cache** even if content was unchanged.
 
 Performance test (198 Phase 2.9): second call with stable model reference must complete in
 < 500 ms; first call may take several seconds.
@@ -104,22 +102,16 @@ getMiroirFundamentalSchemaForDeployment(deploymentUuid, model)
 - `defaultMetaModelEnvironment` — still used as fallback in several editors and in
   `useReduxDeploymentsStateQuerySelectorForCleanedResult` (passes env into query selectors).
 
-### 2.3 UI refresh amplification
+### 2.3 UI refresh amplification *(pre-199 hook behaviour)*
 
-```279:304:packages/miroir-standalone-app/src/miroir-fwk/4_view/ReduxHooks.ts
-  useEffect(() => {
-    if (currentModel && deploymentUuid) {
-      const schema = getMiroirFundamentalSchemaForDeployment(deploymentUuid, currentModel);
-      context.setSchemaForDeployment(deploymentUuid, schema);
-    }
-  }, [currentModel, deploymentUuid, context.setSchemaForDeployment]);
-
-  return useMemo(() => ({
-    miroirFundamentalJzodSchema:
-      context.schemasPerDeployment[deploymentUuid] ??
-      getMiroirFundamentalSchemaForDeployment(deploymentUuid, currentModel),
-    ...
-  }), [miroirMetaModel, currentModel, context.schemasPerDeployment, endpointsByUuid, deploymentUuid]);
+```typescript
+// Pre-199: effect depended on whole currentModel reference
+useEffect(() => {
+  if (currentModel && deploymentUuid) {
+    const schema = getMiroirFundamentalSchemaForDeployment(deploymentUuid, currentModel);
+    context.setSchemaForDeployment(deploymentUuid, schema);
+  }
+}, [currentModel, deploymentUuid, context.setSchemaForDeployment]);
 ```
 
 Observed behaviour on UI refresh / Redux updates:
@@ -173,7 +165,7 @@ re-entering the slow path when only instance data changed.
 
 ## 3. Impact analysis
 
-### A. Cache key granularity — **MUST / medium**
+### A. Cache key granularity — **MUST / medium** ✅ *addressed (Proposal 1 / Phase 3)*
 
 WeakMap keyed on `MetaModel` object identity is insufficient. Need a **schema fingerprint**
 (endpoints relevant to `domainAction`, application uuid, deployment uuid) so identical logical
@@ -196,15 +188,15 @@ Miroir-meta schema vs full deployment extension. Must share carry-on logic with 
 `currentModelEnvironment()` in redux/zustand packages bypasses React context cache entirely;
 any code path using it on hot selectors inherits 4s risk.
 
-### E. Invalidation policy — **SHOULD / cross-cutting**
+### E. Invalidation policy — **SHOULD / cross-cutting** ✅ *addressed (Proposal 5 / Phase 3 + 5)*
 
 Define explicit rules: what model edits require schema rebuild vs page reload vs no action.
 Aligns with #199 (“meta-model update → reload page” for now).
 
-### F. Observability — **OPTIONAL / small**
+### F. Observability — **OPTIONAL / small** ✅ *partial*
 
 Remove debug `console.log`; add optional timing counters (existing `showPerformanceDisplay` /
-activity tracker hooks) for schema build count and duration.
+activity tracker hooks) for schema build count and duration. *Hot-path `console.log` removed; structured timing counters not added.*
 
 ---
 
@@ -215,7 +207,7 @@ Each proposal includes **Impact** (performance / correctness gain) and **Complex
 
 ---
 
-### Proposal 1 — Schema fingerprint cache (content-keyed, not reference-keyed)
+### Proposal 1 — Schema fingerprint cache (content-keyed, not reference-keyed) ✅ *implemented (Phase 3)*
 
 Replace (or supplement) `WeakMap<MetaModel, …>` with a cache keyed by
 `(deploymentUuid, schemaRevision)` where `schemaRevision` is a cheap hash of schema-relevant
@@ -224,6 +216,10 @@ catalog).
 
 **Mechanism:** `computeSchemaRevision(model) → string`; lookup in `Map<string, MlSchema>`.
 Store revision on context; compare before calling carry-on.
+
+**As built:** `schemaCacheByRevision` in `schemaForDeployment.ts` keyed by
+`` `${deploymentUuid}:${mode}:${computeCombinedSchemaRevision(...)}` ``; revision from
+`schemaChangeKind.ts` (FNV-1a fingerprint, browser-safe — no `node:crypto`).
 
 | | |
 |---|---|
@@ -234,20 +230,24 @@ Store revision on context; compare before calling carry-on.
 
 ---
 
-### Proposal 2 — Split API: `getFundamentalSchemaForDeployment` (full) vs `getRuntimeSchemaForDeployment` (light)
+### Proposal 2 — Split API: `resolveFundamentalSchemaForDeployment` + modes ✅ *implemented*
 
 Introduce two entry points sharing internal helpers:
 
-- **`getRuntimeSchemaForDeployment(deploymentUuid, model, mode)`**
+- **`resolveFundamentalSchemaForDeployment(deploymentUuid, model, mode)`**
   - `'static'` — return `miroirFundamentalJzodSchema` (Miroir meta / no app endpoints).
   - `'extended'` — current slow path (Library, apps with owned endpoints).
   - `'auto'` — current `hasAppSpecificEndpoints` branch (default for backward compat).
 
-- **`getMiroirFundamentalSchemaForDeployment`** — alias or thin wrapper calling `'auto'`.
+- **`getMiroirFundamentalSchemaForDeployment`** — thin wrapper calling `'auto'`.
 
 Call sites that **know** they only need Miroir meta-model (server startup, most unit tests,
 selectors scoped to `deployment_Miroir`, MCP json-schema tools on meta types) pass `'static'`
 explicitly and never enter carry-on.
+
+**As built:** `SchemaResolutionMode` + router in `schemaForDeployment.ts`; exported from
+`miroir-core`. Default envs in `Model.ts` use `'static'`. MCP/CLI meta conversion paths migrated.
+Library app-action tests keep `'extended'` / `'auto'` explicitly.
 
 | | |
 |---|---|
@@ -305,7 +305,7 @@ Extract shared `buildDomainActionExtension(model)` used by **both** `generateSch
 
 ---
 
-### Proposal 5 — Policy layer: constant meta-model + explicit reload on meta change
+### Proposal 5 — Policy layer: constant meta-model + explicit reload on meta change ✅ *implemented*
 
 Product/architecture policy codified in code:
 
@@ -318,6 +318,13 @@ Product/architecture policy codified in code:
 
 Implement via feature flag or env `MIROIR_SCHEMA_MODE=runtime|frozen` for tests/CI.
 
+**As built:** `schemaModePolicy.ts` (`MIROIR_SCHEMA_MODE=frozen` forces `'auto'` → static;
+explicit `'extended'` bypasses). UI: `schemaReloadPolicy.ts` +
+`applyDeploymentSchemaRevision` in context; `schemaReloadRequired` flag. Hook effect keyed on
+`computeSchemaRevision`, not `currentModel`. `localCache.currentModelEnvironment` **deprecated
+for UI** (JSDoc + `MIROIR_UI_CONTEXT=1` warn in redux/zustand). Reload **banner** not yet in UI
+— context flag only.
+
 | | |
 |---|---|
 | **Impact** | **Medium–High** — stops worst-case refresh loops immediately; documents current capability ceiling per #199. Does not alone fix Library cold start. |
@@ -327,18 +334,18 @@ Implement via feature flag or env `MIROIR_SCHEMA_MODE=runtime|frozen` for tests/
 
 ## 5. Recommended sequencing
 
-| Phase | Proposals | Rationale |
-|-------|-----------|-----------|
-| **Quick wins** | 2 + 5 + remove `console.log` | Stop paying carry-on in tests/server/meta paths; document reload policy |
-| **Core fix** | 1 | Fix reference-identity cache miss on UI data refresh |
-| **UI structure** | 3 | Centralize provider; measure before/after |
-| **Longer term** | 4 | Deploy-time overlay / full DRY with `generateSchemas` |
+| Phase | Proposals | Status |
+|-------|-----------|--------|
+| **Quick wins** | 2 + 5 + remove `console.log` | **Done** |
+| **Core fix** | 1 (revision cache + invalidation taxonomy) | **Done** |
+| **UI structure** | 3 | **Not started** — ~20 `useCurrentModelEnvironment` call sites still mount hook independently |
+| **Longer term** | 4 | **Not started** — deploy-time overlay persistence |
 
-Suggested acceptance metrics:
+Suggested acceptance metrics *(Phase 6 automated tests cover most)*:
 
 - Cold: first Library schema ≤ 4s (unchanged), logged once per session.
 - Warm: 0 calls to carry-on path during entity grid refresh (only data Redux actions).
-- `getMiroirFundamentalSchemaForDeployment` invocations per user action ≤ 1 (provider).
+- `getMiroirFundamentalSchemaForDeployment` invocations per user action ≤ 1 (provider). *Partially met — context dedupes per revision; N hook mounts remain.*
 - Unit test suite: 0 multi-second schema builds unless explicitly in `schemaForDeployment` perf test.
 
 ---
@@ -350,7 +357,94 @@ Suggested acceptance metrics:
 3. **Server future:** **Yes** — overlay persistence (Proposal 4) will be required when server serves per-tenant dynamic meta-models.
 4. **Partial refresh:** **Meta app** definition changes (Entity, EntityDefinition, Report, Query, Test, Transformer, …) → **full carry-on** / reload; **client app** model definition changes (e.g. Library Book entity, Book details report) → **overlay update for that app only**; instance data → no rebuild.
 
-See [tdd-implementation-plan.md](./tdd-implementation-plan.md) for the TDD slices implementing proposals 2 + 5.
+See [tdd-implementation-plan.md](./tdd-implementation-plan.md) for the TDD slices (phases 1–6 **complete**).
+
+---
+
+## 8. Current architecture (after #199 — orientation)
+
+### 8.1 Layered responsibilities
+
+```
+┌─────────────────────────────────────────────────────────────────────────┐
+│  UI (miroir-standalone-app)                                             │
+│  useCurrentModelEnvironment ──► computeSchemaRevision (meta + app)    │
+│       │                              │ only when revision changes       │
+│       └──────────────────────────────► applyDeploymentSchemaRevision    │
+│                                        (MiroirContextReactProvider)   │
+└────────────────────────────────────────────┬────────────────────────────┘
+                                             │
+┌────────────────────────────────────────────▼────────────────────────────┐
+│  Policy (miroir-react)                                                    │
+│  schemaReloadPolicy.ts — evaluateSchemaRevisionChange / resolveSchema…  │
+└────────────────────────────────────────────┬────────────────────────────┘
+                                             │
+┌────────────────────────────────────────────▼────────────────────────────┐
+│  Core (miroir-core)                                                       │
+│  schemaChangeKind.ts    — computeSchemaRevision, classifySchemaChange     │
+│  schemaModePolicy.ts    — MIROIR_SCHEMA_MODE frozen → static auto         │
+│  schemaForDeployment.ts — resolveFundamentalSchemaForDeployment + cache   │
+│  getMiroirFundamentalSchemaForDeployment → resolve(..., 'auto')          │
+└────────────────────────────────────────────┬────────────────────────────┘
+                                             │
+                    ┌────────────────────────┴────────────────────────┐
+                    │ static (import)          │ extended (carry-on)    │
+                    ▼                          ▼                        │
+         miroirFundamentalJzodSchema    buildExtendedSchema + cache     │
+```
+
+### 8.2 Schema resolution modes
+
+| Mode | When used | Carry-on? |
+|------|-----------|-----------|
+| `'static'` | Default envs (`Model.ts`), frozen tests, explicit meta validation | Never |
+| `'extended'` | UI app-overlay rebuild, Library app-action tests | Yes, when app endpoints exist |
+| `'auto'` | `getMiroirFundamentalSchemaForDeployment`, legacy call sites | Per 198 `hasAppSpecificEndpoints`; frozen env → static |
+
+### 8.3 Invalidation (`SchemaChangeKind`)
+
+| Change | Revision scope | UI / cache behaviour |
+|--------|----------------|----------------------|
+| Instance / report data only | unchanged | **none** — no resolver call, cache hit |
+| Library Book entity def, app endpoint, app report | app revision | **app-overlay** — invalidate `schemasPerDeployment[deployment]`; one `'extended'` resolve |
+| Miroir Entity/Report/Query/Runner/Endpoint def | meta revision | **meta-full-carry-on** — `schemaReloadRequired: true`; **no** silent rebuild in session |
+| Unrelated deployment in map | other deployment's revision | Current app's schema unchanged |
+
+Meta revision is computed from the **Miroir deployment** model (`selfApplicationMiroir`), not from the client app's deployment — avoids false meta invalidation on Library data edits.
+
+### 8.4 UI data flow (today)
+
+1. Redux/localCache updates → new `currentModel` object (often).
+2. Hook computes `metaSchemaRevision` + `appSchemaRevision` via `computeSchemaRevision`.
+3. Effect runs **only when either revision string changes** (not on every model ref).
+4. `applyDeploymentSchemaRevision` → policy → maybe `setSchemaForDeployment`.
+5. Components read `context.schemasPerDeployment[deploymentUuid]` (fallback: one `resolve(..., 'auto')` in `useMemo` before cache warm).
+
+**Still open (Proposal 3):** ~18 production components each mount `useCurrentModelEnvironment`; revision dedup prevents redundant carry-on but not duplicate hook/effect work.
+
+### 8.5 Non-UI paths (unchanged role)
+
+| Path | Schema source | Notes |
+|------|---------------|-------|
+| `localCache.currentModelEnvironment()` | `getMiroirFundamentalSchemaForDeployment` | **Deprecated for UI**; still used by DomainController, integration tests |
+| Server startup | `defaultMetaModelEnvironment` (`'static'`) | One-time at module load |
+| `test-miroir-core` / CI | `MIROIR_SCHEMA_MODE=frozen` default | Library extended suite opts out with `runtime` |
+
+### 8.6 Key modules (post-199)
+
+| Module | Package | Role |
+|--------|---------|------|
+| `schemaForDeployment.ts` | miroir-core | Mode router, revision-keyed cache, `buildExtendedSchema` |
+| `schemaChangeKind.ts` | miroir-core | Revision fingerprint, `SchemaChangeKind` |
+| `schemaModePolicy.ts` | miroir-core | `MIROIR_SCHEMA_MODE` |
+| `schemaReloadPolicy.ts` | miroir-react | UI invalidation decisions |
+| `MiroirContextReactProvider.tsx` | miroir-react | `schemasPerDeployment`, `schemaReloadRequired`, `applyDeploymentSchemaRevision` |
+| `ReduxHooks.ts` | miroir-standalone-app | `useCurrentModelEnvironment` (revision-keyed) |
+| `docs/reference/testing.md` | docs | Frozen vs runtime test policy |
+
+Primary tests: `schemaResolutionMode.unit.test.ts`, `schemaChangeKind.unit.test.ts`,
+`schemaForDeployment.unit.test.ts`, `schemaReloadPolicy.unit.test.ts`,
+`useCurrentModelEnvironment.unit.test.tsx` (Phase 199 + Phase 6).
 
 ---
 
@@ -358,11 +452,17 @@ See [tdd-implementation-plan.md](./tdd-implementation-plan.md) for the TDD slice
 
 | File | Relevance |
 |------|-----------|
-| `packages/miroir-core/src/1_core/jzod/schemaForDeployment.ts` | Core function, WeakMap cache |
+| `packages/miroir-core/src/1_core/jzod/schemaForDeployment.ts` | Mode router, revision-keyed cache, `getMiroirFundamentalSchemaForDeployment` |
+| `packages/miroir-core/src/1_core/jzod/schemaChangeKind.ts` | `computeSchemaRevision`, `classifySchemaChange` |
+| `packages/miroir-core/src/1_core/jzod/schemaModePolicy.ts` | `MIROIR_SCHEMA_MODE` frozen/runtime |
 | `packages/miroir-core/src/0_interfaces/.../getMiroirFundamentalJzodSchemaHelpers.ts` | `applyDeploymentDomainActionCarryOn` |
-| `packages/miroir-core/src/1_core/Model.ts` | Module-level default envs |
-| `packages/miroir-standalone-app/src/miroir-fwk/4_view/ReduxHooks.ts` | UI hook + effect |
-| `packages/miroir-react/src/contexts/MiroirContextReactProvider.tsx` | `schemasPerDeployment` |
-| `packages/miroir-localcache-redux/src/4_services/localCache/Model.ts` | Selector-time schema build |
-| `packages/miroir-core/tests/1_core/schemaForDeployment.unit.test.ts` | Perf guard (500ms warm) |
-| `code-helpers/features/198-.../tdd-implementation-plan.md` | Prior art for caching tests |
+| `packages/miroir-core/src/1_core/Model.ts` | Module-level default envs (`'static'`) |
+| `packages/miroir-react/src/contexts/schemaReloadPolicy.ts` | UI reload / overlay policy |
+| `packages/miroir-react/src/contexts/MiroirContextReactProvider.tsx` | `schemasPerDeployment`, `applyDeploymentSchemaRevision` |
+| `packages/miroir-standalone-app/src/miroir-fwk/4_view/ReduxHooks.ts` | `useCurrentModelEnvironment` |
+| `packages/miroir-localcache-redux/src/4_services/localCache/Model.ts` | `currentModelEnvironment` (DC path; UI deprecated) |
+| `packages/miroir-core/tests/1_core/schema*.unit.test.ts` | Mode, revision, cache, perf guards |
+| `packages/miroir-react/tests/schemaReloadPolicy.unit.test.ts` | UI policy unit tests |
+| `docs/reference/testing.md` | `MIROIR_SCHEMA_MODE` for CI |
+| `code-helpers/features/198-.../tdd-implementation-plan.md` | Prior art (198 extended schema) |
+| `code-helpers/features/199-.../tdd-implementation-plan.md` | Implementation plan (phases 1–6 done) |

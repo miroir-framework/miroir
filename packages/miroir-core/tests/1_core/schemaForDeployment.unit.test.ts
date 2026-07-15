@@ -6,6 +6,7 @@ import {
   deployment_Library_DO_NO_USE,
 } from "miroir-test-app_deployment-library";
 
+import * as schemaHelpers from "../../src/0_interfaces/1_core/bootstrapJzodSchemas/getMiroirFundamentalJzodSchemaHelpers";
 import {
   defaultMiroirMetaModel,
   clearSchemaCacheForTests,
@@ -260,6 +261,37 @@ describe("getMiroirFundamentalSchemaForDeployment (Phase 2.9 — performance)", 
     const start = Date.now();
     getMiroirFundamentalSchemaForDeployment(libraryDeploymentUuid, defaultLibraryAppModel as MetaModel);
     expect(Date.now() - start).toBeLessThan(500);
+  }, 120_000);
+});
+
+describe("Phase 6 — performance acceptance (199)", () => {
+  const libraryDeploymentUuid = deployment_Library_DO_NO_USE.uuid;
+
+  beforeEach(() => {
+    clearSchemaCacheForTests();
+  });
+
+  it("data-only model change does not trigger carry-on when revision is unchanged", () => {
+    const carryOnSpy = vi.spyOn(schemaHelpers, "applyDeploymentDomainActionCarryOn");
+
+    resolveFundamentalSchemaForDeployment(
+      libraryDeploymentUuid,
+      defaultLibraryAppModel as MetaModel,
+      "extended",
+    );
+    carryOnSpy.mockClear();
+
+    const mutated = structuredClone(defaultLibraryAppModel) as MetaModel;
+    mutated.entities = mutated.entities.map((entity) =>
+      entity.uuid === "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+        ? { ...entity, description: "Runtime-only change" }
+        : entity,
+    );
+
+    resolveFundamentalSchemaForDeployment(libraryDeploymentUuid, mutated, "extended");
+
+    expect(carryOnSpy).not.toHaveBeenCalled();
+    carryOnSpy.mockRestore();
   }, 120_000);
 });
 
