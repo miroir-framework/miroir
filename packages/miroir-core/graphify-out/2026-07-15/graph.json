@@ -1605,8 +1605,8 @@
       "source_location": "L19",
       "_origin": "ast",
       "id": "src_0_interfaces_1_core_entitydefinition_uuid",
-      "community": 35,
-      "community_name": "EntityDefinition.ts",
+      "community": 5,
+      "community_name": "Uuid",
       "norm_label": "uuid"
     },
     {
@@ -4157,8 +4157,8 @@
       "source_location": "L2425",
       "_origin": "ast",
       "id": "src_0_interfaces_1_core_preprocessor_generated_miroirfundamentaltype_datastoretype",
-      "community": 35,
-      "community_name": "EntityDefinition.ts",
+      "community": 5,
+      "community_name": "Uuid",
       "norm_label": "datastoretype"
     },
     {
@@ -4960,8 +4960,8 @@
       "source_location": "L3209",
       "_origin": "ast",
       "id": "src_0_interfaces_1_core_preprocessor_generated_miroirfundamentaltype_metamodel",
-      "community": 35,
-      "community_name": "EntityDefinition.ts",
+      "community": 5,
+      "community_name": "Uuid",
       "norm_label": "metamodel"
     },
     {
@@ -5048,8 +5048,8 @@
       "source_location": "L3257",
       "_origin": "ast",
       "id": "src_0_interfaces_1_core_preprocessor_generated_miroirfundamentaltype_storeunitconfiguration",
-      "community": 35,
-      "community_name": "EntityDefinition.ts",
+      "community": 5,
+      "community_name": "Uuid",
       "norm_label": "storeunitconfiguration"
     },
     {
@@ -5752,8 +5752,8 @@
       "source_location": "L3612",
       "_origin": "ast",
       "id": "src_0_interfaces_1_core_preprocessor_generated_miroirfundamentaltype_actionerror",
-      "community": 14,
-      "community_name": "Action2ReturnType",
+      "community": 35,
+      "community_name": "EntityDefinition.ts",
       "norm_label": "actionerror"
     },
     {
@@ -8887,8 +8887,8 @@
       "source_location": "L33",
       "_origin": "ast",
       "id": "src_0_interfaces_2_domain_domaincontrollerinterface_localcacheinfo",
-      "community": 5,
-      "community_name": "Uuid",
+      "community": 28,
+      "community_name": "DomainControllerInterface.ts",
       "norm_label": "localcacheinfo"
     },
     {
@@ -8964,8 +8964,8 @@
       "source_location": "L68",
       "_origin": "ast",
       "id": "src_0_interfaces_2_domain_domaincontrollerinterface_domainstate",
-      "community": 5,
-      "community_name": "Uuid",
+      "community": 28,
+      "community_name": "DomainControllerInterface.ts",
       "norm_label": "domainstate"
     },
     {
@@ -9151,8 +9151,8 @@
       "source_location": "L197",
       "_origin": "ast",
       "id": "src_0_interfaces_2_domain_domaincontrollerinterface_domaincontrollerinterface_currentmodel",
-      "community": 35,
-      "community_name": "EntityDefinition.ts",
+      "community": 5,
+      "community_name": "Uuid",
       "norm_label": ".currentmodel()"
     },
     {
@@ -9448,8 +9448,8 @@
       "source_location": "L207",
       "_origin": "ast",
       "id": "src_0_interfaces_2_domain_domainelement_action2error_constructor",
-      "community": 14,
-      "community_name": "Action2ReturnType",
+      "community": 35,
+      "community_name": "EntityDefinition.ts",
       "norm_label": ".constructor()"
     },
     {
@@ -9712,8 +9712,8 @@
       "source_location": "L65",
       "_origin": "ast",
       "id": "src_0_interfaces_2_domain_extractorrunnerinterface_syncboxedextractorrunner",
-      "community": 7,
-      "community_name": "ExtractorRunnerInterface.ts",
+      "community": 34,
+      "community_name": "DomainStateQuerySelectors.ts",
       "norm_label": "syncboxedextractorrunner"
     },
     {
@@ -10966,8 +10966,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_0_interfaces_4_services_localcacheinterface",
-      "community": 35,
-      "community_name": "EntityDefinition.ts",
+      "community": 5,
+      "community_name": "Uuid",
       "norm_label": "localcacheinterface.ts"
     },
     {
@@ -11010,8 +11010,8 @@
       "source_location": "L29",
       "_origin": "ast",
       "id": "src_0_interfaces_4_services_localcacheinterface_localcacheinterface_currentinfo",
-      "community": 5,
-      "community_name": "Uuid",
+      "community": 28,
+      "community_name": "DomainControllerInterface.ts",
       "norm_label": ".currentinfo()"
     },
     {
@@ -11021,8 +11021,8 @@
       "source_location": "L30",
       "_origin": "ast",
       "id": "src_0_interfaces_4_services_localcacheinterface_localcacheinterface_currentmodel",
-      "community": 35,
-      "community_name": "EntityDefinition.ts",
+      "community": 5,
+      "community_name": "Uuid",
       "norm_label": ".currentmodel()"
     },
     {
@@ -11054,8 +11054,8 @@
       "source_location": "L42",
       "_origin": "ast",
       "id": "src_0_interfaces_4_services_localcacheinterface_localcacheinterface_getdomainstate",
-      "community": 5,
-      "community_name": "Uuid",
+      "community": 28,
+      "community_name": "DomainControllerInterface.ts",
       "norm_label": ".getdomainstate()"
     },
     {
@@ -12143,8 +12143,8 @@
       "source_location": "L165",
       "_origin": "ast",
       "id": "src_0_interfaces_4_services_persistencestorecontrollerinterface_initapplicationparameters",
-      "community": 35,
-      "community_name": "EntityDefinition.ts",
+      "community": 5,
+      "community_name": "Uuid",
       "norm_label": "initapplicationparameters"
     },
     {
@@ -12319,8 +12319,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_0_interfaces_4_services_persistencestorecontrollermanagerinterface",
-      "community": 35,
-      "community_name": "EntityDefinition.ts",
+      "community": 5,
+      "community_name": "Uuid",
       "norm_label": "persistencestorecontrollermanagerinterface.ts"
     },
     {
@@ -12418,8 +12418,8 @@
       "source_location": "L25",
       "_origin": "ast",
       "id": "src_0_interfaces_4_services_persistencestorecontrollermanagerinterface_persistencestorecontrollermanagerinterface_addpersistencestorecontroller",
-      "community": 35,
-      "community_name": "EntityDefinition.ts",
+      "community": 5,
+      "community_name": "Uuid",
       "norm_label": ".addpersistencestorecontroller()"
     },
     {
@@ -12440,8 +12440,8 @@
       "source_location": "L31",
       "_origin": "ast",
       "id": "src_0_interfaces_4_services_persistencestorecontrollermanagerinterface_persistencestorecontrollermanagerinterface_deploymodule",
-      "community": 35,
-      "community_name": "EntityDefinition.ts",
+      "community": 5,
+      "community_name": "Uuid",
       "norm_label": ".deploymodule()"
     },
     {
@@ -12451,8 +12451,8 @@
       "source_location": "L14",
       "_origin": "ast",
       "id": "src_0_interfaces_4_services_persistencestorecontrollermanagerinterface_rationale_14",
-      "community": 35,
-      "community_name": "EntityDefinition.ts",
+      "community": 5,
+      "community_name": "Uuid",
       "norm_label": "todo: remove these getters and setters, only there to circumvent technical diffi"
     },
     {
@@ -13485,8 +13485,8 @@
       "source_location": "L153",
       "_origin": "ast",
       "id": "src_1_core_model_defaultmiroirmetamodel",
-      "community": 35,
-      "community_name": "EntityDefinition.ts",
+      "community": 5,
+      "community_name": "Uuid",
       "norm_label": "defaultmiroirmetamodel"
     },
     {
@@ -13515,7 +13515,7 @@
       "label": "defaultMiroirModelEnvironment",
       "file_type": "code",
       "source_file": "packages/miroir-core/src/1_core/Model.ts",
-      "source_location": "L263",
+      "source_location": "L262",
       "_origin": "ast",
       "id": "src_1_core_model_defaultmiroirmodelenvironment",
       "community": 19,
@@ -13526,7 +13526,7 @@
       "label": "metaModelReports",
       "file_type": "code",
       "source_file": "packages/miroir-core/src/1_core/Model.ts",
-      "source_location": "L276",
+      "source_location": "L274",
       "_origin": "ast",
       "id": "src_1_core_model_metamodelreports",
       "community": 21,
@@ -13537,7 +13537,7 @@
       "label": "getApplicationSection()",
       "file_type": "code",
       "source_file": "packages/miroir-core/src/1_core/Model.ts",
-      "source_location": "L284",
+      "source_location": "L282",
       "_origin": "ast",
       "id": "src_1_core_model_getapplicationsection",
       "community": 23,
@@ -13548,7 +13548,7 @@
       "label": "getReportsAndEntitiesDefinitionsForDeploymentUuid()",
       "file_type": "code",
       "source_file": "packages/miroir-core/src/1_core/Model.ts",
-      "source_location": "L302",
+      "source_location": "L300",
       "_origin": "ast",
       "id": "src_1_core_model_getreportsandentitiesdefinitionsfordeploymentuuid",
       "community": 21,
@@ -13559,7 +13559,7 @@
       "label": "emptyApplicationModel",
       "file_type": "code",
       "source_file": "packages/miroir-core/src/1_core/Model.ts",
-      "source_location": "L341",
+      "source_location": "L339",
       "_origin": "ast",
       "id": "src_1_core_model_emptyapplicationmodel",
       "community": 21,
@@ -13570,7 +13570,7 @@
       "label": "modelIcons",
       "file_type": "code",
       "source_file": "packages/miroir-core/src/1_core/Model.ts",
-      "source_location": "L359",
+      "source_location": "L357",
       "_origin": "ast",
       "id": "src_1_core_model_modelicons",
       "community": 21,
@@ -13581,7 +13581,7 @@
       "label": "extractEntityInstances()",
       "file_type": "code",
       "source_file": "packages/miroir-core/src/1_core/Model.ts",
-      "source_location": "L399",
+      "source_location": "L397",
       "_origin": "ast",
       "id": "src_1_core_model_extractentityinstances",
       "community": 21,
@@ -13592,7 +13592,7 @@
       "label": "extractApplicationModel()",
       "file_type": "code",
       "source_file": "packages/miroir-core/src/1_core/Model.ts",
-      "source_location": "L427",
+      "source_location": "L425",
       "_origin": "ast",
       "id": "src_1_core_model_extractapplicationmodel",
       "community": 21,
@@ -13603,7 +13603,7 @@
       "label": "extractApplicationData()",
       "file_type": "code",
       "source_file": "packages/miroir-core/src/1_core/Model.ts",
-      "source_location": "L478",
+      "source_location": "L476",
       "_origin": "ast",
       "id": "src_1_core_model_extractapplicationdata",
       "community": 21,
@@ -13625,9 +13625,9 @@
       "label": "TODO: DEFUNCT? use useCurrentModel only?",
       "file_type": "rationale",
       "source_file": "packages/miroir-core/src/1_core/Model.ts",
-      "source_location": "L296",
+      "source_location": "L294",
       "_origin": "ast",
-      "id": "src_1_core_model_rationale_296",
+      "id": "src_1_core_model_rationale_294",
       "community": 21,
       "community_name": "Model.ts",
       "norm_label": "todo: defunct? use usecurrentmodel only?"
@@ -18622,8 +18622,8 @@
       "source_location": "L243",
       "_origin": "ast",
       "id": "src_3_controllers_domaincontroller_domaincontroller_currentmodel",
-      "community": 35,
-      "community_name": "EntityDefinition.ts",
+      "community": 5,
+      "community_name": "Uuid",
       "norm_label": ".currentmodel()"
     },
     {
@@ -18655,8 +18655,8 @@
       "source_location": "L270",
       "_origin": "ast",
       "id": "src_3_controllers_domaincontroller_domaincontroller_currentlocalcacheinfo",
-      "community": 5,
-      "community_name": "Uuid",
+      "community": 28,
+      "community_name": "DomainControllerInterface.ts",
       "norm_label": ".currentlocalcacheinfo()"
     },
     {
@@ -18666,8 +18666,8 @@
       "source_location": "L275",
       "_origin": "ast",
       "id": "src_3_controllers_domaincontroller_domaincontroller_getdomainstate",
-      "community": 5,
-      "community_name": "Uuid",
+      "community": 28,
+      "community_name": "DomainControllerInterface.ts",
       "norm_label": ".getdomainstate()"
     },
     {
@@ -20954,8 +20954,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_3_controllers_constants",
-      "community": 14,
-      "community_name": "Action2ReturnType",
+      "community": 63,
+      "community_name": "Endpoint.ts",
       "norm_label": "constants.ts"
     },
     {
@@ -21273,8 +21273,8 @@
       "source_location": "L123",
       "_origin": "ast",
       "id": "src_4_services_miroirlogger_miroirlogger_error",
-      "community": 35,
-      "community_name": "EntityDefinition.ts",
+      "community": 5,
+      "community_name": "Uuid",
       "norm_label": ".error()"
     },
     {
@@ -21922,8 +21922,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_4_services_persistencestorecontrollermanager",
-      "community": 35,
-      "community_name": "EntityDefinition.ts",
+      "community": 5,
+      "community_name": "Uuid",
       "norm_label": "persistencestorecontrollermanager.ts"
     },
     {
@@ -21933,8 +21933,8 @@
       "source_location": "L27",
       "_origin": "ast",
       "id": "src_4_services_persistencestorecontrollermanager_log",
-      "community": 35,
-      "community_name": "EntityDefinition.ts",
+      "community": 5,
+      "community_name": "Uuid",
       "norm_label": "log"
     },
     {
@@ -22021,8 +22021,8 @@
       "source_location": "L94",
       "_origin": "ast",
       "id": "src_4_services_persistencestorecontrollermanager_persistencestorecontrollermanager_addpersistencestorecontroller",
-      "community": 35,
-      "community_name": "EntityDefinition.ts",
+      "community": 5,
+      "community_name": "Uuid",
       "norm_label": ".addpersistencestorecontroller()"
     },
     {
@@ -22043,8 +22043,8 @@
       "source_location": "L206",
       "_origin": "ast",
       "id": "src_4_services_persistencestorecontrollermanager_persistencestorecontrollermanager_getpersistencestorecontroller",
-      "community": 35,
-      "community_name": "EntityDefinition.ts",
+      "community": 5,
+      "community_name": "Uuid",
       "norm_label": ".getpersistencestorecontroller()"
     },
     {
@@ -22065,8 +22065,8 @@
       "source_location": "L228",
       "_origin": "ast",
       "id": "src_4_services_persistencestorecontrollermanager_persistencestorecontrollermanager_deploymodule",
-      "community": 35,
-      "community_name": "EntityDefinition.ts",
+      "community": 5,
+      "community_name": "Uuid",
       "norm_label": ".deploymodule()"
     },
     {
@@ -22076,8 +22076,8 @@
       "source_location": "L271",
       "_origin": "ast",
       "id": "src_4_services_persistencestorecontrollermanager_rationale_271",
-      "community": 35,
-      "community_name": "EntityDefinition.ts",
+      "community": 5,
+      "community_name": "Uuid",
       "norm_label": "todo: inject interface to raise errors!"
     },
     {
@@ -22087,8 +22087,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_4_services_persistencestorecontrollertools",
-      "community": 35,
-      "community_name": "EntityDefinition.ts",
+      "community": 5,
+      "community_name": "Uuid",
       "norm_label": "persistencestorecontrollertools.ts"
     },
     {
@@ -22098,8 +22098,8 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "src_4_services_persistencestorecontrollertools_startlocalpersistencestorecontrollers",
-      "community": 35,
-      "community_name": "EntityDefinition.ts",
+      "community": 5,
+      "community_name": "Uuid",
       "norm_label": "startlocalpersistencestorecontrollers()"
     },
     {
@@ -22109,8 +22109,8 @@
       "source_location": "L39",
       "_origin": "ast",
       "id": "src_4_services_persistencestorecontrollertools_mountapplicationdeployment",
-      "community": 35,
-      "community_name": "EntityDefinition.ts",
+      "community": 5,
+      "community_name": "Uuid",
       "norm_label": "mountapplicationdeployment()"
     },
     {
@@ -68726,7 +68726,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "packages/miroir-core/src/1_core/Model.ts",
-      "source_location": "L406",
+      "source_location": "L404",
       "weight": 1.0,
       "source": "src_1_core_model_extractentityinstances",
       "target": "src_0_interfaces_4_services_persistencestorecontrollerinterface_persistencestorecontrollerinterface_getinstances"
@@ -72808,7 +72808,7 @@
       "source_location": "L79",
       "weight": 1.0,
       "source": "src_1_core_model",
-      "target": "src_1_core_jzod_schemafordeployment_resolvefundamentalschemafordeployment",
+      "target": "src_1_core_jzod_schemafordeployment_getmiroirfundamentalschemafordeployment",
       "confidence_score": 1.0
     },
     {
@@ -72855,7 +72855,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "packages/miroir-core/src/1_core/Model.ts",
-      "source_location": "L263",
+      "source_location": "L262",
       "weight": 1.0,
       "source": "src_1_core_model",
       "target": "src_1_core_model_defaultmiroirmodelenvironment",
@@ -72865,7 +72865,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "packages/miroir-core/src/1_core/Model.ts",
-      "source_location": "L341",
+      "source_location": "L339",
       "weight": 1.0,
       "source": "src_1_core_model",
       "target": "src_1_core_model_emptyapplicationmodel",
@@ -72875,7 +72875,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "packages/miroir-core/src/1_core/Model.ts",
-      "source_location": "L478",
+      "source_location": "L476",
       "weight": 1.0,
       "source": "src_1_core_model",
       "target": "src_1_core_model_extractapplicationdata",
@@ -72885,7 +72885,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "packages/miroir-core/src/1_core/Model.ts",
-      "source_location": "L427",
+      "source_location": "L425",
       "weight": 1.0,
       "source": "src_1_core_model",
       "target": "src_1_core_model_extractapplicationmodel",
@@ -72895,7 +72895,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "packages/miroir-core/src/1_core/Model.ts",
-      "source_location": "L399",
+      "source_location": "L397",
       "weight": 1.0,
       "source": "src_1_core_model",
       "target": "src_1_core_model_extractentityinstances",
@@ -72915,7 +72915,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "packages/miroir-core/src/1_core/Model.ts",
-      "source_location": "L284",
+      "source_location": "L282",
       "weight": 1.0,
       "source": "src_1_core_model",
       "target": "src_1_core_model_getapplicationsection",
@@ -72925,7 +72925,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "packages/miroir-core/src/1_core/Model.ts",
-      "source_location": "L302",
+      "source_location": "L300",
       "weight": 1.0,
       "source": "src_1_core_model",
       "target": "src_1_core_model_getreportsandentitiesdefinitionsfordeploymentuuid",
@@ -72975,7 +72975,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "packages/miroir-core/src/1_core/Model.ts",
-      "source_location": "L276",
+      "source_location": "L274",
       "weight": 1.0,
       "source": "src_1_core_model",
       "target": "src_1_core_model_metamodelreports",
@@ -72995,7 +72995,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "packages/miroir-core/src/1_core/Model.ts",
-      "source_location": "L359",
+      "source_location": "L357",
       "weight": 1.0,
       "source": "src_1_core_model",
       "target": "src_1_core_model_modelicons",
@@ -73015,9 +73015,9 @@
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "packages/miroir-core/src/1_core/Model.ts",
-      "source_location": "L296",
+      "source_location": "L294",
       "weight": 1.0,
-      "source": "src_1_core_model_rationale_296",
+      "source": "src_1_core_model_rationale_294",
       "target": "src_1_core_model",
       "confidence_score": 1.0
     },
@@ -73763,7 +73763,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "packages/miroir-core/src/1_core/Model.ts",
-      "source_location": "L487",
+      "source_location": "L485",
       "weight": 1.0,
       "source": "src_1_core_model_extractapplicationdata",
       "target": "src_1_core_model_extractentityinstances",
@@ -73774,7 +73774,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "packages/miroir-core/src/1_core/Model.ts",
-      "source_location": "L438",
+      "source_location": "L436",
       "weight": 1.0,
       "source": "src_1_core_model_extractapplicationmodel",
       "target": "src_1_core_model_extractentityinstances",
@@ -77441,17 +77441,6 @@
       "confidence_score": 1.0
     },
     {
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "packages/miroir-core/src/5_tests/FunctionCallTestFixtures.ts",
-      "source_location": "L2",
-      "weight": 1.0,
-      "source": "src_5_tests_functioncalltestfixtures",
-      "target": "src_1_core_jzod_schemafordeployment_resolvefundamentalschemafordeployment",
-      "confidence_score": 1.0
-    },
-    {
       "relation": "re_exports",
       "context": "re-export",
       "confidence": "EXTRACTED",
@@ -77460,6 +77449,17 @@
       "weight": 1.0,
       "source": "src_index",
       "target": "src_1_core_jzod_schemafordeployment_resolvefundamentalschemafordeployment",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "packages/miroir-core/src/5_tests/FunctionCallTestFixtures.ts",
+      "source_location": "L2",
+      "weight": 1.0,
+      "source": "src_5_tests_functioncalltestfixtures",
+      "target": "src_1_core_jzod_schemafordeployment_getmiroirfundamentalschemafordeployment",
       "confidence_score": 1.0
     },
     {
@@ -103650,5 +103650,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "0d82d74b78a45b8f295c9e997f1b2a0c7a23f688"
+  "built_at_commit": "f661827963a6dc335d6ff96561d995fd87f9c2a9"
 }

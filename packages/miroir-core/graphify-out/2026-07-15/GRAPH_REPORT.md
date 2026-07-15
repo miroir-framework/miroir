@@ -1,7 +1,7 @@
 # Graph Report - packages\miroir-core  (2026-07-15)
 
 ## Corpus Check
-- 287 files · ~332,214 words
+- 287 files · ~332,127 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
@@ -10,7 +10,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `0d82d74b`
+- Built from commit: `f6618279`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -134,20 +134,20 @@
   packages/miroir-core/src/2_domain/DomainStateQueryTemplateSelector.ts → packages/miroir-core/src/2_domain/QuerySelectors.ts
 
 ## Import Cycles
-- 3-file cycle: `packages/miroir-core/src/1_core/jzod/jzodTypeCheck.ts -> packages/miroir-core/src/1_core/jzod/resolveConditionalSchema.ts -> packages/miroir-core/src/2_domain/TransformersForRuntime.ts -> packages/miroir-core/src/1_core/jzod/jzodTypeCheck.ts`
-- 3-file cycle: `packages/miroir-core/src/2_domain/QuerySelectors.ts -> packages/miroir-core/src/2_domain/TransformersForRuntime.ts -> packages/miroir-core/src/2_domain/ReduxDeploymentsStateQueryExecutor.ts -> packages/miroir-core/src/2_domain/QuerySelectors.ts`
 - 3-file cycle: `packages/miroir-core/src/2_domain/ReduxDeploymentsStateQueryExecutor.ts -> packages/miroir-core/src/2_domain/ReduxDeploymentsStateQuerySelectors.ts -> packages/miroir-core/src/2_domain/TransformersForRuntime.ts -> packages/miroir-core/src/2_domain/ReduxDeploymentsStateQueryExecutor.ts`
+- 3-file cycle: `packages/miroir-core/src/2_domain/QuerySelectors.ts -> packages/miroir-core/src/2_domain/TransformersForRuntime.ts -> packages/miroir-core/src/2_domain/ReduxDeploymentsStateQueryExecutor.ts -> packages/miroir-core/src/2_domain/QuerySelectors.ts`
+- 3-file cycle: `packages/miroir-core/src/1_core/jzod/jzodTypeCheck.ts -> packages/miroir-core/src/1_core/jzod/resolveConditionalSchema.ts -> packages/miroir-core/src/2_domain/TransformersForRuntime.ts -> packages/miroir-core/src/1_core/jzod/jzodTypeCheck.ts`
 - 3-file cycle: `packages/miroir-core/src/0_interfaces/2_domain/DomainControllerInterface.ts -> packages/miroir-core/src/0_interfaces/4-services/PersistenceInterface.ts -> packages/miroir-core/src/0_interfaces/4-services/PersistenceStoreControllerManagerInterface.ts -> packages/miroir-core/src/0_interfaces/2_domain/DomainControllerInterface.ts`
-- 4-file cycle: `packages/miroir-core/src/2_domain/QuerySelectors.ts -> packages/miroir-core/src/2_domain/TransformersForRuntime.ts -> packages/miroir-core/src/2_domain/ReduxDeploymentsStateQueryExecutor.ts -> packages/miroir-core/src/2_domain/QueryTemplateSelectors.ts -> packages/miroir-core/src/2_domain/QuerySelectors.ts`
-- 4-file cycle: `packages/miroir-core/src/2_domain/QueryTemplateSelectors.ts -> packages/miroir-core/src/2_domain/Templates.ts -> packages/miroir-core/src/2_domain/TransformersForRuntime.ts -> packages/miroir-core/src/2_domain/ReduxDeploymentsStateQueryExecutor.ts -> packages/miroir-core/src/2_domain/QueryTemplateSelectors.ts`
 - 4-file cycle: `packages/miroir-core/src/2_domain/QuerySelectors.ts -> packages/miroir-core/src/2_domain/Templates.ts -> packages/miroir-core/src/2_domain/TransformersForRuntime.ts -> packages/miroir-core/src/2_domain/ReduxDeploymentsStateQueryExecutor.ts -> packages/miroir-core/src/2_domain/QuerySelectors.ts`
+- 4-file cycle: `packages/miroir-core/src/2_domain/QueryTemplateSelectors.ts -> packages/miroir-core/src/2_domain/Templates.ts -> packages/miroir-core/src/2_domain/TransformersForRuntime.ts -> packages/miroir-core/src/2_domain/ReduxDeploymentsStateQueryExecutor.ts -> packages/miroir-core/src/2_domain/QueryTemplateSelectors.ts`
 - 4-file cycle: `packages/miroir-core/src/2_domain/QuerySelectors.ts -> packages/miroir-core/src/2_domain/TransformersForRuntime.ts -> packages/miroir-core/src/2_domain/ReduxDeploymentsStateQueryExecutor.ts -> packages/miroir-core/src/2_domain/ReduxDeploymentsStateQuerySelectors.ts -> packages/miroir-core/src/2_domain/QuerySelectors.ts`
-- 5-file cycle: `packages/miroir-core/src/1_core/jzod/jzodTypeCheck.ts -> packages/miroir-core/src/1_core/jzod/resolveConditionalSchema.ts -> packages/miroir-core/src/2_domain/ReduxDeploymentsStateQueryExecutor.ts -> packages/miroir-core/src/2_domain/QuerySelectors.ts -> packages/miroir-core/src/2_domain/TransformersForRuntime.ts -> packages/miroir-core/src/1_core/jzod/jzodTypeCheck.ts`
-- 5-file cycle: `packages/miroir-core/src/1_core/jzod/jzodTypeCheck.ts -> packages/miroir-core/src/1_core/jzod/resolveConditionalSchema.ts -> packages/miroir-core/src/2_domain/ReduxDeploymentsStateQueryExecutor.ts -> packages/miroir-core/src/2_domain/ReduxDeploymentsStateQuerySelectors.ts -> packages/miroir-core/src/2_domain/TransformersForRuntime.ts -> packages/miroir-core/src/1_core/jzod/jzodTypeCheck.ts`
+- 4-file cycle: `packages/miroir-core/src/2_domain/QuerySelectors.ts -> packages/miroir-core/src/2_domain/TransformersForRuntime.ts -> packages/miroir-core/src/2_domain/ReduxDeploymentsStateQueryExecutor.ts -> packages/miroir-core/src/2_domain/QueryTemplateSelectors.ts -> packages/miroir-core/src/2_domain/QuerySelectors.ts`
 - 5-file cycle: `packages/miroir-core/src/2_domain/QuerySelectors.ts -> packages/miroir-core/src/2_domain/Templates.ts -> packages/miroir-core/src/2_domain/TransformersForRuntime.ts -> packages/miroir-core/src/2_domain/ReduxDeploymentsStateQueryExecutor.ts -> packages/miroir-core/src/2_domain/QueryTemplateSelectors.ts -> packages/miroir-core/src/2_domain/QuerySelectors.ts`
-- 5-file cycle: `packages/miroir-core/src/2_domain/QuerySelectors.ts -> packages/miroir-core/src/2_domain/TransformersForRuntime.ts -> packages/miroir-core/src/2_domain/ReduxDeploymentsStateQueryExecutor.ts -> packages/miroir-core/src/2_domain/ReduxDeploymentsStateQuerySelectors.ts -> packages/miroir-core/src/2_domain/QueryTemplateSelectors.ts -> packages/miroir-core/src/2_domain/QuerySelectors.ts`
-- 5-file cycle: `packages/miroir-core/src/2_domain/QueryTemplateSelectors.ts -> packages/miroir-core/src/2_domain/Templates.ts -> packages/miroir-core/src/2_domain/TransformersForRuntime.ts -> packages/miroir-core/src/2_domain/ReduxDeploymentsStateQueryExecutor.ts -> packages/miroir-core/src/2_domain/ReduxDeploymentsStateQuerySelectors.ts -> packages/miroir-core/src/2_domain/QueryTemplateSelectors.ts`
 - 5-file cycle: `packages/miroir-core/src/2_domain/QuerySelectors.ts -> packages/miroir-core/src/2_domain/Templates.ts -> packages/miroir-core/src/2_domain/TransformersForRuntime.ts -> packages/miroir-core/src/2_domain/ReduxDeploymentsStateQueryExecutor.ts -> packages/miroir-core/src/2_domain/ReduxDeploymentsStateQuerySelectors.ts -> packages/miroir-core/src/2_domain/QuerySelectors.ts`
+- 5-file cycle: `packages/miroir-core/src/2_domain/QueryTemplateSelectors.ts -> packages/miroir-core/src/2_domain/Templates.ts -> packages/miroir-core/src/2_domain/TransformersForRuntime.ts -> packages/miroir-core/src/2_domain/ReduxDeploymentsStateQueryExecutor.ts -> packages/miroir-core/src/2_domain/ReduxDeploymentsStateQuerySelectors.ts -> packages/miroir-core/src/2_domain/QueryTemplateSelectors.ts`
+- 5-file cycle: `packages/miroir-core/src/2_domain/QuerySelectors.ts -> packages/miroir-core/src/2_domain/TransformersForRuntime.ts -> packages/miroir-core/src/2_domain/ReduxDeploymentsStateQueryExecutor.ts -> packages/miroir-core/src/2_domain/ReduxDeploymentsStateQuerySelectors.ts -> packages/miroir-core/src/2_domain/QueryTemplateSelectors.ts -> packages/miroir-core/src/2_domain/QuerySelectors.ts`
+- 5-file cycle: `packages/miroir-core/src/1_core/jzod/jzodTypeCheck.ts -> packages/miroir-core/src/1_core/jzod/resolveConditionalSchema.ts -> packages/miroir-core/src/2_domain/ReduxDeploymentsStateQueryExecutor.ts -> packages/miroir-core/src/2_domain/ReduxDeploymentsStateQuerySelectors.ts -> packages/miroir-core/src/2_domain/TransformersForRuntime.ts -> packages/miroir-core/src/1_core/jzod/jzodTypeCheck.ts`
+- 5-file cycle: `packages/miroir-core/src/1_core/jzod/jzodTypeCheck.ts -> packages/miroir-core/src/1_core/jzod/resolveConditionalSchema.ts -> packages/miroir-core/src/2_domain/ReduxDeploymentsStateQueryExecutor.ts -> packages/miroir-core/src/2_domain/QuerySelectors.ts -> packages/miroir-core/src/2_domain/TransformersForRuntime.ts -> packages/miroir-core/src/1_core/jzod/jzodTypeCheck.ts`
 
 ## Communities (103 total, 18 thin omitted)
 
@@ -172,8 +172,8 @@ Cohesion: 0.06
 Nodes (51): JzodSchemaDefinition, jzodSchemaDefinitionSchema, TODO: DEFUNCT???, SelectUnionBranchFromDiscriminatorReturnType, JzodBaseObject, JzodReference, JzodUnion_RecursivelyUnfold_ReturnType, KeyMapEntry (+43 more)
 
 ### Community 5 - "Uuid"
-Cohesion: 0.08
-Nodes (11): DomainState, LocalCacheInfo, LocalCacheInterface, PersistenceStoreControllerManagerInterface, storeActionOrBundleActionStoreRunner(), PersistenceStoreControllerManager, restActionHandler(), restMethodGetHandler() (+3 more)
+Cohesion: 0.07
+Nodes (20): Uuid, DataStoreType, MetaModel, StoreUnitConfiguration, LocalCacheInterface, InitApplicationParameters, PersistenceStoreControllerManagerInterface, TODO: remove these getters and setters, only there to circumvent technical diffi (+12 more)
 
 ### Community 6 - "Deployment.ts"
 Cohesion: 0.06
@@ -181,7 +181,7 @@ Nodes (44): LIBRARY_TMP, ActionTemplate, AdminApplication, ApplicationModelBranc
 
 ### Community 7 - "ExtractorRunnerInterface.ts"
 Cohesion: 0.10
-Nodes (38): BoxedExtractorOrCombinerReturningObject, BoxedExtractorOrCombinerReturningObjectList, BoxedExtractorOrCombinerReturningObjectOrObjectList, BoxedQueryWithExtractorCombinerTransformer, CombinerOneToOne, DomainElementSuccess, EntityInstancesUuidIndex, ExtractorByPrimaryKey (+30 more)
+Nodes (37): BoxedExtractorOrCombinerReturningObject, BoxedExtractorOrCombinerReturningObjectList, BoxedExtractorOrCombinerReturningObjectOrObjectList, BoxedQueryWithExtractorCombinerTransformer, CombinerOneToOne, DomainElementSuccess, EntityInstancesUuidIndex, ExtractorByPrimaryKey (+29 more)
 
 ### Community 8 - "ApplicationDeploymentMap"
 Cohesion: 0.13
@@ -209,7 +209,7 @@ Nodes (42): build(), fileExists(), generateSchemas(), generateTsTypeFileFromJzod
 
 ### Community 14 - "Action2ReturnType"
 Cohesion: 0.08
-Nodes (21): ActionError, DomainElementType, LocalCacheAction, PersistenceAction, RunBoxedQueryTemplateAction, StoreOrBundleAction, Action2Error, Action2ReturnType (+13 more)
+Nodes (20): DomainElementType, LocalCacheAction, PersistenceAction, RunBoxedQueryTemplateAction, StoreOrBundleAction, Action2Error, Action2ReturnType, ErrorLogServiceInterface (+12 more)
 
 ### Community 15 - "MiroirActivityTrackerInterface"
 Cohesion: 0.06
@@ -264,8 +264,8 @@ Cohesion: 0.12
 Nodes (22): MiroirTestDefinition, MiroirTestForRunner, Runner, resolveRunnerFromRegistry(), buildRunnerTestSessionParamBank(), isRunnerTestRunTargetUuid(), mergeRunnerTestParamBank(), resolveRunnerTestRunTarget() (+14 more)
 
 ### Community 28 - "DomainControllerInterface.ts"
-Cohesion: 0.09
-Nodes (19): ModelAction, TransactionalInstanceAction, CRUDActionName, CRUDActionNamesArray, CRUDActionNamesArrayString, CRUDActionNameSchema, CUDActionName, CUDActionNamesArray (+11 more)
+Cohesion: 0.08
+Nodes (21): ModelAction, TransactionalInstanceAction, CRUDActionName, CRUDActionNamesArray, CRUDActionNamesArrayString, CRUDActionNameSchema, CUDActionName, CUDActionNamesArray (+13 more)
 
 ### Community 29 - "PersistenceStoreController"
 Cohesion: 0.18
@@ -288,12 +288,12 @@ Cohesion: 0.07
 Nodes (27): chalk, diff, fast-deep-equal, fast-json-stable-stringify, json-diff, @miroir-framework/jzod, miroir-test-app_deployment-admin, miroir-test-app_deployment-miroir (+19 more)
 
 ### Community 34 - "DomainStateQuerySelectors.ts"
-Cohesion: 0.15
-Nodes (22): BoxedQueryTemplateWithExtractorCombinerTransformer, ExtractorOrCombinerReturningObject, Domain2Element, AsyncQueryTemplateRunnerParams, SyncQueryTemplateRunnerParams, emptyDomainObject, getDomainStateExtractorRunnerMap(), GetExtractorRunnerParamsForDomainState (+14 more)
+Cohesion: 0.14
+Nodes (23): BoxedQueryTemplateWithExtractorCombinerTransformer, ExtractorOrCombinerReturningObject, Domain2Element, AsyncQueryTemplateRunnerParams, SyncBoxedExtractorRunner, SyncQueryTemplateRunnerParams, emptyDomainObject, getDomainStateExtractorRunnerMap() (+15 more)
 
 ### Community 35 - "EntityDefinition.ts"
-Cohesion: 0.07
-Nodes (30): entityDefinitionMLSchema(), InstanceDictionary, InstanceDictionaryNum, MetaEntity, MetaEntitySchema, Uuid, UuidSchema, DataStoreType (+22 more)
+Cohesion: 0.09
+Nodes (20): entityDefinitionMLSchema(), InstanceDictionary, InstanceDictionaryNum, MetaEntity, MetaEntitySchema, UuidSchema, ActionError, ExtractorOrCombinerTemplate (+12 more)
 
 ### Community 36 - "JzodElement"
 Cohesion: 0.18
@@ -388,7 +388,7 @@ Cohesion: 0.18
 Nodes (10): Datastore, DatastoreGitRepo, DatastoreIndexedDb, DatastoreJSONfile, DatastoreNoSQL, DatastoreSQL, DatastoreType, datastoreTypeArray (+2 more)
 
 ### Community 63 - "Endpoint.ts"
-Cohesion: 0.29
+Cohesion: 0.25
 Nodes (6): EndpointDefinition, InstanceAction, EndpointInterfaceNOTUSED, coreEndpoints, coreEndpointsUuidList, log
 
 ### Community 64 - "TransformerEventServiceInterface"
@@ -463,7 +463,7 @@ _Questions this graph is uniquely positioned to answer:_
   _High betweenness centrality (0.040) - this node is a cross-community bridge._
 - **Why does `devDependencies` connect `devDependencies` to `package.json`, `miroir-test-app_deployment-library`, `sequelize`, `tinyrainbow`, `tsx`, `@types/json-diff`, `vitest`?**
   _High betweenness centrality (0.037) - this node is a cross-community bridge._
-- **Why does `Action2VoidReturnType` connect `Action2VoidReturnType` to `index.ts`, `EntityDefinition.ts`, `PersistenceStoreEntitySectionAbstractInterface`, `Uuid`, `ApplicationDeploymentMap`, `EntityInstance`, `PersistenceStoreAbstractSectionInterface`, `PersistenceStoreControllerInterface.ts`, `DomainElement.ts`, `DomainController.ts`, `PersistenceStoreAdminSectionInterface`, `DomainControllerInterface.ts`, `PersistenceStoreController`?**
+- **Why does `Action2VoidReturnType` connect `Action2VoidReturnType` to `index.ts`, `PersistenceStoreEntitySectionAbstractInterface`, `Uuid`, `ApplicationDeploymentMap`, `EntityInstance`, `PersistenceStoreAbstractSectionInterface`, `PersistenceStoreControllerInterface.ts`, `DomainElement.ts`, `DomainController.ts`, `PersistenceStoreAdminSectionInterface`, `DomainControllerInterface.ts`, `PersistenceStoreController`?**
   _High betweenness centrality (0.025) - this node is a cross-community bridge._
 - **What connects `name`, `private`, `version` to the rest of the system?**
   _616 weakly-connected nodes found - possible documentation gaps or missing edges._

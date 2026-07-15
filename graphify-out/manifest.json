@@ -110,13 +110,13 @@
     "semantic_hash": ""
   },
   "packages/miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalJzodSchema.ts": {
-    "mtime": 1784076762.626249,
+    "mtime": 1784077366.198387,
     "ast_hash": "803da93cf073e3989378996ab38374d7",
     "semantic_hash": ""
   },
   "packages/miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.ts": {
-    "mtime": 1784076762.6272495,
-    "ast_hash": "9336fd4e96fdfcbcfa9235843b0f7d71",
+    "mtime": 1784077366.1993916,
+    "ast_hash": "15e46cce45d5224b969758aa86ffee7c",
     "semantic_hash": ""
   },
   "packages/miroir-core/src/0_interfaces/1_core/zodParseError.ts": {
@@ -255,8 +255,8 @@
     "semantic_hash": ""
   },
   "packages/miroir-core/src/1_core/Model.ts": {
-    "mtime": 1784057051.1929011,
-    "ast_hash": "9786fd181b6b1fe1ccbf7cd16442356b",
+    "mtime": 1784077324.5190954,
+    "ast_hash": "f56426076a6a8aa6dae77981ac21f7eb",
     "semantic_hash": ""
   },
   "packages/miroir-core/src/1_core/Report.ts": {
@@ -670,8 +670,8 @@
     "semantic_hash": ""
   },
   "packages/miroir-core/src/5_tests/FunctionCallTestFixtures.ts": {
-    "mtime": 1784057051.1938977,
-    "ast_hash": "bf6f5247e99f7ebc7a0b2c3c49d24817",
+    "mtime": 1784077329.5589557,
+    "ast_hash": "d884a46adbf7438da090c1966ed1e2ed",
     "semantic_hash": ""
   },
   "packages/miroir-core/src/5_tests/FunctionCallTestRegistry.ts": {
@@ -1030,8 +1030,8 @@
     "semantic_hash": ""
   },
   "packages/miroir-core/tests/1_core/modelEnvironment.unit.test.ts": {
-    "mtime": 1782891209.858194,
-    "ast_hash": "2182e4fc0a5dcb2516c43ac4e137b54b",
+    "mtime": 1784077325.5397313,
+    "ast_hash": "12401ec84efc90b7624e741ee7c30325",
     "semantic_hash": ""
   },
   "packages/miroir-core/tests/1_core/modelUpdates.unit.test.ts": {
