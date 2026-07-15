@@ -127,7 +127,7 @@ npm run testByFile -w miroir-standalone-app -- DomainController.integ.Data
 
 Swap the config file to exercise filesystem, IndexedDB, or MongoDB backends (`miroirConfig.test-emulatedServer-filesystem.json`, etc.). The final argument is a Vitest filename filter.
 
-Common filters: `DomainController.integ`, `PersistenceStoreController.integ`, `ExtractorPersistenceStoreRunner.integ`, `ReportPage.integ`, `BlobEditorField.integ`, `JzodElementEditor.test`.
+Common filters: `DomainController.integ`, `PersistenceStoreController.integ`, `ExtractorPersistenceStoreRunner.integ`, `ReportPage.integ`, `BlobEditorField.integ`, `JzodElementEditor.test`, `MiroirTestDisplayIntegrationLaunch.integ`.
 
 **JzodElementEditor component tests** — large RTL suite for the schema editor (`tests/4_view/JzodElementEditor.test.tsx`). Uses in-memory `LocalCache`; optional profile env for logging parity:
 
@@ -138,6 +138,16 @@ npm run testByFile -w miroir-standalone-app -- JzodElementEditor.test
 ```
 
 Filter one editor: `npm run testByFile -w miroir-standalone-app -- 4_view/JzodElementEditor.test.tsx -t "JzodObjectEditor"`. Full detail: [reference/testing.md](../../reference/testing.md#jzodelementeditortesttsx--component-integration-suite).
+
+**MiroirTestDisplay integration launch (B6-d1)** — RTL proof for Feature #197 **Run Integration Tests** button (`tests/4_view/MiroirTestDisplayIntegrationLaunch.integ.test.tsx`). Return Book leaf on `runner.library`; Postgres required (Node SQL mock env):
+
+```bash
+VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-sql.json \
+VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_DomainController_debug.json \
+npm run testByFile -w miroir-standalone-app -- MiroirTestDisplayIntegrationLaunch.integ
+```
+
+Detail: [reference/testing.md § MiroirTestDisplayIntegrationLaunch](../../reference/testing.md#miroirtestdisplayintegrationlaunchintegtesttsx--ui-integration-launch-b6-d1).
 
 Full catalogue, config matrix, and architecture comparison with `testMiroir`: [reference/testing.md](../../reference/testing.md#running-app-stack-integration-tests-testbyfile).
 

@@ -506,11 +506,11 @@ Five different public setup entry points existed across the test infrastructure:
 | **C-assertions** — PSC vs domainController in test bodies | `4_storage` keeps PSC (intentional); UI launcher for PSC Vitest suites not built | `4_storage` only | **Partial** — blocks *in-browser* PSC access; **not** a blocker if UI spawns isolated Vitest (defer to follow-up) |
 | **D** — Env config fragmentation | ~~Unified profile system (`MIROIR_TEST_*` + `VITE_MIROIR_*`)~~ | Transformer, runner, `testByFile` | **Done** ✅ — [gap-D-refactoring-plan.md](./gap-D-refactoring-plan.md) |
 | **E** — Setup helper fragmentation | ~~Consolidate `setupMiroirTest*`; orchestrator for UI~~ | DomainController CRUD, legacy runners | **Done** ✅ — enables Gap B / UI Phase B |
+| **F** — UI store backend / real-server path | Browser emulated integ = **IndexedDB only**; SQL/fs/mongo need Node emulated (CLI) or **`miroir-server`** (`realServer-*` configs). Bootstrap today requires `emulateServer: true`. B6-d e2e RTL proof pending. | #197 Phase B UI launcher | **Open** — [phase-b-ui-launcher-plan.md §5](./phase-b-ui-launcher-plan.md#51-store-backend-reality-corrected--blocks-naive-b6-completion) |
 
 Gaps **A**, **B**, **D**, and **E** (bootstrap, playfield, profiles, setup consolidation) are done. The remaining work for running
-integration tests from the UI is **#197 Phase B** (launcher, session isolation, UI wiring) — see
-[plan.md](./plan.md) B0–B3. Prefer **isolated Vitest subprocess** first; use **embedded** host mode
-only when deliberately attaching to a live session.
+integration tests from the UI is **#197 Phase B** (launcher, session isolation, UI wiring, **B6-d proof**) — see
+[phase-b-ui-launcher-plan.md](./phase-b-ui-launcher-plan.md). Default UI path: **in-browser emulated IndexedDB**; other backends via **real server** (B6-c) or CLI.
 **Gap C-setup** is largely solved: one common bootstrap
 pattern (`RunnerTestSessionInterface` + `AppStackIntegrationTestSession` / `IntegrationTestSession`)
 is available across transformer and storage families, which makes CLI testing much easier to

@@ -6,12 +6,13 @@ import {
   loadBrowserIntegrationTestProfileConfig,
 } from "../../src/miroir-fwk/4-tests/integrationTestProfileAssets.js";
 
-describe("integrationTestProfileAssets (B5)", () => {
-  it("lists the default emulatedServer-sql profile", () => {
+describe("integrationTestProfileAssets (B5/B6-b)", () => {
+  it("lists the default emulatedServer-indexedDb profile", () => {
     expect(listBrowserIntegrationTestProfileNames()).toContain(DEFAULT_UI_INTEGRATION_PROFILE_NAME);
+    expect(DEFAULT_UI_INTEGRATION_PROFILE_NAME).toBe("emulatedServer-indexedDb");
   });
 
-  it("loads bundled miroir and log config for the default profile", async () => {
+  it("loads bundled indexedDb emulated config for the default profile", async () => {
     const { miroirConfig, logConfig } = await loadBrowserIntegrationTestProfileConfig(
       DEFAULT_UI_INTEGRATION_PROFILE_NAME,
     );

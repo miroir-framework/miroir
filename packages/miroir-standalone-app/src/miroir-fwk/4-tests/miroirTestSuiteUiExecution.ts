@@ -4,6 +4,10 @@ import {
   type MiroirTestSuiteUiExecutionMode,
 } from "miroir-core";
 
+import {
+  isUiIntegrationRunnerSuiteSupportedForInstance,
+  resolveUiIntegrationRunnerSuiteKey,
+} from "./resolveUiIntegrationRunnerSuiteKey.js";
 import { listUiIntegrationRunnerSuiteKeys } from "./uiIntegrationTestRunnerSuiteRegistry.js";
 
 export function resolveMiroirTestSuiteUiExecutionMode(
@@ -15,6 +19,11 @@ export function resolveMiroirTestSuiteUiExecutionMode(
 export function isUiIntegrationRunnerSuiteSupported(suiteKey: string): boolean {
   return listUiIntegrationRunnerSuiteKeys().includes(suiteKey);
 }
+
+export {
+  isUiIntegrationRunnerSuiteSupportedForInstance,
+  resolveUiIntegrationRunnerSuiteKey,
+} from "./resolveUiIntegrationRunnerSuiteKey.js";
 
 export function uiExecutionModeBadgeColors(mode: MiroirTestSuiteUiExecutionMode): {
   backgroundColor: string;

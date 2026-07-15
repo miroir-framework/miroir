@@ -6,6 +6,7 @@ import type { MiroirTestSuite } from "miroir-core";
 
 import {
   isUiIntegrationRunnerSuiteSupported,
+  isUiIntegrationRunnerSuiteSupportedForInstance,
   resolveMiroirTestSuiteUiExecutionMode,
   uiExecutionModeBadgeColors,
 } from "../../src/miroir-fwk/4-tests/miroirTestSuiteUiExecution.js";
@@ -27,9 +28,12 @@ describe("miroirTestSuiteUiExecution (B5)", () => {
     ).toBe("mixed");
   });
 
-  it("marks runner_library as UI integration supported", () => {
+  it("marks runner_library instance as UI integration supported (not miroirTestLabel alone)", () => {
     expect(isUiIntegrationRunnerSuiteSupported("runner_library")).toBe(true);
-    expect(isUiIntegrationRunnerSuiteSupported("unknown_suite")).toBe(false);
+    expect(isUiIntegrationRunnerSuiteSupported("runner.library")).toBe(false);
+    expect(isUiIntegrationRunnerSuiteSupportedForInstance(miroirTest_runner_library as never)).toBe(
+      true,
+    );
   });
 
   it("returns badge colors for each execution mode", () => {

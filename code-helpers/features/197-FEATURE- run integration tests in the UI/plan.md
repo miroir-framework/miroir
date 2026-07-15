@@ -2,7 +2,7 @@
 
 GitHub issue: TBD (`miroir-framework/miroir#197`)
 
-**Status:** Phase A ✅ · Phase R (R0–R6) ✅ · Gaps A/B/C-setup/D/E ✅ · **Phase B in progress** (B0–B5 ✅, B6+ — see [phase-b-ui-launcher-plan.md](./phase-b-ui-launcher-plan.md))
+**Status:** Phase A ✅ · Phase R (R0–R6) ✅ · Gaps A/B/C-setup/D/E ✅ · **Phase B in progress** (B0–B5 ✅ · B6 split — see [phase-b-ui-launcher-plan.md](./phase-b-ui-launcher-plan.md); **B6 not done** until B6-d e2e proof)
 
 **Depends on:** [Feature 196 — MiroirTest](../196-FEATURE-migrate-tests-to-MiroirTest/plan.md) (complete)
 
@@ -787,8 +787,8 @@ R6 is split into five TDD slices (R6-A … R6-E): suite `testParams`, `RunnerTes
 |-------|---------|
 | B0–B2 | Types, mutex, Vitest-free in-process suite runner |
 | B3–B4 | `UiIntegrationTestLauncher` + real `RunnerTestSession.teardown` |
-| B5–B6 | UI button, badges, profile picker ✅, ephemeral/pinned toggle ✅, inspector ✅ |
-| B7 | Transformer integ in same launcher |
+| B5–B6 | UI button, badges, profile picker (B6-a/b), real-server path (B6-c), **e2e proof** (B6-d) |
+| B7 | Transformer integ in same launcher — **blocked on B6-d** |
 | B8–B9 | Optional embedded troubleshooting; optional PSC subprocess catalog |
 
 ---
@@ -839,8 +839,8 @@ See [phase-b-ui-launcher-plan.md](./phase-b-ui-launcher-plan.md) §7 for granula
 
 - [x] In-browser data-isolated integ launcher (`hostMode: "isolated"`, dedicated tracker, mutex) — B1–B5
 - [ ] Run `runner_library` + transformer integ from UI without affecting working session stores — runner ✅ (B3–B5); transformer pending B7
-- [x] Ephemeral vs pinned run-target toggle; profile picker from `INTEGRATION_TEST_PROFILES` — B6
-- [x] Environment inspector shows config + last run context — B6
+- [x] Ephemeral vs pinned run-target toggle; profile picker with transport labels — B6-a/b
+- [ ] Environment inspector shows config + last run context **with proven end-to-end launch** — B6-d
 - [x] Teardown leaves no test schemas / indexedDb databases behind — B4
 - [ ] (Optional) embedded host path documented and gated — not default (B8)
 

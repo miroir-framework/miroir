@@ -1,10 +1,10 @@
 import type { LoggerOptions, MiroirConfigClient } from "miroir-core";
 
-import emulatedServerSqlMiroirConfig from "../../../tests/miroirConfig.test-emulatedServer-sql.json";
+import emulatedServerIndexedDbMiroirConfig from "../../../tests/miroirConfig.test-emulatedServer-indexedDb.json";
 import domainControllerDebugLogConfig from "../../../tests/specificLoggersConfig_DomainController_debug.json";
 import {
   DEFAULT_UI_INTEGRATION_PROFILE_NAME,
-  listBrowserAvailableIntegrationTestProfileNames,
+  listBrowserBundledIntegrationTestProfileNames,
 } from "./integrationTestProfileCatalog.js";
 
 export { DEFAULT_UI_INTEGRATION_PROFILE_NAME } from "./integrationTestProfileCatalog.js";
@@ -19,13 +19,13 @@ type BrowserIntegrationTestProfileAssets = {
 const BROWSER_INTEGRATION_TEST_PROFILE_ASSETS: Record<string, BrowserIntegrationTestProfileAssets> =
   {
     [DEFAULT_UI_INTEGRATION_PROFILE_NAME]: {
-      miroirConfig: emulatedServerSqlMiroirConfig as unknown as MiroirConfigClient,
+      miroirConfig: emulatedServerIndexedDbMiroirConfig as unknown as MiroirConfigClient,
       logConfig: domainControllerDebugLogConfig as LoggerOptions,
     },
   };
 
 export function listBrowserIntegrationTestProfileNames(): string[] {
-  return listBrowserAvailableIntegrationTestProfileNames();
+  return listBrowserBundledIntegrationTestProfileNames();
 }
 
 export async function loadBrowserIntegrationTestProfileConfig(

@@ -101,6 +101,18 @@ npm run testByFile -w miroir-standalone-app -- 4_view/JzodElementEditor.test.tsx
 
 No Postgres required (in-memory `LocalCache`). See [reference/testing.md § JzodElementEditor](../reference/testing.md#jzodelementeditortesttsx--component-integration-suite).
 
+### MiroirTestDisplay UI integration launch (B6-d1)
+
+RTL proof for Feature #197 — **Run Integration Tests** from the Miroir Tests report (`MiroirTestDisplay` → inspector). Single leaf: Return Book on `runner.library`.
+
+```bash
+VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-sql.json \
+VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_DomainController_debug.json \
+npm run testByFile -w miroir-standalone-app -- MiroirTestDisplayIntegrationLaunch.integ
+```
+
+Requires Postgres (Node emulated SQL via test mocks). Full detail: [reference/testing.md § MiroirTestDisplayIntegrationLaunch](../reference/testing.md#miroirtestdisplayintegrationlaunchintegtesttsx--ui-integration-launch-b6-d1).
+
 ### Per-file vitest
 
 ```bash

@@ -4,7 +4,7 @@
 
 **Prerequisites:** Phase A ✅ · Gaps A/B/C-setup/D/E ✅ · Phase R (R0–R6) ✅ · **JzodElementEditor component tests** documented and green ([testing.md](../../../docs/reference/testing.md#jzodelementeditortesttsx--component-integration-suite)) — baseline before B7
 
-**Status:** B0 complete ✅ · B1 complete ✅ · B2 complete ✅ · B3 complete ✅ · B4 complete ✅ · B5 complete ✅ · **B6 complete ✅** · B7+ not started
+**Status:** B0–B5 ✅ · **B6 in progress** (B6-a scaffold ✅ · B6-b backend model corrected ✅ · B6-c real-server gaps open · B6-d e2e proof **required for B6 done**) · B7 blocked on B6-d
 
 **Goal:** Run the same domainController-based MiroirTest integration suites from the Miroir UI that CLI runs today — with **data-isolated** test runs that do not pollute the user's working session — plus reporting and a troubleshooting inspector.
 
@@ -295,23 +295,134 @@ npm run testMiroir -w miroir-standalone-app -- --suites runner_library --mode in
 
 ---
 
-### B6 — Profile picker + inspector ✅
+### B6 — Profile picker + **proven** UI launch (mandatory B6-c + B6-d)
 
-**Delivered**
+**B6 is not complete** until **both B6-c and B6-d** pass. Unit tests and Node launcher integ alone are insufficient — the report UI must enable and complete a run.
 
-- Profile dropdown from `listIntegrationTestProfileCatalogEntries()` + descriptions (all Gap D profiles; CLI-only profiles disabled in browser)
-- **Run target toggle** (D2): “Ephemeral run” vs “Pinned suite targets” — persisted via `uiIntegrationTestRunPreferences` and synced from last run
-- `buildIntegrationTestRunInspectorModel` + expanded [`UiIntegrationTestRunInspectorSummary`](../../../packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Reports/UiIntegrationTestRunInspectorSummary.tsx):
-  - Resolved profile name + description
-  - `describeIntegrationTestSession(kind)` → bootstrap phases, playfield, `embeddedCapable`
-  - Last run: `runTarget`, param bank keys, assertion summary + recent failures
-- [`UiIntegrationTestRunControls`](../../../packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Reports/UiIntegrationTestRunControls.tsx) wired in `MiroirTestDisplay`
+**Implementation order (locked D12):** B6-d0 ✅ → **B6-d1 ✅** → **B6-d2 indexedDb manual** → **B6-c** → **B6-d2 real-server manual** → B6 done → B7. Follow-ups: Playwright (D10), Electron emulated (D11).
 
-**Tests**
+#### Proof tiers (clarified)
 
-- Unit: `buildIntegrationTestRunInspectorModel.unit.test.ts`, `integrationTestProfileCatalog.unit.test.ts`, `uiIntegrationTestRunPreferences.unit.test.ts` ✅
+| Tier | What it proves | Required for B6? |
+|------|----------------|------------------|
+| **T0** Unit (catalog, inspector model, suite key resolver) | Wiring logic | Necessary, not sufficient |
+| **T1** Node launcher integ (`uiIntegrationTestLauncher.integ.test.ts`) | Launcher + session in Vitest | Necessary, not sufficient |
+| **T2** Node RTL (`MiroirTestDisplayIntegrationLaunch.integ.test.tsx`) | Full React tree: button → launcher → inspector | **Mandatory (B6-d1)** |
+| **T3** Manual / automated **webApp** smoke | Browser: button enabled, run completes, inspector green | **Mandatory (B6-d2)** |
+| **T4** Real-server path | `realServer-*` with `miroir-server` up | **Mandatory (B6-c)** |
 
-**Note:** Only `emulatedServer-sql` is bundled for in-browser config today (D4 pilot); other profiles appear in picker as CLI-only until additional JSON assets are bundled.
+Vitest (T1/T2) may use **`emulatedServer-sql`** because Node registers store sections. T3 must use **`emulatedServer-indexedDb`** in the browser (or real-server after B6-c).
+
+---
+
+#### B6-a — UI scaffold ✅
+
+Picker, run-target toggle, inspector, preferences, `MiroirTestDisplay` wiring.
+
+---
+
+#### B6-b — Runtime-aware profile catalog (partial)
+
+| Slice | Status | Deliverable |
+|-------|--------|-------------|
+| **B6-b1** | ✅ | `UiIntegrationProfileTransport`; default `emulatedServer-indexedDb`; bundled indexedDb JSON |
+| **B6-b2** | ✅ | `detectUiIntegrationRuntime()`; picker filters by runtime (web hides SQL/mongo emulated); CI profiles omitted |
+| **B6-b3** | Open → **follow-up issue (D11)** | Electron launcher env: bundle `emulatedServer-sql` etc.; wire main-process emulated bootstrap |
+
+---
+
+#### B6-d0 — Suite registry key resolution ✅
+
+**Red:** `isUiIntegrationRunnerSuiteSupported("runner.library")` → false while report uses `miroirTestLabel`.
+
+**Green:** `resolveUiIntegrationRunnerSuiteKey(miroirTest)` → `runner_library`; button uses registry key.
+
+**Verify:** `integrationTestProfileCatalog.unit.test.ts` (resolveUiIntegrationRunnerSuiteKey block).
+
+---
+
+#### B6-d1 — Node RTL: Miroir Test details integration button (mandatory)
+
+**File:** `tests/4_view/MiroirTestDisplayIntegrationLaunch.integ.test.tsx`
+
+**Red**
+
+- Render `MiroirTestDisplay` with `miroirTest_runner_library` and `testLabel="runner.library"` (matches report)
+- Assert Run Integration button **not disabled** when profile `emulatedServer-indexedDb` (mock runtime webApp)
+- Click button → inspector shows `success: true`, suite `runner_library`, ≥1 assertion pass
+
+**Green**
+
+- Provider stack: snackbar, `ConfigurationService.registerTestImplementation({ expect })`, store section startups in `beforeAll` (same as `uiIntegrationTestLauncher.integ.test.ts`)
+- May use **`emulatedServer-sql`** profile in this test (Node) once click path works — proves depth beyond B3
+
+**Verify**
+
+```bash
+VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-sql.json \
+VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_DomainController_debug.json \
+npm run testByFile -w miroir-standalone-app -- MiroirTestDisplayIntegrationLaunch.integ
+```
+
+---
+
+#### B6-d2 — WebApp smoke checklist (mandatory — manual only for B6)
+
+**Locked (D10):** Manual checklist **sufficient for B6 done**. Browser automation (Playwright/Cypress) is a **follow-up issue** — not blocking B6 or B7.
+
+Execute before marking B6 done:
+
+1. `npm run dev -w miroir-standalone-app` — open Library → Miroir Test details for `runner_library`
+2. Profile picker shows **only** `emulatedServer-indexedDb` (+ real-server rows disabled until B6-c) — **not** SQL/mongo emulated
+3. **Run Integration Tests** button **enabled** (orange)
+4. Click run → inspector green; live session unchanged
+5. After B6-c: repeat with `realServer-sql` against **same** dev server (D9); confirm live library session unchanged
+
+Record outcome in plan checklist or PR test plan section. **Follow-up issue:** automate T3 (Playwright) for CI regression of webApp integ launch.
+
+---
+
+#### B6-c — Real-server UI path (mandatory)
+
+**Goal:** SQL / filesystem / mongo / remote IndexedDB in **webApp** via the **same dev `miroir-server`** (`https://localhost:3080`) + `realServer-*` configs.
+
+**Isolation model (locked D9):** **Same dev server, data-isolated `runTarget`.** No second server process. Ephemeral application/deployment UUIDs per integ run; session `teardown()` drops test deployment stores on that server. Live UI session stores remain untouched when `runTarget` UUIDs differ from the working session.
+
+**Implications for C1–C5:**
+
+- Bootstrap is **client-only REST** (`emulateServer: false`) — no in-browser `wireEmulatedStack`.
+- Preflight (C2) pings the **host's** `rootApiUrl` (same server the dev app already uses).
+- C4/C5 use existing `miroirConfig.test-realServer-*.json` without a separate test-server config family.
+- Teardown failure on shared server is **high severity** — inspector must surface failed drop; mutex release still happens in `finally`.
+
+| Slice | TDD | Deliverable |
+|-------|-----|-------------|
+| **C1** | Red: bootstrap rejects `emulateServer: false` today | `runRealServerClientBootstrap` or extend orchestrator — client REST only, no `wireEmulatedStack` |
+| **C2** | Red: no preflight | `assertMiroirServerReachable(rootApiUrl)` before run; snackbar on failure |
+| **C3** | Red: picker disabled | Bundle/fetch `realServer-sql.json`; enable row when C1+C2 green |
+| **C4** | Red: no Node proof | `uiIntegrationTestLauncher.realServer.integ.test.ts` — dev server up, `realServer-sql`, ephemeral runTarget, Return Book leaf, teardown drops test deployment |
+| **C5** | Manual T3 | webApp smoke: real-server profile against **same** localhost server; confirm live library session unchanged |
+
+**Verify (C4):**
+
+```bash
+# miroir-server running at https://localhost:3080
+VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-realServer-sql.json \
+npm run testByFile -w miroir-standalone-app -- uiIntegrationTestLauncher.realServer.integ
+```
+
+Close gaps G-UI-1 … G-UI-7 (§5.3).
+
+---
+
+#### B6 done checklist
+
+- [ ] B6-a scaffold ✅
+- [ ] B6-b2 runtime-filtered picker ✅ · B6-b3 Electron emulated → **follow-up** (not blocking B6 per D10 pattern)
+- [ ] B6-d0 suite key ✅
+- [x] **B6-d1** RTL integ test green (`MiroirTestDisplayIntegrationLaunch.integ.test.tsx` — Return Book leaf, ~19s)
+- [ ] **B6-d2** webApp manual smoke passed (indexedDb emulated)
+- [ ] **B6-c** C1–C5 real-server path green + webApp smoke on same dev server (D9)
 
 ---
 
@@ -369,15 +480,55 @@ flowchart TD
 
 ## 5. Config and profiles in the browser
 
-Gap D profiles use filesystem paths in Node (`loadTestConfigFiles`). UI launcher must resolve config without `process.env.PWD` assumptions:
+### 5.1 Runtime surfaces and store backends (corrected)
+
+Integration tests use an emulated in-process server (`setupMiroirTest`) or a **real** `miroir-server`. Which backends work depends on **where the UI runs**:
+
+| Runtime | Detect | Emulated IndexedDB | Emulated SQL/fs/mongo | Real server (`realServer-*`) |
+|---------|--------|--------------------|------------------------|------------------------------|
+| **webApp** (browser) | no `electronAPI.callMiroirIpc` | ✅ native PSC | ❌ | ✅ when B6-c (HTTP client only) |
+| **electron** (desktop) | `electronAPI.callMiroirIpc` | ✅ | ✅ main process owns emulated stack (same as app today) | ✅ when B6-c |
+| **nodeTest** (Vitest RTL) | test harness | ✅ | ✅ store startups in `beforeAll` | ✅ with server up |
+
+**UI profile picker rules (B6-b2):**
+
+- **Never list** `cliEmulatedOnly` (CI presets) in the picker.
+- **webApp picker:** `emulatedServer-indexedDb` + `realServer-*` (disabled until B6-c). **Do not show** `emulatedServer-sql` / `-filesystem` / `-mongodb`.
+- **electron picker:** all `emulatedServer-*` + `realServer-*` (real-server disabled until B6-c).
+
+Bundling `emulatedServer-sql` JSON into the web bundle does **not** make SQL runnable in the browser.
+
+### 5.2 Known defect — grey Run button (B6-d0) ✅
+
+[`ReportSectionMiroirTest`](../../../packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Reports/ReportSectionMiroirTest.tsx) passes `testLabel = miroirTestLabel` (`runner.library`) but the launcher registry key is **`runner_library`** (`instance.name`). `isUiIntegrationRunnerSuiteSupported("runner.library")` was false → button greyed even with a valid profile.
+
+**Fix:** `resolveUiIntegrationRunnerSuiteKey(instance)` — map by `instance.name` or `miroirTestLabel` → registry key; pass registry key to `RunMiroirTestSuiteButton.testSuiteKey`.
+
+---
+
+Gap D profiles use filesystem paths in Node (`loadTestConfigFiles`). UI launcher bundles or fetches JSON:
 
 | Approach | Pros | Cons |
 |----------|------|------|
-| **A — Bundled profile JSON** (import test config JSON in launcher module) | Simple; works in browser | Duplicate path maintenance |
-| **B — Fetch from known static URLs** (dev server serves `/tests/*.json`) | Single source | Needs vite static asset wiring |
-| **C — Reuse host `MiroirConfig` + profile overrides** | Matches live stack store types | Risk of coupling integ run to live config; still need isolated runTarget |
+| **A — Bundled profile JSON** | Simple; works offline | Per-profile maintenance; today: indexedDb only |
+| **B — Fetch from static URLs** | Single source | Vite asset wiring |
+| **C — Reuse host `MiroirConfig`** | Matches live stack | Couples integ to live session |
 
-**Proposed default:** **B** for Phase B pilot — vite dev + production build copies `packages/miroir-standalone-app/tests/miroirConfig.*.json` to served assets; profile picker sets which URL pair to load. Document in B3.
+**Default (B6-b):** **A** for `emulatedServer-indexedDb`. Real-server profiles (B6-c) reuse same loader once bootstrap supports `emulateServer: false`.
+
+### 5.3 Gap analysis — real-server integ from UI (B6-c)
+
+| # | Gap | Current state | Needed for B6-c |
+|---|-----|---------------|-----------------|
+| G-UI-1 | **`runAppStackIntegrationBootstrap` requires `emulateServer: true`** | Throws if `emulateServer: false` | New phase or parallel bootstrap: **client-only wire** to `rootApiUrl` (HTTP REST), skip in-process server PSC |
+| G-UI-2 | **Browser orchestrator imports `RunnerTestSession` from `tests/helpers/`** | Node store startups assumed in session init | Browser-safe session factory in `src/` OR lazy server path that never calls Node-only stores in browser |
+| G-UI-3 | **No store-section registration in browser app startup** | `index.tsx` does not call `miroirPostgresStoreSectionStartup` etc. | IndexedDB section may register in app bundle; SQL/fs/mongo only on server for real-server path |
+| G-UI-4 | **Real-server profiles absent from Gap D `INTEGRATION_TEST_PROFILES`** | Only emulated profiles in Node catalog | Extend UI catalog (`integrationTestProfileCatalog.ts`) — done; wire loader + bootstrap |
+| G-UI-5 | **Server reachability / TLS** | Documented for CLI real-server tests (`NODE_EXTRA_CA_CERTS`, mkcert) | UI preflight: ping `rootApiUrl` / health; snackbar if server down |
+| G-UI-6 | **Profile picker enabled real-server rows** | Listed, disabled until B6-c | Enable when G-UI-1…5 satisfied |
+| G-UI-7 | **No proof integ button works end-to-end** | B3 Node integ test calls launcher directly; B5 unit tests only | **B6-d** RTL suite (see below) |
+
+Reference configs: `tests/miroirConfig.test-realServer-sql.json`, `realServer-indexedDb.json`, `realServer-filesystem.json`. See [testing.md](../../../docs/reference/testing.md#config-file-catalogue).
 
 ---
 
@@ -388,7 +539,13 @@ Gap D profiles use filesystem paths in Node (`loadTestConfigFiles`). UI launcher
 | **D1** | **Primary transport** | **In-browser async orchestrator** — data-isolated session in the same JS realm; Vitest subprocess **not** the UI model (optional B9 for PSC-only dev catalog) |
 | **D2** | **UI `runTarget` policy** | **User toggle:** “Ephemeral run” → always `generateRunnerTestRunTarget()` (fresh UUID v4); “Pinned suite targets” → `resolveRunnerTestRunTarget({ suite })` (honor JSON pins, generate when unpinned) |
 | **D3** | **First UI suites** | **`runner_library` + transformer integ** (e.g. `miroirCoreTransformers`) — B3 runner pilot, B7 transformer in same Phase B scope (not deferred post-done) |
-| **D4** | Config loading in browser | **Static fetch of profile JSON** (§5 approach B) — _proposed; confirm at B3_ |
+| **D4** | Config / runtime | **webApp:** indexedDb emulated + real-server (B6-c). **electron:** all emulatedServer-* + real-server. **CI profiles:** never in picker |
+| **D8** | **Proof depth for B6** | **T2** Node RTL (B6-d1) + **T3** webApp smoke (B6-d2) + **T4** real-server (B6-c) — all mandatory; T0/T1 necessary only |
+| **D9** | **Real-server isolation (B6-c)** | **Same dev `miroir-server`**, data-isolated ephemeral `runTarget` + teardown — no dedicated test-server process |
+| **D10** | **B6-d2 webApp proof** | **Manual checklist sufficient for B6 done**; Playwright/Cypress T3 automation → **follow-up issue** (not blocking B7) |
+| **D11** | **B6-b3 Electron emulated** | **Follow-up issue** — webApp B6 proof sufficient; Electron integ reuses main-process stack after B6-c |
+| **D12** | **B6 implementation order** | **B6-d1 → B6-d2 (indexedDb manual) → B6-c → B6-d2 (real-server manual)** → B6 done → B7 |
+| **D13** | **B6-d1 RTL scope** | **Single leaf first** (Return Book — same as `uiIntegrationTestLauncher.integ.test.ts`); full `runner_library` optional second test after green |
 | **D5** | Mutex policy | **Reject** second run with snackbar “integ run in progress” (no queue v1) — _proposed_ |
 | **D6** | Mixed unit+integ suite | **Split buttons**: “Run unit tests” + “Run integ tests” when mixed — _proposed_ |
 | **D7** | Cancel mid-run | Phase B v1: no cancel; B+ add `AbortSignal` if bootstrap supports it — _defer_ |
@@ -403,9 +560,11 @@ Gap D profiles use filesystem paths in Node (`loadTestConfigFiles`). UI launcher
 - [ ] Integ uses dedicated activity tracker; unit button behavior unchanged
 - [ ] Mutex prevents overlapping integ runs
 - [ ] `RunnerTestSession.teardown` drops ephemeral deployment stores
-- [x] Mode badge visible on Miroir Test reports (`unit` / `integ`)
-- [x] Inspector shows profile + last runTarget + session descriptor + assertion summary
-- [x] Profile picker lists `INTEGRATION_TEST_PROFILES` (browser: catalog with CLI-only entries disabled)
+- [x] Mode badge visible on Miroir Test reports (`unit` / `integ`) — B5
+- [ ] Inspector shows profile + last runTarget + session descriptor + assertion summary — B6-a ✅; proof via B6-d
+- [ ] Profile picker lists profiles with correct **transport** labels (indexedDb browser / CLI-only / real-server) — B6-b ✅
+- [ ] **B6-d:** RTL integ test clicks “Run Integration Tests” on Miroir Test details and asserts inspector success
+- [ ] (B6-c) Real-server profiles launchable when `miroir-server` running — optional for first B6 done if B6-d uses Node emulated; required for SQL/fs/mongo **in browser**
 - [ ] Transformer integ suite (`miroirCoreTransformers` or equivalent) runnable from same launcher (B7 — in scope per D3)
 
 ### Global non-regression criteria

@@ -1,8 +1,11 @@
 import { useEffect, useState } from "react";
 
 import {
-  listIntegrationTestProfileCatalogEntries,
+  detectUiIntegrationRuntime,
+  isUiIntegrationProfileLaunchableInBrowser,
+  listUiIntegrationProfileCatalogForPicker,
   type IntegrationTestProfileCatalogEntry,
+  type UiIntegrationProfileTransport,
 } from "../../../4-tests/integrationTestProfileCatalog.js";
 import {
   getUiIntegrationTestRunPreferences,
@@ -50,11 +53,23 @@ const legendStyle: React.CSSProperties = {
   marginRight: "4px",
 };
 
-function profileOptionLabel(entry: IntegrationTestProfileCatalogEntry): string {
-  if (entry.browserAvailable) {
-    return `${entry.name} — ${entry.description}`;
+function transportHint(transport: UiIntegrationProfileTransport): string {
+  switch (transport) {
+    case "browserEmulatedIndexedDb":
+      return "browser IndexedDB";
+    case "electronEmulated":
+      return "Electron emulated";
+    case "realServer":
+      return "requires miroir-server (B6-c)";
+    case "cliEmulatedOnly":
+      return "CLI only";
   }
-  return `${entry.name} — ${entry.description} (CLI only — config not bundled in browser)`;
+}
+
+function profileOptionLabel(entry: IntegrationTestProfileCatalogEntry): string {
+  const launchable = isUiIntegrationProfileLaunchableInBrowser(entry.name);
+  const suffix = launchable ? "" : ` [${transportHint(entry.uiTransport)}]`;
+  return `${entry.name} — ${entry.description}${suffix}`;
 }
 
 export function UiIntegrationTestRunControls() {
@@ -68,9 +83,12 @@ export function UiIntegrationTestRunControls() {
     [],
   );
 
-  const profileEntries = listIntegrationTestProfileCatalogEntries();
+  const runtime = detectUiIntegrationRuntime();
+  const profileEntries = listUiIntegrationProfileCatalogForPicker(runtime);
   const selectedProfile = profileEntries.find((entry) => entry.name === preferences.profileName);
-  const selectedProfileAvailable = selectedProfile?.browserAvailable ?? false;
+  const selectedProfileLaunchable = isUiIntegrationProfileLaunchableInBrowser(
+    preferences.profileName,
+  );
 
   const onProfileChange = (profileName: string) => {
     setUiIntegrationTestRunPreferences({ profileName });
@@ -106,17 +124,24 @@ export function UiIntegrationTestRunControls() {
           onChange={(event) => onProfileChange(event.target.value)}
         >
           {profileEntries.map((entry) => (
-            <option key={entry.name} value={entry.name} disabled={!entry.browserAvailable}>
+            <option
+              key={entry.name}
+              value={entry.name}
+              disabled={!isUiIntegrationProfileLaunchableInBrowser(entry.name)}
+            >
               {profileOptionLabel(entry)}
             </option>
           ))}
         </select>
       </div>
 
-      {!selectedProfileAvailable && (
+      {!selectedProfileLaunchable && selectedProfile && (
         <div style={{ fontSize: "12px", color: "#c62828", marginTop: "4px" }}>
-          Selected profile is not bundled for in-browser runs — choose emulatedServer-sql or run via
-          CLI.
+          {selectedProfile.uiTransport === "realServer"
+            ? "Real-server profiles require miroir-server (B6-c)."
+            : selectedProfile.uiTransport === "electronEmulated" && runtime === "webApp"
+              ? "SQL/filesystem/Mongo emulated profiles are Electron-only — use emulatedServer-indexedDb in the browser, or real-server (B6-c)."
+              : "Profile not launchable in this runtime yet."}
         </div>
       )}
 
@@ -149,10 +174,6 @@ export function UiIntegrationTestRunControls() {
   );
 }
 
-export function isSelectedIntegrationProfileBrowserAvailable(): boolean {
-  const { profileName } = getUiIntegrationTestRunPreferences();
-  const entry = listIntegrationTestProfileCatalogEntries().find(
-    (catalogEntry) => catalogEntry.name === profileName,
-  );
-  return entry?.browserAvailable ?? false;
+export function isSelectedIntegrationProfileBrowserLaunchable(): boolean {
+  return isUiIntegrationProfileLaunchableInBrowser(getUiIntegrationTestRunPreferences().profileName);
 }

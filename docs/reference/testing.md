@@ -519,6 +519,7 @@ npm run testByFile -w miroir-standalone-app -- ExtractorPersistenceStoreRunner.i
 | File | Store / config | Focus |
 |------|----------------|-------|
 | `JzodElementEditor.test.tsx` | In-memory `LocalCache` (see below); optional `VITE_MIROIR_*` / `--profile` for logging parity | **JzodElementEditor** — array, enum, literal, object, union, any editors (Formik + RTL) |
+| `MiroirTestDisplayIntegrationLaunch.integ.test.tsx` | Node emulated SQL via mock env (see below); UI profile `emulatedServer-indexedDb` | **Feature #197 B6-d1** — `MiroirTestDisplay` → Run Integration Tests → inspector (Return Book leaf) |
 | `JzodElementEditorReactCodeMirror.test.tsx` | — | CodeMirror sub-editor (currently commented out) |
 | `ReportPage.integ.test.tsx` | Uses shared React test tools | Report rendering smoke tests |
 | `BlobEditorField.integ.test.tsx` | No | Blob field editor component |
@@ -580,6 +581,33 @@ No Postgres or emulated server is required for the current harness (unlike `Doma
 
 **Relation to Feature #197 Phase B:** These component tests validate the schema-editing UI that transformer / runner integ suites depend on indirectly. They are a **pre-B7 baseline** — run green before extending UI integration coverage to transformer suites.
 
+##### `MiroirTestDisplayIntegrationLaunch.integ.test.tsx` — UI integration launch (B6-d1)
+
+RTL proof that the **Miroir Tests** report can launch domainController-based integration from [`MiroirTestDisplay`](../../../packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Reports/MiroirTestDisplay.tsx): enabled **Run Integration Tests** button → in-process launcher → **Integration Test Inspector** with `success: true`.
+
+**Scope (D13):** single leaf — `Return Book Test Composite Action` on suite `runner.library` (registry key `runner_library`), same leaf as [`uiIntegrationTestLauncher.integ.test.ts`](../../../packages/miroir-standalone-app/tests/helpers/uiIntegrationTestLauncher.integ.test.ts).
+
+**Key files**
+
+| Path | Role |
+|------|------|
+| `tests/4_view/MiroirTestDisplayIntegrationLaunch.integ.test.tsx` | RTL harness: `MiroirContextReactProvider`, click integration button, assert inspector |
+| `tests/helpers/miroirTestDisplayIntegrationLaunchMocks.ts` | `vi.mock` for Node SQL launcher env, Return Book filter, `TestExecutionPanel` stub (avoids GlideDataGrid unmount in happy-dom) |
+
+**Run**
+
+```bash
+VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-sql.json \
+VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_DomainController_debug.json \
+npm run testByFile -w miroir-standalone-app -- MiroirTestDisplayIntegrationLaunch.integ
+```
+
+Expect ~20–40s (Postgres emulated stack). The UI picker profile stays **`emulatedServer-indexedDb`** (browser-launchable); Vitest mocks `loadBrowserUiIntegrationTestLauncherEnvironment` to the Node SQL backend for reliable proof depth — same pattern documented for B6-d in [phase-b-ui-launcher-plan.md](../../code-helpers/features/197-FEATURE-%20run%20integration%20tests%20in%20the%20UI/phase-b-ui-launcher-plan.md).
+
+**Prerequisites:** Postgres reachable at the connection string in `miroirConfig.test-emulatedServer-sql.json` (same as other SQL integ suites). Store section startups in `beforeAll` match `uiIntegrationTestLauncher.integ.test.ts`.
+
+**Proof tiers (#197):** T0/T1 (unit + Node launcher) are necessary but not sufficient; this file is mandatory **T2** before B6 manual webApp smoke (B6-d2) and real-server path (B6-c).
+
 ```bash
 npm run testByFile -w miroir-standalone-app -- BlobEditorField.integ
 npm run testByFile -w miroir-standalone-app -- ReportPage.integ
@@ -631,7 +659,19 @@ Model.CRUD may pass `skipResetMiroirModelInInit: true` so reset runs only in `be
 | **`isolated`** | CLI / Vitest (default) | Full `wireEmulatedStack` + phased deploy via `ensureMiroirPlatform` / `ensureLibraryPlayfield` |
 | **`embedded`** | Live UI host (advanced) | Inject `hostExecutionEnvironment`; skip `setupMiroirTest` and destructive deploy when `requireExisting` |
 
-#197 Phase B ([plan.md](../../code-helpers/features/197-FEATURE-%20run%20integration%20tests%20in%20the%20UI/plan.md), [phase-b-ui-launcher-plan.md](../../code-helpers/features/197-FEATURE-%20run%20integration%20tests%20in%20the%20UI/phase-b-ui-launcher-plan.md)) runs domainController-based integ **in-browser** with data isolation (`hostMode: "isolated"`, ephemeral `runTarget`, dedicated activity tracker — live `MiroirContext` untouched). Embedded mode attaches to a running host without re-deploying meta-model stores (advanced, optional B8).
+#197 Phase B runs domainController-based integ from the **Miroir Tests** report UI with data isolation (`hostMode: "isolated"`, ephemeral `runTarget`, dedicated activity tracker). See [plan.md](../../code-helpers/features/197-FEATURE-%20run%20integration%20tests%20in%20the%20UI/plan.md) and [phase-b-ui-launcher-plan.md](../../code-helpers/features/197-FEATURE-%20run%20integration%20tests%20in%20the%20UI/phase-b-ui-launcher-plan.md).
+
+#### UI integration — store backends (Gap F)
+
+| Transport | Profile example | Where it runs | Notes |
+|-----------|-----------------|---------------|-------|
+| **Browser emulated IndexedDB** | `emulatedServer-indexedDb` | In-browser launcher (default) | Only emulated backend with native PSC in the browser |
+| **CLI emulated** | `emulatedServer-sql`, `-filesystem`, `-mongodb` | `testMiroir` / `testByFile` (Node) | Postgres/filesystem/Mongo drivers register in Vitest `beforeAll` |
+| **Real server** | `realServer-sql`, `-indexedDb`, `-filesystem` | Browser client → `https://localhost:3080` | Requires running `miroir-server`; B6-c |
+
+Bundling `emulatedServer-sql` JSON into the UI does **not** enable SQL integ in the browser. Proof of the **Run Integration Tests** button is **`MiroirTestDisplayIntegrationLaunch.integ.test.tsx`** (B6-d1 ✅ — RTL click path + inspector); Vitest uses Node emulated SQL via mocks while the UI profile remains `emulatedServer-indexedDb`. See [§ MiroirTestDisplayIntegrationLaunch](#miroirtestdisplayintegrationlaunchintegtesttsx--ui-integration-launch-b6-d1). Companion launcher test: [`uiIntegrationTestLauncher.integ.test.ts`](../../packages/miroir-standalone-app/tests/helpers/uiIntegrationTestLauncher.integ.test.ts).
+
+Embedded mode attaches to a running host without re-deploying meta-model stores (advanced, optional B8).
 
 | Session kind | `embeddedCapable` | Notes |
 |--------------|-------------------|-------|

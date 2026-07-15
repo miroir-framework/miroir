@@ -9,11 +9,12 @@ import {
 
 import { packageName } from "../../../../constants.js";
 import {
-  isUiIntegrationRunnerSuiteSupported,
+  isUiIntegrationRunnerSuiteSupportedForInstance,
+  resolveUiIntegrationRunnerSuiteKey,
   resolveMiroirTestSuiteUiExecutionMode,
   uiExecutionModeBadgeColors,
 } from "../../../4-tests/miroirTestSuiteUiExecution.js";
-import { getIntegrationTestProfileCatalogEntry } from "../../../4-tests/integrationTestProfileCatalog.js";
+import { isUiIntegrationProfileLaunchableInBrowser } from "../../../4-tests/integrationTestProfileCatalog.js";
 import { useUiIntegrationTestRunPreferences } from "../../../4-tests/useUiIntegrationTestRunPreferences.js";
 import { cleanLevel } from "../../constants.js";
 import {
@@ -65,12 +66,16 @@ export const MiroirTestDisplay = (props: MiroirTestSectionProps) => {
   );
   const uiExecutionMode = resolveMiroirTestSuiteUiExecutionMode(instance.definition);
   const badgeColors = uiExecutionModeBadgeColors(uiExecutionMode);
-  const integrationUiSupported = isUiIntegrationRunnerSuiteSupported(testLabel);
+  const integrationSuiteKey = useMemo(
+    () => resolveUiIntegrationRunnerSuiteKey(instance),
+    [instance],
+  );
+  const integrationUiSupported = isUiIntegrationRunnerSuiteSupportedForInstance(instance);
 
   const integrationPreferences = useUiIntegrationTestRunPreferences();
-  const integrationProfileBrowserAvailable =
-    getIntegrationTestProfileCatalogEntry(integrationPreferences.profileName)?.browserAvailable ??
-    false;
+  const integrationProfileBrowserLaunchable = isUiIntegrationProfileLaunchableInBrowser(
+    integrationPreferences.profileName,
+  );
 
   const currentTestFilter = useMemo(() => {
     return buildTestFilter(testSelectionState, miroirTestResultsData);
@@ -144,7 +149,7 @@ export const MiroirTestDisplay = (props: MiroirTestSectionProps) => {
           <UiIntegrationTestRunControls />
           <RunMiroirTestSuiteButton
             miroirTestSuite={instance}
-            testSuiteKey={testLabel}
+            testSuiteKey={integrationSuiteKey ?? testLabel}
             useSnackBar={useSnackBar}
             testFilter={currentTestFilter}
             onTestComplete={handleTestComplete}
@@ -152,21 +157,18 @@ export const MiroirTestDisplay = (props: MiroirTestSectionProps) => {
             integrationProfileName={integrationPreferences.profileName}
             integrationRunTargetMode={integrationPreferences.runTargetMode}
             label={`Run ${testLabel} Integration Tests`}
-            disabled={
-              !integrationUiSupported ||
-              !integrationProfileBrowserAvailable
-            }
+            disabled={!integrationUiSupported || !integrationProfileBrowserLaunchable}
             title={
               !integrationUiSupported
-                ? `UI integration launcher does not support "${testLabel}" yet`
-                : !integrationProfileBrowserAvailable
-                  ? "Selected profile is not bundled for in-browser runs"
+                ? `UI integration launcher does not support this suite (registry key: ${integrationSuiteKey ?? "unknown"})`
+                : !integrationProfileBrowserLaunchable
+                  ? "Selected profile is not launchable in the browser — use emulatedServer-indexedDb or wait for B6-c (real server)"
                   : undefined
             }
             style={{
               ...runButtonStyle,
               backgroundColor:
-                integrationUiSupported && integrationProfileBrowserAvailable
+                integrationUiSupported && integrationProfileBrowserLaunchable
                   ? "#ef6c00"
                   : "#9e9e9e",
             }}
