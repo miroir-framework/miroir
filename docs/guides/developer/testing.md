@@ -127,7 +127,17 @@ npm run testByFile -w miroir-standalone-app -- DomainController.integ.Data
 
 Swap the config file to exercise filesystem, IndexedDB, or MongoDB backends (`miroirConfig.test-emulatedServer-filesystem.json`, etc.). The final argument is a Vitest filename filter.
 
-Common filters: `DomainController.integ`, `PersistenceStoreController.integ`, `ExtractorPersistenceStoreRunner.integ`, `ReportPage.integ`, `BlobEditorField.integ`.
+Common filters: `DomainController.integ`, `PersistenceStoreController.integ`, `ExtractorPersistenceStoreRunner.integ`, `ReportPage.integ`, `BlobEditorField.integ`, `JzodElementEditor.test`.
+
+**JzodElementEditor component tests** — large RTL suite for the schema editor (`tests/4_view/JzodElementEditor.test.tsx`). Uses in-memory `LocalCache`; optional profile env for logging parity:
+
+```bash
+VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-sql.json \
+VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_DomainController_debug.json \
+npm run testByFile -w miroir-standalone-app -- JzodElementEditor.test
+```
+
+Filter one editor: `npm run testByFile -w miroir-standalone-app -- 4_view/JzodElementEditor.test.tsx -t "JzodObjectEditor"`. Full detail: [reference/testing.md](../../reference/testing.md#jzodelementeditortesttsx--component-integration-suite).
 
 Full catalogue, config matrix, and architecture comparison with `testMiroir`: [reference/testing.md](../../reference/testing.md#running-app-stack-integration-tests-testbyfile).
 

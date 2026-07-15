@@ -516,12 +516,69 @@ npm run testByFile -w miroir-standalone-app -- ExtractorPersistenceStoreRunner.i
 
 #### View / React (`tests/4_view/`)
 
-| File | Store needed | Focus |
-|------|-------------|-------|
+| File | Store / config | Focus |
+|------|----------------|-------|
+| `JzodElementEditor.test.tsx` | In-memory `LocalCache` (see below); optional `VITE_MIROIR_*` / `--profile` for logging parity | **JzodElementEditor** — array, enum, literal, object, union, any editors (Formik + RTL) |
+| `JzodElementEditorReactCodeMirror.test.tsx` | — | CodeMirror sub-editor (currently commented out) |
 | `ReportPage.integ.test.tsx` | Uses shared React test tools | Report rendering smoke tests |
 | `BlobEditorField.integ.test.tsx` | No | Blob field editor component |
 | `JzodObjectEditor.BlobIntegration.integ.test.tsx` | No | JzodObjectEditor blob integration |
 | `Runner_*.integ.test.tsx` | Yes (`VITE_MIROIR_*`) | Legacy runner tests — migrating to `miroir-runner-tests.integ.test.ts` |
+
+##### `JzodElementEditor.test.tsx` — component integration suite
+
+Large React component test harness for [`JzodElementEditor`](../../../packages/miroir-standalone-app/src/miroir-fwk/4_view/components/ValueObjectEditor/JzodElementEditor.tsx). This is **not** a DomainController / app-stack bootstrap test: it seeds an in-memory [`LocalCache`](../../../packages/miroir-react) with Miroir meta-model + library fixtures from `miroir-test-app_deployment-library`, wraps the editor in Formik + MUI theme providers, and drives UI with React Testing Library (`userEvent`, `fireEvent`, `waitFor`).
+
+**Key files**
+
+| Path | Role |
+|------|------|
+| `tests/4_view/JzodElementEditor.test.tsx` | Test case definitions (`getJzod*EditorTests`) + suite registry passed to `prepareAndRunTestSuites` |
+| `tests/4_view/JzodElementEditorTestTools.tsx` | `getWrapperLoadingLocalCache`, `runJzodEditorTest`, `prepareAndRunTestSuites`, DOM helpers (`extractValuesFromRenderedElements`, …) |
+
+**Active sub-suites** (67 tests today): `JzodArrayEditor`, `JzodEnumEditor`, `JzodLiteralEditor`, `JzodObjectEditor`, `JzodSimpleTypeEditor`, `JzodUnionEditor`, `JzodAnyEditor`. Additional suites (book instance, entity definition, endpoint, performance) exist in the file but are commented out in the registry.
+
+**Run the full suite**
+
+```bash
+# Explicit config (recommended — matches other standalone-app integ; DomainController debug logging)
+VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-sql.json \
+VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_DomainController_debug.json \
+npm run testByFile -w miroir-standalone-app -- JzodElementEditor.test
+```
+
+```bash
+# Profile shorthand (Gap D — same config surface as testMiroir / other testByFile suites)
+npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-sql JzodElementEditor.test
+```
+
+```bash
+# Minimal — no profile env (works today; harness uses in-memory LocalCache only)
+npm run testByFile -w miroir-standalone-app -- JzodElementEditor.test
+```
+
+Expect ~60–80s for all 67 tests (single-threaded Vitest pool). `testByFile` sets `VITE_TEST_MODE=true` and uses `--poolOptions.forks.singleFork`.
+
+**Filter to one editor sub-suite**
+
+Use the full Vitest path so the filename filter does not match other test files:
+
+```bash
+npm run testByFile -w miroir-standalone-app -- 4_view/JzodElementEditor.test.tsx -t "JzodObjectEditor"
+```
+
+Vitest test names follow `{EditorName} - jzodElementEditor - {case label}` (see `prepareAndRunTestSuites` in `JzodElementEditorTestTools.tsx`).
+
+**Prerequisites**
+
+```bash
+npm run devBuild -w miroir-core
+npm run devBuild -w miroir-test-app_deployment-library
+```
+
+No Postgres or emulated server is required for the current harness (unlike `DomainController.integ.*` or `PersistenceStoreController.integ`). Setting `VITE_MIROIR_*` or `--profile` is optional for execution but recommended when aligning logging and config with other integration tests.
+
+**Relation to Feature #197 Phase B:** These component tests validate the schema-editing UI that transformer / runner integ suites depend on indirectly. They are a **pre-B7 baseline** — run green before extending UI integration coverage to transformer suites.
 
 ```bash
 npm run testByFile -w miroir-standalone-app -- BlobEditorField.integ

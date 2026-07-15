@@ -2,7 +2,7 @@
 
 **Parent:** [plan.md](./plan.md) (Feature #197)
 
-**Prerequisites:** Phase A ✅ · Gaps A/B/C-setup/D/E ✅ · Phase R (R0–R6) ✅
+**Prerequisites:** Phase A ✅ · Gaps A/B/C-setup/D/E ✅ · Phase R (R0–R6) ✅ · **JzodElementEditor component tests** documented and green ([testing.md](../../../docs/reference/testing.md#jzodelementeditortesttsx--component-integration-suite)) — baseline before B7
 
 **Status:** B0 complete ✅ · B1 complete ✅ · B2 complete ✅ · B3 complete ✅ · B4 complete ✅ · B5 complete ✅ · **B6 complete ✅** · B7+ not started
 

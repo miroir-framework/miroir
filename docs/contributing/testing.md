@@ -83,6 +83,24 @@ npm run testByFile -w miroir-standalone-app -- ExtractorPersistenceStoreRunner.i
 
 Full catalogue: [reference/testing.md](../reference/testing.md#running-app-stack-integration-tests-testbyfile).
 
+### JzodElementEditor component tests
+
+React Testing Library suite for the Jzod schema editor — prerequisite baseline before Feature #197 Phase B transformer UI work:
+
+```bash
+VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-sql.json \
+VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_DomainController_debug.json \
+npm run testByFile -w miroir-standalone-app -- JzodElementEditor.test
+
+# Profile shorthand
+npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-sql JzodElementEditor.test
+
+# One editor sub-suite (67 tests total)
+npm run testByFile -w miroir-standalone-app -- 4_view/JzodElementEditor.test.tsx -t "JzodObjectEditor"
+```
+
+No Postgres required (in-memory `LocalCache`). See [reference/testing.md § JzodElementEditor](../reference/testing.md#jzodelementeditortesttsx--component-integration-suite).
+
 ### Per-file vitest
 
 ```bash

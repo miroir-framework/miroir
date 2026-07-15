@@ -3433,36 +3433,36 @@ const jzodElementEditorTests: Record<
     getJzodEditorTests: getJzodArrayEditorTests,
     modes: "jzodElementEditor",
   },
-  // JzodEnumEditor: {
-  //   editor: getJzodElementEditorForTest(pageLabel),
-  //   getJzodEditorTests: getJzodEnumEditorTests,
-  //   modes: "jzodElementEditor",
-  // },
-  // JzodLiteralEditor: {
-  //   editor: getJzodElementEditorForTest(pageLabel),
-  //   getJzodEditorTests: getJzodLiteralEditorTests,
-  //   modes: "jzodElementEditor",
-  // },
-  // JzodObjectEditor: {
-  //   editor: getJzodElementEditorForTest(pageLabel),
-  //   getJzodEditorTests: getJzodObjectEditorTests,
-  //   modes: "jzodElementEditor",
-  // },
-  // JzodSimpleTypeEditor: {
-  //   editor: getJzodElementEditorForTest(pageLabel),
-  //   getJzodEditorTests: getJzodSimpleTypeEditorTests,
-  //   modes: "jzodElementEditor",
-  // },
-  // JzodUnionEditor: {
-  //   editor: getJzodElementEditorForTest(pageLabel),
-  //   getJzodEditorTests: getJzodUnionEditorTests,
-  //   modes: "jzodElementEditor",
-  // },
-  // JzodAnyEditor: {
-  //   editor: getJzodElementEditorForTest(pageLabel),
-  //   getJzodEditorTests: getJzodAnyEditorTests,
-  //   modes: "jzodElementEditor",
-  // },
+  JzodEnumEditor: {
+    editor: getJzodElementEditorForTest(pageLabel),
+    getJzodEditorTests: getJzodEnumEditorTests,
+    modes: "jzodElementEditor",
+  },
+  JzodLiteralEditor: {
+    editor: getJzodElementEditorForTest(pageLabel),
+    getJzodEditorTests: getJzodLiteralEditorTests,
+    modes: "jzodElementEditor",
+  },
+  JzodObjectEditor: {
+    editor: getJzodElementEditorForTest(pageLabel),
+    getJzodEditorTests: getJzodObjectEditorTests,
+    modes: "jzodElementEditor",
+  },
+  JzodSimpleTypeEditor: {
+    editor: getJzodElementEditorForTest(pageLabel),
+    getJzodEditorTests: getJzodSimpleTypeEditorTests,
+    modes: "jzodElementEditor",
+  },
+  JzodUnionEditor: {
+    editor: getJzodElementEditorForTest(pageLabel),
+    getJzodEditorTests: getJzodUnionEditorTests,
+    modes: "jzodElementEditor",
+  },
+  JzodAnyEditor: {
+    editor: getJzodElementEditorForTest(pageLabel),
+    getJzodEditorTests: getJzodAnyEditorTests,
+    modes: "jzodElementEditor",
+  },
   // // // ################# PERFORMANCE
   // // JzodEditorPerformanceTests: {
   // //   editor: JzodElementEditor,
