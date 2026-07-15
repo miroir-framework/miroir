@@ -5,9 +5,11 @@ certs/*.key
 node_modules*/
 node_modules/.cache*/
 tmp*/
+packages/graphify-out*/
 packages/miroir-cli/dist*/
 packages/miroir-cli/tmp*/
 packages/miroir-cli/tests/tmp*/
+packages/miroir-core/graphify-out*/
 packages/miroir-core/node_modules*/
 packages/miroir-core/dist*/
 packages/miroir-core/dist/index.js
