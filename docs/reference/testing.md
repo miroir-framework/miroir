@@ -104,6 +104,31 @@ See [Filtering MiroirTest cases](#filtering-miroirtest-cases) for the full model
 | `MIROIR_TEST_SUITES` | Comma-separated suite keys, or `*` for all | `*` (all) |
 | `MIROIR_TEST_MODE` | `unit` or `integration` (`integ` accepted) | `unit` |
 | `MIROIR_TEST_FILTER` | JSON filter — see [Filtering MiroirTest cases](#filtering-miroirtest-cases) | (none) |
+| `MIROIR_SCHEMA_MODE` | `frozen` (implicit `'auto'` → static schema) or `runtime` (198 carry-on) | `runtime` (unset); `testMiroir` defaults to `frozen` |
+
+### Schema resolution mode (`MIROIR_SCHEMA_MODE`)
+
+Meta-model unit tests should not pay carry-on cost on every fixture load. Set **`MIROIR_SCHEMA_MODE=frozen`** so `getMiroirFundamentalSchemaForDeployment` and implicit `'auto'` resolution return the static build artifact only.
+
+| Value | Effect |
+|-------|--------|
+| `frozen` | `'auto'` → static; explicit `resolveFundamentalSchemaForDeployment(..., 'extended')` still works |
+| `runtime` | Legacy 198 behaviour (Library app endpoints trigger carry-on under `'auto'`) |
+
+**Defaults:** unset env → `runtime`. `npm run testMiroir -w miroir-core` sets `frozen` unless you override.
+
+**Opt-in extended tests** (Library `lendDocument`, app-action validation) must either:
+
+- set `MIROIR_SCHEMA_MODE=runtime` in the describe `beforeAll`, or
+- call `resolveFundamentalSchemaForDeployment(..., 'extended')` explicitly (preferred in deployment test files).
+
+```bash
+# Frozen gate (meta-model tests)
+MIROIR_SCHEMA_MODE=frozen npm run testByFile -w miroir-core -- tests/1_core/modelEnvironment.unit.test.ts
+
+# Extended app-action suite (library deployment)
+npm test -w miroir-test-app_deployment-library -- "App-action validation"
+```
 
 ### Via `testByFile`
 

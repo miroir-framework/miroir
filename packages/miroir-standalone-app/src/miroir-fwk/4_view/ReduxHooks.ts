@@ -27,7 +27,9 @@ import {
   entityMenu,
   getApplicationSection,
   getReduxDeploymentsStateIndex,
+  computeSchemaRevision,
   getMiroirFundamentalSchemaForDeployment,
+  resolveFundamentalSchemaForDeployment,
   selectEntityUuidFromJzodAttribute,
   selfApplicationMiroir,
   type ApplicationDeploymentMap,
@@ -267,7 +269,8 @@ export function useCurrentModelEnvironment(
   applicationDeploymentMap: ApplicationDeploymentMap,
 ): MiroirModelEnvironment {
   const context = useMiroirContextService();
-  const deploymentUuid = applicationDeploymentMap[application]
+  const deploymentUuid = applicationDeploymentMap[application];
+  const miroirDeploymentUuid = applicationDeploymentMap[selfApplicationMiroir.uuid];
   const miroirMetaModel: MetaModel = useCurrentModel(selfApplicationMiroir.uuid, applicationDeploymentMap);
   const currentModel: MetaModel = useCurrentModel(application, applicationDeploymentMap);
   const applicationUuids = useMemo(() => Object.keys(applicationDeploymentMap), [applicationDeploymentMap]);
@@ -276,19 +279,46 @@ export function useCurrentModelEnvironment(
     applicationDeploymentMap
   );
 
+  const metaSchemaRevision = useMemo(
+    () =>
+      miroirDeploymentUuid && miroirMetaModel
+        ? computeSchemaRevision(miroirDeploymentUuid, miroirMetaModel, selfApplicationMiroir.uuid)
+        : "",
+    [miroirDeploymentUuid, miroirMetaModel],
+  );
+
+  const appSchemaRevision = useMemo(
+    () =>
+      deploymentUuid && currentModel
+        ? computeSchemaRevision(deploymentUuid, currentModel, application)
+        : "",
+    [deploymentUuid, currentModel, application],
+  );
+
   useEffect(() => {
-    log.info("useCurrentModelEnvironment calling getMiroirFundamentalSchemaForDeployment", application, deploymentUuid, applicationDeploymentMap);
-    if (currentModel && deploymentUuid) {
-      const schema = getMiroirFundamentalSchemaForDeployment(deploymentUuid, currentModel);
-      context.setSchemaForDeployment(deploymentUuid, schema);
+    if (!currentModel || !deploymentUuid) {
+      return;
     }
-  }, [currentModel, deploymentUuid, context.setSchemaForDeployment]);
+    context.applyDeploymentSchemaRevision({
+      deploymentUuid,
+      applicationUuid: application,
+      currentModel,
+      metaSchemaRevision,
+      appSchemaRevision,
+    });
+  }, [
+    application,
+    appSchemaRevision,
+    metaSchemaRevision,
+    deploymentUuid,
+    context.applyDeploymentSchemaRevision,
+  ]);
 
   return useMemo(() => {
     return {
       miroirFundamentalJzodSchema:
         context.schemasPerDeployment[deploymentUuid] ??
-        getMiroirFundamentalSchemaForDeployment(deploymentUuid, currentModel),
+        resolveFundamentalSchemaForDeployment(deploymentUuid, currentModel, "auto"),
       miroirMetaModel: miroirMetaModel,
       endpointsByUuid,
       currentModel: currentModel,

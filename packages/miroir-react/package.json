@@ -16,7 +16,9 @@
   },
   "scripts": {
     "build": "tsup",
-    "devBuild": "npm run build"
+    "devBuild": "npm run build",
+    "test": "vitest run --poolOptions.threads.singleThread -t",
+    "testByFile": "vitest run --poolOptions.forks.singleFork --reporter=verbose"
   },
   "dependencies": {
     "@codemirror/lang-javascript": "^6.2.2",
@@ -44,6 +46,9 @@
     "tsup": "^8.0.0",
     "typescript": "^6.0.0",
     "@types/react": "^18",
-    "@types/react-dom": "^18"
+    "@types/react-dom": "^18",
+    "vitest": "^3.2.4",
+    "miroir-test-app_deployment-admin": "*",
+    "miroir-test-app_deployment-library": "*"
   }
 }

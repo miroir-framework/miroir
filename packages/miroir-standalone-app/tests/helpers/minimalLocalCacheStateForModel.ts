@@ -68,3 +68,96 @@ export function addEndpointToLocalCacheState(
     },
   };
 }
+
+export function mutateEntityDescriptionInLocalCacheState(
+  slice: LocalCacheSliceState,
+  deploymentUuid: Uuid,
+  modelSection: "data" | "model",
+  entityUuid: string,
+  description: string,
+): LocalCacheSliceState {
+  const index = getReduxDeploymentsStateIndex(
+    deploymentUuid,
+    modelSection,
+    entityEntity.uuid,
+  );
+  const collection = slice.current[index];
+  const existing = collection?.entities?.[entityUuid];
+  if (!existing) {
+    return slice;
+  }
+  return {
+    ...slice,
+    current: {
+      ...slice.current,
+      [index]: {
+        ...collection,
+        entities: {
+          ...collection.entities,
+          [entityUuid]: {
+            ...existing,
+            description,
+          },
+        },
+      },
+    },
+  };
+}
+
+export function addEntityInstanceToLocalCacheState(
+  slice: LocalCacheSliceState,
+  deploymentUuid: Uuid,
+  entityInstance: { uuid: string },
+): LocalCacheSliceState {
+  const index = getReduxDeploymentsStateIndex(deploymentUuid, "model", entityEntity.uuid);
+  const collection = slice.current[index] ?? emptyCollection();
+  return {
+    ...slice,
+    current: {
+      ...slice.current,
+      [index]: {
+        entities: {
+          ...collection.entities,
+          [entityInstance.uuid]: entityInstance,
+        },
+        ids: collection.ids.includes(entityInstance.uuid)
+          ? collection.ids
+          : [...collection.ids, entityInstance.uuid],
+      },
+    },
+  };
+}
+
+export function mutateEntityDefinitionInLocalCacheState(
+  slice: LocalCacheSliceState,
+  deploymentUuid: Uuid,
+  entityDefinitionUuid: string,
+  patch: Record<string, unknown>,
+): LocalCacheSliceState {
+  const index = getReduxDeploymentsStateIndex(
+    deploymentUuid,
+    "model",
+    entityEntityDefinition.uuid,
+  );
+  const collection = slice.current[index];
+  const existing = collection?.entities?.[entityDefinitionUuid];
+  if (!existing) {
+    return slice;
+  }
+  return {
+    ...slice,
+    current: {
+      ...slice.current,
+      [index]: {
+        ...collection,
+        entities: {
+          ...collection.entities,
+          [entityDefinitionUuid]: {
+            ...existing,
+            ...patch,
+          },
+        },
+      },
+    },
+  };
+}

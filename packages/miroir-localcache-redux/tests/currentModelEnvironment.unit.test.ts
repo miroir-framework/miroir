@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 import { deployment_Miroir } from "miroir-test-app_deployment-admin";
 import {
@@ -25,5 +25,33 @@ describe("currentModelEnvironment (redux, Phase 1)", () => {
     expect(env.miroirFundamentalJzodSchema).toBe(miroirFundamentalJzodSchema);
     expect(env.deploymentUuid).toBe(deploymentUuid);
     expect(env.miroirMetaModel).toBe(defaultMiroirMetaModel);
+  });
+});
+
+describe("currentModelEnvironment (redux, Phase 199 — UI deprecation)", () => {
+  it("emits console.warn when called with MIROIR_UI_CONTEXT=1", () => {
+    const previous = process.env.MIROIR_UI_CONTEXT;
+    process.env.MIROIR_UI_CONTEXT = "1";
+    const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => undefined);
+
+    try {
+      const application = selfApplicationMiroir.uuid;
+      const deploymentUuid = deployment_Miroir.uuid;
+      const applicationDeploymentMap = { [application]: deploymentUuid };
+      const state = buildMinimalLocalCacheStateForDeployment(deploymentUuid, "data");
+
+      currentModelEnvironment(application, applicationDeploymentMap, state);
+
+      expect(warnSpy).toHaveBeenCalledWith(
+        expect.stringContaining("deprecated for UI schema access"),
+      );
+    } finally {
+      warnSpy.mockRestore();
+      if (previous === undefined) {
+        delete process.env.MIROIR_UI_CONTEXT;
+      } else {
+        process.env.MIROIR_UI_CONTEXT = previous;
+      }
+    }
   });
 });

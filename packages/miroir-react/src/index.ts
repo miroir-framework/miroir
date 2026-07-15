@@ -37,6 +37,13 @@ export { CodeBlock_ReadOnly } from "./components/CodeBlock_ReadOnly.js";
 
 // Context provider for global state and services
 export {
+  evaluateSchemaRevisionChange,
+  resolveSchemaForDeploymentPolicy,
+  type ApplySchemaRevisionInput,
+  type ApplySchemaRevisionResult,
+  type DeploymentSchemaRevisions,
+} from "./contexts/schemaReloadPolicy.js";
+export {
   FoldedStateTree,
   formikPath_EntityInstanceSelectorPanel,
   MiroirContextReactProvider,

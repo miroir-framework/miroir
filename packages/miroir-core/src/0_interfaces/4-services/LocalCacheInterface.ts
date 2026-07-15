@@ -32,6 +32,12 @@ export declare interface LocalCacheInterface {
     applicationDeploymentMap: ApplicationDeploymentMap,
     // deploymentUuid: string
   ): MetaModel;
+  /**
+   * Builds a {@link MiroirModelEnvironment} for non-React runners and DomainController.
+   *
+   * @deprecated In UI code, use React context `schemasPerDeployment` via
+   * `useCurrentModelEnvironment` instead. Reserved for DomainController and test runners.
+   */
   currentModelEnvironment(
     application: Uuid,
     applicationDeploymentMap: ApplicationDeploymentMap,

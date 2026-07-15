@@ -6,6 +6,7 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
   type Dispatch,
   type SetStateAction,
@@ -28,9 +29,16 @@ import {
   type ApplicationDeploymentMap,
   type ClientEnvironment,
   type CoreTransformerForBuildPlusRuntime,
+  type MetaModel,
   type MiroirEvent,
   type ReduxStateChanges,
 } from "miroir-core";
+
+import {
+  evaluateSchemaRevisionChange,
+  resolveSchemaForDeploymentPolicy,
+  type DeploymentSchemaRevisions,
+} from "./schemaReloadPolicy.js";
 
 import {
   errorLogService,
@@ -139,6 +147,17 @@ export interface MiroirReactContext {
   // Miroir meta-model — per-deployment jzod schemas (Feature 198)
   schemasPerDeployment: Record<Uuid, MlSchema>;
   setSchemaForDeployment: (deploymentUuid: Uuid, schema: MlSchema) => void;
+  clearSchemaForDeployment: (deploymentUuid: Uuid) => void;
+  schemaReloadRequired: boolean;
+  setSchemaReloadRequired: React.Dispatch<React.SetStateAction<boolean>>;
+  schemaRevisionsByDeployment: Record<Uuid, DeploymentSchemaRevisions>;
+  applyDeploymentSchemaRevision: (input: {
+    deploymentUuid: Uuid;
+    applicationUuid: Uuid;
+    currentModel: MetaModel;
+    metaSchemaRevision: string;
+    appSchemaRevision: string;
+  }) => void;
   // ###################################################################################################
   // Form state management
   innerFormOutput: any;
@@ -228,6 +247,12 @@ export function MiroirContextReactProvider(props: {
     setDeploymentUuidToReportsEntitiesDefinitionsMapping,
   ] = useState<DeploymentUuidToReportsEntitiesDefinitionsMapping>({});
   const [schemasPerDeployment, setSchemasPerDeployment] = useState<Record<Uuid, MlSchema>>({});
+  const [schemaReloadRequired, setSchemaReloadRequired] = useState(false);
+  const schemaRevisionsRef = useRef<Record<Uuid, DeploymentSchemaRevisions>>({});
+  const [schemaRevisionsByDeployment, setSchemaRevisionsByDeployment] = useState<
+    Record<Uuid, DeploymentSchemaRevisions>
+  >({});
+
   const setSchemaForDeployment = useCallback((deploymentUuid: Uuid, schema: MlSchema) => {
     setSchemasPerDeployment((prev) => {
       if (prev[deploymentUuid] === schema) {
@@ -236,6 +261,61 @@ export function MiroirContextReactProvider(props: {
       return { ...prev, [deploymentUuid]: schema };
     });
   }, []);
+
+  const clearSchemaForDeployment = useCallback((deploymentUuid: Uuid) => {
+    setSchemasPerDeployment((prev) => {
+      if (!(deploymentUuid in prev)) {
+        return prev;
+      }
+      const next = { ...prev };
+      delete next[deploymentUuid];
+      return next;
+    });
+  }, []);
+
+  const applyDeploymentSchemaRevision = useCallback(
+    (input: {
+      deploymentUuid: Uuid;
+      applicationUuid: Uuid;
+      currentModel: MetaModel;
+      metaSchemaRevision: string;
+      appSchemaRevision: string;
+    }) => {
+      const previousRevisions = schemaRevisionsRef.current[input.deploymentUuid];
+      const decision = evaluateSchemaRevisionChange({
+        deploymentUuid: input.deploymentUuid,
+        applicationUuid: input.applicationUuid,
+        metaSchemaRevision: input.metaSchemaRevision,
+        appSchemaRevision: input.appSchemaRevision,
+        previousRevisions,
+      });
+
+      schemaRevisionsRef.current[input.deploymentUuid] = decision.revisions;
+      setSchemaRevisionsByDeployment((prev) => ({
+        ...prev,
+        [input.deploymentUuid]: decision.revisions,
+      }));
+
+      if (decision.schemaReloadRequired) {
+        setSchemaReloadRequired(true);
+        return;
+      }
+
+      if (decision.invalidateCachedSchema) {
+        clearSchemaForDeployment(input.deploymentUuid);
+      }
+
+      if (decision.shouldResolveSchema) {
+        const schema = resolveSchemaForDeploymentPolicy(
+          input.deploymentUuid,
+          input.currentModel,
+          decision.resolutionMode,
+        );
+        setSchemaForDeployment(input.deploymentUuid, schema);
+      }
+    },
+    [clearSchemaForDeployment, setSchemaForDeployment],
+  );
 
   // Create ViewParams instance to track UI state with reactive state
   const [sidebarIsopen, setSidebarIsOpen] = useState(true);
@@ -526,6 +606,11 @@ export function MiroirContextReactProvider(props: {
       setDeploymentUuidToReportsEntitiesDefinitionsMapping,
       schemasPerDeployment,
       setSchemaForDeployment,
+      clearSchemaForDeployment,
+      schemaReloadRequired,
+      setSchemaReloadRequired,
+      schemaRevisionsByDeployment,
+      applyDeploymentSchemaRevision,
       viewParams,
       toolsPageState,
       updateToolsPageStateDEFUNCT,
@@ -599,6 +684,10 @@ export function MiroirContextReactProvider(props: {
       deploymentUuidToReportsEntitiesDefinitionsMapping,
       schemasPerDeployment,
       setSchemaForDeployment,
+      clearSchemaForDeployment,
+      schemaReloadRequired,
+      schemaRevisionsByDeployment,
+      applyDeploymentSchemaRevision,
       innerFormOutput,
       props.miroirContext,
       props.domainController,

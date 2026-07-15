@@ -8,6 +8,7 @@ import { deployment_Miroir } from "miroir-test-app_deployment-admin";
 import {
   defaultLibraryAppModel,
   deployment_Library_DO_NO_USE,
+  book1,
 } from "miroir-test-app_deployment-library";
 import {
   getMiroirFundamentalSchemaForDeployment,
@@ -15,11 +16,13 @@ import {
   MiroirActivityTracker,
   MiroirEventService,
   miroirFundamentalJzodSchema,
+  resolveFundamentalSchemaForDeployment,
   selfApplicationMiroir,
   type ApplicationDeploymentMap,
   type DomainControllerInterface,
   type EntityInstance,
 } from "miroir-core";
+import { LocalCache } from "miroir-localcache-redux";
 import {
   LocalCacheProvider,
   MiroirContextReactProvider,
@@ -33,7 +36,9 @@ import {
 import { useCurrentModelEnvironment } from "../../src/miroir-fwk/4_view/ReduxHooks.js";
 import {
   addEndpointToLocalCacheState,
+  addEntityInstanceToLocalCacheState,
   buildMinimalLocalCacheStateForDeployment,
+  mutateEntityDescriptionInLocalCacheState,
 } from "../helpers/minimalLocalCacheStateForModel.js";
 
 const TEST_UPDATE_PRESENT_MODEL = "TEST_UPDATE_PRESENT_MODEL";
@@ -180,7 +185,7 @@ describe("useCurrentModelEnvironment (Phase 1)", () => {
     });
   });
 
-  it("updates context cache when currentModel changes for the same deployment", async () => {
+  it("sets schemaReloadRequired when schemaRevision changes for meta endpoint add", async () => {
     const schemaSpy = vi.spyOn(
       await import("miroir-core"),
       "getMiroirFundamentalSchemaForDeployment",
@@ -224,7 +229,8 @@ describe("useCurrentModelEnvironment (Phase 1)", () => {
 
     await waitFor(() => {
       expect(screen.getByTestId("endpoint-count")).toHaveTextContent("1");
-      expect(schemaSpy.mock.calls.length).toBeGreaterThan(callsAfterMount);
+      expect(capturedContext?.schemaReloadRequired).toBe(true);
+      expect(schemaSpy.mock.calls.length).toBe(callsAfterMount);
       expect(capturedContext?.schemasPerDeployment[deployment_Miroir.uuid]).toBe(
         miroirFundamentalJzodSchema,
       );
@@ -238,9 +244,9 @@ describe("useCurrentModelEnvironment (Phase 2.8 — schema caching)", () => {
   });
 
   it("does not recompute schema when model reference is stable", async () => {
-    const schemaSpy = vi.spyOn(
+    const resolveSpy = vi.spyOn(
       await import("miroir-core"),
-      "getMiroirFundamentalSchemaForDeployment",
+      "resolveFundamentalSchemaForDeployment",
     );
 
     const store = createTestStore(
@@ -257,11 +263,253 @@ describe("useCurrentModelEnvironment (Phase 2.8 — schema caching)", () => {
     );
 
     await waitFor(() => {
-      expect(schemaSpy.mock.calls.length).toBeGreaterThan(0);
+      expect(resolveSpy.mock.calls.length).toBeGreaterThan(0);
     });
 
-    const callCountAfterMount = schemaSpy.mock.calls.length;
+    const callCountAfterMount = resolveSpy.mock.calls.length;
     rerender();
-    expect(schemaSpy.mock.calls.length).toBe(callCountAfterMount);
+    expect(resolveSpy.mock.calls.length).toBe(callCountAfterMount);
+  });
+});
+
+describe("useCurrentModelEnvironment (Phase 199 — schemaRevision policy)", () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it("does not call schema resolver when only instance data changes", async () => {
+    const resolveSpy = vi.spyOn(
+      await import("miroir-core"),
+      "resolveFundamentalSchemaForDeployment",
+    );
+
+    const librarySlice = addEntityInstanceToLocalCacheState(
+      buildMinimalLocalCacheStateForDeployment(deployment_Library_DO_NO_USE.uuid, "model"),
+      deployment_Library_DO_NO_USE.uuid,
+      book1 as EntityInstance,
+    );
+    const store = createTestStore(librarySlice);
+
+    renderHook(
+      () =>
+        useCurrentModelEnvironment(
+          defaultLibraryAppModel.applicationUuid,
+          applicationDeploymentMap,
+        ),
+      {
+        wrapper: ({ children }) => <TestProviders store={store}>{children}</TestProviders>,
+      },
+    );
+
+    await waitFor(() => {
+      expect(resolveSpy.mock.calls.length).toBeGreaterThan(0);
+    });
+
+    const callsAfterMount = resolveSpy.mock.calls.length;
+
+    act(() => {
+      store.dispatch({
+        type: TEST_UPDATE_PRESENT_MODEL,
+        payload: mutateEntityDescriptionInLocalCacheState(
+          librarySlice,
+          deployment_Library_DO_NO_USE.uuid,
+          "model",
+          book1.uuid,
+          "Runtime-only change",
+        ),
+      });
+    });
+
+    await waitFor(() => {
+      expect(resolveSpy.mock.calls.length).toBe(callsAfterMount);
+    });
+  });
+
+  it("calls resolver when app endpoint added (app-overlay revision change)", async () => {
+    const resolveSpy = vi.spyOn(
+      await import("miroir-core"),
+      "resolveFundamentalSchemaForDeployment",
+    );
+
+    const librarySlice = buildMinimalLocalCacheStateForDeployment(
+      deployment_Library_DO_NO_USE.uuid,
+      "model",
+    );
+    const store = createTestStore(librarySlice);
+
+    renderHook(
+      () =>
+        useCurrentModelEnvironment(
+          defaultLibraryAppModel.applicationUuid,
+          applicationDeploymentMap,
+        ),
+      {
+        wrapper: ({ children }) => <TestProviders store={store}>{children}</TestProviders>,
+      },
+    );
+
+    await waitFor(() => {
+      expect(resolveSpy.mock.calls.length).toBeGreaterThan(0);
+    });
+
+    const callsAfterMount = resolveSpy.mock.calls.length;
+
+    act(() => {
+      store.dispatch({
+        type: TEST_UPDATE_PRESENT_MODEL,
+        payload: addEndpointToLocalCacheState(
+          librarySlice,
+          deployment_Library_DO_NO_USE.uuid,
+          "model",
+          { uuid: "overlay-endpoint-uuid", application: defaultLibraryAppModel.applicationUuid },
+        ),
+      });
+    });
+
+    await waitFor(() => {
+      expect(resolveSpy.mock.calls.length).toBeGreaterThan(callsAfterMount);
+      const lastCall = resolveSpy.mock.calls.at(-1);
+      expect(lastCall?.[2]).toBe("extended");
+    });
+  });
+
+  it("does not recompute when unrelated deployment's model changes in map", async () => {
+    const resolveSpy = vi.spyOn(
+      await import("miroir-core"),
+      "resolveFundamentalSchemaForDeployment",
+    );
+
+    const librarySlice = buildMinimalLocalCacheStateForDeployment(
+      deployment_Library_DO_NO_USE.uuid,
+      "model",
+    );
+    const miroirSlice = buildMinimalLocalCacheStateForDeployment(deployment_Miroir.uuid, "data");
+    const store = createTestStore({
+      ...librarySlice,
+      current: {
+        ...librarySlice.current,
+        ...miroirSlice.current,
+      },
+    });
+
+    let capturedLibrarySchema: unknown;
+
+    renderHook(
+      () => {
+        const env = useCurrentModelEnvironment(
+          defaultLibraryAppModel.applicationUuid,
+          applicationDeploymentMap,
+        );
+        capturedLibrarySchema = env.miroirFundamentalJzodSchema;
+        return env;
+      },
+      {
+        wrapper: ({ children }) => <TestProviders store={store}>{children}</TestProviders>,
+      },
+    );
+
+    await waitFor(() => {
+      expect(capturedLibrarySchema).toBeDefined();
+      expect(resolveSpy.mock.calls.length).toBeGreaterThan(0);
+    });
+
+    const callsAfterMount = resolveSpy.mock.calls.length;
+    const schemaBeforeAdminMutation = capturedLibrarySchema;
+
+    act(() => {
+      store.dispatch({
+        type: TEST_UPDATE_PRESENT_MODEL,
+        payload: addEndpointToLocalCacheState(
+          miroirSlice,
+          deployment_Miroir.uuid,
+          "data",
+          { uuid: instanceEndpointV1.uuid! },
+        ),
+      });
+    });
+
+    await waitFor(() => {
+      expect(resolveSpy.mock.calls.length).toBe(callsAfterMount);
+      expect(capturedLibrarySchema).toBe(schemaBeforeAdminMutation);
+    });
+  });
+
+  it("schema for Library application ignores Admin model mutations", async () => {
+    const resolveSpy = vi.spyOn(
+      await import("miroir-core"),
+      "resolveFundamentalSchemaForDeployment",
+    );
+
+    const librarySlice = buildMinimalLocalCacheStateForDeployment(
+      deployment_Library_DO_NO_USE.uuid,
+      "model",
+    );
+    const miroirSlice = buildMinimalLocalCacheStateForDeployment(deployment_Miroir.uuid, "data");
+    const store = createTestStore({
+      ...librarySlice,
+      current: {
+        ...librarySlice.current,
+        ...miroirSlice.current,
+      },
+    });
+
+    let capturedEnv: ReturnType<typeof useCurrentModelEnvironment> | undefined;
+
+    renderHook(
+      () => {
+        capturedEnv = useCurrentModelEnvironment(
+          defaultLibraryAppModel.applicationUuid,
+          applicationDeploymentMap,
+        );
+        return capturedEnv;
+      },
+      {
+        wrapper: ({ children }) => <TestProviders store={store}>{children}</TestProviders>,
+      },
+    );
+
+    await waitFor(() => {
+      expect(capturedEnv?.miroirFundamentalJzodSchema).toBeDefined();
+      expect(resolveSpy.mock.calls.length).toBeGreaterThan(0);
+    });
+
+    const callsAfterMount = resolveSpy.mock.calls.length;
+    const schemaBefore = capturedEnv!.miroirFundamentalJzodSchema;
+
+    act(() => {
+      store.dispatch({
+        type: TEST_UPDATE_PRESENT_MODEL,
+        payload: addEndpointToLocalCacheState(
+          miroirSlice,
+          deployment_Miroir.uuid,
+          "data",
+          { uuid: instanceEndpointV1.uuid! },
+        ),
+      });
+    });
+
+    await waitFor(() => {
+      expect(resolveSpy.mock.calls.length).toBe(callsAfterMount);
+      expect(capturedEnv!.miroirFundamentalJzodSchema).toBe(schemaBefore);
+    });
+  });
+
+  it("does not call localCache.currentModelEnvironment", async () => {
+    const envSpy = vi.spyOn(LocalCache.prototype, "currentModelEnvironment");
+
+    const store = createTestStore(
+      buildMinimalLocalCacheStateForDeployment(deployment_Miroir.uuid, "data"),
+    );
+
+    renderHook(
+      () => useCurrentModelEnvironment(selfApplicationMiroir.uuid, applicationDeploymentMap),
+      {
+        wrapper: ({ children }) => <TestProviders store={store}>{children}</TestProviders>,
+      },
+    );
+
+    await waitFor(() => {
+      expect(envSpy).not.toHaveBeenCalled();
+    });
   });
 });

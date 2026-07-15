@@ -157,6 +157,11 @@ export function currentModelEnvironment(
   applicationDeploymentMap: ApplicationDeploymentMap,
   state: LocalCacheSliceState
 ): MiroirModelEnvironment {
+  if (process.env.MIROIR_UI_CONTEXT === "1") {
+    console.warn(
+      "[currentModelEnvironment] deprecated for UI schema access — use React context schemasPerDeployment instead.",
+    );
+  }
   const deploymentUuid = applicationDeploymentMap[application];
   const model = currentModel(application, applicationDeploymentMap, state);
   return {
