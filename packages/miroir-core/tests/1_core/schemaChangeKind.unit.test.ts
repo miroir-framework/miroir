@@ -157,6 +157,22 @@ describe("computeSchemaRevision — app overlay changes (3.2)", () => {
   });
 });
 
+describe("computeSchemaRevision — partial models (DomainController / localcache)", () => {
+  it("does not throw when schema-relevant arrays are missing on the model", () => {
+    const partialModel = {
+      applicationUuid: selfApplicationMiroir.uuid,
+      applicationName: "",
+      endpoints: [],
+      entityDefinitions: [],
+      reports: [],
+    } as MetaModel;
+
+    expect(() =>
+      computeSchemaRevision(deployment_Miroir.uuid, partialModel, selfApplicationMiroir.uuid),
+    ).not.toThrow();
+  });
+});
+
 describe("computeSchemaRevision — meta full carry-on changes (3.3)", () => {
   const metaApplicationUuid = selfApplicationMiroir.uuid;
 

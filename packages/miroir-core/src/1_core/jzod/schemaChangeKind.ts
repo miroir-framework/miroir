@@ -1,5 +1,3 @@
-import { createHash } from "node:crypto";
-
 import type { Uuid } from "../../0_interfaces/1_core/EntityDefinition";
 import type {
   EndpointDefinition,
@@ -49,6 +47,10 @@ export function computeCombinedSchemaRevision(deploymentUuid: Uuid, model: MetaM
   return `${metaRevision}:${appRevision}`;
 }
 
+function definedArray<T>(values: T[] | undefined | null): T[] {
+  return values ?? [];
+}
+
 function buildMetaSchemaRevisionPayload(deploymentUuid: Uuid, model: MetaModel) {
   return {
     scope: "meta" as const,
@@ -68,7 +70,7 @@ function buildAppSchemaRevisionPayload(
   model: MetaModel,
   applicationUuid: Uuid,
 ) {
-  const appEndpoints = model.endpoints.filter(
+  const appEndpoints = definedArray(model.endpoints).filter(
     (endpoint) => endpoint.application === applicationUuid,
   );
 
@@ -84,8 +86,8 @@ function buildAppSchemaRevisionPayload(
   };
 }
 
-function fingerprintEntityDefinitions(entityDefinitions: EntityDefinition[]) {
-  return [...entityDefinitions]
+function fingerprintEntityDefinitions(entityDefinitions: EntityDefinition[] | undefined) {
+  return [...definedArray(entityDefinitions)]
     .map((entityDefinition) => ({
       uuid: entityDefinition.uuid,
       entityUuid: entityDefinition.entityUuid,
@@ -97,8 +99,8 @@ function fingerprintEntityDefinitions(entityDefinitions: EntityDefinition[]) {
     .sort((left, right) => left.uuid.localeCompare(right.uuid));
 }
 
-function fingerprintReports(reports: Report[]) {
-  return [...reports]
+function fingerprintReports(reports: Report[] | undefined) {
+  return [...definedArray(reports)]
     .map((report) => ({
       uuid: report.uuid,
       name: report.name,
@@ -107,12 +109,12 @@ function fingerprintReports(reports: Report[]) {
     .sort((left, right) => left.uuid.localeCompare(right.uuid));
 }
 
-function fingerprintQueries(queries: Query[]) {
-  return queries.map((query) => sortValue(query));
+function fingerprintQueries(queries: Query[] | undefined) {
+  return definedArray(queries).map((query) => sortValue(query));
 }
 
-function fingerprintRunners(runners: MetaModel["runners"]) {
-  return [...runners]
+function fingerprintRunners(runners: MetaModel["runners"] | undefined) {
+  return [...definedArray(runners)]
     .map((runner) => ({
       uuid: runner.uuid,
       name: runner.name,
@@ -121,8 +123,8 @@ function fingerprintRunners(runners: MetaModel["runners"]) {
     .sort((left, right) => left.uuid.localeCompare(right.uuid));
 }
 
-function fingerprintJzodSchemas(jzodSchemas: MlSchema[]) {
-  return [...jzodSchemas]
+function fingerprintJzodSchemas(jzodSchemas: MlSchema[] | undefined) {
+  return [...definedArray(jzodSchemas)]
     .map((schema) => ({
       uuid: schema.uuid,
       definition: schema.definition,
@@ -130,8 +132,8 @@ function fingerprintJzodSchemas(jzodSchemas: MlSchema[]) {
     .sort((left, right) => left.uuid.localeCompare(right.uuid));
 }
 
-function fingerprintMenus(menus: Menu[]) {
-  return [...menus]
+function fingerprintMenus(menus: Menu[] | undefined) {
+  return [...definedArray(menus)]
     .map((menu) => ({
       uuid: menu.uuid,
       name: menu.name,
@@ -140,8 +142,8 @@ function fingerprintMenus(menus: Menu[]) {
     .sort((left, right) => left.uuid.localeCompare(right.uuid));
 }
 
-function fingerprintEndpoints(endpoints: EndpointDefinition[]) {
-  return [...endpoints]
+function fingerprintEndpoints(endpoints: EndpointDefinition[] | undefined) {
+  return [...definedArray(endpoints)]
     .map((endpoint) => ({
       uuid: endpoint.uuid,
       application: endpoint.application,
@@ -165,7 +167,18 @@ function extractEndpointActionTypes(endpoints: EndpointDefinition[]): string[] {
 }
 
 function hashStableValue(value: unknown): string {
-  return createHash("sha256").update(stableStringify(value)).digest("hex");
+  const input = stableStringify(value);
+  // Browser-safe fingerprint (no node:crypto) — sufficient for revision change detection.
+  return `${fnv1a32Hex(input)}${fnv1a32Hex(input, 0x811c9dc5 ^ 0xffffffff)}`;
+}
+
+function fnv1a32Hex(input: string, seed = 0x811c9dc5): string {
+  let hash = seed >>> 0;
+  for (let index = 0; index < input.length; index++) {
+    hash ^= input.charCodeAt(index);
+    hash = Math.imul(hash, 0x01000193) >>> 0;
+  }
+  return hash.toString(16).padStart(8, "0");
 }
 
 function stableStringify(value: unknown): string {
