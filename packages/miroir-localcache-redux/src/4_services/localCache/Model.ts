@@ -8,6 +8,7 @@
  * @returns 
  */
 
+import { entityDefinitionTheme } from "miroir-test-app_deployment-miroir";
 import { deployment_Miroir } from "miroir-test-app_deployment-admin";
 import {
   type MetaModel,
@@ -20,6 +21,7 @@ import {
   entityMenu,
   entityReport,
   entityQueryVersion,
+  // entityStoredMiroirTheme,
   type ApplicationVersion,
   type StoreBasedConfiguration,
   type Entity,
@@ -34,6 +36,10 @@ import {
   entityEndpointVersion,
   type Uuid,
   type ApplicationDeploymentMap,
+  entityRunner,
+  type StoredMiroirTheme,
+  type Runner,
+  type SelfApplication,
 } from "miroir-core";
 import type { LocalCacheSliceState } from "./localCacheReduxSliceInterface";
 
@@ -104,6 +110,10 @@ export function currentModel(
       state.current[
         getReduxDeploymentsStateIndex(deploymentUuid, modelSection, entityQueryVersion.uuid)
       ];
+    const runners =
+      state.current[getReduxDeploymentsStateIndex(deploymentUuid, modelSection, entityRunner.uuid)];
+    const themes =
+      state.current[getReduxDeploymentsStateIndex(deploymentUuid, modelSection, entityDefinitionTheme.entityUuid)];
     const currentApplicationDefinitions = state.current[
         getReduxDeploymentsStateIndex(
           deploymentUuid,
@@ -119,6 +129,7 @@ export function currentModel(
       applicationName: currentApplicationDefinition
         ? (currentApplicationDefinition as any).name
         : "",
+      applications: (currentApplicationDefinition ? [currentApplicationDefinition] : []) as SelfApplication[],
       applicationVersions: (applicationVersions && applicationVersions.entities
         ? Object.values(applicationVersions.entities)
         : []) as ApplicationVersion[],
@@ -140,9 +151,11 @@ export function currentModel(
         : []) as MlSchema[],
       menus: (menus && menus.entities ? Object.values(menus.entities) : []) as Menu[],
       reports: (reports && reports.entities ? Object.values(reports.entities) : []) as Report[],
+      runners: (runners && runners.entities ? Object.values(runners.entities) : []) as Runner[],
       storedQueries: (queries && queries.entities
         ? Object.values(queries.entities)
         : []) as Query[],
+      themes: (themes && themes.entities ? Object.values(themes.entities) : []) as StoredMiroirTheme[],
     };
     // log.info("called currentModel(", deploymentUuid, ") found result:", JSON.stringify(result, null, 2));
     return result;

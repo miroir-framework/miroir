@@ -30,7 +30,9 @@ import {
   type Runner,
   type StoreBasedConfiguration,
   type StoredMiroirTheme,
-  type Uuid
+  type Uuid,
+  type Entity,
+  type SelfApplication
 } from "miroir-core";
 import { deployment_Miroir } from "miroir-test-app_deployment-admin";
 import { entityTheme } from "miroir-test-app_deployment-miroir";
@@ -113,6 +115,7 @@ export function currentModel(
       ? Object.values(currentApplicationDefinitions)[0]
       : null;
     const result: MetaModel = {
+      applications: (currentApplicationDefinition ? [currentApplicationDefinition] : []) as SelfApplication[],
       applicationUuid: application,
       applicationName: currentApplicationDefinition
         ? (currentApplicationDefinition as any).name
@@ -129,7 +132,7 @@ export function currentModel(
         : []) as MetaModel["endpoints"],
       entities: (entities && entities.entities
         ? Object.values(entities.entities)
-        : []) as MetaEntity[],
+        : []) as Entity[],
       entityDefinitions: (entityDefinitions && entityDefinitions.entities
         ? Object.values(entityDefinitions.entities)
         : []) as EntityDefinition[],
