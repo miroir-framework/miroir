@@ -751,6 +751,11 @@ export {
   type SchemaRevisionScope,
 } from "./1_core/jzod/schemaChangeKind.js";
 export {
+  getMiroirSchemaMode,
+  resolveEffectiveSchemaMode,
+  type MiroirSchemaMode,
+} from "./1_core/jzod/schemaModePolicy.js";
+export {
   localizeJzodSchemaReferenceContext,
   unfoldJzodSchemaOnce, UnfoldJzodSchemaOnceReturnType,
   UnfoldJzodSchemaOnceReturnTypeError,

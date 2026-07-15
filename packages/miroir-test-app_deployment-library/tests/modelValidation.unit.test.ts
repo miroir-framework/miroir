@@ -1,6 +1,6 @@
 /// <reference types="vite/client" />
 
-import { describe, expect, it } from "vitest";
+import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
 import type {
   EntityDefinition,
@@ -408,94 +408,123 @@ describe("extended schema requirement (199)", () => {
   }, 120_000);
 });
 
-describe("App-action validation (Feature 198)", () => {
-  const domainActionSchema: JzodElement = {
-    type: "schemaReference",
-    definition: {
-      absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-      relativePath: "domainAction",
-    },
+function buildExtendedLibraryModelEnvironment(): MiroirModelEnvironment {
+  return {
+    ...libraryModelEnvironment,
+    miroirFundamentalJzodSchema: resolveFundamentalSchemaForDeployment(
+      deployment_Library_DO_NO_USE.uuid,
+      defaultLibraryAppModel,
+      "extended",
+    ),
   };
-  const actionTemplateSchema: JzodElement = {
-    type: "schemaReference",
-    definition: {
-      absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-      relativePath: "actionTemplate",
-    },
-  };
+}
 
-  it("lendDocument action validates against domainAction", () => {
-    const lendDocumentAction = {
-      actionType: "lendDocument",
-      endpoint: "212f2784-5b68-43b2-8ee0-89b1c6fdd0de",
-      payload: {
-        user: "04c371ed-702d-4dd9-a06d-8a04eda5d24f",
-        book: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
-        startDate: "2024-01-01T00:00:00.000Z",
-      },
-    };
+describe("extended schema required — opt out of frozen mode (199)", () => {
+  const previousSchemaMode = process.env.MIROIR_SCHEMA_MODE;
 
-    const result = jzodTypeCheck(
-      domainActionSchema,
-      lendDocumentAction,
-      [],
-      [],
-      libraryModelEnvironment,
-      {},
-    );
-
-    expect(result.status).toBe("ok");
+  beforeAll(() => {
+    process.env.MIROIR_SCHEMA_MODE = "runtime";
   });
 
-  it("template-form lendDocument validates against actionTemplate", () => {
-    const templateFormAction = {
-      // Keep discriminator literal so union branch selection remains deterministic.
-      actionType: "lendDocument",
-      endpoint: "212f2784-5b68-43b2-8ee0-89b1c6fdd0de",
-      payload: {
-        user: { transformerType: "getFromParameters", interpolation: "build", referenceName: "user1Uuid" },
-        book: { transformerType: "getFromParameters", interpolation: "build", referenceName: "book1Uuid" },
-        startDate: { transformerType: "getFromParameters", interpolation: "build", referenceName: "lendStartDate" },
-      },
-    };
-
-    const result = jzodTypeCheck(
-      actionTemplateSchema,
-      templateFormAction,
-      [],
-      [],
-      libraryModelEnvironment,
-      {},
-    );
-
-    expect(result.status).toBe("ok");
+  afterAll(() => {
+    if (previousSchemaMode === undefined) {
+      delete process.env.MIROIR_SCHEMA_MODE;
+    } else {
+      process.env.MIROIR_SCHEMA_MODE = previousSchemaMode;
+    }
   });
 
-  it("runner_library MiroirTest validates against miroirTestDefinition schema", () => {
-    // The runner_library MiroirTest entity has definition.miroirTestType === "miroirTestSuite",
-    // whose miroirTests[] items are miroirTestForRunner entries that carry
-    // preRunnerCompositeActions typed as actionTemplate[].
-    // Those actions include lendDocument with transformer-form payload fields
-    // (getFromParameters). Validation succeeds only when:
-    //   (a) the extended actionTemplate (from libraryModelEnvironment) includes the
-    //       lendDocument carry-on branch, AND
-    //   (b) the Lending endpoint definition has canBeTemplate: true on user/book/startDate.
-    const miroirTestDefinitionSchema: JzodElement = {
+  describe("App-action validation (Feature 198)", () => {
+    const extendedLibraryModelEnvironment = buildExtendedLibraryModelEnvironment();
+
+    const domainActionSchema: JzodElement = {
       type: "schemaReference",
       definition: {
         absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-        relativePath: "miroirTestDefinition",
+        relativePath: "domainAction",
       },
     };
-    const result = jzodTypeCheck(
-      miroirTestDefinitionSchema,
-      runnerLibraryTestJSON,
-      [],
-      [],
-      libraryModelEnvironment,
-      {},
-    );
-    expect(result.status).toBe("ok");
+    const actionTemplateSchema: JzodElement = {
+      type: "schemaReference",
+      definition: {
+        absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+        relativePath: "actionTemplate",
+      },
+    };
+
+    it("lendDocument action validates against domainAction", () => {
+      const lendDocumentAction = {
+        actionType: "lendDocument",
+        endpoint: "212f2784-5b68-43b2-8ee0-89b1c6fdd0de",
+        payload: {
+          user: "04c371ed-702d-4dd9-a06d-8a04eda5d24f",
+          book: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
+          startDate: "2024-01-01T00:00:00.000Z",
+        },
+      };
+
+      const result = jzodTypeCheck(
+        domainActionSchema,
+        lendDocumentAction,
+        [],
+        [],
+        extendedLibraryModelEnvironment,
+        {},
+      );
+
+      expect(result.status).toBe("ok");
+    });
+
+    it("template-form lendDocument validates against actionTemplate", () => {
+      const templateFormAction = {
+        // Keep discriminator literal so union branch selection remains deterministic.
+        actionType: "lendDocument",
+        endpoint: "212f2784-5b68-43b2-8ee0-89b1c6fdd0de",
+        payload: {
+          user: { transformerType: "getFromParameters", interpolation: "build", referenceName: "user1Uuid" },
+          book: { transformerType: "getFromParameters", interpolation: "build", referenceName: "book1Uuid" },
+          startDate: { transformerType: "getFromParameters", interpolation: "build", referenceName: "lendStartDate" },
+        },
+      };
+
+      const result = jzodTypeCheck(
+        actionTemplateSchema,
+        templateFormAction,
+        [],
+        [],
+        extendedLibraryModelEnvironment,
+        {},
+      );
+
+      expect(result.status).toBe("ok");
+    });
+
+    it("runner_library MiroirTest validates against miroirTestDefinition schema", () => {
+      // The runner_library MiroirTest entity has definition.miroirTestType === "miroirTestSuite",
+      // whose miroirTests[] items are miroirTestForRunner entries that carry
+      // preRunnerCompositeActions typed as actionTemplate[].
+      // Those actions include lendDocument with transformer-form payload fields
+      // (getFromParameters). Validation succeeds only when:
+      //   (a) the extended actionTemplate (from extendedLibraryModelEnvironment) includes the
+      //       lendDocument carry-on branch, AND
+      //   (b) the Lending endpoint definition has canBeTemplate: true on user/book/startDate.
+      const miroirTestDefinitionSchema: JzodElement = {
+        type: "schemaReference",
+        definition: {
+          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          relativePath: "miroirTestDefinition",
+        },
+      };
+      const result = jzodTypeCheck(
+        miroirTestDefinitionSchema,
+        runnerLibraryTestJSON,
+        [],
+        [],
+        extendedLibraryModelEnvironment,
+        {},
+      );
+      expect(result.status).toBe("ok");
+    });
   });
 });
 

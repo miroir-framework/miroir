@@ -23,7 +23,11 @@ if (config.executionMode === "integration") {
   process.exit(1);
 }
 
-const env = { ...process.env, ...miroirTestCliConfigToEnv(config) };
+const env = {
+  ...process.env,
+  ...miroirTestCliConfigToEnv(config),
+  MIROIR_SCHEMA_MODE: process.env.MIROIR_SCHEMA_MODE ?? "frozen",
+};
 
 const vitestArgs = [
   "vitest",

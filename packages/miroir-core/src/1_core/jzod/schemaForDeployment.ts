@@ -13,6 +13,7 @@ import type {
 } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { selfApplicationMiroir } from "miroir-test-app_deployment-miroir";
 import { computeCombinedSchemaRevision } from "./schemaChangeKind";
+import { resolveEffectiveSchemaMode } from "./schemaModePolicy";
 
 export type SchemaResolutionMode = "static" | "extended" | "auto";
 
@@ -144,20 +145,22 @@ export function resolveFundamentalSchemaForDeployment(
   model: MetaModel,
   mode: SchemaResolutionMode = "auto",
 ): MlSchema {
-  if (mode === "static") {
+  const effectiveMode = resolveEffectiveSchemaMode(mode);
+
+  if (effectiveMode === "static") {
     return miroirFundamentalJzodSchema as MlSchema;
   }
 
-  const cached = getCachedSchema(deploymentUuid, model, mode);
+  const cached = getCachedSchema(deploymentUuid, model, effectiveMode);
   if (cached) {
     return cached;
   }
 
-  const schema = !shouldBuildExtendedSchema(model, mode)
+  const schema = !shouldBuildExtendedSchema(model, effectiveMode)
     ? (miroirFundamentalJzodSchema as MlSchema)
     : buildExtendedSchema(model);
 
-  setCachedSchema(deploymentUuid, model, mode, schema);
+  setCachedSchema(deploymentUuid, model, effectiveMode, schema);
   return schema;
 }
 

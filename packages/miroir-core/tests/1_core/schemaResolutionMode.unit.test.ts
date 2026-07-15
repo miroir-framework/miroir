@@ -1,4 +1,4 @@
-import { beforeAll, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 
 import { deployment_Miroir } from "miroir-test-app_deployment-admin";
 import {
@@ -8,6 +8,7 @@ import {
 
 import * as schemaHelpers from "../../src/0_interfaces/1_core/bootstrapJzodSchemas/getMiroirFundamentalJzodSchemaHelpers";
 import {
+  clearSchemaCacheForTests,
   defaultMiroirMetaModel,
   getMiroirFundamentalSchemaForDeployment,
   miroirFundamentalJzodSchema,
@@ -106,7 +107,9 @@ describe("resolveFundamentalSchemaForDeployment — extended mode", () => {
 
   it("extended mode invokes applyDeploymentDomainActionCarryOn for Library model", () => {
     const carryOnSpy = vi.spyOn(schemaHelpers, "applyDeploymentDomainActionCarryOn");
-    const freshLibraryModel = { ...defaultLibraryAppModel } as MetaModel;
+    clearSchemaCacheForTests();
+    const freshLibraryModel = structuredClone(defaultLibraryAppModel) as MetaModel;
+    freshLibraryModel.applicationName = `${freshLibraryModel.applicationName}-carry-on-spy`;
 
     resolveFundamentalSchemaForDeployment(
       libraryDeploymentUuid,
@@ -166,5 +169,53 @@ describe("resolveFundamentalSchemaForDeployment — logging", () => {
     );
 
     logSpy.mockRestore();
+  }, 120_000);
+});
+
+describe("MIROIR_SCHEMA_MODE policy (199 Phase 4)", () => {
+  const libraryDeploymentUuid = deployment_Library_DO_NO_USE.uuid;
+
+  afterEach(() => {
+    vi.unstubAllEnvs();
+    clearSchemaCacheForTests();
+  });
+
+  it("MIROIR_SCHEMA_MODE=frozen forces static for Library model via getMiroirFundamentalSchemaForDeployment", () => {
+    vi.stubEnv("MIROIR_SCHEMA_MODE", "frozen");
+
+    const schema = getMiroirFundamentalSchemaForDeployment(
+      libraryDeploymentUuid,
+      defaultLibraryAppModel as MetaModel,
+    );
+
+    expect(schema).toBe(miroirFundamentalJzodSchema);
+  });
+
+  it("MIROIR_SCHEMA_MODE=frozen forces static for Library model via resolve auto mode", () => {
+    vi.stubEnv("MIROIR_SCHEMA_MODE", "frozen");
+
+    const schema = resolveFundamentalSchemaForDeployment(
+      libraryDeploymentUuid,
+      defaultLibraryAppModel as MetaModel,
+      "auto",
+    );
+
+    expect(schema).toBe(miroirFundamentalJzodSchema);
+  });
+
+  it("explicit extended mode still builds carry-on when MIROIR_SCHEMA_MODE=frozen", () => {
+    vi.stubEnv("MIROIR_SCHEMA_MODE", "frozen");
+
+    const schema = resolveFundamentalSchemaForDeployment(
+      libraryDeploymentUuid,
+      defaultLibraryAppModel as MetaModel,
+      "extended",
+    );
+
+    expect(schema).not.toBe(miroirFundamentalJzodSchema);
+    const lendBranch = (schema as any).definition.context.domainAction.definition.find(
+      (branch: any) => branch.definition?.actionType?.definition === "lendDocument",
+    );
+    expect(lendBranch).toBeDefined();
   }, 120_000);
 });
