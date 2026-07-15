@@ -13,12 +13,15 @@ import {
   resolveMiroirTestSuiteUiExecutionMode,
   uiExecutionModeBadgeColors,
 } from "../../../4-tests/miroirTestSuiteUiExecution.js";
+import { getIntegrationTestProfileCatalogEntry } from "../../../4-tests/integrationTestProfileCatalog.js";
+import { useUiIntegrationTestRunPreferences } from "../../../4-tests/useUiIntegrationTestRunPreferences.js";
 import { cleanLevel } from "../../constants.js";
 import {
   RunMiroirTestSuiteButton,
   type MiroirTestResultData,
 } from "../Buttons/RunMiroirTestSuiteButton.js";
 import { TestExecutionPanel } from "./TestExecutionPanel.js";
+import { UiIntegrationTestRunControls } from "./UiIntegrationTestRunControls.js";
 import { UiIntegrationTestRunInspectorSummary } from "./UiIntegrationTestRunInspectorSummary.js";
 import { buildTestFilter, type TestResultDataAndSelect, type TestSelectionState } from "./testSelectionUtils.js";
 
@@ -63,6 +66,11 @@ export const MiroirTestDisplay = (props: MiroirTestSectionProps) => {
   const uiExecutionMode = resolveMiroirTestSuiteUiExecutionMode(instance.definition);
   const badgeColors = uiExecutionModeBadgeColors(uiExecutionMode);
   const integrationUiSupported = isUiIntegrationRunnerSuiteSupported(testLabel);
+
+  const integrationPreferences = useUiIntegrationTestRunPreferences();
+  const integrationProfileBrowserAvailable =
+    getIntegrationTestProfileCatalogEntry(integrationPreferences.profileName)?.browserAvailable ??
+    false;
 
   const currentTestFilter = useMemo(() => {
     return buildTestFilter(testSelectionState, miroirTestResultsData);
@@ -132,19 +140,38 @@ export const MiroirTestDisplay = (props: MiroirTestSectionProps) => {
       )}
 
       {executionCapabilities.hasIntegrationLeaves && (
-        <RunMiroirTestSuiteButton
-          miroirTestSuite={instance}
-          testSuiteKey={testLabel}
-          useSnackBar={useSnackBar}
-          testFilter={currentTestFilter}
-          onTestComplete={handleTestComplete}
-          runMode="integration"
-          label={`Run ${testLabel} Integration Tests`}
-          style={{
-            ...runButtonStyle,
-            backgroundColor: integrationUiSupported ? "#ef6c00" : "#9e9e9e",
-          }}
-        />
+        <>
+          <UiIntegrationTestRunControls />
+          <RunMiroirTestSuiteButton
+            miroirTestSuite={instance}
+            testSuiteKey={testLabel}
+            useSnackBar={useSnackBar}
+            testFilter={currentTestFilter}
+            onTestComplete={handleTestComplete}
+            runMode="integration"
+            integrationProfileName={integrationPreferences.profileName}
+            integrationRunTargetMode={integrationPreferences.runTargetMode}
+            label={`Run ${testLabel} Integration Tests`}
+            disabled={
+              !integrationUiSupported ||
+              !integrationProfileBrowserAvailable
+            }
+            title={
+              !integrationUiSupported
+                ? `UI integration launcher does not support "${testLabel}" yet`
+                : !integrationProfileBrowserAvailable
+                  ? "Selected profile is not bundled for in-browser runs"
+                  : undefined
+            }
+            style={{
+              ...runButtonStyle,
+              backgroundColor:
+                integrationUiSupported && integrationProfileBrowserAvailable
+                  ? "#ef6c00"
+                  : "#9e9e9e",
+            }}
+          />
+        </>
       )}
 
       <UiIntegrationTestRunInspectorSummary />

@@ -19,6 +19,7 @@ import {
   DEFAULT_UI_INTEGRATION_PROFILE_NAME,
   DEFAULT_UI_INTEGRATION_RUN_TARGET_MODE,
 } from "../../../4-tests/integrationTestProfileAssets.js";
+import type { UiIntegrationTestRunTargetMode } from "../../../4-tests/uiIntegrationTestLauncherTypes.js";
 import { isUiIntegrationRunnerSuiteSupported } from "../../../4-tests/miroirTestSuiteUiExecution.js";
 import { setLastUiIntegrationTestRunResult } from "../../../4-tests/uiIntegrationTestRunState.js";
 import { useIntegTestRunCoordinator } from "../../../4-tests/useIntegTestRunCoordinator.js";
@@ -47,6 +48,9 @@ interface RunMiroirTestSuiteButtonProps {
   label?: string;
   /** D6 — explicit unit vs integration path; required when suite is mixed. */
   runMode?: RunMiroirTestSuiteRunMode;
+  /** B6 — integration profile + run target (defaults from uiIntegrationTestRunPreferences). */
+  integrationProfileName?: string;
+  integrationRunTargetMode?: UiIntegrationTestRunTargetMode;
   [key: string]: unknown;
 }
 
@@ -80,6 +84,8 @@ export const RunMiroirTestSuiteButton: React.FC<RunMiroirTestSuiteButtonProps> =
   testFilter,
   label,
   runMode,
+  integrationProfileName,
+  integrationRunTargetMode,
   ...buttonProps
 }) => {
   const { handleAsyncAction } = useSnackbar();
@@ -147,8 +153,8 @@ export const RunMiroirTestSuiteButton: React.FC<RunMiroirTestSuiteButtonProps> =
       {
         suiteKey: testSuiteKey,
         suiteDefinition: miroirTestSuite.definition,
-        profileName: DEFAULT_UI_INTEGRATION_PROFILE_NAME,
-        runTargetMode: DEFAULT_UI_INTEGRATION_RUN_TARGET_MODE,
+        profileName: integrationProfileName ?? DEFAULT_UI_INTEGRATION_PROFILE_NAME,
+        runTargetMode: integrationRunTargetMode ?? DEFAULT_UI_INTEGRATION_RUN_TARGET_MODE,
         hostMode: "isolated",
         filter: testFilter,
       },

@@ -55,9 +55,10 @@ already provisioned Miroir + admin:
 **Session descriptors** include `defaultHostMode: "isolated"` and `embeddedCapable` (false for
 `transformer`; true for app-stack kinds) for #197 UI catalog.
 
-**#197 Phase B:** [plan.md](./plan.md) B0 still recommends **isolated Vitest subprocess** first
-(fresh schema, never touch live `MiroirContext`). Embedded mode is the advanced path for attaching
-to a running host without re-deploying meta-model stores.
+**#197 Phase B:** Default UI path is **data-isolated in-browser orchestrator** (`hostMode: "isolated"`,
+ephemeral `runTarget`, dedicated activity tracker — see [phase-b-ui-launcher-plan.md](./phase-b-ui-launcher-plan.md)).
+Vitest subprocess remains CLI transport and optional B9 catalog for PSC-direct suites. Embedded mode
+is the advanced path for attaching to a running host without re-deploying meta-model stores.
 
 ### What was filled
 

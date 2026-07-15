@@ -4,7 +4,7 @@
 
 **Prerequisites:** Phase A ✅ · Gaps A/B/C-setup/D/E ✅ · Phase R (R0–R6) ✅
 
-**Status:** B0 complete ✅ · B1 complete ✅ · B2 complete ✅ · B3 complete ✅ · B4 complete ✅ · B5 complete ✅ · B6+ not started
+**Status:** B0 complete ✅ · B1 complete ✅ · B2 complete ✅ · B3 complete ✅ · B4 complete ✅ · B5 complete ✅ · **B6 complete ✅** · B7+ not started
 
 **Goal:** Run the same domainController-based MiroirTest integration suites from the Miroir UI that CLI runs today — with **data-isolated** test runs that do not pollute the user's working session — plus reporting and a troubleshooting inspector.
 
@@ -295,21 +295,23 @@ npm run testMiroir -w miroir-standalone-app -- --suites runner_library --mode in
 
 ---
 
-### B6 — Profile picker + inspector
+### B6 — Profile picker + inspector ✅
 
-**Deliverables**
+**Delivered**
 
-- Profile dropdown from `listIntegrationTestProfileNames()` + descriptions
-- **Run target toggle** (D2): “Ephemeral run” vs “Pinned suite targets” — persisted in session inspector for last run
-- `RunnerTestEnvironmentInspector` (or generic `IntegrationTestRunInspector`):
-  - Resolved profile name + config paths
-  - `describeSession(kind)` → bootstrap phases, playfield, `defaultHostMode`, `embeddedCapable`
-  - Last run: `runTarget`, param bank keys (not secrets), deployment map snapshot
-  - Activity tracker excerpt: last N composite actions / assertion failures
+- Profile dropdown from `listIntegrationTestProfileCatalogEntries()` + descriptions (all Gap D profiles; CLI-only profiles disabled in browser)
+- **Run target toggle** (D2): “Ephemeral run” vs “Pinned suite targets” — persisted via `uiIntegrationTestRunPreferences` and synced from last run
+- `buildIntegrationTestRunInspectorModel` + expanded [`UiIntegrationTestRunInspectorSummary`](../../../packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Reports/UiIntegrationTestRunInspectorSummary.tsx):
+  - Resolved profile name + description
+  - `describeIntegrationTestSession(kind)` → bootstrap phases, playfield, `embeddedCapable`
+  - Last run: `runTarget`, param bank keys, assertion summary + recent failures
+- [`UiIntegrationTestRunControls`](../../../packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Reports/UiIntegrationTestRunControls.tsx) wired in `MiroirTestDisplay`
 
 **Tests**
 
-- Unit: inspector model built from mock run result
+- Unit: `buildIntegrationTestRunInspectorModel.unit.test.ts`, `integrationTestProfileCatalog.unit.test.ts`, `uiIntegrationTestRunPreferences.unit.test.ts` ✅
+
+**Note:** Only `emulatedServer-sql` is bundled for in-browser config today (D4 pilot); other profiles appear in picker as CLI-only until additional JSON assets are bundled.
 
 ---
 
@@ -401,9 +403,9 @@ Gap D profiles use filesystem paths in Node (`loadTestConfigFiles`). UI launcher
 - [ ] Integ uses dedicated activity tracker; unit button behavior unchanged
 - [ ] Mutex prevents overlapping integ runs
 - [ ] `RunnerTestSession.teardown` drops ephemeral deployment stores
-- [ ] Mode badge visible on Miroir Test reports (`unit` / `integ`)
-- [ ] Inspector shows profile + last runTarget + session descriptor + assertion summary
-- [ ] Profile picker lists `INTEGRATION_TEST_PROFILES`
+- [x] Mode badge visible on Miroir Test reports (`unit` / `integ`)
+- [x] Inspector shows profile + last runTarget + session descriptor + assertion summary
+- [x] Profile picker lists `INTEGRATION_TEST_PROFILES` (browser: catalog with CLI-only entries disabled)
 - [ ] Transformer integ suite (`miroirCoreTransformers` or equivalent) runnable from same launcher (B7 — in scope per D3)
 
 ### Global non-regression criteria

@@ -554,8 +554,9 @@ explicit phase list. Phase names are defined in `miroir-core` (`IntegrationTestB
 
 `describeSession(kind)` (or `describeIntegrationTestSession(kind, profile)` for
 `domainController`) returns `{ kind, bootstrapPhases, playfield, defaultHostMode, embeddedCapable }`.
-The UI test launcher (#197) uses this metadata to decide subprocess vs embedded execution and
-whether library/platform deployments can be reused from the host.
+The UI test launcher (#197) uses this metadata for the integration-test inspector (bootstrap
+phases, playfield, `embeddedCapable`) and to decide whether embedded host attachment is offered.
+Default UI integ runs use `hostMode: "isolated"` (data-isolated in-process bootstrap).
 
 **DomainController profiles** (`getBootstrapPhasesForDomainControllerProfile` / `getPlayfieldForDomainControllerProfile`):
 
@@ -573,7 +574,7 @@ Model.CRUD may pass `skipResetMiroirModelInInit: true` so reset runs only in `be
 | **`isolated`** | CLI / Vitest (default) | Full `wireEmulatedStack` + phased deploy via `ensureMiroirPlatform` / `ensureLibraryPlayfield` |
 | **`embedded`** | Live UI host (advanced) | Inject `hostExecutionEnvironment`; skip `setupMiroirTest` and destructive deploy when `requireExisting` |
 
-#197 Phase B ([plan.md](../../code-helpers/features/197-FEATURE-%20run%20integration%20tests%20in%20the%20UI/plan.md) **B0**) recommends **isolated Vitest subprocess** first (fresh schema, never reuse live `MiroirContext`). Embedded mode attaches to a running host without re-deploying meta-model stores.
+#197 Phase B ([plan.md](../../code-helpers/features/197-FEATURE-%20run%20integration%20tests%20in%20the%20UI/plan.md), [phase-b-ui-launcher-plan.md](../../code-helpers/features/197-FEATURE-%20run%20integration%20tests%20in%20the%20UI/phase-b-ui-launcher-plan.md)) runs domainController-based integ **in-browser** with data isolation (`hostMode: "isolated"`, ephemeral `runTarget`, dedicated activity tracker — live `MiroirContext` untouched). Embedded mode attaches to a running host without re-deploying meta-model stores (advanced, optional B8).
 
 | Session kind | `embeddedCapable` | Notes |
 |--------------|-------------------|-------|

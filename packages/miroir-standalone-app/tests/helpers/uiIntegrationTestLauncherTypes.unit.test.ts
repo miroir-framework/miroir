@@ -54,6 +54,7 @@ describe("uiIntegrationTestLauncherTypes (B0)", () => {
         },
         runTargetMode: "pinned",
         hostMode: "isolated",
+        paramBankKeys: [],
       },
     };
 

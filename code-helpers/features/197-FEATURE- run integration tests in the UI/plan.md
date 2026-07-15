@@ -2,7 +2,7 @@
 
 GitHub issue: TBD (`miroir-framework/miroir#197`)
 
-**Status:** Phase A complete; integration bootstrap gaps A/B/C-setup/D/E complete ([integ-test-setup-gaps.md](./integ-test-setup-gaps.md)); refactor phase (green) planned before Phase B
+**Status:** Phase A ✅ · Phase R (R0–R6) ✅ · Gaps A/B/C-setup/D/E ✅ · **Phase B in progress** (B0–B5 ✅, B6+ — see [phase-b-ui-launcher-plan.md](./phase-b-ui-launcher-plan.md))
 
 **Depends on:** [Feature 196 — MiroirTest](../196-FEATURE-migrate-tests-to-MiroirTest/plan.md) (complete)
 
@@ -787,7 +787,7 @@ R6 is split into five TDD slices (R6-A … R6-E): suite `testParams`, `RunnerTes
 |-------|---------|
 | B0–B2 | Types, mutex, Vitest-free in-process suite runner |
 | B3–B4 | `UiIntegrationTestLauncher` + real `RunnerTestSession.teardown` |
-| B5–B6 | UI button, badges, profile picker, ephemeral/pinned toggle, inspector |
+| B5–B6 | UI button, badges, profile picker ✅, ephemeral/pinned toggle ✅, inspector ✅ |
 | B7 | Transformer integ in same launcher |
 | B8–B9 | Optional embedded troubleshooting; optional PSC subprocess catalog |
 
@@ -837,12 +837,12 @@ R6 is split into five TDD slices (R6-A … R6-E): suite `testParams`, `RunnerTes
 
 See [phase-b-ui-launcher-plan.md](./phase-b-ui-launcher-plan.md) §7 for granular checkboxes.
 
-- [ ] In-browser data-isolated integ launcher (`hostMode: "isolated"`, dedicated tracker, mutex)
-- [ ] Run `runner_library` + transformer integ from UI without affecting working session stores
-- [ ] Ephemeral vs pinned run-target toggle; profile picker from `INTEGRATION_TEST_PROFILES`
-- [ ] Environment inspector shows config + last run context
-- [ ] Teardown leaves no test schemas / indexedDb databases behind
-- [ ] (Optional) embedded host path documented and gated — not default
+- [x] In-browser data-isolated integ launcher (`hostMode: "isolated"`, dedicated tracker, mutex) — B1–B5
+- [ ] Run `runner_library` + transformer integ from UI without affecting working session stores — runner ✅ (B3–B5); transformer pending B7
+- [x] Ephemeral vs pinned run-target toggle; profile picker from `INTEGRATION_TEST_PROFILES` — B6
+- [x] Environment inspector shows config + last run context — B6
+- [x] Teardown leaves no test schemas / indexedDb databases behind — B4
+- [ ] (Optional) embedded host path documented and gated — not default (B8)
 
 ### Gap D — unified integration test profiles — ✅ **Done**
 

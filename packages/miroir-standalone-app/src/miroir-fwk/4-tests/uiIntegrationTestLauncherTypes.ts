@@ -26,6 +26,7 @@ export type UiIntegrationTestRunInspectorSnapshot = {
   runTarget: RunnerTestRunTarget;
   runTargetMode: UiIntegrationTestRunTargetMode;
   hostMode: IntegrationTestHostMode;
+  paramBankKeys: string[];
 };
 
 /** Result contract for `runUiIntegrationTestSuite` (implemented in B3). */

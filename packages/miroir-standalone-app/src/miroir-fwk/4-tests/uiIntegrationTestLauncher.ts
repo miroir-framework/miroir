@@ -89,6 +89,7 @@ function buildInspectorSnapshot(
     runTarget,
     runTargetMode: request.runTargetMode,
     hostMode,
+    paramBankKeys: Object.keys(request.suiteDefinition.testParams ?? {}).sort(),
   };
 }
 

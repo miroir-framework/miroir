@@ -2,8 +2,12 @@ import type { LoggerOptions, MiroirConfigClient } from "miroir-core";
 
 import emulatedServerSqlMiroirConfig from "../../../tests/miroirConfig.test-emulatedServer-sql.json";
 import domainControllerDebugLogConfig from "../../../tests/specificLoggersConfig_DomainController_debug.json";
+import {
+  DEFAULT_UI_INTEGRATION_PROFILE_NAME,
+  listBrowserAvailableIntegrationTestProfileNames,
+} from "./integrationTestProfileCatalog.js";
 
-export const DEFAULT_UI_INTEGRATION_PROFILE_NAME = "emulatedServer-sql";
+export { DEFAULT_UI_INTEGRATION_PROFILE_NAME } from "./integrationTestProfileCatalog.js";
 
 export const DEFAULT_UI_INTEGRATION_RUN_TARGET_MODE = "ephemeral" as const;
 
@@ -21,7 +25,7 @@ const BROWSER_INTEGRATION_TEST_PROFILE_ASSETS: Record<string, BrowserIntegration
   };
 
 export function listBrowserIntegrationTestProfileNames(): string[] {
-  return Object.keys(BROWSER_INTEGRATION_TEST_PROFILE_ASSETS).sort();
+  return listBrowserAvailableIntegrationTestProfileNames();
 }
 
 export async function loadBrowserIntegrationTestProfileConfig(
