@@ -12,13 +12,23 @@ import type {
   MlSchema,
 } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { selfApplicationMiroir } from "miroir-test-app_deployment-miroir";
+import { computeCombinedSchemaRevision } from "./schemaChangeKind";
 
 export type SchemaResolutionMode = "static" | "extended" | "auto";
 
-const schemaCacheByModel = new WeakMap<MetaModel, Map<string, MlSchema>>();
+const schemaCacheByRevision = new Map<string, MlSchema>();
 
-function cacheKey(deploymentUuid: Uuid, mode: SchemaResolutionMode): string {
-  return `${deploymentUuid}:${mode}`;
+/** @internal Test-only cache reset */
+export function clearSchemaCacheForTests(): void {
+  schemaCacheByRevision.clear();
+}
+
+function cacheKey(
+  deploymentUuid: Uuid,
+  model: MetaModel,
+  mode: SchemaResolutionMode,
+): string {
+  return `${deploymentUuid}:${mode}:${computeCombinedSchemaRevision(deploymentUuid, model)}`;
 }
 
 function getCachedSchema(
@@ -26,7 +36,7 @@ function getCachedSchema(
   model: MetaModel,
   mode: SchemaResolutionMode,
 ): MlSchema | undefined {
-  return schemaCacheByModel.get(model)?.get(cacheKey(deploymentUuid, mode));
+  return schemaCacheByRevision.get(cacheKey(deploymentUuid, model, mode));
 }
 
 function setCachedSchema(
@@ -35,12 +45,7 @@ function setCachedSchema(
   mode: SchemaResolutionMode,
   schema: MlSchema,
 ): void {
-  let byKey = schemaCacheByModel.get(model);
-  if (!byKey) {
-    byKey = new Map();
-    schemaCacheByModel.set(model, byKey);
-  }
-  byKey.set(cacheKey(deploymentUuid, mode), schema);
+  schemaCacheByRevision.set(cacheKey(deploymentUuid, model, mode), schema);
 }
 
 function hasAppSpecificEndpoints(model: MetaModel): boolean {

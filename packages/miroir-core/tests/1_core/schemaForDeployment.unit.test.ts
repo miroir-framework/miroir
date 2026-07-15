@@ -1,4 +1,4 @@
-import { beforeAll, describe, expect, it, vi } from "vitest";
+import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { deployment_Miroir } from "miroir-test-app_deployment-admin";
 import {
@@ -8,8 +8,10 @@ import {
 
 import {
   defaultMiroirMetaModel,
+  clearSchemaCacheForTests,
   getMiroirFundamentalSchemaForDeployment,
   miroirFundamentalJzodSchema,
+  resolveFundamentalSchemaForDeployment,
   type MetaModel,
   LIBRARY_TMP,
 } from "miroir-core";
@@ -253,10 +255,95 @@ describe("getMiroirFundamentalSchemaForDeployment (Phase 2.9 — performance)", 
 
   it("completes within 500ms for the Library model", () => {
     // First call may take several seconds (carry-on build). Runtime path reuses
-    // WeakMap cache (see schemaForDeployment.ts) after hook mount or prior validation.
+    // revision cache (see schemaForDeployment.ts) after hook mount or prior validation.
     getMiroirFundamentalSchemaForDeployment(libraryDeploymentUuid, defaultLibraryAppModel as MetaModel);
     const start = Date.now();
     getMiroirFundamentalSchemaForDeployment(libraryDeploymentUuid, defaultLibraryAppModel as MetaModel);
     expect(Date.now() - start).toBeLessThan(500);
+  }, 120_000);
+});
+
+describe("resolveFundamentalSchemaForDeployment (Phase 199 — revision cache)", () => {
+  const libraryDeploymentUuid = deployment_Library_DO_NO_USE.uuid;
+
+  beforeEach(() => {
+    clearSchemaCacheForTests();
+  });
+
+  it("second call with new model ref but same revision hits cache (< 500ms)", () => {
+    resolveFundamentalSchemaForDeployment(
+      libraryDeploymentUuid,
+      defaultLibraryAppModel as MetaModel,
+      "extended",
+    );
+
+    const clone = structuredClone(defaultLibraryAppModel) as MetaModel;
+    const start = Date.now();
+    const cached = resolveFundamentalSchemaForDeployment(
+      libraryDeploymentUuid,
+      clone,
+      "extended",
+    );
+    expect(Date.now() - start).toBeLessThan(500);
+    expect(cached).toBe(
+      resolveFundamentalSchemaForDeployment(
+        libraryDeploymentUuid,
+        defaultLibraryAppModel as MetaModel,
+        "extended",
+      ),
+    );
+  }, 120_000);
+
+  it("revision change after endpoint edit misses cache and rebuilds", () => {
+    const warmSchema = resolveFundamentalSchemaForDeployment(
+      libraryDeploymentUuid,
+      defaultLibraryAppModel as MetaModel,
+      "extended",
+    );
+
+    const lendingEndpoint = defaultLibraryAppModel.endpoints.find(
+      (endpoint) => endpoint.uuid === "212f2784-5b68-43b2-8ee0-89b1c6fdd0de",
+    );
+    expect(lendingEndpoint).toBeDefined();
+    const firstAction = lendingEndpoint!.definition!.actions![0];
+
+    const mutatedModel = structuredClone(defaultLibraryAppModel) as MetaModel;
+    mutatedModel.endpoints = mutatedModel.endpoints.map((endpoint) =>
+      endpoint.uuid === lendingEndpoint!.uuid
+        ? {
+            ...endpoint,
+            definition: {
+              ...endpoint.definition!,
+              actions: [
+                ...(endpoint.definition?.actions ?? []),
+                {
+                  ...firstAction,
+                  actionParameters: {
+                    ...firstAction.actionParameters,
+                    actionType: {
+                      type: "literal" as const,
+                      definition: "reserveDocument",
+                    },
+                  },
+                },
+              ],
+            },
+          }
+        : endpoint,
+    );
+
+    const rebuiltSchema = resolveFundamentalSchemaForDeployment(
+      libraryDeploymentUuid,
+      mutatedModel,
+      "extended",
+    );
+
+    expect(rebuiltSchema).not.toBe(warmSchema);
+    const domainAction = (rebuiltSchema as any).definition.context.domainAction;
+    expect(
+      domainAction.definition.some(
+        (branch: any) => branch.definition?.actionType?.definition === "reserveDocument",
+      ),
+    ).toBe(true);
   }, 120_000);
 });

@@ -740,8 +740,16 @@ export {
 export {
   getMiroirFundamentalSchemaForDeployment,
   resolveFundamentalSchemaForDeployment,
+  clearSchemaCacheForTests,
   type SchemaResolutionMode,
 } from "./1_core/jzod/schemaForDeployment.js";
+export {
+  classifySchemaChange,
+  computeCombinedSchemaRevision,
+  computeSchemaRevision,
+  type SchemaChangeKind,
+  type SchemaRevisionScope,
+} from "./1_core/jzod/schemaChangeKind.js";
 export {
   localizeJzodSchemaReferenceContext,
   unfoldJzodSchemaOnce, UnfoldJzodSchemaOnceReturnType,
