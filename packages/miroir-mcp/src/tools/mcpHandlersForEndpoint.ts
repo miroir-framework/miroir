@@ -13,7 +13,8 @@ import {
   MiroirLoggerFactory,
   // defaultLibraryAppModel,
   defaultMiroirMetaModel,
-  getMiroirFundamentalSchemaForDeployment,
+  defaultMiroirModelEnvironment,
+  resolveFundamentalSchemaForDeployment,
   resolveJzodSchemaReferenceInContext,
   type EndpointDefinition,
   type JzodObject,
@@ -87,9 +88,10 @@ function resolveAllReferences(element: JzodElement): JzodElement {
       element as JzodReference,
       element.context || {},
       {
-        miroirFundamentalJzodSchema: getMiroirFundamentalSchemaForDeployment(
+        miroirFundamentalJzodSchema: resolveFundamentalSchemaForDeployment(
           deployment_Miroir.uuid,
           defaultMiroirMetaModel,
+          "static",
         ),
         endpointsByUuid: {},
         currentModel: defaultMiroirMetaModel,

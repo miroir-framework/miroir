@@ -21,8 +21,9 @@ import {
   entityDefinitionSelfApplicationModelBranch,
   entityDefinitionSelfApplicationVersion,
   entityDefinitionStoreBasedConfiguration,
-  getMiroirFundamentalSchemaForDeployment,
   jzodTypeCheck,
+  miroirFundamentalJzodSchema,
+  resolveFundamentalSchemaForDeployment,
 } from "miroir-core";
 
 // Admin-specific entity definitions (from admin model assets)
@@ -110,7 +111,11 @@ const adminMetaModel: MetaModel = {
  * so that currentModel reflects the admin application model.
  */
 const adminModelEnvironment: MiroirModelEnvironment = {
-  miroirFundamentalJzodSchema: getMiroirFundamentalSchemaForDeployment(deployment_Admin.uuid, adminMetaModel),
+  miroirFundamentalJzodSchema: resolveFundamentalSchemaForDeployment(
+    deployment_Admin.uuid,
+    adminMetaModel,
+    "static",
+  ),
   miroirMetaModel: defaultMiroirMetaModel,
   endpointsByUuid: {},
   deploymentUuid: deployment_Admin.uuid,
@@ -334,3 +339,13 @@ describeEntityGroup(
   applicationVersionDataInstances,
   adminModelEnvironment,
 );
+
+describe("static schema mode (199)", () => {
+  it("admin model environment schema is miroirFundamentalJzodSchema by reference", () => {
+    expect(adminModelEnvironment.miroirFundamentalJzodSchema).toBe(miroirFundamentalJzodSchema);
+  });
+
+  it("defaultMiroirModelEnvironment schema is miroirFundamentalJzodSchema by reference", () => {
+    expect(defaultMiroirModelEnvironment.miroirFundamentalJzodSchema).toBe(miroirFundamentalJzodSchema);
+  });
+});

@@ -76,7 +76,7 @@ import { Transform } from "stream";
 import { deployment_Miroir } from "miroir-test-app_deployment-admin";
 import { Uuid } from "../0_interfaces/1_core/EntityDefinition";
 import type { DeploymentUuidToReportsEntitiesDefinitions } from "../0_interfaces/1_core/Model";
-import { getMiroirFundamentalSchemaForDeployment } from "./jzod/schemaForDeployment";
+import { resolveFundamentalSchemaForDeployment } from "./jzod/schemaForDeployment";
 
 import {
   Entity,
@@ -251,18 +251,20 @@ const defaultEndpointsByUuid: Record<Uuid, EndpointDefinition> = {
 };
 
 export const defaultMetaModelEnvironment: MiroirModelEnvironment = {
-  miroirFundamentalJzodSchema: getMiroirFundamentalSchemaForDeployment(
+  miroirFundamentalJzodSchema: resolveFundamentalSchemaForDeployment(
     deployment_Miroir.uuid,
     defaultMiroirMetaModel,
+    "static",
   ),
   miroirMetaModel: defaultMiroirMetaModel,
   endpointsByUuid: defaultEndpointsByUuid,
   currentModel: defaultMiroirMetaModel,
 };
 export const defaultMiroirModelEnvironment: MiroirModelEnvironment = {
-  miroirFundamentalJzodSchema: getMiroirFundamentalSchemaForDeployment(
+  miroirFundamentalJzodSchema: resolveFundamentalSchemaForDeployment(
     deployment_Miroir.uuid,
     defaultMiroirMetaModel,
+    "static",
   ),
   miroirMetaModel: defaultMiroirMetaModel,
   endpointsByUuid: defaultEndpointsByUuid,

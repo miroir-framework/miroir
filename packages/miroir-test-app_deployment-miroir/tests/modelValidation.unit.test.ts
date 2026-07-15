@@ -26,7 +26,10 @@ import {
   entityDefinitionTransformerDefinition,
   getInnermostTypeCheckError,
   jzodTypeCheck,
+  miroirFundamentalJzodSchema,
 } from "miroir-core";
+
+import reportEntityList from "../assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/c9ea3359-690c-4620-9603-b5b402e4a2b9.json" assert { type: "json" };
 
 // ================================================================================================
 // Eagerly load all instances via import.meta.glob
@@ -270,4 +273,31 @@ modelTestsToRun.forEach(({ groupName, jzodSchema, instances, filterByName }) => 
     filteredInstances,
     defaultMiroirModelEnvironment,
   );
+});
+
+describe("static schema mode (199)", () => {
+  it("model environment schema is miroirFundamentalJzodSchema by reference", () => {
+    expect(defaultMiroirModelEnvironment.miroirFundamentalJzodSchema).toBe(
+      miroirFundamentalJzodSchema,
+    );
+  });
+
+  it("EntityList report still validates against static domainAction", () => {
+    const reportSchema = (entityDefinitionReport as unknown as { mlSchema: JzodElement }).mlSchema;
+    const result = jzodTypeCheck(
+      reportSchema,
+      reportEntityList,
+      [],
+      [],
+      defaultMiroirModelEnvironment,
+      {},
+    );
+    if (result.status === "error") {
+      console.error(
+        "EntityList validation error:",
+        JSON.stringify(getInnermostTypeCheckError(result), null, 2),
+      );
+    }
+    expect(result.status).toBe("ok");
+  });
 });

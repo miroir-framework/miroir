@@ -13,7 +13,7 @@ import {
   // defaultLibraryAppModel,
   // defaultLibraryModelEnvironment,
   defaultMiroirMetaModel,
-  getMiroirFundamentalSchemaForDeployment,
+  resolveFundamentalSchemaForDeployment,
   instanceEndpointV1,
   resolveJzodSchemaReferenceInContext,
   type EndpointDefinition,
@@ -124,9 +124,10 @@ function resolveAllReferences(element: JzodElement): JzodElement {
       element as JzodReference,
       element.context || {},
       {
-        miroirFundamentalJzodSchema: getMiroirFundamentalSchemaForDeployment(
+        miroirFundamentalJzodSchema: resolveFundamentalSchemaForDeployment(
           deployment_Miroir.uuid,
           defaultMiroirMetaModel,
+          "static",
         ),
         endpointsByUuid: {},
         currentModel: defaultMiroirMetaModel,

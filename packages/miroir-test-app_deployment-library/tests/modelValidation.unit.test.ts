@@ -25,6 +25,7 @@ import {
   entityDefinitionStoreBasedConfiguration,
   getMiroirFundamentalSchemaForDeployment,
   jzodTypeCheck,
+  resolveFundamentalSchemaForDeployment,
 } from "miroir-core";
 
 // Feature 198 — runner_library MiroirTest instance
@@ -377,6 +378,35 @@ modelTestsToRun.forEach(({ groupName, jzodSchema, instances, filterByName }) => 
 // ================================================================================================
 // Feature 198 — app-action validation against extended domainAction
 // ================================================================================================
+
+describe("extended schema requirement (199)", () => {
+  it("Library app-action tests still require extended schema (not static)", () => {
+    const staticSchema = resolveFundamentalSchemaForDeployment(
+      deployment_Library_DO_NO_USE.uuid,
+      defaultLibraryAppModel,
+      "static",
+    );
+    const extendedSchema = resolveFundamentalSchemaForDeployment(
+      deployment_Library_DO_NO_USE.uuid,
+      defaultLibraryAppModel,
+      "extended",
+    );
+
+    expect(staticSchema).not.toBe(extendedSchema);
+
+    const extendedDomainAction = (extendedSchema as any).definition.context.domainAction;
+    const lendBranch = extendedDomainAction.definition.find(
+      (branch: any) => branch.definition?.actionType?.definition === "lendDocument",
+    );
+    expect(lendBranch).toBeDefined();
+
+    const staticDomainAction = (staticSchema as any).definition.context.domainAction;
+    const staticLendBranch = staticDomainAction.definition.find(
+      (branch: any) => branch.definition?.actionType?.definition === "lendDocument",
+    );
+    expect(staticLendBranch).toBeUndefined();
+  }, 120_000);
+});
 
 describe("App-action validation (Feature 198)", () => {
   const domainActionSchema: JzodElement = {
