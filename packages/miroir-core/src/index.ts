@@ -737,7 +737,11 @@ export {
   ANY_IMPLICIT_UNION_TYPE, jzodTypeCheck,
   jzodUnionResolvedTypeForObject, selectUnionBranchFromDiscriminator, unionObjectChoices
 } from "./1_core/jzod/jzodTypeCheck.js";
-export { getMiroirFundamentalSchemaForDeployment } from "./1_core/jzod/schemaForDeployment.js";
+export {
+  getMiroirFundamentalSchemaForDeployment,
+  resolveFundamentalSchemaForDeployment,
+  type SchemaResolutionMode,
+} from "./1_core/jzod/schemaForDeployment.js";
 export {
   localizeJzodSchemaReferenceContext,
   unfoldJzodSchemaOnce, UnfoldJzodSchemaOnceReturnType,

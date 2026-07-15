@@ -13,19 +13,34 @@ import type {
 } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { selfApplicationMiroir } from "miroir-test-app_deployment-miroir";
 
-const schemaCacheByModel = new WeakMap<MetaModel, Map<Uuid, MlSchema>>();
+export type SchemaResolutionMode = "static" | "extended" | "auto";
 
-function getCachedSchema(deploymentUuid: Uuid, model: MetaModel): MlSchema | undefined {
-  return schemaCacheByModel.get(model)?.get(deploymentUuid);
+const schemaCacheByModel = new WeakMap<MetaModel, Map<string, MlSchema>>();
+
+function cacheKey(deploymentUuid: Uuid, mode: SchemaResolutionMode): string {
+  return `${deploymentUuid}:${mode}`;
 }
 
-function setCachedSchema(deploymentUuid: Uuid, model: MetaModel, schema: MlSchema): void {
-  let byDeployment = schemaCacheByModel.get(model);
-  if (!byDeployment) {
-    byDeployment = new Map();
-    schemaCacheByModel.set(model, byDeployment);
+function getCachedSchema(
+  deploymentUuid: Uuid,
+  model: MetaModel,
+  mode: SchemaResolutionMode,
+): MlSchema | undefined {
+  return schemaCacheByModel.get(model)?.get(cacheKey(deploymentUuid, mode));
+}
+
+function setCachedSchema(
+  deploymentUuid: Uuid,
+  model: MetaModel,
+  mode: SchemaResolutionMode,
+  schema: MlSchema,
+): void {
+  let byKey = schemaCacheByModel.get(model);
+  if (!byKey) {
+    byKey = new Map();
+    schemaCacheByModel.set(model, byKey);
   }
-  byDeployment.set(deploymentUuid, schema);
+  byKey.set(cacheKey(deploymentUuid, mode), schema);
 }
 
 function hasAppSpecificEndpoints(model: MetaModel): boolean {
@@ -37,6 +52,13 @@ function hasAppSpecificEndpoints(model: MetaModel): boolean {
 
 function getAppSpecificEndpoints(model: MetaModel) {
   return model.endpoints.filter((endpoint) => endpoint.application === model.applicationUuid);
+}
+
+function shouldBuildExtendedSchema(model: MetaModel, mode: SchemaResolutionMode): boolean {
+  if (mode === "static") {
+    return false;
+  }
+  return hasAppSpecificEndpoints(model);
 }
 
 function actionTypeKeyFromLiteral(actionType: JzodLiteral | undefined): string | undefined {
@@ -107,6 +129,34 @@ function buildExtendedSchema(model: MetaModel): MlSchema {
 }
 
 /**
+ * Returns the jzod schema for a deployment + model with an explicit resolution mode.
+ * - `'static'` → build artifact only (no carry-on, no app endpoint branches)
+ * - `'extended'` → app endpoint branches + carry-on when app-owned endpoints exist
+ * - `'auto'` → legacy 198 behavior (extended when `hasAppSpecificEndpoints`)
+ */
+export function resolveFundamentalSchemaForDeployment(
+  deploymentUuid: Uuid,
+  model: MetaModel,
+  mode: SchemaResolutionMode = "auto",
+): MlSchema {
+  if (mode === "static") {
+    return miroirFundamentalJzodSchema as MlSchema;
+  }
+
+  const cached = getCachedSchema(deploymentUuid, model, mode);
+  if (cached) {
+    return cached;
+  }
+
+  const schema = !shouldBuildExtendedSchema(model, mode)
+    ? (miroirFundamentalJzodSchema as MlSchema)
+    : buildExtendedSchema(model);
+
+  setCachedSchema(deploymentUuid, model, mode, schema);
+  return schema;
+}
+
+/**
  * Returns the jzod schema for a deployment + model.
  * Phase 2.1+: distinct schema object when the model has app-owned endpoints.
  * Phase 2.2+: extends domainAction with app endpoint action shapes.
@@ -116,16 +166,5 @@ export function getMiroirFundamentalSchemaForDeployment(
   deploymentUuid: Uuid,
   model: MetaModel,
 ): MlSchema {
-  const cached = getCachedSchema(deploymentUuid, model);
-  console.log("getMiroirFundamentalSchemaForDeployment", deploymentUuid, model, cached);
-  if (cached) {
-    return cached;
-  }
-
-  const schema = !hasAppSpecificEndpoints(model)
-    ? (miroirFundamentalJzodSchema as MlSchema)
-    : buildExtendedSchema(model);
-
-  setCachedSchema(deploymentUuid, model, schema);
-  return schema;
+  return resolveFundamentalSchemaForDeployment(deploymentUuid, model, "auto");
 }
