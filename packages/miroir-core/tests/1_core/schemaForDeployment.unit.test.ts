@@ -379,3 +379,70 @@ describe("resolveFundamentalSchemaForDeployment (Phase 199 — revision cache)",
     ).toBe(true);
   }, 120_000);
 });
+
+describe("resolveFundamentalSchemaForDeployment (Phase 200 — cold-path performance ceiling)", () => {
+  const libraryDeploymentUuid = deployment_Library_DO_NO_USE.uuid;
+
+  beforeEach(() => {
+    clearSchemaCacheForTests();
+  });
+
+  // #200 regression guard: applyLimitedCarryOnSchemaOnLevel's "union" (and extend-array) cases
+  // previously passed the *same* convertedReferences accumulator to every sibling branch instead
+  // of letting siblings share discoveries, causing shared sub-schemas referenced from many
+  // domainAction/modelAction branches to be redundantly re-converted (measured: one reference
+  // re-visited 71,089 times; see analysis.md §5.2.2 and the fix write-up in §9.1). Before the fix,
+  // this exact cold rebuild took ~6.6-7.7s (analysis.md §5.2.4, repeated cold calls) / ~7.4s
+  // (equivalent build-time pass, §3.1). After the fix: ~3.1-4.1s measured (§9.1). The 6s ceiling
+  // below gives ~1.5-2x headroom over the fixed measurement (avoiding CI flakiness) while still
+  // failing well below the pre-fix cost if the sibling-sharing regresses.
+  it("cold rebuild after endpoint edit (domainAction carry-on) completes within 6s (#200)", () => {
+    const warmSchema = resolveFundamentalSchemaForDeployment(
+      libraryDeploymentUuid,
+      defaultLibraryAppModel as MetaModel,
+      "extended",
+    );
+
+    const lendingEndpoint = defaultLibraryAppModel.endpoints.find(
+      (endpoint) => endpoint.uuid === "212f2784-5b68-43b2-8ee0-89b1c6fdd0de",
+    );
+    expect(lendingEndpoint).toBeDefined();
+    const firstAction = lendingEndpoint!.definition!.actions![0];
+
+    const mutatedModel = structuredClone(defaultLibraryAppModel) as MetaModel;
+    mutatedModel.endpoints = mutatedModel.endpoints.map((endpoint) =>
+      endpoint.uuid === lendingEndpoint!.uuid
+        ? {
+            ...endpoint,
+            definition: {
+              ...endpoint.definition!,
+              actions: [
+                ...(endpoint.definition?.actions ?? []),
+                {
+                  ...firstAction,
+                  actionParameters: {
+                    ...firstAction.actionParameters,
+                    actionType: {
+                      type: "literal" as const,
+                      definition: "reserveDocument",
+                    },
+                  },
+                },
+              ],
+            },
+          }
+        : endpoint,
+    );
+
+    const start = Date.now();
+    const rebuiltSchema = resolveFundamentalSchemaForDeployment(
+      libraryDeploymentUuid,
+      mutatedModel,
+      "extended",
+    );
+    const elapsed = Date.now() - start;
+
+    expect(rebuiltSchema).not.toBe(warmSchema);
+    expect(elapsed).toBeLessThan(6_000);
+  }, 120_000);
+});

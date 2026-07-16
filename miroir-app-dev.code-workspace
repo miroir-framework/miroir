@@ -1,0 +1,17 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "../jzod"
+		},
+		{
+			"path": "../jzod-ts"
+		}
+	],
+  "settings": {
+    "typescript.tsserver.maxTsServerMemory": 8192,
+    "typescript.preferences.includePackageJsonAutoImports": "on"
+  }
+}

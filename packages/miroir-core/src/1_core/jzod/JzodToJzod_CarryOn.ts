@@ -502,10 +502,17 @@ export function applyLimitedCarryOnSchemaOnLevel(
       const flatDiscriminators: string[] | undefined = baseSchema.discriminator?Array.isArray(baseSchema.discriminator)
         ? baseSchema.discriminator.flat()
         : [baseSchema.discriminator]: [];
+      // #200: sibling union branches must share converted-reference progress, the same way
+      // object attributes / tuple items already do (see analysis.md "200-REFACTOR..." §5.2/A8).
+      // Without this, a reference shared by many branches (e.g. a Transformer type embedded in
+      // most domainAction/modelAction branches) is independently re-discovered/re-converted once
+      // per branch instead of once total, violating this function's own "at most once" contract
+      // (see docstring above) and dominating the cost of large unions like domainAction/modelAction.
+      const unionAccumulatedReferences: Record<string, JzodElement> = {};
       const subConvertedSchemas = baseSchema.definition
         // .filter((e) => !flatDiscriminators.includes(e))
-        .map((e) =>
-          applyLimitedCarryOnSchemaOnLevel(
+        .map((e) => {
+          const converted = applyLimitedCarryOnSchemaOnLevel(
             e,
             carryOnSchema,
             carryOnSchemaForArray,
@@ -516,11 +523,18 @@ export function applyLimitedCarryOnSchemaOnLevel(
             localReferencePrefix,
             suffixForReferences,
             resolveJzodReference,
-            convertedReferences,
+            // #200: only pay the merge cost when a prior sibling branch actually discovered something new
+            Object.keys(unionAccumulatedReferences).length === 0
+              ? convertedReferences
+              : { ...convertedReferences, ...unionAccumulatedReferences },
             flatDiscriminators, // skipObjectAttributesOnFirstLevel,
             // skipReference,
-          )
-        );
+          );
+          for (const c of Object.entries(converted.resolvedReferences ?? {})) {
+            unionAccumulatedReferences[c[0]] = c[1];
+          }
+          return converted;
+        });
       const newResolvedReferences = subConvertedSchemas.filter((e) => e.resolvedReferences);
       const references = newResolvedReferences
         ? Object.fromEntries(
@@ -621,24 +635,36 @@ export function applyLimitedCarryOnSchemaOnLevel(
                   // skipReference,
                 ),
               ]
-            : (baseSchema.extend as (JzodObject | JzodReference)[]).map(
-                (e: JzodObject | JzodReference): ApplyCarryOnSchemaOnLevelReturnType =>
-                  applyLimitedCarryOnSchemaOnLevel(
-                    e,
-                    carryOnSchema,
-                    carryOnSchemaForArray,
-                    carryOnSchemaDiscriminator,
-                    alwaysPropagate,
-                    false, // applyOnFirstLevel
-                    carryOnPrefix,
-                    localReferencePrefix,
-                    "extend", //suffixForReferences,
-                    resolveJzodReference,
-                    convertedReferences,
-                    undefined, // skipObjectAttributesOnFirstLevel,
-                    // skipReference,
-                  )
-              )
+            // #200: same sibling-sharing fix as the "union" case above (see comment there) —
+            // each extend-array element must see prior siblings' converted references.
+            : (() => {
+                const extendAccumulatedReferences: Record<string, JzodElement> = {};
+                return (baseSchema.extend as (JzodObject | JzodReference)[]).map(
+                  (e: JzodObject | JzodReference): ApplyCarryOnSchemaOnLevelReturnType => {
+                    const converted = applyLimitedCarryOnSchemaOnLevel(
+                      e,
+                      carryOnSchema,
+                      carryOnSchemaForArray,
+                      carryOnSchemaDiscriminator,
+                      alwaysPropagate,
+                      false, // applyOnFirstLevel
+                      carryOnPrefix,
+                      localReferencePrefix,
+                      "extend", //suffixForReferences,
+                      resolveJzodReference,
+                      Object.keys(extendAccumulatedReferences).length === 0
+                        ? convertedReferences
+                        : { ...convertedReferences, ...extendAccumulatedReferences },
+                      undefined, // skipObjectAttributesOnFirstLevel,
+                      // skipReference,
+                    );
+                    for (const c of Object.entries(converted.resolvedReferences ?? {})) {
+                      extendAccumulatedReferences[c[0]] = c[1];
+                    }
+                    return converted;
+                  }
+                );
+              })()
           : undefined; // TODO: apply carryOn object
       // log.info("convertedExtendResults", JSON.stringify(convertedExtendResults, null, 2));
       const convertedExtendReferences = convertedExtendResults
