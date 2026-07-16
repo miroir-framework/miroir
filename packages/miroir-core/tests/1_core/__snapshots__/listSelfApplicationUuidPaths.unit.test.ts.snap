@@ -1,0 +1,17 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`listSelfApplicationUuidPaths (T1) > Library application (canonical corpus) > discovers compact joker paths on defaultLibraryAppModel 1`] = `
+[
+  "applications.*.homePageUrl.selfApplication",
+  "applications.*.uuid",
+  "applicationUuid",
+  "applicationVersions.*.selfApplication",
+  "endpoints.*.application",
+  "endpoints.*.definition.actions.*.actionImplementation.definition.payload.actionSequence.*.payload.application",
+  "entities.*.selfApplication",
+  "menus.*.definition.definition.*.items.*.instanceUuid",
+  "menus.*.definition.definition.*.items.*.selfApplication",
+  "reports.*.selfApplication",
+  "runners.*.application",
+]
+`;

@@ -373,7 +373,7 @@ npm run testByFile -w miroir-standalone-app -- MiroirTestDisplayIntegrationLaunc
 Execute before marking B6 done:
 
 1. `npm run dev -w miroir-standalone-app` — open Library → Miroir Test details for `runner_library`
-2. Profile picker shows **only** `emulatedServer-indexedDb` (+ real-server rows disabled until B6-c) — **not** SQL/mongo emulated
+2. Profile picker shows **only** `emulatedServer-indexedDb` (+ real-server rows selectable but **not launchable** until B6-c — Run button stays grey) — **not** SQL/mongo emulated
 3. **Run Integration Tests** button **enabled** (orange)
 4. Click run → inspector green; live session unchanged
 5. After B6-c: repeat with `realServer-sql` against **same** dev server (D9); confirm live library session unchanged
@@ -399,7 +399,7 @@ Record outcome in plan checklist or PR test plan section. **Follow-up issue:** a
 |-------|-----|-------------|
 | **C1** | Red: bootstrap rejects `emulateServer: false` today | `runRealServerClientBootstrap` or extend orchestrator — client REST only, no `wireEmulatedStack` |
 | **C2** | Red: no preflight | `assertMiroirServerReachable(rootApiUrl)` before run; snackbar on failure |
-| **C3** | Red: picker disabled | Bundle/fetch `realServer-sql.json`; enable row when C1+C2 green |
+| **C3** | Red: launch gated | Bundle/fetch `realServer-sql.json`; enable **launch** (not merely selection) when C1+C2 green |
 | **C4** | Red: no Node proof | `uiIntegrationTestLauncher.realServer.integ.test.ts` — dev server up, `realServer-sql`, ephemeral runTarget, Return Book leaf, teardown drops test deployment |
 | **C5** | Manual T3 | webApp smoke: real-server profile against **same** localhost server; confirm live library session unchanged |
 
@@ -493,8 +493,8 @@ Integration tests use an emulated in-process server (`setupMiroirTest`) or a **r
 **UI profile picker rules (B6-b2):**
 
 - **Never list** `cliEmulatedOnly` (CI presets) in the picker.
-- **webApp picker:** `emulatedServer-indexedDb` + `realServer-*` (disabled until B6-c). **Do not show** `emulatedServer-sql` / `-filesystem` / `-mongodb`.
-- **electron picker:** all `emulatedServer-*` + `realServer-*` (real-server disabled until B6-c).
+- **webApp picker:** `emulatedServer-indexedDb` + `realServer-*` (selectable; launch gated until B6-c). **Do not show** `emulatedServer-sql` / `-filesystem` / `-mongodb`.
+- **electron picker:** all `emulatedServer-*` + `realServer-*` (real-server launch gated until B6-c).
 
 Bundling `emulatedServer-sql` JSON into the web bundle does **not** make SQL runnable in the browser.
 
@@ -525,7 +525,7 @@ Gap D profiles use filesystem paths in Node (`loadTestConfigFiles`). UI launcher
 | G-UI-3 | **No store-section registration in browser app startup** | `index.tsx` does not call `miroirPostgresStoreSectionStartup` etc. | IndexedDB section may register in app bundle; SQL/fs/mongo only on server for real-server path |
 | G-UI-4 | **Real-server profiles absent from Gap D `INTEGRATION_TEST_PROFILES`** | Only emulated profiles in Node catalog | Extend UI catalog (`integrationTestProfileCatalog.ts`) — done; wire loader + bootstrap |
 | G-UI-5 | **Server reachability / TLS** | Documented for CLI real-server tests (`NODE_EXTRA_CA_CERTS`, mkcert) | UI preflight: ping `rootApiUrl` / health; snackbar if server down |
-| G-UI-6 | **Profile picker enabled real-server rows** | Listed, disabled until B6-c | Enable when G-UI-1…5 satisfied |
+| G-UI-6 | **Profile picker enables real-server launch** | Listed + selectable; Run gated until B6-c | Enable launch when G-UI-1…5 satisfied |
 | G-UI-7 | **No proof integ button works end-to-end** | B3 Node integ test calls launcher directly; B5 unit tests only | **B6-d** RTL suite (see below) |
 
 Reference configs: `tests/miroirConfig.test-realServer-sql.json`, `realServer-indexedDb.json`, `realServer-filesystem.json`. See [testing.md](../../../docs/reference/testing.md#config-file-catalogue).
@@ -637,3 +637,34 @@ When Phase B starts, update [plan.md](./plan.md):
 - Replace “Vitest subprocess” default wording in Phase B / Architecture with **data-isolated in-browser orchestrator run**
 - Link this file from Phase B section (same pattern as R6)
 - Mark success criteria checkboxes here as source of truth for Phase B granularity
+
+---
+
+## 11. Follow-up invariant — `filesystemDeploymentRootDirectory` is server-owned
+
+**Rule (UI integ + real server, and create-deployment in general):** when the client talks to a real `miroir-server` (`emulateServer: false`), **`filesystemDeploymentRootDirectory` must come from the server’s configuration** (`miroirConfig.server.filesystemDeploymentRootDirectory` in `miroirConfig.server.json`). The browser client must **not** invent, override, or send a client-local path as authoritative for server-side filesystem stores.
+
+### Why this matters now
+
+| Surface | Evidence |
+|---------|----------|
+| **Server owns the path** | [`packages/miroir-server/src/server.ts`](../../../packages/miroir-server/src/server.ts) reads `miroirConfig.server.filesystemDeploymentRootDirectory` (default `./tests/deployments/`). Prod/dev docs: [`docs/guides/build-it-yourself.md`](../../../docs/guides/build-it-yourself.md), [`docs/getting-started/installation-nodejs.md`](../../../docs/getting-started/installation-nodejs.md), [`docs/reference/data-architecture-deployments.md`](../../../docs/reference/data-architecture-deployments.md). |
+| **Client must not guess host paths** | Feature [#157](../157-FEATURE-%20harden%20startup%20sequence%20%26%20enable%20admin%20deployment%20choice%20on%20client%20-%20server/PLAN.md): hardcoded `devRelativePathPrefix` / `prodRelativePathPrefix` in browser code are wrong because they resolve on the **client machine**, not the server. Planned fix: `GET /api/serverConfig` → `{ filesystemDeploymentRootDirectory }` — route is still **commented out** in `server.ts` today. |
+| **Create / deploy templates already parameterize it** | [`Runner_CreateApplication.tsx`](../../../packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Runners/Runner_CreateApplication.tsx) uses `getFromParameters` / `referencePath: ["filesystemDeploymentRootDirectory"]` for the filesystem `prefix` of new deployments. That parameter must be the **server** root, not a client config field. |
+| **Emulated UI integ is different** | Browser profile `emulatedServer-indexedDb` runs an in-process stub (`emulateServer: true`). `setupMiroirTest` still **requires** `client.filesystemDeploymentRootDirectory` to construct `PersistenceStoreControllerManager` even when all sections are IndexedDB ([`setupMiroirTest.ts`](../../../packages/miroir-standalone-app/src/miroir-fwk/4-tests/setupMiroirTest.ts), [`PersistenceStoreControllerManager.ts`](../../../packages/miroir-core/src/4_services/PersistenceStoreControllerManager.ts)). For that path only, a **placeholder** client value is OK (`browser-emulated-no-fs` in `miroirConfig.browser-emulatedServer-indexedDb.json`) — it does not need to match the server. |
+| **B6-c (real-server UI integ)** | Must not copy client `filesystemDeploymentRootDirectory` into openStore / createDeployment payloads for filesystem backends. Use server config (via `/api/serverConfig` or equivalent once #157 lands). Same bug class appears when creating a new deployment from the live UI against a real server. |
+
+### Implications for #197
+
+1. **B6-d2 indexedDb smoke** expects **no** HTTPS activity to `miroir-server` (in-browser emulated stack). Vite `/@fs/.../tests/helpers` loads are module fetch, not app API.
+2. **B6-c** must treat filesystem roots as **server-authoritative**; closing Feature **#157** (`/api/serverConfig` + `useServerFilesystemRoot`) unblocks correct create-deployment and real-server UI integ for filesystem backends.
+3. Do **not** “fix” real-server UI by stuffing a developer machine path into the browser-bundled integ profile.
+
+---
+
+## 12. Follow-up analyses (2026-07-15 B6-d2 smoke)
+
+| Doc | Topic |
+|-----|--------|
+| [analysis-emulated-deployment-controller-gap.md](./analysis-emulated-deployment-controller-gap.md) | **Core:** application models are self-UUID-grounded — ephemeral deploy needs T1 path-discovery + T2 remap transformers (TDD); pinned suite is not isolation |
+| [analysis-ui-integ-without-testing-library.md](./analysis-ui-integ-without-testing-library.md) | Why UI loader pulls `@testing-library/react` via `tests-utils.tsx`; Rank 1 split; UI vs Vitest suite gates |

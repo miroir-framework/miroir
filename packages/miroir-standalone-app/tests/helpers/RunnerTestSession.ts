@@ -171,10 +171,13 @@ export class RunnerTestSession implements RunnerTestSessionInterface {
 
   // ##############################################################################################
   async beforeEach(): Promise<void> {
-    if (!this.domainController || !this.applicationDeploymentMap) {
+    if (!this.domainController || !this.applicationDeploymentMap || !this.runnerTestContext) {
       throw new Error("RunnerTestSession.beforeEach: initSession not called");
     }
-    await beforeEachTest(this.domainController, this.applicationDeploymentMap);
+    await beforeEachTest(this.domainController, this.applicationDeploymentMap, {
+      applicationUuid: this.runnerTestContext.runTarget.applicationUuid,
+      deploymentUuid: this.runnerTestContext.runTarget.deploymentUuid,
+    });
     if (this.runnerTestContext) {
       this.runnerTestContext.runtimeContext = {};
     }

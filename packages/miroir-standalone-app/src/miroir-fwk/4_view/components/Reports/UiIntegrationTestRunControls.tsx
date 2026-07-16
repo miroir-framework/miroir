@@ -117,6 +117,11 @@ export function UiIntegrationTestRunControls() {
         <label style={labelStyle} htmlFor="integration-test-profile-select">
           Profile
         </label>
+        {/*
+          Do not set option.disabled for non-launchable profiles — native <select>
+          ignores clicks on disabled options (no onChange), so the picker looked stuck.
+          Selection is allowed; Run Integration Tests stays gated via isUiIntegrationProfileLaunchableInBrowser.
+        */}
         <select
           id="integration-test-profile-select"
           style={selectStyle}
@@ -124,11 +129,7 @@ export function UiIntegrationTestRunControls() {
           onChange={(event) => onProfileChange(event.target.value)}
         >
           {profileEntries.map((entry) => (
-            <option
-              key={entry.name}
-              value={entry.name}
-              disabled={!isUiIntegrationProfileLaunchableInBrowser(entry.name)}
-            >
+            <option key={entry.name} value={entry.name}>
               {profileOptionLabel(entry)}
             </option>
           ))}
@@ -138,10 +139,10 @@ export function UiIntegrationTestRunControls() {
       {!selectedProfileLaunchable && selectedProfile && (
         <div style={{ fontSize: "12px", color: "#c62828", marginTop: "4px" }}>
           {selectedProfile.uiTransport === "realServer"
-            ? "Real-server profiles require miroir-server (B6-c)."
+            ? "Selected profile is not launchable yet — real-server requires miroir-server (B6-c). Run Integration Tests stays disabled."
             : selectedProfile.uiTransport === "electronEmulated" && runtime === "webApp"
               ? "SQL/filesystem/Mongo emulated profiles are Electron-only — use emulatedServer-indexedDb in the browser, or real-server (B6-c)."
-              : "Profile not launchable in this runtime yet."}
+              : "Profile not launchable in this runtime yet. Run Integration Tests stays disabled."}
         </div>
       )}
 

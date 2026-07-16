@@ -779,6 +779,14 @@ export {
   getReportsAndEntitiesDefinitionsForDeploymentUuid, metaMetaModelEntities,
   metaMetaModelEntityUuids, metaModelEntities, metaModelEntityUuids, miroirModelEntities
 } from "./1_core/Model.js";
+export {
+  formatRelativePath,
+  formatRelativePaths,
+  listSelfApplicationUuidPaths,
+  RELATIVE_PATH_JOKER,
+  type ListSelfApplicationUuidPathsOptions,
+  type RelativePath,
+} from "./1_core/listSelfApplicationUuidPaths.js";
 export { defaultReport } from "./1_core/Report.js";
 export { testBuildPlusRuntimeCompositeActionSuiteForRunner } from "./1_core/Runner.js";
 export {

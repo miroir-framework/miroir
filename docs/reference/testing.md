@@ -665,7 +665,7 @@ Model.CRUD may pass `skipResetMiroirModelInInit: true` so reset runs only in `be
 
 | Transport | Profile example | Where it runs | Notes |
 |-----------|-----------------|---------------|-------|
-| **Browser emulated IndexedDB** | `emulatedServer-indexedDb` | In-browser launcher (default) | Only emulated backend with native PSC in the browser |
+| **Browser emulated IndexedDB** | `emulatedServer-indexedDb` | In-browser launcher (default) | Only emulated backend with native PSC in the browser. Bundled config is **`miroirConfig.browser-emulatedServer-indexedDb.json`** (all sections IndexedDB + placeholder `filesystemDeploymentRootDirectory` for `setupMiroirTest`). The Vitest file `miroirConfig.test-emulatedServer-indexedDb.json` still uses filesystem admin and is **CLI-only**. **No HTTPS to `miroir-server`** for this profile — network noise may be Vite loading modules. |
 | **CLI emulated** | `emulatedServer-sql`, `-filesystem`, `-mongodb` | `testMiroir` / `testByFile` (Node) | Postgres/filesystem/Mongo drivers register in Vitest `beforeAll` |
 | **Real server** | `realServer-sql`, `-indexedDb`, `-filesystem` | Browser client → `https://localhost:3080` | Requires running `miroir-server`; B6-c |
 

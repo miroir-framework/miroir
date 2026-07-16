@@ -59,12 +59,18 @@ export interface RunnerTestParams {
 export async function beforeEachTest(
   domainController: DomainControllerInterface,
   applicationDeploymentMap: ApplicationDeploymentMap,
+  libraryRunTarget?: {
+    applicationUuid: string;
+    deploymentUuid: string;
+  },
 ): Promise<void>  {
   await resetLibraryPlayfield({
     domainController,
     applicationDeploymentMap,
-    libraryDeploymentUuid: deployment_Library_DO_NO_USE.uuid,
-    librarySelfApplicationUuid: selfApplicationLibrary.uuid,
+    libraryDeploymentUuid:
+      libraryRunTarget?.deploymentUuid ?? deployment_Library_DO_NO_USE.uuid,
+    librarySelfApplicationUuid:
+      libraryRunTarget?.applicationUuid ?? selfApplicationLibrary.uuid,
     miroirDeploymentUuid: selfApplicationDeploymentMiroir.uuid,
     miroirSelfApplicationUuid: selfApplicationMiroir.uuid,
     resetMiroirPlatform: true,
