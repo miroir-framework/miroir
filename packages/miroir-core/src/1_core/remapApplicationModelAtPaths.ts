@@ -13,6 +13,7 @@ import {
   type ListSelfApplicationUuidPathsOptions,
   type RelativePath,
 } from "./listSelfApplicationUuidPaths.js";
+import type { RunnerTestRunTarget } from "../5_tests/RunnerTestRunTarget.js";
 
 export type RemapApplicationModelParams = {
   oldApplicationUuid: Uuid;
@@ -201,4 +202,25 @@ export function remapSelfApplicationUuidModel(
     useJokerForArrayIndices: options.useJokerForArrayIndices,
   });
   return remapApplicationModelAtPaths(model, paths, remap, options);
+}
+
+/**
+ * Remap a canonical Library (or library-shaped) MetaModel for an ephemeral
+ * runner runTarget. No-op when runTarget already uses the canonical application uuid.
+ */
+export function remapLibraryAppModelForRunTarget(
+  sourceModel: MetaModel,
+  canonicalApplicationUuid: Uuid,
+  canonicalDeploymentUuid: Uuid,
+  runTarget: RunnerTestRunTarget,
+): MetaModel {
+  if (runTarget.applicationUuid === canonicalApplicationUuid) {
+    return sourceModel;
+  }
+  return remapSelfApplicationUuidModel(sourceModel, {
+    oldApplicationUuid: canonicalApplicationUuid,
+    newApplicationUuid: runTarget.applicationUuid,
+    oldDeploymentUuid: canonicalDeploymentUuid,
+    newDeploymentUuid: runTarget.deploymentUuid,
+  });
 }

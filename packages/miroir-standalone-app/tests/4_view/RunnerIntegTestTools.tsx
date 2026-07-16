@@ -63,6 +63,9 @@ export async function beforeEachTest(
     applicationUuid: string;
     deploymentUuid: string;
   },
+  options?: {
+    clearDocumentBody?: boolean;
+  },
 ): Promise<void>  {
   await resetLibraryPlayfield({
     domainController,
@@ -75,7 +78,9 @@ export async function beforeEachTest(
     miroirSelfApplicationUuid: selfApplicationMiroir.uuid,
     resetMiroirPlatform: true,
   });
-  document.body.innerHTML = "";
+  if (options?.clearDocumentBody !== false) {
+    document.body.innerHTML = "";
+  }
 };
 
 // ################################################################################################

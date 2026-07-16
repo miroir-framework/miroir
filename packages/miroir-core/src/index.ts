@@ -790,6 +790,7 @@ export {
 export {
   remapApplicationModelAtPaths,
   RemapApplicationModelAtPathsError,
+  remapLibraryAppModelForRunTarget,
   remapSelfApplicationUuidModel,
   type RemapApplicationModelAtPathsOptions,
   type RemapApplicationModelParams,

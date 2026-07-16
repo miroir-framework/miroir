@@ -668,3 +668,12 @@ When Phase B starts, update [plan.md](./plan.md):
 |-----|--------|
 | [analysis-emulated-deployment-controller-gap.md](./analysis-emulated-deployment-controller-gap.md) | **Core:** application models are self-UUID-grounded — ephemeral deploy needs T1 path-discovery + T2 remap transformers (TDD); pinned suite is not isolation |
 | [analysis-ui-integ-without-testing-library.md](./analysis-ui-integ-without-testing-library.md) | Why UI loader pulls `@testing-library/react` via `tests-utils.tsx`; Rank 1 split; UI vs Vitest suite gates |
+
+### 13. 2026-07-16 post-B6-d2 notes
+
+1. **Blank page regression fixed:** UI integration `beforeEach` previously cleared `document.body`, which unmounted the app. `RunnerTestSession.beforeEach` now disables DOM clearing for UI-launched integration runs.
+2. **Issue #199 alignment:** `getMiroirFundamentalSchemaForDeployment` calls observed during ephemeral runner lifecycle are not purely display-related. They are triggered by `DomainController.currentModelEnvironment` / local cache model-environment construction and by teardown model-environment creation.
+3. **#199 optimization candidates (follow-up):**
+   - Strengthen reuse of schema cache entries across runner phases when schema revision is unchanged.
+   - For teardown-only paths, evaluate using static schema mode (`resolveFundamentalSchemaForDeployment(..., "static")`) where safe.
+   - Reuse session-level `MiroirModelEnvironment` where possible instead of recomputing per lifecycle step.

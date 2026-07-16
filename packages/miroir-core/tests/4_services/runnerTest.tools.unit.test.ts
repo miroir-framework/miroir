@@ -1,9 +1,10 @@
 import { describe, expect, it } from "vitest";
 
-import { defaultLibraryAppModel, miroirTest_runner_library, RUNNER_LIBRARY_RUNNER_REGISTRY } from "miroir-test-app_deployment-library";
+import { defaultLibraryAppModel, deployment_Library_DO_NO_USE, miroirTest_runner_library, RUNNER_LIBRARY_RUNNER_REGISTRY, selfApplicationLibrary } from "miroir-test-app_deployment-library";
 import {
   miroirTestForRunner as miroirTestForRunnerSchema,
   miroirTestSuite as miroirTestSuiteSchema,
+  type MetaModel,
   type MiroirTestDefinition,
   type MiroirTestForRunner,
   type MiroirTestSuite,
@@ -14,6 +15,7 @@ import {
   resolveRunnerTestLeaf,
 } from "../../src/5_tests/RunnerTestTools";
 import { resolveRunnerTestRunTarget } from "../../src/5_tests/RunnerTestRunTarget";
+import { remapLibraryAppModelForRunTarget } from "../../src/1_core/remapApplicationModelAtPaths";
 import { expandResolvableResetAndinitializeDeploymentCompositeAction } from "../../src/1_core/Deployment";
 
 const getFromParameters = (referenceName: string) => ({
@@ -119,6 +121,51 @@ describe("runnerTest tools", () => {
     expect(parsedShell.testParams).not.toHaveProperty("testApplicationUuid");
     expect(parsedShell.testParams).not.toHaveProperty("testApplicationDeploymentUuid");
     expect(parsedShell.testParams).not.toHaveProperty("defaultLibraryAppModel");
+  });
+
+  it("resolveRunnerTestLeaf expands ephemeral defaultLibraryAppModel with new application uuid", () => {
+    const leaf = runnerLibraryLeaf(0);
+    const suite = runnerLibrarySuite();
+    const ephemeralApplicationUuid = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa";
+    const ephemeralDeploymentUuid = "cccccccc-cccc-4ccc-8ccc-cccccccccccc";
+    const runTarget = resolveRunnerTestRunTarget({
+      suite: { miroirTestLabel: suite.miroirTestLabel },
+      generateUuid: (() => {
+        let index = 0;
+        return () =>
+          index++ === 0 ? ephemeralApplicationUuid : ephemeralDeploymentUuid;
+      })(),
+    });
+    const remappedLibraryModel = remapLibraryAppModelForRunTarget(
+      defaultLibraryAppModel as MetaModel,
+      selfApplicationLibrary.uuid as string,
+      deployment_Library_DO_NO_USE.uuid,
+      runTarget,
+    );
+    const sessionTestParams = buildRunnerTestSessionParamBank(suite.testParams, runTarget, {
+      defaultLibraryAppModel: remappedLibraryModel,
+    });
+    const resolved = resolveRunnerTestLeaf({
+      leaf,
+      pageLabel: "Runner_Miroir.integ.test",
+      buildContext,
+      runTarget,
+      sessionTestParams,
+      runnerRegistry: RUNNER_LIBRARY_RUNNER_REGISTRY,
+    });
+
+    const expandedBeforeEach = expandResolvableResetAndinitializeDeploymentCompositeAction(
+      resolved.testCompositeAction.beforeEach!,
+      resolved.testParams as Record<string, unknown>,
+    );
+    expect((resolved.testParams.defaultLibraryAppModel as MetaModel).applicationUuid).toBe(
+      ephemeralApplicationUuid,
+    );
+    expect(
+      expandedBeforeEach.payload.actionSequence.some(
+        (action) => action.payload?.application === ephemeralApplicationUuid,
+      ),
+    ).toBe(true);
   });
 
   it.each([

@@ -259,6 +259,29 @@ function remapApplicationModelAtPaths(
 
 Stopgap lend/return `getFromParameters` edits and runTarget-aware `beforeEach` remain compatible (param bank still supplies new uuid) but become **redundant for grounding** once T2 rewrites literals.
 
+### Post-wire findings (2026-07-16)
+
+#### F1 — Blank UI after clicking "Run Integration Tests" (fixed)
+
+- **Symptom:** Browser UI went blank immediately on integration run start and stayed blank after completion.
+- **Root cause:** `beforeEachTest()` in `RunnerIntegTestTools.tsx` unconditionally executed `document.body.innerHTML = ""`, which unmounted the live React app during UI-launched runs.
+- **Fix:** Added `beforeEachTest(..., options?: { clearDocumentBody?: boolean })`; `RunnerTestSession.beforeEach()` now calls it with `clearDocumentBody: false` for UI integration sessions.
+- **Scope:** Keeps DOM clearing behavior available for harness-only / legacy contexts while preserving mounted UI for B6 launcher runs.
+
+#### F2 — Fundamental schema recomputation during ephemeral run lifecycle (issue #199 context)
+
+- **Observed:** Logs show repeated `getMiroirFundamentalSchemaForDeployment` resolution around ephemeral deployment create/reset/teardown.
+- **Why this happens (non-display path):**
+  1. `runMiroirRunnerTest` calls `domainController.currentModelEnvironment(...)` before executing runner composite actions.
+  2. `DomainController.currentModelEnvironment` delegates to local cache `currentModelEnvironment`.
+  3. Local cache `currentModelEnvironment` builds `miroirFundamentalJzodSchema` via `getMiroirFundamentalSchemaForDeployment(deploymentUuid, model)`.
+  4. `RunnerTestSession.teardown()` also calls `buildTestSessionModelEnvironment(...)`, which currently resolves schema the same way.
+- **Conclusion:** Schema resolution is **not only for display**; it is also used in non-UI execution paths (DomainController/test-runner model environments).
+- **Optimization direction for #199:**
+  - Avoid schema rebuilds when the deployment/model revision key is unchanged (stronger cache-hit path across runner phases).
+  - For teardown-only paths that do not require extended app endpoint branches, evaluate explicit `resolveFundamentalSchemaForDeployment(..., "static")`.
+  - Revisit whether teardown can reuse a previously materialized `MiroirModelEnvironment` from session init instead of rebuilding.
+
 ---
 
 ## 7. Locked decisions (grill) — revised

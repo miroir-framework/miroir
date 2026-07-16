@@ -5,9 +5,11 @@ import {
   defaultMiroirMetaModel,
   extendMiroirConfigWithExtraDeploymentConfiguration,
   getBootstrapPhasesForSessionKind,
+  remapLibraryAppModelForRunTarget,
   type ApplicationDeploymentMap,
   type Deployment,
   type DomainControllerInterface,
+  type MetaModel,
   type MiroirActivityTracker,
   type MiroirConfigClient,
   type MiroirEventService,
@@ -18,7 +20,11 @@ import {
   type RunnerTestSessionInterface,
   type StoreUnitConfiguration,
 } from "miroir-core";
-import { defaultLibraryAppModel } from "miroir-test-app_deployment-library";
+import {
+  defaultLibraryAppModel,
+  deployment_Library_DO_NO_USE,
+  selfApplicationLibrary,
+} from "miroir-test-app_deployment-library";
 import {
   selfApplicationDeploymentMiroir,
   selfApplicationMiroir,
@@ -99,8 +105,18 @@ export class RunnerTestSession implements RunnerTestSessionInterface {
   private domainController: DomainControllerInterface | undefined;
   private applicationDeploymentMap: ApplicationDeploymentMap | undefined;
   private runnerTestContext: RunnerTestContext | undefined;
+  private libraryModelForSession: MetaModel | undefined;
 
   constructor(private readonly options: RunnerTestSessionOptions) {}
+
+  private resolveLibraryModelForRunTarget(runTarget: RunnerTestRunTarget): MetaModel {
+    return remapLibraryAppModelForRunTarget(
+      defaultLibraryAppModel as MetaModel,
+      selfApplicationLibrary.uuid as string,
+      deployment_Library_DO_NO_USE.uuid,
+      runTarget,
+    );
+  }
 
   // ##############################################################################################
   async initSession(): Promise<MiroirTestExecutionEnvironment> {
@@ -139,10 +155,13 @@ export class RunnerTestSession implements RunnerTestSessionInterface {
       [runTarget.applicationUuid]: runTarget.deploymentUuid,
     };
 
+    const libraryModelForSession = this.resolveLibraryModelForRunTarget(runTarget);
+    this.libraryModelForSession = libraryModelForSession;
+
     const sessionTestParams = buildRunnerTestSessionParamBank(
       this.options.suiteTestParams,
       runTarget,
-      { defaultLibraryAppModel },
+      { defaultLibraryAppModel: libraryModelForSession },
     );
 
     this.domainController = domainController;
@@ -177,6 +196,9 @@ export class RunnerTestSession implements RunnerTestSessionInterface {
     await beforeEachTest(this.domainController, this.applicationDeploymentMap, {
       applicationUuid: this.runnerTestContext.runTarget.applicationUuid,
       deploymentUuid: this.runnerTestContext.runTarget.deploymentUuid,
+    }, {
+      // Keep UI mounted during browser-triggered integration runs.
+      clearDocumentBody: false,
     });
     if (this.runnerTestContext) {
       this.runnerTestContext.runtimeContext = {};
@@ -197,7 +219,8 @@ export class RunnerTestSession implements RunnerTestSessionInterface {
     const currentModel =
       runTarget.applicationUuid === selfApplicationMiroir.uuid
         ? defaultMiroirMetaModel
-        : defaultLibraryAppModel;
+        : (this.libraryModelForSession ??
+          this.resolveLibraryModelForRunTarget(runTarget));
     const modelEnvironment = buildTestSessionModelEnvironment(
       runTarget.deploymentUuid,
       currentModel,
@@ -217,5 +240,6 @@ export class RunnerTestSession implements RunnerTestSessionInterface {
     this.domainController = undefined;
     this.applicationDeploymentMap = undefined;
     this.runnerTestContext = undefined;
+    this.libraryModelForSession = undefined;
   }
 }

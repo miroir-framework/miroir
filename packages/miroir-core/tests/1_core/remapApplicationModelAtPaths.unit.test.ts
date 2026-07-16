@@ -14,8 +14,10 @@ import {
 import {
   remapApplicationModelAtPaths,
   RemapApplicationModelAtPathsError,
+  remapLibraryAppModelForRunTarget,
   remapSelfApplicationUuidModel,
 } from "../../src/1_core/remapApplicationModelAtPaths";
+import type { RunnerTestRunTarget } from "../../src/5_tests/RunnerTestRunTarget";
 
 const LIBRARY_APP_UUID = selfApplicationLibrary.uuid as string;
 const LIBRARY_DEPLOYMENT_UUID = "f714bb2f-a12d-4e71-a03b-74dcedea6eb4";
@@ -316,6 +318,40 @@ describe("remapApplicationModelAtPaths (T2)", () => {
         newApplicationUuid: NEW_APP_UUID,
       });
       expect(JSON.stringify(source)).toBe(before);
+    });
+  });
+
+  describe("remapLibraryAppModelForRunTarget (B6-d2 wire-up helper)", () => {
+    const ephemeralTarget: RunnerTestRunTarget = {
+      applicationUuid: NEW_APP_UUID,
+      applicationName: "Library",
+      deploymentUuid: NEW_DEPLOYMENT_UUID,
+    };
+
+    it("no-ops when runTarget uses the canonical Library application uuid", () => {
+      const canonicalTarget: RunnerTestRunTarget = {
+        applicationUuid: LIBRARY_APP_UUID,
+        applicationName: "Library",
+        deploymentUuid: LIBRARY_DEPLOYMENT_UUID,
+      };
+      const result = remapLibraryAppModelForRunTarget(
+        defaultLibraryAppModel as MetaModel,
+        LIBRARY_APP_UUID,
+        LIBRARY_DEPLOYMENT_UUID,
+        canonicalTarget,
+      );
+      expect(result).toBe(defaultLibraryAppModel);
+    });
+
+    it("remaps when runTarget is ephemeral", () => {
+      const result = remapLibraryAppModelForRunTarget(
+        defaultLibraryAppModel as MetaModel,
+        LIBRARY_APP_UUID,
+        LIBRARY_DEPLOYMENT_UUID,
+        ephemeralTarget,
+      );
+      expect(result.applicationUuid).toBe(NEW_APP_UUID);
+      expect(listSelfApplicationUuidPaths(result, LIBRARY_APP_UUID)).toEqual([]);
     });
   });
 });
