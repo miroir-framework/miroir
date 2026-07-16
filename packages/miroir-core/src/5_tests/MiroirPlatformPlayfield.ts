@@ -28,6 +28,11 @@ export type EnsureMiroirPlatformParams = {
   persistenceStoreControllerManager?: PersistenceStoreControllerManagerInterface;
   /** Required when `deployStrategy` is `pscHelper` and deployment must be created. */
   deployViaPscHelper?: () => Promise<void>;
+  /**
+   * When true, omit Admin openStore in createDeployment (real-server: Admin
+   * already open on shared miroir-server).
+   */
+  skipOpenAdminStore?: boolean;
 };
 
 function miroirPlatformExists(params: EnsureMiroirPlatformParams): boolean {
@@ -47,6 +52,7 @@ async function deployMiroirPlatform(params: EnsureMiroirPlatformParams): Promise
       params.miroirSelfApplicationUuid,
       params.adminDeployment,
       params.miroirDeploymentStorageConfiguration,
+      { skipOpenAdminStore: params.skipOpenAdminStore },
     );
     const createDeploymentResult = await params.domainController.handleCompositeAction(
       createMiroirDeploymentAction,

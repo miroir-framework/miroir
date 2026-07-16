@@ -60,7 +60,7 @@ function transportHint(transport: UiIntegrationProfileTransport): string {
     case "electronEmulated":
       return "Electron emulated";
     case "realServer":
-      return "requires miroir-server (B6-c)";
+      return "requires miroir-server / bundled assets";
     case "cliEmulatedOnly":
       return "CLI only";
   }
@@ -139,9 +139,9 @@ export function UiIntegrationTestRunControls() {
       {!selectedProfileLaunchable && selectedProfile && (
         <div style={{ fontSize: "12px", color: "#c62828", marginTop: "4px" }}>
           {selectedProfile.uiTransport === "realServer"
-            ? "Selected profile is not launchable yet — real-server requires miroir-server (B6-c). Run Integration Tests stays disabled."
+            ? "Selected profile is not launchable yet — real-server requires miroir-server and a bundled browser config. Run Integration Tests stays disabled."
             : selectedProfile.uiTransport === "electronEmulated" && runtime === "webApp"
-              ? "SQL/filesystem/Mongo emulated profiles are Electron-only — use emulatedServer-indexedDb in the browser, or real-server (B6-c)."
+              ? "SQL/filesystem/Mongo emulated profiles are Electron-only — use emulatedServer-indexedDb in the browser, or realServer-sql."
               : "Profile not launchable in this runtime yet. Run Integration Tests stays disabled."}
         </div>
       )}

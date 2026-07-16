@@ -149,92 +149,115 @@ MiroirLoggerFactory.registerLoggerToStart(
 // }
 
 // ################################################################################################
+export type CreateDeploymentCompositeActionOptions = {
+  /**
+   * When true, omit Admin openStore. Use for real-server runs where Admin is
+   * already open on the shared miroir-server (`emulateServer: false`).
+   */
+  skipOpenAdminStore?: boolean;
+};
+
 export function createDeploymentCompositeAction(
   applicationName: string,
   newDeploymentUuid: Uuid,
   applicationUuid: Uuid,
   adminDeploymentConfiguration: Deployment,
-  newDeploymentConfiguration: StoreUnitConfiguration
+  newDeploymentConfiguration: StoreUnitConfiguration,
+  options?: CreateDeploymentCompositeActionOptions,
 ): CompositeActionSequence {
-  // log.info(
-  //   "createDeploymentCompositeAction deploymentConfiguration",
-  //   "newDeploymentUuid:",
-  //   newDeploymentUuid,
-  //   "deploymentConfiguration:",
-  //   newDeploymentConfiguration
-  // );
+  // Order matches Create Application / Deploy Existing Application runners
+  // (reportMiroirRunners): register AdminApplication in Admin *before* open/create
+  // of the new deployment stores, then register the Deployment instance.
+  const actionSequence: CompositeActionSequence["payload"]["actionSequence"] = [];
+
+  if (!options?.skipOpenAdminStore) {
+    actionSequence.push({
+      actionType: "storeManagementAction_openStore",
+      actionLabel: "storeManagementAction_openStore for " + applicationName + " admin",
+      endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
+      payload: {
+        application: adminSelfApplication.uuid,
+        deploymentUuid: adminDeploymentConfiguration.uuid,
+        configuration: {
+          [adminDeploymentConfiguration.uuid]:
+            adminDeploymentConfiguration.configuration as StoreUnitConfiguration,
+        },
+      },
+    });
+  }
+
+  actionSequence.push(
+    {
+      actionType: "createInstance",
+      actionLabel: "CreateAdminApplicationInstance for " + applicationName,
+      endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+      payload: {
+        application: adminSelfApplication.uuid,
+        applicationSection: "data",
+        objects: [
+          {
+            uuid: applicationUuid,
+            parentName: entityApplicationForAdmin.name,
+            parentUuid: entityApplicationForAdmin.uuid,
+            name: applicationName,
+            defaultLabel: `The ${applicationName} Application.`,
+            description: `This Application contains the ${applicationName} model and data.`,
+            selfApplication: applicationUuid,
+          } as AdminApplication,
+        ],
+      },
+    },
+    {
+      actionType: "storeManagementAction_openStore",
+      actionLabel: "storeManagementAction_openStore for " + applicationName,
+      endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
+      payload: {
+        application: applicationUuid,
+        deploymentUuid: newDeploymentUuid,
+        configuration: {
+          [newDeploymentUuid]: newDeploymentConfiguration,
+        },
+      },
+    },
+    {
+      actionType: "storeManagementAction_createStore",
+      actionLabel: "storeManagementAction_createStore for " + applicationName,
+      endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
+      payload: {
+        application: applicationUuid,
+        deploymentUuid: newDeploymentUuid,
+        configuration: newDeploymentConfiguration,
+      },
+    },
+    {
+      actionType: "createInstance",
+      actionLabel: "CreateDeploymentInstance for " + applicationName,
+      endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+      payload: {
+        application: adminSelfApplication.uuid,
+        applicationSection: "data",
+        objects: [
+          {
+            uuid: newDeploymentUuid,
+            parentName: "Deployment",
+            parentUuid: entityDeployment.uuid,
+            name: `Deployment of application ${applicationName}`,
+            defaultLabel: `The deployment of application ${applicationName}`,
+            description: `The description of deployment of application ${applicationName}`,
+            selfApplication: applicationUuid,
+            configuration: newDeploymentConfiguration,
+          } as Deployment,
+        ],
+      },
+    },
+  );
+
   return {
     actionType: "compositeActionSequence",
     actionLabel: "createDeploymentCompositeAction",
     endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
     payload: {
-      actionSequence: [
-        {
-          actionType: "storeManagementAction_openStore",
-          actionLabel: "storeManagementAction_openStore for " + applicationName + " admin",
-          endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
-          payload: {
-            application: adminSelfApplication.uuid,
-            deploymentUuid: adminDeploymentConfiguration.uuid,
-            configuration: {
-              [adminDeploymentConfiguration.uuid]:
-                adminDeploymentConfiguration.configuration as StoreUnitConfiguration,
-            },
-          },
-        },
-        {
-          actionType: "storeManagementAction_openStore",
-          actionLabel: "storeManagementAction_openStore for " + applicationName,
-          endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
-          payload: {
-            application: applicationUuid,
-            deploymentUuid: newDeploymentUuid,
-            configuration: {
-              [newDeploymentUuid]: newDeploymentConfiguration,
-            },
-          },
-        },
-        {
-          actionType: "storeManagementAction_createStore",
-          actionLabel: "storeManagementAction_createStore for " + applicationName,
-          endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
-          payload: {
-            application: applicationUuid,
-            deploymentUuid: newDeploymentUuid,
-            configuration: newDeploymentConfiguration,
-          },
-        },
-        {
-          actionType: "createInstance",
-          actionLabel: "CreateDeploymentInstances for " + applicationName,
-          endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-          payload: {
-            application: adminSelfApplication.uuid,
-            applicationSection: "data",
-            objects: [
-              {
-                uuid: applicationUuid,
-                parentName: entityApplicationForAdmin.name,
-                parentUuid: entityApplicationForAdmin.uuid,
-                name: applicationName,
-                defaultLabel: `The ${applicationName} Application.`,
-                description: `This Application contains the ${applicationName} model and data.`,
-                selfApplication: applicationUuid,
-              } as AdminApplication,
-              {
-                uuid: newDeploymentUuid,
-                parentName: "Deployment",
-                parentUuid: entityDeployment.uuid,
-                name: `Deployment of application ${applicationName}`,
-                defaultLabel: `The deployment of application ${applicationName}`,
-                description: `The description of deployment of application ${applicationName}`,
-                selfApplication: applicationUuid, // TODO: this should be selfApplication
-                configuration: newDeploymentConfiguration,
-              } as Deployment,
-            ],
-          },
-        },
-      ],
+      actionSequence,
     },
   };
 }

@@ -4,7 +4,7 @@
 
 **Prerequisites:** Phase A ✅ · Gaps A/B/C-setup/D/E ✅ · Phase R (R0–R6) ✅ · **JzodElementEditor component tests** documented and green ([testing.md](../../../docs/reference/testing.md#jzodelementeditortesttsx--component-integration-suite)) — baseline before B7
 
-**Status:** B0–B5 ✅ · **B6 in progress** (B6-a scaffold ✅ · B6-b backend model corrected ✅ · B6-c real-server gaps open · B6-d e2e proof **required for B6 done**) · B7 blocked on B6-d
+**Status:** B0–B5 ✅ · **B6 in progress** (B6-a ✅ · B6-b ✅ · **B6-d2 indexedDb manual ✅ 2026-07-16** · **B6-c C1–C3 ✅ · C4 Node integ added · C5 manual next**) · B7 blocked on B6-c C5 (real-server webApp smoke)
 
 **Goal:** Run the same domainController-based MiroirTest integration suites from the Miroir UI that CLI runs today — with **data-isolated** test runs that do not pollute the user's working session — plus reporting and a troubleshooting inspector.
 
@@ -299,7 +299,7 @@ npm run testMiroir -w miroir-standalone-app -- --suites runner_library --mode in
 
 **B6 is not complete** until **both B6-c and B6-d** pass. Unit tests and Node launcher integ alone are insufficient — the report UI must enable and complete a run.
 
-**Implementation order (locked D12):** B6-d0 ✅ → **B6-d1 ✅** → **B6-d2 indexedDb manual** → **B6-c** → **B6-d2 real-server manual** → B6 done → B7. Follow-ups: Playwright (D10), Electron emulated (D11).
+**Implementation order (locked D12):** B6-d0 ✅ → **B6-d1 ✅** → **B6-d2 indexedDb manual ✅** → **B6-c C1–C3 ✅ / C4 added / C5 next** → B6 done → B7. Follow-ups: Playwright (D10), Electron emulated (D11).
 
 #### Proof tiers (clarified)
 
@@ -370,15 +370,17 @@ npm run testByFile -w miroir-standalone-app -- MiroirTestDisplayIntegrationLaunc
 
 **Locked (D10):** Manual checklist **sufficient for B6 done**. Browser automation (Playwright/Cypress) is a **follow-up issue** — not blocking B6 or B7.
 
-Execute before marking B6 done:
+##### IndexedDb emulated — ✅ PASSED (2026-07-16)
 
-1. `npm run dev -w miroir-standalone-app` — open Library → Miroir Test details for `runner_library`
-2. Profile picker shows **only** `emulatedServer-indexedDb` (+ real-server rows selectable but **not launchable** until B6-c — Run button stays grey) — **not** SQL/mongo emulated
-3. **Run Integration Tests** button **enabled** (orange)
-4. Click run → inspector green; live session unchanged
-5. After B6-c: repeat with `realServer-sql` against **same** dev server (D9); confirm live library session unchanged
+Manual webApp smoke on `emulatedServer-indexedDb` + ephemeral runTarget:
 
-Record outcome in plan checklist or PR test plan section. **Follow-up issue:** automate T3 (Playwright) for CI regression of webApp integ launch.
+1. ✅ Library → Miroir Test details for `runner_library`
+2. ✅ Profile picker: `emulatedServer-indexedDb` launchable; real-server rows selectable but not launchable until B6-c
+3. ✅ **Run Integration Tests** enabled (orange)
+4. ✅ Click run → inspector **passed** (2/2 tests, 2/2 assertions: Lend Book + Return Book); ephemeral `runTarget` UUIDs distinct from live Library; blank-page regression fixed (`clearDocumentBody: false`)
+5. ⏳ After B6-c: repeat with `realServer-sql` against **same** localhost server (D9); confirm live library session unchanged
+
+**Follow-up issue:** automate T3 (Playwright) for CI regression of webApp integ launch.
 
 ---
 
@@ -397,11 +399,11 @@ Record outcome in plan checklist or PR test plan section. **Follow-up issue:** a
 
 | Slice | TDD | Deliverable |
 |-------|-----|-------------|
-| **C1** | Red: bootstrap rejects `emulateServer: false` today | `runRealServerClientBootstrap` or extend orchestrator — client REST only, no `wireEmulatedStack` |
-| **C2** | Red: no preflight | `assertMiroirServerReachable(rootApiUrl)` before run; snackbar on failure |
-| **C3** | Red: launch gated | Bundle/fetch `realServer-sql.json`; enable **launch** (not merely selection) when C1+C2 green |
-| **C4** | Red: no Node proof | `uiIntegrationTestLauncher.realServer.integ.test.ts` — dev server up, `realServer-sql`, ephemeral runTarget, Return Book leaf, teardown drops test deployment |
-| **C5** | Manual T3 | webApp smoke: real-server profile against **same** localhost server; confirm live library session unchanged |
+| **C1** | ✅ | `runRealServerClientBootstrap` + `RunnerTestSession` branch (`emulateServer: false`, `platformEnsureMode: "skip"`) |
+| **C2** | ✅ | `assertMiroirServerReachable(rootApiUrl)` before real-server run; snackbar via thrown `MiroirServerUnreachableError` on Run button |
+| **C3** | ✅ | Bundled `miroirConfig.browser-realServer-sql.json`; `realServer-sql` launchable in webApp picker |
+| **C4** | ✅ file + skip-if-down | `uiIntegrationTestLauncher.realServer.integ.test.ts` — live server, ephemeral, Return Book leaf |
+| **C5** | Manual T3 | webApp smoke: `realServer-sql` against **same** localhost server; confirm live library session unchanged |
 
 **Verify (C4):**
 
@@ -417,12 +419,12 @@ Close gaps G-UI-1 … G-UI-7 (§5.3).
 
 #### B6 done checklist
 
-- [ ] B6-a scaffold ✅
-- [ ] B6-b2 runtime-filtered picker ✅ · B6-b3 Electron emulated → **follow-up** (not blocking B6 per D10 pattern)
-- [ ] B6-d0 suite key ✅
+- [x] B6-a scaffold ✅
+- [x] B6-b2 runtime-filtered picker ✅ · B6-b3 Electron emulated → **follow-up** (not blocking B6 per D10 pattern)
+- [x] B6-d0 suite key ✅
 - [x] **B6-d1** RTL integ test green (`MiroirTestDisplayIntegrationLaunch.integ.test.tsx` — Return Book leaf, ~19s)
-- [ ] **B6-d2** webApp manual smoke passed (indexedDb emulated)
-- [ ] **B6-c** C1–C5 real-server path green + webApp smoke on same dev server (D9)
+- [x] **B6-d2** webApp manual smoke passed (indexedDb emulated) — **2026-07-16**
+- [x] **B6-c** C1–C3 ✅ · C4 Node integ present (skips if server down) · **C5 webApp real-server smoke pending**
 
 ---
 
@@ -677,3 +679,7 @@ When Phase B starts, update [plan.md](./plan.md):
    - Strengthen reuse of schema cache entries across runner phases when schema revision is unchanged.
    - For teardown-only paths, evaluate using static schema mode (`resolveFundamentalSchemaForDeployment(..., "static")`) where safe.
    - Reuse session-level `MiroirModelEnvironment` where possible instead of recomputing per lifecycle step.
+4. **B6-d2 indexedDb manual ✅** — ephemeral `runner_library` (Lend + Return) green in browser; inspector passed 2/2.
+5. **B6-c C1–C3 ✅** — real-server client bootstrap, preflight, `realServer-sql` launchable. **C4** Node integ added. **Next: C5** webApp smoke with `realServer-sql` (miroir-server up).
+6. **Real-server must not touch package `assets/`:** live admin Deployment for Miroir still points at `miroir-test-app_deployment-miroir/assets/miroir_*` under server `filesystemDeploymentRootDirectory` (`..` → packages). B6-c uses `platformEnsureMode: "skip"` (do not redeploy Miroir) and `resetMiroirPlatform: false` in `RunnerTestSession.beforeEach` when `emulateServer: false`. Ephemeral library isolation only. If a disposable Miroir FS copy is ever needed, use a server-owned test root (e.g. `tests/deployments/`), never package source assets.
+7. **realServer createDeployment sequence:** Matches Create Application / Deploy Existing runners (`reportMiroirRunners`): (optional Admin openStore for emulated only) → `createInstance` AdminApplication → `openStore` ephemeral → `createStore` ephemeral → `createInstance` Deployment. For `emulateServer: false`, `skipOpenAdminStore: true` (Admin already open on shared server).

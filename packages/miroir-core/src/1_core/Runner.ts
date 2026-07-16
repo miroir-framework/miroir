@@ -92,6 +92,10 @@ export function testBuildPlusRuntimeCompositeActionSuiteForRunner(
             testApplicationUuid,
             adminDeployment,
             testDeploymentStorageConfiguration,
+            {
+              // Real-server: Admin is already open on the shared miroir-server.
+              skipOpenAdminStore: internalMiroirConfig.client.emulateServer === false,
+            },
           ),
       beforeEach: skipCreateDeployment
         ? undefined

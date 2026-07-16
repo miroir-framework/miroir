@@ -83,7 +83,10 @@ export async function loadBrowserUiIntegrationTestLauncherEnvironment(): Promise
 
   const loadConfigForProfile = async (profileName: string) => {
     const assets = await loadBrowserIntegrationTestProfileConfig(profileName);
-    ensureBrowserBundledAdminStoreRegistered(assets.miroirConfig);
+    // Bundled admin seed is only for in-browser emulated IndexedDB (empty IDB admin tables).
+    if (assets.miroirConfig.client.emulateServer === true) {
+      ensureBrowserBundledAdminStoreRegistered(assets.miroirConfig);
+    }
     return assets;
   };
 

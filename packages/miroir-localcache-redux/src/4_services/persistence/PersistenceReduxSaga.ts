@@ -762,11 +762,25 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
       //   "full error:",
       //   JSON.stringify(error, undefined, 2)
       // );
+      // RestClient rejects with a bare string message (not an Error), so read that
+      // too — otherwise real transport failures collapse into "Unknown error".
+      const errorDetail =
+        typeof error === "string"
+          ? error
+          : ((error as any)?.message ??
+            (error as any)?.errorData ??
+            (() => {
+              try {
+                return JSON.stringify(error);
+              } catch {
+                return "Unknown error";
+              }
+            })());
       return {
         ...new Action2Error(
           "FailedToHandlePersistenceAction",
           "could not handle action " + ((action as any).actionLabel ?? action.actionType),
-          [(error as any).message ?? "Unknown error"]
+          [errorDetail]
         ),
       };
     }

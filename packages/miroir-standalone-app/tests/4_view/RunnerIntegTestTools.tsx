@@ -65,6 +65,13 @@ export async function beforeEachTest(
   },
   options?: {
     clearDocumentBody?: boolean;
+    /**
+     * When true (default for emulated stacks), reset Miroir platform stores too.
+     * Must be false for real-server / shared miroir-server runs (D9): the live
+     * Miroir deployment often points at package `assets/` under the server's
+     * filesystemDeploymentRootDirectory — resetting it mutates source data.
+     */
+    resetMiroirPlatform?: boolean;
   },
 ): Promise<void>  {
   await resetLibraryPlayfield({
@@ -76,7 +83,7 @@ export async function beforeEachTest(
       libraryRunTarget?.applicationUuid ?? selfApplicationLibrary.uuid,
     miroirDeploymentUuid: selfApplicationDeploymentMiroir.uuid,
     miroirSelfApplicationUuid: selfApplicationMiroir.uuid,
-    resetMiroirPlatform: true,
+    resetMiroirPlatform: options?.resetMiroirPlatform ?? true,
   });
   if (options?.clearDocumentBody !== false) {
     document.body.innerHTML = "";
@@ -199,18 +206,27 @@ export function getTestConfig(
   const miroirDeploymentStorageConfiguration: StoreUnitConfiguration = miroirConfig.client.emulateServer
     ? miroirConfig.client.deploymentStorageConfig[deployment_Miroir.uuid]
     : miroirConfig.client.serverConfig.storeSectionConfiguration[deployment_Miroir.uuid];
-  
-  const adminDeploymentStorageConfiguration: StoreUnitConfiguration = miroirConfig.client.emulateServer
-    ? miroirConfig.client.deploymentStorageConfig[deployment_Admin.uuid]
-    : miroirConfig.client.serverConfig.storeSectionConfiguration[deployment_Admin.uuid];
-  
-    
+
+  // Admin must be present for createDeploymentCompositeAction's first openStore step.
+  // Prefer profile config; fall back to the canonical Admin Deployment asset (filesystem).
+  const adminDeploymentStorageConfiguration: StoreUnitConfiguration =
+    (miroirConfig.client.emulateServer
+      ? miroirConfig.client.deploymentStorageConfig?.[deployment_Admin.uuid]
+      : miroirConfig.client.serverConfig?.storeSectionConfiguration?.[deployment_Admin.uuid]) ??
+    (deployment_Admin.configuration as StoreUnitConfiguration);
+
+  if (!adminDeploymentStorageConfiguration) {
+    throw new Error(
+      `getTestConfig: missing Admin store config for deployment ${deployment_Admin.uuid} ` +
+        `(add it to the profile storeSectionConfiguration / deploymentStorageConfig)`,
+    );
+  }
+
   const adminDeployment: Deployment = {
     ...deployment_Admin,
     configuration: adminDeploymentStorageConfiguration,
   };
-  
-  
+
   const libraryDeploymentStorageConfiguration: StoreUnitConfiguration = miroirConfig.client.emulateServer
     ? miroirConfig.client.deploymentStorageConfig[deployment_Library_DO_NO_USE.uuid]
     : miroirConfig.client.serverConfig.storeSectionConfiguration[deployment_Library_DO_NO_USE.uuid];

@@ -19,6 +19,8 @@ import {
   type IntegActivityTrackerBundle,
   type IntegTestRunCoordinator,
 } from "./integTestRunCoordinator.js";
+import { assertMiroirServerReachable } from "./assertMiroirServerReachable.js";
+import { getIntegrationTestProfileCatalogEntry } from "./integrationTestProfileCatalog.js";
 import {
   resolveUiIntegrationRunnerSuite,
   type UiIntegrationRunnerSuiteEntry,
@@ -39,6 +41,8 @@ export type UiIntegrationTestLauncherEnvironment = {
   createActivityTracker: (logConfig: LoggerOptions) => Promise<IntegActivityTrackerBundle>;
   expect: InProcessExpectFn;
   getCoordinator?: () => IntegTestRunCoordinator;
+  /** Optional fetch for real-server preflight (Node TLS / test doubles). Defaults to global fetch. */
+  fetchImpl?: typeof fetch;
 };
 
 export function resolveUiIntegrationTestRunTarget(
@@ -101,6 +105,23 @@ async function runRunnerIntegrationSuite(
   hostMode: NonNullable<UiIntegrationTestRunRequest["hostMode"]>,
 ): Promise<UiIntegrationTestRunResult> {
   const { miroirConfig, logConfig } = await environment.loadConfigForProfile(request.profileName);
+
+  const catalogEntry = getIntegrationTestProfileCatalogEntry(request.profileName);
+  if (catalogEntry?.uiTransport === "realServer") {
+    const rootApiUrl =
+      !miroirConfig.client.emulateServer
+        ? miroirConfig.client.serverConfig?.rootApiUrl
+        : undefined;
+    if (!rootApiUrl) {
+      throw new Error(
+        `Profile "${request.profileName}" is realServer but miroirConfig.client.serverConfig.rootApiUrl is missing`,
+      );
+    }
+    await assertMiroirServerReachable(rootApiUrl, {
+      fetchImpl: environment.fetchImpl,
+    });
+  }
+
   const trackerBundle = await environment.createActivityTracker(logConfig);
   const orchestrator = environment.createOrchestrator();
   const testSession = orchestrator.createSession(

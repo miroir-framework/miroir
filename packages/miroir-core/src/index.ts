@@ -687,7 +687,9 @@ export {
   ApplicationDeploymentMap,
   ApplicationEntitiesAndInstances,
   // createApplicationCompositeAction,
-  createDeploymentCompositeAction, defaultAdminApplicationDeploymentMapNOTGOOD, defaultDeployments,
+  createDeploymentCompositeAction,
+  type CreateDeploymentCompositeActionOptions,
+  defaultAdminApplicationDeploymentMapNOTGOOD, defaultDeployments,
   defaultDeploymentUuids, defaultEndpointApplicationMap,
   defaultSelfApplicationDeploymentMap, dropApplicationAndDeploymentCompositeAction, emptyMetaModel, EndpointApplicationMap, extendMiroirConfigWithExtraDeploymentConfiguration, metaModelFilterEntities, resetAndinitializeDeploymentCompositeAction, testUtils_deleteApplicationDeployment,
   testUtils_resetApplicationDeployment

@@ -1,3 +1,4 @@
+import crossFetch from "cross-fetch";
 import {
   type LoggerOptions,
 } from "miroir-core";
@@ -37,6 +38,8 @@ export function createNodeUiIntegrationTestLauncherEnvironment(
     },
     createActivityTracker: async () => createIntegActivityTrackerSync(),
     expect: expectFn,
+    // Same TLS-tolerant fetch as RunnerTestSession bootstrap against local miroir-server.
+    fetchImpl: crossFetch as unknown as typeof fetch,
   };
 }
 

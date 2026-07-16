@@ -3,6 +3,7 @@ import crossFetch from "cross-fetch";
 import {
   buildRunnerTestSessionParamBank,
   defaultMiroirMetaModel,
+  ensureLibraryPlayfield,
   extendMiroirConfigWithExtraDeploymentConfiguration,
   getBootstrapPhasesForSessionKind,
   remapLibraryAppModelForRunTarget,
@@ -39,6 +40,7 @@ import {
   runAppStackIntegrationBootstrap,
   type AppStackBootstrapHostOptions,
 } from "./appStackIntegrationBootstrap.js";
+import { runRealServerClientBootstrap } from "./runRealServerClientBootstrap.js";
 import {
   buildTeardownTestApplicationStoresAction,
 } from "../../src/miroir-fwk/4-tests/testApplicationStoreTeardown.js";
@@ -52,6 +54,13 @@ export type RunnerTestSessionOptions = AppStackBootstrapHostOptions & {
   runTarget: RunnerTestRunTarget;
   suiteTestParams?: Record<string, unknown>;
   runnerRegistry: Record<string, Runner>;
+  /**
+   * Fetch implementation for the client REST transport. MUST be runtime-appropriate:
+   * the browser needs the native `window.fetch` (a Node polyfill such as `cross-fetch`
+   * silently fails there before any request is sent). Defaults to `crossFetch` for Node
+   * (vitest / TLS). The browser orchestrator injects `window.fetch.bind(window)`.
+   */
+  customFetch?: typeof fetch;
 };
 
 export type RunnerTestSessionConfig = {
@@ -61,6 +70,24 @@ export type RunnerTestSessionConfig = {
   miroirDeploymentStorageConfiguration: StoreUnitConfiguration;
   testDeploymentStorageConfiguration: StoreUnitConfiguration;
 };
+
+// ################################################################################################
+/**
+ * Resolve the fetch used by the client REST transport for a test session.
+ * - explicit override wins (orchestrator / caller)
+ * - in a browser, the native `window.fetch` (bound) is required — a Node polyfill
+ *   like `cross-fetch` throws before sending, so the request never reaches the server
+ * - otherwise fall back to `crossFetch` (Node / vitest, handles local TLS)
+ */
+export function resolveRuntimeFetch(explicit?: typeof fetch): typeof fetch {
+  if (explicit) {
+    return explicit;
+  }
+  if (typeof window !== "undefined" && typeof window.fetch === "function") {
+    return window.fetch.bind(window) as typeof fetch;
+  }
+  return crossFetch as unknown as typeof fetch;
+}
 
 // ################################################################################################
 export function getTestSessionConfig(
@@ -132,28 +159,70 @@ export class RunnerTestSession implements RunnerTestSessionInterface {
       internalMiroirConfig,
     } = getTestSessionConfig(miroirConfig, runTarget);
 
+    // Node polyfill (crossFetch) is only correct outside the browser; inside the
+    // browser it fails before issuing a request, so the client never reaches the
+    // server. Prefer an explicitly injected fetch, else the browser's native fetch,
+    // else crossFetch for Node/vitest.
+    const customFetch = resolveRuntimeFetch(this.options.customFetch);
+
     const { domainController, persistenceStoreControllerManager } =
-      await runAppStackIntegrationBootstrap({
-        miroirConfig: internalMiroirConfig,
-        applicationDeploymentMap,
-        adminDeployment,
-        miroirDeploymentStorageConfiguration,
-        phases: getBootstrapPhasesForSessionKind("runner"),
-        miroirActivityTracker,
-        miroirEventService,
-        customFetch: crossFetch,
-        testApplicationUuid: runTarget.applicationUuid,
-        deployMiroirStrategy: "compositeAction",
-        openAdminAndMiroirStoresOnServer: false,
-        miroirDeploymentUuid: selfApplicationDeploymentMiroir.uuid,
-        miroirSelfApplicationUuid: selfApplicationMiroir.uuid,
-        ...bootstrapHostOptionsFrom(this.options),
-      });
+      !internalMiroirConfig.client.emulateServer
+        ? await runRealServerClientBootstrap({
+            miroirConfig: internalMiroirConfig,
+            applicationDeploymentMap,
+            adminDeployment,
+            miroirDeploymentStorageConfiguration,
+            miroirActivityTracker,
+            miroirEventService,
+            customFetch,
+            testApplicationUuid: runTarget.applicationUuid,
+            miroirDeploymentUuid: selfApplicationDeploymentMiroir.uuid,
+            miroirSelfApplicationUuid: selfApplicationMiroir.uuid,
+            ...bootstrapHostOptionsFrom(this.options),
+            // D9: shared miroir-server already has Miroir platform (after host options)
+            platformEnsureMode: this.options.platformEnsureMode ?? "skip",
+          })
+        : await runAppStackIntegrationBootstrap({
+            miroirConfig: internalMiroirConfig,
+            applicationDeploymentMap,
+            adminDeployment,
+            miroirDeploymentStorageConfiguration,
+            phases: getBootstrapPhasesForSessionKind("runner"),
+            miroirActivityTracker,
+            miroirEventService,
+            customFetch,
+            testApplicationUuid: runTarget.applicationUuid,
+            deployMiroirStrategy: "compositeAction",
+            openAdminAndMiroirStoresOnServer: false,
+            miroirDeploymentUuid: selfApplicationDeploymentMiroir.uuid,
+            miroirSelfApplicationUuid: selfApplicationMiroir.uuid,
+            ...bootstrapHostOptionsFrom(this.options),
+          });
 
     const testApplicationDeploymentMap = {
       ...applicationDeploymentMap,
       [runTarget.applicationUuid]: runTarget.deploymentUuid,
     };
+
+    // The ephemeral run-target deployment must have a store on the persistence
+    // backend before the per-leaf `beforeEach` reset (resetLibraryPlayfield)
+    // touches it. In the emulated stack `wireEmulatedStack` already opens every
+    // configured deployment locally (including this ephemeral one). Against a real
+    // miroir-server nothing has opened/created it yet, so we send the createDeployment
+    // composite action over REST here — mirroring the vitest suite's `beforeAll`
+    // createDeployment. Admin is already open on the shared server, so skip its openStore.
+    if (!internalMiroirConfig.client.emulateServer) {
+      await ensureLibraryPlayfield({
+        domainController,
+        applicationDeploymentMap: testApplicationDeploymentMap,
+        adminDeployment,
+        libraryDeploymentStorageConfiguration: testDeploymentStorageConfiguration,
+        libraryDeploymentUuid: runTarget.deploymentUuid,
+        librarySelfApplicationUuid: runTarget.applicationUuid,
+        mode: "createIfAbsent",
+        skipOpenAdminStore: true,
+      });
+    }
 
     const libraryModelForSession = this.resolveLibraryModelForRunTarget(runTarget);
     this.libraryModelForSession = libraryModelForSession;
@@ -193,12 +262,16 @@ export class RunnerTestSession implements RunnerTestSessionInterface {
     if (!this.domainController || !this.applicationDeploymentMap || !this.runnerTestContext) {
       throw new Error("RunnerTestSession.beforeEach: initSession not called");
     }
+    const emulateServer = this.runnerTestContext.internalMiroirConfig.client.emulateServer === true;
     await beforeEachTest(this.domainController, this.applicationDeploymentMap, {
       applicationUuid: this.runnerTestContext.runTarget.applicationUuid,
       deploymentUuid: this.runnerTestContext.runTarget.deploymentUuid,
     }, {
       // Keep UI mounted during browser-triggered integration runs.
       clearDocumentBody: false,
+      // D9 / B6-c: never reset shared Miroir platform on live miroir-server
+      // (admin Deployment still points at package miroir_* assets on filesystem).
+      resetMiroirPlatform: emulateServer,
     });
     if (this.runnerTestContext) {
       this.runnerTestContext.runtimeContext = {};

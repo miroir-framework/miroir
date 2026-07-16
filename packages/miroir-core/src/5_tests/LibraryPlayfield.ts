@@ -32,6 +32,11 @@ export type EnsureLibraryPlayfieldParams = {
   librarySelfApplicationUuid: Uuid;
   mode: LibraryPlayfieldEnsureMode;
   persistenceStoreControllerManager?: PersistenceStoreControllerManagerInterface;
+  /**
+   * When true, omit Admin openStore in createDeployment (real-server: Admin
+   * already open on shared miroir-server).
+   */
+  skipOpenAdminStore?: boolean;
 };
 
 export type ResetLibraryPlayfieldParams = {
@@ -95,6 +100,7 @@ export async function ensureLibraryPlayfield(
     params.librarySelfApplicationUuid,
     params.adminDeployment,
     params.libraryDeploymentStorageConfiguration,
+    { skipOpenAdminStore: params.skipOpenAdminStore },
   );
   const createLibraryResult = await domainController.handleCompositeAction(
     createLibraryDeploymentAction,

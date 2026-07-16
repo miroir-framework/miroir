@@ -8,10 +8,14 @@ import type {
 import domainControllerDebugLogConfig from '../../../tests/specificLoggersConfig_DomainController_debug.json';
 import {
   DEFAULT_UI_INTEGRATION_PROFILE_NAME,
+  getIntegrationTestProfileCatalogEntry,
   listBrowserBundledIntegrationTestProfileNames,
+  BROWSER_LAUNCHABLE_REAL_SERVER_PROFILES,
 } from './integrationTestProfileCatalog.js';
 /** Browser-only: bundled admin + IndexedDB Miroir/Library (no filesystem/sql — those factories are not registered in webApp). */
 import browserEmulatedServerIndexedDbMiroirConfig from './miroirConfig.browser-emulatedServer-indexedDb.json';
+/** Browser → live miroir-server (B6-c). SQL stores live on the server; client is REST-only. */
+import browserRealServerSqlMiroirConfig from './miroirConfig.browser-realServer-sql.json';
 
 export { DEFAULT_UI_INTEGRATION_PROFILE_NAME } from './integrationTestProfileCatalog.js';
 
@@ -28,10 +32,14 @@ const BROWSER_INTEGRATION_TEST_PROFILE_ASSETS: Record<string, BrowserIntegration
       miroirConfig: browserEmulatedServerIndexedDbMiroirConfig as unknown as MiroirConfigClient,
       logConfig: domainControllerDebugLogConfig as LoggerOptions,
     },
+    'realServer-sql': {
+      miroirConfig: browserRealServerSqlMiroirConfig as unknown as MiroirConfigClient,
+      logConfig: domainControllerDebugLogConfig as LoggerOptions,
+    },
   };
 
 export function listBrowserIntegrationTestProfileNames(): string[] {
-  return listBrowserBundledIntegrationTestProfileNames();
+  return Object.keys(BROWSER_INTEGRATION_TEST_PROFILE_ASSETS).sort();
 }
 
 function getEmulatedDeploymentStorageConfig(
@@ -69,6 +77,14 @@ export function isBrowserCompatibleEmulatedIndexedDbConfig(config: MiroirConfigC
   return true;
 }
 
+export function isBrowserCompatibleRealServerConfig(config: MiroirConfigClient): boolean {
+  const client = config.client;
+  if (!client || client.emulateServer !== false) {
+    return false;
+  }
+  return typeof client.serverConfig?.rootApiUrl === 'string' && client.serverConfig.rootApiUrl.length > 0;
+}
+
 export async function loadBrowserIntegrationTestProfileConfig(
   profileName: string,
 ): Promise<BrowserIntegrationTestProfileAssets> {
@@ -79,6 +95,17 @@ export async function loadBrowserIntegrationTestProfileConfig(
         `Valid profiles: ${listBrowserIntegrationTestProfileNames().join(', ')}`,
     );
   }
+
+  const catalogEntry = getIntegrationTestProfileCatalogEntry(profileName);
+  if (catalogEntry?.uiTransport === 'realServer') {
+    if (!isBrowserCompatibleRealServerConfig(assets.miroirConfig)) {
+      throw new Error(
+        `Browser integration profile "${profileName}" must set emulateServer: false with serverConfig.rootApiUrl`,
+      );
+    }
+    return assets;
+  }
+
   if (!isBrowserCompatibleEmulatedIndexedDbConfig(assets.miroirConfig)) {
     throw new Error(
       `Browser integration profile "${profileName}" must use indexedDb or bundled for all deployment sections ` +
@@ -86,4 +113,21 @@ export async function loadBrowserIntegrationTestProfileConfig(
     );
   }
   return assets;
+}
+
+/** Profiles with bundled assets that the browser can load (emulated IndexedDB + realServer-sql). */
+export function listBrowserLaunchableIntegrationTestProfileNames(): string[] {
+  return listBrowserIntegrationTestProfileNames().filter((name) => {
+    const entry = getIntegrationTestProfileCatalogEntry(name);
+    if (!entry) {
+      return false;
+    }
+    if (entry.uiTransport === 'browserEmulatedIndexedDb') {
+      return listBrowserBundledIntegrationTestProfileNames().includes(name);
+    }
+    if (entry.uiTransport === 'realServer') {
+      return BROWSER_LAUNCHABLE_REAL_SERVER_PROFILES.includes(name);
+    }
+    return false;
+  });
 }

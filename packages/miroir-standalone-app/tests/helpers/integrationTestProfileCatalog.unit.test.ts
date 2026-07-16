@@ -26,16 +26,17 @@ describe("integrationTestProfileCatalog (B6)", () => {
     expect(electronPicker).not.toContain("ci-emulatedServer-host-sql");
   });
 
-  it("only indexedDb emulated is launchable in webApp today", () => {
+  it("webApp launchable: indexedDb emulated + realServer-sql (B6-c)", () => {
     expect(isUiIntegrationProfileLaunchableInBrowser("emulatedServer-indexedDb", "webApp")).toBe(
       true,
     );
     expect(isUiIntegrationProfileLaunchableInBrowser("emulatedServer-sql", "webApp")).toBe(false);
     expect(isUiIntegrationProfileLaunchableInBrowser("emulatedServer-sql", "electron")).toBe(false);
-    expect(isUiIntegrationProfileLaunchableInBrowser("realServer-sql", "webApp")).toBe(false);
+    expect(isUiIntegrationProfileLaunchableInBrowser("realServer-sql", "webApp")).toBe(true);
+    expect(isUiIntegrationProfileLaunchableInBrowser("realServer-indexedDb", "webApp")).toBe(false);
   });
 
-  it("bundled browser config is indexedDb only", () => {
+  it("bundled browser emulated config is indexedDb only", () => {
     expect(listBrowserBundledIntegrationTestProfileNames()).toEqual(["emulatedServer-indexedDb"]);
   });
 });

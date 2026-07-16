@@ -2,7 +2,7 @@
 
 GitHub issue: TBD (`miroir-framework/miroir#197`)
 
-**Status:** Phase A ✅ · Phase R (R0–R6) ✅ · Gaps A/B/C-setup/D/E ✅ · **Phase B in progress** (B0–B5 ✅ · B6 split — see [phase-b-ui-launcher-plan.md](./phase-b-ui-launcher-plan.md); **B6 not done** until B6-d e2e proof)
+**Status:** Phase A ✅ · Phase R (R0–R6) ✅ · Gaps A/B/C-setup/D/E ✅ · **Phase B in progress** (B0–B5 ✅ · B6-d1 ✅ · **B6-d2 indexedDb manual ✅ 2026-07-16** · **B6-c C1–C3 ✅ · C5 manual next** — see [phase-b-ui-launcher-plan.md](./phase-b-ui-launcher-plan.md))
 
 **Depends on:** [Feature 196 — MiroirTest](../196-FEATURE-migrate-tests-to-MiroirTest/plan.md) (complete)
 

@@ -82,6 +82,32 @@ describe("LibraryPlayfield (Gap B L1/L2)", () => {
       expect(handleCompositeAction).not.toHaveBeenCalled();
       expect(result).toEqual({ created: false });
     });
+
+    it("createIfAbsent with skipOpenAdminStore passes the flag into createDeployment", async () => {
+      const handleCompositeAction = vi.fn().mockResolvedValue({ status: "ok" });
+      await ensureLibraryPlayfield(
+        baseEnsureParams({
+          domainController: { handleCompositeAction } as unknown as DomainControllerInterface,
+          skipOpenAdminStore: true,
+        }),
+      );
+
+      expect(handleCompositeAction).toHaveBeenCalledTimes(1);
+      const action = handleCompositeAction.mock.calls[0][0];
+      const types = action.payload.actionSequence.map((a: { actionType: string }) => a.actionType);
+      expect(types).toEqual([
+        "createInstance",
+        "storeManagementAction_openStore",
+        "storeManagementAction_createStore",
+        "createInstance",
+      ]);
+      expect(action.payload.actionSequence[0].actionLabel).toBe(
+        "CreateAdminApplicationInstance for library",
+      );
+      expect(action.payload.actionSequence[1].actionLabel).toBe(
+        "storeManagementAction_openStore for library",
+      );
+    });
   });
 
   describe("resetLibraryPlayfield", () => {

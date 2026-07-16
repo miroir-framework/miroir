@@ -2,8 +2,8 @@
  * UI integration profile catalog (#197 Phase B6).
  *
  * Profiles are filtered by **runtime surface** before appearing in the picker:
- * - **webApp:** in-browser emulated IndexedDB only (+ real-server when B6-c lands)
- * - **electron:** all emulatedServer-* (Node store drivers in main process) (+ real-server B6-c)
+ * - **webApp:** in-browser emulated IndexedDB + launchable real-server (`realServer-sql`)
+ * - **electron:** all emulatedServer-* (Node store drivers in main process) + real-server
  * - **cliEmulatedOnly** (CI presets): never in UI picker — testMiroir / testByFile only
  */
 
@@ -76,6 +76,9 @@ export const INTEGRATION_TEST_PROFILE_CATALOG: readonly IntegrationTestProfileCa
   },
 ] as const;
 
+/** Real-server profiles with browser-bundled config assets (B6-c C3). */
+export const BROWSER_LAUNCHABLE_REAL_SERVER_PROFILES: readonly string[] = ["realServer-sql"];
+
 export function detectUiIntegrationRuntime(): UiIntegrationRuntime {
   if (
     typeof window !== "undefined" &&
@@ -136,7 +139,8 @@ export function isUiIntegrationProfileLaunchableInBrowser(
     case "electronEmulated":
       return false; // B6-b3: listed in Electron picker only; launch when bundled + wired
     case "realServer":
-      return false; // B6-c
+      // B6-c: launchable when profile assets are bundled (see BROWSER_LAUNCHABLE_REAL_SERVER_PROFILES).
+      return BROWSER_LAUNCHABLE_REAL_SERVER_PROFILES.includes(profileName);
     case "cliEmulatedOnly":
       return false;
   }

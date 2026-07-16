@@ -79,6 +79,24 @@ export const INTEGRATION_TEST_PROFILES: Record<string, IntegrationTestProfile> =
     logConfigFilename: logPath("specificLoggersConfig_warn.json"),
     description: "CI preset — dockerized Postgres connection strings in JSON",
   },
+  "realServer-sql": {
+    name: "realServer-sql",
+    miroirConfigFilename: configPath("miroirConfig.test-realServer-sql.json"),
+    logConfigFilename: logPath("specificLoggersConfig_DomainController_debug.json"),
+    description: "Client REST → live miroir-server (Postgres stores on server) — B6-c",
+  },
+  "realServer-indexedDb": {
+    name: "realServer-indexedDb",
+    miroirConfigFilename: configPath("miroirConfig.test-realServer-indexedDb.json"),
+    logConfigFilename: logPath("specificLoggersConfig_warn.json"),
+    description: "Client REST → live miroir-server (IndexedDB stores on server) — B6-c",
+  },
+  "realServer-filesystem": {
+    name: "realServer-filesystem",
+    miroirConfigFilename: configPath("miroirConfig.test-realServer-filesystem.json"),
+    logConfigFilename: logPath("specificLoggersConfig_warn.json"),
+    description: "Client REST → live miroir-server (filesystem stores on server) — B6-c",
+  },
 };
 
 export function listIntegrationTestProfileNames(): string[] {

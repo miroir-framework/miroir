@@ -1,3 +1,5 @@
+import crossFetch from "cross-fetch";
+
 import type {
   ApplicationDeploymentMap,
   DomainControllerSessionProfile,
@@ -137,6 +139,9 @@ function createStandaloneAppSession(
         runTarget: runnerOptions.runTarget,
         suiteTestParams: runnerOptions.suiteTestParams,
         runnerRegistry: runnerOptions.runnerRegistry,
+        // Node orchestrator: force the TLS-tolerant Node fetch even under jsdom
+        // (where window.fetch would otherwise be picked up).
+        customFetch: crossFetch as unknown as typeof fetch,
         ...runnerOptions,
         ...hostBootstrap,
         hostExecutionEnvironment: resolveHostExecutionEnvironment(context, hostBootstrap),

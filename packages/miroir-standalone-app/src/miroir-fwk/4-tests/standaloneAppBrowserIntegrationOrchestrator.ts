@@ -51,7 +51,8 @@ const browserRunnerSessionFactory: IntegrationTestSessionFactory = {
     }
     const runnerOptions = (sessionSpecificOptions ?? {}) as Partial<
       Pick<RunnerTestSessionOptions, "pageLabel" | "runTarget" | "suiteTestParams" | "runnerRegistry">
-    >;
+    > &
+      Partial<AppStackBootstrapHostOptions>;
     if (!runnerOptions.runTarget) {
       throw new Error("Browser integration orchestrator: runner session requires runTarget");
     }
@@ -66,6 +67,12 @@ const browserRunnerSessionFactory: IntegrationTestSessionFactory = {
       runTarget: runnerOptions.runTarget,
       suiteTestParams: runnerOptions.suiteTestParams,
       runnerRegistry: runnerOptions.runnerRegistry,
+      // Browser: use the native fetch. A Node polyfill (cross-fetch) fails in the
+      // browser before issuing a request, so the client never reaches the server.
+      customFetch:
+        typeof window !== "undefined" && typeof window.fetch === "function"
+          ? (window.fetch.bind(window) as typeof fetch)
+          : undefined,
       ...runnerOptions,
       ...hostBootstrap,
       hostExecutionEnvironment: resolveHostExecutionEnvironment(context, hostBootstrap),

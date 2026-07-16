@@ -28,6 +28,7 @@ import {
 } from "miroir-test-app_deployment-miroir";
 
 const runAppStackIntegrationBootstrapMock = vi.fn();
+const runRealServerClientBootstrapMock = vi.fn();
 const beforeEachTestMock = vi.fn();
 
 vi.mock("./appStackIntegrationBootstrap.js", async (importOriginal) => {
@@ -38,6 +39,11 @@ vi.mock("./appStackIntegrationBootstrap.js", async (importOriginal) => {
       runAppStackIntegrationBootstrapMock(...args),
   };
 });
+
+vi.mock("./runRealServerClientBootstrap.js", () => ({
+  runRealServerClientBootstrap: (...args: unknown[]) =>
+    runRealServerClientBootstrapMock(...args),
+}));
 
 vi.mock("../4_view/RunnerIntegTestTools.js", async (importOriginal) => {
   const actual = await importOriginal<typeof import("../4_view/RunnerIntegTestTools.js")>();
@@ -86,6 +92,12 @@ describe("RunnerTestSession (Gap E R)", () => {
     } as unknown as DomainControllerInterface;
     const runTarget = runnerLibraryRunTarget();
     runAppStackIntegrationBootstrapMock.mockResolvedValue({
+      domainController,
+      applicationDeploymentMap: {} as ApplicationDeploymentMap,
+      testApplicationUuid: runTarget.applicationUuid,
+      persistenceStoreControllerManager: {},
+    });
+    runRealServerClientBootstrapMock.mockResolvedValue({
       domainController,
       applicationDeploymentMap: {} as ApplicationDeploymentMap,
       testApplicationUuid: runTarget.applicationUuid,
@@ -201,6 +213,59 @@ describe("RunnerTestSession (Gap E R)", () => {
         customFetch: expect.any(Function),
       }),
     );
+    expect(runRealServerClientBootstrapMock).not.toHaveBeenCalled();
+  });
+
+  it("initSession uses runRealServerClientBootstrap when emulateServer is false (B6-c C1)", async () => {
+    const tracker = new MiroirActivityTracker();
+    const eventService = new MiroirEventService(tracker);
+    const runTarget = runnerLibraryRunTarget();
+    const realServerConfig = {
+      miroirConfigType: "client",
+      client: {
+        emulateServer: false,
+        serverConfig: {
+          rootApiUrl: "https://localhost:3080",
+          storeSectionConfiguration: {
+            [runTarget.deploymentUuid]: {
+              admin: { emulatedServerType: "sql" },
+              model: { emulatedServerType: "sql" },
+              data: { emulatedServerType: "sql" },
+            },
+            "f714bb2f-a12d-4e71-a03b-74dcedea6eb4": {
+              admin: { emulatedServerType: "sql" },
+              model: { emulatedServerType: "sql" },
+              data: { emulatedServerType: "sql" },
+            },
+            "10ff36f2-50a3-48d8-b80f-e48e5d13af8e": {
+              admin: { emulatedServerType: "sql" },
+              model: { emulatedServerType: "sql" },
+              data: { emulatedServerType: "sql" },
+            },
+          },
+        },
+      },
+    } as MiroirConfigClient;
+
+    const session = new RunnerTestSession({
+      miroirConfig: realServerConfig,
+      miroirActivityTracker: tracker,
+      miroirEventService: eventService,
+      runTarget,
+      suiteTestParams: runnerLibrarySuite().testParams,
+      runnerRegistry: RUNNER_LIBRARY_RUNNER_REGISTRY,
+    });
+
+    await session.initSession();
+
+    expect(runRealServerClientBootstrapMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        platformEnsureMode: "skip",
+        testApplicationUuid: runTarget.applicationUuid,
+        customFetch: expect.any(Function),
+      }),
+    );
+    expect(runAppStackIntegrationBootstrapMock).not.toHaveBeenCalled();
   });
 
   it("beforeEach delegates to beforeEachTest", async () => {

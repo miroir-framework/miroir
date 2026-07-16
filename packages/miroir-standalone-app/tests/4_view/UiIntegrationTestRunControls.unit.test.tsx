@@ -13,7 +13,7 @@ afterEach(() => {
 });
 
 describe('UiIntegrationTestRunControls profile picker', () => {
-  it('updates selected profile when choosing a non-launchable realServer option', () => {
+  it('selects launchable realServer-sql without the gated warning (B6-c)', () => {
     render(<UiIntegrationTestRunControls />);
 
     const select = screen.getByLabelText('Profile') as HTMLSelectElement;
@@ -23,6 +23,18 @@ describe('UiIntegrationTestRunControls profile picker', () => {
 
     expect(select.value).toBe('realServer-sql');
     expect(getUiIntegrationTestRunPreferences().profileName).toBe('realServer-sql');
+    expect(
+      screen.queryByText(/Selected profile is not launchable yet/),
+    ).not.toBeInTheDocument();
+  });
+
+  it('shows gated warning for realServer profiles without bundled assets', () => {
+    render(<UiIntegrationTestRunControls />);
+
+    const select = screen.getByLabelText('Profile') as HTMLSelectElement;
+    fireEvent.change(select, { target: { value: 'realServer-indexedDb' } });
+
+    expect(select.value).toBe('realServer-indexedDb');
     expect(
       screen.getByText(/Selected profile is not launchable yet — real-server requires miroir-server/),
     ).toBeInTheDocument();
