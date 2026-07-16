@@ -785,8 +785,16 @@ export {
   listSelfApplicationUuidPaths,
   RELATIVE_PATH_JOKER,
   type ListSelfApplicationUuidPathsOptions,
-  type RelativePath,
+  type RelativePath as SelfApplicationRelativePath,
 } from "./1_core/listSelfApplicationUuidPaths.js";
+export {
+  remapApplicationModelAtPaths,
+  RemapApplicationModelAtPathsError,
+  remapSelfApplicationUuidModel,
+  type RemapApplicationModelAtPathsOptions,
+  type RemapApplicationModelParams,
+  type RemapSelfApplicationUuidModelOptions,
+} from "./1_core/remapApplicationModelAtPaths.js";
 export { defaultReport } from "./1_core/Report.js";
 export { testBuildPlusRuntimeCompositeActionSuiteForRunner } from "./1_core/Runner.js";
 export {
