@@ -51,6 +51,10 @@ describe("integrationTestProfiles (Gap D0)", () => {
       "emulatedServer-indexedDb",
       "emulatedServer-mongodb",
       "emulatedServer-sql",
+      "realServer-filesystem",
+      "realServer-indexedDb",
+      "realServer-mongodb",
+      "realServer-sql",
     ]);
   });
 

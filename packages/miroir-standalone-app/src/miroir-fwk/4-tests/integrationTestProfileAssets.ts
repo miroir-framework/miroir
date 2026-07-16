@@ -14,8 +14,15 @@ import {
 } from './integrationTestProfileCatalog.js';
 /** Browser-only: bundled admin + IndexedDB Miroir/Library (no filesystem/sql — those factories are not registered in webApp). */
 import browserEmulatedServerIndexedDbMiroirConfig from './miroirConfig.browser-emulatedServer-indexedDb.json';
-/** Browser → live miroir-server (B6-c). SQL stores live on the server; client is REST-only. */
+/**
+ * Browser → live miroir-server (B6-c). The store type (sql/filesystem/indexedDb/mongodb)
+ * lives entirely on the server; the browser client is REST-only and never loads a local
+ * store factory, so all four backends are equally launchable from the webApp picker.
+ */
 import browserRealServerSqlMiroirConfig from './miroirConfig.browser-realServer-sql.json';
+import browserRealServerIndexedDbMiroirConfig from './miroirConfig.browser-realServer-indexedDb.json';
+import browserRealServerFilesystemMiroirConfig from './miroirConfig.browser-realServer-filesystem.json';
+import browserRealServerMongodbMiroirConfig from './miroirConfig.browser-realServer-mongodb.json';
 
 export { DEFAULT_UI_INTEGRATION_PROFILE_NAME } from './integrationTestProfileCatalog.js';
 
@@ -34,6 +41,18 @@ const BROWSER_INTEGRATION_TEST_PROFILE_ASSETS: Record<string, BrowserIntegration
     },
     'realServer-sql': {
       miroirConfig: browserRealServerSqlMiroirConfig as unknown as MiroirConfigClient,
+      logConfig: domainControllerDebugLogConfig as LoggerOptions,
+    },
+    'realServer-indexedDb': {
+      miroirConfig: browserRealServerIndexedDbMiroirConfig as unknown as MiroirConfigClient,
+      logConfig: domainControllerDebugLogConfig as LoggerOptions,
+    },
+    'realServer-filesystem': {
+      miroirConfig: browserRealServerFilesystemMiroirConfig as unknown as MiroirConfigClient,
+      logConfig: domainControllerDebugLogConfig as LoggerOptions,
+    },
+    'realServer-mongodb': {
+      miroirConfig: browserRealServerMongodbMiroirConfig as unknown as MiroirConfigClient,
       logConfig: domainControllerDebugLogConfig as LoggerOptions,
     },
   };
@@ -115,7 +134,7 @@ export async function loadBrowserIntegrationTestProfileConfig(
   return assets;
 }
 
-/** Profiles with bundled assets that the browser can load (emulated IndexedDB + realServer-sql). */
+/** Profiles with bundled assets that the browser can load (emulated IndexedDB + all realServer-* profiles). */
 export function listBrowserLaunchableIntegrationTestProfileNames(): string[] {
   return listBrowserIntegrationTestProfileNames().filter((name) => {
     const entry = getIntegrationTestProfileCatalogEntry(name);

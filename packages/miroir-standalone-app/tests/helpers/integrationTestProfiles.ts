@@ -97,6 +97,12 @@ export const INTEGRATION_TEST_PROFILES: Record<string, IntegrationTestProfile> =
     logConfigFilename: logPath("specificLoggersConfig_warn.json"),
     description: "Client REST → live miroir-server (filesystem stores on server) — B6-c",
   },
+  "realServer-mongodb": {
+    name: "realServer-mongodb",
+    miroirConfigFilename: configPath("miroirConfig.test-realServer-mongodb.json"),
+    logConfigFilename: logPath("specificLoggersConfig_warn.json"),
+    description: "Client REST → live miroir-server (MongoDB stores on server) — B6-c",
+  },
 };
 
 export function listIntegrationTestProfileNames(): string[] {

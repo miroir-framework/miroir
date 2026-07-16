@@ -2,7 +2,12 @@
  * UI integration profile catalog (#197 Phase B6).
  *
  * Profiles are filtered by **runtime surface** before appearing in the picker:
- * - **webApp:** in-browser emulated IndexedDB + launchable real-server (`realServer-sql`)
+ * - **webApp:** in-browser emulated IndexedDB + launchable real-server profiles
+ *   (`realServer-sql`, `realServer-indexedDb`, `realServer-filesystem`, `realServer-mongodb`).
+ *   The realServer client is a pure REST client — it never loads a local store
+ *   factory, so the store type used *on the server* (sql/filesystem/indexedDb/mongodb)
+ *   is irrelevant to browser launchability. Only bundled config assets gate it
+ *   (see `BROWSER_LAUNCHABLE_REAL_SERVER_PROFILES`).
  * - **electron:** all emulatedServer-* (Node store drivers in main process) + real-server
  * - **cliEmulatedOnly** (CI presets): never in UI picker — testMiroir / testByFile only
  */
@@ -74,10 +79,20 @@ export const INTEGRATION_TEST_PROFILE_CATALOG: readonly IntegrationTestProfileCa
     description: "Real server — filesystem via miroir-server (B6-c)",
     uiTransport: "realServer",
   },
+  {
+    name: "realServer-mongodb",
+    description: "Real server — MongoDB via miroir-server (B6-c)",
+    uiTransport: "realServer",
+  },
 ] as const;
 
 /** Real-server profiles with browser-bundled config assets (B6-c C3). */
-export const BROWSER_LAUNCHABLE_REAL_SERVER_PROFILES: readonly string[] = ["realServer-sql"];
+export const BROWSER_LAUNCHABLE_REAL_SERVER_PROFILES: readonly string[] = [
+  "realServer-sql",
+  "realServer-indexedDb",
+  "realServer-filesystem",
+  "realServer-mongodb",
+];
 
 export function detectUiIntegrationRuntime(): UiIntegrationRuntime {
   if (

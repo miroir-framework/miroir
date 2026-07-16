@@ -26,14 +26,20 @@ describe("integrationTestProfileCatalog (B6)", () => {
     expect(electronPicker).not.toContain("ci-emulatedServer-host-sql");
   });
 
-  it("webApp launchable: indexedDb emulated + realServer-sql (B6-c)", () => {
+  it("webApp launchable: indexedDb emulated + all realServer-* profiles (B6-c)", () => {
     expect(isUiIntegrationProfileLaunchableInBrowser("emulatedServer-indexedDb", "webApp")).toBe(
       true,
     );
     expect(isUiIntegrationProfileLaunchableInBrowser("emulatedServer-sql", "webApp")).toBe(false);
     expect(isUiIntegrationProfileLaunchableInBrowser("emulatedServer-sql", "electron")).toBe(false);
+    // realServer client is REST-only (no local store factory), so the store type used
+    // on the server is irrelevant to browser launchability — all four are launchable.
     expect(isUiIntegrationProfileLaunchableInBrowser("realServer-sql", "webApp")).toBe(true);
-    expect(isUiIntegrationProfileLaunchableInBrowser("realServer-indexedDb", "webApp")).toBe(false);
+    expect(isUiIntegrationProfileLaunchableInBrowser("realServer-indexedDb", "webApp")).toBe(true);
+    expect(isUiIntegrationProfileLaunchableInBrowser("realServer-filesystem", "webApp")).toBe(
+      true,
+    );
+    expect(isUiIntegrationProfileLaunchableInBrowser("realServer-mongodb", "webApp")).toBe(true);
   });
 
   it("bundled browser emulated config is indexedDb only", () => {

@@ -594,7 +594,7 @@ export function AppBar(props:AppBarProps) {
               </Tooltip>
             )}
             {/* Performance Monitor Indicator */}
-            {/* {context.setShowPerformanceDisplay && (
+            {context.setShowPerformanceDisplay && (
                 <Tooltip
                   title={
                     context.showPerformanceDisplay
@@ -618,7 +618,7 @@ export function AppBar(props:AppBarProps) {
                     />
                   </ThemedIconButton>
                 </Tooltip>
-              )} */}
+              )}
             {/* Document Outline Toggle */}
             {/* {props.onOutlineToggle && (
                 <Tooltip

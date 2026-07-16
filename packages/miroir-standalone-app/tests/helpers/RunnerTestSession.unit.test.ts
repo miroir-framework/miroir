@@ -88,7 +88,9 @@ describe("RunnerTestSession (Gap E R)", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     const domainController = {
-      handleCompositeAction: vi.fn(),
+      // Real-server initSession calls ensureLibraryPlayfield, which awaits this
+      // to create the ephemeral run-target deployment on the server (B6-c).
+      handleCompositeAction: vi.fn().mockResolvedValue({ status: "ok" }),
     } as unknown as DomainControllerInterface;
     const runTarget = runnerLibraryRunTarget();
     runAppStackIntegrationBootstrapMock.mockResolvedValue({

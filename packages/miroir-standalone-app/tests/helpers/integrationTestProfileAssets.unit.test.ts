@@ -57,9 +57,41 @@ describe("integrationTestProfileAssets (B5/B6-b/B6-c)", () => {
     expect(adminStore?.data?.emulatedServerType).toBe("filesystem");
   });
 
-  it("lists launchable browser profiles including realServer-sql", () => {
+  it.each([
+    ["realServer-indexedDb", "indexedDb"],
+    ["realServer-filesystem", "filesystem"],
+    ["realServer-mongodb", "mongodb"],
+  ] as const)(
+    "loads %s browser config (emulateServer false + rootApiUrl + Admin, store type %s on server)",
+    async (profileName, expectedServerType) => {
+      const { miroirConfig } = await loadBrowserIntegrationTestProfileConfig(profileName);
+      expect(miroirConfig.client?.emulateServer).toBe(false);
+      expect(miroirConfig.client?.serverConfig?.rootApiUrl).toBe("https://localhost:3080");
+      expect(isBrowserCompatibleRealServerConfig(miroirConfig)).toBe(true);
+
+      // Admin is always filesystem-backed on the server, regardless of the profile's
+      // app/model store type — createDeploymentCompositeAction opens it first.
+      const adminStore =
+        miroirConfig.client?.serverConfig?.storeSectionConfiguration?.[
+          "18db21bf-f8d3-4f6a-8296-84b69f6dc48b"
+        ];
+      expect(adminStore?.admin?.emulatedServerType).toBe("filesystem");
+
+      const libraryStore =
+        miroirConfig.client?.serverConfig?.storeSectionConfiguration?.[
+          "f714bb2f-a12d-4e71-a03b-74dcedea6eb4"
+        ];
+      expect(libraryStore?.model?.emulatedServerType).toBe(expectedServerType);
+      expect(libraryStore?.data?.emulatedServerType).toBe(expectedServerType);
+    },
+  );
+
+  it("lists launchable browser profiles including all realServer-* profiles", () => {
     expect(listBrowserLaunchableIntegrationTestProfileNames()).toEqual([
       "emulatedServer-indexedDb",
+      "realServer-filesystem",
+      "realServer-indexedDb",
+      "realServer-mongodb",
       "realServer-sql",
     ]);
   });
