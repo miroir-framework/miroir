@@ -64,3 +64,42 @@ describe("runUiIntegrationTestSuite (B3)", () => {
     expect(result.inspector.runTarget).toEqual(result.runTarget);
   }, 180_000);
 });
+
+describe("runUiIntegrationTestSuite transformer (B7)", () => {
+  it("runs one miroirCoreTransformers integ leaf via in-process launcher", async () => {
+    const { resolveUiIntegrationTransformerSuite } = await import(
+      "../../src/miroir-fwk/4-tests/uiIntegrationTestTransformerSuiteRegistry.js"
+    );
+    const { suiteDefinition } = resolveUiIntegrationTransformerSuite("miroirCoreTransformers");
+
+    const result = await runUiIntegrationTestSuiteInNode(
+      {
+        suiteKey: "miroirCoreTransformers",
+        suiteDefinition,
+        profileName: "emulatedServer-sql",
+        runTargetMode: "pinned",
+        hostMode: "isolated",
+        filter: {
+          testList: {
+            miroirCoreTransformers: {
+              runtimeTransformerTests: {
+                plus: ["plus with empty args fails"],
+              },
+            },
+          },
+        },
+      },
+      vitestExpect,
+    );
+
+    expect(result.suiteKey).toBe("miroirCoreTransformers");
+    expect(result.sessionKind).toBe("transformer");
+    expect(result.profileName).toBe("emulatedServer-sql");
+    expect(result.hostMode).toBe("isolated");
+    expect(result.runTargetMode).toBe("pinned");
+    expect(result.inspector.sessionKind).toBe("transformer");
+    expect(result.runTarget.applicationUuid).toBeTruthy();
+    expect(result.runTarget.deploymentUuid).toBeTruthy();
+    expect(result.success).toBe(true);
+  }, 180_000);
+});

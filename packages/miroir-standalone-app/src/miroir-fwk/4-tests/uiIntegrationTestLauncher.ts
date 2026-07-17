@@ -22,9 +22,16 @@ import {
 import { assertMiroirServerReachable } from "./assertMiroirServerReachable.js";
 import { getIntegrationTestProfileCatalogEntry } from "./integrationTestProfileCatalog.js";
 import {
+  generateEphemeralIntegrationTestApplicationIdentity,
+  PINNED_INTEG_TEST_APPLICATION_IDENTITY,
+  type TestSessionForIntegOptions,
+} from "./IntegrationTestSession.js";
+import { transformerIdentityToRunTarget } from "./resolveTransformerTestSessionOptions.js";
+import {
   resolveUiIntegrationRunnerSuite,
   type UiIntegrationRunnerSuiteEntry,
 } from "./uiIntegrationTestRunnerSuiteRegistry.js";
+import { resolveUiIntegrationTransformerSuite } from "./uiIntegrationTestTransformerSuiteRegistry.js";
 import type {
   UiIntegrationTestRunInspectorSnapshot,
   UiIntegrationTestRunRequest,
@@ -43,6 +50,15 @@ export type UiIntegrationTestLauncherEnvironment = {
   getCoordinator?: () => IntegTestRunCoordinator;
   /** Optional fetch for real-server preflight (Node TLS / test doubles). Defaults to global fetch. */
   fetchImpl?: typeof fetch;
+  /**
+   * Build IntegrationTestSession options for transformer suites.
+   * Node: env-derived store backends. Browser: IndexedDB + bundled admin.
+   */
+  resolveTransformerSessionOptions: (
+    profileName: string,
+    runTargetMode: UiIntegrationTestRunTargetMode,
+    miroirConfig: MiroirConfigClient,
+  ) => TestSessionForIntegOptions | Promise<TestSessionForIntegOptions>;
 };
 
 export function resolveUiIntegrationTestRunTarget(
@@ -57,11 +73,32 @@ export function resolveUiIntegrationTestRunTarget(
   return resolveRunnerTestRunTarget({ suite });
 }
 
+export function resolveUiIntegrationTransformerApplicationIdentity(
+  runTargetMode: UiIntegrationTestRunTargetMode,
+) {
+  return runTargetMode === "ephemeral"
+    ? generateEphemeralIntegrationTestApplicationIdentity()
+    : PINNED_INTEG_TEST_APPLICATION_IDENTITY;
+}
+
 export function readUiIntegrationSuiteTestResults(
   tracker: IntegActivityTrackerBundle["miroirActivityTracker"],
   testSuitePathKey: string,
 ): TestSuiteResult {
   return tracker.getTestAssertionsResults([{ testSuite: testSuitePathKey }]);
+}
+
+function collectLeafTestResults(suiteResult: TestSuiteResult): Array<{ testResult: string }> {
+  const leaves: Array<{ testResult: string }> = [];
+  if (suiteResult.testsResults) {
+    leaves.push(...Object.values(suiteResult.testsResults));
+  }
+  if (suiteResult.testsSuiteResults) {
+    for (const nested of Object.values(suiteResult.testsSuiteResults)) {
+      leaves.push(...collectLeafTestResults(nested));
+    }
+  }
+  return leaves;
 }
 
 export function isUiIntegrationSuiteRunSuccessful(
@@ -74,11 +111,13 @@ export function isUiIntegrationSuiteRunSuccessful(
   } catch {
     return false;
   }
-  const testResults = suiteResult.testsResults;
-  if (!testResults || Object.keys(testResults).length === 0) {
+  // Nested transformer suites store leaves under testsSuiteResults, not only
+  // top-level testsResults (runner_library is flat; miroirCoreTransformers is nested).
+  const leafResults = collectLeafTestResults(suiteResult);
+  if (leafResults.length === 0) {
     return false;
   }
-  return Object.values(testResults).every((entry) => entry.testResult === "ok");
+  return leafResults.every((entry) => entry.testResult === "ok");
 }
 
 function buildInspectorSnapshot(
@@ -97,6 +136,29 @@ function buildInspectorSnapshot(
   };
 }
 
+async function assertRealServerReachableIfNeeded(
+  request: UiIntegrationTestRunRequest,
+  environment: UiIntegrationTestLauncherEnvironment,
+  miroirConfig: MiroirConfigClient,
+): Promise<void> {
+  const catalogEntry = getIntegrationTestProfileCatalogEntry(request.profileName);
+  if (catalogEntry?.uiTransport !== "realServer") {
+    return;
+  }
+  const rootApiUrl =
+    !miroirConfig.client.emulateServer
+      ? miroirConfig.client.serverConfig?.rootApiUrl
+      : undefined;
+  if (!rootApiUrl) {
+    throw new Error(
+      `Profile "${request.profileName}" is realServer but miroirConfig.client.serverConfig.rootApiUrl is missing`,
+    );
+  }
+  await assertMiroirServerReachable(rootApiUrl, {
+    fetchImpl: environment.fetchImpl,
+  });
+}
+
 async function runRunnerIntegrationSuite(
   request: UiIntegrationTestRunRequest,
   environment: UiIntegrationTestLauncherEnvironment,
@@ -105,22 +167,7 @@ async function runRunnerIntegrationSuite(
   hostMode: NonNullable<UiIntegrationTestRunRequest["hostMode"]>,
 ): Promise<UiIntegrationTestRunResult> {
   const { miroirConfig, logConfig } = await environment.loadConfigForProfile(request.profileName);
-
-  const catalogEntry = getIntegrationTestProfileCatalogEntry(request.profileName);
-  if (catalogEntry?.uiTransport === "realServer") {
-    const rootApiUrl =
-      !miroirConfig.client.emulateServer
-        ? miroirConfig.client.serverConfig?.rootApiUrl
-        : undefined;
-    if (!rootApiUrl) {
-      throw new Error(
-        `Profile "${request.profileName}" is realServer but miroirConfig.client.serverConfig.rootApiUrl is missing`,
-      );
-    }
-    await assertMiroirServerReachable(rootApiUrl, {
-      fetchImpl: environment.fetchImpl,
-    });
-  }
+  await assertRealServerReachableIfNeeded(request, environment, miroirConfig);
 
   const trackerBundle = await environment.createActivityTracker(logConfig);
   const orchestrator = environment.createOrchestrator();
@@ -188,6 +235,91 @@ async function runRunnerIntegrationSuite(
   };
 }
 
+async function runTransformerIntegrationSuite(
+  request: UiIntegrationTestRunRequest,
+  environment: UiIntegrationTestLauncherEnvironment,
+  hostMode: NonNullable<UiIntegrationTestRunRequest["hostMode"]>,
+): Promise<UiIntegrationTestRunResult> {
+  // Ensures the suite key is registered (throws with a clear message if not).
+  resolveUiIntegrationTransformerSuite(request.suiteKey);
+
+  const { miroirConfig, logConfig } = await environment.loadConfigForProfile(request.profileName);
+  await assertRealServerReachableIfNeeded(request, environment, miroirConfig);
+
+  const sessionOptions = await environment.resolveTransformerSessionOptions(
+    request.profileName,
+    request.runTargetMode,
+    miroirConfig,
+  );
+  const applicationIdentity =
+    sessionOptions.applicationIdentity ??
+    resolveUiIntegrationTransformerApplicationIdentity(request.runTargetMode);
+  const runTarget = transformerIdentityToRunTarget(applicationIdentity);
+
+  const trackerBundle = await environment.createActivityTracker(logConfig);
+  const orchestrator = environment.createOrchestrator();
+  const testSession = orchestrator.createSession(
+    "transformer",
+    {
+      miroirConfig,
+      miroirActivityTracker: trackerBundle.miroirActivityTracker,
+      miroirEventService: trackerBundle.miroirEventService,
+      hostMode,
+    },
+    {
+      ...sessionOptions,
+      applicationIdentity,
+    },
+  );
+
+  let success = false;
+  try {
+    const executionEnvironment = await testSession.initSession();
+    await runMiroirTestSuiteInProcess({
+      runMiroirTests,
+      expect: environment.expect,
+      testSuitePath: [request.suiteKey],
+      miroirTestSuite: request.suiteDefinition,
+      filter: request.filter,
+      modelEnvironment: defaultMetaModelEnvironment,
+      miroirActivityTracker: trackerBundle.miroirActivityTracker,
+      executionOptions: {
+        executionMode: "integration",
+        executionEnvironment,
+      },
+      beforeEachLeaf: () => testSession.beforeEach(),
+    });
+    success = isUiIntegrationSuiteRunSuccessful(
+      trackerBundle.miroirActivityTracker,
+      request.suiteKey,
+    );
+  } finally {
+    await testSession.teardown();
+  }
+
+  let testSuiteResults: TestSuiteResult | undefined;
+  try {
+    testSuiteResults = readUiIntegrationSuiteTestResults(
+      trackerBundle.miroirActivityTracker,
+      request.suiteKey,
+    );
+  } catch {
+    testSuiteResults = undefined;
+  }
+
+  return {
+    suiteKey: request.suiteKey,
+    sessionKind: "transformer",
+    runTarget,
+    runTargetMode: request.runTargetMode,
+    profileName: request.profileName,
+    hostMode,
+    success,
+    inspector: buildInspectorSnapshot(request, "transformer", runTarget),
+    testSuiteResults,
+  };
+}
+
 export async function runUiIntegrationTestSuite(
   request: UiIntegrationTestRunRequest,
   environment: UiIntegrationTestLauncherEnvironment,
@@ -199,17 +331,26 @@ export async function runUiIntegrationTestSuite(
     );
   }
 
+  const hostMode = request.hostMode ?? "isolated";
+  const coordinator = environment.getCoordinator?.() ?? getIntegTestRunCoordinator();
+
+  if (sessionKind === "transformer") {
+    return coordinator.runExclusive(() =>
+      runTransformerIntegrationSuite(request, environment, hostMode),
+    );
+  }
+
   if (sessionKind !== "runner") {
     throw new Error(
-      `B3 pilot: session kind "${sessionKind}" not supported yet (runner_library only)`,
+      `UI integration launcher does not support session kind "${sessionKind}" yet`,
     );
   }
 
   const runnerEntry = resolveUiIntegrationRunnerSuite(request.suiteKey);
-
-  const runTarget = resolveUiIntegrationTestRunTarget(request.runTargetMode, request.suiteDefinition);
-  const hostMode = request.hostMode ?? "isolated";
-  const coordinator = environment.getCoordinator?.() ?? getIntegTestRunCoordinator();
+  const runTarget = resolveUiIntegrationTestRunTarget(
+    request.runTargetMode,
+    request.suiteDefinition,
+  );
 
   return coordinator.runExclusive(() =>
     runRunnerIntegrationSuite(request, environment, runnerEntry, runTarget, hostMode),

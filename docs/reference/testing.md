@@ -79,7 +79,7 @@ selectUnionBranchFromDiscriminator, tools, unfoldSchemaOnce,
 unionArrayChoices, unionObjectChoices
 ```
 
-`miroirCoreTransformers` is integration-only (runtime SQL queries). All others are unit-safe.
+`miroirCoreTransformers` is a **mixed** suite: many leaves are unit-safe; leaves with `integrationTestExpectedValue` need an integ session (runtime SQL / store). All other registry suites are unit-safe unless they declare integ expectations.
 
 ---
 
@@ -169,14 +169,33 @@ This file:
 
 Use **`--profile`** so one preset sets both `VITE_MIROIR_*` (app-stack / runner) and `MIROIR_TEST_*` (transformer integ). Explicit env vars still override profile defaults.
 
+| Kind | Suite key (`--suites`) | Session | Typical profile |
+|------|------------------------|---------|-----------------|
+| **Transformer** | `miroirCoreTransformers` | `IntegrationTestSession` (synthetic `testApplication`) | `emulatedServer-sql` |
+| **Runner** | `runner_library` | `RunnerTestSession` (library playfield + runners) | `emulatedServer-sql` |
+
 ```bash
-# Recommended — transformer integ (no manual MIROIR_TEST_POSTGRES_HOST)
+# Transformer integ
 npm run testMiroir -w miroir-standalone-app -- \
   --profile emulatedServer-sql --suites miroirCoreTransformers --mode integ
 
-# Same profile — runner integ
+# Runner integ
 npm run testMiroir -w miroir-standalone-app -- \
   --profile emulatedServer-sql --suites runner_library --mode integ
+```
+
+Filter keys use the suite **`miroirTestLabel`**, not the registry key (see [Filtering](#filtering-miroirtest-cases)):
+
+```bash
+# One runner leaf — key is runner.library
+npm run testMiroir -w miroir-standalone-app -- \
+  --profile emulatedServer-sql --suites runner_library --mode integ \
+  --filter '{"runner.library":["Return Book Test Composite Action"]}'
+
+# One transformer leaf — nested labels under miroirCoreTransformers
+npm run testMiroir -w miroir-standalone-app -- \
+  --profile emulatedServer-sql --suites miroirCoreTransformers --mode integ \
+  --filter '{"miroirCoreTransformers":{"runtimeTransformerTests":{"plus":["plus with empty args fails"]}}}'
 ```
 
 Legacy explicit-env form (still supported):
@@ -475,7 +494,7 @@ The final argument is a Vitest file-name filter (not a suite key). Examples:
 | `PersistenceStoreController.integ` | PSC low-level store tests |
 | `ExtractorPersistenceStoreRunner.integ` | Extractor runner against live store |
 | `ExtractorTemplatePersistenceStoreRunner.integ` | Extractor template runner |
-| `uiIntegrationTestLauncher.integ` | Node proof of the UI launcher with emulated SQL |
+| `uiIntegrationTestLauncher.integ` | Node proof of the UI launcher (runner + transformer leaves, emulated SQL) |
 | `uiIntegrationTestLauncher.realServer.integ` | Node proof of the UI launcher against live `miroir-server` (`--storage` / `--profile realServer-*`) |
 | `Runner_Miroir.integ` | Legacy runner integration (prefer `testMiroir` runner entry) |
 | `Runner_Library.integ` | Legacy runner integration (prefer the `testMiroir` runner entry) |
@@ -486,14 +505,14 @@ The final argument is a Vitest file-name filter (not a suite key). Examples:
 
 #### UI launcher Node proofs (`tests/helpers/`)
 
-These exercise the same in-process launcher used by the browser UI. They run the `Return Book Test Composite Action` leaf in `runner_library`.
+These exercise the same in-process launcher used by the browser UI (`runUiIntegrationTestSuite`).
 
-| File | Backend | Launch |
-|------|---------|--------|
-| [`uiIntegrationTestLauncher.integ.test.ts`](../../../packages/miroir-standalone-app/tests/helpers/uiIntegrationTestLauncher.integ.test.ts) | Emulated SQL (`emulatedServer-sql`), pinned runTarget | `npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-sql uiIntegrationTestLauncher.integ` |
-| [`uiIntegrationTestLauncher.realServer.integ.test.ts`](../../../packages/miroir-standalone-app/tests/helpers/uiIntegrationTestLauncher.realServer.integ.test.ts) | Live `miroir-server` — storage via `--storage` / `--profile realServer-*`, ephemeral runTarget | see below |
+| File | What it proves | Launch |
+|------|----------------|--------|
+| [`uiIntegrationTestLauncher.integ.test.ts`](../../../packages/miroir-standalone-app/tests/helpers/uiIntegrationTestLauncher.integ.test.ts) | **Runner** leaf (Return Book) + **transformer** leaf (`plus with empty args fails`) on emulated SQL | `npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-sql uiIntegrationTestLauncher.integ` |
+| [`uiIntegrationTestLauncher.realServer.integ.test.ts`](../../../packages/miroir-standalone-app/tests/helpers/uiIntegrationTestLauncher.realServer.integ.test.ts) | **Runner** leaf against live `miroir-server` (`--storage` / `--profile realServer-*`), ephemeral runTarget | see below |
 
-For the real-server test, `--storage` selects `realServer-<storage>`:
+For the real-server runner proof, `--storage` selects `realServer-<storage>`:
 
 ```bash
 # sql | filesystem | indexedDb | mongodb
@@ -508,7 +527,7 @@ npm run testByFile -w miroir-standalone-app -- \
   --profile realServer-indexedDb uiIntegrationTestLauncher.realServer.integ
 ```
 
-**Prerequisites:** `miroir-server` at `https://localhost:3080` with the matching store backend reachable; `NODE_EXTRA_CA_CERTS` for mkcert (see [HTTPS setup](../guides/https-setup-developer.md)). Skips when the server is unreachable.
+**Prerequisites (real-server):** `miroir-server` at `https://localhost:3080` with the matching store backend reachable; `NODE_EXTRA_CA_CERTS` for mkcert (see [HTTPS setup](../guides/https-setup-developer.md)). Skips when the server is unreachable.
 
 #### DomainController (`tests/3_controllers/`)
 
@@ -653,7 +672,7 @@ The Miroir Tests report runs data-isolated integration sessions with `hostMode: 
 | **CLI emulated** | `emulatedServer-sql`, `-filesystem`, `-mongodb` | `testMiroir` / `testByFile` (Node) | Postgres/filesystem/Mongo drivers register in Vitest `beforeAll` |
 | **Real server** | `realServer-sql`, `-indexedDb`, `-filesystem`, `-mongodb` | Browser client → `https://localhost:3080` (also Node proof via `uiIntegrationTestLauncher.realServer.integ`) | Requires running `miroir-server`. Select backend with `--storage` or `--profile realServer-*`. |
 
-Bundling `emulatedServer-sql` JSON into the UI does **not** enable SQL integration in the browser. `MiroirTestDisplayIntegrationLaunch.integ.test.tsx` verifies the Run Integration Tests button through an RTL click path and inspector; it uses a mocked Node SQL launcher environment while the browser UI profile remains `emulatedServer-indexedDb`. The companion launcher test is [`uiIntegrationTestLauncher.integ.test.ts`](../../packages/miroir-standalone-app/tests/helpers/uiIntegrationTestLauncher.integ.test.ts).
+Bundling `emulatedServer-sql` JSON into the UI does **not** enable SQL integration in the browser. In webApp, **transformer** integ uses IndexedDB + bundled admin; **runner** integ uses IndexedDB emulated or any `realServer-*` profile. `MiroirTestDisplayIntegrationLaunch.integ.test.tsx` verifies the Run Integration Tests button through an RTL click path (runner Return Book); the companion launcher test [`uiIntegrationTestLauncher.integ.test.ts`](../../packages/miroir-standalone-app/tests/helpers/uiIntegrationTestLauncher.integ.test.ts) covers both runner and transformer leaves in Node.
 
 Embedded mode attaches to a running host without re-deploying meta-model stores.
 
@@ -952,11 +971,11 @@ await session.teardown();
 
 | Name | Example | Used in |
 |------|---------|---------|
-| **Registry key** | `runner_library`, `mustache` | `--suites`, `MIROIR_TEST_SUITES` |
-| **Suite `miroirTestLabel`** | `runner.library`, `mustache.extractDoubleBracePatterns` | Filter object **keys** (when nested) |
-| **Leaf `miroirTestLabel`** | `Return Book Test Composite Action` | Filter object **values** (string array) |
+| **Registry key** | `runner_library`, `miroirCoreTransformers` | `--suites`, `MIROIR_TEST_SUITES`, UI suite key |
+| **Suite `miroirTestLabel`** | `runner.library`, `miroirCoreTransformers`, nested `plus` | Filter object **keys** (when nested) |
+| **Leaf `miroirTestLabel`** | `Return Book Test Composite Action`, `plus with empty args fails` | Filter object **values** (string array) |
 
-The registry key and suite label are **not** the same for runner tests: `--suites runner_library` but filter key `runner.library`.
+For **runner** suites the registry key and suite label often differ: `--suites runner_library` but filter key `runner.library`. For **transformer** suites such as `miroirCoreTransformers` they usually match; nest intermediate suite labels in the filter JSON.
 
 Find labels in the MiroirTest JSON under `definition.miroirTestLabel` (suite) and each leaf’s `miroirTestLabel`.
 
@@ -1009,10 +1028,10 @@ npm run testMiroir -w miroir-standalone-app -- \
 ```bash
 npm run testMiroir -w miroir-standalone-app -- \
   --profile emulatedServer-sql --suites miroirCoreTransformers --mode integ \
-  --filter '{"miroirCoreTransformers":["some transformer case label"]}'
+  --filter '{"miroirCoreTransformers":{"runtimeTransformerTests":{"plus":["plus with empty args fails"]}}}'
 ```
 
-(Use the actual nested suite / leaf labels from that suite’s JSON — transformer suites are often deeply nested.)
+Nest objects for intermediate suite labels; use a string array for the leaf list at the innermost level. Labels come from that suite’s JSON (`miroirTestLabel`).
 
 #### 4. One unit-test leaf (functionCallTest)
 
@@ -1082,21 +1101,46 @@ Checks performed:
 
 1. Start the app: `npm run dev -w miroir-standalone-app`.
 2. Navigate to **Miroir Tests** in the menu.
-3. The list report shows all registered suites; click to open details.
-4. **Run suite** executes unit tests via `MiroirTestTools` — no external store required.
-5. **Run Integration Tests** is available for supported runner suites. Choose a profile and an ephemeral or pinned run target in the integration run settings.
+3. Open a suite’s details. The badge shows `unit` / `integration` / `mixed`.
+4. **Run unit tests** — in-memory via the live context (no external store).
+5. **Run Integration Tests** — data-isolated session via the UI launcher (same path as the Node proofs above).
+
+### Runner vs transformer from the UI
+
+Both use the same **Run Integration Tests** button. The launcher picks the session kind from the suite’s leaves:
+
+| Suite (instance name) | Session | What to select | Browser profile |
+|-----------------------|---------|----------------|-----------------|
+| `runner_library` (label `runner.library`) | `RunnerTestSession` | Ephemeral or pinned run target | `emulatedServer-indexedDb` (default) or `realServer-*` |
+| `miroirCoreTransformers` | `IntegrationTestSession` | Ephemeral or pinned `testApplication` identity | `emulatedServer-indexedDb` only in webApp |
+
+**Runner**
+
+1. Open **runner_library** / `runner.library`.
+2. Choose profile (`emulatedServer-indexedDb` or a `realServer-*` profile with `miroir-server` up).
+3. Choose **Ephemeral run** (fresh UUIDs) or **Pinned suite targets**.
+4. Click **Run Integration Tests** — inspector should show `sessionKind: runner`.
+
+**Transformer**
+
+1. Open **miroirCoreTransformers**.
+2. Choose profile **`emulatedServer-indexedDb`** (webApp cannot run SQL/filesystem emulated stacks).
+3. Choose ephemeral or pinned identity.
+4. Click **Run Integration Tests** — inspector should show `sessionKind: transformer`.
+
+Mixed suites (e.g. `miroirCoreTransformers`) show separate unit and integration actions when both leaf kinds are present.
 
 Browser-supported profiles:
 
-| Profile | Store location |
-|---------|----------------|
-| `emulatedServer-indexedDb` | Browser IndexedDB |
-| `realServer-sql` | Postgres behind `miroir-server` |
-| `realServer-filesystem` | Filesystem behind `miroir-server` |
-| `realServer-indexedDb` | IndexedDB behind `miroir-server` |
-| `realServer-mongodb` | MongoDB behind `miroir-server` |
+| Profile | Store location | Runner | Transformer |
+|---------|----------------|--------|-------------|
+| `emulatedServer-indexedDb` | Browser IndexedDB | ✅ | ✅ |
+| `realServer-sql` | Postgres behind `miroir-server` | ✅ | — (use CLI / Electron for SQL transformer) |
+| `realServer-filesystem` | Filesystem behind `miroir-server` | ✅ | — |
+| `realServer-indexedDb` | IndexedDB behind `miroir-server` | ✅ | — |
+| `realServer-mongodb` | MongoDB behind `miroir-server` | ✅ | — |
 
-Real-server profiles require a reachable `miroir-server` and the selected backend to be configured on that server. The browser is REST-only for these profiles; it does not need the server's store driver.
+Real-server profiles require a reachable `miroir-server` and the selected backend on that server. The browser is REST-only for these profiles.
 
 ---
 

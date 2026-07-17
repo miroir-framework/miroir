@@ -10,6 +10,10 @@ import {
   RunnerTestSession,
   type RunnerTestSessionOptions,
 } from "../../../tests/helpers/RunnerTestSession.js";
+import {
+  IntegrationTestSession,
+  type TestSessionForIntegOptions,
+} from "./IntegrationTestSession.js";
 
 function resolveBootstrapHostOptions(
   context: IntegrationTestOrchestratorContext,
@@ -37,11 +41,37 @@ function resolveHostExecutionEnvironment(
   };
 }
 
-const browserRunnerSessionFactory: IntegrationTestSessionFactory = {
+function assertBrowserSafeTransformerOptions(options: TestSessionForIntegOptions): void {
+  const appType = options.testApplicationStore.emulatedServerType;
+  const adminType = options.adminStore.emulatedServerType;
+  if (appType === "filesystem" || adminType === "filesystem") {
+    throw new Error(
+      "Browser transformer session cannot use filesystem stores (no node:path). Use indexedDb + bundled admin.",
+    );
+  }
+  if (appType === "sql" || adminType === "sql") {
+    throw new Error(
+      "Browser transformer session cannot use SQL stores in webApp. Use indexedDb + bundled admin, or Electron/Node.",
+    );
+  }
+}
+
+const browserSessionFactory: IntegrationTestSessionFactory = {
   createSession({ kind, context, sessionSpecificOptions }) {
+    if (kind === "transformer") {
+      const options = (sessionSpecificOptions ?? {}) as TestSessionForIntegOptions;
+      if (!options.testApplicationStore || !options.adminStore) {
+        throw new Error(
+          "Browser integration orchestrator: transformer session requires testApplicationStore and adminStore",
+        );
+      }
+      assertBrowserSafeTransformerOptions(options);
+      return new IntegrationTestSession(options);
+    }
+
     if (kind !== "runner") {
       throw new Error(
-        `Browser integration orchestrator supports runner sessions only (got "${kind}")`,
+        `Browser integration orchestrator supports runner and transformer sessions only (got "${kind}")`,
       );
     }
     if (!context.miroirActivityTracker || !context.miroirEventService) {
@@ -81,5 +111,5 @@ const browserRunnerSessionFactory: IntegrationTestSessionFactory = {
 };
 
 export function createStandaloneAppBrowserIntegrationOrchestrator(): MiroirTestIntegrationOrchestrator {
-  return createDefaultMiroirTestIntegrationOrchestrator(browserRunnerSessionFactory);
+  return createDefaultMiroirTestIntegrationOrchestrator(browserSessionFactory);
 }

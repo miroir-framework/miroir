@@ -80,36 +80,44 @@ See [Filtering MiroirTest cases](../../reference/testing.md#filtering-miroirtest
 
 ## Running MiroirTest integration tests (CLI)
 
-MiroirTest integration runs in `miroir-standalone-app` via `testMiroir`. Prefer **`--profile`** (and other argv flags); `MIROIR_TEST_*` env remains a legacy / CI fallback:
+MiroirTest integration runs in `miroir-standalone-app` via `testMiroir`. Prefer **`--profile`** (and other argv flags); `MIROIR_TEST_*` env remains a legacy / CI fallback.
+
+| Kind | `--suites` | Session | Example |
+|------|------------|---------|---------|
+| **Transformer** | `miroirCoreTransformers` | `IntegrationTestSession` | see below |
+| **Runner** | `runner_library` | `RunnerTestSession` | see below |
 
 ```bash
-# Preferred
+# Transformer integ
 npm run testMiroir -w miroir-standalone-app -- \
   --profile emulatedServer-sql --suites miroirCoreTransformers --mode integ
 
-# Legacy — explicit env
+# Runner integ
+npm run testMiroir -w miroir-standalone-app -- \
+  --profile emulatedServer-sql --suites runner_library --mode integ
+
+# Legacy — explicit env (transformer)
 MIROIR_TEST_SUITES=miroirCoreTransformers MIROIR_TEST_MODE=integ \
   MIROIR_TEST_POSTGRES_HOST=localhost \
-  npm run testMiroir -w miroir-standalone-app
-
-MIROIR_TEST_SUITES=miroirCoreTransformers MIROIR_TEST_MODE=integ \
-  MIROIR_TEST_APP_STORE_TYPE=filesystem \
-  MIROIR_TEST_APP_FILESYSTEM_ROOT=/tmp/miroir-test \
   npm run testMiroir -w miroir-standalone-app
 ```
 
 Invalid configuration prints a full usage message before any test runs. See [reference/testing.md](../../reference/testing.md#running-miroirtest-integration-tests-testmiroir).
 
-### Runner integ (`runner_library`)
+### Filtering one leaf
 
-Same `testMiroir` launcher with `VITE_MIROIR_*` config and `--mode integ`. Filter by **suite** `miroirTestLabel` `runner.library`, not registry key `runner_library`:
+Filter by suite **`miroirTestLabel`**, not the registry key:
 
 ```bash
-VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-sql.json \
-VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_DomainController_debug.json \
+# Runner — key is runner.library
 npm run testMiroir -w miroir-standalone-app -- \
   --suites runner_library --mode integ --profile emulatedServer-sql \
   --filter '{"runner.library":["Return Book Test Composite Action"]}'
+
+# Transformer — nested suite labels
+npm run testMiroir -w miroir-standalone-app -- \
+  --profile emulatedServer-sql --suites miroirCoreTransformers --mode integ \
+  --filter '{"miroirCoreTransformers":{"runtimeTransformerTests":{"plus":["plus with empty args fails"]}}}'
 ```
 
 Details: [Filtering MiroirTest cases](../../reference/testing.md#filtering-miroirtest-cases).
@@ -167,8 +175,16 @@ Full catalogue, config matrix, and architecture comparison with `testMiroir`: [r
 
 1. `npm run dev -w miroir-standalone-app`
 2. Navigate to **Miroir Tests** in the menu.
-3. Select a suite in the list report; open details to inspect cases.
-4. Click **Run suite** — executes in unit mode via `MiroirTestTools`.
+3. Open a suite; badge shows `unit` / `integration` / `mixed`.
+4. **Run unit tests** — in-memory (live context).
+5. **Run Integration Tests** — data-isolated launcher (same as Node UI proofs).
+
+| Suite | How to launch integ in the UI |
+|-------|-------------------------------|
+| **`runner_library`** | Open suite → profile `emulatedServer-indexedDb` or `realServer-*` → ephemeral/pinned → **Run Integration Tests** |
+| **`miroirCoreTransformers`** | Open suite → profile **`emulatedServer-indexedDb`** → ephemeral/pinned → **Run Integration Tests** |
+
+CLI equivalents and Node proofs: [reference/testing.md — Running tests in the UI](../../reference/testing.md#running-tests-in-the-ui) and [UI launcher Node proofs](../../reference/testing.md#ui-launcher-node-proofs-testshelpers).
 
 Legacy **Unit Test** / **Transformer Test** reports still exist; prefer **Miroir Tests** for new work.
 

@@ -40,22 +40,24 @@ npm run testMiroir -w miroir-core -- --mode unit
 
 ### MiroirTest integration (`testMiroir`)
 
-Runs in `miroir-standalone-app`, not `miroir-core`:
+Runs in `miroir-standalone-app`, not `miroir-core`. Prefer **`--profile`** / **`--suites`** / **`--mode`**:
+
+| Kind | Command |
+|------|---------|
+| **Transformer** | `npm run testMiroir -w miroir-standalone-app -- --profile emulatedServer-sql --suites miroirCoreTransformers --mode integ` |
+| **Runner** | `npm run testMiroir -w miroir-standalone-app -- --profile emulatedServer-sql --suites runner_library --mode integ` |
+
+Legacy env form:
 
 ```bash
-# Default: sql test application + filesystem admin
 MIROIR_TEST_SUITES=miroirCoreTransformers MIROIR_TEST_MODE=integ \
   MIROIR_TEST_POSTGRES_HOST=localhost \
   npm run testMiroir -w miroir-standalone-app
-
-# Filesystem test application (no Postgres)
-MIROIR_TEST_SUITES=miroirCoreTransformers MIROIR_TEST_MODE=integ \
-  MIROIR_TEST_APP_STORE_TYPE=filesystem \
-  MIROIR_TEST_APP_FILESYSTEM_ROOT=/tmp/miroir-test \
-  npm run testMiroir -w miroir-standalone-app
 ```
 
-See [reference/testing.md](../reference/testing.md#running-miroirtest-integration-tests-testmiroir) for all `MIROIR_TEST_*` options.
+**UI:** same suites under **Miroir Tests** → **Run Integration Tests** (webApp: `emulatedServer-indexedDb`; runner also supports `realServer-*`). See [reference — Running tests in the UI](../reference/testing.md#running-tests-in-the-ui).
+
+Full options: [reference/testing.md](../reference/testing.md#running-miroirtest-integration-tests-testmiroir).
 
 ### App-stack integration (`testByFile`)
 

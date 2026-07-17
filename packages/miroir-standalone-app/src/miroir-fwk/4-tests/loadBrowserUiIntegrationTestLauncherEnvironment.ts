@@ -16,9 +16,13 @@ import {
   getIntegTestRunCoordinator,
 } from "./integTestRunCoordinator.js";
 import { loadBrowserIntegrationTestProfileConfig } from "./integrationTestProfileAssets.js";
+import { resolveBrowserTransformerTestSessionOptions } from "./resolveTransformerTestSessionOptions.js";
 import type { UiIntegrationTestLauncherEnvironment } from "./uiIntegrationTestLauncher.js";
 
 let browserBundledAdminStoreRegistered = false;
+let lastBundledDeploymentData:
+  | ReturnType<typeof buildBrowserAdminBundledDeploymentData>
+  | undefined;
 
 export function resolveBrowserInProcessExpect(): InProcessExpectFn {
   const expectFn = ConfigurationService.configurationService.testImplementation?.expect;
@@ -64,17 +68,18 @@ function ensureBrowserBundledAdminStoreRegistered(miroirConfig: MiroirConfigClie
       "ensureBrowserBundledAdminStoreRegistered: browser UI integ profile must use bundled admin storage",
     );
   }
+  lastBundledDeploymentData = buildBrowserAdminBundledDeploymentData(miroirDeploymentStoreConfig);
   miroirBundledStoreSectionStartup(
     ConfigurationService.configurationService,
-    buildBrowserAdminBundledDeploymentData(miroirDeploymentStoreConfig),
+    lastBundledDeploymentData,
   );
   browserBundledAdminStoreRegistered = true;
 }
 
 /**
  * Loads the browser integration launcher environment on demand.
- * Uses a runner-only orchestrator in src — must not import tests/helpers/IntegrationTestSession
- * (Node-only stores and node:path would break the Vite production bundle).
+ * Orchestrator lives in src and supports runner + transformer (IndexedDB) sessions —
+ * must not import Node-only IntegrationTestSession facades that pull node:path.
  */
 export async function loadBrowserUiIntegrationTestLauncherEnvironment(): Promise<UiIntegrationTestLauncherEnvironment> {
   const { createStandaloneAppBrowserIntegrationOrchestrator } = await import(
@@ -96,5 +101,22 @@ export async function loadBrowserUiIntegrationTestLauncherEnvironment(): Promise
     createActivityTracker: async () => createIntegActivityTrackerSync(),
     expect: resolveBrowserInProcessExpect(),
     getCoordinator: getIntegTestRunCoordinator,
+    resolveTransformerSessionOptions: (profileName, runTargetMode, miroirConfig) => {
+      if (miroirConfig.client?.emulateServer !== true) {
+        throw new Error(
+          `Browser transformer UI integ requires an emulated profile (got "${profileName}" with emulateServer=false). Use emulatedServer-indexedDb.`,
+        );
+      }
+      if (!lastBundledDeploymentData) {
+        throw new Error(
+          "Browser transformer session: bundled admin seed not registered — loadConfigForProfile must run first",
+        );
+      }
+      return resolveBrowserTransformerTestSessionOptions({
+        runTargetMode,
+        bundledDeploymentData: lastBundledDeploymentData,
+        profileName,
+      });
+    },
   };
 }

@@ -269,8 +269,6 @@ export class RunnerTestSession implements RunnerTestSessionInterface {
     }, {
       // Keep UI mounted during browser-triggered integration runs.
       clearDocumentBody: false,
-      // D9 / B6-c: never reset shared Miroir platform on live miroir-server
-      // (admin Deployment still points at package miroir_* assets on filesystem).
       resetMiroirPlatform: emulateServer,
     });
     if (this.runnerTestContext) {

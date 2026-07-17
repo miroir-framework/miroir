@@ -28,6 +28,18 @@ describe("uiIntegrationTestRunnerSuiteRegistry (B3)", () => {
   });
 });
 
+describe("uiIntegrationTestTransformerSuiteRegistry (B7)", () => {
+  it("lists and resolves miroirCoreTransformers", async () => {
+    const {
+      listUiIntegrationTransformerSuiteKeys,
+      resolveUiIntegrationTransformerSuite,
+    } = await import("../../src/miroir-fwk/4-tests/uiIntegrationTestTransformerSuiteRegistry.js");
+    expect(listUiIntegrationTransformerSuiteKeys()).toContain("miroirCoreTransformers");
+    const entry = resolveUiIntegrationTransformerSuite("miroirCoreTransformers");
+    expect(entry.suiteDefinition.miroirTestLabel).toBe("miroirCoreTransformers");
+  });
+});
+
 describe("resolveUiIntegrationTestRunTarget (B3)", () => {
   it("pinned mode uses suite runTarget", () => {
     const suite = runnerLibrarySuite();
@@ -57,5 +69,32 @@ describe("isUiIntegrationSuiteRunSuccessful (B3)", () => {
         "runner_library",
       ),
     ).toBe(false);
+  });
+
+  it("returns true for nested transformer suite results (B7)", () => {
+    expect(
+      isUiIntegrationSuiteRunSuccessful(
+        {
+          getTestAssertionsResults: () => ({
+            testsSuiteResults: {
+              runtimeTransformerTests: {
+                testsSuiteResults: {
+                  plus: {
+                    testsResults: {
+                      "plus with empty args fails": {
+                        testLabel: "plus with empty args fails",
+                        testResult: "ok",
+                        testAssertionsResults: {},
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          }),
+        } as never,
+        "miroirCoreTransformers",
+      ),
+    ).toBe(true);
   });
 });

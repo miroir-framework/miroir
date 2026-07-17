@@ -68,4 +68,21 @@ describe("buildTeardownTestApplicationStoresAction", () => {
       },
     });
   });
+
+  it("omits Admin instance deletes when deleteAdminInstances is false (transformer session)", () => {
+    const action = buildTeardownTestApplicationStoresAction(
+      "11111111-1111-4111-8111-111111111111",
+      "22222222-2222-4222-8222-222222222222",
+      {
+        model: { emulatedServerType: "indexedDb", indexedDbName: "x" },
+        data: { emulatedServerType: "indexedDb", indexedDbName: "x" },
+      },
+      { deleteAdminInstances: false },
+    );
+
+    expect(action.payload.actionSequence.map((step) => step.actionType)).toEqual([
+      "storeManagementAction_deleteStore",
+      "storeManagementAction_closeStore",
+    ]);
+  });
 });

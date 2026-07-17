@@ -1,0 +1,13 @@
+---
+description: Prefer Python over JS/TS for ad-hoc and helper scripts
+alwaysApply: true
+---
+
+# Script language preference
+
+When creating **ad-hoc scripts**, one-off diagnostics, repo helpers, or tooling outside the app runtime:
+
+- **Prefer Python** (`.py`)
+- **Avoid JavaScript/TypeScript** for that purpose (no `.js` / `.mjs` / `.cjs` / `.ts` / `.mts` script files, and avoid `node`/`tsx` one-liners when a short Python script would do)
+
+Exceptions: keep using JS/TS when the script must live inside an existing Node/Vite/Vitest package workflow, or when it must import TypeScript modules from the monorepo that Python cannot reasonably call.

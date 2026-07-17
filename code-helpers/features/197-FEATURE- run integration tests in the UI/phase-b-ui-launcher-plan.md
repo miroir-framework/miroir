@@ -4,7 +4,7 @@
 
 **Prerequisites:** Phase A ✅ · Gaps A/B/C-setup/D/E ✅ · Phase R (R0–R6) ✅ · **JzodElementEditor component tests** documented and green ([testing.md](../../../docs/reference/testing.md#jzodelementeditortesttsx--component-integration-suite)) — baseline before B7
 
-**Status:** B0–B5 ✅ · **B6 in progress** (B6-a ✅ · B6-b ✅ · **B6-d2 indexedDb manual ✅ 2026-07-16** · **B6-c C1–C3 ✅ · C4 Node integ added · C5 manual next**) · B7 blocked on B6-c C5 (real-server webApp smoke)
+**Status:** B0–B5 ✅ · **B6 ✅** (B6-a/b/d + B6-c C1–C4 ✅ · C5 manual optional) · **B7 in progress** (launcher + registry + Node integ ✅ · UI manual next)
 
 **Goal:** Run the same domainController-based MiroirTest integration suites from the Miroir UI that CLI runs today — with **data-isolated** test runs that do not pollute the user's working session — plus reporting and a troubleshooting inspector.
 
@@ -436,11 +436,26 @@ Close gaps G-UI-1 … G-UI-7 (§5.3).
 
 **Deliverables**
 
-- Launcher branch for `kind: "transformer"` → `IntegrationTestSession` + same in-process runner
-- Register transformer suites in UI catalog (standalone-app deployed instances)
-- Ephemeral / pinned toggle applies to transformer session `testApplication` identity where relevant
+- ✅ Launcher branch for `kind: "transformer"` → `IntegrationTestSession` + same in-process runner
+- ✅ Register transformer suites in UI catalog (`miroirCoreTransformers`)
+- ✅ Ephemeral / pinned toggle applies to transformer session `applicationIdentity`
+- ✅ Browser-safe `IntegrationTestSession` in `src/` (no `node:path`); browser orchestrator supports transformer with IndexedDB + bundled admin
+- ✅ Node integ: `uiIntegrationTestLauncher.integ.test.ts` transformer leaf green
 
-**Verify:** `miroirCoreTransformers` integ suite green from UI manual test + CLI non-reg.
+**Verify**
+
+```bash
+# Node UI launcher integ (one integ leaf)
+npm run testByFile -w miroir-standalone-app -- uiIntegrationTestLauncher.integ
+
+# CLI non-reg
+npm run testMiroir -w miroir-standalone-app -- \
+  --profile emulatedServer-sql --suites miroirCoreTransformers --mode integ
+```
+
+**Manual (webApp):** Miroir Tests → `miroirCoreTransformers` → profile `emulatedServer-indexedDb` → Run Integration Tests.
+
+**Follow-up (list vs details unit/integ UX):** [ui-unit-vs-integ-run-context-plan.md](./ui-unit-vs-integ-run-context-plan.md) — dual batch bar on MiroirTest **list**; keep capability-driven unit/integ on **details**; retain runner integ.
 
 ---
 
@@ -674,6 +689,7 @@ When Phase B starts, update [plan.md](./plan.md):
 |-----|--------|
 | [analysis-emulated-deployment-controller-gap.md](./analysis-emulated-deployment-controller-gap.md) | **Core:** application models are self-UUID-grounded — ephemeral deploy needs T1 path-discovery + T2 remap transformers (TDD); pinned suite is not isolation |
 | [analysis-ui-integ-without-testing-library.md](./analysis-ui-integ-without-testing-library.md) | Why UI loader pulls `@testing-library/react` via `tests-utils.tsx`; Rank 1 split; UI vs Vitest suite gates |
+| [ui-unit-vs-integ-run-context-plan.md](./ui-unit-vs-integ-run-context-plan.md) | List “Run All” is unit-only/unlabeled; details already split unit/integ — TDD plan for dual-mode list + mixed transformer |
 
 ### 13. 2026-07-16 post-B6-d2 notes
 

@@ -1,7 +1,4 @@
 /**
- * B6-c C4 — Node proof that the UI launcher path works against a live miroir-server
- * (`realServer-*`, ephemeral runTarget, Return Book leaf).
- *
  * Storage backend is selected via argv (preferred) or env:
  *   --storage sql|filesystem|indexedDb|mongodb   → profile `realServer-<storage>`
  *   --profile realServer-<storage>               → same (via testByFile)
@@ -57,7 +54,7 @@ beforeAll(() => {
   });
 });
 
-describe(`runUiIntegrationTestSuite ${profileName} (B6-c C4)`, () => {
+describe(`runUiIntegrationTestSuite ${profileName}`, () => {
   it(`runs runner_library Return Book leaf against live miroir-server (${storage}, ephemeral)`, async () => {
     try {
       await assertMiroirServerReachable(REAL_SERVER_ROOT_API_URL, {
@@ -67,7 +64,7 @@ describe(`runUiIntegrationTestSuite ${profileName} (B6-c C4)`, () => {
     } catch (error) {
       if (error instanceof MiroirServerUnreachableError) {
         console.warn(
-          `[B6-c C4] Skipping: miroir-server unreachable at ${REAL_SERVER_ROOT_API_URL} (${error.message})`,
+          `Skipping: miroir-server unreachable at ${REAL_SERVER_ROOT_API_URL} (${error.message})`,
         );
         return;
       }
