@@ -3,6 +3,7 @@ import crossFetch from "cross-fetch";
 import {
   type ApplicationDeploymentMap,
   type CompositeAction,
+  type CompositeActionTemplate,
   type CompositeRunTestAssertion,
   type Deployment,
   type DomainControllerInterface,
@@ -41,7 +42,8 @@ export interface RunnerTestParams {
   testApplicationDeploymentUuid: string,
   testApplicationName: string,
   testParams: Record<string, any>,
-  preTestCompositeActions: CompositeAction[],
+  // preTestCompositeActions: CompositeAction[],
+  preTestCompositeActions: CompositeActionTemplate[],
   testCompositeActionAssertions: CompositeRunTestAssertion[],
   //
   internalMiroirConfig: MiroirConfigClient,
@@ -173,6 +175,7 @@ export function testApplicationStorageConfiguration(
           database: testApplicationName,
         },
       };
+      break;
     }
     default: {
       throw new Error("Unsupported emulatedServerType: " + libraryDeploymentStorageConfiguration.model.emulatedServerType);

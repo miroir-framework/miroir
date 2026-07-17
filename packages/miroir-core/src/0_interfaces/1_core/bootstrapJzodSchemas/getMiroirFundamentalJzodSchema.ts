@@ -3499,20 +3499,6 @@ export function getMiroirFundamentalJzodSchema(
         ______________________________________________buildPlusRuntimeDomainAction_______________________:
           { type: "any" },
         buildPlusRuntimeDomainAction: buildPlusRuntimeDomainActionSchemaBuilder.resultSchema,
-        compositeActionTemplate: {
-          type: "schemaReference",
-          definition: {
-            absolutePath: miroirFundamentalJzodSchemaUuid,
-            relativePath: "buildPlusRuntimeCompositeAction",
-          },
-        }, // compositeActionTemplate: THAT's THE RESULT OF THE WHOLE MOVEMENT!
-        actionTemplate: {
-          type: "schemaReference",
-          definition: {
-            absolutePath: miroirFundamentalJzodSchemaUuid,
-            relativePath: "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction",
-          },
-        }, // compositeActionTemplate: THAT's THE RESULT OF THE WHOLE MOVEMENT!
         mlSchemaTemplate: {
           type: "schemaReference",
           definition: {
@@ -3654,22 +3640,6 @@ export function getMiroirFundamentalJzodSchema(
             },
           ],
         },
-        // extractorOrCombinerTemplate: {
-        //   "type": "schemaReference",
-        //   "definition": {
-        //     "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-        //     "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorOrCombiner"
-        //   }
-        // },
-        // extractorOrCombinerTemplateRecord: {
-        //   type: "record",
-        //   definition: {
-        //     type: "schemaReference",
-        //     definition: {
-        //       relativePath: "extractorOrCombinerTemplate",
-        //     },
-        //   },
-        // },
         buildPlusRuntimeCompositeAction: {
           type: "schemaReference",
           definition: {
@@ -3678,6 +3648,20 @@ export function getMiroirFundamentalJzodSchema(
               "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeActionSequence",
           },
         },
+        actionTemplate: {
+          type: "schemaReference",
+          definition: {
+            absolutePath: miroirFundamentalJzodSchemaUuid,
+            relativePath: "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction",
+          },
+        }, 
+        compositeActionTemplate: {
+          type: "schemaReference",
+          definition: {
+            absolutePath: miroirFundamentalJzodSchemaUuid,
+            relativePath: "buildPlusRuntimeCompositeAction",
+          },
+        }, // compositeActionTemplate: THAT's THE RESULT OF THE WHOLE MOVEMENT!
       } as Record<string, any /**JzodElement */>,
     } as any /** JzodObjectOrReference */,
   };

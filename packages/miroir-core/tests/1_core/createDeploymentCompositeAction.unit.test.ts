@@ -2,9 +2,13 @@ import { describe, expect, it } from "vitest";
 
 import type {
   Deployment,
+  MiroirConfigClient,
   StoreUnitConfiguration,
 } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
-import { createDeploymentCompositeAction } from "../../src/1_core/Deployment";
+import {
+  createDeploymentCompositeAction,
+  testUtils_deleteApplicationDeployment,
+} from "../../src/1_core/Deployment";
 import { adminSelfApplication, entityApplicationForAdmin, entityDeployment } from "miroir-test-app_deployment-admin";
 
 const ADMIN_DEPLOYMENT_UUID = "18db21bf-f8d3-4f6a-8296-84b69f6dc48b";
@@ -140,5 +144,46 @@ describe("createDeploymentCompositeAction", () => {
             adminSelfApplication.uuid,
       ),
     ).toBe(false);
+  });
+});
+
+describe("testUtils_deleteApplicationDeployment", () => {
+  it("deletes the store, then Admin Deployment and AdminApplication instances", () => {
+    const miroirConfig = {
+      client: {
+        emulateServer: false,
+        serverConfig: {
+          storeSectionConfiguration: {
+            [DEPLOYMENT_UUID]: newDeploymentConfiguration,
+          },
+        },
+      },
+    } as unknown as MiroirConfigClient;
+
+    const sequence = testUtils_deleteApplicationDeployment(
+      miroirConfig,
+      APP_UUID,
+      DEPLOYMENT_UUID,
+    );
+
+    expect(sequence.payload.actionSequence.map((step) => step.actionType)).toEqual([
+      "storeManagementAction_deleteStore",
+      "deleteInstance",
+      "deleteInstance",
+    ]);
+    expect(sequence.payload.actionSequence[1]).toMatchObject({
+      actionType: "deleteInstance",
+      payload: {
+        application: adminSelfApplication.uuid,
+        objects: [{ uuid: DEPLOYMENT_UUID, parentUuid: entityDeployment.uuid }],
+      },
+    });
+    expect(sequence.payload.actionSequence[2]).toMatchObject({
+      actionType: "deleteInstance",
+      payload: {
+        application: adminSelfApplication.uuid,
+        objects: [{ uuid: APP_UUID, parentUuid: entityApplicationForAdmin.uuid }],
+      },
+    });
   });
 });

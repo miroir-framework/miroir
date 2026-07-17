@@ -322,9 +322,21 @@ describe("RunnerTestSession (Gap E R)", () => {
       domainController.handleCompositeAction,
     ).mock.calls[0]!;
     expect(action.actionLabel).toBe("teardownTestApplicationStores");
+    expect(action.payload.actionSequence.map((step: { actionType: string }) => step.actionType)).toEqual([
+      "storeManagementAction_deleteStore",
+      "storeManagementAction_closeStore",
+      "deleteInstance",
+      "deleteInstance",
+    ]);
     expect(action.payload.actionSequence[0]?.payload).toMatchObject({
       deploymentUuid: runTarget.deploymentUuid,
       application: runTarget.applicationUuid,
+    });
+    expect(action.payload.actionSequence[2]?.payload).toMatchObject({
+      objects: [{ uuid: runTarget.deploymentUuid }],
+    });
+    expect(action.payload.actionSequence[3]?.payload).toMatchObject({
+      objects: [{ uuid: runTarget.applicationUuid }],
     });
     expect(applicationDeploymentMapArg[runTarget.applicationUuid]).toBe(runTarget.deploymentUuid);
     const remappedLibraryModel = remapLibraryAppModelForRunTarget(

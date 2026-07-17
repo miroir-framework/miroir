@@ -7,6 +7,7 @@ import type {
   ApplicationVersion,
   BuildPlusRuntimeCompositeAction,
   CompositeAction,
+  CompositeActionTemplate,
   CompositeRunTestAssertion,
   CoreTransformerForBuildPlusRuntime,
   Deployment,
@@ -32,7 +33,8 @@ export function testBuildPlusRuntimeCompositeActionSuiteForRunner(
   testApplicationDeploymentUuid: string,
   testApplicationName: string,
   testParams: Record<string, any>,
-  preTestCompositeActions: ActionTemplate[],
+  // preTestCompositeActions: ActionTemplate[],
+  preTestCompositeActions: CompositeActionTemplate[],
   testCompositeActionAssertions: CompositeRunTestAssertion[],
   //
   internalMiroirConfig: MiroirConfigClient,
@@ -139,13 +141,14 @@ export function testBuildPlusRuntimeCompositeActionSuiteForRunner(
             // ],
           ),
       afterEach: testUtils_resetApplicationDeployment(testApplicationUuid),
-      afterAll: skipDropDeployment
-        ? undefined
-        : testUtils_deleteApplicationDeployment(
-            internalMiroirConfig,
-            testApplicationUuid,
-            testApplicationDeploymentUuid,
-          ),
+      afterAll: undefined,
+      // afterAll: skipDropDeployment
+      //   ? undefined
+      //   : testUtils_deleteApplicationDeployment(
+      //       internalMiroirConfig,
+      //       testApplicationUuid,
+      //       testApplicationDeploymentUuid,
+      //     ),
       testCompositeActions: {
         [testCompositeActionLabel ?? "no_testCompositeActionLabel_given"]: {
           testType: "testBuildPlusRuntimeCompositeAction",

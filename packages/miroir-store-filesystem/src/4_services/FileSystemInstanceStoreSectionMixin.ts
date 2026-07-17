@@ -340,12 +340,12 @@ export function FileSystemInstanceStoreSectionMixin<TBase extends MixableFileSys
             instance,
           );
           const entityPath = path.join(this.directory, entityUuid);
-          if (!fs.existsSync(filePath)) {
+          if (!fs.existsSync(entityPath)) {
             return Promise.resolve(
               new Action2Error(
                 "FailedToDeleteInstance",
                 // `could not find file to delete: ${filePath} entityUuid ${entityUuid} instance ${instance}`
-                `could not find entity ${entityUuid}`,
+                `could not find entity ${entityUuid} in database schema library, available entities: ${fs.readdirSync(this.directory)}`,
               ),
             );
           }
