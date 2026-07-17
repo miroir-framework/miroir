@@ -7,6 +7,7 @@ import {
   normalizeMiroirTestRunFilter,
   parseMiroirTestCliArgs,
   parseMiroirTestCliConfig,
+  parseStorageArg,
   resolveMiroirTestSuiteKeys,
 } from "../../src/5_tests/parseMiroirTestCliConfig";
 
@@ -134,5 +135,12 @@ describe("parseMiroirTestCliConfig (Phase 2)", () => {
       executionMode: "unit",
     });
     expect(env.MIROIR_TEST_SUITES).toBe("*");
+  });
+
+  it("parseStorageArg reads --storage / -S (argv-first storage selection)", () => {
+    expect(parseStorageArg(["--storage", "sql"])).toBe("sql");
+    expect(parseStorageArg(["-S", "indexedDb"])).toBe("indexedDb");
+    expect(parseStorageArg([])).toBeUndefined();
+    expect(() => parseStorageArg(["--storage", "redis"])).toThrow(/Invalid --storage/);
   });
 });

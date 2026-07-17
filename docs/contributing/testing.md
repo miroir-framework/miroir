@@ -20,20 +20,22 @@ Integration tests need a reachable store when using SQL/ MongoDB configs:
 
 ## Running tests
 
+**Prefer argv** (`--suites`, `--mode`, `--filter`, `--profile`, `--storage`). Env vars remain for CI / legacy; see [Parameter surface](../reference/testing.md#parameter-surface-argv-preferred) in the reference.
+
 ### Unit (no database)
 
 ```bash
-# Single suite by key
+# Preferred — argv
+npm run testMiroir -w miroir-core -- --suites mustache --mode unit
+
+# Legacy — env (still supported)
 MIROIR_TEST_SUITES=mustache MIROIR_TEST_MODE=unit npm run testMiroir -w miroir-core
 
 # Multiple suites
-MIROIR_TEST_SUITES=alterObject,EntityPrimaryKey MIROIR_TEST_MODE=unit npm run testMiroir -w miroir-core
-
-# Argv form — same as above
-npm run testMiroir -w miroir-core -- --suites mustache --mode unit
+npm run testMiroir -w miroir-core -- --suites alterObject,EntityPrimaryKey --mode unit
 
 # All registered suites
-MIROIR_TEST_MODE=unit npm run testMiroir -w miroir-core
+npm run testMiroir -w miroir-core -- --mode unit
 ```
 
 ### MiroirTest integration (`testMiroir`)

@@ -1158,12 +1158,16 @@ export {
   parseMiroirTestCliArgs,
   parseMiroirTestCliConfig,
   parseProfileArg,
+  parseStorageArg,
+  isMiroirTestStorageType,
+  MIROIR_TEST_STORAGE_TYPES,
   normalizeMiroirTestRunFilter,
   resolveMiroirTestSuiteKeys,
   resolveMiroirTestCliConfigFromPartial,
   splitSuiteKeys,
   type MiroirCoreTestVitestEntry,
   type MiroirTestCliConfig,
+  type MiroirTestStorageType,
 } from "./5_tests/parseMiroirTestCliConfig.js";
 // // Bootstrap-only schema fixtures (legacy test entities removed from deployment)
 // export { default as entityDefinitionTransformerTest } from "./0_interfaces/1_core/bootstrapJzodSchemas/fixtures/entityDefinitionTransformerTest.json" assert { type: "json" };

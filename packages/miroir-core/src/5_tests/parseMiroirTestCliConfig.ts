@@ -146,6 +146,46 @@ export function parseProfileArg(argv: string[]): string | undefined {
   return undefined;
 }
 
+/** Persistence store backends selectable via `--storage` / `-S` (argv-first CLI). */
+export const MIROIR_TEST_STORAGE_TYPES = [
+  "sql",
+  "filesystem",
+  "indexedDb",
+  "mongodb",
+] as const;
+
+export type MiroirTestStorageType = (typeof MIROIR_TEST_STORAGE_TYPES)[number];
+
+export function isMiroirTestStorageType(value: string): value is MiroirTestStorageType {
+  return (MIROIR_TEST_STORAGE_TYPES as readonly string[]).includes(value);
+}
+
+/**
+ * Parse `--storage value` / `-S value` from argv (does not mutate env).
+ * Preferred over `MIROIR_TEST_STORAGE` / `MIROIR_TEST_APP_STORE_TYPE` — argv is the
+ * main parameter surface; env remains for CI / legacy.
+ */
+export function parseStorageArg(argv: string[]): MiroirTestStorageType | undefined {
+  for (let index = 0; index < argv.length; index++) {
+    const arg = argv[index];
+    if (arg === "--storage" || arg === "-S") {
+      const value = argv[++index];
+      if (value === undefined) {
+        throw new Error(
+          `Missing value for ${arg} (expected ${MIROIR_TEST_STORAGE_TYPES.join(" | ")})`,
+        );
+      }
+      if (!isMiroirTestStorageType(value)) {
+        throw new Error(
+          `Invalid ${arg} "${value}" (expected ${MIROIR_TEST_STORAGE_TYPES.join(" | ")})`,
+        );
+      }
+      return value;
+    }
+  }
+  return undefined;
+}
+
 /** Parse `--flag value` pairs from argv (does not mutate env). */
 export function parseMiroirTestCliArgs(
   argv: string[],

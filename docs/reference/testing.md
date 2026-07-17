@@ -16,6 +16,18 @@ Miroir has three test layers:
 
 **MiroirTest** suites (transformer, function-call, query, runner) are defined as deployment JSON entities and share runners in `miroir-core`. **App-stack** tests are hand-written Vitest files that exercise `DomainController`, persistence stores, extractors, and React views against a full client/server stack configured via JSON files under `tests/miroirConfig.test-*.json`.
 
+### Parameter surface (argv preferred)
+
+**Trajectory:** CLI **arguments are the main way to pass parameters**. Environment variables remain supported for CI and legacy scripts, but new work should prefer argv (`--suites`, `--mode`, `--filter`, `--profile`, `--storage`). Where both are present, **argv wins** for suite selection, mode, filter, and storage. Explicit `VITE_MIROIR_*` / `MIROIR_TEST_*` values still override defaults supplied by `--profile`.
+
+| Concern | Preferred argv | Env fallback (legacy / CI) |
+|---------|----------------|----------------------------|
+| Suites | `--suites` / `-s` | `MIROIR_TEST_SUITES` |
+| Mode | `--mode` / `-m` | `MIROIR_TEST_MODE` |
+| Filter | `--filter` / `-f` | `MIROIR_TEST_FILTER` |
+| Config preset | `--profile` / `-p` | `VITE_MIROIR_TEST_CONFIG_FILENAME` + related |
+| Real-server store backend | `--storage` / `-S` (`sql` \| `filesystem` \| `indexedDb` \| `mongodb`) | `MIROIR_TEST_STORAGE` (set by `testByFile` when `--storage` is used) |
+
 ---
 
 ## Test format: MiroirTest
@@ -78,26 +90,22 @@ Unit tests run entirely in-memory. No Postgres, no filesystem seeding.
 ### Via `testMiroir` (preferred)
 
 ```bash
-# Run one suite
-MIROIR_TEST_SUITES=mustache MIROIR_TEST_MODE=unit npm run testMiroir -w miroir-core
-
-# Run several suites
-MIROIR_TEST_SUITES=alterObject,EntityPrimaryKey MIROIR_TEST_MODE=unit npm run testMiroir -w miroir-core
-
-# Run all suites
-MIROIR_TEST_MODE=unit npm run testMiroir -w miroir-core
-
-# With argv flags (equivalent)
+# Preferred — argv
 npm run testMiroir -w miroir-core -- --suites mustache --mode unit
 
 # Filter to specific test labels (suite miroirTestLabel → leaf labels)
 npm run testMiroir -w miroir-core -- --suites mustache --mode unit \
   --filter '{"mustache.extractDoubleBracePatterns":["should extract patterns with double braces"]}'
+
+# Legacy — env vars (still supported; argv wins when both are set)
+MIROIR_TEST_SUITES=mustache MIROIR_TEST_MODE=unit npm run testMiroir -w miroir-core
+MIROIR_TEST_SUITES=alterObject,EntityPrimaryKey MIROIR_TEST_MODE=unit npm run testMiroir -w miroir-core
+MIROIR_TEST_MODE=unit npm run testMiroir -w miroir-core
 ```
 
 See [Filtering MiroirTest cases](#filtering-miroirtest-cases) for the full model and runner examples.
 
-### Environment variables
+### Environment variables (legacy / CI fallback)
 
 | Variable | Purpose | Default |
 |----------|---------|---------|
@@ -142,7 +150,7 @@ This runs `tests/miroir-core-tests.unit.test.ts` directly with vitest, inheritin
 
 ## Running MiroirTest integration tests (`testMiroir`)
 
-MiroirTest integration runs against a real persistence store. The test application schema and the admin deployment are configured **independently** via `MIROIR_TEST_*` env vars.
+MiroirTest integration runs against a real persistence store. Use a profile and CLI arguments for normal runs; the test application schema and admin deployment can also be configured independently through `MIROIR_TEST_*` environment variables when needed.
 
 ### Vitest entry
 
@@ -188,13 +196,12 @@ See [Integration test profiles](#integration-test-profiles) for the full catalog
 Registry: `packages/miroir-standalone-app/tests/helpers/integrationTestProfiles.ts`  
 Applied by `scripts/test-miroir-runner.ts` and `scripts/test-by-file.ts` via `applyIntegrationTestProfile` **before** Vitest spawn.
 
-Gap D plan (complete): `code-helpers/features/197-FEATURE- run integration tests in the UI/gap-D-refactoring-plan.md`
-
 **Resolution order** (highest wins):
 
-1. Explicit `VITE_MIROIR_*` / `MIROIR_TEST_*` in the environment
-2. `--profile` / `-p` on the `testMiroir` CLI
-3. Built-in defaults inside `IntegrationTestSession` (local dev only; CI should use a profile or explicit env)
+1. **CLI argv** — `--suites` / `--mode` / `--filter` / `--storage` (and `--profile` for presets)
+2. Explicit `VITE_MIROIR_*` / `MIROIR_TEST_*` in the environment (legacy / CI; still overrides profile-derived defaults)
+3. `--profile` / `-p` applied defaults (when env unset)
+4. Built-in defaults inside `IntegrationTestSession` (local dev only; CI should use argv or a profile)
 
 | Profile key | Config JSON | Typical use |
 |-------------|-------------|-------------|
@@ -204,6 +211,10 @@ Gap D plan (complete): `code-helpers/features/197-FEATURE- run integration tests
 | `emulatedServer-mongodb` | `miroirConfig.test-emulatedServer-mongodb.json` | Miroir + library MongoDB |
 | `ci-emulatedServer-host-sql` | `miroirConfig.test-ci-emulatedServer-host-sql.json` | CI — Postgres on host (`host.docker.internal`) |
 | `ci-emulatedServer-dockerized-sql` | `miroirConfig.test-ci-emulatedServer-dockerized-sql.json` | CI — Postgres in Docker network |
+| `realServer-sql` | `miroirConfig.test-realServer-sql.json` | Client REST → live `miroir-server` (Postgres on server) |
+| `realServer-filesystem` | `miroirConfig.test-realServer-filesystem.json` | Client REST → live server (filesystem on server) |
+| `realServer-indexedDb` | `miroirConfig.test-realServer-indexedDb.json` | Client REST → live server (IndexedDB on server) |
+| `realServer-mongodb` | `miroirConfig.test-realServer-mongodb.json` | Client REST → live server (MongoDB on server) |
 
 Transformer session defaults (`MIROIR_TEST_APP_STORE_TYPE`, `MIROIR_TEST_POSTGRES_HOST`, …) are **derived from the profile JSON** (`deriveTestSessionDefaultsFromMiroirConfig`).
 
@@ -386,21 +397,27 @@ Filter rules and common mistakes: [Filtering MiroirTest cases](#filtering-miroir
 
 These are the original standalone-app integration tests: one Vitest file per concern, with test cases defined inline in TypeScript (composite-action trees or direct `it()` blocks). They configure the full Miroir client/server stack via JSON files and are launched with `npm run testByFile`.
 
-### Required environment variables
+### Configuration
 
-Both variables are **mandatory** — `loadTestConfigFiles` throws if either is missing — unless you pass **`--profile`** on `testByFile` (same catalog as `testMiroir`):
+Both variables are **mandatory** — `loadTestConfigFiles` throws if either is missing — unless you pass **`--profile`** or **`--storage`** on `testByFile` (same catalog as `testMiroir`):
 
 ```bash
+# Preferred — argv profile
 npm run testByFile -w miroir-standalone-app -- \
   --profile emulatedServer-sql PersistenceStoreController.integ
+
+# Real-server UI launcher — argv storage (→ realServer-<storage>)
+npm run testByFile -w miroir-standalone-app -- \
+  --storage sql uiIntegrationTestLauncher.realServer.integ
 ```
 
 | Variable | Purpose |
 |----------|---------|
 | `VITE_MIROIR_TEST_CONFIG_FILENAME` | Path to a `miroirConfig.test-*.json` file (must have `.json` extension) |
 | `VITE_MIROIR_LOG_CONFIG_FILENAME` | Path to a `specificLoggersConfig_*.json` file |
+| `MIROIR_TEST_STORAGE` | Set by `testByFile` when `--storage` / `--profile realServer-*` is used (Vitest child reads this after flags are stripped) |
 
-`npm run testByFile` sets `VITE_TEST_MODE=true` automatically. Explicit `VITE_MIROIR_*` still override `--profile` defaults.
+`npm run testByFile` sets `VITE_TEST_MODE=true` automatically. Explicit `VITE_MIROIR_*` still override `--profile` defaults (legacy); prefer argv going forward.
 
 For **real-server** configs (`miroirConfig.test-realServer-*.json`), the dev server must be running at `https://localhost:3080` and Node must trust the mkcert CA:
 
@@ -424,6 +441,7 @@ All configs live in `packages/miroir-standalone-app/tests/`.
 | `miroirConfig.test-realServer-sql.json` | Real HTTPS server | Postgres via running `miroir-server` |
 | `miroirConfig.test-realServer-filesystem.json` | Real HTTPS server | Filesystem via running server |
 | `miroirConfig.test-realServer-indexedDb.json` | Real HTTPS server | IndexedDB via running server |
+| `miroirConfig.test-realServer-mongodb.json` | Real HTTPS server | MongoDB via running server |
 | `miroirConfig.test-ci-emulatedServer-*.json` | CI presets | Host-specific connection strings |
 
 Before first run, check `filesystemDeploymentRootDirectory` inside the chosen config — it must point at your local `packages/` directory (paths in the checked-in files are developer-specific).
@@ -457,16 +475,44 @@ The final argument is a Vitest file-name filter (not a suite key). Examples:
 | `PersistenceStoreController.integ` | PSC low-level store tests |
 | `ExtractorPersistenceStoreRunner.integ` | Extractor runner against live store |
 | `ExtractorTemplatePersistenceStoreRunner.integ` | Extractor template runner |
+| `uiIntegrationTestLauncher.integ` | Node proof of the UI launcher with emulated SQL |
+| `uiIntegrationTestLauncher.realServer.integ` | Node proof of the UI launcher against live `miroir-server` (`--storage` / `--profile realServer-*`) |
 | `Runner_Miroir.integ` | Legacy runner integration (prefer `testMiroir` runner entry) |
-| `Runner_Library.integ` | ??? TODO ???? Legacy runner integration (prefer `testMiroir` runner entry) |
+| `Runner_Library.integ` | Legacy runner integration (prefer the `testMiroir` runner entry) |
 | `ReportPage.integ` | Report view React smoke tests |
 | `BlobEditorField.integ` | Blob editor component tests (no store required) |
 
 ### Test catalogue
 
+#### UI launcher Node proofs (`tests/helpers/`)
+
+These exercise the same in-process launcher used by the browser UI. They run the `Return Book Test Composite Action` leaf in `runner_library`.
+
+| File | Backend | Launch |
+|------|---------|--------|
+| [`uiIntegrationTestLauncher.integ.test.ts`](../../../packages/miroir-standalone-app/tests/helpers/uiIntegrationTestLauncher.integ.test.ts) | Emulated SQL (`emulatedServer-sql`), pinned runTarget | `npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-sql uiIntegrationTestLauncher.integ` |
+| [`uiIntegrationTestLauncher.realServer.integ.test.ts`](../../../packages/miroir-standalone-app/tests/helpers/uiIntegrationTestLauncher.realServer.integ.test.ts) | Live `miroir-server` — storage via `--storage` / `--profile realServer-*`, ephemeral runTarget | see below |
+
+For the real-server test, `--storage` selects `realServer-<storage>`:
+
+```bash
+# sql | filesystem | indexedDb | mongodb
+npm run testByFile -w miroir-standalone-app -- \
+  --storage sql uiIntegrationTestLauncher.realServer.integ
+
+npm run testByFile -w miroir-standalone-app -- \
+  --storage filesystem uiIntegrationTestLauncher.realServer.integ
+
+# Equivalent profile form
+npm run testByFile -w miroir-standalone-app -- \
+  --profile realServer-indexedDb uiIntegrationTestLauncher.realServer.integ
+```
+
+**Prerequisites:** `miroir-server` at `https://localhost:3080` with the matching store backend reachable; `NODE_EXTRA_CA_CERTS` for mkcert (see [HTTPS setup](../guides/https-setup-developer.md)). Skips when the server is unreachable.
+
 #### DomainController (`tests/3_controllers/`)
 
-Full-stack CRUD through `domainController.handleCompositeAction`, using `DomainControllerIntegrationTestSession` in `beforeAll` and `runTestOrTestSuite` for composite-action test trees.
+Full-stack CRUD coverage for model and data actions.
 
 | File | Focus |
 |------|-------|
@@ -477,26 +523,22 @@ Full-stack CRUD through `domainController.handleCompositeAction`, using `DomainC
 | `DomainController.integ.noParentUuid.CRUD.test.tsx` | Entities without `parentUuid` |
 
 ```bash
-# All DomainController integration tests, emulated server + Postgres
-VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-sql.json \
-VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_DomainController_debug.json \
-npm run testByFile -w miroir-standalone-app -- DomainController.integ
+# Postgres
+npm run testByFile -w miroir-standalone-app -- \
+  --profile emulatedServer-sql DomainController.integ
 
-# Filesystem backend (no Postgres)
-VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-filesystem.json \
-VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_warn.json \
-npm run testByFile -w miroir-standalone-app -- DomainController.integ
+# Filesystem
+npm run testByFile -w miroir-standalone-app -- \
+  --profile emulatedServer-filesystem DomainController.integ
 
-# IndexedDB backend
-VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-indexedDb.json \
-VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_warn.json \
-npm run testByFile -w miroir-standalone-app -- DomainController.integ.Data
+# IndexedDB
+npm run testByFile -w miroir-standalone-app -- \
+  --profile emulatedServer-indexedDb DomainController.integ.Data
 ```
 
 #### Storage layer (`tests/4_storage/`)
 
-Tests persistence below the domain layer — `PersistenceStoreController` directly or extractor runners.
-All three families use **`AppStackIntegrationTestSession`** in `beforeAll` (Gap C slices E / ET / P).
+Tests persistence below the domain layer, including the persistence controller and extractor runners.
 
 | File | Setup | Focus |
 |------|-------|-------|
@@ -505,21 +547,19 @@ All three families use **`AppStackIntegrationTestSession`** in `beforeAll` (Gap 
 | `ExtractorTemplatePersistenceStoreRunner.integ.test.tsx` | `AppStackIntegrationTestSession` | Extractor templates against live store |
 
 ```bash
-VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-sql.json \
-VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_warn.json \
-npm run testByFile -w miroir-standalone-app -- PersistenceStoreController.integ
+npm run testByFile -w miroir-standalone-app -- \
+  --profile emulatedServer-sql PersistenceStoreController.integ
 
-VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-indexedDb.json \
-VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_warn.json \
-npm run testByFile -w miroir-standalone-app -- ExtractorPersistenceStoreRunner.integ
+npm run testByFile -w miroir-standalone-app -- \
+  --profile emulatedServer-indexedDb ExtractorPersistenceStoreRunner.integ
 ```
 
 #### View / React (`tests/4_view/`)
 
 | File | Store / config | Focus |
 |------|----------------|-------|
-| `JzodElementEditor.test.tsx` | In-memory `LocalCache` (see below); optional `VITE_MIROIR_*` / `--profile` for logging parity | **JzodElementEditor** — array, enum, literal, object, union, any editors (Formik + RTL) |
-| `MiroirTestDisplayIntegrationLaunch.integ.test.tsx` | Node emulated SQL via mock env (see below); UI profile `emulatedServer-indexedDb` | **Feature #197 B6-d1** — `MiroirTestDisplay` → Run Integration Tests → inspector (Return Book leaf) |
+| `JzodElementEditor.test.tsx` | In-memory `LocalCache`; `--profile` optional | Jzod editor components |
+| `MiroirTestDisplayIntegrationLaunch.integ.test.tsx` | Node emulated SQL via mocked launcher environment | `MiroirTestDisplay` launches integration and shows the result inspector |
 | `JzodElementEditorReactCodeMirror.test.tsx` | — | CodeMirror sub-editor (currently commented out) |
 | `ReportPage.integ.test.tsx` | Uses shared React test tools | Report rendering smoke tests |
 | `BlobEditorField.integ.test.tsx` | No | Blob field editor component |
@@ -528,98 +568,42 @@ npm run testByFile -w miroir-standalone-app -- ExtractorPersistenceStoreRunner.i
 
 ##### `JzodElementEditor.test.tsx` — component integration suite
 
-Large React component test harness for [`JzodElementEditor`](../../../packages/miroir-standalone-app/src/miroir-fwk/4_view/components/ValueObjectEditor/JzodElementEditor.tsx). This is **not** a DomainController / app-stack bootstrap test: it seeds an in-memory [`LocalCache`](../../../packages/miroir-react) with Miroir meta-model + library fixtures from `miroir-test-app_deployment-library`, wraps the editor in Formik + MUI theme providers, and drives UI with React Testing Library (`userEvent`, `fireEvent`, `waitFor`).
-
-**Key files**
-
-| Path | Role |
-|------|------|
-| `tests/4_view/JzodElementEditor.test.tsx` | Test case definitions (`getJzod*EditorTests`) + suite registry passed to `prepareAndRunTestSuites` |
-| `tests/4_view/JzodElementEditorTestTools.tsx` | `getWrapperLoadingLocalCache`, `runJzodEditorTest`, `prepareAndRunTestSuites`, DOM helpers (`extractValuesFromRenderedElements`, …) |
-
-**Active sub-suites** (67 tests today): `JzodArrayEditor`, `JzodEnumEditor`, `JzodLiteralEditor`, `JzodObjectEditor`, `JzodSimpleTypeEditor`, `JzodUnionEditor`, `JzodAnyEditor`. Additional suites (book instance, entity definition, endpoint, performance) exist in the file but are commented out in the registry.
+This React test harness seeds an in-memory `LocalCache` and exercises the editor through React Testing Library. It does not require an external store.
 
 **Run the full suite**
 
 ```bash
-# Explicit config (recommended — matches other standalone-app integ; DomainController debug logging)
-VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-sql.json \
-VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_DomainController_debug.json \
+# This test needs no external store or profile.
 npm run testByFile -w miroir-standalone-app -- JzodElementEditor.test
 ```
 
 ```bash
-# Profile shorthand (Gap D — same config surface as testMiroir / other testByFile suites)
-npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-sql JzodElementEditor.test
+# One editor sub-suite
+npm run testByFile -w miroir-standalone-app -- \
+  4_view/JzodElementEditor.test.tsx -t "JzodObjectEditor"
 ```
+
+
+##### `MiroirTestDisplayIntegrationLaunch.integ.test.tsx` — UI integration launch
+
+RTL coverage for the **Run Integration Tests** button and its success inspector. It runs the `Return Book Test Composite Action` leaf in `runner.library`.
 
 ```bash
-# Minimal — no profile env (works today; harness uses in-memory LocalCache only)
-npm run testByFile -w miroir-standalone-app -- JzodElementEditor.test
+npm run testByFile -w miroir-standalone-app -- \
+  --profile emulatedServer-sql MiroirTestDisplayIntegrationLaunch.integ
 ```
 
-Expect ~60–80s for all 67 tests (single-threaded Vitest pool). `testByFile` sets `VITE_TEST_MODE=true` and uses `--poolOptions.forks.singleFork`.
-
-**Filter to one editor sub-suite**
-
-Use the full Vitest path so the filename filter does not match other test files:
-
-```bash
-npm run testByFile -w miroir-standalone-app -- 4_view/JzodElementEditor.test.tsx -t "JzodObjectEditor"
-```
-
-Vitest test names follow `{EditorName} - jzodElementEditor - {case label}` (see `prepareAndRunTestSuites` in `JzodElementEditorTestTools.tsx`).
-
-**Prerequisites**
-
-```bash
-npm run devBuild -w miroir-core
-npm run devBuild -w miroir-test-app_deployment-library
-```
-
-No Postgres or emulated server is required for the current harness (unlike `DomainController.integ.*` or `PersistenceStoreController.integ`). Setting `VITE_MIROIR_*` or `--profile` is optional for execution but recommended when aligning logging and config with other integration tests.
-
-**Relation to Feature #197 Phase B:** These component tests validate the schema-editing UI that transformer / runner integ suites depend on indirectly. They are a **pre-B7 baseline** — run green before extending UI integration coverage to transformer suites.
-
-##### `MiroirTestDisplayIntegrationLaunch.integ.test.tsx` — UI integration launch (B6-d1)
-
-RTL proof that the **Miroir Tests** report can launch domainController-based integration from [`MiroirTestDisplay`](../../../packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Reports/MiroirTestDisplay.tsx): enabled **Run Integration Tests** button → in-process launcher → **Integration Test Inspector** with `success: true`.
-
-**Scope (D13):** single leaf — `Return Book Test Composite Action` on suite `runner.library` (registry key `runner_library`), same leaf as [`uiIntegrationTestLauncher.integ.test.ts`](../../../packages/miroir-standalone-app/tests/helpers/uiIntegrationTestLauncher.integ.test.ts).
-
-**Key files**
-
-| Path | Role |
-|------|------|
-| `tests/4_view/MiroirTestDisplayIntegrationLaunch.integ.test.tsx` | RTL harness: `MiroirContextReactProvider`, click integration button, assert inspector |
-| `tests/helpers/miroirTestDisplayIntegrationLaunchMocks.ts` | `vi.mock` for Node SQL launcher env, Return Book filter, `TestExecutionPanel` stub (avoids GlideDataGrid unmount in happy-dom) |
-
-**Run**
-
-```bash
-VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-sql.json \
-VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_DomainController_debug.json \
-npm run testByFile -w miroir-standalone-app -- MiroirTestDisplayIntegrationLaunch.integ
-```
-
-Expect ~20–40s (Postgres emulated stack). The UI picker profile stays **`emulatedServer-indexedDb`** (browser-launchable); Vitest mocks `loadBrowserUiIntegrationTestLauncherEnvironment` to the Node SQL backend for reliable proof depth — same pattern documented for B6-d in [phase-b-ui-launcher-plan.md](../../code-helpers/features/197-FEATURE-%20run%20integration%20tests%20in%20the%20UI/phase-b-ui-launcher-plan.md).
-
-**Prerequisites:** Postgres reachable at the connection string in `miroirConfig.test-emulatedServer-sql.json` (same as other SQL integ suites). Store section startups in `beforeAll` match `uiIntegrationTestLauncher.integ.test.ts`.
-
-**Proof tiers (#197):** T0/T1 (unit + Node launcher) are necessary but not sufficient; this file is mandatory **T2** before B6 manual webApp smoke (B6-d2) and real-server path (B6-c).
-
-```bash
-npm run testByFile -w miroir-standalone-app -- BlobEditorField.integ
-npm run testByFile -w miroir-standalone-app -- ReportPage.integ
-```
+The browser profile remains **`emulatedServer-indexedDb`**; this Vitest test uses a mocked Node SQL launcher environment.
 
 ---
 
-## Integration test sessions and bootstrap
+## Advanced implementation notes
 
-All MiroirTest and app-stack integration paths that share the emulated client/server stack delegate
-to **`runAppStackIntegrationBootstrap`** (`tests/helpers/appStackIntegrationBootstrap.ts`) with an
-explicit phase list. Phase names are defined in `miroir-core` (`IntegrationTestBootstrap.ts`).
+This section is for people extending test infrastructure. It is not required to run the test suites above.
+
+### Integration test sessions and bootstrap
+
+App-stack integration paths use **`runAppStackIntegrationBootstrap`** (`tests/helpers/appStackIntegrationBootstrap.ts`) with an explicit phase list. Phase names are defined in `miroir-core` (`IntegrationTestBootstrap.ts`).
 
 | Phase | Effect |
 |-------|--------|
@@ -639,7 +623,7 @@ explicit phase list. Phase names are defined in `miroir-core` (`IntegrationTestB
 
 `describeSession(kind)` (or `describeIntegrationTestSession(kind, profile)` for
 `domainController`) returns `{ kind, bootstrapPhases, playfield, defaultHostMode, embeddedCapable }`.
-The UI test launcher (#197) uses this metadata for the integration-test inspector (bootstrap
+The UI test launcher uses this metadata for the integration-test inspector (bootstrap
 phases, playfield, `embeddedCapable`) and to decide whether embedded host attachment is offered.
 Default UI integ runs use `hostMode: "isolated"` (data-isolated in-process bootstrap).
 
@@ -652,26 +636,26 @@ Default UI integ runs use `hostMode: "isolated"` (data-isolated in-process boots
 
 Model.CRUD may pass `skipResetMiroirModelInInit: true` so reset runs only in `beforeEach`.
 
-### Host modes (Gap A)
+### Host modes
 
 | `IntegrationTestHostMode` | When | Bootstrap behaviour |
 |---------------------------|------|---------------------|
 | **`isolated`** | CLI / Vitest (default) | Full `wireEmulatedStack` + phased deploy via `ensureMiroirPlatform` / `ensureLibraryPlayfield` |
 | **`embedded`** | Live UI host (advanced) | Inject `hostExecutionEnvironment`; skip `setupMiroirTest` and destructive deploy when `requireExisting` |
 
-#197 Phase B runs domainController-based integ from the **Miroir Tests** report UI with data isolation (`hostMode: "isolated"`, ephemeral `runTarget`, dedicated activity tracker). See [plan.md](../../code-helpers/features/197-FEATURE-%20run%20integration%20tests%20in%20the%20UI/plan.md) and [phase-b-ui-launcher-plan.md](../../code-helpers/features/197-FEATURE-%20run%20integration%20tests%20in%20the%20UI/phase-b-ui-launcher-plan.md).
+The Miroir Tests report runs data-isolated integration sessions with `hostMode: "isolated"`, an ephemeral run target, and a dedicated activity tracker.
 
-#### UI integration — store backends (Gap F)
+#### UI integration — store backends
 
 | Transport | Profile example | Where it runs | Notes |
 |-----------|-----------------|---------------|-------|
 | **Browser emulated IndexedDB** | `emulatedServer-indexedDb` | In-browser launcher (default) | Only emulated backend with native PSC in the browser. Bundled config is **`miroirConfig.browser-emulatedServer-indexedDb.json`** (all sections IndexedDB + placeholder `filesystemDeploymentRootDirectory` for `setupMiroirTest`). The Vitest file `miroirConfig.test-emulatedServer-indexedDb.json` still uses filesystem admin and is **CLI-only**. **No HTTPS to `miroir-server`** for this profile — network noise may be Vite loading modules. |
 | **CLI emulated** | `emulatedServer-sql`, `-filesystem`, `-mongodb` | `testMiroir` / `testByFile` (Node) | Postgres/filesystem/Mongo drivers register in Vitest `beforeAll` |
-| **Real server** | `realServer-sql`, `-indexedDb`, `-filesystem` | Browser client → `https://localhost:3080` | Requires running `miroir-server`; B6-c |
+| **Real server** | `realServer-sql`, `-indexedDb`, `-filesystem`, `-mongodb` | Browser client → `https://localhost:3080` (also Node proof via `uiIntegrationTestLauncher.realServer.integ`) | Requires running `miroir-server`. Select backend with `--storage` or `--profile realServer-*`. |
 
-Bundling `emulatedServer-sql` JSON into the UI does **not** enable SQL integ in the browser. Proof of the **Run Integration Tests** button is **`MiroirTestDisplayIntegrationLaunch.integ.test.tsx`** (B6-d1 ✅ — RTL click path + inspector); Vitest uses Node emulated SQL via mocks while the UI profile remains `emulatedServer-indexedDb`. See [§ MiroirTestDisplayIntegrationLaunch](#miroirtestdisplayintegrationlaunchintegtesttsx--ui-integration-launch-b6-d1). Companion launcher test: [`uiIntegrationTestLauncher.integ.test.ts`](../../packages/miroir-standalone-app/tests/helpers/uiIntegrationTestLauncher.integ.test.ts).
+Bundling `emulatedServer-sql` JSON into the UI does **not** enable SQL integration in the browser. `MiroirTestDisplayIntegrationLaunch.integ.test.tsx` verifies the Run Integration Tests button through an RTL click path and inspector; it uses a mocked Node SQL launcher environment while the browser UI profile remains `emulatedServer-indexedDb`. The companion launcher test is [`uiIntegrationTestLauncher.integ.test.ts`](../../packages/miroir-standalone-app/tests/helpers/uiIntegrationTestLauncher.integ.test.ts).
 
-Embedded mode attaches to a running host without re-deploying meta-model stores (advanced, optional B8).
+Embedded mode attaches to a running host without re-deploying meta-model stores.
 
 | Session kind | `embeddedCapable` | Notes |
 |--------------|-------------------|-------|
@@ -706,8 +690,7 @@ bootstrap. Use `requireExisting` with `hostMode: "embedded"` when the UI host al
 
 Orchestrator context (`IntegrationTestOrchestratorContext.playfieldMode`) forwards to session
 bootstrap as `libraryPlayfieldEnsureMode`. Use `requireExisting` with embedded host mode when the
-host already deployed the library. See
-[integ-test-setup-gaps.md](../../code-helpers/features/197-FEATURE-%20run%20integration%20tests%20in%20the%20UI/integ-test-setup-gaps.md).
+host already deployed the library.
 
 Shared seed constants for standalone-app tests:
 `packages/miroir-standalone-app/tests/helpers/libraryPlayfieldSeeds.ts`
@@ -736,7 +719,7 @@ const session = orchestrator.createSession("runner", {
   playfieldMode: "createIfAbsent",
 });
 
-// Embedded live UI host (advanced — #197 Phase B)
+// Embedded live UI host
 const embeddedSession = orchestrator.createSession("appStackPsc", {
   miroirConfig,
   hostMode: "embedded",
@@ -754,7 +737,7 @@ await session.initSession();
 `describeIntegrationTestSession`. For `domainController`, pass the profile to
 `describeIntegrationTestSession(kind, profile)` directly.
 
-**Orchestrator context fields (Gap A + Gap B):**
+**Orchestrator context fields:**
 
 | Field | Purpose |
 |-------|---------|
@@ -773,9 +756,9 @@ wrappers (used by characterization unit tests) but are **deprecated** — prefer
 
 ---
 
-## Architecture: comparing integration paths
+### Architecture: comparing integration paths
 
-### MiroirTest path (`testMiroir` → `miroir-core-tests.integ.test.ts`)
+#### MiroirTest path (`testMiroir` → `miroir-core-tests.integ.test.ts`)
 
 ```
 npm run testMiroir -w miroir-standalone-app
@@ -795,7 +778,7 @@ npm run testMiroir -w miroir-standalone-app
 
 **Characteristics:** env-var configuration; no emulated HTTP server; tests defined as `MiroirTest` JSON entities; `IntegrationTestSession` owns store lifecycle; pre-flight validation with usage output.
 
-### App-stack path (`testByFile` → `DomainController.integ.*.test.tsx`)
+#### App-stack path (`testByFile` → `DomainController.integ.*.test.tsx`)
 
 ```
 npm run testByFile -w miroir-standalone-app -- DomainController.integ.Data
@@ -816,7 +799,7 @@ npm run testByFile -w miroir-standalone-app -- DomainController.integ.Data
 
 **Characteristics:** JSON config files (`miroirConfig.test-*.json`); full client/server stack with optional `RestClientStub` emulated HTTPS; tests defined inline as `TestCompositeActionParams` records; per-file `beforeAll`/`afterAll`; no `MIROIR_TEST_*` validation layer.
 
-### Side-by-side comparison
+#### Side-by-side comparison
 
 | | MiroirTest (`testMiroir`) | App-stack (`testByFile`) |
 |--|--------------------------|--------------------------|
@@ -832,7 +815,7 @@ npm run testByFile -w miroir-standalone-app -- DomainController.integ.Data
 
 Both paths ultimately drive actions through `domainController`, but the MiroirTest path bypasses the HTTP/RestClient layer and reads test cases from deployment assets, while the app-stack path exercises the same code paths the standalone UI uses (including emulated server routing).
 
-### Unit tests (miroir-core)
+#### Unit tests (miroir-core)
 
 ```
 npm run testMiroir -w miroir-core
@@ -844,9 +827,9 @@ npm run testMiroir -w miroir-core
 
 ---
 
-## Key source files
+### Key source files
 
-### miroir-core
+#### miroir-core
 
 | File | Role |
 |------|------|
@@ -862,7 +845,7 @@ npm run testMiroir -w miroir-core
 | `tests/miroir-core-tests.unit.test.ts` | Vitest unit entry |
 | `scripts/test-miroir-core.ts` | `testMiroir` launcher for unit tests |
 
-### miroir-standalone-app
+#### miroir-standalone-app
 
 | File | Role |
 |------|------|
@@ -882,7 +865,7 @@ npm run testMiroir -w miroir-core
 | `tests/miroirConfig.test-*.json` | App-stack store/backend presets |
 | `scripts/test-miroir-runner.ts` | `testMiroir` launcher — routes core vs runner integ |
 
-### App-stack integration test files
+#### App-stack integration test files
 
 | Path | Role |
 |------|------|
@@ -893,7 +876,7 @@ npm run testMiroir -w miroir-core
 | `tests/4_view/ReportPage.integ.test.tsx` | Report view React tests |
 | `tests/4_view/BlobEditorField.integ.test.tsx` | Blob editor component tests |
 
-### miroir-test-app_deployment-miroir
+#### miroir-test-app_deployment-miroir
 
 | Path | Role |
 |------|------|
@@ -902,7 +885,7 @@ npm run testMiroir -w miroir-core
 
 ---
 
-## `IntegrationTestSession`: programmatic API
+### `IntegrationTestSession`: programmatic API
 
 ```typescript
 import {
@@ -933,7 +916,7 @@ const executionEnvironment = await session.initSession();
 await session.teardown();
 ```
 
-### `IntegrationTestSession` lifecycle
+#### `IntegrationTestSession` lifecycle
 
 | Method | Called by | Effect |
 |--------|-----------|--------|
@@ -941,13 +924,13 @@ await session.teardown();
 | `beforeEach()` | vitest `beforeEach` hook | Re-run `resetModel → initModel → createEntity → createInstance` |
 | `teardown()` | vitest `afterAll` hook | Delete test schemas, close store |
 
-### Deprecated aliases
+#### Deprecated aliases
 
 `IntegrationTestSessionForPostgres` is kept as thin wrappers over `IntegrationTestSession` for backward compatibility and will be removed in a future release.
 
 ---
 
-## Adding a new suite
+### Adding a new suite
 
 1. Create a `MiroirTestDefinition` JSON in `assets/miroir_data/a311f363-…/<uuid>.json`.
 2. Export it from `packages/miroir-test-app_deployment-miroir/index.ts`:
@@ -1038,7 +1021,7 @@ npm run testMiroir -w miroir-core -- --suites mustache --mode unit \
   --filter '{"mustache.extractDoubleBracePatterns":["should extract patterns with double braces"]}'
 ```
 
-#### 5. Env var instead of argv
+#### 5. Legacy environment-variable form
 
 ```bash
 MIROIR_TEST_FILTER='{"runner.library":["Return Book Test Composite Action"]}' \
@@ -1100,9 +1083,20 @@ Checks performed:
 1. Start the app: `npm run dev -w miroir-standalone-app`.
 2. Navigate to **Miroir Tests** in the menu.
 3. The list report shows all registered suites; click to open details.
-4. **Run suite** executes in unit mode via `MiroirTestTools` — no Postgres required.
+4. **Run suite** executes unit tests via `MiroirTestTools` — no external store required.
+5. **Run Integration Tests** is available for supported runner suites. Choose a profile and an ephemeral or pinned run target in the integration run settings.
 
-Integration mode is not available in the UI (it requires an active store session and is run CLI-only).
+Browser-supported profiles:
+
+| Profile | Store location |
+|---------|----------------|
+| `emulatedServer-indexedDb` | Browser IndexedDB |
+| `realServer-sql` | Postgres behind `miroir-server` |
+| `realServer-filesystem` | Filesystem behind `miroir-server` |
+| `realServer-indexedDb` | IndexedDB behind `miroir-server` |
+| `realServer-mongodb` | MongoDB behind `miroir-server` |
+
+Real-server profiles require a reachable `miroir-server` and the selected backend to be configured on that server. The browser is REST-only for these profiles; it does not need the server's store driver.
 
 ---
 
@@ -1125,4 +1119,3 @@ npm run build -w miroir-react
 
 - [Contributing: testing guidelines](../contributing/testing.md) — commands for contributors
 - [Developer guide: testing](../guides/developer/testing.md) — context and concepts
-- Feature plans: `code-helpers/features/196-FEATURE-migrate-tests-to-MiroirTest/plan.md`, `code-helpers/features/197-FEATURE-run-integration-tests-in-the-UI/plan.md`

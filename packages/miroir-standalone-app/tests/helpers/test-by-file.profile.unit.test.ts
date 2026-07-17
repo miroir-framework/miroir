@@ -9,6 +9,7 @@ const ENV_KEYS = [
   "VITE_MIROIR_TEST_CONFIG_FILENAME",
   "VITE_MIROIR_LOG_CONFIG_FILENAME",
   "VITE_TEST_MODE",
+  "MIROIR_TEST_STORAGE",
 ] as const;
 
 describe("testByFileLauncher profile (Gap D5)", () => {
@@ -31,7 +32,7 @@ describe("testByFileLauncher profile (Gap D5)", () => {
     }
   });
 
-  it("stripProfileArgs removes --profile and value from argv", () => {
+  it("stripProfileArgs removes --profile / --storage and values from argv", () => {
     expect(
       stripProfileArgs([
         "--profile",
@@ -40,6 +41,14 @@ describe("testByFileLauncher profile (Gap D5)", () => {
       ]),
     ).toEqual(["PersistenceStoreController.integ"]);
     expect(stripProfileArgs(["-p", "emulatedServer-filesystem", "--bail=1"])).toEqual(["--bail=1"]);
+    expect(
+      stripProfileArgs([
+        "--storage",
+        "sql",
+        "uiIntegrationTestLauncher.realServer.integ",
+      ]),
+    ).toEqual(["uiIntegrationTestLauncher.realServer.integ"]);
+    expect(stripProfileArgs(["-S", "mongodb", "--bail=1"])).toEqual(["--bail=1"]);
   });
 
   it("--profile emulatedServer-sql sets VITE_* on spawn env", () => {
@@ -55,6 +64,48 @@ describe("testByFileLauncher profile (Gap D5)", () => {
       "miroirConfig.test-emulatedServer-sql.json",
     );
     expect(spawnEnv.VITE_MIROIR_LOG_CONFIG_FILENAME).toContain("specificLoggersConfig");
+  });
+
+  it("--storage sql applies realServer-sql profile and sets MIROIR_TEST_STORAGE", () => {
+    const { vitestArgs, spawnEnv } = prepareTestByFileLaunch(process.env, [
+      "--storage",
+      "sql",
+      "uiIntegrationTestLauncher.realServer.integ",
+    ]);
+
+    expect(vitestArgs).toEqual(["uiIntegrationTestLauncher.realServer.integ"]);
+    expect(spawnEnv.MIROIR_TEST_STORAGE).toBe("sql");
+    expect(spawnEnv.VITE_MIROIR_TEST_CONFIG_FILENAME).toContain(
+      "miroirConfig.test-realServer-sql.json",
+    );
+  });
+
+  it("--profile realServer-filesystem sets MIROIR_TEST_STORAGE from profile name", () => {
+    const { spawnEnv } = prepareTestByFileLaunch(process.env, [
+      "--profile",
+      "realServer-filesystem",
+      "uiIntegrationTestLauncher.realServer.integ",
+    ]);
+
+    expect(spawnEnv.MIROIR_TEST_STORAGE).toBe("filesystem");
+    expect(spawnEnv.VITE_MIROIR_TEST_CONFIG_FILENAME).toContain(
+      "miroirConfig.test-realServer-filesystem.json",
+    );
+  });
+
+  it("--profile wins over --storage", () => {
+    const { spawnEnv } = prepareTestByFileLaunch(process.env, [
+      "--storage",
+      "mongodb",
+      "--profile",
+      "realServer-sql",
+      "uiIntegrationTestLauncher.realServer.integ",
+    ]);
+
+    expect(spawnEnv.MIROIR_TEST_STORAGE).toBe("sql");
+    expect(spawnEnv.VITE_MIROIR_TEST_CONFIG_FILENAME).toContain(
+      "miroirConfig.test-realServer-sql.json",
+    );
   });
 
   it("without profile does not set VITE_MIROIR_*", () => {

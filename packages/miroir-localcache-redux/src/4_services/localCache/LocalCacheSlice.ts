@@ -262,23 +262,23 @@ function initializeLocalCacheSliceStateWithEntityAdapter(
   state: LocalCacheSliceState
 ) {
   // TODO: refactor so as to avoid side effects!
-  log.info(
-    "initializeLocalCacheSliceStateWithEntityAdapter called for deploymentUuid",
-    deploymentUuid,
-    "section",
-    section,
-    "entityUuid",
-    entityUuid,
-    "zone",
-    zone,
-    // "state",
-    // state
-  );
+  // log.info(
+  //   "initializeLocalCacheSliceStateWithEntityAdapter called for deploymentUuid",
+  //   deploymentUuid,
+  //   "section",
+  //   section,
+  //   "entityUuid",
+  //   entityUuid,
+  //   "zone",
+  //   zone,
+  //   // "state",
+  //   // state
+  // );
   const entityInstancesLocationIndex = getReduxDeploymentsStateIndex(deploymentUuid, section, entityUuid);
-  log.info(
-    "initializeLocalCacheSliceStateWithEntityAdapter got entityInstancesLocationIndex",
-    entityInstancesLocationIndex
-  );
+  // log.info(
+  //   "initializeLocalCacheSliceStateWithEntityAdapter got entityInstancesLocationIndex",
+  //   entityInstancesLocationIndex
+  // );
   const currentAdapter = getOrCreateEntityAdapter(entityInstancesLocationIndex);
   if (!(state as any)[zone][entityInstancesLocationIndex]) {
     (state as any)[zone][entityInstancesLocationIndex] = currentAdapter.getInitialState();
@@ -358,12 +358,12 @@ function loadNewEntityInstancesInLocalCache(
       : i
   );
 
-  log.info(
-    "loadNewEntityInstancesInLocalCache loading instances",
-    deploymentUuid,
-    section,
-    JSON.stringify(serializableInstances[0])
-  );
+  // log.info(
+  //   "loadNewEntityInstancesInLocalCache loading instances",
+  //   deploymentUuid,
+  //   section,
+  //   JSON.stringify(serializableInstances[0])
+  // );
 
   (state as any).loading[instanceCollectionEntityIndex] = sliceEntityAdapter.setAll(
     (state as any).loading[instanceCollectionEntityIndex],

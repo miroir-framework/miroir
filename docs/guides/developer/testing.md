@@ -50,22 +50,20 @@ Field naming uses `miroirTestType`, `miroirTestLabel`, `miroirTests`.
 
 ## Running unit tests (CLI)
 
+**Prefer argv** over env vars (see [Parameter surface](../../reference/testing.md#parameter-surface-argv-preferred)):
+
 ```bash
-# Single suite
-MIROIR_TEST_SUITES=mustache MIROIR_TEST_MODE=unit npm run testMiroir -w miroir-core
-
-# Multiple suites
-MIROIR_TEST_SUITES=alterObject,EntityPrimaryKey MIROIR_TEST_MODE=unit npm run testMiroir -w miroir-core
-
-# All suites
-MIROIR_TEST_MODE=unit npm run testMiroir -w miroir-core
-
-# Argv form
+# Preferred — argv
 npm run testMiroir -w miroir-core -- --suites mustache --mode unit
 
 # Filter to specific test labels
 npm run testMiroir -w miroir-core -- --suites mustache --mode unit \
   --filter '{"mustache.extractDoubleBracePatterns":["should extract patterns with double braces"]}'
+
+# Legacy — env (still supported; argv wins when both are set)
+MIROIR_TEST_SUITES=mustache MIROIR_TEST_MODE=unit npm run testMiroir -w miroir-core
+MIROIR_TEST_SUITES=alterObject,EntityPrimaryKey MIROIR_TEST_MODE=unit npm run testMiroir -w miroir-core
+MIROIR_TEST_MODE=unit npm run testMiroir -w miroir-core
 ```
 
 See [Filtering MiroirTest cases](../../reference/testing.md#filtering-miroirtest-cases) for the full filter model (registry key vs `miroirTestLabel`, runner examples).
@@ -82,15 +80,18 @@ See [Filtering MiroirTest cases](../../reference/testing.md#filtering-miroirtest
 
 ## Running MiroirTest integration tests (CLI)
 
-MiroirTest integration runs in `miroir-standalone-app` via `testMiroir`. The test application store and admin store are configured independently with `MIROIR_TEST_*`:
+MiroirTest integration runs in `miroir-standalone-app` via `testMiroir`. Prefer **`--profile`** (and other argv flags); `MIROIR_TEST_*` env remains a legacy / CI fallback:
 
 ```bash
-# Default: sql test app + filesystem admin
+# Preferred
+npm run testMiroir -w miroir-standalone-app -- \
+  --profile emulatedServer-sql --suites miroirCoreTransformers --mode integ
+
+# Legacy — explicit env
 MIROIR_TEST_SUITES=miroirCoreTransformers MIROIR_TEST_MODE=integ \
   MIROIR_TEST_POSTGRES_HOST=localhost \
   npm run testMiroir -w miroir-standalone-app
 
-# Filesystem app store (no Postgres)
 MIROIR_TEST_SUITES=miroirCoreTransformers MIROIR_TEST_MODE=integ \
   MIROIR_TEST_APP_STORE_TYPE=filesystem \
   MIROIR_TEST_APP_FILESYSTEM_ROOT=/tmp/miroir-test \
@@ -117,15 +118,24 @@ Details: [Filtering MiroirTest cases](../../reference/testing.md#filtering-miroi
 
 ## Running app-stack integration tests (CLI)
 
-DomainController, persistence-store, and extractor tests are **per-file Vitest suites** launched with `testByFile`. They require two env vars pointing at JSON config files:
+DomainController, persistence-store, extractor, and UI-launcher Node proofs are **per-file Vitest suites** launched with `testByFile`. Prefer **`--profile`** / **`--storage`**; `VITE_MIROIR_*` env remains a legacy fallback:
 
 ```bash
+# Preferred
+npm run testByFile -w miroir-standalone-app -- \
+  --profile emulatedServer-sql DomainController.integ.Data
+
+# UI launcher against live miroir-server (B6-c C4) — storage via --storage
+npm run testByFile -w miroir-standalone-app -- \
+  --storage sql uiIntegrationTestLauncher.realServer.integ
+
+# Legacy — explicit env
 VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-sql.json \
 VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_DomainController_debug.json \
 npm run testByFile -w miroir-standalone-app -- DomainController.integ.Data
 ```
 
-Swap the config file to exercise filesystem, IndexedDB, or MongoDB backends (`miroirConfig.test-emulatedServer-filesystem.json`, etc.). The final argument is a Vitest filename filter.
+Swap the profile / config file to exercise filesystem, IndexedDB, or MongoDB backends. The final argument is a Vitest filename filter. Full catalogue: [reference/testing.md](../../reference/testing.md#running-app-stack-integration-tests-testbyfile).
 
 Common filters: `DomainController.integ`, `PersistenceStoreController.integ`, `ExtractorPersistenceStoreRunner.integ`, `ReportPage.integ`, `BlobEditorField.integ`, `JzodElementEditor.test`, `MiroirTestDisplayIntegrationLaunch.integ`.
 

@@ -402,15 +402,19 @@ Manual webApp smoke on `emulatedServer-indexedDb` + ephemeral runTarget:
 | **C1** | ✅ | `runRealServerClientBootstrap` + `RunnerTestSession` branch (`emulateServer: false`, `platformEnsureMode: "skip"`) |
 | **C2** | ✅ | `assertMiroirServerReachable(rootApiUrl)` before real-server run; snackbar via thrown `MiroirServerUnreachableError` on Run button |
 | **C3** | ✅ | Bundled `miroirConfig.browser-realServer-sql.json`; `realServer-sql` launchable in webApp picker |
-| **C4** | ✅ file + skip-if-down | `uiIntegrationTestLauncher.realServer.integ.test.ts` — live server, ephemeral, Return Book leaf |
+| **C4** | ✅ file + skip-if-down | `uiIntegrationTestLauncher.realServer.integ.test.ts` — live server, ephemeral, Return Book leaf; `--storage sql\|filesystem\|indexedDb\|mongodb` (or `--profile realServer-*`) |
 | **C5** | Manual T3 | webApp smoke: `realServer-sql` against **same** localhost server; confirm live library session unchanged |
 
 **Verify (C4):**
 
 ```bash
-# miroir-server running at https://localhost:3080
-VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-realServer-sql.json \
-npm run testByFile -w miroir-standalone-app -- uiIntegrationTestLauncher.realServer.integ
+# miroir-server running at https://localhost:3080 — prefer argv (env is legacy)
+npm run testByFile -w miroir-standalone-app -- \
+  --storage sql uiIntegrationTestLauncher.realServer.integ
+
+# Equivalent profile form
+npm run testByFile -w miroir-standalone-app -- \
+  --profile realServer-filesystem uiIntegrationTestLauncher.realServer.integ
 ```
 
 Close gaps G-UI-1 … G-UI-7 (§5.3).
