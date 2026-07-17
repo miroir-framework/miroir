@@ -48,21 +48,18 @@ export function testBuildPlusRuntimeCompositeActionSuiteForRunner(
   //     "Runner_CreateEntity.integ.test: testRunnerActions only supports customRunner type",
   //   );
   // }
-  const actionTemplateWithoutTemplates =
+  const actionTemplateWithoutTemplates: CompositeActionTemplate =
     runner.definition.runnerType === "customRunner"
       ? {
           ...runner.definition.compositeActionSequence,
           payload: { ...runner.definition.compositeActionSequence.payload },
         }
       : {
-          // actionType: "lendDocument",
-          // endpoint: "212f2784-5b68-43b2-8ee0-89b1c6fdd0de",
-          // payload: {
             transformerType: "getFromParameters",
             interpolation: "build",
             referencePath: [runner.name],
-          // } as any, // TODO: fix type!!
-        };
+        } as any // TODO: fix type!!
+      ;
 
   if (runner.definition.runnerType === "customRunner") {
     delete (actionTemplateWithoutTemplates as any).payload.templates;
@@ -183,8 +180,8 @@ export function testBuildPlusRuntimeCompositeActionSuiteForRunner(
                         },
                       },
                     ]),
-                ...((preRunnerCompositeActions ?? []) as any[]),
-                actionTemplateWithoutTemplates as any,
+                ...(preRunnerCompositeActions ?? []),
+                actionTemplateWithoutTemplates as any, // TODO: fix type!!
                 {
                   actionType: "commit",
                   actionLabel: "commitLibraryLocalCache",
