@@ -196,7 +196,7 @@ cd packages/miroir-standalone-app && npx vitest run tests/4_view/RunAllMiroirTes
 
 ---
 
-### T3 — List display dual bar (unit / RTL light)
+### T3 — List display dual bar (unit / RTL light) ✅
 
 **Red**
 
@@ -210,7 +210,7 @@ cd packages/miroir-standalone-app && npx vitest run tests/4_view/RunAllMiroirTes
 
 - Wire aggregate classifier + prefs + buttons in `MiroirTestListDisplay`.
 
-**Verify**
+**Verify** ✅
 
 ```bash
 cd packages/miroir-standalone-app && npx vitest run tests/4_view/MiroirTestListDisplay.unit.test.tsx
