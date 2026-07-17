@@ -44,6 +44,12 @@ describe('miroirTestSuiteUiExecution (B5)', () => {
     ).toBe('mixed');
   });
 
+  it('classifies EntityPrimaryKey as unit-only UI mode', () => {
+    expect(
+      resolveMiroirTestSuiteUiExecutionMode(suiteDefinition(miroirTest_EntityPrimaryKey)),
+    ).toBe('unit');
+  });
+
   it('marks runner_library instance as UI integration supported (not miroirTestLabel alone)', () => {
     expect(isUiIntegrationRunnerSuiteSupported('runner_library')).toBe(true);
     expect(isUiIntegrationRunnerSuiteSupported('runner.library')).toBe(false);

@@ -220,7 +220,7 @@ cd packages/miroir-standalone-app && npx vitest run tests/4_view/MiroirTestListD
 
 ---
 
-### T4 — Details mixed suite non-regression (unit / existing RTL)
+### T4 — Details mixed suite non-regression (unit / existing RTL) ✅
 
 **Red / Green**
 
@@ -229,16 +229,15 @@ cd packages/miroir-standalone-app && npx vitest run tests/4_view/MiroirTestListD
   - unit-only → unit only
   - `miroirCoreTransformers` → both; integ disabled when profile not launchable
 
-**Verify**
+**Verify** ✅
 
 ```bash
 cd packages/miroir-standalone-app && npx vitest run \
   tests/helpers/miroirTestSuiteUiExecution.unit.test.ts \
-  tests/4_view/MiroirTestDisplayIntegrationLaunch.integ
+  tests/4_view/MiroirTestDisplay.unit.test.tsx
 ```
 
-(Keep B6-d1 runner Return Book as integ smoke; optional second RTL case for transformer details later.)
-
+- B6-d1 `MiroirTestDisplayIntegrationLaunch.integ` still passes its Return Book assertion (pre-existing unhandled `useReportPageContext` noise after teardown may still fail the process exit code).
 - Linter clean on touched details/test files
 
 ---
