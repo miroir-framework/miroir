@@ -2,11 +2,8 @@ import { selfApplicationMiroir } from "miroir-test-app_deployment-miroir";
 
 
 import type {
-  ActionTemplate,
   ApplicationModelBranch,
   ApplicationVersion,
-  BuildPlusRuntimeCompositeAction,
-  CompositeAction,
   CompositeActionTemplate,
   CompositeRunTestAssertion,
   CoreTransformerForBuildPlusRuntime,
@@ -15,12 +12,11 @@ import type {
   MiroirConfigClient,
   Runner,
   StoreUnitConfiguration,
-  TestCompositeActionParams,
+  TestCompositeActionParams
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import {
   createDeploymentCompositeAction,
   resetAndinitializeDeploymentCompositeAction,
-  testUtils_deleteApplicationDeployment,
   testUtils_resetApplicationDeployment
 } from "./Deployment";
 import { defaultMiroirMetaModel } from "./Model";
@@ -41,7 +37,8 @@ export function testBuildPlusRuntimeCompositeActionSuiteForRunner(
   adminDeployment: Deployment,
   testDeploymentStorageConfiguration: StoreUnitConfiguration,
   initialModel: MetaModel | CoreTransformerForBuildPlusRuntime,
-  preRunnerCompositeActions?: ActionTemplate[],
+  // preRunnerCompositeActions?: ActionTemplate[],
+  preRunnerCompositeActions?: CompositeActionTemplate[],
   testCompositeActionLabel?: string,
   skipCreateDeployment?: boolean,
   skipDropDeployment?: boolean,

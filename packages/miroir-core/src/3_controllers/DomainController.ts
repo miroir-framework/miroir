@@ -34,7 +34,6 @@ import { deployment_Miroir } from "miroir-test-app_deployment-admin";
 import {
   ApplicationSection,
   ApplicationVersion,
-  BuildPlusRuntimeCompositeAction,
   CompositeActionSequence,
   CompositeActionTemplate,
   Deployment,
@@ -58,6 +57,7 @@ import {
   TestResult,
   TransactionalInstanceAction,
   UndoRedoAction,
+  type CompositeActionSequenceTemplate,
   type CompositeRunBoxedQueryAction,
   type CompositeRunBoxedQueryTemplateAction,
   type CoreTransformerForBuildPlusRuntime,
@@ -92,6 +92,7 @@ import { cleanLevel } from "./constants";
 // import { Endpoint } from "./Endpoint";
 import { CallUtils } from "./ErrorHandling/CallUtils";
 // import { TestSuiteContext } from '../4_services/TestSuiteContext.js';
+import { defaultApplicationSection } from '../0_interfaces/1_core/Model.js';
 import {
   Action2Error,
   Action2ReturnType,
@@ -112,7 +113,6 @@ import {
   removeUndefinedProperties,
   unNullify,
 } from "../4_services/otherTools.js";
-import { defaultApplicationSection } from '../0_interfaces/1_core/Model.js';
 import { ConfigurationService } from './ConfigurationService.js';
 
 export const templateEvaluationParams = {
@@ -2530,7 +2530,7 @@ export class DomainController implements DomainControllerInterface {
 
   // ##############################################################################################
   async handleRuntimeCompositeActionDO_NOT_USE(
-    buildPlusRuntimeCompositeAction: BuildPlusRuntimeCompositeAction,
+    compositeActionSequenceTemplate: CompositeActionSequenceTemplate,
     applicationDeploymentMap: ApplicationDeploymentMap,
     modelEnvironment: MiroirModelEnvironment,
     actionParamValues: Record<string, any>,
@@ -2540,12 +2540,12 @@ export class DomainController implements DomainControllerInterface {
 
     // log.info(
     //   "handleRuntimeCompositeAction compositeActionSequence",
-    //   JSON.stringify(buildPlusRuntimeCompositeAction, null, 2),
+    //   JSON.stringify(compositeActionSequenceTemplate, null, 2),
     //   "localActionParams keys",
     //   Object.keys(localActionParams),
     // );
 
-    for (const currentAction of buildPlusRuntimeCompositeAction.payload.actionSequence) {
+    for (const currentAction of compositeActionSequenceTemplate.payload.actionSequence) {
       let actionResult: Action2ReturnType | undefined = undefined;
       const currentActionlabel: string | undefined = currentAction.actionLabel
         ? (currentAction as any).actionLabel instanceof String
@@ -2576,7 +2576,6 @@ export class DomainController implements DomainControllerInterface {
             actionResult = await this.handleRuntimeCompositeActionDO_NOT_USE(
               currentAction,
               applicationDeploymentMap,
-              // currentAction as BuildPlusRuntimeCompositeAction,
               modelEnvironment,
               actionParamValues,
             );
@@ -2789,7 +2788,7 @@ export class DomainController implements DomainControllerInterface {
 
   // ##############################################################################################
   async handleBuildPlusRuntimeCompositeAction(
-    buildPlusRuntimeCompositeAction: BuildPlusRuntimeCompositeAction,
+    compositeActionSequenceTemplate: CompositeActionSequenceTemplate,
     applicationDeploymentMap: ApplicationDeploymentMap,
     modelEnvironment: MiroirModelEnvironment,
     actionParamValues: Record<string, any>,
@@ -2798,28 +2797,23 @@ export class DomainController implements DomainControllerInterface {
 
     log.info(
       "handleBuildPlusRuntimeCompositeAction compositeActionSequence",
-      JSON.stringify(buildPlusRuntimeCompositeAction, null, 2),
+      JSON.stringify(compositeActionSequenceTemplate, null, 2),
       "localActionParams keys",
       Object.keys(localActionParams),
     );
 
     const resolvedCompositeActionTemplates: any = {};
     // going imperatively to handle inner references
-    if (buildPlusRuntimeCompositeAction.payload.templates) {
-      // log.info("handleBuildPlusRuntimeCompositeAction resolving templates", buildPlusRuntimeCompositeAction.templates);
+    if (compositeActionSequenceTemplate.payload.templates) {
 
-      for (const t of Object.entries(buildPlusRuntimeCompositeAction.payload.templates)) {
-        // const newLocalParameters: Record<string,any> = { ...localActionParams, ...resolvedCompositeActionTemplates };
+      for (const t of Object.entries(compositeActionSequenceTemplate.payload.templates)) {
         const newLocalParameters: Record<string, any> = {
-          // miroirFundamentalJzodSchema: miroirFundamentalJzodSchema as MlSchema,
-          // TODO: missing miroirMetaModel: MetaModel
-          // currentModel,
           ...localActionParams,
           ...resolvedCompositeActionTemplates,
         };
         log.info(
-          "buildPlusRuntimeCompositeAction",
-          buildPlusRuntimeCompositeAction.actionLabel,
+          "handleBuildPlusRuntimeCompositeAction",
+          compositeActionSequenceTemplate.actionLabel,
           "resolving template",
           t[0],
           // t[1],
@@ -2846,8 +2840,8 @@ export class DomainController implements DomainControllerInterface {
             "FailedToResolveTemplate",
             "handleBuildPlusRuntimeCompositeAction error resolving template ",
             [
-              buildPlusRuntimeCompositeAction.actionLabel ??
-                buildPlusRuntimeCompositeAction.actionType,
+              compositeActionSequenceTemplate.actionLabel ??
+                compositeActionSequenceTemplate.actionType,
             ],
             undefined, // innerError,
             resolvedTemplate,
@@ -2859,7 +2853,7 @@ export class DomainController implements DomainControllerInterface {
         } else {
           log.info(
             "handleBuildPlusRuntimeCompositeAction",
-            buildPlusRuntimeCompositeAction.actionLabel,
+            compositeActionSequenceTemplate.actionLabel,
             "resolved template",
             t[0],
             "has value",
@@ -2883,9 +2877,9 @@ export class DomainController implements DomainControllerInterface {
 
     log.info(
       "handleBuildPlusRuntimeCompositeAction",
-      buildPlusRuntimeCompositeAction.actionLabel,
+      compositeActionSequenceTemplate.actionLabel,
       "resolving action with templates",
-      Object.keys(buildPlusRuntimeCompositeAction.payload.templates ?? {}),
+      Object.keys(compositeActionSequenceTemplate.payload.templates ?? {}),
       "resolvedCompositeActionTemplates",
       resolvedCompositeActionTemplates,
       "actionParamValues",
@@ -2899,8 +2893,8 @@ export class DomainController implements DomainControllerInterface {
       undefined, // activityTracker
       "build",
       [],
-      buildPlusRuntimeCompositeAction.actionLabel,
-      buildPlusRuntimeCompositeAction.payload.actionSequence as any as CoreTransformerForBuildPlusRuntime,
+      compositeActionSequenceTemplate.actionLabel,
+      compositeActionSequenceTemplate.payload.actionSequence as any as CoreTransformerForBuildPlusRuntime,
       "value",
       modelEnvironment,
       queryParamsForActionResolution, // queryParams
@@ -2915,21 +2909,15 @@ export class DomainController implements DomainControllerInterface {
     if (resolvedActionDefinition instanceof TransformerFailure) {
       log.error(
         "handleBuildPlusRuntimeCompositeAction Error on action",
-        JSON.stringify(buildPlusRuntimeCompositeAction, null, 2),
+        JSON.stringify(compositeActionSequenceTemplate, null, 2),
         "actionResult",
-        JSON.stringify(buildPlusRuntimeCompositeAction, null, 2),
+        JSON.stringify(compositeActionSequenceTemplate, null, 2),
       );
-      // throw new Error(
-      //   "handleBuildPlusRuntimeCompositeAction Error on action" +
-      //     JSON.stringify(buildPlusRuntimeCompositeAction, null, 2) +
-      //     "actionResult" +
-      //     JSON.stringify(buildPlusRuntimeCompositeAction, null, 2)
-      // );
       return new Action2Error(
         "FailedToResolveAction",
         "handleBuildPlusRuntimeCompositeAction error",
         [
-          buildPlusRuntimeCompositeAction.actionLabel ?? buildPlusRuntimeCompositeAction.actionType,
+          compositeActionSequenceTemplate.actionLabel ?? compositeActionSequenceTemplate.actionType,
           ...(resolvedActionDefinition.errorStack ?? ([] as any)),
         ],
         resolvedActionDefinition as any, // TODO: Action2Error can not be constructed from TransformerFailure, should this be allowed?
@@ -2941,10 +2929,9 @@ export class DomainController implements DomainControllerInterface {
       );
     }
 
-    // const resolvedAction: BuildPlusRuntimeCompositeAction = {
     const resolvedAction: CompositeActionSequence = {
       actionType: "compositeActionSequence",
-      actionLabel: buildPlusRuntimeCompositeAction.actionLabel,
+      actionLabel: compositeActionSequenceTemplate.actionLabel,
       endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
       payload: {
         actionSequence: resolvedActionDefinition as any,
@@ -2952,12 +2939,6 @@ export class DomainController implements DomainControllerInterface {
       },
     };
 
-    // return this.handleRuntimeCompositeActionDO_NOT_USE(
-    //   resolvedAction, //buildPlusRuntimeCompositeAction,
-    //   applicationDeploymentMap,
-    //   modelEnvironment,
-    //   actionParamValues,
-    // );
     return this.handleCompositeActionInternal(
       resolvedAction,
       modelEnvironment,
@@ -3623,6 +3604,7 @@ export class DomainController implements DomainControllerInterface {
    * @returns
    */
   async handleTestCompositeAction(
+    // testAction: TestCompositeAction | TestBuildPlusRuntimeCompositeAction,
     testAction: TestCompositeAction | TestBuildPlusRuntimeCompositeAction,
     applicationDeploymentMap: ApplicationDeploymentMap,
     modelEnvironment: MiroirModelEnvironment,
@@ -3683,7 +3665,7 @@ export class DomainController implements DomainControllerInterface {
         );
       }
       case "testBuildPlusRuntimeCompositeAction": {
-        const localCompositeAction: BuildPlusRuntimeCompositeAction = {
+        const localCompositeAction: CompositeActionSequenceTemplate = {
           ...testAction.compositeActionSequence,
           endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
           payload: {
@@ -3893,15 +3875,13 @@ export class DomainController implements DomainControllerInterface {
         let testResult: Action2ReturnType | undefined = undefined;
         switch (testCompositeAction[1].testType) {
           case "testBuildPlusRuntimeCompositeAction": {
-            const localTestCompositeAction: BuildPlusRuntimeCompositeAction = {
+            const localTestCompositeAction: CompositeActionSequenceTemplate = {
               ...testCompositeAction[1].compositeActionSequence,
               endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
               payload: {
                 ...(testCompositeAction[1].compositeActionSequence.payload.templates
-                  // || testCompositeAction[1].testParams
                   ? {
                       templates: {
-                        // ...testCompositeAction[1].testParams,
                         ...testCompositeAction[1].compositeActionSequence.payload.templates,
                       },
                     }
@@ -3927,33 +3907,6 @@ export class DomainController implements DomainControllerInterface {
             );
             break;
           }
-          // case "testRuntimeCompositeAction": {
-          //   const localTestCompositeAction: BuildPlusRuntimeCompositeAction = {
-          //     ...testCompositeAction[1].compositeActionSequence,
-          //     definition: [
-          //       ...testCompositeAction[1].compositeActionSequence.definition,
-          //       ...testCompositeAction[1].testCompositeActionAssertions,
-          //     ],
-          //   };
-          //   // TestSuiteContext.setTest(testCompositeAction[1].testLabel);
-          //   this.miroirContext.miroirActivityTracker.setTest(testCompositeAction[1].testLabel);
-          //   testResult = await this.miroirContext.miroirActivityTracker.trackTest(
-          //     testCompositeAction[1].testLabel,
-          //     this.miroirContext.miroirActivityTracker.getCurrentActivityId() || "unknown",
-          //     async() => await this.handleRuntimeCompositeActionDO_NOT_USE(
-          //       localTestCompositeAction,
-          //       modelEnvironment,
-          //       localActionParams,
-          //     )
-          //   );
-          //   //
-          //   // testResult = await this.handleRuntimeCompositeActionDO_NOT_USE(
-          //   //   localTestCompositeAction,
-          //   //   localActionParams,
-          //   //   currentModel
-          //   // );
-          //   break;
-          // }
           case "testCompositeAction": {
             const localTestCompositeAction: CompositeActionSequence = {
               ...testCompositeAction[1].compositeActionSequence,

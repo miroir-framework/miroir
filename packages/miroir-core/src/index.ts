@@ -47,6 +47,8 @@ export {
   compositeAction,
   CompositeActionSequence,
   compositeActionSequence,
+  CompositeActionSequenceTemplate,
+  compositeActionSequenceTemplate,
   CompositeActionTemplate,
   compositeActionTemplate,
   CompositeRunBoxedQueryAction,

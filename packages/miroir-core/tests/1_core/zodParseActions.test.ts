@@ -1,11 +1,12 @@
 "use strict";
 
 import { describe, expect, it } from 'vitest';
-import { z, ZodTypeAny } from "zod";
+import { ZodTypeAny } from "zod";
 
 import {
   ActionError,
-  BuildPlusRuntimeCompositeAction,
+  // BuildPlusRuntimeCompositeAction,
+  CompositeActionSequenceTemplate,
   CompositeActionSequence,
   domainAction,
   DomainAction,
@@ -17,7 +18,6 @@ import {
   persistenceAction,
   PersistenceAction,
   storeManagementAction,
-  testBuildPlusRuntimeCompositeAction,
   TestBuildPlusRuntimeCompositeActionSuite,
   TestCompositeActionParams,
   ZodParseError,
@@ -25,8 +25,8 @@ import {
 } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
 import { deployment_Miroir } from "miroir-test-app_deployment-admin";
+import { entityDefinitionEntity, entityEntity, entityMenu, menuDefaultMiroir, selfApplicationMiroir } from "miroir-test-app_deployment-miroir";
 import { InitApplicationParameters } from "../../src/0_interfaces/4-services/PersistenceStoreControllerInterface";
-import { selfApplicationMiroir, menuDefaultMiroir, entityEntity, entityMenu, entityDefinitionEntity } from "miroir-test-app_deployment-miroir";
 
 
 
@@ -76,7 +76,7 @@ type ZodParseTestActionType =
   | ExtractorOrCombinerTemplate
   // | MiroirQueryTemplate
   | CompositeActionSequence
-  | BuildPlusRuntimeCompositeAction
+  | CompositeActionSequenceTemplate
   | TestBuildPlusRuntimeCompositeActionSuite
   | TestCompositeActionParams
 ;

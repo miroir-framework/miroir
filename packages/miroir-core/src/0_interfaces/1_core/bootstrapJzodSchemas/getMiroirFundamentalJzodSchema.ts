@@ -3645,7 +3645,8 @@ export function getMiroirFundamentalJzodSchema(
           definition: {
             absolutePath: miroirFundamentalJzodSchemaUuid,
             relativePath:
-              "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeActionSequence",
+              // "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeActionSequence",
+              "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction",
           },
         },
         actionTemplate: {
@@ -3655,6 +3656,13 @@ export function getMiroirFundamentalJzodSchema(
             relativePath: "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction",
           },
         }, 
+        compositeActionSequenceTemplate: {
+          type: "schemaReference",
+          definition: {
+            absolutePath: miroirFundamentalJzodSchemaUuid,
+            relativePath: "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeActionSequence",
+          },
+        }, // compositeActionTemplate: THAT's THE RESULT OF THE WHOLE MOVEMENT!
         compositeActionTemplate: {
           type: "schemaReference",
           definition: {
