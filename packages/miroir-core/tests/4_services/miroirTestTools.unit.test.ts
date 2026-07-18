@@ -7,8 +7,10 @@ import {
   defaultMetaModelEnvironment,
   listQueryRunnerFixtureRefs,
   listWhitelistedFunctionRefs,
+  miroirTestForAction,
   miroirTestForFunctionCall,
   miroirTestForQuery,
+  miroirTestLeaf,
   miroirTest_pilot_transformer_plus,
   miroirTest_queries_library,
   resolveFunctionCallTarget,
@@ -99,6 +101,24 @@ describe("miroir leaf zod schemas", () => {
       ],
     });
     expect(parsed.fixtureRef).toBe("libraryDomainState");
+  });
+
+  it("miroirTestForAction validates a minimal actionTest leaf", () => {
+    const parsed = miroirTestForAction.parse({
+      miroirTestType: "actionTest",
+      miroirTestLabel: "Refresh all Instances",
+    });
+    expect(parsed.miroirTestLabel).toBe("Refresh all Instances");
+    expect(parsed.miroirTestType).toBe("actionTest");
+  });
+
+  it("miroirTestLeaf accepts actionTest in the union", () => {
+    const parsed = miroirTestLeaf.parse({
+      miroirTestType: "actionTest",
+      miroirTestLabel: "Add Book instance",
+      testParams: { bookCount: 6 },
+    });
+    expect(parsed.miroirTestType).toBe("actionTest");
   });
 });
 

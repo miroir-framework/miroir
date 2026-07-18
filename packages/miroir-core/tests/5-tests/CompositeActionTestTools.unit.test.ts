@@ -1,8 +1,12 @@
 import { describe, expect, it, vi } from "vitest";
 
 import type { TestCompositeActionParams } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
-import { miroirTestForActionDraft } from "../../src/0_interfaces/5-tests/miroirTestActionTypes";
+import { miroirTestForAction } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { runCompositeActionTestParams } from "../../src/5_tests/CompositeActionTestTools";
+import type {
+  CompositeActionTestContext,
+  RunnerTestContext,
+} from "../../src/5_tests/MiroirTestTools";
 
 const applicationUuid = "5af03c98-fe5e-490b-b08f-e1230971c57f";
 
@@ -25,9 +29,9 @@ function mockTracker() {
   };
 }
 
-describe("miroirTestForActionDraft (Phase 0 schema)", () => {
+describe("miroirTestForAction (Phase 1 schema)", () => {
   it("accepts a minimal actionTest leaf", () => {
-    const parsed = miroirTestForActionDraft.parse({
+    const parsed = miroirTestForAction.parse({
       miroirTestType: "actionTest",
       miroirTestLabel: "Refresh all Instances",
     });
@@ -36,10 +40,36 @@ describe("miroirTestForActionDraft (Phase 0 schema)", () => {
 
   it("rejects a leaf missing miroirTestLabel", () => {
     expect(() =>
-      miroirTestForActionDraft.parse({
+      miroirTestForAction.parse({
         miroirTestType: "actionTest",
       }),
     ).toThrow();
+  });
+});
+
+describe("CompositeActionTestContext (Phase 1.2)", () => {
+  it("allows RunnerTestContext to be used as CompositeActionTestContext", () => {
+    const runnerContext = {
+      domainController: {} as CompositeActionTestContext["domainController"],
+      applicationDeploymentMap: {},
+      internalMiroirConfig: {} as CompositeActionTestContext["internalMiroirConfig"],
+      pageLabel: "p",
+      adminDeployment: {} as CompositeActionTestContext["adminDeployment"],
+      testDeploymentStorageConfiguration:
+        {} as CompositeActionTestContext["testDeploymentStorageConfiguration"],
+      runTarget: {
+        applicationUuid: "a",
+        applicationName: "Library",
+        deploymentUuid: "d",
+      },
+      testParams: {},
+      runtimeContext: {},
+      runnerRegistry: {},
+    } satisfies RunnerTestContext;
+
+    const asComposite: CompositeActionTestContext = runnerContext;
+    expect(asComposite.pageLabel).toBe("p");
+    expect(asComposite.runTarget.applicationName).toBe("Library");
   });
 });
 

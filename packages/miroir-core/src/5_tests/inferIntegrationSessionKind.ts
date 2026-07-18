@@ -41,6 +41,7 @@ export function transformerTestLeafRequiresIntegration(leaf: MiroirTestForTransf
 function miroirTestLeafSupportsUnitExecution(leaf: MiroirTestLeaf): boolean {
   switch (leaf.miroirTestType) {
     case "runnerTest":
+    case "actionTest":
       return false;
     case "transformerTest":
       return leaf.unitTestExpectedValue !== undefined;
@@ -57,6 +58,7 @@ function miroirTestLeafSupportsUnitExecution(leaf: MiroirTestLeaf): boolean {
 function miroirTestLeafRequiresIntegrationExecution(leaf: MiroirTestLeaf): boolean {
   switch (leaf.miroirTestType) {
     case "runnerTest":
+    case "actionTest":
       return true;
     case "transformerTest":
       return transformerTestLeafRequiresIntegration(leaf);
@@ -70,12 +72,21 @@ function miroirTestLeafRequiresIntegrationExecution(leaf: MiroirTestLeaf): boole
   }
 }
 
+/**
+ * Session kind for UI/CLI integ launchers.
+ * Locked 1.3-a: `actionTest` reuses `"runner"` (same bootstrap / library playfield;
+ * registry unused for Action leaves).
+ */
 export function inferIntegrationSessionKind(
   suite: MiroirTestSuite,
 ): IntegrationTestSessionKind | undefined {
   const leaves = walkMiroirTestLeaves(suite);
 
-  if (leaves.some((leaf) => leaf.miroirTestType === "runnerTest")) {
+  if (
+    leaves.some(
+      (leaf) => leaf.miroirTestType === "runnerTest" || leaf.miroirTestType === "actionTest",
+    )
+  ) {
     return "runner";
   }
 

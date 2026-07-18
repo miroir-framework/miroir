@@ -447,6 +447,8 @@ export {
   miroirTestForQuery,
   MiroirTestForRunner,
   miroirTestForRunner,
+  MiroirTestForAction,
+  miroirTestForAction,
   MiroirTestLeaf,
   miroirTestLeaf,
   MiroirTestSuite,
@@ -1046,19 +1048,14 @@ export {
 export {
   runMiroirActionTest,
 } from "./5_tests/ActionTestTools.js";
-export type {
-  MiroirTestForAction,
-} from "./0_interfaces/5-tests/miroirTestActionTypes.js";
-export {
-  miroirTestForActionDraft,
-} from "./0_interfaces/5-tests/miroirTestActionTypes.js";
+/** @deprecated Phase 0 draft — use `miroirTestForAction` from fundamental types. */
+export { miroirTestForAction as miroirTestForActionDraft } from "./0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 export {
   resolveRunnerTestLeaf,
   runMiroirRunnerTest as runMiroirRunnerTestInMemory,
   runRunnerTestCompositeAction,
   runnerTestJzodSchema,
-} from "./5_tests/RunnerTestTools.js";
-export {
+} from "./5_tests/RunnerTestTools.js";export {
   resolveRunnerFromRegistry,
 } from "./5_tests/resolveRunnerFromRegistry.js";
 export {
@@ -1082,6 +1079,7 @@ export {
   type RunMiroirTests,
   type MiroirTestExecutionEnvironment,
   type RunnerTestSessionInterface,
+  type CompositeActionTestContext,
   type RunnerTestContext,
 } from "./5_tests/MiroirTestTools.js";
 export {

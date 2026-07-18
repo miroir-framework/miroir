@@ -2,7 +2,7 @@
 
 **Parent:** [plan.md](./plan.md) (Feature #197)  
 **Pilot source:** `packages/miroir-standalone-app/tests/3_controllers/DomainController.integ.Data.CRUD.test.tsx`  
-**Status:** Phase 0 ✅ (shared executor + provisional `actionTest` draft + dispatch stub)  
+**Status:** Phase 1 ✅ (fundamental `actionTest` schema + compositeActionTestContext + 1.3-a session kind)  
 **Method:** TDD; run `npm run nonreg` (or targeted profile integ + unit gate) after each impactful slice
 
 ### Hard constraint — legacy file untouched until wrap-up
@@ -189,6 +189,7 @@ Once CLI MiroirTest Action suites exist:
 | A6 | Context object | Prefer generalized **`compositeActionTestContext`** (runTarget, testParams, deployments, domainController); `runnerTestContext` = that + `runnerRegistry` + pageLabel |
 | A7 | Testing method | **TDD**; after schema/dispatch/session/CLI slices → **`npm run nonreg`** (or documented subset + full nonreg before merge) |
 | A8 | Profiles | Reuse `--profile` / Gap D (pilot: `emulatedServer-sql`) |
+| A9 | Session kind for `actionTest` | **1.3-a** — reuse `"runner"` (registry unused for Action leaves) |
 
 ---
 
@@ -262,19 +263,15 @@ Each slice: **failing test → implement → green → commit**. After slices ma
 
 **Note:** Phase 0 does **not** touch `DomainController.integ.Data.CRUD.test.tsx`. Resolve / JSON pilot starts in Phase 2.
 
-### Phase 1 — Schema + session context generalization
+### Phase 1 — Schema + session context generalization ✅
 
-| Slice | Work | Tests first | Nonreg |
-|-------|------|-------------|--------|
-| 1.1 ★ | Add `miroirTestForAction` to fundamental schema; regenerate types; union into `miroirTestLeaf` | Schema / zod unit tests; existing MiroirTest instances still validate | **nonreg** |
-| 1.2 | Introduce `compositeActionTestContext`; make `runnerTestContext` extend it; Action path does not require `runnerRegistry` | Unit: orchestrator / resolve context construction | — |
-| 1.3 | `inferIntegrationSessionKind` + capabilities: `actionTest` → integ (kind: `"runner"` **or** `"domainController"` — pick one in 1.3 and stick to it; default recommendation: **reuse `"runner"` session kind with empty/no registry**, or add `"action"` alias that shares Runner bootstrap) | Extend `inferIntegrationSessionKind.unit.test.ts` | — |
+| Slice | Work | Tests first | Nonreg | Status |
+|-------|------|-------------|--------|--------|
+| 1.1 ★ | Add `miroirTestForAction` to fundamental schema; regenerate types; union into `miroirTestLeaf` | Schema / zod unit tests | **nonreg** + legacy Data.CRUD | ✅ |
+| 1.2 | `compositeActionTestContext`; `runnerTestContext` extends it | Unit: Runner assignable to Composite | — | ✅ |
+| 1.3 | `inferIntegrationSessionKind` / capabilities: `actionTest` → integ, kind **`"runner"` (1.3-a)** | Extended `inferIntegrationSessionKind.unit.test.ts` | — | ✅ |
 
-**Open micro-decision in 1.3 (resolve before coding):**  
-- **1.3-a:** Action suites use session kind `"runner"` with optional registry → maximum DRY, slight naming stretch.  
-- **1.3-b:** New kind `"action"` factory that constructs the same bootstrap as Runner without registry → clearer catalog, tiny duplication in orchestrator switch.
-
-Recommendation: **1.3-b** if UI catalog labels matter; **1.3-a** if we want zero new session class.
+**Locked 1.3-a:** Action suites reuse session kind `"runner"` (registry unused for Action leaves).
 
 ### Phase 2 — Pilot MiroirTest instance (parity with Data.CRUD)
 

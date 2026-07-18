@@ -6345,6 +6345,14 @@ export const miroirFundamentalJzodSchema = {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
             },
             "context": {}
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "miroirTestForAction",
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+            },
+            "context": {}
           }
         ]
       },
@@ -6731,6 +6739,92 @@ export const miroirFundamentalJzodSchema = {
           }
         }
       },
+      "miroirTestForAction": {
+        "type": "object",
+        "tag": {
+          "value": {
+            "defaultLabel": "Action integration test",
+            "description": "DomainController action integ test via testCompositeActionSuite (Feature 197) — subset of runnerTest without Runner entity",
+            "display": {
+              "displayedAttributeValueWhenFolded": "miroirTestLabel"
+            }
+          }
+        },
+        "definition": {
+          "testTag": {
+            "type": "union",
+            "optional": true,
+            "definition": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "array",
+                "definition": {
+                  "type": "string"
+                }
+              }
+            ]
+          },
+          "skip": {
+            "type": "boolean",
+            "optional": true
+          },
+          "testParams": {
+            "type": "record",
+            "optional": true,
+            "definition": {
+              "type": "any"
+            }
+          },
+          "compositeActionSequence": {
+            "type": "schemaReference",
+            "optional": true,
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "compositeActionSequence"
+            },
+            "context": {}
+          },
+          "testCompositeActionAssertions": {
+            "type": "array",
+            "optional": true,
+            "definition": {
+              "type": "schemaReference",
+              "definition": {
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                "relativePath": "compositeRunTestAssertion"
+              },
+              "context": {}
+            }
+          },
+          "beforeTestSetupAction": {
+            "type": "schemaReference",
+            "optional": true,
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "compositeActionSequence"
+            },
+            "context": {}
+          },
+          "afterTestCleanupAction": {
+            "type": "schemaReference",
+            "optional": true,
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "compositeActionSequence"
+            },
+            "context": {}
+          },
+          "miroirTestType": {
+            "type": "literal",
+            "definition": "actionTest"
+          },
+          "miroirTestLabel": {
+            "type": "string"
+          }
+        }
+      },
       "miroirTestDefinition": {
         "type": "object",
         "extend": {
@@ -6958,6 +7052,12 @@ export const miroirFundamentalJzodSchema = {
                     "type": "schemaReference",
                     "definition": {
                       "relativePath": "miroirTestForRunner"
+                    }
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "miroirTestForAction"
                     }
                   }
                 ]
@@ -7331,6 +7431,88 @@ export const miroirFundamentalJzodSchema = {
                   "miroirTestType": {
                     "type": "literal",
                     "definition": "runnerTest"
+                  },
+                  "miroirTestLabel": {
+                    "type": "string"
+                  }
+                }
+              },
+              "miroirTestForAction": {
+                "type": "object",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Action integration test",
+                    "description": "DomainController action integ test via testCompositeActionSuite (Feature 197) — subset of runnerTest without Runner entity",
+                    "display": {
+                      "displayedAttributeValueWhenFolded": "miroirTestLabel"
+                    }
+                  }
+                },
+                "definition": {
+                  "testTag": {
+                    "type": "union",
+                    "optional": true,
+                    "definition": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "array",
+                        "definition": {
+                          "type": "string"
+                        }
+                      }
+                    ]
+                  },
+                  "skip": {
+                    "type": "boolean",
+                    "optional": true
+                  },
+                  "testParams": {
+                    "type": "record",
+                    "optional": true,
+                    "definition": {
+                      "type": "any"
+                    }
+                  },
+                  "compositeActionSequence": {
+                    "type": "schemaReference",
+                    "optional": true,
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "compositeActionSequence"
+                    }
+                  },
+                  "testCompositeActionAssertions": {
+                    "type": "array",
+                    "optional": true,
+                    "definition": {
+                      "type": "schemaReference",
+                      "definition": {
+                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        "relativePath": "compositeRunTestAssertion"
+                      }
+                    }
+                  },
+                  "beforeTestSetupAction": {
+                    "type": "schemaReference",
+                    "optional": true,
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "compositeActionSequence"
+                    }
+                  },
+                  "afterTestCleanupAction": {
+                    "type": "schemaReference",
+                    "optional": true,
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "compositeActionSequence"
+                    }
+                  },
+                  "miroirTestType": {
+                    "type": "literal",
+                    "definition": "actionTest"
                   },
                   "miroirTestLabel": {
                     "type": "string"
