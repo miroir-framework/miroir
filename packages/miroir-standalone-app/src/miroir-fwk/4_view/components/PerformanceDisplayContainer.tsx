@@ -4,7 +4,10 @@ import { RenderPerformanceMetrics, RenderPerformanceMetricsElement } from '../to
 import { getPerformanceConfig, updatePerformanceConfig } from '../tools/performanceConfig.js';
 import { DraggableContainer } from './DraggableContainer.js';
 
-// Performance display container with polling-based updates
+/**
+ * @deprecated Prefer {@link RenderInsightSummary} (docked panel). Kept for optional
+ * detach / legacy floating workflows; no longer mounted by ReportDisplay by default.
+ */
 export const PerformanceDisplayContainer = () => {
   const context = useMiroirContextService();
   const [metrics, setMetrics] = useState<Record<string, RenderPerformanceMetricsElement>>({});
