@@ -34,6 +34,7 @@ import {
 } from "miroir-react";
 
 import { useCurrentModelEnvironment } from "../../src/miroir-fwk/4_view/ReduxHooks.js";
+import { ModelEnvironmentSync } from "../../src/miroir-fwk/4_view/ModelEnvironmentSync.js";
 import {
   addEndpointToLocalCacheState,
   addEntityInstanceToLocalCacheState,
@@ -81,9 +82,12 @@ function createTestStore(initialSlice: LocalCacheSliceState): Store {
 function TestProviders({
   store,
   children,
+  syncApplications,
 }: {
   store: Store;
   children: React.ReactNode;
+  /** When set, mounts ModelEnvironmentSync for these apps (Proposal 3). */
+  syncApplications?: string[];
 }) {
   return (
     <LocalCacheProvider store={store}>
@@ -91,6 +95,12 @@ function TestProviders({
         miroirContext={miroirContext}
         domainController={{} as DomainControllerInterface}
       >
+        {syncApplications && syncApplications.length > 0 ? (
+          <ModelEnvironmentSync
+            applicationDeploymentMap={applicationDeploymentMap}
+            applicationsToSync={syncApplications}
+          />
+        ) : null}
         {children}
       </MiroirContextReactProvider>
     </LocalCacheProvider>
@@ -562,6 +572,139 @@ describe("useCurrentModelEnvironment (Phase 6 — performance acceptance)", () =
           deployment_Library_DO_NO_USE.uuid,
           "model",
           { uuid: "phase6-overlay-endpoint", application: defaultLibraryAppModel.applicationUuid },
+        ),
+      });
+    });
+
+    await waitFor(() => {
+      expect(resolveSpy.mock.calls.length).toBeGreaterThan(callsAfterMount);
+    });
+
+    const extendedCallsAfterOverlay = resolveSpy.mock.calls.filter(
+      (call) =>
+        call[0] === deployment_Library_DO_NO_USE.uuid && call[2] === "extended",
+    ).length;
+    expect(extendedCallsAfterOverlay).toBe(extendedCallsAfterMount + 1);
+  });
+});
+
+describe("useCurrentModelEnvironment (Phase 7 — ModelEnvironmentSync)", () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  function ThreeConsumers() {
+    useCurrentModelEnvironment(
+      defaultLibraryAppModel.applicationUuid,
+      applicationDeploymentMap,
+    );
+    useCurrentModelEnvironment(
+      defaultLibraryAppModel.applicationUuid,
+      applicationDeploymentMap,
+    );
+    useCurrentModelEnvironment(
+      defaultLibraryAppModel.applicationUuid,
+      applicationDeploymentMap,
+    );
+    return null;
+  }
+
+  it("N consumers without Sync still resolve at most once via ensureSchemaForDeployment", async () => {
+    const resolveSpy = vi.spyOn(
+      await import("miroir-core"),
+      "resolveFundamentalSchemaForDeployment",
+    );
+
+    const librarySlice = buildMinimalLocalCacheStateForDeployment(
+      deployment_Library_DO_NO_USE.uuid,
+      "model",
+    );
+    const store = createTestStore(librarySlice);
+
+    render(<ThreeConsumers />, {
+      wrapper: ({ children }) => (
+        <TestProviders store={store}>{children}</TestProviders>
+      ),
+    });
+
+    await waitFor(() => {
+      expect(resolveSpy.mock.calls.length).toBeGreaterThan(0);
+    });
+
+    const extendedCalls = resolveSpy.mock.calls.filter(
+      (call) =>
+        call[0] === deployment_Library_DO_NO_USE.uuid && call[2] === "extended",
+    ).length;
+    expect(extendedCalls).toBeLessThanOrEqual(1);
+  });
+
+  it("ModelEnvironmentSync + N consumers: ≤1 extended resolve; data-only no extra; overlay +1", async () => {
+    const resolveSpy = vi.spyOn(
+      await import("miroir-core"),
+      "resolveFundamentalSchemaForDeployment",
+    );
+
+    const librarySlice = addEntityInstanceToLocalCacheState(
+      buildMinimalLocalCacheStateForDeployment(deployment_Library_DO_NO_USE.uuid, "model"),
+      deployment_Library_DO_NO_USE.uuid,
+      book1 as EntityInstance,
+    );
+    const store = createTestStore(librarySlice);
+
+    render(<ThreeConsumers />, {
+      wrapper: ({ children }) => (
+        <TestProviders
+          store={store}
+          syncApplications={[
+            selfApplicationMiroir.uuid,
+            defaultLibraryAppModel.applicationUuid,
+          ]}
+        >
+          {children}
+        </TestProviders>
+      ),
+    });
+
+    await waitFor(() => {
+      expect(resolveSpy.mock.calls.length).toBeGreaterThan(0);
+    });
+
+    const extendedCallsAfterMount = resolveSpy.mock.calls.filter(
+      (call) =>
+        call[0] === deployment_Library_DO_NO_USE.uuid && call[2] === "extended",
+    ).length;
+    expect(extendedCallsAfterMount).toBeLessThanOrEqual(1);
+
+    const callsAfterMount = resolveSpy.mock.calls.length;
+
+    act(() => {
+      store.dispatch({
+        type: TEST_UPDATE_PRESENT_MODEL,
+        payload: mutateEntityDescriptionInLocalCacheState(
+          librarySlice,
+          deployment_Library_DO_NO_USE.uuid,
+          "model",
+          book1.uuid,
+          "Runtime-only change",
+        ),
+      });
+    });
+
+    await waitFor(() => {
+      expect(resolveSpy.mock.calls.length).toBe(callsAfterMount);
+    });
+
+    act(() => {
+      store.dispatch({
+        type: TEST_UPDATE_PRESENT_MODEL,
+        payload: addEndpointToLocalCacheState(
+          librarySlice,
+          deployment_Library_DO_NO_USE.uuid,
+          "model",
+          {
+            uuid: "phase7-overlay-endpoint",
+            application: defaultLibraryAppModel.applicationUuid,
+          },
         ),
       });
     });

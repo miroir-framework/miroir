@@ -20,7 +20,7 @@ mode="${2:-all}"
 
 if [[ -z "$step" ]]; then
   echo "Usage: $0 <step> [green|regression|all]"
-  echo "Steps: 1.5 | 2.6 | 3.5 | 4.4 | 5.6 | 6.2"
+  echo "Steps: 1.5 | 2.6 | 3.5 | 4.4 | 5.6 | 6.2 | 7.3"
   exit 1
 fi
 
@@ -145,6 +145,15 @@ run_phase_6_2() {
   (cd "$PACKAGES/miroir-core" && MIROIR_SCHEMA_MODE=frozen npm test -- modelEnvironment)
 }
 
+run_phase_7_3() {
+  echo "=== 199 Phase 7.3 ModelEnvironmentSync gate ==="
+  run_standalone_unit "tests/4_view/useCurrentModelEnvironment.unit.test.tsx"
+  if [[ -d "$PACKAGES/miroir-react/tests" ]]; then
+    (cd "$PACKAGES/miroir-react" && npm test -- schemaReloadPolicy)
+  fi
+  run_standalone_unit "tests/4_view/typedValueObjectEditorSchema.unit.test.ts"
+}
+
 run_step() {
   case "$step" in
     1.5) run_phase_1_5 ;;
@@ -153,9 +162,10 @@ run_step() {
     4.4) run_phase_4_4 ;;
     5.6) run_phase_5_6 ;;
     6.2) run_phase_6_2 ;;
+    7.3) run_phase_7_3 ;;
     *)
       echo "Unknown step: $step"
-      echo "Valid: 1.5 2.6 3.5 4.4 5.6 6.2"
+      echo "Valid: 1.5 2.6 3.5 4.4 5.6 6.2 7.3"
       exit 1
       ;;
   esac
