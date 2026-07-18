@@ -162,7 +162,7 @@ export const MiroirTestDisplay = (props: MiroirTestSectionProps) => {
               !integrationUiSupported
                 ? `UI integration launcher does not support this suite (registry key: ${integrationSuiteKey ?? "unknown"})`
                 : !integrationProfileBrowserLaunchable
-                  ? "Selected profile is not launchable in the browser — use emulatedServer-indexedDb or wait for B6-c (real server)"
+                  ? "Selected profile is not launchable in the browser — use emulatedServer-indexedDb or realServer-sql (with miroir-server up)"
                   : undefined
             }
             style={{

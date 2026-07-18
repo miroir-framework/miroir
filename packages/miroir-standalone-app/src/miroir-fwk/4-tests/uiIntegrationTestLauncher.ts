@@ -26,6 +26,7 @@ import {
   PINNED_INTEG_TEST_APPLICATION_IDENTITY,
   type TestSessionForIntegOptions,
 } from "./IntegrationTestSession.js";
+import type { RealServerTransformerTestSessionOptions } from "./RealServerTransformerTestSession.js";
 import { transformerIdentityToRunTarget } from "./resolveTransformerTestSessionOptions.js";
 import {
   resolveUiIntegrationRunnerSuite,
@@ -51,14 +52,24 @@ export type UiIntegrationTestLauncherEnvironment = {
   /** Optional fetch for real-server preflight (Node TLS / test doubles). Defaults to global fetch. */
   fetchImpl?: typeof fetch;
   /**
-   * Build IntegrationTestSession options for transformer suites.
-   * Node: env-derived store backends. Browser: IndexedDB + bundled admin.
+   * Build transformer session options.
+   * Node: env-derived local stores, or realServer when profile is emulateServer:false.
+   * Browser: IndexedDB + bundled admin, or realServer-sql via REST.
    */
   resolveTransformerSessionOptions: (
     profileName: string,
     runTargetMode: UiIntegrationTestRunTargetMode,
     miroirConfig: MiroirConfigClient,
-  ) => TestSessionForIntegOptions | Promise<TestSessionForIntegOptions>;
+  ) =>
+    | TestSessionForIntegOptions
+    | Omit<RealServerTransformerTestSessionOptions, "miroirActivityTracker" | "miroirEventService">
+    | Promise<
+        | TestSessionForIntegOptions
+        | Omit<
+            RealServerTransformerTestSessionOptions,
+            "miroirActivityTracker" | "miroirEventService"
+          >
+      >;
 };
 
 export function resolveUiIntegrationTestRunTarget(

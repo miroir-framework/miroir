@@ -5,15 +5,19 @@ import type {
 } from "miroir-core";
 import { createDefaultMiroirTestIntegrationOrchestrator } from "miroir-core";
 
-import type { AppStackBootstrapHostOptions } from "../../../tests/helpers/appStackIntegrationBootstrap.js";
 import {
   RunnerTestSession,
   type RunnerTestSessionOptions,
 } from "../../../tests/helpers/RunnerTestSession.js";
+import type { AppStackBootstrapHostOptions } from "./appStackBootstrapHostOptions.js";
 import {
   IntegrationTestSession,
   type TestSessionForIntegOptions,
 } from "./IntegrationTestSession.js";
+import {
+  isRealServerTransformerSessionOptions,
+  RealServerTransformerTestSession,
+} from "./RealServerTransformerTestSession.js";
 
 function resolveBootstrapHostOptions(
   context: IntegrationTestOrchestratorContext,
@@ -64,10 +68,29 @@ function assertBrowserSafeTransformerOptions(options: TestSessionForIntegOptions
 const browserSessionFactory: IntegrationTestSessionFactory = {
   createSession({ kind, context, sessionSpecificOptions }) {
     if (kind === "transformer") {
+      if (isRealServerTransformerSessionOptions(sessionSpecificOptions)) {
+        const hostBootstrap = resolveBootstrapHostOptions(context, sessionSpecificOptions);
+        return new RealServerTransformerTestSession({
+          ...sessionSpecificOptions,
+          miroirConfig: sessionSpecificOptions.miroirConfig ?? context.miroirConfig,
+          miroirActivityTracker:
+            sessionSpecificOptions.miroirActivityTracker ?? context.miroirActivityTracker,
+          miroirEventService:
+            sessionSpecificOptions.miroirEventService ?? context.miroirEventService,
+          customFetch:
+            sessionSpecificOptions.customFetch ??
+            (typeof window !== "undefined" && typeof window.fetch === "function"
+              ? (window.fetch.bind(window) as typeof fetch)
+              : undefined),
+          ...hostBootstrap,
+          hostExecutionEnvironment: resolveHostExecutionEnvironment(context, hostBootstrap),
+          platformEnsureMode: hostBootstrap.platformEnsureMode ?? "skip",
+        });
+      }
       const options = (sessionSpecificOptions ?? {}) as TestSessionForIntegOptions;
       if (!options.testApplicationStore || !options.adminStore) {
         throw new Error(
-          "Browser integration orchestrator: transformer session requires testApplicationStore and adminStore",
+          "Browser integration orchestrator: transformer session requires testApplicationStore and adminStore (or transport: realServer)",
         );
       }
       assertBrowserSafeTransformerOptions(options);

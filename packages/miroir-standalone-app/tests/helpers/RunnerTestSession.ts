@@ -37,10 +37,10 @@ import {
 } from "../4_view/RunnerIntegTestTools.js";
 import {
   bootstrapHostOptionsFrom,
-  runAppStackIntegrationBootstrap,
   type AppStackBootstrapHostOptions,
-} from "./appStackIntegrationBootstrap.js";
-import { runRealServerClientBootstrap } from "./runRealServerClientBootstrap.js";
+} from "../../src/miroir-fwk/4-tests/appStackBootstrapHostOptions.js";
+import { runRealServerClientBootstrap } from "../../src/miroir-fwk/4-tests/runRealServerClientBootstrap.js";
+import { runAppStackIntegrationBootstrap } from "./appStackIntegrationBootstrap.js";
 import {
   buildTeardownTestApplicationStoresAction,
 } from "../../src/miroir-fwk/4-tests/testApplicationStoreTeardown.js";

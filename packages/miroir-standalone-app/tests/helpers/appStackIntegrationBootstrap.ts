@@ -36,22 +36,10 @@ import { setupMiroirTest } from "../../src/miroir-fwk/4-tests/setupMiroirTest.js
 import { createMiroirDeploymentGetPersistenceStoreController } from "../../src/miroir-fwk/4-tests/tests-utils.js";
 
 export type { DeployMiroirStrategy };
-
-export type AppStackBootstrapHostOptions = Pick<
-  AppStackBootstrapOptions,
-  "hostMode" | "hostExecutionEnvironment" | "skipBootstrapPhases" | "platformEnsureMode"
->;
-
-export function bootstrapHostOptionsFrom(
-  source: AppStackBootstrapHostOptions,
-): AppStackBootstrapHostOptions {
-  return {
-    hostMode: source.hostMode,
-    hostExecutionEnvironment: source.hostExecutionEnvironment,
-    skipBootstrapPhases: source.skipBootstrapPhases,
-    platformEnsureMode: source.platformEnsureMode,
-  };
-}
+export {
+  bootstrapHostOptionsFrom,
+  type AppStackBootstrapHostOptions,
+} from "../../src/miroir-fwk/4-tests/appStackBootstrapHostOptions.js";
 
 export type AppStackBootstrapOptions = {
   miroirConfig: MiroirConfigClient;

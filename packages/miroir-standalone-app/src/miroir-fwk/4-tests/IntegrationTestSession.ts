@@ -614,95 +614,14 @@ export class IntegrationTestSession implements RunnerTestSessionInterface {
     domainController: DomainControllerInterface,
     applicationDeploymentMap: ApplicationDeploymentMap,
   ): Promise<void> {
-    const identity = this.getApplicationIdentity();
-    const initParams = this.getInitApplicationParameters();
-    const modelEnvironment = buildIntegrationTestModelEnvironment(identity.deploymentUuid);
-
-    const resetResult = await domainController.handleAction(
-      {
-        actionType: "resetModel",
-        actionLabel: "resetTestStore",
-        endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-        payload: { application: identity.applicationUuid },
-      },
-      applicationDeploymentMap,
-      modelEnvironment,
+    const { seedTransformerTestApplicationData } = await import(
+      "./transformerTestApplicationPlayfield.js"
     );
-    if (resetResult instanceof Action2Error) {
-      throw new Error(
-        "IntegrationTestSession.initTestApplicationData: resetModel failed: " +
-          JSON.stringify(resetResult),
-      );
-    }
-
-    const initResult = await domainController.handleAction(
-      {
-        actionType: "initModel",
-        endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-        payload: {
-          application: identity.applicationUuid,
-          params: {
-            dataStoreType: "app",
-            metaModel: defaultMiroirMetaModel,
-            selfApplication: initParams.selfApplication,
-            applicationModelBranch: initParams.applicationModelBranch,
-            applicationVersion: initParams.applicationVersion,
-          },
-        },
-      },
+    await seedTransformerTestApplicationData(
+      domainController,
+      this.getApplicationIdentity(),
       applicationDeploymentMap,
-      modelEnvironment,
     );
-    if (initResult instanceof Action2Error) {
-      throw new Error(
-        "IntegrationTestSession.initTestApplicationData: initModel failed: " + JSON.stringify(initResult),
-      );
-    }
-
-    const createEntityResult = await domainController.handleAction(
-      {
-        actionType: "createEntity",
-        actionLabel: "CreateLibraryStoreEntities",
-        endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-        payload: {
-          application: identity.applicationUuid,
-          transactional: false,
-          entities: INTEG_TEST_LIBRARY_ENTITIES_AND_INSTANCES.flatMap((entry) => ({
-            entity: entry.entity as Entity,
-            entityDefinition: entry.entityDefinition,
-          })),
-        },
-      },
-      applicationDeploymentMap,
-      modelEnvironment,
-    );
-    if (createEntityResult instanceof Action2Error) {
-      throw new Error(
-        "IntegrationTestSession.initTestApplicationData: createEntity failed: " +
-          JSON.stringify(createEntityResult),
-      );
-    }
-
-    const createInstanceResult = await domainController.handleAction(
-      {
-        actionType: "createInstance",
-        actionLabel: "CreateLibraryStoreInstances",
-        endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-        payload: {
-          application: identity.applicationUuid,
-          applicationSection: "data",
-          objects: INTEG_TEST_LIBRARY_ENTITIES_AND_INSTANCES.flatMap((entry) => entry.instances),
-        },
-      },
-      applicationDeploymentMap,
-      modelEnvironment,
-    );
-    if (createInstanceResult instanceof Action2Error) {
-      throw new Error(
-        "IntegrationTestSession.initTestApplicationData: createInstance failed: " +
-          JSON.stringify(createInstanceResult),
-      );
-    }
   }
 
   private isIgnorableCreateStoreError(
