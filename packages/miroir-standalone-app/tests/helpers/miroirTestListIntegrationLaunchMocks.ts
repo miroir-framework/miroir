@@ -4,14 +4,14 @@ import type { UiIntegrationTestRunRequest } from '../../src/miroir-fwk/4-tests/u
 import {
   defaultUiIntegrationFilterForSuite,
   hasIntegrationTestFilterSelection,
-  RETURN_BOOK_LEAF,
-  RUNNER_LIBRARY_LABEL,
 } from './uiIntegrationTestLaunchFilterHelpers.js';
 
-export { RETURN_BOOK_LEAF, RUNNER_LIBRARY_LABEL };
+vi.mock('../../src/miroir-fwk/4_view/components/Reports/TestResultsGrid.js', () => ({
+  TestResultsGrid: () => null,
+}));
 
-vi.mock('../../src/miroir-fwk/4_view/components/Reports/TestExecutionPanel.js', () => ({
-  TestExecutionPanel: () => null,
+vi.mock('../../src/miroir-fwk/4_view/components/Reports/UnitTestExecutionSummary.js', () => ({
+  UnitTestExecutionSummary: () => null,
 }));
 
 vi.mock(
@@ -22,6 +22,8 @@ vi.mock(
     );
     const { expect } = await import('vitest');
 
+    // Node list-integ proof uses SQL stores; UI prefs stay on indexedDb so the
+    // Run All Integration Tests button remains browser-launchable (same as B6-d1).
     const NODE_INTEGRATION_PROFILE = 'emulatedServer-sql';
 
     return {
@@ -40,23 +42,27 @@ vi.mock('../../src/miroir-fwk/4-tests/uiIntegrationTestLauncher.js', async (impo
   const actual = await importOriginal<
     typeof import('../../src/miroir-fwk/4-tests/uiIntegrationTestLauncher.js')
   >();
+  const { capturedUiIntegrationRunResults } = await import(
+    './miroirTestListIntegrationLaunchCapture.js'
+  );
   return {
     ...actual,
-    runUiIntegrationTestSuite: (
+    runUiIntegrationTestSuite: async (
       request: UiIntegrationTestRunRequest,
       env: Parameters<typeof actual.runUiIntegrationTestSuite>[1],
-    ) =>
-      actual.runUiIntegrationTestSuite(
+    ) => {
+      const result = await actual.runUiIntegrationTestSuite(
         {
           ...request,
           runTargetMode: 'pinned',
           filter: hasIntegrationTestFilterSelection(request.filter)
             ? request.filter
-            : defaultUiIntegrationFilterForSuite(request.suiteKey) ?? {
-                testList: { [RUNNER_LIBRARY_LABEL]: [RETURN_BOOK_LEAF] },
-              },
+            : defaultUiIntegrationFilterForSuite(request.suiteKey),
         },
         env,
-      ),
+      );
+      capturedUiIntegrationRunResults.push(result);
+      return result;
+    },
   };
 });

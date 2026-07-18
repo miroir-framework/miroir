@@ -19,6 +19,12 @@
     "lerna": "^9.0.0",
     "typescript": "^6.0.2"
   },
+  "scripts": {
+    "nonreg": "python scripts/run-nonreg.py",
+    "nonreg:unit": "python scripts/run-nonreg.py --tier unit --run-all",
+    "nonreg:default": "python scripts/run-nonreg.py --tier default --run-all",
+    "nonreg:fail-fast": "python scripts/run-nonreg.py --tier default --fail-fast"
+  },
   "nx": {
     "targets": {
       "build": {

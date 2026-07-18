@@ -1,7 +1,7 @@
 # UI unit vs integ run context — TDD plan (Feature #197)
 
 **Parent:** [plan.md](./plan.md) · [phase-b-ui-launcher-plan.md](./phase-b-ui-launcher-plan.md)  
-**Status:** Proposed (post-B7)  
+**Status:** Done (T0–T6 complete; §9 success criteria met — nonreg `20260717T234407Z` + T6 manual sign-off)  
 **Problem:** List and details Miroir Test reports expose different run affordances; list “Run All” is unit-only and unlabeled as such, while details already split unit/integ by leaf capabilities. Transformer suites (mixed) need a clear way to launch either mode; runner suites must keep integ-only launch.
 
 ---
@@ -242,7 +242,7 @@ cd packages/miroir-standalone-app && npx vitest run \
 
 ---
 
-### T5 — List integ batch Node proof (integ)
+### T5 — List integ batch Node proof (integ) ✅
 
 **Red**
 
@@ -252,8 +252,9 @@ cd packages/miroir-standalone-app && npx vitest run \
 **Green**
 
 - Batch path production-ready; snackbar lists skipped non-launchable keys.
+- Proof: `MiroirTestListIntegrationLaunch.integ.test.tsx` (UI prefs `emulatedServer-indexedDb` for button enablement; Node env mock loads `emulatedServer-sql`; filtered `plus with empty args fails` leaf).
 
-**Verify**
+**Verify** ✅
 
 ```bash
 npm run testByFile -w miroir-standalone-app -- \
@@ -264,14 +265,15 @@ npm run testByFile -w miroir-standalone-app -- \
 
 ---
 
-### T6 — Docs + manual checklist
+### T6 — Docs + manual checklist ✅
 
 **Docs** (`docs/reference/testing.md` § Running tests in the UI):
 
 - Table: **List vs Details** × **Unit vs Integ**.
 - Explicit: list “Run All Unit Tests” ≠ integ; details/list integ need launchable profile (`emulatedServer-indexedDb` in webApp).
+- Manual webApp checklist + list-integ proof file documented under View / React.
 
-**Manual webApp**
+**Manual webApp** (operator sign-off) — ✅ signed off 2026-07-18
 
 1. Miroir deployment → Miroir Tests **list** → **Run All Unit Tests** completes; label not ambiguous.
 2. Same list → profile indexedDb → **Run All Integration Tests** runs launchable suites only (expect `miroirCoreTransformers` and/or `runner_library` if present).
@@ -279,7 +281,7 @@ npm run testByFile -w miroir-standalone-app -- \
 4. Details `runner_library` → integ only (regression).
 5. Details unit-only suite → unit only (regression).
 
-**Verify:** docs edited; no leftover lint on code touched in T1–T5.
+**Verify:** docs edited; list-integ proof green (T5); manual checklist signed off.
 
 ---
 
@@ -304,13 +306,16 @@ Do **not** start T5 until T2/T3 green (batch path must exist).
 
 ## 9. Success criteria
 
-- [ ] List unit button label says **Unit**.
-- [ ] List shows **Run All Integration Tests** iff the fetched list has ≥1 UI-launchable integ suite.
-- [ ] List integ batch uses the same launcher, prefs, and mutex as details.
-- [ ] Details still: runner integ-only; unit-only unit-only; mixed both.
-- [ ] Mixed suite unit run does not execute integ-only leaves; integ run does not claim unit-only leaves as failures from wrong mode.
-- [ ] Docs describe list vs details and transformer vs runner launch.
-- [ ] T1–T5 automated proofs green; T6 manual checklist signed off.
+- [x] List unit button label says **Unit**.
+- [x] List shows **Run All Integration Tests** iff the fetched list has ≥1 UI-launchable integ suite.
+- [x] List integ batch uses the same launcher, prefs, and mutex as details.
+- [x] Details still: runner integ-only; unit-only unit-only; mixed both.
+- [x] Mixed suite unit run does not execute integ-only leaves; integ run does not claim unit-only leaves as failures from wrong mode.
+- [x] Docs describe list vs details and transformer vs runner launch.
+- [x] T1–T5 automated proofs green; T6 docs + manual checklist signed off.
+- [x] Default nonreg green (`20260717T234407Z` — 11/11; Display RTL exit 0).
+
+Evidence: T1–T4 unit/RTL, T5 list integ, B6-d1/B7 Node proofs, docs § Running tests in the UI, operator T6 walkthrough, `npm run nonreg`.
 
 ---
 

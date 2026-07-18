@@ -1,0 +1,146 @@
+{
+  "version": 1,
+  "description": "Repo-wide non-regression steps. Tiers: unit ⊂ default ⊂ full.",
+  "defaultProfile": "emulatedServer-sql",
+  "steps": [
+    {
+      "id": "unit-miroir-core",
+      "tier": "unit",
+      "title": "MiroirTest unit suites (miroir-core registry)",
+      "requires": "none",
+      "argv": ["npm", "run", "testMiroir", "-w", "miroir-core", "--", "--mode", "unit"]
+    },
+    {
+      "id": "integ-transformer-miroirCoreTransformers",
+      "tier": "default",
+      "title": "MiroirTest integ — miroirCoreTransformers",
+      "requires": "postgres",
+      "argv": [
+        "npm", "run", "testMiroir", "-w", "miroir-standalone-app", "--",
+        "--profile", "{profile}",
+        "--suites", "miroirCoreTransformers",
+        "--mode", "integ"
+      ]
+    },
+    {
+      "id": "integ-runner-runner_library",
+      "tier": "default",
+      "title": "MiroirTest integ — runner_library",
+      "requires": "postgres",
+      "argv": [
+        "npm", "run", "testMiroir", "-w", "miroir-standalone-app", "--",
+        "--profile", "{profile}",
+        "--suites", "runner_library",
+        "--mode", "integ"
+      ]
+    },
+    {
+      "id": "appstack-DomainController.integ",
+      "tier": "default",
+      "title": "App-stack — DomainController.integ (all)",
+      "requires": "postgres",
+      "argv": [
+        "npm", "run", "testByFile", "-w", "miroir-standalone-app", "--",
+        "--profile", "{profile}",
+        "DomainController.integ"
+      ]
+    },
+    {
+      "id": "appstack-PersistenceStoreController.integ",
+      "tier": "default",
+      "title": "App-stack — PersistenceStoreController.integ",
+      "requires": "postgres",
+      "argv": [
+        "npm", "run", "testByFile", "-w", "miroir-standalone-app", "--",
+        "--profile", "{profile}",
+        "PersistenceStoreController.integ"
+      ]
+    },
+    {
+      "id": "appstack-ExtractorPersistenceStoreRunner.integ",
+      "tier": "default",
+      "title": "App-stack — ExtractorPersistenceStoreRunner.integ",
+      "requires": "postgres",
+      "argv": [
+        "npm", "run", "testByFile", "-w", "miroir-standalone-app", "--",
+        "--profile", "{profile}",
+        "ExtractorPersistenceStoreRunner.integ"
+      ]
+    },
+    {
+      "id": "appstack-ExtractorTemplatePersistenceStoreRunner.integ",
+      "tier": "default",
+      "title": "App-stack — ExtractorTemplatePersistenceStoreRunner.integ",
+      "requires": "postgres",
+      "argv": [
+        "npm", "run", "testByFile", "-w", "miroir-standalone-app", "--",
+        "--profile", "{profile}",
+        "ExtractorTemplatePersistenceStoreRunner.integ"
+      ]
+    },
+    {
+      "id": "appstack-uiIntegrationTestLauncher.integ",
+      "tier": "default",
+      "title": "UI launcher Node proof — runner + transformer leaves",
+      "requires": "postgres",
+      "argv": [
+        "npm", "run", "testByFile", "-w", "miroir-standalone-app", "--",
+        "--profile", "{profile}",
+        "uiIntegrationTestLauncher.integ"
+      ]
+    },
+    {
+      "id": "appstack-MiroirTestDisplayIntegrationLaunch",
+      "tier": "default",
+      "title": "UI details integ launch (B6-d1)",
+      "requires": "postgres",
+      "argv": [
+        "npm", "run", "testByFile", "-w", "miroir-standalone-app", "--",
+        "--profile", "{profile}",
+        "MiroirTestDisplayIntegrationLaunch"
+      ]
+    },
+    {
+      "id": "appstack-MiroirTestListIntegrationLaunch",
+      "tier": "default",
+      "title": "UI list integ batch (T5)",
+      "requires": "postgres",
+      "argv": [
+        "npm", "run", "testByFile", "-w", "miroir-standalone-app", "--",
+        "--profile", "{profile}",
+        "MiroirTestListIntegrationLaunch"
+      ]
+    },
+    {
+      "id": "appstack-JzodElementEditor.test",
+      "tier": "default",
+      "title": "JzodElementEditor component suite",
+      "requires": "none",
+      "argv": [
+        "npm", "run", "testByFile", "-w", "miroir-standalone-app", "--",
+        "--profile", "{profile}",
+        "JzodElementEditor.test"
+      ]
+    },
+    {
+      "id": "full-miroir-modelValidation",
+      "tier": "full",
+      "title": "Deployment modelValidation — miroir",
+      "requires": "none",
+      "argv": [
+        "npm", "run", "testByFile", "-w", "miroir-test-app_deployment-miroir", "--",
+        "tests/modelValidation.unit.test.ts"
+      ]
+    },
+    {
+      "id": "full-library-modelValidation",
+      "tier": "full",
+      "title": "Deployment modelValidation — library",
+      "requires": "none",
+      "argv": [
+        "npm", "run", "testByFile", "-w", "miroir-test-app_deployment-library", "--",
+        "tests/modelValidation.unit.test.ts"
+      ]
+    }
+  ]
+}

@@ -22,6 +22,33 @@ Integration tests need a reachable store when using SQL/ MongoDB configs:
 
 **Prefer argv** (`--suites`, `--mode`, `--filter`, `--profile`, `--storage`). Env vars remain for CI / legacy; see [Parameter surface](../reference/testing.md#parameter-surface-argv-preferred) in the reference.
 
+### Repo-wide non-regression (`npm run nonreg`)
+
+There is **no** `lerna run test` aggregator for Miroir. Use the Python runner:
+
+```bash
+# Default = unit (A) + MiroirTest integ (B) + curated app-stack (C); continue after failures
+npm run nonreg
+# same as:
+npm run nonreg -- --tier default --run-all
+
+# Unit only (no Postgres)
+npm run nonreg:unit
+
+# Stop at first failure
+npm run nonreg:fail-fast
+
+# Compare this run against a previous snapshot
+npm run nonreg -- --tier default --run-all --compare test-results/nonreg/<stamp>/summary.json
+
+# Compare two existing snapshots (no re-run)
+python scripts/run-nonreg.py --compare-only \
+  test-results/nonreg/<newer>/summary.json \
+  test-results/nonreg/<older>/summary.json
+```
+
+Snapshots land in `test-results/nonreg/<UTC-stamp>/` (`summary.json`, `summary.md`, per-step `logs/`). End-of-run prints passed / failed / skipped / not_run. Edit the step list in [`scripts/nonreg-manifest.json`](../../scripts/nonreg-manifest.json). Full detail: [reference/testing.md § Repo-wide non-regression](../reference/testing.md#repo-wide-non-regression-npm-run-nonreg).
+
 ### Unit (no database)
 
 ```bash

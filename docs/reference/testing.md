@@ -28,6 +28,46 @@ Miroir has three test layers:
 | Config preset | `--profile` / `-p` | `VITE_MIROIR_TEST_CONFIG_FILENAME` + related |
 | Real-server store backend | `--storage` / `-S` (`sql` \| `filesystem` \| `indexedDb` \| `mongodb`) | `MIROIR_TEST_STORAGE` (set by `testByFile` when `--storage` is used) |
 
+### Repo-wide non-regression (`npm run nonreg`)
+
+There is **no** single Vitest/`lerna run test` command that covers the whole matrix. Use:
+
+```bash
+npm run nonreg                         # --tier default --run-all
+npm run nonreg:unit                    # tier unit only
+npm run nonreg:fail-fast               # tier default, stop on first failure
+npm run nonreg -- --tier full --run-all
+```
+
+| Tier | Contents |
+|------|----------|
+| `unit` | MiroirTest unit suites via `testMiroir -w miroir-core -- --mode unit` + `RunAllMiroirTestsButton`, `MiroirTestListDisplay`, `MiroirTestDisplay` |
+| `default` | `unit` + MiroirTest integ (`miroirCoreTransformers`, `runner_library`) + curated app-stack (`DomainController.integ`, PSC, extractors, UI launcher/list/display proofs, `JzodElementEditor`) |
+| `full` | `default` + deployment `modelValidation` packages |
+
+Modes: `--run-all` (continue after failures; default) or `--fail-fast`.
+
+Each run writes a **timestamped snapshot** under `test-results/nonreg/<UTC-stamp>/`:
+
+| File | Role |
+|------|------|
+| `summary.json` | Machine-readable step results (for `--compare` / `--compare-only`) |
+| `summary.md` | Human table |
+| `logs/<step-id>.log` | Full stdout+stderr per step |
+
+```bash
+# Diff current run vs an older snapshot
+npm run nonreg -- --tier default --run-all \
+  --compare test-results/nonreg/20260717T190000Z/summary.json
+
+# Diff two existing snapshots
+python scripts/run-nonreg.py --compare-only \
+  test-results/nonreg/20260717T200000Z/summary.json \
+  test-results/nonreg/20260717T190000Z/summary.json
+```
+
+Step list: [`scripts/nonreg-manifest.json`](../../scripts/nonreg-manifest.json). Runner: [`scripts/run-nonreg.py`](../../scripts/run-nonreg.py). Default integ profile: `emulatedServer-sql` (override with `--profile`).
+
 ---
 
 ## Test format: MiroirTest
@@ -579,6 +619,7 @@ npm run testByFile -w miroir-standalone-app -- \
 |------|----------------|-------|
 | `JzodElementEditor.test.tsx` | In-memory `LocalCache`; `--profile` optional | Jzod editor components |
 | `MiroirTestDisplayIntegrationLaunch.integ.test.tsx` | Node emulated SQL via mocked launcher environment | `MiroirTestDisplay` launches integration and shows the result inspector |
+| `MiroirTestListIntegrationLaunch.integ.test.tsx` | Node emulated SQL via mocked launcher environment | List **Run All Integration Tests** batch for `miroirCoreTransformers` (filtered leaf) |
 | `JzodElementEditorReactCodeMirror.test.tsx` | — | CodeMirror sub-editor (currently commented out) |
 | `ReportPage.integ.test.tsx` | Uses shared React test tools | Report rendering smoke tests |
 | `BlobEditorField.integ.test.tsx` | No | Blob field editor component |
@@ -613,6 +654,17 @@ npm run testByFile -w miroir-standalone-app -- \
 ```
 
 The browser profile remains **`emulatedServer-indexedDb`**; this Vitest test uses a mocked Node SQL launcher environment.
+
+##### `MiroirTestListIntegrationLaunch.integ.test.tsx` — list integ batch
+
+RTL coverage for list **Run All Integration Tests**. It runs one filtered `miroirCoreTransformers` leaf (`plus with empty args fails`) and asserts transformer `sessionKind` + inspector success.
+
+```bash
+npm run testByFile -w miroir-standalone-app -- \
+  --profile emulatedServer-sql MiroirTestListIntegrationLaunch
+```
+
+Same pattern as the details proof: UI prefs stay on IndexedDB; the Node env mock loads SQL.
 
 ---
 
@@ -672,7 +724,7 @@ The Miroir Tests report runs data-isolated integration sessions with `hostMode: 
 | **CLI emulated** | `emulatedServer-sql`, `-filesystem`, `-mongodb` | `testMiroir` / `testByFile` (Node) | Postgres/filesystem/Mongo drivers register in Vitest `beforeAll` |
 | **Real server** | `realServer-sql`, `-indexedDb`, `-filesystem`, `-mongodb` | Browser client → `https://localhost:3080` (also Node proof via `uiIntegrationTestLauncher.realServer.integ`) | Requires running `miroir-server`. Select backend with `--storage` or `--profile realServer-*`. |
 
-Bundling `emulatedServer-sql` JSON into the UI does **not** enable SQL integration in the browser. In webApp, **transformer** integ uses IndexedDB + bundled admin; **runner** integ uses IndexedDB emulated or any `realServer-*` profile. `MiroirTestDisplayIntegrationLaunch.integ.test.tsx` verifies the Run Integration Tests button through an RTL click path (runner Return Book); the companion launcher test [`uiIntegrationTestLauncher.integ.test.ts`](../../packages/miroir-standalone-app/tests/helpers/uiIntegrationTestLauncher.integ.test.ts) covers both runner and transformer leaves in Node.
+Bundling `emulatedServer-sql` JSON into the UI does **not** enable SQL integration in the browser. In webApp, **transformer** integ uses IndexedDB + bundled admin; **runner** integ uses IndexedDB emulated or any `realServer-*` profile. `MiroirTestDisplayIntegrationLaunch.integ.test.tsx` verifies the details **Run Integration Tests** button (runner Return Book); `MiroirTestListIntegrationLaunch.integ.test.tsx` verifies list **Run All Integration Tests** (transformer leaf). The companion launcher test [`uiIntegrationTestLauncher.integ.test.ts`](../../packages/miroir-standalone-app/tests/helpers/uiIntegrationTestLauncher.integ.test.ts) covers both runner and transformer leaves in Node without RTL.
 
 Embedded mode attaches to a running host without re-deploying meta-model stores.
 
@@ -1101,13 +1153,28 @@ Checks performed:
 
 1. Start the app: `npm run dev -w miroir-standalone-app`.
 2. Navigate to **Miroir Tests** in the menu.
-3. Open a suite’s details. The badge shows `unit` / `integration` / `mixed`.
-4. **Run unit tests** — in-memory via the live context (no external store).
-5. **Run Integration Tests** — data-isolated session via the UI launcher (same path as the Node proofs above).
+3. Use the **list** report for batch runs, or open a suite’s **details** for a single-suite cockpit. The badge on details shows `unit` / `integration` / `mixed`.
+
+### List vs details × unit vs integration
+
+| Surface | Unit | Integration |
+|---------|------|-------------|
+| **List** (`MiroirTestListDisplay`) | **Run All Unit Tests** — in-memory unit leaves for every suite in the list | **Run All Integration Tests** — shown only when ≥1 UI-launchable integ suite is in the list; runs launchable suites **sequentially** under one mutex. Shares profile / run-target prefs with details. |
+| **Details** (`MiroirTestDisplay`) | **Run unit tests** when the suite has unit-capable leaves | **Run Integration Tests** when the suite has integ-capable leaves (runner = integ-only; mixed transformer = both buttons) |
+
+List **Run All Unit Tests** never launches integration sessions. List/details integ need a **browser-launchable** profile — in webApp that is **`emulatedServer-indexedDb`** (default) or a **`realServer-*`** profile with `miroir-server` up. Emulated SQL/filesystem/Mongo profiles stay Electron/CLI-only.
+
+### Manual checklist (webApp)
+
+1. Miroir deployment → Miroir Tests **list** → **Run All Unit Tests** completes; label is unambiguous (not “Run All Miroir Tests”).
+2. Same list → profile `emulatedServer-indexedDb` → **Run All Integration Tests** runs launchable suites only (expect `miroirCoreTransformers` and/or `runner_library` when present in the fetched list).
+3. Details `miroirCoreTransformers` → both unit and integ buttons; run unit then integ.
+4. Details `runner_library` → integ only (no unit button).
+5. Details unit-only suite (e.g. `EntityPrimaryKey`) → unit only.
 
 ### Runner vs transformer from the UI
 
-Both use the same **Run Integration Tests** button. The launcher picks the session kind from the suite’s leaves:
+Both use the same **Run Integration Tests** affordance (details button, or list **Run All Integration Tests** batch). The launcher picks the session kind from the suite’s leaves:
 
 | Suite (instance name) | Session | What to select | Browser profile |
 |-----------------------|---------|----------------|-----------------|
@@ -1116,14 +1183,14 @@ Both use the same **Run Integration Tests** button. The launcher picks the sessi
 
 **Runner**
 
-1. Open **runner_library** / `runner.library`.
+1. Open **runner_library** / `runner.library` (or use list **Run All Integration Tests** when the suite is in the list).
 2. Choose profile (`emulatedServer-indexedDb` or a `realServer-*` profile with `miroir-server` up).
 3. Choose **Ephemeral run** (fresh UUIDs) or **Pinned suite targets**.
 4. Click **Run Integration Tests** — inspector should show `sessionKind: runner`.
 
 **Transformer**
 
-1. Open **miroirCoreTransformers**.
+1. Open **miroirCoreTransformers** (or use the list batch).
 2. Choose profile **`emulatedServer-indexedDb`** (webApp cannot run SQL/filesystem emulated stacks).
 3. Choose ephemeral or pinned identity.
 4. Click **Run Integration Tests** — inspector should show `sessionKind: transformer`.

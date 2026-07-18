@@ -54,6 +54,11 @@ function assertBrowserSafeTransformerOptions(options: TestSessionForIntegOptions
       "Browser transformer session cannot use SQL stores in webApp. Use indexedDb + bundled admin, or Electron/Node.",
     );
   }
+  if (appType === "mongodb" || adminType === "mongodb") {
+    throw new Error(
+      "Browser transformer session cannot use MongoDB stores in webApp. Use indexedDb + bundled admin, or Electron/Node.",
+    );
+  }
 }
 
 const browserSessionFactory: IntegrationTestSessionFactory = {

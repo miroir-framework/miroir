@@ -61,6 +61,16 @@ export default defineConfig({
       '@emotion/styled', 
       '@mui/material/Tooltip'
     ],
+    // Node-only store drivers — pulled via dynamic import from IntegrationTestSession
+    // for CLI/Vitest. Must not be prebundled into the webApp (MongoDB driver crashes
+    // in-browser: "Class extends value undefined is not a constructor").
+    exclude: [
+      'miroir-store-filesystem',
+      'miroir-store-mongodb',
+      'miroir-store-postgres',
+      'mongodb',
+      'pg',
+    ],
   },
   plugins: [
     nodePolyfills({

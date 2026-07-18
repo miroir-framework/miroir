@@ -3,9 +3,13 @@
  * Bootstraps testApplication + admin deployments with configurable store backends.
  *
  * Browser-safe: no Node built-ins (node:path, node:url, cross-fetch) and no
- * dependency on the Node-only appStackIntegrationBootstrap. The Node facade at
- * tests/helpers/IntegrationTestSession.ts re-exports this module and adds back
- * the Node-only pieces (real filesystem defaults, env resolvers, app-stack session).
+ * dependency on the Node-only appStackIntegrationBootstrap. Node store drivers
+ * (filesystem / postgres / mongodb) are loaded only via dynamic import when a
+ * session actually requests those store types — never as static imports (Vite
+ * webApp would otherwise evaluate the MongoDB Node driver and crash).
+ * The Node facade at tests/helpers/IntegrationTestSession.ts re-exports this
+ * module and adds back Node-only pieces (real filesystem defaults, env resolvers,
+ * app-stack session).
  */
 import { v4 as uuidv4 } from "uuid";
 import {
@@ -30,11 +34,13 @@ import {
 import { setupMiroirDomainController } from "miroir-localcache-redux";
 import { miroirBundledStoreSectionStartup } from "miroir-store-bundled";
 import type { BundledDeploymentData } from "miroir-store-bundled";
-import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
 import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
-import { miroirMongoDbStoreSectionStartup } from "miroir-store-mongodb";
-import { miroirPostgresStoreSectionStartup } from "miroir-store-postgres";
 import { deployment_Admin } from "miroir-test-app_deployment-admin";
+// Node-only store drivers (filesystem / postgres / mongodb) must NOT be static
+// imports here — evaluating them in the Vite webApp pulls the MongoDB Node
+// driver and crashes with "Class extends value undefined is not a constructor".
+// They are loaded via dynamic import in registerStoreSectionStartups when needed.
+
 import { buildTeardownTestApplicationStoresAction } from "./testApplicationStoreTeardown.js";
 import { buildTestSessionModelEnvironment } from "./testSessionModelEnvironment.js";
 import {
@@ -501,25 +507,31 @@ export function buildMiroirConfigForPostgres(
   );
 }
 
-function registerStoreSectionStartups(
+async function registerStoreSectionStartups(
   serverTypes: Set<EmulatedServerType>,
   bundledDeploymentData: Record<string, BundledDeploymentData>,
-): void {
+): Promise<void> {
   const configurationService = ConfigurationService.configurationService;
-  if (serverTypes.has("filesystem")) {
-    miroirFileSystemStoreSectionStartup(configurationService);
-  }
-  if (serverTypes.has("sql")) {
-    miroirPostgresStoreSectionStartup(configurationService);
-  }
+  // Browser-native / bundled — safe to load eagerly in webApp.
   if (serverTypes.has("indexedDb")) {
     miroirIndexedDbStoreSectionStartup(configurationService);
   }
-  if (serverTypes.has("mongodb")) {
-    miroirMongoDbStoreSectionStartup(configurationService);
-  }
   if (serverTypes.has("bundled")) {
     miroirBundledStoreSectionStartup(configurationService, bundledDeploymentData);
+  }
+  // Node-only drivers — dynamic import so Vite webApp never evaluates them unless
+  // a Node/Electron/Vitest path actually requests that store type.
+  if (serverTypes.has("filesystem")) {
+    const { miroirFileSystemStoreSectionStartup } = await import("miroir-store-filesystem");
+    miroirFileSystemStoreSectionStartup(configurationService);
+  }
+  if (serverTypes.has("sql")) {
+    const { miroirPostgresStoreSectionStartup } = await import("miroir-store-postgres");
+    miroirPostgresStoreSectionStartup(configurationService);
+  }
+  if (serverTypes.has("mongodb")) {
+    const { miroirMongoDbStoreSectionStartup } = await import("miroir-store-mongodb");
+    miroirMongoDbStoreSectionStartup(configurationService);
   }
 }
 
@@ -580,10 +592,10 @@ export class IntegrationTestSession implements RunnerTestSessionInterface {
     );
   }
 
-  private ensureStoreSectionsRegistered(
+  private async ensureStoreSectionsRegistered(
     testStoreConfig: StoreUnitConfiguration,
     adminStoreConfig: StoreUnitConfiguration,
-  ): void {
+  ): Promise<void> {
     const registrationKey = [...collectStoreUnitConfigurationServerTypes(testStoreConfig, adminStoreConfig)]
       .sort()
       .join(",");
@@ -591,7 +603,7 @@ export class IntegrationTestSession implements RunnerTestSessionInterface {
       return;
     }
     miroirCoreStartup();
-    registerStoreSectionStartups(
+    await registerStoreSectionStartups(
       collectStoreUnitConfigurationServerTypes(testStoreConfig, adminStoreConfig),
       this.options.bundledDeploymentData ?? {},
     );
@@ -711,7 +723,7 @@ export class IntegrationTestSession implements RunnerTestSessionInterface {
     const adminStoreConfig = this.getAdminStoreConfig();
     this.testStoreConfig = testStoreConfig;
 
-    this.ensureStoreSectionsRegistered(testStoreConfig, adminStoreConfig);
+    await this.ensureStoreSectionsRegistered(testStoreConfig, adminStoreConfig);
 
     this.miroirConfig = buildMiroirConfigForInteg(
       testStoreConfig,
