@@ -12,10 +12,14 @@ import {
   resolveRunnerTestRunTarget,
   type LoggerInterface,
   type LoggerOptions,
+  type MetaModel,
   type MiroirTestSuite,
   parseMiroirRunnerTestCliConfig,
 } from "miroir-core";
-import { miroirTest_runner_library, RUNNER_LIBRARY_RUNNER_REGISTRY } from "miroir-test-app_deployment-library";
+import {
+  defaultLibraryAppModel,
+  RUNNER_LIBRARY_RUNNER_REGISTRY,
+} from "miroir-test-app_deployment-library";
 import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
 import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
 import { miroirMongoDbStoreSectionStartup } from "miroir-store-mongodb";
@@ -24,8 +28,15 @@ import { env } from "process";
 import { loglevelnext } from "../src/loglevelnextImporter.js";
 import { miroirAppStartup } from "../src/startup.js";
 import { loadTestConfigFiles } from "./utils/fileTools.js";
-import { runMiroirRunnerTestsFromCLI } from "./helpers/runMiroirRunnerTestsFromCLI.js";
+import {
+  loadRunnerOrActionMiroirTestSuite,
+  runMiroirRunnerTestsFromCLI,
+} from "./helpers/runMiroirRunnerTestsFromCLI.js";
 import { createStandaloneAppIntegrationOrchestrator } from "./helpers/StandaloneAppIntegrationOrchestrator.js";
+import {
+  libraryEntitiesAndInstancesWithoutBook3,
+  libraryPlayfieldSeedInitParams,
+} from "./helpers/libraryPlayfieldSeeds.js";
 
 const pageLabel = "miroir-runner-tests.integ";
 
@@ -64,20 +75,43 @@ if (config.filter?.testList) {
   );
 }
 
-if (config.suiteKeys.length > 0) {
-  const orchestrator = createStandaloneAppIntegrationOrchestrator();
-  const runnerLibrarySuite = miroirTest_runner_library.definition as MiroirTestSuite;
-  const runTarget = resolveRunnerTestRunTarget({ suite: runnerLibrarySuite });
-  const testSession = orchestrator.createSession("runner", {
-    miroirConfig,
-    miroirActivityTracker,
-    miroirEventService,
-  }, {
+function sessionOptionsForSuite(suiteKey: string, suite: MiroirTestSuite) {
+  const runTarget = resolveRunnerTestRunTarget({ suite });
+  if (suiteKey === "domain_controller_data_crud") {
+    return {
+      pageLabel,
+      runTarget,
+      suiteTestParams: suite.testParams,
+      runnerRegistry: {},
+      libraryPlayfieldSeed: {
+        libraryEntitiesAndInstances: libraryEntitiesAndInstancesWithoutBook3,
+        librarySeedInitParams: libraryPlayfieldSeedInitParams,
+        // Library app model (not Miroir meta-model) — same as Data.CRUD beforeEach.
+        librarySeedMetaModel: defaultLibraryAppModel as MetaModel,
+      },
+    };
+  }
+  return {
     pageLabel,
     runTarget,
-    suiteTestParams: runnerLibrarySuite.testParams,
+    suiteTestParams: suite.testParams,
     runnerRegistry: RUNNER_LIBRARY_RUNNER_REGISTRY,
-  });
+  };
+}
+
+if (config.suiteKeys.length > 0) {
+  const primarySuiteKey = config.suiteKeys[0];
+  const primarySuite = loadRunnerOrActionMiroirTestSuite(primarySuiteKey);
+  const orchestrator = createStandaloneAppIntegrationOrchestrator();
+  const testSession = orchestrator.createSession(
+    "runner",
+    {
+      miroirConfig,
+      miroirActivityTracker,
+      miroirEventService,
+    },
+    sessionOptionsForSuite(primarySuiteKey, primarySuite),
+  );
 
   await runMiroirRunnerTestsFromCLI(
     runMiroirTests,

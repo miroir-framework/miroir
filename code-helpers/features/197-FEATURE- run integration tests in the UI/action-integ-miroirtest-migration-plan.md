@@ -273,14 +273,21 @@ Each slice: **failing test → implement → green → commit**. After slices ma
 
 **Locked 1.3-a:** Action suites reuse session kind `"runner"` (registry unused for Action leaves).
 
-### Phase 2 — Pilot MiroirTest instance (parity with Data.CRUD)
+### Phase 2 — Pilot MiroirTest instance (parity with Data.CRUD) ✅
 
-| Slice | Work | Tests first | Nonreg |
-|-------|------|-------------|--------|
-| 2.1 | Add deployment JSON suite with **one** leaf (“Refresh all Instances”) + suite hooks or playfield seed | Integ: `testMiroir --suites <key> --mode integ --profile emulatedServer-sql --filter Refresh` | — |
-| 2.2 | Port remaining five cases as `actionTest` leaves | Filter each leaf; then full suite | — |
-| 2.3 ★ | Wire suite into `testMiroir` / registry export (library package) | CLI entry green for full Data.CRUD suite | **nonreg** |
-| 2.4 | Parity checklist vs imperative file (same assertions / counts) | Keep both green; document known deltas if any | — |
+| Slice | Work | Tests first | Nonreg | Status |
+|-------|------|-------------|--------|--------|
+| 2.0 | `resolveActionTestLeaf` + real `runMiroirActionTest` (via `runCompositeActionTestParams`) | Unit: `ActionTestTools.unit.test.ts` | — | ✅ |
+| 2.1 | Add deployment JSON suite with **one** leaf (“Refresh all Instances”) + playfield seed (no suite-level hooks) | Integ: `testMiroir --suites domain_controller_data_crud --mode integ --profile emulatedServer-sql` | — | ✅ |
+| 2.2 | Port remaining five cases as `actionTest` leaves | Full suite 6/6 | — | ✅ |
+| 2.3 ★ | Wire suite into `testMiroir` / registry export (library package); session `libraryPlayfieldSeed` | CLI entry green for full Data.CRUD suite | **nonreg** | ✅ |
+| 2.4 | Parity checklist vs imperative file (same assertions / counts) | Keep both green; document known deltas if any | — | ✅ |
+
+**Phase 2 notes:**
+- Suite key: `domain_controller_data_crud` (`miroirTest_domain_controller_data_crud`).
+- Seed uses `libraryEntitiesAndInstancesWithoutBook3` + `defaultLibraryAppModel` (not `defaultMiroirMetaModel`).
+- Imperative `DomainController.integ.Data.CRUD.test.tsx` untouched; both paths green.
+- Lifecycle already on session playfield (`RunnerTestSession.libraryPlayfieldSeed`) — Phase 3.1 largely pre-satisfied.
 
 ### Phase 3 — Lifecycle alignment (DRY with Runner)
 

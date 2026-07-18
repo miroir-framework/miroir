@@ -5,16 +5,33 @@ import {
   defaultMetaModelEnvironment,
   displayMiroirTestResults,
   type MiroirTestCliConfig,
+  type MiroirTestDefinition,
   type MiroirTestExecutionEnvironment,
   type MiroirTestExecutionOptions,
   type MiroirTestSuite,
   type RunMiroirTests,
   type RunnerTestSessionInterface,
-  type VitestNamespace
+  type VitestNamespace,
 } from "miroir-core";
-import { miroirTest_runner_library } from "miroir-test-app_deployment-library";
+import {
+  miroirTest_domain_controller_data_crud,
+  miroirTest_runner_library,
+} from "miroir-test-app_deployment-library";
 
+const SUITE_BY_KEY: Record<string, MiroirTestDefinition> = {
+  runner_library: miroirTest_runner_library as MiroirTestDefinition,
+  domain_controller_data_crud: miroirTest_domain_controller_data_crud as MiroirTestDefinition,
+};
 
+export function loadRunnerOrActionMiroirTestSuite(suiteKey: string): MiroirTestSuite {
+  const instance = SUITE_BY_KEY[suiteKey];
+  if (!instance) {
+    throw new Error(
+      `Unknown runner/action MiroirTest suite key "${suiteKey}". Available: ${Object.keys(SUITE_BY_KEY).join(", ")}`,
+    );
+  }
+  return instance.definition as MiroirTestSuite;
+}
 
 // ################################################################################################
 export async function runMiroirRunnerTestsFromCLI(
@@ -25,8 +42,11 @@ export async function runMiroirRunnerTestsFromCLI(
   testSession: RunnerTestSessionInterface,
 ): Promise<void> {
   const executionEnvironment: MiroirTestExecutionEnvironment = await testSession.initSession();
-  const executionOptions: MiroirTestExecutionOptions = { executionMode: "integration", executionEnvironment };
-  
+  const executionOptions: MiroirTestExecutionOptions = {
+    executionMode: "integration",
+    executionEnvironment,
+  };
+
   const loadedSuites: { suiteKey: string; definition: MiroirTestSuite }[] = [];
 
   beforeEach(async () => {
@@ -48,15 +68,15 @@ export async function runMiroirRunnerTestsFromCLI(
   });
 
   for (const suiteKey of config.suiteKeys) {
-    const suiteExport = miroirTest_runner_library.definition as MiroirTestSuite;
+    const suiteExport = loadRunnerOrActionMiroirTestSuite(suiteKey);
     loadedSuites.push({
       suiteKey,
-      definition: suiteExport as MiroirTestSuite,
+      definition: suiteExport,
     });
     await runMiroirTests._runMiroirTestSuite(
       vitest,
       [suiteKey],
-      suiteExport as MiroirTestSuite,
+      suiteExport,
       config.filter,
       defaultMetaModelEnvironment,
       miroirActivityTracker,
@@ -65,6 +85,5 @@ export async function runMiroirRunnerTestsFromCLI(
       runMiroirTests,
       executionOptions,
     );
-  
   }
 }

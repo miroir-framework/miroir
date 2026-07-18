@@ -1,0 +1,1101 @@
+{
+  "uuid": "c8e2a104-5b6d-4f91-a2c3-9d0e1f2a3b4c",
+  "parentName": "MiroirTest",
+  "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
+  "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+  "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
+  "name": "domain_controller_data_crud",
+  "description": "DomainController Data CRUD action integration tests (Feature 197 Phase 2)",
+  "definition": {
+    "miroirTestType": "miroirTestSuite",
+    "miroirTestLabel": "domainController.data.crud",
+    "runTarget": {
+      "applicationUuid": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+      "applicationName": "Library",
+      "deploymentUuid": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4"
+    },
+    "miroirTests": [
+      {
+        "miroirTestType": "actionTest",
+        "miroirTestLabel": "Refresh all Instances",
+        "compositeActionSequence": {
+          "actionType": "compositeActionSequence",
+          "actionLabel": "AddBookInstanceThenRollback",
+          "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+          "payload": {
+            "actionSequence": [
+              {
+                "actionType": "rollback",
+                "actionLabel": "refreshMiroirLocalCache",
+                "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                "payload": {
+                  "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
+                }
+              },
+              {
+                "actionType": "rollback",
+                "actionLabel": "refreshLibraryLocalCache",
+                "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                "payload": {
+                  "application": "5af03c98-fe5e-490b-b08f-e1230971c57f"
+                }
+              },
+              {
+                "actionType": "compositeRunBoxedQueryAction",
+                "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                "actionLabel": "calculateNewEntityDefinionAndReports",
+                "nameGivenToResult": "entityBookList",
+                "payload": {
+                  "actionType": "runBoxedQueryAction",
+                  "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+                  "payload": {
+                    "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                    "applicationSection": "data",
+                    "query": {
+                      "queryType": "boxedQueryWithExtractorCombinerTransformer",
+                      "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                      "pageParams": {
+                        "currentDeploymentUuid": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4"
+                      },
+                      "extractors": {
+                        "books": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "data",
+                          "parentName": "Book",
+                          "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                          "orderBy": {
+                            "attributeName": "uuid",
+                            "direction": "ASC"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "testCompositeActionAssertions": [
+          {
+            "actionType": "compositeRunTestAssertion",
+            "actionLabel": "checkNumberOfBooks",
+            "nameGivenToResult": "checkNumberOfBooks",
+            "testAssertion": {
+              "testType": "testAssertion",
+              "testLabel": "checkNumberOfBooks",
+              "definition": {
+                "resultAccessPath": [
+                  "0"
+                ],
+                "resultTransformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referencePath": [
+                      "entityBookList",
+                      "books"
+                    ]
+                  }
+                },
+                "expectedValue": {
+                  "aggregate": 5
+                }
+              }
+            }
+          },
+          {
+            "actionType": "compositeRunTestAssertion",
+            "actionLabel": "checkEntityBooks",
+            "nameGivenToResult": "checkEntityBooks",
+            "testAssertion": {
+              "testType": "testAssertion",
+              "testLabel": "checkEntityBooks",
+              "definition": {
+                "resultAccessPath": [
+                  "entityBookList",
+                  "books"
+                ],
+                "ignoreAttributes": [
+                  "conceptLevel"
+                ],
+                "expectedValue": [
+                  {
+                    "uuid": "6fefa647-7ecf-4f83-b617-69d7d5094c37",
+                    "parentName": "Book",
+                    "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                    "name": "The Bride Wore Black",
+                    "author": "d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17",
+                    "conceptLevel": "",
+                    "publisher": "c1c97d54-aba8-4599-883a-7fe8f3874095",
+                    "year": 1940
+                  },
+                  {
+                    "uuid": "c6852e89-3c3c-447f-b827-4b5b9d830975",
+                    "parentName": "Book",
+                    "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                    "conceptLevel": "Data",
+                    "name": "Le Pain et le Cirque",
+                    "author": "ce7b601d-be5f-4bc6-a5af-14091594046a",
+                    "publisher": "516a7366-39e7-4998-82cb-80199a7fa667"
+                  },
+                  {
+                    "uuid": "c97be567-bd70-449f-843e-cd1d64ac1ddd",
+                    "parentName": "Book",
+                    "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                    "name": "Rear Window",
+                    "author": "d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17",
+                    "conceptLevel": "",
+                    "publisher": "1f550a2a-33f5-4a56-83ee-302701039494",
+                    "year": 1942
+                  },
+                  {
+                    "uuid": "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
+                    "parentName": "Book",
+                    "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                    "conceptLevel": "Data",
+                    "name": "Et dans l'éternité je ne m'ennuierai pas",
+                    "author": "ce7b601d-be5f-4bc6-a5af-14091594046a",
+                    "publisher": "516a7366-39e7-4998-82cb-80199a7fa667",
+                    "year": 2014
+                  },
+                  {
+                    "uuid": "e20e276b-619d-4e16-8816-b7ec37b53439",
+                    "parentName": "Book",
+                    "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                    "name": "The Design of Everyday Things",
+                    "author": "4441169e-0c22-4fbc-81b2-28c87cf48ab2",
+                    "conceptLevel": "",
+                    "publisher": "c1c97d54-aba8-4599-883a-7fe8f3874095",
+                    "year": 1988
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      {
+        "miroirTestType": "actionTest",
+        "miroirTestLabel": "Add Book instance",
+        "compositeActionSequence": {
+          "actionType": "compositeActionSequence",
+          "actionLabel": "AddBookInstanceThenRollback",
+          "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+          "payload": {
+            "actionSequence": [
+              {
+                "actionType": "rollback",
+                "actionLabel": "refreshMiroirLocalCache",
+                "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                "payload": {
+                  "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
+                }
+              },
+              {
+                "actionType": "rollback",
+                "actionLabel": "refreshLibraryLocalCache",
+                "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                "payload": {
+                  "application": "5af03c98-fe5e-490b-b08f-e1230971c57f"
+                }
+              },
+              {
+                "actionType": "createInstance",
+                "actionLabel": "addBook3",
+                "endpoint": "ed520de4-55a9-4550-ac50-b1b713b72a89",
+                "payload": {
+                  "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                  "applicationSection": "data",
+                  "objects": [
+                    {
+                      "uuid": "4cb917b3-3c53-4f9b-b000-b0e4c07a81f7",
+                      "parentName": "Book",
+                      "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                      "name": "Renata n'importe quoi",
+                      "author": "e4376314-d197-457c-aa5e-d2da5f8d5977",
+                      "conceptLevel": "Data",
+                      "publisher": "516a7366-39e7-4998-82cb-80199a7fa667"
+                    }
+                  ]
+                }
+              },
+              {
+                "actionType": "compositeRunBoxedQueryAction",
+                "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                "actionLabel": "calculateNewEntityDefinionAndReports",
+                "nameGivenToResult": "entityBookList",
+                "payload": {
+                  "actionType": "runBoxedQueryAction",
+                  "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+                  "payload": {
+                    "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                    "applicationSection": "data",
+                    "query": {
+                      "queryType": "boxedQueryWithExtractorCombinerTransformer",
+                      "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                      "pageParams": {
+                        "currentDeploymentUuid": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4"
+                      },
+                      "extractors": {
+                        "books": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "data",
+                          "parentName": "Book",
+                          "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                          "orderBy": {
+                            "attributeName": "uuid",
+                            "direction": "ASC"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "testCompositeActionAssertions": [
+          {
+            "actionType": "compositeRunTestAssertion",
+            "actionLabel": "checkNumberOfBooks",
+            "nameGivenToResult": "checkNumberOfBooks",
+            "testAssertion": {
+              "testType": "testAssertion",
+              "testLabel": "checkNumberOfBooks",
+              "definition": {
+                "resultAccessPath": [
+                  "0"
+                ],
+                "resultTransformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referencePath": [
+                      "entityBookList",
+                      "books"
+                    ]
+                  }
+                },
+                "expectedValue": {
+                  "aggregate": 6
+                }
+              }
+            }
+          },
+          {
+            "actionType": "compositeRunTestAssertion",
+            "actionLabel": "checkEntityBooks",
+            "nameGivenToResult": "checkEntityBooks",
+            "testAssertion": {
+              "testType": "testAssertion",
+              "testLabel": "checkEntityBooks",
+              "definition": {
+                "resultAccessPath": [
+                  "entityBookList",
+                  "books"
+                ],
+                "ignoreAttributes": [
+                  "conceptLevel"
+                ],
+                "expectedValue": [
+                  {
+                    "uuid": "4cb917b3-3c53-4f9b-b000-b0e4c07a81f7",
+                    "parentName": "Book",
+                    "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                    "name": "Renata n'importe quoi",
+                    "author": "e4376314-d197-457c-aa5e-d2da5f8d5977",
+                    "conceptLevel": "Data",
+                    "publisher": "516a7366-39e7-4998-82cb-80199a7fa667"
+                  },
+                  {
+                    "uuid": "6fefa647-7ecf-4f83-b617-69d7d5094c37",
+                    "parentName": "Book",
+                    "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                    "name": "The Bride Wore Black",
+                    "author": "d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17",
+                    "conceptLevel": "",
+                    "publisher": "c1c97d54-aba8-4599-883a-7fe8f3874095",
+                    "year": 1940
+                  },
+                  {
+                    "uuid": "c6852e89-3c3c-447f-b827-4b5b9d830975",
+                    "parentName": "Book",
+                    "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                    "conceptLevel": "Data",
+                    "name": "Le Pain et le Cirque",
+                    "author": "ce7b601d-be5f-4bc6-a5af-14091594046a",
+                    "publisher": "516a7366-39e7-4998-82cb-80199a7fa667"
+                  },
+                  {
+                    "uuid": "c97be567-bd70-449f-843e-cd1d64ac1ddd",
+                    "parentName": "Book",
+                    "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                    "name": "Rear Window",
+                    "author": "d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17",
+                    "conceptLevel": "",
+                    "publisher": "1f550a2a-33f5-4a56-83ee-302701039494",
+                    "year": 1942
+                  },
+                  {
+                    "uuid": "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
+                    "parentName": "Book",
+                    "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                    "conceptLevel": "Data",
+                    "name": "Et dans l'éternité je ne m'ennuierai pas",
+                    "author": "ce7b601d-be5f-4bc6-a5af-14091594046a",
+                    "publisher": "516a7366-39e7-4998-82cb-80199a7fa667",
+                    "year": 2014
+                  },
+                  {
+                    "uuid": "e20e276b-619d-4e16-8816-b7ec37b53439",
+                    "parentName": "Book",
+                    "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                    "name": "The Design of Everyday Things",
+                    "author": "4441169e-0c22-4fbc-81b2-28c87cf48ab2",
+                    "conceptLevel": "",
+                    "publisher": "c1c97d54-aba8-4599-883a-7fe8f3874095",
+                    "year": 1988
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      {
+        "miroirTestType": "actionTest",
+        "miroirTestLabel": "Add Book instance then rollback",
+        "compositeActionSequence": {
+          "actionType": "compositeActionSequence",
+          "actionLabel": "AddBookInstanceThenRollback",
+          "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+          "payload": {
+            "actionSequence": [
+              {
+                "actionType": "rollback",
+                "actionLabel": "refreshMiroirLocalCache",
+                "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                "payload": {
+                  "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
+                }
+              },
+              {
+                "actionType": "rollback",
+                "actionLabel": "refreshLibraryLocalCache",
+                "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                "payload": {
+                  "application": "5af03c98-fe5e-490b-b08f-e1230971c57f"
+                }
+              },
+              {
+                "actionType": "createInstance",
+                "actionLabel": "addBook3",
+                "endpoint": "ed520de4-55a9-4550-ac50-b1b713b72a89",
+                "payload": {
+                  "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                  "applicationSection": "data",
+                  "objects": [
+                    {
+                      "uuid": "4cb917b3-3c53-4f9b-b000-b0e4c07a81f7",
+                      "parentName": "Book",
+                      "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                      "name": "Renata n'importe quoi",
+                      "author": "e4376314-d197-457c-aa5e-d2da5f8d5977",
+                      "conceptLevel": "Data",
+                      "publisher": "516a7366-39e7-4998-82cb-80199a7fa667"
+                    }
+                  ]
+                }
+              },
+              {
+                "actionType": "compositeRunBoxedQueryAction",
+                "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                "actionLabel": "calculateNewEntityDefinionAndReports",
+                "nameGivenToResult": "entityBookList",
+                "payload": {
+                  "actionType": "runBoxedQueryAction",
+                  "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+                  "payload": {
+                    "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                    "applicationSection": "data",
+                    "query": {
+                      "queryType": "boxedQueryWithExtractorCombinerTransformer",
+                      "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                      "pageParams": {
+                        "currentDeploymentUuid": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4"
+                      },
+                      "extractors": {
+                        "books": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "data",
+                          "parentName": "Book",
+                          "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                          "orderBy": {
+                            "attributeName": "uuid",
+                            "direction": "ASC"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "testCompositeActionAssertions": [
+          {
+            "actionType": "compositeRunTestAssertion",
+            "actionLabel": "checkNumberOfBooks",
+            "nameGivenToResult": "checkNumberOfBooks",
+            "testAssertion": {
+              "testType": "testAssertion",
+              "testLabel": "checkNumberOfBooks",
+              "definition": {
+                "resultAccessPath": [
+                  "0"
+                ],
+                "resultTransformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referencePath": [
+                      "entityBookList",
+                      "books"
+                    ]
+                  }
+                },
+                "expectedValue": {
+                  "aggregate": 6
+                }
+              }
+            }
+          },
+          {
+            "actionType": "compositeRunTestAssertion",
+            "actionLabel": "checkEntityBooks",
+            "nameGivenToResult": "checkEntityBooks",
+            "testAssertion": {
+              "testType": "testAssertion",
+              "testLabel": "checkEntityBooks",
+              "definition": {
+                "resultAccessPath": [
+                  "entityBookList",
+                  "books"
+                ],
+                "ignoreAttributes": [
+                  "conceptLevel"
+                ],
+                "expectedValue": [
+                  {
+                    "uuid": "4cb917b3-3c53-4f9b-b000-b0e4c07a81f7",
+                    "parentName": "Book",
+                    "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                    "name": "Renata n'importe quoi",
+                    "author": "e4376314-d197-457c-aa5e-d2da5f8d5977",
+                    "conceptLevel": "Data",
+                    "publisher": "516a7366-39e7-4998-82cb-80199a7fa667"
+                  },
+                  {
+                    "uuid": "6fefa647-7ecf-4f83-b617-69d7d5094c37",
+                    "parentName": "Book",
+                    "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                    "name": "The Bride Wore Black",
+                    "author": "d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17",
+                    "conceptLevel": "",
+                    "publisher": "c1c97d54-aba8-4599-883a-7fe8f3874095",
+                    "year": 1940
+                  },
+                  {
+                    "uuid": "c6852e89-3c3c-447f-b827-4b5b9d830975",
+                    "parentName": "Book",
+                    "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                    "conceptLevel": "Data",
+                    "name": "Le Pain et le Cirque",
+                    "author": "ce7b601d-be5f-4bc6-a5af-14091594046a",
+                    "publisher": "516a7366-39e7-4998-82cb-80199a7fa667"
+                  },
+                  {
+                    "uuid": "c97be567-bd70-449f-843e-cd1d64ac1ddd",
+                    "parentName": "Book",
+                    "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                    "name": "Rear Window",
+                    "author": "d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17",
+                    "conceptLevel": "",
+                    "publisher": "1f550a2a-33f5-4a56-83ee-302701039494",
+                    "year": 1942
+                  },
+                  {
+                    "uuid": "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
+                    "parentName": "Book",
+                    "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                    "conceptLevel": "Data",
+                    "name": "Et dans l'éternité je ne m'ennuierai pas",
+                    "author": "ce7b601d-be5f-4bc6-a5af-14091594046a",
+                    "publisher": "516a7366-39e7-4998-82cb-80199a7fa667",
+                    "year": 2014
+                  },
+                  {
+                    "uuid": "e20e276b-619d-4e16-8816-b7ec37b53439",
+                    "parentName": "Book",
+                    "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                    "name": "The Design of Everyday Things",
+                    "author": "4441169e-0c22-4fbc-81b2-28c87cf48ab2",
+                    "conceptLevel": "",
+                    "publisher": "c1c97d54-aba8-4599-883a-7fe8f3874095",
+                    "year": 1988
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      {
+        "miroirTestType": "actionTest",
+        "miroirTestLabel": "Remove Book instance",
+        "compositeActionSequence": {
+          "actionType": "compositeActionSequence",
+          "actionLabel": "AddBookInstanceThenRollback",
+          "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+          "payload": {
+            "actionSequence": [
+              {
+                "actionType": "rollback",
+                "actionLabel": "refreshMiroirLocalCache",
+                "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                "payload": {
+                  "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
+                }
+              },
+              {
+                "actionType": "rollback",
+                "actionLabel": "refreshLibraryLocalCache",
+                "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                "payload": {
+                  "application": "5af03c98-fe5e-490b-b08f-e1230971c57f"
+                }
+              },
+              {
+                "actionType": "deleteInstance",
+                "actionLabel": "deleteBook2",
+                "endpoint": "ed520de4-55a9-4550-ac50-b1b713b72a89",
+                "payload": {
+                  "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                  "applicationSection": "data",
+                  "objects": [
+                    {
+                      "uuid": "e20e276b-619d-4e16-8816-b7ec37b53439",
+                      "parentName": "Book",
+                      "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                      "name": "The Design of Everyday Things",
+                      "author": "4441169e-0c22-4fbc-81b2-28c87cf48ab2",
+                      "conceptLevel": "",
+                      "publisher": "c1c97d54-aba8-4599-883a-7fe8f3874095",
+                      "year": 1988
+                    }
+                  ]
+                }
+              },
+              {
+                "actionType": "compositeRunBoxedQueryAction",
+                "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                "actionLabel": "calculateNewEntityDefinionAndReports",
+                "nameGivenToResult": "entityBookList",
+                "payload": {
+                  "actionType": "runBoxedQueryAction",
+                  "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+                  "payload": {
+                    "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                    "applicationSection": "data",
+                    "query": {
+                      "queryType": "boxedQueryWithExtractorCombinerTransformer",
+                      "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                      "pageParams": {
+                        "currentDeploymentUuid": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4"
+                      },
+                      "extractors": {
+                        "books": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "data",
+                          "parentName": "Book",
+                          "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                          "orderBy": {
+                            "attributeName": "uuid",
+                            "direction": "ASC"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "testCompositeActionAssertions": [
+          {
+            "actionType": "compositeRunTestAssertion",
+            "actionLabel": "checkNumberOfBooks",
+            "nameGivenToResult": "checkNumberOfBooks",
+            "testAssertion": {
+              "testType": "testAssertion",
+              "testLabel": "checkNumberOfBooks",
+              "definition": {
+                "resultAccessPath": [
+                  "0"
+                ],
+                "resultTransformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referencePath": [
+                      "entityBookList",
+                      "books"
+                    ]
+                  }
+                },
+                "expectedValue": {
+                  "aggregate": 4
+                }
+              }
+            }
+          },
+          {
+            "actionType": "compositeRunTestAssertion",
+            "actionLabel": "checkEntityBooks",
+            "nameGivenToResult": "checkEntityBooks",
+            "testAssertion": {
+              "testType": "testAssertion",
+              "testLabel": "checkEntityBooks",
+              "definition": {
+                "resultAccessPath": [
+                  "entityBookList",
+                  "books"
+                ],
+                "ignoreAttributes": [
+                  "conceptLevel"
+                ],
+                "expectedValue": [
+                  {
+                    "uuid": "6fefa647-7ecf-4f83-b617-69d7d5094c37",
+                    "parentName": "Book",
+                    "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                    "name": "The Bride Wore Black",
+                    "author": "d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17",
+                    "conceptLevel": "",
+                    "publisher": "c1c97d54-aba8-4599-883a-7fe8f3874095",
+                    "year": 1940
+                  },
+                  {
+                    "uuid": "c6852e89-3c3c-447f-b827-4b5b9d830975",
+                    "parentName": "Book",
+                    "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                    "conceptLevel": "Data",
+                    "name": "Le Pain et le Cirque",
+                    "author": "ce7b601d-be5f-4bc6-a5af-14091594046a",
+                    "publisher": "516a7366-39e7-4998-82cb-80199a7fa667"
+                  },
+                  {
+                    "uuid": "c97be567-bd70-449f-843e-cd1d64ac1ddd",
+                    "parentName": "Book",
+                    "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                    "name": "Rear Window",
+                    "author": "d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17",
+                    "conceptLevel": "",
+                    "publisher": "1f550a2a-33f5-4a56-83ee-302701039494",
+                    "year": 1942
+                  },
+                  {
+                    "uuid": "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
+                    "parentName": "Book",
+                    "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                    "conceptLevel": "Data",
+                    "name": "Et dans l'éternité je ne m'ennuierai pas",
+                    "author": "ce7b601d-be5f-4bc6-a5af-14091594046a",
+                    "publisher": "516a7366-39e7-4998-82cb-80199a7fa667",
+                    "year": 2014
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      {
+        "miroirTestType": "actionTest",
+        "miroirTestLabel": "Remove Book instance then rollback",
+        "compositeActionSequence": {
+          "actionType": "compositeActionSequence",
+          "actionLabel": "AddBookInstanceThenRollback",
+          "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+          "payload": {
+            "actionSequence": [
+              {
+                "actionType": "rollback",
+                "actionLabel": "refreshMiroirLocalCache",
+                "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                "payload": {
+                  "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
+                }
+              },
+              {
+                "actionType": "rollback",
+                "actionLabel": "refreshLibraryLocalCache",
+                "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                "payload": {
+                  "application": "5af03c98-fe5e-490b-b08f-e1230971c57f"
+                }
+              },
+              {
+                "actionType": "deleteInstance",
+                "actionLabel": "addBook3",
+                "endpoint": "ed520de4-55a9-4550-ac50-b1b713b72a89",
+                "payload": {
+                  "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                  "applicationSection": "data",
+                  "objects": [
+                    {
+                      "uuid": "e20e276b-619d-4e16-8816-b7ec37b53439",
+                      "parentName": "Book",
+                      "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                      "name": "The Design of Everyday Things",
+                      "author": "4441169e-0c22-4fbc-81b2-28c87cf48ab2",
+                      "conceptLevel": "",
+                      "publisher": "c1c97d54-aba8-4599-883a-7fe8f3874095",
+                      "year": 1988
+                    }
+                  ]
+                }
+              },
+              {
+                "actionType": "rollback",
+                "actionLabel": "refreshLibraryLocalCache",
+                "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                "payload": {
+                  "application": "5af03c98-fe5e-490b-b08f-e1230971c57f"
+                }
+              },
+              {
+                "actionType": "compositeRunBoxedQueryAction",
+                "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                "actionLabel": "calculateNewEntityDefinionAndReports",
+                "nameGivenToResult": "entityBookList",
+                "payload": {
+                  "actionType": "runBoxedQueryAction",
+                  "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+                  "payload": {
+                    "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                    "applicationSection": "data",
+                    "query": {
+                      "queryType": "boxedQueryWithExtractorCombinerTransformer",
+                      "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                      "pageParams": {
+                        "currentDeploymentUuid": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4"
+                      },
+                      "extractors": {
+                        "books": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "data",
+                          "parentName": "Book",
+                          "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                          "orderBy": {
+                            "attributeName": "uuid",
+                            "direction": "ASC"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "testCompositeActionAssertions": [
+          {
+            "actionType": "compositeRunTestAssertion",
+            "actionLabel": "checkNumberOfBooks",
+            "nameGivenToResult": "checkNumberOfBooks",
+            "testAssertion": {
+              "testType": "testAssertion",
+              "testLabel": "checkNumberOfBooks",
+              "definition": {
+                "resultAccessPath": [
+                  "0"
+                ],
+                "resultTransformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referencePath": [
+                      "entityBookList",
+                      "books"
+                    ]
+                  }
+                },
+                "expectedValue": {
+                  "aggregate": 4
+                }
+              }
+            }
+          },
+          {
+            "actionType": "compositeRunTestAssertion",
+            "actionLabel": "checkEntityBooks",
+            "nameGivenToResult": "checkEntityBooks",
+            "testAssertion": {
+              "testType": "testAssertion",
+              "testLabel": "checkEntityBooks",
+              "definition": {
+                "resultAccessPath": [
+                  "entityBookList",
+                  "books"
+                ],
+                "ignoreAttributes": [
+                  "conceptLevel"
+                ],
+                "expectedValue": [
+                  {
+                    "uuid": "6fefa647-7ecf-4f83-b617-69d7d5094c37",
+                    "parentName": "Book",
+                    "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                    "name": "The Bride Wore Black",
+                    "author": "d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17",
+                    "conceptLevel": "",
+                    "publisher": "c1c97d54-aba8-4599-883a-7fe8f3874095",
+                    "year": 1940
+                  },
+                  {
+                    "uuid": "c6852e89-3c3c-447f-b827-4b5b9d830975",
+                    "parentName": "Book",
+                    "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                    "conceptLevel": "Data",
+                    "name": "Le Pain et le Cirque",
+                    "author": "ce7b601d-be5f-4bc6-a5af-14091594046a",
+                    "publisher": "516a7366-39e7-4998-82cb-80199a7fa667"
+                  },
+                  {
+                    "uuid": "c97be567-bd70-449f-843e-cd1d64ac1ddd",
+                    "parentName": "Book",
+                    "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                    "name": "Rear Window",
+                    "author": "d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17",
+                    "conceptLevel": "",
+                    "publisher": "1f550a2a-33f5-4a56-83ee-302701039494",
+                    "year": 1942
+                  },
+                  {
+                    "uuid": "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
+                    "parentName": "Book",
+                    "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                    "conceptLevel": "Data",
+                    "name": "Et dans l'éternité je ne m'ennuierai pas",
+                    "author": "ce7b601d-be5f-4bc6-a5af-14091594046a",
+                    "publisher": "516a7366-39e7-4998-82cb-80199a7fa667",
+                    "year": 2014
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      {
+        "miroirTestType": "actionTest",
+        "miroirTestLabel": "Update Book instance",
+        "compositeActionSequence": {
+          "actionType": "compositeActionSequence",
+          "actionLabel": "AddBookInstanceThenRollback",
+          "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+          "payload": {
+            "actionSequence": [
+              {
+                "actionType": "rollback",
+                "actionLabel": "refreshMiroirLocalCache",
+                "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                "payload": {
+                  "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
+                }
+              },
+              {
+                "actionType": "rollback",
+                "actionLabel": "refreshLibraryLocalCache",
+                "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                "payload": {
+                  "application": "5af03c98-fe5e-490b-b08f-e1230971c57f"
+                }
+              },
+              {
+                "actionType": "updateInstance",
+                "actionLabel": "updateBook2",
+                "endpoint": "ed520de4-55a9-4550-ac50-b1b713b72a89",
+                "payload": {
+                  "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                  "applicationSection": "data",
+                  "objects": [
+                    {
+                      "uuid": "6fefa647-7ecf-4f83-b617-69d7d5094c37",
+                      "parentName": "Book",
+                      "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                      "name": "Tthe Bride Wore Blackk",
+                      "author": "d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17",
+                      "conceptLevel": "",
+                      "publisher": "c1c97d54-aba8-4599-883a-7fe8f3874095",
+                      "year": 1940
+                    }
+                  ]
+                }
+              },
+              {
+                "actionType": "compositeRunBoxedQueryAction",
+                "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                "actionLabel": "calculateNewEntityDefinionAndReports",
+                "nameGivenToResult": "entityBookList",
+                "payload": {
+                  "actionType": "runBoxedQueryAction",
+                  "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+                  "payload": {
+                    "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                    "applicationSection": "data",
+                    "query": {
+                      "queryType": "boxedQueryWithExtractorCombinerTransformer",
+                      "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                      "pageParams": {
+                        "currentDeploymentUuid": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4"
+                      },
+                      "extractors": {
+                        "books": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "data",
+                          "parentName": "Book",
+                          "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                          "orderBy": {
+                            "attributeName": "uuid",
+                            "direction": "ASC"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "testCompositeActionAssertions": [
+          {
+            "actionType": "compositeRunTestAssertion",
+            "actionLabel": "checkNumberOfBooks",
+            "nameGivenToResult": "checkNumberOfBooks",
+            "testAssertion": {
+              "testType": "testAssertion",
+              "testLabel": "checkNumberOfBooks",
+              "definition": {
+                "resultAccessPath": [
+                  "0"
+                ],
+                "resultTransformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referencePath": [
+                      "entityBookList",
+                      "books"
+                    ]
+                  }
+                },
+                "expectedValue": {
+                  "aggregate": 5
+                }
+              }
+            }
+          },
+          {
+            "actionType": "compositeRunTestAssertion",
+            "actionLabel": "checkEntityBooks",
+            "nameGivenToResult": "checkEntityBooks",
+            "testAssertion": {
+              "testType": "testAssertion",
+              "testLabel": "checkEntityBooks",
+              "definition": {
+                "resultAccessPath": [
+                  "entityBookList",
+                  "books"
+                ],
+                "ignoreAttributes": [
+                  "conceptLevel"
+                ],
+                "expectedValue": [
+                  {
+                    "uuid": "6fefa647-7ecf-4f83-b617-69d7d5094c37",
+                    "parentName": "Book",
+                    "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                    "name": "Tthe Bride Wore Blackk",
+                    "author": "d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17",
+                    "conceptLevel": "",
+                    "publisher": "c1c97d54-aba8-4599-883a-7fe8f3874095",
+                    "year": 1940
+                  },
+                  {
+                    "uuid": "c6852e89-3c3c-447f-b827-4b5b9d830975",
+                    "parentName": "Book",
+                    "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                    "conceptLevel": "Data",
+                    "name": "Le Pain et le Cirque",
+                    "author": "ce7b601d-be5f-4bc6-a5af-14091594046a",
+                    "publisher": "516a7366-39e7-4998-82cb-80199a7fa667"
+                  },
+                  {
+                    "uuid": "c97be567-bd70-449f-843e-cd1d64ac1ddd",
+                    "parentName": "Book",
+                    "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                    "name": "Rear Window",
+                    "author": "d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17",
+                    "conceptLevel": "",
+                    "publisher": "1f550a2a-33f5-4a56-83ee-302701039494",
+                    "year": 1942
+                  },
+                  {
+                    "uuid": "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
+                    "parentName": "Book",
+                    "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                    "conceptLevel": "Data",
+                    "name": "Et dans l'éternité je ne m'ennuierai pas",
+                    "author": "ce7b601d-be5f-4bc6-a5af-14091594046a",
+                    "publisher": "516a7366-39e7-4998-82cb-80199a7fa667",
+                    "year": 2014
+                  },
+                  {
+                    "uuid": "e20e276b-619d-4e16-8816-b7ec37b53439",
+                    "parentName": "Book",
+                    "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                    "name": "The Design of Everyday Things",
+                    "author": "4441169e-0c22-4fbc-81b2-28c87cf48ab2",
+                    "conceptLevel": "",
+                    "publisher": "c1c97d54-aba8-4599-883a-7fe8f3874095",
+                    "year": 1988
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

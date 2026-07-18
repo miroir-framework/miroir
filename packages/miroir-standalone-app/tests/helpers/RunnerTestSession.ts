@@ -55,6 +55,15 @@ export type RunnerTestSessionOptions = AppStackBootstrapHostOptions & {
   suiteTestParams?: Record<string, unknown>;
   runnerRegistry: Record<string, Runner>;
   /**
+   * Optional playfield seed applied in `beforeEach` after reset
+   * (Action Data.CRUD MiroirTest suites).
+   */
+  libraryPlayfieldSeed?: {
+    libraryEntitiesAndInstances: import("miroir-core").ApplicationEntitiesAndInstances;
+    librarySeedInitParams: import("miroir-core").InitApplicationParameters;
+    librarySeedMetaModel: MetaModel;
+  };
+  /**
    * Fetch implementation for the client REST transport. MUST be runtime-appropriate:
    * the browser needs the native `window.fetch` (a Node polyfill such as `cross-fetch`
    * silently fails there before any request is sent). Defaults to `crossFetch` for Node
@@ -211,7 +220,8 @@ export class RunnerTestSession implements RunnerTestSessionInterface {
     // miroir-server nothing has opened/created it yet, so we send the createDeployment
     // composite action over REST here — mirroring the vitest suite's `beforeAll`
     // createDeployment. Admin is already open on the shared server, so skip its openStore.
-    if (!internalMiroirConfig.client.emulateServer) {
+    // Action Data.CRUD suites also need ensure on emulated when seeding (playfield create).
+    if (!internalMiroirConfig.client.emulateServer || this.options.libraryPlayfieldSeed) {
       await ensureLibraryPlayfield({
         domainController,
         applicationDeploymentMap: testApplicationDeploymentMap,
@@ -221,6 +231,7 @@ export class RunnerTestSession implements RunnerTestSessionInterface {
         librarySelfApplicationUuid: runTarget.applicationUuid,
         mode: "createIfAbsent",
         skipOpenAdminStore: true,
+        persistenceStoreControllerManager,
       });
     }
 
@@ -263,6 +274,7 @@ export class RunnerTestSession implements RunnerTestSessionInterface {
       throw new Error("RunnerTestSession.beforeEach: initSession not called");
     }
     const emulateServer = this.runnerTestContext.internalMiroirConfig.client.emulateServer === true;
+    const playfieldSeed = this.options.libraryPlayfieldSeed;
     await beforeEachTest(this.domainController, this.applicationDeploymentMap, {
       applicationUuid: this.runnerTestContext.runTarget.applicationUuid,
       deploymentUuid: this.runnerTestContext.runTarget.deploymentUuid,
@@ -270,6 +282,15 @@ export class RunnerTestSession implements RunnerTestSessionInterface {
       // Keep UI mounted during browser-triggered integration runs.
       clearDocumentBody: false,
       resetMiroirPlatform: emulateServer,
+      ...(playfieldSeed
+        ? {
+            ...playfieldSeed,
+            // Prefer remapped session library model when the caller omitted / used a
+            // static default (ephemeral runTarget UUIDs).
+            librarySeedMetaModel:
+              this.libraryModelForSession ?? playfieldSeed.librarySeedMetaModel,
+          }
+        : {}),
     });
     if (this.runnerTestContext) {
       this.runnerTestContext.runtimeContext = {};

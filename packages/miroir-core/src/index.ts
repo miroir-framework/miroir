@@ -1046,6 +1046,7 @@ export {
   runCompositeActionTestParams,
 } from "./5_tests/CompositeActionTestTools.js";
 export {
+  resolveActionTestLeaf,
   runMiroirActionTest,
 } from "./5_tests/ActionTestTools.js";
 /** @deprecated Phase 0 draft — use `miroirTestForAction` from fundamental types. */
