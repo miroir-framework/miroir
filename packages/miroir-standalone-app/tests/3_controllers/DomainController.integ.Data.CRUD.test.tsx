@@ -1,3 +1,9 @@
+/**
+ * @deprecated Prefer MiroirTest suite `domain_controller_data_crud` via
+ * `npm run testMiroir -w miroir-standalone-app -- --suites domain_controller_data_crud --mode integ --profile emulatedServer-sql`.
+ * Canonical leaves: `miroirTest_domain_controller_data_crud` (deployment-library).
+ * This imperative harness must remain green until that suite fully replaces it; do not delete.
+ */
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
 import process from "process";

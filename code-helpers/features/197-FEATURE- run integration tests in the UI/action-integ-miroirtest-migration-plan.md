@@ -5,10 +5,11 @@
 **Status:** Phase 1 ✅ (fundamental `actionTest` schema + compositeActionTestContext + 1.3-a session kind)  
 **Method:** TDD; run `npm run nonreg` (or targeted profile integ + unit gate) after each impactful slice
 
-### Hard constraint — legacy file untouched until wrap-up
+### Hard constraint — legacy file kept green (deprecate, do not delete in 4.1)
 
 - **Do not modify** `DomainController.integ.Data.CRUD.test.tsx` during Phases 0–3 (or any earlier slice).
-- This command must **keep passing throughout** the migration:
+- Phase **4.1:** mark **deprecated** and point docs/nonreg at `testMiroir --suites domain_controller_data_crud`. **Do not delete** the legacy file until MiroirTest is accepted as the sole owner.
+- This command must **keep passing throughout** the migration (and after 4.1 deprecation):
 
 ```bash
 VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-sql.json \
@@ -16,7 +17,14 @@ VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificL
 npm run testByFile -w miroir-standalone-app -- DomainController.integ.Data
 ```
 
-- Delete / retire the legacy file **only in Phase 4 wrap-up**, after MiroirTest parity is proven.
+- Preferred owner path:
+
+```bash
+npm run testMiroir -w miroir-standalone-app -- \
+  --suites domain_controller_data_crud --mode integ --profile emulatedServer-sql
+```
+
+- Delete / retire the legacy file **only in a later cutover slice**, after MiroirTest parity is proven and agreed.
 - After `miroir-core` source changes that standalone-app imports from `dist`, run `npm run build -w miroir-core` before re-checking the legacy command.
 
 ## Goal
@@ -303,10 +311,14 @@ Each slice: **failing test → implement → green → commit**. After slices ma
 
 ### Phase 4 — Cutover & siblings
 
-| Slice | Work | Tests first | Nonreg |
-|-------|------|-------------|--------|
-| 4.1 | Deprecate (DO NOT delete) `DomainController.integ.Data.CRUD.test.tsx` when MiroirTest is sole owner | Confirm CI / docs point to `testMiroir` | **nonreg** |
-| 4.2+ | Migrate Model / PK / noParentUuid CRUD files using the same leaf + session | One file per slice | nonreg per file or batch |
+| Slice | Work | Tests first | Nonreg | Status |
+|-------|------|-------------|--------|--------|
+| 4.1 ★ | **Deprecate** (do **not** delete) `DomainController.integ.Data.CRUD.test.tsx`; docs + nonreg prefer `testMiroir --suites domain_controller_data_crud`; legacy stays in nonreg via `DomainController.integ` | Both paths green | **nonreg** | ✅ |
+| 4.2+ | Migrate Model / PK / noParentUuid CRUD files using the same leaf + session | One file per slice | nonreg per file or batch | — |
+
+**Phase 4.1 notes:**
+- Legacy file marked `@deprecated` with preferred CLI; **must remain runnable** until MiroirTest is accepted as sole owner (later deletion slice — not 4.1).
+- Nonreg adds `integ-action-domain_controller_data_crud` while keeping `appstack-DomainController.integ`.
 
 ### Phase 5 — UI (#197 Phase B follow-on)
 
@@ -357,12 +369,12 @@ Do **not** weaken assertions to get green; fix executor / param bank instead.
 
 ## 9. Success criteria
 
-- [ ] `actionTest` is a first-class `MiroirTest` leaf; dispatch lives in `miroir-core`
-- [ ] Runner and Action integ share one composite-action execution helper
-- [ ] Data.CRUD coverage runs via `testMiroir --mode integ` with parity to the imperative suite
-- [ ] Imperative Data.CRUD file removed or permanently skipped after cutover
-- [ ] `inferIntegrationSessionKind` / UI capabilities understand Action suites
-- [ ] Documented in [docs/reference/testing.md](../../../docs/reference/testing.md) under MiroirTest integ families
+- [x] `actionTest` is a first-class `MiroirTest` leaf; dispatch lives in `miroir-core`
+- [x] Runner and Action integ share one composite-action execution helper
+- [x] Data.CRUD coverage runs via `testMiroir --mode integ` with parity to the imperative suite
+- [ ] Imperative Data.CRUD file **deleted** only after MiroirTest is sole owner (4.1: **deprecated**, still green)
+- [x] `inferIntegrationSessionKind` / UI capabilities understand Action suites
+- [x] Documented in [docs/reference/testing.md](../../../docs/reference/testing.md) under MiroirTest integ families
 
 ---
 

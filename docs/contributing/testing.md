@@ -89,7 +89,11 @@ Full options: [reference/testing.md](../reference/testing.md#running-miroirtest-
 DomainController, persistence-store, and extractor tests use JSON config files:
 
 ```bash
-# DomainController data CRUD (emulated server + Postgres)
+# DomainController data CRUD — preferred MiroirTest action suite
+npm run testMiroir -w miroir-standalone-app -- \
+  --profile emulatedServer-sql --suites domain_controller_data_crud --mode integ
+
+# Deprecated imperative Data CRUD (parity harness — keep green; do not delete yet)
 VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-sql.json \
 VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_DomainController_debug.json \
 npm run testByFile -w miroir-standalone-app -- DomainController.integ.Data
