@@ -57,6 +57,10 @@ export const DOMAIN_CONTROLLER_NON_UUID_PK_MODEL_CRUD_SUITE_KEY =
 export const DOMAIN_CONTROLLER_NON_UUID_PK_DATA_CRUD_SUITE_KEY =
   "domain_controller_non_uuid_pk_data_crud";
 
+/** Suite registry key for DomainController no-parentUuid CRUD action MiroirTest. */
+export const DOMAIN_CONTROLLER_NO_PARENT_UUID_CRUD_SUITE_KEY =
+  "domain_controller_no_parent_uuid_crud";
+
 /**
  * Seed payload for `RunnerTestSessionOptions.libraryPlayfieldSeed` /
  * `resetLibraryPlayfield` (Action Data.CRUD playfield).
@@ -297,6 +301,105 @@ export const publisherOnlyTestMetaModel: MetaModel = {
   applications: [],
 };
 
+/** Entity whose instances omit `parentUuid` — standard UUID PK (legacy noParentUuid integ). */
+export const ENTITY_NO_PARENT_UUID_UUID = "aaa11111-bbbb-cccc-dddd-eeee00001111";
+export const ENTITY_DEFINITION_NO_PARENT_UUID_UUID = "aaa22222-bbbb-cccc-dddd-eeee00002222";
+
+export const entityNoParentUuid: Entity = {
+  uuid: ENTITY_NO_PARENT_UUID_UUID,
+  parentName: "Entity",
+  parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+  parentDefinitionVersionUuid: "381ab1be-337f-4198-b1d3-f686867fc1dd",
+  selfApplication: selfApplicationLibrary.uuid,
+  name: "TestEntityNoParentUuid",
+  conceptLevel: "Model",
+  description: "Test entity whose instances do not bear a parentUuid attribute.",
+} as Entity;
+
+export const entityDefinitionNoParentUuid: EntityDefinition = {
+  uuid: ENTITY_DEFINITION_NO_PARENT_UUID_UUID,
+  parentName: "EntityDefinition",
+  parentUuid: "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+  parentDefinitionVersionUuid: "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
+  entityUuid: ENTITY_NO_PARENT_UUID_UUID,
+  conceptLevel: "Model",
+  name: "TestEntityNoParentUuid",
+  mlSchema: {
+    type: "object",
+    definition: {
+      uuid: {
+        type: "uuid",
+        tag: { value: { id: 1, defaultLabel: "Uuid", editable: false } },
+      },
+      name: {
+        type: "string",
+        tag: { value: { id: 2, defaultLabel: "Name" } },
+      },
+      description: {
+        type: "string",
+        optional: true,
+        tag: { value: { id: 3, defaultLabel: "Description" } },
+      },
+    },
+  },
+} as EntityDefinition;
+
+export const noParentItem1: EntityInstance = {
+  uuid: "ff000001-0000-0000-0000-000000000001",
+  name: "item one",
+} as EntityInstance;
+
+export const noParentItem2: EntityInstance = {
+  uuid: "ff000002-0000-0000-0000-000000000002",
+  name: "item two",
+} as EntityInstance;
+
+export const noParentItem3: EntityInstance = {
+  uuid: "ff000003-0000-0000-0000-000000000003",
+  name: "item three",
+} as EntityInstance;
+
+/**
+ * MetaModel for no-parentUuid suite — Publisher + TestEntityNoParentUuid
+ * (Model leaf expects count 2 after recreate; Data leaves use NoParentUuid instances).
+ */
+export const noParentUuidTestMetaModel: MetaModel = {
+  applicationUuid: selfApplicationLibrary.uuid,
+  applicationName: selfApplicationLibrary.name,
+  entities: [entityPublisher as Entity, entityNoParentUuid],
+  entityDefinitions: [
+    entityDefinitionPublisher as EntityDefinition,
+    entityDefinitionNoParentUuid,
+  ],
+  endpoints: [],
+  jzodSchemas: [],
+  menus: [],
+  runners: [],
+  themes: [],
+  applicationVersions: [],
+  reports: [],
+  storedQueries: [],
+  applicationVersionCrossEntityDefinition: [],
+  applications: [],
+};
+
+export const libraryEntitiesAndInstancesNoParentUuid: ApplicationEntitiesAndInstances = [
+  {
+    entity: entityPublisher as Entity,
+    entityDefinition: entityDefinitionPublisher as EntityDefinition,
+    instances: [
+      publisher1 as EntityInstance,
+      publisher2 as EntityInstance,
+      publisher3 as EntityInstance,
+    ],
+  },
+  {
+    entity: entityNoParentUuid,
+    entityDefinition: entityDefinitionNoParentUuid,
+    instances: [noParentItem1, noParentItem2, noParentItem3],
+  },
+];
+
 export const libraryPlayfieldSeedInitParams: InitApplicationParameters = {
   dataStoreType: "app",
   metaModel: defaultMiroirMetaModel,
@@ -473,13 +576,28 @@ export function isDomainControllerNonUuidPkDataCrudSuite(suiteKey: string): bool
   return suiteKey === DOMAIN_CONTROLLER_NON_UUID_PK_DATA_CRUD_SUITE_KEY;
 }
 
+/**
+ * Session playfield seed for `domain_controller_no_parent_uuid_crud`.
+ * Publisher + TestEntityNoParentUuid (instances without parentUuid) + 3 items.
+ */
+export const domainControllerNoParentUuidCrudLibraryPlayfieldSeed: LibraryPlayfieldSeed = {
+  libraryEntitiesAndInstances: libraryEntitiesAndInstancesNoParentUuid,
+  librarySeedInitParams: libraryPlayfieldSeedInitParams,
+  librarySeedMetaModel: noParentUuidTestMetaModel,
+};
+
+export function isDomainControllerNoParentUuidCrudSuite(suiteKey: string): boolean {
+  return suiteKey === DOMAIN_CONTROLLER_NO_PARENT_UUID_CRUD_SUITE_KEY;
+}
+
 export function isDomainControllerActionCrudSuite(suiteKey: string): boolean {
   return (
     isDomainControllerDataCrudSuite(suiteKey) ||
     isDomainControllerModelCrudSuite(suiteKey) ||
     isDomainControllerCompositePkCrudSuite(suiteKey) ||
     isDomainControllerNonUuidPkModelCrudSuite(suiteKey) ||
-    isDomainControllerNonUuidPkDataCrudSuite(suiteKey)
+    isDomainControllerNonUuidPkDataCrudSuite(suiteKey) ||
+    isDomainControllerNoParentUuidCrudSuite(suiteKey)
   );
 }
 
@@ -500,6 +618,9 @@ export function libraryPlayfieldSeedForActionSuite(
   }
   if (isDomainControllerNonUuidPkDataCrudSuite(suiteKey)) {
     return domainControllerNonUuidPkDataCrudLibraryPlayfieldSeed;
+  }
+  if (isDomainControllerNoParentUuidCrudSuite(suiteKey)) {
+    return domainControllerNoParentUuidCrudLibraryPlayfieldSeed;
   }
   return undefined;
 }

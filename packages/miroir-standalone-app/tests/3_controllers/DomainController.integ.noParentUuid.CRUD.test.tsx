@@ -1,3 +1,9 @@
+/**
+ * @deprecated Prefer MiroirTest suite `domain_controller_no_parent_uuid_crud` via
+ * `npm run testMiroir -w miroir-standalone-app -- --suites domain_controller_no_parent_uuid_crud --mode integ --profile emulatedServer-sql`.
+ * Canonical leaves: `miroirTest_domain_controller_no_parent_uuid_crud` (deployment-miroir; Library is runTarget only).
+ * Kept green until MiroirTest is accepted as sole owner — do not delete.
+ */
 import { describe, expect } from "vitest";
 
 import process from "process";

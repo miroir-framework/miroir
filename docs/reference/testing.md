@@ -213,7 +213,7 @@ Use **`--profile`** so one preset sets both `VITE_MIROIR_*` (app-stack / runner)
 |------|------------------------|---------|-----------------|
 | **Transformer** | `miroirCoreTransformers` | `IntegrationTestSession` (synthetic `testApplication`) | `emulatedServer-sql` |
 | **Runner** | `runner_library` | `RunnerTestSession` (library playfield + runners) | `emulatedServer-sql` |
-| **Action** | `domain_controller_data_crud`, `domain_controller_model_crud`, `domain_controller_composite_pk_crud`, `domain_controller_non_uuid_pk_{model,data}_crud` (all Miroir `miroir_data`) | `RunnerTestSession` + `libraryPlayfieldSeed` (`actionTest` leaves); Library is `runTarget`/testbed | `emulatedServer-sql` |
+| **Action** | `domain_controller_data_crud`, `domain_controller_model_crud`, `domain_controller_composite_pk_crud`, `domain_controller_non_uuid_pk_{model,data}_crud`, `domain_controller_no_parent_uuid_crud` (all Miroir `miroir_data`) | `RunnerTestSession` + `libraryPlayfieldSeed` (`actionTest` leaves); Library is `runTarget`/testbed | `emulatedServer-sql` |
 
 ```bash
 # Transformer integ
@@ -245,6 +245,11 @@ npm run testMiroir -w miroir-standalone-app -- \
   --profile emulatedServer-sql --suites domain_controller_non_uuid_pk_model_crud --mode integ
 npm run testMiroir -w miroir-standalone-app -- \
   --profile emulatedServer-sql --suites domain_controller_non_uuid_pk_data_crud --mode integ
+
+# Action no-parentUuid CRUD integ — single Miroir-owned suite (Model+Data); Library is runTarget only
+# (preferred over DomainController.integ.noParentUuid.CRUD.test.tsx)
+npm run testMiroir -w miroir-standalone-app -- \
+  --profile emulatedServer-sql --suites domain_controller_no_parent_uuid_crud --mode integ
 ```
 
 Filter keys use the suite **`miroirTestLabel`**, not the registry key (see [Filtering](#filtering-miroirtest-cases)):
@@ -602,7 +607,7 @@ Full-stack CRUD coverage for model and data actions.
 | `DomainController.integ.Model.CRUD.test.tsx` | **Deprecated** Model-section CRUD — keep green; prefer `testMiroir --suites domain_controller_model_crud` (`actionTest`) |
 | `DomainController.integ.compositePK.CRUD.test.tsx` | **Deprecated** Composite-PK Data CRUD — keep green; prefer `testMiroir --suites domain_controller_composite_pk_crud` (`actionTest`) |
 | `DomainController.integ.nonUuidPK.CRUD.test.tsx` | **Deprecated** Non-UUID PK Model+Data CRUD — keep green; prefer `testMiroir --suites domain_controller_non_uuid_pk_{model,data}_crud` (`actionTest`) |
-| `DomainController.integ.noParentUuid.CRUD.test.tsx` | Entities without `parentUuid` |
+| `DomainController.integ.noParentUuid.CRUD.test.tsx` | **Deprecated** Entities without `parentUuid` — keep green; prefer `testMiroir --suites domain_controller_no_parent_uuid_crud` (`actionTest`) |
 
 ```bash
 # Preferred Data CRUD — MiroirTest action suite

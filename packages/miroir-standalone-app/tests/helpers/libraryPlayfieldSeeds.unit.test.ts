@@ -5,16 +5,19 @@ import {
   DOMAIN_CONTROLLER_COMPOSITE_PK_CRUD_SUITE_KEY,
   DOMAIN_CONTROLLER_DATA_CRUD_SUITE_KEY,
   DOMAIN_CONTROLLER_MODEL_CRUD_SUITE_KEY,
+  DOMAIN_CONTROLLER_NO_PARENT_UUID_CRUD_SUITE_KEY,
   DOMAIN_CONTROLLER_NON_UUID_PK_DATA_CRUD_SUITE_KEY,
   DOMAIN_CONTROLLER_NON_UUID_PK_MODEL_CRUD_SUITE_KEY,
   domainControllerDataCrudFilterEntities,
   domainControllerDataCrudLibraryPlayfieldSeed,
   domainControllerModelCrudLibraryPlayfieldSeed,
   domainControllerCompositePkCrudLibraryPlayfieldSeed,
+  domainControllerNoParentUuidCrudLibraryPlayfieldSeed,
   domainControllerNonUuidPkDataCrudLibraryPlayfieldSeed,
   domainControllerNonUuidPkModelCrudLibraryPlayfieldSeed,
   ENTITY_CODE_NUMBER_UUID,
   ENTITY_COMPOSITE_PK_UUID,
+  ENTITY_NO_PARENT_UUID_UUID,
   isDomainControllerCompositePkCrudSuite,
   isDomainControllerDataCrudSuite,
   isDomainControllerModelCrudSuite,
@@ -89,5 +92,20 @@ describe("libraryPlayfieldSeeds (Phase 3 Action Data.CRUD)", () => {
     expect(
       libraryPlayfieldSeedForActionSuite(DOMAIN_CONTROLLER_NON_UUID_PK_DATA_CRUD_SUITE_KEY),
     ).toBe(dataSeed);
+  });
+
+  it("domainControllerNoParentUuidCrudLibraryPlayfieldSeed seeds Publisher + NoParentUuid", () => {
+    const seed = domainControllerNoParentUuidCrudLibraryPlayfieldSeed;
+    expect(seed.libraryEntitiesAndInstances.map((b) => b.entity.name).sort()).toEqual([
+      "Publisher",
+      "TestEntityNoParentUuid",
+    ]);
+    const noParent = seed.libraryEntitiesAndInstances.find(
+      (b) => b.entity.uuid === ENTITY_NO_PARENT_UUID_UUID,
+    );
+    expect(noParent?.instances).toHaveLength(3);
+    expect(
+      libraryPlayfieldSeedForActionSuite(DOMAIN_CONTROLLER_NO_PARENT_UUID_CRUD_SUITE_KEY),
+    ).toBe(seed);
   });
 });
