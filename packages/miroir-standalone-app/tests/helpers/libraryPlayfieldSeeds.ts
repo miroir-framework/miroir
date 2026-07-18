@@ -76,8 +76,8 @@ export type LibraryPlayfieldSeed = {
 };
 
 /** Composite-PK test entity — PK is `["region", "code"]` (matches legacy integ file). */
-export const ENTITY_COMPOSITE_PK_UUID = "aaa0b000-1a1a-2b2b-3c3c-4d4d5e5e6f6f";
-export const ENTITY_DEFINITION_COMPOSITE_PK_UUID = "bbb1c111-2c2c-3d3d-4e4e-5f5f6a6a7b7b";
+export const ENTITY_COMPOSITE_PK_UUID = "44691d2c-d7c1-48e0-8363-71c51195e104";
+export const ENTITY_DEFINITION_COMPOSITE_PK_UUID = "fbec9082-5cdf-4877-bd78-66a434a8eebf";
 
 export const entityCompositePK: Entity = {
   uuid: ENTITY_COMPOSITE_PK_UUID,
@@ -181,8 +181,8 @@ export const libraryEntitiesAndInstancesCompositePK: ApplicationEntitiesAndInsta
 ];
 
 /** Non-UUID number PK test entity — `idAttribute: "code"` (matches legacy integ file). */
-export const ENTITY_CODE_NUMBER_UUID = "ccc0d000-1c1c-2b2b-3a3a-4b4b5c5c6d6d";
-export const ENTITY_DEFINITION_CODE_NUMBER_UUID = "ddd1e111-2d2d-3e3e-4f4f-5a5a6b6b7c7c";
+export const ENTITY_CODE_NUMBER_UUID = "4bbf4d19-7ac5-4fff-88ee-63ee49c7802f";
+export const ENTITY_DEFINITION_CODE_NUMBER_UUID = "dceae8f8-c657-49df-9967-64ac3e52f5b4";
 
 export const entityCodeNumber: Entity = {
   uuid: ENTITY_CODE_NUMBER_UUID,
@@ -306,8 +306,8 @@ export const publisherOnlyTestMetaModel: MetaModel = {
 };
 
 /** Entity whose instances omit `parentUuid` — standard UUID PK (legacy noParentUuid integ). */
-export const ENTITY_NO_PARENT_UUID_UUID = "aaa11111-bbbb-cccc-dddd-eeee00001111";
-export const ENTITY_DEFINITION_NO_PARENT_UUID_UUID = "aaa22222-bbbb-cccc-dddd-eeee00002222";
+export const ENTITY_NO_PARENT_UUID_UUID = "803b81ad-fda4-4206-8860-cc86f37c7a6e";
+export const ENTITY_DEFINITION_NO_PARENT_UUID_UUID = "0057f84b-64d8-4395-8841-b264e3f9473a";
 
 export const entityNoParentUuid: Entity = {
   uuid: ENTITY_NO_PARENT_UUID_UUID,
@@ -349,17 +349,17 @@ export const entityDefinitionNoParentUuid: EntityDefinition = {
 } as EntityDefinition;
 
 export const noParentItem1: EntityInstance = {
-  uuid: "ff000001-0000-0000-0000-000000000001",
+  uuid: "4476e12d-e822-44db-bd06-aadb81b74d60",
   name: "item one",
 } as EntityInstance;
 
 export const noParentItem2: EntityInstance = {
-  uuid: "ff000002-0000-0000-0000-000000000002",
+  uuid: "63e87f77-30d8-4044-a8de-0e7af286060c",
   name: "item two",
 } as EntityInstance;
 
 export const noParentItem3: EntityInstance = {
-  uuid: "ff000003-0000-0000-0000-000000000003",
+  uuid: "ada284e0-f3bb-4da8-8041-671a8ee39b8d",
   name: "item three",
 } as EntityInstance;
 

@@ -46,8 +46,8 @@
                 "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
                 "payload": {
                   "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
-                  "entityUuid": "aaa11111-bbbb-cccc-dddd-eeee00001111",
-                  "entityDefinitionUuid": "aaa22222-bbbb-cccc-dddd-eeee00002222"
+                  "entityUuid": "803b81ad-fda4-4206-8860-cc86f37c7a6e",
+                  "entityDefinitionUuid": "0057f84b-64d8-4395-8841-b264e3f9473a"
                 }
               },
               {
@@ -67,7 +67,7 @@
                   "entities": [
                     {
                       "entity": {
-                        "uuid": "aaa11111-bbbb-cccc-dddd-eeee00001111",
+                        "uuid": "803b81ad-fda4-4206-8860-cc86f37c7a6e",
                         "parentName": "Entity",
                         "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
                         "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
@@ -77,11 +77,11 @@
                         "description": "Test entity whose instances do not bear a parentUuid attribute."
                       },
                       "entityDefinition": {
-                        "uuid": "aaa22222-bbbb-cccc-dddd-eeee00002222",
+                        "uuid": "0057f84b-64d8-4395-8841-b264e3f9473a",
                         "parentName": "EntityDefinition",
                         "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
                         "parentDefinitionVersionUuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
-                        "entityUuid": "aaa11111-bbbb-cccc-dddd-eeee00001111",
+                        "entityUuid": "803b81ad-fda4-4206-8860-cc86f37c7a6e",
                         "conceptLevel": "Model",
                         "name": "TestEntityNoParentUuid",
                         "mlSchema": {
@@ -246,7 +246,7 @@
                           "extractorOrCombinerType": "extractorInstancesByEntity",
                           "applicationSection": "data",
                           "parentName": "TestEntityNoParentUuid",
-                          "parentUuid": "aaa11111-bbbb-cccc-dddd-eeee00001111",
+                          "parentUuid": "803b81ad-fda4-4206-8860-cc86f37c7a6e",
                           "orderBy": {
                             "attributeName": "name",
                             "direction": "ASC"
@@ -324,10 +324,10 @@
                 "payload": {
                   "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
                   "applicationSection": "data",
-                  "parentUuid": "aaa11111-bbbb-cccc-dddd-eeee00001111",
+                  "parentUuid": "803b81ad-fda4-4206-8860-cc86f37c7a6e",
                   "objects": [
                     {
-                      "uuid": "ff000004-0000-0000-0000-000000000004",
+                      "uuid": "3864e72e-08f4-4ede-b694-ee4caafa24a9",
                       "name": "item four"
                     }
                   ]
@@ -355,7 +355,7 @@
                           "extractorOrCombinerType": "extractorInstancesByEntity",
                           "applicationSection": "data",
                           "parentName": "TestEntityNoParentUuid",
-                          "parentUuid": "aaa11111-bbbb-cccc-dddd-eeee00001111",
+                          "parentUuid": "803b81ad-fda4-4206-8860-cc86f37c7a6e",
                           "orderBy": {
                             "attributeName": "name",
                             "direction": "ASC"
@@ -433,10 +433,10 @@
                 "payload": {
                   "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
                   "applicationSection": "data",
-                  "parentUuid": "aaa11111-bbbb-cccc-dddd-eeee00001111",
+                  "parentUuid": "803b81ad-fda4-4206-8860-cc86f37c7a6e",
                   "objects": [
                     {
-                      "uuid": "ff000001-0000-0000-0000-000000000001",
+                      "uuid": "4476e12d-e822-44db-bd06-aadb81b74d60",
                       "name": "item one UPDATED"
                     }
                   ]
@@ -464,7 +464,7 @@
                           "extractorOrCombinerType": "extractorInstancesByEntity",
                           "applicationSection": "data",
                           "parentName": "TestEntityNoParentUuid",
-                          "parentUuid": "aaa11111-bbbb-cccc-dddd-eeee00001111",
+                          "parentUuid": "803b81ad-fda4-4206-8860-cc86f37c7a6e",
                           "orderBy": {
                             "attributeName": "name",
                             "direction": "ASC"
@@ -525,15 +525,15 @@
                 ],
                 "expectedValue": [
                   {
-                    "uuid": "ff000001-0000-0000-0000-000000000001",
+                    "uuid": "4476e12d-e822-44db-bd06-aadb81b74d60",
                     "name": "item one UPDATED"
                   },
                   {
-                    "uuid": "ff000003-0000-0000-0000-000000000003",
+                    "uuid": "ada284e0-f3bb-4da8-8041-671a8ee39b8d",
                     "name": "item three"
                   },
                   {
-                    "uuid": "ff000002-0000-0000-0000-000000000002",
+                    "uuid": "63e87f77-30d8-4044-a8de-0e7af286060c",
                     "name": "item two"
                   }
                 ]
@@ -574,10 +574,10 @@
                 "payload": {
                   "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
                   "applicationSection": "data",
-                  "parentUuid": "aaa11111-bbbb-cccc-dddd-eeee00001111",
+                  "parentUuid": "803b81ad-fda4-4206-8860-cc86f37c7a6e",
                   "objects": [
                     {
-                      "uuid": "ff000002-0000-0000-0000-000000000002",
+                      "uuid": "63e87f77-30d8-4044-a8de-0e7af286060c",
                       "name": "item two"
                     }
                   ]
@@ -605,7 +605,7 @@
                           "extractorOrCombinerType": "extractorInstancesByEntity",
                           "applicationSection": "data",
                           "parentName": "TestEntityNoParentUuid",
-                          "parentUuid": "aaa11111-bbbb-cccc-dddd-eeee00001111",
+                          "parentUuid": "803b81ad-fda4-4206-8860-cc86f37c7a6e",
                           "orderBy": {
                             "attributeName": "name",
                             "direction": "ASC"
@@ -683,15 +683,15 @@
                 "payload": {
                   "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
                   "applicationSection": "data",
-                  "parentUuid": "aaa11111-bbbb-cccc-dddd-eeee00001111",
+                  "parentUuid": "803b81ad-fda4-4206-8860-cc86f37c7a6e",
                   "objects": [
                     {
-                      "uuid": "ff000005-0000-0000-0000-000000000005",
-                      "parentUuid": "aaa11111-bbbb-cccc-dddd-eeee00001111",
+                      "uuid": "c0960303-1e38-4c0c-ad4c-1b0c50696d4b",
+                      "parentUuid": "803b81ad-fda4-4206-8860-cc86f37c7a6e",
                       "name": "item five with parentUuid"
                     },
                     {
-                      "uuid": "ff000006-0000-0000-0000-000000000006",
+                      "uuid": "c19217e1-18d1-406d-85c3-d21c79874854",
                       "name": "item six without parentUuid"
                     }
                   ]
@@ -719,7 +719,7 @@
                           "extractorOrCombinerType": "extractorInstancesByEntity",
                           "applicationSection": "data",
                           "parentName": "TestEntityNoParentUuid",
-                          "parentUuid": "aaa11111-bbbb-cccc-dddd-eeee00001111",
+                          "parentUuid": "803b81ad-fda4-4206-8860-cc86f37c7a6e",
                           "orderBy": {
                             "attributeName": "name",
                             "direction": "ASC"

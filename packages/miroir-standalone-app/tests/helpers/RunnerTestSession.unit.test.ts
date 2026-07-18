@@ -345,13 +345,13 @@ describe("RunnerTestSession (Gap E R)", () => {
     const tracker = new MiroirActivityTracker();
     const eventService = new MiroirEventService(tracker);
     const runTarget = runnerLibraryRunTarget();
-    const customEntityUuid = "aaa0b000-1a1a-2b2b-3c3c-4d4d5e5e6f6f";
+    const customEntityUuid = "44691d2c-d7c1-48e0-8363-71c51195e104";
     const customMetaModel = {
       applicationUuid: selfApplicationLibrary.uuid,
       applicationName: "Library",
       entities: [{ uuid: customEntityUuid, name: "TestEntityCompositePK" }],
       entityDefinitions: [
-        { uuid: "bbb1c111-2c2c-3d3d-4e4e-5f5f6a6a7b7b", entityUuid: customEntityUuid },
+        { uuid: "fbec9082-5cdf-4877-bd78-66a434a8eebf", entityUuid: customEntityUuid },
       ],
       endpoints: [],
       jzodSchemas: [],

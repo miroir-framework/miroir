@@ -80,8 +80,8 @@ import { DomainControllerIntegrationTestSession } from "../helpers/DomainControl
 // Non-UUID PK test entity definition
 // ##############################################################################################
 
-const entityCodeNumberUuid = "ccc0d000-1c1c-2b2b-3a3a-4b4b5c5c6d6d";
-const entityDefinitionCodeNumberUuid = "ddd1e111-2d2d-3e3e-4f4f-5a5a6b6b7c7c";
+const entityCodeNumberUuid = "4bbf4d19-7ac5-4fff-88ee-63ee49c7802f";
+const entityDefinitionCodeNumberUuid = "dceae8f8-c657-49df-9967-64ac3e52f5b4";
 
 const entityCodeNumber: Entity = {
   uuid: entityCodeNumberUuid,

@@ -75,8 +75,8 @@ import { runTestOrTestSuite } from "../../src/miroir-fwk/4-tests/runTestOrTestSu
 // PK is ["region", "code"] — two string attributes form the composite key.
 // ##############################################################################################
 
-const entityCompositePKUuid = "aaa0b000-1a1a-2b2b-3c3c-4d4d5e5e6f6f";
-const entityDefinitionCompositePKUuid = "bbb1c111-2c2c-3d3d-4e4e-5f5f6a6a7b7b";
+const entityCompositePKUuid = "44691d2c-d7c1-48e0-8363-71c51195e104";
+const entityDefinitionCompositePKUuid = "fbec9082-5cdf-4877-bd78-66a434a8eebf";
 
 const entityCompositePK: Entity = {
   uuid: entityCompositePKUuid,
