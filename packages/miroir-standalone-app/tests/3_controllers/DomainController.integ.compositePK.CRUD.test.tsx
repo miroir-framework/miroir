@@ -1,3 +1,9 @@
+/**
+ * @deprecated Prefer MiroirTest suite `domain_controller_composite_pk_crud` via
+ * `npm run testMiroir -w miroir-standalone-app -- --suites domain_controller_composite_pk_crud --mode integ --profile emulatedServer-sql`.
+ * Canonical leaves: `miroirTest_domain_controller_composite_pk_crud` (deployment-miroir; Library is runTarget only).
+ * Kept green until MiroirTest is accepted as sole owner — do not delete.
+ */
 import { describe, expect, beforeAll, beforeEach, afterAll, afterEach, it } from "vitest";
 
 import process from "process";

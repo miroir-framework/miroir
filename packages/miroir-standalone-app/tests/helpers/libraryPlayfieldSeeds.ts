@@ -45,6 +45,10 @@ export const DOMAIN_CONTROLLER_DATA_CRUD_SUITE_KEY = "domain_controller_data_cru
 /** Suite registry key for DomainController Model CRUD action MiroirTest. */
 export const DOMAIN_CONTROLLER_MODEL_CRUD_SUITE_KEY = "domain_controller_model_crud";
 
+/** Suite registry key for DomainController composite-PK Data CRUD action MiroirTest. */
+export const DOMAIN_CONTROLLER_COMPOSITE_PK_CRUD_SUITE_KEY =
+  "domain_controller_composite_pk_crud";
+
 /**
  * Seed payload for `RunnerTestSessionOptions.libraryPlayfieldSeed` /
  * `resetLibraryPlayfield` (Action Data.CRUD playfield).
@@ -54,6 +58,111 @@ export type LibraryPlayfieldSeed = {
   librarySeedInitParams: InitApplicationParameters;
   librarySeedMetaModel: MetaModel;
 };
+
+/** Composite-PK test entity — PK is `["region", "code"]` (matches legacy integ file). */
+export const ENTITY_COMPOSITE_PK_UUID = "aaa0b000-1a1a-2b2b-3c3c-4d4d5e5e6f6f";
+export const ENTITY_DEFINITION_COMPOSITE_PK_UUID = "bbb1c111-2c2c-3d3d-4e4e-5f5f6a6a7b7b";
+
+export const entityCompositePK: Entity = {
+  uuid: ENTITY_COMPOSITE_PK_UUID,
+  parentName: "Entity",
+  parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+  parentDefinitionVersionUuid: "381ab1be-337f-4198-b1d3-f686867fc1dd",
+  selfApplication: selfApplicationLibrary.uuid,
+  name: "TestEntityCompositePK",
+  conceptLevel: "Model",
+  description: "Test entity with a composite primary key [region, code].",
+} as Entity;
+
+export const entityDefinitionCompositePK: EntityDefinition = {
+  uuid: ENTITY_DEFINITION_COMPOSITE_PK_UUID,
+  parentName: "EntityDefinition",
+  parentUuid: "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+  parentDefinitionVersionUuid: "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
+  entityUuid: ENTITY_COMPOSITE_PK_UUID,
+  conceptLevel: "Model",
+  name: "TestEntityCompositePK",
+  idAttribute: ["region", "code"],
+  mlSchema: {
+    type: "object",
+    definition: {
+      region: {
+        type: "string",
+        tag: { value: { id: 1, defaultLabel: "Region" } },
+      },
+      code: {
+        type: "string",
+        tag: { value: { id: 2, defaultLabel: "Code" } },
+      },
+      parentName: {
+        type: "string",
+        optional: true,
+        tag: { value: { id: 3, defaultLabel: "Entity Name" } },
+      },
+      parentUuid: {
+        type: "uuid",
+        tag: { value: { id: 4, defaultLabel: "Entity Uuid" } },
+      },
+      name: {
+        type: "string",
+        tag: { value: { id: 5, defaultLabel: "Name" } },
+      },
+    },
+  },
+} as any as EntityDefinition;
+
+export const compositeItem1: EntityInstance = {
+  region: "EU",
+  code: "A1",
+  parentUuid: ENTITY_COMPOSITE_PK_UUID,
+  parentName: "TestEntityCompositePK",
+  name: "EU-A1 item",
+} as EntityInstance;
+
+export const compositeItem2: EntityInstance = {
+  region: "EU",
+  code: "B2",
+  parentUuid: ENTITY_COMPOSITE_PK_UUID,
+  parentName: "TestEntityCompositePK",
+  name: "EU-B2 item",
+} as EntityInstance;
+
+export const compositeItem3: EntityInstance = {
+  region: "US",
+  code: "A1",
+  parentUuid: ENTITY_COMPOSITE_PK_UUID,
+  parentName: "TestEntityCompositePK",
+  name: "US-A1 item",
+} as EntityInstance;
+
+/**
+ * MetaModel for composite-PK Action seed — only TestEntityCompositePK
+ * (matches legacy filterEntities=[entityCompositePKUuid]).
+ */
+export const compositePKTestMetaModel: MetaModel = {
+  applicationUuid: selfApplicationLibrary.uuid,
+  applicationName: selfApplicationLibrary.name,
+  entities: [entityCompositePK],
+  entityDefinitions: [entityDefinitionCompositePK],
+  endpoints: [],
+  jzodSchemas: [],
+  menus: [],
+  runners: [],
+  themes: [],
+  applicationVersions: [],
+  reports: [],
+  storedQueries: [],
+  applicationVersionCrossEntityDefinition: [],
+  applications: [],
+};
+
+export const libraryEntitiesAndInstancesCompositePK: ApplicationEntitiesAndInstances = [
+  {
+    entity: entityCompositePK,
+    entityDefinition: entityDefinitionCompositePK,
+    instances: [compositeItem1, compositeItem2, compositeItem3],
+  },
+];
 
 export const libraryPlayfieldSeedInitParams: InitApplicationParameters = {
   dataStoreType: "app",
@@ -189,8 +298,26 @@ export function isDomainControllerModelCrudSuite(suiteKey: string): boolean {
   return suiteKey === DOMAIN_CONTROLLER_MODEL_CRUD_SUITE_KEY;
 }
 
+/**
+ * Session playfield seed for `domain_controller_composite_pk_crud`.
+ * Custom TestEntityCompositePK (idAttribute region+code) + 3 instances.
+ */
+export const domainControllerCompositePkCrudLibraryPlayfieldSeed: LibraryPlayfieldSeed = {
+  libraryEntitiesAndInstances: libraryEntitiesAndInstancesCompositePK,
+  librarySeedInitParams: libraryPlayfieldSeedInitParams,
+  librarySeedMetaModel: compositePKTestMetaModel,
+};
+
+export function isDomainControllerCompositePkCrudSuite(suiteKey: string): boolean {
+  return suiteKey === DOMAIN_CONTROLLER_COMPOSITE_PK_CRUD_SUITE_KEY;
+}
+
 export function isDomainControllerActionCrudSuite(suiteKey: string): boolean {
-  return isDomainControllerDataCrudSuite(suiteKey) || isDomainControllerModelCrudSuite(suiteKey);
+  return (
+    isDomainControllerDataCrudSuite(suiteKey) ||
+    isDomainControllerModelCrudSuite(suiteKey) ||
+    isDomainControllerCompositePkCrudSuite(suiteKey)
+  );
 }
 
 export function libraryPlayfieldSeedForActionSuite(
@@ -201,6 +328,9 @@ export function libraryPlayfieldSeedForActionSuite(
   }
   if (isDomainControllerModelCrudSuite(suiteKey)) {
     return domainControllerModelCrudLibraryPlayfieldSeed;
+  }
+  if (isDomainControllerCompositePkCrudSuite(suiteKey)) {
+    return domainControllerCompositePkCrudLibraryPlayfieldSeed;
   }
   return undefined;
 }

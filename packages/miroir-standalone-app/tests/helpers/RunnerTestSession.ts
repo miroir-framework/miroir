@@ -285,10 +285,15 @@ export class RunnerTestSession implements RunnerTestSessionInterface {
       ...(playfieldSeed
         ? {
             ...playfieldSeed,
-            // Prefer remapped session library model when the caller omitted / used a
-            // static default (ephemeral runTarget UUIDs).
-            librarySeedMetaModel:
-              this.libraryModelForSession ?? playfieldSeed.librarySeedMetaModel,
+            // Remap the *provided* seed metaModel for ephemeral runTargets.
+            // Do not replace with defaultLibraryAppModel — Action suites may seed
+            // custom entities (e.g. composite-PK TestEntityCompositePK).
+            librarySeedMetaModel: remapLibraryAppModelForRunTarget(
+              playfieldSeed.librarySeedMetaModel,
+              selfApplicationLibrary.uuid as string,
+              deployment_Library_DO_NO_USE.uuid,
+              this.runnerTestContext.runTarget,
+            ),
           }
         : {}),
     });

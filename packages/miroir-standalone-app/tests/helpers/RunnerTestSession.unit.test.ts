@@ -299,7 +299,7 @@ describe("RunnerTestSession (Gap E R)", () => {
     expect(beforeEachTestMock).toHaveBeenCalledTimes(1);
   });
 
-  it("beforeEach forwards libraryPlayfieldSeed and prefers remapped library model", async () => {
+  it("beforeEach forwards libraryPlayfieldSeed and remaps its metaModel for runTarget", async () => {
     const { domainControllerDataCrudLibraryPlayfieldSeed } = await import(
       "./libraryPlayfieldSeeds.js"
     );
@@ -338,6 +338,55 @@ describe("RunnerTestSession (Gap E R)", () => {
         }),
       }),
     );
+  });
+
+  it("beforeEach preserves custom seed metaModel entities (not defaultLibraryAppModel)", async () => {
+    const { libraryPlayfieldSeedInitParams } = await import("./libraryPlayfieldSeeds.js");
+    const tracker = new MiroirActivityTracker();
+    const eventService = new MiroirEventService(tracker);
+    const runTarget = runnerLibraryRunTarget();
+    const customEntityUuid = "aaa0b000-1a1a-2b2b-3c3c-4d4d5e5e6f6f";
+    const customMetaModel = {
+      applicationUuid: selfApplicationLibrary.uuid,
+      applicationName: "Library",
+      entities: [{ uuid: customEntityUuid, name: "TestEntityCompositePK" }],
+      entityDefinitions: [
+        { uuid: "bbb1c111-2c2c-3d3d-4e4e-5f5f6a6a7b7b", entityUuid: customEntityUuid },
+      ],
+      endpoints: [],
+      jzodSchemas: [],
+      menus: [],
+      runners: [],
+      themes: [],
+      applicationVersions: [],
+      reports: [],
+      storedQueries: [],
+      applicationVersionCrossEntityDefinition: [],
+      applications: [],
+    } as unknown as MetaModel;
+    const session = new RunnerTestSession({
+      miroirConfig: baseMiroirConfig(runTarget),
+      miroirActivityTracker: tracker,
+      miroirEventService: eventService,
+      runTarget,
+      suiteTestParams: runnerLibrarySuite().testParams,
+      runnerRegistry: {},
+      libraryPlayfieldSeed: {
+        libraryEntitiesAndInstances: [],
+        librarySeedInitParams: libraryPlayfieldSeedInitParams,
+        librarySeedMetaModel: customMetaModel,
+      },
+    });
+
+    await session.initSession();
+    await session.beforeEach();
+
+    const forwarded = beforeEachTestMock.mock.calls[0][3] as {
+      librarySeedMetaModel: MetaModel;
+    };
+    expect(forwarded.librarySeedMetaModel.entities.map((e) => e.uuid)).toEqual([
+      customEntityUuid,
+    ]);
   });
 
   it("teardown drops runTarget deployment stores via composite action (B4)", async () => {

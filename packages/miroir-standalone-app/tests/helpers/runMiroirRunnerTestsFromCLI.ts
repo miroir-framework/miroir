@@ -15,6 +15,7 @@ import {
 } from "miroir-core";
 import { miroirTest_runner_library } from "miroir-test-app_deployment-library";
 import {
+  miroirTest_domain_controller_composite_pk_crud,
   miroirTest_domain_controller_data_crud,
   miroirTest_domain_controller_model_crud,
 } from "miroir-test-app_deployment-miroir";
@@ -23,6 +24,8 @@ const SUITE_BY_KEY: Record<string, MiroirTestDefinition> = {
   runner_library: miroirTest_runner_library as MiroirTestDefinition,
   domain_controller_data_crud: miroirTest_domain_controller_data_crud as MiroirTestDefinition,
   domain_controller_model_crud: miroirTest_domain_controller_model_crud as MiroirTestDefinition,
+  domain_controller_composite_pk_crud:
+    miroirTest_domain_controller_composite_pk_crud as MiroirTestDefinition,
 };
 
 export function loadRunnerOrActionMiroirTestSuite(suiteKey: string): MiroirTestSuite {

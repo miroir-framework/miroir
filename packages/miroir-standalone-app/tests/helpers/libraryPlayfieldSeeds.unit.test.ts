@@ -2,11 +2,15 @@ import { describe, expect, it } from "vitest";
 import { defaultLibraryAppModel, entityAuthor, entityBook, entityPublisher } from "miroir-test-app_deployment-library";
 
 import {
+  DOMAIN_CONTROLLER_COMPOSITE_PK_CRUD_SUITE_KEY,
   DOMAIN_CONTROLLER_DATA_CRUD_SUITE_KEY,
   DOMAIN_CONTROLLER_MODEL_CRUD_SUITE_KEY,
   domainControllerDataCrudFilterEntities,
   domainControllerDataCrudLibraryPlayfieldSeed,
   domainControllerModelCrudLibraryPlayfieldSeed,
+  domainControllerCompositePkCrudLibraryPlayfieldSeed,
+  ENTITY_COMPOSITE_PK_UUID,
+  isDomainControllerCompositePkCrudSuite,
   isDomainControllerDataCrudSuite,
   isDomainControllerModelCrudSuite,
   libraryEntitiesAndInstancesWithoutBook3,
@@ -48,5 +52,21 @@ describe("libraryPlayfieldSeeds (Phase 3 Action Data.CRUD)", () => {
     ]);
     expect(isDomainControllerModelCrudSuite(DOMAIN_CONTROLLER_MODEL_CRUD_SUITE_KEY)).toBe(true);
     expect(libraryPlayfieldSeedForActionSuite(DOMAIN_CONTROLLER_MODEL_CRUD_SUITE_KEY)).toBe(seed);
+  });
+
+  it("domainControllerCompositePkCrudLibraryPlayfieldSeed seeds TestEntityCompositePK only", () => {
+    const seed = domainControllerCompositePkCrudLibraryPlayfieldSeed;
+    expect(seed.libraryEntitiesAndInstances).toHaveLength(1);
+    expect(seed.libraryEntitiesAndInstances[0].entity.uuid).toBe(ENTITY_COMPOSITE_PK_UUID);
+    expect(seed.libraryEntitiesAndInstances[0].instances).toHaveLength(3);
+    expect(seed.librarySeedMetaModel.entities.map((e) => e.uuid)).toEqual([
+      ENTITY_COMPOSITE_PK_UUID,
+    ]);
+    expect(
+      isDomainControllerCompositePkCrudSuite(DOMAIN_CONTROLLER_COMPOSITE_PK_CRUD_SUITE_KEY),
+    ).toBe(true);
+    expect(
+      libraryPlayfieldSeedForActionSuite(DOMAIN_CONTROLLER_COMPOSITE_PK_CRUD_SUITE_KEY),
+    ).toBe(seed);
   });
 });
