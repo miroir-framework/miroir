@@ -193,6 +193,7 @@ docs-new/
 7. [Integration Guide](guides/developer/integration.md) - System integration (30 min)
 8. [Deployment Guide](guides/deployment.md) - Production architecture (20 min)
 9. [Custom Stores](guides/advanced/custom-stores.md) - Extensibility (20 min)
+10. [UI Performance Monitoring](guides/advanced/performance.md) - Timer toggle & render insights (10 min)
 
 **Next Steps**: Architecture design for specific use case
 

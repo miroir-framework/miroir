@@ -228,7 +228,7 @@ Phase 3 — Visual-debug inline header                           slices 3.1–3.
 Phase 4 — Migrate Report-tree call sites (replace text ruins)  slices 4.1–4.3   [DONE]
 Phase 5 — Docked summary (retire default floating modal)       slices 5.1–5.3   [DONE]
 Phase 6 — Timing + threshold + export                          slices 6.1–6.3   [DONE]
-Phase 7 — Acceptance: footprint + docs note                    slices 7.1–7.2
+Phase 7 — Acceptance: footprint + docs note                    slices 7.1–7.2   [DONE]
 ```
 
 ---
@@ -427,21 +427,21 @@ Do not leave half-enabled `performance.now()` in hot editors without the gate.
 
 ---
 
-## Phase 7 — Acceptance & docs
+## Phase 7 — Acceptance & docs ✅
 
-### 7.1  Footprint acceptance test
+### 7.1  Footprint acceptance test ✅
 
 **Behavior**: with `showPerformanceDisplay === false`, after N simulated renders of a fixture component:
 
 - registry size stays 0
-- `performance.now` not required (spy optional)
+- no `trackRender` calls
 - no summary / header in the document
 
-**Progress (RED/GREEN)** → automated test; this is the #61 “negligible impact” gate.
+**Progress (GREEN)** → `tests/4_view/renderInsightFootprint.acceptance.unit.test.tsx` (#61 negligible-impact gate).
 
-### 7.2  Short developer note
+### 7.2  Short developer note ✅
 
-Optional: stub `docs/guides/advanced/performance.md` with “how to use the timer toggle, depth filter, and how to instrument a component with `useRenderInsight`”.
+`docs/guides/advanced/performance.md` — timer toggle, depth filter, instrumenting with `useRenderInsight`.
 
 ---
 
@@ -483,9 +483,9 @@ Optional: stub `docs/guides/advanced/performance.md` with “how to use the time
 
 ## 10. Success criteria
 
-- [ ] Timer **off** → no registry writes, no insight UI, no floating modal (footprint test green).
-- [ ] Timer **on** → ReportPage spine shows visual-debug-style refresh badges with nav/total counts.
-- [ ] Depth control hides deep leaves and shows **avg / min path / max path** aggregates.
-- [ ] Docked summary replaces the default awkward Performance Stats modal.
-- [ ] Existing refresh-diagnosis workflow (catch MVC-inconsistent cascades) is faster than reading plain-text ruins.
-- [ ] Implementation landed via vertical TDD slices in Phases 1–7.
+- [x] Timer **off** → no registry writes, no insight UI, no floating modal (footprint test green).
+- [x] Timer **on** → ReportPage spine shows visual-debug-style refresh badges with nav/total counts.
+- [x] Depth control hides deep leaves and shows **avg / min path / max path** aggregates.
+- [x] Docked summary replaces the default awkward Performance Stats modal.
+- [x] Existing refresh-diagnosis workflow (catch MVC-inconsistent cascades) is faster than reading plain-text ruins.
+- [x] Implementation landed via vertical TDD slices in Phases 1–7.
